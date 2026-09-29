@@ -1,0 +1,479 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "date": "2026-09-29",
+  "size": [
+    64,
+    64
+  ],
+  "license": "CC0-1.0 (project dedication, to the extent rights exist)",
+  "plate": "#151f2d",
+  "plate_sampling": "Most frequent RGB pixel across the outer 4px of all 22 Round 18 skill icons: (21,31,45), 437 occurrences. Existing skill plates themselves vary slightly.",
+  "roster_note": "The supplied task enumerates 27 status IDs, despite claiming 29. All explicitly named IDs are delivered; no excluded or unrequested icons are invented.",
+  "assets": [
+    {
+      "id": "food",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD status icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Subject: generic FOOD fallback, one appetizing roasted drumstick resting diagonally across a small rustic bread loaf, warm golden brown food, no plate or cutlery. Composition: one centered emblem occupying 75% of the square; generous empty outer margin, no part near edge. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering the entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-0c65257f-3db0-4480-bd27-a042d20590e3.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_food.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_food.png",
+      "source_sha256": "30a5882ba46beceb7ce3908ce1965e8855834bbd2431c22ce9c0fde97c983e87",
+      "sha256": "85601f014ddbd1643ea81c9aaea390cb5661f06493ce275390bf342c2e7df89b",
+      "bytes": 3312
+    },
+    {
+      "id": "elixir_vigor",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A round-bottomed clear glass elixir flask, short narrow neck, tan cork, round spherical body, front view, occupies 70% height. Ruby-red liquid with one bold gold heart emblem centered on the glass.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-3a1d2394-5d67-4fa7-86fe-b94ac37d928a.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_elixir_vigor.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_elixir_vigor.png",
+      "source_sha256": "b6f44c692d0728cd99cdcc41d1d0cb2b5320c123a72f8bde5854f3182b9d3d2a",
+      "sha256": "97c21aa1a4b818ce4724cfcce7f2e4c3549b1501f2cdd1523de7e605c20645bd",
+      "bytes": 3106
+    },
+    {
+      "id": "elixir_focus",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A round-bottomed clear glass elixir flask, short narrow neck, tan cork, round spherical body, front view, occupies 70% height. Deep blue liquid with one large luminous four-point star centered inside.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-0d6176c0-6335-4ce5-b06b-31ade1ae7c7c.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_elixir_focus.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_elixir_focus.png",
+      "source_sha256": "337e5d9ba2734449f5987f41efcc0d96dbc2155a99d5c7ff117b7e5b2ad5e533",
+      "sha256": "25c6a0c56dad3ea0e4bcef6d461b0f8c14b33a5d7b1a50b5d0193c5a2bd65199",
+      "bytes": 2898
+    },
+    {
+      "id": "elixir_precision",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A round-bottomed clear glass elixir flask, short narrow neck, tan cork, round spherical body, front view, occupies 70% height. Amber liquid with one bold white crosshair ring emblem centered on glass.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-d23555e5-4324-4291-b97a-3cd3b486ca06.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_elixir_precision.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_elixir_precision.png",
+      "source_sha256": "4dd623912cdd1b14fe56c25e357343ff4685d2c3e68b36e99019483491b7f74a",
+      "sha256": "c188e8bce4edac4fe8d2ea8ef216fba129d6c069cc985ff34dcdaec506993083",
+      "bytes": 3967
+    },
+    {
+      "id": "elixir_stoneskin",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A round-bottomed clear glass elixir flask, short narrow neck, tan cork, round spherical body, front view, occupies 70% height. Grey liquid and glass visibly divided into chunky cracked stone plates. Strong grey faceted rock emblem.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-4e25c803-7b43-4011-a0ba-90d0d626a850.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_elixir_stoneskin.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_elixir_stoneskin.png",
+      "source_sha256": "1b5fa47628c2321bc6340d9fca5f3bff7c52d7cccaa1a347a63f224b83ee46e5",
+      "sha256": "7723a57150c9810b6d0634679ca714ca2092b0ec7c23d6e4e1d3f13ba4f05a78",
+      "bytes": 3885
+    },
+    {
+      "id": "elixir_deepwater",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A round-bottomed clear glass elixir flask, short narrow neck, open mouth, round spherical body, front view. Teal liquid with three large distinct pale air bubbles rising out of neck. Flask and bubbles together occupy 75% height.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-6c62c94b-7e53-4de6-a04b-b3a1e38eae81.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_elixir_deepwater.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_elixir_deepwater.png",
+      "source_sha256": "74ac8cb3717353c1415ed0fb1cd7fa93eb7185cdab996d3b8e4ea8efd9db32d1",
+      "sha256": "48074189f2b1585e217405cea6cc7d9fbf593b00038bf5e7fae65781e10d00b0",
+      "bytes": 2499
+    },
+    {
+      "id": "alchemy_swiftness",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A tall NARROW yellow glass vial with a tiny cork, straight slender sides, a bold small white wing emblem on its side and three large speed streaks. Clearly slender utility vial, not round-bottomed elixir flask. No boot.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-ce346459-6ab0-4966-8a46-c121762d12a7.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_alchemy_swiftness.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_alchemy_swiftness.png",
+      "source_sha256": "ad06e1a06b83d27fa209261a1a07f5142bafd2d6d080c72b98b23e8a04a534e4",
+      "sha256": "a6e1af111d896ef95f145a3ff695e12a9925876a70d65c78bdf9e31f50e45a67",
+      "bytes": 2401
+    },
+    {
+      "id": "alchemy_cave",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A tall NARROW violet glass vial with a tiny cork, straight slender sides, one large luminous cat-slit eye in front of it. Clearly slender utility vial, not round-bottomed elixir flask.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-e6848312-46fe-4ab9-bfb8-e79661835094.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_alchemy_cave.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_alchemy_cave.png",
+      "source_sha256": "398cb2285c925f3715a48a12d25c77ee30ce06db8957e916d3052f2dd8cd2c62",
+      "sha256": "dad472a79a3a6f91700aa7253ae0775ac057c240464570a0f56346b6536c9557",
+      "bytes": 2135
+    },
+    {
+      "id": "mount_land",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One warm iron horseshoe, open end upward, with a tan leather rein loop draped over its upper side. Bold equestrian emblem, warm metal and tan.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-416324dd-98e3-439a-a21e-6b7b06115d3d.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_mount_land.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_mount_land.png",
+      "source_sha256": "e8127a57a48e710a77cf705a5222c7f917974b26cac9b5831b82703bb7292f78",
+      "sha256": "dee2303c4d70c50091ee1a4d1cc65c928677e1153a4049451089930cd5c70cdc",
+      "bytes": 4233
+    },
+    {
+      "id": "mount_flight",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: EXACTLY ONE SINGLE feathered sky-blue WING in SIDE PROFILE sweeping from lower left to upper right, above ONE small tan leather saddle. Asymmetrical emblem. One wing only, NOT a pair of wings, not symmetrical. Wing fills upper two thirds, small saddle lower third. Bold chunky broad feathers.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-56509027-8ee8-4149-ad59-09c36a546cb5.png",
+      "superseded": [
+        {
+          "id": "mount_flight",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One single spread sky-blue feathered wing rising above a small tan leather riding saddle. Together one compact emblem, broad chunky feathers.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-6d9009f9-cff4-471f-9caa-96753da3640c.png",
+          "reason": "Generated a pair of wings instead of the required single wing."
+        }
+      ],
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_mount_flight.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_mount_flight.png",
+      "source_sha256": "d4ea4f155347232ba525c6366db0aa149043995509db249940dfd0e189f6f271",
+      "sha256": "8ca23e8f6d47d60dfcb11257fd491ee3192f42e2de2718a8312f1e88d568a2ba",
+      "bytes": 4432
+    },
+    {
+      "id": "shield",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One translucent golden protective bubble dome with bright thick rim highlight, EMPTY inside. Simple luminous hemispherical absorb barrier, golden glasslike shell on dark background.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-64a3ac2a-c659-4394-92d0-902ce3cc05ee.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_shield.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_shield.png",
+      "source_sha256": "b5faed760ddc7e3aced352fe34befb5e82fd5baa282803b9678ac0f9a600a263",
+      "sha256": "c953361b678680cdb5aae65e33353ccd2b4be1897fafff887196eb16f1a95e5e",
+      "bytes": 3787
+    },
+    {
+      "id": "move_immune",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A SINGLE HUGE HEAVY IRON SHACKLE snapped into EXACTLY TWO chunky C-shaped halves, pulled apart by a WIDE black central gap. Just ONE short thick chain link attached at each outer side. Bright steel highlights, ONE big gold burst in the gap. EXTREMELY SIMPLE, two large metal shapes and one burst, almost pictogram simplicity but painted fantasy material. NO tiny fragments, NO flying debris, NO long chains. Fills central 75% of square. At 32px the two open halves must remain obvious.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-ae45a5c6-94e7-4f8f-997f-83874528bf4f.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_move_immune.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_move_immune.png",
+      "source_sha256": "87123cd992fa6180c557c54262bd8affb340ce2a602a3acbf92412d9b44e204c",
+      "sha256": "02b3032b3e145392a6c89ca879fe7d1ea070bed9d3c3c9f5eb3e8ee1482011ed",
+      "bytes": 4008,
+      "superseded": [
+        {
+          "id": "move_immune",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A heavy iron shackle SNAPPED OPEN, with broken chain links flying apart to left and right and a gold glint at the rupture. Clearly separated halves with a wide open gap. Iron grey and gold. No boot, no closed loop.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-d29ade0a-db26-4e56-b773-aff5a8f5b2fb.png",
+          "reason": "Too fine or dark at 32px in the first contact sheet."
+        }
+      ]
+    },
+    {
+      "id": "talent_unbroken",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One dented steel breastplate, heavy armored chest silhouette, glowing with a hot ORANGE crack that still holds together. Steel grey and hot orange seam, bold chunky armor.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-b309716b-2077-491d-8531-bf4e05334c05.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_unbroken.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_unbroken.png",
+      "source_sha256": "9ac12c6717781825d2b5b5017da09e3f6b337c95247f8624411cc144edb9a0f7",
+      "sha256": "b24231169ea33f4e850291a5b25686711227a8734c43f97c08d72c5901be1bbe",
+      "bytes": 4617
+    },
+    {
+      "id": "talent_ruination",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A heavy war hammer head wreathed in BLOOD-RED energy, with a single white four-point critical-hit star at the impact point. Short thick handle, bold hammer silhouette.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-86076553-dd26-4a09-b7f6-391c39c97684.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_ruination.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_ruination.png",
+      "source_sha256": "84a9d95d07eca6bab92db2d1f5932e218da48a4843f2e0afdbb4cfadc445a654",
+      "sha256": "8c10ed649027c18e0ba422f8507101f2a652535dc641beb8af005a7822aa3c8a",
+      "bytes": 5334
+    },
+    {
+      "id": "talent_whitehot",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One AIRBORNE round fireball with a brilliant WHITE-HOT core and PALE YELLOW corona, flowing flame tail. Predominantly white and light yellow; no orange ground, no ground at all. Floating circular silhouette.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-d1d2e88d-a916-48c2-ad86-12b8e225db95.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_whitehot.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_whitehot.png",
+      "source_sha256": "ccea8c8e9f425ea793838a835077f5245aa42ccb17948e618268bc626cf42674",
+      "sha256": "c5b6e293f79250626f3c6cf3ec1369a5edf13122a8d8d67c3f872652383d8a23",
+      "bytes": 3618
+    },
+    {
+      "id": "talent_turn_aside",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One golden ROUND metal shield with a bright curved deflection arc visibly glancing off its outer edge. Solid disc shield and broad swooping arc, bold silhouette.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-97a8a5b8-cda8-43d3-8c0a-c9f34d8de115.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_turn_aside.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_turn_aside.png",
+      "source_sha256": "a2b59a1ad24cf62cf9ccc12ed0538df758e1aa3ac33710860bcae40b8a144f97",
+      "sha256": "74ddec24956e550402d78cd80701e061b23c02db05f8facf7c7a5b1419bb9622",
+      "bytes": 4819
+    },
+    {
+      "id": "talent_last_word",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One deep VIOLET spiral vortex draining inward into a small bright RED HEART at its center. Thick purple curved spiral arms, clear heart shape, dark purple and red.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-7705781f-d2c9-450f-bd15-6d8fafae4697.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_last_word.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_last_word.png",
+      "source_sha256": "9602831cfbb600b36978d8ec8eb41dcb7f132d9d75caaa2affd90252d9e12c82",
+      "sha256": "b280fc0919ad886583296bf0055161a2e86cea6287aba7ae8d86146ed685262b",
+      "bytes": 4429
+    },
+    {
+      "id": "talent_untouchable",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One charcoal HOODED SHADOW bust silhouette with teal edges, half-faded, with TWO arrows passing harmlessly THROUGH its translucent torso. Bold hood and simple arrow shafts.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-71726285-b4ff-49bd-825b-3372e08ecc11.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_talent_untouchable.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_talent_untouchable.png",
+      "source_sha256": "6228c8484fd1ee4d3fa99ce8bf705be25780e29b6887f2b349d9c0aa4c194c5f",
+      "sha256": "54f441981552029f075bdc3a90d2e6d284d8fde89d5be62f0c2e9b27a44093ca",
+      "bytes": 3973
+    },
+    {
+      "id": "poisoned",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One single fat ACID-GREEN venom DROP falling from a curved ivory FANG. Make the green droplet dominant, simple curved fang above it. Sickly green, no leaves, no heart.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-f77272b8-3291-4d9d-9bb9-a461328f7ed5.png",
+      "kind": "status",
+      "frame": "debuff",
+      "file": "grug_status_poisoned.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_poisoned.png",
+      "source_sha256": "438045449334b75e1cceaa47e351ad31345d45a8235ad95fcc3dfd39fc94dd66",
+      "sha256": "addf87316c3fa7b5feabf8dff01899eb6da16511890df4cdfe53a5e746e302f1",
+      "bytes": 1785
+    },
+    {
+      "id": "slowed",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One leather BOOT tangled in thick GREY-WHITE sticky WEB STRANDS, with one downward drag chevron underneath. Large boot silhouette, just a few thick web strands, no tiny net.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-c35222e1-dc0e-4124-96bd-e6bbbb0d90bc.png",
+      "kind": "status",
+      "frame": "debuff",
+      "file": "grug_status_slowed.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_slowed.png",
+      "source_sha256": "1592e8bf3ddf7e29344165e51f5b1e684663fbebcbdf5b10d28b9b75d1089b6e",
+      "sha256": "d232daa589e9bbf9b53edd5ee7e0e304636dce8ab12808bdd6ee778f05ae54c5",
+      "bytes": 3661
+    },
+    {
+      "id": "rooted",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: A large warm TAN LEATHER BOOT, thick closed SILVER shackle around ankle with one obvious padlock, and EXACTLY THREE HUGE SILVER chain links connecting it to one SMALL stone stake directly beside the boot's heel. Tiny ice-blue crystal at stake. Boot occupies most of emblem, chain very short and thick, intact and taut. Bright steel highlights and tan leather make it readable on dark. EXTREMELY SIMPLE, few chunky forms, no laces, no ornament, no tiny detail. Fills central 75% of square.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-b95b581b-925b-44d5-a465-b0aa725df70c.png",
+      "kind": "status",
+      "frame": "debuff",
+      "file": "grug_status_rooted.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_rooted.png",
+      "source_sha256": "97a5f486dd2734e9270f2fc621157195792634c9ec9bac411d209ff86de133a7",
+      "sha256": "42dd400a2294b8dcd0719d187b04b998c0f2b9034c3f95cfe72ed770338bede9",
+      "bytes": 4322,
+      "superseded": [
+        {
+          "id": "rooted",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One leather BOOT locked to the ground by a CLOSED intact iron chain and locked shackle, chain staked into a small chunk of stone with ice crystals at stake. Chain taut and UNBROKEN, no flying links. Boot cannot move.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-837dd9fa-7870-44d6-8f90-456059ca659f.png",
+          "reason": "Too fine or dark at 32px in the first contact sheet."
+        }
+      ]
+    },
+    {
+      "id": "stunned",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One dented steel HELMET with THREE bright yellow five-point stars circling above it. Broad simple helmet and clearly separated large stars.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-0e94c705-8e47-4be0-9b2e-c2a456367e94.png",
+      "kind": "status",
+      "frame": "debuff",
+      "file": "grug_status_stunned.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_stunned.png",
+      "source_sha256": "31cce425ec13e225cef58274b185b2b254b314a3a4cc6f3e8b0e2eee650689ee",
+      "sha256": "059a855b5ae3a1e929d4529ca556fe7a061bbf77b728a654c3ef87d3493ab0db",
+      "bytes": 4179
+    },
+    {
+      "id": "scorched",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: ORANGE-RED flame tongues rising upward from CRACKED GLOWING GROUND, a low flat dark stone base with orange cracks. Ground-based burning patch, vertical flames with broad ground silhouette. No floating ball.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-4c97b40f-3580-40ed-94ac-9234041dd4d8.png",
+      "kind": "status",
+      "frame": "debuff",
+      "file": "grug_status_scorched.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_scorched.png",
+      "source_sha256": "eda130fd29038e2b2cf682a2bdf71070abb47e1f5839ca2f8c48cd2c6bdb0f80",
+      "sha256": "318ff06806ba7ca3cee3ea5d67f31d3505a2c0cc4f657232b429f80877c3b161",
+      "bytes": 4110
+    },
+    {
+      "id": "in_combat",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: Exactly TWO RED SWORDS CROSSED in an X. Thick red blades with scarlet glow and small dark metal hilts. Single centered combat emblem. No helmet, banner, shield or background object.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-a6061e0c-833e-4234-9ffe-b9bb543d5e74.png",
+      "kind": "status",
+      "frame": "neutral",
+      "file": "grug_status_in_combat.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_in_combat.png",
+      "source_sha256": "95fda41c578e1ed47cf61f10b7145baea67836e8d4561deaca78dfe9721b8669",
+      "sha256": "f1b6f8821a70c9bcc650dfb6a4d49461adb165071936f07209933a619a501da8",
+      "bytes": 3427
+    },
+    {
+      "id": "pvp_tagged",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One front-facing steel WAR HELMET with a deep red plume, backed by two short crossed SILVER sword blades. Helmet is the large dominant center silhouette. Silver metal with crimson accent. Must read as helmet, not just crossed swords. No banner.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-9bb8f7dc-a5ca-4014-8a0f-ac883436a59a.png",
+      "kind": "status",
+      "frame": "neutral",
+      "file": "grug_status_pvp_tagged.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_pvp_tagged.png",
+      "source_sha256": "d311406e34e1575451238de53d07297bfbbff69a4b2aa840c8bd6ad2078226b4",
+      "sha256": "c43dbc919de69d948720efddf17f82bcbc9998a6015435694a112125802c0102",
+      "bytes": 4673
+    },
+    {
+      "id": "pvp_contested",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One large torn RED AND BLACK WAR BANNER hanging from a thick silver horizontal crossbar, with two small crossed SILVER swords overlaying lower cloth. Banner and pole dominate tall rectangular silhouette; war territory emblem. No helmet.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-0b1840db-4a8f-4705-a165-b6bf2ab79afb.png",
+      "kind": "status",
+      "frame": "neutral",
+      "file": "grug_status_pvp_contested.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_pvp_contested.png",
+      "source_sha256": "8348e63a1747582263d40b596df2b8c2c4135b3607ec5362d0ef03a9494232fe",
+      "sha256": "b1bdf27fc9d0bf85670b8a60b0652f093b26cf00f8fccbd4ad8dd70e77d796dd",
+      "bytes": 3742
+    },
+    {
+      "id": "warding_draught",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One stout SILVER flask with a large embossed HEATER-SHIELD emblem on its front and a faint white ward aura around it. Short wide flattened flask, silver and white, obvious shield emblem.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-e9c7a736-e917-4be3-af88-119d0f6cd64e.png",
+      "kind": "status",
+      "frame": "buff",
+      "file": "grug_status_warding_draught.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_warding_draught.png",
+      "source_sha256": "d769ce4898ca9067dd84d69e9cb9b3662c1872a5648c638395ddfe3f03881a90",
+      "sha256": "864e986c5397619292605655c2cf38dd30b40b4a08b62d1b3189264a13fb7f72",
+      "bytes": 4787
+    },
+    {
+      "id": "warrior",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One heavy notched steel BROADSWORD crossed diagonally over one round BROWN LEATHER shield. Class accent #a66a3f brown dominates shield. Shield surface is PLAIN brown leather with steel boss, NO paint, NO runes, NO symbols, NO markings or decoration. Broad blunt sword, brown leather hilt. Compact centered weapon-and-shield emblem within central 75% of square.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-fc89ae79-ac58-4b16-8bb5-1d28ce9ab575.png",
+      "superseded": [
+        {
+          "id": "warrior",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CLASS WARRIOR. A notched heavy BROADSWORD crossed diagonally over a ROUND SHIELD, blunt heavy silhouette, brown leather wrapping and steel edges. Dominant class accent leather brown #a66a3f.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-59c1d23b-bec1-4fb4-8092-6c767edc627c.png",
+          "reason": "Unrequested rune-like shield markings."
+        }
+      ],
+      "kind": "class",
+      "frame": null,
+      "file": "grug_class_warrior.png",
+      "path": "mods/PLAYER/grug_classes/textures/grug_class_warrior.png",
+      "source_sha256": "c86283b9f720505f3311d27375d151ab7f1fb0d9150bb73a408d76493cbc1308",
+      "sha256": "249dda0411ff9c919df96343afdd110cf4b9609f4da9be0882ab370ae362bdcd",
+      "bytes": 4513
+    },
+    {
+      "id": "mage",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CLASS MAGE. One luminous SPELL ORB hovering over an open palm, a few large blue sparks and cool glow. Class accent arcane blue #4a9bd8. Bold magical sphere and hand silhouette.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-da6d3d45-ea10-4553-ac24-f8891852c037.png",
+      "kind": "class",
+      "frame": null,
+      "file": "grug_class_mage.png",
+      "path": "mods/PLAYER/grug_classes/textures/grug_class_mage.png",
+      "source_sha256": "98336558c21415e8dbe89aa52d12ec47fccc4d57768588aaa5d1bd95008cabb6",
+      "sha256": "8c7bd40c1a848843d3193b6289ed5502385cadbd18b0ea1d8f46bce685db44a4",
+      "bytes": 3906
+    },
+    {
+      "id": "priest",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One brilliant WHITE #f2f2f2 SUNBURST holy symbol, a solid white circular center with eight thick WHITE rays. Predominantly WHITE and silver-grey; ONLY the tiniest hint of PALE GOLD at the inner ring. Dark-grey outline, subtle white glow. White must dominate, NOT yellow, NOT golden. Compact centered sun emblem within central 75% of square.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-d94d0928-5dae-4d38-b3ce-85ecded11724.png",
+      "superseded": [
+        {
+          "id": "priest",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CLASS PRIEST. One radiant simple SUNBURST holy symbol in white #f2f2f2 and pale gold, luminous central disc with eight chunky rays. Outline symbol in darker grey so it reads on dark plate. No letters, no glyph writing.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-32c47acc-eecc-4197-a3da-f5619157d308.png",
+          "reason": "Gold dominated instead of the white class accent."
+        }
+      ],
+      "kind": "class",
+      "frame": null,
+      "file": "grug_class_priest.png",
+      "path": "mods/PLAYER/grug_classes/textures/grug_class_priest.png",
+      "source_sha256": "65991318cf5c0ce70f301bd18f4325d00e5e5d3deab83dc8c469ffa32806e36a",
+      "sha256": "d2555d888829742b0b4f4c59ac4d20b2facefb8311f4067a8361265da47874f0",
+      "bytes": 3900
+    },
+    {
+      "id": "scout",
+      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One LARGE THICK olive-green #6b7d32 LONGBOW and ONE thick nocked arrow, compact D-shaped silhouette turned diagonally. Bow limb must be VERY BROAD and chunky, like a stylized fantasy longbow carved from green wood, with a tan edge highlight. A thick ivory taut string joins both tips through the arrow nock. The nocked arrow has a HUGE ivory triangular arrowhead and two large olive feather vanes, aimed diagonally up-right. No person, hands or body, no text. EXTREMELY SIMPLE equipment emblem readable at 32 pixels: use broad thick shapes, NOT hairline thin sticks. Entire emblem centered in central 75% square with empty margins.",
+      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-d465c752-db72-4736-ae97-7e154d2784f3.png",
+      "superseded": [
+        {
+          "id": "scout",
+          "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One standalone wooden LONGBOW with taut pulled-back string and one NOCKED ARROW. Arrow aimed diagonally up-right, olive green #6b7d32 fletching and small olive leather grip accents. A tiny crescent of hood fabric behind grip ONLY. NO person, NO body, NO face, NO hands, NO arms. An isolated BOW AND ARROW equipment emblem. Show entire bow, both tips and arrow within central 70% of square with LARGE empty margins. Simple chunky silhouette.",
+          "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-678951de-1e4c-4ee3-86ef-f1e8bc8b02c5.png",
+          "superseded": [
+            {
+              "id": "scout",
+              "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: CLASS SCOUT. One DRAWN LONGBOW with a NOCKED ARROW aimed diagonally upward, taut string, olive green #6b7d32 fletching, a subtle hint of a hood edge behind the bow. Bow dominates clear silhouette.",
+              "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-1e116e9a-d5f8-4cc0-92b7-af00ee3d2bf3.png",
+              "reason": "Generated a whole archer and cropped bow instead of an isolated bow emblem."
+            }
+          ],
+          "reason": "Too fine or dark at 32px in the first contact sheet."
+        }
+      ],
+      "kind": "class",
+      "frame": null,
+      "file": "grug_class_scout.png",
+      "path": "mods/PLAYER/grug_classes/textures/grug_class_scout.png",
+      "source_sha256": "15cdc850517606ebd4e80c80f27515ad6fb136281f70604255b74aebf216c9fa",
+      "sha256": "1f2ebde7e9e7fc286d69ad51a35b60fef3dc236f51905a6d65634a2838800a75",
+      "bytes": 4098
+    },
+    {
+      "id": "frame_buff",
+      "file": "grug_status_frame_buff.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_frame_buff.png",
+      "kind": "frame",
+      "source": "tools/r26_icons/frames.py",
+      "brief": "64x64 RGBA, transparent center, exact 3px border #4caf50.",
+      "sha256": "62ac968a0eae85799b94b7ea4a953184814b061361d08c728c6c017e41970fb1",
+      "bytes": 181
+    },
+    {
+      "id": "frame_debuff",
+      "file": "grug_status_frame_debuff.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_frame_debuff.png",
+      "kind": "frame",
+      "source": "tools/r26_icons/frames.py",
+      "brief": "64x64 RGBA, transparent center, exact 3px border #c41e3a.",
+      "sha256": "37faad5543c2cdd68b534b72541f39238cf6f4e3c69cf2e18b6c25679f365a9e",
+      "bytes": 183
+    },
+    {
+      "id": "frame_neutral",
+      "file": "grug_status_frame_neutral.png",
+      "path": "mods/CORE/grug_core/textures/grug_status_frame_neutral.png",
+      "kind": "frame",
+      "source": "tools/r26_icons/frames.py",
+      "brief": "64x64 RGBA, transparent center, exact 3px border #ffd100.",
+      "sha256": "2ebe081b3d2828748814c250f9959eae05d380860f06ec16babb0f6d50007c6c",
+      "bytes": 177
+    }
+  ],
+  "composition": "Opaque 64x64 RGBA plates, one emblem, no baked-in frame. Status frames are separate overlays.",
+  "postprocess": "Pillow Lanczos to 56x56; normalize border-connected near-background pixels to sampled #151f2d with a soft transition; center on 64x64 plate for a guaranteed 4px frame margin. No changes to motif colors.",
+  "pillow_version": "12.3.0",
+  "contact_sheet": {
+    "path": "tools/r26_icons/contact_sheet.png",
+    "sha256": "0cbf051b562fec5320871fe659f5f8cf10cf017596cf44ef8f6d7de2704db1ba"
+  }
+}
