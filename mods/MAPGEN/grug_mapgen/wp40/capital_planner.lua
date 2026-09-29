@@ -72,6 +72,7 @@ M.DEFAULTS = {
 	SNAP = 20, SNAP_T = 1.0, SNAP_S = 3, SNAP_D = 2.5,
 	POLY = nil,
 	NOTCH = 0.14,
+	GROW = 0.08, GROW_TRIES = 2, -- a plan leaving a named plot out retries at +8 %, +16 % area
 	SHORE_STOP = 70,      -- water met this far out along a ray: the city grows across it only
 	C_BEYOND = 3,         -- ... at this multiple of the cost (it prefers its near bank)         -- a ray keeps within this share of the broadly smoothed outline
 	C_WET = 4.0, C_STEEP = 2.6, C_BUILD = 1.0,
@@ -463,7 +464,7 @@ end
 --   planner derives its city parameters, M.city_roads); I.network_roads =
 --   the network's roads (streets and connectors meet them level, D49)
 -------------------------------------------------------------------------------
-function M.plan(seed, I, opt)
+local function plan_once(seed, I, opt)
 	local P = {}
 	for k, v in pairs(M.DEFAULTS) do P[k] = v end
 	for k, v in pairs(opt or {}) do P[k] = v end
@@ -2289,6 +2290,38 @@ function M.plan(seed, I, opt)
 		connectors = connectors, layout = layout, plots = placed, left_out = left_out,
 		relaxed = relaxed, wall = wall, canal = canal, squares = squares, stats = st, r_at = r_at, inside = inside,
 		grid = {TT = TT, WET = WET, BUILD = BUILD, DW = DW, NG = NG, G = G, EXT = EXT}}
+end
+
+-- Round 26 (ruling 3, a size that fits the content): a plan that leaves a
+-- named or required plot out is planned again with a slightly larger target
+-- area (GROW, at most GROW_TRIES times); the plan with the fewest such plots
+-- left out wins (the first on ties). Nearly every capital plans once.
+function M.plan(seed, I, opt)
+	local function named_left(plan)
+		local n = 0
+		for _, p in ipairs(plan.left_out) do
+			if p.required or p.kind ~= "fill" then n = n + 1 end
+		end
+		return n
+	end
+	local best = plan_once(seed, I, opt)
+	local best_n = named_left(best)
+	local area = (opt and opt.TARGET_AREA) or M.DEFAULTS.TARGET_AREA
+	local grow = (opt and opt.GROW) or M.DEFAULTS.GROW
+	local tries = (opt and opt.GROW_TRIES) or M.DEFAULTS.GROW_TRIES
+	local t = best.stats.t.total
+	for k = 1, tries do
+		if best_n == 0 then break end
+		local o = {}
+		for key, v in pairs(opt or {}) do o[key] = v end
+		o.TARGET_AREA = area * (1 + k * grow)
+		local plan = plan_once(seed, I, o)
+		t = t + plan.stats.t.total
+		local n = named_left(plan)
+		if n < best_n then best, best_n = plan, n end
+	end
+	best.stats.t.all_tries = t
+	return best
 end
 
 -------------------------------------------------------------------------------
