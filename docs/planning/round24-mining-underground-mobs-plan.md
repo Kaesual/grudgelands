@@ -254,6 +254,14 @@ go-ahead.**
     at once, so a reconnect continues at the first missing step. No kick
     button.
 
+33. **Housing areas are ordinary terrain** (user, 2026-09-29): the housing
+    mask only decides where a Claim Stone may be placed. Mapgen and runtime
+    renewal treat housing-mask columns like any other ground at every depth:
+    ores, shallow bands, cliff layers and nests, surface skin, cave content,
+    gathering sources, plants and water content follow the normal rules.
+    Placed Claim Stones (player protection) change nothing about generation
+    or renewal either.
+
 ## Lanes
 
 | Lane | Scope | Depends on |
@@ -269,6 +277,7 @@ go-ahead.**
 | **G — Protection depth** | Ruling 30 | B2 (same ore host code) |
 | **G2 — Normal caves below protection** | Ruling 30 addendum (cave content, cultural reservations; hostile spawns in F) | G merged |
 | **H — Pausable character creation** | Ruling 32 | — |
+| **I — Housing areas as ordinary terrain** | Ruling 33 (+ Lane H join-step one-liner) | G2, H merged |
 
 ## Coordination
 
