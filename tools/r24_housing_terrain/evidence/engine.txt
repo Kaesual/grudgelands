@@ -1,0 +1,41 @@
+Round 24 Lane I engine evidence (2026-09-29), seed 10536739806879207652.
+Two headless runs through tools/luanti_headless.sh (LC_ALL=C, isolated
+/tmp/grudgelands-headless.r24-lane-i-* roots, removed afterwards):
+before = `git archive main` (f981612b), after = `git archive` of the branch.
+A first before-boot with a probe radius of 8 crashed in the coal probe's
+tunnel sampler within seconds (box narrower than its 55-node tunnels) and
+was rerun with radius 32; nothing else differs.
+Boxes: housing H x 368..527, z 1968..2127 (housing_kragmar_redtusk, 100 %
+mask, 2 % other exclusions) and non-housing N x 608..767, z 1968..2127 (same
+zone, Redtusk Savanna, savanna biome), both y -112..207; dumps of the 64 x 64
+cores x 416..479 / 656..719, z 2016..2079.
+
+Cave content (cave_cap, y -500..-100) lies below the dumped boxes and is not
+engine-checked here; the portable fixture covers it (cave sites open in
+housing columns: 0 on main, 6594 / 6488 on the branch).
+
+analyze.py before after:
+
+timing: Lua planner slice + writer per chunk, same chunks before (main) and after (branch)
+  housing H (x 368..527, z 1968..2127)       chunks  16  wall   6.92 s ->   6.34 s (-8.4%)  cpu   6.94 s ->   6.37 s (-8.2%)
+  non-housing N (x 608..767, z 1968..2127)   chunks  12  wall   4.86 s ->   4.62 s (-5.0%)  cpu   4.90 s ->   4.65 s (-5.1%)
+  other (Orc start probe box, neighbours)    chunks  16  wall   6.68 s ->   6.39 s (-4.4%)  cpu   6.92 s ->   6.61 s (-4.5%)
+only before: 0 only after: 0
+content digests per chunk (node names + param2):
+  housing H (x 368..527, z 1968..2127)       chunks  16 identical   7 differ   9 368,-32,1968 368,-32,2048 368,48,1968 368,48,2048 368,128,2048 448,-32,1968 448,-32,2048 448,48,1968 448,48,2048
+  non-housing N (x 608..767, z 1968..2127)   chunks  12 identical  12 differ   0
+  other (Orc start probe box, neighbours)    chunks  16 identical  16 differ   0
+dump boxes (64 x 64 columns; depth measured from the column's top ground node):
+  H before  band/layer share at depth 5-40:   0.0%  ores:  5.2%  surface sources  1 (grug_gathering:red_ochre_source 1)  plants/trees above ground 1763  cave sources 0
+  H after   band/layer share at depth 5-40:  22.2%  ores:  4.0%  surface sources 12 (grug_gathering:corn_source 1, grug_gathering:red_ochre_source 1, grug_mapgen:sunberry_source 5, grug_mapgen:wild_grain_source 5)  plants/trees above ground 1763  cave sources 0
+  N before  band/layer share at depth 5-40:  23.1%  ores:  4.0%  surface sources 19 (grug_gathering:corn_source 3, grug_gathering:red_ochre_source 1, grug_gathering:sunleaf_source 5, grug_mapgen:fire_pepper_source 2, grug_mapgen:sunberry_source 2, grug_mapgen:wild_grain_source 6)  plants/trees above ground 1425  cave sources 0
+  N after   band/layer share at depth 5-40:  23.1%  ores:  4.0%  surface sources 19 (grug_gathering:corn_source 3, grug_gathering:red_ochre_source 1, grug_gathering:sunleaf_source 5, grug_mapgen:fire_pepper_source 2, grug_mapgen:sunberry_source 2, grug_mapgen:wild_grain_source 6)  plants/trees above ground 1425  cave sources 0
+
+Reading: the housing box now carries the same shallow bands as its
+non-housing neighbour (22.2 % vs 23.1 % of depth 5-40; 0 % before) and
+world-content/P9G surface sources (12 vs 19 in the neighbour; 1 before). The
+ore share at depth 5-40 drops from 5.2 % to the neighbour's 4.0 % because
+bands replace stone hosts, exactly as outside housing. Only housing chunks
+changed; every non-housing chunk is byte-identical. Timing is a comparison
+only: all three groups ran 4-8 % faster in the second run, so the housing
+change is within run-to-run noise.

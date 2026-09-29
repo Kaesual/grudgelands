@@ -466,7 +466,7 @@ return function(deps)
 	-- corridors too, water banks not). Cave rows follow the writer's "cave"
 	-- rule. Round 24 ruling 30 addendum (optional deps, all or none):
 	-- `cave_limit` is the writer's own column rule (r6_settlement.lua
-	-- `r30_cave_limit`, with `housing_mask_id_at` and `protected_floor_at`),
+	-- `r30_cave_limit`, with `protected_floor_at`),
 	-- so cave rows regrow exactly where the generator places them, below a
 	-- town's or POI's protected floor included; `protected_only_floor_at`
 	-- lets a surface resource below such a floor ignore the claim exclusion,
@@ -474,7 +474,6 @@ return function(deps)
 	local cave_limit = deps.cave_limit
 	local protected_only_floor_at = deps.protected_only_floor_at
 	if cave_limit ~= nil and (type(cave_limit) ~= "function" or
-			type(deps.housing_mask_id_at) ~= "function" or
 			type(deps.protected_floor_at) ~= "function" or
 			type(protected_only_floor_at) ~= "function") then
 		fail("ruling 30 cave seams differ")
@@ -488,8 +487,8 @@ return function(deps)
 		if cave then
 			local _, cave_id = deps.static_exclusion_values_at(x, z, "cave")
 			if cave_limit then
-				if y >= cave_limit(water, cave_id, deps.housing_mask_id_at(x, z) ~= nil,
-						functional_kind, hard_foundation, deps.protected_floor_at, x, z) then
+				if y >= cave_limit(water, cave_id, functional_kind, hard_foundation,
+						deps.protected_floor_at, x, z) then
 					return nil, "excluded"
 				end
 			elseif cave_id ~= nil then

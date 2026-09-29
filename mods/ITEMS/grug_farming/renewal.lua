@@ -16,7 +16,8 @@
 --   find_nodes_in_area_under_air(minp, maxp, names), get_item_group(name, group)
 --   density     the vegetation authority (grug_mapgen.wp40.vegetation)
 --   planner     the planner column source (grug_mapgen.wp40.planner_source)
---   world_alterable(pos)  grug_core's actor-neutral mutation permission
+--   natural_ground_alterable(pos)  grug_core's territory rule for natural
+--               change (no claim guards: claims never feed renewal)
 --   random()    uniform [0, 1); trees  bool (setting grug_tree_regrowth)
 --   non_natural array of node names that are not natural (sapling guard)
 return function(api)
@@ -188,17 +189,19 @@ return function(api)
 		return true
 	end
 
-	-- Mutation permission: protected ground (territory, claims), housing and
-	-- hard rows never grow renewed plants. The writers' claim exclusions
-	-- (settlements, POIs, roads, water; per plant class) and the ground they
-	-- keep bare are the habitat's answer (vegetation_density.lua).
+	-- Mutation permission: protected territory (towns, landmarks, immutable
+	-- ground) and hard rows never grow renewed plants. The writers' claim
+	-- exclusions (settlements, POIs, roads, water; per plant class) and the
+	-- ground they keep bare are the habitat's answer (vegetation_density.lua).
+	-- Housing masks and Claim Stones are no part of it (Round 24 ruling 33):
+	-- a housing column renews like any other ground.
 	local function permitted(pos, support_pos)
-		if planner.housing_mask_id_at(pos.x, pos.z) ~= nil then return false, "housing" end
 		if planner.hard_row_at(pos.x, pos.y, pos.z) ~= nil or
 				planner.hard_row_at(support_pos.x, support_pos.y, support_pos.z) ~= nil then
 			return false, "hard_row"
 		end
-		if not api.world_alterable(pos) or not api.world_alterable(support_pos) then
+		if not api.natural_ground_alterable(pos) or
+				not api.natural_ground_alterable(support_pos) then
 			return false, "protected"
 		end
 		return true

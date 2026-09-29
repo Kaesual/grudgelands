@@ -182,9 +182,9 @@ The Claim Stone is the centre of its protected area.
 
 ### 2.3 Depth bounds
 
-- A Claim Stone may not be placed below y = −50. This is the T1 pick's natural
-  depth limit at y = −100 minus the maximum possible claim radius 50, so no
-  claim volume can reach below the T1 layer.
+- A Claim Stone may not be placed below y = −50. The tier-2 rock starts at
+  y = −101 (Round 24 ruling 1), so a radius-50 claim placed at −50 reaches
+  down to −100 at most and never covers tier-2 rock.
 - At y = −701 and below, the universal contested T5/T6 terrain rule overrides
   every land claim: both factions may dig and place, and PvP is always
   contested.
@@ -447,7 +447,15 @@ visitor's own faction.
 
 `housing_eligible_at(x, z)` is the authored positive housing mask within the
 six level-11–20 and four level-21–30 housing zones, minus every deterministic
-exclusion corridor and envelope. The complete future radius-50 footprint—not
+exclusion corridor and envelope.
+
+**The housing mask is claim eligibility only** (Round 24 ruling 33). It
+decides where a Claim Stone may be placed and nothing else: mapgen and runtime
+renewal treat a housing-mask column exactly like the same column without the
+mask, at every depth (ores, shallow bands, cliff layers and nests, surface
+skin, cave mouths and cave content, gathering sources, plants and water
+content). Placed Claim Stones change nothing about generation or renewal
+either (§6.4, §7.3). The complete future radius-50 footprint—not
 only its centre or corners—must pass the rule.
 
 A reservation may never intersect:
@@ -549,6 +557,10 @@ Protection and claim eligibility are independent systems.
   source remains ordinary direct placement governed by the ACL.
 - Benign growth under §6.3 may advance stages and add ordinary growth nodes.
   It grants no general destructive-replacement permission.
+- Natural world renewal is not a claim mutation (Round 24 ruling 33): wild
+  plants regrow on claimed ground by the same habitat rules as anywhere else,
+  only into open air on open natural support (never replacing a node). The
+  claim predicate guards system mutations such as liquid flow, not renewal.
 - Normal operation of an owner-accessible workstation may alter its own
   inventory and metadata.
 - Protection governs world state, not combat. Mobs and hostile effects may
@@ -636,6 +648,9 @@ but its authored envelope can never be privatized:
 
 Ordinary terrain inside the positive housing mask is freely reshapeable and
 may receive a Claim Stone when its complete future reservation passes §6.
+The mask itself is claim eligibility only: the ground inside it is generated
+and renewed exactly like ordinary terrain outside it, with the same ores,
+bands, caves, gathering sources and plants (§6, Round 24 ruling 33).
 Battlegrounds terrain is mutable but remains outside every positive housing
 mask and therefore cannot receive a Claim Stone.
 

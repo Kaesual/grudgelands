@@ -172,7 +172,7 @@ local function settlement_factory()
 				end
 				if water_class == "land" and zone_id and biome and water_y == nil and
 						functional_kind == nil and transition_kind == nil and not hard and
-						admitted and not context.housing_excluded_at(x, z) then
+						admitted then
 					local surface = context.select_surface(biome, x, z, water_y, terrain_y,
 						zone_id)
 					local filler_depth = surface and surface.filler_depth or 4
@@ -263,9 +263,10 @@ local function settlement_factory()
 	-- Ruling 30 addendum: the cave-content rule of one column, shared by the
 	-- writer (`cave_content_allowed_at`, world_content.lua) and runtime
 	-- renewal (vegetation_density.lua), so both answer alike. A column is
-	-- excluded by a "cave" claim shape on land, a housing mask, a functional
-	-- kind other than a land grade, or a hard foundation. Housing masks and
-	-- planned-water/coast shapes are no protection: excluded at every depth.
+	-- excluded by a "cave" claim shape on land, a functional kind other than
+	-- a land grade, or a hard foundation. Planned-water/coast shapes are no
+	-- protection: excluded at every depth. A housing mask is no exclusion
+	-- (Round 24 ruling 33: it only decides where a Claim Stone may stand).
 	-- Every other exclusion (anchor envelopes, hard cores, anchor grades,
 	-- hard foundations) ends at the column's protected floor
 	-- (`floor_at(x, z)`, nil where no protected shape holds it).
@@ -275,15 +276,15 @@ local function settlement_factory()
 		local prefix = id:sub(1, 15)
 		return prefix == "exclude:anchor:" or prefix == "exclude:active:"
 	end
-	local function r30_cave_limit(water_class, cave_id, housing, functional_kind,
+	local function r30_cave_limit(water_class, cave_id, functional_kind,
 			hard_foundation, floor_at, x, z)
-		if not ((water_class == "land" and cave_id ~= nil) or housing or
+		if not ((water_class == "land" and cave_id ~= nil) or
 				(functional_kind ~= nil and functional_kind ~= "land_grade") or
 				hard_foundation) then
 			return math.huge
 		end
-		if housing or (cave_id ~= nil and not hard_foundation and
-				not r30_protected_claim_id(cave_id)) then
+		if cave_id ~= nil and not hard_foundation and
+				not r30_protected_claim_id(cave_id) then
 			return -math.huge
 		end
 		return floor_at(x, z) or -math.huge
@@ -561,8 +562,7 @@ local function settlement_factory()
 			local eligible = water_class == "land" and zone_id == cave.zone_id and
 				water_y == nil and river_id == nil and functional_kind == nil and
 				transition_kind == nil and not hard and
-				context.static_exclusion_values_at(x, z) == nil and
-				not context.housing_excluded_at(x, z)
+				context.static_exclusion_values_at(x, z) == nil
 			eligible_columns[key], eligible_heights[key] = eligible, terrain_y
 			return eligible
 		end
@@ -1202,10 +1202,6 @@ local function settlement_factory()
 			id = overlay_exclusion_id[kind]
 			if not id then fail("fail_settlement", "overlay exclusion kind differs") end
 			return "route_or_water", id
-		end
-		local function housing_excluded_at(x, z)
-			return type(horizontal.housing_mask_id_at) == "function" and
-				horizontal.housing_mask_id_at(x, z) ~= nil
 		end
 		local apex_columns = {}
 		do
@@ -2205,9 +2201,6 @@ local function settlement_factory()
 						(ref - 1) * 256
 				end
 				function context.exclusion_at(x, z) return exclusion_reason(x, z) end
-				function context.housing_excluded_at(x, z)
-					return housing_excluded_at(x, z)
-				end
 				function context.column_values_at(x, z)
 					return planner_source.column_values_at(x, z)
 				end
@@ -2506,7 +2499,6 @@ local function settlement_factory()
 			end,
 			primary_reason = primary_reason, exclusion_reason = exclusion_reason,
 			static_exclusion_reason = static_exclusion_reason,
-			housing_excluded_at = housing_excluded_at,
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			decoration_support_ref = decoration_support_ref,
@@ -2739,7 +2731,6 @@ local function settlement_factory()
 				-- Natural landmark relief envelopes are terrain, not occupied cells.
 				-- Their real water/route/build footprints remain independently guarded.
 				return (water_class == "land" and static_id ~= nil) or
-					helpers.housing_excluded_at(x, z) or
 					(functional_kind ~= nil and functional_kind ~= "land_grade") or
 					hard_foundation
 			end
@@ -2967,7 +2958,6 @@ local function settlement_factory()
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = helpers.r8_horizontal.static_exclusion_values_at,
 				protected_only_floor_at = protected_only_floor, column_cap = column_cap,
-				housing_excluded_at = helpers.housing_excluded_at,
 				select_surface = helpers.r8_select_surface, strata = helpers.r8_strata,
 				content_ref = content.content_ref, fill_stone_at = fill_stone_at,
 				write = function(x, y, z, ref)
@@ -3002,8 +2992,7 @@ local function settlement_factory()
 					index_at = index_at, classify = classify,
 					column_values_at = planner_source.column_values_at,
 					static_exclusion_values_at =
-						helpers.r8_horizontal.static_exclusion_values_at,
-					housing_excluded_at = helpers.housing_excluded_at}, cave)
+						helpers.r8_horizontal.static_exclusion_values_at}, cave)
 				if voxels then
 					local air_cid = contract.r5.resolve(1, 0, 0)
 					for voxel = 1, #voxels do
@@ -3661,8 +3650,7 @@ local function settlement_factory()
 								planner_source.column_values_at(x, z)
 						local _, cave_id = helpers.r8_horizontal.static_exclusion_values_at(
 							x, z, "cave")
-						limit = r30_cave_limit(water_class, cave_id,
-							helpers.housing_excluded_at(x, z), functional_kind,
+						limit = r30_cave_limit(water_class, cave_id, functional_kind,
 							hard_foundation, planner_source.protected_floor_at, x, z)
 						cave_limit_column[column] = limit
 					end
@@ -3681,9 +3669,6 @@ local function settlement_factory()
 						return nil
 					end
 					return reason, id
-				end
-				function successor_context.housing_excluded_at(x, z)
-					return helpers.housing_excluded_at(x, z)
 				end
 				function successor_context.column_values_at(x, z)
 					return planner_source.column_values_at(x, z)

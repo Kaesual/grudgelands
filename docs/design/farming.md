@@ -101,18 +101,20 @@ spots lie 20–48 nodes horizontally from the sampling player and at least 20
 nodes (3-D) from every player; unloaded nodes are skipped and nothing is caught
 up for unvisited areas. A spot needs an open support the habitat accepts
 (player-made ground of the same node counts) and, above the planned surface,
-natural noon light 10 (13 for a sapling). Never on farm soil, housing masks,
-capital hard rows or ground `grug_core.world_alterable` refuses (territory and
-claims). Each class keeps its own writer's claim exclusions: resource plants
-the full territory rule (settlements, POIs with their collars, start and
-capital blend envelopes, roads, inland water and water banks; shoreline
-species ignore the bank, gathering sources the dry island coast envelopes),
-ground cover and trees the decoration rule (the planner's vegetation
+natural noon light 10 (13 for a sapling). Never on farm soil, capital hard
+rows or ground whose territory rule refuses natural change
+(`grug_core.natural_ground_alterable`: towns, landmarks, immutable ground).
+Housing areas renew like any other ground, and Claim Stones and other player
+protection are never consulted (Round 24 ruling 33). Each class keeps its
+own writer's claim exclusions: resource plants the full territory rule
+(settlements, POIs with their collars, start and capital blend envelopes,
+roads, inland water and water banks; shoreline species ignore the bank,
+gathering sources the dry island coast envelopes), ground cover and trees the decoration rule (the planner's vegetation
 exclusions and road corridors; banks allowed). Cave plants follow the
 generator's own cave rule (`r6_settlement.lua` `r30_cave_limit`): they stay
-out of occupied ground, of housing masks and of planned-water and coast
-shapes, and below a town's or POI's protected floor (placement height − 100,
-Round 24 ruling 30) the cave is ordinary ground. A surface resource plant on
+out of occupied ground and of planned-water and coast shapes, and below a
+town's or POI's protected floor (placement height − 100, Round 24 ruling
+30) the cave is ordinary ground. A surface resource plant on
 ground below such a floor ignores the envelope's claim exclusion, as the
 writers do. At the planned surface renewal follows the generator's own
 host rule: nothing on an anchor platform, on a land grade other than a

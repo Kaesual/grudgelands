@@ -12,8 +12,7 @@ local function limit(x, z)
 	local water, _, _, _, _, _, _, _, _, fkind, _, _, _, _, _, _, _, _, _, hard =
 		P.column_values_at(x, z)
 	local _, cave_id = P.static_exclusion_values_at(x, z, "cave")
-	return limit_of(water, cave_id, P.housing_mask_id_at(x, z) ~= nil, fkind, hard,
-		P.protected_floor_at, x, z)
+	return limit_of(water, cave_id, fkind, hard, P.protected_floor_at, x, z)
 end
 -- warm the planner caches once
 for x = x0, x0 + 79 do for z = z0, z0 + 79 do limit(x, z); P.protected_only_floor_at(x, z) end end

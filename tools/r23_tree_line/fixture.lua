@@ -242,6 +242,8 @@ local function synthetic_source(height_at, biome_at, zone_at)
 	function source.river_water_in() return false end
 	function source.surface_cave_run_at() return nil end
 	function source.surface_cave_candidate_at_cell() return nil end
+	-- Round 24 ruling 30 addendum seam (no protected column here).
+	function source.protected_only_floor_at() return nil end
 	function source.metrics() return {} end
 	return source
 end

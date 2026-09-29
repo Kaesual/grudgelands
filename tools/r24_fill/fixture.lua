@@ -141,7 +141,6 @@ local function run_strata(w, steep_x, excluded_x, info, steep_fn)
 		stone_cid = STONE, index_at = w.index_at, column_info = info,
 		column_values_at = w.column_values_at,
 		static_exclusion_values_at = function(x) if x == excluded_x then return "poi" end end,
-		housing_excluded_at = function() return false end,
 		select_surface = function(_, x)
 			return {filler_depth = 4, steep = steep_fn and steep_fn(x) or x == steep_x}
 		end,

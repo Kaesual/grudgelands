@@ -473,7 +473,7 @@ do
 		get_item_group = core.get_item_group,
 		density = density,
 		planner = wp40.planner_source,
-		world_alterable = grug_core.world_alterable,
+		natural_ground_alterable = grug_core.natural_ground_alterable,
 		random = math.random,
 		trees = core.settings:get_bool("grug_tree_regrowth", true),
 		non_natural = {},

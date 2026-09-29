@@ -4,8 +4,7 @@ local function new_surface_cave_factory(definition)
 	if type(definition) ~= "table" or type(definition.full_seed_string) ~= "string" or
 			definition.full_seed_string == "" or
 			type(definition.column_values_at) ~= "function" or
-			type(definition.static_exclusion_values_at) ~= "function" or
-			type(definition.housing_mask_id_at) ~= "function" then
+			type(definition.static_exclusion_values_at) ~= "function" then
 		error("WP40 surface caves: construction seam differs", 0)
 	end
 	-- Candidates are owner-local.  The writer alone may turn one into a mouth,
@@ -50,8 +49,7 @@ local function new_surface_cave_factory(definition)
 				(wanted_zone ~= nil and zone_id ~= wanted_zone) or water_y ~= nil or
 				river_id ~= nil or functional_kind ~= nil or
 				transition_kind ~= nil or hard_foundation ~= false or
-				definition.static_exclusion_values_at(x, z) ~= nil or
-				definition.housing_mask_id_at(x, z) ~= nil then
+				definition.static_exclusion_values_at(x, z) ~= nil then
 			return nil
 		end
 		return integer(terrain_y, "terrain height"), zone_id
@@ -1517,7 +1515,6 @@ local function zones_factory(dependencies)
 				full_seed_string = full_seed_string,
 				column_values_at = planner_source.column_values_at,
 				static_exclusion_values_at = horizontal.static_exclusion_values_at,
-				housing_mask_id_at = horizontal.housing_mask_id_at,
 			})
 			function planner_source.surface_cave_run_at(x, z)
 				return surface_caves.run_at(x, z)
@@ -1561,6 +1558,8 @@ local function zones_factory(dependencies)
 			function planner_source.static_exclusion_values_at(x, z, purpose)
 				return horizontal.static_exclusion_values_at(x, z, purpose)
 			end
+			-- The housing mask decides only where a Claim Stone may stand
+			-- (Round 24 ruling 33); no mapgen writer and no renewal consults it.
 			function planner_source.housing_mask_id_at(x, z)
 				return horizontal.housing_mask_id_at(x, z)
 			end
