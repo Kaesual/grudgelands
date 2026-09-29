@@ -304,7 +304,10 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] then return end
+			-- a segment inside a gatehouse (both ends gap points) carries no
+			-- wall; one that runs into it is built up to the box, which the
+			-- gatehouse owns above (Round 26 playtest: gaps at the gates)
+			if W.gap[i] and W.gap[i % n + 1] then return end
 			local head = head_of(i, u)
 			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)
@@ -387,7 +390,10 @@ local function loader(directory)
 			end
 			local d, i, u, outside = nearest(lx, lz)
 			if not d or d > HALF + 0.5 then return end
-			if W.gap[i] or W.gap[i % n + 1] then return end
+			-- a segment inside a gatehouse (both ends gap points) carries no
+			-- wall; one that runs into it is built up to the box, which the
+			-- gatehouse owns above (Round 26 playtest: gaps at the gates)
+			if W.gap[i] and W.gap[i % n + 1] then return end
 			local head = head_of(i, u)
 			if not head and (W.lake[i] or W.lake[i % n + 1]) then return end
 			local top, slab = walk_at(i, u)

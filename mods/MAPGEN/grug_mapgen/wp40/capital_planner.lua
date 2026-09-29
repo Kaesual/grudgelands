@@ -72,6 +72,8 @@ M.DEFAULTS = {
 	SNAP = 20, SNAP_T = 1.0, SNAP_S = 3, SNAP_D = 2.5,
 	POLY = nil,
 	NOTCH = 0.14,
+	BANK_RUN = 8,         -- at most this many rays on the far bank of a river follow their neighbours
+	GATE_FLAT = 8, GATE_BLEND = 2, -- the wall runs straight across each gate this far beyond the gatehouse
 	GROW = 0.08, GROW_TRIES = 2, -- a plan leaving a named plot out retries at +8 %, +16 % area
 	SHORE_STOP = 70,      -- water met this far out along a ray: the city grows across it only
 	C_BEYOND = 3,         -- ... at this multiple of the cost (it prefers its near bank)         -- a ray keeps within this share of the broadly smoothed outline
@@ -817,6 +819,90 @@ local function plan_once(seed, I, opt)
 			end
 			R = S
 		end
+		-- Round 26 playtest (the wall dipping into a river): a short run of
+		-- rays (at most BANK_RUN) whose wall crosses the same river on both
+		-- sides of it -- the run on one bank, its neighbours on the other --
+		-- moves to the neighbours' bank (the dry point nearest the line
+		-- between them, within 50), so the wall follows one bank instead of
+		-- dipping across the water and back.
+		for _ = 1, (P.WALL_BANK > 0 and 2 or 0) do
+			local cross, nc = {}, 0
+			for a = 1, NR do
+				local b = a % NR + 1
+				local ax, az = R[a] * RAYS[a].c, R[a] * RAYS[a].s
+				local bx, bz = R[b] * RAYS[b].c, R[b] * RAYS[b].s
+				local vx, vz = bx - ax, bz - az
+				local steps = max(1, floor(sqrt(vx * vx + vz * vz) / G))
+				local wet_seg = false
+				for k = 1, steps - 1 do
+					if WET[gk(ax + vx * k / steps, az + vz * k / steps)] then wet_seg = true break end
+				end
+				cross[a] = wet_seg
+				if wet_seg then nc = nc + 1 end
+			end
+			local changed = false
+			if nc >= 2 then
+				for a0 = 1, NR do
+					if cross[a0] then
+						local len, e = 0, a0
+						repeat e = e % NR + 1; len = len + 1 until cross[e] or len > P.BANK_RUN
+						if cross[e] and len <= P.BANK_RUN and e ~= a0 then
+							local f1, f2 = a0, e % NR + 1
+							local moves = {}
+							for k = 1, len do
+								local a = (a0 - 1 + k) % NR + 1
+								local ray = RAYS[a]
+								local target = R[f1] + (R[f2] - R[f1]) * k / (len + 1)
+								local found
+								for d = 0, 50, 2 do
+									for _, r in ipairs({target - d, target + d}) do
+										if not found and r >= P.R_MIN and r <= rmax[a] and
+												DW[gk(r * ray.c, r * ray.s)] >= P.WALL_BANK then
+											found = r
+										end
+									end
+									if found then break end
+								end
+								if not found then moves = nil break end
+								moves[#moves + 1] = {a, found}
+							end
+							for _, m in ipairs(moves or {}) do
+								if abs(R[m[1]] - m[2]) > 1 then R[m[1]] = m[2]; changed = true end
+							end
+						end
+					end
+				end
+			end
+			if not changed then break end
+		end
+		-- Round 26 playtest (a V into the river): the smoothing above can
+		-- leave a ray back on a bank or in the water between neighbours that
+		-- stand on the far bank. A last pass without smoothing moves every
+		-- such ray to the dry point (within 40) nearest the mean of its two
+		-- neighbours, so it follows them instead of dipping into the river.
+		for _ = 1, (P.WALL_BANK > 0 and 3 or 0) do
+			local any = false
+			for a = 1, NR do
+				local ray = RAYS[a]
+				local function bad(r) return DW[gk(r * ray.c, r * ray.s)] < P.WALL_BANK end
+				if bad(R[a]) then
+					local target = 0.5 * (R[(a - 2) % NR + 1] + R[a % NR + 1])
+					local lo_r, hi_r = max(P.R_MIN, R[a] - 40), min(rmax[a], R[a] + 40)
+					local done = false
+					for d = 0, 80, 2 do
+						local c1, c2 = target - d, target + d
+						if abs(c2 - R[a]) < abs(c1 - R[a]) then c1, c2 = c2, c1 end
+						for _, r in ipairs({c1, c2}) do
+							if not done and r >= lo_r and r <= hi_r and not bad(r) then
+								R[a], done, any = r, true, true
+							end
+						end
+						if done then break end
+					end
+				end
+			end
+			if not any then break end
+		end
 		local area = 0
 		for a = 1, NR do
 			area = area + 0.5 * R[a] * R[a] * 2 * pi / NR
@@ -952,6 +1038,58 @@ local function plan_once(seed, I, opt)
 		-- a gate over water (no dry spot within the slide) is a bridge gate
 		if wmax and g.y < wmax + 2 then g.y, g.bridge = floor(wmax + 2), true end
 		g.slide = g.r * wrap(g.phi - CARD[g.c].ang)
+	end
+	-- Round 26 playtest: the wall meets every gatehouse across its passage.
+	-- A gatehouse box is compass-aligned; where the outline passed the gate
+	-- at a steep angle (a slid or turned gate on an irregular outline) the
+	-- wall ran into the box's front or back face, or along the passage, and
+	-- stopped short of it. So the rays whose outline point lies within
+	-- GATE_WIDTH + GATE_FLAT of the gate (across its axis) move onto the
+	-- straight line through the gate at right angles to its axis, and the
+	-- next GATE_BLEND rays on either side ease back to the outline.
+	do
+		local flat_w, near = {}, {}
+		for _, g in ipairs(gates) do
+			local c0 = g.x * g.dx + g.z * g.dz
+			local function line_r(a)
+				local ray = RAYS[a]
+				local den = ray.c * g.dx + ray.s * g.dz
+				if den < 0.3 then return nil end
+				local r = c0 / den
+				local ww = -(r * ray.c - g.x) * g.dz + (r * ray.s - g.z) * g.dx
+				return r, ww
+			end
+			local run = {}
+			for a = 1, NR do
+				local r, ww = line_r(a)
+				if r and abs(ww) <= P.GATE_WIDTH + P.GATE_FLAT then run[#run + 1] = a; flat_w[a] = r end
+			end
+			for _, a0 in ipairs(run) do
+				for d = 1, P.GATE_BLEND do
+					for _, sg in ipairs({-1, 1}) do
+						local a = (a0 - 1 + sg * d) % NR + 1
+						if not flat_w[a] then
+							local r = line_r(a)
+							if r then
+								local w = 1 - d / (P.GATE_BLEND + 1)
+								if not near[a] or w > near[a][2] then near[a] = {r, w} end
+							end
+						end
+					end
+				end
+			end
+		end
+		for a = 1, NR do
+			if flat_w[a] then
+				R[a] = max(P.R_MIN, min(rmax[a], flat_w[a]))
+			elseif near[a] then
+				local r, w = near[a][1], near[a][2]
+				R[a] = max(P.R_MIN, min(rmax[a], w * r + (1 - w) * R[a]))
+			end
+		end
+		area = 0
+		for a = 1, NR do area = area + 0.5 * R[a] * R[a] * 2 * pi / NR end
+		st.area = area
 	end
 	st.t.gates = os.clock() - T3
 	---------------------------------------------------------------------------
@@ -1667,10 +1805,11 @@ local function plan_once(seed, I, opt)
 		for i = 1, n do
 			local p = pts[i]
 			for _, g in ipairs(gates) do
-				-- inside the gatehouse box (+1): the wall stops at its sides
+				-- inside the gatehouse box (the writer's, +0.5): the wall is built
+				-- up to its sides (`wp13/city_edge.lua`)
 				local dd = (p[1] - g.x) * g.dx + (p[2] - g.z) * g.dz
 				local ww = -(p[1] - g.x) * g.dz + (p[2] - g.z) * g.dx
-				if abs(dd) <= P.GATE_DEPTH + 2 and abs(ww) <= P.GATE_WIDTH then gap[i] = g.c end
+				if abs(dd) <= P.GATE_DEPTH + 0.5 and abs(ww) <= P.GATE_WIDTH + 0.5 then gap[i] = g.c end
 			end
 		end
 		-- walk level: ground + height, then limited to 1/2 per node both ways
