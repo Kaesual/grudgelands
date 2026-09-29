@@ -14,8 +14,6 @@ the broader named-zone WP9 story remains open.
   same-level solo kills award `15L` XP before racial bonuses: the
   `(200L - 100)` interval needs about 7 kills at level 1 and approaches
   13.3 kills at higher levels without quests. Tune with playtests, not redesigns.
-- **Rested XP** (WP21): logging out at an innkeeper accrues a rested
-  bonus — rewards the irregular play patterns of a small server.
 
 ## 2. Reward cadence (the "new verbs" schedule)
 

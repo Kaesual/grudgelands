@@ -3,6 +3,35 @@
 Read-only survey of repository `main` at 29e4b6a7, dated 2026-09-29. Line
 references are relative to `/home/jan/projects/grudgelands`.
 
+## User decisions (2026-09-29)
+
+These override the proposals and open questions below.
+
+- **Background:** the dark square plate of the Round 18 skill icons. Ability
+  buffs may reuse their skill icon.
+- **Frames (drawn by code):** green for buffs, red for debuffs, and a third
+  **gold** frame for states that are neither clearly buff nor debuff (PvP
+  tags, combat state).
+- **Shield:** one generic shield icon for all absorb sources.
+- **Slows:** one icon for every slow; no variants.
+- **PvP icons** (Tagged, Contested): drawn now.
+- **Rested XP is removed from the game design entirely**; its row is gone
+  from this list and orphaned references are removed from the current docs.
+- **Combat state gets an icon:** a red icon with two crossed swords. It
+  replaces the "Combat" text next to the health bar.
+- **Dragon Scorch** is shown as a short 1.5 s status while standing on the
+  patch.
+- **No cooldowns as status icons:** only real buffs and debuffs (the potion
+  cooldown and similar timers stay off the status bar).
+- **Food buffs show the icon of the food that caused them** (the item's own
+  inventory image, set by code), when that is straightforward; otherwise one
+  generic food icon, since the effect is described in the text. Either way no
+  per-role food art is needed from the artist.
+- **New: one class icon per class** (Warrior, Mage, Priest, Scout), for
+  example in the party UI, so a player's class is clear without knowing the
+  colour codes. Same plate and size as the status icons, no frame; each
+  class icon should also carry the class colour as an accent.
+
 ## 0. Overview
 
 **What the HUD shows today.** `grug_core.set_status` has nine callers. It
@@ -20,7 +49,7 @@ Dragon Scorch.
 | **Total** | **32** | **19** | **9** | **4** |
 
 Planned rows break down as 4 decided (PvP Tagged, PvP Contested, Warding
-Draught, Rested), 1 deferred (Stealth v2) and 2 optional or undecided (home
+Draught; Rested was listed here and is now removed), 1 deferred (Stealth v2) and 2 optional or undecided (home
 travel cooldown, boss lockouts).
 
 **Icon roster after dedup** (§4): **34 core icons**, plus **10 optional
@@ -205,7 +234,6 @@ icon.
 | `pvp_tagged` | "PvP 0:SS" | N (debuff-like) | PvP (WP41) | Attackable by enemy players; 60 s tail outside contested zones | planned `world_zones.md:168-195, 1843`; `combat_stats.md:382-400`; `docs/research/wp41-engineering-brief.md:358-360` | **Crossed swords**: two blades in an X, blood-red blade glow. This motif is specified in the docs. |
 | `pvp_contested` | "PvP — CONTESTED" | N | Contested zone or y ≤ −701 (forced tag) | Tag forced while inside | planned `wp41-engineering-brief.md:358-360`; `world_zones.md:171-174` | The same crossed swords over a torn **war banner**, with red and black cloth behind the blades, to show that the state is forced. |
 | `warding_draught` | "Warding Draught" (+ race) | B | Alchemy T4–T6 | −5%/7.5%/10% incoming damage from one selected race, 5 min; one active | planned `items_crafting.md:1537-1556`; `combat_stats.md:206-212`; `classes.md:150-152` | A stout **silver** flask with a heater-shield emblem embossed on the glass and a faint white ward aura. Use one icon for all six target races (human, dwarf, elf, orc, troll, undead; `grug_classes/init.lua:173-209`) and put the race in the label. Six race-glyph variants are possible if wanted. |
-| `rested` | "Rested" | B | Innkeeper logout (WP21) | Bonus XP accrual | planned, mechanics undesigned: `progression.md:17-18`; `work-package-scopes.md:123` | A **crescent moon** over a plump pillow, in soft gold and night blue. No letters, so no "Zzz". |
 | `stealth` *(deferred v2)* | "Stealth" | B | Scout (deferred) | Hidden from mobs; ×0.6 speed; breaks on combat | deferred `scout.md:401-624`; the doc asks for a "visible status entry at minimum" (`:624-626`) | A hooded cloak with no face, only a dark void and two faint eye glints, half dissolved into smoke. Must differ from Untouchable's arrows. |
 | `home_travel_cooldown` *(optional)* | "Return home" | D | Home travel (30 min real time) | Travel home blocked | undecided: `home_travel.md:14-23` shows it on the Map tab | A small cottage with a sand hourglass. |
 | `boss_lockout` *(optional)* | "Crown/Dragon lockout" | N | King Crown and dragon loot lockouts (24 h) | No boss reward | undecided: `items_crafting.md:1705-1707`; `world.md:628-631` | Not recommended for the HUD. If used: a crown with a padlock. |
@@ -263,7 +291,7 @@ Explicitly **not** planned or not timed (no icon):
     `talent_untouchable`.
   - Debuffs: `potion_cooldown`, `poisoned`, `slowed`, `rooted`, `stunned`,
     `scorched`.
-  - Planned: `pvp_tagged`, `pvp_contested`, `warding_draught`, `rested`.
+  - Planned: `pvp_tagged`, `pvp_contested`, `warding_draught`.
 - **Optional (10):**
   - Shield variants: `shield_power_word`, `shield_glacial_ward`,
     `shield_hold_ground`, `shield_recompense`, `shield_last_light`.

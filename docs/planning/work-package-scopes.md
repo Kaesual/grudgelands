@@ -118,9 +118,9 @@ Travel: waypoint nodes at starts, capitals and authored zone hubs; visit-unlock 
 
 **Dependencies:** WP1.
 
-**Status:** open (spec: `docs/design/combat_stats.md` §5, `docs/design/progression.md` §1)
+**Status:** closed 2026-09-29 (user decision, [WP audit](wp-audit-2026-09-29.md#user-decisions-2026-09-29)): food-based recovery is the final recovery system; there is no separate out-of-combat regeneration and no rested XP.
 
-Recovery & rest: out-of-combat HP regen (0.5%/s), food recovery, innkeeper rested-XP/recovery service and any remaining rest integration. Innkeeper home binding/return/death respawn is already delivered by [home_travel.md](../design/home_travel.md); do not reimplement it. The Claim Stone as travel-home target belongs to WP24 (`docs/design/housing.md` §8)
+Former scope: recovery & rest (out-of-combat regen, food recovery, innkeeper rest service). Innkeeper home binding/return/death respawn is already delivered by [home_travel.md](../design/home_travel.md); do not reimplement it. The Claim Stone as travel-home target belongs to WP24 (`docs/design/housing.md` §8)
 
 ## WP22
 
