@@ -63,7 +63,9 @@ content requirements remain explicitly separate from delivered behavior.
 
   Each species at the point gets the share point budget × its row cap ÷ their
   summed row caps, rounded (at least 1); a species alone fills the whole
-  budget. The night count covers only the night cast, so day animals still
+  budget. Below its own Round 16 cap a species always spawns, so neighbours
+  of a mixed area (a higher-level edge, another biome patch) never hold it
+  below its pre-Round-24 population. The night count covers only the night cast, so day animals still
   about at dusk do not block night spawns. Budgeted rows spawn with 1.5x
   attempt frequency, and their own mobs_redo cap is lifted to 64 so the budget
   binds. Critters, underground rows, the Kraken and Reed Angelfish, shore

@@ -20,7 +20,9 @@
 --   * each of those species gets the share P x w / W, rounded (at least 1),
 --     where w is its registered row cap and W their summed row caps; a
 --     species alone may fill the whole budget;
---   * the budgeted mobs within the same radius never exceed P in total.
+--   * the budgeted mobs within the same radius never exceed P in total;
+--   * below its own Round 16 cap a species always spawns, so no species is
+--     ever held below its pre-Round-24 population by its neighbours.
 --
 -- Critters, underground rows, NPCs, guards, camps, patrols, named rares,
 -- bosses, royals and independent-authority mobs are neither counted nor
@@ -232,6 +234,12 @@ function grug_mobs.density_allows(name, pos, node_name, eligible)
 		-- Zombie row by day): its own row cap at the same scale.
 		local own = weights[name] or 1
 		return same < math.max(1, round(own * grug_mobs.DENSITY_SCALE))
+	end
+	-- Below its own Round 16 cap a species always spawns, exactly as before
+	-- Round 24: neighbours of a mixed area (a higher-level edge, another
+	-- biome patch) can then fill the budget without crowding it out.
+	if same < grug_mobs.density_old_cap(weight, clock) then
+		return true
 	end
 	-- Cheap paths. No point budget exceeds max(zone budget, whole cast's old
 	-- population); none falls below the zone budget, and no share below the

@@ -342,11 +342,32 @@ local RACE_FACTIONS = {
 local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
 local START_PAD_HIGH = 63
 local START_BAND = 12
--- Round 24 ruling 30: a start town is protected from 100 nodes below its
--- placement height (the start anchor's y) upward, so the hostile refusal
--- ends there too; caves under the town keep their ordinary population.
-local START_PROTECTED_DEPTH = 100
 local start_pads
+
+-- Round 24 ruling 30: a start town is hard-protected only from its floor
+-- (placement height - 100, owned by the zone authority) upward, so the
+-- hostile refusal ends there too; caves below keep their ordinary
+-- population. The authority's public query answers "town" exactly at and
+-- above that floor in the anchor column, so the floor is found once per
+-- town by bisection instead of restating the depth here.
+local function protected_floor(anchor)
+	local function town(y)
+		return grug_zones.hard_protection_kind_at(
+			{x = anchor.x, y = y, z = anchor.z}) == "town"
+	end
+	local low, high = -31000, anchor.y
+	if not town(high) then
+		error("[grug_mobs] start footprint: the anchor is not a protected town")
+	end
+	if town(low) then
+		return low
+	end
+	while high - low > 1 do
+		local middle = math.floor((low + high) / 2)
+		if town(middle) then high = middle else low = middle end
+	end
+	return high
+end
 
 local function compile_start_pads()
 	local pads = {}
@@ -362,7 +383,7 @@ local function compile_start_pads()
 			max_x = anchor.x + START_PAD_HIGH,
 			min_z = anchor.z - START_PAD_LOW,
 			max_z = anchor.z + START_PAD_HIGH,
-			min_y = anchor.y - START_PROTECTED_DEPTH,
+			anchor = anchor,
 		}
 	end
 	return pads
@@ -378,12 +399,16 @@ function grug_mobs.in_start_footprint(x, z, y)
 	for i = 1, #start_pads do
 		local pad = start_pads[i]
 		if x >= pad.min_x - START_BAND and x <= pad.max_x + START_BAND and
-				z >= pad.min_z - START_BAND and z <= pad.max_z + START_BAND and
-				(y == nil or y >= pad.min_y) then
+				z >= pad.min_z - START_BAND and z <= pad.max_z + START_BAND then
 			local ex = math.max(pad.min_x - x, x - pad.max_x, 0)
 			local ez = math.max(pad.min_z - z, z - pad.max_z, 0)
 			if ex * ex + ez * ez <= START_BAND * START_BAND then
-				return true
+				if y == nil then
+					return true
+				end
+				-- Resolved on the first query inside this town, not at load.
+				pad.min_y = pad.min_y or protected_floor(pad.anchor)
+				return y >= pad.min_y
 			end
 		end
 	end

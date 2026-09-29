@@ -303,11 +303,24 @@ do
 	end
 end
 
--- Start-town hostile refusal ends 100 nodes below the start anchor (ruling
--- 30); the fixture anchors sit at y 10.
-check(gm.in_start_footprint(0, -2550, 10) and gm.in_start_footprint(0, -2550, -90) and
-	not gm.in_start_footprint(0, -2550, -91) and gm.in_start_footprint(0, -2550),
-	"start footprint: protected volume from anchor y - 100 upward")
+-- Start-town hostile refusal ends at the town's protected floor (ruling 30),
+-- read from the zone authority: in the anchor column it agrees with the
+-- authority's own "town" answer at every height, and the floor lies below
+-- the surface.
+do
+	local agree, floor = true, nil
+	for y = -300, 60 do
+		local refused = gm.in_start_footprint(0, -2550, y)
+		local town = S.hard_protection_kind_at({x = 0, y = y, z = -2550}) == "town"
+		if refused ~= town then agree = false end
+		if refused and not floor then floor = y end
+	end
+	print(("human start town: hostile refusal from y %s (surface %s)"):format(
+		tostring(floor), tostring(S.terrain_height_at(0, -2550))))
+	check(agree and floor and floor < S.terrain_height_at(0, -2550) - 50 and
+		gm.in_start_footprint(0, -2550),
+		"start footprint: the authority's protected volume, not unlimited depth")
+end
 -- Ruling 31 (Lane D3): Scorpion and Viper carry a night row and a zone day
 -- row with the same cap; the weight is that one cap, and the zone key puts
 -- them into their start zone's day cast only.
@@ -395,7 +408,26 @@ do
 	check(not allows("giant_rat"), "night level 10: 8 rats -> share reached")
 	check(allows("scorpion"), "night level 10: scorpion still has its share")
 	fill({{"scorpion", 10}, {"sun_dried_husk", 13}})
-	check(not allows("giant_rat"), "night level 10: 23 others -> total budget full")
+	check(allows("giant_rat"),
+		"night level 10: total full, but the rat is below its old cap 7 -> spawns as before")
+	fill({{"giant_rat", 7}, {"scorpion", 8}, {"sun_dried_husk", 8}})
+	check(not allows("giant_rat") and not allows("scorpion"),
+		"night level 10: total 23 full and everyone at or above the old cap")
+	-- The engine case: a band-1 column (only the Jungle Boar may spawn there)
+	-- next to a band-2 edge whose Lynx, Tapir and Viper fill the budget; the
+	-- boar still reaches its old cap 7.
+	do
+		local saved_zone, saved_node, saved_level, saved_time =
+			area.zone, node, area.level, timeofday
+		area.zone, area.level, timeofday = "kragmar_kapok_cradle", 3, 0.5
+		node = "default:dirt_with_rainforest_litter"
+		fill({{"jungle_boar", 6}, {"jungle_lynx", 7}, {"tapir", 4}, {"viper", 5}})
+		check(allows("jungle_boar"), "mixed area: boar below its old cap despite a full budget")
+		fill({{"jungle_boar", 7}, {"jungle_lynx", 7}, {"tapir", 4}, {"viper", 5}})
+		check(not allows("jungle_boar"), "mixed area: boar at its old cap, total full")
+		area.zone, node, area.level, timeofday =
+			saved_zone, saved_node, saved_level, saved_time
+	end
 	-- A species-rich point keeps its old population as its budget: Kapok by
 	-- day at level 10 on rainforest litter, Jungle Boar, Jungle Lynx, Tapir and
 	-- Viper (old caps 7 + 7 + 4 + 5 = 23 > zone budget 15).

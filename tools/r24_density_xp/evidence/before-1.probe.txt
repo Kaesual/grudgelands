@@ -1,0 +1,60 @@
+[r24_density_probe] emerged 8 areas in 50.0 s
+[r24_density_probe] point hearthpine zone=elandor_hearthpine_vale level=3
+[r24_density_probe] point dawnmere zone=elandor_dawnmere_fields level=3
+[r24_density_probe] point silverleaf zone=elandor_silverleaf_glades level=3
+[r24_density_probe] point stillgrave zone=kragmar_stillgrave_hollow level=3
+[r24_density_probe] point sunscar zone=kragmar_sunscar_flats level=3
+[r24_density_probe] point kapok zone=kragmar_kapok_cradle level=3
+[r24_density_probe] point moonfall zone=elandor_moonfall_wood level=25
+[r24_density_probe] point redtusk zone=kragmar_redtusk_savanna level=15
+[r24_density_probe] window baseline day start (120 s)
+[r24_density_probe] census baseline day@60 hearthpine budgeted=12 natural_other=1 other=0 level=3 [boar=5 fox=4 ibex=3]
+[r24_density_probe] census baseline day@60 dawnmere budgeted=5 natural_other=3 other=0 level=3 [boar=5]
+[r24_density_probe] census baseline day@60 silverleaf budgeted=8 natural_other=3 other=0 level=3 [boar=6 fox=2]
+[r24_density_probe] census baseline day@60 stillgrave budgeted=9 natural_other=4 other=0 level=3 [crocodile=1 plague_boar=6 zombie=2]
+[r24_density_probe] census baseline day@60 sunscar budgeted=7 natural_other=5 other=0 level=3 [boar=5 scorpion=2]
+[r24_density_probe] census baseline day@60 kapok budgeted=16 natural_other=4 other=0 level=3 [jungle_boar=6 jungle_lynx=4 tapir=3 viper=3]
+[r24_density_probe] census baseline day@60 moonfall budgeted=13 natural_other=0 other=0 level=25 [bear=3 stag=4 wolf=6]
+[r24_density_probe] census baseline day@60 redtusk budgeted=13 natural_other=4 other=0 level=15 [boar=5 hyena=4 zebra=4]
+[r24_density_probe] census baseline day@90 hearthpine budgeted=11 natural_other=3 other=0 level=3 [boar=5 fox=3 ibex=3]
+[r24_density_probe] census baseline day@90 dawnmere budgeted=5 natural_other=2 other=0 level=3 [boar=3 fox=2]
+[r24_density_probe] census baseline day@90 silverleaf budgeted=8 natural_other=3 other=0 level=3 [boar=5 fox=3]
+[r24_density_probe] census baseline day@90 stillgrave budgeted=8 natural_other=2 other=0 level=3 [crocodile=1 plague_boar=6 zombie=1]
+[r24_density_probe] census baseline day@90 sunscar budgeted=7 natural_other=6 other=0 level=3 [boar=5 scorpion=2]
+[r24_density_probe] census baseline day@90 kapok budgeted=18 natural_other=4 other=0 level=3 [jungle_boar=6 jungle_lynx=4 tapir=3 viper=5]
+[r24_density_probe] census baseline day@90 moonfall budgeted=8 natural_other=0 other=0 level=25 [bear=3 stag=2 wolf=3]
+[r24_density_probe] census baseline day@90 redtusk budgeted=11 natural_other=4 other=0 level=15 [boar=4 hyena=3 zebra=4]
+[r24_density_probe] census baseline day@120 hearthpine budgeted=12 natural_other=3 other=0 level=3 [boar=5 fox=4 ibex=3]
+[r24_density_probe] census baseline day@120 dawnmere budgeted=4 natural_other=1 other=0 level=3 [boar=2 fox=2]
+[r24_density_probe] census baseline day@120 silverleaf budgeted=7 natural_other=2 other=0 level=3 [boar=4 fox=3]
+[r24_density_probe] census baseline day@120 stillgrave budgeted=10 natural_other=2 other=0 level=3 [crocodile=2 plague_boar=6 zombie=2]
+[r24_density_probe] census baseline day@120 sunscar budgeted=5 natural_other=5 other=0 level=3 [boar=3 scorpion=2]
+[r24_density_probe] census baseline day@120 kapok budgeted=18 natural_other=4 other=0 level=3 [jungle_boar=6 jungle_lynx=4 tapir=3 viper=5]
+[r24_density_probe] census baseline day@120 moonfall budgeted=8 natural_other=0 other=0 level=25 [bear=3 stag=2 wolf=3]
+[r24_density_probe] census baseline day@120 redtusk budgeted=11 natural_other=3 other=0 level=15 [boar=4 hyena=3 zebra=4]
+[r24_density_probe] window baseline night start (120 s)
+[r24_density_probe] census baseline night@60 hearthpine budgeted=19 natural_other=1 other=0 level=3 [boar=5 fox=4 giant_rat=3 ibex=2 zombie=5]
+[r24_density_probe] census baseline night@60 dawnmere budgeted=14 natural_other=1 other=0 level=3 [boar=3 fox=1 giant_rat=4 zombie=6]
+[r24_density_probe] census baseline night@60 silverleaf budgeted=15 natural_other=3 other=0 level=3 [boar=4 fox=1 giant_rat=4 poacher=2 zombie=4]
+[r24_density_probe] census baseline night@60 stillgrave budgeted=17 natural_other=2 other=0 level=3 [crocodile=2 giant_rat=6 plague_boar=6 zombie=3]
+[r24_density_probe] census baseline night@60 sunscar budgeted=16 natural_other=4 other=0 level=3 [boar=3 giant_rat=6 scorpion=3 sun_dried_husk=4]
+[r24_density_probe] census baseline night@60 kapok budgeted=27 natural_other=5 other=0 level=3 [giant_rat=4 jungle_boar=5 jungle_lynx=3 tapir=3 viper=7 zombie=5]
+[r24_density_probe] census baseline night@60 moonfall budgeted=21 natural_other=0 other=0 level=25 [bear=1 giant_spider=5 poacher=3 stag=2 wisp=5 wolf=5]
+[r24_density_probe] census baseline night@60 redtusk budgeted=21 natural_other=4 other=0 level=15 [boar=4 hyena=3 scorpion=5 sun_dried_husk=5 zebra=4]
+[r24_density_probe] census baseline night@90 hearthpine budgeted=18 natural_other=0 other=0 level=3 [boar=5 fox=4 giant_rat=4 ibex=1 zombie=4]
+[r24_density_probe] census baseline night@90 dawnmere budgeted=15 natural_other=1 other=0 level=3 [boar=3 fox=1 giant_rat=4 zombie=7]
+[r24_density_probe] census baseline night@90 silverleaf budgeted=14 natural_other=3 other=0 level=3 [boar=4 fox=1 giant_rat=3 poacher=1 zombie=5]
+[r24_density_probe] census baseline night@90 stillgrave budgeted=17 natural_other=2 other=0 level=3 [crocodile=2 giant_rat=6 plague_boar=5 zombie=4]
+[r24_density_probe] census baseline night@90 sunscar budgeted=15 natural_other=4 other=0 level=3 [boar=3 giant_rat=6 scorpion=3 sun_dried_husk=3]
+[r24_density_probe] census baseline night@90 kapok budgeted=26 natural_other=5 other=0 level=3 [giant_rat=4 jungle_boar=5 jungle_lynx=3 tapir=3 viper=6 zombie=5]
+[r24_density_probe] census baseline night@90 moonfall budgeted=19 natural_other=0 other=0 level=25 [bear=1 giant_spider=6 poacher=3 stag=2 wisp=2 wolf=5]
+[r24_density_probe] census baseline night@90 redtusk budgeted=21 natural_other=4 other=0 level=15 [boar=4 hyena=4 scorpion=5 sun_dried_husk=4 zebra=4]
+[r24_density_probe] census baseline night@120 hearthpine budgeted=19 natural_other=0 other=0 level=3 [boar=6 fox=4 giant_rat=4 ibex=1 zombie=4]
+[r24_density_probe] census baseline night@120 dawnmere budgeted=16 natural_other=1 other=0 level=3 [boar=3 fox=1 giant_rat=5 zombie=7]
+[r24_density_probe] census baseline night@120 silverleaf budgeted=15 natural_other=3 other=0 level=3 [boar=4 fox=2 giant_rat=3 poacher=2 zombie=4]
+[r24_density_probe] census baseline night@120 stillgrave budgeted=17 natural_other=3 other=0 level=3 [bog_ooze=1 crocodile=2 giant_rat=5 plague_boar=5 zombie=4]
+[r24_density_probe] census baseline night@120 sunscar budgeted=14 natural_other=5 other=0 level=3 [boar=3 giant_rat=5 scorpion=3 sun_dried_husk=3]
+[r24_density_probe] census baseline night@120 kapok budgeted=25 natural_other=3 other=0 level=3 [giant_rat=4 jungle_boar=5 jungle_lynx=3 tapir=2 viper=5 zombie=6]
+[r24_density_probe] census baseline night@120 moonfall budgeted=19 natural_other=0 other=0 level=25 [bear=1 giant_spider=5 poacher=3 stag=2 wisp=3 wolf=5]
+[r24_density_probe] census baseline night@120 redtusk budgeted=21 natural_other=4 other=0 level=15 [boar=4 hyena=4 scorpion=5 sun_dried_husk=4 zebra=4]
+[r24_density_probe] RESULT DONE baseline
