@@ -1176,7 +1176,7 @@ local function install(entity, row, slot)
 		entity._grug_npc_name = "Riding Trainer"
 		entity._grug_walker = false
 	elseif slot.role == "housing_manager" then
-		entity._grug_npc_name = "Housing Manager"
+		entity._grug_npc_name = "Housing Steward"
 		entity._grug_walker = false
 	elseif slot.role == "trainer" then
 		grug_mobs.install_profession_trainer(entity, slot)

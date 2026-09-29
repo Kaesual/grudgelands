@@ -9,7 +9,8 @@
 --   R  the Round 17 innkeeper regression (binding, auth, combat, cooldown,
 --      failed/blocked emerge, stale/duplicate callbacks, reconnect, timeout,
 --      respawn safety, map output) -- the retired tools/round17/home_micro.lua;
---   S  set_home_claim / home_is_claim (refusals, owner, unfuelled message);
+--   S  set_home_claim / home_is_claim (refusals, owner, unfuelled message,
+--      Round 26: a draft is refused);
 --   T  travel to the arrival cube, cooldown, respawn stays at the innkeeper;
 --   E  an expired (unfuelled) claim is still the target;
 --   B  blocked arrival cube (solid, liquid, no headroom) falls back to the
@@ -140,7 +141,7 @@ local next_claim = 0
 local function place_claim(owner, center, paid)
  next_claim = next_claim + 1
  local claim = {id=next_claim, owner=owner, center=vnew(center), placed_at=clock,
-  paid_until=clock + (paid or 3600)}
+  activated_at=clock, paid_until=clock + (paid or 3600)}
  claims[owner] = {claim=claim, state="placed"}
  cells[key(center)] = "grug_housing:claim_stone"
  return claim
@@ -265,6 +266,14 @@ ok = home.set_home_claim(player); check(not ok, "S refused while carried")
 claims.tester = {claim={id=50, owner="someone", center=vnew(0, 101, 0)}, state="placed"}
 ok = home.set_home_claim(player); check(not ok, "S refused for a foreign owner")
 check(not home.set_home_claim({is_player=function() return false end}), "S refused for a non-player")
+-- Round 26 ruling 8: a draft (activated_at 0, the real api.lua is_draft) is
+-- no home yet.
+claims.tester = {claim={id=51, owner="tester", center=vnew(0, 101, 0), placed_at=clock,
+ activated_at=0, paid_until=clock}, state="placed"}
+ok, message = home.set_home_claim(player)
+check(not ok and message == "Activate your Claim Stone first.", "S refused for a draft")
+check(not home.home_is_claim(player), "S a draft is not the home")
+claims.tester = nil
 local stone_pos = vnew(700, 101, 700)
 local claim = place_claim("tester", stone_pos)
 check(not home.home_is_claim(player), "S claim not home before setting")
@@ -366,6 +375,14 @@ check(last_chat() == "Your Claim Stone has been destroyed. Your home is now the 
  "F offline message at login: " .. last_chat())
 check(not home.home_is_claim(player) and home.get(player).id == "highcourt", "F offline reset")
 chat = {}; event("join"); check(#chat == 0, "F message delivered once")
+-- Round 26: an admin removal resets the home with its own wording.
+claim = place_claim("tester", stone_pos)
+check(home.set_home_claim(player), "F set for the admin removal")
+chat = {}
+remove_claim("tester", "destroyed"); fire(claim, "removed")
+check(last_chat() == "Your Claim Stone was removed by an admin. Your home is now the Highcourt Innkeeper.",
+ "F admin removal message: " .. last_chat())
+check(not home.home_is_claim(player) and home.get(player).id == "highcourt", "F admin removal reset")
 -- A lost claim that is not the home gives no message.
 claim = place_claim("tester", stone_pos)
 chat = {}

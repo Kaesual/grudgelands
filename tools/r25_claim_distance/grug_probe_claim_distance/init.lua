@@ -161,7 +161,10 @@ local function scenario(c, edge)
 		check(placed, "stone accepted 70 nodes from the village core")
 		local claim = grug_housing.player_claim(OWNER)
 		if not check(claim ~= nil, "owner has the claim") then return finish() end
-		check(grug_housing.add_fuel(claim, 3) == 3, "fuelled")
+		-- Round 26: a placed stone is a draft; activate it (5 lumps) first.
+		check(grug_housing.model.activate(claim, 5) == 5 and
+			grug_housing.add_fuel(claim, 3) == 3 and grug_housing.is_active(claim),
+			"activated and fuelled")
 		log(("FAR claim %d at %s (70 from the core, %d/%d from the village centre," ..
 			" inside the old 160-node blend envelope: %s); placement %.1f ms"):format(
 			claim.id, core.pos_to_string(pos), math.abs(pos.x - c.x), math.abs(pos.z - c.z),

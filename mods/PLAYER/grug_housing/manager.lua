@@ -1,7 +1,9 @@
--- The Housing Manager (rulings 7 and 14): one per capital, handing out the
--- Claim Stone through issue_stone and explaining the upkeep in a few lines.
+-- The Housing Steward (rulings 7 and 14; renamed from Housing Manager in
+-- Round 26, ruling 11): one per capital, handing out the Claim Stone through
+-- issue_stone and explaining activation and upkeep in a few lines. The
+-- internal role id stays "housing_manager" (sockets, grug_mobs, grug_map).
 --
--- NO MAPGEN CHANGE. Like the innkeeper (grug_home), the Manager takes over an
+-- NO MAPGEN CHANGE. Like the innkeeper (grug_home), the Steward takes over an
 -- existing inhabited gate resident: the gate socket of each capital's tailor
 -- service plot (capital_services.lua M.PLOTS[city].tailor). Service plots are
 -- required plots, so the capital planner always places them, and the socket
@@ -33,7 +35,7 @@ local FACTION = {}
 
 local mobs = rawget(_G, "grug_mobs")
 if not mobs or not mobs.register_start_socket_role then
-	error("grug_housing: the Housing Manager needs grug_mobs loaded first " ..
+	error("grug_housing: the Housing Steward needs grug_mobs loaded first " ..
 		"(mod.conf: depends = grug_mapgen, grug_mobs)", 0)
 end
 for _, row in ipairs(MANAGERS) do
@@ -44,7 +46,7 @@ mobs.register_start_socket_role("housing_manager", function(_, settlement)
 	return "grug_mobs:villager_" .. settlement.race_id
 end)
 
--- The six Manager sockets as world positions, for the map and for probes.
+-- The six Steward sockets as world positions, for the map and for probes.
 function grug_housing.manager_sockets()
 	local result = {}
 	for _, row in ipairs(MANAGERS) do
@@ -60,7 +62,7 @@ end
 
 local sessions = {}
 
--- The dialog is bound to the live Manager standing on its own socket, within
+-- The dialog is bound to the live Steward standing on its own socket, within
 -- talking range, and to players of the capital's faction.
 local function permitted(player, entity)
 	if not player or not player.is_player or not player:is_player() or
@@ -87,23 +89,27 @@ end
 local LINES = {
 	"From level 20 you get one Claim Stone for free.",
 	"Place it in your faction's lands of level 11 to 30.",
+	("Activate it within %d minutes with %d coal lumps or charcoal,"):format(
+		grug_housing.DRAFT_SECONDS / 60, grug_housing.ACTIVATION_LUMPS),
+	"or it crumbles and I give you a new one.",
 	"It burns coal lumps or charcoal: 99 lumps last about 30 days.",
 	"When the fuel runs out, the protection ends.",
-	"You can place it once and pick it up once every 24 hours.",
+	("After activation the stone stays in place for %d hours."):format(
+		grug_housing.PICKUP_LOCK_SECONDS / 3600),
 }
 
 local function formspec(session)
-	local fs = {"formspec_version[4]size[10.5,5.9]",
-		"label[0.4,0.5;Housing Manager]"}
+	local fs = {"formspec_version[4]size[10.5,6.8]",
+		"label[0.4,0.5;Housing Steward]"}
 	for index, line in ipairs(LINES) do
 		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(0.7 + index * 0.45, ui.esc(line))
 	end
 	if session.message then
-		fs[#fs + 1] = ("label[0.4,3.85;%s]"):format(ui.text(session.message,
+		fs[#fs + 1] = ("label[0.4,4.75;%s]"):format(ui.text(session.message,
 			session.message_color))
 	end
-	fs[#fs + 1] = "button[0.4,4.6;5.2,0.8;receive;Receive Claim Stone]"
-	fs[#fs + 1] = "button_exit[6.9,4.6;3.2,0.8;close;Close]"
+	fs[#fs + 1] = "button[0.4,5.5;5.2,0.8;receive;Receive Claim Stone]"
+	fs[#fs + 1] = "button_exit[6.9,5.5;3.2,0.8;close;Close]"
 	return table.concat(fs)
 end
 
