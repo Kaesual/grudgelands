@@ -87,5 +87,10 @@ atlas.register_marker_provider("home", function(player)
    detail=row.label .. (chosen and " — Your home / Innkeeper" or " — Innkeeper"),
    position=row.pos, kind=chosen and "home" or "innkeeper"}
  end
+ -- A Claim Stone travel home (grug_home claim_home.lua) is marked at its stone.
+ if selected and selected.claim then
+  result[#result + 1] = {id=selected.id, label="Your Claim Stone",
+   detail="Claim Stone — Your home", position=selected.pos, kind="home"}
+ end
  return result
 end)

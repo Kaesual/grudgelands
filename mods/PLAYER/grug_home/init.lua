@@ -24,7 +24,10 @@ function grug_home.locations()
  return result
 end
 function grug_home.location(id) return copy(locations[id]) end
-function grug_home.get(player)
+-- The innkeeper home: the bound innkeeper, else the racial start. Respawn
+-- always uses it; travel uses grug_home.get (claim_home.lua), which returns a
+-- placed Claim Stone home first.
+function grug_home.innkeeper(player)
  local faction = grug_factions.get_faction(player)
  local row = locations[player:get_meta():get_string("grug_home:id")]
  if not row or row.faction ~= faction then
@@ -36,5 +39,6 @@ end
 grug_mobs.register_start_socket_role("innkeeper", function(socket, settlement)
  return "grug_mobs:villager_" .. settlement.race_id
 end)
+dofile(path .. "/claim_home.lua")
 dofile(path .. "/travel.lua")
 dofile(path .. "/innkeeper.lua")
