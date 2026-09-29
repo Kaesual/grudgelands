@@ -1,0 +1,35 @@
+== branch: 5 seeds, load failures 0
+   CPU s/seed mean 13.7
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     0            0                                    2.20/5
+   dur_brannoc                   0            0                                    2.80/5
+   gor_drazhak                   0            0                                    4.40/6
+   lethariel                     0            0                                    0.60/2
+   kezamba                       1            3  shore_watch 1, shore_house 1, totem_well 1  10.20/11
+   nhal_veyr                     0            0                                    3.40/6
+== main (this harness): 5 seeds, load failures 5: 1908324341779493589 (kezamba:shore_carvers), 10131113280343415741 (kezamba:shore_store+shore_carvers), 7547589907258370542 (kezamba:shore_carvers), 9192956703488730922 (kezamba:shore_carvers), 7950299496086484370 (gor_drazhak:bazaar_smithy)
+   CPU s/seed mean 13.6
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     0            0                                    2.20/5
+   dur_brannoc                   0            0                                    2.60/5
+   gor_drazhak                   3            3  bone_quarry 2, bazaar_brewhouse 1  3.60/5
+   lethariel                     0            0                                    0.40/2
+   kezamba                       5           21  shore_watch 5, shore_market 4, shore_butcher 4  6.00/8
+   nhal_veyr                     0            0                                    3.20/5
+== branch, same seeds: 5 seeds, load failures 0
+   CPU s/seed mean 13.7
+   capital      seeds_w_named_drop  named_drops  top_dropped                       fill_drops(mean/max)
+   highcourt                     0            0                                    2.20/5
+   dur_brannoc                   0            0                                    2.80/5
+   gor_drazhak                   0            0                                    4.40/6
+   lethariel                     0            0                                    0.60/2
+   kezamba                       1            3  shore_watch 1, shore_house 1, totem_well 1  10.20/11
+   nhal_veyr                     0            0                                    3.40/6
+== layout identity, 5 seeds (digest of planner.serialize)
+   capital      clean_on_main  identical/clean  changed_total  overflow_named_on_main  identical_among_those
+   highcourt                1                1      4 ( 80 %)                       4                      0
+   dur_brannoc              1                1      4 ( 80 %)                       4                      0
+   gor_drazhak              0                0      5 (100 %)                       5                      0
+   lethariel                0                0      5 (100 %)                       5                      0
+   kezamba                  0                0      5 (100 %)                       5                      0
+   nhal_veyr                2                2      3 ( 60 %)                       3                      0

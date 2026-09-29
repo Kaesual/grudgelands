@@ -1,0 +1,13 @@
+headless boot: PASS (port 34267, 280 s)
+log: /tmp/grudgelands-headless.lMzELQ/server.log
+seed = 1908324341779493589
+253:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:34267.
+kept: /tmp/grudgelands-headless.lMzELQ
+exit=0
+ACTION[Main]: [grug_mapgen] capital highcourt: area 99987 m2, built 28.3 %, plots 50 of 52 (overflowed 8, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0 ... planned in 0.83 s
+ACTION[Main]: [grug_mapgen] capital dur_brannoc: area 100004 m2, built 26.6 %, plots 47 of 52 (overflowed 8, left out 5 fill, 0 buildings), required 9 of 9, relaxed 0 ... planned in 1.04 s
+ACTION[Main]: [grug_mapgen] capital gor_drazhak: area 99998 m2, built 28.5 %, plots 48 of 52 (overflowed 4, left out 4 fill, 0 buildings), required 9 of 9, relaxed 0 ... planned in 1.05 s
+WARNING[Main]: [grug_mapgen] capital gor_drazhak: no street profile fits the pinned ends (core, gate or road end level), the street follows the ground and may meet its end with a step: primary end:18 - gate_south
+ACTION[Main]: [grug_mapgen] capital lethariel: area 99995 m2, built 23.7 %, plots 42 of 44 (overflowed 6, left out 2 fill, 0 buildings), required 9 of 9, relaxed 0 ... planned in 1.04 s
+ACTION[Main]: [grug_mapgen] capital kezamba: area 99997 m2, built 21.6 %, plots 38 of 52 (overflowed 8, left out 11 fill, 3 buildings), required 9 of 9, relaxed 2 ... planned in 1.34 s
+ACTION[Main]: [grug_mapgen] capital nhal_veyr: area 100008 m2, built 27.8 %, plots 49 of 52 (overflowed 4, left out 3 fill, 0 buildings), required 9 of 9, relaxed 0 ... planned in 1.11 s
