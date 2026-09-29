@@ -1,13 +1,14 @@
 # Media Origin & Licenses (grug_materials)
 
-**Twelve stored files since WP13's round-2 tool ladder (§0 below); everything
-else is a runtime registration.** Apart from those, the mod's registrations
-use vendored minetest_game media unchanged, generate a tinted derivative at
-runtime with Luanti texture modifiers, or copy a vendored node definition under
-a canonical name.
+**Thirty stored files: twelve tool sprites since WP13's round-2 tool ladder
+(§0 below) and eighteen rock and mineral textures since Round 24 (§9);
+everything else is a runtime registration.** Apart from those, the mod's
+registrations use vendored minetest_game media unchanged, generate a tinted
+derivative at runtime with Luanti texture modifiers, or copy a vendored node
+definition under a canonical name.
 
-This is therefore an attribution inventory for runtime registrations plus one
-small file inventory, not a pure file inventory.
+This is therefore an attribution inventory for runtime registrations plus two
+small file inventories, not a pure file inventory.
 
 ## 0. Stored tool sprites — CC BY-SA 3.0 Unported
 
@@ -68,21 +69,23 @@ are runtime modifiers of the vendored stone tile, set in one table
 
 ## 2. Natural resource nodes
 
-Every tile keeps an unmodified `default_stone.png` background and applies the
-listed colorizer only to the mineral overlay.
+Every tile is the unmodified `default_stone.png` with the node's stored mineral
+overlay from §9.3 drawn over it at runtime
+(`default_stone.png^grug_materials_mineral_<key>.png`). The same node, and so
+the same light stone background, is used at every depth (Round 24 ruling 17).
 
-| Runtime node | Overlay original | Overlay modifier |
-|---|---|---|
-| `grug_materials:stone_with_quartz` | `default_mineral_diamond.png` | `^[colorize:#eaf6ff:120` |
-| `grug_materials:stone_with_silver` | `default_mineral_iron.png` | `^[colorize:#e8edf2:200` |
-| `grug_materials:stone_with_citrine` | `default_mineral_diamond.png` | `^[colorize:#d9a21b:190` |
-| `grug_materials:stone_with_garnet` | `default_mineral_diamond.png` | `^[colorize:#9e1526:210` |
-| `grug_materials:stone_with_jade` | `default_mineral_diamond.png` | `^[colorize:#3d9b65:190` |
-| `grug_materials:stone_with_emberglass` | `default_mineral_mese.png` | `^[colorize:#ff7a2e:65` |
-| `grug_materials:stone_with_diamond` | `default_mineral_diamond.png` | `^[colorize:#ffffff:20` |
-| `grug_materials:stone_with_sapphire` | `default_mineral_diamond.png` | `^[colorize:#235ac7:190` |
-| `grug_materials:stone_with_ruby` | `default_mineral_diamond.png` | `^[colorize:#c51d35:195` |
-| `grug_materials:abyssal_crystal_ore` | `default_mineral_diamond.png` | `^[colorize:#3a1f6e:210` |
+| Runtime node | Stored overlay (§9.3) |
+|---|---|
+| `grug_materials:stone_with_quartz` | `grug_materials_mineral_quartz.png` |
+| `grug_materials:stone_with_silver` | `grug_materials_mineral_silver.png` |
+| `grug_materials:stone_with_citrine` | `grug_materials_mineral_citrine.png` |
+| `grug_materials:stone_with_garnet` | `grug_materials_mineral_garnet.png` |
+| `grug_materials:stone_with_jade` | `grug_materials_mineral_jade.png` |
+| `grug_materials:stone_with_emberglass` | `grug_materials_mineral_emberglass.png` |
+| `grug_materials:stone_with_diamond` | `grug_materials_mineral_diamond.png` |
+| `grug_materials:stone_with_sapphire` | `grug_materials_mineral_sapphire.png` |
+| `grug_materials:stone_with_ruby` | `grug_materials_mineral_ruby.png` |
+| `grug_materials:abyssal_crystal_ore` | `grug_materials_mineral_abyssal_crystal.png` |
 
 The five upstream natural ores retain their vendored textures under their
 upstream IDs: `default:stone_with_coal`, `default:stone_with_copper`,
@@ -195,3 +198,84 @@ refer to the vendored
 Other nodes registered by this mod use the vendored stone, glass or wood sound
 defaults from the same minetest_game commit. The combined sound licenses and
 attributions are the ones preserved in `mods/BASE/default/license.txt`.
+
+## 9. Round 24 stored rock and mineral textures
+
+Eighteen files for Round 24 rulings 8, 16 and 17
+(`docs/planning/round24-mining-underground-mobs-plan.md`). Regenerate with
+`python3 tools/r24_art/build_rock_ore_textures.py --voxelibre <VoxeLibre checkout>`
+(`--check` verifies the stored pixels, `--renders` rebuilds the comparison
+sheets in `docs/research/round24-art/`). The script pins every input below by
+SHA-256.
+
+VoxeLibre inputs come from its top-level `textures/` directory,
+<https://git.minetest.land/VoxeLibre/VoxeLibre>, commit
+`2373982f19f9b5d89cd2e3146ad7749876319e15` (the `reference_projects/VoxeLibre`
+submodule pin). Upstream `LEGAL.md`, "License of media": textures are "based
+on the Pixel Perfection resource pack for Minecraft 1.11, authored by
+XSSheep", **CC BY-SA 4.0**
+(<https://creativecommons.org/licenses/by-sa/4.0/>), with per-mod READMEs
+naming exceptions; "No non-free licenses are used anywhere". The one
+exception that applies here is noted in its row. (`mods/ITEMS/mcl_core/README.txt`
+still carries a pre-move note about a "Faithful 1.11" texture set; `mcl_core`
+no longer ships any textures, so it does not describe the top-level files.)
+
+### 9.1 Tier rocks — CC BY-SA 3.0 Unported (minetest_game derivatives)
+
+Derivatives of the vendored `default_stone.png` (§ "Source and license"
+above), so they stay under CC BY-SA 3.0 with the same attribution. Each is the
+original with its pixel contrast around the mean raised (up to ×1.35 at T6),
+multiplied by a brightness factor and a cool tint (full strength R ×0.93,
+G ×0.98, B ×1.06, scaled per tier), plus a tile-seamless set of mostly
+horizontal hairline cracks (crack pixel ×0.68; from T4 a lit lip ×1.10 above
+each crack). Deeper tiers keep the shallower tiers' cracks and add new ones.
+
+| File | Brightness | Tint strength | Cracks | Mean luminance vs `default_stone` |
+|---|---|---|---|---|
+| `grug_materials_t2_stone.png` | ×0.935 | 0.2 | 2 | −8 % |
+| `grug_materials_t3_stone.png` | ×0.86 | 0.4 | 4 | −17 % |
+| `grug_materials_t4_stone.png` | ×0.785 | 0.6 | 6 | −25 % |
+| `grug_materials_t5_stone.png` | ×0.71 | 0.8 | 8 | −32 % |
+| `grug_materials_t6_stone.png` | ×0.635 | 1.0 | 10 | −40 % |
+
+### 9.2 Decorative rocks — VoxeLibre derivatives
+
+Each is the upstream 16×16 texture re-graded: its mean colour moved to the
+listed target, its luminance pattern kept (scaled by the contrast factor) and
+half of its own per-pixel hue variation kept.
+
+| File | Upstream source | Author and licence | Modification |
+|---|---|---|---|
+| `grug_materials_slate.png` | `mcl_deepslate.png` (mod `mcl_deepslate` by NO11, "Textures are from Pixel Perfection!") | XSSheep / Pixel Perfection, VoxeLibre contributors — CC BY-SA 4.0 | re-graded to cool blue-grey mean `#56606b`, contrast ×1.1 |
+| `grug_materials_basalt.png` | `mcl_blackstone_basalt_side.png` | **Lifora — CC BY-SA 3.0** (`mods/ITEMS/mcl_blackstone/README.md` lists this file by name), <https://creativecommons.org/licenses/by-sa/3.0/> | re-graded to near-black mean `#3b3a3d`; stays CC BY-SA 3.0 |
+| `grug_materials_granite.png` | `mcl_core_granite.png` | XSSheep / Pixel Perfection, VoxeLibre contributors — CC BY-SA 4.0 | re-graded to mean `#94705f` |
+
+### 9.3 Mineral overlays
+
+Transparent 16×16 overlays, drawn over `default_stone.png` at runtime (§2).
+For the VoxeLibre-derived ones the script cuts the mineral motif out of the
+upstream ore by differencing it against VoxeLibre's own `default_stone.png`
+(quartz: by selecting its pale pixels, since it sits on netherrack), maps the
+mineral pixels' brightness onto a five-colour ramp per mineral, and redraws the
+grey rim pixels VoxeLibre sets around a gem with the nearest grey of
+minetest_game's `default_stone.png` palette (two darker steps added). Those
+overlays are adaptations of CC BY-SA 4.0 art and are released under
+**CC BY-SA 4.0**; the few borrowed stone greys are CC BY-SA 3.0 material,
+which that licence allows in a CC BY-SA 4.0 adaptation.
+
+| File | Upstream motif | Licence | Ramp (dark → highlight) |
+|---|---|---|---|
+| `grug_materials_mineral_citrine.png` | VoxeLibre `mcl_core_emerald_ore.png` | CC BY-SA 4.0 | `#5a3806` … `#fff3b8` |
+| `grug_materials_mineral_garnet.png` | VoxeLibre `mcl_core_emerald_ore.png` | CC BY-SA 4.0 | `#34040e` … `#f09aa6` |
+| `grug_materials_mineral_jade.png` | VoxeLibre `mcl_core_emerald_ore.png` | CC BY-SA 4.0 | `#0c3520` … `#c9f2d6` |
+| `grug_materials_mineral_diamond.png` | VoxeLibre `mcl_core_diamond_ore.png` | CC BY-SA 4.0 | `#3f6f8a` … `#ffffff` |
+| `grug_materials_mineral_sapphire.png` | VoxeLibre `mcl_core_diamond_ore.png` | CC BY-SA 4.0 | `#0b1d58` … `#c4d8ff` |
+| `grug_materials_mineral_ruby.png` | VoxeLibre `mcl_core_diamond_ore.png` | CC BY-SA 4.0 | `#4e0412` … `#ffc6ce` |
+| `grug_materials_mineral_emberglass.png` | VoxeLibre `mcl_core_redstone_ore.png` | CC BY-SA 4.0 | `#5c1504` … `#fff1a0` |
+| `grug_materials_mineral_abyssal_crystal.png` | VoxeLibre `mcl_core_lapis_ore.png` | CC BY-SA 4.0 | `#1a0b33` … `#e2d0ff` |
+| `grug_materials_mineral_quartz.png` | VoxeLibre `mcl_nether_quartz_ore.png` (pale flecks only) | CC BY-SA 4.0 | `#8d8480` … `#ffffff`, plus a one-pixel stone-grey shadow below/right of each fleck |
+| `grug_materials_mineral_silver.png` | minetest_game `default_mineral_iron.png` (vendored, §"Source and license") | **CC BY-SA 3.0** | streaks mirrored left-right, brightness mapped to `#7d8a9c` … `#f4f8ff`, translucent `#2e3440` (alpha 120) shade under each streak |
+
+Only the silver overlay stays in minetest_game's streak language, like the
+vendored coal, copper, tin, iron and gold ores; gems and crystals use the
+VoxeLibre gem motifs, so the two families read apart.
