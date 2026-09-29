@@ -57,9 +57,21 @@ M.DEFAULTS = {
 	CORE_GATE = 49,       -- core gatehouse radius on the axes
 	CORE_KEEP = 52,       -- streets and plots keep this Chebyshev distance
 	TARGET_AREA = 100000, -- city footprint target (D70: ~100 k m2 first)
-	R_MIN = 110, BAND = 26,   -- outline radius floor; wall-to-reserved-edge band
-	NRAY = 180, SMOOTH_PASSES = 4, SMOOTH_W = 4,
-	BUDGET_NOISE = 0.3, WALL_BANK = 6,
+	R_MIN = 118, BAND = 26,   -- outline radius floor; wall-to-reserved-edge band
+	NRAY = 180, SMOOTH_PASSES = 2, SMOOTH_W = 3,
+	BUDGET_NOISE = 0.32, WALL_BANK = 6,
+	-- Round 26 outline character (M.STYLE overrides per capital): budget
+	-- noise octaves {frequency, weight, x offset, z offset}; the two
+	-- harmonics toward the open ground (ECC1 off-centre, ECC2 elongated
+	-- along AXIS "open" or "across"); the terrain snap (SNAP reach in nodes,
+	-- SNAP_T per node of crest or brow, SNAP_S for a shore just ahead,
+	-- SNAP_D the penalty at full reach); POLY = corner count of an angular
+	-- outline (nil: curved)
+	NOISE_OCT = {{1.6, 0.7, 0, 0}, {4, 0.3, 7, -3}},
+	ECC1 = 0.1, ECC2 = 0.08, AXIS = "open",
+	SNAP = 20, SNAP_T = 1.0, SNAP_S = 3, SNAP_D = 2.5,
+	POLY = nil,
+	NOTCH = 0.14,         -- a ray keeps within this share of the broadly smoothed outline
 	C_WET = 4.0, C_STEEP = 2.6, C_BUILD = 1.0,
 	BANK = 6, ROUGH = 6,      -- buildable: distance to water >= BANK, relief in a 10-node window <= ROUGH
 	GATE_SLIDE = 60, GATE_SLIDE_WET = 2.5,   -- D70: a gate may slide further (x2.5) to avoid water
@@ -68,6 +80,10 @@ M.DEFAULTS = {
 	RING_GUIDE = 1.2, AVENUE_GUIDE = 0.5, AVENUE_GUIDE_MAX = 6, ASSIGN = "capacity",
 	CANAL = false, CANAL_OFF = 2, CANAL_HALF = 2, CANAL_DEPTH = 2, CANAL_CLEAR = 12, CANAL_VAR = 3, CANAL_MIN = 60,
 	WALL_HALF = 3, WALL_KEEP = 8, TURRET_EVERY = 64, WALL_HEIGHT = 7,
+	-- towers (Round 26): the edge kind's turret radius, flank towers beside
+	-- the gatehouses, towers at bends turning more than BEND_MIN (radians
+	-- over ~20 nodes; nil: none) at least BEND_GAP apart along the wall
+	TURRET_R = 5, GATE_FLANK = true, BEND_MIN = 0.45, BEND_GAP = 40,
 	WALL_SLACK = 1.05,    -- walk slope bound: <= 1/2 node per (node x this)
 	WALL_CLEAR = 1,       -- over water the walk stands at least this far above the surface
 	-- a civic lake is the edge (M.shore_flags, I.shore_distance)
@@ -93,7 +109,13 @@ M.DEFAULTS = {
 	-- and seed from a variation hash, so six capitals do not repeat)
 	RING_JITTER = 0.05,   -- ring fractions +- this
 	RING2_OPEN = 0.35,    -- share of ring-2 arcs that stop halfway in a square
-	CROSS_MEAN = 1.0,     -- cross-lanes ring 1 -> ring 2 per quadrant (0..2)
+	RING1_OPEN = 0,       -- ... and of ring-1 arcs (Round 26 character)
+	OPEN_MAX = 2,         -- at most this many open arcs
+	RING_SHAPE = nil,     -- {[ring] = "circle"}: a ring round the core, not along the outline
+	CROSS_MEAN = 1.0,     -- cross-lanes ring 1 -> ring 2 per quadrant (0..CROSS_MAX)
+	CROSS_MAX = 2,
+	RING_WALL_MAX = 46,   -- the outer ring keeps within this of the (smoothed) wall
+	RING_GAP_MAX = 84,    -- ... and the ring inside it within this of it
 	SQUARE_P = 0.5,       -- share of avenue/ring crossings that get a small square
 	SQUARE_R = 6,         -- square radius (nodes)
 	PIN = nil,            -- {district = quadrant-direction {x, z}}: pinned districts
@@ -114,16 +136,60 @@ M.DEFAULTS = {
 -- (M.shore_flags, the `l` and `f` flags of the payload).
 M.EDGE = {
 	stone = {model = "stone", half = 3, depth = 5, width = 7, turret = 5,
-		opts = {WALL_HALF = 3, WALL_HEIGHT = 7, GATE_DEPTH = 5, GATE_WIDTH = 7}},
+		opts = {WALL_HALF = 3, WALL_HEIGHT = 7, GATE_DEPTH = 5, GATE_WIDTH = 7, TURRET_R = 5}},
 	palisade = {model = "palisade", half = 2, depth = 4, width = 6, turret = 3,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 4, GATE_WIDTH = 6,
-			TURRET_EVERY = 56}},
+			TURRET_EVERY = 56, TURRET_R = 3}},
 	stone_narrow = {model = "stone", half = 2, depth = 3, width = 5, turret = 3,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 6, GATE_DEPTH = 3, GATE_WIDTH = 5,
-			WALL_KEEP = 6, TURRET_EVERY = 48}},
+			WALL_KEEP = 6, TURRET_EVERY = 48, TURRET_R = 3}},
 	palisade_narrow = {model = "palisade", half = 2, depth = 3, width = 5, turret = 3,
 		opts = {WALL_HALF = 2, WALL_HEIGHT = 5, GATE_DEPTH = 3, GATE_WIDTH = 5,
-			WALL_KEEP = 6, TURRET_EVERY = 56}},
+			WALL_KEEP = 6, TURRET_EVERY = 56, TURRET_R = 3}},
+}
+
+-- Round 26 (D72, plan rulings 1-4): each capital's character, planner
+-- overrides applied after its edge kind's (`r7_capitals.lua`). NAME is a
+-- short description for the review images. Within the planner's legality
+-- rules they vary the outline (noise, harmonics toward the open ground,
+-- terrain snap, angular corners), the towers and the street pattern (ring
+-- fractions and shape, open arcs, cross-lanes, squares, avenue pull).
+M.STYLE = {
+	highcourt = {NAME = "royal city: broad and even, towers at the bends, flanked gatehouses",
+		SMOOTH_PASSES = 2, SMOOTH_W = 3, BUDGET_NOISE = 0.3, ECC1 = 0.12, ECC2 = 0.1,
+		SNAP = 20, GATE_FLANK = true, BEND_MIN = 0.4, BEND_GAP = 44, TURRET_EVERY = 80,
+		RINGS = {0.3, 0.7}, RING2_OPEN = 0.2, CROSS_MEAN = 1.0, SQUARE_P = 0.6,
+		AVENUE_GUIDE = 0.6},
+	dur_brannoc = {NAME = "mountain hold: straight curtain faces on the crests, a tower on every corner",
+		POLY = 8, SMOOTH_PASSES = 1, SMOOTH_W = 2, BUDGET_NOISE = 0.22, ECC1 = 0.16, ECC2 = 0.08,
+		SNAP = 30, SNAP_T = 1.5, GATE_FLANK = true, BEND_MIN = 0.2, BEND_GAP = 30,
+		TURRET_EVERY = 90, RINGS = {0.28, 0.7}, RING_SHAPE = {[2] = "wall"}, RING2_OPEN = 0,
+		CROSS_MEAN = 0.8,
+		SQUARE_P = 0.35, AVENUE_GUIDE = 1.2},
+	nhal_veyr = {NAME = "walled necropolis: long closed curtain stretched along its ground, a steady tower rhythm, a round inner ring",
+		SMOOTH_PASSES = 3, SMOOTH_W = 3, BUDGET_NOISE = 0.2, ECC1 = 0.06, ECC2 = 0.22,
+		SNAP = 16, GATE_FLANK = true, BEND_MIN = false, TURRET_EVERY = 64,
+		RINGS = {0.3, 0.72}, RING_SHAPE = {"circle"}, RING2_OPEN = 0, CROSS_MEAN = 1.4,
+		CROSS_MAX = 3, SQUARE_P = 0.7, SQUARE_R = 5, AVENUE_GUIDE = 0.8},
+	gor_drazhak = {NAME = "war camp: rough jagged stockade, broken rings ending in open yards, winding avenues",
+		SMOOTH_PASSES = 1, SMOOTH_W = 2, BUDGET_NOISE = 0.32,
+		NOISE_OCT = {{1.6, 0.55, 0, 0}, {4, 0.3, 7, -3}, {9, 0.15, -11, 5}},
+		ECC1 = 0.2, ECC2 = 0.06, SNAP = 20, GATE_FLANK = false, BEND_MIN = 0.45, BEND_GAP = 44,
+		TURRET_EVERY = 84, RINGS = {0.34, 0.74}, RING1_OPEN = 0.25, RING2_OPEN = 0.5,
+		OPEN_MAX = 3, CROSS_MEAN = 1.6, CROSS_MAX = 3, SQUARE_P = 0.7, SQUARE_R = 8,
+		AVENUE_GUIDE = 0.2},
+	lethariel = {NAME = "lakeside city: a long flowing curtain along the crown lake, few towers",
+		SMOOTH_PASSES = 3, SMOOTH_W = 4, BUDGET_NOISE = 0.24, ECC1 = 0.14, ECC2 = 0.22,
+		AXIS = "across", SNAP = 20, SNAP_S = 5, GATE_FLANK = false, BEND_MIN = 0.55,
+		BEND_GAP = 60, TURRET_EVERY = 96, RINGS = {0.32, 0.72}, RING2_OPEN = 0.5,
+		CROSS_MEAN = 1.0, SQUARE_P = 0.5, AVENUE_GUIDE = 0.25},
+	kezamba = {NAME = "jungle city: an irregular stockade wrapped round the cenote, winding avenues",
+		SMOOTH_PASSES = 2, SMOOTH_W = 2, BUDGET_NOISE = 0.34,
+		NOISE_OCT = {{1.6, 0.6, 0, 0}, {4, 0.4, 7, -3}},
+		ECC1 = 0.16, ECC2 = 0.12, AXIS = "across", SNAP = 20, SNAP_S = 4, GATE_FLANK = false,
+		BEND_MIN = 0.4, BEND_GAP = 36, TURRET_EVERY = 64, RINGS = {0.3, 0.72},
+		RING2_OPEN = 0.45, CROSS_MEAN = 1.4, CROSS_MAX = 3, SQUARE_P = 0.5, SQUARE_R = 7,
+		AVENUE_GUIDE = 0.2},
 }
 
 -- cardinal directions: E, S, W, N (x east, z south; north = -z)
@@ -527,72 +593,212 @@ function M.plan(seed, I, opt)
 	st.t.masks = os.clock() - T1
 	---------------------------------------------------------------------------
 	-- 3. outline r(phi)
+	--
+	-- Round 26 (D72, rulings 1-4 of the Round 26 plan): still star-shaped,
+	-- one wall point per ray, but each capital's character (M.STYLE) shapes
+	-- it: the seeded budget noise (octaves NOISE_OCT), two harmonics that
+	-- stretch the city toward its open ground (ECC1: off-centre toward the
+	-- most buildable side, ECC2: elongated along the axis AXIS), a snap of
+	-- every ray to the terrain near its reach (a crest, the brow of a
+	-- slope or a shore ahead, within SNAP), little smoothing, and for an
+	-- angular capital (POLY) straight wall faces between corners.
 	---------------------------------------------------------------------------
 	local T2 = os.clock()
 	local NR = P.NRAY
 	local noise = I.simplex(seed, "capital_outline")
 	local RAYS = {}
 	local rmax = {}
+	local SL = 5   -- terrain snap: crest/brow half window, in samples (10 nodes)
+	local open_c1, open_s1, open_c2, open_s2 = 0, 0, 0, 0
 	for a = 1, NR do
 		local phi = (a - 1) * 2 * pi / NR - pi
 		local c, s = cos(phi), sin(phi)
 		local m = max(abs(c), abs(s))
 		local s0 = P.CORE / m
 		rmax[a] = min((P.HALF - P.BAND) / m, 260)
-		local cum, rr = {}, {}
+		local cum, rr, hh, wet, dw = {}, {}, {}, {}, {}
 		local acc = 0
 		local r = s0
+		local nopen, nall = 0, 0
 		while r <= rmax[a] + 2 do
 			local k = gk(r * c, r * s)
 			local w = WET[k] and P.C_WET or (BUILD[k] and P.C_BUILD or P.C_STEEP)
 			acc = acc + w * G
 			cum[#cum + 1], rr[#rr + 1] = acc, r
+			hh[#hh + 1], wet[#wet + 1], dw[#dw + 1] = TT[k], WET[k], DW[k]
+			if r >= P.CORE_KEEP + 16 then
+				nall = nall + 1
+				if BUILD[k] then nopen = nopen + 1 end
+			end
 			r = r + G
 		end
-		local nz = 0.7 * noise(c * 1.6, s * 1.6) + 0.3 * noise(c * 4 + 7, s * 4 - 3)
-		RAYS[a] = {phi = phi, c = c, s = s, s0 = s0, cum = cum, r = rr, f = 1 + P.BUDGET_NOISE * nz}
+		-- the terrain score of every sample (independent of the budget): a
+		-- crest or the brow of an outward slope, and a shore just ahead
+		local terr = {}
+		for j = 1, #rr do
+			local h = hh[j]
+			local hin, hout = hh[max(1, j - SL)], hh[min(#rr, j + SL)]
+			local crest = h - 0.5 * (hin + hout)
+			local brow = 0.5 * (h - hout)
+			local shore = 0
+			for q = j + 1, min(#rr, j + 8) do
+				if wet[q] then shore = 1 break end
+			end
+			terr[j] = P.SNAP_T * max(crest, brow, 0) + P.SNAP_S * shore
+		end
+		local nz, wsum = 0, 0
+		for _, o in ipairs(P.NOISE_OCT) do
+			nz = nz + o[2] * noise(c * o[1] + (o[3] or 0), s * o[1] + (o[4] or 0))
+			wsum = wsum + o[2]
+		end
+		local open = nall > 0 and nopen / nall or 0
+		open_c1, open_s1 = open_c1 + open * c, open_s1 + open * s
+		open_c2, open_s2 = open_c2 + open * cos(2 * phi), open_s2 + open * sin(2 * phi)
+		RAYS[a] = {phi = phi, c = c, s = s, s0 = s0, cum = cum, r = rr, h = hh, wet = wet,
+			dw = dw, terr = terr, nz = nz / wsum}
+	end
+	-- the character's harmonics, oriented by the open ground: ECC1 pushes
+	-- the city toward its most buildable side (the core then sits off
+	-- centre), ECC2 stretches it along the open ground's long axis ("open")
+	-- or across the first harmonic ("across": along a lake shore). Where the
+	-- ground is even all round, a seeded direction decides.
+	do
+		local mag1 = sqrt(open_c1 * open_c1 + open_s1 * open_s1) / NR
+		local phi1 = mag1 > 0.02 and atan2(open_s1, open_c1) or (2 * vrand() - 1) * pi
+		local phi2
+		if P.AXIS == "across" then
+			phi2 = phi1 + pi / 2
+		else
+			local mag2 = sqrt(open_c2 * open_c2 + open_s2 * open_s2) / NR
+			phi2 = mag2 > 0.02 and 0.5 * atan2(open_s2, open_c2) or (2 * vrand() - 1) * pi
+		end
+		st.ecc_dir, st.axis_dir = phi1, phi2
+		for a = 1, NR do
+			local ray = RAYS[a]
+			ray.f = max(0.35, 1 + P.BUDGET_NOISE * ray.nz + P.ECC1 * cos(ray.phi - phi1) +
+				P.ECC2 * cos(2 * (ray.phi - phi2)))
+		end
+	end
+	-- angular capitals: the corner rays (evenly spread, seeded jitter); each
+	-- corner then takes the farthest-reaching ray near its nominal angle
+	local corners
+	if P.POLY then
+		local K = P.POLY + floor(3 * vrand()) - 1
+		local off = vrand()
+		corners = {}
+		for k = 0, K - 1 do
+			local u = (k + off + 0.3 * (vrand() - 0.5)) / K
+			corners[#corners + 1] = floor(u * NR) % NR + 1
+		end
+		table.sort(corners)
+		st.corners = #corners
+	end
+	local function smooth(R, passes, w)
+		for _ = 1, passes do
+			local S = {}
+			for a = 1, NR do
+				local acc = 0
+				for d = -w, w do acc = acc + R[(a - 1 + d) % NR + 1] end
+				S[a] = acc / (2 * w + 1)
+			end
+			R = S
+		end
+		return R
 	end
 	local function outline_for(B)
 		local R = {}
 		for a = 1, NR do
 			local ray = RAYS[a]
 			local lim = B * ray.f
-			local r = ray.r[#ray.r]
+			local j0 = #ray.r
 			for j = 1, #ray.cum do
-				if ray.cum[j] >= lim then r = ray.r[j] break end
+				if ray.cum[j] >= lim then j0 = j break end
 			end
-			R[a] = r
+			-- terrain snap: the best-scoring sample within SNAP of the reach
+			-- (a crest, a brow, a shore ahead), off the banks, penalised by
+			-- its distance from the reach
+			local span = floor(P.SNAP / G)
+			local best, bs = j0, ray.terr[j0]
+			if span > 0 then
+				for j = max(1, j0 - span), min(#ray.r, j0 + span) do
+					if ray.dw[j] >= P.WALL_BANK + 2 and not ray.wet[j] then
+						local u = (j - j0) / span
+						local sc = ray.terr[j] - P.SNAP_D * u * u
+						if sc > bs + 1e-9 then best, bs = j, sc end
+					end
+				end
+			end
+			R[a] = ray.r[best]
 		end
-		for _ = 1, P.SMOOTH_PASSES do
-			local S = {}
+		R = smooth(R, P.SMOOTH_PASSES, P.SMOOTH_W)
+		-- no bays and no lobes (ruling 2): each ray stays within NOTCH of
+		-- the broadly smoothed outline
+		do
+			local W = smooth(R, 3, 5)
 			for a = 1, NR do
-				local acc = 0
-				for d = -P.SMOOTH_W, P.SMOOTH_W do acc = acc + R[(a - 1 + d) % NR + 1] end
-				S[a] = acc / (2 * P.SMOOTH_W + 1)
+				R[a] = max(W[a] * (1 - P.NOTCH), min(W[a] * (1 + P.NOTCH), R[a]))
 			end
-			R = S
 		end
 		for a = 1, NR do R[a] = max(P.R_MIN, min(rmax[a], R[a])) end
+		if corners then
+			-- straight faces between the corners (polar line through two
+			-- corner points; each corner the farthest ray within a quarter
+			-- of its spacing)
+			local K = #corners
+			local cp = {}
+			for k = 1, K do
+				local a0 = corners[k]
+				local gap = ((corners[k % K + 1] - a0) % NR)
+				local w = max(1, floor(gap / 5))
+				local ba, br = a0, R[a0]
+				for d = -w, w do
+					local a = (a0 - 1 + d) % NR + 1
+					if R[a] > br then ba, br = a, R[a] end
+				end
+				cp[k] = ba
+			end
+			local S = {}
+			for k = 1, K do
+				local a1, a2 = cp[k], cp[k % K + 1]
+				local p1, p2 = RAYS[a1].phi, RAYS[a2].phi
+				local r1, r2 = R[a1], R[a2]
+				local span = wrap(p2 - p1)
+				if span <= 0 then span = span + 2 * pi end
+				local n = (a2 - a1) % NR
+				if n == 0 then n = NR end
+				for d = 0, n - 1 do
+					local a = (a1 - 1 + d) % NR + 1
+					local t = wrap(RAYS[a].phi - p1)
+					if t < 0 then t = t + 2 * pi end
+					S[a] = r1 * r2 * sin(span) / (r1 * sin(t) + r2 * sin(span - t))
+				end
+			end
+			for a = 1, NR do R[a] = max(P.R_MIN, min(rmax[a], S[a] or R[a])) end
+		end
 		-- the wall keeps off banks: a ray whose outline point lies within
 		-- WALL_BANK of water moves to the nearest point that does not
-		-- (inward first on ties, within 40), then one light smoothing pass.
-		-- Where a river crosses the outline the neighbouring rays snap to
-		-- opposite banks and the wall crosses it short (an arcade).
+		-- (inward first on ties, within 40), and the rays round a moved one
+		-- are smoothed lightly. Where a river crosses the outline the
+		-- neighbouring rays snap to opposite banks and the wall crosses it
+		-- short (an arcade).
 		for _ = 1, (P.WALL_BANK > 0 and 3 or 0) do
+			local moved = {}
 			for a = 1, NR do
 				local ray = RAYS[a]
 				local function bad(r) return DW[gk(r * ray.c, r * ray.s)] < P.WALL_BANK end
 				if bad(R[a]) then
 					for d = 2, 40, 2 do
 						local ri, ro = R[a] - d, R[a] + d
-						if ri >= P.R_MIN and not bad(ri) then R[a] = ri break end
-						if ro <= rmax[a] and not bad(ro) then R[a] = ro break end
+						if ri >= P.R_MIN and not bad(ri) then R[a] = ri; moved[a] = true break end
+						if ro <= rmax[a] and not bad(ro) then R[a] = ro; moved[a] = true break end
 					end
 				end
 			end
 			local S = {}
 			for a = 1, NR do
-				S[a] = 0.25 * R[(a - 2) % NR + 1] + 0.5 * R[a] + 0.25 * R[a % NR + 1]
+				local near = false
+				for d = -2, 2 do if moved[(a - 1 + d) % NR + 1] then near = true end end
+				S[a] = near and (0.25 * R[(a - 2) % NR + 1] + 0.5 * R[a] + 0.25 * R[a % NR + 1]) or R[a]
 			end
 			R = S
 		end
@@ -618,6 +824,18 @@ function M.plan(seed, I, opt)
 		local a = floor(u)
 		local f = u - a
 		local r1, r2 = R[a % NR + 1], R[(a + 1) % NR + 1]
+		return r1 + (r2 - r1) * f
+	end
+	-- the outline smoothed as before Round 26: the ring lanes follow it, so
+	-- an irregular wall does not make them zigzag
+	local RS = smooth(R, 4, 4)
+	local rs_mean = 0
+	for a = 1, NR do rs_mean = rs_mean + RS[a] / NR end
+	local function rs_at(phi)
+		local u = (wrap(phi) + pi) / (2 * pi) * NR
+		local a = floor(u)
+		local f = u - a
+		local r1, r2 = RS[a % NR + 1], RS[(a + 1) % NR + 1]
 		return r1 + (r2 - r1) * f
 	end
 	local function inside(lx, lz, margin)
@@ -927,16 +1145,41 @@ function M.plan(seed, I, opt)
 		avenues[c] = road
 		streets[#streets + 1] = road
 	end
-	-- 5b. ring lanes: per quadrant an arc from avenue q to avenue q+1
-	local function ring_r(frac, phi)
-		return P.CORE_GATE + frac * (r_at(phi) - P.CORE_GATE)
+	-- 5b. ring lanes: per quadrant an arc from avenue q to avenue q+1. A
+	-- ring follows the smoothed outline at its fraction of the way from the
+	-- core gate to the wall; a "circle" ring (M.STYLE RING_SHAPE) keeps one
+	-- radius round the core instead, never nearer the wall than the outline
+	-- ring at 0.8
+	-- ("wall": along the unsmoothed outline, an angular capital's straight
+	-- faces). Where the city reaches far out (an off-centre or elongated
+	-- outline) the outer ring keeps within RING_WALL_MAX of the wall and the
+	-- inner one within RING_GAP_MAX of the outer, so the wide side is not
+	-- left without streets.
+	local ring_r
+	ring_r = function(ri, phi)
+		local frac = P.RINGS[ri]
+		local shape = P.RING_SHAPE and P.RING_SHAPE[ri]
+		local base = shape == "wall" and r_at(phi) or rs_at(phi)
+		local r
+		if shape == "circle" then
+			r = min(P.CORE_GATE + frac * (rs_mean - P.CORE_GATE),
+				P.CORE_GATE + 0.8 * (base - P.CORE_GATE))
+		else
+			r = P.CORE_GATE + frac * (base - P.CORE_GATE)
+		end
+		if ri == #P.RINGS then
+			r = max(r, base - P.RING_WALL_MAX)
+		elseif ri == #P.RINGS - 1 then
+			r = max(r, ring_r(#P.RINGS, phi) - P.RING_GAP_MAX)
+		end
+		return r
 	end
-	local function avenue_index_at(road, frac)
+	local function avenue_index_at(road, ri)
 		-- first centreline point whose radius reaches the ring
 		local best
 		for i = 1, #road.X do
 			local lx, lz = road.X[i] - AX, road.Z[i] - AZ
-			if sqrt(lx * lx + lz * lz) >= ring_r(frac, atan2(lz, lx)) then best = i break end
+			if sqrt(lx * lx + lz * lz) >= ring_r(ri, atan2(lz, lx)) then best = i break end
 		end
 		best = best or floor(#road.X / 2)
 		-- a junction needs dry, ground-supported parent points around it
@@ -1046,11 +1289,14 @@ function M.plan(seed, I, opt)
 		return nx_, nz_
 	end
 	local nopen = 0
-	for ri, frac in ipairs(P.RINGS) do
+	for ri in ipairs(P.RINGS) do
 		for q = 1, 4 do
 			local road
-			-- D70: some outer arcs stop halfway in a small square
-			local open = ri == #P.RINGS and nopen < 2 and vrand() < P.RING2_OPEN
+			-- D70: some outer arcs stop halfway in a small square (Round 26:
+			-- the share and the count by character; an inner arc too where
+			-- the character opens its inner ring)
+			local share = ri == #P.RINGS and P.RING2_OPEN or (P.RING1_OPEN or 0)
+			local open = nopen < P.OPEN_MAX and vrand() < share
 			local from_b = vrand() < 0.5
 			local u_end = 0.45 + 0.2 * vrand()
 			-- attempts: A -> B; B -> A; A -> B with a wider target window;
@@ -1065,7 +1311,7 @@ function M.plan(seed, I, opt)
 				local is_open = mode[1]
 				if mode[2] then A, B = B, A end
 				local span = mode[3]
-				local ia, ib = avenue_index_at(A, frac), avenue_index_at(B, frac)
+				local ia, ib = avenue_index_at(A, ri), avenue_index_at(B, ri)
 				local ax, az = A.X[ia] - AX, A.Z[ia] - AZ
 				local bx, bz = B.X[ib] - AX, B.Z[ib] - AZ
 				local nx_, nz_ = unit_normal_toward(A, ia, bx - ax, bz - az)
@@ -1078,12 +1324,12 @@ function M.plan(seed, I, opt)
 					local u = wrap(phi - phi_a) / wrap(phi_b - phi_a)
 					local g = outside_cost(lx, lz, 14, 10)
 					if u < -0.05 or u > 1.05 then g = g + 20 end
-					local dr = (r - ring_r(frac, phi)) / 10
+					local dr = (r - ring_r(ri, phi)) / 10
 					return g + min(8, P.RING_GUIDE * dr * dr)
 				end)
 				if is_open then
 					local pt = phi_a + u_end * wrap(phi_b - phi_a)
-					local rt = ring_r(frac, pt)
+					local rt = ring_r(ri, pt)
 					local tx, tz = rt * cos(pt), rt * sin(pt)
 					local tcell = cell_li(tx, tz)
 					if tcell and not wet_at(tx, tz) and DW[gk(tx, tz)] >= 6 then
@@ -1140,9 +1386,9 @@ function M.plan(seed, I, opt)
 		end
 		local v = vrand()
 		local n = v < 0.25 and 0 or (v < 0.8 and 1 or 2)
-		n = min(2, floor(n * P.CROSS_MEAN + 0.5))
+		n = min(P.CROSS_MAX, floor(n * P.CROSS_MEAN + 0.5))
 		for k = 1, (r1 and n or 0) do
-			local u = n == 1 and (0.35 + 0.3 * vrand()) or (k == 1 and 0.28 + 0.1 * vrand() or 0.62 + 0.1 * vrand())
+			local u = (k - 0.5) / n + (0.3 * vrand() - 0.15) / n
 			local i1 = max(20, min(#r1.X - 20, floor(u * #r1.X + 0.5)))
 			local ok = true
 			for _, j in ipairs(r1.junctions) do if abs(j.idx - i1) < 18 then ok = false end end
@@ -1152,7 +1398,6 @@ function M.plan(seed, I, opt)
 				local s1 = {ax + nx_ * 8, az + nz_ * 8}
 				local src = cell_li(s1[1], s1[2])
 				local phi_u = atan2(az, ax)
-				local r2f = P.RINGS[#P.RINGS]
 				local guide = guide_for(function(lx, lz)
 					local r = sqrt(lx * lx + lz * lz)
 					local dphi = wrap(atan2(lz, lx) - phi_u)
@@ -1174,7 +1419,7 @@ function M.plan(seed, I, opt)
 						end
 					end
 				end
-				local rt = ring_r(r2f, phi_u)
+				local rt = ring_r(#P.RINGS, phi_u)
 				local tx, tz = rt * cos(phi_u), rt * sin(phi_u)
 				local road
 				if B then
@@ -1183,7 +1428,7 @@ function M.plan(seed, I, opt)
 				end
 				if not road then
 					-- dead end: halfway out, ending in a square
-					local rd = 0.5 * (ring_r(P.RINGS[1], phi_u) + rt)
+					local rd = 0.5 * (ring_r(1, phi_u) + rt)
 					local dx, dz = rd * cos(phi_u), rd * sin(phi_u)
 					local tcell = cell_li(dx, dz)
 					if tcell and not wet_at(dx, dz) then
@@ -1340,19 +1585,141 @@ function M.plan(seed, I, opt)
 			end
 		end
 		wall.walk, wall.wet, wall.gap, wall.s = walk, wetp, gap, s
-		-- turrets about every TURRET_EVERY along the wall, not at gates
+		-- Towers (Round 26, ruling 3: a few well-placed ones, never filler):
+		--  * "flank": beside each gatehouse, one each side on the first wall
+		--    point clear of its box by the turret radius (M.STYLE GATE_FLANK),
+		--    so the gate reads as a fortified gatehouse;
+		--  * "bend": at the sharpest bends of the wall (turning more than
+		--    BEND_MIN over ~20 nodes), strongest first, BEND_GAP apart along
+		--    the wall -- an angular capital's corners;
+		--  * "rhythm": the stretches still longer than TURRET_EVERY get evenly
+		--    spaced towers.
+		-- None stands on or beside water (an arcade) or within 8 points of a
+		-- gate gap (flank towers excepted).
 		local turrets = {}
-		local nextt = P.TURRET_EVERY / 2
-		for i = 1, n do
-			if s[i] >= nextt then
-				local near_gate = false
-				for j = max(1, i - 8), min(n, i + 8) do if gap[j] then near_gate = true end end
-				if not near_gate then
-					turrets[#turrets + 1] = {x = pts[i][1], z = pts[i][2], i = i}
-					nextt = s[i] + P.TURRET_EVERY
+		local TR = P.TURRET_R or 5
+		local function at(k) return (k - 1) % n + 1 end
+		local function blocked(i, flank)
+			for d = -2, 2 do if wetp[at(i + d)] then return true end end
+			if flank then
+				if gap[i] then return true end
+			else
+				for d = -8, 8 do if gap[at(i + d)] then return true end end
+			end
+			return false
+		end
+		local function along(i, j)   -- wall distance from point i forward to j
+			local d = s[j] - s[i]
+			if d < 0 then d = d + wall.length end
+			return d
+		end
+		local function far_from_all(i, lim)
+			for _, t in ipairs(turrets) do
+				local d = along(i, t.i)
+				if min(d, wall.length - d) < lim then return false end
+			end
+			return true
+		end
+		if P.GATE_FLANK then
+			for _, g in ipairs(gates) do
+				-- the gap's two ends, then outward along the wall
+				local first
+				for i = 1, n do
+					if gap[i] == g.c and gap[at(i - 1)] ~= g.c then first = i end
+				end
+				if first then
+					for _, dir in ipairs({-1, 1}) do
+						local i = first
+						if dir == 1 then
+							while gap[i] == g.c do i = at(i + 1) end
+						else
+							i = at(i - 1)
+						end
+						for _ = 1, 12 do
+							local rx, rz = pts[i][1] - g.x, pts[i][2] - g.z
+							local ww = abs(-rx * g.dz + rz * g.dx)
+							if ww >= P.GATE_WIDTH + TR - 0.5 then
+								if not blocked(i, true) and far_from_all(i, 2 * TR + 2) then
+									turrets[#turrets + 1] = {x = pts[i][1], z = pts[i][2], i = i, kind = "flank"}
+								end
+								break
+							end
+							i = at(i + dir)
+						end
+					end
 				end
 			end
 		end
+		if P.BEND_MIN then
+			local K = 5
+			local bends = {}
+			for i = 1, n do
+				local a, b, c = pts[at(i - K)], pts[i], pts[at(i + K)]
+				local ux, uz = b[1] - a[1], b[2] - a[2]
+				local vx, vz = c[1] - b[1], c[2] - b[2]
+				local turn = abs(atan2(ux * vz - uz * vx, ux * vx + uz * vz))
+				bends[i] = turn
+			end
+			local cand = {}
+			for i = 1, n do
+				local tb = bends[i]
+				if tb >= P.BEND_MIN and tb >= bends[at(i - 1)] and tb > bends[at(i + 1)] then
+					cand[#cand + 1] = i
+				end
+			end
+			table.sort(cand, function(u, v)
+				if bends[u] ~= bends[v] then return bends[u] > bends[v] end
+				return u < v
+			end)
+			for _, i in ipairs(cand) do
+				if not blocked(i) and far_from_all(i, P.BEND_GAP) then
+					turrets[#turrets + 1] = {x = pts[i][1], z = pts[i][2], i = i, kind = "bend",
+						turn = bends[i]}
+				end
+			end
+		end
+		-- rhythm: fill every stretch longer than TURRET_EVERY between two
+		-- towers or gate gaps with evenly spaced towers
+		do
+			local stops = {}
+			for _, t in ipairs(turrets) do stops[#stops + 1] = t.i end
+			for i = 1, n do
+				if gap[i] and not gap[at(i - 1)] then stops[#stops + 1] = i end
+				if gap[i] and not gap[at(i + 1)] then stops[#stops + 1] = i end
+			end
+			table.sort(stops)
+			if #stops == 0 then stops[1] = 1 end
+			local add = {}
+			for k = 1, #stops do
+				local i, j = stops[k], stops[k % #stops + 1]
+				local len = along(i, j)
+				if #stops == 1 then len = wall.length end
+				local cnt = floor(len / P.TURRET_EVERY)
+				for c = 1, cnt do
+					local target = s[i] + c * len / (cnt + 1)
+					if target >= wall.length then target = target - wall.length end
+					-- the wall point nearest that distance, moved off gates and water
+					local best, bd
+					for m = 1, n do
+						local d = abs(s[m] - target)
+						d = min(d, wall.length - d)
+						if (not bd or d < bd) then best, bd = m, d end
+					end
+					local ok = false
+					for d = 0, 6 do
+						for _, sg in ipairs({1, -1}) do
+							local m = at(best + sg * d)
+							if not ok and not blocked(m) and far_from_all(m, 0.5 * P.TURRET_EVERY) then
+								best, ok = m, true
+							end
+						end
+					end
+					if ok then add[#add + 1] = best; turrets[#turrets + 1] = {x = pts[best][1],
+						z = pts[best][2], i = best, kind = "turret"} end
+				end
+			end
+		end
+		table.sort(turrets, function(u, v) return u.i < v.i end)
 		-- Round 23 (user rulings 2026-09-28): a capital's CIVIC lake is its
 		-- edge where it crosses the outline (Lethariel's crown lake, Kezamba's
 		-- cenote). M.shore_flags: the wall is continuous on land, runs a few

@@ -183,6 +183,8 @@ return function(wp40_directory)
 			end
 			local opts = {WALL = cfg.edge, PIN = pin, CANAL = cfg.canal == true}
 			for k, v in pairs(planner.EDGE[cfg.edge].opts) do opts[k] = v end
+			-- Round 26: the capital's own character (outline, towers, streets)
+			for k, v in pairs(planner.STYLE[key] or {}) do opts[k] = v end
 			-- the core's own landing on an axis: a solid core cell at the
 			-- core's edge on the axis near the core's level (Kezamba's decks
 			-- over its cenote); a civic-water edge without one gets no avenue
