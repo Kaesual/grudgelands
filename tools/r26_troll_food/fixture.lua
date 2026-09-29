@@ -46,6 +46,7 @@ _G.grug_core = permissive({
 	end,
 	in_combat = function(player) return player.combat == true end,
 	can_use_item_level = function() return true end,
+	status_icons = {item_icon = function() return "" end},
 })
 local mana_restored = {}
 _G.grug_abilities = permissive({
