@@ -81,7 +81,13 @@ second writer. Capital roots use the current exact center; the historical
 `+11,+11` offset belonged to the removed legacy platform and is retired.
 
 The 24 outpost and 12 bandit root columns are hard-protected at `y >= -700`.
-Their `y <= -701` cells remain governed by the predecessor authority. Capitals
+Their `y <= -701` cells remain governed by the predecessor authority.
+**Amended 2026-09-29 (Round 24 ruling 30, user decision):** each column is
+now protected from its anchor's placement height (the roster `y`) − 100
+upward; below that the predecessor authority governs. The overlay schema is
+`grug_wp40_r7_functional_anchor_protection_v2`, and the R7 manifest field
+`functional_anchor_y_min = -700` became
+`functional_anchor_depth_below_placement = 100`. Capitals
 continue to rely on the existing R4 hard volumes. These are exactly 36 added
 columns and 42 mutable mapgen root cells; the protection overlay does not grant
 mapgen permission to change any neighboring cell. `grug_nodes:camp_fire` owns

@@ -107,6 +107,15 @@ grug_wp40_simple_map_r4_artifact_v1
   floor division in world coordinates.
 - The static housing reservation is exactly 101 by 101 nodes.
 - Hard protection starts at y = `-700`, inclusive, and is upward-unbounded.
+  **Amended 2026-09-29 (Round 24 ruling 30, user decision):** each hard
+  volume now starts at its own placement height − 100 (the final surface y
+  of its centre column, published by `height.lua` as `surface_y` with the
+  resulting `y_min`; recipe `y_policy_id`
+  `placement_minus_depth_upward_to_world_top`, `depth_below_placement` 100)
+  and stays upward-unbounded. The global `-700` floor and the R3 passthrough
+  check `y_min == -700` are retired; the contested-depth override below is
+  unchanged. The `-700` references further down this historical contract
+  describe the original acceptance.
 - The independent contested-depth override starts at y = `-701`, inclusive.
 - The compatibility underground bucket starts at y `< -40`.
 - Canonical representative seeds are, in this order, `0`, `1`,

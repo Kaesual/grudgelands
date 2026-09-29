@@ -94,10 +94,13 @@ M.CAPITAL_OVERLAY = {
 	-- edge's reach and a band beyond it, so the edge always lies inside the
 	-- protected city, and the city inside this square.
 	square = {min_x = -266, max_x = 266, min_z = -266, max_z = 266},
-	-- VERTICAL, absolute world y: the protection's own (y_min -700, upward
-	-- unbounded). The edge publishes its actual absolute y range
-	-- (`r7_capital_blueprint.lua`) and is held to this.
-	world_y = {min = -700, max = 31000},
+	-- VERTICAL, absolute world y: the world's range. The edge publishes its
+	-- actual absolute y range (`r7_capital_blueprint.lua`) and is held to
+	-- this here; the capital's protected volume starts at its anchor's
+	-- placement height minus the protection depth (Round 24 ruling 30), and
+	-- the settlement holds the edge's lowest y to that floor once the anchor
+	-- is known (`config.new`).
+	world_y = {min = -31000, max = 31000},
 }
 
 -- The box an overlay's identity publishes and the manifest checks it
@@ -1164,6 +1167,19 @@ function M.config(prepared, content, raw_sha256)
 		for index = 1, #prepared.blueprints do
 			local kind = prepared.blueprints[index].descriptor.kind
 			if kind == "reference" or kind == "overlay" then needs_height = true end
+			-- The city edge lies inside its capital's protected volume
+			-- (Round 24 ruling 30: from the anchor's placement height minus
+			-- the protection depth upward).
+			if kind == "overlay" then
+				local protection_floor_y = dependencies.zones_session.protection_floor_y
+				if type(protection_floor_y) ~= "function" then
+					fail("zone session protection floor differs")
+				end
+				if prepared.blueprints[index].bounds.min.y <
+						protection_floor_y(anchor.y) then
+					fail("the city edge reaches below its capital's protected volume")
+				end
+			end
 		end
 		local column_values_at, road_column_at
 		if needs_height then

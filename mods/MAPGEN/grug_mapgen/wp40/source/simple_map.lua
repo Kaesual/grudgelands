@@ -508,10 +508,17 @@ source.anchor_profiles = {
 -- (the start profile's fitting width) and every column within `band` nodes of
 -- it (true distance, so the corners are rounded). `bound_width` = pad + 2 band
 -- is the square that holds it: the index box and the zone field footprint.
+-- Vertically (Round 24 ruling 30) every hard footprint is protected from
+-- `depth_below_placement` nodes below its placement height upward, without
+-- an upper limit. The placement height is the final surface y at the
+-- footprint's centre column (the anchor for a capital or start town, the
+-- socket column itself for an apex socket); `height.lua` publishes it as
+-- `surface_y` and the resulting `y_min` with each hard record.
+source.protection_depth_below_placement = 100
 source.hard_protection_recipes = {
-	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
-	{id="hard_start_town_v1",shape="start_town_outline",footprint_policy_id="start_town_outline_v1",pad_width=128,band=12,bound_width=152,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
-	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="shallow_land_upward_to_world_top",y_min=-700,upward_unbounded=true},
+	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
+	{id="hard_start_town_v1",shape="start_town_outline",footprint_policy_id="start_town_outline_v1",pad_width=128,band=12,bound_width=152,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
+	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
 }
 
 source.hard_protection = {}

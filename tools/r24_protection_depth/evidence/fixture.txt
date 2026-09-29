@@ -1,0 +1,149 @@
+seed 4242424242 (built in 2.1 s)
+start    anchor_001             x= -1800 z= -2550 placement=  35 bound= -65 lowest ground 35 (margin 100)
+start    anchor_002             x=     0 z= -2550 placement=  37 bound= -63 lowest ground 35 (margin 98)
+start    anchor_003             x=  1800 z= -2550 placement=  31 bound= -69 lowest ground 29 (margin 98)
+start    anchor_004             x= -1800 z=  2550 placement=  30 bound= -70 lowest ground 29 (margin 99)
+start    anchor_005             x=     0 z=  2550 placement=  37 bound= -63 lowest ground 36 (margin 99)
+start    anchor_006             x=  1800 z=  2550 placement=  24 bound= -76 lowest ground 23 (margin 99)
+capital  anchor_007             x= -1800 z= -1500 placement=  70 bound= -30 lowest ground 58 (margin 88)
+capital  anchor_008             x=     0 z= -1500 placement=  39 bound= -61 lowest ground 23 (margin 84)
+capital  anchor_009             x=  1800 z= -1500 placement=  55 bound= -45 lowest ground 44 (margin 89)
+capital  anchor_010             x= -1800 z=  1500 placement=  45 bound= -55 lowest ground 31 (margin 86)
+capital  anchor_011             x=     0 z=  1500 placement=  61 bound= -39 lowest ground 49 (margin 88)
+capital  anchor_012             x=  1800 z=  1500 placement=  37 bound= -63 lowest ground 16 (margin 79)
+socket   anchor_089:socket_01   x= -3280 z=    20 placement= 336 bound= 236
+socket   anchor_089:socket_02   x= -3230 z=     0 placement= 318 bound= 218
+socket   anchor_089:socket_03   x= -3170 z=     0 placement= 194 bound=  94
+socket   anchor_089:socket_04   x= -3120 z=    20 placement= 171 bound=  71
+socket   anchor_089:socket_05   x= -3290 z=    80 placement= 276 bound= 176
+socket   anchor_089:socket_06   x= -3110 z=    80 placement= 229 bound= 129
+socket   anchor_089:socket_07   x= -3280 z=   140 placement= 302 bound= 202
+socket   anchor_089:socket_08   x= -3230 z=   160 placement= 245 bound= 145
+socket   anchor_089:socket_09   x= -3170 z=   160 placement= 273 bound= 173
+socket   anchor_089:socket_10   x= -3120 z=   140 placement= 315 bound= 215
+socket   anchor_089:socket_11   x= -3245 z=    80 placement= 213 bound= 113
+socket   anchor_089:socket_12   x= -3155 z=    80 placement= 202 bound= 102
+socket   anchor_090:socket_01   x=  3120 z=    20 placement= 225 bound= 125
+socket   anchor_090:socket_02   x=  3170 z=     0 placement= 191 bound=  91
+socket   anchor_090:socket_03   x=  3230 z=     0 placement= 190 bound=  90
+socket   anchor_090:socket_04   x=  3280 z=    20 placement= 181 bound=  81
+socket   anchor_090:socket_05   x=  3110 z=    80 placement= 170 bound=  70
+socket   anchor_090:socket_06   x=  3290 z=    80 placement= 153 bound=  53
+socket   anchor_090:socket_07   x=  3120 z=   140 placement= 194 bound=  94
+socket   anchor_090:socket_08   x=  3170 z=   160 placement= 232 bound= 132
+socket   anchor_090:socket_09   x=  3230 z=   160 placement= 218 bound= 118
+socket   anchor_090:socket_10   x=  3280 z=   140 placement= 237 bound= 137
+socket   anchor_090:socket_11   x=  3155 z=    80 placement= 149 bound=  49
+socket   anchor_090:socket_12   x=  3245 z=    80 placement= 136 bound=  36
+outpost  anchor_025             x= -2100 z= -2100 placement= 103 bound=   3
+outpost  anchor_026             x= -2300 z= -1250 placement= 213 bound= 113
+outpost  anchor_027             x= -2074 z=  -826 placement= 250 bound= 150
+outpost  anchor_028             x= -1500 z=  -450 placement= 238 bound= 138
+outpost  anchor_029             x=   176 z= -2026 placement=  38 bound= -62
+outpost  anchor_030             x=  -618 z= -1266 placement=  40 bound= -60
+outpost  anchor_031             x=  -350 z=  -850 placement=  63 bound= -37
+outpost  anchor_032             x=   300 z=  -450 placement=  86 bound= -14
+outpost  anchor_033             x=  2100 z= -2100 placement=  86 bound= -14
+outpost  anchor_034             x=   626 z= -1226 placement=  83 bound= -17
+outpost  anchor_035             x=  2376 z= -1326 placement=  41 bound= -59
+outpost  anchor_036             x=  1932 z=  -566 placement= 202 bound= 102
+outpost  anchor_037             x= -2100 z=  2100 placement=  35 bound= -65
+outpost  anchor_038             x= -2268 z=  1234 placement= 144 bound=  44
+outpost  anchor_039             x= -2018 z=   834 placement= 271 bound= 171
+outpost  anchor_040             x= -1468 z=   434 placement= 164 bound=  64
+outpost  anchor_041             x=   176 z=  2074 placement=  76 bound= -24
+outpost  anchor_042             x=  -650 z=  1250 placement=  88 bound= -12
+outpost  anchor_043             x=  -374 z=   874 placement= 122 bound=  22
+outpost  anchor_044             x=   276 z=   474 placement=  73 bound= -27
+outpost  anchor_045             x=  2132 z=  2084 placement=  46 bound= -54
+outpost  anchor_046             x=   682 z=  1234 placement=  35 bound= -65
+outpost  anchor_047             x=  2400 z=  1350 placement=  16 bound= -84
+outpost  anchor_048             x=  1900 z=   550 placement= 115 bound=  15
+bandit   anchor_049             x= -1568 z= -2066 placement=  82 bound= -18
+bandit   anchor_050             x= -1824 z=  -406 placement= 155 bound=  55
+bandit   anchor_051             x=   320 z= -1980 placement=  36 bound= -64
+bandit   anchor_052             x=   -24 z=  -406 placement=  58 bound= -42
+bandit   anchor_053             x=  1632 z= -2066 placement=  84 bound= -16
+bandit   anchor_054             x=  1776 z=  -406 placement= 238 bound= 138
+bandit   anchor_055             x= -1600 z=  2050 placement=  43 bound= -57
+bandit   anchor_056             x= -1800 z=   430 placement= 159 bound=  59
+bandit   anchor_057             x=   320 z=  1980 placement= 106 bound=   6
+bandit   anchor_058             x=    32 z=   414 placement=  74 bound= -26
+bandit   anchor_059             x=  1632 z=  2034 placement=  75 bound= -25
+bandit   anchor_060             x=  1776 z=   454 placement= 131 bound=  31
+Orc start (0,37,2550): exclusion exclude:anchor:anchor_005:01, P8 floor -63
+seed 10536739806879207652 (built in 2.0 s)
+start    anchor_001             x= -1800 z= -2550 placement=  34 bound= -66 lowest ground 33 (margin 99)
+start    anchor_002             x=     0 z= -2550 placement=  27 bound= -73 lowest ground 25 (margin 98)
+start    anchor_003             x=  1800 z= -2550 placement=  37 bound= -63 lowest ground 35 (margin 98)
+start    anchor_004             x= -1800 z=  2550 placement=  24 bound= -76 lowest ground 23 (margin 99)
+start    anchor_005             x=     0 z=  2550 placement=  37 bound= -63 lowest ground 36 (margin 99)
+start    anchor_006             x=  1800 z=  2550 placement=  17 bound= -83 lowest ground 15 (margin 98)
+capital  anchor_007             x= -1800 z= -1500 placement=  70 bound= -30 lowest ground 61 (margin 91)
+capital  anchor_008             x=     0 z= -1500 placement=  41 bound= -59 lowest ground 31 (margin 90)
+capital  anchor_009             x=  1800 z= -1500 placement=  56 bound= -44 lowest ground 37 (margin 81)
+capital  anchor_010             x= -1800 z=  1500 placement=  45 bound= -55 lowest ground 31 (margin 86)
+capital  anchor_011             x=     0 z=  1500 placement=  61 bound= -39 lowest ground 48 (margin 87)
+capital  anchor_012             x=  1800 z=  1500 placement=  37 bound= -63 lowest ground 16 (margin 79)
+socket   anchor_089:socket_01   x= -3280 z=    20 placement= 308 bound= 208
+socket   anchor_089:socket_02   x= -3230 z=     0 placement= 287 bound= 187
+socket   anchor_089:socket_03   x= -3170 z=     0 placement= 194 bound=  94
+socket   anchor_089:socket_04   x= -3120 z=    20 placement= 192 bound=  92
+socket   anchor_089:socket_05   x= -3290 z=    80 placement= 299 bound= 199
+socket   anchor_089:socket_06   x= -3110 z=    80 placement= 249 bound= 149
+socket   anchor_089:socket_07   x= -3280 z=   140 placement= 231 bound= 131
+socket   anchor_089:socket_08   x= -3230 z=   160 placement= 297 bound= 197
+socket   anchor_089:socket_09   x= -3170 z=   160 placement= 358 bound= 258
+socket   anchor_089:socket_10   x= -3120 z=   140 placement= 322 bound= 222
+socket   anchor_089:socket_11   x= -3245 z=    80 placement= 291 bound= 191
+socket   anchor_089:socket_12   x= -3155 z=    80 placement= 285 bound= 185
+socket   anchor_090:socket_01   x=  3120 z=    20 placement= 188 bound=  88
+socket   anchor_090:socket_02   x=  3170 z=     0 placement= 177 bound=  77
+socket   anchor_090:socket_03   x=  3230 z=     0 placement= 123 bound=  23
+socket   anchor_090:socket_04   x=  3280 z=    20 placement= 120 bound=  20
+socket   anchor_090:socket_05   x=  3110 z=    80 placement= 174 bound=  74
+socket   anchor_090:socket_06   x=  3290 z=    80 placement=  94 bound=  -6
+socket   anchor_090:socket_07   x=  3120 z=   140 placement= 180 bound=  80
+socket   anchor_090:socket_08   x=  3170 z=   160 placement= 182 bound=  82
+socket   anchor_090:socket_09   x=  3230 z=   160 placement= 192 bound=  92
+socket   anchor_090:socket_10   x=  3280 z=   140 placement=  48 bound= -52
+socket   anchor_090:socket_11   x=  3155 z=    80 placement= 130 bound=  30
+socket   anchor_090:socket_12   x=  3245 z=    80 placement= 119 bound=  19
+outpost  anchor_025             x= -2100 z= -2100 placement=  60 bound= -40
+outpost  anchor_026             x= -2300 z= -1250 placement= 151 bound=  51
+outpost  anchor_027             x= -2074 z=  -826 placement= 412 bound= 312
+outpost  anchor_028             x= -1500 z=  -450 placement= 218 bound= 118
+outpost  anchor_029             x=   176 z= -2026 placement=  40 bound= -60
+outpost  anchor_030             x=  -618 z= -1266 placement=  42 bound= -58
+outpost  anchor_031             x=  -350 z=  -850 placement=  33 bound= -67
+outpost  anchor_032             x=   300 z=  -450 placement=  62 bound= -38
+outpost  anchor_033             x=  2100 z= -2100 placement=  66 bound= -34
+outpost  anchor_034             x=   626 z= -1226 placement=  83 bound= -17
+outpost  anchor_035             x=  2376 z= -1326 placement=  13 bound= -87
+outpost  anchor_036             x=  1932 z=  -566 placement= 154 bound=  54
+outpost  anchor_037             x= -2100 z=  2100 placement=  52 bound= -48
+outpost  anchor_038             x= -2268 z=  1234 placement=  95 bound=  -5
+outpost  anchor_039             x= -2018 z=   834 placement= 223 bound= 123
+outpost  anchor_040             x= -1468 z=   434 placement= 117 bound=  17
+outpost  anchor_041             x=   176 z=  2074 placement= 118 bound=  18
+outpost  anchor_042             x=  -650 z=  1250 placement=  69 bound= -31
+outpost  anchor_043             x=  -374 z=   874 placement= 104 bound=   4
+outpost  anchor_044             x=   276 z=   474 placement= 129 bound=  29
+outpost  anchor_045             x=  2132 z=  2084 placement=  71 bound= -29
+outpost  anchor_046             x=   682 z=  1234 placement=  38 bound= -62
+outpost  anchor_047             x=  2400 z=  1350 placement=  11 bound= -89
+outpost  anchor_048             x=  1900 z=   550 placement= 153 bound=  53
+bandit   anchor_049             x= -1568 z= -2066 placement=  66 bound= -34
+bandit   anchor_050             x= -1824 z=  -406 placement= 130 bound=  30
+bandit   anchor_051             x=   320 z= -1980 placement=  39 bound= -61
+bandit   anchor_052             x=   -24 z=  -406 placement=  51 bound= -49
+bandit   anchor_053             x=  1632 z= -2066 placement=  52 bound= -48
+bandit   anchor_054             x=  1776 z=  -406 placement= 182 bound=  82
+bandit   anchor_055             x= -1600 z=  2050 placement=  39 bound= -61
+bandit   anchor_056             x= -1800 z=   430 placement= 182 bound=  82
+bandit   anchor_057             x=   320 z=  1980 placement= 131 bound=  31
+bandit   anchor_058             x=    32 z=   414 placement=  91 bound=  -9
+bandit   anchor_059             x=  1632 z=  2034 placement=  61 bound= -39
+bandit   anchor_060             x=  1776 z=   454 placement= 207 bound= 107
+Orc start (0,37,2550): exclusion exclude:anchor:anchor_005:01, P8 floor -63
+R24 PROTECTION DEPTH FIXTURE PASS checks=3188

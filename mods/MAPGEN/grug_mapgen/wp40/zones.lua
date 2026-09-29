@@ -833,6 +833,14 @@ local function zones_factory(dependencies)
 			recipe_by_id[recipe.id] = recipe
 		end
 		-- Hard protection: start towns, protected cities and apex socket columns.
+		-- Vertically each is protected from its own floor `y_min` upward
+		-- (Round 24 ruling 30): the placement height (the final surface at its
+		-- centre column, `height.lua`) minus the source's protection depth.
+		local PROTECTION_DEPTH = source.protection_depth_below_placement
+		if type(PROTECTION_DEPTH) ~= "number" or PROTECTION_DEPTH % 1 ~= 0 or
+				PROTECTION_DEPTH < 0 then
+			fail("protection depth differs")
+		end
 		local height_hard_by_id = {}
 		local height_hard_records = height.hard_protection_volumes()
 		for index = 1, #height_hard_records do
@@ -848,7 +856,11 @@ local function zones_factory(dependencies)
 			if type(height_hard) ~= "table" or
 					not source_subset_matches(source_hard, height_hard) or
 					height_hard.recipe_id ~= source_hard.recipe_id or
-					height_hard.y_min ~= -700 or
+					recipe.depth_below_placement ~= PROTECTION_DEPTH or
+					height_hard.depth_below_placement ~= PROTECTION_DEPTH or
+					type(height_hard.surface_y) ~= "number" or
+					height_hard.surface_y % 1 ~= 0 or
+					height_hard.y_min ~= height_hard.surface_y - PROTECTION_DEPTH or
 					height_hard.upward_unbounded ~= true or
 					height_hard.y_policy_id ~= recipe.y_policy_id then
 				fail("R3 hard-volume passthrough differs")
@@ -857,7 +869,7 @@ local function zones_factory(dependencies)
 				id = source_hard.id,
 				record = deep_copy(height_hard),
 				shape = recipe.shape,
-				y_min = recipe.y_min,
+				y_min = height_hard.y_min,
 			}
 			local bbox
 			if recipe.shape == "exact_column" then
@@ -933,10 +945,19 @@ local function zones_factory(dependencies)
 			fail("unknown hard footprint at query")
 		end
 
+		-- The lowest floor of every hard footprint: below it no query needs
+		-- the footprint index.
+		local hard_y_floor = math.huge
+		for index = 1, #hard_rows do
+			if hard_rows[index].y_min < hard_y_floor then
+				hard_y_floor = hard_rows[index].y_min
+			end
+		end
+
 		local session = {}
 
 		local function hard_row_at(x, y, z)
-			if y < -700 then return nil end
+			if y < hard_y_floor then return nil end
 			local candidates = index128.footprint_candidates(hard_index, x, z)
 			for candidate_index = 1, #candidates do
 				local row = hard_by_id[candidates[candidate_index]]
@@ -949,15 +970,64 @@ local function zones_factory(dependencies)
 		end
 
 		local function capital_member(x, y, z)
-			if y < -700 then return false end
+			if y < hard_y_floor then return false end
 			local candidates = index128.footprint_candidates(hard_index, x, z)
 			for candidate_index = 1, #candidates do
 				local row = hard_by_id[candidates[candidate_index]]
-				if row and row.capital and hard_horizontal_member(row, x, z) then
+				if row and row.capital and y >= row.y_min and
+						hard_horizontal_member(row, x, z) then
 					return true
 				end
 			end
 			return false
+		end
+
+		-- The lowest floor of the hard footprints whose x/z shape holds the
+		-- column, or nil outside every footprint.
+		local function hard_floor_at(x, z)
+			local result
+			local candidates = index128.footprint_candidates(hard_index, x, z)
+			for candidate_index = 1, #candidates do
+				local row = hard_by_id[candidates[candidate_index]]
+				if not row then fail("hard candidate identity differs") end
+				if (result == nil or row.y_min < result) and
+						hard_horizontal_member(row, x, z) then
+					result = row.y_min
+				end
+			end
+			return result
+		end
+
+		-- The protected floor of every fixed claim exclusion (Round 24 ruling
+		-- 30): an anchor's envelope (a capital's city, a start town, the square
+		-- of a POI, village, camp or outpost) from its anchor's placement
+		-- height, an active hard core from its own hard row.
+		local exclusion_floor_by_id = {}
+		do
+			local anchor_record_by_id = {}
+			for index = 1, #anchor_records do
+				anchor_record_by_id[anchor_records[index].id] = anchor_records[index]
+			end
+			for index = 1, #(source.claim_exclusions or {}) do
+				local row = source.claim_exclusions[index]
+				if row.recipe_id == "exclude_anchor_blend_v1" then
+					local anchor = anchor_record_by_id[row.source_id]
+					if not anchor then fail("exclusion anchor missing: " .. tostring(row.id)) end
+					exclusion_floor_by_id[row.id] =
+						integer(anchor.y, "anchor placement height") - PROTECTION_DEPTH
+				elseif row.recipe_id == "exclude_active_core_v1" then
+					local hard = hard_by_id[row.source_id]
+					if not hard then fail("exclusion hard core missing: " .. tostring(row.id)) end
+					exclusion_floor_by_id[row.id] = hard.y_min
+				end
+			end
+		end
+
+		-- The floor of a protected volume placed at `placement_y` (Round 24
+		-- ruling 30), for the footprints this index does not hold (the R7
+		-- functional-anchor columns, `r7_zone_overlay.lua`).
+		function session.protection_floor_y(placement_y)
+			return integer(placement_y, "placement height") - PROTECTION_DEPTH
 		end
 
 		local function depth_level(y)
@@ -1479,6 +1549,21 @@ local function zones_factory(dependencies)
 			end
 			function planner_source.hard_row_at(x, y, z)
 				return hard_row_at(x, y, z)
+			end
+			-- The protected floor of a fixed/protected column (Round 24 ruling
+			-- 30): the lowest of its static exclusion's floor and the floors of
+			-- the hard footprints holding it. `exclusion_id` is the id
+			-- `static_exclusion_values_at` answered for the column; a route or
+			-- water id counts only through a hard footprint (a hard
+			-- foundation). Mapgen keeps ore out of the column from here up.
+			function planner_source.protection_floor_y(exclusion_id, x, z)
+				local result = exclusion_floor_by_id[exclusion_id]
+				local hard = hard_floor_at(x, z)
+				if hard ~= nil and (result == nil or hard < result) then result = hard end
+				if result == nil then
+					fail("protection floor missing: " .. tostring(exclusion_id))
+				end
+				return result
 			end
 
 			function planner_source.metrics()

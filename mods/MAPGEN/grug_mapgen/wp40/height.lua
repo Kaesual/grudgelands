@@ -1730,15 +1730,20 @@ local function height_factory(dependencies)
 				local record = deep_copy(source.hard_protection[hard_index])
 				local recipe = recipe_by_id[record.recipe_id]
 				if not recipe then fail("hard-protection recipe missing") end
-				record.y_min = recipe.y_min
 				record.upward_unbounded = recipe.upward_unbounded
 				record.y_policy_id = recipe.y_policy_id
-				if record.center then
-					local _, surface_y = final_functional_values_at(record.center.x,
-						record.center.z)
-					record.surface_y = surface_y or final_terrain_height_at(
-						record.center.x, record.center.z)
+				record.depth_below_placement = recipe.depth_below_placement
+				if not record.center or type(recipe.depth_below_placement) ~= "number" then
+					fail("hard-protection placement differs")
 				end
+				-- The placement height (Round 24 ruling 30): the final surface
+				-- at the footprint's centre column. The volume is protected from
+				-- `depth_below_placement` below it upward.
+				local _, surface_y = final_functional_values_at(record.center.x,
+					record.center.z)
+				record.surface_y = surface_y or final_terrain_height_at(
+					record.center.x, record.center.z)
+				record.y_min = record.surface_y - recipe.depth_below_placement
 				hard_records[hard_index] = record
 			end
 		end

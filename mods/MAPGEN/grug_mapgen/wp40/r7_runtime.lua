@@ -557,7 +557,8 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			anchor_roster_sha256 = anchor_roster.sha256,
 			cultural_registrations = cultural,
 			decoded_templates = r6_identity.template_records,
-			consumer_payload = consumer_payload})
+			consumer_payload = consumer_payload,
+			protection_depth_below_placement = source.protection_depth_below_placement})
 		r7_manifest_module.validate(manifest, expected_manifest_sha256)
 		if authority_only then
 			return {schema = "grug_wp40_r7_authority_runtime_v1",
