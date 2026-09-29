@@ -1,0 +1,29 @@
+diff --git a/mods/CORE/grug_core/hud_layout.lua b/mods/CORE/grug_core/hud_layout.lua
+index 3bb9ef80..c20ccc3a 100644
+--- a/mods/CORE/grug_core/hud_layout.lua
++++ b/mods/CORE/grug_core/hud_layout.lua
+@@ -125,9 +125,8 @@ layout.anchors = {
+ 	-- next to their own bars and the top centre belongs to the target frame
+ 	-- alone. `offset.y` is the icon CENTRE of the row.
+ 	status_row = {
+-		position = {x = 0.5, y = 1},
+-		offset = {x = 0, y = layout.rows.skill.top - 4 - layout.STATUS_CAPTION -
+-			2 - layout.STATUS_ICON / 2},
++		position = {x = 0.5, y = 0},
++		offset = {x = 0, y = 8 + layout.STATUS_ICON / 2},
+ 	},
+ 	-- Vertically centred at the right edge, one line per tracked quest (at
+ 	-- most grug_quests.MAX_TRACKED = 10). The builtin minimap is a square of
+diff --git a/mods/ENTITIES/grug_mobs/target_frame.lua b/mods/ENTITIES/grug_mobs/target_frame.lua
+index 3c6f244e..4d06ddd0 100644
+--- a/mods/ENTITIES/grug_mobs/target_frame.lua
++++ b/mods/ENTITIES/grug_mobs/target_frame.lua
+@@ -154,7 +154,7 @@ core.register_on_joinplayer(function(player)
+ 	local id = player:hud_add({
+ 		type = "text",
+ 		position = {x = 0.5, y = 0},
+-		offset = {x = 0, y = 40},
++		offset = {x = 0, y = 76},
+ 		alignment = {x = 0, y = 0},
+ 		number = COLOR_RED,
+ 		text = "",
