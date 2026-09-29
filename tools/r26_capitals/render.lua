@@ -3,7 +3,8 @@
 --
 --   luajit tools/r26_capitals/render.lua <repo> <seed> <out_dir> [capital ...]
 --
--- <repo> is the tree whose mapgen is planned (main or a branch); the output
+-- <repo> is the tree whose mapgen is planned (main or a branch); <out_dir>
+-- must exist (run.sh makes it). The output
 -- is <out_dir>/<capital>.json (the plan: outline, wall, turrets, gates,
 -- streets, squares, plots with their tier, left-out plots, statistics) and
 -- <out_dir>/<capital>.layers (the final ground around the capital, one node
@@ -16,7 +17,6 @@ for i = 4, #arg do only[arg[i]] = true end
 local here = debug.getinfo(1, "S").source:match("^@(.*)/[^/]*$") or "."
 local W = dofile(here .. "/world.lua")(repo)
 local floor, sqrt, max, min, abs = math.floor, math.sqrt, math.max, math.min, math.abs
-os.execute("mkdir -p '" .. out_dir .. "'")
 
 local t0 = os.clock()
 local run = W.plan(seed)
@@ -194,4 +194,7 @@ for _, key in ipairs(run.order) do
 	end
 end
 write(out_dir .. "/timing.tsv", table.concat(tsv, "\n") .. "\n")
+-- the capital layout text in the world layout file's section format, for
+-- tools/wp13/capital_walls_probe.lua (part 2) without an engine boot
+write(out_dir .. "/layouts.txt", ("section capital %d 0\n%s\nsection meta 0\n"):format(#run.text, run.text))
 io.stderr:write(("done %.1f s\n"):format(os.clock() - t0))

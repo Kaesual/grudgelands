@@ -71,7 +71,9 @@ M.DEFAULTS = {
 	ECC1 = 0.1, ECC2 = 0.08, AXIS = "open",
 	SNAP = 20, SNAP_T = 1.0, SNAP_S = 3, SNAP_D = 2.5,
 	POLY = nil,
-	NOTCH = 0.14,         -- a ray keeps within this share of the broadly smoothed outline
+	NOTCH = 0.14,
+	SHORE_STOP = 70,      -- water met this far out along a ray: the city grows across it only
+	C_BEYOND = 3,         -- ... at this multiple of the cost (it prefers its near bank)         -- a ray keeps within this share of the broadly smoothed outline
 	C_WET = 4.0, C_STEEP = 2.6, C_BUILD = 1.0,
 	BANK = 6, ROUGH = 6,      -- buildable: distance to water >= BANK, relief in a 10-node window <= ROUGH
 	GATE_SLIDE = 60, GATE_SLIDE_WET = 2.5,   -- D70: a gate may slide further (x2.5) to avoid water
@@ -155,7 +157,7 @@ M.EDGE = {
 -- terrain snap, angular corners), the towers and the street pattern (ring
 -- fractions and shape, open arcs, cross-lanes, squares, avenue pull).
 M.STYLE = {
-	highcourt = {NAME = "royal city: broad and even, towers at the bends, flanked gatehouses",
+	highcourt = {NAME = "royal city: a broad curtain along its river and ground, towers at the bends, flanked gatehouses",
 		SMOOTH_PASSES = 2, SMOOTH_W = 3, BUDGET_NOISE = 0.3, ECC1 = 0.12, ECC2 = 0.1,
 		SNAP = 20, GATE_FLANK = true, BEND_MIN = 0.4, BEND_GAP = 44, TURRET_EVERY = 80,
 		RINGS = {0.3, 0.7}, RING2_OPEN = 0.2, CROSS_MEAN = 1.0, SQUARE_P = 0.6,
@@ -186,7 +188,7 @@ M.STYLE = {
 	kezamba = {NAME = "jungle city: an irregular stockade wrapped round the cenote, winding avenues",
 		SMOOTH_PASSES = 2, SMOOTH_W = 2, BUDGET_NOISE = 0.34,
 		NOISE_OCT = {{1.6, 0.6, 0, 0}, {4, 0.4, 7, -3}},
-		ECC1 = 0.16, ECC2 = 0.12, AXIS = "across", SNAP = 20, SNAP_S = 4, GATE_FLANK = false,
+		ECC1 = 0.08, ECC2 = 0.12, AXIS = "across", SNAP = 20, SNAP_S = 4, GATE_FLANK = false,
 		BEND_MIN = 0.4, BEND_GAP = 36, TURRET_EVERY = 64, RINGS = {0.3, 0.72},
 		RING2_OPEN = 0.45, CROSS_MEAN = 1.4, CROSS_MAX = 3, SQUARE_P = 0.5, SQUARE_R = 7,
 		AVENUE_GUIDE = 0.2},
@@ -620,13 +622,16 @@ function M.plan(seed, I, opt)
 		local acc = 0
 		local r = s0
 		local nopen, nall = 0, 0
+		local shore_r   -- the first water beyond SHORE_STOP along the ray
 		while r <= rmax[a] + 2 do
 			local k = gk(r * c, r * s)
 			local w = WET[k] and P.C_WET or (BUILD[k] and P.C_BUILD or P.C_STEEP)
+			if WET[k] and not shore_r and r >= P.SHORE_STOP then shore_r = r end
+			if shore_r then w = w * P.C_BEYOND end
 			acc = acc + w * G
 			cum[#cum + 1], rr[#rr + 1] = acc, r
 			hh[#hh + 1], wet[#wet + 1], dw[#dw + 1] = TT[k], WET[k], DW[k]
-			if r >= P.CORE_KEEP + 16 then
+			if r >= P.CORE_KEEP + 16 and not shore_r then
 				nall = nall + 1
 				if BUILD[k] then nopen = nopen + 1 end
 			end
@@ -1155,19 +1160,22 @@ function M.plan(seed, I, opt)
 	-- outline) the outer ring keeps within RING_WALL_MAX of the wall and the
 	-- inner one within RING_GAP_MAX of the outer, so the wide side is not
 	-- left without streets.
-	local ring_r
+	local ring_r, ring_loose
 	ring_r = function(ri, phi)
 		local frac = P.RINGS[ri]
 		local shape = P.RING_SHAPE and P.RING_SHAPE[ri]
 		local base = shape == "wall" and r_at(phi) or rs_at(phi)
 		local r
+		if ring_loose then frac = frac * ring_loose end
 		if shape == "circle" then
 			r = min(P.CORE_GATE + frac * (rs_mean - P.CORE_GATE),
 				P.CORE_GATE + 0.8 * (base - P.CORE_GATE))
 		else
 			r = P.CORE_GATE + frac * (base - P.CORE_GATE)
 		end
-		if ri == #P.RINGS then
+		if ring_loose then
+			return r
+		elseif ri == #P.RINGS then
 			r = max(r, base - P.RING_WALL_MAX)
 		elseif ri == #P.RINGS - 1 then
 			r = max(r, ring_r(#P.RINGS, phi) - P.RING_GAP_MAX)
@@ -1303,10 +1311,16 @@ function M.plan(seed, I, opt)
 			-- a chosen open arc comes first and falls back to a closed one;
 			-- a closed arc that finds no route falls back to open arcs
 			-- (dead ends in a square) from either side
-			local modes = {{false, false, 10}, {false, true, 10}, {false, false, 30}}
+			-- (Round 26: a ring kept near a far wall that finds no route --
+			-- e.g. across a river -- retries at its plain fraction and then a
+			-- little further in: `ring_loose` scales the fraction, no bound)
+			local modes = {{false, false, 10}, {false, true, 10}, {false, false, 30},
+				{false, false, 10, 1}, {false, true, 10, 1}, {false, false, 10, 0.85},
+				{false, true, 10, 0.85}}
 			if open then table.insert(modes, 1, {true, from_b, 10})
 			else modes[#modes + 1] = {true, false, 10}; modes[#modes + 1] = {true, true, 10} end
 			for attempt, mode in ipairs(modes) do
+				ring_loose = mode[4]
 				local A, B = avenues[q], avenues[q % 4 + 1]
 				local is_open = mode[1]
 				if mode[2] then A, B = B, A end
@@ -1372,6 +1386,7 @@ function M.plan(seed, I, opt)
 		end
 	end
 	st.open_arcs = nopen
+	ring_loose = nil
 	-- D70 cross-lanes: ring 1 -> ring 2 (or a dead end with a square where
 	-- ring 2 is open), 0..2 per quadrant
 	local ncross = 0
