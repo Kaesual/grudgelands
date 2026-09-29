@@ -2,7 +2,23 @@
 
 Updated 2026-09-29. This is the delivery pointer, not another game specification.
 
-- **Round 24 delivered locally:** tier rocks with engine-native pick gating
+- **Round 25 delivered locally:** Claim Stone housing (WP24,
+  [housing.md](design/housing.md)): one free, soulbound stone from the
+  Housing Manager in each capital from level 20; a 101 × 101 claim column from
+  y = −100 up in the own L11–30 home zones, 16 nodes clear of settlement cores
+  and hard footprints; coal or charcoal fuel as a "paid until" time (a full
+  slot lasts about a month); Interact/Everything permissions with a
+  right-click and node-inventory guard; stone form, Character-page status;
+  the stone as travel home with an arrival cube; no hostile spawns in active
+  claims; housing masks removed. Roads, bridges and POI, village and camp
+  cores are protected for everyone, with hint reasons ("Road – protected").
+  The capital planner places required and named buildings before fill: load
+  failures 1.3 % of seeds → 0 of 200, capital layouts changed. All nine lanes
+  merged on local main (`7270feb3`). No push.
+  [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
+  Next: fresh world and playtest.
+
+- **Round 24 delivered, pushed and accepted:** tier rocks with engine-native pick gating
   replace depth bounds and shatter (loose ground by hand or shovel, axe and
   shovel tiers, protection and pick hints on punch, tool level requirements);
   the terrain fill hosts ores and bands (coal near the Orc start 0.10–0.37 →
@@ -14,9 +30,10 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   scaled to max HP; hard protection from 100 below each footprint's placement
   height instead of y ≥ −700; housing areas as ordinary terrain; pausable
   character creation. All 13 lanes reviewed and merged (`1e338503`) and
-  synchronized to Luanti on 2026-09-29. No push.
+  synchronized to Luanti on 2026-09-29. Pushed with the playtest
+  protection-hint fix and the Round 25 plan as `d4eaffff`; accepted by the
+  user.
   [Plan, completion and playtest checklist](planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
-  Next: fresh production world and playtest, then Housing (WP24).
 
 - **Round 23 delivered locally:** full-column world preparation (a finished
   full-world preparation leaves nothing to generate for walking, diving or
@@ -75,8 +92,8 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
   [R21 checklist](research/round21-playtest.md) covers the new changes; the
   R20 input limits remain documented in its earlier checklist.
-- **Remote observation:** local `origin/main` remains `e346ec48`. No network
-  fetch/push occurred in this round; the Round 20 and Round 21 commits are local.
+- **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
+  Round 25 plan). Round 25 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

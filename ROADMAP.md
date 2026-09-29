@@ -32,9 +32,10 @@ Earlier delivery narratives are preserved in the
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
   contested land, including the Battlegrounds at every depth, is editable by
-  both sides. Deep ocean and full dragon channels are immutable. Roads,
-  village/outpost/camp
-  shells and battlefield dressing are mutable but claim-excluded; only
+  both sides. Deep ocean and full dragon channels are immutable. Roads with
+  their bridges and the building cores of POIs, villages and camps are
+  protected for everyone (Round 25); the rest of village/outpost/camp shells
+  and battlefield dressing stays mutable. Only
   bounded functional anchors and complete civic cores — capitals and starting
   settlements with their bare protected bands (Round 22 D76/D78) — are
   hard-protected, fail-closed
@@ -49,11 +50,13 @@ Earlier delivery narratives are preserved in the
   Summit are contested offshore dragon islands. Each reserves an all-six-gem
   apex camp with exactly twelve protected renewable sockets: two each of
   Citrine, Garnet, Jade, Diamond, Sapphire and Ruby.
-- **Housing lives in the open world.** Exactly ten peaceful level-11–30 home
-  zones accept Claim Stones. Four stone tiers protect radii 20/30/40/50 while
-  every placement immediately reserves its future 101×101 footprint. Stable
-  ids survive recovery, dormancy, decay and reissue; a claim-bound Home Stone
-  has no capital fallback. Private housing islands do not exist.
+- **Housing lives in the open world** (delivered in Round 25,
+  [housing.md](docs/design/housing.md)). From level 20 each player gets one
+  free, soulbound Claim Stone from a capital's Housing Manager. It claims a
+  101 × 101 column from y = −100 up in the player's own level-11–30 home
+  zones, protects it while coal or charcoal burns, grants Interact or
+  Everything to named players and can be the travel-home target. There are
+  no tiers, and private housing islands do not exist.
 - **One six-tier material spine serves every race.** Bronze, Iron, Steel,
   Silversteel, Embersteel and Abyssal Steel picks dig the six tier rocks:
   stone down to −100, then ever harder rock below −100/−300/−500/−700/−1000
@@ -70,7 +73,7 @@ Earlier delivery narratives are preserved in the
   physical Gold is a separate crafting material. The target Common weapon
   axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
   An Income Ledger measures reliable net solo income after ordinary costs and
-  calibrates Claim Stone and mount prices.
+  calibrates mount prices; the Claim Stone is free.
 - **Combat supports solo play and the tank/healer/damage trinity.** Threat,
   taunt and healing threat make group roles matter, but content is sized for
   two or three players and remains beatable without a healer. Level 60 takes
@@ -79,8 +82,9 @@ Earlier delivery narratives are preserved in the
 - **Travel has separate systems.** Delivered innkeeper home return binds one of
   twelve faction-compatible homes, returns instantly outside combat on a personal
   30-minute cooldown and owns death respawn. Planned visit-unlocked waypoints
-  connect authored hubs; the separate planned Housing Home Stone targets an active
-  bound claim only. Universal riding unlocks at
+  connect authored hubs. Since Round 25 the player's own Claim Stone can
+  replace the innkeeper as travel-home target; respawn stays at the
+  innkeeper. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
   second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight. Boats are
@@ -93,8 +97,9 @@ Earlier delivery narratives are preserved in the
   it in parallel without becoming allies.
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. WP41's exact PvP transaction, WP24 Housing, WP17 boats/waypoints and
-WP44 economy remain unfinished. [BACKLOG](BACKLOG.md) distinguishes them.
+running code. WP41's exact PvP transaction, WP17 boats/waypoints and WP44
+economy remain unfinished; WP24 Housing is delivered and awaits the
+playtest. [BACKLOG](BACKLOG.md) distinguishes them.
 The original V1 baseline (2026-09-18) included Rounds 1–9, open-world Housing,
 mounts, release gates and polish; subsequently approved Rounds 10–19 extend that
 baseline. This documentation round neither expands nor removes release scope.
@@ -122,11 +127,14 @@ baseline. This documentation round neither expands nor removes release scope.
   return and respawn; riding/flight. No fog-of-war or waypoint prerequisite.
 - [x] Surface-following optional full-world preparation, resumable bounded scheduling
   and shared creation/reconnect waiting flow.
+- [x] **WP24 Housing** (Round 25): Claim Stones, claim protection and
+  permissions, the stone as travel home, and road and POI protection.
+  Playtest pending: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
 
 ### Remaining work
 
 - [ ] **WP44 economy:** final Common-price axis, 5% buy-back, complete anti-profit
-  audits, Income Ledger and measured mount/claim/respec prices. Running economy
+  audits, Income Ledger and measured mount/respec prices. Running economy
   retains its legacy curve and 25% buy-back until this implementation.
 - [ ] **WP5 / WP10 / WP27–WP30 items and professions:** retain wider loot,
   cultural/PvP finish, masterwork and catalog/price remainders. Selected enchanting,
@@ -137,19 +145,18 @@ baseline. This documentation round neither expands nor removes release scope.
   then bounded war-front encounters with their PvP dependencies. The Round 20
   authored roster and quests do not close the full world-story plan. The bandit-frontier
   building-core width discrepancy remains explicit in BACKLOG.
-- [ ] **WP24 Housing:** complete Claim Stone protection/state/indexing, capacity
-  and pricing integration. No private housing islands or old-world migration.
-- [ ] **WP17 travel:** boats with ocean-danger prerequisites, claim-bound Home Stone
-  and authored visit-unlocked waypoints. Innkeeper return is already delivered.
+- [ ] **WP17 travel:** boats with ocean-danger prerequisites and authored
+  visit-unlocked waypoints. Innkeeper return and the Claim Stone travel home
+  are already delivered.
 - [ ] **WP34 depth:** renewable camp resources, deep pressure/lava and final supply
   tuning after world structures/economy; unresolved design stays in TODO-design-depth.md.
 - [ ] **WP41:** exact geographic PvP transaction and shared eligibility seam.
 - [ ] **WP23:** full two-dragon encounter scope behind structures, boats, PvP and
   apex resources; visible bosses and several behavior corrections are implemented.
 - [ ] **WP14 / WP21 / WP22 / WP31 / WP32:** bounded remaining light/rest, digging-speed,
-  repair/Housing, mount-price/acceptance and farming/Housing work. Held-torch moving
-  light and friendly-guard healing remain deferred after R18. Use current BACKLOG
-  scope, not older “not implemented” descriptions of whole systems.
+  repair/Housing-station, mount-price/acceptance and farming acceptance work.
+  Held-torch moving light and friendly-guard healing remain deferred after R18.
+  Use current BACKLOG scope, not older “not implemented” descriptions of whole systems.
 - [ ] **WP37:** reconcile the old blanket surface-density reduction with later
   approved scoped tuning before scheduling another density change.
 - [ ] **WP46 / WP48 / WP49:** remaining indirect terrain protection, bounded writer

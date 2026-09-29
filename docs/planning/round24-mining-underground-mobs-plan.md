@@ -316,7 +316,7 @@ to Luanti on 2026-09-29; no push (the user pushes). Coordinator: Claude Opus 5.5
 | F — density, gathering XP, tool levels | `b8f67ab4` | `tools/r24_density_xp/evidence` |
 | G2 — normal caves below protection | `7f188f6b` | `tools/r24_protection_depth/evidence` |
 | H — pausable character creation | `48261a77` | `tools/r24_creation_pause/evidence` |
-| I — housing areas as ordinary terrain | `1e338503` | `tools/r24_housing_terrain/evidence` |
+| I — housing areas as ordinary terrain | `1e338503` | `tools/r24_housing_terrain/evidence` (retired in Round 25; git history keeps it) |
 
 **Mining (A, C, F).**
 - Tier rocks `t2_stone`…`t6_stone` below −100 use engine-native

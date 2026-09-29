@@ -9,14 +9,16 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **53 identities**: WP0–WP49 and WP-Scout/WP-HUD/WP-Speed.
-**27 delivered**, **1 canceled** (WP16), **25 open or partial**. This corrects the
+**28 delivered**, **1 canceled** (WP16), **24 open or partial**. This corrects the
 old summary's omission of the already-delivered WP8, WP12 and WP20; it does not
 claim any additional implementation or GUI acceptance.
 
-- Latest delivery: [Round 24](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29); user playtest pending.
-  Rounds 21–24 (terrain, water, roads, POI access, resources, furnaces, world
-  preparation, renewal, walls, mining tiers, underground fill, start-zone mobs
-  and bounded fixes) do not close another full WP identity. Counts remain 27 delivered / 53 tracked.
+- Latest delivery: [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29)
+  delivers WP24 Housing (28 delivered / 53 tracked); user playtest pending.
+  Round 24 is pushed (`d4eaffff`) and accepted. Rounds 21–24 (terrain, water,
+  roads, POI access, resources, furnaces, world preparation, renewal, walls,
+  mining tiers, underground fill, start-zone mobs and bounded fixes) do not
+  close another full WP identity.
 - WP5's selected fixed-tier enchanting is delivered; loot, cultural/PvP finishes
   and masterwork remain. WP44's economy/measurement remains open.
 - WP11's talent consumers are delivered; measured respec prices await WP44.
@@ -33,10 +35,13 @@ claim any additional implementation or GUI acceptance.
   round findings. Current runtime tuning is not changed here.
 - WP27–WP30 contain substantially delivered gear/recipes; check their remainders
   against the topic audit before treating historical dependency order as untouched.
-- WP24/WP34/WP41/WP42/WP23 retain the dependency chain below. WP17 claim-bound
-  travel and boats are separate from the delivered innkeeper home return.
-- WP31 mount runtime and WP32 farming are delivered in bounded rounds; economy,
-  Housing integration and recorded acceptance remain separate.
+- WP34/WP41/WP42/WP23 retain the dependency chain below. WP17 boats and
+  waypoints are separate from the delivered innkeeper and Claim Stone home
+  travel.
+- WP31 mount runtime and WP32 farming are delivered in bounded rounds; economy
+  and recorded acceptance remain separate. WP32's Claim Stone integration
+  (harvesting counts as digging, no wild renewal in active claims) shipped
+  with WP24.
 
 “Delivered” records the package's bounded development delivery. It does not mean
 all later refinements, release gates or user GUI checks have passed. Historical
@@ -66,14 +71,14 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP14 | [Offhands delivered; carried-light remainder](docs/planning/work-package-scopes.md#wp14) | Ordinary offhands delivered; moving light deferred. | WP3 |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
-| WP17 | [Boats, waypoint travel and claim-bound Home Stone](docs/planning/work-package-scopes.md#wp17) | Future boats/waypoints/claim travel; innkeeper return already delivered. | WP24, WP40 |
+| WP17 | [Boats and waypoint travel](docs/planning/work-package-scopes.md#wp17) | Future boats/waypoints; innkeeper return and the Claim Stone travel home (WP24, Round 25) already delivered. | WP40 |
 | WP18 | First continent map (superseded by WP40) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP19 | Original kit and race-passive tuning | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP20 | Same-faction parties | Delivered R14–19: persistent parties, management and optional HUD. | — |
-| WP21 | [Recovery/rest and Housing integration](docs/planning/work-package-scopes.md#wp21) | Food/recovery basics delivered; broader rest/Housing open. | WP1 |
+| WP21 | [Recovery/rest and Housing integration](docs/planning/work-package-scopes.md#wp21) | Food/recovery basics delivered; broader rest open. The Claim Stone travel home shipped with WP24. | WP1 |
 | WP22 | [Tool-speed calibration, wear/repair remainder](docs/planning/work-package-scopes.md#wp22) | Tier wear and money repair delivered; Round 24 adds shovel and axe tiers and tool level requirements. Speed/Housing remainder. | WP5, WP7, WP43, WP44 |
 | WP23 | [Full dragon encounters](docs/planning/work-package-scopes.md#wp23) | Bosses present; full encounter dependencies remain. | WP13, WP17, WP34, WP40, WP41, WP43 |
-| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Approved design; implementation and economy integration open. Since Round 24 the housing mask only decides Claim Stone eligibility (ruling 33); carry-over below. | WP40, WP43, WP44 |
+| WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Delivered in Round 25 ([completion](docs/planning/round25-housing-plan.md#completion-2026-09-29)): Claim Stones as in `housing.md`, no price, housing masks removed; road and POI protection alongside. User playtest pending; carry-overs below. | WP40 |
 | WP25 | Original strata/materials (superseded by WP43) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP26 | Furnace and alloy chain | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP27 | [Armor catalog remainder](docs/planning/work-package-scopes.md#wp27) | Base armor/visuals delivered; broader contract reconciliation remains. | WP26, WP43 |
@@ -81,7 +86,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP29 | [Canonical gear/tool catalog remainder](docs/planning/work-package-scopes.md#wp29) | Current catalog/recipes delivered; broader contract remainder. | WP26, WP27, WP43 |
 | WP30 | [Trader catalog and final prices](docs/planning/work-package-scopes.md#wp30) | Await final catalog/economy integration. | WP5, WP29, WP44 |
 | WP31 | [Mount acceptance and price calibration](docs/planning/work-package-scopes.md#wp31) | Runtime/services/art delivered; GUI and economy remainder. | WP28, WP40, WP44 |
-| WP32 | [Farming Housing integration and acceptance](docs/planning/work-package-scopes.md#wp32) | 17-family farming and world sources delivered; Housing remainder. | WP10, WP24, WP33 |
+| WP32 | [Farming Housing integration and acceptance](docs/planning/work-package-scopes.md#wp32) | 17-family farming and world sources delivered; Claim Stone integration shipped with WP24. GUI acceptance remains. | WP10, WP24 ✅, WP33 |
 | WP33 | Gathering/source catalog | Delivered; Round 23 replaces exact-baseline renewal with habitat-driven renewal ([receipt](docs/research/round23-habitat-renewal.md)). Current rules: topic design. | — |
 | WP34 | [Deep pressure and renewable camp resources](docs/planning/work-package-scopes.md#wp34) | Open; structures/economy and depth decisions required. | WP6, WP13, WP40, WP43, WP44 |
 | WP35 | Equipped weapon source and appearance | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -119,7 +124,9 @@ Plan (decided direction, details in the lane brief):
 1. **One guard predicate in `grug_core`**, actor-neutral:
    `grug_core.world_alterable(pos)` = not inside any settlement claim (the
    six capitals with precinct and outer ring, the six starts, every POI and
-   landmark footprint, housing claims) — the same authority
+   landmark footprint, housing claims; Round 25 guards only the arrival
+   cube, claim protection against explosions and fire is not part of V1) —
+   the same authority
    `world_protected_for_faction` already uses in `protection.lua`, without a
    player name. Every effect that changes nodes on its own (not through a
    player's dig/place, which `core.is_protected` already covers) calls it per
@@ -250,12 +257,31 @@ the playtest.
   before the next stage profile.
 - Art: check silver vs tin readability in the playtest. Basalt cliff bands
   read with low contrast in the B2 renders.
-- WP24: natural renewal can regrow plants inside future claims, also on
-  player-placed natural ground (`housing.md` §6.4). Revisit in the Housing
-  round.
+- WP24: natural renewal inside claims. Resolved in Round 25: it is off in
+  active claims (engine growth continues, ruling 28).
 - WP45: a one-time waiting-screen race when an Esc crosses a progress update.
 - The "Requires level N" tooltip line does not relabel tool stacks from older
   worlds. This does not matter for fresh worlds.
+
+### Round 25 carry-overs
+
+**Noted 2026-09-29** ([completion](docs/planning/round25-housing-plan.md#completion-2026-09-29));
+none blocks the playtest.
+
+- **Capitals: organic wall line, larger area if needed** (user idea
+  2026-09-29). An irregular wall course instead of the current outline; the
+  city area may grow, its protection zones included. This is also the lever
+  for the rare named-building drops at a capacity limit (2 of 200 seeds after
+  Lane H). The capital protection already uses per-row intervals.
+- WP24: an admin command to remove a claim or an orphaned fuelled stone. A
+  fuelled stone without a registry row (for example after a crash between the
+  map save and the mod-storage save) cannot be dug by anyone (Lane A review).
+- WP24: a `buildable_to` node such as snow in the arrival cube cannot be dug,
+  not even by the owner (arrival-cube placement guard).
+- WP24: two touching claims can cover all three route points of one named
+  rare and suppress its spawn (consequence of ruling 24).
+- The per-run early-out in `world_protection` (Lane E) relies on dyadic road
+  profiles (multiples of 1/16). Revisit if road profiles change.
 
 ### First-public-release gates
 
