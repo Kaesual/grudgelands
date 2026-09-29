@@ -171,8 +171,9 @@ arbitrary fixed-price wall.
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
 - While mounted, the status icon row (`inventory_equipment.md` §5) shows a
-  land or flight mount icon with the tier name and speed bonus (for example
-  "+60% speed") and no countdown. This is
+  land or flight mount icon with an empty caption (no countdown); the tier
+  name and speed bonus (for example "+60% speed") appear on the Character
+  page's Effects tab. This is
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.
 - Only one active mount entity may exist per player. Using the active mount item

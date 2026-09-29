@@ -16,7 +16,8 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
     critters at 0.75 density (WP28 delivered); Trolls also get +50% food
     healing.
   - **I:** the status icon row above the skill bar (green/red/gold frames,
-    at most 10, no cooldowns), the combat icon instead of the "Combat" text,
+    at most 10, no cooldowns), a combat icon right of the health bar instead
+    of the "Combat" text,
     Character page Stats/Effects tabs and class icons in the party HUD and
     Group page (audit D10; [inventory_equipment.md](design/inventory_equipment.md) §5).
   - Pending: Lane W (organic capital outlines; waits for the user's image

@@ -294,20 +294,23 @@ the Round 19 top-centre text list:
 - **No cooldowns** on the row (ruling 21): the potion cooldown is no longer
   shown; its refusal messages remain.
 - **Registered statuses:** food (the eaten item's own image, else the
-  generic food icon), elixirs, draughts, mounts (land or flight, with tier
-  name and speed), one shield icon for every absorb source, move immunity,
-  Sprint, Sidestep and Renew (their skill icons), the six talent windows
-  (Unbroken, Ruination, Whitehot, Turn Aside, Last Word, Untouchable),
-  poisoned, slowed (one icon for every slow), rooted, stunned and scorched
-  (1.5 s per Dragon Scorch tick). Neutral: **in combat**, which replaces the
-  "Combat" text next to the health bar, and PvP tagged, PvP contested and the
-  Warding Draught, which are registered but not set by anything yet (WP41
-  and WP5 call `set_status`).
-- Food labels state the active effect, for example `Food +2% HP/5s` or
-  `Food +6% HP, +6% Mana/5s, +2% Mana pool`; the item tooltip explains that
-  secondary bonuses remain active while the regeneration ticks pause in
-  combat.
-- One throttled 1 s pass owns timed ticks, expiry and display refresh, and
+  generic food icon), elixirs, draughts, mounts (land or flight; an untimed
+  status, so the row caption is empty and the tier name and "+N% speed"
+  appear only on the Effects tab), one shield icon for every absorb source,
+  move immunity, Sprint, Sidestep and Renew (their skill icons), the six
+  talent windows (Unbroken, Ruination, Whitehot, Turn Aside, Last Word,
+  Untouchable), poisoned, slowed (one icon for every slow), rooted, stunned
+  and scorched (1.5 s per Dragon Scorch tick). Registered but not set by
+  anything yet: the Warding Draught (a buff, green; WP5) and the neutral PvP
+  tagged and PvP contested (gold; WP41 calls `set_status`).
+- **The combat state is not a status.** It never takes a row slot or appears
+  on the Effects tab: `grug_core/combat_hud.lua` draws a 32 px gold-framed
+  crossed-swords icon right of the health bar, where the "Combat" text was.
+- A food status is named after the dish itself; its effect, for example
+  `+2% HP/5s` or `+6% HP, +6% Mana/5s, +2% Mana pool`, is the detail line on
+  the Effects tab. The item tooltip explains that secondary bonuses remain
+  active while the regeneration ticks pause in combat.
+- One throttled pass every 0.5 s owns timed ticks, expiry and display refresh, and
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
 - **Character page tabs:** "Stats" (the view as before) and "Effects": icon,
@@ -351,8 +354,9 @@ overlap existing combat bars, target information or status effects.
 
 Armor hover descriptions explicitly state Cloth, Leather or Metal, including
 named enchanted variants. The combat state is shown while the living player
-is in combat; since Round 26 it is the gold-framed "in combat" icon in the
-status row (§5), no longer a "Combat" text beside the life bar. Station recipe
+is in combat; since Round 26 it is a 32 px gold-framed crossed-swords icon
+beside the life bar (`grug_core/combat_hud.lua`), no longer a "Combat" text,
+and not part of the status row (§5). Station recipe
 book buttons occupy a separate right-hand position clear of input/fuel/output
 slots, mode explanations and crafting-operation controls.
 

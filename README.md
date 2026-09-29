@@ -53,8 +53,9 @@ The systems above are implemented and installed in the local development build.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md) is in
 progress. A placed Claim Stone now starts as a draft that you activate with
 five lumps of coal within five minutes, and the Housing Steward hands it out.
-Buffs, debuffs and the combat state show as icons above the skill bar, with a
-new Effects tab on the Character page and class icons in the party display.
+Buffs and debuffs show as icons above the skill bar, the combat state as an
+icon next to the health bar, with a new Effects tab on the Character page and
+class icons in the party display.
 Old utility items and duplicate tool names are cleaned up. More irregular and
 more varied capital walls are still in the works.
 [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29) adds

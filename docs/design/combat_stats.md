@@ -889,8 +889,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   pool and show both that percentage and its current-level absolute value.
 - Every timed effect on the player is shown in the **status icon row**
   (`inventory_equipment.md` §5; Round 26, the status-icon package of WP
-  audit D10), which replaced the first-pass text list. The combat state is a
-  gold-framed icon there, replacing the "Combat" text next to the health bar.
+  audit D10), which replaced the first-pass text list. The combat state is
+  not a status: a 32 px gold-framed crossed-swords icon right of the health
+  bar replaces the former "Combat" text there (`grug_core/combat_hud.lua`).
 
 ## 6. Player and mob nameplates & con colors
 

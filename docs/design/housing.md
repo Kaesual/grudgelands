@@ -77,9 +77,11 @@ or guild land.
 
 - **The draft** (Round 26 ruling 8): a placed stone first stands as the
   half-transparent node `grug_housing:claim_stone_draft`. It reserves its
-  square: the overlap and distance checks of other placements count it. It
-  protects nothing: no claim protection, no interaction guard, no spawn
-  guard, and natural renewal runs. Nobody can dig or blow it up; the owner
+  square: the overlap check of other placements counts it (the 16-node
+  margin applies to settlements only, §2). It protects nothing: no claim
+  protection, no interaction guard, no spawn guard, and natural renewal runs.
+  It keeps the arrival-cube guard, though: no placing, liquid flow or renewal
+  into the cube. Nobody can dig or blow it up; the owner
   can pick it up at any time through its form, with no lock.
 - **Crumbling:** a draft that is not activated within **300 s (5 min)** of
   placing crumbles, whether the owner is online or not. The owner then needs
@@ -162,10 +164,12 @@ The stone burns fuel whether anybody is near it or not (ruling 10).
   of its activation (§3).
 - **Admin removal** (Round 26 ruling 12): `/claim_remove <player>`,
   `/claim_remove here` (the claim the admin stands in) or
-  `/claim_remove orphans` (stone nodes near the admin without a registry
-  row), with the `server` privilege. The owner is told "Your Claim Stone was
-  removed by an admin…", the Character page shows it, the travel home falls
-  back to the innkeeper (§8), and nothing is refunded.
+  `/claim_remove orphans` (stone nodes within 16 nodes of the admin that have
+  no registry row; registered claim centres are skipped), with the `server`
+  privilege. An online owner gets the chat message "Your Claim Stone was
+  removed by an admin…"; an offline owner sees it on the Character page and
+  gets the travel-home fallback message at the next login (§8). The travel
+  home falls back to the innkeeper, and nothing is refunded.
 
 ## 6. Permissions and protection
 
@@ -248,10 +252,11 @@ map shows it with a "+" marker.
 ### 7.3 Character page status
 
 Shown only once a player has received a stone for the first time, wherever
-the player is:
+the player is. Times are whole minutes ("4 min", "< 1 min" in the last
+minute); only the draft form (§7.1) counts seconds.
 
-- draft: "Your Claim Stone is not active yet: activate it within 4 min 05 s
-  or it crumbles" (example), in red;
+- draft: "Your Claim Stone is not active yet: activate it within 4 min or it
+  crumbles" (example), in red;
 - placed and fuelled: "Claim Stone fuel: 12 d 4 h 31 min" (example), in red
   when less than 24 h remain;
 - placed, fuel empty: "Your Claim Stone needs fuel, anyone can access your

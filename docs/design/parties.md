@@ -91,7 +91,8 @@ fabricated live HP. The existing HUD visibility preference is independent.
 Settings changes and health/class transitions update changed HUD fields only.
 Since Round 26 each row also shows the member's class icon (Warrior, Mage,
 Priest, Scout), in the party HUD and in the Group page's "Current party"
-table, so the class is clear without knowing the colours.
+table, so the class is clear without knowing the colours. On the Group page
+an offline member or a member without a class shows a blank instead.
 
 ## Level presentation
 

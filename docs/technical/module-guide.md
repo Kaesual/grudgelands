@@ -243,8 +243,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
   `noclip` exempt; lava is 20% and drowning 10% of maximum HP/s
   (`environment_damage.lua`, Round 24), and absorb does not cover fall,
-  lava or drowning. `grug_core.status` is the runtime timed-effect registry and
-  top-center eight-line buff/debuff text list (Round 19). Status definitions may carry only
+  lava or drowning. `grug_core.status` is the runtime timed-effect registry and, since
+  Round 26, the bottom-centre status icon row (at most 10 icons, 0.5 s pass;
+  pictures and frame kinds in `grug_core/status_icons.lua`) that also feeds
+  the Character page's Effects tab; the combat state is not a status but
+  the icon `grug_core/combat_hud.lua` draws right of the health bar. Status definitions may carry only
   `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
   and the modifier-change callback drives the same HP/mana clamp and HUD/page
