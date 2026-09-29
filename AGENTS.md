@@ -64,11 +64,12 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 26 in progress, started 2026-09-29.** Merged on local main: Claim
-Stone draft/activation and the Housing Steward (Lane S), registration cleanup
-WP28 with the tool namespace (Lane R) and the status-icon package (Lane I).
-Pending: organic capital outlines (Lane W, images before merge) and the
-documentation cleanup (Lane D). [Plan](docs/planning/round26-capitals-housing-cleanup-plan.md).
+**Round 26 delivered locally, 2026-09-29.** Claim Stone draft/activation and
+the Housing Steward (Lane S), registration cleanup WP28 with the tool
+namespace (Lane R), the status-icon package (Lane I), organic capitals with a
+character per capital (Lane W) and the documentation cleanup (Lane D). All
+lanes merged on local main; no push. Next: fresh world and playtest.
+[Plan, completion and playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29).
 The [work-package audit](docs/planning/wp-audit-2026-09-29.md) and its user
 decisions (2026-09-29) set the current BACKLOG and V1 scope (ROADMAP).
 

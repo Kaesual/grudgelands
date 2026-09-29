@@ -17,19 +17,17 @@ WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
 WP28 followed in Round 26. The audit's letters and numbers (for example E5)
 are cited below.
 
-- **Current round:
-  [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md) in
-  progress** (started 2026-09-29). Merged on local main: Lane S (Claim Stone
-  draft and activation, 12 h pick-up lock, Housing Steward, admin removal,
-  arrival-cube snow), Lane R (registration cleanup, WP28 delivered; Troll
-  food-healing follow-up) and Lane I (the status-icon package, audit D10).
-  Pending: Lane W, organic capital outlines and more variety between the
-  capitals (the D72 follow-up), which waits for the user's image approval, and
-  Lane D, this documentation cleanup. Not in this round: the depth pulse
-  (WP34), WP44, WP17, WP41, WP9, WP5 and WP10.
-- Latest delivery: [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29)
-  delivers WP24 Housing; user playtest pending. Round 24 is pushed
-  (`d4eaffff`) and accepted.
+- **Latest delivery:
+  [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
+  complete** (2026-09-29, local main, no push): Claim Stone draft and
+  activation with the Housing Steward (Lane S), the registration cleanup
+  (WP28 delivered, Lane R), the status-icon package (audit D10, Lane I),
+  organic capitals with a character per capital (the D72 follow-up, Lane W)
+  and this documentation cleanup (Lane D). Next: fresh world and playtest.
+  Not in this round: the depth pulse (WP34), WP44, WP17, WP41, WP9, WP5 and
+  WP10.
+- Round 25 delivers WP24 Housing; its playtest is under way. Round 24 is
+  pushed (`d4eaffff`) and accepted.
 - **V1 scope** ([ROADMAP](ROADMAP.md#v1-scope)): WP17 boats and waypoints (starts
   and capitals only), WP41 geographic PvP and WP9's story levels 41–60 with
   the finale are V1; WP42's scripted NPC battles come after V1, while small
@@ -68,7 +66,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waypoints remain WP17. | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1). Remaining: a separate POI walk (E2); capital variety in Round 26 Lane W. | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72). Remaining: a separate POI walk (E2). | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands](docs/planning/work-package-scopes.md#wp14) | Delivered; closed 2026-09-29. Carried light canceled (C5). | WP3 ✅ |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
@@ -248,9 +246,9 @@ the playtest.
 none blocks the playtest.
 
 - **Capitals: more irregular wall outline and more variety** (user idea
-  2026-09-29, audit A1–A5): **Round 26 Lane W.** The outline stays star-shaped
-  inside today's 512 reserved square; it is also the lever for the rare
-  named-building drops at a capacity limit (2 of 200 seeds after Lane H).
+  2026-09-29, audit A1–A5): **done in Round 26 Lane W.** The outline stays
+  star-shaped inside the 512 reserved square; with the replan at +8 %/+16 %
+  area the named-building drops went from 2 to 0 of 200 seeds.
 - WP24: an admin command to remove a claim or an orphaned fuelled stone. A
   fuelled stone without a registry row (for example after a crash between the
   map save and the mod-storage save) cannot be dug by anyone (Lane A review).
@@ -269,6 +267,20 @@ none blocks the playtest.
 - Remove `apex_sockets` from mapgen (E5): main still generates 24
   hard-protected socket columns (`wp40/source/simple_map.lua:357-372`, `:471`,
   `:489-495`; `r6_settlement.lua:1205-1231`) although the design has none.
+
+### Round 26 carry-overs
+
+**Noted 2026-09-29** ([completion](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29));
+none blocks the playtest. All are low priority.
+
+- Capitals: Lethariel's south gatehouse sits slightly further over the civic
+  lake (up to about 0.8 node); check it in the playtest.
+- Capital planner hardening (optional): clamp to `rmax` after the partial
+  smoothing, assert `POLY` ≥ 4, and guard a plaza that has no avenue.
+- `tools/wp13/node_tiles.json` (generated) still lists `mobs:mob_repellent`;
+  regenerate it. The Round 25 engine probes `tools/r25_claim_core/run.sh`
+  and `tools/r25_interfaces/run.sh` assume the pre-draft Claim Stone; the
+  current probe is `tools/r26_claim_activation/`.
 
 ### First-public-release gates
 

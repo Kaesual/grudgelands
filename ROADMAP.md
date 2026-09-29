@@ -141,16 +141,14 @@ B1–B7) settle the rest:
   and shared creation/reconnect waiting flow.
 - [x] **WP24 Housing** (Round 25): Claim Stones, claim protection and
   permissions, the stone as travel home, and road and POI protection.
-  Playtest pending: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
+  Playtest under way: [completion](docs/planning/round25-housing-plan.md#completion-2026-09-29).
+- [x] **Round 26** ([completion](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)):
+  Claim Stone draft and activation with the Housing Steward, the registration
+  cleanup (WP28), the status icons and organic capitals with a character per
+  capital. Next: fresh world and playtest.
 
 ### Remaining work
 
-- [ ] **Round 26, in progress**
-  ([plan](docs/planning/round26-capitals-housing-cleanup-plan.md)). Merged:
-  Claim Stone draft and activation with the Housing Steward, the
-  registration cleanup (WP28) and the status-icon package (audit D10).
-  Pending: more irregular and more varied capital outlines (after the user
-  approves the images) and this documentation cleanup.
 - [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
   waypoints at every start and capital. Innkeeper return and the Claim Stone
   travel home are already delivered.

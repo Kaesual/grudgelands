@@ -2,10 +2,9 @@
 
 Updated 2026-09-29. This is the delivery pointer, not another game specification.
 
-- **Round 26 in progress** (started 2026-09-29,
-  [plan](planning/round26-capitals-housing-cleanup-plan.md)). Lanes S, R and
-  I are merged on local main (S `377e7cd4`; R `4e88234c` with the Troll
-  follow-up `ed7d79a1`; I `abaaa262`; head `25507c83`). No push:
+- **Round 26 delivered locally** (2026-09-29,
+  [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
+  All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). No push.
   - **S:** a placed Claim Stone is a half-transparent draft that protects
     nothing and crumbles after 5 minutes unless activated with 5 lumps; the
     only lock is 12 hours without pick-up after activation; the Housing
@@ -17,13 +16,19 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
     healing.
   - **I:** the status icon row above the skill bar (green/red/gold frames,
     at most 10, no cooldowns), a combat icon right of the health bar instead
-    of the "Combat" text,
-    Character page Stats/Effects tabs and class icons in the party HUD and
-    Group page (audit D10; [inventory_equipment.md](design/inventory_equipment.md) §5).
-  - Pending: Lane W (organic capital outlines; waits for the user's image
-    approval) and Lane D, the documentation cleanup after the
+    of the "Combat" text, Character page Stats/Effects tabs and class icons
+    in the party HUD and Group page (audit D10;
+    [inventory_equipment.md](design/inventory_equipment.md) §5).
+  - **W:** more irregular, still star-shaped capital outlines at about the
+    same area, a character per capital, towers at bends and gatehouses, and
+    a replan when a named building is dropped (2 → 0 of 200 seeds; planning
+    5.7 → 6.2 s per seed, preparation 14.5 → 14.9 CPU s; engine check seed
+    42 PASS 36/36) ([world_zones.md](design/world_zones.md) §12).
+  - **D:** documentation after the
     [work-package audit](planning/wp-audit-2026-09-29.md) and its
-    [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29).
+    [user decisions](planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29),
+    then the lane facts.
+  - Next: fresh world and playtest.
 
 - **Round 25 delivered locally:** Claim Stone housing (WP24,
   [housing.md](design/housing.md)): one free, soulbound stone from the
@@ -99,7 +104,7 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 25, which includes Rounds 20–24
+- **Latest game:** local main carries Round 26, which includes Rounds 20–25
   and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
   accepted state; the Round 25 playtest is under way (first rulings recorded). Fresh-world development
   remains in force.
@@ -115,11 +120,13 @@ Updated 2026-09-29. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
-  covers the newest changes; earlier rounds keep their own checklists. The
+  The [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
+  covers the newest changes, the
+  [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+  the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
 - **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
-  Round 25 plan). Round 25 is local only.
+  Round 25 plan). Rounds 25 and 26 are local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

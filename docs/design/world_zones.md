@@ -333,8 +333,9 @@ replaced; git history before this rewrite records that model.
   (-1800, +1500), (0, +1500) and (+1800, +1500). Each **512 by 512 build
   envelope** belongs wholly to its capital zone. The surrounding terrain blend
   may cross a zone border and does not enlarge political ownership. The
-  envelope size is today's value, not a promise: a later round makes capitals
-  smaller and denser (§12).
+  envelope size stays. The former goal of smaller, denser capitals (Round 22
+  §11) is retired (user decision 2026-09-29, WP audit A3): a capital's size
+  fits its content, with a characteristic look (§12).
 - Every anchor slot keeps its stable id and fixed x/z position. No world seed
   selects, moves or rejects a 2D anchor; terrain fitting adapts to the anchor.
 - The macro silhouette remains legible as three outer prongs, one connected
@@ -1444,23 +1445,57 @@ one-cell settlement checks are unchanged.
   flat; the ground around it keeps long-wave hills and hollows of limited
   height (§7.6). Each capital's target ground height sits well below its
   region's clouds (§7.6).
-- A fixed 96×96 civic core contains the king's hall, waypoint and principal
-  service court, and four core gates on the axes. It stays as authored and
-  free of natural water.
-- **The capital planner (Round 22, D60, D69, D70, D72; as built):** once per
-  world start, in main, after height, water and roads, every capital's city is
-  laid out in its landscape (`wp40/capital_planner.lua`), and the layout
-  travels to emerge with the water and road layouts. Per capital and seed:
-  - an organic outline of about 100 k m² (a rough guide, D21) that avoids
-    water and steep ground, and a 26-node band to the reserved area's edge
-    that stays countryside;
+- A fixed 96×96 civic core contains the king's hall, the current waypoint
+  socket and principal service court, and four core gates on the axes. It
+  stays as authored and free of natural water. The future WP17 waypoint pad
+  may stand anywhere in the city (user decision 2026-09-29, WP audit A5).
+- **The capital planner (Round 22, D60, D69, D70, D72; Round 26 Lane W; as
+  built):** once per world start, in main, after height, water and roads,
+  every capital's city is laid out in its landscape
+  (`wp40/capital_planner.lua`), and the layout travels to emerge with the
+  water and road layouts. Per capital and seed:
+  - an organic outline of about 100 k m² (a rough guide, D21) inside the
+    reserved 512 square, which avoids water and steep ground and keeps a
+    26-node band to the reserved area's edge as countryside. Since Round 26
+    (plan rulings 1–4) it is more irregular but still **star-shaped**: one
+    wall point per ray from the anchor, so `r_at`/`inside` are unchanged. It
+    has less smoothing and more outline noise, snaps to nearby crests, slope
+    tops and shorelines, prefers the near bank of a river or lake (water met
+    beyond about 70 nodes out is crossed only at three times the cost), and
+    each ray is clamped against the broadly smoothed outline so there are no
+    deep bays or lobes;
+  - **a character per capital** (D72 follow-up; settings table `M.STYLE`,
+    applied after the edge kind's settings in `r7_capitals.lua`), within the
+    planner's legality rules:
+    - *Highcourt*, royal city: a broad curtain following its river, towers at
+      bends and beside the gatehouses, two rings plus the quay canal and a
+      large royal plaza on the long side's avenue;
+    - *Dur Brannoc*, mountain hold: an angular wall of seven to nine straight
+      faces on the crests with a tower on every corner (accepted by the user
+      although it breaks with the other cities' style), the outer ring
+      parallel to the faces and a star of straight radial streets;
+    - *Nhal Veyr*, walled necropolis: a long closed curtain with a steady
+      tower rhythm, one round ring only, and rows of lanes out to the wall,
+      each ending in a small square; graveyards and fields mix with houses;
+    - *Gor Drazhak*, war camp: the roughest, jagged palisade, gates turned
+      the same way into a pinwheel of winding avenues, a large war yard, a
+      broken outer ring, many cross-lanes and lanes out to the wall;
+    - *Lethariel*, lakeside city: a flowing curtain along the crown lake,
+      few towers (about 7–10), gates turned the other way and an off-centre
+      inner ring;
+    - *Kezamba*, jungle city: an irregular palisade round the cenote, an
+      off-centre inner ring, a market plaza, winding avenues and lanes into
+      the green.
+    The open land between the outer ring and the wall is a mix of fields and
+    houses; no capital is enlarged to fill it;
   - four gates, one per cardinal direction, slid along the outline toward the
     incoming road ends and off water; road ends reach the reserved area's edge
     anywhere (§9), and connector roads (the road module's own routing,
     half-step profile and raster) join them to their gates;
-  - avenues from each core gate through its city gate, two terrain-bent ring
-    lanes, not closed everywhere, a few cross-lanes and small flat squares at
-    crossings and lane ends; streets and connectors are road-module roads
+  - avenues from each core gate through its city gate, terrain-bent ring
+    lanes (two by default; their count, shape and gaps vary with the
+    character above), cross-lanes and small flat squares at crossings and
+    lane ends; streets and connectors are road-module roads
     (≤ ½ node between neighbouring columns, slabs on half steps, bridges over
     water, §9); the street surface stops at the civic core's edge, where the
     core gate takes the passage over. No street ends over water: where the
@@ -1477,8 +1512,11 @@ one-cell settlement checks are unchanged.
     legal spot remains anywhere (rare), fill dressings first. Placement runs in tiers
     (required, other named buildings, fill), each through all its passes
     (own quarter, neighbours, opposite, relaxed anywhere; fill only the first
-    two) before the next tier starts (Round 25 Lane H). Plots never stand in
-    water. Lethariel's mere precinct and Kezamba's shore market stay beside
+    two) before the next tier starts (Round 25 Lane H). If a plan still
+    leaves out a named or required building, the planner replans the city at
+    +8 % and then +16 % area (clamped inside the reserved square) and keeps
+    the plan with the fewest dropped buildings (Round 26); the load-failure
+    guard for required plots stays. Plots never stand in water. Lethariel's mere precinct and Kezamba's shore market stay beside
     their civic lake;
   - the edge by race: a stone curtain with turrets and gatehouses (Highcourt,
     Dur Brannoc, Nhal Veyr, and since Round 23 Lethariel's light curtain), or a
@@ -1488,7 +1526,10 @@ one-cell settlement checks are unchanged.
     polylines, their walk walkable on half steps, and cross rivers as arcades
     or timber decks with the walk out of the water; a capital's civic lake is
     its edge where it crosses the outline, the wall continuous on land and
-    ending a few nodes into the water in a closed head;
+    ending a few nodes into the water in a closed head. Towers (Round 26):
+    evenly spaced on long stretches at each capital's own rhythm, at sharp
+    wall bends (the ordinary turret, no separate bastion shape) and beside
+    the gatehouses where the character asks for it;
   - Highcourt's one-level quay canal beside its outer ring lane (D58), sealed
     off natural water.
   The layout is a pure function of the seed and the code, so every boot of a

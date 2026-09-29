@@ -94,7 +94,9 @@ and functional anchors are preserved. Do not schedule these as 70 empty sites. T
 - **Separate POI walk** (E2): the user wants to walk the Round 20 POI art
   apart from ordinary playtests; that walk is its GUI acceptance.
 - The Round 22 D72 follow-up ("capitals look too alike", infill houses) is
-  Round 26 Lane W ([plan](round26-capitals-housing-cleanup-plan.md)).
+  done: Round 26 Lane W gave every capital a more irregular outline and its
+  own character, with fields and houses between the outer ring and the wall
+  ([plan](round26-capitals-housing-cleanup-plan.md), `world_zones.md` §12).
 - Preserve complete civic protection (capital cities and start towns with
   their bare bands, Round 22 D76/D78). Roads and POI, village and camp
   building cores are world-protected (Round 25 rulings 15–16, `world.md` §2

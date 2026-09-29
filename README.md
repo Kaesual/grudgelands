@@ -50,14 +50,16 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
-[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md) is in
-progress. A placed Claim Stone now starts as a draft that you activate with
+[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
+is complete locally and awaits a playtest on a fresh world. A placed Claim Stone now starts as a draft that you activate with
 five lumps of coal within five minutes, and the Housing Steward hands it out.
 Buffs and debuffs show as icons above the skill bar, the combat state as an
 icon next to the health bar, with a new Effects tab on the Character page and
 class icons in the party display.
-Old utility items and duplicate tool names are cleaned up. More irregular and
-more varied capital walls are still in the works.
+Old utility items and duplicate tool names are cleaned up. The six capitals
+get more irregular walls and each its own character: a royal river city, an
+angular mountain hold, a necropolis, a war camp, a lakeside city and a jungle
+city round its cenote.
 [Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29) adds
 housing: from level 20 a Housing Steward in your capital hands out a Claim
 Stone. Placed in your faction's level-11–30 lands and fuelled with coal or
@@ -98,10 +100,10 @@ canceled and 11 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 25](docs/planning/round25-housing-plan.md#completion-2026-09-29),
+[Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29),
 independently reviewed and merged locally; Round 24 is the latest pushed and
 accepted state. [Project status](docs/STATUS.md) records acceptance, and the
-[Round 25 playtest](docs/planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+[Round 26 playtest](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 remains separate.
 
 **Ready for further work:** the first release still needs boats and
@@ -113,7 +115,7 @@ follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Performance and first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round25-housing-plan.md#playtest-checklist-fresh-world)
+the [latest playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
 
 </details>
