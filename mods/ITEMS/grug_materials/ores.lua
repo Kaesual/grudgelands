@@ -1,16 +1,11 @@
 -- Canonical natural resources and material items (WP43).
 
+-- Stored, pre-coloured mineral overlays drawn over `default_stone.png`
+-- (Round 24 ruling 17; `tools/r24_art/build_rock_ore_textures.py`).
 local ORE_VISUALS = {
-	quartz = {"default_mineral_diamond.png", "#eaf6ff:120"},
-	silver = {"default_mineral_iron.png", "#e8edf2:200"},
-	citrine = {"default_mineral_diamond.png", "#d9a21b:190"},
-	garnet = {"default_mineral_diamond.png", "#9e1526:210"},
-	jade = {"default_mineral_diamond.png", "#3d9b65:190"},
-	emberglass = {"default_mineral_mese.png", "#ff7a2e:65"},
-	diamond = {"default_mineral_diamond.png", "#ffffff:20"},
-	sapphire = {"default_mineral_diamond.png", "#235ac7:190"},
-	ruby = {"default_mineral_diamond.png", "#c51d35:195"},
-	abyssal_crystal = {"default_mineral_diamond.png", "#3a1f6e:210"},
+	quartz = true, silver = true, citrine = true, garnet = true, jade = true,
+	emberglass = true, diamond = true, sapphire = true, ruby = true,
+	abyssal_crystal = true,
 }
 
 local ITEM_VISUALS = {
@@ -32,13 +27,12 @@ local function item_texture(key)
 end
 
 local function register_owned_resource(resource)
-	local ore = ORE_VISUALS[resource.key]
-	if not ore then
+	if not ORE_VISUALS[resource.key] then
 		return
 	end
 	core.register_node(resource.natural_node, {
 		description = grug_materials.resource_ore_description(resource),
-		tiles = {"default_stone.png^(" .. ore[1] .. "^[colorize:" .. ore[2] .. ")"},
+		tiles = {"default_stone.png^grug_materials_mineral_" .. resource.key .. ".png"},
 		groups = {grug_natural = 1, grug_resource = resource.harvest_tier,
 			level = grug_materials.level_for_tier(resource.harvest_tier)},
 		drop = resource.raw_item,
