@@ -7,6 +7,12 @@ Status: implementation contract for branch
 This brief translates the decided design into implementation packages. It does
 not change the authoritative rules in `docs/design/`.
 
+**Historical (Round 24, 2026-09-29):** the per-pick depth limits, the
+under-tier shatter path and the "no node `level`" rule described here were
+replaced by engine-native tier rock (`grug_materials:t2_stone`..`t6_stone`,
+node `level` against pick `maxlevel`); see `items_crafting.md` §3.0.4 and
+[wp43_wp40_handoff.md](wp43_wp40_handoff.md).
+
 ## 1. Starting inventory
 
 The WP25 runtime is concentrated in `grug_materials`: its `TIERS` entries carry

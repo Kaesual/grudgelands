@@ -631,12 +631,11 @@ WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —
 `mob_level_at = max(surface_level(x,z), depth_level(y))`, **3 levels per
 50 nodes** below y=0, capped at 60; ore tiers follow the same depth
 axis, so mining deep is the alternative progression path to travelling
-out. The visual-stratum starts are exact: Basalt at **−301**, Granite at
-**−501**, Emberrock at **−701** and Abyssal Rock at **−1001**
-(`items_crafting.md` §3.0.4). The level anchors therefore fall on the last node
-before two transitions: **−500 = level 30** is the last Basalt node before
-Granite, and **−1000 = level 60** is the last Emberrock node before Abyssal
-Rock and the cap. What the rate really says is where depth **overtakes** the surface
+out. The tier-rock starts are exact: T3 rock at **−301**, T4 at **−501**,
+T5 at **−701** and T6 at **−1001** (`items_crafting.md` §3.0.4). The level
+anchors therefore fall on the last node before two transitions: **−500 = level
+30** is the last T3 node before T4, and **−1000 = level 60** is the last T5
+node before T6 and the cap. What the rate really says is where depth **overtakes** the surface
 field: at `y = −surface_level / 0.06`, e.g. **−83** in a level-5 start
 area, **−417** in a level-25 heartland area and **−750** in a level-45 front
 area — in the beginner zone depth takes over almost immediately, and a

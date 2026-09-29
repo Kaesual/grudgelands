@@ -32,8 +32,8 @@ M.plants={
  row("blightberry",{homes[4]},hosts({"blight"}),11,20),
  row("carrot",subset(starts,1,3),hosts({"meadows","pine_hills","elf_forest"}),1,6),
  row("cassava",subset(starts,4,6),hosts({"savanna","blight","jungle_edge"}),1,6),
- row("cave_cap",{}, {stone={"default:stone","grug_materials:granite","grug_materials:slate","grug_materials:basalt"}},-500,-100,"none",768,"cave"),
- row("ember_moss",{}, {stone={"grug_materials:emberrock"}},-30912,-701,"none",1024,"cave"),
+ row("cave_cap",{}, {stone={"default:stone","grug_materials:t2_stone","grug_materials:t3_stone","grug_materials:t4_stone"}},-500,-100,"none",768,"cave"),
+ row("ember_moss",{}, {stone={"grug_materials:t5_stone"}},-30912,-701,"none",1024,"cave"),
  row("fire_pepper",subset(starts,4,6,homes),hosts({"savanna","blight","jungle_edge","badlands"}),1,20,"none",512),
  -- Freshwater margins are mostly sand (the near-water material rule), so the
  -- melon also roots in sand there, and the margin is a thin band, so its

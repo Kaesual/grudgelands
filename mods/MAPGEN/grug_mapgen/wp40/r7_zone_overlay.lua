@@ -43,6 +43,10 @@ return function(session, roster)
 		if functional_protected(position) then return "hard_protected" end
 		return session.territory_rule_at(position)
 	end
+	function wrapped.hard_protection_kind_at(position)
+		if functional_protected(position) then return "landmark" end
+		return session.hard_protection_kind_at(position)
+	end
 	local compatibility = {}
 	for key, value in pairs(session.compatibility) do compatibility[key] = value end
 	function compatibility.world_protected_for_faction(position, actor_faction)

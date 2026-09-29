@@ -10,8 +10,8 @@
 -- IRON (T2) EXISTS AND THEREFORE GETS TOOLS. `grug_materials:iron_bar` is a
 -- real registered item (registry.lua, TIERS[2].bar_item) -- it is what
 -- upstream's "steel ingot" migrated to, because §3.0.1 reads a smelted iron
--- ore as Iron, not as Steel. With Iron a full material tier owning a depth
--- band (-101..-300) and a pick tier of its own in `PICK_PROFILES`, a ladder
+-- ore as Iron, not as Steel. With Iron a full material tier owning a tier
+-- rock (T2 stone) and a pick tier of its own in `PICK_PROFILES`, a ladder
 -- that jumps Bronze -> Steel would leave §3.0.4's T2 row without a pick at
 -- all. So T2 tools are registered here like the other three.
 --
@@ -93,7 +93,7 @@ for _, id in ipairs(TIERS_WITH_TOOLS) do
 			damage_groups = {fleshy = 4},
 		},
 		sound = {breaks = "default_tool_breaks"},
-		groups = {axe = 1},
+		groups = {axe = 1, grug_axe_tier = id},
 	})
 
 	local shovel = SHOVEL_PROFILES[id]

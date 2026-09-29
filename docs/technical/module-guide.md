@@ -454,15 +454,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   override item definitions. Build texture modifier strings in one helper:
   malformed modifiers produce client-side image errors that may not appear in
   server logs. Equipment changes must notify the shared equipment seam.
-- **Materials & depth gating** (`items_crafting.md` §3.0,
+- **Materials & tier-rock gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
-  - **Shipped WP43 contract:** Bronze, Iron, Steel, Silversteel, Embersteel
-    and Abyssal Steel are the six universal tiers, with inclusive natural
-    depth limits y = -100/-300/-500/-700/-1000/-31000. `grug_materials` is
-    the sole owner of `TIERS`, `TIER_BY_KEY`, `tier_at(y)`,
-    `stratum_node_for(y)`, `max_depth_for_pick_tier(tier)` and
-    `can_mine_natural_at(pick_tier, y)`. Consumers never copy a depth
-    boundary, harvest tier, stratum name or race-region assignment.
+  - **Contract (WP43, Round 24):** Bronze, Iron, Steel, Silversteel,
+    Embersteel and Abyssal Steel are the six universal tiers. Their tier rocks
+    (`default:stone`, `grug_materials:t2_stone`..`t6_stone`) lie in the bands
+    y ≥ -100, -101..-300, -301..-500, -501..-700, -701..-1000 and below; the
+    rock's tier, not y, gates the pick. `grug_materials` is the sole owner of
+    `TIERS`, `TIER_BY_KEY`, `tier_at(y)`, `stratum_node_for(y)`,
+    `level_for_tier(tier)`, `required_pick_tier(node)` and `DECORATIVE_ROCKS`.
+    Consumers never copy a band boundary, harvest tier, rock name or
+    race-region assignment.
   - Registry consumers use `RESOURCES`, `RESOURCE_BY_KEY`,
     `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`, `GEM_GRADES`,
     `CULTURAL_MATERIALS`, `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
@@ -478,20 +480,23 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     natural ground from `is_ground_content`: the engine defaults that field
     to true even for saplings and decorations. `NATURAL_GROUND_SET` is the
     audited lookup, not a second extension point.
-  - The server-authoritative `core.node_dig` wrapper evaluates protection,
-    exact target y and then the separate harvest tier. `mining_decision`
-    returns structured `protected`/`no_pick`/`depth`/`shatter`/`allowed`
-    state; `emit_mining_failure` owns the throttled player feedback. A depth
-    refusal happens before node damage, wear, drops or settlement. A
-    completed under-tier resource dig takes ×4/×6/×8/×10 time, spends exactly
-    one ordinary pick use, suppresses drops and every harvest callback, emits
-    shatter feedback and still lets a renewable socket enter its depleted
-    state. Successful sufficient-tier settlement uses `register_on_harvest`;
-    socket consumers distinguish the no-drop transaction with
-    `is_shattering`.
-  - All material-system nodes have no engine `level`, and every Grudgelands
-    pick groupcap has `maxlevel = 0`; `max_drop_level` is a separate ordinary
-    drop property and may remain non-zero. `build_pick_capabilities` and the
+  - The engine gates tiers: tier rock and resources carry node `level =
+    tier - 1`, every Grudgelands pick carries `maxlevel = tier - 1` on
+    `cracky` and `grug_resource`, so the client predicts a too-weak pick as
+    unable to dig (no cracks). No other node may carry a `level`; the startup
+    audit checks this and an engine dig matrix. Loose generated ground carries
+    `grug_loose` (= its `crumbly` rating) and no level; shovels and axes carry
+    `grug_shovel_tier`/`grug_axe_tier`. The `core.node_dig` wrapper re-checks
+    protection and the engine rule for natural nodes (`mining_decision`
+    returns `protected`/`too_hard`/`allowed`), and settles
+    `register_on_harvest` after a successful resource dig. There is no
+    depth limit per pick and no dig-without-drop path. A
+    `register_on_punchnode` handler shows one rate-limited hint in the shared
+    screen flash line (`grug_core.flash(player, message, color)`, which
+    `grug_abilities.flash` forwards to in error red): the protection reason
+    (`grug_core.protection_hint`), "Requires a T<N> pick" or the broken-pick
+    line; never with a selected skill. `max_drop_level` is a separate ordinary drop
+    property and may remain non-zero. `build_pick_capabilities` and the
     six `PICK_PROFILES` are the verification/consumer seam. WP29 owns the
     final playable pick catalog and recipes, while WP22 owns runtime
     speed/durability calibration. Canonical storage blocks, Iron Sign/Ladder

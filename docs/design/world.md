@@ -249,32 +249,30 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   hard-anchor and depth rule is evaluated first. A claim never grants terrain
   rights outside its current active volume, never privatizes its complete
   future reservation and never reaches the contested deep layer.
-- **R6 — Natural depth and resource harvesting**: six visual strata retain the
-  boundaries at **−100 / −300 / −500 / −700 / −1000 / bedrock**, but rock
-  identity and engine `level`/`groupcaps.maxlevel` no longer gate progression.
-  Every dig resolves three independent questions in order:
+- **R6 — Tier rock and resource harvesting** (Round 24, 2026-09-29; details
+  in `items_crafting.md` §3.0.4): six tier rocks keep the band boundaries at
+  **−100 / −300 / −500 / −700 / −1000 / bedrock**, and the rock's tier, not
+  the target y, decides which pick digs it. Every dig resolves two questions:
   1. territory/protection: may this player change this position;
-  2. natural depth: does the wielded pick reach the target y;
-  3. resource harvest: is that pick tier high enough to receive this natural
-     ore or gem's drop.
+  2. pick tier: is the wielded pick at least the tier of the target rock or
+     resource.
 
-  | Tier | Canonical metal/pick | Maximum natural depth | Visual stratum opened |
-  |---|---|---:|---|
-  | T1 | Bronze | y = −100 | Stone |
-  | T2 | Iron | y = −300 | Slate |
-  | T3 | Steel | y = −500 | Basalt |
-  | T4 | Silversteel | y = −700 | Granite |
-  | T5 | Embersteel | y = −1000 | Emberrock |
-  | T6 | Abyssal Steel | map floor (−31000) | Abyssal Rock |
+  | Tier | Canonical metal/pick | Band | Tier rock |
+  |---|---|---|---|
+  | T1 | Bronze | y ≥ −100 | `default:stone` |
+  | T2 | Iron | −101…−300 | `grug_materials:t2_stone` |
+  | T3 | Steel | −301…−500 | `grug_materials:t3_stone` |
+  | T4 | Silversteel | −501…−700 | `grug_materials:t4_stone` |
+  | T5 | Embersteel | −701…−1000 | `grug_materials:t5_stone` |
+  | T6 | Abyssal Steel | below −1000 | `grug_materials:t6_stone` |
 
-  Wood and Stone starter picks share the T1 maximum. The strata, top to
-  bottom, remain `default:stone`, `grug_materials:slate`, `:basalt`,
-  `:granite`, `:emberrock` and `:abyssal_rock`; they are cosmetic stone-like
-  excavation material and all drop ordinary cobble. Every real pick may break
-  one when its y is legal, including a player-placed decorative copy near the
-  surface. Higher tiers gain speed through explicit tool `times`, never
-  `leveldiff`. Cave walls inherit the local stratum, but an exposed cave wall
-  does not bypass the target-y check.
+  Wood and Stone starter picks are T1 picks. All six rocks display as "Stone",
+  drop ordinary cobble and are gated by engine node `level` against pick
+  `maxlevel`, so a too-weak pick cannot dig them at all; a higher pick digs
+  lower rock faster. Cave walls show the local rock. Loose ground (dirt, sand,
+  gravel, clay, snow, mud, mesa clay, ash ground) has no gate: hand, skill hand,
+  shovel and pick dig it, a shovel fastest. Decorative Slate, Basalt and
+  Granite are any-pick building rock that drops itself.
 
   The exact political split follows those boundaries: **y = −700 is the last
   protected shallow node; y = −701 is the first universally contested deep
@@ -283,16 +281,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   even beneath a capital, hard-protected anchor, road or active claim. Deep
   ocean and immutable dragon channels remain full-column exceptions.
 
-  Natural resources use a separate minimum-pick property: T1 harvests Copper,
-  Tin, Coal, Iron and Quartz; T2 harvests Gold and all G1 gems (Citrine,
-  Garnet, Jade); T3 harvests Silver; T4 harvests Emberglass and all G2 gems
-  (Diamond, Sapphire, Ruby); T5 harvests Abyssal Crystal. An under-tier real
-  pick at an otherwise legal y destroys the resource with no drop, profession
-  yield, XP or quest credit at ×4/×6/×8/×10 effective dig time for a shortfall
-  of one/two/three/four-or-more tiers, consumes one ordinary pick use and gives
-  explicit shatter feedback. Bare hands and non-picks cannot do this. Crafted
-  storage/building blocks are never natural resources: any real pick recovers
-  them where territory allows, and they always drop themselves.
+  Natural resources need the pick of the layer where they first appear, at any
+  depth: T1 digs Copper, Tin, Coal, Iron and Quartz; T2 Gold and all G1 gems
+  (Citrine, Garnet, Jade); T3 Silver; T4 Emberglass and all G2 gems (Diamond,
+  Sapphire, Ruby); T5 Abyssal Crystal. A weaker pick cannot dig the ore at all
+  (the former under-tier shatter path is retired). Crafted storage/building
+  blocks are never natural resources: any real pick recovers them where
+  territory allows, and they always drop themselves.
 
 Implementation: one central `core.is_protected` override in `grug_core`
 (faction + position check).
@@ -689,8 +684,8 @@ administration system do not exist in the target design.
   envelope, dynamic-POI candidate envelope or other static exclusion. Roads
   and ordinary POI shells remain mutable even though their analytic envelopes
   exclude claims.
-- Placement is forbidden below y = −50, derived from the T1 natural-depth
-  limit minus the maximum radius. No claim can therefore reach deep T5/T6.
+- Placement is forbidden below y = −50, derived from the T1 rock band
+  (y ≥ −100) minus the maximum radius. No claim can therefore reach deep T5/T6.
   Claims are dry-land housing only: no protected underwater claims or private
   harbors.
 - Copperfell Foothills, Mournfen, Starbough Vale and Raincall Basin each retain

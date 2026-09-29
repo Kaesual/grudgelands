@@ -12,6 +12,7 @@ local PUBLIC_METHODS = {
 	"race_region_at",
 	"faction_at",
 	"territory_rule_at",
+	"hard_protection_kind_at",
 	"pvp_rule_at",
 	"surface_mob_level_at",
 	"mob_level_at",

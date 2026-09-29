@@ -123,8 +123,8 @@ local PUBLIC_SYMBOL_TYPES = {
 	TIER_BY_KEY = "table",
 	tier_at = "function",
 	stratum_node_for = "function",
-	max_depth_for_pick_tier = "function",
-	can_mine_natural_at = "function",
+	level_for_tier = "function",
+	DECORATIVE_ROCKS = "table",
 	NATURAL_GROUND_NODES = "table",
 	NATURAL_GROUND_SET = "table",
 	natural_groups = "function",
@@ -142,16 +142,15 @@ local PUBLIC_SYMBOL_TYPES = {
 	SIGNATURE_WOODS = "table",
 	RACE_REGIONS = "table",
 	DENSITY = "table",
-	SHORTFALL_MULTIPLIERS = "table",
 	PICK_PROFILES = "table",
 	build_pick_capabilities = "function",
 	pick_tier_for_stack = "function",
 	is_natural_node = "function",
+	required_pick_tier = "function",
 	mining_decision = "function",
 	resource_ore_description = "function",
 	register_on_harvest = "function",
 	emit_mining_failure = "function",
-	is_shattering = "function",
 	node_dig_wrapper = "function",
 	CURRENT_SCATTER_RESOURCES = "table",
 	STORAGE_DERIVATIVES = "table",
@@ -309,7 +308,7 @@ function handoff.validate_public(materials, projection)
 	end
 	for i, tier in ipairs(projection.tiers) do
 		if materials.TIER_BY_KEY[tier.key] ~= materials.TIERS[i] or
-				materials.max_depth_for_pick_tier(i) ~= tier.max_depth then
+				materials.level_for_tier(i) ~= i - 1 then
 			fail("tier public lookup mismatch for " .. tier.key)
 		end
 		for _, y in ipairs({tier.y_min - 1, tier.y_min, tier.y_min + 1,
@@ -319,11 +318,6 @@ function handoff.validate_public(materials, projection)
 					materials.stratum_node_for(y) then
 				fail("tier boundary projection mismatch for " .. tier.key)
 			end
-		end
-		local allowed = materials.can_mine_natural_at(i, tier.max_depth)
-		local below = materials.can_mine_natural_at(i, tier.max_depth - 1)
-		if not allowed or below then
-			fail("inclusive depth predicate mismatch for " .. tier.key)
 		end
 	end
 	for _, resource in ipairs(projection.resources) do

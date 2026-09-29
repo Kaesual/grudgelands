@@ -39,6 +39,8 @@ local modpath = core.get_modpath(core.get_current_modname())
 -- The bottom-centre HUD column. Pure data plus arithmetic, depends on
 -- nothing, and every HUD writer in the game reads it.
 dofile(modpath .. "/hud_layout.lua")
+-- The shared screen flash line (skill errors, mining hints); reads hud_layout.
+dofile(modpath .. "/flash.lua")
 dofile(modpath .. "/tag_carrier.lua")
 dofile(modpath .. "/status.lua")
 dofile(modpath .. "/atmosphere.lua")

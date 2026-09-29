@@ -34,7 +34,6 @@ local cooldowns = {}
 -- has no wear bar and talents cannot shorten it.
 local cast_intervals = {}
 local targets = {} -- player name -> {enemy = rec, ally = rec}; rec = {obj, expiry}
-local flash_huds = {} -- player name -> {id = hud id, token = n}
 local ready_reticle_huds = {} -- player name -> {id = hud id, visible = bool}
 -- Skill-name line (classes.md §2c) and the throttled wield watcher that feeds
 -- it (WP38 T3). The watcher keeps the last noticed wielded stack per player:
@@ -434,22 +433,10 @@ local function add_bar(player, row)
 	}
 end
 
+-- The flash line itself lives in grug_core (flash.lua, shared with the
+-- mining hints since Round 24); skill errors keep its red.
 function grug_abilities.flash(player, msg)
-	local name = player:get_player_name()
-	local rec = flash_huds[name]
-	if not rec then
-		return
-	end
-	rec.token = rec.token + 1
-	local token = rec.token
-	player:hud_change(rec.id, "text", msg)
-	core.after(1.5, function()
-		local p = core.get_player_by_name(name)
-		local r = flash_huds[name]
-		if p and r and r.token == token then
-			p:hud_change(r.id, "text", "")
-		end
-	end)
+	grug_core.flash(player, msg, grug_core.FLASH_COLOR.error)
 end
 
 --
@@ -2482,8 +2469,6 @@ core.register_on_joinplayer(function(player)
 		breath = add_bar(player, "breath"),
 	}
 	player:hud_set_flags({healthbar = false, breathbar = false})
-	flash_huds[name] = {token = 0, id = player:hud_add(
-		layout.text_element("flash", {number = 0xff4444, text = ""}))}
 	skillname_huds[name] = {token = 0, id = player:hud_add(
 		layout.text_element("skill", {number = 0xffffff, text = ""}))}
 	ready_reticle_huds[name] = {visible = false, id = player:hud_add(
@@ -2539,7 +2524,6 @@ core.register_on_leaveplayer(function(player)
 	charge_steps[name] = nil
 	bar_huds[name] = nil
 	predicted_hp[name] = nil
-	flash_huds[name] = nil
 	skillname_huds[name] = nil
 	ready_reticle_huds[name] = nil
 	wield_watch[name] = nil

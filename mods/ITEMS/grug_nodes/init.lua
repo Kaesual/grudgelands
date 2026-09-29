@@ -22,9 +22,12 @@
 -- `default.can_grow()` refuses to grow a sapling unless the node below is
 -- in group `soil`; without it no tree could ever grow on an elf-forest or
 -- bone-forest floor.
-local function dirt_groups(extra, loose)
-	local groups = {crumbly = 3, soil = 1}
-	if loose ~= false then groups.grug_loose = 3 end
+--
+-- Every generated ground node is loose ground (Round 24 ruling 5): the hand,
+-- every shovel and every pick dig it, a shovel fastest. `grug_loose` repeats
+-- the node's `crumbly` rating.
+local function dirt_groups(extra)
+	local groups = {crumbly = 3, grug_loose = 3, soil = 1}
 	if extra then
 		for k, v in pairs(extra) do
 			groups[k] = v
@@ -89,7 +92,7 @@ register_litter("dirt_with_canopy_litter", "Dirt with Canopy Litter",
 core.register_node("grug_nodes:mud", {
 	description = "Swamp Mud",
 	tiles = {"grug_nodes_mud.png"},
-	groups = dirt_groups({mud = 1}, false),
+	groups = dirt_groups({mud = 1}),
 	sounds = default.node_sound_dirt_defaults(),
 })
 
@@ -97,12 +100,14 @@ core.register_node("grug_nodes:mud", {
 -- Stone-ish
 --
 
--- Badlands surface: hardened clay, so harder than dirt and it drops itself
--- instead of clay lumps (it is a building material, not a clay source).
+-- Badlands surface: hardened clay, so harder than dirt (crumbly 2, like
+-- gravel) and it drops itself instead of clay lumps (it is a building
+-- material, not a clay source). It is loose ground (Round 24 ruling 5): no
+-- `cracky`, so a shovel digs it faster than the pick of its tier.
 core.register_node("grug_nodes:mesa_clay", {
 	description = "Mesa Clay",
 	tiles = {"grug_nodes_mesa_clay.png"},
-	groups = grug_materials.natural_groups({cracky = 3, crumbly = 2}),
+	groups = grug_materials.natural_groups({crumbly = 2, grug_loose = 2}),
 	sounds = default.node_sound_dirt_defaults(),
 })
 
