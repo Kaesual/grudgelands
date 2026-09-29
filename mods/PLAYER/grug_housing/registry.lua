@@ -33,6 +33,10 @@ return function(api)
 	-- every column of the square is checked (about 10 ms per placement in the
 	-- engine-free fixture), so no forbidden column can be missed.
 	M.SAMPLE_STEP = 1
+	-- Ruling 27: a claim keeps this distance (in x and in z) from every
+	-- POI, village and camp core and every town, capital or landmark
+	-- footprint; the blend envelopes around them are no barrier.
+	M.SETTLEMENT_MARGIN = 16
 	M.CELL = 128             -- claim grid cell (nodes)
 	local RADIUS, CELL = M.RADIUS, M.CELL
 
@@ -349,7 +353,7 @@ return function(api)
 		return true
 	end
 
-	-- Placement validation (rulings 2, 3, 5, 6, 9, 22, 23). `world`:
+	-- Placement validation (rulings 2, 3, 5, 6, 9, 22, 23, 27). `world`:
 	--   water_class_at(x, z) "land" or "planned_water" (rivers, lakes, bay
 	--                        water: allowed, ruling 23); "coastal_shelf",
 	--                        "deep_ocean" and "immutable_dragon_channel"
@@ -361,9 +365,12 @@ return function(api)
 	--   territory_at(x, z)   the territory rule of the column at the world top
 	--                        ("hard_protected" wherever a town or landmark
 	--                        column is, whatever its floor)
-	--   exclusion_in(min_x, min_z, max_x, max_z)  id, kind ("town",
-	--                        "landmark", "site") of an excluded box the
-	--                        rectangle touches, or nil
+	--   feature_in(min_x, min_z, max_x, max_z, margin)  the kind ("site",
+	--                        "town", "landmark") of a settlement core (POI,
+	--                        village, camp) or a hard footprint (start town,
+	--                        capital city, landmark) that comes within
+	--                        `margin` nodes (in x and in z) of the inclusive
+	--                        rectangle, or nil; exact or conservative
 	--   cube_clear(pos)      true when the 3 x 3 x 3 cube above pos is air
 	--
 	-- Zone check: every column of the square's border (400 columns) first,
@@ -376,8 +383,9 @@ return function(api)
 	-- can be missed, and only if it holds no lattice column: every
 	-- SAMPLE_STEP x SAMPLE_STEP block of columns inside the square holds one,
 	-- so an enclave is missed only if it is narrower than SAMPLE_STEP in x or
-	-- in z. Towns, landmarks and POI areas are no sampling matter: they are
-	-- tested as boxes (exclusion_in), which is exact-or-conservative.
+	-- in z. Settlements are no sampling matter (ruling 27): feature_in tests
+	-- the square widened by SETTLEMENT_MARGIN against the settlement cores
+	-- and the hard footprints themselves.
 	local function zone_problem(faction, home, water, zone, territory)
 		if water == "coastal_shelf" then return "shelf" end
 		if water ~= "land" and water ~= "planned_water" then return "sea" end
@@ -400,9 +408,12 @@ return function(api)
 		no_faction = "Choose a faction first.",
 		already_placed = "Your Claim Stone is already placed.",
 		overlap = "Too close to another home: claims may not overlap.",
-		town = "Too close to a town: the claim (101 x 101) may not touch it.",
-		landmark = "Too close to a protected landmark.",
-		site = "Too close to a village, camp or point of interest.",
+		town = "Too close to a town: the claim (101 x 101) must stay " ..
+			M.SETTLEMENT_MARGIN .. " nodes away from it.",
+		landmark = "Too close to a protected landmark: the claim must stay " ..
+			M.SETTLEMENT_MARGIN .. " nodes away from it.",
+		site = "Too close to a village, camp or point of interest: the claim " ..
+			"must stay " .. M.SETTLEMENT_MARGIN .. " nodes away from its buildings.",
 		sea = "The claim (101 x 101) may not reach over the open sea.",
 		shelf = "The claim (101 x 101) may not reach over the coastal shelf.",
 		enemy = "The claim (101 x 101) may not reach into enemy territory.",
@@ -465,8 +476,8 @@ return function(api)
 				return refuse("overlap")
 			end
 		end
-		local _, kind = world.exclusion_in(x - RADIUS, z - RADIUS, x + RADIUS,
-			z + RADIUS)
+		local kind = world.feature_in(x - RADIUS, z - RADIUS, x + RADIUS,
+			z + RADIUS, M.SETTLEMENT_MARGIN)
 		if kind then return refuse(MESSAGES[kind] and kind or "site") end
 		local home = faction .. "_home"
 		local offsets_x, offsets_z = sample_offsets.x, sample_offsets.z

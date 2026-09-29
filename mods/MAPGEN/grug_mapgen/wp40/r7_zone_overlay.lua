@@ -55,9 +55,9 @@ return function(session, roster)
 		if functional_protected(position) then return "landmark" end
 		return session.hard_protection_kind_at(position)
 	end
-	-- Claim Stone placement (Round 25 ruling 3): these columns are landmarks
-	-- a claim may not touch either.
-	function wrapped.claim_exclusion_in(min_x, min_z, max_x, max_z)
+	-- Claim Stone placement (Round 25 ruling 27): these columns are landmark
+	-- footprints too (inclusive x/z rectangle, exact).
+	function wrapped.hard_footprint_in(min_x, min_z, max_x, max_z)
 		for index = 1, #column_list do
 			local column = column_list[index]
 			if column.x >= min_x and column.x <= max_x and
@@ -65,7 +65,7 @@ return function(session, roster)
 				return "functional:" .. tostring(column.id), "landmark"
 			end
 		end
-		return session.claim_exclusion_in(min_x, min_z, max_x, max_z)
+		return session.hard_footprint_in(min_x, min_z, max_x, max_z)
 	end
 	local compatibility = {}
 	for key, value in pairs(session.compatibility) do compatibility[key] = value end

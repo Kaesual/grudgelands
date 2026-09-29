@@ -1047,53 +1047,32 @@ local function zones_factory(dependencies)
 			return integer(placement_y, "placement height") - PROTECTION_DEPTH
 		end
 
-		-- Claim Stone placement (Round 25 ruling 3): the x/z boxes a claim may
-		-- not touch. Every anchor's blend envelope (a start town, a capital, a
-		-- POI, village or camp together with its fitting and blend ground) and
-		-- every hard footprint's bounding box, each widened by one node so the
-		-- half-open squares need no rounding care. Boxes only over-approximate
-		-- the shapes they hold, so an answer of nil is exact for them.
-		local claim_boxes = {}
-		do
-			local anchor_template = {}
-			for index = 1, #anchor_records do
-				anchor_template[anchor_records[index].id] =
-					anchor_records[index].template_id
-			end
-			for index = 1, #(source.claim_exclusions or {}) do
-				local row = source.claim_exclusions[index]
-				if row.recipe_id == "exclude_anchor_blend_v1" then
-					local template = anchor_template[row.source_id]
-					if not template or type(row.total_width) ~= "number" then
-						fail("claim box anchor differs: " .. tostring(row.id))
-					end
-					local half = math.floor((row.total_width + 1) / 2) + 1
-					claim_boxes[#claim_boxes + 1] = {id = row.id,
-						kind = (template == "start" or template:match("^capital_")) and
-							"town" or "site",
-						min_x = row.center.x - half, max_x = row.center.x + half,
-						min_z = row.center.z - half, max_z = row.center.z + half}
-				end
-			end
+		-- Claim Stone placement (Round 25 ruling 27): the id and kind ("town"
+		-- for a capital's city or a start town, "landmark" for an exact
+		-- column) of the first hard footprint holding a column of the inclusive
+		-- x/z rectangle, or nil. Exact: an exact column by its coordinates, an
+		-- outline by its own membership over the columns the rectangle shares
+		-- with its index box (only for the few footprints whose box it meets).
+		-- The caller widens the rectangle by the ruling's distance.
+		function session.hard_footprint_in(min_x, min_z, max_x, max_z)
+			min_x, min_z = normalize_xz(min_x, min_z, "hard rectangle min")
+			max_x, max_z = normalize_xz(max_x, max_z, "hard rectangle max")
 			for index = 1, #hard_rows do
 				local row = hard_rows[index]
-				claim_boxes[#claim_boxes + 1] = {id = row.id,
-					kind = row.shape == "exact_column" and "landmark" or "town",
-					min_x = row.bbox.min_x - 1, max_x = row.bbox.max_x + 1,
-					min_z = row.bbox.min_z - 1, max_z = row.bbox.max_z + 1}
-			end
-		end
-
-		-- The id and kind ("town", "landmark" or "site") of the first box the
-		-- inclusive rectangle touches, or nil.
-		function session.claim_exclusion_in(min_x, min_z, max_x, max_z)
-			min_x, min_z = normalize_xz(min_x, min_z, "claim rectangle min")
-			max_x, max_z = normalize_xz(max_x, max_z, "claim rectangle max")
-			for index = 1, #claim_boxes do
-				local box = claim_boxes[index]
-				if max_x >= box.min_x and min_x <= box.max_x and
-						max_z >= box.min_z and min_z <= box.max_z then
-					return box.id, box.kind
+				if row.shape == "exact_column" then
+					local c = row.center
+					if c.x >= min_x and c.x <= max_x and c.z >= min_z and c.z <= max_z then
+						return row.id, "landmark"
+					end
+				else
+					local box = row.bbox
+					local x0, x1 = math.max(min_x, box.min_x), math.min(max_x, box.max_x)
+					local z0, z1 = math.max(min_z, box.min_z), math.min(max_z, box.max_z)
+					for z = z0, z1 do
+						for x = x0, x1 do
+							if hard_horizontal_member(row, x, z) then return row.id, "town" end
+						end
+					end
 				end
 			end
 			return nil

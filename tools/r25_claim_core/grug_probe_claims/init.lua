@@ -3,7 +3,7 @@
 --
 -- Boot 1 (empty probe storage):
 --   1. the mod loaded: node variants, pick groupcaps, housing masks gone,
---      grug_zones.claim_exclusion_in published;
+--      grug_zones.hard_footprint_in published;
 --   2. the first accepted Accord spot of a lattice over the home zones
 --      (pure zone check), emerged; the real stone on_place with a fake
 --      placer: refused while the arrival cube holds a node, accepted once it
@@ -109,18 +109,9 @@ end
 local function zone_ok(x, z)
 	local zone = grug_zones.get(grug_zones.id_at(x, z) or "")
 	if not zone or zone.faction ~= "accord" then return false end
-	local world = {
-		water_class_at = grug_zones.water_class_at,
-		zone_at = function(sx, sz)
-			local id = grug_zones.id_at(sx, sz)
-			return id and grug_zones.get(id) or nil
-		end,
-		territory_at = function(sx, sz)
-			return grug_zones.territory_rule_at({x = sx, y = 30000, z = sz})
-		end,
-		exclusion_in = grug_zones.claim_exclusion_in,
-		cube_clear = function() return true end,
-	}
+	local world = {}
+	for key, fn in pairs(grug_housing.placement_world) do world[key] = fn end
+	world.cube_clear = function() return true end
 	local ok, code = model.validate("r25scan", "accord", {x = x, y = 0, z = z}, world)
 	return ok, code, zone
 end
@@ -346,7 +337,8 @@ core.after(3, function()
 	check(ItemStack(""):get_tool_capabilities().groupcaps.grug_claim_stone == nil,
 		"hand has no claim-stone cap")
 	check(grug_zones.housing_eligible_at == nil and
-		type(grug_zones.claim_exclusion_in) == "function", "authority: masks gone, boxes in")
+		type(grug_zones.hard_footprint_in) == "function" and
+		grug_zones.claim_exclusion_in == nil, "authority: masks gone, footprint query in")
 	-- 2. Refusals by zone: next to the Accord (human) start and in its L1-10 zone.
 	local start = grug_core.start_anchor("accord", "human")
 	local near_ok, near_code = zone_ok(start.x, start.z + 150)

@@ -226,8 +226,16 @@ function world.territory_at(x, z)
 	return grug_zones.territory_rule_at({x = x, y = 30000, z = z})
 end
 
-function world.exclusion_in(min_x, min_z, max_x, max_z)
-	return grug_zones.claim_exclusion_in(min_x, min_z, max_x, max_z)
+-- Ruling 27: the settlement cores of POIs, villages and camps (grug_core,
+-- Round 25 ruling 16) and the hard footprints of start towns, capitals and
+-- landmarks, each within `margin` of the claim square.
+function world.feature_in(min_x, min_z, max_x, max_z, margin)
+	if grug_core.world_feature_boxes_in(min_x, min_z, max_x, max_z, margin) then
+		return "site"
+	end
+	local _, kind = grug_zones.hard_footprint_in(min_x - margin, min_z - margin,
+		max_x + margin, max_z + margin)
+	return kind
 end
 
 function world.cube_clear(pos)
@@ -243,7 +251,11 @@ function world.cube_clear(pos)
 	return true
 end
 
--- Rulings 2, 3, 5, 6 and 9 for a stone the player would place at pos;
+-- The world queries above, for probes that check placement without a map
+-- (replace cube_clear in a copy).
+grug_housing.placement_world = world
+
+-- Rulings 2, 3, 5, 6, 9 and 27 for a stone the player would place at pos;
 -- returns true, or false, code, message.
 function grug_housing.validate_placement(player, pos)
 	if not grug_core.zone_authority_installed() then

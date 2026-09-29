@@ -1,0 +1,23 @@
+staged probe: grug_probe_claim_distance
+headless boot: PASS (port 38829, 270 s)
+log: /tmp/grudgelands-headless.zoAkTK/server.log
+seed = 4242424242
+252:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:38829.
+kept: /tmp/grudgelands-headless.zoAkTK
+ACTION[Server]: [grug_housing] interaction guard: node inventories on 919 nodes, right-click on 158, node form on 12; exceptions: default:sign_wall_wood, grug_housing:claim_stone, grug_materials:iron_sign_wall
+ACTION[Server]: [r25_distance_probe] MODS grug_home grug_housing
+ACTION[Server]: [r25_distance_probe] CANDIDATE r20_anchor_016 at -925,65,-1557: village
+ACTION[Server]: [r25_distance_probe]   core edge -936,-1557; 70 away -1006,-1557: ok
+ACTION[Server]: [r25_distance_probe] CANDIDATE r20_anchor_018 at 875,105,-1557: village
+ACTION[Server]: [r25_distance_probe]   core edge 875,-1545; 70 away 875,-1475: ok
+ACTION[Server]: [r25_distance_probe] CANDIDATE copperfell_village at -1869,110,-2037: village
+ACTION[Server]: [r25_distance_probe]   core edge -1869,-2025; 70 away -1869,-1955: ok
+ACTION[Emerge-0]: [r25_distance_probe] EMERGED (-1062,15,-1613)..(-900,115,-1501) in 5.8 s
+ACTION[Emerge-0]: [r25_distance_probe] NEAR (-956,55,-1557) (20 from the core): site, "Too close to a village, camp or point of interest: the claim must stay 16 nodes away from its buildings."
+ACTION[Emerge-0]: [grug_housing] r25a2owner placed Claim Stone 1 at (-1006,44,-1557)
+ACTION[Emerge-0]: [r25_distance_probe] FAR claim 1 at (-1006,44,-1557) (70 from the core, 81/0 from the village centre, inside the old 160-node blend envelope: true); placement 9.9 ms
+ACTION[Emerge-0]: [r25_distance_probe] CROSSING 22 corridor columns from (-973,66,-1524): mud mud mud mud mud mud cobble cobble cobble cobble cobble cobble slab_cobble cobble cobble slab_cobble mud mud mud mud mud mud; open to the owner: 0
+ACTION[Emerge-0]: [r25_distance_probe] ROAD (-963,65,-1524) (road, node default:cobble) in claim 1: owner is_protected=true, hint "Road – protected", place above=false, dig kept default:cobble
+ACTION[Emerge-0]: [r25_distance_probe] BESIDE (-974,67,-1524) (beside the corridor, 11 from its middle column): stranger hint "Home of r25a2owner – protected", stranger placed=false; owner placed=true -> default:dirt
+ACTION[Emerge-0]: [r25_distance_probe] RESULT PASS checks=24 failures=0
+r25 claim distance probe: PASS
