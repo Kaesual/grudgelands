@@ -1,0 +1,9 @@
+ACTION[Emerge-0]: [r25_spawn_guard_probe] emerged in 11.7 s
+ACTION[Server]: [r25_spawn_guard_probe] claim centre zone=elandor_moonfall_wood level=25; free point zone=elandor_moonfall_wood level=25; h=44
+ACTION[Server]: [r25_spawn_guard_probe] census active@60 hostile present inside=6 (walk-ins allowed) outside=40
+ACTION[Server]: [r25_spawn_guard_probe] census active@120 hostile present inside=7 (walk-ins allowed) outside=46
+ACTION[Server]: [r25_spawn_guard_probe] active spawns inside: hostile=0 other=0; outside: hostile=54 other=78; claim lookups=473 [outside:elder_dwarf=2 outside:elder_elf=2 outside:elder_human=2 outside:elder_orc=2 outside:elder_troll=2 outside:elder_undead=2 outside:giant_spider=15 outside:grug_traders:vendor_race_dwarf=1 outside:grug_traders:vendor_race_elf=1 outside:grug_traders:vendor_race_human=1 outside:grug_traders:vendor_race_orc=1 outside:grug_traders:vendor_race_troll=1 outside:grug_traders:vendor_race_undead=1 outside:guard_accord=9 outside:guard_throng=9 outside:poacher=10 outside:villager_dwarf=7 outside:villager_elf=7 outside:villager_human=7 outside:villager_orc=7 outside:villager_troll=7 outside:villager_undead=7 outside:wisp=10 outside:wolf=19]
+ACTION[Server]: [r25_spawn_guard_probe] expired spawns inside: hostile=0 other=0; outside: hostile=2 other=0; claim lookups=188 [outside:poacher=1 outside:wisp=1]
+ACTION[Server]: [r25_spawn_guard_probe] refused hostile attempts in the active claim=170; lookups in the expired claim=67
+ACTION[Server]: [r25_spawn_guard_probe] expired claim: hostile spawns inside=0 (informational)
+ACTION[Server]: [r25_spawn_guard_probe] RESULT PASS

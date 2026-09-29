@@ -367,6 +367,14 @@ function mobs:spawn_abm_check(pos, node, name)
 	if not spawn_allowed(name, pos) then
 		return true
 	end
+	-- Round 25 ruling 24 (spawn_policy.lua claim_refuses_spawn): at most one
+	-- claim lookup, only for a hostile attempt the policy already allows. It
+	-- stays out of spawn_allowed, so the budget's eligible species at a point
+	-- are the same with or without a claim and the refusal is an ordinary
+	-- failed attempt. The mob would stand on top of the matched node.
+	if grug_mobs.claim_refuses_spawn(name, {x = pos.x, y = pos.y + 1, z = pos.z}) then
+		return true
+	end
 	if not grug_mobs.density_allows(name, pos, node and node.name,
 			spawn_allowed) then
 		return true
