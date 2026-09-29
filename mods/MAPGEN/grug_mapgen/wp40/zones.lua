@@ -1025,6 +1025,24 @@ local function zones_factory(dependencies)
 				end
 			end
 		end
+		-- Every other static claim exclusion (planned water, coast) is no
+		-- protection: a column any of them holds keeps its exclusion at every
+		-- depth (ruling 30 addendum).
+		-- The second set leaves out the two dragon islands' whole-island coast
+		-- envelopes, which P9G gathering treats as nonblocking on dry land
+		-- (r7_p9g.lua DRY_ISLAND_COAST).
+		local unprotected_value_by_id, unprotected_off_island_by_id = {}, {}
+		local DRY_ISLAND_COAST = {["exclude:coast:island_wyrmglass"] = true,
+			["exclude:coast:island_stormscale"] = true}
+		for index = 1, #(source.claim_exclusions or {}) do
+			local row = source.claim_exclusions[index]
+			if exclusion_floor_by_id[row.id] == nil then
+				unprotected_value_by_id[row.id] = 0
+				if not DRY_ISLAND_COAST[row.id] then
+					unprotected_off_island_by_id[row.id] = 0
+				end
+			end
+		end
 
 		-- The floor of a protected volume placed at `placement_y` (Round 24
 		-- ruling 30), for the footprints this index does not hold (the R7
@@ -1571,6 +1589,24 @@ local function zones_factory(dependencies)
 				return result
 			end
 			function planner_source.protected_floor_at(x, z)
+				return protected_floor_at(x, z)
+			end
+			-- The floor below which a column's claim exclusion no longer
+			-- applies (Round 24 ruling 30 addendum), or nil when the column is
+			-- also held by a non-protection exclusion (planned water, coast, a
+			-- road corridor, inland water or its bank), or by no protected shape
+			-- at all. Surface and near-surface writers ask it where the
+			-- territory rule (purpose nil) excludes a column: an anchor
+			-- envelope on a slope reaches ground far below its anchor.
+			-- `dry_island_open`: P9G's view, where the dragon islands' coast
+			-- envelopes do not block a dry land column.
+			function planner_source.protected_only_floor_at(x, z, dry_island_open)
+				if horizontal.lowest_exclusion_value_at(x, z, (dry_island_open and
+						planner_source.column_values_at(x, z) == "land") and
+						unprotected_off_island_by_id or unprotected_value_by_id) ~= nil or
+						planner_source.overlay_exclusion_at(x, z) ~= nil then
+					return nil
+				end
 				return protected_floor_at(x, z)
 			end
 			function planner_source.protection_floor_y(exclusion_id, x, z)

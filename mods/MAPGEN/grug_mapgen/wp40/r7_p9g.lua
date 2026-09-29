@@ -313,7 +313,10 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			value.prior_cid, value.prior_param2, value.prior_occupancy,
 				value.prior_opcode, value.prior_feature, value.prior_interface,
 				value.prior_aux = context.settled_at(x, y, z)
-			local exclusion, exclusion_id = context.exclusion_at(x, z)
+			-- `y` (Round 24 ruling 30 addendum): below the column's protected
+			-- floor an anchor envelope's exclusion does not apply (the dry
+			-- island coast envelopes stay nonblocking, as below).
+			local exclusion, exclusion_id = context.exclusion_at(x, z, y, true)
 			-- The two island coast records are claim envelopes over the complete
 			-- island polygon, not occupied world cells.  Their physically dry P7
 			-- surface remains the ratified host for endpoint gathering sources.

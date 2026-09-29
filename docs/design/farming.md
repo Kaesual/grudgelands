@@ -108,9 +108,13 @@ the full territory rule (settlements, POIs with their collars, start and
 capital blend envelopes, roads, inland water and water banks; shoreline
 species ignore the bank, gathering sources the dry island coast envelopes),
 ground cover and trees the decoration rule (the planner's vegetation
-exclusions and road corridors; banks allowed). Cave plants stay out of
-occupied ground, except below a town's or POI's protected floor (placement
-height − 100, Round 24 ruling 30), where the cave is ordinary ground. At the planned surface renewal follows the generator's own
+exclusions and road corridors; banks allowed). Cave plants follow the
+generator's own cave rule (`r6_settlement.lua` `r30_cave_limit`): they stay
+out of occupied ground, of housing masks and of planned-water and coast
+shapes, and below a town's or POI's protected floor (placement height − 100,
+Round 24 ruling 30) the cave is ordinary ground. A surface resource plant on
+ground below such a floor ignores the envelope's claim exclusion, as the
+writers do. At the planned surface renewal follows the generator's own
 host rule: nothing on an anchor platform, on a land grade other than a
 start's or capital's dry anchor grade, on a sealed river or lake column or in
 a surface cave mouth; the dry anchor grades (the natural skin around starts

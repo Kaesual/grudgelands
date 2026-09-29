@@ -463,13 +463,21 @@ return function(deps)
 	--    columns per plant)}.
 	-- Each class keeps its own writer's claim exclusions: resources the full
 	-- territory rule, decorations the "vegetation" rule (road
-	-- corridors too, water banks not). Cave rows follow no claim exclusion in
-	-- the writer; renewal keeps them out of occupied ground (the "cave" rule),
-	-- except below a town's or POI's protected floor (Round 24 ruling 30
-	-- addendum: `protected_floor_at`, optional), where the ground is ordinary.
-	local protected_floor_at = deps.protected_floor_at
-	local function protected_shape(id)
-		return id:sub(1, 15) == "exclude:anchor:" or id:sub(1, 15) == "exclude:active:"
+	-- corridors too, water banks not). Cave rows follow the writer's "cave"
+	-- rule. Round 24 ruling 30 addendum (optional deps, all or none):
+	-- `cave_limit` is the writer's own column rule (r6_settlement.lua
+	-- `r30_cave_limit`, with `housing_mask_id_at` and `protected_floor_at`),
+	-- so cave rows regrow exactly where the generator places them, below a
+	-- town's or POI's protected floor included; `protected_only_floor_at`
+	-- lets a surface resource below such a floor ignore the claim exclusion,
+	-- as the writers do.
+	local cave_limit = deps.cave_limit
+	local protected_only_floor_at = deps.protected_only_floor_at
+	if cave_limit ~= nil and (type(cave_limit) ~= "function" or
+			type(deps.housing_mask_id_at) ~= "function" or
+			type(deps.protected_floor_at) ~= "function" or
+			type(protected_only_floor_at) ~= "function") then
+		fail("ruling 30 cave seams differ")
 	end
 	function M.categories(x, y, z, support, light)
 		local water, _, zone, biome, _, terrain_y, water_y, river_id, _,
@@ -479,10 +487,13 @@ return function(deps)
 		local cave = y <= terrain_y - 2
 		if cave then
 			local _, cave_id = deps.static_exclusion_values_at(x, z, "cave")
-			if cave_id ~= nil then
-				local floor = protected_floor_at and protected_shape(cave_id) and
-					protected_floor_at(x, z) or nil
-				if floor == nil or y >= floor then return nil, "excluded" end
+			if cave_limit then
+				if y >= cave_limit(water, cave_id, deps.housing_mask_id_at(x, z) ~= nil,
+						functional_kind, hard_foundation, deps.protected_floor_at, x, z) then
+					return nil, "excluded"
+				end
+			elseif cave_id ~= nil then
+				return nil, "excluded"
 			end
 		elseif writer_bare(x, z, terrain_y, water_y, river_id,
 				functional_kind, functional_feature_id) then
@@ -490,9 +501,16 @@ return function(deps)
 		end
 		if not cave and (light or 0) < M.SURFACE_MIN_LIGHT then return nil, "dark" end
 		local overlay, territory_id, vegetation_excluded
+		local below_floor, below_floor_p9g = false, false
 		if not cave then
 			overlay = deps.overlay_exclusion_at(x, z)
 			territory_id = select(2, deps.static_exclusion_values_at(x, z))
+			if territory_id ~= nil and protected_only_floor_at then
+				local floor = protected_only_floor_at(x, z)
+				below_floor = floor ~= nil and y < floor
+				floor = protected_only_floor_at(x, z, true)
+				below_floor_p9g = floor ~= nil and y < floor
+			end
 			vegetation_excluded = overlay == "road_corridor" or
 				deps.static_exclusion_values_at(x, z, "vegetation") ~= nil
 		end
@@ -506,8 +524,12 @@ return function(deps)
 			local source = resources[index]
 			if habitat.habitat_matches(source, values) and
 					shore_ok(source, x, y - 1, z) then
-				if not cave and resource_excluded(source, territory_id, overlay, water,
-						hard_foundation) then
+				-- Round 24 ruling 30 addendum: below a protected-only floor the
+				-- claim exclusion does not apply (P9G: dry islands stay open).
+				local below = source.kind == "p9g" and below_floor_p9g or
+					source.kind ~= "p9g" and below_floor
+				if not cave and resource_excluded(source, not below and territory_id or nil,
+						overlay, water, hard_foundation) then
 					excluded = true
 				else
 					result[#result + 1] = {class = "resource", key = source.key,
