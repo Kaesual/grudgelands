@@ -114,11 +114,21 @@ end
 -- also contains solid sandstone. The engine selects the fastest matching
 -- groupcap, so a dedicated group makes the shovel surface explicit and gives
 -- picks one slower route: a pick digs loose ground at twice the time of the
--- shovel of its tier (ruling 5).
+-- shovel of its tier (ruling 5), but never slower than the bare hand. The
+-- engine uses a tool's own capability whenever it can dig, so without the cap
+-- a starter pick would be slower on dirt than an empty hand.
 function grug_materials.build_loose_times(shovel_times)
+	local hand = core.registered_items[""]
+	local hand_times = hand and hand.tool_capabilities and
+		hand.tool_capabilities.groupcaps and
+		hand.tool_capabilities.groupcaps.crumbly and
+		hand.tool_capabilities.groupcaps.crumbly.times or {}
 	local times = {}
 	for rating, seconds in pairs(shovel_times or {}) do
 		times[rating] = seconds * 2
+		if hand_times[rating] and hand_times[rating] < times[rating] then
+			times[rating] = hand_times[rating]
+		end
 	end
 	return times
 end
@@ -223,6 +233,13 @@ local function is_player(object)
 		object:is_player()
 end
 
+local function wields_broken(stack)
+	local owner = rawget(_G, "grug_core")
+	return stack ~= nil and owner ~= nil and
+		type(owner.equipment_is_broken) == "function" and
+		owner.equipment_is_broken(stack) == true
+end
+
 -- The full public decision is read-only. The authoritative dig wrapper owns
 -- the one protection-violation record on an actual refused transaction.
 function grug_materials.mining_decision(pos, node, digger)
@@ -262,6 +279,7 @@ function grug_materials.mining_decision(pos, node, digger)
 	if is_player(digger) and not grug_materials.stack_can_dig(stack, def) then
 		result.allowed = false
 		result.reason = result.required_tier and "too_hard" or "not_diggable"
+		result.broken_pick = result.pick_tier ~= nil and wields_broken(stack)
 		return result
 	end
 	result.reason = "allowed"
@@ -295,8 +313,10 @@ local function settle_harvest(pos, node, digger, decision)
 	end
 end
 
--- One-line hints (ruling 7). At most one line per player every 1.5 s, and the
--- same line at most every 5 s while a player keeps punching.
+-- One-line hints (ruling 7) in the shared screen flash line (grug_core), in
+-- its neutral notice colour; chat only if the flash is unavailable. At most
+-- one line per player every 1.5 s, and the same line at most every 5 s while
+-- a player keeps punching.
 local HINT_INTERVAL_US = 1500000
 local SAME_HINT_INTERVAL_US = 5000000
 local last_hint = {}
@@ -315,7 +335,13 @@ function grug_materials.emit_hint(name, message)
 		return false
 	end
 	last_hint[name] = {at = now, message = message}
-	core.chat_send_player(name, message)
+	local owner = rawget(_G, "grug_core")
+	local player = core.get_player_by_name(name)
+	if not (player and owner and type(owner.flash) == "function" and
+			owner.flash(player, message, owner.FLASH_COLOR and
+				owner.FLASH_COLOR.notice)) then
+		core.chat_send_player(name, message)
+	end
 	return true
 end
 
@@ -334,13 +360,16 @@ function grug_materials.too_hard_hint(required_tier)
 	return "Requires a T" .. required_tier .. " pick"
 end
 
+grug_materials.BROKEN_PICK_HINT = "Your pick is broken – repair it"
+
 function grug_materials.emit_mining_failure(pos, digger, decision)
 	local name = digger_name(digger)
 	local message
 	if decision.reason == "protected" then
 		message = grug_materials.protection_hint(pos, name) or "Protected"
 	elseif decision.reason == "too_hard" then
-		message = grug_materials.too_hard_hint(decision.required_tier)
+		message = decision.broken_pick and grug_materials.BROKEN_PICK_HINT or
+			grug_materials.too_hard_hint(decision.required_tier)
 	end
 	return grug_materials.emit_hint(name, message)
 end
@@ -350,15 +379,9 @@ local function wields_skill(stack)
 	return def ~= nil and ((def.groups or {}).grug_ability or 0) > 0
 end
 
-local function wields_broken(stack)
-	local owner = rawget(_G, "grug_core")
-	return stack ~= nil and owner ~= nil and
-		type(owner.equipment_is_broken) == "function" and
-		owner.equipment_is_broken(stack) == true
-end
-
 -- The hint a punch earns, or nil. A selected skill makes LMB on a node the
 -- hand cannot dig a cast (classes.md 2b), so skills never produce a hint.
+-- A broken pick on rock earns the repair line instead of the tier line.
 function grug_materials.punch_hint(pos, node, puncher)
 	if not is_player(puncher) or not node then return nil end
 	local def = core.registered_nodes[node.name]
@@ -369,8 +392,10 @@ function grug_materials.punch_hint(pos, node, puncher)
 	local protected = grug_materials.protection_hint(pos, name)
 	if protected then return protected end
 	local required = grug_materials.required_pick_tier(node.name, def)
-	if required and not wields_broken(stack) and
-			not grug_materials.stack_can_dig(stack, def) then
+	if required and not grug_materials.stack_can_dig(stack, def) then
+		if wields_broken(stack) and grug_materials.pick_tier_for_stack(stack) then
+			return grug_materials.BROKEN_PICK_HINT
+		end
 		return grug_materials.too_hard_hint(required)
 	end
 	return nil

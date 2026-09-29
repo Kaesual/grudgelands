@@ -164,10 +164,13 @@ do not create a parallel Mese material.
 
 ## 7. Mining-failure feedback
 
-An under-tier resource shatter emits transient particles using
-`default_stone.png^[colorize:#777777:180` and plays the vendored
-`default_dig_cracky.1-3.ogg` sound family. No generated particle texture or
-sound file is stored by this mod.
+Removed in Round 24: the under-tier resource shatter (and with it its
+transient `default_stone.png^[colorize:#777777:180` particles and the
+`default_dig_cracky.1-3.ogg` sound it played) no longer exists; a too-weak pick
+cannot dig at all and the player gets a one-line text hint. No media file
+became unused: this mod never stored its own particle texture or sound, and
+`default_stone.png` and the `default_dig_cracky` sounds remain in use by the
+vendored `default` mod (stone tiles, cracky dig sounds).
 
 ## 8. Canonical derivatives of vendored nodes
 

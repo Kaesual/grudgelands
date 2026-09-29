@@ -225,6 +225,23 @@ local function transaction(base)
 			probe_player("default:pick_wood"))
 		check(decision.allowed and decision.required_tier == 1,
 			"coal at y=-600 needs only a T1 pick")
+		-- A broken pick earns the repair line.
+		do
+			local broken = ItemStack("default:pick_bronze")
+			broken:set_wear(65535)
+			local pos = vector.offset(base, 1, 0, 0)
+			local hint = grug_materials.punch_hint(pos, core.get_node(pos), {
+				is_player = function() return true end,
+				get_player_name = function() return PROBE_NAME end,
+				get_wielded_item = function() return ItemStack(broken) end,
+			})
+			check(hint == "Your pick is broken – repair it", "broken pick hint " ..
+				tostring(hint))
+		end
+		local abilities = rawget(_G, "grug_abilities")
+		check(type(grug_core.flash) == "function" and
+			(abilities == nil or type(abilities.flash) == "function"),
+			"shared flash API present")
 		-- Skills never produce a hint.
 		if core.registered_items["grug_abilities:strike"] then
 			local pos = vector.offset(base, 1, 0, 0)

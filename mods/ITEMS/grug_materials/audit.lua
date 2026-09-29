@@ -357,6 +357,22 @@ local function check_dig_matrix()
 		end
 	end
 
+	-- No pick or shovel digs loose ground more slowly than the bare hand (the
+	-- engine uses a tool's own capability whenever it can dig).
+	for name, def in pairs(core.registered_items) do
+		local groups = def.groups or {}
+		if groups.grug_pick_tier or groups.grug_shovel_tier then
+			for _, node_name in ipairs(grug_materials.NATURAL_GROUND_NODES) do
+				if node_name ~= "default:stone" then
+					local tool = expect(node_name, def.tool_capabilities, true, name)
+					if tool.time > dig(node_name, hand).time then
+						fail(name .. " digs " .. node_name .. " slower than the hand")
+					end
+				end
+			end
+		end
+	end
+
 	-- Wood is not gated; a better axe chops faster.
 	for _, node_name in ipairs({"default:tree", "default:wood"}) do
 		local previous

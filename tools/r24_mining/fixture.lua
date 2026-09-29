@@ -163,6 +163,8 @@ function stack_meta:get_count() return self.name == "" and 0 or 1 end
 function stack_meta:get_wear() return self.wear end
 function stack_meta:get_definition() return items[self.name] end
 function stack_meta:get_tool_capabilities()
+	-- A broken stack carries empty meta capabilities (grug_repair/grug_quality).
+	if self.wear >= 65535 then return {groupcaps = {}} end
 	local def = items[self.name]
 	return (def and def.tool_capabilities) or items[""].tool_capabilities
 end
@@ -242,6 +244,14 @@ for _, pick in ipairs(picks) do
 	end
 	for _, node_name in ipairs(loose) do
 		check(dig_with(node_name, name).diggable, name .. " on " .. node_name)
+		check(dig(node_name, caps(name)).time <= dig(node_name, HAND).time,
+			name .. " never slower than the hand on " .. node_name)
+	end
+end
+for _, name in ipairs({"default:shovel_wood", "default:shovel_stone"}) do
+	for _, node_name in ipairs(loose) do
+		check(dig(node_name, caps(name)).time <= dig(node_name, HAND).time,
+			name .. " never slower than the hand on " .. node_name)
 	end
 end
 -- The hand (and every non-pick through the hand fallback): loose only.
@@ -355,8 +365,14 @@ local node = place("grug_materials:t3_stone")
 check(M.punch_hint(origin, node, player("miner", "grug_abilities:strike")) == nil,
 	"skill: no hint")
 _G.grug_core = {equipment_is_broken = function(stack) return stack:get_wear() >= 65535 end}
-check(M.punch_hint(origin, node, player("miner", "default:pick_bronze", 65535)) == nil,
-	"broken pick: no hint")
+check(M.punch_hint(origin, node, player("miner", "default:pick_bronze", 65535)) ==
+	"Your pick is broken – repair it", "broken pick: repair hint")
+check(M.punch_hint(origin, node, player("miner", "default:shovel_bronze", 65535)) ==
+	"Requires a T3 pick", "broken shovel on rock: tier hint")
+node = place("default:stone")
+check(M.punch_hint(origin, node, player("miner", "default:pick_wood", 65535)) ==
+	"Your pick is broken – repair it", "broken starter pick on stone: repair hint")
+node = place("grug_materials:t3_stone")
 -- Refused real dig: node kept, one line; rate limit and repeat suppression.
 chat = {}
 now_us = 10000000
@@ -371,6 +387,19 @@ check(#chat == 1, "same line within 5 s is suppressed")
 now_us = now_us + 4000000
 for _, fn in ipairs(punch_callbacks) do fn(origin, node, player("miner", "default:pick_bronze")) end
 check(#chat == 2, "same line again after 5 s")
+-- With grug_core's flash available the line goes to the screen, not chat.
+do
+	local flashed
+	_G.grug_core = {FLASH_COLOR = {notice = 0xf0e6c8, error = 0xff4444},
+		flash = function(_, message, color) flashed = {message, color} return true end}
+	core_stub.get_player_by_name = function(name) return {name = name} end
+	chat, now_us = {}, now_us + 10000000
+	check(M.emit_hint("miner", "Requires a T3 pick") and #chat == 0 and flashed and
+		flashed[1] == "Requires a T3 pick" and flashed[2] == 0xf0e6c8,
+		"hint uses the neutral screen flash")
+	core_stub.get_player_by_name = noop
+	_G.grug_core = nil
+end
 -- Allowed dig of a resource settles the harvest callbacks.
 local harvested
 M.register_on_harvest(function(event) harvested = event end)

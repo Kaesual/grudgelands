@@ -563,7 +563,8 @@ has no level and no tool gate. It carries `grug_loose` equal to its `crumbly`
 rating (mesa clay is loose ground with no `cracky`). The bare hand digs it
 through its `crumbly` capability; the equipped skill hand digs it through the
 engine's hand fallback. A shovel digs it faster than the pick of the same tier
-(picks use twice the shovel time of their tier), and a higher shovel is faster
+(picks use twice the shovel time of their tier, capped at the bare hand's time
+so no pick or shovel is ever slower than the hand), and a higher shovel is faster
 than a lower one. Shovels carry `grug_shovel_tier`.
 
 **Wood** is not gated (ruling 6). Axes carry `grug_axe_tier`; a better axe
@@ -577,8 +578,10 @@ bands' secondary rock, in irregular nests and in the sparse mountain layers.
 
 **Punch hints** (ruling 7). The client still sends a punch when it starts
 digging a node it predicts as undiggable (`src/client/game.cpp`
-`handleDigging`), so the server answers with one rate-limited line (at most one
-line per 1.5 s, the same line at most every 5 s):
+`handleDigging`), so the server answers with one rate-limited line in the
+shared screen flash line (`grug_core.flash`, the same line the skill errors
+use, here in a neutral colour; at most one line per 1.5 s, the same line at
+most every 5 s):
 
 - protected node, with the protection reason: "Town – protected" (a
   capital's protected city or a start town), "Landmark – protected" (a
@@ -586,10 +589,11 @@ line per 1.5 s, the same line at most every 5 s):
   home territory – protected", "Throng home territory – protected", "Open sea
   – protected"; a player without a faction reads "Protected – choose a faction
   first";
-- rock or resource too hard for the wielded tool: "Requires a T<N> pick".
+- rock or resource too hard for the wielded tool: "Requires a T<N> pick";
+- a broken pick on rock or ore: "Your pick is broken – repair it".
 
 A selected skill never produces a hint (with a skill, LMB on a node the hand
-cannot dig is a cast; `classes.md` §2b), nor does a broken tool. Protected
+cannot dig is a cast; `classes.md` §2b). Protected
 nodes still show cracks (an engine limit: the client cannot know position or
 faction); there is no per-player capability swapping.
 
