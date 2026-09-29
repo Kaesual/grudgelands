@@ -36,9 +36,8 @@ layout.XP_WIDTH = 360
 layout.PARTY_ROW_GAP = 6
 layout.PARTY_BAR_HEIGHT = 6
 layout.PARTY_TEXT_HEIGHT = 20
+-- Widest quest-tracker line in characters; each tracked quest is one line.
 layout.QUEST_WRAP = 38
-layout.QUEST_TITLE_LINES = 2
-layout.QUEST_OBJECTIVE_LINES = 2
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
 
 -- The smallest and largest fill a partial bar may draw. Below 1 px the
@@ -111,6 +110,14 @@ layout.anchors = {
 		offset = {x = 0, y = 20},
 		alignment = {x = 0, y = 1},
 	},
+	-- Vertically centred at the right edge, one line per tracked quest (at
+	-- most grug_quests.MAX_TRACKED = 10). The builtin minimap is a square of
+	-- 25% of the window height at the top right, offset 10 HUD px from both
+	-- edges (builtin/game/hud.lua:248-255), so its bottom is 0.25 H + 10 hud.
+	-- Ten lines of roughly 20 GUI px reach up to 0.5 H - 100 gui, which clears
+	-- it while H >= 400 gui + 40 hud: 440 px at GUI scaling 1, 640 px at 1.5,
+	-- 840 px at 2 (HUD scaling 1). The old worst case (three quests of up to
+	-- four wrapped lines) was twelve lines.
 	quest_list = {
 		position = {x = 1, y = 0.5},
 		offset = {x = -20, y = 0},

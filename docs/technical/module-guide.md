@@ -230,7 +230,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `def.values(user)`; `grug_abilities.description_for` writes the effective
   current-level values to that player's stack on kit sync, level change and
   talent change. Suffocation is 5% maximum HP/s (minimum 1), with stasis and
-  `noclip` exempt. `grug_core.status` is the runtime timed-effect registry and
+  `noclip` exempt; lava is 20% and drowning 10% of maximum HP/s
+  (`environment_damage.lua`, Round 24), and absorb does not cover fall,
+  lava or drowning. `grug_core.status` is the runtime timed-effect registry and
   top-center eight-line buff/debuff text list (Round 19). Status definitions may carry only
   `hp_pool_percent`, `mana_pool_percent`, `crit_percent`, `armor` and
   `spell_damage_percent`; `grug_core.status_modifier_sum` adds active statuses,
@@ -589,7 +591,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `npc_by_socket` keys actual settlement identity plus socket id, never terrain
   anchor ids. Marker children partition observers through the existing tag
   carrier's one-second 25/30 hysteresis pass; no independent player scan.
-  Quest UI tracks three selected quests and stores its HUD preference. The
+  Quest UI tracks up to ten selected quests (`grug_quests.MAX_TRACKED`, one objective line each) and stores its HUD preference. The
   102-quest catalog (66 starter + 36 local) requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.

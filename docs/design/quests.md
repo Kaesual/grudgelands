@@ -35,8 +35,13 @@ Decided 2026-09-21; extended by Round 20 user Go, 2026-09-24.
 
 ### Accepted defaults
 
-- Track up to three selected quests on the HUD. Keep the tab authoritative;
-  do not place the entire journal permanently on screen.
+- Track up to ten selected quests on the HUD (Round 24 ruling 23; one
+  constant for the tracker, the auto-track on accept and the quest-log
+  notice). Each tracked quest is one HUD line showing only its objective
+  (e.g. "0/4 Bring Raw Meat"), no title; a quest ready to turn in shows
+  "Return to <turn-in NPC>". Two quests with identical objectives may read
+  the same. Keep the tab authoritative; do not place the entire journal
+  permanently on screen.
 - Item turn-ins accept already-owned and traded/crafted-by-others items.
   Descriptions say “Bring ...” instead of claiming to verify personal crafting.
   V1 requirements match registered item id and count only, with no wear,
@@ -79,8 +84,9 @@ Decided 2026-09-21; extended by Round 20 user Go, 2026-09-24.
 
 Decided 2026-09-21: enlarge quest symbols fivefold while holding their upper
 extent fixed (growth downward). Keep per-viewer states and existing visibility
-hysteresis. The optional three-quest HUD sits at screen middle-right, with
-right-aligned wrapped text and edge padding.
+hysteresis. The optional quest HUD (up to ten one-line entries) sits at screen
+middle-right, with right-aligned text and edge padding, clear of the top-right
+minimap.
 
 Round 20 expands authored journeys to approximately 240 quests including
 revision of the initial 102. This is an editorial budget, not a filler quota.

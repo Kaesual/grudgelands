@@ -132,8 +132,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     negative fall change of `r` settles as `ceil(max_hp × r / 20)`. Native zero
     stays zero and there is no 100%-of-pool cap. This preserves the engine's
     impact-derived input rather than reconstructing block distance. The Dwarf
-    multiplier of 0.8 then rounds up, followed by absorb; armor and dodge never
-    apply. A shield therefore always soaks *post*-mitigation
+    multiplier of 0.8 then rounds up; armor, dodge and the absorb shield never
+    apply (see "Environmental damage" below). For hits, a shield therefore always soaks *post*-mitigation
     damage, i.e. shield points are worth full damage rather than pre-armor
     damage.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
@@ -213,12 +213,36 @@ Two optional target-race systems use the central pipeline:
 
 ### Environmental damage, deaths and shore movement
 
+Environmental damage to players scales with the **actual** pool
+(`player:get_properties().hp_max`, maximum HP below). Mob damage from nodes is
+unchanged (mobs_redo applies its own node damage).
+
 - A player whose head point is inside an opaque, walkable, non-liquid full
   regular cube takes **floor(5% of maximum HP) per second, minimum 1 HP**.
   Thin doors, panes, shutters, meshes, non-walkable plants, liquids and nodes
   explicitly opting out do not suffocate. The
   character-creation stasis state and players holding the `noclip` privilege
   are exempt.
+- **Lava** (Round 24 ruling 24): **ceil(20% of maximum HP) per second**. The
+  engine's once-per-second node-damage tick keeps its cadence, but its flat
+  `damage_per_second` (8) is replaced, not added to. The engine picks the
+  strongest damaging node among the player's body points, so standing in
+  several lava nodes is still one hit per second. A full pool therefore lasts
+  at most five ticks.
+- **Drowning** (ruling 24): once the engine has run the breath out (it removes
+  one breath every 2 s while the head is in a `drowning` node), the player
+  takes **ceil(10% of maximum HP) per second** — at most ten ticks from a full
+  pool. The engine's own flat drown hit (every 2 s) is cancelled; Grudgelands
+  deals the per-second tick instead, under the engine's own conditions (head
+  node with `drowning > 0`, zero breath, not immortal, the `drowning` player
+  flag on). Lava also has `drowning`, so a submerged head in lava takes both.
+- Fall damage is the pool conversion in §2 above
+  (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
+- **Armor never reduces** fall, lava, drowning or suffocation (armor is
+  punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
+  damage**; other sources (hits, suffocation, authored ground effects such as
+  dragon scorch) still consume it. Both shares round up and deal at least 1 HP
+  for any positive pool.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch

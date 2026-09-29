@@ -65,7 +65,7 @@ dofile(modpath .. "/combat.lua")
 dofile(modpath .. "/homing.lua")
 dofile(modpath .. "/combat_hud.lua")
 dofile(modpath .. "/death_messages.lua")
-dofile(modpath .. "/suffocation.lua")
+dofile(modpath .. "/environment_damage.lua")
 -- After combat.lua: the aggregator reads grug_core.mono_time() (one clock for
 -- every combat timer, see there). It is the ONLY writer of a player's
 -- physics_override in the game -- grug_mobs, grug_abilities and grug_classes
