@@ -11,15 +11,19 @@
 --      list clearance holds; it follows window size and HUD scaling;
 --   B  base: quality setting and fallback, tiles (<= 512 px, cover the image
 --      exactly), the Map tab's combined texture, the round mask;
---   G  geometry: window size per quality, grid snapping (player within half
---      a cell of the centre), every window of the world needs at most 4
---      tiles, distinct textures per walk (the client texture cache), rim
---      arrow directions;
+--   G  geometry (glide): window ~900 nodes per quality; the cell texture
+--      covers the hole wherever the player is in the cell and the bezel
+--      covers its overhang; the bezel fits the native box at usual window
+--      sizes; walks along every axis keep the player's pixel on the centre
+--      and every cell swap lines the new texture up with the old one to the
+--      pixel (seam-free); every texture needs at most 4 tiles; distinct
+--      textures per walk (the bounded client texture cache); rim arrows;
 --   R  runtime: native minimap off on join; elements created; only changes
---      are sent (a still player sends nothing); a new texture only on a new
---      cell; markers of the ruling-8 kinds inside the circle only, quest
---      states as icons; party members inside as heading arrows, outside as
---      rim arrows; window resize relayouts; the Map tab switch hides and
+--      are sent (a still player sends nothing); the arrow stays centred and
+--      the map and markers move together; a new texture only on a new cell;
+--      markers of the ruling-8 kinds inside the hole only, quest states as
+--      icons; party members inside as heading arrows, outside as rim arrows
+--      on the bezel; window resize relayouts; the Map tab switch hides and
 --      shows the minimap and persists in meta; every texture exists;
 --   P  page: region label boxes tall enough for no scrollbar (ruling 12).
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
@@ -214,28 +218,82 @@ end
 local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
 local bounds = atlas.view()
 local views = {}
+local WINDOWS = {{x = 1280, y = 720, hud = 1}, {x = 1920, y = 1080, hud = 1},
+	{x = 2560, y = 1440, hud = 1}, {x = 2560, y = 1440, hud = 2}, {x = 3840, y = 2160, hud = 2},
+	{x = 1024, y = 600, hud = 1}}
 for quality, spec in pairs(base.QUALITY) do
-	local info = {width = spec.width, height = spec.height, minimap_grid = spec.minimap_grid,
+	local info = {quality = quality, width = spec.width, height = spec.height,
 		tiles = base.tiles(spec.width, spec.height)}
 	local v = V.new(info, bounds)
 	views[quality] = v
 	local expected = quality == "normal" and 135 or 450
 	check(v.crop == expected, "G " .. quality .. " window " .. v.crop .. " px")
 	check(near(v.crop * v.npp, 900, 5), "G " .. quality .. " window ~900 nodes")
-	check(v.crop <= base.TILE, "G " .. quality .. " window fits in a tile")
-	-- player within half a cell of the window centre, everywhere
+	check(v.texture % v.grid == 0 and v.texture <= base.TILE,
+		"G " .. quality .. " texture " .. v.texture .. " px, whole cells, fits a tile")
+	-- the disc covers the hole at the worst offset; the bezel covers the disc
+	check(v.texture / 2 - v.d >= v.crop / 2 and v.texture / 2 + v.d <= v.outer - 0.5,
+		("G %s hole %.1f <= cover %.1f, disc reach %.1f <= bezel %.1f"):format(quality,
+		v.crop / 2, v.texture / 2 - v.d, v.texture / 2 + v.d, v.outer))
+	-- the player is never further than d from the texture centre
 	local worst = 0
 	for x = -3600, 3600, 37 do
 		for z = -3200, 3200, 41 do
 			local cx, cy = V.cell(v, x, z)
 			local ox, oy = V.origin(v, cx, cy)
 			local px, py = V.base_pixel(v, x, z)
-			worst = math.max(worst, math.abs(px - ox - v.crop / 2), math.abs(py - oy - v.crop / 2))
+			local dx, dy = px - ox - v.texture / 2, py - oy - v.texture / 2
+			worst = math.max(worst, math.sqrt(dx * dx + dy * dy))
 		end
 	end
-	check(worst <= v.grid / 2 + 1, ("G %s player at most %.1f px off-centre (grid %d)"):
-		format(quality, worst, v.grid))
-	-- every cell's window needs at most four tiles
+	check(worst <= v.d + 1e-9, ("G %s player at most %.2f px from the texture centre (d %.2f)"):
+		format(quality, worst, v.d))
+	-- frames: bezel inside the native box, whole-pixel sizes, f a multiple of 1/grid
+	local frames_ok, smallest = true, 1
+	for _, w in ipairs(WINDOWS) do
+		local box = layout.minimap_box({size = {x = w.x, y = w.y}, real_hud_scaling = w.hud})
+		local frame = V.frame(v, box)
+		smallest = math.min(smallest, frame.diameter / box.size)
+		frames_ok = frames_ok and frame.diameter <= box.size and
+			frame.drawn % 1 == 0 and near(frame.f * v.grid, frame.k) and
+			near(frame.center_x + frame.diameter / 2, box.center_x + box.size / 2) and
+			near(frame.center_y - frame.diameter / 2, box.center_y - box.size / 2) and
+			frame.hole <= (v.texture / 2 - v.d) * frame.f
+	end
+	check(frames_ok, "G " .. quality .. " frames fit the box top-right, whole pixels")
+	check(smallest >= 0.85, ("G %s bezel at least 85 %% of the box (%.2f)"):format(quality, smallest))
+	-- walks: the player's pixel on the centre; cell swaps seam-free
+	local centred, seams, swaps = true, true, 0
+	for _, w in ipairs(WINDOWS) do
+		local box = layout.minimap_box({size = {x = w.x, y = w.y}, real_hud_scaling = w.hud})
+		local frame = V.frame(v, box)
+		for _, dir in ipairs({{1, 0}, {0, 1}, {1, 1}, {-1, 0.37}, {0.21, -1}}) do
+			local x, z = -1234.5, 876.25
+			local last
+			for _ = 1, 3000 do
+				x, z = x + dir[1] * 0.17, z + dir[2] * 0.17
+				local px, py = V.base_pixel(v, x, z)
+				local cx, cy = V.cell(v, x, z)
+				local ox, oy = V.origin(v, cx, cy)
+				local mx, my = V.map_corner(v, frame, ox, oy, px, py)
+				local sx, sy = mx + (px - ox) * frame.f, my + (py - oy) * frame.f
+				centred = centred and math.abs(sx - frame.center_x) <= 0.5 + 1e-9 and
+					math.abs(sy - frame.center_y) <= 0.5 + 1e-9
+				if last and (last.cx ~= cx or last.cy ~= cy) then
+					-- the old texture at THIS position, as drawn one step later
+					local lx, ly = V.map_corner(v, frame, last.ox, last.oy, px, py)
+					swaps = swaps + 1
+					-- a world texel shows at the same screen pixel in both
+					seams = seams and lx - last.ox * frame.f == mx - ox * frame.f and
+						ly - last.oy * frame.f == my - oy * frame.f
+				end
+				last = {cx = cx, cy = cy, ox = ox, oy = oy}
+			end
+		end
+	end
+	check(centred, "G " .. quality .. " player's pixel on the centre along every walk")
+	check(seams and swaps > 100, ("G %s %d cell swaps seam-free"):format(quality, swaps))
+	-- every cell's texture needs at most four tiles
 	local most = 0
 	for cx = -1, math.ceil(spec.width / v.grid) do
 		for cy = -1, math.ceil(spec.height / v.grid) do
@@ -244,7 +302,7 @@ for quality, spec in pairs(base.QUALITY) do
 			most = math.max(most, count)
 		end
 	end
-	check(most <= 4, "G " .. quality .. " at most 4 tiles per window (" .. most .. ")")
+	check(most <= 4, "G " .. quality .. " at most 4 tiles per texture (" .. most .. ")")
 	-- a 3000-node walk: distinct textures = client textures created
 	local seen, count = {}, 0
 	for x = -1500, 1500 do
@@ -253,15 +311,19 @@ for quality, spec in pairs(base.QUALITY) do
 		if not seen[key] then seen[key], count = true, count + 1 end
 	end
 	v.walk = count
-	check(count >= 20 and count <= 32, ("G %s 3000-node walk makes %d textures"):format(quality, count))
+	v.walk_bytes = count * v.texture * v.texture * 4
+	check(count <= 3000 / (v.grid * v.npp) + 2, ("G %s 3000-node walk makes %d textures (%.1f MB)"):
+		format(quality, count, v.walk_bytes / 1048576))
 end
 do
-	local box = {size = 270, center_x = 1000, center_y = 200, hud = 1}
-	local function frame(dx, dy) return select(3, V.rim(box, dx, dy, 8)) end
-	check(frame(0, -100) == 0 and frame(100, 0) == 4 and frame(0, 100) == 8 and
-		frame(-100, 0) == 12 and frame(70, -70) == 2, "G rim frames clockwise from north")
-	local rx, ry = V.rim(box, 500, 0, 8)
-	check(near(rx - 1000, V.inner_radius(box, 8)) and near(ry, 200), "G rim arrow on the rim")
+	local frame = V.frame(views.normal, layout.minimap_box({size = {x = 1920, y = 1080},
+		real_hud_scaling = 1}))
+	local function index(dx, dy) return select(3, V.rim(frame, dx, dy)) end
+	check(index(0, -100) == 0 and index(100, 0) == 4 and index(0, 100) == 8 and
+		index(-100, 0) == 12 and index(70, -70) == 2, "G rim frames clockwise from north")
+	local rx, ry = V.rim(frame, 500, 0)
+	check(near(rx - frame.center_x, (frame.hole + frame.diameter / 2) / 2) and
+		near(ry, frame.center_y), "G rim arrow on the middle of the bezel")
 end
 
 -- ---------------------------------------------------------------------------
@@ -300,7 +362,7 @@ QUESTS.giver, QUESTS.far, QUESTS.crowd = "available", "available", "available"
 
 local loaded = {}
 core.register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end
-local installed = {quality = "normal", width = 1080, height = 960, minimap_grid = 16,
+local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = base.tiles(1080, 960)}
 installed.texture = base.combined_texture(1080, 960, installed.tiles)
 atlas.set_base_texture(installed.texture)
@@ -347,19 +409,39 @@ local function screen(def, p)
 	return def.position.x * w.size.x, def.position.y * w.size.y
 end
 
-local maps = by_text(me, "^%[combine:135x135:")
+local v = views.normal
+local function frame_of(p)
+	return V.frame(v, layout.minimap_box(windows[p.name]))
+end
+local maps = by_text(me, "^%[combine:156x156:")
 check(#maps == 1 and maps[1].text:find("%^%[mask:grug_map_minimap_mask%.png$"),
-	"R one map element, a masked window")
+	"R one map element, a cell texture cut to a disc")
 local map = maps[1]
-check(map and near(map.scale.x * 135, 270, 1e-6), "R map drawn 270 px at 1080p")
-local mx, my = screen(map, me)
-check(near(mx, 1775, 1) and near(my, 145, 1), "R map centred in the native box")
-check(#by_text(me, "^grug_map_minimap_ring%.png$") == 1, "R ring")
-check(#by_text(me, "^grug_map_minimap_mask%.png%^%[multiply:") == 1, "R sea background disc")
+local frame = frame_of(me)
+check(map and map.alignment.x == 1 and
+	math.floor(156 * map.scale.x * 1) == frame.drawn, "R map drawn " .. frame.drawn .. " px")
 local compass
 for _, e in ipairs(elements(me)) do if e.def.type == "compass" then compass = e.def end end
 check(compass and compass.text == "grug_map_heading_gold_00.png" and compass.size.x == 24,
 	"R player arrow is a 24 px compass element")
+local function centre_of_player()
+	local mx, my = screen(map, me)
+	local px, py = V.base_pixel(v, me.pos.x, me.pos.z)
+	local cx, cy = V.cell(v, me.pos.x, me.pos.z)
+	local ox, oy = V.origin(v, cx, cy)
+	return mx + (px - ox) * frame.f, my + (py - oy) * frame.f
+end
+do
+	local ax, ay = screen(compass, me)
+	local sx, sy = centre_of_player()
+	check(near(ax, math.floor(frame.center_x + 0.5), 1e-6) and
+		math.abs(sx - ax) <= 0.5 + 1e-6 and math.abs(sy - ay) <= 0.5 + 1e-6,
+		"R arrow centred on the player's own map pixel")
+end
+local bezels = by_text(me, "^grug_map_minimap_bezel%.png$")
+check(#bezels == 1 and near(screen(bezels[1], me) + frame.diameter, 1920 - 10, 1e-6) and
+	math.floor(256 * bezels[1].scale.x) == frame.diameter, "R bezel at the box's top right")
+check(#by_text(me, "^grug_map_minimap_mask%.png%^%[multiply:") == 1, "R sea background disc")
 local function has(texture) return #by_text(me, "^" .. texture:gsub("%.", "%%.") .. "$") end
 check(has("grug_map_quest_available.png") == 1, "R near quest giver shown, far one not")
 check(has("grug_map_housing_steward.png") == 1, "R Housing Steward shown")
@@ -379,16 +461,29 @@ local before = me.sent
 step(0.25) step(0.25) step(1.0)
 check(me.sent == before, "R a still player sends nothing (" .. (me.sent - before) .. ")")
 
--- Moving inside the cell moves the arrow only; a new cell changes the map.
+-- Moving: the arrow stays, the map and the markers move by the same pixels;
+-- a new cell changes the texture.
 local map_text = map.text
+local compass_x = compass.position.x
+local book = by_text(me, "^grug_jobs_book%.png$")[1]
+local bx0, by0 = screen(book, me)
+local mx0, my0 = screen(map, me)
 me.pos.x = me.pos.x + 20
-before = me.sent
-step(0.25)
-check(map.text == map_text and me.sent - before == 1, "R move inside the cell: arrow only (" ..
-	(me.sent - before) .. " packets)")
+step(0.09)
+local bx1, by1 = screen(book, me)
+local mx1, my1 = screen(map, me)
+check(map.text == map_text and compass.position.x == compass_x and mx1 < mx0 and
+	math.abs((bx1 - bx0) - (mx1 - mx0)) <= 1 + 1e-6 and near(by1 - by0, my1 - my0, 1 + 1e-6),
+	"R walking east: arrow stays, map and markers glide west together")
 me.pos.x = me.pos.x + 200
-step(0.25)
-check(map.text ~= map_text, "R new cell: new window texture")
+step(0.09)
+check(map.text ~= map_text, "R new cell: new texture")
+do
+	local ax, ay = screen(compass, me)
+	local sx, sy = centre_of_player()
+	check(math.abs(sx - ax) <= 0.5 + 1e-6 and math.abs(sy - ay) <= 0.5 + 1e-6,
+		"R after the swap the arrow is still on the player's pixel")
+end
 
 -- Quest state: ready shows "?", a quest change refreshes at once.
 QUESTS.giver = "ready"
@@ -421,33 +516,50 @@ local rim = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")
 check(#rim == 1, "R party member outside: rim arrow")
 if rim[1] then
 	local rx, ry = screen(rim[1], me)
-	local box = layout.minimap_box(windows.me)
-	local frame = tonumber(rim[1].text:match("(%d%d)%.png"))
-	check(near(math.sqrt((rx - box.center_x) ^ 2 + (ry - box.center_y) ^ 2),
-		V.inner_radius(box, 8), 1.5) and frame >= 3 and frame <= 5,
-		"R rim arrow on the rim pointing east (frame " .. tostring(frame) .. ")")
+	local index = tonumber(rim[1].text:match("(%d%d)%.png"))
+	check(near(math.sqrt((rx - frame.center_x) ^ 2 + (ry - frame.center_y) ^ 2),
+		(frame.hole + frame.diameter / 2) / 2, 1.5) and index >= 3 and index <= 5,
+		"R rim arrow on the bezel pointing east (frame " .. tostring(index) .. ")")
 end
--- every marker drawn inside the ring
+-- every marker and party arrow shown lies inside the hole; one walked out
+-- of it is hidden
 do
-	local box = layout.minimap_box(windows.me)
-	local inside = true
-	for _, e in ipairs(elements(me)) do
-		local t = e.def.text
-		if e.def.type == "image" and t ~= "" and not t:find("combine") and not t:find("ring") and
-				not t:find("mask") then
-			local x, y = screen(e.def, me)
-			inside = inside and math.sqrt((x - box.center_x) ^ 2 + (y - box.center_y) ^ 2) <=
-				box.size / 2
+	local function all_inside()
+		local inside, count = true, 0
+		for _, e in ipairs(elements(me)) do
+			local t = e.def.text
+			if e.def.type == "image" and t ~= "" and not t:find("combine") and
+					not t:find("bezel") and not t:find("mask") and not t:find("rim_") then
+				local x, y = screen(e.def, me)
+				count = count + 1
+				inside = inside and math.sqrt((x - frame.center_x) ^ 2 +
+					(y - frame.center_y) ^ 2) <= frame.hole
+			end
 		end
+		return inside, count
 	end
-	check(inside, "R markers inside the circle")
+	local inside, count = all_inside()
+	check(inside and count >= 5, "R markers inside the hole (" .. count .. ")")
+	local saved = me.pos.x
+	me.pos.x = me.pos.x - 600
+	step(0.09)
+	local inside2, count2 = all_inside()
+	check(inside2 and count2 < count, ("R markers leaving the hole are hidden (%d -> %d)"):
+		format(count, count2))
+	me.pos.x = saved
+	step(0.09)
 end
 
 -- Window resize: the box follows (25 % of the new height).
 windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 1}
 step(0.25)
-check(near(map.scale.x * 135, 180, 1e-6) and near(screen(map, me), 1280 - 10 - 90, 1),
-	"R resize: 180 px box at 720p")
+do
+	local small = frame_of(me)
+	local bezel = by_text(me, "^grug_map_minimap_bezel%.png$")[1]
+	check(math.floor(156 * map.scale.x) == small.drawn and small.diameter <= 180 and
+		near(screen(bezel, me) + small.diameter, 1280 - 10, 1e-6), "R resize: 720p frame")
+	frame = small
+end
 
 -- The Map tab switch.
 local context = {}
@@ -475,7 +587,7 @@ do
 		end
 		return false
 	end
-	local names = {"grug_map_minimap_ring.png", "grug_map_quest_available.png",
+	local names = {"grug_map_minimap_bezel.png", "grug_map_quest_available.png",
 		"grug_map_quest_locked.png", "grug_map_quest_ready.png", "grug_map_quest_active.png",
 		"grug_map_innkeeper.png", "grug_map_home.png", "grug_map_heading_gold_00.png"}
 	for f = 0, 15 do
@@ -489,7 +601,7 @@ do
 	local file = io.open(repo .. "/mods/PLAYER/grug_map/LICENSE-media.md", "rb")
 	local text = file and file:read("*a") or ""
 	if file then file:close() end
-	check(text:find("render_icons.py", 1, true) and text:find("grug_map_minimap_ring.png", 1, true),
+	check(text:find("render_icons.py", 1, true) and text:find("grug_map_minimap_bezel.png", 1, true),
 		"R LICENSE-media rows")
 end
 
@@ -566,9 +678,11 @@ for i = 1, 200 do
 	if i % 25 == 0 then step(5.0) end
 end
 local cost = minimap.stats.us / math.max(1, minimap.stats.updates)
-print(("R27 cost: %.1f us per player update (%d updates, %.2f packets per update, " ..
-	"walk textures normal %d / high %d per 3000 nodes)"):format(cost, minimap.stats.updates,
-	minimap.stats.changes / math.max(1, minimap.stats.updates), views.normal.walk, views.high.walk))
+print(("R27 cost: %.1f us per player update (%d updates, %.2f packets per update); " ..
+	"textures per 3000 nodes: normal %d (%.1f MB), high %d (%.1f MB)"):format(cost,
+	minimap.stats.updates, minimap.stats.changes / math.max(1, minimap.stats.updates),
+	views.normal.walk, views.normal.walk_bytes / 1048576, views.high.walk,
+	views.high.walk_bytes / 1048576))
 
 -- A world folder that cannot be written: no mask, no minimap, the load goes
 -- on and the Map tab says so. (A second copy of minimap.lua, last.)

@@ -10,8 +10,9 @@ the other grug_map marker icons, see mods/PLAYER/grug_map/LICENSE-media.md).
 * grug_map_rim_cyan_00..15.png -- 32x32 rim arrows for party members outside
   the minimap, drawn like tools/r15_map/render_headings.py; frame 0 points up
   (north), frames turn clockwise by 22.5 degrees;
-* grug_map_minimap_ring.png -- 256x256 frame of the round minimap: a dark rim
-  with a light inner edge and an "N" plate at the top (north up).
+* grug_map_minimap_bezel.png -- 256x256 opaque frame of the gliding minimap:
+  a dark band round a hole of BEZEL_HOLE of the radius, a light inner rim and
+  an "N" plate at the top (north up).
 
 Usage: python3 tools/r27_minimap/render_icons.py
 """
@@ -164,21 +165,46 @@ N_GLYPH = [
 ]
 
 
-def ring():
+# Hole radius over outer radius; must equal V.BEZEL_HOLE in
+# mods/PLAYER/grug_map/minimap_view.lua.
+BEZEL_HOLE = 0.77
+
+
+def bezel():
+    """The glide minimap's opaque frame: a dark band from the hole to the
+    outer edge, a light inner rim and a thin darker outer edge, subtle
+    shading toward the middle of the band, and the N plate at the top."""
     ss = 4
     s = 256 * ss
+    c = s / 2
+    outer = c - 0.5 * ss
+    hole = BEZEL_HOLE * c
     im = Image.new("RGBA", (s, s))
     d = ImageDraw.Draw(im)
-    band = 6 * ss
-    d.ellipse((0, 0, s - 1, s - 1), outline=(30, 24, 18, 255), width=band)
-    d.ellipse((band - ss, band - ss, s - band + ss, s - band + ss),
-              outline=(196, 170, 118, 255), width=ss)
-    d.ellipse((ss, ss, s - ss, s - ss), outline=(70, 56, 40, 255), width=ss)
-    c = s / 2
-    d.polygon([(c - 12 * ss, 0), (c + 12 * ss, 0), (c + 9 * ss, 15 * ss), (c - 9 * ss, 15 * ss)],
-              fill=(30, 24, 18, 255))
-    px = 2 * ss
-    x0, y0 = c - 2.5 * px, 2.5 * ss
+    # the band, drawn as rings from the outside in: a darker edge, the body
+    # with a faint lighter crest in the middle, a dark line at the hole
+    steps = 24
+    for k in range(steps):
+        t = k / (steps - 1)
+        r = outer - (outer - hole) * t
+        crest = 1 - abs(t - 0.45) * 2
+        base = 30 + int(14 * max(0.0, crest))
+        col = (base, int(base * 0.8), int(base * 0.6), 255)
+        d.ellipse((c - r, c - r, c + r, c + r), fill=col)
+    d.ellipse((c - outer, c - outer, c + outer, c + outer), outline=(18, 14, 10, 255), width=ss)
+    # the light rim round the hole, then the hole itself
+    d.ellipse((c - hole - 2 * ss, c - hole - 2 * ss, c + hole + 2 * ss, c + hole + 2 * ss),
+              fill=(196, 170, 118, 255))
+    d.ellipse((c - hole - ss, c - hole - ss, c + hole + ss, c + hole + ss), fill=(22, 18, 13, 255))
+    d.ellipse((c - hole, c - hole, c + hole, c + hole), fill=(0, 0, 0, 0))
+    # the N plate on the band at the top
+    band = outer - hole
+    top, bottom = c - outer + band * 0.18, c - hole - band * 0.22
+    w = band * 0.62
+    d.rounded_rectangle((c - w / 2, top, c + w / 2, bottom), radius=2 * ss,
+                        fill=(20, 16, 11, 255), outline=(150, 128, 88, 255), width=ss)
+    px = (bottom - top) * 0.14
+    x0, y0 = c - 2.5 * px, (top + bottom) / 2 - 2.5 * px
     for j, row in enumerate(N_GLYPH):
         for i, ch in enumerate(row):
             if ch == "k":
@@ -201,8 +227,8 @@ def main():
                       "y": (176, 64, 44, 255)}).save(OUT / "grug_map_home.png")
     for frame in range(16):
         rim_arrow(frame).save(OUT / f"grug_map_rim_cyan_{frame:02d}.png")
-    ring().save(OUT / "grug_map_minimap_ring.png")
-    print("quest=4 innkeeper home rim=16 ring written to", OUT)
+    bezel().save(OUT / "grug_map_minimap_bezel.png")
+    print("quest=4 innkeeper home rim=16 bezel written to", OUT)
 
 
 if __name__ == "__main__":
