@@ -106,7 +106,7 @@ rawset(_G, "grug_quests", {registered_npcs = npcs, marker_state = function() ret
 	register_on_change = function() end})
 rawset(_G, "grug_parties", {view = function()
 	return {members = {{name = "me"}, {name = "p1"}, {name = "p2"}}}
-end})
+end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function()
 	return {{id = "inn", label = "Inn", pos = {x = -80, y = 20, z = -1450}}}
 end})
@@ -115,7 +115,7 @@ rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_map", {atlas = dofile(tree .. "/mods/PLAYER/grug_map/atlas.lua")})
 local base = dofile(tree .. "/mods/PLAYER/grug_map/base.lua")
 grug_map.base = base
-local installed = {quality = "normal", width = 1080, height = 960, minimap_grid = 16,
+local installed = {quality = "normal", width = 1080, height = 960,
 	tiles = base.tiles(1080, 960)}
 installed.texture = base.combined_texture(1080, 960, installed.tiles)
 grug_map.atlas.set_base_texture(installed.texture)

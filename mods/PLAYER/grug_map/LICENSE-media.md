@@ -24,7 +24,8 @@ CC0-1.0. No third-party source images.
 - `textures/grug_map_rim_cyan_00.png` through `_15.png`: original polygon
   artwork, 32×32 RGBA rim arrows in sixteen directions.
 - `textures/grug_map_minimap_bezel.png`: original 256×256 RGBA opaque frame
-  (bezel) of the round gliding minimap with an "N" plate.
+  (bezel) of the round gliding minimap: a warm grey-bronze band with a fine
+  light inner edge, dot marks at E, S and W and a small "N".
 
 The minimap's round mask (`grug_map_minimap_mask.png`) is not shipped: the
 server generates it at start (`grug_map/base.lua`, `mask_png`).
