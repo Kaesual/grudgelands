@@ -1182,7 +1182,13 @@ local function plan_once(seed, I, opt)
 	-- gatehouse box. Streets, squares and the plaza keep their surface off
 	-- the wall band with these, so no road surface lies on the wall line
 	-- away from a gate (the writer never builds over one).
-	local WALL_REACH = 48
+	-- WALL_REACH caps the distance search, so it must stay ABOVE every
+	-- threshold wall_dist is compared with below: the spoke end's
+	-- SPOKE_IN - 2 (28 at the default 30, the largest), a square's or the
+	-- plaza's radius + WALL_HALF + 4, a junction's and a lane cell's
+	-- WALL_CLEAR_ST + 8 and a connector's WALL_CLEAR_ST + 5.5. A capped
+	-- answer then reads as "clear" exactly where the true distance would.
+	local WALL_REACH = max(32, P.SPOKE_IN + 1, max(P.PLAZA or 0, P.SQUARE_R) + P.WALL_HALF + 5)
 	local WB = 8
 	local wall_bk = {}
 	local wall_xz = {}
@@ -1303,16 +1309,27 @@ local function plan_once(seed, I, opt)
 		local g = {}
 		for li = 1, NLc do
 			local lx, lz = li_local(li)
-			local v = fn(lx, lz)
+			local v = fn(lx, lz, li)
 			if v and v > 0 then g[li] = v end
 		end
 		return g
 	end
+	-- a lattice cell's wall distance, once per plan (every search attempt
+	-- builds its guide over all cells)
+	local cell_wd = {}
+	local function cell_wall_dist(lx, lz, li)
+		local d = cell_wd[li]
+		if not d then
+			d = wall_dist(lx, lz)
+			cell_wd[li] = d
+		end
+		return d
+	end
 	-- Round 27: a lane's search keeps off the wall band (a lane that still
 	-- reaches it is cut back or not built, `lane_to`), a 4-node cell's
 	-- width of margin beyond a lane's clearance
-	local function wall_cost(lx, lz)
-		if wall_dist(lx, lz) < WALL_CLEAR_ST + 2.5 + 4 then return 12 end
+	local function wall_cost(lx, lz, li)
+		if cell_wall_dist(lx, lz, li) < WALL_CLEAR_ST + 2.5 + 4 then return 12 end
 		return 0
 	end
 	local function outside_cost(lx, lz, margin, k)
@@ -1499,10 +1516,7 @@ local function plan_once(seed, I, opt)
 		best = best or floor(#road.X / 2)
 		-- a junction needs dry, ground-supported parent points around it
 		-- (not on a bridge or a deck): the nearest such index within 40
-		local function ok(i)
-			-- Round 27: a junction (and the square a crossing may get) keeps
-			-- well off the wall, never at the gatehouse's inner mouth
-			if wall_dist(road.X[i] - AX, road.Z[i] - AZ) < WALL_CLEAR_ST + 8 then return false end
+		local function dry_ok(i)
 			for j = max(1, i - 10), min(#road.X, i + 10) do
 				if road.cls[j] ~= "G" then return false end
 				if wet_at(road.X[j] - AX, road.Z[j] - AZ) then return false end
@@ -1511,11 +1525,26 @@ local function plan_once(seed, I, opt)
 			end
 			return true
 		end
+		-- Round 27: a junction (and the square a crossing may get) keeps
+		-- well off the wall, never at the gatehouse's inner mouth; `by_wall`
+		-- notes a point that was dry enough and only too near the wall
+		local by_wall = false
+		local function ok(i)
+			if wall_dist(road.X[i] - AX, road.Z[i] - AZ) < WALL_CLEAR_ST + 8 then
+				if not by_wall and dry_ok(i) then by_wall = true end
+				return false
+			end
+			return dry_ok(i)
+		end
 		for d = 0, 40 do
 			if best + d <= #road.X - 12 and ok(best + d) then return best + d end
 			if best - d >= 12 and ok(best - d) then return best - d end
 		end
-		st.junction_wet = (st.junction_wet or 0) + 1
+		if by_wall then
+			st.junction_wall = (st.junction_wall or 0) + 1
+		else
+			st.junction_wet = (st.junction_wet or 0) + 1
+		end
 		return best
 	end
 	local rings = {}
@@ -1667,11 +1696,11 @@ local function plan_once(seed, I, opt)
 				local s1 = {ax + nx_ * 10, az + nz_ * 10}
 				local src = cell_li(s1[1], s1[2])
 				local phi_a, phi_b = atan2(az, ax), atan2(bz, bx)
-				local guide = guide_for(function(lx, lz)
+				local guide = guide_for(function(lx, lz, li)
 					local r = sqrt(lx * lx + lz * lz)
 					local phi = atan2(lz, lx)
 					local u = wrap(phi - phi_a) / wrap(phi_b - phi_a)
-					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz)
+					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz, li)
 					if u < -0.05 or u > 1.05 then g = g + 20 end
 					local dr = (r - ring_r(ri, phi)) / 10
 					return g + min(8, P.RING_GUIDE * dr * dr)
@@ -1752,10 +1781,10 @@ local function plan_once(seed, I, opt)
 				local s1 = {ax + nx_ * 8, az + nz_ * 8}
 				local src = cell_li(s1[1], s1[2])
 				local phi_u = atan2(az, ax)
-				local guide = guide_for(function(lx, lz)
+				local guide = guide_for(function(lx, lz, li)
 					local r = sqrt(lx * lx + lz * lz)
 					local dphi = wrap(atan2(lz, lx) - phi_u)
-					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz)
+					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz, li)
 					local t = dphi * r / 12
 					return g + min(10, 1.5 * (t * t))
 				end)
@@ -1845,11 +1874,11 @@ local function plan_once(seed, I, opt)
 						local nx_, nz_ = unit_normal_toward(ro, i1, ax, az)   -- outward
 						local s1 = {ax + nx_ * 8, az + nz_ * 8}
 						local src = cell_li(s1[1], s1[2])
-						local guide = guide_for(function(lx, lz)
+						local guide = guide_for(function(lx, lz, li)
 							local r = sqrt(lx * lx + lz * lz)
 							local dphi = wrap(atan2(lz, lx) - phi_u)
 							local t = dphi * r / 12
-							return outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz) + min(10, 1.5 * (t * t))
+							return outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz, li) + min(10, 1.5 * (t * t))
 						end)
 						local dx, dz = rd * cos(phi_u), rd * sin(phi_u)
 						local tcell = cell_li(dx, dz)
@@ -2346,7 +2375,7 @@ local function plan_once(seed, I, opt)
 				idx = idx - 1
 			end
 			if idx ~= q.idx then
-				q.idx, q.x, q.z = idx, X[idx] - AX, Z[idx] - AZ
+				q.idx, q.x, q.z, q.pulled = idx, X[idx] - AX, Z[idx] - AZ, true
 				st.squares_pulled = (st.squares_pulled or 0) + 1
 			end
 		end
@@ -2371,6 +2400,18 @@ local function plan_once(seed, I, opt)
 			st.squares_cut = (st.squares_cut or 0) + 1
 		end
 		q.r = r
+		-- a square moved back keeps add_square's 14-node spacing to the
+		-- squares kept before it
+		if r >= 3 and q.pulled then
+			for _, o in ipairs(kept_sq) do
+				local rx, rz = o.x - q.x, o.z - q.z
+				if rx * rx + rz * rz < 14 * 14 then
+					r = 0
+					st.squares_close = (st.squares_close or 0) + 1
+					break
+				end
+			end
+		end
 		if r >= 3 then kept_sq[#kept_sq + 1] = q end
 	end
 	st.squares_dropped = #squares - #kept_sq
@@ -2710,7 +2751,7 @@ local function plan_once(seed, I, opt)
 		for _, e in ipairs(g.ends) do
 			local kind = e.kind == "primary" and "primary" or "secondary"
 			local kit_half = city.P.HALF[kind]
-			local guide = guide_for(function(lx, lz)
+			local guide = guide_for(function(lx, lz, li)
 				-- stay outside the city (the wall), except in front of the gate
 				local rx, rz = lx - g.ox, lz - g.oz
 				-- Round 27 playtest: and off the wall band, which a road
@@ -2720,7 +2761,7 @@ local function plan_once(seed, I, opt)
 				local along = rx * g.dx + rz * g.dz
 				local across = -rx * g.dz + rz * g.dx
 				if along >= -1 and abs(across) <= P.GATE_WIDTH + 1 then return 0 end
-				if wall_dist(lx, lz) < WALL_CLEAR_ST + kit_half + 2 then return 50 end
+				if cell_wall_dist(lx, lz, li) < WALL_CLEAR_ST + kit_half + 2 then return 50 end
 				local dg = sqrt(rx * rx + rz * rz)
 				if dg < 20 then return 0 end
 				local r = sqrt(lx * lx + lz * lz)

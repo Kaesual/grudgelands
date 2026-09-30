@@ -30,7 +30,8 @@
 # Round 27 wall fixes (no street or square opening the wall, gatehouses on the
 # ground): gate_gaps.lua also measures the whole edge on real roads (open,
 # float, fgate, hang; wall_summary.py compares two fleets,
-# results/summary-r27-wall.txt), section.lua / section.py draw a vertical
+# results/summary-r27-wall.txt), plan_digest.lua hashes the plans (and times
+# the planner), section.lua / section.py draw a vertical
 # before | after section, engine_wall.sh checks the playtest seed's two spots
 # and every gatehouse's towers in the engine.
 set -euo pipefail

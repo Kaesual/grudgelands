@@ -47,7 +47,12 @@ along the avenue (the gate-line pass stops that side at water), so the avenue
 covers the wall line beside the box. Outline geometry, not street planning.
 The one extra dip (Kezamba 4205313115137717109) comes from the planner's area
 retry (+8 %): the first plan there left a named plot out, the retry places all.
-Planner time, seed 7522774488337609340, six capitals: main 6.38 s, branch 6.80 s.
+Planner time, seed 7522774488337609340, six capitals (plan_digest.lua, four
+sequential rounds, min / mean): main 5.94 / 6.20 s, 5f9af6f1 6.74 / 6.88 s,
+branch after the review follow-up (wall distance memoised per lattice cell,
+WALL_REACH 48 -> 32) 5.99 / 6.29 s. The follow-up leaves every plan, its
+statistics and this fleet byte-identical (plan digests on five seeds; the
+200-seed gate_gaps rerun equals r27-wall-sample200-branch.tsv line for line).
 Engine: engine-wall-seed7522774488337609340/ (engine_wall.sh): branch PASS
 (Gor Drazhak spot walled 47 of 47, all 24 gatehouses' outer towers on the ground;
 one Kezamba tower column stands on a 1-node crust over a covered cave, logged);
