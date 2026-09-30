@@ -26,6 +26,8 @@ lighter, turrets darker, gatehouse towers dark red and its passage pale red
 
 crops before | after around world column (x, z) at `zoom` pixels per node
 (default 8) into <out_root>/compare/<seedtag>_<capital>_<x>_<z>.png.
+AFTER_LABEL=<text> names the after variant in the overview titles (default
+"Round 26").
 """
 import json
 import math
@@ -36,6 +38,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 S = 2  # pixels per node
+AFTER = os.environ.get('AFTER_LABEL', 'Round 26')  # the after variant's name in the titles
 CAPS = ['highcourt', 'dur_brannoc', 'nhal_veyr', 'gor_drazhak', 'lethariel', 'kezamba']
 NAMES = {'highcourt': 'Highcourt', 'dur_brannoc': 'Dur Brannoc', 'lethariel': 'Lethariel',
          'nhal_veyr': 'Nhal Veyr', 'gor_drazhak': 'Gor Drazhak', 'kezamba': 'Kezamba'}
@@ -338,7 +341,7 @@ def main():
     res = {}
     for v in variants:
         for c in CAPS:
-            r = render_one(root, v, tag, c, {'before': 'BEFORE (main)', 'after': 'AFTER (Round 26)'}.get(v))
+            r = render_one(root, v, tag, c, {'before': 'BEFORE (main)', 'after': f'AFTER ({AFTER})'}.get(v))
             if r:
                 res[(v, c)] = r
                 print(os.path.join(root, v, tag, c + '.png'))
@@ -361,7 +364,7 @@ def main():
     cv = Image.new('RGB', (cols * pw + (cols + 1) * 16, 3 * ph + 60), (26, 26, 30))
     d = ImageDraw.Draw(cv)
     seed = res[('after', CAPS[0])][2]['seed']
-    d.text((16, 14), f"Seed {seed}: the six capitals, BEFORE (main, left) and AFTER (Round 26, right) - north up",
+    d.text((16, 14), f"Seed {seed}: the six capitals, BEFORE (main, left) and AFTER ({AFTER}, right) - north up",
            fill=(255, 255, 255), font=FB)
     for i, c in enumerate(CAPS):
         x = 16 + (i % cols) * (pw + 16)

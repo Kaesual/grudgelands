@@ -1,0 +1,110 @@
+ACTION[Server]: [r27w3_wall_probe] 25 emerge jobs
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate east in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate east at 155,-1483: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate south in 2.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate south at -68,-1352: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate west in 3.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate west at -196,-1567: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate north in 2.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate north at -11,-1688: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate east in 1.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate east at -1642,-1566: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate south in 1.8 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate south at -1800,-1334: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate west in 0.9 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate west at -1996,-1445: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate north in 1.8 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate north at -1805,-1688: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate east in 2.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate east at -1586,1565: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate south in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate south at -1794,1678: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate west in 1.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate west at -1914,1554: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate north in 2.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate north at -1836,1332: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate east in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate east at 102,1570: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate south in 3.1 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate south at 1,1646: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate west in 2.3 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate west at -230,1452: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate north in 2.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate north at 14,1311: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak playtest spot in 2.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak playtest spot -139,1616: wall centre-line columns 47, walled 33 (open -133,1617 -136,1618 -136,1619 -137,1619 -138,1619 -139,1620 -140,1620 -141,1620 -141,1621 -142,1621 -143,1621 -143,1622 -144,1622 -145,1622)
+ERROR[Emerge-0]: [r27w3_wall_probe] FAIL gor_drazhak playtest spot walled
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate east in 2.1 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate east at 2007,-1564: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate south in 1.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate south at 1774,-1377: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate west in 1.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate west at 1583,-1364: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate north in 4.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate north at 1802,-1634: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate east in 2.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate east at 1922,1484: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate south in 2.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate south: a cave under the ground's crust below the tower column 1765,1623 (air at y 35, covered)
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate south at 1760,1620: outer tower columns 14, standing on the ground 7 (over a covered cave 1) (unsupported 1755,41,1617:air [35=default:dirt 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,41,1617:air [35=default:sandstone 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,1618:no tower 1765,1619:no tower 1755,41,1620:air [35=default:dirt 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,41,1620:air [35=default:sandstone 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,1621:no tower)
+ERROR[Emerge-0]: [r27w3_wall_probe] FAIL kezamba gate south towers on the ground
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate west in 3.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate west at 1594,1571: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate north in 1.6 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate north at 1743,1313: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] RESULT FAIL checks=33 failures=2
+ACTION[Server]: [r27w3_wall_probe] 25 emerge jobs
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate east in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate east at 155,-1483: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate south in 2.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate south at -68,-1352: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate west in 3.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate west at -196,-1567: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED highcourt gate north in 2.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] highcourt gate north at -11,-1688: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate east in 1.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate east at -1642,-1566: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate south in 1.8 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate south at -1800,-1334: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate west in 0.9 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate west at -1996,-1445: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED dur_brannoc gate north in 1.8 s
+ACTION[Emerge-0]: [r27w3_wall_probe] dur_brannoc gate north at -1805,-1688: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate east in 2.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate east at -1586,1565: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate south in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate south at -1794,1678: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate west in 1.7 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate west at -1914,1554: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED nhal_veyr gate north in 2.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] nhal_veyr gate north at -1836,1332: outer tower columns 22, standing on the ground 22 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate east in 3.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate east at 102,1570: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate south in 3.1 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate south at 1,1646: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate west in 2.3 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate west at -230,1452: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak gate north in 2.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak gate north at 14,1311: outer tower columns 18, standing on the ground 18 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED gor_drazhak playtest spot in 2.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] gor_drazhak playtest spot -139,1616: wall centre-line columns 47, walled 33 (open -133,1617 -136,1618 -136,1619 -137,1619 -138,1619 -139,1620 -140,1620 -141,1620 -141,1621 -142,1621 -143,1621 -143,1622 -144,1622 -145,1622)
+ERROR[Emerge-0]: [r27w3_wall_probe] FAIL gor_drazhak playtest spot walled
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate east in 2.1 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate east at 2007,-1564: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate south in 1.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate south at 1774,-1377: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate west in 1.2 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate west at 1583,-1364: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED lethariel gate north in 4.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] lethariel gate north at 1802,-1634: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate east in 2.4 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate east at 1922,1484: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate south in 2.0 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate south: a cave under the ground's crust below the tower column 1765,1623 (air at y 35, covered)
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate south at 1760,1620: outer tower columns 14, standing on the ground 7 (over a covered cave 1) (unsupported 1755,41,1617:air [35=default:dirt 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,41,1617:air [35=default:sandstone 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,1618:no tower 1765,1619:no tower 1755,41,1620:air [35=default:dirt 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,41,1620:air [35=default:sandstone 36=default:mossycobble 37=air 38=air 39=air 40=air 41=air 42=default:jungletree 43=default:jungletree 44=air] 1765,1621:no tower)
+ERROR[Emerge-0]: [r27w3_wall_probe] FAIL kezamba gate south towers on the ground
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate west in 3.5 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate west at 1594,1571: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] EMERGED kezamba gate north in 1.6 s
+ACTION[Emerge-0]: [r27w3_wall_probe] kezamba gate north at 1743,1313: outer tower columns 14, standing on the ground 14 (over a covered cave 0)
+ACTION[Emerge-0]: [r27w3_wall_probe] RESULT FAIL checks=33 failures=2
