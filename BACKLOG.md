@@ -301,6 +301,26 @@ none blocks the playtest.
   playtest decides whether this needs handling.
 - A new home (innkeeper binding or Claim Stone) appears on the minimap up to
   5 s later: static markers refresh on quest changes and every 5 s.
+- Minimap glide (discussed 2026-09-30, not approved yet): an opaque square
+  plate with a round hole would let the map scroll pixel by pixel under a
+  centred arrow instead of snapping per grid cell; it changes the approved look
+  and adds marker updates, so a mockup comes first.
+
+### Round 26 capital wall follow-ups
+
+**Noted 2026-09-30** after the playtest fix `1ff541e4` (wall–gatehouse gaps
+10336 → 0 and leaking gates 2287 → 0 over 200 seeds; river dips 271 → 86 by
+`tools/r26_capitals/gate_gaps.lua`, whose merged dip metric undercounts a
+crossing plus a bend clip). Lethariel leaves more of its crown lake shore
+unwalled; the user accepted this.
+
+- River V-dips still occur where a whole run of rays sits on the far bank:
+  the bank-run pass moves rays one at a time and never the whole run back to
+  its neighbours' bank (for example seed 9469376632389957802, Lethariel and
+  Kezamba). Same as before the fix, not a regression against main.
+- A wall is never built over a road, so a street crossing the wall line next
+  to a gatehouse leaves an opening (6770 → 1180 columns over 200 seeds).
+  Closing it needs a street-planning change.
 
 ### First-public-release gates
 
