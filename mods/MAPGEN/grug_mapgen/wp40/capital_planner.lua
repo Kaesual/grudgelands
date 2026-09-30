@@ -1174,6 +1174,69 @@ local function plan_once(seed, I, opt)
 		st.area = area
 	end
 	st.t.gates = os.clock() - T3
+	-- Round 27 playtest (the wall is closed everywhere except at its
+	-- gatehouses): the outline is final here, and the wall polyline is the
+	-- straight line between its ray points (`wall.pts` below resamples
+	-- exactly that ring). `wall_dist(lx, lz)` is a column's distance from it,
+	-- capped at WALL_REACH; `box_dist` its distance from the nearest
+	-- gatehouse box. Streets, squares and the plaza keep their surface off
+	-- the wall band with these, so no road surface lies on the wall line
+	-- away from a gate (the writer never builds over one).
+	local WALL_REACH = 48
+	local WB = 8
+	local wall_bk = {}
+	local wall_xz = {}
+	for a = 1, NR do wall_xz[a] = {R[a] * RAYS[a].c, R[a] * RAYS[a].s} end
+	for a = 1, NR do
+		local p, q = wall_xz[a], wall_xz[a % NR + 1]
+		for bz = floor((min(p[2], q[2]) - WALL_REACH) / WB), floor((max(p[2], q[2]) + WALL_REACH) / WB) do
+			for bx = floor((min(p[1], q[1]) - WALL_REACH) / WB), floor((max(p[1], q[1]) + WALL_REACH) / WB) do
+				local k = bz * 65536 + bx
+				local l = wall_bk[k]
+				if not l then l = {}; wall_bk[k] = l end
+				l[#l + 1] = a
+			end
+		end
+	end
+	local function wall_dist(lx, lz)
+		local l = wall_bk[floor(lz / WB) * 65536 + floor(lx / WB)]
+		local best = WALL_REACH
+		if not l then return best end
+		for m = 1, #l do
+			local a = l[m]
+			local p, q = wall_xz[a], wall_xz[a % NR + 1]
+			local vx, vz = q[1] - p[1], q[2] - p[2]
+			local l2 = vx * vx + vz * vz
+			local u = l2 > 0 and ((lx - p[1]) * vx + (lz - p[2]) * vz) / l2 or 0
+			if u < 0 then u = 0 elseif u > 1 then u = 1 end
+			local dx, dz = lx - p[1] - u * vx, lz - p[2] - u * vz
+			local d = sqrt(dx * dx + dz * dz)
+			if d < best then best = d end
+		end
+		return best
+	end
+	local function box_dist(lx, lz)
+		local best = INF
+		for _, g in ipairs(gates) do
+			local dd = abs((lx - g.x) * g.dx + (lz - g.z) * g.dz) - P.GATE_DEPTH - 0.5
+			local ww = abs(-(lx - g.x) * g.dz + (lz - g.z) * g.dx) - P.GATE_WIDTH - 0.5
+			dd, ww = max(0, dd), max(0, ww)
+			local d = sqrt(dd * dd + ww * ww)
+			if d < best then best = d end
+		end
+		return best
+	end
+	-- a street keeps its surface edge this far from the wall's centre line
+	-- (the writer's band reaches WALL_HALF + 1/2, then a node and a half of
+	-- clearance), a square its rim
+	local WALL_CLEAR_ST = P.WALL_HALF + 2
+	local function wall_hit(road)
+		local X, Z = road.X, road.Z
+		for i = 1, #X do
+			if wall_dist(X[i] - AX, Z[i] - AZ) - road.hw < WALL_CLEAR_ST then return true end
+		end
+		return false
+	end
 	---------------------------------------------------------------------------
 	-- 5. streets: the road module's kit on a 4-node city grid
 	---------------------------------------------------------------------------
@@ -1244,6 +1307,13 @@ local function plan_once(seed, I, opt)
 			if v and v > 0 then g[li] = v end
 		end
 		return g
+	end
+	-- Round 27: a lane's search keeps off the wall band (a lane that still
+	-- reaches it is cut back or not built, `lane_to`), a 4-node cell's
+	-- width of margin beyond a lane's clearance
+	local function wall_cost(lx, lz)
+		if wall_dist(lx, lz) < WALL_CLEAR_ST + 2.5 + 4 then return 12 end
+		return 0
 	end
 	local function outside_cost(lx, lz, margin, k)
 		local r = sqrt(lx * lx + lz * lz)
@@ -1430,6 +1500,9 @@ local function plan_once(seed, I, opt)
 		-- a junction needs dry, ground-supported parent points around it
 		-- (not on a bridge or a deck): the nearest such index within 40
 		local function ok(i)
+			-- Round 27: a junction (and the square a crossing may get) keeps
+			-- well off the wall, never at the gatehouse's inner mouth
+			if wall_dist(road.X[i] - AX, road.Z[i] - AZ) < WALL_CLEAR_ST + 8 then return false end
 			for j = max(1, i - 10), min(#road.X, i + 10) do
 				if road.cls[j] ~= "G" then return false end
 				if wet_at(road.X[j] - AX, road.Z[j] - AZ) then return false end
@@ -1478,6 +1551,31 @@ local function plan_once(seed, I, opt)
 		for k, v in pairs(f) do ff[k] = v end
 		if not (tset and tset[last]) then ff.b_parent = nil; ff.flat_b = ff.flat_b or 8 end
 		local road = kit.street("lane", ctrl, ff)
+		-- Round 27 playtest: a lane keeps its surface off the wall band. A
+		-- dead end (a spoke, an open arc, a dead-end cross-lane) is cut back
+		-- from its far end one control point at a time until it clears the
+		-- wall; a lane between two streets that reaches the band is not built
+		-- (the caller tries its next option).
+		if wall_hit(road) then
+			if ff.b_parent then
+				st.lanes_rejected = (st.lanes_rejected or 0) + 1
+				st.lanes_wall = (st.lanes_wall or 0) + 1
+				return nil
+			end
+			local c = #ctrl
+			while wall_hit(road) and c > #head + 2 do
+				c = c - 1
+				local cut = {}
+				for i = 1, c do cut[i] = ctrl[i] end
+				road = kit.street("lane", cut, ff)
+			end
+			if wall_hit(road) or #road.X < 32 then
+				st.lanes_rejected = (st.lanes_rejected or 0) + 1
+				st.lanes_wall = (st.lanes_wall or 0) + 1
+				return nil
+			end
+			st.lanes_trimmed = (st.lanes_trimmed or 0) + 1
+		end
 		-- a lane whose profile has no feasible solution (e.g. its mouth
 		-- in water) is not built; the caller tries its next option
 		if road.cost == math.huge then
@@ -1573,7 +1671,7 @@ local function plan_once(seed, I, opt)
 					local r = sqrt(lx * lx + lz * lz)
 					local phi = atan2(lz, lx)
 					local u = wrap(phi - phi_a) / wrap(phi_b - phi_a)
-					local g = outside_cost(lx, lz, 14, 10)
+					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz)
 					if u < -0.05 or u > 1.05 then g = g + 20 end
 					local dr = (r - ring_r(ri, phi)) / 10
 					return g + min(8, P.RING_GUIDE * dr * dr)
@@ -1657,7 +1755,7 @@ local function plan_once(seed, I, opt)
 				local guide = guide_for(function(lx, lz)
 					local r = sqrt(lx * lx + lz * lz)
 					local dphi = wrap(atan2(lz, lx) - phi_u)
-					local g = outside_cost(lx, lz, 14, 10)
+					local g = outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz)
 					local t = dphi * r / 12
 					return g + min(10, 1.5 * (t * t))
 				end)
@@ -1726,6 +1824,13 @@ local function plan_once(seed, I, opt)
 							local x, z = ro.X[i] - AX, ro.Z[i] - AZ
 							local ph = atan2(z, x)
 							local r_end = r_at(ph) - P.SPOKE_IN
+							-- Round 27: SPOKE_IN from the wall itself, which
+							-- comes nearer than its radius at that angle where
+							-- it runs slanted (a jagged outline)
+							local cph, sph = cos(ph), sin(ph)
+							while r_end > 0 and wall_dist(r_end * cph, r_end * sph) < P.SPOKE_IN - 2 do
+								r_end = r_end - 2
+							end
 							-- not alongside an avenue (its gate's direction)
 							for _, g in ipairs(gates) do
 								if abs(wrap(ph - g.phi)) < 0.25 then r_end = -INF end
@@ -1744,7 +1849,7 @@ local function plan_once(seed, I, opt)
 							local r = sqrt(lx * lx + lz * lz)
 							local dphi = wrap(atan2(lz, lx) - phi_u)
 							local t = dphi * r / 12
-							return outside_cost(lx, lz, 14, 10) + min(10, 1.5 * (t * t))
+							return outside_cost(lx, lz, 14, 10) + wall_cost(lx, lz) + min(10, 1.5 * (t * t))
 						end)
 						local dx, dz = rd * cos(phi_u), rd * sin(phi_u)
 						local tcell = cell_li(dx, dz)
@@ -1781,7 +1886,8 @@ local function plan_once(seed, I, opt)
 		local bi, bs
 		for i = max(12, lo_i - 10), min(#av.X - 20, hi_i) do
 			local lx, lz = av.X[i] - AX, av.Z[i] - AZ
-			if max(abs(lx), abs(lz)) > CK + P.PLAZA + 2 and not wet_at(lx, lz) then
+			if max(abs(lx), abs(lz)) > CK + P.PLAZA + 2 and not wet_at(lx, lz) and
+					wall_dist(lx, lz) >= P.PLAZA + WALL_CLEAR_ST + 2 then
 				local dev = 0
 				for j = max(1, i - reach), min(#av.X, i + reach) do
 					dev = max(dev, abs(av.R[j] - av.R[i]))
@@ -2227,6 +2333,23 @@ local function plan_once(seed, I, opt)
 	-- squares: flat at the street level where they sit; occupied for plots
 	local kept_sq = {}
 	for _, q in ipairs(squares) do
+		-- Round 27 playtest: a square never reaches the wall band or a
+		-- gatehouse box. A lane's end square moves back along its lane (up to
+		-- twice its radius) until it has its full size clear of both; any
+		-- square is then cut to what is clear (and dropped below 3, below)
+		local r0 = q.rmax or P.SQUARE_R
+		if q.why == "lane end" then
+			local X, Z = q.road.X, q.road.Z
+			local idx, lim = q.idx, max(12, q.idx - 2 * r0)
+			while idx > lim and (wall_dist(X[idx] - AX, Z[idx] - AZ) < r0 + WALL_CLEAR_ST or
+					box_dist(X[idx] - AX, Z[idx] - AZ) < r0 + 1) do
+				idx = idx - 1
+			end
+			if idx ~= q.idx then
+				q.idx, q.x, q.z = idx, X[idx] - AX, Z[idx] - AZ
+				st.squares_pulled = (st.squares_pulled or 0) + 1
+			end
+		end
 		q.y = floor(2 * q.road.R[q.idx] + 0.5) / 2
 		-- the square reaches only as far as every street through it stays
 		-- within 1/2 of its level (junction mouths are flat), so its edge
@@ -2241,6 +2364,11 @@ local function plan_once(seed, I, opt)
 					if abs(y - q.y) > 0.5 then r = min(r, d - sr.hw - 2) end
 				end
 			end
+		end
+		local clear = min(wall_dist(q.x, q.z) - WALL_CLEAR_ST, box_dist(q.x, q.z) - 1)
+		if clear < r then
+			r = clear
+			st.squares_cut = (st.squares_cut or 0) + 1
 		end
 		q.r = r
 		if r >= 3 then kept_sq[#kept_sq + 1] = q end
@@ -2581,9 +2709,18 @@ local function plan_once(seed, I, opt)
 		local first
 		for _, e in ipairs(g.ends) do
 			local kind = e.kind == "primary" and "primary" or "secondary"
+			local kit_half = city.P.HALF[kind]
 			local guide = guide_for(function(lx, lz)
 				-- stay outside the city (the wall), except in front of the gate
 				local rx, rz = lx - g.ox, lz - g.oz
+				-- Round 27 playtest: and off the wall band, which a road
+				-- skirting a slanted stretch of wall ran along (its radius
+				-- was clear of the wall, its surface on it), except in the
+				-- gate's own approach straight out from the passage
+				local along = rx * g.dx + rz * g.dz
+				local across = -rx * g.dz + rz * g.dx
+				if along >= -1 and abs(across) <= P.GATE_WIDTH + 1 then return 0 end
+				if wall_dist(lx, lz) < WALL_CLEAR_ST + kit_half + 2 then return 50 end
 				local dg = sqrt(rx * rx + rz * rz)
 				if dg < 20 then return 0 end
 				local r = sqrt(lx * lx + lz * lz)

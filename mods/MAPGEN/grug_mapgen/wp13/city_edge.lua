@@ -25,10 +25,10 @@
 --     street;
 --   * masonry starts two courses under the column's own ground, so a wall on
 --     a slope is a stepped face, never a gap;
---   * over water (a point flagged `a` by the planner, or a wet column) the
---     wall is an arcade: the walk on a three-course arch, piers down to the
---     bed every few points, the river passing below (the palisade: a timber
---     deck on piles);
+--   * over water (a column under water; Round 27: the planner's `a` flag
+--     alone no longer opens a dry bank column) the wall is an arcade: the
+--     walk on a three-course arch, piers down to the bed every few points,
+--     the river passing below (the palisade: a timber deck on piles);
 --   * a capital's civic lake (points flagged `l`, Lethariel and Kezamba) is
 --     the edge itself where the outline crosses it: no wall stands on those
 --     points; the wall runs on land up to the water and a few points into it
@@ -37,7 +37,8 @@
 --     a closed head -- a parapet across the walk, or the stockade;
 --   * a gatehouse owns its box: the avenue runs through the passage (the
 --     road writer paves it) and the gatehouse writes nothing below the lintel
---     there.
+--     there; its outermost column either side is always tower, so the
+--     lintel never hangs free.
 --
 -- Plain Lua 5.1, pure, no engine calls, no globals.
 
@@ -253,8 +254,11 @@ local function loader(directory)
 		local function stone_column(lx, lz, ground, water, road, put)
 			local g, dd, ww = gate_of(lx, lz)
 			if g then
-				-- a street column is always passage, never tower
-				local tower = abs(ww) >= WIDTH - 2 and not road
+				-- a street column is passage, never tower -- except the
+				-- outermost column either side, which always stands (Round 27
+				-- playtest: a square across the tower strip left the lintel
+				-- hanging in the air), so every lintel rests on a tower
+				local tower = abs(ww) >= WIDTH or (abs(ww) >= WIDTH - 2 and not road)
 				local roof = g.y + 9
 				if tower then
 					for y = ground - 2, roof + 2 do put(y, R.face) end
@@ -318,9 +322,11 @@ local function loader(directory)
 			local top, slab = walk_at(i, u)
 			local edge_lane = head or d > HALF - 0.5
 			-- by the civic lake (`f`, and the head) the wall stands on a
-			-- solid footing
+			-- solid footing; the arch spans only a column that is itself
+			-- under water (Round 27 playtest: a dry bank column of a point
+			-- flagged `a` hung the masonry over the sand)
 			local wet = not (head or W.foot[i] or W.foot[i % n + 1]) and
-				(W.wet[i] or (water ~= nil and water > ground))
+				water ~= nil and water > ground
 			local pier = (i % 6) < 2
 			local low = ground - 2
 			if wet and not pier then low = top - 3 end
@@ -360,7 +366,8 @@ local function loader(directory)
 		local function palisade_column(lx, lz, ground, water, road, put)
 			local g, dd, ww = gate_of(lx, lz)
 			if g then
-				local tower = abs(ww) >= WIDTH - 1 and not road
+				-- (as the stone gatehouse: the outermost column always stands)
+				local tower = abs(ww) >= WIDTH or (abs(ww) >= WIDTH - 1 and not road)
 				local roof = g.y + 7
 				if tower then
 					for y = ground - 1, roof do put(y, R.stake) end
@@ -404,7 +411,9 @@ local function loader(directory)
 			-- by the civic lake (`f`) the stakes stand solid to the bed
 			local foot = head or W.foot[i] or W.foot[i % n + 1]
 			local in_water = water ~= nil and water > ground
-			local wet = not foot and (W.wet[i] or in_water)
+			-- piles with gaps only where the column itself is under water
+			-- (Round 27 playtest: stakes hung over a dry bank)
+			local wet = not foot and in_water
 			if head or (outside and d > HALF - 1.5) then
 				-- the stockade: stakes from under the ground to above the
 				-- walk (and across the wall's end in the lake, its head)

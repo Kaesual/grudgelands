@@ -1,0 +1,6 @@
+staged probe: grug_probe_r27w3_wall
+headless boot: PASS (port 37718, 330 s)
+log: /tmp/grudgelands-headless.r27w3-fZtroC/server.log
+seed = 7522774488337609340
+67:ACTION[Main]: Server for gameid="grudgelands" listening on 127.0.0.1:37718.
+kept: /tmp/grudgelands-headless.r27w3-fZtroC

@@ -27,6 +27,12 @@
 # (results/summary-gate-gaps.txt); engine_gates.sh checks every gate of the
 # playtest seed in the engine; `render.py <out_root> <tag> --crop ...` draws a
 # node-sized before | after close-up of the edge the writer builds.
+# Round 27 wall fixes (no street or square opening the wall, gatehouses on the
+# ground): gate_gaps.lua also measures the whole edge on real roads (open,
+# float, fgate, hang; wall_summary.py compares two fleets,
+# results/summary-r27-wall.txt), section.lua / section.py draw a vertical
+# before | after section, engine_wall.sh checks the playtest seed's two spots
+# and every gatehouse's towers in the engine.
 set -euo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
