@@ -35,7 +35,7 @@ local MARKER_SLOTS, PARTY_SLOTS = 24, 9
 local ICON, PARTY_ARROW, PLAYER_ARROW = 16, 20, 24
 -- A rim arrow fills RIM_FILL of the bezel ring's width; its chevron spans
 -- RIM_EXTENT of its 32 px texture from tip to back, outline included.
-local RIM_FILL, RIM_EXTENT = 0.85, 23 / 32
+local RIM_FILL, RIM_EXTENT = 0.85, 21 / 32
 local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
 local SEA = "#1c3a52"
@@ -254,7 +254,7 @@ local function update(player, state, slow)
 	-- The map: texture and position change in the same step, so a new cell
 	-- lines up with the old one to the pixel.
 	local px, py = V.base_pixel(view, pos.x, pos.z)
-	local mx, my = V.map_corner(view, frame, state.ox, state.oy, px, py)
+	local mx, my = V.map_corner(view, frame, state.cell_x, state.cell_y, px, py)
 	changes = changes + show(player, frame, hud.map, state.texture, mx, my,
 		exact(frame.drawn, view.pixels, frame))
 	local sea = math.floor(frame.hole + 2)
@@ -314,17 +314,16 @@ local function update(player, state, slow)
 				-- north matters more than the letter), filling the ring.
 				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
 				local ring = frame.diameter / 2 - frame.hole
-				local px = RIM_FILL * ring / RIM_EXTENT
+				local size = RIM_FILL * ring / RIM_EXTENT
 				changes = changes + show(player, frame, hud.party[i],
-					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, px / (32 * hud_px))
+					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, size / (32 * hud_px))
 			end
 		end
 	end
 
 	-- The arrow sits at the centre; the compass element's size is in raw
 	-- pixels.
-	local x = math.floor(frame.center_x + 0.5)
-	local y = math.floor(frame.center_y + 0.5)
+	local x, y = frame.arrow_x, frame.arrow_y
 	local arrow = math.floor(PLAYER_ARROW * hud_px + 0.5)
 	local element = hud.player
 	if element.x ~= x or element.y ~= y then

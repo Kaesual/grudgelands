@@ -142,14 +142,15 @@ HOME = [
 
 def rim_arrow(frame):
     """A chevron pointing outward; frame 0 points up (screen), clockwise.
-    From tip to back it spans RIM_EXTENT of the texture (outline included),
-    so the minimap can size it to fill the bezel ring."""
+    From tip to back it spans 21 of the texture's 32 px (outline included,
+    RIM_EXTENT in minimap.lua), so the minimap can size it to fill the ring;
+    even the diagonal frames stay inside the texture."""
     a = frame * math.tau / 16
     s = 128
     im = Image.new("RGBA", (s, s))
     d = ImageDraw.Draw(im)
     pts = []
-    for x, y in [(0, -10.5), (11, 10.5), (0, 5.5), (-11, 10.5)]:
+    for x, y in [(0, -9.5), (10, 9.5), (0, 5), (-10, 9.5)]:
         # rotate clockwise on screen (y down)
         pts.append(((16 + x * math.cos(a) - y * math.sin(a)) * 4,
                     (16 + x * math.sin(a) + y * math.cos(a)) * 4))
@@ -171,7 +172,7 @@ N_GLYPH = [
 # Hole radius over outer radius and the radius (over the outer one) up to
 # which the art is fully opaque; must equal V.BEZEL_HOLE and V.BEZEL_OPAQUE
 # in mods/PLAYER/grug_map/minimap_view.lua.
-BEZEL_HOLE = 0.84
+BEZEL_HOLE = 0.83
 BEZEL_OPAQUE = 0.975
 
 
@@ -230,7 +231,12 @@ def main():
     pixel_icon(HOME, {"o": OUTLINE, "G": (255, 211, 79, 255), "w": (245, 236, 214, 255),
                       "y": (176, 64, 44, 255)}).save(OUT / "grug_map_home.png")
     for frame in range(16):
-        rim_arrow(frame).save(OUT / f"grug_map_rim_cyan_{frame:02d}.png")
+        arrow = rim_arrow(frame)
+        # never clipped: the texture's border stays (almost) transparent
+        for i in range(32):
+            for x, y in ((i, 0), (i, 31), (0, i), (31, i)):
+                assert arrow.getpixel((x, y))[3] <= 8, ("rim arrow clipped", frame, x, y)
+        arrow.save(OUT / f"grug_map_rim_cyan_{frame:02d}.png")
     art = bezel()
     # the band is opaque (alpha >= 250 of 255) from just outside the hole to
     # BEZEL_OPAQUE

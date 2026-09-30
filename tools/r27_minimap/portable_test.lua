@@ -11,7 +11,7 @@
 --      list clearance holds; it follows window size and HUD scaling;
 --   B  base: quality setting and fallback, tiles (<= 512 px, cover the image
 --      exactly), the Map tab's combined texture, the round mask;
---   G  geometry (glide): window ~900 nodes per quality; the cell texture
+--   G  geometry (glide): window ~880 nodes per quality; the cell texture
 --      covers the hole wherever the player is in the cell and the bezel
 --      covers its overhang; the bezel fits the native box at usual window
 --      sizes; walks along every axis keep the player's pixel on the centre
@@ -29,6 +29,8 @@
 -- Prints "R27 MINIMAP PORTABLE PASS checks=<n>" or the failures, plus the
 -- measured per-update cost as a comparison.
 local repo = arg[1] or "."
+-- `debug` as the second argument prints the first uncovered pixel
+local DEBUG = arg[2] == "debug"
 local checks, failures = 0, {}
 local function check(ok, label)
 	checks = checks + 1
@@ -219,6 +221,33 @@ end
 -- ---------------------------------------------------------------------------
 local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
 local bounds = atlas.view()
+
+-- What the client shows, emulated: `[resize` is CImage::copyToScaling
+-- (irr/src/CImage.cpp:185: an exact multiple steps src/dst from 0, any
+-- other size keeps the border pixels, stepping (src-1)/(dst-1) from 0.5),
+-- and the HUD draws the texture with nearest sampling (gui_scaling_filter
+-- off). `index[u]` is the combined pixel texel u holds.
+local function resize_index(src, dst)
+	local index, step, start = {}, nil, 0
+	if src == dst then
+		for u = 0, dst - 1 do index[u] = u end
+		return index
+	end
+	if dst % src == 0 then step = src / dst else step, start = (src - 1) / (dst - 1), 0.5 end
+	local at = start
+	for u = 0, dst - 1 do index[u] = math.floor(at) at = at + step end
+	return index
+end
+-- The base pixel (x, y) the screen pixel sx/sy shows, the texel, and
+-- whether the texel is fully opaque in the mask; nil outside the texture.
+local function shown(v, frame, index, mask, cx, cy, mx, my, sx, sy)
+	local u = math.floor((sx + 0.5 - mx) * v.pixels / frame.drawn)
+	local w = math.floor((sy + 0.5 - my) * v.pixels / frame.drawn)
+	if u < 0 or w < 0 or u >= v.pixels or w >= v.pixels then return nil end
+	local ox, oy = V.origin(v, cx, cy)
+	local opaque = mask:byte((w * v.pixels + u) * 4 + 4) == 255
+	return ox + index[u], oy + index[w], opaque
+end
 local views = {}
 local WINDOWS = {{x = 1280, y = 720, hud = 1}, {x = 1920, y = 1080, hud = 1},
 	{x = 1920, y = 1080, hud = 0.75}, {x = 1280, y = 720, hud = 2},
@@ -229,9 +258,9 @@ for quality, spec in pairs(base.QUALITY) do
 		tiles = base.tiles(spec.width, spec.height)}
 	local v = V.new(info, bounds)
 	views[quality] = v
-	local expected = quality == "normal" and 135 or 450
+	local expected = quality == "normal" and 132 or 440
 	check(v.crop == expected, "G " .. quality .. " window " .. v.crop .. " px")
-	check(near(v.crop * v.npp, 900, 5), "G " .. quality .. " window ~900 nodes")
+	check(near(v.crop * v.npp, 880, 5), "G " .. quality .. " window ~880 nodes")
 	check(v.texture % v.grid == 0 and v.texture <= base.TILE,
 		"G " .. quality .. " texture " .. v.texture .. " px, whole cells, fits a tile")
 	-- the disc covers the hole at the worst offset; the bezel covers the disc
@@ -261,18 +290,32 @@ for quality, spec in pairs(base.QUALITY) do
 			frame.drawn % 1 == 0 and near(frame.f * v.grid, frame.k) and
 			near(frame.center_x + frame.diameter / 2, box.center_x + box.size / 2) and
 			near(frame.center_y - frame.diameter / 2, box.center_y - box.size / 2) and
-			frame.hole <= (v.texture / 2 - v.d) * frame.f and
+			-- cover margin: a texel (the mask's soft edge) plus half a screen pixel
+			v.texture / 2 - v.d - v.crop / 2 >= v.reduce + 0.5 / frame.f and
 			-- the disc at its furthest, plus a pixel of rounding, stays under
 			-- the opaque part of the drawn bezel
 			(v.texture / 2 + v.d) * frame.f + 1 <= V.BEZEL_OPAQUE * frame.diameter / 2
 	end
 	check(frames_ok, "G " .. quality .. " frames fit the box top-right, whole pixels")
 	check(smallest >= 0.85, ("G %s bezel at least 85 %% of the box (%.2f)"):format(quality, smallest))
-	-- walks: the player's pixel on the centre; cell swaps seam-free
+	-- walks: the player's pixel on the centre; at every cell swap each
+	-- screen pixel of the hole shows the same base pixel in the old and the
+	-- new texture (emulated sampling, so a resize that shifts texels fails)
+	local index = resize_index(v.combined, v.pixels)
+	local mask = base.mask_png(v.pixels, 0).data
 	local centred, seams, swaps = true, true, 0
 	for _, w in ipairs(WINDOWS) do
 		local box = layout.minimap_box({size = {x = w.x, y = w.y}, real_hud_scaling = w.hud})
 		local frame = V.frame(v, box)
+		local samples = {}
+		for sy = math.floor(frame.center_y - frame.hole), math.ceil(frame.center_y + frame.hole), 3 do
+			for sx = math.floor(frame.center_x - frame.hole), math.ceil(frame.center_x + frame.hole), 3 do
+				local dx, dy = sx + 0.5 - frame.center_x, sy + 0.5 - frame.center_y
+				if dx * dx + dy * dy <= frame.hole * frame.hole then
+					samples[#samples + 1] = {sx, sy}
+				end
+			end
+		end
 		for _, dir in ipairs({{1, 0}, {0, 1}, {1, 1}, {-1, 0.37}, {0.21, -1}}) do
 			local x, z = -1234.5, 876.25
 			local last
@@ -281,23 +324,60 @@ for quality, spec in pairs(base.QUALITY) do
 				local px, py = V.base_pixel(v, x, z)
 				local cx, cy = V.cell(v, x, z)
 				local ox, oy = V.origin(v, cx, cy)
-				local mx, my = V.map_corner(v, frame, ox, oy, px, py)
+				local mx, my = V.map_corner(v, frame, cx, cy, px, py)
 				local sx, sy = mx + (px - ox) * frame.f, my + (py - oy) * frame.f
-				centred = centred and math.abs(sx - frame.center_x) <= 0.5 + 1e-9 and
-					math.abs(sy - frame.center_y) <= 0.5 + 1e-9
+				centred = centred and math.abs(sx - frame.arrow_x) <= 0.5 + 1e-9 and
+					math.abs(sy - frame.arrow_y) <= 0.5 + 1e-9
 				if last and (last.cx ~= cx or last.cy ~= cy) then
 					-- the old texture at THIS position, as drawn one step later
-					local lx, ly = V.map_corner(v, frame, last.ox, last.oy, px, py)
+					local lx, ly = V.map_corner(v, frame, last.cx, last.cy, px, py)
 					swaps = swaps + 1
-					-- a world texel shows at the same screen pixel in both
-					seams = seams and lx - mx == (last.ox - ox) / v.grid * frame.k and
-						ly - my == (last.oy - oy) / v.grid * frame.k
+					for _, sample in ipairs(samples) do
+						local ax, ay = shown(v, frame, index, mask, last.cx, last.cy, lx, ly,
+							sample[1], sample[2])
+						local bx, by = shown(v, frame, index, mask, cx, cy, mx, my,
+							sample[1], sample[2])
+						if ax ~= bx or ay ~= by then seams = false break end
+					end
 				end
 				last = {cx = cx, cy = cy, ox = ox, oy = oy}
 			end
 		end
 	end
 	check(centred, "G " .. quality .. " player's pixel on the centre along every walk")
+	-- cover: with the player at any corner of a cell, every screen pixel of
+	-- the hole (plus half a pixel for the bezel's soft inner edge) shows a
+	-- fully opaque texel of the masked texture
+	local covered, worst = true, nil
+	for _, w in ipairs(WINDOWS) do
+		local box = layout.minimap_box({size = {x = w.x, y = w.y}, real_hud_scaling = w.hud})
+		local frame = V.frame(v, box)
+		local reach = frame.hole + 0.5
+		for _, corner in ipairs({{0.001, 0.001}, {v.grid - 0.001, 0.001},
+				{0.001, v.grid - 0.001}, {v.grid - 0.001, v.grid - 0.001}, {v.grid / 2, 0.001}}) do
+			local cx, cy = 40, 30
+			local px, py = cx * v.grid + corner[1], cy * v.grid + corner[2]
+			local mx, my = V.map_corner(v, frame, cx, cy, px, py)
+			for sy = math.floor(frame.center_y - reach), math.ceil(frame.center_y + reach) do
+				for sx = math.floor(frame.center_x - reach), math.ceil(frame.center_x + reach) do
+					local dx, dy = sx + 0.5 - frame.center_x, sy + 0.5 - frame.center_y
+					if dx * dx + dy * dy <= reach * reach then
+						local bx, _, opaque = shown(v, frame, index, mask, cx, cy, mx, my, sx, sy)
+						if not bx or not opaque then
+							if DEBUG and not worst then
+								io.stderr:write(table.concat({quality, w.x, w.y, w.hud, corner[1], corner[2], sx, sy,
+									math.sqrt(dx * dx + dy * dy), frame.hole, tostring(bx), tostring(opaque), frame.f, mx, my}, " ") .. "\n")
+							end
+							covered = false
+							worst = worst or ("%dx%d hud %s"):format(w.x, w.y, w.hud)
+						end
+					end
+				end
+			end
+		end
+	end
+	check(covered, "G " .. quality .. " hole fully covered at every cell corner" ..
+		(worst and (" (not at " .. worst .. ")") or ""))
 	check(seams and swaps > 100, ("G %s %d cell swaps seam-free"):format(quality, swaps))
 	-- every cell's texture needs at most four tiles
 	local most = 0
@@ -499,7 +579,7 @@ do
 	local ax, ay = screen(compass, me)
 	local sx, sy = centre_of_player()
 	check(math.abs(sx - ax) <= 0.5 + 1e-6 and math.abs(sy - ay) <= 0.5 + 1e-6,
-		"R after the swap the arrow is still on the player's pixel")
+		("R after the swap the arrow is still on the player's pixel (%.2f,%.2f vs %.2f,%.2f)"):format(sx, sy, ax, ay))
 end
 
 -- Quest state: ready shows "?", a quest change refreshes at once.
@@ -553,8 +633,8 @@ do
 	step(0.09)
 	local small = frame_of(me)
 	local arrow = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")[1]
-	-- the chevron spans 23 of the texture's 32 px from tip to back
-	local drawn = arrow and arrow.scale.x * 32 * 2 * 23 / 32 or 99
+	-- the chevron spans 21 of the texture's 32 px from tip to back
+	local drawn = arrow and arrow.scale.x * 32 * 2 * 21 / 32 or 99
 	local ring = small.diameter / 2 - small.hole
 	check(drawn <= 0.9 * ring and drawn >= 0.8 * ring,
 		("R rim arrow %.1f px fills 80-90 %% of the %.1f px ring"):format(drawn, ring))
@@ -603,7 +683,7 @@ do
 	local px, py = V.base_pixel(v, me.pos.x, me.pos.z)
 	local cx, cy = V.cell(v, me.pos.x, me.pos.z)
 	local ox, oy = V.origin(v, cx, cy)
-	local ex, ey = V.map_corner(v, f2, ox, oy, px, py)
+	local ex, ey = V.map_corner(v, f2, cx, cy, px, py)
 	check(f1.f == f2.f and f1.center_y == f2.center_y and
 		near(ay, math.floor(f2.center_y + 0.5), 1e-6) and near(ax, math.floor(f2.center_x + 0.5), 1e-6) and
 		near(mx, ex, 1e-6) and near(my, ey, 1e-6), "R height-only resize resends the positions")
