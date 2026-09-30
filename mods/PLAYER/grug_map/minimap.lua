@@ -32,7 +32,10 @@ local META = "grug_map:minimap_hidden"
 local SLOW = 5.0
 local MARKER_SLOTS, PARTY_SLOTS = 24, 9
 -- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image).
-local ICON, PARTY_ARROW, RIM_ARROW, PLAYER_ARROW = 16, 20, 16, 24
+local ICON, PARTY_ARROW, PLAYER_ARROW = 16, 20, 24
+-- A rim arrow fills RIM_FILL of the bezel ring's width; its chevron spans
+-- RIM_EXTENT of its 32 px texture from tip to back, outline included.
+local RIM_FILL, RIM_EXTENT = 0.85, 23 / 32
 local BEZEL = "grug_map_minimap_bezel.png"
 local BEZEL_PX = 256
 local SEA = "#1c3a52"
@@ -253,11 +256,11 @@ local function update(player, state, slow)
 	local px, py = V.base_pixel(view, pos.x, pos.z)
 	local mx, my = V.map_corner(view, frame, state.ox, state.oy, px, py)
 	changes = changes + show(player, frame, hud.map, state.texture, mx, my,
-		exact(frame.drawn, view.texture, frame))
+		exact(frame.drawn, view.pixels, frame))
 	local sea = math.floor(frame.hole + 2)
 	changes = changes + show(player, frame, hud.background,
 		M.mask .. "^[multiply:" .. SEA, frame.center_x - sea, frame.center_y - sea,
-		exact(2 * sea, view.texture, frame))
+		exact(2 * sea, view.pixels, frame))
 	changes = changes + show(player, frame, hud.bezel, BEZEL,
 		frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2,
 		exact(frame.diameter, BEZEL_PX, frame))
@@ -308,10 +311,10 @@ local function update(player, state, slow)
 					PARTY_ARROW / 32)
 			else
 				-- On the bezel, above it and its N plate (a party member due
-				-- north matters more than the letter), never wider than the ring.
+				-- north matters more than the letter), filling the ring.
 				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
 				local ring = frame.diameter / 2 - frame.hole
-				local px = math.min(RIM_ARROW * hud_px, 0.8 * ring)
+				local px = RIM_FILL * ring / RIM_EXTENT
 				changes = changes + show(player, frame, hud.party[i],
 					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, px / (32 * hud_px))
 			end
@@ -365,7 +368,7 @@ function M.install(installed)
 	local candidate = V.new(installed, atlas.view())
 	local ok, err = pcall(function()
 		grug_map.base.add_media(grug_map.base.MASK,
-			grug_map.base.mask_png(candidate.texture, 0))
+			grug_map.base.mask_png(candidate.pixels, 0))
 	end)
 	if not ok then
 		core.log("error", "[grug_map] minimap unavailable: " .. tostring(err))

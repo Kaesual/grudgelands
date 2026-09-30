@@ -59,6 +59,37 @@ local function walk_to(player, target)
 	return false
 end
 
+-- Two stand-in party members for the minimap only (there is one client):
+-- one inside the circle, one far north-north-east (a rim arrow). Only
+-- calls from grug_map/minimap.lua see them; nothing else is changed.
+local function install_ghosts(player)
+	local at = player:get_pos()
+	local ghosts = {
+		grugcap_ghost_rim = {x = at.x + 250, z = at.z + 700, yaw = 0},
+		grugcap_ghost_in = {x = at.x + 90, z = at.z - 120, yaw = 2.0},
+	}
+	local view = grug_parties.view
+	grug_parties.view = function(p)
+		local result = view(p)
+		local info = debug.getinfo(2, "S")
+		if info and info.source:find("grug_map/minimap.lua", 1, true) then
+			result = result or {members = {{name = p:get_player_name()}}}
+			for name in pairs(ghosts) do result.members[#result.members + 1] = {name = name} end
+		end
+		return result
+	end
+	local get = core.get_player_by_name
+	core.get_player_by_name = function(name)
+		local ghost = ghosts[name]
+		if ghost then
+			return {get_pos = function() return {x = ghost.x, y = 0, z = ghost.z} end,
+				get_look_horizontal = function() return ghost.yaw end}
+		end
+		return get(name)
+	end
+	log("ghost party members placed")
+end
+
 local function average_us(fn, rounds)
 	local started = core.get_us_time()
 	for _ = 1, rounds do fn() end
@@ -143,6 +174,7 @@ core.register_globalstep(function(dtime)
 			local pos = player:get_pos()
 			state.edge = cell_edge(pos.x, pos.z)
 			log(("cell edge at x %.2f (player x %.2f)"):format(state.edge, pos.x))
+			install_ghosts(player)
 			-- start a few nodes before it, then walk
 			walk_to(player, state.edge - 6)
 			player:set_pos({x = state.edge - 6, y = ground(state.edge - 6, pos.z,

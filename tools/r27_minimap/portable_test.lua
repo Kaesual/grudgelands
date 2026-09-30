@@ -290,8 +290,8 @@ for quality, spec in pairs(base.QUALITY) do
 					local lx, ly = V.map_corner(v, frame, last.ox, last.oy, px, py)
 					swaps = swaps + 1
 					-- a world texel shows at the same screen pixel in both
-					seams = seams and lx - last.ox * frame.f == mx - ox * frame.f and
-						ly - last.oy * frame.f == my - oy * frame.f
+					seams = seams and lx - mx == (last.ox - ox) / v.grid * frame.k and
+						ly - my == (last.oy - oy) / v.grid * frame.k
 				end
 				last = {cx = cx, cy = cy, ox = ox, oy = oy}
 			end
@@ -309,6 +309,17 @@ for quality, spec in pairs(base.QUALITY) do
 		end
 	end
 	check(most <= 4, "G " .. quality .. " at most 4 tiles per texture (" .. most .. ")")
+	-- half resolution at high: a whole number of texture pixels per cell and
+	-- per origin, so texels line up across swaps too
+	do
+		local ox, oy = V.origin(v, 10, 10)
+		local text = V.texture(v, ox, oy, "m.png")
+		local resized = text:find(("^[resize:%dx%d^[mask:m.png"):format(v.pixels, v.pixels), 1, true)
+		check(v.reduce == (quality == "high" and 2 or 1) and v.pixels * v.reduce == v.texture and
+			v.grid % v.reduce == 0 and ox % v.reduce == 0 and
+			(v.reduce > 1) == (resized ~= nil), ("G %s texture %d px (%d base px)%s"):format(
+			quality, v.pixels, v.texture, v.reduce > 1 and ", halved on the client" or ""))
+	end
 	-- a 3000-node walk: distinct textures = client textures created
 	local seen, count = {}, 0
 	for x = -1500, 1500 do
@@ -317,7 +328,7 @@ for quality, spec in pairs(base.QUALITY) do
 		if not seen[key] then seen[key], count = true, count + 1 end
 	end
 	v.walk = count
-	v.walk_bytes = count * v.texture * v.texture * 4
+	v.walk_bytes = count * v.pixels * v.pixels * 4
 	check(count <= 3000 / (v.grid * v.npp) + 2, ("G %s 3000-node walk makes %d textures (%.1f MB)"):
 		format(quality, count, v.walk_bytes / 1048576))
 end
@@ -419,13 +430,13 @@ local v = views.normal
 local function frame_of(p)
 	return V.frame(v, layout.minimap_box(windows[p.name]))
 end
-local maps = by_text(me, "^%[combine:156x156:")
+local maps = by_text(me, "^%[combine:" .. views.normal.pixels .. "x" .. views.normal.pixels .. ":")
 check(#maps == 1 and maps[1].text:find("%^%[mask:grug_map_minimap_mask%.png$"),
 	"R one map element, a cell texture cut to a disc")
 local map = maps[1]
 local frame = frame_of(me)
 check(map and map.alignment.x == 1 and
-	math.floor(156 * map.scale.x * 1) == frame.drawn, "R map drawn " .. frame.drawn .. " px")
+	math.floor(views.normal.pixels * map.scale.x * 1) == frame.drawn, "R map drawn " .. frame.drawn .. " px")
 local compass
 for _, e in ipairs(elements(me)) do if e.def.type == "compass" then compass = e.def end end
 check(compass and compass.text == "grug_map_heading_gold_00.png" and compass.size.x == 24,
@@ -474,7 +485,7 @@ local compass_x = compass.position.x
 local book = by_text(me, "^grug_jobs_book%.png$")[1]
 local bx0, by0 = screen(book, me)
 local mx0, my0 = screen(map, me)
-me.pos.x = me.pos.x + 20
+me.pos.x = me.pos.x + 5
 step(0.09)
 local bx1, by1 = screen(book, me)
 local mx1, my1 = screen(map, me)
@@ -542,9 +553,11 @@ do
 	step(0.09)
 	local small = frame_of(me)
 	local arrow = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")[1]
-	local drawn = arrow and arrow.scale.x * 32 * 2 or 99
-	check(drawn <= small.diameter / 2 - small.hole, ("R rim arrow %.1f px within the %.1f px ring")
-		:format(drawn, small.diameter / 2 - small.hole))
+	-- the chevron spans 23 of the texture's 32 px from tip to back
+	local drawn = arrow and arrow.scale.x * 32 * 2 * 23 / 32 or 99
+	local ring = small.diameter / 2 - small.hole
+	check(drawn <= 0.9 * ring and drawn >= 0.8 * ring,
+		("R rim arrow %.1f px fills 80-90 %% of the %.1f px ring"):format(drawn, ring))
 	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
 	step(0.09)
 end
@@ -604,7 +617,7 @@ step(0.25)
 do
 	local small = frame_of(me)
 	local bezel = by_text(me, "^grug_map_minimap_bezel%.png$")[1]
-	check(math.floor(156 * map.scale.x) == small.drawn and small.diameter <= 180 and
+	check(math.floor(views.normal.pixels * map.scale.x) == small.drawn and small.diameter <= 180 and
 		near(screen(bezel, me) + small.diameter, 1280 - 10, 1e-6), "R resize: 720p frame")
 	frame = small
 end

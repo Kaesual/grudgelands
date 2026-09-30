@@ -10,15 +10,16 @@ the other grug_map marker icons, see mods/PLAYER/grug_map/LICENSE-media.md).
 * grug_map_rim_cyan_00..15.png -- 32x32 rim arrows for party members outside
   the minimap, drawn like tools/r15_map/render_headings.py; frame 0 points up
   (north), frames turn clockwise by 22.5 degrees;
-* grug_map_minimap_bezel.png -- 256x256 opaque frame of the gliding minimap:
-  a dark band round a hole of BEZEL_HOLE of the radius, a light inner rim and
-  an "N" plate at the top (north up).
+* grug_map_minimap_bezel.png -- 256x256 opaque frame of the gliding minimap
+  ("pewter"): a warm grey-bronze band round a hole of BEZEL_HOLE of the
+  radius, fine light inner edge, dot marks at E/S/W and a small N (north up).
 
 Usage: python3 tools/r27_minimap/render_icons.py
 """
 import math
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -140,18 +141,20 @@ HOME = [
 
 
 def rim_arrow(frame):
-    """A chevron pointing outward; frame 0 points up (screen), clockwise."""
+    """A chevron pointing outward; frame 0 points up (screen), clockwise.
+    From tip to back it spans RIM_EXTENT of the texture (outline included),
+    so the minimap can size it to fill the bezel ring."""
     a = frame * math.tau / 16
     s = 128
     im = Image.new("RGBA", (s, s))
     d = ImageDraw.Draw(im)
     pts = []
-    for x, y in [(0, -11), (9, 7), (0, 2), (-9, 7)]:
+    for x, y in [(0, -10.5), (11, 10.5), (0, 5.5), (-11, 10.5)]:
         # rotate clockwise on screen (y down)
         pts.append(((16 + x * math.cos(a) - y * math.sin(a)) * 4,
                     (16 + x * math.sin(a) + y * math.cos(a)) * 4))
     d.polygon(pts, fill=CYAN)
-    d.line(pts + [pts[0]], fill="#19150f", width=7, joint="curve")
+    d.line(pts + [pts[0]], fill="#19150f", width=9, joint="curve")
     return im.resize((32, 32), Image.Resampling.LANCZOS)
 
 
@@ -168,51 +171,50 @@ N_GLYPH = [
 # Hole radius over outer radius and the radius (over the outer one) up to
 # which the art is fully opaque; must equal V.BEZEL_HOLE and V.BEZEL_OPAQUE
 # in mods/PLAYER/grug_map/minimap_view.lua.
-BEZEL_HOLE = 0.75
+BEZEL_HOLE = 0.84
 BEZEL_OPAQUE = 0.975
 
 
 def bezel():
-    """The glide minimap's opaque frame: a dark band from the hole to the
-    outer edge, a light inner rim and a thin darker outer edge, subtle
-    shading toward the middle of the band, and the N plate at the top."""
+    """The gliding minimap's frame, "pewter" (chosen by the user, Round 27):
+    a warm grey-bronze band, almost flat with a very soft bevel lit from the
+    top-left, a fine light inner edge, a slightly darker outer edge, dot
+    marks at E, S and W and a small N. No pure black anywhere; opaque from
+    the hole to BEZEL_OPAQUE of the radius (checked in main)."""
     ss = 4
-    s = 256 * ss
-    c = s / 2
-    outer = c - 0.5 * ss
-    hole = BEZEL_HOLE * c
-    im = Image.new("RGBA", (s, s))
-    d = ImageDraw.Draw(im)
-    # the band, drawn as rings from the outside in: a darker edge, the body
-    # with a faint lighter crest in the middle, a dark line at the hole
-    steps = 24
-    for k in range(steps):
-        t = k / (steps - 1)
-        r = outer - (outer - hole) * t
-        crest = 1 - abs(t - 0.45) * 2
-        base = 30 + int(14 * max(0.0, crest))
-        col = (base, int(base * 0.8), int(base * 0.6), 255)
-        d.ellipse((c - r, c - r, c + r, c + r), fill=col)
-    d.ellipse((c - outer, c - outer, c + outer, c + outer), outline=(18, 14, 10, 255), width=ss)
-    # the light rim round the hole, then the hole itself
-    d.ellipse((c - hole - 2 * ss, c - hole - 2 * ss, c + hole + 2 * ss, c + hole + 2 * ss),
-              fill=(196, 170, 118, 255))
-    d.ellipse((c - hole - ss, c - hole - ss, c + hole + ss, c + hole + ss), fill=(22, 18, 13, 255))
-    d.ellipse((c - hole, c - hole, c + hole, c + hole), fill=(0, 0, 0, 0))
-    # the N plate on the band at the top
-    band = outer - hole
-    top, bottom = c - outer + band * 0.18, c - hole - band * 0.22
-    w = band * 0.62
-    d.rounded_rectangle((c - w / 2, top, c + w / 2, bottom), radius=2 * ss,
-                        fill=(20, 16, 11, 255), outline=(150, 128, 88, 255), width=ss)
-    px = (bottom - top) * 0.14
-    x0, y0 = c - 2.5 * px, (top + bottom) / 2 - 2.5 * px
+    n = 256 * ss
+    ys, xs = np.mgrid[0:n, 0:n]
+    c = n / 2
+    dx, dy = (xs + 0.5 - c) / ss, (ys + 0.5 - c) / ss
+    r, th = np.hypot(dx, dy), np.arctan2(dy, dx)
+    outer, hole = 127.6, BEZEL_HOLE * 128
+    t = (r - hole) / (outer - hole)
+    inside = (r >= hole) & (r <= outer)
+    # a convex band: its outer slope faces the light at the top-left, its
+    # inner slope at the bottom-right
+    facing = np.cos(th - math.atan2(-1, -1))
+    shade = (1 + 0.10 * (t - 0.5) * 2 * facing) * (0.94 + 0.08 * np.sin(np.pi * np.clip(t, 0, 1)))
+    rgb = np.array([86, 78, 66], float)[None, None, :] * shade[..., None]
+    rgb[(r >= hole) & (r < hole + 0.9)] = (182, 170, 148)
+    rgb[(r > outer - 0.9) & (r <= outer)] = (62, 56, 47)
+    alpha = np.where(inside, 255, 0)
+    data = np.dstack([np.clip(rgb, 0, 255), alpha]).astype(np.uint8)
+    img = Image.fromarray(data, "RGBA").resize((256, 256), Image.Resampling.LANCZOS)
+    d = ImageDraw.Draw(img)
+    band_mid = 128 - (128 - BEZEL_HOLE * 128) / 2
+    for ang in (90, 180, 270):  # E, S, W (0 is north, clockwise)
+        a = math.radians(ang)
+        x, y = 128 + band_mid * math.sin(a), 128 - band_mid * math.cos(a)
+        # opaque: ImageDraw replaces pixels, it does not blend
+        d.ellipse((x - 1.3, y - 1.3, x + 1.3, y + 1.3), fill=(160, 150, 130, 255))
+    scale = 1.4
+    x0, y0 = 128 - 2.5 * scale, 128 - band_mid - 2.5 * scale
     for j, row in enumerate(N_GLYPH):
         for i, ch in enumerate(row):
             if ch == "k":
-                d.rectangle((x0 + i * px, y0 + j * px, x0 + (i + 1) * px - 1, y0 + (j + 1) * px - 1),
-                            fill=(236, 220, 180, 255))
-    return im.resize((256, 256), Image.Resampling.LANCZOS)
+                d.rectangle((x0 + i * scale, y0 + j * scale, x0 + (i + 1) * scale - 0.01,
+                             y0 + (j + 1) * scale - 0.01), fill=(214, 204, 184, 255))
+    return img
 
 
 def main():

@@ -25,13 +25,19 @@ V.WINDOW_NODES = 900
 -- The art is fully opaque only out to BEZEL_OPAQUE of its radius (its outer
 -- edge is anti-aliased; tools/r27_minimap/render_icons.py checks it), so
 -- the map disc must stay inside that.
-V.BEZEL_HOLE = 0.75
+V.BEZEL_HOLE = 0.84
 V.BEZEL_OPAQUE = 0.975
 V.RIM_FRAMES = 16
--- The snap grid in base pixels per map quality (ruling 9): 12 px (80
--- nodes) at normal, 32 px (64 nodes) at high. A new texture is built every
--- cell; the bezel is as wide as the texture's overhang, about 1.4 cells.
-V.GRID = {normal = 12, high = 32}
+-- The snap grid in base pixels per map quality (ruling 9): 6 px (40 nodes)
+-- at normal, 16 px (32 nodes) at high. A new texture is built every cell;
+-- the bezel must cover the texture's overhang, about 1.4 cells, so a finer
+-- grid is a slimmer bezel (about 21 px at 1080p) for more textures.
+V.GRID = {normal = 6, high = 16}
+-- High quality's cell texture is halved on the client (`[resize`): at usual
+-- window sizes the HUD draws it smaller than half its pixels anyway, and it
+-- takes a quarter of the client memory. A cell is still a whole number of
+-- texture pixels, so a swap still moves no pixel.
+V.REDUCE = {normal = 1, high = 2}
 
 -- `base` is what base.lua's install returned (quality, width, height,
 -- tiles); `bounds` the atlas world bounds.
@@ -43,8 +49,11 @@ function V.new(base, bounds)
 	-- diagonally: T >= C + 2 d; T is a whole number of cells.
 	local d = math.sqrt(2) * grid / 2
 	local texture = math.ceil((crop + 2 * d) / grid) * grid
+	local reduce = V.REDUCE[base.quality] or 1
+	-- `texture` is in base pixels, `pixels` the texture's own size.
 	return {npp = npp, crop = crop, grid = grid, tiles = base.tiles,
-		texture = texture, d = d, outer = crop / 2 / V.BEZEL_HOLE,
+		texture = texture, pixels = texture / reduce, reduce = reduce,
+		d = d, outer = crop / 2 / V.BEZEL_HOLE,
 		min_x = bounds.min_x, max_z = bounds.max_z,
 		width = base.width, height = base.height}
 end
@@ -67,8 +76,9 @@ function V.origin(v, cx, cy)
 end
 
 -- The cell's texture: the tiles it overlaps (at most four, a tile is at
--- least as large as the texture) combined, cut to a disc by `mask`. Parts
--- outside the base stay transparent.
+-- least as large as the texture) combined, halved at high quality, cut to a
+-- disc by `mask` (made at the texture's own size). Parts outside the base
+-- stay transparent.
 function V.texture(v, ox, oy, mask)
 	local parts = {("[combine:%dx%d"):format(v.texture, v.texture)}
 	for _, tile in ipairs(v.tiles) do
@@ -77,7 +87,8 @@ function V.texture(v, ox, oy, mask)
 			parts[#parts + 1] = ("%d,%d=%s"):format(tile.x - ox, tile.y - oy, tile.name)
 		end
 	end
-	return table.concat(parts, ":") .. "^[mask:" .. mask
+	local resize = v.reduce > 1 and ("^[resize:%dx%d"):format(v.pixels, v.pixels) or ""
+	return table.concat(parts, ":") .. resize .. "^[mask:" .. mask
 end
 
 -- The drawing frame for a minimap `box` (grug_core.hud_layout.minimap_box):
@@ -98,8 +109,13 @@ end
 -- the player's pixel lands on the centre. Rounded once, so the cell term
 -- (a whole number of pixels) never changes the rounding.
 function V.map_corner(v, frame, ox, oy, px, py)
-	return math.floor(frame.center_x - (px - ox) * frame.f + 0.5),
-		math.floor(frame.center_y - (py - oy) * frame.f + 0.5)
+	-- ox = cell x grid + shift: the cell's whole k pixels are added after
+	-- the rounding, so every cell rounds the same value and neighbours stay
+	-- exactly k pixels apart whatever the floating point does.
+	local shift = (v.grid - v.texture) / 2
+	local cx, cy = (ox - shift) / v.grid, (oy - shift) / v.grid
+	return math.floor(frame.center_x - px * frame.f + shift * frame.f + 0.5) + cx * frame.k,
+		math.floor(frame.center_y - py * frame.f + shift * frame.f + 0.5) + cy * frame.k
 end
 
 -- Screen position (real pixels, fractional) of world x/z with the texture
