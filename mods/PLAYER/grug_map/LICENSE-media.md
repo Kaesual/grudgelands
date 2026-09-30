@@ -23,8 +23,8 @@ CC0-1.0. No third-party source images.
   pixel art drawn from character grids.
 - `textures/grug_map_rim_cyan_00.png` through `_15.png`: original polygon
   artwork, 32×32 RGBA rim arrows in sixteen directions.
-- `textures/grug_map_minimap_ring.png`: original 256×256 RGBA frame of the
-  round minimap with an "N" plate.
+- `textures/grug_map_minimap_bezel.png`: original 256×256 RGBA opaque frame
+  (bezel) of the round gliding minimap with an "N" plate.
 
 The minimap's round mask (`grug_map_minimap_mask.png`) is not shipped: the
 server generates it at start (`grug_map/base.lua`, `mask_png`).

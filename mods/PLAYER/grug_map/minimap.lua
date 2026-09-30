@@ -5,11 +5,16 @@
 -- members (rim arrows when outside), quest givers with their state, the
 -- Housing Steward, trainers, innkeepers and the player's home.
 --
--- Client cost (ruling 9): the map is ONE image element whose texture is the
--- window's grid cell, so the client builds a new texture only on entering a
--- new cell; markers are separate elements and never pixels of that texture.
--- hud_change sends a packet on every call, so every element keeps what was
--- last sent and only differences are sent.
+-- Glide (test variant for the playtest): the arrow stays in the centre and
+-- the map moves under it pixel by pixel, every server step. The map is ONE
+-- image element whose texture is the player's grid cell (ruling 9: the
+-- client builds a new texture only on entering a new cell); the element is
+-- moved so the player's own pixel lies at the centre, and an opaque bezel
+-- covers what overhangs the round hole (HUD images are never clipped).
+-- Geometry, and why a cell swap moves no pixel: minimap_view.lua. Markers
+-- are separate elements that move with the map. hud_change sends a packet
+-- on every call, so every element keeps what was last sent and only
+-- differences (whole screen pixels) are sent.
 
 local atlas = grug_map.atlas
 local layout = grug_core.hud_layout
@@ -20,16 +25,16 @@ grug_map.minimap = M
 -- Ruling 10: a per-player switch on the Map tab, stored in player meta, on
 -- by default.
 local META = "grug_map:minimap_hidden"
--- Arrows and party members move every FAST tick. The static markers are
--- asked from their providers on a quest change, on joining and every SLOW
--- seconds (a quest may unlock with a level); the ones near the window are
--- picked on each new cell.
-local FAST, SLOW = 0.2, 5.0
+-- The map, markers and party members move every server step. The static
+-- markers are asked from their providers on a quest change, on joining and
+-- every SLOW seconds (a quest may unlock with a level), each player in its
+-- own phase; the ones near the window are picked on each new cell.
+local SLOW = 5.0
 local MARKER_SLOTS, PARTY_SLOTS = 24, 9
 -- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image).
 local ICON, PARTY_ARROW, RIM_ARROW, PLAYER_ARROW = 16, 20, 16, 24
-local RING = "grug_map_minimap_ring.png"
-local RING_PX = 256
+local BEZEL = "grug_map_minimap_bezel.png"
+local BEZEL_PX = 256
 local SEA = "#1c3a52"
 -- Kinds shown (ruling 8); settlements, camps, kings and dragons stay on the
 -- Map tab only.
@@ -41,11 +46,17 @@ local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
 local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png"}
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
 local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5}
-local Z = {background = 10, map = 11, ring = 12, marker = 20, party = 50, player = 60}
+local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
 
 local base, view -- set by M.install
 local players = {}
-M.stats = {updates = 0, us = 0, changes = 0, textures = 0}
+-- `bytes` estimates what the hud_changes cost on the wire: a reliable
+-- TOCLIENT_HUDCHANGE is about 18 bytes of headers plus its value.
+M.stats = {updates = 0, us = 0, changes = 0, bytes = 0, textures = 0}
+local function sent(bytes)
+	M.stats.bytes = M.stats.bytes + 18 + bytes
+	return 1
+end
 
 -- Texture sizes, read once from the PNG header of the owning mod's file
 -- (every texture here is named after its mod). 16 if not found.
@@ -79,38 +90,48 @@ function M.enabled(player)
 end
 
 -- One HUD image element: what was last sent, so only changes are sent.
-local function image(player, z)
+-- `corner` elements are placed by their top-left pixel, the others by
+-- their centre.
+local function image(player, z, corner)
+	local align = corner and 1 or 0
 	return {id = player:hud_add({type = "image", position = {x = 0, y = 0},
-		alignment = {x = 0, y = 0}, scale = {x = 1, y = 1}, text = "",
+		alignment = {x = align, y = align}, scale = {x = 1, y = 1}, text = "",
 		z_index = z}), text = "", x = 0, y = 0, scale = 1}
 end
 
-local function show(player, box, element, text, x, y, px, tex_px)
+-- Shows `text` at screen pixel x/y (fractional is rounded) with `scale`;
+-- "" hides the element. Positions are fractions of the window: the client
+-- rounds position x width to the pixel (hud.cpp), offsets would be scaled.
+local function show(player, frame, element, text, x, y, scale)
 	local changes = 0
 	if text == "" then
 		if element.text ~= "" then
 			player:hud_change(element.id, "text", "")
-			element.text, changes = "", 1
+			element.text, changes = "", sent(2)
 		end
 		return changes
 	end
-	-- Whole pixels, as fractions of the window: offsets would be scaled by
-	-- the client's HUD factor, positions are exact.
 	x, y = math.floor(x + 0.5), math.floor(y + 0.5)
 	if element.x ~= x or element.y ~= y then
-		player:hud_change(element.id, "position", {x = x / box.width, y = y / box.height})
-		element.x, element.y, changes = x, y, changes + 1
+		player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
+		element.x, element.y, changes = x, y, changes + sent(8)
 	end
-	local scale = px / (tex_px * box.hud)
 	if element.scale ~= scale then
 		player:hud_change(element.id, "scale", {x = scale, y = scale})
-		element.scale, changes = scale, changes + 1
+		element.scale, changes = scale, changes + sent(8)
 	end
 	if element.text ~= text then
 		player:hud_change(element.id, "text", text)
-		element.text, changes = text, changes + 1
+		element.text, changes = text, changes + sent(2 + #text)
 	end
 	return changes
+end
+
+-- The scale that draws a `texture_px` texture exactly `px` screen pixels
+-- wide: the client truncates texture_px x scale x HUD factor, so a quarter
+-- pixel more keeps the whole pixel.
+local function exact(px, texture_px, frame)
+	return (px + 0.25) / (texture_px * frame.hud)
 end
 
 local function remove(player, state)
@@ -120,16 +141,17 @@ local function remove(player, state)
 end
 
 local function create(player, state)
-	local hud = {background = image(player, Z.background), map = image(player, Z.map),
-		ring = image(player, Z.ring), markers = {}, party = {}}
+	local hud = {background = image(player, Z.background, true),
+		map = image(player, Z.map, true), bezel = image(player, Z.bezel, true),
+		markers = {}, party = {}}
 	for i = 1, MARKER_SLOTS do hud.markers[i] = image(player, Z.marker + i) end
 	for i = 1, PARTY_SLOTS do hud.party[i] = image(player, Z.party + i) end
 	-- The player's arrow is a compass element: the client turns it with the
-	-- view every frame, so turning around sends nothing.
+	-- view every frame, so turning around sends nothing; it stays centred.
 	hud.player = {id = player:hud_add({type = "compass", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 0}, size = {x = 1, y = 1}, direction = 0,
 		text = "grug_map_heading_gold_00.png", z_index = Z.player}), x = 0, y = 0, size = 0}
-	hud.all = {hud.background, hud.map, hud.ring, hud.player}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.player}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
@@ -180,6 +202,12 @@ local function update(player, state, slow)
 	if not state.hud then create(player, state) end
 	local hud, changes = state.hud, 0
 	local box = layout.minimap_box(core.get_player_window_information(name))
+	local key = box.size .. ":" .. box.center_x .. ":" .. box.center_y .. ":" ..
+		box.hud .. ":" .. box.width .. ":" .. box.height
+	if state.frame_key ~= key then
+		state.frame, state.frame_key = V.frame(view, box), key
+	end
+	local frame = state.frame
 	local pos = player:get_pos()
 	local cx, cy = V.cell(view, pos.x, pos.z)
 	if cx ~= state.cell_x or cy ~= state.cell_y then
@@ -193,30 +221,38 @@ local function update(player, state, slow)
 		state.static, state.near = static_markers(player), nil
 	end
 	if not state.near then
-		-- the static markers within the window's square, in draw order
+		-- the static markers under the cell's texture, in draw order
 		state.near = {}
-		local half = view.crop / 2
+		local size = view.texture
 		for _, marker in ipairs(state.static) do
 			local px, py = V.base_pixel(view, marker.x, marker.z)
-			if math.abs(px - state.ox - half) <= half and
-					math.abs(py - state.oy - half) <= half then
+			if px >= state.ox and px <= state.ox + size and
+					py >= state.oy and py <= state.oy + size then
 				state.near[#state.near + 1] = marker
 			end
 		end
 	end
-	local size = box.size
-	changes = changes + show(player, box, hud.background,
-		M.mask .. "^[multiply:" .. SEA, box.center_x, box.center_y, size, view.crop)
-	changes = changes + show(player, box, hud.map, state.texture,
-		box.center_x, box.center_y, size, view.crop)
-	changes = changes + show(player, box, hud.ring, RING,
-		box.center_x, box.center_y, size, RING_PX)
 
-	local hud_px = box.hud
-	local limit = V.inner_radius(box, ICON / 2 * hud_px)
+	-- The map: texture and position change in the same step, so a new cell
+	-- lines up with the old one to the pixel.
+	local px, py = V.base_pixel(view, pos.x, pos.z)
+	local mx, my = V.map_corner(view, frame, state.ox, state.oy, px, py)
+	changes = changes + show(player, frame, hud.map, state.texture, mx, my,
+		exact(frame.drawn, view.texture, frame))
+	local sea = math.floor(frame.hole + 2)
+	changes = changes + show(player, frame, hud.background,
+		M.mask .. "^[multiply:" .. SEA, frame.center_x - sea, frame.center_y - sea,
+		exact(2 * sea, view.texture, frame))
+	changes = changes + show(player, frame, hud.bezel, BEZEL,
+		frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2,
+		exact(frame.diameter, BEZEL_PX, frame))
+
+	local hud_px = frame.hud
+	local limit = frame.hole - ICON / 2 * hud_px
 	local visible = {}
 	for index, marker in ipairs(state.near) do
-		local x, y, distance = V.place(view, box, state.ox, state.oy, marker.x, marker.z)
+		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
+			marker.x, marker.z)
 		if distance <= limit then
 			visible[#visible + 1] = {marker = marker, x = x, y = y, order = index}
 		end
@@ -233,49 +269,49 @@ local function update(player, state, slow)
 		for i = #visible, MARKER_SLOTS + 1, -1 do visible[i] = nil end
 		table.sort(visible, function(a, b) return a.order < b.order end)
 	end
-	local slot = #visible
 	for i, row in ipairs(visible) do
-		changes = changes + show(player, box, hud.markers[i], row.marker.texture, row.x, row.y,
-			ICON * hud_px, texture_size(row.marker.texture))
+		local texture = row.marker.texture
+		changes = changes + show(player, frame, hud.markers[i], texture, row.x, row.y,
+			ICON / texture_size(texture))
 	end
-	for i = slot + 1, MARKER_SLOTS do
-		changes = changes + show(player, box, hud.markers[i], "")
+	for i = #visible + 1, MARKER_SLOTS do
+		changes = changes + show(player, frame, hud.markers[i], "")
 	end
 
 	local party = party_members(player)
-	local inside = V.inner_radius(box, PARTY_ARROW / 2 * hud_px)
+	local inside = frame.hole - PARTY_ARROW / 2 * hud_px
 	for i = 1, PARTY_SLOTS do
 		local member = party[i]
 		if not member then
-			changes = changes + show(player, box, hud.party[i], "")
+			changes = changes + show(player, frame, hud.party[i], "")
 		else
-			local x, y, distance = V.place(view, box, state.ox, state.oy, member.x, member.z)
+			local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
+				member.x, member.z)
 			if distance <= inside then
-				changes = changes + show(player, box, hud.party[i],
+				changes = changes + show(player, frame, hud.party[i],
 					("grug_map_heading_cyan_%02d.png"):format(member.frame), x, y,
-					PARTY_ARROW * hud_px, 32)
+					PARTY_ARROW / 32)
 			else
-				local rx, ry, frame = V.rim(box, x - box.center_x, y - box.center_y,
-					RIM_ARROW / 2 * hud_px)
-				changes = changes + show(player, box, hud.party[i],
-					("grug_map_rim_cyan_%02d.png"):format(frame), rx, ry,
-					RIM_ARROW * hud_px, 32)
+				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
+				changes = changes + show(player, frame, hud.party[i],
+					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, RIM_ARROW / 32)
 			end
 		end
 	end
 
-	-- The compass element's size is in raw pixels; its position is exact.
-	local x, y = V.place(view, box, state.ox, state.oy, pos.x, pos.z)
-	x, y = math.floor(x + 0.5), math.floor(y + 0.5)
+	-- The arrow sits at the centre; the compass element's size is in raw
+	-- pixels.
+	local x = math.floor(frame.center_x + 0.5)
+	local y = math.floor(frame.center_y + 0.5)
 	local arrow = math.floor(PLAYER_ARROW * hud_px + 0.5)
 	local element = hud.player
 	if element.x ~= x or element.y ~= y then
-		player:hud_change(element.id, "position", {x = x / box.width, y = y / box.height})
-		element.x, element.y, changes = x, y, changes + 1
+		player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
+		element.x, element.y, changes = x, y, changes + sent(8)
 	end
 	if element.size ~= arrow then
 		player:hud_change(element.id, "size", {x = arrow, y = arrow})
-		element.size, changes = arrow, changes + 1
+		element.size, changes = arrow, changes + sent(8)
 	end
 	return changes
 end
@@ -307,8 +343,8 @@ function M.install(installed)
 	if not installed.tiles then return end
 	local candidate = V.new(installed, atlas.view())
 	local ok, err = pcall(function()
-		grug_map.base.add_media(grug_map.base.MASK, grug_map.base.mask_png(candidate.crop,
-			math.floor(candidate.crop * V.MASK_INSET + 0.5)))
+		grug_map.base.add_media(grug_map.base.MASK,
+			grug_map.base.mask_png(candidate.texture, 0))
 	end)
 	if not ok then
 		core.log("error", "[grug_map] minimap unavailable: " .. tostring(err))
@@ -322,13 +358,24 @@ function M.available()
 	return view ~= nil
 end
 
+-- For engine probes: the geometry (minimap_view's table) and a player's
+-- current cell texture.
+function M.geometry()
+	return view
+end
+
+function M.texture_of(player)
+	local state = players[player:get_player_name()]
+	return state and state.texture
+end
+
 -- Each player's SLOW refresh has its own phase, so the marker providers are
 -- not asked for every player in the same step.
 local joined = 0
 core.register_on_joinplayer(function(player)
 	native_off(player)
 	joined = joined + 1
-	players[player:get_player_name()] = {slow = (joined * FAST) % SLOW}
+	players[player:get_player_name()] = {slow = (joined * 0.2) % SLOW}
 end)
 core.register_on_leaveplayer(function(player)
 	players[player:get_player_name()] = nil
@@ -338,16 +385,12 @@ grug_quests.register_on_change(function(player)
 	if state then state.static = nil end
 end)
 
-local fast = 0
 core.register_globalstep(function(dtime)
-	fast = fast + dtime
-	if fast < FAST or not view then return end
-	local elapsed = fast
-	fast = 0
+	if not view then return end
 	for _, player in ipairs(core.get_connected_players()) do
 		local state = players[player:get_player_name()]
 		if state then
-			state.slow = (state.slow or 0) + elapsed
+			state.slow = (state.slow or 0) + dtime
 			local is_slow = state.slow >= SLOW
 			if is_slow then state.slow = state.slow % SLOW end
 			local started = core.get_us_time()

@@ -37,13 +37,9 @@ M.MASK = "grug_map_minimap_mask.png"
 -- samples every 4 nodes (two map pixels), which the bilinear interpolation
 -- below keeps smooth. The steps are part of this file's source and therefore
 -- of the cache key, so changing one re-renders cached bases.
---
--- `minimap_grid` is the minimap's snap grid in base pixels (ruling 9): 16 px
--- is about 107 nodes at normal; high snaps on 64 px (128 nodes), so both
--- create a new client texture about every 110-130 nodes walked.
 M.QUALITY = {
-	normal = {width = 1080, height = 960, relief_step = 8, minimap_grid = 16},
-	high = {width = 3600, height = 3200, relief_step = 4, minimap_grid = 64},
+	normal = {width = 1080, height = 960, relief_step = 8},
+	high = {width = 3600, height = 3200, relief_step = 4},
 }
 M.DEFAULT_QUALITY = "normal"
 -- Shown if rendering fails: plain sea, so the markers stay usable.
@@ -579,12 +575,12 @@ local function prepare(view)
 		assert(core.safe_file_write(CACHE_KEY, key), "cannot write " .. CACHE_KEY)
 	end
 	return {quality = spec.quality, width = spec.width, height = spec.height,
-		minimap_grid = M.QUALITY[spec.quality].minimap_grid, tiles = tiles,
+		tiles = tiles,
 		texture = M.combined_texture(spec.width, spec.height, tiles)}
 end
 
--- Load-time entry point. Returns the base: {quality, width, height,
--- minimap_grid, tiles, texture} with `texture` what the Map tab shows, or
+-- Load-time entry point. Returns the base: {quality, width, height, tiles,
+-- texture} with `texture` what the Map tab shows, or
 -- {texture = fallback} without tiles if the base is unavailable. Startup
 -- media must be announced while mods load (dynamic_add_media without a
 -- callback), so init.lua calls this; grug_mapgen has installed the world

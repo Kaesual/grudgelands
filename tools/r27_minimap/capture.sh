@@ -10,8 +10,9 @@
 # is never touched and nothing is drawn on the user's desktop.
 #
 # Usage: XVFB=/path/to/Xvfb [GAME_PATCH=file] tools/r27_minimap/capture.sh OUT.png
-# Writes OUT.png (minimap on, facing east), OUT_off.png (our minimap switched
-# off: the corner must be empty, i.e. the native one is off too) and
+# Writes OUT_before.png / OUT_after.png (walking across a grid-cell edge,
+# the texture swapped between them), OUT_off.png (our minimap switched off:
+# the corner must be empty, i.e. the native one is off too) and
 # OUT_maptab.png (the Map tab). GAME_PATCH (e.g. grug_map_quality = high) is
 # passed to tools/luanti_headless.sh.
 set -euo pipefail
@@ -113,7 +114,8 @@ grab() { # PROBE_TAG TARGET
 	import -display ":$display_no" -window root "$2"
 	echo "capture: $2"
 }
-grab MINIMAP "$out"
+grab BEFORE "${out%.png}_before.png"
+grab AFTER "${out%.png}_after.png"
 grab OFF "${out%.png}_off.png"
 grab MAPTAB "${out%.png}_maptab.png"
 grep -h '\[r27mm_probe\]' "$root/server.log" || true
