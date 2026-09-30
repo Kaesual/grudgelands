@@ -64,29 +64,31 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 27 delivered locally, 2026-09-30.** WP50: our own round minimap
+**Round 27 delivered, 2026-09-30.** WP50: our own round minimap
 (`grug_map`) with quest-giver, service, home and party markers in place of
 the native minimap, the `grug_map_quality` setting (normal/high) for the Map
 tab and the minimap, readable relief and a tiled map base (Lane M), and the
-documentation (Lane D). Merged on local main; no push. Next: short playtest.
+documentation (Lane D), then the gliding minimap with a pewter bezel after the
+user's playtest. Pushed up to `96bcab41` on 2026-09-30; the glide fixes and docs after it are local.
+Next: short playtest.
 [Plan, completion and playtest checklist](docs/planning/round27-minimap-plan.md#completion-2026-09-30).
 
-**Round 26 delivered locally, 2026-09-29.** Claim Stone draft/activation and
+**Round 26 delivered, 2026-09-29.** Claim Stone draft/activation and
 the Housing Steward (Lane S), registration cleanup WP28 with the tool
 namespace (Lane R), the status-icon package (Lane I), organic capitals with a
 character per capital (Lane W) and the documentation cleanup (Lane D). All
-lanes merged on local main; no push. Next: fresh world and playtest.
+lanes merged on main and pushed. Playtested 2026-09-29.
 [Plan, completion and playtest checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29).
 The [work-package audit](docs/planning/wp-audit-2026-09-29.md) and its user
 decisions (2026-09-29) set the current BACKLOG and V1 scope (ROADMAP).
 
-**Round 25 delivered locally, 2026-09-29.** Claim Stone housing (WP24,
+**Round 25 delivered, 2026-09-29.** Claim Stone housing (WP24,
 `grug_housing`, [housing.md](docs/design/housing.md)): claims, fuel,
 permissions, interaction guard, Housing Stewards, Character status and the
 stone as travel home; road and POI world protection; capital planner places
 required and named buildings before fill. Coordinated by Claude Opus 5.5.
 [Plan, completion and playtest checklist](docs/planning/round25-housing-plan.md#completion-2026-09-29).
-Merged on main as `7270feb3`; no push. Next: fresh world and playtest.
+Merged on main as `7270feb3` and pushed.
 
 **Round 24 delivered, 2026-09-29.** Mining tiers (tier rock with
 engine-native pick gating, loose ground, tool levels), ores and layers in the

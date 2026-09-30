@@ -19,13 +19,13 @@ numbers (for example E5) are cited below.
 
 - **Latest delivery:
   [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
-  complete** (2026-09-30, local main, no push): WP50 delivered — our own
+  complete** (2026-09-30; pushed up to `96bcab41`, later glide fixes local): WP50 delivered — our own
   round minimap with quest, service, home and party markers in place of the
   native one, the `grug_map_quality` setting (normal/high) for the Map tab and
   the minimap, readable relief and the tiled map base (Lane M), and the
   documentation (Lane D). Next: short playtest.
 - [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)
-  (2026-09-29, local main, no push): Claim Stone draft and
+  (2026-09-29, pushed): Claim Stone draft and
   activation with the Housing Steward (Lane S), the registration cleanup
   (WP28 delivered, Lane R), the status-icon package (audit D10, Lane I),
   organic capitals with a character per capital (the D72 follow-up, Lane W)

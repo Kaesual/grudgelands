@@ -91,7 +91,7 @@ touches no capital files.
 
 Lane M is merged on local main as `cda93c90` (Phase 1 images `7595d67e`,
 minimap `aab95593`, review fixes `bd92081b`); D is merged after it.
-WP50 is delivered. No push.
+WP50 is delivered. Pushed up to `96bcab41` on 2026-09-30; later commits local.
 
 - **M — map quality and minimap** (rulings 1–12,
   [world_map.md](../design/world_map.md)): `grug_map_quality` normal

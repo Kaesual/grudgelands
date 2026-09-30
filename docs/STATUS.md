@@ -4,7 +4,7 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
 
 - **Round 27 delivered locally** (2026-09-30, WP50,
   [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
-  Lanes M (`cda93c90`) and D merged on local main. No push.
+  Lanes M (`cda93c90`) and D merged on main; pushed up to `96bcab41`.
   The Round 26 playtest fix for capital walls (no gaps at gatehouses, fewer
   walls in rivers) is merged as `1ff541e4`; follow-ups in the BACKLOG.
   - **M:** our own round, north-up minimap in the native minimap's box
@@ -27,7 +27,7 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
 
 - **Round 26 delivered locally** (2026-09-29,
   [plan, completion and playtest checklist](planning/round26-capitals-housing-cleanup-plan.md#completion-2026-09-29)).
-  All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). No push.
+  All lanes are merged on local main: S `377e7cd4`, R `4e88234c` with the Troll follow-up `ed7d79a1`, I `abaaa262`, W `ce2264e9`, D (branch `r26-d-docs`). Pushed.
   - **S:** a placed Claim Stone is a half-transparent draft that protects
     nothing and crumbles after 5 minutes unless activated with 5 lumps; the
     only lock is 12 hours without pick-up after activation; the Housing
@@ -66,7 +66,7 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
   The capital planner places required and named buildings before fill: load
   failures 1.3 % of seeds → 0 of 200, capital layouts changed. All nine lanes
   merged on local main (`7ca48666`), independently reviewed and synchronized
-  to Luanti on 2026-09-29. No push.
+  to Luanti on 2026-09-29. Pushed.
   [Plan, completion and playtest checklist](planning/round25-housing-plan.md#completion-2026-09-29).
   The first playtest has started; its follow-up rulings 30–33 feed Round 26.
 
