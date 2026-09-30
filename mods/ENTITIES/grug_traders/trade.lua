@@ -41,11 +41,9 @@ local function esc(text)
 	return core.formspec_escape(text)
 end
 
--- First line of an item description, for one-line labels.
+-- The item's name, for one-line labels and chat (grug_core.item_name).
 local function short_desc(itemname)
-	local def = core.registered_items[itemname]
-	local desc = (def and def.description) or itemname
-	return (desc:gsub("\n.*", ""))
+	return grug_core.item_name(itemname)
 end
 
 local function full_desc(itemname)
