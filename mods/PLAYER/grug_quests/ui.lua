@@ -11,12 +11,6 @@ local function tracked(journal, id)
 	return false
 end
 
-local function item_label(name)
-	local def = core.registered_items[name]
-	local description = def and def.description ~= "" and def.description or name
-	return description:match("^[^\n]+") or name
-end
-
 local function mob_label(name)
 	local def = core.registered_entities[name]
 	if def and def.description and def.description ~= "" then return def.description end
@@ -29,7 +23,7 @@ end
 local function objective_label(objective)
 	local subject
 	if objective.type == "item" then
-		subject = "Bring " .. item_label(objective.item)
+		subject = "Bring " .. grug_core.item_name(objective.item)
 	elseif objective.type == "talk" then
 		local npc = grug_quests.registered_npcs[objective.npc]
 		subject = "Speak with " .. (npc and npc.title or objective.npc)
@@ -84,7 +78,7 @@ local function content(player, context)
 	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
 	for _, item in ipairs(quest.rewards.items) do
 		local stack = ItemStack(item)
-		rewards[#rewards + 1] = stack:get_count() .. " × " .. item_label(stack:get_name())
+		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
 	end
 	fs[#fs + 1] = "textarea[3.85,4.00;6.25,0.75;;;Rewards: " .. esc(table.concat(rewards, ", ")) .. "]"
 	fs[#fs + 1] = ("checkbox[3.85,4.78;grug_quest_track;Track on HUD;%s]")

@@ -41,7 +41,7 @@ function Q.open_npc(player, entity, selected, notice)
 		local subject = objective.description
 		if not subject then
 			if objective.type == "item" then
-				subject = "Bring " .. (core.registered_items[objective.item].description or objective.item)
+				subject = "Bring " .. grug_core.item_name(objective.item)
 			elseif objective.type == "talk" then
 				local destination = Q.registered_npcs[objective.npc]
 				subject = "Speak with " .. (destination and destination.title or objective.npc)
@@ -52,7 +52,7 @@ function Q.open_npc(player, entity, selected, notice)
 	detail = detail .. "\nRewards: " .. def.rewards.xp .. " XP, " .. grug_money.format(def.rewards.copper)
 	for _, item in ipairs(def.rewards.items) do
 		local stack = ItemStack(item)
-		detail = detail .. "\n" .. (stack:get_description()) .. " × " .. stack:get_count()
+		detail = detail .. "\n" .. grug_core.item_name(stack) .. " × " .. stack:get_count()
 	end
 	local form = "formspec_version[6]size[12,9]label[0.4,0.4;" .. esc(Q.registered_npcs[id].title or id) .. "]" ..
 		"textlist[0.4,0.9;4,6;quests;" .. table.concat(entries, ",") .. ";" .. selected .. ";false]" ..
