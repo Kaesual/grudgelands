@@ -2,7 +2,8 @@
 
 Drafted 2026-09-29 after the Round 26 playtest; approved by the user the same
 day. Work package: [WP50](work-package-scopes.md#wp50).
-**Status: complete, 2026-09-30** (see [Completion](#completion-2026-09-30)).
+**Status: complete, 2026-09-30** (see [Completion](#completion-2026-09-30));
+the minimap now glides ([follow-up](#follow-up-gliding-minimap-2026-09-30)).
 Next: short playtest.
 
 Running alongside, outside this round: the Round 26 playtest fix for gaps
@@ -135,18 +136,56 @@ Open notes (in [BACKLOG](../../BACKLOG.md#round-27-carry-overs)):
 
 ### Playtest checklist
 
-1. **Minimap:** top right, round, north up; the gold arrow turns with the
-   view. The quest list stays clear below it. V no longer opens the native
+1. **Minimap:** top right, round, north up; the gold arrow stays in the
+   centre and turns with the view, and the map glides under it without
+   jumps. The pewter bezel hides the map's edge, also after resizing the
+   window. The quest list stays clear below it. V no longer opens the native
    minimap.
 2. **Markers:** quest givers show their state and change it when you accept
    or finish a quest; the Housing Steward, trainers and innkeepers show in
    towns; your home appears within a few seconds of binding.
-3. **Party:** a party member inside the circle is a cyan arrow; outside it,
-   a small arrow on the rim points toward them.
+3. **Party:** a party member inside the circle is a cyan arrow that glides
+   with the map; outside it, an arrow on the bezel points toward them and is
+   drawn above the "N".
 4. **Switch:** "Show minimap" on the Map tab hides and shows it and is
    remembered after a reconnect.
 5. **Relief:** hills and mountains read clearly on the Map tab (shading,
    contour lines, lighter high ground); no small dark box next to the region
    names.
 6. **Optional:** set `grug_map_quality = high` on a test world: the first
-   start takes about a minute longer and the map is sharper at 8x.
+   start takes about a minute longer and the map is sharper at 8x; the
+   minimap (half resolution at high) still looks sharp enough at your
+   window size.
+
+## Follow-up: gliding minimap (2026-09-30)
+
+After the Round 27 docs the minimap was redesigned; the user approved each
+step in playtest. Test variant `0115ddde` (merged as `96bcab41`), review
+fixes `7bd3b166`, the pewter bezel and half-resolution high texture
+`3319b6c0` and review fixes `0e4940d0` (these three merged as `9c8ece8c`).
+Current rules: [world_map.md](../design/world_map.md#minimap). Local
+`origin/main` is `96bcab41`; the later commits are local.
+
+- **User decisions:** the arrow stays centred and the map glides under it
+  pixel by pixel (replacing ruling 9's off-centre arrow; the texture still
+  changes only per grid cell); the pewter bezel (variant C); party rim arrows
+  drawn above the "N"; the band slimmed to about two thirds (about 22.5 px at
+  1080p, was 34); the high-quality minimap texture at half resolution;
+  bigger rim arrows (85 % of the band).
+- **Built:** a window of about 880 nodes; snap grid 6 base pixels at normal
+  and 16 at high; one disc texture per cell from at most four tiles, seam-free
+  on cell swaps by construction; high combined at 479 px and `[resize`d to
+  240; markers and party arrows glide with the map and hide outside the hole.
+  Per step: party names cached until the party changes (or the 5 s refresh), the box compared
+  field by field, the switch state cached; every position resent after a
+  window change.
+- **Measured** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
+  (LuaJIT, no engine) against the snapped minimap of `a19b829d`: walking
+  17.9 HUD packets/s and 487 B/s (was 4.9 and 131), flying 45.2 packets/s and
+  1217 B/s (was 11.5 and 312), about 3.7–3.9 times; minimap work 5–7 µs per
+  player per step (was 4–6). Client textures per 3000 nodes walked (portable
+  fixture): normal 76, about 6.0 MB; high 95, about 20.9 MB.
+- **Checks:** `tools/r27_minimap/portable_test.lua` (93 checks, including
+  seam-free cell swaps with the client's resize and nearest sampling
+  emulated, and hole coverage at eight window sizes); `render_icons.py`
+  asserts the bezel's opaque radius and the rim chevron's extent.

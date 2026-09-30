@@ -109,8 +109,8 @@ enters the cache key, so switching it re-renders the base at the next start.
 **Tiles.** The base is sent as 512 px tiles (`grug_map_base_<col>_<row>.png`,
 edge tiles smaller), written to the world directory and announced as startup
 media; nothing else of the base is sent. The Map tab combines all tiles into
-one texture; the minimap combines only the at most four tiles its window
-overlaps.
+one texture; the minimap combines only the at most four tiles each cell
+texture overlaps.
 
 **Relief** (both qualities, tuned on images of the user's world):
 - Hillshade: Lambert shading with light from the north-west (map top-left)
@@ -135,7 +135,8 @@ window can bring the scrollbar back.
 ## Minimap
 
 Round 27 (WP50) replaces Luanti's native minimap with our own HUD minimap
-drawn from the base image above.
+drawn from the base image above. The gliding version (approved in playtest,
+2026-09-30) keeps the arrow centred and moves the map under it.
 
 - **Native minimap off** for every player: `hud_set_flags` minimap and radar
   false on join, with a single "off" minimap mode as backstop. The client's V
@@ -143,35 +144,65 @@ drawn from the base image above.
 - **Look and place:** round, top right, in the box of the native minimap it
   replaces (a square of 25 % of the window height, 10 HUD px from the top and
   right edges, `grug_core.hud_layout.minimap_box`; it follows window
-  resizes). The quest list's clearance below it is unchanged. A ring frame
-  with an "N" plate surrounds the map. North is always up; the player's gold
-  arrow is a compass HUD element that the client turns with the view, so
-  turning sends nothing. The map never rotates.
-- **One zoom level:** a window of about 900 nodes (135 base pixels at normal
-  quality, 450 at high).
-- **Grid snapping:** the Luanti client never frees textures it builds from
-  texture modifiers, so every distinct map window would stay in client
-  memory. The window therefore snaps to a grid of 16 base pixels at normal
-  (about 107 nodes) and 64 at high (128 nodes), centred on the player's grid
-  cell; the player's arrow moves off-centre inside it (at most half a cell).
-  A new window texture is built only when the player enters a new cell, about
-  every 110–130 nodes walked.
+  resizes). An opaque pewter bezel (a warm grey-bronze band with a small "N"
+  and dot marks at E, S and W) frames the map and covers the map texture's
+  overhang, since HUD images are never clipped. The art is opaque out to
+  0.975 of its radius and the hole is 0.83 of it; at 1920×1080 the bezel is
+  265 px across with a band of about 22.5 px. The whole bezel sits inside the
+  native box (top-right corners aligned), so the quest list's clearance below
+  it is unchanged. North is always up; the map never rotates.
+- **Centred arrow, gliding map:** the player's gold arrow stays at the
+  centre. It is a compass HUD element that the client turns with the view,
+  so turning sends nothing. The map moves under it pixel by pixel on every
+  server step: the map element is placed so the player's own pixel lies on
+  the arrow's pixel, and a `hud_change` is sent only when that rounded pixel
+  changes.
+- **One zoom level:** a window of about 880 nodes (132 base pixels at normal
+  quality, 440 at high).
+- **Cells:** the Luanti client never frees textures it builds from texture
+  modifiers, so every distinct map texture stays in client memory. The map
+  therefore uses one texture per grid cell of 6 base pixels at normal
+  (40 nodes) and 16 at high (32 nodes): a disc large enough to cover the hole
+  wherever the player is in the cell, combined from the at most four tiles it
+  overlaps. A new texture is built only when the player enters a new cell.
+  The drawn scale is a whole multiple of 1/grid screen pixels per base pixel,
+  so neighbouring cells' textures sit a whole number of pixels apart, and the
+  texture and position change in the same step: a cell swap moves no pixel.
+- **High quality at half resolution:** the high cell texture is combined at
+  479 base pixels and halved on the client with `[resize` to 240 px, a
+  quarter of the memory (one pixel short, so the resize steps exactly two
+  base pixels per texel and swaps stay seam-free). Up to 1080p the HUD draws
+  the texture at half its base pixels or less anyway, so nothing is lost; at
+  1440p and 4K the half-size texture is drawn larger than it is, and high
+  shows less detail than it could, though still more than normal.
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
   locked), the Housing Steward, profession and Riding trainers, innkeepers
   and the player's home (the bound innkeeper or Claim Stone). Settlements,
-  camps, kings and dragons stay on the Map tab only. The minimap has 24
-  marker slots; when more markers fall inside the circle, quest givers keep
-  a slot first, then the Steward, home, innkeeper and trainers, and the kept
-  ones are drawn in their usual order. Markers are not clustered or moved
-  apart.
+  camps, kings and dragons stay on the Map tab only. Markers glide with the
+  map and are hidden unless the whole icon lies inside the hole. The minimap
+  has 24 marker slots; when more markers fall inside the circle, quest givers
+  keep a slot first, then the Steward, home, innkeeper and trainers, and the
+  kept ones are drawn in their usual order. Markers are not clustered or
+  moved apart.
 - **Party members** (online, same party) have nine slots of their own: a cyan
-  heading arrow inside the circle, or a small cyan arrow on the rim pointing
-  toward them (16 directions) when they are outside the window.
-- **Updates:** positions and party members are checked every 0.2 s, static
-  markers are asked from their providers on joining, on every quest change
-  and every 5 s (each player in their own phase). Only changed HUD values are
-  sent; a standing player costs no packets.
+  heading arrow that glides with the map inside the hole, or a cyan arrow on
+  the bezel pointing toward them (16 directions) when they are outside it.
+  Rim arrows fill 85 % of the bezel's band and are drawn above the "N".
+- **Updates:** the map, markers and party members are checked every server
+  step. Static markers are asked from their providers on joining, on every
+  quest change and every 5 s (each player in their own phase); party member
+  names are read again only on a party change and that 5 s refresh. A window
+  change resends every element's position. Only changed HUD values are sent;
+  a standing player costs no packets.
+- **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
+  (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
+  the window, two party members moving along) measures about 18 HUD packets
+  and 0.49 KB per second walking, 25 sprinting, 31 riding and 45 (1.2 KB/s)
+  flying, about 3.7–3.9 times the earlier snapped minimap (4.9 walking,
+  11.5 flying). Minimap work is about 5–7 µs per player per step there. By
+  the portable fixture a 3000-node walk builds 76 client textures (about
+  6.0 MB) at normal and 95 (about 20.9 MB) at high.
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" on the Map tab (Luanti has no custom keybinds),
   stored per player in player meta, on by default. If the server has no base

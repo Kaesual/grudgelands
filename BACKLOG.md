@@ -301,10 +301,9 @@ none blocks the playtest.
   playtest decides whether this needs handling.
 - A new home (innkeeper binding or Claim Stone) appears on the minimap up to
   5 s later: static markers refresh on quest changes and every 5 s.
-- Minimap glide (discussed 2026-09-30, not approved yet): an opaque square
-  plate with a round hole would let the map scroll pixel by pixel under a
-  centred arrow instead of snapping per grid cell; it changes the approved look
-  and adds marker updates, so a mockup comes first.
+- Minimap glide: delivered 2026-09-30 (the map glides under a centred arrow
+  inside a pewter bezel, merged as `9c8ece8c`;
+  [follow-up](docs/planning/round27-minimap-plan.md#follow-up-gliding-minimap-2026-09-30)).
 
 ### Round 26 capital wall follow-ups
 

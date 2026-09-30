@@ -677,11 +677,16 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   until a 0.5 s quiet interval. Closing resets to Character; leave/death clean up.
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
   it as 512 px tiles; `minimap.lua` (HUD state, marker slots, change-only
-  `hud_change`) and the pure `minimap_view.lua` (window, grid snap, placement,
-  rim arrows) draw the minimap in `grug_core.hud_layout.minimap_box`. The
-  minimap asks only the quest, service and home marker providers
+  `hud_change` per whole screen pixel, every server step) and the pure
+  `minimap_view.lua` (window, snap grid and per-cell disc texture, the
+  seam-free scale and map corner under the centred arrow, bezel frame,
+  placement, rim arrows) draw the gliding minimap in
+  `grug_core.hud_layout.minimap_box`. Keep the texture and position change
+  in the same step and the scale a whole multiple of 1/grid, or cell swaps
+  jump. The minimap asks only the quest, service and home marker providers
   (`atlas.collect_markers(player, only)`). Fixture:
-  `tools/r27_minimap/portable_test.lua`.
+  `tools/r27_minimap/portable_test.lua`; traffic comparison:
+  `tools/r27_minimap/bench_glide.lua`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
