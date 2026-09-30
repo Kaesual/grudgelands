@@ -1,21 +1,15 @@
 local huds = {}
 local elapsed = 0
 
--- Item descriptions carry translation escapes ("\27(T@mobs)Raw Meat\27E").
--- Resolve them to the game's English text first, so a cut never lands inside
--- an escape and the width counts only visible characters.
-local function plain(text)
-	if core.get_translated_string then text = core.get_translated_string("en", text) end
-	if core.strip_colors then text = core.strip_colors(text) end
-	return text
-end
+-- Text can carry translation escapes ("\27(T@mobs)Raw Meat\27E"). Resolve
+-- them to the game's English text first, so a cut never lands inside an
+-- escape and the width counts only visible characters.
+local plain = grug_core.plain_text
 
 local function objective_text(objective)
 	local subject = objective.description
 	if objective.type == "item" then
-		local def = core.registered_items[objective.item]
-		local description = def and def.description ~= "" and def.description or objective.item
-		subject = "Bring " .. (plain(description):match("^[^\n]+") or objective.item)
+		subject = "Bring " .. grug_core.item_name(objective.item)
 	elseif objective.type == "talk" then
 		local npc = grug_quests.registered_npcs[objective.npc]
 		subject = "Speak with " .. (npc and npc.title or objective.npc)

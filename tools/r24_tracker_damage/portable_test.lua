@@ -66,6 +66,7 @@ vector = {offset = function(p, x, y, z) return {x = p.x + x, y = p.y + y, z = p.
 
 grug_core = {}
 dofile("mods/CORE/grug_core/hud_layout.lua")
+dofile("mods/CORE/grug_core/item_names.lua")
 dofile("mods/CORE/grug_core/combat.lua")
 dofile("mods/CORE/grug_core/death_messages.lua")
 dofile("mods/CORE/grug_core/environment_damage.lua")

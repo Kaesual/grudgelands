@@ -41,6 +41,8 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/hud_layout.lua")
 -- The shared screen flash line (skill errors, mining hints); reads hud_layout.
 dofile(modpath .. "/flash.lua")
+-- Player-facing item names for running text (quests, dialogue, tracker).
+dofile(modpath .. "/item_names.lua")
 dofile(modpath .. "/tag_carrier.lua")
 -- The status icon registry (pure data), read by status.lua and combat_hud.lua.
 dofile(modpath .. "/status_icons.lua")
