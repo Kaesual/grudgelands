@@ -165,9 +165,11 @@ N_GLYPH = [
 ]
 
 
-# Hole radius over outer radius; must equal V.BEZEL_HOLE in
-# mods/PLAYER/grug_map/minimap_view.lua.
-BEZEL_HOLE = 0.77
+# Hole radius over outer radius and the radius (over the outer one) up to
+# which the art is fully opaque; must equal V.BEZEL_HOLE and V.BEZEL_OPAQUE
+# in mods/PLAYER/grug_map/minimap_view.lua.
+BEZEL_HOLE = 0.75
+BEZEL_OPAQUE = 0.975
 
 
 def bezel():
@@ -227,7 +229,16 @@ def main():
                       "y": (176, 64, 44, 255)}).save(OUT / "grug_map_home.png")
     for frame in range(16):
         rim_arrow(frame).save(OUT / f"grug_map_rim_cyan_{frame:02d}.png")
-    bezel().save(OUT / "grug_map_minimap_bezel.png")
+    art = bezel()
+    # the band is opaque (alpha >= 250 of 255) from just outside the hole to
+    # BEZEL_OPAQUE
+    for step in range(720):
+        a = step * math.tau / 720
+        for r in (BEZEL_HOLE * 128 + 3, (BEZEL_HOLE + BEZEL_OPAQUE) * 64, BEZEL_OPAQUE * 128):
+            x, y = 128 + r * math.cos(a), 128 + r * math.sin(a)
+            alpha = art.getpixel((min(255, int(x)), min(255, int(y))))[3]
+            assert alpha >= 250, ("bezel not opaque", r, a, alpha)
+    art.save(OUT / "grug_map_minimap_bezel.png")
     print("quest=4 innkeeper home rim=16 bezel written to", OUT)
 
 

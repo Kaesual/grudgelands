@@ -22,7 +22,11 @@ local V = {}
 V.WINDOW_NODES = 900
 -- The bezel art (textures/grug_map_minimap_bezel.png): hole radius over
 -- outer radius. The hole shows the C-pixel window, so R = C / 2 / BEZEL_HOLE.
-V.BEZEL_HOLE = 0.77
+-- The art is fully opaque only out to BEZEL_OPAQUE of its radius (its outer
+-- edge is anti-aliased; tools/r27_minimap/render_icons.py checks it), so
+-- the map disc must stay inside that.
+V.BEZEL_HOLE = 0.75
+V.BEZEL_OPAQUE = 0.975
 V.RIM_FRAMES = 16
 -- The snap grid in base pixels per map quality (ruling 9): 12 px (80
 -- nodes) at normal, 32 px (64 nodes) at high. A new texture is built every

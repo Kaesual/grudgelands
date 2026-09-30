@@ -156,7 +156,7 @@ local function create(player, state)
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
-	state.near = nil
+	state.near, state.box = nil, nil
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
@@ -177,35 +177,50 @@ local function static_markers(player)
 	return result
 end
 
-local function party_members(player)
+-- The other members' names, asked from grug_parties only when the party
+-- changes (or on the SLOW refresh); positions are read every step.
+local function party_members(player, state)
+	local name = player:get_player_name()
+	if not state.party then
+		state.party = {}
+		local group = grug_parties.view(player)
+		for _, member in ipairs(group and group.members or {}) do
+			if member.name ~= name then state.party[#state.party + 1] = member.name end
+		end
+	end
 	local result = {}
-	local group = grug_parties.view(player)
-	for _, member in ipairs(group and group.members or {}) do
-		if member.name ~= player:get_player_name() then
-			local other = core.get_player_by_name(member.name)
-			if other then
-				local pos = other:get_pos()
-				result[#result + 1] = {x = pos.x, z = pos.z,
-					frame = atlas.heading_frame(other:get_look_horizontal())}
-			end
+	for _, member in ipairs(state.party) do
+		local other = core.get_player_by_name(member)
+		if other then
+			local pos = other:get_pos()
+			result[#result + 1] = {x = pos.x, z = pos.z,
+				frame = atlas.heading_frame(other:get_look_horizontal())}
 		end
 	end
 	return result
 end
 
+-- Every element resends its position on the next show: after a window
+-- change the same pixel is a different fraction of the window.
+local function forget_positions(hud)
+	for _, element in ipairs(hud.all) do element.x, element.y = nil, nil end
+end
+
 local function update(player, state, slow)
-	local name = player:get_player_name()
-	if not M.enabled(player) then
+	if state.enabled == nil then state.enabled = M.enabled(player) end
+	if not state.enabled then
 		remove(player, state)
 		return 0
 	end
 	if not state.hud then create(player, state) end
 	local hud, changes = state.hud, 0
-	local box = layout.minimap_box(core.get_player_window_information(name))
-	local key = box.size .. ":" .. box.center_x .. ":" .. box.center_y .. ":" ..
-		box.hud .. ":" .. box.width .. ":" .. box.height
-	if state.frame_key ~= key then
-		state.frame, state.frame_key = V.frame(view, box), key
+	local box = layout.minimap_box(core.get_player_window_information(player:get_player_name()))
+	local last = state.box
+	if not last or last.size ~= box.size or last.center_x ~= box.center_x or
+			last.center_y ~= box.center_y or last.hud ~= box.hud or
+			last.width ~= box.width or last.height ~= box.height then
+		state.box, state.frame = box, V.frame(view, box)
+		forget_positions(hud)
 	end
 	local frame = state.frame
 	local pos = player:get_pos()
@@ -218,7 +233,7 @@ local function update(player, state, slow)
 		M.stats.textures = M.stats.textures + 1
 	end
 	if slow or not state.static then
-		state.static, state.near = static_markers(player), nil
+		state.static, state.near, state.party = static_markers(player), nil, nil
 	end
 	if not state.near then
 		-- the static markers under the cell's texture, in draw order
@@ -278,7 +293,7 @@ local function update(player, state, slow)
 		changes = changes + show(player, frame, hud.markers[i], "")
 	end
 
-	local party = party_members(player)
+	local party = party_members(player, state)
 	local inside = frame.hole - PARTY_ARROW / 2 * hud_px
 	for i = 1, PARTY_SLOTS do
 		local member = party[i]
@@ -292,9 +307,13 @@ local function update(player, state, slow)
 					("grug_map_heading_cyan_%02d.png"):format(member.frame), x, y,
 					PARTY_ARROW / 32)
 			else
+				-- On the bezel, above it and its N plate (a party member due
+				-- north matters more than the letter), never wider than the ring.
 				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
+				local ring = frame.diameter / 2 - frame.hole
+				local px = math.min(RIM_ARROW * hud_px, 0.8 * ring)
 				changes = changes + show(player, frame, hud.party[i],
-					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, RIM_ARROW / 32)
+					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, px / (32 * hud_px))
 			end
 		end
 	end
@@ -324,6 +343,8 @@ end
 
 function M.set_enabled(player, enabled)
 	player:get_meta():set_string(META, enabled and "" or "1")
+	local state = players[player:get_player_name()]
+	if state then state.enabled = enabled and true or false end
 	M.refresh(player)
 end
 
@@ -370,15 +391,21 @@ function M.texture_of(player)
 end
 
 -- Each player's SLOW refresh has its own phase, so the marker providers are
--- not asked for every player in the same step.
+-- not asked for every player in the same step: players joining one after
+-- another start JOIN_PHASE seconds apart (SLOW / JOIN_PHASE phases).
+local JOIN_PHASE = 0.2
 local joined = 0
 core.register_on_joinplayer(function(player)
 	native_off(player)
 	joined = joined + 1
-	players[player:get_player_name()] = {slow = (joined * 0.2) % SLOW}
+	players[player:get_player_name()] = {slow = (joined * JOIN_PHASE) % SLOW}
 end)
 core.register_on_leaveplayer(function(player)
 	players[player:get_player_name()] = nil
+end)
+grug_parties.register_on_change(function(name)
+	local state = players[name]
+	if state then state.party = nil end
 end)
 grug_quests.register_on_change(function(player)
 	local state = player and players[player:get_player_name()]

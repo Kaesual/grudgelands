@@ -136,12 +136,14 @@ rawset(_G, "grug_quests", {registered_npcs = {},
 	marker_state = function(_, id) return QUESTS[id] end,
 	register_on_change = function(fn) quest_changes[#quest_changes + 1] = fn end})
 local PARTY = {}
+local party_views, party_changes = 0, {}
 rawset(_G, "grug_parties", {view = function(player)
+	party_views = party_views + 1
 	if #PARTY == 0 then return nil end
 	local members = {{name = player:get_player_name()}}
 	for _, name in ipairs(PARTY) do members[#members + 1] = {name = name} end
 	return {members = members}
-end})
+end, register_on_change = function(fn) party_changes[#party_changes + 1] = fn end})
 local HOME
 rawset(_G, "grug_home", {get = function() return HOME end,
 	locations = function()
@@ -219,6 +221,7 @@ local V = dofile(repo .. "/mods/PLAYER/grug_map/minimap_view.lua")
 local bounds = atlas.view()
 local views = {}
 local WINDOWS = {{x = 1280, y = 720, hud = 1}, {x = 1920, y = 1080, hud = 1},
+	{x = 1920, y = 1080, hud = 0.75}, {x = 1280, y = 720, hud = 2},
 	{x = 2560, y = 1440, hud = 1}, {x = 2560, y = 1440, hud = 2}, {x = 3840, y = 2160, hud = 2},
 	{x = 1024, y = 600, hud = 1}}
 for quality, spec in pairs(base.QUALITY) do
@@ -232,9 +235,9 @@ for quality, spec in pairs(base.QUALITY) do
 	check(v.texture % v.grid == 0 and v.texture <= base.TILE,
 		"G " .. quality .. " texture " .. v.texture .. " px, whole cells, fits a tile")
 	-- the disc covers the hole at the worst offset; the bezel covers the disc
-	check(v.texture / 2 - v.d >= v.crop / 2 and v.texture / 2 + v.d <= v.outer - 0.5,
-		("G %s hole %.1f <= cover %.1f, disc reach %.1f <= bezel %.1f"):format(quality,
-		v.crop / 2, v.texture / 2 - v.d, v.texture / 2 + v.d, v.outer))
+	check(v.texture / 2 - v.d >= v.crop / 2 and v.texture / 2 + v.d <= V.BEZEL_OPAQUE * v.outer,
+		("G %s hole %.1f <= cover %.1f, disc reach %.1f <= opaque bezel %.1f"):format(quality,
+		v.crop / 2, v.texture / 2 - v.d, v.texture / 2 + v.d, V.BEZEL_OPAQUE * v.outer))
 	-- the player is never further than d from the texture centre
 	local worst = 0
 	for x = -3600, 3600, 37 do
@@ -258,7 +261,10 @@ for quality, spec in pairs(base.QUALITY) do
 			frame.drawn % 1 == 0 and near(frame.f * v.grid, frame.k) and
 			near(frame.center_x + frame.diameter / 2, box.center_x + box.size / 2) and
 			near(frame.center_y - frame.diameter / 2, box.center_y - box.size / 2) and
-			frame.hole <= (v.texture / 2 - v.d) * frame.f
+			frame.hole <= (v.texture / 2 - v.d) * frame.f and
+			-- the disc at its furthest, plus a pixel of rounding, stays under
+			-- the opaque part of the drawn bezel
+			(v.texture / 2 + v.d) * frame.f + 1 <= V.BEZEL_OPAQUE * frame.diameter / 2
 	end
 	check(frames_ok, "G " .. quality .. " frames fit the box top-right, whole pixels")
 	check(smallest >= 0.85, ("G %s bezel at least 85 %% of the box (%.2f)"):format(quality, smallest))
@@ -511,6 +517,15 @@ local far_friend = new_player("far", {x = 1300, y = 20, z = -1450}, 0)
 players.near, players.far = near_friend, far_friend
 PARTY = {"near", "far"}
 step(0.25)
+check(#by_text(me, "^grug_map_heading_cyan_%d%d%.png$") == 0,
+	"R party names are cached until the party changes")
+for _, fn in ipairs(party_changes) do fn("me", "join") end
+do
+	local views = party_views
+	step(0.09) step(0.09) step(0.09)
+	check(party_views == views + 1, "R one party lookup after a change, not one per step (" ..
+		(party_views - views) .. ")")
+end
 check(#by_text(me, "^grug_map_heading_cyan_%d%d%.png$") == 1, "R party member inside: arrow")
 local rim = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")
 check(#rim == 1, "R party member outside: rim arrow")
@@ -520,6 +535,18 @@ if rim[1] then
 	check(near(math.sqrt((rx - frame.center_x) ^ 2 + (ry - frame.center_y) ^ 2),
 		(frame.hole + frame.diameter / 2) / 2, 1.5) and index >= 3 and index <= 5,
 		"R rim arrow on the bezel pointing east (frame " .. tostring(index) .. ")")
+end
+-- At HUD scaling 2 in a small window the rim arrow is clamped to the ring.
+do
+	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 2, real_gui_scaling = 1}
+	step(0.09)
+	local small = frame_of(me)
+	local arrow = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")[1]
+	local drawn = arrow and arrow.scale.x * 32 * 2 or 99
+	check(drawn <= small.diameter / 2 - small.hole, ("R rim arrow %.1f px within the %.1f px ring")
+		:format(drawn, small.diameter / 2 - small.hole))
+	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(0.09)
 end
 -- every marker and party arrow shown lies inside the hole; one walked out
 -- of it is hidden
@@ -547,6 +574,27 @@ do
 	check(inside2 and count2 < count, ("R markers leaving the hole are hidden (%d -> %d)"):
 		format(count, count2))
 	me.pos.x = saved
+	step(0.09)
+end
+
+-- A height-only resize that keeps every pixel (1080 -> 1100: same scale,
+-- same bezel place) must still resend the positions: they are fractions
+-- of the window.
+do
+	local f1 = frame_of(me)
+	windows.me = {size = {x = 1920, y = 1100}, real_hud_scaling = 1, real_gui_scaling = 1}
+	step(0.09)
+	local f2 = frame_of(me)
+	local ax, ay = screen(compass, me)
+	local mx, my = screen(map, me)
+	local px, py = V.base_pixel(v, me.pos.x, me.pos.z)
+	local cx, cy = V.cell(v, me.pos.x, me.pos.z)
+	local ox, oy = V.origin(v, cx, cy)
+	local ex, ey = V.map_corner(v, f2, ox, oy, px, py)
+	check(f1.f == f2.f and f1.center_y == f2.center_y and
+		near(ay, math.floor(f2.center_y + 0.5), 1e-6) and near(ax, math.floor(f2.center_x + 0.5), 1e-6) and
+		near(mx, ex, 1e-6) and near(my, ey, 1e-6), "R height-only resize resends the positions")
+	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
 	step(0.09)
 end
 
