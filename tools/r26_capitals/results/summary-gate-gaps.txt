@@ -1,0 +1,32 @@
+Round 26 playtest fix (walls against every gatehouse, no wall dipping into a river)
+tools/r26_capitals/gate_fleet.sh over tools/r25_capital_plots/results/sample200.txt,
+main 0545bed6 (gate-gaps-sample200-main.tsv) vs branch r26-w2-gate-fixes (gate-gaps-sample200-branch.tsv),
+real final ground and water per seed, the edge written without roads (see gate_gaps.lua):
+
+                           main (before)          branch (after)
+gap columns                10336 in 200 seeds     0
+leaking gates (of 4800)    2287 in 200 seeds      0
+gates the wall passes by   0                      0
+road columns by a gate     6770 in 200 seeds      1044 in 108 seeds
+wall dips into water       271 in 142 seeds       86 in 70 seeds
+arcade crossings           1229                   1064
+named plots left out       0                      0
+required plots missing     0                      0
+
+Per capital and seed (1200): dips better 183, worse 21, same 996; road columns
+better 535, worse 53. Dips per capital main -> branch: Highcourt 24 -> 14,
+Dur Brannoc 35 -> 11, Gor Drazhak 32 -> 19, Lethariel 56 -> 6, Kezamba 66 -> 14,
+Nhal Veyr 58 -> 22.
+
+"dip" is a run of wall points over water (off the civic lake's open stretch and
+its walled shore points; runs at most 12 dry points apart count as one, so a V
+whose tip touches the far bank is one) whose dry ends lie on the same bank (box
++ 4). It includes the wall clipping a river bend, so it is an upper bound for
+V-shaped dips.
+
+Civic lake: Lethariel's open lake stretch (no wall) is longer on every seed
+(26175 -> 30849 points over 200 seeds); Kezamba's is unchanged. Ablation on
+seed 13850148706045623975: the bank-run pass alone leaves it as on main; the
+gate line and the last bank pass each lengthen it, through the outline's size
+search (a move near a river changes the area, the budget re-tunes every ray).
+Engine: engine-gates-seed3464175725660475642/ (engine_gates.sh, all 24 gates, PASS).

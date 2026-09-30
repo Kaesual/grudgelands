@@ -17,6 +17,15 @@ with a dark frame, FILL pieces hatched without a frame; overflowed plots a
 white frame; the wall in its model's colour (arcade over water lighter, civic
 lake edge dotted), turrets as discs, bastions as larger diamonds, gatehouses
 as dark red boxes; road ends white rings; the reserved 512 square white.
+With render.lua's edge layer the wall is instead painted node by node as the
+shipped writer builds it: face/parapet in the model's colour, the walk
+lighter, turrets darker, gatehouse towers dark red and its passage pale red
+(the gate box outlined), edge columns over water tinted blue.
+
+  render.py <out_root> <seedtag> --crop <capital> <x> <z> <radius> [zoom]
+
+crops before | after around world column (x, z) at `zoom` pixels per node
+(default 8) into <out_root>/compare/<seedtag>_<capital>_<x>_<z>.png.
 """
 import json
 import math
@@ -46,11 +55,13 @@ WALLCOL = {'stone': (80, 78, 78), 'palisade': (120, 78, 38)}
 
 
 def load_layers(path):
+    """terrain, water, road code and (newer render.lua) the city edge code"""
     with open(path) as fh:
         n, x0, z0 = map(int, fh.readline().split())
         data = np.array(fh.read().split(), dtype=np.float64)
-    data = data.reshape(3, n, n)
-    return n, x0, z0, data[0], data[1], data[2].astype(int)
+    data = data.reshape(-1, n, n)
+    edge = data[3].astype(int) if data.shape[0] > 3 else None
+    return n, x0, z0, data[0], data[1], data[2].astype(int), edge
 
 
 def hillshade(h):
@@ -82,7 +93,7 @@ def relief(t, wy):
     return rgb
 
 
-def plan_image(J, n, T, WY, RC):
+def plan_image(J, n, T, WY, RC, EDGE=None):
     win = J['window']
     rgb = relief(T, WY)
     cls, kind = RC // 10, RC % 10
@@ -95,6 +106,14 @@ def plan_image(J, n, T, WY, RC):
     rgb[surf & (cls == 4)] = (190, 80, 60)
     slope = (cls >= 7) & (cls <= 10)
     rgb[slope] = rgb[slope] * 0.75 + np.array([150, 130, 100]) * 0.25
+    if EDGE is not None:
+        # the edge as the shipped writer builds it, one node per column
+        base = np.array(WALLCOL.get(J['dims']['model'], (80, 80, 80)), dtype=float)
+        for code, c in ((1, base), (2, np.minimum(255, base + 80)), (3, (150, 35, 35)),
+                        (4, (205, 95, 85)), (5, base * 0.7)):
+            rgb[EDGE == code] = c
+        wet_edge = (EDGE > 0) & (WY > -999)
+        rgb[wet_edge] = rgb[wet_edge] * 0.6 + np.array([95, 150, 210]) * 0.4
     img = Image.fromarray(np.clip(rgb, 0, 255).astype('uint8')).resize((n * S, n * S), Image.NEAREST)
     d = ImageDraw.Draw(img, 'RGBA')
 
@@ -146,7 +165,7 @@ def plan_image(J, n, T, WY, RC):
     wall = J['wall']
     m = len(wall)
     wpx = max(2, (2 * dims['half'] + 1) * S)
-    for i in range(m):
+    for i in range(m if EDGE is None else 0):
         a, b = wall[i], wall[(i + 1) % m]
         if a[2] or b[2]:
             continue
@@ -155,7 +174,7 @@ def plan_image(J, n, T, WY, RC):
             continue
         c = tuple(min(255, v + 70) for v in col) if (a[3] or b[3]) else col
         d.line([px(a[0], a[1]), px(b[0], b[1])], fill=c, width=wpx)
-    for x, z, k in J['turrets']:
+    for x, z, k in (J['turrets'] if EDGE is None else []):
         r = dims['turret']
         cx, cy = px(x, z)
         dark = tuple(int(v * 0.7) for v in col)
@@ -169,7 +188,10 @@ def plan_image(J, n, T, WY, RC):
     for g in J['gates']:
         pts = [px(g['x'] + g['dx'] * dd - g['dz'] * ww, g['z'] + g['dz'] * dd + g['dx'] * ww)
                for dd, ww in ((-gd, -gw), (gd, -gw), (gd, gw), (-gd, gw))]
-        d.polygon(pts, fill=(150, 35, 35), outline=(15, 15, 15))
+        if EDGE is None:
+            d.polygon(pts, fill=(150, 35, 35), outline=(15, 15, 15))
+        else:
+            d.polygon(pts, outline=(15, 15, 15))
         lx, ly = px(g['x'] + g['dx'] * 16, g['z'] + g['dz'] * 16)
         d.text((lx - 5, ly - 8), g['name'][0].upper(), fill=(255, 255, 255), font=FM)
     for x, z in J['ends']:
@@ -202,6 +224,8 @@ def legend(d, x, y, J, dcol):
              ((196, 170, 120), 'network road / connector'), ((170, 105, 55), 'bridge'), ((190, 80, 60), 'deck'),
              (col, J['dims']['model'] + ' wall'), (tuple(min(255, v + 70) for v in col), 'wall over water'),
              (tuple(int(v * 0.7) for v in col), 'tower / bastion'), ((150, 35, 35), 'gatehouse'),
+             (tuple(min(255, v + 80) for v in col), 'wall walk (edge layer)'),
+             ((205, 95, 85), 'gate passage (edge layer)'),
              ((95, 150, 210), 'water')]
     for nm, c in dcol.items():
         items.append((c, 'district ' + nm.replace(J['key'] + '_', '')))
@@ -237,8 +261,8 @@ def render_one(root, variant, tag, cap, label=None):
     if not os.path.exists(base + '.json'):
         return None
     J = json.load(open(base + '.json'))
-    n, _, _, T, WY, RC = load_layers(base + '.layers')
-    img, dcol = plan_image(J, n, T, WY, RC)
+    n, _, _, T, WY, RC, EDGE = load_layers(base + '.layers')
+    img, dcol = plan_image(J, n, T, WY, RC, EDGE)
     head = 120
     canvas = Image.new('RGB', (img.width + 250, img.height + head + 10), (26, 26, 30))
     canvas.paste(img, (10, head))
@@ -254,7 +278,61 @@ def render_one(root, variant, tag, cap, label=None):
     return canvas, img, J
 
 
+def crop(root, tag, cap, x, z, r, zoom=8):
+    """before | after around world column (x, z), `zoom` pixels per node, with
+    the planned wall centre line (thin black) and its gap points (inside a
+    gatehouse box, red dots) over the writer's edge"""
+    tiles = []
+    for v, label in (('before', 'BEFORE (main)'), ('after', 'AFTER (fix)')):
+        base = os.path.join(root, v, tag, cap)
+        J = json.load(open(base + '.json'))
+        n, _, _, T, WY, RC, EDGE = load_layers(base + '.layers')
+        img, _ = plan_image(J, n, T, WY, RC, EDGE)
+        win = J['window']
+        lx, lz = x - J['anchor']['x'], z - J['anchor']['z']
+        im = img.crop(((lx - r + win) * S, (lz - r + win) * S, (lx + r + 1 + win) * S,
+                       (lz + r + 1 + win) * S)).resize(((2 * r + 1) * zoom,) * 2, Image.NEAREST)
+        d = ImageDraw.Draw(im, 'RGBA')
+
+        def q(px_, pz_):
+            return ((px_ - lx + r + 0.5) * zoom, (pz_ - lz + r + 0.5) * zoom)
+        for k in range(0, 2 * r + 2):
+            d.line([(k * zoom, 0), (k * zoom, im.height)], fill=(0, 0, 0, 28))
+            d.line([(0, k * zoom), (im.width, k * zoom)], fill=(0, 0, 0, 28))
+        wall = J['wall']
+        d.line([q(p[0], p[1]) for p in wall] + [q(wall[0][0], wall[0][1])], fill=(0, 0, 0, 200), width=2)
+        for p in wall:
+            if p[2]:
+                cx, cy = q(p[0], p[1])
+                d.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=(230, 20, 20))
+        tiles.append((im, label, J))
+    head = 64
+    w = max(sum(t[0].width for t in tiles) + 30, 1060)
+    cv = Image.new('RGB', (w, tiles[0][0].height + head + 40), (26, 26, 30))
+    d = ImageDraw.Draw(cv)
+    J = tiles[1][2]
+    d.text((10, 8), f"{NAMES[cap]} - seed {J['seed']} - around x {x}, z {z} (north up, -z), {zoom} px per node",
+           fill=(255, 255, 255), font=FB)
+    d.text((10, 32), 'wall face/parapet in the model colour, walk light, turret dark, gatehouse tower dark red, '
+           'passage pale red, box outlined;', fill=(215, 215, 215), font=FS)
+    d.text((10, 46), 'black: planned centre line, red dots: gap points (inside a gatehouse box); blue tint: over water',
+           fill=(215, 215, 215), font=FS)
+    ox = 10
+    for im, label, _ in tiles:
+        cv.paste(im, (ox, head))
+        d.text((ox, head + im.height + 8), label, fill=(255, 255, 255), font=FM)
+        ox += im.width + 10
+    os.makedirs(os.path.join(root, 'compare'), exist_ok=True)
+    p = os.path.join(root, 'compare', f'{tag}_{cap}_{x}_{z}.png')
+    cv.save(p)
+    print(p)
+
+
 def main():
+    if len(sys.argv) > 3 and sys.argv[3] == '--crop':
+        a = sys.argv
+        crop(a[1], a[2], a[4], int(a[5]), int(a[6]), int(a[7]), int(a[8]) if len(a) > 8 else 8)
+        return
     root, tag = sys.argv[1], sys.argv[2]
     variants = sys.argv[3:] or ['before', 'after']
     res = {}

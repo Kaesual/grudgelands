@@ -22,6 +22,11 @@
 # (sample-branch.tsv is main's Round 25 planner; results/hard14.txt holds the
 # five seeds that failed the load before Round 25 plus the seeds that dropped a
 # named plot in earlier Round 26 iterations).
+# Round 26 playtest fix (gates, river): gate_gaps.lua / gate_fleet.sh measure
+# wall-gatehouse gaps, leaks and walls dipping into water per seed
+# (results/summary-gate-gaps.txt); engine_gates.sh checks every gate of the
+# playtest seed in the engine; `render.py <out_root> <tag> --crop ...` draws a
+# node-sized before | after close-up of the edge the writer builds.
 set -euo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
