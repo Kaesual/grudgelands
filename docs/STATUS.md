@@ -17,6 +17,12 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
     stone tint; region-label scrollbar fix
     ([world_map.md](design/world_map.md)).
   - **D:** documentation of the Lane M facts and WP50 closure.
+  - **Glide follow-up** (merged as `9c8ece8c`,
+    [follow-up](planning/round27-minimap-plan.md#follow-up-gliding-minimap-2026-09-30)):
+    the arrow stays centred and the map glides under it every server step
+    inside a pewter bezel; about 880 nodes, one texture per 6 (normal) or 16
+    (high) base-pixel cell, high at half resolution; about 3.7–3.9 times the
+    snapped HUD traffic.
   - Next: short playtest.
 
 - **Round 26 delivered locally** (2026-09-29,
@@ -144,8 +150,9 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** local `origin/main` is `d4eaffff` (Round 24 and the
-  Round 25 plan). Rounds 25, 26 and 27 are local only.
+- **Remote observation:** local `origin/main` is `96bcab41` (observed
+  2026-09-30: Rounds 25–27 and the first glide variant). The glide fixes
+  (`9c8ece8c`) are local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.
