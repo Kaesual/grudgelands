@@ -317,9 +317,18 @@ unwalled; the user accepted this.
   the bank-run pass moves rays one at a time and never the whole run back to
   its neighbours' bank (for example seed 9469376632389957802, Lethariel and
   Kezamba). Same as before the fix, not a regression against main.
-- A wall is never built over a road, so a street crossing the wall line next
-  to a gatehouse leaves an opening (6770 → 1180 columns over 200 seeds).
-  Closing it needs a street-planning change.
+- Streets on the wall line: after the Round 27 playtest fix (lanes, squares,
+  junctions and the plaza keep off the wall band; every gatehouse's outermost
+  column is a tower) capital plans with a wall opening away from a gate fell
+  from 58 to 6 of 1200 over 200 seeds. The remaining 6 (Lethariel seeds
+  10977656699485584087, 10086036900283954633, 17175927337665330950,
+  13094141985803758170; Kezamba 14402018182688909832; Gor Drazhak
+  17608184500408850831) are outline geometry: where the gate-line pass stops
+  at water, the wall leaves a gatehouse through its inner face and the avenue
+  covers the wall line beside the box. Options: let the wall win over avenue
+  columns beside a gatehouse (cheap, may narrow the approach), or make the
+  wall leave the box sideways (cleaner, touches the river-dip tuning and needs
+  a new dip run). Deferred by the user 2026-09-30.
 
 ### First-public-release gates
 
