@@ -580,7 +580,7 @@ ratio** (Last Word). The Scout's base-kit Sprint is a tenth, and it is not a
 talent — [scout.md](scout.md) §2 carries it.
 
 `combat_stats.md` §2 owns the armor formula and the named Crit/Dodge cap
-exceptions. Character shows resulting armor rating and same-level reduction;
+exceptions. Character shows resulting armor rating and Damage reduction (same-level);
 Help explains Unbroken's multiplier and cap rules. Talents contains only build
 selection, descriptions and purchases (Round 19). Talents that are *not* marked `‼` stay inside every cap, so
 Turn Aside's +20 dodge is clamped at 30 % like any gear roll.

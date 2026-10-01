@@ -109,7 +109,9 @@ gray mob does not itself erase quest credit. See `quests.md`.
 The numeric XP HUD line is replaced with a gold progress bar directly above
 the hotbar, 360×6 HUD units (life remains 180×16). A compact label to its right
 shows the level and current interval progress, for example
-`Lv 8 (520/1500)`. The bar fills fully at maximum level. `/xp` reports exact
+`Lv 8 (520/1500)`. Every XP gain also appears as "+N XP" in the message
+feed (gains within 1.5 s summed), and a level-up is a large centre
+announcement, never a chat line (`inventory_equipment.md`, "Message feed"). The bar fills fully at maximum level. `/xp` reports exact
 XP; a server administrator can grant a validated positive amount to an online
 player with `/xp give <player> <amount>`. All offsets use the shared HUD layout
 owner.
@@ -146,8 +148,8 @@ and every fish a player catches gives
 - Only a successful player dig of a natural resource node (the
   `grug_materials` harvest callback) and a reeled-in fish pay. There is no
   anti-cheat or autoclicker check (user ruling). A caught fish shows its XP in
-  the catch notice ("Caught: Silver Trout (+100 XP)"); ore XP shows on the XP
-  bar only.
+  its feed line ("Caught Silver Trout (+100 XP)"); ore XP shows as an
+  ordinary "+N XP" feed line.
 
 ## Current fixed quest reward table
 

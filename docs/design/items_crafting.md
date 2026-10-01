@@ -158,7 +158,12 @@ Imbue/Temper recipes do not survive as mastery unlocks.
   is never bought, traded, carried, lost or consumed, and stores no state.
 - Every learned book shows its complete catalog from T1 through T6. Recipes
   above the effective profession level remain visible but greyed, with the
-  required profession tier and corresponding character-band floor.
+  required profession tier and corresponding character-band floor
+  ("Locked: needs Weaponsmith tier 3 (character level 21+).", in the tooltip
+  and in the recipe view). A profession book's per-tier line counts these
+  recipes ("T3: 4 locked"); Basics keeps its per-tier "Undiscovered" count.
+  A station's book button lists only what the player can craft there.
+  Greyed recipes are browsable but are never ingredient-navigation targets.
 - The crafting page carries two primary book slots, one slot for every
   framework secondary (Cooking today), and the always-open **Basics** book.
   Empty learnable slots say **learn at a trainer**. First Aid and Riding do not
@@ -1174,7 +1179,8 @@ Neither of these costs a main profession slot (professions.md §1).
   Round 14 fishing uses one visible bobber per angler. Right-click casts and
   reels; a bite visibly dips the float and opens a 1.5-second catch window.
   A missed bite returns to waiting, early reeling retrieves an empty line.
-  Successful catches show temporary HUD text `Caught: <Fish Name>`, not chat.
+  Successful catches show a message-feed line `Caught <Fish Name> (+N XP)`,
+  not chat (`inventory_equipment.md`, "Message feed").
   Current catch tables and catch-only rod wear stay unchanged. Death, logout,
   unequipping or leaving the permitted range removes the line. No fishing
   profession or lure system is introduced.
@@ -1473,7 +1479,8 @@ The resulting T6 per-stack values are:
 All finish, affix, attribute and base-equipment sources add before their final
 consumers. Crit and Dodge cap at 30%. Armor remains uncapped as raw rating;
 attacker-level mitigation alone caps at 70%. Character displays armor
-rating and same-level reduction; there is no reroll or overflow conversion.
+rating and Damage reduction (same-level); there is no reroll or overflow
+conversion.
 The theoretical T6
 cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
 (including compatible Dexterity), +9.9 Dodge points and +7 armor points.
@@ -1906,7 +1913,8 @@ prefixes/suffixes, cultural finishes, attributes and base equipment all add
 before their consumers. Crit and Dodge cap at 30%. Armor sources add uncapped
 raw rating; `combat_stats.md` §2 converts that rating against attacker level
 and caps only final reduction at 70%. Character shows effective Crit/Dodge
-plus armor rating and same-level reduction; Help explains formulas and caps.
+plus armor rating and Damage reduction (same-level); Help explains formulas
+and caps.
 
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.

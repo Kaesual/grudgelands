@@ -46,6 +46,11 @@ leash; bound actors: leash and give-up distance).
   from every profession trainer, including Cooking trainers in starting villages.
 - **Mounts are not a reward and not a drop** — they are bought (§2), and
   buying them is the point (§2 is a gold sink).
+- **Trainer dialogue (Round 28 ruling 19):** all four tiers are always
+  listed, each with its state: **Owned**, a **Buy <price>** button,
+  greyed **Requires level N**, or greyed **Learn <previous tier> first**
+  (only Buy is a button). A purchase result shows in the flash line and in
+  the reopened dialogue, never in chat.
 
 ### 1.1 The four tiers
 
