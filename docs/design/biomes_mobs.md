@@ -586,7 +586,7 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
-| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
+| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; linen scrap 1/2; the band's flesh 1/2 (T3+ also its tooth 1/3) and cloth (linen cloth from band 2, heavy cloth from band 3) 1/2; the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
@@ -639,7 +639,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Small Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
@@ -1408,9 +1408,12 @@ Rulings 35 and 36 (`docs/planning/round28-questing-leveling-plan.md`); data
 formats in the design frame §4.1–§4.3. All of it is data in
 `mods/ENTITIES/grug_mobs/data/` (`subtypes.json`, `tints.json`,
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
-mob file. A missing or empty file means no data; the shipped files are empty
-until the content lanes fill them, and without data every mob behaves as
-before.
+mob file. A missing or empty file means no data, and without data every mob
+behaves as before. The shipped files are copies of the reviewed design
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 188 sub-types
+(49 leaders), 9 tints, 119 items (94 signatures, of which 89 new, and 25
+existing generic materials) and 24 drop families. The catalogue is the
+source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
 `base` registration's original definition: same mesh, animations, verbs,
@@ -1460,7 +1463,11 @@ is not registered yet become craft items (`grug_mobs:` ids; an id in another
 mod's namespace must be registered by that mod). Description = the name plus
 the flavour line; the inventory image is a tinted placeholder until the art
 lands, and the `icon` brief stays on the item as `_grug_icon_brief`.
-Signature items are mob materials (`grug_material`). `generic` items are
+Signature items are mob materials (`grug_material`); their catalogue `tier`
+(1–6) is both their vendor price in copper and their ingredient tier
+(registered by `grug_professions`, so recipe books show it and no enchant
+takes one above its own tier). Quest items have no price and no tier. The
+trader drop audit covers the band tables too. `generic` items are
 existing ones; `reagent` items belong to `grug_professions`. Any other kind is
 a load error.
 
@@ -1474,6 +1481,24 @@ band (missing or an empty list), keeps the definition's static drops (a
 sub-type's are its base's). The player-tag rule, the
 profession drop hooks and quality loot apply unchanged; a table can give
 drops to a mob that has no static drops.
+
+Seven drop families are named after existing roles, so those existing mobs
+(not only their sub-types) use the band tables in the bands listed, and their
+static rows above apply only outside them:
+
+- **Boar** (bands 1–3): meat 1/1 ×1 (was ×1–2), light leather 1/2, the band's
+  tusk 1/3 (Boar Tusk, Ridged, Gnarled).
+- **Zombie** (all bands): see its row above; the guaranteed flesh becomes 1/2
+  and the bar 1/10 becomes the band's tier bar at 1/50.
+- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/3 kept in bands
+  1–2 (quests ask for it), the band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
+- **Bear** (bands 3, 4, 6): meat 1/1 ×1 (was ×2), heavy leather 1/3 (was
+  1/2), Bear Claw 1/3 (was 1/4), from band 4 also the band's claw 1/3.
+- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/3 and the band's
+  tooth 1/3; no guaranteed Scaled Hide any more.
+- **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops).
+- **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/2,
+  the band's reed pearl 1/3, Shiny Scale 1/4; no Raw Fish any more.
 
 **Quest-only drops** (ruling 41) use
 `grug_mobs.register_participant_drop_hook(fn)`: once per kill with at least

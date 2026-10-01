@@ -1,1 +1,1511 @@
-[]
+[
+  {
+    "id": "grug_mobs:zombie_flesh",
+    "name": "Rotting Flesh",
+    "tier": 1,
+    "family": "zombie",
+    "kind": "generic",
+    "description": "A stubborn scrap of its former owner.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "grug_mobs:tattered_flesh",
+    "name": "Tattered Flesh",
+    "tier": 1,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Still hanging together. Barely.",
+    "uses": [
+      "enchant:max_hp_percent:t1",
+      "quest"
+    ],
+    "icon": "A small dusty-pink flap with three ragged ends and one pale tendon across its centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bandit_talisman",
+    "name": "Bandit Talisman",
+    "tier": 1,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A rough tan wooden disc on a loose brown cord, pierced off-centre with one charcoal notch. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:foul_flesh",
+    "name": "Foul Flesh",
+    "tier": 2,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Kept badly. Kept anyway.",
+    "uses": [
+      "enchant:max_hp_percent:t2",
+      "quest"
+    ],
+    "icon": "A swollen olive-green lump with a purple bruise and two dangling yellow fibres. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:knotted_talisman",
+    "name": "Knotted Talisman",
+    "tier": 2,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "Three ochre cord knots stacked around a chipped red bead; the cord forms a short triangular loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:pickled_flesh",
+    "name": "Pickled Flesh",
+    "tier": 3,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "No cook admits to owning the jar.",
+    "uses": [
+      "enchant:max_hp_percent:t3",
+      "quest"
+    ],
+    "icon": "A square green-grey flesh slice folded once, glistening with amber brine along a curled edge; no jar. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:stubborn_molar",
+    "name": "Stubborn Molar",
+    "tier": 3,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "The rest of the jaw gave notice.",
+    "uses": [
+      "enchant:str:t3",
+      "enchant:crit_percent:t3",
+      "quest"
+    ],
+    "icon": "A broad ivory molar with four square cusps and two crooked brown roots. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:coded_talisman",
+    "name": "Coded Talisman",
+    "tier": 3,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "enchant:int:t3",
+      "enchant:max_mana_percent:t3",
+      "quest"
+    ],
+    "icon": "A dark triangular wood tag crossed by three pale tally cuts, hung from a tight blue cord loop; no lettering. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:balanced_weapon_strap",
+    "name": "Balanced Weapon Strap",
+    "tier": 3,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "uses": [
+      "enchant:dex:t3",
+      "enchant:attack_speed_percent:t3",
+      "enchant:dodge_percent:t3",
+      "enchant:armor_rating:t3",
+      "quest"
+    ],
+    "icon": "A soft tan leather strip bent into a symmetrical U, with a small brass ring at each end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:leathery_flesh",
+    "name": "Leathery Flesh",
+    "tier": 4,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Several campaigns have failed to soften it.",
+    "uses": [
+      "enchant:max_hp_percent:t4",
+      "quest"
+    ],
+    "icon": "A thick brown hide-like strip rolled at one end, with a dark stitched-looking natural seam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:gritted_teeth",
+    "name": "Gritted Teeth",
+    "tier": 4,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "A little courage, recovered by force.",
+    "uses": [
+      "enchant:str:t4",
+      "enchant:crit_percent:t4",
+      "quest"
+    ],
+    "icon": "Four yellow teeth pressed in a tight horizontal row on a narrow red gum ridge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:campaign_talisman",
+    "name": "Campaign Talisman",
+    "tier": 4,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "enchant:int:t4",
+      "enchant:max_mana_percent:t4",
+      "quest"
+    ],
+    "icon": "A dented brass lozenge carrying a simple dark sun mark, tied with faded crimson thread. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:reinforced_weapon_strap",
+    "name": "Reinforced Weapon Strap",
+    "tier": 4,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "uses": [
+      "enchant:dex:t4",
+      "enchant:attack_speed_percent:t4",
+      "enchant:dodge_percent:t4",
+      "enchant:armor_rating:t4",
+      "quest"
+    ],
+    "icon": "A dark chestnut leather loop with two broad steel rivets and a square iron buckle. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:scorched_flesh",
+    "name": "Scorched Flesh",
+    "tier": 5,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "The siege has already done the browning.",
+    "uses": [
+      "enchant:max_hp_percent:t5",
+      "quest"
+    ],
+    "icon": "A charcoal-black flesh shard with a split orange inner edge and an irregular burnt crust. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:clenched_jaw",
+    "name": "Clenched Jaw",
+    "tier": 5,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Apparently surrender was not an option.",
+    "uses": [
+      "enchant:str:t5",
+      "enchant:crit_percent:t5",
+      "quest"
+    ],
+    "icon": "A compact yellowed lower jaw in a squared U, two large teeth jutting inward. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siege_talisman",
+    "name": "Siege Talisman",
+    "tier": 5,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "enchant:int:t5",
+      "enchant:max_mana_percent:t5",
+      "quest"
+    ],
+    "icon": "A squat iron hexagon blackened at one corner, wrapped in two crossed ochre cords. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siege_weapon_strap",
+    "name": "Siege Weapon Strap",
+    "tier": 5,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "uses": [
+      "enchant:dex:t5",
+      "enchant:attack_speed_percent:t5",
+      "enchant:dodge_percent:t5",
+      "enchant:armor_rating:t5",
+      "quest"
+    ],
+    "icon": "A broad black leather strap folded sharply, patched with a scorched iron plate and red stitching. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:salt_cured_flesh",
+    "name": "Salt-Cured Flesh",
+    "tier": 6,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Preserved against the end of the world. Not food.",
+    "uses": [
+      "enchant:max_hp_percent:t6",
+      "quest"
+    ],
+    "icon": "A flat mauve flesh ribbon stiffened into a zigzag, with large white salt crystals along its rim. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:last_laugh_dentures",
+    "name": "Last-Laugh Dentures",
+    "tier": 6,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Whoever laughs last should label their teeth.",
+    "uses": [
+      "enchant:str:t6",
+      "enchant:crit_percent:t6",
+      "quest"
+    ],
+    "icon": "A crescent of pale dentures with one gold tooth and a dark empty socket at the end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:last_pay_talisman",
+    "name": "Last-Pay Talisman",
+    "tier": 6,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "uses": [
+      "enchant:int:t6",
+      "enchant:max_mana_percent:t6",
+      "quest"
+    ],
+    "icon": "A pale blue broken coin held in a black cord cage; one white knot closes the loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:unbroken_weapon_strap",
+    "name": "Unbroken Weapon Strap",
+    "tier": 6,
+    "family": "outlaw",
+    "kind": "signature",
+    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "uses": [
+      "enchant:dex:t6",
+      "enchant:attack_speed_percent:t6",
+      "enchant:dodge_percent:t6",
+      "enchant:armor_rating:t6",
+      "quest"
+    ],
+    "icon": "A smooth midnight-blue leather oval reinforced by a continuous pale metal spine and bright clasp. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:boar_tusk",
+    "name": "Boar Tusk",
+    "tier": 1,
+    "family": "boar",
+    "kind": "signature",
+    "description": "Dense ivory shaped by rooting through obstinate ground.",
+    "uses": [
+      "enchant:str:t1",
+      "enchant:crit_percent:t1",
+      "quest",
+      "existing recipes"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:ridged_boar_tusk",
+    "name": "Ridged Boar Tusk",
+    "tier": 2,
+    "family": "boar",
+    "kind": "signature",
+    "description": "Dense ivory shaped by rooting through obstinate ground.",
+    "uses": [
+      "enchant:str:t2",
+      "enchant:crit_percent:t2",
+      "quest"
+    ],
+    "icon": "A long cream tusk curving left, with three dark transverse ridges and a worn ochre root; larger than the plain T1 tusk. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:gnarled_boar_tusk",
+    "name": "Gnarled Boar Tusk",
+    "tier": 3,
+    "family": "boar",
+    "kind": "signature",
+    "description": "Dense ivory shaped by rooting through obstinate ground.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A thick double-curved amber tusk, twisted at its broad root with two deep charcoal grooves and a chipped tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:rat_tail",
+    "name": "Rat Tail",
+    "tier": 1,
+    "family": "rat",
+    "kind": "signature",
+    "description": "A flexible length of stubborn sinew.",
+    "uses": [
+      "enchant:dex:t1",
+      "enchant:attack_speed_percent:t1",
+      "enchant:dodge_percent:t1",
+      "quest"
+    ],
+    "icon": "A slim pink tail curled into an S, with fine brown rings and a tapering pale tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:rat_fur_patch",
+    "name": "Rat Fur Patch",
+    "tier": 1,
+    "family": "rat",
+    "kind": "signature",
+    "description": "Tough padding. Wash before applying to anything respectable.",
+    "uses": [
+      "enchant:armor_rating:t1",
+      "quest"
+    ],
+    "icon": "A small ragged grey fur diamond with four coarse hairs rising from its top edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:sinewy_rat_tail",
+    "name": "Sinewy Rat Tail",
+    "tier": 2,
+    "family": "rat",
+    "kind": "signature",
+    "description": "A flexible length of stubborn sinew.",
+    "uses": [
+      "enchant:dex:t2",
+      "enchant:attack_speed_percent:t2",
+      "enchant:dodge_percent:t2",
+      "quest"
+    ],
+    "icon": "A thick wine-red tail in a tight hook, its pale sinew ridge visible along the inner curve. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:dense_rat_fur",
+    "name": "Dense Rat Fur",
+    "tier": 2,
+    "family": "rat",
+    "kind": "signature",
+    "description": "Tough padding. Wash before applying to anything respectable.",
+    "uses": [
+      "enchant:armor_rating:t2",
+      "quest"
+    ],
+    "icon": "A wide dark-brown fur tuft with a tawny centre and a dense comb of short black guard hairs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:crab_eye",
+    "name": "Crab Eye",
+    "tier": 1,
+    "family": "crab",
+    "kind": "signature",
+    "description": "A bright bead built to notice movement through shifting water.",
+    "uses": [
+      "enchant:int:t1",
+      "enchant:max_mana_percent:t1",
+      "quest"
+    ],
+    "icon": "A glossy black eye bead on a short rust-orange stalk, with a single white pinpoint highlight. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:crab_leg",
+    "name": "Crab Leg",
+    "tier": 1,
+    "family": "crab",
+    "kind": "signature",
+    "description": "A neatly jointed leg, much easier to hold after the crab lets go.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A red-orange crab leg bent at two knuckles, ending in a narrow cream hook. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:clear_crab_eye",
+    "name": "Clear Crab Eye",
+    "tier": 2,
+    "family": "crab",
+    "kind": "signature",
+    "description": "A bright bead built to notice movement through shifting water.",
+    "uses": [
+      "enchant:int:t2",
+      "enchant:max_mana_percent:t2",
+      "quest"
+    ],
+    "icon": "A translucent amber eye sphere on a pale forked stalk, showing a dark pupil through a broad cool highlight. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:ridged_crab_shell",
+    "name": "Ridged Crab Shell",
+    "tier": 2,
+    "family": "crab",
+    "kind": "signature",
+    "description": "Overlapping armour grown without a single rivet.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A burnt-orange shell half with three raised cream ribs and a chipped scalloped edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:layered_crab_shell",
+    "name": "Layered Crab Shell",
+    "tier": 3,
+    "family": "crab",
+    "kind": "signature",
+    "description": "Overlapping armour grown without a single rivet.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "Three overlapping blue-grey shell plates stacked like roof tiles with dark seams. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:storm_crab_shell",
+    "name": "Storm Crab Shell",
+    "tier": 4,
+    "family": "crab",
+    "kind": "signature",
+    "description": "Overlapping armour grown without a single rivet.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A dark teal shell shield with a jagged white rim and two pale diagonal lightning-shaped scratches. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:abyssal_crab_shell",
+    "name": "Abyssal Crab Shell",
+    "tier": 6,
+    "family": "crab",
+    "kind": "signature",
+    "description": "Overlapping armour grown without a single rivet.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A deep violet shell bowl with a black centre and thick turquoise spikes around its outer edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:fox_tail",
+    "name": "Fox Tail",
+    "tier": 1,
+    "family": "fox",
+    "kind": "signature",
+    "description": "Soft balance at the end of a very quick animal.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A soft rust-red fox tail curling down, with a broad white tip and dark root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:brush_fox_tail",
+    "name": "Brush Fox Tail",
+    "tier": 2,
+    "family": "fox",
+    "kind": "signature",
+    "description": "Soft balance at the end of a very quick animal.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A fan-shaped copper tail with a cream brush edge and a slim black base. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:silver_tip_fox_tail",
+    "name": "Silver-Tip Fox Tail",
+    "tier": 3,
+    "family": "fox",
+    "kind": "signature",
+    "description": "Soft balance at the end of a very quick animal.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A long dusky-red tail arcing upwards, ending in a sharp silver-white wedge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:fine_sinew",
+    "name": "Fine Sinew",
+    "tier": 1,
+    "family": "grazer",
+    "kind": "signature",
+    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A thin cream sinew thread wound into a loose figure-eight, with one wispy loose end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:tough_sinew",
+    "name": "Tough Sinew",
+    "tier": 2,
+    "family": "grazer",
+    "kind": "signature",
+    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "Two ochre tendon strands twisted into a short rope with blunt fibrous ends. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:braided_sinew",
+    "name": "Braided Sinew",
+    "tier": 3,
+    "family": "grazer",
+    "kind": "signature",
+    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A plait of three golden tendon strands tied into a small round coil. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:ironbound_sinew",
+    "name": "Ironbound Sinew",
+    "tier": 4,
+    "family": "grazer",
+    "kind": "signature",
+    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A dark tan tendon loop pinched by two dull iron ferrules, with a taut straight centre span. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:rime_sinew",
+    "name": "Rime Sinew",
+    "tier": 6,
+    "family": "grazer",
+    "kind": "signature",
+    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A stiff pale-blue tendon coil edged by sparse white frost needles and one uncoiled silver tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:raptor_claw",
+    "name": "Small Cat Claw",
+    "tier": 1,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "notes": "Existing id and icon retained; deliberately relabel Raptor Claw as Small Cat Claw because its authored sources are cats. No raptor source or alias is added."
+  },
+  {
+    "id": "grug_mobs:hooked_cat_claw",
+    "name": "Hooked Cat Claw",
+    "tier": 2,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "An ivory claw with a deep fishhook curve, dark brown socket and narrow pale point. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:shearing_cat_claw",
+    "name": "Shearing Cat Claw",
+    "tier": 3,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A broad cream claw shaped like a scissor blade, with a grey bevel and a split brown root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:razor_cat_claw",
+    "name": "Razor Cat Claw",
+    "tier": 4,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A slender blue-grey claw with a nearly straight polished edge and a hooked black tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siege_cat_claw",
+    "name": "Siege Cat Claw",
+    "tier": 5,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A thick soot-stained claw with a cracked amber base and one bright silver scrape along the cutting edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:glass_cat_claw",
+    "name": "Glass Cat Claw",
+    "tier": 6,
+    "family": "feline",
+    "kind": "signature",
+    "description": "A curved hunting claw made for a precise strike.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A translucent cyan claw in a clean crescent, with a violet root and two angular white facets. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:fang",
+    "name": "Fang",
+    "tier": 2,
+    "family": "canid",
+    "kind": "signature",
+    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "uses": [
+      "quest",
+      "existing recipes"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:serrated_fang",
+    "name": "Serrated Fang",
+    "tier": 3,
+    "family": "canid",
+    "kind": "signature",
+    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A yellow fang with three small saw notches along its outer edge and a dark hollow root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:warpack_fang",
+    "name": "Warpack Fang",
+    "tier": 4,
+    "family": "canid",
+    "kind": "signature",
+    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A broad ivory canine leaning right, with a red-stained base and a deep dark groove down its face. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siegepack_fang",
+    "name": "Siegepack Fang",
+    "tier": 5,
+    "family": "canid",
+    "kind": "signature",
+    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A chipped charcoal-grey canine with an ochre root, square missing corner and a narrow surviving white tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:saltpack_fang",
+    "name": "Saltpack Fang",
+    "tier": 6,
+    "family": "canid",
+    "kind": "signature",
+    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A pale lavender canine crusted with white salt at its root; its long tip remains dark and smooth. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bear_claw",
+    "name": "Bear Claw",
+    "tier": 3,
+    "family": "bear",
+    "kind": "generic",
+    "description": "A heavy hook for making a point through armour.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "grug_mobs:scarred_bear_claw",
+    "name": "Scarred Bear Claw",
+    "tier": 4,
+    "family": "bear",
+    "kind": "signature",
+    "description": "A heavy hook for making a point through armour.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A heavy honey-brown claw with two diagonal white scars and a broad square root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:salt_bear_claw",
+    "name": "Salt Bear Claw",
+    "tier": 6,
+    "family": "bear",
+    "kind": "signature",
+    "description": "A heavy hook for making a point through armour.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A thick slate-blue hook, white salt crystals packed into a broken root and a polished black tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:blunt_croc_tooth",
+    "name": "Blunt Crocodile Tooth",
+    "tier": 2,
+    "family": "crocodile",
+    "kind": "signature",
+    "description": "A squat tooth built for a grip that does not let go.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A squat cream cone with a rounded worn tip and a wide muddy-green socket. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:ridged_croc_tooth",
+    "name": "Ridged Crocodile Tooth",
+    "tier": 3,
+    "family": "crocodile",
+    "kind": "signature",
+    "description": "A squat tooth built for a grip that does not let go.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A tall olive-ivory tooth with two strong vertical ridges and a flared brown root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:thin_slime_gel",
+    "name": "Thin Slime Gel",
+    "tier": 2,
+    "family": "ooze",
+    "kind": "signature",
+    "description": "It remembers the shape of its container. Eventually.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A shallow translucent lime puddle with a long drooping edge and two tiny trapped bubbles. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:slime_gel",
+    "name": "Slime Gel",
+    "tier": 3,
+    "family": "ooze",
+    "kind": "generic",
+    "description": "It remembers the shape of its container. Eventually.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "grug_mobs:reed_pearl",
+    "name": "Reed Pearl",
+    "tier": 2,
+    "family": "mirefolk",
+    "kind": "signature",
+    "description": "A smooth bead sorted and carried by the reed-dwellers.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A small warm-white pearl nestled in a V of two cut green reed blades. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:clouded_reed_pearl",
+    "name": "Clouded Reed Pearl",
+    "tier": 3,
+    "family": "mirefolk",
+    "kind": "signature",
+    "description": "A smooth bead sorted and carried by the reed-dwellers.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A larger smoky-lilac pearl with a cloudy white swirl, held by one curled dry reed strip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:wisp_mote",
+    "name": "Wisp Mote",
+    "tier": 2,
+    "family": "wisp",
+    "kind": "signature",
+    "description": "A small wandering light, finally persuaded to stay in a bottle.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A small blue-white flame with a rounded luminous heart and a single curling cyan tail. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bound_wisp_mote",
+    "name": "Bound Wisp Mote",
+    "tier": 3,
+    "family": "wisp",
+    "kind": "signature",
+    "description": "A small wandering light, finally persuaded to stay in a bottle.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A tight violet light sphere encircled by two thin copper-coloured arcs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:restless_wisp_mote",
+    "name": "Restless Wisp Mote",
+    "tier": 4,
+    "family": "wisp",
+    "kind": "signature",
+    "description": "A small wandering light, finally persuaded to stay in a bottle.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A broken ring of turquoise flame around a dark centre, with three unequal outward sparks. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:mourning_resin",
+    "name": "Mourning Resin",
+    "tier": 3,
+    "family": "treant",
+    "kind": "signature",
+    "description": "A dark bead of resin that still smells of rain and old wood.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A long amber resin tear with a black bark fleck suspended near its pointed end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bitter_resin",
+    "name": "Bitter Resin",
+    "tier": 4,
+    "family": "treant",
+    "kind": "signature",
+    "description": "A dark bead of resin that still smells of rain and old wood.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A squat dark-green resin bead stuck to a splinter of pale bark, with a sharp yellow gleam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bone_chitin",
+    "name": "Bone Chitin",
+    "tier": 3,
+    "family": "weevil",
+    "kind": "signature",
+    "description": "A stiff shell plate that once fitted something unpleasant.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A single off-white insect plate shaped like a shallow shield, with two dark pores at the base. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:layered_bone_chitin",
+    "name": "Layered Bone Chitin",
+    "tier": 4,
+    "family": "weevil",
+    "kind": "signature",
+    "description": "A stiff shell plate that once fitted something unpleasant.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "Three ivory insect plates fanned apart, brown hinge lines visible between their thick ridges. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:salt_chitin",
+    "name": "Salt Chitin",
+    "tier": 6,
+    "family": "weevil",
+    "kind": "signature",
+    "description": "A stiff shell plate that once fitted something unpleasant.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A curved blue-white insect plate with a serrated lower rim and salt crystals filling its central groove. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:ape_hair",
+    "name": "Ape Hair",
+    "tier": 4,
+    "family": "ape",
+    "kind": "signature",
+    "description": "A coarse knot of hair from a powerful climber.",
+    "uses": [
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:silver_ape_hair",
+    "name": "Silver Ape Hair",
+    "tier": 6,
+    "family": "ape",
+    "kind": "signature",
+    "description": "A coarse knot of hair from a powerful climber.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A coarse silver hair tuft bound by one dark root, fanning into five long charcoal-tipped strands. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:mild_venom",
+    "name": "Mild Venom",
+    "tier": 1,
+    "family": "venomous",
+    "kind": "signature",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A pale green drop hanging from the end of a short hollow ivory sting. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:bitter_venom",
+    "name": "Bitter Venom",
+    "tier": 2,
+    "family": "venomous",
+    "kind": "signature",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A dark olive venom bead clinging between the two tips of a cracked tan fang. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:concentrated_venom",
+    "name": "Concentrated Venom",
+    "tier": 3,
+    "family": "venomous",
+    "kind": "signature",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A dense violet venom droplet in a small translucent membrane, with a narrow yellow glint. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:venom_sac",
+    "name": "Venom Sac",
+    "tier": 4,
+    "family": "venomous",
+    "kind": "generic",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "grug_mobs:scorch_venom",
+    "name": "Scorch Venom",
+    "tier": 5,
+    "family": "venomous",
+    "kind": "signature",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A dark red venom clot with an ember-orange centre and a black blistered membrane edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:glass_venom",
+    "name": "Glass Venom",
+    "tier": 6,
+    "family": "venomous",
+    "kind": "signature",
+    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A clear cyan venom bead with an angular white reflection, held in a thin violet membrane loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:coarse_spider_silk",
+    "name": "Coarse Spider Silk",
+    "tier": 3,
+    "family": "spider",
+    "kind": "signature",
+    "description": "A strong silken strand that clings to the unwary.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A loosely wound beige silk hank with two stiff frayed strands sticking sideways. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:spider_silk",
+    "name": "Spider Silk",
+    "tier": 4,
+    "family": "spider",
+    "kind": "generic",
+    "description": "A strong silken strand that clings to the unwary.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:glass_spider_silk",
+    "name": "Glass Spider Silk",
+    "tier": 6,
+    "family": "spider",
+    "kind": "signature",
+    "description": "A strong silken strand that clings to the unwary.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A narrow crystalline blue silk spindle with sharp white crossed strands and violet shadow beneath. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:stolen_purse",
+    "name": "Stolen Purse",
+    "tier": 2,
+    "family": "goblin",
+    "kind": "signature",
+    "description": "Someone else's purse. The goblin was vague about whose.",
+    "uses": [
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:clasped_purse",
+    "name": "Clasped Purse",
+    "tier": 3,
+    "family": "goblin",
+    "kind": "signature",
+    "description": "Someone else's purse. The goblin was vague about whose.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A round burgundy leather purse with a broad dull brass clasp and a short tightly drawn neck. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:campaign_purse",
+    "name": "Campaign Purse",
+    "tier": 4,
+    "family": "goblin",
+    "kind": "signature",
+    "description": "Someone else's purse. The goblin was vague about whose.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A flat khaki money pouch with a red patch, square steel catch and one frayed corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:etched_bone",
+    "name": "Etched Bone",
+    "tier": 3,
+    "family": "skeleton",
+    "kind": "signature",
+    "description": "An old bone marked by a habit that outlived its owner.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A short ivory bone chip carrying three dark shallow cuts and a brown broken end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:marching_bone",
+    "name": "Marching Bone",
+    "tier": 4,
+    "family": "skeleton",
+    "kind": "signature",
+    "description": "An old bone marked by a habit that outlived its owner.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A long grey shin fragment with a squared bottom, dark worn knee ridge and one ivory scrape. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siege_bone",
+    "name": "Siege Bone",
+    "tier": 5,
+    "family": "skeleton",
+    "kind": "signature",
+    "description": "An old bone marked by a habit that outlived its owner.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A blackened thick bone segment split down its length, exposing a warm cream interior. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:unquiet_bone",
+    "name": "Unquiet Bone",
+    "tier": 6,
+    "family": "skeleton",
+    "kind": "signature",
+    "description": "An old bone marked by a habit that outlived its owner.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A pale violet hooked vertebra with a dark central hole and a thin turquoise seam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:hex_bottle_shard",
+    "name": "Hex Bottle Shard",
+    "tier": 4,
+    "family": "witch",
+    "kind": "signature",
+    "description": "A thick glass splinter with a stubborn trace of hex.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A triangular green bottle shard bearing half a purple spiral, with a thick curved base edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:last_hex_shard",
+    "name": "Last-Hex Shard",
+    "tier": 6,
+    "family": "witch",
+    "kind": "signature",
+    "description": "A thick glass splinter with a stubborn trace of hex.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A hooked violet glass neck fragment, its black rim split by a single cyan crack. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:barbed_feather",
+    "name": "Barbed Feather",
+    "tier": 3,
+    "family": "scavenger",
+    "kind": "signature",
+    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A sandy-brown flight feather with three hooked barbs standing out from its left edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:storm_feather",
+    "name": "Storm Feather",
+    "tier": 4,
+    "family": "scavenger",
+    "kind": "signature",
+    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A slate-blue feather bent sharply near its tip, with a white shaft and uneven silver barbs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:ash_feather",
+    "name": "Ash Feather",
+    "tier": 5,
+    "family": "scavenger",
+    "kind": "signature",
+    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A short soot-black feather with a ragged burnt tip and two rusty-orange surviving barbs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:sharp_feather",
+    "name": "Sharp Feather",
+    "tier": 6,
+    "family": "scavenger",
+    "kind": "generic",
+    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:chipped_core",
+    "name": "Chipped Core",
+    "tier": 3,
+    "family": "stone",
+    "kind": "signature",
+    "description": "A fragment of the force that kept stone or machinery moving.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A rough grey stone sphere with one large chipped corner revealing a dull ochre centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:veined_core",
+    "name": "Veined Core",
+    "tier": 4,
+    "family": "stone",
+    "kind": "signature",
+    "description": "A fragment of the force that kept stone or machinery moving.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A heavy slate core shaped like a rounded cube, split by two branching bright blue mineral veins. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:siege_core",
+    "name": "Siege Core",
+    "tier": 5,
+    "family": "stone",
+    "kind": "signature",
+    "description": "A fragment of the force that kept stone or machinery moving.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A squat dark iron-and-stone core with a square socket, rust-red bands and a cracked amber centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:stone_core",
+    "name": "Stone Core",
+    "tier": 6,
+    "family": "stone",
+    "kind": "generic",
+    "description": "A fragment of the force that kept stone or machinery moving.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "mobs:meat_raw",
+    "name": "Raw Meat",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "mobs:leather",
+    "name": "Leather",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:light_leather",
+    "name": "Light Leather",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:linen_scrap",
+    "name": "Linen Scrap",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:linen_cloth",
+    "name": "Linen Cloth",
+    "tier": 2,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:heavy_leather",
+    "name": "Heavy Leather",
+    "tier": 3,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:heavy_cloth",
+    "name": "Heavy Cloth",
+    "tier": 3,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:scaled_hide",
+    "name": "Scaled Hide",
+    "tier": 4,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:sleek_pelt",
+    "name": "Sleek Pelt",
+    "tier": 5,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:bone",
+    "name": "Bone",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:feather",
+    "name": "Feather",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_mobs:arrow",
+    "name": "Bundle of Arrows",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "default:stick",
+    "name": "Stick",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "default:apple",
+    "name": "Apple",
+    "tier": 2,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing ordinary material; retain its present uses.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused; retain the registered name."
+  },
+  {
+    "id": "grug_materials:quartz",
+    "name": "Quartz",
+    "tier": 1,
+    "family": "common",
+    "kind": "generic",
+    "description": "Existing raw mineral, recovered from the core of a stone leader.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing item and icon reused. Modest, band-independent leader bonus; not metal or a signature."
+  },
+  {
+    "id": "grug_mobs:layered_spider_web",
+    "name": "Layered Spider Web",
+    "tier": 4,
+    "family": "spider",
+    "kind": "signature",
+    "description": "Several nights of patient repairs, undone in one bad morning.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "Three cream web fans folded over one another, dark gaps separating their thick scalloped edges. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:salt_barbed_feather",
+    "name": "Salt-Barbed Feather",
+    "tier": 6,
+    "family": "scavenger",
+    "kind": "signature",
+    "description": "The wind has sharpened every edge. Handle the quill.",
+    "uses": [
+      "quest"
+    ],
+    "icon": "A long indigo feather with pale salt crystals on each hooked barb and a clean white quill. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
+  },
+  {
+    "id": "grug_mobs:venom_gland",
+    "name": "Venom Gland",
+    "tier": 2,
+    "family": "spider",
+    "kind": "generic",
+    "description": "A sealed pouch, best left that way.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  },
+  {
+    "id": "grug_mobs:croc_tooth",
+    "name": "Crocodile Tooth",
+    "tier": 4,
+    "family": "crocodile",
+    "kind": "generic",
+    "description": "A tooth that once mistook every reed basket for lunch.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  },
+  {
+    "id": "grug_mobs:shiny_scale",
+    "name": "Shiny Scale",
+    "tier": 4,
+    "family": "mirefolk",
+    "kind": "generic",
+    "description": "One bright scale from a very wet argument.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  }
+]

@@ -10,7 +10,7 @@
 -- registration stub does what init.lua's grug_mobs.register_mob does for this
 -- test: keep the base definition, apply the disposition and the level config.
 --
--- 1. Without data (the shipped empty data/ files): nothing registered, every
+-- 1. Without data (no data/ files at all): nothing registered, every
 --    mob is its own family, the alert rule is the same-name rule for every
 --    pair, every mob at every level drops its static list, no item.
 -- 2. With the sample catalogue tools/r28_b2/sample/data/: registrations,
@@ -299,7 +299,9 @@ end
 -- 1. Without data: today's behaviour.
 ------------------------------------------------------------------------------
 do
-	local w = new_world(ROOT .. "/mods/ENTITIES/grug_mobs")
+	-- A modpath without data/: the shipped catalogue (Lane E1) needs every
+	-- base family, which this test does not load.
+	local w = new_world("/virtual/no_data")
 	check(#w.order == w.base_count and next(grug_mobs.subtypes) == nil,
 		"no data: no sub-type registered")
 	check(w.item_calls == 0, "no data: no loot item registered")
@@ -615,8 +617,17 @@ check(tail.inventory_image:find("%^%[multiply:") ~= nil, "placeholder image is a
 check(tail._grug_icon_brief == "A pale pink rat tail curled into an S on a dark plate.",
 	"icon brief kept for C4")
 check(tail.groups.grug_material == 1, "signature item is a mob material")
+check(tail._grug_sell_price == 1 and grug_mobs.loot_item_tiers["grug_mobs:rat_tail"] == 1,
+	"signature tier 1: 1c vendor price and ingredient tier 1")
 check(w.items["grug_mobs:crop_ledger"] ~= nil, "quest item registered")
-check(w.items["grug_mobs:boar_tusk"] == nil, "existing id not re-registered")
+check(w.items["grug_mobs:crop_ledger"]._grug_sell_price == nil
+	and grug_mobs.loot_item_tiers["grug_mobs:crop_ledger"] == nil,
+	"quest item: no vendor price, no ingredient tier")
+check(w.items["grug_mobs:boar_tusk"] == nil
+	and grug_mobs.loot_item_tiers["grug_mobs:boar_tusk"] == nil, "existing id not re-registered")
+local band_items = grug_mobs.band_drop_items()
+check(band_items["grug_mobs:rat_fur_patch"] and band_items["grug_mobs:rat_fur_patch"].rat
+	and band_items["grug_mobs:rat_tail"].rat, "band drop items: band rows and leader bonus")
 check(w.items["grug_materials:glittering_tin"] == nil, "reagent left to its own lane")
 check(w.item_calls == 3, "exactly three new items")
 

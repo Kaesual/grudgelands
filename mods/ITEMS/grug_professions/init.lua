@@ -72,6 +72,13 @@ core.register_craft({
 
 dofile(core.get_modpath("grug_jobs") .. "/station_operations.lua")
 
+-- The ingredient tier of the new mob loot grug_mobs registered from its
+-- catalogue (data/items.json `tier`): the recipe books show it, and
+-- enchants.lua refuses an enchant input declared above the enchant's tier.
+for item, tier in pairs(grug_mobs.loot_item_tiers) do
+	grug_jobs.register_ingredient_tier(item, tier)
+end
+
 dofile(modpath .. "/base_recipes.lua")
 dofile(modpath .. "/smiths.lua")
 dofile(modpath .. "/leatherworker.lua")

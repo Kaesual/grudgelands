@@ -18,6 +18,9 @@ example your own worktree's copy).
 The reference of every registered item, item group, mob entity and quest NPC
 a design may use, generated from the real registry. Read `existing.md`; the
 tools read `existing.json`. Never use anything under "Curated out".
+The catalogue's own registrations (its sub-types and the new loot items
+grug_mobs registers from the shipped copy of `catalog/items.json`) are left
+out: the tools take those from the catalogue.
 
 Refresh it after mod changes (one short headless boot, about 40 s):
 

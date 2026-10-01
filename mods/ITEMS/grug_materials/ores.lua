@@ -98,6 +98,19 @@ local PROCESSED_VISUALS = {
 	gold = {"default_gold_ingot.png", "default_gold_block.png"},
 }
 
+-- Vendor prices (copper, economy.md §3) of the tier bars mobs drop (Round 28
+-- band tables), next to Iron's 3c from the registry. They live here, not in
+-- PROCESSED_MATERIALS: that table is part of WP40's frozen WP43 projection.
+-- Each stays at or below the priced inputs of its alloy (grug_traders' alloy
+-- audit: Steel <= Iron 3 + Coal, Embersteel <= Silversteel 5 + Emberglass 5,
+-- Abyssal Steel <= Embersteel 6 + Abyssal Crystal 6) and below every vendor
+-- shelf price of the same bar, and high enough that no plain metal armor
+-- piece sells for more than its bars (the craft audit: Silversteel, Embersteel
+-- and Abyssal Steel boots, Abyssal Steel helmet and chest set the floors).
+local BAR_SELL_PRICES = {
+	bronze = 2, steel = 3, silversteel = 5, embersteel = 6, abyssal_steel = 9,
+}
+
 for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 	local visual = PROCESSED_VISUALS[material.key]
 	if material.kind == "bar" and not core.registered_items[material.item] then
@@ -107,7 +120,7 @@ for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 		core.register_craftitem(material.item, {
 			description = material.name .. " Bar",
 			inventory_image = visual[1],
-			_grug_sell_price = material.sell_price,
+			_grug_sell_price = material.sell_price or BAR_SELL_PRICES[material.key],
 		})
 	end
 	if not core.registered_nodes[material.block_node] then

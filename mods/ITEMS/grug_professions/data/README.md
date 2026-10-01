@@ -5,21 +5,20 @@ Enchant and universal-reagent catalogs (Round 28 ruling 28, formats in
 Read once at load by `enchants.lua` and `reagents.lua`; the checks live in
 `enchant_data.lua`.
 
-## INTERIM DATA — replaced by Lane E1
+## Source
 
-`enchants.json` is **interim**: it converts the pre-Round-28 scheme so that
-enchanting keeps working until the C1 catalogue lands.
+Both files are copies of the reviewed Round 28 catalogue
+(`docs/planning/round28/design/catalog/enchants.json` and `reagents.json`,
+ported by Lane E1); the catalogue README explains the stat loot per tier.
+Edit the catalogue and this copy together and rerun
+`python3 tools/r28_design/validate.py --design docs/planning/round28/design --atlas docs/planning/round28/zones`.
+`reagents.json` is an empty list: the catalogue defines no universal reagent.
 
-- `stat_loot`: every stat of a tier uses that tier's old single reagent
-  (Coal Lump, Venom Gland, Slime Gel, Croc Tooth, Stormkelp, Stone Core).
-- `family_input`: every family of a tier uses one cheap mined item (Tin Lump,
-  Gold Lump, Silver, Emberglass, Abyssal Crystal at T5 and T6).
-
-`reagents.json` is an empty list: no universal reagent exists yet.
-
-Lane E1 replaces both files with the C1 catalogue
-(`docs/planning/round28/design/catalog/enchants.json` and `reagents.json`)
-and deletes this section.
+Until the zone spawn areas land (Round 28 lanes E2/E3), only existing mobs
+named after a drop family drop catalogue loot (Boar tusks, Zombie flesh and
+teeth), so only Strength, Critical chance and Maximum HP enchants can be made,
+none at T5: 245 of the 588 operations
+([crafting_equipment_revision.md](../../../../docs/design/crafting_equipment_revision.md)).
 
 ## Format
 
