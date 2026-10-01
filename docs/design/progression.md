@@ -2,8 +2,11 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-Rounds 14–15 implement 66 starter quests and 36 optional local quests;
-the broader named-zone WP9 story remains open.
+The game ships 240 quests (Rounds 14, 15 and 20: 66 starter quests, 36
+optional local quests, the capital, regional and travel quests), kept since
+Round 28 as one data file per zone (`quests.md`, "Quest data"); each zone's
+Round 28 design replaces its file. The broader named-zone WP9 story remains
+open.
 
 ## 1. Leveling pace
 
@@ -145,8 +148,9 @@ Revised 2026-09-23, Round 18:
 - Quest descriptions show their minimum level and named prerequisite quests.
 - Quest XP uses the authored reward level rather than the receiver's level
   and does not scale at hand-in. New quests (Round 28) author a weight in
-  kill equivalents ("XP units and level curve"); the current catalog still
-  carries the older fixed integers ("Current fixed quest reward table").
+  kill equivalents ("XP units and level curve"); the split older quests in
+  the zone files still carry the fixed integers ("Current fixed quest reward
+  table") until their zone's design replaces them.
 - The final quest at each starting settlement is handed in to the next
   regional giver, so completion and the following regional quest meet at the
   same NPC.

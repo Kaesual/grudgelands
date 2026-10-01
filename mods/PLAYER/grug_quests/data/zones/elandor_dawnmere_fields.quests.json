@@ -1,0 +1,290 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "dawnmere",
+      "anchor": "dawnmere",
+      "givers": [
+        {
+          "npc": "r14_human_elder",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_human_start_cook",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_human_01_boars_beyond_the_fence",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "Boars Beyond the Fence",
+      "text": "Boars root through the outer seed rows by day. Drive off three beyond Dawnmere's fence, and take spare raw meat to Bess Honeycrust beside the village oven.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:boar"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_02_the_smokehouse_share",
+      "line": "legacy",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Smokehouse Share",
+      "text": "The shared oven feeds everyone returning from dawnmere's outer paths. Bring four raw meat portions to Bess Honeycrust beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_03_granary_teeth",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "r14_human_01_boars_beyond_the_fence"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Braces for the Granary",
+      "text": "The granary's damaged braces leave the baskets open to pests. Bring six oak planks to repair the store frame. Boards already in your pack or obtained by trade count too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "copper": 20,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_04_shapes_by_lanternlight",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 4,
+      "level": 4,
+      "requires": [
+        "r14_human_01_boars_beyond_the_fence"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Shapes by Lanternlight",
+      "text": "Zombies approach Dawnmere's lantern road after nightfall. Defeat three beyond the houses in the level-3-and-up fields. The daytime repair work and optional tool lessons remain alternatives while the road is quiet.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:zombie"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 140,
+        "copper": 25,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_05_the_missing_flock",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_human_03_granary_teeth"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Missing Flock",
+      "text": "Foxes draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:fox"
+          ],
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 30,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_06_flock_on_mill_road",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_human_05_the_missing_flock"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Road to Marta Millward",
+      "text": "At level 10, travel to Goldmead Village and speak with Marta Millward. Goldmead Vale is level 11–20 country; follow the road instead of trying to clear every creature. Complete this handoff with Marta there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_human_steward"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_10_a_woodsman_s_edge",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "A Woodsman's Edge",
+      "text": "Bring a wood axe and Elian will explain safe trees, shared timber and the first repair.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 15,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_11_a_pick_for_the_road",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 2,
+      "level": 2,
+      "requires": [
+        "r14_human_10_a_woodsman_s_edge"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "A Pick for the Road",
+      "text": "Bring a stone pick for a short lesson before the road leaves the soft fields.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 45,
+        "copper": 15,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_human_start_cook",
+      "line": "legacy",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Second Oven",
+      "text": "Bess Honeycrust has a second oven ready for Dawnmere's returning field hands. Bring three coal lumps for its fuel store. Traded supplies count; mining natural coal yourself only requires a pickaxe; wood and stone picks work too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_human_capital_intro",
+      "line": "legacy",
+      "giver": "r14_human_elder",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Road to Highcourt",
+      "text": "Highcourt has public workspaces, profession trainers and repair services beyond Dawnmere's small yard. At level 10, follow the road to Mariel Waybook at the chapel. The surrounding country is level 20–30, so travel by the road instead of testing its wildlife. Speak with Mariel and complete the introduction there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_human_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    }
+  ]
+}

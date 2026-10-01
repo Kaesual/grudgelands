@@ -3,6 +3,8 @@ grug_quests.registered_quests = quests
 grug_quests.registered_npcs = npcs
 grug_quests.quests_by_npc = {}
 grug_quests.npc_by_socket = {}
+-- Entity names any quest-only drop can come from (roll_quest_drops' early exit).
+grug_quests.quest_drop_mobs = {}
 local function integer(n)
 	return type(n) == "number" and n >= 0 and n <= 2147483647 and n % 1 == 0
 end
@@ -14,6 +16,11 @@ function grug_quests.register_npc(id, def)
 	grug_quests.npc_by_socket[key] = id
 	npcs[id] = table.copy(def)
 end
+-- Objectives (Round 28 rulings 39 and 41): `kill` names `mobs` (entity
+-- names; the loader turns design `roles` into them), optionally limited to
+-- one spawn `area` ("zone/area", credited by the mob's `_grug_area` tag) or,
+-- for the mechanically split older quests, a named `zone`; `item` names one
+-- `item` or an item `group`; `talk` is a travel quest's only objective.
 function grug_quests.register_quest(id, def)
 	assert(type(id) == "string" and not quests[id], "Duplicate quest")
 	assert(type(def.title) == "string" and type(def.description) == "string")
@@ -21,18 +28,30 @@ function grug_quests.register_quest(id, def)
 	def.id = id
 	def.turnin_npc = def.turnin_npc or def.npc
 	def.min_level = def.min_level or 1
+	def.level = def.level or def.min_level
 	def.prerequisites = def.prerequisites or {}
 	def.rewards = def.rewards or {}
-	def.rewards.xp = def.rewards.xp or 0
 	def.rewards.copper = def.rewards.copper or 0
 	def.rewards.items = def.rewards.items or {}
-	assert(integer(def.min_level) and def.min_level >= 1)
-	assert(integer(def.rewards.xp) and integer(def.rewards.copper))
+	def.quest_drops = def.quest_drops or {}
+	-- Rewards are a weight in kill equivalents at the reward level (ruling
+	-- 32) or, for the split older quests, a fixed XP amount.
+	if def.rewards.weight then
+		assert(type(def.rewards.weight) == "number" and def.rewards.weight >= 0)
+	else
+		def.rewards.xp = def.rewards.xp or 0
+		assert(integer(def.rewards.xp))
+	end
+	assert(integer(def.min_level) and def.min_level >= 1 and integer(def.level) and def.level >= 1)
+	assert(integer(def.rewards.copper))
+	assert(not def.repeatable or (integer(def.repeatable.cooldown) and def.repeatable.cooldown > 0))
 	assert(type(def.objectives) == "table" and #def.objectives > 0)
 	for _, objective in ipairs(def.objectives) do
 		assert(integer(objective.count) and objective.count > 0)
 		assert(objective.type == "item" or objective.type == "kill" or objective.type == "talk")
-		if objective.type == "item" then assert(type(objective.item) == "string")
+		if objective.type == "item" then
+			assert((type(objective.item) == "string") ~= (type(objective.group) == "string"),
+				"An item objective names one item or one group")
 		elseif objective.type == "talk" then
 			assert(type(objective.npc) == "string" and objective.count == 1,
 				"A conversation objective names one destination NPC")
@@ -42,6 +61,11 @@ function grug_quests.register_quest(id, def)
 			objective.mobs = objective.mobs or {objective.mob}
 			assert(#objective.mobs > 0)
 		end
+	end
+	for _, drop in ipairs(def.quest_drops) do
+		assert(type(drop.item) == "string" and integer(drop.chance) and drop.chance > 0 and
+			type(drop.mobs) == "table" and #drop.mobs > 0, "Invalid quest drop")
+		for _, name in ipairs(drop.mobs) do grug_quests.quest_drop_mobs[name] = true end
 	end
 	local requirements = {"Minimum level: " .. def.min_level}
 	if #def.prerequisites > 0 then
@@ -61,6 +85,16 @@ function grug_quests.register_quest(id, def)
 		grug_quests.quests_by_npc[npc] = index
 		index[id] = true
 	end
+end
+-- The quest's reward XP before the race bonus (grug_xp.add_xp applies it).
+function grug_quests.reward_xp(def)
+	if def.rewards.weight then return grug_xp.quest_reward(def.level, def.rewards.weight) end
+	return def.rewards.xp
+end
+-- A travel quest: one conversation at its destination, credited on accept
+-- (ruling 39); the HUD reads "Travel to <NPC>".
+function grug_quests.is_travel(def)
+	return #def.objectives == 1 and def.objectives[1].type == "talk"
 end
 function grug_quests.validate_registry()
 	local visiting, done = {}, {}
@@ -90,7 +124,7 @@ function grug_quests.validate_registry()
 		assert(npcs[def.npc] and npcs[def.turnin_npc], "Unknown quest NPC: " .. id)
 		for _, objective in ipairs(def.objectives) do
 			if objective.type == "item" then
-				assert(core.registered_items[objective.item], "Unknown quest item: " .. id)
+				assert(not objective.item or core.registered_items[objective.item], "Unknown quest item: " .. id)
 			elseif objective.type == "talk" then
 				assert(npcs[objective.npc], "Unknown conversation NPC: " .. id)
 			else
@@ -98,6 +132,9 @@ function grug_quests.validate_registry()
 					assert(core.registered_entities[mob], "Unknown quest mob: " .. id)
 				end
 			end
+		end
+		for _, drop in ipairs(def.quest_drops) do
+			assert(core.registered_items[drop.item], "Unknown quest drop: " .. id)
 		end
 		for _, item in ipairs(def.rewards.items) do
 			local stack = ItemStack(item)

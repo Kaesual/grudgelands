@@ -11,28 +11,10 @@ local function tracked(journal, id)
 	return false
 end
 
-local function mob_label(name)
-	local def = core.registered_entities[name]
-	if def and def.description and def.description ~= "" then return def.description end
-	local label = name:match("[^:]+$") or name
-	return label:gsub("_", " "):gsub("(%a)([%w']*)", function(a, b)
-		return a:upper() .. b
-	end)
-end
-
+-- One line per objective (ruling 41): "Bring Wood Axe: 0/1".
 local function objective_label(objective)
-	local subject
-	if objective.type == "item" then
-		subject = "Bring " .. grug_core.item_name(objective.item)
-	elseif objective.type == "talk" then
-		local npc = grug_quests.registered_npcs[objective.npc]
-		subject = "Speak with " .. (npc and npc.title or objective.npc)
-	else
-		local names = {}
-		for _, name in ipairs(objective.mobs or {}) do names[#names + 1] = mob_label(name) end
-		subject = "Defeat " .. table.concat(names, " or ")
-	end
-	return ("%s: %d/%d"):format(subject, objective.count, objective.required)
+	return ("%s: %d/%d"):format(grug_quests.objective_action(objective),
+		objective.count, objective.required)
 end
 
 local function selected(journal, context)
@@ -64,7 +46,7 @@ local function content(player, context)
 	for index, row in ipairs(journal.quests) do
 		context.grug_quest_rows[index] = row.id
 		rows[#rows + 1] = esc((tracked(journal, row.id) and "* " or "") ..
-			row.title .. (row.ready and " [Ready]" or ""))
+			row.title .. (row.repeatable and " [Repeatable]" or "") .. (row.ready and " [Ready]" or ""))
 	end
 	local fs = {
 		("label[0.15,0.18;Active quests: %d/20]"):format(#journal.quests),
@@ -78,7 +60,8 @@ local function content(player, context)
 			"Your quest log is empty. Talk to a quest giver to begin.")
 		return table.concat(fs)
 	end
-	fs[#fs + 1] = ("label[%.2f,0.65;%s]"):format(COLUMN_X, esc(quest.title))
+	fs[#fs + 1] = ("label[%.2f,0.65;%s]"):format(COLUMN_X,
+		esc(quest.title .. (quest.repeatable and " (Repeatable)" or "")))
 	fs[#fs + 1] = ("textarea[%.2f,1.05;%.2f,1.35;;;%s]"):format(TEXT_X, TEXT_W,
 		esc(grug_inventory.wrap_text(quest.description, 58)))
 	local objectives = {}
@@ -88,7 +71,7 @@ local function content(player, context)
 	fs[#fs + 1] = ("textarea[%.2f,2.35;%.2f,1.55;;;%s]"):format(TEXT_X, TEXT_W,
 		esc(table.concat(objectives, "\n")))
 	local rewards = {}
-	if quest.rewards.xp > 0 then rewards[#rewards + 1] = quest.rewards.xp .. " XP" end
+	if quest.reward_xp > 0 then rewards[#rewards + 1] = quest.reward_xp .. " XP" end
 	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
 	for _, item in ipairs(quest.rewards.items) do
 		local stack = ItemStack(item)
@@ -110,7 +93,8 @@ local function content(player, context)
 	if quest.ready then
 		local npc = grug_quests.registered_npcs[quest.npc]
 		fs[#fs + 1] = ("label[%.2f,6.15;%s]"):format(COLUMN_X,
-			esc("Ready to return to " .. (npc and npc.title or quest.npc) .. "."))
+			esc((quest.travel and "Travel to " or "Ready to return to ") ..
+				(npc and npc.title or quest.npc) .. "."))
 	elseif context.grug_quest_notice then
 		fs[#fs + 1] = ("label[%.2f,6.15;%s]"):format(COLUMN_X,
 			esc(context.grug_quest_notice))

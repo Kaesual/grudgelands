@@ -1,0 +1,143 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "identity": "Fixture for tools/r28_b4_quests/portable_test.lua: every objective kind of the Round 28 quest format.",
+  "hubs": [
+    {
+      "id": "dawnmere",
+      "anchor": "start",
+      "givers": [
+        {"npc": "r14_human_elder", "lines": ["hunt", "tools"]},
+        {"npc": "r20_human_start_cook", "lines": ["pantry", "kitchen"]}
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "fx_hunt_02",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 8,
+      "level": 10,
+      "requires": ["fx_hunt_01"],
+      "title": "The Chief",
+      "text": "The bandit chief waits at the border. End his raids.",
+      "objectives": [{"type": "kill", "roles": ["confused_bandit_chief"], "count": 1}],
+      "rewards": {"weight": 6, "copper": 20, "items": [{"item": "grug_materials:axe_wood", "count": 1}]}
+    },
+    {
+      "id": "fx_hunt_01",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "Crop Thieves",
+      "text": "During the day, Small Boars steal our crops south of Dawnmere. Drive them off.",
+      "objectives": [
+        {"type": "kill", "roles": ["small_boar"], "count": 3, "area": "elandor_dawnmere_fields/home_fields_day"}
+      ],
+      "rewards": {"weight": 4, "copper": 10, "items": []}
+    },
+    {
+      "id": "fx_tools_01",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 1,
+      "title": "First Tools",
+      "text": "Bring a Wood Axe and a Wood Pickaxe. Basics in your Crafting tab shows both.",
+      "objectives": [
+        {"type": "item", "item": "grug_materials:axe_wood", "count": 1},
+        {"type": "item", "item": "grug_materials:pick_wood", "count": 1}
+      ],
+      "rewards": {"weight": 2, "copper": 5}
+    },
+    {
+      "id": "fx_tools_02",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": ["fx_tools_01"],
+      "title": "Logs of Any Tree",
+      "text": "Bring five logs. Any tree will do.",
+      "objectives": [{"type": "item", "group": "group:tree", "count": 5}],
+      "rewards": {"weight": 2, "copper": 5}
+    },
+    {
+      "id": "fx_pantry_01",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 8,
+      "level": 10,
+      "title": "The Stolen Ledger",
+      "text": "The bandits at the border took my ledger. Bring its pages back.",
+      "objectives": [{"type": "item", "item": "grug_mobs:ledger_page", "count": 2}],
+      "quest_drops": [
+        {"item": "grug_mobs:ledger_page", "roles": ["confused_bandit"],
+         "area": "elandor_dawnmere_fields/border_bandits", "chance": 2}
+      ],
+      "rewards": {"weight": 3, "copper": 8}
+    },
+    {
+      "id": "fx_kitchen_bounty",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 2,
+      "title": "Rats in the Larder",
+      "text": "Large Rats raid the larder after nightfall. Thin them out, and come back tomorrow.",
+      "objectives": [
+        {"type": "kill", "roles": ["large_rat"], "count": 2, "area": "home_fields_night"}
+      ],
+      "repeatable": {"cooldown": 1800},
+      "rewards": {"weight": 1, "copper": 2}
+    },
+    {
+      "id": "fx_kitchen_after",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 2,
+      "requires": ["fx_kitchen_bounty"],
+      "title": "Meat for the Pot",
+      "text": "Now the larder is safe again. Bring two raw meat.",
+      "objectives": [{"type": "item", "item": "mobs:meat_raw", "count": 2}],
+      "rewards": {"weight": 1, "copper": 2}
+    },
+    {
+      "id": "fx_travel",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": ["fx_hunt_02"],
+      "title": "The Road to Highcourt",
+      "text": "Take the road north to Highcourt. Mariel waits at the chapel.",
+      "objectives": [{"type": "talk", "npc": "r20_human_capital_envoy"}],
+      "rewards": {"weight": 1, "copper": 10}
+    },
+    {
+      "id": "fx_legacy",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "faction": "accord",
+      "race": "human",
+      "title": "Legacy Boars",
+      "text": "A quest in the legacy fields of the mechanical split.",
+      "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar"], "zone": "elandor_dawnmere_fields", "count": 2}],
+      "rewards": {"xp": 50, "copper": 3, "items": []}
+    }
+  ]
+}

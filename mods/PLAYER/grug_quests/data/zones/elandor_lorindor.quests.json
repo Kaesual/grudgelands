@@ -1,0 +1,332 @@
+{
+  "zone": "elandor_lorindor",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_018",
+      "anchor": "r20_anchor_018",
+      "givers": [
+        {
+          "npc": "r20_anchor_018_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_034",
+      "anchor": "r20_anchor_034",
+      "givers": [
+        {
+          "npc": "r20_anchor_034_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_063",
+      "anchor": "r20_anchor_063",
+      "givers": [
+        {
+          "npc": "r20_anchor_063_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_018_01",
+      "line": "legacy",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Stones Around the Roots",
+      "text": "Berrycourt's orchard crew needs a low stone rim to keep washed soil against the roots. Bring eight cobble blocks to Lorindor Berrycourt, leaving the tended trees and protected court intact. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_018_02",
+      "line": "legacy",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "No Snares in Berrycourt",
+      "text": "At night, poachers work Lorindor's silver-leaf and forest margins beyond Berrycourt. Defeat four of them while the orchard crew rebuilds the root beds.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_018_03",
+      "line": "legacy",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_018_02"
+      ],
+      "faction": "accord",
+      "title": "The Uninvited Lanterns",
+      "text": "The snares have gone, but pale lights still lead late pickers away from Lorindor's orchard paths. Disperse three wisps after dark around the damp woodland, then report back to Ilwen.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_034_01",
+      "line": "legacy",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Trough's New Kerb",
+      "text": "Petalbank's trough has lost the stone kerb that keeps washwater out of the berry baskets. Bring eight cobble blocks for its edge; the covered court must stay open to carriers. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_034_02",
+      "line": "legacy",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Wardens Without Arrows",
+      "text": "Poachers enter Lorindor's woodland at night and force Petalbank's wardens away from the gathering routes. Defeat four so the wardens can take their normal posts again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_034_03",
+      "line": "legacy",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_034_02"
+      ],
+      "faction": "accord",
+      "title": "Lanterns We Did Not Hang",
+      "text": "The wardens have rehung their own lamps, but other lights still move beyond them after dark. Disperse three wisps in Lorindor's damp woodland and report to Petalbank.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_063_01",
+      "line": "legacy",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "A Gentle Edge",
+      "text": "Paleroot's cutters need a spare stone pick for work beside the orchard roots. Bring one to the braced shelter; you may craft it, buy it or use an existing spare. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_063_02",
+      "line": "legacy",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Survey Stakes Vanish",
+      "text": "Poachers cross Lorindor's woodland at night and disturb the survey stakes outside the cutting. Defeat four so the crew can recover its marked line in daylight.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_063_03",
+      "line": "legacy",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_063_02"
+      ],
+      "faction": "accord",
+      "title": "Light on the Cutting Marks",
+      "text": "The recovered line leads into damp ground where wisps gather after dark. Disperse three in Lorindor before another cutter mistakes them for work lamps.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "elandor_lorindor",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_journey_02",
+      "line": "legacy",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 24,
+      "level": 24,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Word for Saevin Rootscribe",
+      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Paleroot Cutting in Lorindor and speak with Saevin Rootscribe. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Saevin Rootscribe there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_063_host"
+        }
+      ],
+      "rewards": {
+        "xp": 705,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_journey_03",
+      "line": "legacy",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Word for Faeris Rootbinder",
+      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Glassroot Gate in Glassroot Wilds and speak with Faeris Rootbinder. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Faeris Rootbinder there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
+        }
+      ],
+      "rewards": {
+        "xp": 915,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

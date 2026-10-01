@@ -1,6 +1,8 @@
--- Round 20 NPC bindings. Coordinates remain owned by authored actor sockets.
+-- Quest NPCs bound to authored settlement quest sockets (Round 14, 15 and 20
+-- casts). Coordinates remain owned by the sockets; new givers at free quest
+-- sockets come from the zone quest files (loader.lua).
 local Q = grug_quests
-local actors = {
+for _, row in ipairs({
 	{"r20_anchor_014_host", "r20_anchor_014", "quest_host", "Edda Tarnmantle"},
 	{"r20_anchor_016_host", "r20_anchor_016", "quest_host", "Merren Oakstamp"},
 	{"r20_anchor_018_host", "r20_anchor_018", "quest_host", "Ilwen Petalmeasure"},
@@ -49,7 +51,36 @@ local actors = {
 	{"r20_troll_start_cook", "kapok", "quest_cook", "Zemi Sweetroot"},
 	{"r20_troll_capital_cook", "kezamba", "shore_smokehouse/shore_smokehouse_quest_cook", "Teshani Smokereed"},
 	{"r20_troll_capital_envoy", "kezamba", "shrine_quest", "Nalo Pathdrum"},
-}
-for _, row in ipairs(actors) do
+	{"r14_dwarf_elder", "hearthpine", "hall_quest", "Brunna Flintbraid"},
+	{"r14_dwarf_steward", "copperfell_village", "quest_steward", "Orrik Pineledger"},
+	{"r14_dwarf_scout", "copperfell_outpost", "quest_scout", "Mara Deepwatch"},
+	{"r14_dwarf_captive", "copperfell_bandit_camp", "quest_captive", "Tovin Ashthumb"},
+	{"r15_dwarf_local", "copperfell_village", "quest_local", "Dagna Copperset"},
+	{"r14_human_elder", "dawnmere", "hall_quest", "Elian Reed"},
+	{"r14_human_steward", "goldmead_village", "quest_steward", "Marta Millward"},
+	{"r14_human_scout", "goldmead_outpost", "quest_scout", "Jon Vale"},
+	{"r14_human_captive", "goldmead_bandit_camp", "quest_captive", "Pella Thatch"},
+	{"r15_human_local", "goldmead_village", "quest_local", "Alda Sheaf"},
+	{"r14_elf_elder", "silverleaf", "hall_quest", "Saelin Dewbough"},
+	{"r14_elf_steward", "starbough_village", "quest_steward", "Ilyra Mossveil"},
+	{"r14_elf_scout", "starbough_outpost", "quest_scout", "Theren Farstep"},
+	{"r14_elf_captive", "starbough_bandit_camp", "quest_captive", "Nima Fern"},
+	{"r15_elf_local", "starbough_village", "quest_local", "Lethri Reedshade"},
+	{"r14_undead_elder", "stillgrave", "hall_quest", "Veyra Pall"},
+	{"r14_undead_steward", "mournfen_village", "quest_steward", "Mordec Silt"},
+	{"r14_undead_scout", "mournfen_outpost", "quest_scout", "Sera Vane"},
+	{"r14_undead_captive", "mournfen_bandit_camp", "quest_captive", "Hollis Grey"},
+	{"r15_undead_local", "mournfen_village", "quest_local", "Edris Wax"},
+	{"r14_orc_elder", "sunscar", "hall_quest", "Gara Stonevoice"},
+	{"r14_orc_steward", "redtusk_village", "quest_steward", "Borak Redgrass"},
+	{"r14_orc_scout", "redtusk_outpost", "quest_scout", "Kesh Longstride"},
+	{"r14_orc_captive", "redtusk_bandit_camp", "quest_captive", "Rokka Emberhand"},
+	{"r15_orc_local", "redtusk_village", "quest_local", "Morga Clayhand"},
+	{"r14_troll_elder", "kapok", "hall_quest", "Zalima Rainhum"},
+	{"r14_troll_steward", "raincall_village", "quest_steward", "Daro Kapok"},
+	{"r14_troll_scout", "raincall_outpost", "quest_scout", "Neshi Reedstep"},
+	{"r14_troll_captive", "raincall_bandit_camp", "quest_captive", "Veko Bluefeather"},
+	{"r15_troll_local", "raincall_village", "quest_local", "Amari Palmweave"},
+}) do
 	Q.register_npc(row[1], {settlement = row[2], socket = row[3], title = row[4]})
 end

@@ -1,0 +1,100 @@
+{
+  "zone": "kragmar_thunderroot_wilds",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_048",
+      "anchor": "r20_anchor_048",
+      "givers": [
+        {
+          "npc": "r20_anchor_048_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_048_01",
+      "line": "legacy",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "A Gutter Before the Rain",
+      "text": "Thunderstep's roof runoff cuts across the forest ascent. Bring eight cobble blocks for a shallow gutter beside the shelter, keeping the walking line free. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_048_02",
+      "line": "legacy",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Rainchar's Burning Cargo",
+      "text": "Rainchar Camp's bandits hold supplies intended for the ascent. Defeat four bandits at that occupied camp in Thunderroot Wilds and report to Rumela.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit"
+          ],
+          "zone": "kragmar_thunderroot_wilds",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_048_03",
+      "line": "legacy",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [
+        "r20_anchor_048_02"
+      ],
+      "faction": "throng",
+      "title": "Across the Glass Passage",
+      "text": "The report points across Glassroot Wilds to the Accord's frontier watch. At level 40, defeat three Accord guards at its military outposts or their patrols. This mission concerns armed guards, never villagers, players or Lethariel's capital watch.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:guard_accord"
+          ],
+          "zone": "elandor_glassroot_wilds",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1975,
+        "copper": 100,
+        "items": []
+      }
+    }
+  ]
+}

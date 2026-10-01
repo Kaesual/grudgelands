@@ -1,0 +1,309 @@
+{
+  "zone": "kragmar_raincall_basin",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "raincall_village",
+      "anchor": "raincall_village",
+      "givers": [
+        {
+          "npc": "r14_troll_steward",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r15_troll_local",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "raincall_outpost",
+      "anchor": "raincall_outpost",
+      "givers": [
+        {
+          "npc": "r14_troll_scout",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "raincall_bandit_camp",
+      "anchor": "raincall_bandit_camp",
+      "givers": [
+        {
+          "npc": "r14_troll_captive",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_troll_07_the_coiled_footpath",
+      "line": "legacy",
+      "giver": "r14_troll_steward",
+      "turnin": "r14_troll_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_troll_06_claws_on_raincall_road"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "The Coiled Footpath",
+      "text": "Vipers emerge along the village footpath after nightfall. Clear Raincall's nearby rainforest ground so Daro can reopen the walk.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:viper"
+          ],
+          "zone": "kragmar_raincall_basin",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_08_cats_at_the_reed_line",
+      "line": "legacy",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_troll_07_the_coiled_footpath"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Cats at the Reed Line",
+      "text": "Jungle lynx watch the reed line below the outpost. Clear Neshi's patrol route.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:jungle_lynx"
+          ],
+          "zone": "kragmar_raincall_basin",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 525,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_09_smoke_beneath_the_rain",
+      "line": "legacy",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_troll_08_cats_at_the_reed_line"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Smoke Beneath the Rain",
+      "text": "The bandits' wet cargo smoulders without being consumed and bears a hooked sun. Defeat them and speak with Veko. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit",
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "kragmar_raincall_basin",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 805,
+        "copper": 80,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_01",
+      "line": "legacy",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_troll_06_claws_on_raincall_road"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Meat for the Preparation Roof",
+      "text": "The village preparation shelter has room for another shared meal. Bring raw meat from the basin hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_02",
+      "line": "legacy",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_troll_06_claws_on_raincall_road"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Hooves Between the Stilt Posts",
+      "text": "Tapirs push through the shade beneath the communal house. Thin the herd before the low path is blocked.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:tapir"
+          ],
+          "zone": "kragmar_raincall_basin",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_03",
+      "line": "legacy",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_troll_07_the_coiled_footpath"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "A Dry Niche for Supplies",
+      "text": "Vipers have claimed the dry equipment niche beside the roofed lookout. Clear them after nightfall.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:viper"
+          ],
+          "zone": "kragmar_raincall_basin",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 315,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_04",
+      "line": "legacy",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_troll_07_the_coiled_footpath"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Leather for the Reed-Line Packs",
+      "text": "Bring two ordinary leather pieces for Neshi's patrol packs while clearing the daytime jungle lynx from Raincall's reed line. Carried or traded leather is welcome; there is no second counted cat hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:leather",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 420,
+        "copper": 55,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_05",
+      "line": "legacy",
+      "giver": "r14_troll_captive",
+      "turnin": "r14_troll_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_troll_08_cats_at_the_reed_line"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Pay from the Ferry Road",
+      "text": "Ferry workers tie coloured cords around their pay purses. Recover two stolen purses from the camp and let the captive match those cords to the missing crews. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:stolen_purse",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 460,
+        "copper": 65,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_troll_local_06",
+      "line": "legacy",
+      "giver": "r14_troll_captive",
+      "turnin": "r14_troll_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_troll_08_cats_at_the_reed_line"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Dry Bindings in the Rain",
+      "text": "The camp's sleeping shelters keep the raiders' linen cloth dry. Bring enough for Veko to wrap the smouldering cargo safely.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 575,
+        "copper": 75,
+        "items": []
+      }
+    }
+  ]
+}

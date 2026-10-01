@@ -1,0 +1,100 @@
+{
+  "zone": "elandor_moonfall_wood",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_035",
+      "anchor": "r20_anchor_035",
+      "givers": [
+        {
+          "npc": "r20_anchor_035_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_035_01",
+      "line": "legacy",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "A Chart Table Repaired",
+      "text": "Moonfall's chart table rocks whenever the lookout marks a route. Bring eight oak planks for its frame; the observatory is a shelter for path-watchers, not a new magical instrument. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_035_02",
+      "line": "legacy",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Fangs Beneath the Fallen Bough",
+      "text": "Wolves prowl Moonfall Wood's forest floor beneath the fallen boughs. Defeat four so the observers can check the lake paths without abandoning their charts.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wolf"
+          ],
+          "zone": "elandor_moonfall_wood",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_035_03",
+      "line": "legacy",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_035_02"
+      ],
+      "faction": "accord",
+      "title": "The Moonlit Snare Line",
+      "text": "The clear paths expose a second hazard: poachers return to the wood at night. Defeat four in Moonfall Wood before the next dawn survey follows their snare line.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_moonfall_wood",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    }
+  ]
+}

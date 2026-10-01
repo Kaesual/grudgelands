@@ -1,0 +1,127 @@
+{
+  "zone": "elandor_lethariel",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "lethariel",
+      "anchor": "lethariel",
+      "givers": [
+        {
+          "npc": "r20_elf_capital_cook",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_elf_capital_envoy",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_elf_capital_cook",
+      "line": "legacy",
+      "giver": "r20_elf_capital_cook",
+      "turnin": "r20_elf_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "The Petalpot Share",
+      "text": "Mirael Petalpot keeps a common pot beside Lethariel's market bakehouse. Bring five raw meat portions for travellers and wardens sharing that table. You need no Cooking qualification to contribute.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_capital_services",
+      "line": "legacy",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r20_elf_capital_intro"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Petalpot Hospitality",
+      "text": "Eriath recommends Mirael Petalpot's table at the market bakehouse before you set out again. Speak with the cook beside the oven, then complete this introduction there. Learning Cooking from its separate trainer is optional.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_elf_capital_cook"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_capital_stores",
+      "line": "legacy",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 20,
+      "level": 20,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Boards for the Grove Patrol",
+      "text": "The grove patrol needs ordinary oak boards for its covered stores. Bring ten planks to Eriath in Lethariel. Oak is welcome here; you do not need to cut a silverwood tree for this repair.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "xp": 780,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_journey_01",
+      "line": "legacy",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Word for Ilwen Petalmeasure",
+      "text": "The capital keeps contact with the working settlements beyond its groves. Travel to Lorindor Berrycourt in Lorindor and speak with Ilwen Petalmeasure. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Ilwen Petalmeasure there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_018_host"
+        }
+      ],
+      "rewards": {
+        "xp": 615,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

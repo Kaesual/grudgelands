@@ -1,0 +1,290 @@
+{
+  "zone": "kragmar_kapok_cradle",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "kapok",
+      "anchor": "kapok",
+      "givers": [
+        {
+          "npc": "r14_troll_elder",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_troll_start_cook",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_troll_01_boars_in_the_yam_beds",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Boars in the Yam Beds",
+      "text": "Jungle boars turn up the yam beds outside Kapok by day. Drive off three, and bring spare raw meat to Zemi Sweetroot at the separate oven shelter.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:jungle_boar"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_02_fill_the_evening_pot",
+      "line": "legacy",
+      "giver": "r20_troll_start_cook",
+      "turnin": "r20_troll_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Fill the Evening Pot",
+      "text": "The shared oven feeds everyone returning from kapok's outer paths. Bring four raw meat portions to Zemi Sweetroot beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_03_teeth_in_the_basket_weave",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "r14_troll_01_boars_in_the_yam_beds"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "A Dry Frame for the Baskets",
+      "text": "Kapok's dry baskets need a new frame above the wet ground. Bring six junglewood planks for the supports. Ordinary planks from local jungle trunks, existing supplies and traded boards all count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:junglewood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "copper": 20,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_04_dead_in_the_rootways",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 4,
+      "level": 4,
+      "requires": [
+        "r14_troll_01_boars_in_the_yam_beds"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Dead in the Rootways",
+      "text": "Zombies wander the rootways beyond Kapok after nightfall. Defeat three on level-3-and-up ground. The basket repair and optional tool lessons are available without waiting for the night patrol.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:zombie"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 140,
+        "copper": 25,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_05_vipers_under_broad_leaves",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_troll_03_teeth_in_the_basket_weave"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Vipers Under Broad Leaves",
+      "text": "Vipers shelter beneath the broad leaves beside the homes. Clear the nearest nests. Near the start they hunt by day and by night on level-4-and-up ground.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:viper"
+          ],
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 30,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_06_claws_on_raincall_road",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_troll_05_vipers_under_broad_leaves"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "The Road to Daro Kapok",
+      "text": "At level 10, follow the route to Raincall Village and speak with Daro Kapok. Raincall Basin is level 11–20 country; prepare your equipment and avoid wandering into its hunters. Complete this handoff with Daro, with no fighting errand or return trip.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_troll_steward"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_10_a_dry_handled_axe",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "A Dry-Handled Axe",
+      "text": "Bring a wood axe and Zalima will show how to keep the handle dry and the cut clean.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 15,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_troll_11_stone_beneath_the_moss",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r14_troll_elder",
+      "min_level": 2,
+      "level": 2,
+      "requires": [
+        "r14_troll_10_a_dry_handled_axe"
+      ],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Stone Beneath the Moss",
+      "text": "Bring a stone pick for a lesson in reading rock beneath moss and root.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 45,
+        "copper": 15,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_troll_start_cook",
+      "line": "legacy",
+      "giver": "r20_troll_start_cook",
+      "turnin": "r20_troll_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "The Pot Before the Rain",
+      "text": "Zemi Sweetroot has moved the common pot under Kapok's oven shelter before the rain arrives. Bring three coal lumps for the dry fuel basket. Traded supplies count; mining coal yourself only requires a pickaxe; wood and stone picks work too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_troll_capital_intro",
+      "line": "legacy",
+      "giver": "r14_troll_elder",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "The Road to Kezamba",
+      "text": "Kezamba's shrine receives travellers looking for trainers, repairs and the city's public workspaces. At level 10, follow the road to Nalo Pathdrum there. The country around the city is level 20–30; leave its wildlife alone on the journey. Speak with Nalo and complete the introduction at the shrine.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_troll_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    }
+  ]
+}

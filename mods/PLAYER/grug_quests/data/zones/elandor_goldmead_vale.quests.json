@@ -1,0 +1,306 @@
+{
+  "zone": "elandor_goldmead_vale",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "goldmead_village",
+      "anchor": "goldmead_village",
+      "givers": [
+        {
+          "npc": "r14_human_steward",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r15_human_local",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goldmead_outpost",
+      "anchor": "goldmead_outpost",
+      "givers": [
+        {
+          "npc": "r14_human_scout",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "goldmead_bandit_camp",
+      "anchor": "goldmead_bandit_camp",
+      "givers": [
+        {
+          "npc": "r14_human_captive",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_human_07_orchard_watch",
+      "line": "legacy",
+      "giver": "r14_human_steward",
+      "turnin": "r14_human_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_human_06_flock_on_mill_road"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Orchard Watch",
+      "text": "Foxes have moved into the orchard margins. Give Marta's pickers room to work.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:fox"
+          ],
+          "zone": "elandor_goldmead_vale",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_08_empty_snares",
+      "line": "legacy",
+      "giver": "r14_human_scout",
+      "turnin": "r14_human_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_human_07_orchard_watch"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Empty Snares",
+      "text": "The poachers left empty snares around the outpost. Jon wants the hunters found before they return. Look for this threat after nightfall in the named regional zone.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_goldmead_vale",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 525,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_human_09_the_blackened_tally",
+      "line": "legacy",
+      "giver": "r14_human_scout",
+      "turnin": "r14_human_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_human_08_empty_snares"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Blackened Tally",
+      "text": "The bandits burned a hooked-sun mark into stolen grain tallies. Clear the camp and hear Pella's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit",
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "elandor_goldmead_vale",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 805,
+        "copper": 80,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_01",
+      "line": "legacy",
+      "giver": "r15_human_local",
+      "turnin": "r15_human_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_human_06_flock_on_mill_road"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Food for the Granary Crew",
+      "text": "The granary crew cannot leave the open shed while carts are queued. Bring raw meat for their common pot.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_02",
+      "line": "legacy",
+      "giver": "r15_human_local",
+      "turnin": "r15_human_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_human_06_flock_on_mill_road"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Apples for the Orchard Crew",
+      "text": "The orchard crew needs provisions while Marta's watch clears the foxes. Bring four ordinary apples, gathered from nearby apple trees or supplied from your pack.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:apple",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_03",
+      "line": "legacy",
+      "giver": "r14_human_scout",
+      "turnin": "r14_human_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_human_07_orchard_watch"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Cloth from the Empty Snares",
+      "text": "The night poachers around Goldmead carry ordinary linen cloth. Bring three pieces while helping Jon investigate the empty snares, rather than setting out on a second identical hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 315,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_04",
+      "line": "legacy",
+      "giver": "r14_human_scout",
+      "turnin": "r14_human_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_human_07_orchard_watch"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "A Clear Eastern View",
+      "text": "Foxes keep tripping the warning cords across the lookout's open sightline. Clear the slope so the next alarm means danger.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:fox"
+          ],
+          "zone": "elandor_goldmead_vale",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 420,
+        "copper": 55,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_05",
+      "line": "legacy",
+      "giver": "r14_human_captive",
+      "turnin": "r14_human_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_human_08_empty_snares"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "The Millers' Missing Pay",
+      "text": "Pella saw the millers' purses thrown beside the scorched grain tallies. Recover two stolen purses from the camp before the bandits divide the harvest pay. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:stolen_purse",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 460,
+        "copper": 65,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_human_local_06",
+      "line": "legacy",
+      "giver": "r14_human_captive",
+      "turnin": "r14_human_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_human_08_empty_snares"
+      ],
+      "faction": "accord",
+      "race": "human",
+      "title": "Linen Around the Grain",
+      "text": "The raiders tied the gathered grain with their own linen cloth. Bring enough camp cloth for Pella to mark the recovered sacks.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 575,
+        "copper": 75,
+        "items": []
+      }
+    }
+  ]
+}

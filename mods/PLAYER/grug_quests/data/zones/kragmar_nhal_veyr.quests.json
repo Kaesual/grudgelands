@@ -1,0 +1,127 @@
+{
+  "zone": "kragmar_nhal_veyr",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "nhal_veyr",
+      "anchor": "nhal_veyr",
+      "givers": [
+        {
+          "npc": "r20_undead_capital_cook",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_undead_capital_envoy",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_undead_capital_cook",
+      "line": "legacy",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_undead_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Bowls for the Vigil",
+      "text": "Velis Mourningbowl has set bowls for Nhal Veyr's vigil keepers. Bring five raw meat portions to the cook in the mourners' hall so the preserved stores can last another shift. This does not require the Cooking profession.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_undead_capital_services",
+      "line": "legacy",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r20_undead_capital_intro"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "The Vigil Table",
+      "text": "Ossa asks you to meet Velis Mourningbowl at the homes mourners' hall. Speak with the cook at the oven and complete this introduction there. The Cooking trainer remains a separate, optional service.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_undead_capital_cook"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_undead_capital_stores",
+      "line": "legacy",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 20,
+      "level": 20,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Coal for the Vigil Lamps",
+      "text": "The vigil lamps must outlast each watch, even when the covered courtyard is wet. Bring eight coal lumps to Ossa for the lamp reserve. Ordinary carried or traded fuel is sufficient.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 780,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_undead_journey_01",
+      "line": "legacy",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_anchor_020_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Word for Sovel Namekeeper",
+      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Sovel Namekeeper there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_020_host"
+        }
+      ],
+      "rewards": {
+        "xp": 615,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

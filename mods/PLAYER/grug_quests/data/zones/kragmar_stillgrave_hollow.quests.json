@@ -1,0 +1,288 @@
+{
+  "zone": "kragmar_stillgrave_hollow",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "stillgrave",
+      "anchor": "stillgrave",
+      "givers": [
+        {
+          "npc": "r14_undead_elder",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_undead_start_cook",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_undead_01_boars_in_the_dead_furrows",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Boars in the Dead Furrows",
+      "text": "Plague boars churn Stillgrave's outer furrows by day. Drive off three before the retaining stones loosen, and take spare raw meat to Neral Saltkeeper by the oven.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:plague_boar"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_02_salt_for_what_remains",
+      "line": "legacy",
+      "giver": "r20_undead_start_cook",
+      "turnin": "r20_undead_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Salt for What Remains",
+      "text": "The shared oven feeds everyone returning from stillgrave's outer paths. Bring four raw meat portions to Neral Saltkeeper beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_03_gnawing_in_the_crypt_stores",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "r14_undead_01_boars_in_the_dead_furrows"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Dry Shelves for the Crypt Stores",
+      "text": "The crypt stores need dry shelves above the damp soil. Bring six gravewood planks, the ordinary boards cut from this region's gravewood trunks. Existing or traded boards count; nothing must be taken from a protected tomb.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_trees:gravewood_wood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "copper": 20,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_04_the_uncalled_dead",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 4,
+      "level": 4,
+      "requires": [
+        "r14_undead_01_boars_in_the_dead_furrows"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "The Uncalled Dead",
+      "text": "Three uncalled zombies have wandered into Stillgrave's outer furrows. The patrol sets out after nightfall, although blight-ground zombies can linger through daylight too. Seek level-3-and-up ground; the store repairs do not depend on this patrol.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:zombie"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 140,
+        "copper": 25,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_05_furrows_gone_sour",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_undead_03_gnawing_in_the_crypt_stores"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Stones Against the Sour Furrows",
+      "text": "Bring eight cobble blocks to shore up Stillgrave's outer retaining stones. The boar patrol has already done its part; this repair is ordinary material delivery, not another hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 30,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_06_tusks_along_the_fen_road",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_undead_05_furrows_gone_sour"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "The Road to Mordec Silt",
+      "text": "At level 10, take the fen road to Mournfen Village and speak with Mordec Silt. Mournfen is level 11–20 country; keep clear of its hungry banks while travelling. Complete this conversation with Mordec there, without an added hunt or return journey.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_undead_steward"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_10_a_handle_that_will_not_rot",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "A Handle That Will Not Rot",
+      "text": "Bring a wood axe so Veyra can show how living handles are kept sound in dead soil.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 15,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_11_a_pick_among_headstones",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r14_undead_elder",
+      "min_level": 2,
+      "level": 2,
+      "requires": [
+        "r14_undead_10_a_handle_that_will_not_rot"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "A Pick Among Headstones",
+      "text": "Bring a stone pick for a lesson in separating useful rock from a sealed grave.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 45,
+        "copper": 15,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_undead_start_cook",
+      "line": "legacy",
+      "giver": "r20_undead_start_cook",
+      "turnin": "r20_undead_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Salt Against the Damp",
+      "text": "Neral Saltkeeper warms Stillgrave's salting room from the oven beside the common table. Bring three coal lumps to keep the damp out. Traded fuel counts; if you mine coal yourself, bring a pickaxe; wood and stone picks work too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_undead_capital_intro",
+      "line": "legacy",
+      "giver": "r14_undead_elder",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "throng",
+      "race": "undead",
+      "title": "The Road to Nhal Veyr",
+      "text": "Nhal Veyr keeps its profession trainers, repair services and public workspaces beyond Stillgrave's narrow paths. At level 10, follow the road to Ossa Quietregister in the vigil hall. Outside the city the country is level 20–30; pass through without provoking its wildlife. Speak with Ossa and complete the introduction there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_undead_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    }
+  ]
+}

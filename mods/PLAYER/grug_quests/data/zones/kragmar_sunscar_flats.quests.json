@@ -1,0 +1,290 @@
+{
+  "zone": "kragmar_sunscar_flats",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "sunscar",
+      "anchor": "sunscar",
+      "givers": [
+        {
+          "npc": "r14_orc_elder",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_orc_start_cook",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_orc_01_tusks_at_the_water_skins",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Tusks at the Water Skins",
+      "text": "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:boar"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_02_meat_for_the_long_fire",
+      "line": "legacy",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Meat for the Long Fire",
+      "text": "The shared oven feeds everyone returning from sunscar's outer paths. Bring four raw meat portions to Ugra Brothstone beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_03_rats_under_the_hide_racks",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "r14_orc_01_tusks_at_the_water_skins"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Posts Beneath the Hide Racks",
+      "text": "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:acacia_wood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "copper": 20,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_04_the_thirsting_dead",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_orc_01_tusks_at_the_water_skins"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "The Thirsting Dead",
+      "text": "Sun-dried husks walk the outer flats toward Redtusk after nightfall. Defeat three on the level-4-and-up ground between the camp and the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:sun_dried_husk"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 25,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_05_shells_by_the_bedrolls",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_orc_03_rats_under_the_hide_racks"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Shells by the Bedrolls",
+      "text": "Scorpions have crawled under the bedrolls. Clear the camp edge before nightfall. Near the start they hunt by day and by night on level-4-and-up ground.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:scorpion"
+          ],
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 30,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_06_husks_on_redtusk_road",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_orc_05_shells_by_the_bedrolls"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "The Road to Borak Redgrass",
+      "text": "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11–20 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_orc_steward"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_10_edge_of_the_first_camp",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Edge of the First Camp",
+      "text": "Bring a wood axe. Gara will show the safe cut before strength becomes waste.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 15,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_11_stone_has_no_pride",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 2,
+      "level": 2,
+      "requires": [
+        "r14_orc_10_edge_of_the_first_camp"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Stone Has No Pride",
+      "text": "Bring a stone pick. Stone has no pride, but it punishes a careless swing.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 45,
+        "copper": 15,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_orc_start_cook",
+      "line": "legacy",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Keep the Long Fire Fed",
+      "text": "Ugra Brothstone keeps Sunscar's long fire supplied beside the oven. Bring three coal lumps for the covered fuel box. Existing or traded coal is welcome; You can mine natural coal with any pickaxe, including wood or stone.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_orc_capital_intro",
+      "line": "legacy",
+      "giver": "r14_orc_elder",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "The Road to Gor Drazhak",
+      "text": "Gor Drazhak offers public workspaces, trainers and repairs beyond Sunscar's camp. At level 10, follow the road to Thorga Roadspeaker in the skull hall. Its surrounding country is level 20–30, so avoid the wildlife and keep to the route. Speak with Thorga and complete this introduction there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_orc_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    }
+  ]
+}

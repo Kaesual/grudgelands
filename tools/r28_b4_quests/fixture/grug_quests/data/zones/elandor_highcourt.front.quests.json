@@ -1,0 +1,19 @@
+{
+  "zone": "elandor_highcourt",
+  "quests": [
+    {
+      "id": "fx_front_01",
+      "line": "front",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 42,
+      "level": 44,
+      "title": "Ghouls on the Line",
+      "text": "Ghouls walk the Shattered Line at night. Break them and report back here.",
+      "objectives": [
+        {"type": "kill", "roles": ["front_ghoul"], "count": 6, "area": "front_shattered_line/ghoul_field"}
+      ],
+      "rewards": {"weight": 5, "copper": 30}
+    }
+  ]
+}
