@@ -43,6 +43,8 @@ _G.grug_mobs = {
 	walk_toward = function(self, x, z) nudges[#nudges + 1] = {self = self, x = x, z = z} end,
 	idle_health_tick = function() end,
 	place_on_ground = function() end,
+	-- Round 28 Lane A1 road/town push; this fixture checks the leash only.
+	roam_avoid_tick = function() end,
 }
 dofile(repo .. "/mods/ENTITIES/grug_mobs/aggro.lua")
 local original_reset = grug_mobs.leash_reset

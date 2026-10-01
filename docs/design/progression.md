@@ -239,7 +239,7 @@ quadratic curve (interval `200L − 100`) and stay unchanged until the Round 28
 zone designs replace the quests (Ruling 32 weights). Against the new curve
 they are mis-sized: a level-1 quest is 0.5–0.7 kill equivalents (6–8 % of
 the level), levels 3–5 are 2.5–3.6 KE (29–39 % of a level), and from level 10
-on every quest is 3.8–9.5 KE, 33–85 % of a whole level (the old design meant
+on every quest is 3.8–9.5 KE, 36–85 % of a whole level (the old design meant
 15–35 %; the new interval at level 10 is 800 instead of 1,900). Example: the
 L10–12 regional and local quests of one start town add 4,430 XP, which takes
 a player from level 10 to about level 14 by rewards alone.
