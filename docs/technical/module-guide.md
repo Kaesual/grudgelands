@@ -143,10 +143,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   WP35 added: a **weapon slot** (group `grug_equip_weapon`) whose item is
   the single fixed source of damage AND appearance for every skill of its
   type — **no fallback to the wielded item**, empty slot = bare-handed
-  baseline; `inventory_equipment.md` §2 (eligibility, no class gate, the
+  baseline; `inventory_equipment.md` §2 (eligibility, per-class hand rules, the
   `_grug_hands` two-handed rule) and `combat_stats.md` §2. Its
   **equipment seam** lives in `grug_core/combat.lua`:
-  `get_equipped_weapon`/`get_equipped_offhand` (stub-override pattern like
+  `get_equipped_weapon`/`get_equipped_offhand`, and since Round 28
+  `get_melee_weapon` — the item Strike and every melee skill swing: the
+  Scout's Melee offhand, everyone else's Weapon slot
+  (`grug_inventory.HAND_RULES`, `melee_list`, `hand_list` for an ability's
+  `slot` of "weapon"/"offhand"/"melee") — (stub-override pattern like
   `get_armor_rating`; **the returned ItemStack is the caller's OWN
   COPY** — a modified copy is not equipped until it is written back AND
   `grug_inventory.equipment_changed` is called) plus
