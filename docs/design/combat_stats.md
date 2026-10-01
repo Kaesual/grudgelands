@@ -214,8 +214,8 @@ Two optional target-race systems use the central pipeline:
 ### Environmental damage, deaths and shore movement
 
 Environmental damage to players scales with the **actual** pool
-(`player:get_properties().hp_max`, maximum HP below). Mob damage from nodes is
-unchanged (mobs_redo applies its own node damage).
+(`player:get_properties().hp_max`, maximum HP below). Mobs follow the same
+idea (Round 28 ruling 6), see "Mobs" at the end of this list.
 
 - A player whose head point is inside an opaque, walkable, non-liquid full
   regular cube takes **floor(5% of maximum HP) per second, minimum 1 HP**.
@@ -243,6 +243,21 @@ unchanged (mobs_redo applies its own node damage).
   damage**; other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
+- **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a
+  share of its `hp_max` per environment tick (mobs_redo ticks once per
+  second), rounded up and at least 1 HP: **sun 5 %** (every mob with
+  `light_damage > 0`, inside its light window), **lava 20 %**, **fire 10 %**,
+  **water 10 %** (only mobs that water hurts) and **suffocation 5 %**. Fall
+  damage has the player's shape, **`ceil(hp_max × (d − 6) / 20)`** for a fall
+  of `d` nodes (after the floor's `fall_damage_add_percent`). The per-mob
+  definition values (`light_damage`, `lava_damage`, `fire_damage`,
+  `water_damage`, `suffocation`, `fall_damage`) are only on/off switches.
+  **Elite and rare** tiers take **half**; the **boss tier (dragons) and the
+  kings are immune**. Other `damage_per_second` nodes and `air_damage` keep
+  mobs_redo's flat amounts. *Why:* flat amounts made high-level mobs nearly
+  immortal (an L30 zombie, 764 HP, needed 6.4 minutes in the sun; now 20 s).
+  Implementation: `grug_mobs/env_damage.lua`, called from `mobs/api.lua`
+  `do_env_damage()` and `falling()`.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
@@ -465,15 +480,40 @@ Normal tier at level L:
   `skeleton_raider.lua:27`, `spider.lua:19`, `wolf.lua:19` and
   `zombie.lua:21`; the exceptions are `kraken.lua:34` and
   `start_villagers.lua:936`.
-- **Ordinary hits have zero knockback.** Damage never becomes an implicit
-  displacement magnitude. `damage_groups.knockback` remains the explicit
-  override seam for a future limited/cooldown skill
-  (`mobs/api.lua:3455-3481`).
+- **Knockback: player melee swings only** (Round 28 ruling 7). Strike and the
+  melee swing skills (Mighty Blow, Hamstring, Opening: every authoritative
+  swing) push a normal mob back by **`c × swing interval`** with
+  **c = 0.25 m per second** (`grug_mobs.KNOCKBACK_PER_SECOND`, one constant to
+  tune by feel): dagger 0.7 s → 0.175 m, sword 1.0 s → 0.25 m, battle axe
+  1.4 s → 0.35 m. The interval is the weapon's actual interval after the
+  attack-speed affix, so knockback per second is the same for every weapon
+  and weapon tier does not matter. It is a horizontal **position
+  displacement** along attacker → mob (a velocity would be overwritten by the
+  next AI step), applied only when the mob's collision box fits at the
+  destination (no walkable, unknown or damaging node, so slabs and stairs
+  count as blocked) and the node under its feet there is walkable; otherwise
+  there is no knockback. Mobs are therefore never pushed into walls or over
+  ledges, and fliers and swimmers (no floor) are not pushed. Only the
+  **normal and critter** tiers are pushed: no knockback for elite, rare, boss
+  or king, nor for a `knock_back = false` mob (the Kraken). Casts, Charge,
+  arrows, mob hits and every other punch carry no implicit knockback; several
+  players' knockback adds up (accepted). The backpedal abuse stays
+  impossible: mobs close at 0.6 m/s (4.6 vs 4.0), well above 0.25 m/s.
+  `damage_groups.knockback` remains the explicit velocity override seam for a
+  future limited/cooldown skill. Implementation: `grug_mobs/separation.lua`,
+  called from `mobs/api.lua` `on_punch`.
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
-  actor-on-actor climbing and deliberately permits visual overlap, which the
-  runtime playtest must judge (`mobs/api.lua:3967-3975`;
-  `grug_core/init.lua:70`).
+  actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is
+  limited by **separation** (Round 28 ruling 5, kept deliberately simple): an
+  engaged ground melee mob does not enter its target's own column — the
+  contact run stops while a visible target is within the two collision radii
+  plus 0.5 m horizontally, and once a second a mob found inside that column
+  (radii sum) is moved out of it — and engaged mobs whose bodies overlap
+  drift apart sideways (perpendicular to the line to their own target), at
+  most 0.5 m per second. The same fit test as knockback applies; no
+  pathfinding. Implementation: `grug_mobs/separation.lua`, called from the
+  dogfight branch of `mobs/api.lua` `do_states()`.
 - **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
@@ -719,6 +759,11 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   claims the timer only after line of sight succeeds. A blocked ready swing
   therefore stays banked (`mobs/api.lua:2491-2819`;
   `mobs/grug_obstacle.lua:4-237`).
+- **Hits never stall a mob's attack clock** (Round 28 ruling 8). No player
+  hit — melee swing, arrow or ability, with or without knockback — pauses the
+  mob. mobs_redo set a 0.25 s pause on every landed hit, which skipped the
+  attack state and therefore the punch timer; several players hitting one mob
+  stretched its attack interval a lot. Mob-vs-mob hits keep that pause.
 - **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
   mob has spent about **1 s** inside reach without line of sight, it starts the
   existing bounded A* search despite already being close. It does not abandon
