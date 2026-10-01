@@ -531,7 +531,8 @@ Normal tier at level L:
   their incoming-damage clock plus current-target horizontal movement govern
   disengagement (Round 19 follow-up).
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
-  elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
+  elites/rares signal via **scale + tint** — elite `visual_size` ×1.4
+  (Round 28 ruling 9; model, collision and selection box scale together),
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
   violet `#a64dff:90`, nametag prefix `★ ` — plus the `!! ` prefix while
   a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
@@ -1026,13 +1027,24 @@ Startup presentation settings:
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
-category default. Ordinary bars retain their existing dimensions and attachment
-path; Round 19 does not retune them. Round 19 gives the two dragons
-explicit world-space anchor/size overrides near their visible head/body:
-Wyrmglass at 5 nodes above origin, Stormscale at 4 nodes, each 3 by 0.25 nodes.
-For these explicit overrides, attachment position compensates parent scale,
-while billboard width/height are already world dimensions and are not divided
-by that scale.
+category default. **Every bar is world-sized** (Round 28 ruling 10): an
+ordinary bar is 0.8 by 0.1 nodes whatever the mob's `visual_size` (a fox drawn
+at 10 and a serpent drawn at 0.3 get the same bar) and hangs 0.12 nodes above
+the mob's selection-box top, just under the nametag, which the engine draws
+0.3 nodes above that top. The two dragons keep explicit world-space profiles
+of 3 by 0.25 nodes, anchored just under their nametag: Wyrmglass at 2.77 nodes
+above origin, Stormscale at 2.97. Billboard width and height are world
+dimensions and are never divided by the parent's scale; only the attachment
+position compensates it. A tier rescale after the bar exists re-attaches the
+bar at the new box top, and the nametag carrier copies the rescaled box.
+
+**Selection boxes match the model** (Round 28 ruling 10). Every mob whose
+rendered mesh clearly exceeds its box (more than a quarter node) has a
+rotated selection box (`rotate = true`, it turns with the mob's yaw) built
+from the measured mesh bounds of its stand animation, horizontally never
+narrower than its collision footprint, rounded out to 0.05 node
+(`tools/r28_a3/mesh_bounds.py`). The collision box stays the movement
+footprint. The boar family and the Ibex had such boxes already.
 This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 

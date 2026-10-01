@@ -41,6 +41,8 @@ grug_mobs.register_mob("grug_mobs:zombie", {
 	-- drew a 5.4-node zombie around a player-sized hitbox.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.89, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.45, -0.05, -0.3, 0.45, 1.8, 0.65, rotate = true},
 	makes_footstep_sound = true,
 
 	animation = {

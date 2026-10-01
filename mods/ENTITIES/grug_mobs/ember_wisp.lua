@@ -22,6 +22,8 @@ local wisp = {
 		"grug_mobs_wisp.png^[colorize:#ff5a1e:140"}},
 	visual_size = {x = 1.25, y = 1.25},
 	collisionbox = {-0.2, 0.2, -0.2, 0.2, 1, 0.2},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.55, 0.2, -0.65, 0.55, 1.1, 0.45, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 40, stand_end = 80, stand_speed = 25,

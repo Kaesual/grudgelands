@@ -38,6 +38,8 @@ local function goblin_def(description, texture, ranged)
 		visual = "mesh", mesh = "grug_mobs_goblin.b3d",
 		textures = {{texture}}, visual_size = {x = 1, y = 1},
 		collisionbox = {-0.25, -0.01, -0.25, 0.25, 0.9, 0.25},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.3, 0, -0.25, 0.3, 1.25, 0.35, rotate = true},
 		makes_footstep_sound = true, animation = goblin_animation,
 		drops = {
 			{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},
@@ -100,6 +102,8 @@ local snow_leopard = ground({
 	textures = {grug_mobs.atlas_textures("grug_mobs_snow_leopard.png", 17)},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, 0, -1.5, 0.5, 0.9, 0.75, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 50,
@@ -136,6 +140,8 @@ local wisp = {
 	textures = {{"default_tool_steelsword.png", "grug_mobs_wisp.png"}},
 	visual_size = {x = 1.25, y = 1.25},
 	collisionbox = {-0.2, 0.2, -0.2, 0.2, 1, 0.2},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.55, 0.2, -0.65, 0.55, 1.1, 0.45, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 40, stand_end = 80, stand_speed = 25,
@@ -180,6 +186,8 @@ local function treant_def(description, tint)
 		textures = {{"grug_mobs_treant.png^[multiply:" .. tint}},
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.3, -1, -0.3, 0.3, 0.75, 0.3},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.6, -1.15, -0.65, 0.65, 1.25, 0.75, rotate = true},
 		makes_footstep_sound = true,
 		animation = {
 			stand_start = 1, stand_end = 24, stand_speed = 15,

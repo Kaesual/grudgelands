@@ -32,6 +32,8 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 		textures = {{"grug_mobs_shore_crab.png"}},
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.4, -0.01, -0.4, 0.4, 0.4, 0.4},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.4, -0.05, -0.75, 0.5, 0.55, 0.7, rotate = true},
 		makes_footstep_sound = false,
 		animation = {
 			stand_start = 1, stand_end = 100, stand_speed = 50,

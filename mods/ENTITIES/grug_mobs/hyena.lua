@@ -41,6 +41,8 @@ local hyena = {
 	-- the box below; upstream (animalworld, already a mobs_redo def) uses 1.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, 0, -1.15, 0.5, 1.05, 0.75, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.1: no run range — walk at a higher speed (§0.2).

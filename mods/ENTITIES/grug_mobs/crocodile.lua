@@ -76,6 +76,8 @@ local crocodile = {
 	-- to cover the body, the tail may stick out of it.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.6, -0.01, -0.6, 0.6, 0.95, 0.6},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.85, -0.05, -2.35, 0.85, 0.55, 1.55, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.6: no run range -> run = walk range at a higher

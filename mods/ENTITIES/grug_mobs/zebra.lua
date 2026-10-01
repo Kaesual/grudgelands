@@ -37,6 +37,8 @@ local zebra = {
 	-- the 1.4 box; upstream (animalworld) has no visual_size, i.e. 1.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 1.4, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -1.05, 0.5, 1.8, 1.25, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.2. `stand1` is mobs_redo's second idle clip — it
