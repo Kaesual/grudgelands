@@ -363,10 +363,10 @@ dofile("mods/PLAYER/grug_xp/init.lua")
 local bob = make_player("bob", {real_hud_scaling = 1, real_gui_scaling = 1})
 for _, fn in ipairs(callbacks.join) do fn(bob) end
 chat = {}
-grug_xp.add_xp(bob, 60, "kill")
-eq(fed_xp[1], 60, "kill XP reaches the feed")
+grug_xp.add_xp(bob, 200, "kill")
+eq(fed_xp[1], 200, "kill XP reaches the feed")
 eq(#banners, 0, "no banner below the next level")
-grug_xp.add_xp(bob, 50, "kill")
+grug_xp.add_xp(bob, 50, "kill") -- 250 >= 240, level 2 (Round 28 ruling 31)
 eq(fed_xp[2], 50, "second grant reaches the feed")
 eq(banners[1], "Reached level 2!", "level-up is a banner")
 grug_xp.award_gathering(bob, "fish", 10, true)

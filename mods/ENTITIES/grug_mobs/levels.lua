@@ -6,10 +6,10 @@
 -- tier, never hand-written in a mob def.
 --
 --   HP = 20 + 5*L + 0.66*L^2
---   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
+--   damage = 2 + 0.3*L + 0.005*L^2   XP = grug_xp.mob_xp(L) = 25 + 5*L
 --   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.4, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
---   boss:  18000 HP flat (fixed apex encounter budget)
+--   boss:  18000 HP flat (fixed apex encounter budget), normal damage and XP
 --
 -- ENGINE vs. DEF CONTRACT (the one rule for the whole mod):
 --   * HP (hp_min/hp_max/health), damage and XP are ALWAYS engine-owned.
@@ -109,8 +109,9 @@ end
 --
 -- `hp_flat`/`xp_flat` opt a tier out of the multiplier model for that one
 -- stat. The critter tier fixes both reward stats; the boss tier fixes HP while
--- retaining formula-derived damage and XP. Normal/elite/rare keep the original
--- multiplier arithmetic.
+-- retaining formula-derived damage and XP. Normal/elite/rare keep the
+-- multiplier arithmetic. XP is the kill-equivalent unit of grug_xp (Round 28
+-- ruling 30) times the tier multiplier.
 local damage_scale = tonumber(core.settings:get("grug_mob_damage_scale")) or 1.5
 if damage_scale ~= damage_scale or damage_scale < 0 or damage_scale > 10 then
 	core.log("warning", "[grug_mobs] invalid grug_mob_damage_scale; using 1.5")
@@ -125,7 +126,7 @@ function grug_mobs.stats_for(level, tier)
 	return t.hp_flat or math.floor((20 + 5 * level + 0.66 * level * level)
 			* t.hp + 0.5),
 		grug_mobs.scale_attack_damage(round1((2 + 0.3 * level + 0.005 * level * level) * t.dmg)),
-		t.xp_flat or math.floor(10 * level * t.xp + 0.5)
+		t.xp_flat or grug_xp.mob_xp(level) * t.xp
 end
 
 --
@@ -486,7 +487,7 @@ function grug_mobs.kill_xp(self, player_level)
 	end
 	local level = self._grug_level or 1
 	if player_level ~= nil then
-		level = math.min(level, player_level + 5)
+		level = math.min(level, player_level + grug_xp.LEVEL_OFFSET)
 	end
 	local _, _, xp = grug_mobs.stats_for(level, self._grug_tier)
 	return xp

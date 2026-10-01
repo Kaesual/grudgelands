@@ -222,7 +222,8 @@ local function reel(player, cast, itemstack)
 	core.sound_play("default_water_footstep",
 		{pos = cast.pos, gain = 0.5, max_hear_distance = 12}, true)
 	-- Round 24 ruling 28: a caught fish pays gathering XP from the top of its
-	-- water's zone band (grug_xp owns the formula); junk pays nothing. The
+	-- water's zone band (0.33 kill equivalents, Round 28 ruling 32; grug_xp
+	-- owns the formula, gather_xp); junk pays nothing. The
 	-- catch is one feed line that names the XP too (Round 28 ruling 20), so
 	-- the award itself stays quiet.
 	local notice = "Caught " .. grug_core.item_name(entry.name)

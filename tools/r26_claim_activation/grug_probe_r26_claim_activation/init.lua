@@ -145,7 +145,7 @@ end)
 
 local owner, inv = stand_in(OWNER)
 local other, _, other_meta = stand_in(OTHER, "default:pick_steel")
-other_meta["grug_xp:xp"] = tostring(100 * 59 * 59) -- no tool-level shortfall
+other_meta["grug_xp:xp"] = tostring(grug_xp.xp_for_level(60)) -- no tool-level shortfall
 local admin = stand_in(ADMIN)
 local steward, pos
 
@@ -202,7 +202,7 @@ local function step_steward()
 	if file then file:close() end
 	check(source:find('entity._grug_npc_name = "Housing Steward"', 1, true) ~= nil and
 		source:find('"Housing Manager"', 1, true) == nil, "NPC name Housing Steward")
-	owner:get_meta():set_string("grug_xp:xp", tostring(100 * 19 * 19))
+	owner:get_meta():set_string("grug_xp:xp", tostring(grug_xp.xp_for_level(20)))
 	submit(owner, "grug_housing:manager", {receive = ""})
 	check(count_item(inv, H.STONE_ITEM) == 1, "level 20 receives the stone")
 	core.get_auth_handler().create_auth(OTHER, "")

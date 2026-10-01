@@ -5,19 +5,53 @@ local META_XP = "grug_xp:xp"
 grug_xp.MAX_LEVEL = 60
 
 --
--- Level curve: cumulative XP for level L (level 1 = 0 XP).
--- Quadratic: level 2 = 100, level 10 = 8100, level 60 = 348100.
+-- XP units (Round 28 rulings 30-32, progression.md). Every XP amount is
+-- measured in kill equivalents: M(L), the XP of one normal-tier kill at level
+-- L. Kills, the level curve, quest rewards and gathering all derive from it,
+-- so retuning means editing this block only. tools/r28_design/r28common.py
+-- implements the same formulas for the design ledger; tools/r28_b3_xp
+-- cross-checks both.
 --
 
+-- A reward reads its level at most this far above the player's (kill and
+-- gathering XP).
+grug_xp.LEVEL_OFFSET = 5
+
+-- M(L) = 25 + 5L: L1 30, L10 75, L30 175, L60 325.
+function grug_xp.mob_xp(level)
+	return 25 + 5 * level
+end
+
+-- XP from `level` to `level + 1`: M(L) x k(L) rounded to tens, with
+-- k(L) = 8 + 0.29 (L - 1) same-level kill equivalents (8 at L1, about 25
+-- at L59). Same operation order as the ledger, so both round identically.
+function grug_xp.level_xp(level)
+	return 10 * math.floor(grug_xp.mob_xp(level) * (8 + 0.29 * (level - 1)) / 10 + 0.5)
+end
+
+-- Quest reward of `weight` kill equivalents at the quest's reward level,
+-- rounded half up. The race bonus is applied later by add_xp (source "quest").
+function grug_xp.quest_reward(level, weight)
+	return math.floor(weight * grug_xp.mob_xp(level) + 0.5)
+end
+
+-- LEVEL_START[L] = cumulative XP at which level L starts (level 1 = 0 XP):
+-- 4,200 at level 10, 194,220 at level 60.
+local LEVEL_START = {0}
+for level = 1, grug_xp.MAX_LEVEL - 1 do
+	LEVEL_START[level + 1] = LEVEL_START[level] + grug_xp.level_xp(level)
+end
+
 function grug_xp.xp_for_level(level)
-	level = math.min(level, grug_xp.MAX_LEVEL)
-	return 100 * (level - 1) * (level - 1)
+	return LEVEL_START[math.max(1, math.min(level, grug_xp.MAX_LEVEL))]
 end
 
 function grug_xp.level_from_xp(xp)
-	-- 1e-9: guards against sqrt rounding just below the level boundary
-	local level = math.floor(math.sqrt(xp / 100) + 1e-9) + 1
-	return math.min(level, grug_xp.MAX_LEVEL)
+	local level = 1
+	while level < grug_xp.MAX_LEVEL and xp >= LEVEL_START[level + 1] do
+		level = level + 1
+	end
+	return level
 end
 
 --
@@ -91,9 +125,9 @@ end
 
 -- `source` (optional) tags where the XP comes from ("kill", "quest", ...)
 -- and lets race passives scale it (world.md §7: human +10% quest XP).
--- grug_classes loads after grug_xp, hence the runtime global probe. No
--- caller passes "quest" yet — the quest framework (WP8) gets the bonus
--- for free by tagging its rewards.
+-- grug_classes loads after grug_xp, hence the runtime global probe. Only
+-- "quest" is scaled today (grug_quests tags its rewards); kill and
+-- gathering XP carry no race bonus.
 -- Every positive grant shows in the message feed (Round 28 ruling 20,
 -- grug_core.feed_xp) unless `quiet` is true: a caller that already names
 -- the XP in its own feed line (a fishing catch) passes it.
@@ -107,36 +141,35 @@ function grug_xp.add_xp(player, amount, source, quiet)
 end
 
 --
--- Gathering XP (Round 24 ruling 28), the one place of its factors and formula:
+-- Gathering XP (Round 24 ruling 28, in kill equivalents since Round 28
+-- ruling 32):
 --
---   XP = factor x min(reference level, player level + 5), rounded half up
+--   XP = ratio x M(min(reference level, player level + 5)), rounded half up
 --
 -- The reference level is the top of a ten-level band: 10 x harvest tier for
 -- an ore or gem node (T1 10 .. T5 50), 10 x the water's zone band for a fish
 -- (10 .. 60). No gray rule: T1 always pays. Source "gathering" carries no race
 -- or class bonus (grug_classes.get_xp_bonus scales only "quest").
 --
-grug_xp.GATHERING_XP_FACTOR = {ore = 1.5, gem = 3, fish = 5}
-grug_xp.GATHERING_LEVEL_OFFSET = 5
+grug_xp.GATHER_XP_RATIO = {ore = 0.10, gem = 0.20, fish = 0.33}
 
 function grug_xp.gathering_reference_level(tier_or_band)
 	return 10 * tier_or_band
 end
 
-function grug_xp.gathering_xp(kind, reference_level, player_level)
-	local factor = grug_xp.GATHERING_XP_FACTOR[kind]
-	if not factor then
+function grug_xp.gather_xp(kind, reference_level, player_level)
+	local ratio = grug_xp.GATHER_XP_RATIO[kind]
+	if not ratio then
 		error("[grug_xp] unknown gathering kind " .. tostring(kind))
 	end
-	local level = math.min(reference_level,
-		player_level + grug_xp.GATHERING_LEVEL_OFFSET)
-	return math.floor(factor * level + 0.5)
+	local level = math.min(reference_level, player_level + grug_xp.LEVEL_OFFSET)
+	return math.floor(ratio * grug_xp.mob_xp(level) + 0.5)
 end
 
 -- Awards and returns the gathering XP of one ore/gem node or one fish.
 -- `quiet` as in add_xp.
 function grug_xp.award_gathering(player, kind, reference_level, quiet)
-	local amount = grug_xp.gathering_xp(kind, reference_level,
+	local amount = grug_xp.gather_xp(kind, reference_level,
 		grug_xp.get_level(player))
 	grug_xp.add_xp(player, amount, "gathering", quiet)
 	return amount

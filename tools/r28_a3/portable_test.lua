@@ -92,6 +92,8 @@ _G.grug_core = {format_k = function(v) return tostring(v) end}
 _G.grug_zones = {mob_level_at = function() return 10 end,
 	guard_level_at = function() return 60 end}
 _G.grug_mobs = {}
+-- levels.lua derives kill XP from grug_xp's kill-equivalent unit.
+_G.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET = 5}
 
 -- The vendored mobs:scale_mob, verbatim, cut out of api.lua.
 local api = assert(io.open(ROOT .. "/mods/ENTITIES/mobs/api.lua")):read("*a")
