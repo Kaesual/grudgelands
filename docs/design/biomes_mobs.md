@@ -1463,7 +1463,11 @@ is not registered yet become craft items (`grug_mobs:` ids; an id in another
 mod's namespace must be registered by that mod). Description = the name plus
 the flavour line; the inventory image is a tinted placeholder until the art
 lands, and the `icon` brief stays on the item as `_grug_icon_brief`.
-Signature items are mob materials (`grug_material`). `generic` items are
+Signature items are mob materials (`grug_material`); their catalogue `tier`
+(1–6) is both their vendor price in copper and their ingredient tier
+(registered by `grug_professions`, so recipe books show it and no enchant
+takes one above its own tier). Quest items have no price and no tier. The
+trader drop audit covers the band tables too. `generic` items are
 existing ones; `reagent` items belong to `grug_professions`. Any other kind is
 a load error.
 
