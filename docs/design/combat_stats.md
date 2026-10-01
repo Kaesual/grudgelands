@@ -1068,6 +1068,33 @@ above and there is no chase leash. Camp members keep their 20-node roam cap;
 patrollers, named rares, bosses and summons, royals, bespoke no-leash actors,
 NPCs and water-bound swimmers keep their own movement rules. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
+Round 28 ruling 4 keeps the leash anchored at the spawn point with radius 32;
+the spawn areas of Round 28 Section B (planned, not built yet) are to be sized
+so that it keeps mobs inside their area.
+
+**Road and town push (Round 28 ruling 2):** roads and towns should feel safe
+to travel and rest in without becoming a combat refuge. An idle (standing or
+walking: no target, not following, not evading) free-roaming mob with the
+**aggressive** disposition probes every 4–5 seconds of the leash slot (the
+period picked per mob and probe, the first probe of an activation at a random
+slot) eight points on a horizontal ring of radius equal to its `view_range`,
+at its own height. A point hits on a road, bridge or village
+(`grug_core.world_feature_at`) or in a start town or capital city
+(`grug_zones.hard_protection_kind_at` "town"). POIs (including outposts and
+hostile camps) do not push. With any hit the mob walks along a free ring
+direction, never toward a hit: the free direction closest to the opposite of
+the hits' mean direction (when the hits cancel, as for a mob standing on a
+straight road or a crossroads, the free direction with the most free
+neighbours; ties go to the direction nearer its spawn point, then to ring
+order). When all eight points hit it walks straight toward its spawn point
+(no push without one). It uses the wander leash's nudge. Inside the
+wander radius the push steers; outside it the leash walks the mob home and the
+push is not asked, so the two never fight. Neutral mobs, critters, NPCs, camp
+members, patrollers, rares, bosses and the other bound actors are never
+pushed, and pursuit is unchanged: a fighting mob follows its target across any
+road. It is a tendency, not a guarantee (the random walk may carry a mob back
+for a while). Code: `grug_mobs/roam_avoid.lua`, called from `aggro.lua`
+roam_check.
 
 ## Out-of-combat mob recovery
 

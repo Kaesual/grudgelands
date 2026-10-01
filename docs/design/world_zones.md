@@ -578,8 +578,9 @@ replaced; git history before this rewrite records that model.
   2 nodes beyond the road edge; vegetation, POI content and spawns keep off
   it.
 - Roads and open-world bridges are world-protected (Round 25 ruling 15,
-  `world.md` §2 R1b): the road's half width plus 3 nodes on each side
-  (primary 13, secondary 11, trail 9 nodes) and ±5 nodes around the road
+  `world.md` §2 R1b): the road's half width plus 1 node on each side
+  (Round 28 ruling 1: primary 9, secondary 7, trail 5 nodes, inside the
+  vegetation exclusion above) and ±5 nodes around the road
   surface, checked analytically against the planned centreline segments.
   Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their

@@ -518,7 +518,7 @@ end
 local function roam_check(self)
 	-- Camp members keep the camp radius; free-roaming mobs take the wander
 	-- leash; every other mob (see grug_mobs.free_roamer) keeps its own rules.
-	local radius
+	local radius, wander
 	if self._grug_camp_pos then
 		-- The designated patroller is §4's one exemption: being far from its
 		-- post is its entire job (same exemption as the evade above).
@@ -527,7 +527,7 @@ local function roam_check(self)
 		end
 		radius = ROAM_RADIUS
 	elseif grug_mobs.free_roamer(self) then
-		radius = grug_mobs.WANDER_RADIUS
+		radius, wander = grug_mobs.WANDER_RADIUS, true
 	else
 		return
 	end
@@ -554,6 +554,11 @@ local function roam_check(self)
 	-- not stray.
 	local dx, dz = pos.x - home.x, pos.z - home.z
 	if dx * dx + dz * dz <= radius * radius then
+		-- Inside the wander leash the road and town push may steer (Round 28
+		-- ruling 2, roam_avoid.lua); outside it the leash below wins.
+		if wander then
+			grug_mobs.roam_avoid_tick(self, pos)
+		end
 		return
 	end
 	grug_mobs.walk_toward(self, home.x, home.z, pos)

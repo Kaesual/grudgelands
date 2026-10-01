@@ -192,9 +192,13 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
 - **R1b — Roads and POIs are protected** (Round 25 rulings 15–17,
   2026-09-29), in every territory and for every player:
   - **Roads**, their bridges and future waypoints. Sideways the corridor is
-    the road's own half width plus 3 nodes of terrain on each side: `primary`
-    roads are 7 wide, so 13 nodes are protected; `secondary` 5 → 11; `trail`
-    3 → 9. Vertically it covers ±5 nodes around the road surface. The check
+    the road's own half width plus 1 node of terrain on each side (Round 28
+    ruling 1; Round 25 had 3): `primary` roads are 7 wide, so 9 nodes are
+    protected; `secondary` 5 → 7; `trail` 3 → 5. Vertically it covers ±5
+    nodes around the road surface. The vegetation claim exclusion (the road,
+    its side slopes and 2 nodes beyond the edge: 11 / 9 / 7 nodes) stays
+    strictly wider, so no plant that nobody may harvest grows on protected
+    road ground, at mapgen or by renewal. The check
     is analytic — the distance to the planned centreline segment — and each
     segment is registered in the existing 128-node candidate grid of the
     zone authority's protection index; nothing is rasterised.
