@@ -185,10 +185,11 @@ selected spell's authored range. Solid terrain and intervening objects matter.
 - **Friendly player:** use an applicable heal/support action on the currently
   aimed eligible ally. No Strike fallback or attack through that ally.
 - **Hand-diggable node:** dig with hand capabilities, never equipped-weapon
-  mining power. On the initial press only, a competing usable self/support
-  skill waits approximately 200 ms: short release casts; continued hold digs.
-  Without such a competing action, digging begins immediately. Leaving the
-  initial node discards its pending release-cast. Later held retargeting enters
+  mining power. On the initial press only, a selected self/support skill
+  waits approximately 200 ms, whether it is ready or not: short release
+  casts (an unready skill reports its refusal at that tap); continued hold
+  digs. Without a selected self/support skill, digging begins immediately.
+  Leaving the initial node discards its pending release-cast. Later held retargeting enters
   digging directly; a cooldown becoming ready cannot interrupt the dig.
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
   including when inventory is full. That decision does not also cast. Holding
@@ -490,14 +491,17 @@ Mighty Blow is the design working, not a bug.
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Renew has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
 
-**Charge destination** (Round 28 ruling 12). The player lands 1.3 m in front
-of the target on the line toward the caster, at the target's feet height.
-Room is checked with Blink's rules: the player's real collision box against
-the nodes' collision boxes, one node of step-up allowed, and a clear ray from
-the caster's eye to the destination eye. A spot without room is searched back
-toward the caster in 0.5 m steps, never past the caster and never more than
-3 m (melee reach) from the target. With no room the cast fails with "Not
-enough room at target." and costs neither rage nor cooldown.
+**Charge destination** (Round 28 ruling 12). The preferred spot is 1.3 m in
+front of the target on the line toward the caster, at the target's feet
+height; it is always tried, even when the caster stands closer. Room is
+checked with Blink's rules: the player's real collision box against the
+nodes' collision boxes, one node of step-up allowed, and a clear ray from the
+caster's eye to the destination eye. A spot without room is searched back
+toward the caster in 0.5 m steps; the back-search never passes the caster and
+stays at most 3 m (melee reach) horizontally from the target's centre. With
+no room the cast fails with "Not enough room at target." and costs neither
+rage nor cooldown. While LMB stays held on the target, a failed Charge is
+retried at most every 0.25 s; Strike swings in between.
 
 ### The rage ledger (ruling 25, 2026-09-16)
 

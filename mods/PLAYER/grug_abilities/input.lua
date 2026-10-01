@@ -9,6 +9,10 @@ return function(api)
 	-- A skill failure message shows on a fresh press only and the same
 	-- message at most once per NOTICE_US (Round 28 ruling 13).
 	local NOTICE_US = 1000000
+	-- A held retry of a cast that failed inside try_cast (Charge without room)
+	-- waits this long: every try resets the swing boundary, which would keep
+	-- the held Strike fallback from accumulating.
+	local RETRY_US = 250000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -114,13 +118,19 @@ return function(api)
 			if fresh then report(player, s, refusal) end
 			return false
 		end
+		local now = core.get_us_time()
+		s.failed = s.failed or {}
+		local failed = s.failed[def.id]
+		if not fresh and failed and now - failed < RETRY_US then return false end
 		local notify = fresh and function(message) report(player, s, message) end or silent
 		if Q.try_cast(player, def, hit, notify) then
+			s.failed[def.id] = nil
 			if def.repeat_policy == "once" then s.used = true end
 			s.cast_press = true -- this physical press cast (see M.cast_this_press)
 			api.delay_strike(player)
 			return true
 		end
+		s.failed[def.id] = now
 		return false
 	end
 	local function interactive(hit, distance)

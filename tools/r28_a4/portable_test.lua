@@ -393,9 +393,20 @@ do -- M2 try_cast's own refusal (Charge without room) on a fresh press only.
 	press()
 	check(count(flashes, "Not enough room at target.") == 1,
 		"M2 fresh press shows the cast's own refusal")
-	hold(10)
-	check(#casts >= 5 and count(flashes, "Not enough room at target.") == 1,
-		"M2 held retries reach try_cast silently (casts " .. #casts .. ")")
+	hold(10) -- 0.5 s of held steps at 50 ms
+	-- Held retries of a cast that failed in try_cast wait 0.25 s each (every
+	-- try resets the swing boundary), so 0.5 s of holding retries twice;
+	-- the Strike fallback swings on every step.
+	check(#casts == 3 and count(flashes, "Not enough room at target.") == 1,
+		"M2 held retries reach try_cast silently, at most every 0.25 s (casts " ..
+		#casts .. ", expected 3)")
+	check(count(swings, "strike") == 11, "M2 Strike falls back on every step (swings " ..
+		count(swings, "strike") .. ")")
+	release()
+	-- A fresh press retries at once, even inside the 0.25 s.
+	reset_log()
+	press()
+	check(#casts == 1, "M2 a fresh press always tries the cast")
 	release()
 	try_cast_result.charge = nil
 	clock = clock + 2000000
