@@ -51,7 +51,9 @@ All automatic furnace, dual-furnace and brewing completion is universal and
 gives no profession progress. Only qualified cooks assemble profession dishes.
 Only qualified alchemists assemble potion mixtures, in the player's own 3x3
 grid; anyone may finish those mixtures at a Brewing Stand. Direct grid dishes
-still require Cooking and grant progress once. Simple meat/fish/grain roasting
+still require Cooking and grant progress once; the six Hearty dishes that have
+a raw assembly come only from that "Raw X" in a furnace (Round 28 ruling 27).
+Simple meat/fish/grain roasting
 is universal, belongs to Basics and gives no profession progress.
 
 Profession progression belongs to the eligible taker of the protected
@@ -100,14 +102,45 @@ Found-item random value windows remain distinct from fixed crafted enchants.
 | Attack speed (%) | 4 | 6 | 8 | 10 | 12 | 14 |
 | Armor rating | 1 | 2 | 3 | 4 | 5 | 6 |
 
-Each operation consumes one matching tier professional component plus one tier
-reagent: Coal / Venom Gland / Slime Gel / Croc Tooth / Stormkelp / Stone Core.
-Components: Weaponsmith metal fittings; Armorsmith metal bar; Leatherworker
-leather grade; Tailor cloth bolt; Woodcarver graded wood plus a matching metal
-fitting; Goldsmith setting. Existing ingredient identities and component recipes
-remain authoritative. These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
+**Enchant inputs (Round 28 ruling 28).** Professions are self-contained: no
+operation needs another profession's product. An enchant of tier T for
+equipment family F and stat S consumes three items:
+
+1. the family's **own material** of tier T: Weaponsmith and Armorsmith the
+   metal bar (Bronze … Abyssal Steel), Leatherworker the leather grade, Tailor
+   the cloth bolt, Woodcarver the graded wood (Seasoned … Heartwood), Goldsmith
+   the setting;
+2. the tier's **stat loot** item for S, a mob loot item of the tier band;
+3. the tier's **family input** for F, a mining or gathering item (it may come
+   from an earlier tier, be a raw gem, an alloy ingredient such as a tin or
+   copper bar, or a universal reagent).
+
+Prefix and suffix of one stat share these inputs; the trinket's prefix pool
+(Strength/Intelligence/Dexterity) and suffix pool (maximum HP/maximum
+Mana/Crit) differ but use the same stat loot. The Weaponsmith metal fittings
+are removed (user decision 2026-10-01). The table lives in
+`mods/ITEMS/grug_professions/data/enchants.json` (one entry per tier,
+`stat_loot` per stat and `family_input` per family; format in the Round 28
+design frame §4.4) and is checked at load: every tier present, every stat of
+every family pool has stat loot, every family has an input, every item is
+registered, and no profession recipe or enchant operation uses an item that
+another profession's recipe makes. Until Lane E1 ports the C1 catalogue the
+shipped table is interim: the old tier reagent (Coal Lump / Venom Gland /
+Slime Gel / Croc Tooth / Stormkelp / Stone Core) as every stat's loot and one
+mined item per tier (Tin Lump / Gold Lump / Silver / Emberglass / Abyssal
+Crystal / Abyssal Crystal) as every family's input.
+
+These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);
 UI selection distinguishes operations without manufacturing ambiguous grid recipes.
+
+**Universal reagents.** A few crafted enchant inputs (about two per tier at
+most) anyone can make: one shapeless crafting-grid recipe or one furnace
+recipe from loot, mining or gathering items, never from a profession product.
+They are listed in `mods/ITEMS/grug_professions/data/reagents.json` (`id`,
+`name`, `tier`, `method` grid or furnace, `inputs`, `output_count`; design
+frame §4.5), register as ordinary craft items with their tier as ingredient
+tier, and appear in the Basics book. None exists before Lane E1.
 
 ## Equipment and lifetime
 
@@ -136,8 +169,8 @@ below and T `grug_professions:thread`. Dashes are empty grid slots.
 
 Each wand consumes one occult component; each staff consumes two. Bows need
 none. Graded wood and the former metal-rod wand alternative are absent from
-these base recipes. Graded-wood production and Woodcarver enchant costs remain
-unchanged. Existing mob sources, chances and item stats are unchanged; components
+these base recipes. Graded-wood production is unchanged; Woodcarver enchant
+costs follow the enchant inputs above. Existing mob sources, chances and item stats are unchanged; components
 may be collected before their weapon tier, with metal providing the tier gate.
 Bronze recipes are visible from the start; later recipes are discovered by
 finding their matching metal bar. Discovery only affects book visibility, never
