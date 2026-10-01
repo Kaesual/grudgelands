@@ -75,7 +75,7 @@ Two free main professions per player, unchanged. The roster is organised
 |---|---|---|
 | **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical weapons and mining tools |
 | **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments; plain shields are Basics |
-| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor, leather bags and the quiver |
+| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and leather bags |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
 | **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff, wand and bow enchantments; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
 | **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
@@ -105,8 +105,8 @@ That is the property the re-cut was made for, and it is checkable:
   fixed tier values
   (`items_crafting.md` §6.2); cultural finishes never apply to trinkets.
 - **Offhands have distinct roles**: plain shields are Basics and Armorsmith
-  improves them; Goldsmith makes spellbooks; Leatherworker makes the no-stat
-  four-stack quiver. A bow permits only the quiver beside it.
+  improves them; Goldsmith makes spellbooks. The Scout's offhand is its melee
+  blade, and its quiver is a slot, not an item (Round 28).
 - **Consumables** are the Alchemist's alone. Tailor owns cloth bags and
   Leatherworker owns equal-capacity leather bags.
 
@@ -213,8 +213,8 @@ who wants both specialties spends both slots, matching the two-profession cost
 of cloth or leather users who also want a professionally improved weapon.
 
 - **The Bowyer split is dropped entirely** (2026-08-07). Plain bows are Basics,
-  while Woodcarver owns their named enchant operations; the quiver stays
-  Leatherworker, so there is nothing left for a Bowyer to own. The
+  while Woodcarver owns their named enchant operations, so there is nothing
+  left for a Bowyer to own. The
   Leatherworker is not split.
   *A settlement shop called a bowyer is not this.* Since 2026-09-15 a
   settlement may hold one of twelve **profession shop vendors** — butcher,
@@ -227,8 +227,7 @@ of cloth or leather users who also want a professionally improved weapon.
   what equipment professions do to their own item families
   (`items_crafting.md` §6b), not a seventh profession that would take a
   cut of all six.
-- **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. Woodcarver improves bows;
-  Leatherworker makes the optional four-stack quiver.
+- **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. Woodcarver improves bows.
 - Cultural finishing is the scalable race/profession hook
   (`items_crafting.md` §4): a crafter applies only their own culture's fixed
   effects to families their profession owns, while finished stacks remain

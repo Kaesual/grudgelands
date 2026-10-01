@@ -68,53 +68,158 @@ for _, row in ipairs(extra_bags) do
 	})
 end
 
+--
+-- The Scout's quiver (Round 28 ruling 26). One slot beside the equipment
+-- slots holds up to quiver_capacity() arrows; there is no quiver item.
+--
+-- Why: arrows are the Scout's ammunition, and a slot of its own keeps them
+-- out of the bags without an item to craft first. Shots draw from the quiver
+-- first, then from `main`.
+--
+-- The arrows live in QUIVER_LIST, QUIVER_STACKS ordinary stacks of up to the
+-- arrow's stack_max (100) each, but the Character page draws only its first
+-- cell. normalize_quiver keeps that cell holding min(total, 100), so clicking
+-- it takes up to 100 arrows as one stack, and a label beside it shows the
+-- total. Arrows come in by drag, shift-click and pickup. A drag onto the full
+-- visible cell cannot be an engine move (the engine would swap the stacks),
+-- so every move INTO the quiver is applied by absorb_into_quiver from the
+-- allow callback, which then refuses the engine's own move. There is no item
+-- drop on death, so the quiver keeps its arrows like the equipped items do.
+--
 grug_inventory.QUIVER_LIST = "grug_quiver_content"
-core.register_tool("grug_inventory:quiver", {
-	tool_capabilities = {full_punch_interval=1.4, damage_groups={fleshy=0},
-		groupcaps={}, punch_attack_uses=0},
-	description = "Quiver (4 arrow stacks)",
-	inventory_image = "grug_inventory_quiver.png^[resize:64x64",
-	stack_max = 1, _grug_hands = 0, _grug_tier = 1,
-	groups = {grug_equip_offhand = 1, grug_quiver = 1},
-})
+grug_inventory.QUIVER_STACKS = 5
+local QUIVER_LIST = grug_inventory.QUIVER_LIST
+local QUIVER_STACKS = grug_inventory.QUIVER_STACKS
+local ARROW = "grug_gear:arrow"
 
 local function is_arrow(stack)
 	return stack and not stack:is_empty() and
 		core.get_item_group(stack:get_name(), "grug_arrow") > 0
 end
 
-local function equipped_quiver(inventory)
-	return core.get_item_group(inventory:get_stack("grug_offhand", 1):get_name(),
-		"grug_quiver") > 0
+function grug_inventory.quiver_capacity()
+	return QUIVER_STACKS * ItemStack(ARROW):get_stack_max()
 end
 
-local function quiver_arrow_count(inventory)
+-- Only the Scout has a quiver slot.
+function grug_inventory.has_quiver(player)
+	return grug_classes.get_class(player) == "scout"
+end
+
+-- Stack counts for `total` arrows over `size` cells of `stack_max`: cell 1
+-- first, so the one visible cell is full whenever there are 100 arrows.
+function grug_inventory.quiver_layout(total, stack_max, size)
+	local counts = {}
+	for index = 1, size do
+		local count = math.max(0, math.min(stack_max, total))
+		counts[index] = count
+		total = total - count
+	end
+	return counts
+end
+
+local function quiver_total(inventory)
 	local count = 0
-	for _, stack in ipairs(inventory:get_list(grug_inventory.QUIVER_LIST) or {}) do
+	for _, stack in ipairs(inventory:get_list(QUIVER_LIST) or {}) do
 		if is_arrow(stack) then count = count + stack:get_count() end
 	end
 	return count
 end
 
-local function main_arrow_capacity(inventory, occupied_index)
-	local capacity = 0
-	local arrow_stack_max = ItemStack("grug_gear:arrow"):get_stack_max()
-	for index, stack in ipairs(inventory:get_list("main") or {}) do
-		if index ~= occupied_index then
-			if stack:is_empty() then
-				capacity = capacity + arrow_stack_max
-			elseif is_arrow(stack) then
-				capacity = capacity + math.max(0, stack:get_stack_max() - stack:get_count())
+-- Rewrite the quiver into its layout, writing only the cells that change.
+-- Arrows are the only items that may enter, so the content is one total per
+-- arrow item -- with the one arrow item there is, one total.
+local function normalize_quiver(inventory)
+	local totals, order = {}, {}
+	for _, stack in ipairs(inventory:get_list(QUIVER_LIST) or {}) do
+		if not stack:is_empty() then
+			local name = stack:get_name()
+			if not totals[name] then
+				order[#order + 1] = name
+				totals[name] = 0
+			end
+			totals[name] = totals[name] + stack:get_count()
+		end
+	end
+	local size = inventory:get_size(QUIVER_LIST)
+	local wanted, index = {}, 1
+	for _, name in ipairs(order) do
+		local counts = grug_inventory.quiver_layout(totals[name],
+			ItemStack(name):get_stack_max(), size - index + 1)
+		for _, count in ipairs(counts) do
+			if count > 0 then
+				wanted[index] = name .. " " .. count
+				index = index + 1
 			end
 		end
 	end
-	return capacity
+	for cell = 1, size do
+		local target = ItemStack(wanted[cell] or "")
+		if inventory:get_stack(QUIVER_LIST, cell):to_string() ~= target:to_string() then
+			inventory:set_stack(QUIVER_LIST, cell, target)
+		end
+	end
 end
 
-local function usable_ammo_lists(inventory)
-	local quiver = inventory:get_stack("grug_offhand", 1)
-	if equipped_quiver(inventory) and quiver:get_wear() < 65535 then
-		return {grug_inventory.QUIVER_LIST, "main"}
+-- The Character page's Stats tab prints the total beside the slot, so a
+-- changed quiver re-renders a cached Stats tab (pages.lua). Nothing else is
+-- re-sent.
+local function quiver_changed(player, inventory)
+	normalize_quiver(inventory)
+	if grug_inventory.refresh_character_tab then
+		grug_inventory.refresh_character_tab(player, "stats")
+	end
+end
+
+function grug_inventory.quiver_count(player)
+	local inv = player and player:get_inventory()
+	return inv and quiver_total(inv) or 0
+end
+
+-- Put arrows into the Scout's quiver as far as it has room. Returns the
+-- leftover (all of it for a non-Scout or a non-arrow).
+function grug_inventory.add_to_quiver(player, stack)
+	stack = ItemStack(stack)
+	local inv = player and player:get_inventory()
+	if not inv or not is_arrow(stack) or not grug_inventory.has_quiver(player) then
+		return stack
+	end
+	local room = grug_inventory.quiver_capacity() - quiver_total(inv)
+	local count = math.min(room, stack:get_count())
+	if count <= 0 then
+		return stack
+	end
+	-- Counts, not take_item: a stack taken to zero loses its name, and a later
+	-- set_count would then leave a nameless stack behind.
+	local moving = ItemStack(stack)
+	moving:set_count(count)
+	local accepted = count - inv:add_item(QUIVER_LIST, moving):get_count()
+	stack:set_count(stack:get_count() - accepted)
+	quiver_changed(player, inv)
+	return stack
+end
+
+-- A move into the quiver: up to `count` arrows of the source stack go in,
+-- applied here rather than by the engine (see above).
+local function absorb_into_quiver(player, inventory, from_list, from_index, count)
+	local source = inventory:get_stack(from_list, from_index)
+	if not is_arrow(source) then
+		return
+	end
+	local moving = ItemStack(source)
+	moving:set_count(math.min(count, source:get_count()))
+	local accepted = moving:get_count() -
+		grug_inventory.add_to_quiver(player, moving):get_count()
+	if accepted <= 0 then
+		return -- a full quiver: nothing changes hands
+	end
+	source:set_count(source:get_count() - accepted)
+	inventory:set_stack(from_list, from_index, source)
+end
+
+local function usable_ammo_lists(player)
+	if grug_inventory.has_quiver(player) then
+		return {QUIVER_LIST, "main"}
 	end
 	return {"main"}
 end
@@ -122,21 +227,12 @@ end
 function grug_inventory.ammo_count(player)
 	local inv = player:get_inventory()
 	local count = 0
-	for _, list in ipairs(usable_ammo_lists(inv)) do
+	for _, list in ipairs(usable_ammo_lists(player)) do
 		for _, stack in ipairs(inv:get_list(list) or {}) do
 			if is_arrow(stack) then count = count + stack:get_count() end
 		end
 	end
 	return count
-end
-
-function grug_inventory.get_equipped_quiver(player)
-	local inv = player and player:get_inventory()
-	if not inv then return nil end
-	local stack = inv:get_stack("grug_offhand", 1)
-	if core.get_item_group(stack:get_name(), "grug_quiver") == 0 or
-		stack:get_wear() >= 65535 then return nil end
-	return ItemStack(stack)
 end
 
 function grug_inventory.is_bow(stack)
@@ -151,31 +247,34 @@ function grug_inventory.consume_ammo(player, count)
 	if count < 1 or grug_inventory.ammo_count(player) < count then return false end
 	local inv = player:get_inventory()
 	local left = count
-	for _, list in ipairs(usable_ammo_lists(inv)) do
+	local from_quiver = false
+	for _, list in ipairs(usable_ammo_lists(player)) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			if left > 0 and is_arrow(stack) then
 				local take = math.min(left, stack:get_count())
 				stack:take_item(take)
 				inv:set_stack(list, index, stack)
 				left = left - take
+				from_quiver = from_quiver or list == QUIVER_LIST
 			end
 		end
+	end
+	if from_quiver then
+		quiver_changed(player, inv)
 	end
 	return left == 0
 end
 
 -- Return one successful shot action's complete ammunition count. Prefer the
--- equipped quiver, then main; if both filled between launch and refund, place
--- the remainder at the player's feet instead of silently losing it.
+-- quiver, then main; if both filled between launch and refund, place the
+-- remainder at the player's feet instead of silently losing it.
 function grug_inventory.refund_ammo(player, count)
 	count = math.floor(tonumber(count) or 0)
 	if count < 1 then return false end
 	local inv = player and player:get_inventory()
 	if not inv then return false end
-	local leftover = ItemStack("grug_gear:arrow " .. count)
-	if grug_inventory.get_equipped_quiver(player) then
-		leftover = inv:add_item(grug_inventory.QUIVER_LIST, leftover)
-	end
+	local leftover = grug_inventory.add_to_quiver(player,
+		ItemStack(ARROW .. " " .. count))
 	if not leftover:is_empty() then
 		leftover = inv:add_item("main", leftover)
 	end
@@ -185,24 +284,43 @@ function grug_inventory.refund_ammo(player, count)
 	return true
 end
 
+-- Picked-up arrows fill a Scout's quiver first, the rest goes to `main`.
+-- Returning nil leaves an untouched pickup to builtin's own add to `main`.
+core.register_on_item_pickup(function(itemstack, picker)
+	if not picker or not picker.is_player or not picker:is_player() or
+			not is_arrow(itemstack) then
+		return nil
+	end
+	local leftover = grug_inventory.add_to_quiver(picker, itemstack)
+	if leftover:get_count() == itemstack:get_count() then
+		return nil
+	end
+	return picker:get_inventory():add_item("main", leftover)
+end)
+
+-- Would moving `stack` onto `dest` be a swap? The engine swaps when nothing of
+-- the stack fits. A move out of the quiver never swaps: arrows would enter
+-- the quiver past absorb_into_quiver.
+local function would_swap(dest, stack)
+	if dest:is_empty() then
+		return false
+	end
+	return ItemStack(dest):add_item(stack):get_count() == stack:get_count()
+end
+
 --
 -- List setup & rules
 --
 
 core.register_on_joinplayer(function(player)
 	local inv = player:get_inventory()
-	inv:set_size(grug_inventory.QUIVER_LIST, 4)
+	inv:set_size(QUIVER_LIST, QUIVER_STACKS)
 	for i = 1, grug_inventory.BAG_COUNT do
 		inv:set_size(grug_inventory.bag_list(i), 1)
 		local bag = inv:get_stack(grug_inventory.bag_list(i), 1)
 		inv:set_size(grug_inventory.content_list(i),
 			grug_inventory.bag_slots_of(bag))
 	end
-end)
-
-local quiver_notice_at = {}
-core.register_on_leaveplayer(function(player)
-	quiver_notice_at[player:get_player_name()] = nil
 end)
 
 core.register_allow_player_inventory_action(function(player, action, inventory, info)
@@ -225,28 +343,33 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		return 0
 	end
 
-	-- Removing a filled quiver is one transaction: all arrows must fit in main
-	-- after the quiver move. The post-action callback performs the transfer.
-	if from_list == "grug_offhand" and equipped_quiver(inventory) then
-		local occupied = action == "move" and to_list == "main" and info.to_index or nil
-		if main_arrow_capacity(inventory, occupied) < quiver_arrow_count(inventory) then
-			local name = player:get_player_name()
-			local now = core.get_us_time()
-			if not quiver_notice_at[name] or now - quiver_notice_at[name] >= 2000000 then
-				quiver_notice_at[name] = now
-				core.chat_send_player(name,
-					"Make room in your main inventory for all arrows before removing the quiver.")
-			end
+	if to_list == QUIVER_LIST then
+		if not grug_inventory.has_quiver(player) or not is_arrow(stack) then
 			return 0
 		end
+		if action == "put" then
+			-- From another inventory: the engine's own add, as far as the
+			-- quiver and the target cell have room.
+			local room = grug_inventory.quiver_capacity() - quiver_total(inventory)
+			local cell = inventory:get_stack(QUIVER_LIST, info.index)
+			if not cell:is_empty() and cell:get_name() ~= stack:get_name() then
+				return 0
+			end
+			return math.max(0, math.min(stack:get_count(), room,
+				stack:get_stack_max() - cell:get_count()))
+		end
+		if from_list ~= QUIVER_LIST then
+			absorb_into_quiver(player, inventory, from_list, info.from_index,
+				info.count or stack:get_count())
+		end
+		return 0
+	end
+	if from_list == QUIVER_LIST and action == "move" and
+			would_swap(inventory:get_stack(to_list, info.to_index), stack) then
+		return 0
 	end
 
 	if to_list then
-		if to_list == grug_inventory.QUIVER_LIST then
-			if not equipped_quiver(inventory) or
-				inventory:get_stack("grug_offhand", 1):get_wear() >= 65535 then return 0 end
-			return is_arrow(stack) and (info.count or stack:get_count()) or 0
-		end
 		local to_bag = bag_slot_index(to_list)
 		if to_bag then
 			if grug_inventory.bag_slots_of(stack) == 0 then
@@ -286,21 +409,13 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 		note(info.listname)
 	end
 
-	local refresh = false
-	local removed_quiver = (action == "move" and info.from_list == "grug_offhand") or
-		(action == "take" and info.listname == "grug_offhand")
-	if removed_quiver and not equipped_quiver(inventory) then
-		for index, stack in ipairs(inventory:get_list(grug_inventory.QUIVER_LIST) or {}) do
-			if not stack:is_empty() then
-				local leftover = inventory:add_item("main", stack)
-				if not leftover:is_empty() then
-					error("grug_inventory: quiver transfer violated its preflight", 0)
-				end
-				inventory:set_stack(grug_inventory.QUIVER_LIST, index, ItemStack(""))
-			end
-		end
-		refresh = true
+	-- Arrows taken out of the quiver: refill its visible cell.
+	if (action == "move" and info.from_list == QUIVER_LIST) or
+			(action ~= "move" and info.listname == QUIVER_LIST) then
+		quiver_changed(player, inventory)
 	end
+
+	local refresh = false
 	for i in pairs(touched_bags) do
 		local bag = inventory:get_stack(grug_inventory.bag_list(i), 1)
 		inventory:set_size(grug_inventory.content_list(i),

@@ -170,6 +170,19 @@ local function weapon_stats(damage, fpi, hands)
 	return line
 end
 
+-- Where a weapon goes, per family (Round 28 ruling 25): the Scout carries its
+-- bow in the Weapon slot, shown as "Ranged", and its sword or dagger in the
+-- offhand, shown as "Melee". The line is the same for every viewer.
+function grug_gear.equip_hint(family)
+	if family == "bow" then
+		return "Equip in Character > Ranged; shoot with a hotbar bow skill"
+	elseif family == "sword" or family == "dagger" then
+		return "Equip in Character > Weapon (Scout: Melee); attack with a " ..
+			"hotbar combat skill"
+	end
+	return "Equip in Character > Weapon; attack with a hotbar combat skill"
+end
+
 local ARMOR_LABELS = {[1] = "Cloth", [2] = "Leather", [3] = "Metal"}
 
 local function armor_stats(armor)
@@ -196,10 +209,12 @@ end
 -- DECLARATION here, never a check -- grug_gear registers items, the equipment
 -- lists are the only place that knows what a free hand is.
 --
--- greataxe and staff are the two-handers; sword, dagger and every caster 1H
--- family are one-handed. Anything
--- that does not declare the field at all counts as one-handed, which is what
--- keeps the rule additive for torches, shields and every future offhand item.
+-- greataxe and staff are the two-handers; sword, dagger, every caster 1H
+-- family and the bow are one-handed. The bow is one-handed since Round 28
+-- ruling 25: only the Scout uses it, and the Scout carries its melee weapon in
+-- the offhand beside it. Anything that does not declare the field at all
+-- counts as one-handed, which is what keeps the rule additive for shields and
+-- every future offhand item.
 local WEAPONS = {
 	-- `fixed` = always on sale; the rest are the rotation pool of §3.8.
 	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, hands = 1, group = "sword", fixed = true},
@@ -207,7 +222,7 @@ local WEAPONS = {
 	{key = "greataxe", noun = "Battle Axe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
 	{key = "staff",    noun = "Staff",    fpi = 1.4, factor = 1.2, hands = 2, group = "staff"},
 	{key = "wand",     noun = "Wand",     fpi = 1.0, factor = 1.0, hands = 1, group = "wand", caster = true},
-	{key = "bow",      noun = "Bow",      fpi = 1.0, factor = 1.0, hands = 2,
+	{key = "bow",      noun = "Bow",      fpi = 1.0, factor = 1.0, hands = 1,
 		group = "bow", bow = true},
 }
 
@@ -290,7 +305,7 @@ function grug_gear.describe_stack_base(stack, ilvl)
 				base_caps.full_punch_interval or 1.4, def._grug_hands or 1))
 		end
 		lines[#lines + 1] = core.colorize(STAT_COLOR,
-			"Equip in Character > Weapon; attack with a hotbar combat skill")
+			grug_gear.equip_hint(def._grug_weapon_family or family))
 		return lines, {damage = damage,
 			full_punch_interval = base_caps.full_punch_interval or 1.4}
 	end
@@ -385,7 +400,6 @@ local REPAIR_STARTER_PRICE = {
 	["grug_farming:hoe"] = 5,
 	["grug_materials:pick_stone"] = 10, ["grug_materials:shovel_stone"] = 10,
 	["grug_materials:axe_stone"] = 10, ["grug_farming:hoe_stone"] = 10,
-	["grug_inventory:quiver"] = grug_gear.BRACKETS[1].price.other,
 }
 local REPAIR_TIER_TOOL = {}
 for tier, names in ipairs({
@@ -474,7 +488,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		core.register_tool(itemname, {
 			description = describe(metal.name, w.noun, br.ilvl,
 				weapon_stats(damage, w.fpi, w.hands) ..
-				"\nEquip in Character > Weapon; attack with a hotbar combat skill"),
+				"\n" .. grug_gear.equip_hint(w.key)),
 			-- One sprite per family AND material, all in the one diagonal
 			-- convention (grip bottom-left) the wield transform is derived for.
 			inventory_image = image,
@@ -603,7 +617,7 @@ grug_gear.STARTER_SWORD = "grug_gear:sword_bronze"
 
 core.register_craftitem("grug_gear:arrow", {
 	description = "Arrow", inventory_image = "grug_gear_arrow.png",
-	groups = {grug_arrow = 1}, stack_max = 200, _grug_sell_price = 1,
+	groups = {grug_arrow = 1}, stack_max = 100, _grug_sell_price = 1,
 })
 dofile(core.get_modpath("grug_gear") .. "/trinkets.lua")
 
@@ -625,7 +639,7 @@ core.register_on_mods_loaded(function()
 				local label = ((def.description or itemname):gsub("\n.*", ""))
 				local stat_line = weapon_stats(damage,
 					caps.full_punch_interval or 1.4, def._grug_hands or 1) ..
-					"\nEquip in Character > Weapon; attack with a hotbar combat skill"
+					"\n" .. grug_gear.equip_hint(def._grug_weapon_family)
 				core.override_item(itemname, {
 					description = describe(label, nil, def._grug_ilvl, stat_line) ..
 					"\n" .. grug_gear.usable_by(ItemStack(itemname)),
@@ -702,14 +716,16 @@ local function refresh_weapon_descriptions(player)
 			local stack = inventory:get_stack(listname, index)
 			if grug_gear.initialize_weapon_tooltip(stack, player) then
 				inventory:set_stack(listname, index, stack)
-				if listname == "grug_weapon" then
-					equipment_changed = true
+				if listname == "grug_weapon" or listname == "grug_offhand" then
+					equipment_changed = equipment_changed == false and listname or true
 				end
 			end
 		end
 	end
 	if equipment_changed then
-		inventory_api.equipment_changed(player, "grug_weapon")
+		-- One changed hand names its list; both hands are "unknown" (nil).
+		inventory_api.equipment_changed(player,
+			equipment_changed ~= true and equipment_changed or nil)
 	end
 end
 

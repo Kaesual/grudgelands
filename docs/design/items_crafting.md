@@ -142,7 +142,7 @@ new rule, all three were implicit before:
 |---|---|
 | Weaponsmith | Metal fittings; physical-weapon enchantments |
 | Armorsmith | Metal-armor and shield enchantments |
-| Leatherworker | Weapon grips; 8/16/24/32-slot leather bags; quiver; leather enchants |
+| Leatherworker | Weapon grips; 8/16/24/32-slot leather bags; leather enchants |
 | Tailor | 8/16/24/32-slot cloth bags; cloth enchants |
 | Woodcarver | Staff, wand and bow enchantments |
 | Goldsmith | Rough→Cut gems; Settings; trinkets; spellbooks; ornaments; named enchants |
@@ -504,8 +504,9 @@ from `grug_gear`. Consequences, all binding:
   Lifetime follows the current equipment revision.
   Woodcutting Axes are damage-free tools; two-handed Battle Axes are weapons.
   Wood and Stone exist only as tools. Fresh Warrior characters start with a
-  Bronze Sword, Mage/Priest with a Bronze Staff, Scout with a Bronze Bow,
-  backup Bronze Sword and 200 arrows. Ordinary T1 weapons are usable at level 1.
+  Bronze Sword, Mage/Priest with a Bronze Staff, Scout with a Bronze Bow in
+  Ranged, a Bronze Sword in Melee and 200 arrows in its quiver slot (Round 28).
+  Ordinary T1 weapons are usable at level 1.
 - **All armor base recipes use the canonical shapes:** head 5, chest 8,
   legs 7 and feet 4 units, in the same grid positions for metal, cloth and
   leather. All three lines and all six material tiers are registered and
@@ -899,9 +900,9 @@ wearers are the **Warrior** (light avoidance set, §3.8 — decided
 
 **Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
 grips** at Apprentice — 2 leather of the item's tier, retained as a component
-without a current enchant consumer; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes the four-stack **quiver**, an Offhand item
-that stores arrows but grants no stat, affix or combat bonus, plus
-the 8-slot Leather Pouch. Its 16/24/32-slot leather bags follow at
+without a current enchant consumer; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes
+the 8-slot Leather Pouch. (The quiver item and its recipe were removed in
+Round 28; the quiver is a Scout-only slot, `inventory_equipment.md` §3.) Its 16/24/32-slot leather bags follow at
 Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
 Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
@@ -1017,7 +1018,6 @@ for example Steel Staff (§3.8).
 **Enchants**: staves, wands and bows.
 
 **Exclusive operations:** named staff, wand and bow enchants across T1–T6.
-The quiver stays Leatherworker (§3.4).
 
 **Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
 Every tier of
@@ -1788,7 +1788,7 @@ preserves the requirement while rebuilding the description.
 | Metal armor | +Str, +max HP%, +armor rating |
 | Leather armor | +Dex, +max HP%, +max Mana%, +crit%, +dodge% |
 | Cloth armor | +Int, +max Mana%, +max HP%, +crit% |
-| Quiver, bags | none |
+| Bags | none |
 
 Ordinary equipment keeps the no-duplicate-stat rule across its prefix and
 suffix. Either channel draws from the same family pool. Cultural finish and
@@ -2112,8 +2112,9 @@ are derived only after those rates are measured; the retired fixed
 **Its consumer is delivered in Round 11**: the Scout's base kit opens
 with a bow shot ([scout.md](scout.md) §2, rulings 7 and 12 of
 [skill_trees.md](skill_trees.md) §5) and Round 17 changes the arrow to **targeted homing**, like Fireball
-(`combat_stats.md` §2, `classes.md` §2b). Round 11 has delivered the registered bow, arrow and
-quiver item foundation below. The Scout runtime owns draw, launch and
+(`combat_stats.md` §2, `classes.md` §2b). Round 11 has delivered the registered bow and arrow
+item foundation below (Round 28 replaced the quiver item with a Scout-only
+slot). The Scout runtime owns draw, launch and
 accepted-action hit settlement.
 
 Item path (source: `mcl_bows`, code **LGPL 3.0 or GPL 3.0** — VoxeLibre
@@ -2131,17 +2132,16 @@ consumer are active:
   material-named like everything else (§3.0.3). Its ordinary affix pool is
   Dexterity, Crit, draw speed, HP and Mana; draw speed uses the weapon-family
   attack-speed channel to shorten draw time.
-- **Arrows** stack to **200** per inventory/quiver slot (user playtest ruling
-  2026-09-20); new Scouts receive 200. Ammo also has a targeted projectile entity;
+- **Arrows** stack to **100** in any inventory (Round 28 ruling 26, which
+  replaced the 200 of the 2026-09-20 playtest ruling); new Scouts receive 200
+  in their quiver slot, which holds up to 500 (`inventory_equipment.md` §3). Ammo also has a targeted projectile entity;
   craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
-  eagle/vulture drops finally get their reagent role). The optional quiver is
-  a Leatherworker Offhand item with four arrow-only slots (§3.4). The current
+  eagle/vulture drops finally get their reagent role). The current
   Bowyer offer is 3c per arrow (2c after the same-race discount), with 1c
   buy-back; purchase remains strictly above buy-back after rounding.
 - **Plain production is Basics; Woodcarver owns enchantments.** The
-  Scout consumes the family in V1. The Leatherworker's Apprentice quiver is an
-  optional four-stack Offhand convenience; shooting still reads `main` when no
-  quiver is equipped.
+  Scout consumes the family in V1. Shots draw from the Scout's quiver slot
+  first, then `main`.
 
 ## 10. Historical decision log (non-authoritative)
 
@@ -2166,6 +2166,7 @@ See [archived §10.3](../archive/design/items-history.md#103-2026-08-08).
 Approved 2026-09-24: a valid 1.5s food hold provides
 continuous bite feedback at gain 0.5; a modest moving HUD food image may
 substitute for the native wield image with full cancellation cleanup. Keep
-consumption timing and interaction priority. Basic arrows craft 200 from one
+consumption timing and interaction priority. Basic arrows craft 200 (100 since
+Round 28: one craft fills one stack) from one
 Bronze Bar and two Sticks diagonally (`--M / -S- / S--`), without feathers or
 a profession. No other metal recipe or bonus-damage ammo tier is included.

@@ -106,8 +106,8 @@ function grug_trinkets.modify_instant_potion(player, amount)
 end
 
 function grug_trinkets.accepted_weapon_hit(player)
-	if not grug_core.get_equipped_weapon or
-			not grug_core.get_equipped_weapon(player) then
+	if not grug_core.get_melee_weapon or
+			not grug_core.get_melee_weapon(player) then
 		return
 	end
 	local effect = record(player, "battlebeat_rage")

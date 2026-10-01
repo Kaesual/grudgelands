@@ -579,7 +579,10 @@ smith.meta["grug_jobs:level:weaponsmith"] = 2
 -- The page itself.
 grug_inventory.equipment_slots = {}
 player_api = {registered_models = {["character.b3d"] = {textures = {"character.png"}}}}
+-- Lane A7's hand slots and Scout quiver read the class (a Warrior: no quiver).
+grug_inventory.has_quiver = function() return false end
 grug_classes = {get_class_def = function() return {resource = "rage"} end,
+	get_class = function() return "warrior" end,
 	get_pool_breakdown = function() return {final = 120} end,
 	get_crit_chance = function() return 0.05 end, get_dodge_chance = function() return 0.05 end}
 grug_core.get_armor_rating = function() return 10 end

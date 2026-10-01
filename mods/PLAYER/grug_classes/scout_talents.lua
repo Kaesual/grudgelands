@@ -64,7 +64,7 @@ grug_classes.register_talent({
 
 grug_classes.register_tree({
 	id = "veil", class = "scout", name = "Veil",
-	description = "Main-hand blade damage and avoidance.",
+	description = "Melee-slot blade damage and avoidance.",
 	chains = {"blade", "shadow"},
 	capstone_chain = "shadow",
 })
@@ -86,7 +86,7 @@ grug_classes.register_talent({
 	keystone = true, ability = "opening",
 	name = "Opening",
 	description = "New skill: a 15% base-mana swing from behind for " ..
-		"220 / 250 / 280% main-hand damage plus melee bonus; 12 s charge.",
+		"220 / 250 / 280% Melee-slot weapon damage plus melee bonus; 12 s charge.",
 	effects = {opening_multiplier = {220, 250, 280}},
 })
 grug_classes.register_talent({

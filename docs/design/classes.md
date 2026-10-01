@@ -15,9 +15,14 @@ Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 two trees per class derived from the kits below, the talents that improve
 their numbers, and the keystones and capstones that add new main skills —
 Renew among them, as §5 already decided. A **fourth class, the Scout**
-([scout.md](scout.md)): leather armour, a bow and a blade. A melee Scout uses
-the equipped main hand as the sole weapon-damage source; an offhand never adds
-a second strike, damage roll or talent axis. The numbers in the
+([scout.md](scout.md)): leather armour, a bow and a blade. The Scout carries
+its bow in the Weapon slot, shown as "Ranged", and its sword or dagger in the
+offhand, shown as "Melee" (Round 28 ruling 25): bow skills read Ranged,
+Strike and every melee skill read Melee. Each skill swings exactly one slot's
+item; no class gets a second strike, damage roll or talent axis from the
+other hand. Every class's offhand is class-specific — Warrior a shield, Mage
+and Priest a spellbook ("Caster offhand"), Scout the Melee blade — and both
+hand items always count toward stats (`inventory_equipment.md` §2). The numbers in the
 §3-§5 tables become the **untalented base** values; and by the user's ruling
 of 2026-09-16 the **Warrior's base kit drops to three abilities** (Charge,
 Mighty Blow, Taunt), so that every class starts with Strike plus three:
@@ -170,7 +175,10 @@ Core principles:
 All selected skills support native empty-hand digging and zero native combat
 damage. Swing versus cast describes the effect, not a different mouse binding.
 Only skills initiate player combat; ordinary tools retain their gathering role.
-The equipped Weapon slot is the combat source, never a weapon in the hotbar.
+The equipped hand slots are the combat source, never a weapon in the hotbar:
+Strike and every melee skill swing the melee slot (the Scout's Melee offhand,
+everyone else's Weapon slot), the Scout's bow skills read its Ranged slot. A
+held skill shows the item of its own slot in first and third person.
 
 ### Left click and held input
 
@@ -415,7 +423,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the weapon slot: weapon damage + floor(melee attribute/10) (Scout Dex, otherwise Str), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + floor(melee attribute/10) (Scout Dex, otherwise Str), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh
@@ -427,7 +435,7 @@ it, including one that has not picked a class yet.
   characters see the swing text alone.
 - It is the **"no effect" slot**: the baseline every other swing skill is
   measured against, and the slot to sit on while the others charge.
-- **An empty weapon slot makes it weak, never uncastable**: it swings for
+- **An empty melee slot makes it weak, never uncastable**: it swings for
   the bare-hand baseline. The same holds for every weapon-scaled class
   ability.
 - It is **melee**, so the elf's +5 m ability-range passive (`world.md` §7)
@@ -451,7 +459,7 @@ starter supplies. Existing carried items are preserved. This startup arrangement
 does not reorder the player's inventory on joins or talent changes.
 
 Ability items may live in `main` or the character's four owned bag-content
-lists. `craft`, equipment, quivers, bag slots, nodes, detached inventories and
+lists. `craft`, equipment, the quiver, bag slots, nodes, detached inventories and
 other characters refuse them. Dropping one deletes the representation without
 changing entitlement or combat state; dragging it back to its matching Skills
 entry does the same. Recovery is available only when no copy exists in `main`,

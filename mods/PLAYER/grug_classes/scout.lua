@@ -6,8 +6,9 @@ local sidestep_expiry = {}
 grug_classes.register_class({
 	id = "scout",
 	name = "Scout",
-	description = "Ranged hunter and agile blade fighter. Uses a bow or\n" ..
-		"main-hand melee weapon and survives through movement and dodge.",
+	description = "Ranged hunter and agile blade fighter. Carries a bow in\n" ..
+		"the Ranged slot and a sword or dagger in the Melee slot, and survives\n" ..
+		"through movement and dodge.",
 	growth = {str = 1, int = 1, dex = 2},
 	resource = "mana",
 	armor_rank = 2,
