@@ -6,6 +6,20 @@ grug_professions = {
 }
 
 local modpath = core.get_modpath(core.get_current_modname())
+grug_professions.enchant_data = dofile(modpath .. "/enchant_data.lua")
+
+-- Decoded JSON from this mod's data/ directory, or nil when the file is absent.
+function grug_professions.read_json(name)
+	local file = io.open(modpath .. "/data/" .. name, "r")
+	if not file then return nil end
+	local text = file:read("*a")
+	file:close()
+	local value, err = core.parse_json(text, nil, true)
+	if value == nil then
+		error("grug_professions: data/" .. name .. ": " .. tostring(err), 0)
+	end
+	return value
+end
 
 function grug_professions.register_item(name, description, image, groups)
 	if not core.registered_items[name] then
@@ -62,6 +76,7 @@ dofile(modpath .. "/base_recipes.lua")
 dofile(modpath .. "/smiths.lua")
 dofile(modpath .. "/leatherworker.lua")
 dofile(modpath .. "/tailor.lua")
+dofile(modpath .. "/reagents.lua")
 dofile(modpath .. "/enchants.lua")
 
 core.register_on_mods_loaded(function()
@@ -92,4 +107,4 @@ core.register_on_mods_loaded(function()
 end)
 
 core.log("action", "[grug_professions] registered Weaponsmith, Armorsmith, " ..
-	"Leatherworker and Tailor catalogs")
+	"Leatherworker and Tailor catalogs, " .. #grug_professions.REAGENTS .. " universal reagents")
