@@ -6,7 +6,9 @@ Tools for the Round 28 design round (plan:
 no network, no engine needed except to refresh the item catalogue.
 
 Design files live under `docs/planning/round28/design/` (`catalog/`,
-`zones/<zone_id>.spawns.json`, `zones/<zone_id>.quests.json`). Both tools
+`zones/<zone_id>.spawns.json`, `zones/<zone_id>.quests.json`, and
+`zones/<host_zone>.front.quests.json` for the front lane's quests given in a
+31–40 or capital zone). Both tools
 read that directory by default; `--design DIR` points them elsewhere (for
 example your own worktree's copy).
 
@@ -43,22 +45,49 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   items), NPCs are quest NPCs (today's registry, plus the atlas), areas used by
   quests exist and host the target, `quest_drops` pair with an item objective
   and a catalogue item of kind `quest`, prerequisites exist and have no cycle.
-- Limits: at most 2 givers per hub and 2 lines per giver, a giver in one hub
-  only, critters never kill targets, sub-type size 0.75–1.3, at most two
-  signature items per family and band, tier-matched metal drops, enchant stat
-  loot is a signature drop, one fallback area per zone with areas, elite
-  leaders only from 31, no `band` shape in front zones.
-- Level fit: a kill target's level range `[lo, hi]` (the area's, else the
-  role's) must contain the quest `level` within ±3.
+- Limits: at most 2 givers per hub and 2 line names per giver (front
+  included), a giver in one hub only, critters never kill targets, sub-type
+  size 0.75–1.3, at most two signature items per family and band,
+  tier-matched metal drops, enchant stat loot is a signature drop, enchant
+  `family_input` keys are sword, dagger, greataxe, metal_armor, shield,
+  leather_armor, cloth_armor, bow, caster_weapon, spellbook, trinket; one
+  fallback area per zone with areas, elite leaders only from 31, no `band`
+  shape in front zones.
+- Level fit is **containment** (`E-level-fit`): every level a kill target or
+  quest-drop source is met at lies within the quest's reward `level` ±3.
+  "Met at" is the named leader's fixed level, else the referenced area's
+  levels, else the levels of all the zone's areas hosting the role, else the
+  role's levels.
+- Leaders: a kill objective or quest drop on a leader role finds the leader
+  in the zone's `leaders` and uses its fixed level; it names no area
+  (`E-leader-area`), because leaders do not spawn from an area.
+- Front files: `zones/<host>.front.quests.json` (`{"zone": host, "quests":
+  [...]}`) are validated with the host zone. Their quests use the line
+  `front`, which the host's `quests.json` must declare for that giver
+  (`E-front-line`); the host's own quests never use `front`. In a contested
+  zone every outpost giver declares `front` (`E-front-reserve`), except in
+  zones with a single quest NPC (Glassroot, Thunderroot). A front file whose
+  host `quests.json` does not exist yet is checked against the atlas only
+  (`W-front-host-missing`).
 - Area references are `zone_id/area_id`; a bare id is accepted with a warning
   only when it exists in the quest's own zone.
 - `--atlas DIR` (the zone atlas `docs/planning/round28/zones/`, or one
   `<zone_id>.json`) adds:
   - zone ids exist; anchors resolve (anchor id such as `anchor_015`,
     settlement key such as `goldmead_village`, or slot such as `start`,
-    `capital`, `village_1`; `zone` = the zone hub); biomes are the zone's
-    (with or without the `grug_` prefix); area levels inside the zone's level
-    range; no `band` shape in front zones and islands;
+    `capital`, `village_1`, `outpost_1`, `clash_1`, `rare_*`; `zone` = the
+    zone hub); biomes are the zone's (with or without the `grug_` prefix;
+    `shore: true` = only near water, false or absent = no restriction); area
+    levels inside the zone's level range; no `band` shape in front zones and
+    islands;
+  - **in zone**: the centre (anchor + offset) of every circle, ring and
+    leader lies in the zone (`E-outside-zone` when more than 96 nodes
+    outside, `W-area-outside` when just outside), a band has sample points in
+    the zone, and most of a circle, ring or band lies inside
+    (`W-area-outside`). The outline is the atlas's rough one: the land extent
+    box plus each border as the line through its midpoint perpendicular to
+    the two zones' hubs. Points at an atlas anchor never fail. The game clips
+    areas to the real zone;
   - quest NPCs are the atlas's quest-socket NPCs; a hub's givers stand in
     that zone (`E-giver-zone`) at the hub's anchor (`E-giver-hub`);
   - **Ruling 44** (`E-race-track`): no kill area, quest-drop area, travel
@@ -71,7 +100,8 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
     names those tracks).
   Without `--atlas` these checks are skipped with one `W-no-atlas` warning.
 - `--legacy` allows the legacy-only fields of B4's mechanical split (`xp`,
-  `mobs`, `zone` on kill objectives, `faction`, `race`).
+  `faction`, `race`; kill objectives with `mobs` entity names and `zone`
+  instead of `roles`).
 - Output: one line per finding, `error [E-code] file: json.path: message` or
   `warning [W-code] …`. Exit 0 = no errors, 1 = errors (or warnings with
   `--strict`), 2 = unreadable files.
@@ -84,11 +114,17 @@ python3 tools/r28_design/ledger.py \
   --atlas docs/planning/round28/zones/ --human --out docs/planning/round28/design/ledger/human.md
 ```
 
-- `--route`: the zones in play order. Each zone's band comes from the
-  atlas level range (`--atlas`; capital 20–30 and 21–30 zones share the
-  20 → 30 band), else from its quests' median reward level; pin it with
-  `zone:lo-hi`. For alternative zones (two 21–30 zones) run one ledger per
-  alternative.
+- `--route`: the zones in play order; each zone's quests include its front
+  file. Every quest counts in the band of its **reward level** (so front
+  quests in contested or capital files count in the front bands). The zone
+  table labels each zone with its atlas band (`--atlas`), else its quests'
+  median band, or `zone:lo-hi`. For alternative zones (two 21–30 zones) run
+  one ledger per alternative.
+- `--lines front` (comma list) counts only those quest lines, e.g.
+  `--route <the 31-40 and capital zones> --lines front --start-level 40
+  --repeat 3` for `ledger/front.md`.
+- Kill objectives and quest drops on a leader use its fixed level; legacy
+  kill objectives (`mobs`) are read too.
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
@@ -113,7 +149,8 @@ python3 tools/r28_design/ledger.py \
   the party only (`--solo-group` to include them solo).
 - `--repeat N` counts every repeatable quest N times (front bands target
   "incl. repeatables"); `--skip-optional` drops `"optional": true` quests;
-  `--start-level` for contested and front routes.
+  `--start-level N` for contested and front routes (the first band's need
+  then starts at N).
 - Exit 0: the targets are rough guides for the solo route, the duo table is
   informational. `--strict` exits 1 when a band is flagged.
 
@@ -126,9 +163,13 @@ python3 tools/r28_design/ledger.py --self-test
 
 They use `samples/valid/` (a small Dawnmere Fields design with catalogues,
 real zone and NPC ids), `samples/existing_min.json` and `samples/atlas/`
-(seven zone files of the seed-42 atlas, trimmed to the fields the tools
+(nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 36 variants each give
-their finding (35 broken, one allowed anchor form); the ledger test checks
-the formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
-194k / 968 KE to 60), the solo/duo rules and the atlas bands.
+`W-loot-unchecked` (only Dawnmere is designed) and that 53 variants each give
+their expected finding (broken designs, plus allowed forms: a settlement-key
+anchor, a leader kill without area, a declared front file, the single-NPC
+contested exemption, legacy kill objectives). The ledger test checks the
+formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
+194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
+per-quest bands, `--lines` and `--start-level`. Both print one summary line
+on PASS.

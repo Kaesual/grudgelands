@@ -1,0 +1,284 @@
+{
+  "id": "elandor_glassroot_wilds",
+  "name": "Glassroot Wilds",
+  "role": "contested 31-40",
+  "level_min": 31,
+  "level_max": 40,
+  "faction": "contested",
+  "race_track": "elf",
+  "race_region": "elf",
+  "extent": {
+    "centroid": {
+      "x": 1662,
+      "z": -683
+    },
+    "land_area_nodes2": 1254320,
+    "max_x": 2616,
+    "max_z": -192,
+    "min_x": 756,
+    "min_z": -1192
+  },
+  "hub": {
+    "x": 1800,
+    "z": -700
+  },
+  "front": {
+    "axis": "+z",
+    "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 832,
+      "midpoint": {
+        "x": 841,
+        "z": -761
+      },
+      "zone": "elandor_ashenward_march"
+    },
+    {
+      "length_nodes": 780,
+      "midpoint": {
+        "x": 1612,
+        "z": -1066
+      },
+      "zone": "elandor_lethariel"
+    },
+    {
+      "length_nodes": 760,
+      "midpoint": {
+        "x": 1032,
+        "z": -1155
+      },
+      "zone": "elandor_lorindor"
+    },
+    {
+      "length_nodes": 820,
+      "midpoint": {
+        "x": 2209,
+        "z": -989
+      },
+      "zone": "elandor_moonfall_wood"
+    },
+    {
+      "length_nodes": 536,
+      "midpoint": {
+        "x": 1189,
+        "z": -279
+      },
+      "zone": "front_shattered_line"
+    },
+    {
+      "length_nodes": 1284,
+      "midpoint": {
+        "x": 2056,
+        "z": -231
+      },
+      "zone": "front_skyglass_canopy"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "anchor_036",
+      "kind": "outpost",
+      "name": "Glassroot Gate",
+      "settlement_key": "r20_anchor_036",
+      "slot": "outpost_1",
+      "x": 1932,
+      "z": -566
+    },
+    {
+      "id": "anchor_054",
+      "kind": "bandit_frontier",
+      "name": "Rootsnare Camp",
+      "settlement_key": "r20_anchor_054",
+      "slot": "bandit_1",
+      "x": 1776,
+      "z": -406
+    }
+  ],
+  "settlements": [
+    {
+      "key": "r20_anchor_036",
+      "anchor_id": "anchor_036",
+      "npcs": [
+        {
+          "npc_id": "r20_anchor_036_host",
+          "npc_name": "Faeris Rootbinder",
+          "role": "quest",
+          "socket": "quest_host"
+        }
+      ]
+    },
+    {
+      "key": "r20_anchor_054",
+      "anchor_id": "anchor_054",
+      "npcs": []
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_deep_forest",
+      "share": 45
+    },
+    {
+      "id": "grug_jungle_fringe",
+      "share": 35
+    },
+    {
+      "id": "grug_elf_forest",
+      "share": 10
+    },
+    {
+      "id": "grug_swamp",
+      "share": 10
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 48.0
+    },
+    {
+      "id": "grug_jungle_fringe",
+      "share_pct": 35.4
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 8.6
+    },
+    {
+      "id": "grug_elf_forest",
+      "share_pct": 7.7
+    },
+    {
+      "id": "grug_badlands",
+      "share_pct": 0.2
+    },
+    {
+      "id": "grug_meadows",
+      "share_pct": 0.1
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:bear",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 55.4
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:jungle_ape",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 35.6
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:jungle_spider",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 90.8
+      }
+    },
+    {
+      "mob": "grug_mobs:panther",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 35.6
+      }
+    },
+    {
+      "mob": "grug_mobs:serpent",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 44.3
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:shore_crab",
+      "day": {
+        "area_nodes2": 4032,
+        "levels": [
+          32,
+          40
+        ]
+      },
+      "night": {
+        "area_nodes2": 4032,
+        "levels": [
+          32,
+          40
+        ]
+      }
+    },
+    {
+      "mob": "grug_mobs:stag",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 47.7
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:wisp",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.6
+      }
+    },
+    {
+      "mob": "grug_mobs:wolf",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 47.7
+      },
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 47.7
+      }
+    }
+  ]
+}

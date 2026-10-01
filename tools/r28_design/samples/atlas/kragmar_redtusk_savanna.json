@@ -7,6 +7,59 @@
   "faction": "throng",
   "race_track": "orc",
   "race_region": "orc",
+  "extent": {
+    "centroid": {
+      "x": -88,
+      "z": 2060
+    },
+    "land_area_nodes2": 612128,
+    "max_x": 724,
+    "max_z": 2424,
+    "min_x": -772,
+    "min_z": 1688
+  },
+  "hub": {
+    "x": 0,
+    "z": 2050
+  },
+  "front": {
+    "axis": "-z",
+    "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1232,
+      "midpoint": {
+        "x": 8,
+        "z": 1814
+      },
+      "zone": "kragmar_gor_drazhak"
+    },
+    {
+      "length_nodes": 1004,
+      "midpoint": {
+        "x": -654,
+        "z": 2000
+      },
+      "zone": "kragmar_speargrass_reach"
+    },
+    {
+      "length_nodes": 1724,
+      "midpoint": {
+        "x": -127,
+        "z": 2305
+      },
+      "zone": "kragmar_sunscar_flats"
+    },
+    {
+      "length_nodes": 432,
+      "midpoint": {
+        "x": 628,
+        "z": 1949
+      },
+      "zone": "kragmar_whispering_reedlands"
+    }
+  ],
   "anchors": [
     {
       "id": "anchor_021",

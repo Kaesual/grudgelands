@@ -7,6 +7,35 @@
   "faction": "accord",
   "race_track": "human",
   "race_region": "human",
+  "extent": {
+    "centroid": {
+      "x": -112,
+      "z": -2660
+    },
+    "land_area_nodes2": 816912,
+    "max_x": 496,
+    "max_z": -2196,
+    "min_x": -844,
+    "min_z": -3140
+  },
+  "hub": {
+    "x": 0,
+    "z": -2550
+  },
+  "front": {
+    "axis": "+z",
+    "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1492,
+      "midpoint": {
+        "x": -162,
+        "z": -2294
+      },
+      "zone": "elandor_goldmead_vale"
+    }
+  ],
   "anchors": [
     {
       "id": "anchor_002",

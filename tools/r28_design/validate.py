@@ -21,6 +21,7 @@ Usage:
 import argparse
 import copy
 import json
+import math
 import re
 import shutil
 import sys
@@ -62,6 +63,12 @@ CLOCKS = ("day", "night", "both")
 DISPOSITIONS = ("neutral", "aggressive", "critter")
 SHAPES = ("circle", "ring", "band", "zone")
 FIXED_ANCHORS = ("start", "capital", "zone")
+FRONT_LINE = "front"
+FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
+            "bow", "caster_weapon", "spellbook", "trinket")
+# Area or leader centres further outside the atlas's rough zone outline than
+# this are errors; closer ones are warnings (borders are warped).
+ZONE_MARGIN = 96
 
 
 class Findings:
@@ -374,6 +381,8 @@ class Validator:
                                "(catalog/items.json kind signature)" % item)
             for family, item in (row.get("family_input") or {}).items():
                 fpath = "%s.family_input.%s" % (path, family)
+                if family not in FAMILIES:
+                    self.E("E-family", file, fpath, "unknown equipment family %r (%s)" % (family, ", ".join(FAMILIES)))
                 if self.check_item_ref(item, file, fpath, "family input"):
                     routes = (self.ex_items.get(item) or {}).get("profession_recipes") or []
                     if routes:
@@ -431,6 +440,7 @@ class Validator:
             self.check_anchor(area.get("anchor"), zone, file, path + ".anchor")
             self.check_offset(area.get("offset"), file, path)
             self.check_shape(area.get("shape"), front, file, path + ".shape")
+            self.check_in_zone(zone, area.get("anchor"), area.get("offset"), area.get("shape"), file, path)
             hosts = area.get("hosts")
             if not isinstance(hosts, dict) or not isinstance(hosts.get("biomes"), list) or not hosts["biomes"]:
                 self.E("E-hosts", file, path + ".hosts", "hosts needs a non-empty 'biomes' list ('any' allowed)")
@@ -498,6 +508,7 @@ class Validator:
                 self.W("W-leader-flag", file, path, "sub-type %s is not marked \"leader\": true" % role)
             self.check_anchor(leader.get("anchor"), zone, file, path + ".anchor")
             self.check_offset(leader.get("offset"), file, path)
+            self.check_in_zone(zone, leader.get("anchor"), leader.get("offset"), {"kind": "point"}, file, path)
             level = leader.get("level")
             if not is_int(level, 1, C.LEVEL_CAP):
                 self.E("E-levels", file, path, "level must be an integer 1..60")
@@ -509,6 +520,64 @@ class Validator:
                     self.E("E-leader-tier", file, path, "elite leaders only from level 31 (frame 2.4)")
             if not is_int(leader.get("respawn"), 1):
                 self.E("E-type", file, path, "respawn must be seconds (integer >= 1)")
+
+    def check_in_zone(self, zone, anchor, offset, shape, file, path):
+        """Frame 4.6: anchor + offset (the centre of a circle, ring or leader
+        spot) lies in the zone; most of a circle, ring or band should too.
+        Uses the atlas's rough outline (extent box and border lines)."""
+        if not self.atlas or not isinstance(shape, dict) or shape.get("kind") == "zone":
+            return
+        base = self.atlas.position(zone, anchor) if isinstance(anchor, str) else None
+        if base is None:
+            return
+        if not (isinstance(offset, list) and len(offset) == 2 and all(is_int(v) for v in offset)):
+            offset = [0, 0]
+        cx, cz = base[0] + offset[0], base[1] + offset[1]
+        kind = shape.get("kind")
+        samples = []
+        if kind == "band":
+            fwd, side = shape.get("forward"), shape.get("side")
+            if not (isinstance(fwd, list) and isinstance(side, list) and len(fwd) == 2 and len(side) == 2
+                    and all(is_num(v) for v in fwd + side)):
+                return
+            sign = self.atlas.zones[zone]["front_sign"]
+            for i in range(5):
+                for j in range(5):
+                    f = fwd[0] + (fwd[1] - fwd[0]) * i / 4.0
+                    sd = side[0] + (side[1] - side[0]) * j / 4.0
+                    samples.append((cx + sd, cz + sign * f))
+            inside = [p for p in samples if self.atlas.outside_by(zone, *p) <= 0]
+            if not inside:
+                self.E("E-outside-zone", file, path, "the band lies entirely outside %s" % zone)
+            elif len(inside) * 2 < len(samples):
+                self.W("W-area-outside", file, path, "most of the band lies outside %s (%d of %d sample points "
+                       "inside)" % (zone, len(inside), len(samples)))
+            return
+        out = self.atlas.outside_by(zone, cx, cz)
+        near_anchor = any(abs(cx - ax) <= 24 and abs(cz - az) <= 24
+                          for ax, az in self.atlas.zones[zone]["anchor_pos"].values())
+        if out > ZONE_MARGIN and not near_anchor:
+            self.E("E-outside-zone", file, path, "centre (%d, %d) lies about %d nodes outside %s"
+                   % (cx, cz, out, zone))
+            return
+        if out > 0 and not near_anchor:
+            self.W("W-area-outside", file, path, "centre (%d, %d) lies near or just outside the border of %s "
+                   "(about %d nodes; borders are approximate)" % (cx, cz, zone, out))
+        radii = []
+        if kind == "circle" and is_num(shape.get("r")):
+            radii = [shape["r"] / 2.0, shape["r"]]
+        elif kind == "ring" and isinstance(shape.get("r"), list) and len(shape["r"]) == 2 \
+                and all(is_num(v) for v in shape["r"]):
+            radii = [shape["r"][0], sum(shape["r"]) / 2.0, shape["r"][1]]
+        for r in radii:
+            for k in range(8):
+                angle = math.pi * k / 4.0
+                samples.append((cx + r * math.cos(angle), cz + r * math.sin(angle)))
+        if samples:
+            inside = sum(1 for p in samples if self.atlas.outside_by(zone, *p) <= 0)
+            if inside * 2 < len(samples):
+                self.W("W-area-outside", file, path, "most of the %s lies outside %s (%d of %d sample points "
+                       "inside)" % (kind, zone, inside, len(samples)))
 
     def check_offset(self, offset, file, path):
         if offset is None:
@@ -606,7 +675,62 @@ class Validator:
                 continue
             if isinstance(q.get("id"), str):
                 path = "quests[%s]" % q["id"]
+            if q.get("line") == FRONT_LINE:
+                self.E("E-front-line", file, path + ".line", "line 'front' belongs to the front file "
+                       "zones/%s.front.quests.json (front design lane)" % zone)
             self.quest(zone, q, file, path, giver_lines, all_areas)
+        self.front_reserve(zone, giver_lines, file)
+        return giver_lines
+
+    def front_reserve(self, zone, giver_lines, file):
+        """Frame 2.1: each 31-40 outpost giver reserves one of its two lines
+        for the front lane. A contested zone with a single quest NPC carries
+        its own lines and is exempt."""
+        info = self.zone_info(zone)
+        if info is None or info["role"] != "contested" or len(info["npcs"]) <= 1:
+            return
+        for npc, lines in giver_lines.items():
+            where = info["npcs"].get(npc)
+            if where and info["anchor_kinds"].get(where["anchor"]) == "outpost" and FRONT_LINE not in lines:
+                self.E("E-front-reserve", file, "hubs", "outpost giver %s must declare the line 'front' "
+                       "(one of its two lines, reserved for the front lane)" % npc)
+
+    def front_quests(self, host, data, all_areas, giver_lines):
+        """zones/<host>.front.quests.json: front quests given by the host
+        zone's givers, only on a line `front` the host's quests.json declares."""
+        file = self.d.root / "zones" / ("%s.front.quests.json" % host)
+        if not isinstance(data, dict):
+            self.E("E-type", file, "$", "front quests file must be an object")
+            return
+        if data.get("zone") != host:
+            self.E("E-zone-mismatch", file, "zone", "zone %r does not match the host zone %s of the file name"
+                   % (data.get("zone"), host))
+        if self.atlas and self.zone_info(host) is None:
+            self.E("E-unknown-zone", file, "zone", "host zone %s is not in the atlas" % host)
+        for key in data:
+            if key not in ("zone", "quests", "notes"):
+                self.W("W-unknown-key", file, "$", "unknown field %r (a front file holds zone and quests)" % key)
+        if giver_lines is None:
+            self.W("W-front-host-missing", file, "$", "zones/%s.quests.json does not exist yet: front givers "
+                   "are checked against the atlas only" % host)
+            info = self.zone_info(host)
+            giver_lines = {npc: {FRONT_LINE} for npc in (info["npcs"] if info else self.npcs)}
+        front_lines = {npc: lines & {FRONT_LINE} for npc, lines in giver_lines.items()}
+        for i, q in enumerate(data.get("quests") or []):
+            path = "quests[%d]" % i
+            if not isinstance(q, dict):
+                self.E("E-type", file, path, "quest must be an object")
+                continue
+            if isinstance(q.get("id"), str):
+                path = "quests[%s]" % q["id"]
+            if q.get("line") != FRONT_LINE:
+                self.E("E-front-line", file, path + ".line", "front quests use the line 'front' (not %r)"
+                       % q.get("line"))
+            elif q.get("giver") in giver_lines and FRONT_LINE not in giver_lines[q["giver"]]:
+                self.E("E-front-line", file, path + ".giver", "%s does not declare the line 'front' in "
+                       "zones/%s.quests.json" % (q["giver"], host))
+                continue
+            self.quest(host, q, file, path, front_lines, all_areas)
 
     def quest(self, zone, q, file, path, giver_lines, all_areas):
         allowed = set(QUEST_KEYS) | (set(LEGACY_QUEST_KEYS) if self.legacy else set())
@@ -715,14 +839,12 @@ class Validator:
             if not isinstance(roles, list) or not roles:
                 self.E("E-required", file, dpath, "quest drop needs a non-empty 'roles' list")
                 roles = []
-            area = self.resolve_area(drop.get("area"), zone, file, dpath, all_areas) if drop.get("area") else None
+            area_ref = drop.get("area")
+            area = self.resolve_area(area_ref, zone, file, dpath, all_areas) if area_ref else None
             for role in roles:
-                if not self.role_def(role)[0]:
-                    self.E("E-unknown-role", file, dpath, "role %r is neither a sub-type nor an existing mob" % role)
-                elif self.role_disposition(role) == "critter":
-                    self.E("E-critter-target", file, dpath, "critter %s cannot be a quest-drop source" % role)
-                if area is not None and role not in self.area_roles(area):
-                    self.E("E-role-not-in-area", file, dpath, "%s does not spawn in %s" % (role, drop["area"]))
+                if self.target_role_ok(role, file, dpath, "quest-drop source"):
+                    levels = self.target_levels(zone, role, area_ref, area, file, dpath, all_areas)
+                    self.check_level_fit(role, levels, level, file, dpath)
         for item in item_objectives:
             if (self.catalog_items.get(item) or {}).get("kind") == "quest" and item not in dropped:
                 self.E("E-quest-item-source", file, path, "quest item %s needs a quest_drops entry" % item)
@@ -811,44 +933,77 @@ class Validator:
                 ref, azone, ", ".join(sorted(all_areas.get(azone) or {})) or "no spawns file / no areas"))
         return area
 
-    def kill_objective(self, zone, q, obj, level, file, path, all_areas):
+    def target_levels(self, zone, role, area_ref, area, file, path, all_areas):
+        """Level range a kill or quest-drop target is met at: a named leader
+        of the zone has its fixed level (and no area), an area its levels,
+        otherwise the zone's areas hosting the role, else the role's levels."""
+        target_zone = C.split_area_ref(area_ref, zone)[0] if isinstance(area_ref, str) else zone
+        leader = self.d.leaders(target_zone).get(role)
+        if leader is not None:
+            if area_ref:
+                self.E("E-leader-area", file, path, "%s is a leader at a fixed spot of %s, not in an area: "
+                       "drop the area" % (role, target_zone))
+            return (leader["level"], leader["level"]) if is_int(leader.get("level"), 1) else None
+        if area_ref:
+            if area is None:
+                return None
+            if role not in self.area_roles(area):
+                self.E("E-role-not-in-area", file, path, "%s does not spawn in %s" % (role, area_ref))
+            return tuple(area["levels"]) if level_range(area.get("levels")) else None
+        hosting = [a for a in (all_areas.get(zone) or {}).values()
+                   if role in self.area_roles(a) and level_range(a.get("levels"))]
+        if hosting:
+            return (min(a["levels"][0] for a in hosting), max(a["levels"][1] for a in hosting))
+        if all_areas.get(zone):
+            self.W("W-role-not-in-zone", file, path, "%s does not spawn in any area or as a leader of %s"
+                   % (role, zone))
+        levels = self.role_levels(role)
+        return tuple(levels) if levels else None
+
+    def check_level_fit(self, role, levels, level, file, path):
+        """Containment: every level the target is met at lies within the
+        quest's reward level +- LEVEL_SLACK."""
+        if levels and level and not (levels[0] >= level - LEVEL_SLACK and levels[1] <= level + LEVEL_SLACK):
+            self.E("E-level-fit", file, path, "%s is met at levels %d-%d; all must lie within quest level %d "
+                   "±%d (%d-%d)" % (role, levels[0], levels[1], level, LEVEL_SLACK,
+                                    level - LEVEL_SLACK, level + LEVEL_SLACK))
+
+    def target_role_ok(self, role, file, path, what="kill target"):
+        if not self.role_def(role)[0]:
+            self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
+            return False
+        disposition = self.role_disposition(role)
+        if disposition == "critter":
+            self.E("E-critter-target", file, path, "critter %s is never a %s (Ruling 29)" % (role, what))
+            return False
+        if disposition is None:
+            self.E("E-not-a-mob", file, path, "%s is an NPC or guard, not a %s" % (role, what))
+            return False
+        return True
+
+    def kill_roles(self, obj, file, path):
         roles = obj.get("roles")
+        if self.legacy and roles is None and (obj.get("mobs") or obj.get("mob")):
+            # B4's mechanical split keeps today's entity names.
+            mobs = obj.get("mobs") or [obj.get("mob")]
+            return [m.split(":", 1)[1] if isinstance(m, str) and m.startswith("grug_mobs:") else m
+                    for m in mobs]
         if not isinstance(roles, list) or not roles:
             self.E("E-objective", file, path, "kill objective needs a non-empty 'roles' list")
-            roles = []
+            return []
+        return roles
+
+    def kill_objective(self, zone, q, obj, level, file, path, all_areas):
         for key in LEGACY_OBJECTIVE_KEYS:
             if key in obj and not self.legacy:
                 self.E("E-legacy", file, path, "%r on a kill objective is legacy-only; use 'roles'/'area'" % key)
-        area = self.resolve_area(obj.get("area"), zone, file, path + ".area", all_areas) if "area" in obj else None
+        roles = self.kill_roles(obj, file, path)
+        area_ref = obj.get("area")
+        area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if "area" in obj else None
         for role in roles:
-            source, rec = self.role_def(role)
-            if not source:
-                self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
-                continue
-            disposition = self.role_disposition(role)
-            if disposition == "critter":
-                self.E("E-critter-target", file, path, "critter %s is never a kill target (Ruling 29)" % role)
-                continue
-            if disposition is None:
-                self.E("E-not-a-mob", file, path, "%s is an NPC or guard, not a kill target" % role)
-                continue
-            if area is not None:
-                if role not in self.area_roles(area):
-                    self.E("E-role-not-in-area", file, path, "%s does not spawn in %s" % (role, obj["area"]))
-                lo, hi = area.get("levels") if level_range(area.get("levels")) else (None, None)
-            else:
-                hosting = [a for a in (all_areas.get(zone) or {}).values() if role in self.area_roles(a)
-                           and level_range(a.get("levels"))]
-                if hosting:
-                    lo, hi = min(a["levels"][0] for a in hosting), max(a["levels"][1] for a in hosting)
-                elif all_areas.get(zone):
-                    self.W("W-role-not-in-zone", file, path, "%s does not spawn in any area of %s" % (role, zone))
-                    lo, hi = (self.role_levels(role) or (None, None))
-                else:
-                    lo, hi = (self.role_levels(role) or (None, None))
-            if level and lo is not None and not lo - LEVEL_SLACK <= level <= hi + LEVEL_SLACK:
-                self.E("E-level-fit", file, path, "%s levels %d-%d do not fit quest level %d (±%d)"
-                       % (role, lo, hi, level, LEVEL_SLACK))
+            if self.target_role_ok(role, file, path):
+                levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
+                self.check_level_fit(role, levels, level, file, path)
 
     # -- driver ----------------------------------------------------------
     def run(self):
@@ -859,23 +1014,28 @@ class Validator:
                    "zone-band checks skipped; NPCs checked against today's quest registry only")
         self.catalogs()
         all_areas = {zone: self.d.areas(zone) for zone in self.d.spawns}
-        # Quest ids of every zone first: requires may cross zones.
-        for zone, data in self.d.quests.items():
-            for i, q in enumerate((data or {}).get("quests") or [] if isinstance(data, dict) else []):
-                if isinstance(q, dict) and isinstance(q.get("id"), str):
-                    path = "quests[%s]" % q["id"]
-                    if q["id"] in self.quest_ids:
-                        self.E("E-duplicate", self.d.root / "zones" / ("%s.quests.json" % zone), path,
-                               "quest id %s also in %s" % (q["id"], self.quest_ids[q["id"]][0]))
-                    else:
-                        self.quest_ids[q["id"]] = (zone, path)
+        # Quest ids of every zone (front files included) first: requires may
+        # cross zones.
+        for suffix, files in ((".quests.json", self.d.quests), (".front.quests.json", self.d.front)):
+            for zone, data in files.items():
+                for q in (data or {}).get("quests") or [] if isinstance(data, dict) else []:
+                    if isinstance(q, dict) and isinstance(q.get("id"), str):
+                        path = "quests[%s]" % q["id"]
+                        if q["id"] in self.quest_ids:
+                            self.E("E-duplicate", self.d.root / "zones" / (zone + suffix), path,
+                                   "quest id %s also in %s" % (q["id"], self.quest_ids[q["id"]][0]))
+                        else:
+                            self.quest_ids[q["id"]] = (zone, path)
         for zone, data in self.d.spawns.items():
             if not self.only_zones or zone in self.only_zones:
                 self.spawns(zone, data)
-        hub_givers = {}
+        hub_givers, lines_by_zone = {}, {}
         for zone, data in self.d.quests.items():
             if not self.only_zones or zone in self.only_zones:
-                self.quests(zone, data, all_areas, hub_givers)
+                lines_by_zone[zone] = self.quests(zone, data, all_areas, hub_givers)
+        for host, data in self.d.front.items():
+            if not self.only_zones or host in self.only_zones:
+                self.front_quests(host, data, all_areas, lines_by_zone.get(host))
         self.cycles()
         self.loot_coverage()
         return self.f
@@ -1152,6 +1312,36 @@ def _mutations():
     def settlement_anchor_ok(d):
         area(d, "home_fields_night")["anchor"] = "dawnmere"
 
+    def bandits_outside(d):
+        area(d, "border_bandits")["offset"] = [120, 560]
+
+    def leader_outside(d):
+        d["leaders"][0]["offset"] = [120, 560]
+
+    def band_outside(d):
+        area(d, "home_fields_day")["shape"]["forward"] = [600, 900]
+
+    def level_containment(d):
+        quest(d, "sample_hunt_01")["level"] = 6
+        quest(d, "sample_hunt_01")["min_level"] = 5
+
+    def drop_level(d):
+        q = quest(d, "sample_tools_03")
+        q["objectives"].append({"type": "item", "item": "grug_mobs:crop_ledger", "count": 1})
+        q["quest_drops"] = [{"item": "grug_mobs:crop_ledger", "roles": ["confused_bandit_chief"], "chance": 1}]
+
+    def kill_leader(d):
+        quest(d, "sample_hunt_04")["objectives"].append(
+            {"type": "kill", "roles": ["confused_bandit_chief"], "count": 1})
+
+    def kill_leader_area(d):
+        quest(d, "sample_hunt_04")["objectives"].append(
+            {"type": "kill", "roles": ["confused_bandit_chief"], "count": 1,
+             "area": "elandor_dawnmere_fields/border_bandits"})
+
+    def bad_family(d):
+        d[0]["family_input"]["axe"] = "grug_materials:tin_bar"
+
     def no_tusk(d):
         d[0]["bands"]["1"] = [row for row in d[0]["bands"]["1"] if row["item"] != "grug_mobs:boar_tusk"]
 
@@ -1192,7 +1382,106 @@ def _mutations():
         ("giver from another zone", Q, foreign_giver, "E-giver-zone"),
         ("anchor by settlement key", S, settlement_anchor_ok, None),
         ("stat loot not dropped in the track", "catalog/drops.json", no_tusk, "W-loot-track"),
+        ("area centre outside the zone", S, bandits_outside, "E-outside-zone"),
+        ("leader outside the zone", S, leader_outside, "E-outside-zone"),
+        ("band entirely outside the zone", S, band_outside, "E-outside-zone"),
+        ("target levels not contained in quest level ±3", Q, level_containment, "E-level-fit"),
+        ("quest-drop source levels not contained", Q, drop_level, "E-level-fit"),
+        ("kill objective on a leader, no area", Q, kill_leader, "!W-role-not-in-zone"),
+        ("kill objective on a leader with an area", Q, kill_leader_area, "E-leader-area"),
+        ("unknown enchant family", "catalog/enchants.json", bad_family, "E-family"),
     ]
+
+
+Q_FILE = "zones/elandor_dawnmere_fields.quests.json"
+COOK = "r20_human_start_cook"
+
+
+def _front_host(target):
+    """The cook declares the line `front` (kitchen quests move to pantry)."""
+    data = _load(target / Q_FILE)
+    for giver in data["hubs"][0]["givers"]:
+        if giver["npc"] == COOK:
+            giver["lines"] = ["pantry", "front"]
+    for q in data["quests"]:
+        if q["line"] == "kitchen":
+            q["line"] = "pantry"
+    _save(target / Q_FILE, data)
+
+
+def _simple_quest(qid, giver, line, level):
+    return {"id": qid, "line": line, "giver": giver, "turnin": giver, "min_level": level, "level": level,
+            "requires": [], "title": "Supplies", "text": "The front needs coal. Dig five lumps and bring them here.",
+            "objectives": [{"type": "item", "item": "default:coal_lump", "count": 5}],
+            "rewards": {"weight": 1, "copper": 5, "items": []}}
+
+
+def _scenarios():
+    """(name, setup(target_dir), legacy, expectation). Expectation: a code
+    that must appear, None for "no error", or "!CODE" for "no error and no
+    CODE"."""
+    def front_file(target, line="front", giver=COOK, host="elandor_dawnmere_fields"):
+        _save(target / "zones" / ("%s.front.quests.json" % host),
+              {"zone": host, "quests": [_simple_quest("sample_front_01", giver, line, 10)]})
+
+    def front_ok(target):
+        _front_host(target)
+        front_file(target)
+
+    def front_wrong_line(target):
+        _front_host(target)
+        front_file(target, line="pantry")
+
+    def front_in_host(target):
+        _front_host(target)
+        data = _load(target / Q_FILE)
+        data["quests"].append(_simple_quest("sample_front_02", COOK, "front", 10))
+        _save(target / Q_FILE, data)
+
+    def front_undeclared(target):
+        _front_host(target)
+        front_file(target, giver="r14_human_elder")
+
+    def front_host_missing(target):
+        front_file(target, giver="r14_human_steward", host="elandor_goldmead_vale")
+
+    def contested(zone, npc, lines):
+        def setup(target):
+            _save(target / "zones" / ("%s.quests.json" % zone), {
+                "zone": zone, "hubs": [{"id": "outpost", "anchor": "outpost_1",
+                                        "givers": [{"npc": npc, "lines": lines}]}],
+                "quests": [_simple_quest("sample_%s_01" % zone.split("_")[1], npc, lines[0], 31)]})
+        return setup
+
+    def legacy_kill(target):
+        data = _load(target / Q_FILE)
+        for q in data["quests"]:
+            if q["id"] == "sample_hunt_01":
+                q["objectives"] = [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "zone": False, "count": 3}]
+        _save(target / Q_FILE, data)
+
+    return [
+        ("front file on a declared front line", front_ok, False, "!W-front-host-missing"),
+        ("front file quest on another line", front_wrong_line, False, "E-front-line"),
+        ("host quests.json uses line front", front_in_host, False, "E-front-line"),
+        ("front giver without a front line", front_undeclared, False, "E-front-line"),
+        ("front file before its host quests.json", front_host_missing, False, "W-front-host-missing"),
+        ("outpost giver without a front line", contested("elandor_ashenward_march", "r20_anchor_031_host",
+                                                         ["watch"]), False, "E-front-reserve"),
+        ("single-NPC contested zone is exempt", contested("elandor_glassroot_wilds", "r20_anchor_036_host",
+                                                          ["watch", "roots"]), False, "!E-front-reserve"),
+        ("legacy kill objective with mobs", legacy_kill, True, None),
+        ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
+    ]
+
+
+def _expect(name, got, code, failures):
+    if code is None or code.startswith("!"):
+        if got.errors() or (code and code[1:] in got.codes()):
+            failures.append("%s: expected no error%s, got %s" % (
+                name, " and no " + code[1:] if code else "", sorted(got.codes())))
+    elif code not in got.codes():
+        failures.append("%s: expected %s, got %s" % (name, code, sorted(got.codes()) or "nothing"))
 
 
 def self_test():
@@ -1210,20 +1499,20 @@ def self_test():
     if no_atlas.errors() or no_atlas.codes() != {"W-no-atlas"}:
         print_findings(no_atlas, valid)
         failures.append("without an atlas the valid sample gives exactly W-no-atlas")
-    for name, rel, mutate, code in _mutations():
+    cases = [(name, rel, mutate, False, code) for name, rel, mutate, code in _mutations()]
+    cases += [(name, None, setup, legacy, code) for name, setup, legacy, code in _scenarios()]
+    for name, rel, change, legacy, code in cases:
         tmp = Path(tempfile.mkdtemp(prefix="r28_validate_"))
         try:
             target = tmp / "design"
             shutil.copytree(valid, target)
-            data = _load(target / rel)
-            mutated = copy.deepcopy(data)
-            mutate(mutated)
-            _save(target / rel, mutated)
-            got = validate(target, existing, atlas)
-            if code is None and got.errors():
-                failures.append("%s: expected no error, got %s" % (name, sorted(got.codes())))
-            elif code is not None and code not in got.codes():
-                failures.append("%s: expected %s, got %s" % (name, code, sorted(got.codes()) or "nothing"))
+            if rel is None:
+                change(target)
+            else:
+                data = copy.deepcopy(_load(target / rel))
+                change(data)
+                _save(target / rel, data)
+            _expect(name, validate(target, existing, atlas, legacy), code, failures)
         finally:
             shutil.rmtree(tmp)
     if failures:
@@ -1231,7 +1520,7 @@ def self_test():
             print("FAIL " + f)
         print("validate self-test: FAIL (%d)" % len(failures))
         return 1
-    print("validate self-test: PASS (valid sample as expected; %d variants each give their finding)" % len(_mutations()))
+    print("validate self-test: PASS (valid sample as expected; %d variants each give their finding)" % len(cases))
     return 0
 
 

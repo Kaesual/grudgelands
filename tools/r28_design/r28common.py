@@ -171,6 +171,9 @@ class Design:
         self.tints = self._tints(catalog / "tints.json")
         self.spawns = {}
         self.quests = {}
+        # zones/<host_zone>.front.quests.json: front quests (owned by the
+        # front design lane) given by the host zone's givers on line `front`.
+        self.front = {}
         zones = self.root / "zones"
         if zones.is_dir():
             for path in sorted(zones.glob("*.spawns.json")):
@@ -179,10 +182,29 @@ class Design:
                 if data is not None:
                     self.spawns[zone] = data
             for path in sorted(zones.glob("*.quests.json")):
-                zone = path.name[:-len(".quests.json")]
+                front = path.name.endswith(".front.quests.json")
+                zone = path.name[:-len(".front.quests.json" if front else ".quests.json")]
                 data = self._read(path)
                 if data is not None:
-                    self.quests[zone] = data
+                    (self.front if front else self.quests)[zone] = data
+
+    def zone_quests(self, zone, lines=None):
+        """The zone's own quests plus its front file's, optionally only the
+        given lines. Each quest is returned as stored."""
+        out = []
+        for data in (self.quests.get(zone), self.front.get(zone)):
+            if isinstance(data, dict):
+                out.extend(q for q in data.get("quests") or [] if isinstance(q, dict))
+        if lines:
+            out = [q for q in out if q.get("line") in lines]
+        return out
+
+    def quest_zones(self):
+        return sorted(set(self.quests) | set(self.front))
+
+    def leaders(self, zone):
+        data = self.spawns.get(zone) or {}
+        return {row.get("role"): row for row in data.get("leaders") or [] if isinstance(row, dict)}
 
     def _read(self, path):
         try:
@@ -283,12 +305,14 @@ class Atlas:
             # Contested 31-40 zones belong to their race's faction (shared per
             # faction); front zones and islands to nobody.
             faction = RACE_FACTION.get(race) if role == "contested" else None
-        anchors, anchor_kinds = {}, {}
+        anchors, anchor_kinds, anchor_pos = {}, {}, {}
         for anchor in rec.get("anchors") or []:
             aid = anchor.get("id")
             if not aid:
                 continue
             anchor_kinds[aid] = anchor.get("kind")
+            if isinstance(anchor.get("x"), int) and isinstance(anchor.get("z"), int):
+                anchor_pos[aid] = (anchor["x"], anchor["z"])
             for ref in (aid, anchor.get("settlement_key"), anchor.get("slot")):
                 if ref:
                     anchors.setdefault(ref, aid)
@@ -310,10 +334,21 @@ class Atlas:
         levels = None
         if isinstance(rec.get("level_min"), int) and isinstance(rec.get("level_max"), int):
             levels = [rec["level_min"], rec["level_max"]]
+        ext = rec.get("extent") or {}
+        extent = None
+        if all(isinstance(ext.get(k), int) for k in ("min_x", "max_x", "min_z", "max_z")):
+            extent = (ext["min_x"], ext["max_x"], ext["min_z"], ext["max_z"])
+        hub = rec.get("hub") or {}
+        borders = [(b.get("zone"), (b["midpoint"]["x"], b["midpoint"]["z"]))
+                   for b in rec.get("borders") or []
+                   if isinstance(b.get("midpoint"), dict) and b.get("zone")]
+        axis = str((rec.get("front") or {}).get("axis") or "")
         self.zones[rec["id"]] = {
             "name": rec.get("name"), "role": role, "levels": levels, "faction": faction,
             "race": race, "anchors": anchors, "anchor_kinds": anchor_kinds, "npcs": npcs,
-            "biomes": biomes, "palette": palette,
+            "biomes": biomes, "palette": palette, "anchor_pos": anchor_pos, "extent": extent,
+            "hub": (hub["x"], hub["z"]) if isinstance(hub.get("x"), int) else None,
+            "borders": borders, "front_sign": -1 if axis.startswith("-") else 1,
         }
 
     def all_npcs(self):
@@ -328,3 +363,40 @@ class Atlas:
         if ref == "zone":
             return "zone"
         return info["anchors"].get(ref)
+
+    def position(self, zone, ref):
+        """World (x, z) of an anchor reference, or the zone hub for `zone`."""
+        info = self.zones.get(zone)
+        if info is None:
+            return None
+        if ref == "zone":
+            return info["hub"]
+        aid = info["anchors"].get(ref)
+        return info["anchor_pos"].get(aid) if aid else None
+
+    def outside_by(self, zone, x, z):
+        """Rough in-zone test: how far (nodes) a point lies outside the zone;
+        0 inside, None when the atlas lacks the geometry. Inside means within
+        the zone's land extent box and on the zone's side of every measured
+        border, each border taken as the line through its midpoint
+        perpendicular to the two zones' hubs. Real borders are warped by up
+        to a few hundred nodes, so small values are a guide only; the spawn
+        code clips areas to the real zone."""
+        info = self.zones.get(zone)
+        if info is None or info["extent"] is None:
+            return None
+        min_x, max_x, min_z, max_z = info["extent"]
+        out = max(0, min_x - x, x - max_x, min_z - z, z - max_z)
+        own = info["hub"]
+        for neighbour, (mx, mz) in info["borders"]:
+            other = (self.zones.get(neighbour) or {}).get("hub")
+            if own is None or other is None:
+                continue
+            dx, dz = other[0] - own[0], other[1] - own[1]
+            length = math.hypot(dx, dz) or 1.0
+            out = max(out, ((x - mx) * dx + (z - mz) * dz) / length)
+        return out
+
+    def contains(self, zone, x, z):
+        out = self.outside_by(zone, x, z)
+        return None if out is None else out <= 0

@@ -7,6 +7,59 @@
   "faction": "accord",
   "race_track": "human",
   "race_region": "human",
+  "extent": {
+    "centroid": {
+      "x": -71,
+      "z": -2053
+    },
+    "land_area_nodes2": 572272,
+    "max_x": 640,
+    "max_z": -1656,
+    "min_x": -796,
+    "min_z": -2344
+  },
+  "hub": {
+    "x": 0,
+    "z": -2050
+  },
+  "front": {
+    "axis": "+z",
+    "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1484,
+      "midpoint": {
+        "x": -163,
+        "z": -2299
+      },
+      "zone": "elandor_dawnmere_fields"
+    },
+    {
+      "length_nodes": 1456,
+      "midpoint": {
+        "x": -24,
+        "z": -1812
+      },
+      "zone": "elandor_highcourt"
+    },
+    {
+      "length_nodes": 464,
+      "midpoint": {
+        "x": 565,
+        "z": -1796
+      },
+      "zone": "elandor_lorindor"
+    },
+    {
+      "length_nodes": 588,
+      "midpoint": {
+        "x": -665,
+        "z": -2031
+      },
+      "zone": "elandor_whitebridge_shire"
+    }
+  ],
   "anchors": [
     {
       "id": "anchor_015",

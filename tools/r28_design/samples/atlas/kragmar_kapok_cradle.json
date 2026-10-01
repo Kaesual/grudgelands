@@ -7,6 +7,43 @@
   "faction": "throng",
   "race_track": "troll",
   "race_region": "troll",
+  "extent": {
+    "centroid": {
+      "x": 1900,
+      "z": 2541
+    },
+    "land_area_nodes2": 604704,
+    "max_x": 2680,
+    "max_z": 3008,
+    "min_x": 1228,
+    "min_z": 2152
+  },
+  "hub": {
+    "x": 1800,
+    "z": 2550
+  },
+  "front": {
+    "axis": "-z",
+    "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1536,
+      "midpoint": {
+        "x": 1883,
+        "z": 2278
+      },
+      "zone": "kragmar_raincall_basin"
+    },
+    {
+      "length_nodes": 216,
+      "midpoint": {
+        "x": 2584,
+        "z": 2159
+      },
+      "zone": "kragmar_totemwater_reach"
+    }
+  ],
   "anchors": [
     {
       "id": "anchor_006",

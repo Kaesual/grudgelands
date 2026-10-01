@@ -114,8 +114,8 @@
       "id": "border_bandits",
       "anchor": "start",
       "offset": [
-        120,
-        560
+        -160,
+        200
       ],
       "shape": {
         "kind": "circle",
@@ -176,8 +176,8 @@
       "role": "confused_bandit_chief",
       "anchor": "start",
       "offset": [
-        120,
-        560
+        -160,
+        200
       ],
       "level": 10,
       "respawn": 300

@@ -6,6 +6,75 @@
   "level_max": 50,
   "faction": "contested",
   "race_region": "orc",
+  "extent": {
+    "centroid": {
+      "x": 722,
+      "z": 23
+    },
+    "land_area_nodes2": 678368,
+    "max_x": 1448,
+    "max_z": 368,
+    "min_x": -8,
+    "min_z": -340
+  },
+  "hub": {
+    "x": 750,
+    "z": 0
+  },
+  "front": {
+    "axis": "z=0",
+    "text": "Battlegrounds band around z = 0: Accord comes from -z (south), Throng from +z (north)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1304,
+      "midpoint": {
+        "x": 492,
+        "z": -199
+      },
+      "zone": "elandor_ashenward_march"
+    },
+    {
+      "length_nodes": 540,
+      "midpoint": {
+        "x": 1190,
+        "z": -285
+      },
+      "zone": "elandor_glassroot_wilds"
+    },
+    {
+      "length_nodes": 524,
+      "midpoint": {
+        "x": 0,
+        "z": 126
+      },
+      "zone": "front_broken_causeway"
+    },
+    {
+      "length_nodes": 632,
+      "midpoint": {
+        "x": 1402,
+        "z": 27
+      },
+      "zone": "front_skyglass_canopy"
+    },
+    {
+      "length_nodes": 1436,
+      "midpoint": {
+        "x": 502,
+        "z": 281
+      },
+      "zone": "kragmar_bannerbreak_mesa"
+    },
+    {
+      "length_nodes": 536,
+      "midpoint": {
+        "x": 1255,
+        "z": 250
+      },
+      "zone": "kragmar_thunderroot_wilds"
+    }
+  ],
   "anchors": [
     {
       "id": "anchor_081",

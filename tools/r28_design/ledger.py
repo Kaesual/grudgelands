@@ -23,7 +23,7 @@ not), and flags shares outside the frame's targets (questing ~90 % / rewards
 Usage:
   ledger.py --route zone_a,zone_b[:lo-hi],... [--design DIR] [--existing FILE]
             [--start-level N] [--human] [--party solo|duo|both]
-            [--repeat N] [--skip-optional] [--solo-group] [--tolerance PCT]
+            [--repeat N] [--skip-optional] [--solo-group] [--tolerance PCT] [--lines a,b]
             [--out FILE] [--strict] [--atlas DIR]
   Exit code 0 (flags are rough guides, Ruling 33); --strict exits 1 when a
   band is flagged; 2 when design files cannot be read.
@@ -55,7 +55,7 @@ class Route:
 
 class Ledger:
     def __init__(self, design, existing, human=False, participants=1, repeat=0,
-                 skip_optional=False, include_group=False, start_level=1):
+                 skip_optional=False, include_group=False, start_level=1, lines=None):
         self.design = design
         self.existing = existing or {}
         self.human = human
@@ -73,6 +73,8 @@ class Ledger:
         self.kill_rows = []
         self.zone_rows = []
         self.done = set()
+        self.lines = set(lines) if lines else None
+        self.per_band = defaultdict(lambda: defaultdict(float))
 
     # -- helpers --------------------------------------------------------
     @property
@@ -88,6 +90,10 @@ class Ledger:
         return (sub or {}).get("tier", "normal")
 
     def role_levels(self, role, zone, area_ref=None, own_zone=None):
+        target_zone = C.split_area_ref(area_ref, own_zone or zone)[0] if area_ref else zone
+        leader = self.design.leaders(target_zone).get(role)
+        if leader and isinstance(leader.get("level"), int):
+            return (leader["level"], leader["level"])
         if area_ref:
             azone, aid = C.split_area_ref(area_ref, own_zone or zone)
             area = self.design.areas(azone).get(aid)
@@ -196,16 +202,22 @@ class Ledger:
             del pending[pick.get("id")]
         return out
 
+    def quest_band(self, zone, q):
+        """A quest counts in the band of its reward level (front quests in
+        contested or capital files count in the front bands). A pinned
+        `zone:lo-hi` only labels the zone row."""
+        band = C.band_of_level(q.get("level", 1) if isinstance(q.get("level"), int) else 1)
+        return (band[0], band[1])
+
     def run_zone(self, zone, band):
-        data = self.design.quests.get(zone)
         acc = defaultdict(float)
         row = {"zone": zone, "band": band, "entry": self.level, "quests": 0}
-        if data is None:
+        if zone not in self.design.quests and zone not in self.design.front:
             self.warn("%s: no quests file in the design" % zone)
             row.update(exit=self.level, acc=acc)
             self.zone_rows.append(row)
             return acc
-        quests = [q for q in data.get("quests") or [] if isinstance(q, dict)]
+        quests = self.design.zone_quests(zone, self.lines)
         one_time = [q for q in quests if not q.get("repeatable")]
         repeatables = [q for q in quests if q.get("repeatable")]
         plan = self.ordered(zone, one_time)
@@ -219,7 +231,11 @@ class Ledger:
             for req in q.get("requires") or []:
                 if req not in self.done and req not in {o.get("id") for o in quests}:
                     self.warn("%s requires %s, which is not on the route (assumed done)" % (q.get("id"), req))
-            self.run_quest(zone, q, acc)
+            qacc = defaultdict(float)
+            self.run_quest(zone, q, qacc)
+            for key, value in qacc.items():
+                acc[key] += value
+                self.per_band[self.quest_band(zone, q)][key] += value
             self.done.add(q.get("id"))
             row["quests"] += 1
         row.update(exit=self.level, acc=acc)
@@ -242,6 +258,9 @@ class Ledger:
             count = obj.get("count", 1)
             if kind == "kill":
                 roles = obj.get("roles") or ([obj["role"]] if obj.get("role") else [])
+                if not roles and (obj.get("mobs") or obj.get("mob")):
+                    roles = [m.split(":", 1)[1] if m.startswith("grug_mobs:") else m
+                             for m in (obj.get("mobs") or [obj["mob"]]) if isinstance(m, str)]
                 role = roles[0] if roles else None
                 levels = self.role_levels(role, zone, obj.get("area"), zone) if role else None
                 if not levels:
@@ -342,9 +361,7 @@ def zone_band(route, design, zone):
     if info and info.get("levels"):
         band = C.band_of_level(info["levels"][0])
         return (band[0], band[1])
-    data = design.quests.get(zone) or {}
-    levels = sorted(q.get("level", 1) for q in data.get("quests") or [] if isinstance(q, dict)
-                    and not q.get("repeatable"))
+    levels = sorted(q.get("level", 1) for q in design.zone_quests(zone) if not q.get("repeatable"))
     if not levels:
         return None
     band = C.band_of_level(levels[len(levels) // 2])
@@ -354,15 +371,11 @@ def zone_band(route, design, zone):
 def run(design, existing, route, participants, args):
     ledger = Ledger(design, existing, human=args.human, participants=participants,
                     repeat=args.repeat, skip_optional=args.skip_optional,
-                    include_group=args.solo_group, start_level=args.start_level)
-    per_band = defaultdict(lambda: defaultdict(float))
+                    include_group=args.solo_group, start_level=args.start_level,
+                    lines=getattr(args, "lines_set", None))
     for zone in route.zones:
-        band = zone_band(route, design, zone)
-        acc = ledger.run_zone(zone, band)
-        if band:
-            for key, value in acc.items():
-                per_band[band][key] += value
-    return ledger, per_band
+        ledger.run_zone(zone, zone_band(route, design, zone))
+    return ledger, ledger.per_band
 
 
 def pct(x):
@@ -383,9 +396,11 @@ def report(design, existing, route, args):
     out.append("# Leveling ledger: %s" % " → ".join(route.zones))
     out.append("")
     out.append("Generated by `tools/r28_design/ledger.py` (design `%s`). Real XP, not KE. "
-               "Start level %d%s; repeatables counted %d×; tolerance ±%d points."
-               % (args.design, args.start_level, ", human +10 % quest XP" if args.human else "",
-                  args.repeat, args.tolerance))
+               "Start level %d%s; repeatables counted %d×; tolerance ±%d points%s. Quests count in the band "
+               "of their reward level." % (args.design, args.start_level,
+                                            ", human +10 % quest XP" if args.human else "", args.repeat,
+                                            args.tolerance, "; lines: " + ", ".join(args.lines_set)
+                                            if getattr(args, "lines_set", None) else ""))
     out.append("")
     for participants in parties:
         ledger, per_band = run(design, existing, route, participants, args)
@@ -397,7 +412,8 @@ def report(design, existing, route, args):
         out.append("|---|---|---|---|---|---|---|---|---|---|---|")
         for band in sorted(per_band):
             acc = per_band[band]
-            need = C.xp_between(band[0], band[1])
+            start = max(band[0], min(args.start_level, band[1] - 1))
+            need = C.xp_between(start, band[1])
             questing = acc["rewards"] + acc["kills"] + acc["drop_kills"] + acc["gathering"]
             share, rshare = questing / need, acc["rewards"] / need
             target, rtarget = target_for(band)
@@ -413,7 +429,7 @@ def report(design, existing, route, args):
                 flags.append("UNDERSHOOT rewards")
             flags_total += len(flags)
             out.append("| %d → %d | %d (%.0f) | %d | %d | %d | %d | %d | %s (%s) | %s (%s) | %d | %s |" % (
-                band[0], band[1], need, C.ke_between(band[0], band[1]), acc["rewards"], acc["kills"],
+                start, band[1], need, C.ke_between(start, band[1]), acc["rewards"], acc["kills"],
                 acc["drop_kills"], acc["gathering"], questing, pct(share), pct(target), pct(rshare),
                 pct(rtarget), max(0, need - questing), ", ".join(flags) or "ok"))
         out.append("")
@@ -457,6 +473,7 @@ def parse(argv):
     ap.add_argument("--party", choices=("solo", "duo", "both"), default="both")
     ap.add_argument("--repeat", type=int, default=0, help="count each repeatable quest N times")
     ap.add_argument("--skip-optional", action="store_true")
+    ap.add_argument("--lines", help="comma-separated quest lines to count (e.g. front); default all")
     ap.add_argument("--solo-group", action="store_true", help="solo player also does group quests")
     ap.add_argument("--tolerance", type=int, default=10, help="flag shares more than PCT points off target")
     ap.add_argument("--out", help="also write the report to this file")
@@ -467,6 +484,7 @@ def parse(argv):
 
 def main(argv):
     args = parse(argv)
+    args.lines_set = [x.strip() for x in args.lines.split(",") if x.strip()] if args.lines else None
     if args.self_test:
         return self_test()
     if not args.route:
@@ -505,8 +523,10 @@ def self_test():
     here = Path(__file__).resolve().parent
     sample = here / "samples" / "valid"
     failures = []
+    checks = [0]
 
     def check(cond, msg):
+        checks[0] += 1
         if not cond:
             failures.append(msg)
 
@@ -533,6 +553,7 @@ def self_test():
     args = A()
     args.design, args.start_level, args.human, args.repeat = str(sample), 1, False, 0
     args.skip_optional, args.solo_group, args.tolerance, args.party = False, False, 10, "both"
+    args.lines_set = None
     solo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 1, args)
     duo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 2, args)
     sacc, dacc = solo.zone_rows[0]["acc"], duo.zone_rows[0]["acc"]
@@ -551,6 +572,20 @@ def self_test():
     routed = Route("elandor_dawnmere_fields,elandor_goldmead_vale,elandor_highcourt,front_shattered_line", atlas)
     check([zone_band(routed, design, z) for z in routed.zones] == [(1, 10), (10, 20), (20, 30), (40, 50)],
           "atlas level ranges give the bands")
+    # Leaders count at their fixed level; quests in the band of their level.
+    check(solo.role_levels("confused_bandit_chief", "elandor_dawnmere_fields") == (10, 10), "leader level")
+    check(set(solo.per_band) == {(1, 10), (10, 20)}, "the level-10 quests count in 10 -> 20 (%s)"
+          % sorted(solo.per_band))
+    lined = A()
+    lined.__dict__.update(args.__dict__)
+    lined.lines_set = ["hunt"]
+    hunt, _ = run(design, existing, Route("elandor_dawnmere_fields"), 1, lined)
+    check(hunt.zone_rows[0]["quests"] == 4, "--lines hunt keeps the four hunt quests")
+    started = A()
+    started.__dict__.update(args.__dict__)
+    started.start_level = 5
+    text5, _ = report(design, existing, Route("elandor_dawnmere_fields"), started)
+    check("| 5 → 10 | %d " % C.xp_between(5, 10) in text5, "--start-level 5 starts the band need at 5")
     human = A()
     human.__dict__.update(args.__dict__)
     human.human = True
@@ -561,8 +596,7 @@ def self_test():
             print("FAIL " + f)
         print("ledger self-test: FAIL (%d)" % len(failures))
         return 1
-    print(text)
-    print("ledger self-test: PASS")
+    print("ledger self-test: PASS (%d checks)" % checks[0])
     return 0
 
 
