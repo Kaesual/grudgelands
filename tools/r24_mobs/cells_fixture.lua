@@ -71,6 +71,8 @@ _G.grug_zones = {
 }
 local rows, defs = {}, {}
 _G.grug_mobs = {}
+-- levels.lua derives kill XP from grug_xp's kill-equivalent unit.
+_G.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET = 5}
 _G.mobs = {spawn = function(_, def)
 	rows[#rows + 1] = grug_mobs.prepare_spawn_row(def)
 end}

@@ -432,15 +432,17 @@ the editable land rule.
 Normal tier at level L:
 
 - **HP** = `20 + 5×L + 0.66×L²` · **Damage/hit** =
-  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **base XP** = `10×L`.
-  The Round 16 kill award multiplies this base by 1.5 before participant
-  splitting and racial bonuses (normal same-level solo award: `15×L`).
+  `2 + 0.3×L + 0.005×L²`, rounded to one decimal · **XP** = one kill
+  equivalent `M(L) = 25 + 5×L` (Round 28 ruling 30, `grug_xp.mob_xp`;
+  `progression.md` "Kill XP"). There is no other kill multiplier (the Round
+  16 ×1.5 is gone) and no race bonus on kill XP.
 - mobs_redo armor: normal 100, **elite 80 (×3 HP, ×1.8 dmg, ×4 XP)**,
   **rare patrol 70 (×5 HP, ×2.2 dmg, ×6 XP)**, and the registered
-  **boss tier (×20 HP only; normal damage, XP and armor; no telegraph)**.
+  **boss tier (18,000 HP flat; normal damage, XP and armor; no telegraph)**.
   No mob uses the boss tier before
   the round-6 king/dragon content. The single implementation table and formula
-  are `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
+  are the `TIERS` table and `grug_mobs.stats_for` in
+  `mods/ENTITIES/grug_mobs/levels.lua`.
 - **Three mob classes** (decided 2026-08-08, full rule in
   `biomes_mobs.md` §3.0): **critters** (small animals — always level 1,
   always **1 HP**, **0 XP**, **food-only drops**, **no fall damage**,
@@ -557,16 +559,18 @@ Normal tier at level L:
   Archer**, one slot in three of the existing bandit camp, which takes the
   registered ranged roster from **4 of 43 to 5 of 44** and is the first ranged
   enemy a player meets in the inner ring.
-- Pacing property after Round 16: normal same-level solo kills award **15L XP**
-  before racial bonuses. The quadratic interval `(200L - 100)` needs about
-  7 kills at level 1 and approaches 13.3 at higher levels without quests;
-  quest rewards and gathering XP (ore, gem and fish; `progression.md`
-  "Gathering XP") are additional.
+- Pacing (Round 28 ruling 31): a level needs `k(L) = 8 + 0.29·(L − 1)`
+  same-level normal kills' worth of XP (8 at level 1, about 25 at level 59;
+  82 kill equivalents to level 10, 968 to level 60); quest rewards and
+  gathering XP (ore, gem and fish) carry part of it (`progression.md` "XP
+  units and level curve", "Gathering XP").
 - **Gray kills award no XP**: a mob at level ≤ killer level − 10 gives 0
   XP (kills trivial-mob farming).
 - **XP level cap**: calculate each recipient's formula with effective mob
   level `min(actual mob level, player level + 5)`. The gray test still reads
-  the actual mob level (`mods/ENTITIES/grug_mobs/levels.lua:643-656`).
+  the actual mob level (`grug_mobs.kill_xp` in
+  `mods/ENTITIES/grug_mobs/levels.lua`, settlement `grug_mobs.award_kill_xp`
+  in `init.lua`).
 - **XP participation and split**: a participant dealt accepted damage to the
   mob or delivered effective healing to an existing participant. At death,
   only participants who are online and within 40 m count; divide the award by
@@ -611,8 +615,9 @@ Normal tier at level L:
   `dogshoot`). **Named rares broadcast** their spawn faction-wide
   ("Grimtusk has been sighted…") — a meeting point for a low-population
   server.
-- WP1 retune (**done with WP6**): boar = L1 (HP 26, dmg 2.3, XP 10),
-  zombie = L3 (HP 41, dmg 2.9, XP 30), and both now use the 4.6 melee band
+- WP1 retune (**done with WP6**): boar = L1 (HP 26, dmg 2.3, XP 10 then,
+  30 since Round 28), zombie = L3 (HP 41, dmg 2.9, XP 30 then, 40 since
+  Round 28), and both now use the 4.6 melee band
   (`run_velocity` was 3.4/2.6 at WP6, raised to 4.4/4.2 with the soft
   de-aggro, then to the band's 4.6 in rounds 4 and 5).
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
@@ -637,12 +642,12 @@ Normal tier at level L:
   designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
   every WP13 king at L65. No second king-specific fixed-level path exists.
 
-| Mob level | HP | Dmg/hit | Base XP | Normal same-level solo award, before race bonus |
-|-----------|----|---------|--------:|-----------------------------------------------:|
-| 1 | 26 | 2.3 | 10 | 15 |
-| 10 | 136 | 5.5 | 100 | 150 |
-| 30 | 764 | 15.5 | 300 | 450 |
-| 60 | 2696 | 38.0 | 600 | 900 |
+| Mob level | HP | Dmg/hit | Kill XP (normal, solo) | Elite / rare XP |
+|-----------|----|---------|-----------------------:|----------------:|
+| 1 | 26 | 2.3 | 30 | 120 / 180 |
+| 10 | 136 | 5.5 | 75 | 300 / 450 |
+| 30 | 764 | 15.5 | 175 | 700 / 1050 |
+| 60 | 2696 | 38.0 | 325 | 1300 / 1950 |
 
 ### Same-level TTK check
 

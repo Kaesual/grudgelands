@@ -140,7 +140,7 @@ new rule, all three were implicit before:
 
 | Profession | Retained specialist products |
 |---|---|
-| Weaponsmith | Metal fittings; physical-weapon enchantments |
+| Weaponsmith | Physical-weapon enchantments |
 | Armorsmith | Metal-armor and shield enchantments |
 | Leatherworker | Weapon grips; 8/16/24/32-slot leather bags; leather enchants |
 | Tailor | 8/16/24/32-slot cloth bags; cloth enchants |
@@ -476,7 +476,7 @@ from `grug_gear`. Consequences, all binding:
   bars and the approved mob component; bows use sticks, metal and Thread.
   Their exact shapes and ingredient ladder are in
   [`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows). No
-  base recipe adds a gem or professional fitting beyond those stated shapes.
+  base recipe adds a gem or professional component beyond those stated shapes.
   **This supersedes §3.3's** "vendor floor sells up to the bronze pick —
   iron+ picks are smith products" (see the marked line there).
 - **`default`'s tool ladder is replaced** by the six-tier ladder: wood
@@ -660,9 +660,9 @@ shovels need a character level by material tier; the tier is the tool's own
 
 **Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
 node a player digs and every fish caught gives XP (formula and table in
-[progression.md](progression.md) "Gathering XP"): factor 1.5 per ore node, 3 per
-gem node (the six regional G1/G2 species), 5 per fish, times
-`min(reference level, player level + 5)` with reference level 10 × harvest
+[progression.md](progression.md) "Gathering XP"): 0.10 kill equivalents per ore
+node, 0.20 per gem node (the six regional G1/G2 species), 0.33 per fish, of
+`M(min(reference level, player level + 5))` (Round 28 ruling 32) with reference level 10 × harvest
 tier (T1 10 … T5 50) or 10 × the water's zone band. The harvest callback of the
 node_dig wrapper settles it, so only a successful player dig of a natural
 resource node pays; explosions and mobs never dig through it, and ore nodes
@@ -869,10 +869,11 @@ six-tier ladder, and **§10 P1's "gem-tempered steel" is retired with it**
 **Weaponsmith enchants** physical weapons. Gathering tools have no combat enchants.
 **Armorsmith enchants** metal armor and shields. Plain base recipes
 remain universal: swords cost two bars plus a handle; picks cost three bars;
-armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Metal fittings
-are Weaponsmith trade goods used for professional improvement, never base gear.
+armor uses the canonical 5/8/7/4 head/chest/legs/feet layouts. Both smiths
+enchant with the metal bar of the enchant tier as their own material (§6b);
+the former Weaponsmith metal fittings are removed (Round 28 ruling 28).
 
-**Exclusive recipes**: **metal fittings** and named family-legal enchantments.
+**Exclusive recipes**: named family-legal enchantments.
 Plain shields use their universal Basics grid; Armorsmith owns their enchants.
 Cultural/PvP operations remain separate future delivery.
 
@@ -907,8 +908,7 @@ Round 28; the quiver is a Scout-only slot, `inventory_equipment.md` §3.) Its 16
 Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
 Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
-buy leather for bags, Alchemists for apothecary gear. The current Woodcarver enchant costs do not
-consume grips; its metal-fitting demand is defined separately.
+buy leather for bags, Alchemists for apothecary gear. No enchant consumes grips.
 
 ### 3.5 Tailor (tailor bench) — cloth and cloth bags
 
@@ -1020,13 +1020,10 @@ for example Steel Staff (§3.8).
 
 **Exclusive operations:** named staff, wand and bow enchants across T1–T6.
 
-**Cross-buy: the Woodcarver buys metal fittings from the Weaponsmith.**
-Every tier of
-professional enchanting needs a Weaponsmith-made fitting of the enchant tier.
-Universal plain caster weapons never require a professional component. That is
-the same deliberate supply loop the Leatherworker and Tailor already run
-in professions.md §3 — a profession that cannot finish its own top item
-alone is what keeps the market alive.
+**Self-contained (Round 28 ruling 28).** The Woodcarver enchants with its
+own graded wood of the enchant tier plus the tier's loot and mining inputs
+(§6b); it no longer buys Weaponsmith metal fittings, which are removed.
+Universal plain caster weapons never require a professional component.
 
 ### 3.6b Goldsmith (jeweller's bench) — gold, gems, both trinket slots
 
@@ -1133,34 +1130,30 @@ Neither of these costs a main profession slot (professions.md §1).
   are T1 Hearty dishes.
 
   **Cooking book.** Every row is a profession recipe at the crafting grid and
-  contains at least one ingredient registered at its own recipe tier.
+  contains at least one ingredient registered at its own recipe tier. The
+  Hearty dishes have no direct grid route (Round 28 ruling 27): they come only
+  from their raw assembly in the furnace (below).
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Hearty | raw meat + potato or corn | Hearty Stew |
   | T1 | Caster | carrot or cassava + potato or corn | Sweetroot Mash |
   | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
-  | T2 | Hearty | pumpkin + raw meat + potato or corn | Pumpkin Stew |
   | T2 | Caster | 2 berries + Sugar Cane | Berry Preserve |
   | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
-  | T3 | Hearty | mushroom + raw meat + potato or corn | Forager's Pot |
   | T3 | Caster | 2 mushrooms | Mushroom Skewer |
   | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
-  | T4 | Hearty | raw meat + Marshbloom + potato or corn | Marsh Roast |
   | T4 | Caster | raw fish + Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
-  | T5 | Hearty | raw meat + Stormkelp + Rock Salt | Kelp-Wrapped Roast |
   | T5 | Caster | Stormkelp + raw fish + melon | Stormkelp Broth |
   | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
-  | T6 | Hearty | 2 raw meat + Wild Cocoa + Stormkelp | Grand Feast |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
 
   **Both furnace patterns.** Raw meat → Cooked Meat, ordinary Raw Fish →
   Cooked Fish and Wild Grain → Bread are universal Basics routes with no
   profession progression. Every tier also
-  has one Cooking grid recipe for an inedible raw assembly; its
-  universal furnace finishing route meets the direct grid route at the same edible
+  has one Cooking grid recipe for an inedible raw assembly ("Raw X"); its
+  universal furnace finishing route is the only source of that tier's
   Hearty dish:
 
   | Tier | Raw assembly inputs | Furnace output |
@@ -1951,6 +1944,28 @@ The nine stat curves, material costs and 588 operations are defined in
 [the current contract](crafting_equipment_revision.md#enchanting). Bonuses depend
 on enchant tier, never a higher target tier. No extra base-damage or lifetime
 multiplier exists.
+
+**Enchant inputs** (Round 28 ruling 28): every operation of tier T consumes
+the family's own material of tier T, the tier's loot item for the chosen stat
+(`stat_loot`) and the tier's mining or gathering item for the equipment family
+(`family_input`), from `grug_professions/data/enchants.json`:
+
+| Family (`family_input` key) | Profession | Own material T1 → T6 |
+|---|---|---|
+| sword, dagger, greataxe | Weaponsmith | Bronze → Abyssal Steel Bar |
+| metal_armor, shield | Armorsmith | Bronze → Abyssal Steel Bar |
+| leather_armor | Leatherworker | Light → Nightscale Leather |
+| cloth_armor | Tailor | Patch → Stormweave Bolt |
+| bow, caster_weapon | Woodcarver | Seasoned → Heartwood Wood |
+| spellbook, trinket | Goldsmith | Tin → Gold-filigreed Abyssal Steel Setting |
+
+Prefix and suffix of a stat share the inputs; both trinket pools use the same
+`stat_loot`. No input may be another profession's product (a Cut gem is a
+Goldsmith product, so other families use raw gems); the few universal
+reagents anyone can craft are the exception that keeps a family input
+varied. Load fails on a missing entry, an unregistered item, an input declared
+above the enchant tier or a foreign
+product.
 
 ### 6b.3 Eligibility
 

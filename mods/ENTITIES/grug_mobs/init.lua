@@ -252,9 +252,10 @@ function grug_mobs.award_kill_xp(self)
 		for i = 1, count do
 			local player = eligible[i]
 			local player_level = grug_xp.get_level(player)
-			-- Round 16 raises kill XP once at the settlement authority, before
-			-- the existing participant split and per-recipient race bonus.
-			local xp = math.floor(grug_mobs.kill_xp(self, player_level) * 1.5)
+			-- Round 28 ruling 30: one kill equivalent M(min(mob, player + 5))
+			-- times the tier multiplier, then the gray rule and the split.
+			-- Kill XP carries no race bonus (only source "quest" is scaled).
+			local xp = grug_mobs.kill_xp(self, player_level)
 			if (self._grug_level or 1) <= player_level - 10
 					or grug_factions.same_faction(player, self.object) then
 				xp = 0
