@@ -164,7 +164,30 @@ local function run()
 		end
 		return out
 	end
+	-- Quest NPCs and today's quests: the designers' NPC ids and the legacy
+	-- quest ids a new design replaces.
+	local function scalars(def)
+		local out = {}
+		for key, value in pairs(def) do
+			local kind = type(value)
+			if type(key) == "string" and (kind == "string" or kind == "number" or kind == "boolean") then
+				out[key] = value
+			end
+		end
+		return out
+	end
+	local quest_npcs, quests = {}, {}
+	for id, def in pairs(grug_quests.registered_npcs or {}) do quest_npcs[id] = scalars(def) end
+	for id, def in pairs(grug_quests.registered_quests or {}) do
+		local row = scalars(def)
+		row.description = nil
+		row.xp = def.rewards and def.rewards.xp
+		row.prerequisites = def.prerequisites
+		quests[id] = row
+	end
 	local dump = {
+		quest_npcs = quest_npcs,
+		quests = quests,
 		items = items,
 		aliases = aliases,
 		entities = entities,

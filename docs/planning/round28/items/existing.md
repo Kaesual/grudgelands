@@ -1031,6 +1031,92 @@ Disposition from `grug_mobs/disposition.lua`; drops are today's static rows.
 | `grug_traders:vendor_tanner` | Tanner | npc |  |  |
 | `mobs:_pos` |  |  |  |  |
 
+## Quest NPCs
+
+Registered quest NPC ids today (settlement / socket). The zone atlas says
+which zone and hub each belongs to.
+
+| NPC id | Name | Settlement | Socket |
+|---|---|---|---|
+| `r14_dwarf_captive` | Tovin Ashthumb | copperfell_bandit_camp | quest_captive |
+| `r14_dwarf_elder` | Brunna Flintbraid | hearthpine | hall_quest |
+| `r14_dwarf_scout` | Mara Deepwatch | copperfell_outpost | quest_scout |
+| `r14_dwarf_steward` | Orrik Pineledger | copperfell_village | quest_steward |
+| `r14_elf_captive` | Nima Fern | starbough_bandit_camp | quest_captive |
+| `r14_elf_elder` | Saelin Dewbough | silverleaf | hall_quest |
+| `r14_elf_scout` | Theren Farstep | starbough_outpost | quest_scout |
+| `r14_elf_steward` | Ilyra Mossveil | starbough_village | quest_steward |
+| `r14_human_captive` | Pella Thatch | goldmead_bandit_camp | quest_captive |
+| `r14_human_elder` | Elian Reed | dawnmere | hall_quest |
+| `r14_human_scout` | Jon Vale | goldmead_outpost | quest_scout |
+| `r14_human_steward` | Marta Millward | goldmead_village | quest_steward |
+| `r14_orc_captive` | Rokka Emberhand | redtusk_bandit_camp | quest_captive |
+| `r14_orc_elder` | Gara Stonevoice | sunscar | hall_quest |
+| `r14_orc_scout` | Kesh Longstride | redtusk_outpost | quest_scout |
+| `r14_orc_steward` | Borak Redgrass | redtusk_village | quest_steward |
+| `r14_troll_captive` | Veko Bluefeather | raincall_bandit_camp | quest_captive |
+| `r14_troll_elder` | Zalima Rainhum | kapok | hall_quest |
+| `r14_troll_scout` | Neshi Reedstep | raincall_outpost | quest_scout |
+| `r14_troll_steward` | Daro Kapok | raincall_village | quest_steward |
+| `r14_undead_captive` | Hollis Grey | mournfen_bandit_camp | quest_captive |
+| `r14_undead_elder` | Veyra Pall | stillgrave | hall_quest |
+| `r14_undead_scout` | Sera Vane | mournfen_outpost | quest_scout |
+| `r14_undead_steward` | Mordec Silt | mournfen_village | quest_steward |
+| `r15_dwarf_local` | Dagna Copperset | copperfell_village | quest_local |
+| `r15_elf_local` | Lethri Reedshade | starbough_village | quest_local |
+| `r15_human_local` | Alda Sheaf | goldmead_village | quest_local |
+| `r15_orc_local` | Morga Clayhand | redtusk_village | quest_local |
+| `r15_troll_local` | Amari Palmweave | raincall_village | quest_local |
+| `r15_undead_local` | Edris Wax | mournfen_village | quest_local |
+| `r20_anchor_014_host` | Edda Tarnmantle | r20_anchor_014 | quest_host |
+| `r20_anchor_016_host` | Merren Oakstamp | r20_anchor_016 | quest_host |
+| `r20_anchor_018_host` | Ilwen Petalmeasure | r20_anchor_018 | quest_host |
+| `r20_anchor_020_host` | Sovel Namekeeper | r20_anchor_020 | quest_host |
+| `r20_anchor_022_host` | Brakka Jarward | r20_anchor_022 | quest_host |
+| `r20_anchor_024_host` | Taleko Drycord | r20_anchor_024 | quest_host |
+| `r20_anchor_026_host` | Hedra Rimebell | r20_anchor_026 | quest_host |
+| `r20_anchor_027_host` | Borin Splitbolt | r20_anchor_027 | quest_host |
+| `r20_anchor_028_host` | Alna Archsight | r20_anchor_028 | quest_host |
+| `r20_anchor_030_host` | Jessa Axlewright | r20_anchor_030 | quest_host |
+| `r20_anchor_031_host` | Toren Waterbarrel | r20_anchor_031 | quest_host |
+| `r20_anchor_032_host` | Nella Hedgeward | r20_anchor_032 | quest_host |
+| `r20_anchor_034_host` | Orya Petalward | r20_anchor_034 | quest_host |
+| `r20_anchor_035_host` | Lethen Moonledger | r20_anchor_035 | quest_host |
+| `r20_anchor_036_host` | Faeris Rootbinder | r20_anchor_036 | quest_host |
+| `r20_anchor_038_host` | Mereth Rubbinghand | r20_anchor_038 | quest_host |
+| `r20_anchor_039_host` | Vaska Ashlistener | r20_anchor_039 | quest_host |
+| `r20_anchor_040_host` | Orrel Hollowstep | r20_anchor_040 | quest_host |
+| `r20_anchor_042_host` | Morga Cutgrass | r20_anchor_042 | quest_host |
+| `r20_anchor_043_host` | Drek Rampbinder | r20_anchor_043 | quest_host |
+| `r20_anchor_044_host` | Yarra Standardmender | r20_anchor_044 | quest_host |
+| `r20_anchor_046_host` | Enashi Reedvoice | r20_anchor_046 | quest_host |
+| `r20_anchor_047_host` | Tokai Knotreader | r20_anchor_047 | quest_host |
+| `r20_anchor_048_host` | Rumela Stormstep | r20_anchor_048 | quest_host |
+| `r20_anchor_061_host` | Kelda Screesort | r20_anchor_061 | quest_host |
+| `r20_anchor_062_host` | Halen Chalkthumb | r20_anchor_062 | quest_host |
+| `r20_anchor_063_host` | Saevin Rootscribe | r20_anchor_063 | quest_host |
+| `r20_anchor_064_host` | Neris Fossilhand | r20_anchor_064 | quest_host |
+| `r20_anchor_065_host` | Gorren Redpick | r20_anchor_065 | quest_host |
+| `r20_anchor_066_host` | Zali Runoff | r20_anchor_066 | quest_host |
+| `r20_dwarf_capital_cook` | Varda Copperpan | dur_brannoc | terrace_bakehouse/terrace_bakehouse_quest_cook |
+| `r20_dwarf_capital_envoy` | Dorrin Gateledger | dur_brannoc | ancestor_hall_quest |
+| `r20_dwarf_start_cook` | Hilda Hearthspoon | hearthpine | quest_cook |
+| `r20_elf_capital_cook` | Mirael Petalpot | lethariel | market_bakehouse/market_bakehouse_quest_cook |
+| `r20_elf_capital_envoy` | Eriath Boughwarden | lethariel | star_hall_quest |
+| `r20_elf_start_cook` | Liora Dewpot | silverleaf | quest_cook |
+| `r20_human_capital_cook` | Ansel Ovenward | highcourt | homes_bakehouse/homes_bakehouse_quest_cook |
+| `r20_human_capital_envoy` | Mariel Waybook | highcourt | chapel_quest |
+| `r20_human_start_cook` | Bess Honeycrust | dawnmere | quest_cook |
+| `r20_orc_capital_cook` | Gorla Longladle | gor_drazhak | warren_cook_court/warren_cook_court_quest_cook |
+| `r20_orc_capital_envoy` | Thorga Roadspeaker | gor_drazhak | skull_hall_quest |
+| `r20_orc_start_cook` | Ugra Brothstone | sunscar | quest_cook |
+| `r20_troll_capital_cook` | Teshani Smokereed | kezamba | shore_smokehouse/shore_smokehouse_quest_cook |
+| `r20_troll_capital_envoy` | Nalo Pathdrum | kezamba | shrine_quest |
+| `r20_troll_start_cook` | Zemi Sweetroot | kapok | quest_cook |
+| `r20_undead_capital_cook` | Velis Mourningbowl | nhal_veyr | homes_mourners_hall/homes_mourners_hall_quest_cook |
+| `r20_undead_capital_envoy` | Ossa Quietregister | nhal_veyr | vigil_hall_quest |
+| `r20_undead_start_cook` | Neral Saltkeeper | stillgrave | quest_cook |
+
 ## Curated out
 
 Never reference these (`mods/ITEMS/grug_materials/content_curation.lua`).

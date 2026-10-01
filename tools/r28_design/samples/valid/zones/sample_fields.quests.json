@@ -1,0 +1,362 @@
+{
+  "zone": "sample_fields",
+  "identity": "The fields feed the capital; something eats the harvest first.",
+  "hubs": [
+    {
+      "id": "sample_town",
+      "anchor": "start",
+      "givers": [
+        {
+          "npc": "r14_human_elder",
+          "lines": [
+            "hunt",
+            "tools"
+          ]
+        },
+        {
+          "npc": "r20_human_start_cook",
+          "lines": [
+            "pantry",
+            "kitchen"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "sample_hunt_01",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "Crop Thieves",
+      "text": "During the day, Small Boars have been stealing our crops south of town. Drive them off before the harvest is gone.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "small_boar"
+          ],
+          "count": 8,
+          "area": "sample_fields/home_fields_day"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "copper": 10,
+        "items": []
+      },
+      "lesson": "Yellow names are neutral: they only fight back.",
+      "duration_min": 8
+    },
+    {
+      "id": "sample_hunt_02",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 3,
+      "requires": [
+        "sample_hunt_01"
+      ],
+      "title": "Night Gnawers",
+      "text": "Large Rats roam south of town after nightfall. Thin them out before they reach the granary.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 8,
+          "area": "sample_fields/home_fields_night"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "copper": 10,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "sample_hunt_03",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 3,
+      "level": 4,
+      "requires": [
+        "sample_hunt_02"
+      ],
+      "title": "Sleepwalkers",
+      "text": "At night, Braindead Zombies wash up on the home beach. The morning sun burns them, but the night watch needs help now.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "braindead_zombie"
+          ],
+          "count": 8,
+          "area": "sample_fields/home_beach_night"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "copper": 10,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "sample_hunt_04",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 9,
+      "level": 10,
+      "requires": [
+        "sample_hunt_03"
+      ],
+      "title": "The Chief's Ledger",
+      "text": "Confused Bandits camp near the border, day and night. Scatter them and bring back the chief's ledger.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "confused_bandit"
+          ],
+          "count": 6,
+          "area": "sample_fields/border_bandits"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:crop_ledger",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 8,
+        "copper": 10,
+        "items": []
+      },
+      "climax": true,
+      "duration_min": 15,
+      "quest_drops": [
+        {
+          "item": "grug_mobs:crop_ledger",
+          "roles": [
+            "confused_bandit_chief"
+          ],
+          "chance": 1
+        }
+      ]
+    },
+    {
+      "id": "sample_tools_01",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "title": "First Tools",
+      "text": "Every farmhand needs an axe and a pick. Craft a Wooden Axe and a Wooden Pickaxe and show them to me.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:pick_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_tools_02",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": [
+        "sample_tools_01"
+      ],
+      "title": "Logs for the Fence",
+      "text": "The fence needs mending. Bring five logs of any tree from the woods east of town.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_tools_03",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 4,
+      "level": 6,
+      "requires": [
+        "sample_tools_02"
+      ],
+      "title": "Bronze for the Smith",
+      "text": "Copper and tin lie in the hills. Smelt them into bars and alloy five Bronze Bars in a dual furnace.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_pantry_01",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 2,
+      "level": 3,
+      "requires": [],
+      "title": "Tails for the Tanner",
+      "text": "Large Rats come out at night. Bring me five of their tails; the tanner pays well.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:rat_tail",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_kitchen_01",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "Meat for the Pot",
+      "text": "Bring me five pieces of raw meat. Boars graze south of town by day. Raw meat goes into the oven, not your mouth.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_kitchen_02",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "sample_kitchen_01"
+      ],
+      "title": "Coal for the Oven",
+      "text": "The oven is cold. Dig five coal lumps from the rocks; any pick will do.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_travel_01",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r14_human_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "sample_kitchen_02"
+      ],
+      "title": "On to the Vale",
+      "text": "You have outgrown our fields. The steward in the vale needs hands. Travel there and speak to her.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_human_steward"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "sample_bounty_rats",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "sample_pantry_01"
+      ],
+      "title": "Rat Bounty",
+      "text": "Large Rats breed faster than we can count. Kill ten more at night and I will pay again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 10,
+          "area": "sample_fields/home_fields_night"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "copper": 10,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 3600
+      }
+    }
+  ]
+}

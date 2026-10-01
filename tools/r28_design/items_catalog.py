@@ -274,6 +274,11 @@ def build(dump):
         "aliases": dict(sorted((dump.get("aliases") or {}).items())),
         "curated_out": curated_out,
         "entities": entities,
+        "quest_npcs": dict(sorted((dump.get("quest_npcs") or {}).items())),
+        "legacy_quests": {qid: {"npc": q.get("npc"), "turnin": q.get("turnin_npc"),
+                                "min_level": q.get("min_level"), "xp": q.get("xp"),
+                                "title": q.get("title")}
+                          for qid, q in sorted((dump.get("quests") or {}).items())},
     }
 
 
@@ -377,6 +382,18 @@ def render_md(cat):
         drops = ", ".join("%s %s" % (r["item"], r["chance"]) for r in e["drops"])
         lines.append("| `%s` | %s | %s | %s | %s |" % (n, md_escape(e["description"]), e["type"] or "",
                                                       e["disposition"] or "", drops))
+    lines.append("")
+
+    lines.append("## Quest NPCs")
+    lines.append("")
+    lines.append("Registered quest NPC ids today (settlement / socket). The zone atlas says")
+    lines.append("which zone and hub each belongs to.")
+    lines.append("")
+    lines.append("| NPC id | Name | Settlement | Socket |")
+    lines.append("|---|---|---|---|")
+    for n, e in cat["quest_npcs"].items():
+        lines.append("| `%s` | %s | %s | %s |" % (n, md_escape(str(e.get("name") or e.get("title") or "")),
+                                                e.get("settlement", ""), e.get("socket", "")))
     lines.append("")
 
     lines.append("## Curated out")
