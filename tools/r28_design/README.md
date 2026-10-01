@@ -8,7 +8,8 @@ no network, no engine needed except to refresh the item catalogue.
 Design files live under `docs/planning/round28/design/` (`catalog/`,
 `zones/<zone_id>.spawns.json`, `zones/<zone_id>.quests.json`, and
 `zones/<host_zone>.front.quests.json` for the front lane's quests given in a
-31–40 or capital zone). Both tools
+31–40 or capital zone, and `zones/<zone_id>.catalog.json` for a zone's own
+leader roles and quest-only items). Both tools
 read that directory by default; `--design DIR` points them elsewhere (for
 example your own worktree's copy).
 
@@ -45,6 +46,21 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   items), NPCs are quest NPCs (today's registry, plus the atlas), areas used by
   quests exist and host the target, `quest_drops` pair with an item objective
   and a catalogue item of kind `quest`, prerequisites exist and have no cycle.
+- Zone catalogues: `zones/<zone_id>.catalog.json` = `{"subtypes": [...],
+  "items": [...]}` in the formats of `catalog/subtypes.json` and
+  `catalog/items.json`. Both tools merge them into the catalogue: role and
+  item ids are unique across the global catalogue and every zone addition
+  (`E-duplicate`), and a zone-added role or item may be used from any zone's
+  files. A zone catalogue adds only leader roles (`"leader": true`) and
+  quest-only items (kind `quest`) (`E-zone-catalog`); a zone-added leader is
+  a leader of that zone only (`E-zone-leader` in another zone's `leaders`,
+  `W-zone-leader` when its own zone does not place it). Its drops come from
+  its family's `leader_bonus` in `catalog/drops.json`.
+- Sub-type bases: a sub-type of a critter base stays a critter
+  (`E-critter-base`), and an aggressive role needs a base with an
+  `attack_type` (`E-attack-type`; from the mob catalogue
+  `docs/planning/round28/mobs/catalogue.json`, `--mobs` to point elsewhere).
+  B2 enforces both in the game.
 - Limits: at most 2 givers per hub and 2 line names per giver (front
   included), a giver in one hub only, critters never kill targets, sub-type
   size 0.75–1.3, at most two signature items per family and band,
@@ -177,14 +193,17 @@ python3 tools/r28_design/ledger.py --self-test
 ```
 
 They use `samples/valid/` (a small Dawnmere Fields design with catalogues,
-real zone and NPC ids), `samples/existing_min.json` and `samples/atlas/`
+real zone and NPC ids; the bandit chief and the crop ledger come from its
+zone catalogue), `samples/existing_min.json`, `samples/mobs_min.json` and
+`samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 63 variants each give
+`W-loot-unchecked` (only Dawnmere is designed) and that 71 variants each give
 their expected finding (broken designs, plus allowed forms: a settlement-key
 anchor, a leader kill without area, a leader of another zone, a declared
 front file, a capital front giver, both outpost givers declared, the
-single-NPC contested exemption, a new giver at a free socket, legacy kill
+single-NPC contested exemption, a new giver at a free socket, a zone-added
+leader used from another zone, a critter sub-type of a critter base, legacy kill
 objectives). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,

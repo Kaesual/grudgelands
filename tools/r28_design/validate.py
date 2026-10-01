@@ -108,7 +108,7 @@ def sentences(text):
 
 
 class Validator:
-    def __init__(self, design, existing, atlas=None, legacy=False, zones=None):
+    def __init__(self, design, existing, atlas=None, legacy=False, zones=None, mob_facts=None):
         self.d = design
         self.ex = existing or {}
         self.atlas = atlas
@@ -131,6 +131,9 @@ class Validator:
         self.aliases = self.ex.get("aliases") or {}
         self.npcs = set(self.ex.get("quest_npcs") or {})
         self.new_npcs, self.used_sockets = {}, {}
+        self.item_files, self.role_files, self.zone_roles = {}, {}, {}
+        self.mob_facts = mob_facts or {}
+        self.mob_facts_warned = False
         if atlas:
             self.npcs |= atlas.all_npcs()
         self.registered_npcs = set(self.npcs)
@@ -231,30 +234,38 @@ class Validator:
         d = self.d
         where = d.root / "catalog"
         for i, row in enumerate(d.items or []):
-            path = "items.json[%d]" % i
+            rel, zone_of = d.item_origin[i] if i < len(d.item_origin) else ("catalog/items.json", None)
+            file = d.root / rel
+            path = "items[%d]" % i if zone_of else "items.json[%d]" % i
             if not isinstance(row, dict):
-                self.E("E-type", where / "items.json", path, "entry must be an object")
+                self.E("E-type", file, path, "entry must be an object")
                 continue
-            self.unknown_keys(row, ITEM_KEYS, where / "items.json", path)
-            self.required(row, ITEM_REQUIRED, where / "items.json", path)
+            self.unknown_keys(row, ITEM_KEYS, file, path)
+            self.required(row, ITEM_REQUIRED, file, path)
             iid = row.get("id")
             if not isinstance(iid, str) or not C.ITEM_ID.match(iid):
-                self.E("E-id", where / "items.json", path, "id %r must be 'mod:snake_case'" % iid)
+                self.E("E-id", file, path, "id %r must be 'mod:snake_case'" % iid)
                 continue
             if iid in self.catalog_items:
-                self.E("E-duplicate", where / "items.json", path, "duplicate item id %s" % iid)
+                self.E("E-duplicate", file, path, "duplicate item id %s (also in %s)"
+                       % (iid, self.item_files.get(iid)))
             self.catalog_items[iid] = row
+            self.item_files[iid] = rel
             if iid in self.curated:
-                self.E("E-curated", where / "items.json", path, "%s is curated out" % iid)
+                self.E("E-curated", file, path, "%s is curated out" % iid)
             if row.get("kind") not in ITEM_KINDS:
-                self.E("E-enum", where / "items.json", path, "kind %r not in %s" % (row.get("kind"), ITEM_KINDS))
+                self.E("E-enum", file, path, "kind %r not in %s" % (row.get("kind"), ITEM_KINDS))
+            elif zone_of and row["kind"] != "quest":
+                self.E("E-zone-catalog", file, path, "a zone catalogue adds only quest-only items (kind quest); "
+                       "%s belongs in catalog/items.json" % iid)
             if not is_int(row.get("tier"), 1, 6):
-                self.E("E-tier", where / "items.json", path, "tier must be 1..6")
+                self.E("E-tier", file, path, "tier must be 1..6")
             if iid not in self.ex_items and not row.get("icon"):
-                self.W("W-icon", where / "items.json", path, "new item %s has no icon description" % iid)
+                self.W("W-icon", file, path, "new item %s has no icon description" % iid)
         for i, row in enumerate(d.subtypes or []):
-            path = "subtypes.json[%d]" % i
-            file = where / "subtypes.json"
+            rel, zone_of = d.subtype_origin[i] if i < len(d.subtype_origin) else ("catalog/subtypes.json", None)
+            file = d.root / rel
+            path = "subtypes[%d]" % i if zone_of else "subtypes.json[%d]" % i
             if not isinstance(row, dict):
                 self.E("E-type", file, path, "entry must be an object")
                 continue
@@ -264,10 +275,17 @@ class Validator:
             if not isinstance(role, str) or not C.SNAKE.match(role):
                 self.E("E-id", file, path, "role %r must be snake_case" % role)
                 continue
-            path = "subtypes.json[%s]" % role
+            path = ("subtypes[%s]" if zone_of else "subtypes.json[%s]") % role
             if role in self.subtypes:
-                self.E("E-duplicate", file, path, "duplicate role %s" % role)
+                self.E("E-duplicate", file, path, "duplicate role %s (also in %s)" % (role, self.role_files.get(role)))
             self.subtypes[role] = row
+            self.role_files[role] = rel
+            if zone_of:
+                self.zone_roles[role] = zone_of
+                if row.get("leader") is not True:
+                    self.E("E-zone-catalog", file, path, "a zone catalogue adds only leader roles (\"leader\": true); "
+                           "%s belongs in catalog/subtypes.json" % role)
+            self.check_base(row, file, path)
             if "grug_mobs:" + role in self.ex_entities:
                 self.E("E-role-collides", file, path, "role %s collides with the existing entity grug_mobs:%s "
                        "(use the existing mob unchanged without a sub-type, or pick a new role)" % (role, role))
@@ -394,6 +412,46 @@ class Validator:
                         self.W("W-profession-product", file, fpath,
                                "%s is a %s product; only that profession's own families may use it"
                                % (item, "/".join(sorted({r.get("profession", "?") for r in routes}))))
+
+    def base_facts(self, base):
+        """(disposition, attack_type) of a base entity: the mob catalogue,
+        else existing.json (which has no attack_type)."""
+        mob = self.mob_facts.get(base)
+        if mob is not None:
+            return mob.get("disposition"), (mob.get("combat") or {}).get("attack_type")
+        entity = self.ex_entities.get(base) or {}
+        return entity.get("disposition"), None
+
+    def check_base(self, row, file, path):
+        """A sub-type never changes a critter base, and an aggressive role
+        needs a base that can attack (B2 enforces both in the game)."""
+        base = row.get("base")
+        if base not in self.ex_entities and base not in self.mob_facts:
+            return
+        disposition, attack_type = self.base_facts(base)
+        role_disposition = row.get("disposition")
+        if disposition == "critter" and role_disposition != "critter":
+            self.E("E-critter-base", file, path, "base %s is a critter; a sub-type of it stays a critter "
+                   "(not %r)" % (base, role_disposition))
+        if role_disposition == "aggressive" and base in self.mob_facts and not attack_type:
+            self.E("E-attack-type", file, path, "aggressive role on base %s, which has no attack_type "
+                   "(it cannot fight)" % base)
+        elif role_disposition == "aggressive" and base not in self.mob_facts and not self.mob_facts_warned:
+            self.mob_facts_warned = True
+            self.W("W-no-mob-catalogue", file, path, "no mob catalogue entry for %s: attack_type not checked "
+                   "(--mobs docs/planning/round28/mobs/catalogue.json)" % base)
+
+    def zone_leaders_placed(self):
+        """A zone-added leader role is a leader of its own zone."""
+        for role, zone in sorted(self.zone_roles.items()):
+            file = self.d.root / self.role_files[role]
+            for other, data in self.d.spawns.items():
+                if other != zone and role in self.d.leaders(other):
+                    self.E("E-zone-leader", self.d.root / "zones" / ("%s.spawns.json" % other), "leaders",
+                           "%s was added by %s's zone catalogue and is a leader of %s only" % (role, zone, zone))
+            if role not in self.d.leaders(zone):
+                self.W("W-zone-leader", file, "subtypes[%s]" % role, "zone-added leader %s is not placed in "
+                       "zones/%s.spawns.json leaders" % (role, zone))
 
     def drop_row(self, drop, file, path):
         if not isinstance(drop, dict):
@@ -1097,6 +1155,17 @@ class Validator:
                 self.front_quests(host, data, all_areas, lines_by_zone.get(host))
         self.cycles()
         self.loot_coverage()
+        self.zone_leaders_placed()
+        for zone, data in self.d.zone_catalogs.items():
+            file = self.d.root / "zones" / ("%s.catalog.json" % zone)
+            if not isinstance(data, dict):
+                self.E("E-type", file, "$", "a zone catalogue is {\"subtypes\": [...], \"items\": [...]}")
+                continue
+            for key in data:
+                if key not in ("subtypes", "items", "notes"):
+                    self.W("W-unknown-key", file, "$", "unknown field %r (subtypes, items)" % key)
+            if self.atlas and zone not in self.atlas.zones:
+                self.E("E-unknown-zone", file, "$", "zone %s is not in the atlas" % zone)
         return self.f
 
     # Which zones of a race track serve each tier's loot (T5/T6: the front).
@@ -1200,6 +1269,8 @@ def parse(argv):
     ap.add_argument("--design", default=str(C.DEFAULT_DESIGN))
     ap.add_argument("--existing", default=str(C.DEFAULT_EXISTING))
     ap.add_argument("--atlas", help="zone atlas JSON file or directory (optional)")
+    ap.add_argument("--mobs", default=str(C.DEFAULT_MOBS),
+                    help="mob catalogue (attack_type of sub-type bases)")
     ap.add_argument("--zone", action="append", help="check only these zones' files (all are still loaded)")
     ap.add_argument("--legacy", action="store_true", help="allow legacy-only fields (B4's mechanical split)")
     ap.add_argument("--strict", action="store_true", help="warnings fail too")
@@ -1208,11 +1279,19 @@ def parse(argv):
     return ap.parse_args(argv)
 
 
-def validate(design_dir, existing_path, atlas_path=None, legacy=False, zones=None):
+def load_mob_facts(path):
+    """{entity: catalogue row} from the mob catalogue (attack_type etc.)."""
+    if not path or not Path(path).exists():
+        return {}
+    data = C.read_json(path)
+    return {row["entity"]: row for row in (data.get("mobs") or []) if isinstance(row, dict) and row.get("entity")}
+
+
+def validate(design_dir, existing_path, atlas_path=None, legacy=False, zones=None, mobs_path=C.DEFAULT_MOBS):
     design = C.Design(design_dir)
     existing = C.load_existing(existing_path)
     atlas = C.Atlas(atlas_path) if atlas_path else None
-    return Validator(design, existing, atlas, legacy, zones).run()
+    return Validator(design, existing, atlas, legacy, zones, load_mob_facts(mobs_path)).run()
 
 
 def main(argv):
@@ -1223,7 +1302,7 @@ def main(argv):
         print("validate: design directory %s not found" % args.design, file=sys.stderr)
         return 2
     try:
-        findings = validate(args.design, args.existing, args.atlas, args.legacy, args.zone)
+        findings = validate(args.design, args.existing, args.atlas, args.legacy, args.zone, args.mobs)
     except C.LoadError as err:
         print("validate: %s" % err, file=sys.stderr)
         return 2
@@ -1243,6 +1322,16 @@ def _load(path):
 
 def _save(path, data):
     Path(path).write_text(json.dumps(data, indent=2) + "\n")
+
+
+def _add_subtype(**fields):
+    """A mutation appending one sub-type row to catalog/subtypes.json."""
+    def change(d):
+        row = {"role": "odd_role", "family": "boar", "base": "grug_mobs:boar", "display": "Odd",
+               "size": 1.0, "disposition": "neutral", "levels": [1, 3], "drops": "boar"}
+        row.update(fields)
+        d.append(row)
+    return change
 
 
 def _mutations():
@@ -1438,6 +1527,12 @@ def _mutations():
         ("iron bar in band 1", "catalog/drops.json", iron_in_band1, "E-metal-tier"),
         ("enchant loot not a signature drop", "catalog/enchants.json", enchant_generic, "E-enchant-loot"),
         ("unknown stat", "catalog/enchants.json", bad_stat, "E-stat"),
+        ("sub-type turns a critter base neutral", "catalog/subtypes.json",
+         _add_subtype(role="big_rabbit", base="grug_mobs:rabbit"), "E-critter-base"),
+        ("critter sub-type of a critter base", "catalog/subtypes.json",
+         _add_subtype(role="fat_rabbit", base="grug_mobs:rabbit", disposition="critter"), "!E-critter-base"),
+        ("aggressive role on a base without attack_type", "catalog/subtypes.json",
+         _add_subtype(role="angry_dummy", base="grug_mobs:training_dummy", disposition="aggressive"), "E-attack-type"),
         ("travel into another race's 11-20 zone", Q, other_race_home, "E-race-track"),
         ("kill area in another race's 11-20 zone", Q, other_race_area, "E-race-track"),
         ("travel into the other faction", Q, other_faction, "W-faction"),
@@ -1545,7 +1640,9 @@ def _scenarios():
             _save(target / Q_FILE, data)
         return setup
 
-    def leader_elsewhere(target):
+    def leader_elsewhere(target, move_catalogue=True):
+        """The bandit chief becomes Goldmead's leader; Dawnmere's quest drop
+        still names it (a zone-added role is usable from other zones)."""
         spawns_file = target / "zones" / "elandor_dawnmere_fields.spawns.json"
         spawns = _load(spawns_file)
         leader = spawns.pop("leaders")[0]
@@ -1553,6 +1650,40 @@ def _scenarios():
         leader.update(anchor="village_1", offset=[0, 0])
         _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
               {"zone": "elandor_goldmead_vale", "areas": [], "leaders": [leader]})
+        if move_catalogue:
+            cat = target / "zones" / "elandor_dawnmere_fields.catalog.json"
+            data = _load(cat)
+            _save(target / "zones" / "elandor_goldmead_vale.catalog.json",
+                  {"subtypes": data.pop("subtypes"), "items": []})
+            _save(cat, data)
+
+    def zone_cat(change):
+        def setup(target):
+            path = target / "zones" / "elandor_dawnmere_fields.catalog.json"
+            data = _load(path)
+            change(data)
+            _save(path, data)
+        return setup
+
+    def non_leader_role(d):
+        d["subtypes"].append({"role": "dawnmere_scarecrow", "family": "bandit", "base": "grug_mobs:bandit",
+                              "display": "Scarecrow", "size": 1.0, "disposition": "aggressive",
+                              "levels": [5, 5], "drops": "bandit"})
+
+    def non_quest_item(d):
+        d["items"].append({"id": "grug_mobs:scarecrow_hat", "name": "Scarecrow Hat", "tier": 1,
+                           "kind": "signature", "description": "Straw.", "icon": "A straw hat."})
+
+    def duplicate_role(d):
+        dup = dict(d["subtypes"][0])
+        dup["role"] = "small_boar"
+        d["subtypes"].append(dup)
+
+    def duplicate_item(d):
+        dup = dict(d["items"][0])
+        dup["id"] = "grug_mobs:rat_tail"
+        d["items"].append(dup)
+
 
     def front_cycle(target):
         front_ok(target)
@@ -1592,6 +1723,12 @@ def _scenarios():
         ("new giver reusing a registered id", new_giver("lore_shrine/lore_shrine_quest",
                                                         "r20_human_capital_envoy"), False, "E-new-giver"),
         ("leader of another zone as a drop source", leader_elsewhere, False, "!W-role-not-in-zone"),
+        ("zone-added leader placed in another zone", lambda t: leader_elsewhere(t, False), False,
+         "E-zone-leader"),
+        ("zone catalogue adds a non-leader role", zone_cat(non_leader_role), False, "E-zone-catalog"),
+        ("zone catalogue adds a non-quest item", zone_cat(non_quest_item), False, "E-zone-catalog"),
+        ("zone catalogue role collides with the global one", zone_cat(duplicate_role), False, "E-duplicate"),
+        ("zone catalogue item collides with the global one", zone_cat(duplicate_item), False, "E-duplicate"),
         ("prerequisite cycle in a front file", front_cycle, False, "E-cycle"),
         ("legacy kill objective with mobs", legacy_kill, True, None),
         ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
@@ -1613,12 +1750,13 @@ def self_test():
     existing = here / "samples" / "existing_min.json"
     atlas = here / "samples" / "atlas"
     failures = []
-    findings = validate(valid, existing, atlas)
+    mobs = here / "samples" / "mobs_min.json"
+    findings = validate(valid, existing, atlas, mobs_path=mobs)
     # Only Dawnmere is designed: the other race tracks' T1 loot is unchecked.
     if findings.errors() or findings.codes() != {"W-loot-unchecked"}:
         print_findings(findings, valid)
         failures.append("the valid sample gives exactly W-loot-unchecked with the atlas")
-    no_atlas = validate(valid, existing, None)
+    no_atlas = validate(valid, existing, None, mobs_path=mobs)
     if no_atlas.errors() or no_atlas.codes() != {"W-no-atlas"}:
         print_findings(no_atlas, valid)
         failures.append("without an atlas the valid sample gives exactly W-no-atlas")
@@ -1635,7 +1773,7 @@ def self_test():
                 data = copy.deepcopy(_load(target / rel))
                 change(data)
                 _save(target / rel, data)
-            _expect(name, validate(target, existing, atlas, legacy), code, failures)
+            _expect(name, validate(target, existing, atlas, legacy, mobs_path=mobs), code, failures)
         finally:
             shutil.rmtree(tmp)
     if failures:

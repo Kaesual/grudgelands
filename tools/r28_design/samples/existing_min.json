@@ -269,6 +269,12 @@
       "description": "Guard",
       "disposition": null,
       "drops": []
+    },
+    "grug_mobs:training_dummy": {
+      "type": "npc",
+      "description": "Training Dummy",
+      "disposition": "neutral",
+      "drops": []
     }
   },
   "quest_npcs": {
