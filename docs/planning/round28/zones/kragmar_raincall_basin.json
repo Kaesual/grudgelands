@@ -1,0 +1,1318 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_023",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 16,
+   "name": "Raincall Village",
+   "protected_box": {
+    "kind": "village",
+    "max_x": 1887,
+    "max_z": 2055,
+    "min_x": 1864,
+    "min_z": 2032
+   },
+   "settlement_key": "raincall_village",
+   "slot": "village_1",
+   "x": 1876,
+   "y": 73,
+   "z": 2044
+  },
+  {
+   "id": "anchor_045",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 15,
+   "name": "Raincall Outpost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 2139,
+    "max_z": 2091,
+    "min_x": 2124,
+    "min_z": 2076
+   },
+   "settlement_key": "raincall_outpost",
+   "slot": "outpost_1",
+   "x": 2132,
+   "y": 70,
+   "z": 2084
+  },
+  {
+   "id": "anchor_059",
+   "kind": "bandit_home",
+   "kind_text": "bandit camp",
+   "level_at": 16,
+   "name": "Raincall Bandit Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 1643,
+    "max_z": 2045,
+    "min_x": 1620,
+    "min_z": 2022
+   },
+   "settlement_key": "raincall_bandit_camp",
+   "slot": "bandit_1",
+   "x": 1632,
+   "y": 61,
+   "z": 2034
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_jungle_edge",
+   "share": 65
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share": 15
+  },
+  {
+   "id": "grug_swamp",
+   "share": 20
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 60.7
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 21.7
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 17.6
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1528,
+   "midpoint": {
+    "x": 1883,
+    "z": 2282
+   },
+   "zone": "kragmar_kapok_cradle"
+  },
+  {
+   "length_nodes": 996,
+   "midpoint": {
+    "x": 1730,
+    "z": 1856
+   },
+   "zone": "kragmar_kezamba"
+  },
+  {
+   "length_nodes": 792,
+   "midpoint": {
+    "x": 2297,
+    "z": 1985
+   },
+   "zone": "kragmar_totemwater_reach"
+  },
+  {
+   "length_nodes": 516,
+   "midpoint": {
+    "x": 1187,
+    "z": 2031
+   },
+   "zone": "kragmar_whispering_reedlands"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_045",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 15,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Raincall Outpost",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 2132,
+   "z": 2084
+  },
+  {
+   "anchor": "anchor_059",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 16,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Raincall Bandit Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": 1632,
+   "z": 2034
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:parrot",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_day": [
+   "grug_mobs:jungle_boar",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_night": [
+   "grug_mobs:viper",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:viper",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 15104,
+  "bay_water_area_nodes2": 13232,
+  "beaches": [
+   {
+    "area_nodes2": 3856,
+    "box": {
+     "max_x": 1236,
+     "max_z": 2308,
+     "min_x": 1096,
+     "min_z": 2216
+    },
+    "centroid": {
+     "x": 1177,
+     "z": 2254
+    },
+    "id": "B1",
+    "levels": [
+     11,
+     13
+    ]
+   },
+   {
+    "area_nodes2": 592,
+    "box": {
+     "max_x": 1076,
+     "max_z": 2204,
+     "min_x": 1056,
+     "min_z": 2148
+    },
+    "centroid": {
+     "x": 1066,
+     "z": 2176
+    },
+    "id": "B2",
+    "levels": [
+     13,
+     14
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 13552,
+  "sea_beach_sand_area_nodes2": 4464,
+  "sea_coast_length_nodes": 372
+ },
+ "drift_band_share_pct": 9.8,
+ "extent": {
+  "centroid": {
+   "x": 1732,
+   "z": 2096
+  },
+  "land_area_nodes2": 492352,
+  "max_x": 2496,
+  "max_z": 2340,
+  "min_x": 1056,
+  "min_z": 1772
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": 2050
+ },
+ "id": "kragmar_raincall_basin",
+ "level_field": {
+  "histogram_pct": {
+   "11": 8.8,
+   "12": 11.1,
+   "13": 13.6,
+   "14": 14.4,
+   "15": 12.6,
+   "16": 11.2,
+   "17": 7.4,
+   "18": 8.0,
+   "19": 7.2,
+   "20": 5.6
+  },
+  "max": 20,
+  "min": 11
+ },
+ "level_max": 20,
+ "level_min": 11,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_raincall_basin.png",
+ "name": "Raincall Basin",
+ "neighbors": [
+  "kragmar_kapok_cradle",
+  "kragmar_kezamba",
+  "kragmar_totemwater_reach",
+  "kragmar_whispering_reedlands"
+ ],
+ "numeric_id": 28,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_023",
+    "kind": "village",
+    "max_x": 1887,
+    "max_z": 2055,
+    "min_x": 1864,
+    "min_z": 2032,
+    "name": "Raincall Village"
+   },
+   {
+    "anchor": "anchor_045",
+    "kind": "poi",
+    "max_x": 2139,
+    "max_z": 2091,
+    "min_x": 2124,
+    "min_z": 2076,
+    "name": "Raincall Outpost"
+   },
+   {
+    "anchor": "anchor_059",
+    "kind": "camp",
+    "max_x": 1643,
+    "max_z": 2045,
+    "min_x": 1620,
+    "min_z": 2022,
+    "name": "Raincall Bandit Camp"
+   }
+  ]
+ },
+ "protected_share_pct": 2.7,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 50,
+   "description": "Vipers emerge along the village footpath after nightfall. Clear Raincall's nearby rainforest ground so Daro can reopen the walk.",
+   "giver": "r14_troll_steward",
+   "giver_name": "Daro Kapok",
+   "giver_settlement": "Raincall Village",
+   "id": "r14_troll_07_the_coiled_footpath",
+   "min_level": 10,
+   "objectives": [
+    "kill 6 viper [in kragmar_raincall_basin]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:viper"
+     ],
+     "type": "kill",
+     "zone": "kragmar_raincall_basin"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_06_claws_on_raincall_road"
+   ],
+   "reward_items": [],
+   "title": "The Coiled Footpath",
+   "turnin": "r14_troll_steward",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "The village preparation shelter has room for another shared meal. Bring raw meat from the basin hunt.",
+   "giver": "r15_troll_local",
+   "giver_name": "Amari Palmweave",
+   "giver_settlement": "Raincall Village",
+   "id": "r15_troll_local_01",
+   "min_level": 10,
+   "objectives": [
+    "bring 4 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "description": "Bring raw meat",
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_06_claws_on_raincall_road"
+   ],
+   "reward_items": [],
+   "title": "Meat for the Preparation Roof",
+   "turnin": "r15_troll_local",
+   "xp": 285
+  },
+  {
+   "copper": 45,
+   "description": "Tapirs push through the shade beneath the communal house. Thin the herd before the low path is blocked.",
+   "giver": "r15_troll_local",
+   "giver_name": "Amari Palmweave",
+   "giver_settlement": "Raincall Village",
+   "id": "r15_troll_local_02",
+   "min_level": 10,
+   "objectives": [
+    "kill 5 tapir [in kragmar_raincall_basin]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:tapir"
+     ],
+     "type": "kill",
+     "zone": "kragmar_raincall_basin"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_06_claws_on_raincall_road"
+   ],
+   "reward_items": [],
+   "title": "Hooves Between the Stilt Posts",
+   "turnin": "r15_troll_local",
+   "xp": 380
+  },
+  {
+   "copper": 60,
+   "description": "Jungle lynx watch the reed line below the outpost. Clear Neshi's patrol route.",
+   "giver": "r14_troll_scout",
+   "giver_name": "Neshi Reedstep",
+   "giver_settlement": "Raincall Outpost",
+   "id": "r14_troll_08_cats_at_the_reed_line",
+   "min_level": 11,
+   "objectives": [
+    "kill 6 jungle_lynx [in kragmar_raincall_basin]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:jungle_lynx"
+     ],
+     "type": "kill",
+     "zone": "kragmar_raincall_basin"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_07_the_coiled_footpath"
+   ],
+   "reward_items": [],
+   "title": "Cats at the Reed Line",
+   "turnin": "r14_troll_scout",
+   "xp": 525
+  },
+  {
+   "copper": 50,
+   "description": "Vipers have claimed the dry equipment niche beside the roofed lookout. Clear them after nightfall.",
+   "giver": "r14_troll_scout",
+   "giver_name": "Neshi Reedstep",
+   "giver_settlement": "Raincall Outpost",
+   "id": "r15_troll_local_03",
+   "min_level": 11,
+   "objectives": [
+    "kill 4 viper [in kragmar_raincall_basin]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:viper"
+     ],
+     "type": "kill",
+     "zone": "kragmar_raincall_basin"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_07_the_coiled_footpath"
+   ],
+   "reward_items": [],
+   "title": "A Dry Niche for Supplies",
+   "turnin": "r14_troll_scout",
+   "xp": 315
+  },
+  {
+   "copper": 55,
+   "description": "Bring two ordinary leather pieces for Neshi's patrol packs while clearing the daytime jungle lynx from Raincall's reed line. Carried or traded leather is welcome; there is no second counted cat hunt.",
+   "giver": "r14_troll_scout",
+   "giver_name": "Neshi Reedstep",
+   "giver_settlement": "Raincall Outpost",
+   "id": "r15_troll_local_04",
+   "min_level": 11,
+   "objectives": [
+    "bring 2 mobs:leather"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "mobs:leather",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_07_the_coiled_footpath"
+   ],
+   "reward_items": [],
+   "title": "Leather for the Reed-Line Packs",
+   "turnin": "r14_troll_scout",
+   "xp": 420
+  },
+  {
+   "copper": 80,
+   "description": "The bandits' wet cargo smoulders without being consumed and bears a hooked sun. Defeat them and speak with Veko. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+   "giver": "r14_troll_scout",
+   "giver_name": "Neshi Reedstep",
+   "giver_settlement": "Raincall Outpost",
+   "id": "r14_troll_09_smoke_beneath_the_rain",
+   "min_level": 12,
+   "objectives": [
+    "kill 4 bandit or bandit_archer [in kragmar_raincall_basin]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit",
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "kragmar_raincall_basin"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_08_cats_at_the_reed_line"
+   ],
+   "reward_items": [],
+   "title": "Smoke Beneath the Rain",
+   "turnin": "r14_troll_captive",
+   "xp": 805
+  },
+  {
+   "copper": 65,
+   "description": "Ferry workers tie coloured cords around their pay purses. Recover two stolen purses from the camp and let the captive match those cords to the missing crews. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+   "giver": "r14_troll_captive",
+   "giver_name": "Veko Bluefeather",
+   "giver_settlement": "Raincall Bandit Camp",
+   "id": "r15_troll_local_05",
+   "min_level": 12,
+   "objectives": [
+    "bring 2 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:stolen_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_08_cats_at_the_reed_line"
+   ],
+   "reward_items": [],
+   "title": "Pay from the Ferry Road",
+   "turnin": "r14_troll_captive",
+   "xp": 460
+  },
+  {
+   "copper": 75,
+   "description": "The camp's sleeping shelters keep the raiders' linen cloth dry. Bring enough for Veko to wrap the smouldering cargo safely.",
+   "giver": "r14_troll_captive",
+   "giver_name": "Veko Bluefeather",
+   "giver_settlement": "Raincall Bandit Camp",
+   "id": "r15_troll_local_06",
+   "min_level": 12,
+   "objectives": [
+    "bring 5 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "description": "Bring linen cloth",
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_08_cats_at_the_reed_line"
+   ],
+   "reward_items": [],
+   "title": "Dry Bindings in the Rain",
+   "turnin": "r14_troll_captive",
+   "xp": 575
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 143,
+   "median": 60,
+   "min": 0,
+   "p10": 24,
+   "p90": 89
+  },
+  "steep_share_pct": 6.0
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    1513,
+    2333
+   ],
+   "from": "anchor_006 (Kapok, kragmar_kapok_cradle)",
+   "id": 19,
+   "kind": "primary",
+   "last_in_zone": [
+    1406,
+    1886
+   ],
+   "length_in_zone": 486,
+   "length_total": 984,
+   "polyline_simplified": [
+    [
+     1800,
+     2486
+    ],
+    [
+     1794,
+     2453
+    ],
+    [
+     1742,
+     2407
+    ],
+    [
+     1617,
+     2338
+    ],
+    [
+     1544,
+     2348
+    ],
+    [
+     1470,
+     2288
+    ],
+    [
+     1472,
+     2168
+    ],
+    [
+     1439,
+     1952
+    ],
+    [
+     1389,
+     1853
+    ],
+    [
+     1422,
+     1774
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    1873,
+    2060
+   ],
+   "from": "anchor_023 (Raincall Village, kragmar_raincall_basin)",
+   "id": 22,
+   "kind": "secondary",
+   "last_in_zone": [
+    1638,
+    2324
+   ],
+   "length_in_zone": 364,
+   "length_total": 389,
+   "polyline_simplified": [
+    [
+     1873,
+     2060
+    ],
+    [
+     1866,
+     2082
+    ],
+    [
+     1780,
+     2140
+    ],
+    [
+     1629,
+     2343
+    ]
+   ],
+   "to": "joins road 19"
+  },
+  {
+   "first_in_zone": [
+    1764,
+    1863
+   ],
+   "from": "anchor_012 (Kezamba, kragmar_kezamba)",
+   "id": 29,
+   "kind": "secondary",
+   "last_in_zone": [
+    1860,
+    2039
+   ],
+   "length_in_zone": 216,
+   "length_total": 352,
+   "polyline_simplified": [
+    [
+     1712,
+     1760
+    ],
+    [
+     1773,
+     1823
+    ],
+    [
+     1760,
+     1898
+    ],
+    [
+     1801,
+     1988
+    ],
+    [
+     1860,
+     2039
+    ]
+   ],
+   "to": "anchor_023 (Raincall Village, kragmar_raincall_basin)"
+  },
+  {
+   "first_in_zone": [
+    2121,
+    2082
+   ],
+   "from": "anchor_045 (Raincall Outpost, kragmar_raincall_basin)",
+   "id": 46,
+   "kind": "trail",
+   "last_in_zone": [
+    1822,
+    2108
+   ],
+   "length_in_zone": 318,
+   "length_total": 321,
+   "polyline_simplified": [
+    [
+     2121,
+     2082
+    ],
+    [
+     1992,
+     2085
+    ],
+    [
+     1902,
+     2127
+    ],
+    [
+     1822,
+     2108
+    ]
+   ],
+   "to": "joins road 22"
+  },
+  {
+   "first_in_zone": [
+    1617,
+    2026
+   ],
+   "from": "anchor_059 (Raincall Bandit Camp, kragmar_raincall_basin)",
+   "id": 59,
+   "kind": "trail",
+   "last_in_zone": [
+    1434,
+    1938
+   ],
+   "length_in_zone": 214,
+   "length_total": 212,
+   "polyline_simplified": [
+    [
+     1617,
+     2026
+    ],
+    [
+     1485,
+     1941
+    ],
+    [
+     1434,
+     1938
+    ]
+   ],
+   "to": "joins road 19"
+  }
+ ],
+ "role": "home zone 11-20",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1876,
+    "y": 73,
+    "z": 2044
+   },
+   "anchor_id": "anchor_023",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Raincall Outpost",
+      "road": 422,
+      "straight": 259,
+      "to": "raincall_outpost",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kapok",
+      "road": 707,
+      "straight": 512,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1191,
+      "straight": 244,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kezamba",
+      "road": 1741,
+      "straight": 549,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1796,
+      "straight": 1093,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1935,
+      "straight": 1127,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 188,
+     "x": 1868,
+     "z": 1856
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 645,
+     "x": 2440,
+     "z": 2356
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 618,
+     "x": 2260,
+     "z": 2528
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 424,
+      "hits": "kragmar_totemwater_reach"
+     },
+     "north_+z": {
+      "distance": 272,
+      "hits": "kragmar_kapok_cradle"
+     },
+     "south_-z": {
+      "distance": 192,
+      "hits": "kragmar_kezamba"
+     },
+     "west_-x": {
+      "distance": 688,
+      "hits": "kragmar_whispering_reedlands"
+     }
+    }
+   },
+   "key": "raincall_village",
+   "name": "Raincall Village",
+   "npcs": [
+    {
+     "npc_id": "r14_troll_steward",
+     "npc_name": "Daro Kapok",
+     "quests": [
+      "r14_troll_07_the_coiled_footpath"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_steward",
+     "x": 1878,
+     "y": 74,
+     "z": 2044
+    },
+    {
+     "npc_id": "r15_troll_local",
+     "npc_name": "Amari Palmweave",
+     "quests": [
+      "r15_troll_local_01",
+      "r15_troll_local_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_local",
+     "x": 1874,
+     "y": 74,
+     "z": 2042
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "idle": 2,
+    "quest": 2
+   }
+  },
+  {
+   "anchor": {
+    "x": 2132,
+    "y": 70,
+    "z": 2084
+   },
+   "anchor_id": "anchor_045",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Raincall Village",
+      "road": 422,
+      "straight": 259,
+      "to": "raincall_village",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kapok",
+      "road": 945,
+      "straight": 572,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1429,
+      "straight": 502,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kezamba",
+      "road": 1979,
+      "straight": 672,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 2034,
+      "straight": 1345,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 2173,
+      "straight": 1353,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 164,
+     "x": 2132,
+     "z": 2248
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 411,
+     "x": 2440,
+     "z": 2356
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 383,
+     "x": 2448,
+     "z": 2300
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 232,
+      "hits": "kragmar_totemwater_reach"
+     },
+     "north_+z": {
+      "distance": 164,
+      "hits": "kragmar_kapok_cradle"
+     },
+     "south_-z": {
+      "distance": 316,
+      "hits": "kragmar_kezamba"
+     },
+     "west_-x": {
+      "distance": 984,
+      "hits": "kragmar_whispering_reedlands"
+     }
+    }
+   },
+   "key": "raincall_outpost",
+   "name": "Raincall Outpost",
+   "npcs": [
+    {
+     "npc_id": "r14_troll_scout",
+     "npc_name": "Neshi Reedstep",
+     "quests": [
+      "r14_troll_08_cats_at_the_reed_line",
+      "r14_troll_09_smoke_beneath_the_rain",
+      "r15_troll_local_03",
+      "r15_troll_local_04"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_scout",
+     "x": 2135,
+     "y": 71,
+     "z": 2081
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1632,
+    "y": 61,
+    "z": 2034
+   },
+   "anchor_id": "anchor_059",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Kezamba",
+      "road": 1008,
+      "straight": 560,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1062,
+      "straight": 870,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kapok",
+      "road": 1089,
+      "straight": 543,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     },
+     {
+      "name": "Raincall Village",
+      "road": 1191,
+      "straight": 244,
+      "to": "raincall_village",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1202,
+      "straight": 949,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Raincall Outpost",
+      "road": 1429,
+      "straight": 502,
+      "to": "raincall_outpost",
+      "zone": "kragmar_raincall_basin"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 141,
+     "x": 1604,
+     "z": 1896
+    },
+    "nearest_road": {
+     "distance": 17
+    },
+    "nearest_sea": {
+     "bearing": "NW",
+     "distance": 494,
+     "x": 1224,
+     "z": 2312
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 466,
+     "x": 1236,
+     "z": 2280
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 672,
+      "hits": "kragmar_totemwater_reach"
+     },
+     "north_+z": {
+      "distance": 292,
+      "hits": "kragmar_kapok_cradle"
+     },
+     "south_-z": {
+      "distance": 144,
+      "hits": "kragmar_kezamba"
+     },
+     "west_-x": {
+      "distance": 432,
+      "hits": "kragmar_whispering_reedlands"
+     }
+    }
+   },
+   "key": "raincall_bandit_camp",
+   "name": "Raincall Bandit Camp",
+   "npcs": [
+    {
+     "npc_id": "r14_troll_captive",
+     "npc_name": "Veko Bluefeather",
+     "quests": [
+      "r15_troll_local_05",
+      "r15_troll_local_06"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_captive",
+     "x": 1642,
+     "y": 62,
+     "z": 2044
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 77.7
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:sand",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:hare",
+   "name": "Hare",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:jungle_boar",
+   "name": "Jungle Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 82.3
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_lynx",
+   "name": "Jungle Lynx",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:parrot",
+   "name": "Parrot",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 4464,
+    "levels": [
+     11,
+     14
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 4464,
+    "levels": [
+     11,
+     14
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 82.3
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:tapir",
+   "name": "Tapir",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:viper",
+   "name": "Viper",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 2
+}

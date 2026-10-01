@@ -1,0 +1,1078 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_009",
+   "kind": "capital_elf",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Lethariel",
+   "settlement_key": "lethariel",
+   "slot": "capital",
+   "x": 1800,
+   "y": 55,
+   "z": -1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_elf_forest",
+   "share": 90
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 10
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 87.4
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 12.4
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.0
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 788,
+   "midpoint": {
+    "x": 1611,
+    "z": -1062
+   },
+   "zone": "elandor_glassroot_wilds"
+  },
+  {
+   "length_nodes": 620,
+   "midpoint": {
+    "x": 1324,
+    "z": -1443
+   },
+   "zone": "elandor_lorindor"
+  },
+  {
+   "length_nodes": 1384,
+   "midpoint": {
+    "x": 2151,
+    "z": -1461
+   },
+   "zone": "elandor_moonfall_wood"
+  },
+  {
+   "length_nodes": 1196,
+   "midpoint": {
+    "x": 1794,
+    "z": -1877
+   },
+   "zone": "elandor_starbough_vale"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 14,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 11184,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 46192,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 8.9,
+ "extent": {
+  "centroid": {
+   "x": 1783,
+   "z": -1485
+  },
+  "land_area_nodes2": 636160,
+  "max_x": 2232,
+  "max_z": -1004,
+  "min_x": 1300,
+  "min_z": -2024
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": -1500
+ },
+ "id": "elandor_lethariel",
+ "level_field": {
+  "histogram_pct": {
+   "20": 9.0,
+   "21": 10.2,
+   "22": 12.4,
+   "23": 10.0,
+   "24": 9.9,
+   "25": 7.8,
+   "26": 7.4,
+   "27": 8.4,
+   "28": 8.9,
+   "29": 8.0,
+   "30": 8.1
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/elandor_lethariel.png",
+ "name": "Lethariel",
+ "neighbors": [
+  "elandor_glassroot_wilds",
+  "elandor_lorindor",
+  "elandor_moonfall_wood",
+  "elandor_starbough_vale"
+ ],
+ "numeric_id": 13,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 158548,
+   "box": {
+    "max_x": 2052,
+    "max_z": -1276,
+    "min_x": 1610,
+    "min_z": -1748
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": 2026,
+     "y": 55,
+     "z": -1570
+    },
+    {
+     "name": "south",
+     "x": 1774,
+     "y": 56,
+     "z": -1377
+    },
+    {
+     "name": "west",
+     "x": 1664,
+     "y": 57,
+     "z": -1461
+    },
+    {
+     "name": "north",
+     "x": 1795,
+     "y": 50,
+     "z": -1716
+    }
+   ],
+   "outline_kind": "stone_narrow",
+   "zone_land_outside_city_pct": 75.1
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 19.8,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Mirael Petalpot keeps a common pot beside Lethariel's market bakehouse. Bring five raw meat portions for travellers and wardens sharing that table. You need no Cooking qualification to contribute.",
+   "giver": "r20_elf_capital_cook",
+   "giver_name": "Mirael Petalpot",
+   "giver_settlement": "Lethariel",
+   "id": "r20_elf_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Petalpot Share",
+   "turnin": "r20_elf_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Eriath recommends Mirael Petalpot's table at the market bakehouse before you set out again. Speak with the cook beside the oven, then complete this introduction there. Learning Cooking from its separate trainer is optional.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "r20_elf_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Mirael Petalpot (lethariel)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_elf_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_elf_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "Petalpot Hospitality",
+   "turnin": "r20_elf_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The grove patrol needs ordinary oak boards for its covered stores. Bring ten planks to Eriath in Lethariel. Oak is welcome here; you do not need to cut a silverwood tree for this repair.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "r20_elf_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 10 default:wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "default:wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Boards for the Grove Patrol",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its groves. Travel to Lorindor Berrycourt in Lorindor and speak with Ilwen Petalmeasure. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Ilwen Petalmeasure there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "r20_elf_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Ilwen Petalmeasure (r20_anchor_018)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_018_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Ilwen Petalmeasure",
+   "turnin": "r20_anchor_018_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "elf",
+ "race_track": "elf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.0,
+  "height_above_sea": {
+   "max": 151,
+   "median": 58,
+   "min": 32,
+   "p10": 51,
+   "p90": 86
+  },
+  "steep_share_pct": 1.2
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    1311,
+    -1480
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 2,
+   "kind": "primary",
+   "last_in_zone": [
+    1536,
+    -1489
+   ],
+   "length_in_zone": 232,
+   "length_total": 1355,
+   "polyline_simplified": [
+    [
+     273,
+     -1358
+    ],
+    [
+     339,
+     -1391
+    ],
+    [
+     527,
+     -1407
+    ],
+    [
+     670,
+     -1361
+    ],
+    [
+     848,
+     -1455
+    ],
+    [
+     968,
+     -1445
+    ],
+    [
+     1109,
+     -1504
+    ],
+    [
+     1191,
+     -1487
+    ],
+    [
+     1260,
+     -1502
+    ],
+    [
+     1324,
+     -1475
+    ],
+    [
+     1536,
+     -1489
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    1849,
+    -1932
+   ],
+   "from": "anchor_003 (Silverleaf, elandor_silverleaf_glades)",
+   "id": 5,
+   "kind": "primary",
+   "last_in_zone": [
+    1853,
+    -1760
+   ],
+   "length_in_zone": 180,
+   "length_total": 810,
+   "polyline_simplified": [
+    [
+     1799,
+     -2486
+    ],
+    [
+     1796,
+     -2442
+    ],
+    [
+     1732,
+     -2353
+    ],
+    [
+     1764,
+     -2248
+    ],
+    [
+     1823,
+     -2142
+    ],
+    [
+     1792,
+     -2053
+    ],
+    [
+     1855,
+     -1917
+    ],
+    [
+     1853,
+     -1760
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    1835,
+    -1006
+   ],
+   "from": "anchor_036 (Glassroot Gate, elandor_glassroot_wilds)",
+   "id": 14,
+   "kind": "secondary",
+   "last_in_zone": [
+    1776,
+    -1232
+   ],
+   "length_in_zone": 242,
+   "length_total": 897,
+   "polyline_simplified": [
+    [
+     1924,
+     -578
+    ],
+    [
+     1908,
+     -629
+    ],
+    [
+     1952,
+     -762
+    ],
+    [
+     1857,
+     -708
+    ],
+    [
+     1827,
+     -746
+    ],
+    [
+     1826,
+     -846
+    ],
+    [
+     1796,
+     -915
+    ],
+    [
+     1832,
+     -977
+    ],
+    [
+     1839,
+     -1082
+    ],
+    [
+     1776,
+     -1232
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    2129,
+    -1275
+   ],
+   "from": "anchor_035 (Moonfall Observatory, elandor_moonfall_wood)",
+   "id": 39,
+   "kind": "trail",
+   "last_in_zone": [
+    1833,
+    -1100
+   ],
+   "length_in_zone": 348,
+   "length_total": 667,
+   "polyline_simplified": [
+    [
+     2366,
+     -1334
+    ],
+    [
+     2307,
+     -1383
+    ],
+    [
+     2256,
+     -1394
+    ],
+    [
+     2161,
+     -1288
+    ],
+    [
+     1833,
+     -1100
+    ]
+   ],
+   "to": "joins road 14"
+  },
+  {
+   "first_in_zone": [
+    1776,
+    -1232
+   ],
+   "from": "end:14",
+   "id": 150,
+   "kind": "secondary",
+   "last_in_zone": [
+    1774,
+    -1371
+   ],
+   "length_in_zone": 142,
+   "length_total": 141,
+   "polyline_simplified": [
+    [
+     1776,
+     -1232
+    ],
+    [
+     1774,
+     -1371
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    1536,
+    -1489
+   ],
+   "from": "end:2",
+   "id": 151,
+   "kind": "primary",
+   "last_in_zone": [
+    1658,
+    -1461
+   ],
+   "length_in_zone": 138,
+   "length_total": 137,
+   "polyline_simplified": [
+    [
+     1536,
+     -1489
+    ],
+    [
+     1622,
+     -1448
+    ],
+    [
+     1658,
+     -1461
+    ]
+   ],
+   "to": "gate_west"
+  },
+  {
+   "first_in_zone": [
+    1853,
+    -1760
+   ],
+   "from": "end:5",
+   "id": 152,
+   "kind": "primary",
+   "last_in_zone": [
+    1795,
+    -1722
+   ],
+   "length_in_zone": 84,
+   "length_total": 81,
+   "polyline_simplified": [
+    [
+     1853,
+     -1760
+    ],
+    [
+     1795,
+     -1722
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1800,
+    "y": 55,
+    "z": -1500
+   },
+   "anchor_id": "anchor_009",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Starbough Village",
+      "road": 812,
+      "straight": 530,
+      "to": "starbough_village",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Starbough Bandit Camp",
+      "road": 889,
+      "straight": 590,
+      "to": "starbough_bandit_camp",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Paleroot Cutting",
+      "road": 1033,
+      "straight": 812,
+      "to": "r20_anchor_063",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Lorindor Berrycourt",
+      "road": 1126,
+      "straight": 926,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Starbough Outpost",
+      "road": 1176,
+      "straight": 671,
+      "to": "starbough_outpost",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Moonfall Observatory",
+      "road": 1180,
+      "straight": 602,
+      "to": "r20_anchor_035",
+      "zone": "elandor_moonfall_wood"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SW",
+     "distance": 376,
+     "x": 1616,
+     "z": -1828
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 666,
+     "x": 1304,
+     "z": -1944
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 586,
+     "x": 1400,
+     "z": -1928
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 424,
+      "hits": "elandor_moonfall_wood"
+     },
+     "north_+z": {
+      "distance": 496,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "south_-z": {
+      "distance": 428,
+      "hits": "elandor_starbough_vale"
+     },
+     "west_-x": {
+      "distance": 488,
+      "hits": "elandor_lorindor"
+     }
+    }
+   },
+   "key": "lethariel",
+   "name": "Lethariel",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": 1762,
+     "y": 61,
+     "z": -1525
+    },
+    {
+     "npc_id": "r20_elf_capital_envoy",
+     "npc_name": "Eriath Boughwarden",
+     "quests": [
+      "r20_elf_capital_services",
+      "r20_elf_capital_stores",
+      "r20_elf_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "star_hall_quest",
+     "tag": "door",
+     "x": 1775,
+     "y": 56,
+     "z": -1495
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": 1817,
+     "y": 56,
+     "z": -1525
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": 1824,
+     "y": 56,
+     "z": -1525
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": 1825,
+     "y": 56,
+     "z": -1514
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_1",
+     "tag": "1",
+     "x": 1812,
+     "y": 56,
+     "z": -1561
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_2",
+     "tag": "2",
+     "x": 1812,
+     "y": 56,
+     "z": -1571
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_3",
+     "tag": "3",
+     "x": 1818,
+     "y": 56,
+     "z": -1561
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_4",
+     "tag": "4",
+     "x": 1818,
+     "y": 56,
+     "z": -1571
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "market_stable/market_stable_riding",
+     "x": 1809,
+     "y": 56,
+     "z": -1566
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_bowyer/market_bowyer_vendor_bowyer",
+     "vendor_kind": "bowyer",
+     "x": 1858,
+     "y": 56,
+     "z": -1510
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_bowyer/market_bowyer_station",
+     "tag": "carving_bench",
+     "x": 1863,
+     "y": 56,
+     "z": -1521
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_bowyer/market_bowyer_woodcarver",
+     "x": 1865,
+     "y": 56,
+     "z": -1519
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "market_weaver/market_weaver_gate_idle",
+     "tag": "door",
+     "x": 1804,
+     "y": 57,
+     "z": -1590
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_weaver/market_weaver_vendor_weaver",
+     "vendor_kind": "tailor",
+     "x": 1802,
+     "y": 57,
+     "z": -1595
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_weaver/market_weaver_station",
+     "tag": "tailor_bench",
+     "x": 1814,
+     "y": 57,
+     "z": -1590
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_weaver/market_weaver_tailor",
+     "x": 1812,
+     "y": 57,
+     "z": -1588
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_bakehouse/market_bakehouse_vendor_baker",
+     "vendor_kind": "baker",
+     "x": 1879,
+     "y": 55,
+     "z": -1520
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_bakehouse/market_bakehouse_station",
+     "tag": "furnace",
+     "x": 1883,
+     "y": 55,
+     "z": -1531
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_bakehouse/market_bakehouse_cooking",
+     "x": 1885,
+     "y": 55,
+     "z": -1529
+    },
+    {
+     "npc_id": "r20_elf_capital_cook",
+     "npc_name": "Mirael Petalpot",
+     "quests": [
+      "r20_elf_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "market_bakehouse/market_bakehouse_quest_cook",
+     "x": 1881,
+     "y": 55,
+     "z": -1529
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "martial_armoury/martial_armoury_vendor_armourer",
+     "vendor_kind": "armourer",
+     "x": 1739,
+     "y": 57,
+     "z": -1450
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "martial_armoury/martial_armoury_station",
+     "tag": "forge",
+     "x": 1728,
+     "y": 57,
+     "z": -1455
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "martial_armoury/martial_armoury_weaponsmith",
+     "x": 1730,
+     "y": 57,
+     "z": -1457
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "martial_armoury/martial_armoury_armorsmith",
+     "x": 1730,
+     "y": 57,
+     "z": -1453
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "martial_armoury/martial_armoury_weapon",
+     "tag": "weapon",
+     "x": 1726,
+     "y": 58,
+     "z": -1458
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "martial_armoury/martial_armoury_armor",
+     "tag": "armor",
+     "x": 1726,
+     "y": 58,
+     "z": -1452
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "martial_store/martial_store_station",
+     "tag": "tanning_rack",
+     "x": 1733,
+     "y": 58,
+     "z": -1434
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "martial_store/martial_store_leatherworker",
+     "x": 1735,
+     "y": 58,
+     "z": -1436
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "mere_lore_hall/mere_lore_hall_vendor_herbalist",
+     "vendor_kind": "herbalist",
+     "x": 1867,
+     "y": 56,
+     "z": -1495
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "mere_lore_hall/mere_lore_hall_station",
+     "tag": "jewellers_bench",
+     "x": 1862,
+     "y": 56,
+     "z": -1483
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "mere_lore_hall/mere_lore_hall_goldsmith",
+     "x": 1860,
+     "y": 56,
+     "z": -1485
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "mere_lore_hall/mere_lore_hall_jewel",
+     "tag": "jewel",
+     "x": 1865,
+     "y": 57,
+     "z": -1482
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "homes_longhouse/homes_longhouse_gate_idle",
+     "tag": "door",
+     "x": 1790,
+     "y": 56,
+     "z": -1562
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "homes_brewhouse/homes_brewhouse_vendor_brewer",
+     "vendor_kind": "brewer",
+     "x": 1725,
+     "y": 57,
+     "z": -1526
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "homes_brewhouse/homes_brewhouse_station",
+     "tag": "brewing_stand",
+     "x": 1714,
+     "y": 57,
+     "z": -1531
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "homes_brewhouse/homes_brewhouse_alchemist",
+     "x": 1716,
+     "y": 57,
+     "z": -1533
+    },
+    {
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "mere_shrine/mere_shrine_quest",
+     "tag": "door",
+     "x": 1884,
+     "y": 56,
+     "z": -1498
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "mere_stages/mere_stages_vendor_fishmonger",
+     "vendor_kind": "fishmonger",
+     "x": 1991,
+     "y": 51,
+     "z": -1547
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 43,
+    "guard_post": 14,
+    "housing_manager": 1,
+    "idle": 127,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 3,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 9,
+    "waypoint": 1,
+    "work": 48
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "accord_home",
+ "track_order": 3
+}

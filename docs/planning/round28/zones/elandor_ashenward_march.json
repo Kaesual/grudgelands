@@ -1,0 +1,1865 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_031",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 33,
+   "name": "Cinderline Watch",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -343,
+    "max_z": -843,
+    "min_x": -358,
+    "min_z": -858
+   },
+   "settlement_key": "r20_anchor_031",
+   "slot": "outpost_1",
+   "x": -350,
+   "y": 56,
+   "z": -850
+  },
+  {
+   "id": "anchor_032",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 37,
+   "name": "Last Hedge Redoubt",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 307,
+    "max_z": -443,
+    "min_x": 292,
+    "min_z": -458
+   },
+   "settlement_key": "r20_anchor_032",
+   "slot": "outpost_2",
+   "x": 300,
+   "y": 77,
+   "z": -450
+  },
+  {
+   "id": "anchor_052",
+   "kind": "bandit_frontier",
+   "kind_text": "bandit hideout",
+   "level_at": 38,
+   "name": "Coalbrand Yard",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": -17,
+    "max_z": -399,
+    "min_x": -32,
+    "min_z": -414
+   },
+   "settlement_key": "r20_anchor_052",
+   "slot": "bandit_1",
+   "x": -24,
+   "y": 112,
+   "z": -406
+  },
+  {
+   "id": "anchor_071",
+   "kind": "clash",
+   "kind_text": "clash site",
+   "level_at": 39,
+   "name": "Ashen Wheelbreak",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -267,
+    "max_z": -289,
+    "min_x": -282,
+    "min_z": -304
+   },
+   "settlement_key": "r20_anchor_071",
+   "slot": "clash_1",
+   "x": -274,
+   "y": 115,
+   "z": -296
+  },
+  {
+   "id": "anchor_072",
+   "kind": "clash",
+   "kind_text": "clash site",
+   "level_at": 39,
+   "name": "Hedgefire Crossing",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 257,
+    "max_z": -313,
+    "min_x": 242,
+    "min_z": -328
+   },
+   "settlement_key": "r20_anchor_072",
+   "slot": "clash_2",
+   "x": 250,
+   "y": 160,
+   "z": -320
+  },
+  {
+   "id": "anchor_092",
+   "kind": "rare_route",
+   "kind_text": "rare route",
+   "level_at": 35,
+   "name": "Whitefang's Cold Den",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -175,
+    "max_z": -645,
+    "min_x": -186,
+    "min_z": -656
+   },
+   "settlement_key": "r20_anchor_092",
+   "slot": "rare_old_whitefang",
+   "x": -180,
+   "y": 37,
+   "z": -650
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_deep_forest",
+   "share": 50
+  },
+  {
+   "id": "grug_meadows",
+   "share": 30
+  },
+  {
+   "id": "grug_swamp",
+   "share": 20
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 53.2
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 32.2
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 13.9
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_crags",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_savanna",
+   "share_pct": 0.0
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 832,
+   "midpoint": {
+    "x": 846,
+    "z": -763
+   },
+   "zone": "elandor_glassroot_wilds"
+  },
+  {
+   "length_nodes": 1340,
+   "midpoint": {
+    "x": -27,
+    "z": -1150
+   },
+   "zone": "elandor_highcourt"
+  },
+  {
+   "length_nodes": 500,
+   "midpoint": {
+    "x": 588,
+    "z": -1181
+   },
+   "zone": "elandor_lorindor"
+  },
+  {
+   "length_nodes": 508,
+   "midpoint": {
+    "x": -880,
+    "z": -739
+   },
+   "zone": "elandor_stormvault_heights"
+  },
+  {
+   "length_nodes": 672,
+   "midpoint": {
+    "x": -687,
+    "z": -1109
+   },
+   "zone": "elandor_whitebridge_shire"
+  },
+  {
+   "length_nodes": 1412,
+   "midpoint": {
+    "x": -482,
+    "z": -269
+   },
+   "zone": "front_broken_causeway"
+  },
+  {
+   "length_nodes": 1304,
+   "midpoint": {
+    "x": 496,
+    "z": -195
+   },
+   "zone": "front_shattered_line"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_031",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 33,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Cinderline Watch",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -350,
+   "z": -850
+  },
+  {
+   "anchor": "anchor_032",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 37,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Last Hedge Redoubt",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 300,
+   "z": -450
+  },
+  {
+   "anchor": "anchor_052",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 38,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Coalbrand Yard",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": -24,
+   "z": -406
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:bone_weevil",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_night": [
+   "grug_mobs:ashen_treant",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:giant_spider",
+   "grug_mobs:pale_spider",
+   "grug_mobs:poacher",
+   "grug_mobs:skeleton_raider",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:ashen_treant",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:giant_spider",
+   "grug_mobs:pale_spider",
+   "grug_mobs:poacher",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:skeleton_raider",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 19056,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 72768,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 7.3,
+ "extent": {
+  "centroid": {
+   "x": 7,
+   "z": -671
+  },
+  "land_area_nodes2": 1533984,
+  "max_x": 988,
+  "max_z": -92,
+  "min_x": -892,
+  "min_z": -1276
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": -700
+ },
+ "id": "elandor_ashenward_march",
+ "level_field": {
+  "histogram_pct": {
+   "31": 9.1,
+   "32": 11.1,
+   "33": 11.3,
+   "34": 11.6,
+   "35": 12.0,
+   "36": 12.1,
+   "37": 7.9,
+   "38": 8.3,
+   "39": 8.2,
+   "40": 8.5
+  },
+  "max": 40,
+  "min": 31
+ },
+ "level_max": 40,
+ "level_min": 31,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_ashenward_march.png",
+ "name": "Ashenward March",
+ "neighbors": [
+  "elandor_glassroot_wilds",
+  "elandor_highcourt",
+  "elandor_lorindor",
+  "elandor_stormvault_heights",
+  "elandor_whitebridge_shire",
+  "front_broken_causeway",
+  "front_shattered_line"
+ ],
+ "numeric_id": 10,
+ "palette_without_host_ground": [
+  "Blightfang Wolf",
+  "Bone Weevil",
+  "Bonelurker Spider",
+  "Gaunt Stag",
+  "Plaguehide Bear"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_031",
+    "kind": "poi",
+    "max_x": -343,
+    "max_z": -843,
+    "min_x": -358,
+    "min_z": -858,
+    "name": "Cinderline Watch"
+   },
+   {
+    "anchor": "anchor_032",
+    "kind": "poi",
+    "max_x": 307,
+    "max_z": -443,
+    "min_x": 292,
+    "min_z": -458,
+    "name": "Last Hedge Redoubt"
+   },
+   {
+    "anchor": "anchor_052",
+    "kind": "camp",
+    "max_x": -17,
+    "max_z": -399,
+    "min_x": -32,
+    "min_z": -414,
+    "name": "Coalbrand Yard"
+   },
+   {
+    "anchor": "anchor_071",
+    "kind": "poi",
+    "max_x": -267,
+    "max_z": -289,
+    "min_x": -282,
+    "min_z": -304,
+    "name": "Ashen Wheelbreak"
+   },
+   {
+    "anchor": "anchor_072",
+    "kind": "poi",
+    "max_x": 257,
+    "max_z": -313,
+    "min_x": 242,
+    "min_z": -328,
+    "name": "Hedgefire Crossing"
+   },
+   {
+    "anchor": "anchor_092",
+    "kind": "poi",
+    "max_x": -175,
+    "max_z": -645,
+    "min_x": -186,
+    "min_z": -656,
+    "name": "Whitefang's Cold Den"
+   }
+  ]
+ },
+ "protected_share_pct": 1.5,
+ "pvp_rule": "contested",
+ "quests": [
+  {
+   "copper": 85,
+   "description": "Embers blow straight through the low gap in Cinderline's wind wall. Bring ten cobble blocks for that gap so the watch's covered barrels stay sheltered. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "r20_anchor_031_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 10 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Wall Against Embers",
+   "turnin": "r20_anchor_031_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Ashen treants move through Ashenward March's forest litter at night. Defeat three before the watch sends another barrel crew into those scorched stands.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "r20_anchor_031_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 3 ashen_treant [in elandor_ashenward_march]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:ashen_treant"
+     ],
+     "type": "kill",
+     "zone": "elandor_ashenward_march"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Ashen Wood Stirs",
+   "turnin": "r20_anchor_031_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "The last hedge has gaps wide enough for loaded wagons to drift off the dispatch lane. Bring eight oak planks for the marker posts at Last Hedge Redoubt. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "r20_anchor_032_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 8 default:wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Posts for the Last Hedge",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Skeleton raiders take the dispatch road through Ashenward March after nightfall. Defeat four while the watch restores the road's markers.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "r20_anchor_032_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 4 skeleton_raider [in elandor_ashenward_march]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:skeleton_raider"
+     ],
+     "type": "kill",
+     "zone": "elandor_ashenward_march"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Dead on the Dispatch Road",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "The barrel route is usable again, and its stolen cargo has been traced to Coalbrand Camp in Ashenward March. Defeat four bandit archers guarding that camp's supplies.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "r20_anchor_031_03",
+   "min_level": 33,
+   "objectives": [
+    "kill 4 bandit_archer [in elandor_ashenward_march]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "elandor_ashenward_march"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_031_02"
+   ],
+   "reward_items": [],
+   "title": "Coalbrand's Watchers",
+   "turnin": "r20_anchor_031_host",
+   "xp": 1300
+  },
+  {
+   "copper": 100,
+   "description": "The dispatches identify a Throng garrison across Bannerbreak Mesa. At level 40, defeat three Throng guards at those frontier military posts or their patrols. Leave civilians, players and Gor Drazhak's city watch outside this mission.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "r20_anchor_032_03",
+   "min_level": 40,
+   "objectives": [
+    "kill 3 guard_throng [in kragmar_bannerbreak_mesa]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:guard_throng"
+     ],
+     "type": "kill",
+     "zone": "kragmar_bannerbreak_mesa"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_032_02"
+   ],
+   "reward_items": [],
+   "title": "Standards Across the Mesa",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1975
+  }
+ ],
+ "race_region": "human",
+ "race_track": "human",
+ "rares": [
+  {
+   "biome_hint": "the deep forest",
+   "id": "old_whitefang",
+   "level_at": 35,
+   "mob": "grug_mobs:wolf",
+   "name": "Old Whitefang",
+   "respawn_s": [
+    7200,
+    14400
+   ],
+   "route": [
+    [
+     -228,
+     37,
+     -674
+    ],
+    [
+     -164,
+     52,
+     -610
+    ],
+    [
+     -124,
+     49,
+     -666
+    ]
+   ]
+  }
+ ],
+ "relief": {
+  "cliff_share_pct": 1.0,
+  "height_above_sea": {
+   "max": 349,
+   "median": 76,
+   "min": 32,
+   "p10": 49,
+   "p90": 151
+  },
+  "steep_share_pct": 9.1
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -525,
+    -1218
+   ],
+   "from": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)",
+   "id": 1,
+   "kind": "primary",
+   "last_in_zone": [
+    -430,
+    -1234
+   ],
+   "length_in_zone": 100,
+   "length_total": 1434,
+   "polyline_simplified": [
+    [
+     -1536,
+     -1633
+    ],
+    [
+     -1452,
+     -1637
+    ],
+    [
+     -1384,
+     -1616
+    ],
+    [
+     -1179,
+     -1498
+    ],
+    [
+     -1107,
+     -1426
+    ],
+    [
+     -946,
+     -1414
+    ],
+    [
+     -865,
+     -1340
+    ],
+    [
+     -705,
+     -1240
+    ],
+    [
+     -545,
+     -1217
+    ],
+    [
+     -272,
+     -1247
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    -355,
+    -861
+   ],
+   "from": "anchor_031 (Cinderline Watch, elandor_ashenward_march)",
+   "id": 13,
+   "kind": "secondary",
+   "last_in_zone": [
+    -501,
+    -1223
+   ],
+   "length_in_zone": 404,
+   "length_total": 410,
+   "polyline_simplified": [
+    [
+     -355,
+     -861
+    ],
+    [
+     -462,
+     -1024
+    ],
+    [
+     -501,
+     -1223
+    ]
+   ],
+   "to": "joins road 1"
+  },
+  {
+   "first_in_zone": [
+    -668,
+    -308
+   ],
+   "from": "anchor_028 (Archshadow Post, elandor_stormvault_heights)",
+   "id": 33,
+   "kind": "trail",
+   "last_in_zone": [
+    -377,
+    -901
+   ],
+   "length_in_zone": 724,
+   "length_total": 1729,
+   "polyline_simplified": [
+    [
+     -1497,
+     -439
+    ],
+    [
+     -1475,
+     -402
+    ],
+    [
+     -1407,
+     -364
+    ],
+    [
+     -1362,
+     -291
+    ],
+    [
+     -1183,
+     -198
+    ],
+    [
+     -1065,
+     -240
+    ],
+    [
+     -985,
+     -208
+    ],
+    [
+     -792,
+     -212
+    ],
+    [
+     -710,
+     -254
+    ],
+    [
+     -643,
+     -333
+    ],
+    [
+     -580,
+     -368
+    ],
+    [
+     -606,
+     -483
+    ],
+    [
+     -493,
+     -694
+    ],
+    [
+     -405,
+     -785
+    ],
+    [
+     -377,
+     -901
+    ]
+   ],
+   "to": "joins road 13"
+  },
+  {
+   "first_in_zone": [
+    290,
+    -450
+   ],
+   "from": "anchor_032 (Last Hedge Redoubt, elandor_ashenward_march)",
+   "id": 36,
+   "kind": "trail",
+   "last_in_zone": [
+    -439,
+    -988
+   ],
+   "length_in_zone": 948,
+   "length_total": 967,
+   "polyline_simplified": [
+    [
+     290,
+     -450
+    ],
+    [
+     171,
+     -496
+    ],
+    [
+     95,
+     -557
+    ],
+    [
+     -27,
+     -616
+    ],
+    [
+     -87,
+     -675
+    ],
+    [
+     -130,
+     -761
+    ],
+    [
+     -260,
+     -837
+    ],
+    [
+     -391,
+     -984
+    ],
+    [
+     -439,
+     -988
+    ]
+   ],
+   "to": "joins road 13"
+  },
+  {
+   "first_in_zone": [
+    613,
+    -1158
+   ],
+   "from": "anchor_034 (Petalbank Wardenry, elandor_lorindor)",
+   "id": 38,
+   "kind": "trail",
+   "last_in_zone": [
+    408,
+    -1269
+   ],
+   "length_in_zone": 280,
+   "length_total": 488,
+   "polyline_simplified": [
+    [
+     632,
+     -1215
+    ],
+    [
+     623,
+     -1167
+    ],
+    [
+     574,
+     -1137
+    ],
+    [
+     475,
+     -1158
+    ],
+    [
+     352,
+     -1392
+    ]
+   ],
+   "to": "joins road 2"
+  },
+  {
+   "first_in_zone": [
+    -14,
+    -410
+   ],
+   "from": "anchor_052 (Coalbrand Yard, elandor_ashenward_march)",
+   "id": 52,
+   "kind": "trail",
+   "last_in_zone": [
+    -471,
+    -1054
+   ],
+   "length_in_zone": 1462,
+   "length_total": 1486,
+   "polyline_simplified": [
+    [
+     -14,
+     -410
+    ],
+    [
+     135,
+     -464
+    ],
+    [
+     272,
+     -417
+    ],
+    [
+     303,
+     -422
+    ],
+    [
+     336,
+     -479
+    ],
+    [
+     292,
+     -567
+    ],
+    [
+     140,
+     -749
+    ],
+    [
+     -38,
+     -800
+    ],
+    [
+     -173,
+     -876
+    ],
+    [
+     -232,
+     -970
+    ],
+    [
+     -311,
+     -1018
+    ],
+    [
+     -471,
+     -1054
+    ]
+   ],
+   "to": "joins road 13"
+  }
+ ],
+ "role": "contested 31-40",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -350,
+    "y": 56,
+    "z": -850
+   },
+   "anchor_id": "anchor_031",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Last Hedge Redoubt",
+      "road": 1144,
+      "straight": 763,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": 1795,
+      "straight": 1218,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 1465,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1703,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1724,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 2370,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 291,
+     "x": -264,
+     "z": -1128
+    },
+    "nearest_road": {
+     "distance": 12
+    },
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 1247,
+     "x": -1004,
+     "z": -1912
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 1176,
+     "x": -960,
+     "z": -1856
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 1156,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "north_+z": {
+      "distance": 656,
+      "hits": "front_broken_causeway"
+     },
+     "south_-z": {
+      "distance": 332,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 544,
+      "hits": "elandor_stormvault_heights"
+     }
+    }
+   },
+   "key": "r20_anchor_031",
+   "name": "Cinderline Watch",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_031_host",
+     "npc_name": "Toren Waterbarrel",
+     "quests": [
+      "r20_anchor_031_01",
+      "r20_anchor_031_02",
+      "r20_anchor_031_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -348,
+     "y": 57,
+     "z": -850
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -24,
+    "y": 112,
+    "z": -406
+   },
+   "anchor_id": "anchor_052",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 327,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 551,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 930,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1327,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1477,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1671,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "NE",
+     "distance": 274,
+     "x": 104,
+     "z": -164
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 1599,
+     "x": 820,
+     "z": -1764
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SE",
+     "distance": 1580,
+     "x": 664,
+     "z": -1828
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 984,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "north_+z": {
+      "distance": 316,
+      "hits": "front_broken_causeway"
+     },
+     "south_-z": {
+      "distance": 656,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 716,
+      "hits": "front_broken_causeway"
+     }
+    }
+   },
+   "key": "r20_anchor_052",
+   "name": "Coalbrand Yard",
+   "npcs": [],
+   "race": "human",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": 300,
+    "y": 77,
+    "z": -450
+   },
+   "anchor_id": "anchor_032",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Cinderline Watch",
+      "road": 1144,
+      "straight": 763,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 924,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1486,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": 2824,
+      "straight": 1800,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1887,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1977,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 274,
+     "x": 256,
+     "z": -180
+    },
+    "nearest_road": {
+     "distance": 10
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 1413,
+     "x": 820,
+     "z": -1764
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "S",
+     "distance": 1425,
+     "x": 664,
+     "z": -1828
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 644,
+      "hits": "inland_water"
+     },
+     "north_+z": {
+      "distance": 280,
+      "hits": "front_shattered_line"
+     },
+     "south_-z": {
+      "distance": 740,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 1148,
+      "hits": "front_broken_causeway"
+     }
+    }
+   },
+   "key": "r20_anchor_032",
+   "name": "Last Hedge Redoubt",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_032_host",
+     "npc_name": "Nella Hedgeward",
+     "quests": [
+      "r20_anchor_032_01",
+      "r20_anchor_032_02",
+      "r20_anchor_032_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 302,
+     "y": 78,
+     "z": -450
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -274,
+    "y": 115,
+    "z": -296
+   },
+   "anchor_id": "anchor_071",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 559,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 594,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 946,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1174,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1236,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1399,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 84,
+     "x": -276,
+     "z": -212
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 1773,
+     "x": -1004,
+     "z": -1912
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 1704,
+     "x": -960,
+     "z": -1856
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 1176,
+      "hits": "inland_water"
+     },
+     "north_+z": {
+      "distance": 84,
+      "hits": "front_broken_causeway"
+     },
+     "south_-z": {
+      "distance": 836,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 388,
+      "hits": "front_broken_causeway"
+     }
+    }
+   },
+   "key": "r20_anchor_071",
+   "name": "Ashen Wheelbreak",
+   "npcs": [],
+   "race": "human",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": 250,
+    "y": 160,
+    "z": -320
+   },
+   "anchor_id": "anchor_072",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 139,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 794,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 801,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1347,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1700,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1755,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 140,
+     "x": 248,
+     "z": -180
+    },
+    "nearest_road": {
+     "distance": 99
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 1552,
+     "x": 820,
+     "z": -1764
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "S",
+     "distance": 1564,
+     "x": 664,
+     "z": -1828
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 700,
+      "hits": "front_shattered_line"
+     },
+     "north_+z": {
+      "distance": 140,
+      "hits": "front_shattered_line"
+     },
+     "south_-z": {
+      "distance": 840,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 936,
+      "hits": "front_broken_causeway"
+     }
+    }
+   },
+   "key": "r20_anchor_072",
+   "name": "Hedgefire Crossing",
+   "npcs": [],
+   "race": "human",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": -180,
+    "y": 37,
+    "z": -650
+   },
+   "anchor_id": "anchor_092",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 262,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 520,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 1213,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1335,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1536,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1683,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 428,
+     "x": -136,
+     "z": -1076
+    },
+    "nearest_road": {
+     "distance": 93
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 1480,
+     "x": 684,
+     "z": -1852
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 1436,
+     "x": -960,
+     "z": -1856
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 1064,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "north_+z": {
+      "distance": 488,
+      "hits": "front_broken_causeway"
+     },
+     "south_-z": {
+      "distance": 444,
+      "hits": "elandor_highcourt"
+     },
+     "west_-x": {
+      "distance": 688,
+      "hits": "elandor_stormvault_heights"
+     }
+    }
+   },
+   "key": "r20_anchor_092",
+   "name": "Whitefang's Cold Den",
+   "npcs": [],
+   "race": "human",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:ashen_treant",
+   "name": "Ashen Treant",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 52.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.2
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:bear",
+   "name": "Bear",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:carrion_crow",
+   "name": "Carrion Crow",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:giant_spider",
+   "name": "Giant Spider",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:poacher",
+   "name": "Poacher",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:skeleton_raider",
+   "name": "Skeleton Raider",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.1
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:stag",
+   "name": "Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 67.3
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.1
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:wolf",
+   "name": "Wolf",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.1
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "contested_land",
+ "track_order": 5
+}

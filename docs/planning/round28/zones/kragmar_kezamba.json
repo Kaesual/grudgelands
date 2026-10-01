@@ -1,0 +1,1061 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_012",
+   "kind": "capital_troll",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Kezamba",
+   "settlement_key": "kezamba",
+   "slot": "capital",
+   "x": 1800,
+   "y": 36,
+   "z": 1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_jungle_edge",
+   "share": 75
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share": 20
+  },
+  {
+   "id": "grug_swamp",
+   "share": 5
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 83.6
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 9.9
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 6.3
+  },
+  {
+   "id": "grug_badlands_east",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1004,
+   "midpoint": {
+    "x": 1729,
+    "z": 1861
+   },
+   "zone": "kragmar_raincall_basin"
+  },
+  {
+   "length_nodes": 864,
+   "midpoint": {
+    "x": 1736,
+    "z": 1032
+   },
+   "zone": "kragmar_thunderroot_wilds"
+  },
+  {
+   "length_nodes": 848,
+   "midpoint": {
+    "x": 2118,
+    "z": 1412
+   },
+   "zone": "kragmar_totemwater_reach"
+  },
+  {
+   "length_nodes": 1028,
+   "midpoint": {
+    "x": 1321,
+    "z": 1472
+   },
+   "zone": "kragmar_whispering_reedlands"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 19,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 11680,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 34736,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 9.8,
+ "extent": {
+  "centroid": {
+   "x": 1698,
+   "z": 1459
+  },
+  "land_area_nodes2": 617008,
+  "max_x": 2144,
+  "max_z": 1896,
+  "min_x": 1268,
+  "min_z": 1004
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": 1500
+ },
+ "id": "kragmar_kezamba",
+ "level_field": {
+  "histogram_pct": {
+   "20": 12.8,
+   "21": 12.0,
+   "22": 10.1,
+   "23": 6.7,
+   "24": 7.7,
+   "25": 8.6,
+   "26": 8.5,
+   "27": 8.0,
+   "28": 8.3,
+   "29": 7.8,
+   "30": 9.4
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/kragmar_kezamba.png",
+ "name": "Kezamba",
+ "neighbors": [
+  "kragmar_raincall_basin",
+  "kragmar_thunderroot_wilds",
+  "kragmar_totemwater_reach",
+  "kragmar_whispering_reedlands"
+ ],
+ "numeric_id": 29,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 146100,
+   "box": {
+    "max_x": 2032,
+    "max_z": 1726,
+    "min_x": 1550,
+    "min_z": 1284
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": 1933,
+     "y": 35,
+     "z": 1484
+    },
+    {
+     "name": "south",
+     "x": 1755,
+     "y": 41,
+     "z": 1633
+    },
+    {
+     "name": "west",
+     "x": 1572,
+     "y": 41,
+     "z": 1561
+    },
+    {
+     "name": "north",
+     "x": 1823,
+     "y": 44,
+     "z": 1336
+    }
+   ],
+   "outline_kind": "palisade_narrow",
+   "zone_land_outside_city_pct": 76.3
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 20.2,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Teshani Smokereed is preparing the next meal beside Kezamba's shore smokehouse. Bring five raw meat portions for the travellers waiting above the cenote. No Cooking profession is required.",
+   "giver": "r20_troll_capital_cook",
+   "giver_name": "Teshani Smokereed",
+   "giver_settlement": "Kezamba",
+   "id": "r20_troll_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Smoke Above the Cenote",
+   "turnin": "r20_troll_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Nalo sends new arrivals to Teshani Smokereed at the shore smokehouse. Speak with the cook beside the oven and complete this introduction there; the separate Cooking trainer is optional.",
+   "giver": "r20_troll_capital_envoy",
+   "giver_name": "Nalo Pathdrum",
+   "giver_settlement": "Kezamba",
+   "id": "r20_troll_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Teshani Smokereed (kezamba)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_troll_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_troll_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "The Smokereed Welcome",
+   "turnin": "r20_troll_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The rain stores need sound crosspieces above the damp floor. Bring ten junglewood planks to Nalo in Kezamba so the next cargo can stay dry without narrowing the walkway.",
+   "giver": "r20_troll_capital_envoy",
+   "giver_name": "Nalo Pathdrum",
+   "giver_settlement": "Kezamba",
+   "id": "r20_troll_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 10 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Boards for the Rain Stores",
+   "turnin": "r20_troll_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its thresholds. Travel to Whisperreed Landing in Whispering Reedlands and speak with Taleko Drycord. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Taleko Drycord there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_troll_capital_envoy",
+   "giver_name": "Nalo Pathdrum",
+   "giver_settlement": "Kezamba",
+   "id": "r20_troll_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Taleko Drycord (r20_anchor_024)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_024_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Taleko Drycord",
+   "turnin": "r20_anchor_024_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.0,
+  "height_above_sea": {
+   "max": 121,
+   "median": 46,
+   "min": 25,
+   "p10": 34,
+   "p90": 75
+  },
+  "steep_share_pct": 0.9
+ },
+ "relief_profile": "plateau",
+ "roads": [
+  {
+   "first_in_zone": [
+    1294,
+    1771
+   ],
+   "from": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)",
+   "id": 16,
+   "kind": "primary",
+   "last_in_zone": [
+    1536,
+    1758
+   ],
+   "length_in_zone": 250,
+   "length_total": 1364,
+   "polyline_simplified": [
+    [
+     272,
+     1634
+    ],
+    [
+     404,
+     1619
+    ],
+    [
+     661,
+     1747
+    ],
+    [
+     848,
+     1749
+    ],
+    [
+     1050,
+     1687
+    ],
+    [
+     1266,
+     1773
+    ],
+    [
+     1536,
+     1758
+    ]
+   ],
+   "to": "anchor_012 (Kezamba, kragmar_kezamba)"
+  },
+  {
+   "first_in_zone": [
+    1405,
+    1885
+   ],
+   "from": "anchor_006 (Kapok, kragmar_kapok_cradle)",
+   "id": 19,
+   "kind": "primary",
+   "last_in_zone": [
+    1422,
+    1774
+   ],
+   "length_in_zone": 128,
+   "length_total": 984,
+   "polyline_simplified": [
+    [
+     1800,
+     2486
+    ],
+    [
+     1794,
+     2453
+    ],
+    [
+     1742,
+     2407
+    ],
+    [
+     1617,
+     2338
+    ],
+    [
+     1544,
+     2348
+    ],
+    [
+     1470,
+     2288
+    ],
+    [
+     1472,
+     2168
+    ],
+    [
+     1439,
+     1952
+    ],
+    [
+     1389,
+     1853
+    ],
+    [
+     1422,
+     1774
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    1954,
+    1052
+   ],
+   "from": "anchor_048 (Thunderstep Watch, kragmar_thunderroot_wilds)",
+   "id": 28,
+   "kind": "secondary",
+   "last_in_zone": [
+    1840,
+    1232
+   ],
+   "length_in_zone": 218,
+   "length_total": 733,
+   "polyline_simplified": [
+    [
+     1909,
+     561
+    ],
+    [
+     1964,
+     691
+    ],
+    [
+     1955,
+     1048
+    ],
+    [
+     1840,
+     1232
+    ]
+   ],
+   "to": "anchor_012 (Kezamba, kragmar_kezamba)"
+  },
+  {
+   "first_in_zone": [
+    1712,
+    1760
+   ],
+   "from": "anchor_012 (Kezamba, kragmar_kezamba)",
+   "id": 29,
+   "kind": "secondary",
+   "last_in_zone": [
+    1765,
+    1861
+   ],
+   "length_in_zone": 132,
+   "length_total": 352,
+   "polyline_simplified": [
+    [
+     1712,
+     1760
+    ],
+    [
+     1773,
+     1823
+    ],
+    [
+     1760,
+     1898
+    ],
+    [
+     1801,
+     1988
+    ],
+    [
+     1860,
+     2039
+    ]
+   ],
+   "to": "anchor_023 (Raincall Village, kragmar_raincall_basin)"
+  },
+  {
+   "first_in_zone": [
+    2141,
+    1248
+   ],
+   "from": "anchor_047 (Totemwater Post, kragmar_totemwater_reach)",
+   "id": 48,
+   "kind": "trail",
+   "last_in_zone": [
+    1913,
+    1133
+   ],
+   "length_in_zone": 268,
+   "length_total": 561,
+   "polyline_simplified": [
+    [
+     2390,
+     1349
+    ],
+    [
+     2241,
+     1335
+    ],
+    [
+     2042,
+     1165
+    ],
+    [
+     1913,
+     1133
+    ]
+   ],
+   "to": "joins road 28"
+  },
+  {
+   "first_in_zone": [
+    1712,
+    1760
+   ],
+   "from": "end:29",
+   "id": 172,
+   "kind": "secondary",
+   "last_in_zone": [
+    1755,
+    1639
+   ],
+   "length_in_zone": 160,
+   "length_total": 159,
+   "polyline_simplified": [
+    [
+     1712,
+     1760
+    ],
+    [
+     1689,
+     1734
+    ],
+    [
+     1755,
+     1639
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    1536,
+    1758
+   ],
+   "from": "end:16",
+   "id": 173,
+   "kind": "primary",
+   "last_in_zone": [
+    1566,
+    1561
+   ],
+   "length_in_zone": 222,
+   "length_total": 220,
+   "polyline_simplified": [
+    [
+     1536,
+     1758
+    ],
+    [
+     1560,
+     1718
+    ],
+    [
+     1566,
+     1561
+    ]
+   ],
+   "to": "gate_west"
+  },
+  {
+   "first_in_zone": [
+    1840,
+    1232
+   ],
+   "from": "end:28",
+   "id": 174,
+   "kind": "secondary",
+   "last_in_zone": [
+    1823,
+    1330
+   ],
+   "length_in_zone": 106,
+   "length_total": 104,
+   "polyline_simplified": [
+    [
+     1840,
+     1232
+    ],
+    [
+     1823,
+     1330
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1800,
+    "y": 36,
+    "z": 1500
+   },
+   "anchor_id": "anchor_012",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1008,
+      "straight": 560,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Totemwater Post",
+      "road": 1158,
+      "straight": 618,
+      "to": "r20_anchor_047",
+      "zone": "kragmar_totemwater_reach"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": 1209,
+      "straight": 955,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1244,
+      "straight": 930,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1384,
+      "straight": 798,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kapok",
+      "road": 1639,
+      "straight": 1050,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 296,
+     "x": 2096,
+     "z": 1500
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 782,
+     "x": 2556,
+     "z": 1300
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 739,
+     "x": 2516,
+     "z": 1316
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 296,
+      "hits": "kragmar_totemwater_reach"
+     },
+     "north_+z": {
+      "distance": 364,
+      "hits": "kragmar_raincall_basin"
+     },
+     "south_-z": {
+      "distance": 492,
+      "hits": "kragmar_thunderroot_wilds"
+     },
+     "west_-x": {
+      "distance": 528,
+      "hits": "kragmar_whispering_reedlands"
+     }
+    }
+   },
+   "key": "kezamba",
+   "name": "Kezamba",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": 1811,
+     "y": 42,
+     "z": 1469
+    },
+    {
+     "npc_id": "r20_troll_capital_envoy",
+     "npc_name": "Nalo Pathdrum",
+     "quests": [
+      "r20_troll_capital_services",
+      "r20_troll_capital_stores",
+      "r20_troll_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "shrine_quest",
+     "tag": "door",
+     "x": 1762,
+     "y": 37,
+     "z": 1527
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": 1776,
+     "y": 37,
+     "z": 1487
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": 1776,
+     "y": 37,
+     "z": 1493
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": 1762,
+     "y": 37,
+     "z": 1476
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_fishmonger",
+     "vendor_kind": "fishmonger",
+     "x": 1775,
+     "y": 37,
+     "z": 1521
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "vine_longhouse/vine_longhouse_gate_idle",
+     "tag": "door",
+     "x": 1727,
+     "y": 37,
+     "z": 1543
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vine_herbalist/vine_herbalist_vendor_herbalist",
+     "vendor_kind": "herbalist",
+     "x": 1714,
+     "y": 39,
+     "z": 1553
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "vine_herbalist/vine_herbalist_station",
+     "tag": "brewing_stand",
+     "x": 1706,
+     "y": 39,
+     "z": 1557
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "vine_herbalist/vine_herbalist_alchemist",
+     "x": 1708,
+     "y": 39,
+     "z": 1555
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "canopy_armoury/canopy_armoury_station",
+     "tag": "forge",
+     "x": 1756,
+     "y": 37,
+     "z": 1406
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "canopy_armoury/canopy_armoury_weaponsmith",
+     "x": 1758,
+     "y": 37,
+     "z": 1408
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "canopy_armoury/canopy_armoury_armorsmith",
+     "x": 1754,
+     "y": 37,
+     "z": 1408
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "canopy_armoury/canopy_armoury_weapon",
+     "tag": "weapon",
+     "x": 1759,
+     "y": 38,
+     "z": 1404
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "canopy_armoury/canopy_armoury_armor",
+     "tag": "armor",
+     "x": 1753,
+     "y": 38,
+     "z": 1404
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "canopy_stable/canopy_stable_mount_1",
+     "tag": "1",
+     "x": 1697,
+     "y": 37,
+     "z": 1481
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "canopy_stable/canopy_stable_mount_2",
+     "tag": "2",
+     "x": 1687,
+     "y": 37,
+     "z": 1481
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "canopy_stable/canopy_stable_mount_3",
+     "tag": "3",
+     "x": 1697,
+     "y": 37,
+     "z": 1475
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "canopy_stable/canopy_stable_mount_4",
+     "tag": "4",
+     "x": 1687,
+     "y": 37,
+     "z": 1475
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "canopy_stable/canopy_stable_riding",
+     "x": 1692,
+     "y": 37,
+     "z": 1484
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "totem_scriptorium/totem_scriptorium_station",
+     "tag": "jewellers_bench",
+     "x": 1871,
+     "y": 38,
+     "z": 1474
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "totem_scriptorium/totem_scriptorium_goldsmith",
+     "x": 1873,
+     "y": 38,
+     "z": 1476
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "totem_scriptorium/totem_scriptorium_jewel",
+     "tag": "jewel",
+     "x": 1868,
+     "y": 39,
+     "z": 1473
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "shore_tailor/shore_tailor_gate_idle",
+     "tag": "door",
+     "x": 1725,
+     "y": 38,
+     "z": 1518
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "shore_tailor/shore_tailor_vendor_tailor",
+     "vendor_kind": "tailor",
+     "x": 1721,
+     "y": 38,
+     "z": 1517
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "shore_tailor/shore_tailor_station",
+     "tag": "tailor_bench",
+     "x": 1725,
+     "y": 38,
+     "z": 1525
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "shore_tailor/shore_tailor_tailor",
+     "x": 1723,
+     "y": 38,
+     "z": 1523
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "shore_store/shore_store_station",
+     "tag": "tanning_rack",
+     "x": 1718,
+     "y": 40,
+     "z": 1592
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "shore_store/shore_store_leatherworker",
+     "x": 1716,
+     "y": 40,
+     "z": 1590
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "shore_smokehouse/shore_smokehouse_station",
+     "tag": "furnace",
+     "x": 1686,
+     "y": 40,
+     "z": 1556
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "shore_smokehouse/shore_smokehouse_cooking",
+     "x": 1684,
+     "y": 40,
+     "z": 1554
+    },
+    {
+     "npc_id": "r20_troll_capital_cook",
+     "npc_name": "Teshani Smokereed",
+     "quests": [
+      "r20_troll_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "shore_smokehouse/shore_smokehouse_quest_cook",
+     "x": 1688,
+     "y": 40,
+     "z": 1554
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "shore_carvers/shore_carvers_station",
+     "tag": "carving_bench",
+     "x": 1747,
+     "y": 39,
+     "z": 1590
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "shore_carvers/shore_carvers_woodcarver",
+     "x": 1749,
+     "y": 39,
+     "z": 1588
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "shore_market/shore_market_vendor_brewer",
+     "vendor_kind": "brewer",
+     "x": 1652,
+     "y": 34,
+     "z": 1489
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "shore_butcher/shore_butcher_vendor_butcher",
+     "vendor_kind": "butcher",
+     "x": 1629,
+     "y": 36,
+     "z": 1501
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 60,
+    "guard_post": 13,
+    "housing_manager": 1,
+    "idle": 103,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 2,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 7,
+    "waypoint": 1,
+    "work": 53
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "throng_home",
+ "track_order": 3
+}

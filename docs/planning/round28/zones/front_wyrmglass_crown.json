@@ -1,0 +1,725 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_075",
+   "kind": "clash",
+   "kind_text": "clash site",
+   "level_at": 60,
+   "name": "Crystal Landing Scar",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -3017,
+    "max_z": 201,
+    "min_x": -3032,
+    "min_z": 186
+   },
+   "settlement_key": "r20_anchor_075",
+   "slot": "clash_1",
+   "x": -3024,
+   "y": 377,
+   "z": 194
+  },
+  {
+   "id": "anchor_087",
+   "kind": "dragon",
+   "kind_text": "dragon arena",
+   "level_at": 60,
+   "name": "Wyrmglass Dragonspire",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -3245,
+    "max_z": -25,
+    "min_x": -3276,
+    "min_z": -56
+   },
+   "settlement_key": "r20_anchor_087",
+   "slot": "dragon",
+   "x": -3260,
+   "y": 326,
+   "z": -40
+  },
+  {
+   "id": "anchor_089",
+   "kind": "apex_mine",
+   "kind_text": "apex mine camp",
+   "level_at": 60,
+   "name": "Wyrmglass Fault Camp",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -3185,
+    "max_z": 95,
+    "min_x": -3216,
+    "min_z": 64
+   },
+   "settlement_key": "r20_anchor_089",
+   "slot": "apex_mine",
+   "x": -3200,
+   "y": 183,
+   "z": 80
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_crags",
+   "share": 55
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share": 30
+  },
+  {
+   "id": "grug_beach",
+   "share": 15
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_crags",
+   "share_pct": 51.3
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share_pct": 32.8
+  },
+  {
+   "id": "grug_beach",
+   "share_pct": 15.9
+  }
+ ],
+ "borders": [],
+ "camps": [],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture"
+  ],
+  "density_budget_day": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture"
+  ],
+  "density_budget_night": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:frost_stray",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:rift_spawn",
+   "grug_mobs:snow_leopard",
+   "grug_mobs:stone_golem",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:frost_stray",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:rift_spawn",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:skeleton_raider",
+   "grug_mobs:snow_leopard",
+   "grug_mobs:stone_golem",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 0,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 8064,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 2296
+ },
+ "drift_band_share_pct": 0.0,
+ "extent": {
+  "centroid": {
+   "x": -3125,
+   "z": -12
+  },
+  "land_area_nodes2": 223168,
+  "max_x": -2880,
+  "max_z": 292,
+  "min_x": -3404,
+  "min_z": -292
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "island",
+  "text": "Offshore dragon island, reached by boat from the Battlegrounds end zone (no land neighbours, no roads)."
+ },
+ "hub": {
+  "x": -3150,
+  "z": 0
+ },
+ "id": "front_wyrmglass_crown",
+ "level_field": {
+  "histogram_pct": {
+   "60": 100.0
+  },
+  "max": 60,
+  "min": 60
+ },
+ "level_max": 60,
+ "level_min": 60,
+ "level_rule": "Flat level 60.",
+ "map": "maps/front_wyrmglass_crown.png",
+ "name": "The Wyrmglass Crown",
+ "neighbors": [],
+ "numeric_id": 33,
+ "palette_without_host_ground": [
+  "Hyena",
+  "Vulture"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_075",
+    "kind": "poi",
+    "max_x": -3017,
+    "max_z": 201,
+    "min_x": -3032,
+    "min_z": 186,
+    "name": "Crystal Landing Scar"
+   },
+   {
+    "anchor": "anchor_087",
+    "kind": "poi",
+    "max_x": -3245,
+    "max_z": -25,
+    "min_x": -3276,
+    "min_z": -56,
+    "name": "Wyrmglass Dragonspire"
+   },
+   {
+    "anchor": "anchor_089",
+    "kind": "poi",
+    "max_x": -3185,
+    "max_z": 95,
+    "min_x": -3216,
+    "min_z": 64,
+    "name": "Wyrmglass Fault Camp"
+   }
+  ]
+ },
+ "protected_share_pct": 1.3,
+ "pvp_rule": "contested",
+ "quests": [],
+ "race_region": "dwarf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 62.3,
+  "height_above_sea": {
+   "max": 506,
+   "median": 279,
+   "min": 0,
+   "p10": 108,
+   "p90": 382
+  },
+  "steep_share_pct": 81.1
+ },
+ "relief_profile": "mountain",
+ "roads": [],
+ "role": "dragon island (60)",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -3024,
+    "y": 377,
+    "z": 194
+   },
+   "anchor_id": "anchor_075",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1192,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Splitbolt Station",
+      "road": null,
+      "straight": 1394,
+      "to": "r20_anchor_027",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1574,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1654,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2736,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 2871,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 497,
+     "x": -2528,
+     "z": 168
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 66,
+     "x": -2976,
+     "z": 240
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 506,
+     "x": -2520,
+     "z": 152
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 116,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 92,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 448,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 288,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_075",
+   "name": "Crystal Landing Scar",
+   "npcs": [],
+   "race": "dwarf",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": -3260,
+    "y": 326,
+    "z": -40
+   },
+   "anchor_id": "anchor_087",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Splitbolt Station",
+      "road": null,
+      "straight": 1423,
+      "to": "r20_anchor_027",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1519,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1807,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1854,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 3021,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 3027,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 747,
+     "x": -2516,
+     "z": -104
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 133,
+     "x": -3384,
+     "z": -88
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 765,
+     "x": -2520,
+     "z": 152
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 380,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 260,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 204,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 144,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_087",
+   "name": "Wyrmglass Dragonspire",
+   "npcs": [],
+   "race": "dwarf",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": -3200,
+    "y": 183,
+    "z": 80
+   },
+   "anchor_id": "anchor_089",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1402,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Splitbolt Station",
+      "road": null,
+      "straight": 1445,
+      "to": "r20_anchor_027",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1768,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 1781,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2935,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 2998,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 677,
+     "x": -2528,
+     "z": 160
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 142,
+     "x": -3224,
+     "z": 220
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 684,
+     "x": -2520,
+     "z": 152
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 316,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 144,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 368,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 176,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_089",
+   "name": "Wyrmglass Fault Camp",
+   "npcs": [],
+   "race": "dwarf",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:carrion_crow",
+   "name": "Carrion Crow",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:crag_eagle",
+   "name": "Crag Eagle",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:frost_stray",
+   "name": "Frost Stray",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 35456
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:sand"
+   ],
+   "mob": "grug_mobs:gull",
+   "name": "Gull",
+   "night": null,
+   "note": "logical beach biome only"
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:mountain_ram",
+   "name": "Mountain Ram",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:rift_spawn",
+   "name": "Rift Spawn",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:snow_leopard",
+   "name": "Snow Leopard",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock",
+    "default:stone"
+   ],
+   "mob": "grug_mobs:stone_golem",
+   "name": "Stone Golem",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "contested_land"
+}

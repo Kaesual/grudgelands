@@ -1,0 +1,720 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_047",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 27,
+   "name": "Totemwater Post",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 2407,
+    "max_z": 1357,
+    "min_x": 2392,
+    "min_z": 1342
+   },
+   "settlement_key": "r20_anchor_047",
+   "slot": "outpost_1",
+   "x": 2400,
+   "y": 3,
+   "z": 1350
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_jungle_edge",
+   "share": 35
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share": 45
+  },
+  {
+   "id": "grug_swamp",
+   "share": 20
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 37.4
+  },
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 36.7
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 25.8
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 212,
+   "midpoint": {
+    "x": 2586,
+    "z": 2163
+   },
+   "zone": "kragmar_kapok_cradle"
+  },
+  {
+   "length_nodes": 848,
+   "midpoint": {
+    "x": 2113,
+    "z": 1410
+   },
+   "zone": "kragmar_kezamba"
+  },
+  {
+   "length_nodes": 796,
+   "midpoint": {
+    "x": 2293,
+    "z": 1989
+   },
+   "zone": "kragmar_raincall_basin"
+  },
+  {
+   "length_nodes": 580,
+   "midpoint": {
+    "x": 2313,
+    "z": 1042
+   },
+   "zone": "kragmar_thunderroot_wilds"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_047",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 27,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Totemwater Post",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 2400,
+   "z": 1350
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bog_fowl",
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:parrot",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp"
+  ],
+  "night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 10960,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 22864,
+    "box": {
+     "max_x": 2728,
+     "max_z": 1576,
+     "min_x": 2512,
+     "min_z": 1248
+    },
+    "centroid": {
+     "x": 2626,
+     "z": 1403
+    },
+    "id": "B1",
+    "levels": [
+     25,
+     28
+    ]
+   },
+   {
+    "area_nodes2": 22352,
+    "box": {
+     "max_x": 2696,
+     "max_z": 2168,
+     "min_x": 2524,
+     "min_z": 1752
+    },
+    "centroid": {
+     "x": 2596,
+     "z": 1967
+    },
+    "id": "B2",
+    "levels": [
+     21,
+     24
+    ]
+   },
+   {
+    "area_nodes2": 5040,
+    "box": {
+     "max_x": 2620,
+     "max_z": 1744,
+     "min_x": 2556,
+     "min_z": 1572
+    },
+    "centroid": {
+     "x": 2595,
+     "z": 1634
+    },
+    "id": "B3",
+    "levels": [
+     24,
+     25
+    ]
+   },
+   {
+    "area_nodes2": 400,
+    "box": {
+     "max_x": 2608,
+     "max_z": 1072,
+     "min_x": 2596,
+     "min_z": 1020
+    },
+    "centroid": {
+     "x": 2603,
+     "z": 1046
+    },
+    "id": "B4",
+    "levels": [
+     30,
+     30
+    ]
+   },
+   {
+    "area_nodes2": 144,
+    "box": {
+     "max_x": 2596,
+     "max_z": 1012,
+     "min_x": 2584,
+     "min_z": 996
+    },
+    "centroid": {
+     "x": 2592,
+     "z": 1003
+    },
+    "id": "B5",
+    "levels": [
+     30,
+     30
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 19056,
+  "sea_beach_sand_area_nodes2": 50992,
+  "sea_coast_length_nodes": 2564
+ },
+ "drift_band_share_pct": 1.8,
+ "extent": {
+  "centroid": {
+   "x": 2401,
+   "z": 1547
+  },
+  "land_area_nodes2": 501424,
+  "max_x": 2728,
+  "max_z": 2168,
+  "min_x": 2064,
+  "min_z": 992
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 2400,
+  "z": 1500
+ },
+ "id": "kragmar_totemwater_reach",
+ "level_field": {
+  "histogram_pct": {
+   "21": 8.7,
+   "22": 9.1,
+   "23": 10.6,
+   "24": 11.4,
+   "25": 10.7,
+   "26": 13.7,
+   "27": 9.9,
+   "28": 9.1,
+   "29": 8.9,
+   "30": 7.9
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_totemwater_reach.png",
+ "name": "Totemwater Reach",
+ "neighbors": [
+  "kragmar_kapok_cradle",
+  "kragmar_kezamba",
+  "kragmar_raincall_basin",
+  "kragmar_thunderroot_wilds"
+ ],
+ "numeric_id": 31,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_047",
+    "kind": "poi",
+    "max_x": 2407,
+    "max_z": 1357,
+    "min_x": 2392,
+    "min_z": 1342,
+    "name": "Totemwater Post"
+   }
+  ]
+ },
+ "protected_share_pct": 0.3,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "Totemwater's rope rack needs sound crosspieces before the next river crossing. Bring eight junglewood planks for the covered rack; the river path must stay open beside it. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "r20_anchor_047_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Rope Rack Timbers",
+   "turnin": "r20_anchor_047_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Crocodiles wait on Totemwater Reach's muddy banks where carriers leave the path. Defeat three and give the crossing crew room to work.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "r20_anchor_047_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 3 crocodile [in kragmar_totemwater_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:crocodile"
+     ],
+     "type": "kill",
+     "zone": "kragmar_totemwater_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Jaws at the River Path",
+   "turnin": "r20_anchor_047_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "With the banks clearer, the crew can see bog ooze collecting below the route marker. Break up four in Totemwater Reach's muddy ground before the next load comes through.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "r20_anchor_047_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 bog_ooze [in kragmar_totemwater_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bog_ooze"
+     ],
+     "type": "kill",
+     "zone": "kragmar_totemwater_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_047_02"
+   ],
+   "reward_items": [],
+   "title": "Mud Around the Marker",
+   "turnin": "r20_anchor_047_host",
+   "xp": 900
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 2.1,
+  "height_above_sea": {
+   "max": 164,
+   "median": 13,
+   "min": 0,
+   "p10": 2,
+   "p90": 76
+  },
+  "steep_share_pct": 8.2
+ },
+ "relief_profile": "wetland_delta",
+ "roads": [
+  {
+   "first_in_zone": [
+    2390,
+    1349
+   ],
+   "from": "anchor_047 (Totemwater Post, kragmar_totemwater_reach)",
+   "id": 48,
+   "kind": "trail",
+   "last_in_zone": [
+    2142,
+    1250
+   ],
+   "length_in_zone": 286,
+   "length_total": 561,
+   "polyline_simplified": [
+    [
+     2390,
+     1349
+    ],
+    [
+     2241,
+     1335
+    ],
+    [
+     2042,
+     1165
+    ],
+    [
+     1913,
+     1133
+    ]
+   ],
+   "to": "joins road 28"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 2400,
+    "y": 3,
+    "z": 1350
+   },
+   "anchor_id": "anchor_047",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Kezamba",
+      "road": 1158,
+      "straight": 618,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": 1191,
+      "straight": 943,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1960,
+      "straight": 1028,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 2197,
+      "straight": 1545,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 2336,
+      "straight": 1375,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kapok",
+      "road": 2592,
+      "straight": 1342,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 269,
+     "x": 2144,
+     "z": 1268
+    },
+    "nearest_road": {
+     "distance": 10
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 164,
+     "x": 2556,
+     "z": 1300
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 121,
+     "x": 2516,
+     "z": 1316
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 292,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 752,
+      "hits": "kragmar_raincall_basin"
+     },
+     "south_-z": {
+      "distance": 340,
+      "hits": "inland_water"
+     },
+     "west_-x": {
+      "distance": 288,
+      "hits": "kragmar_kezamba"
+     }
+    }
+   },
+   "key": "r20_anchor_047",
+   "name": "Totemwater Post",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_047_host",
+     "npc_name": "Tokai Knotreader",
+     "quests": [
+      "r20_anchor_047_01",
+      "r20_anchor_047_02",
+      "r20_anchor_047_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 2402,
+     "y": 4,
+     "z": 1350
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 25.4
+   },
+   "disposition": "critter",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_fowl",
+   "name": "Bog Fowl",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 25.4
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_ooze",
+   "name": "Bog Ooze",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 25.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 25.4
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:crocodile",
+   "name": "Crocodile",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 25.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 74.6
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_lynx",
+   "name": "Jungle Lynx",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 36.8
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:parrot",
+   "name": "Parrot",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 50992,
+    "levels": [
+     21,
+     30
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 50992,
+    "levels": [
+     21,
+     30
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 74.6
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:tapir",
+   "name": "Tapir",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 5
+}

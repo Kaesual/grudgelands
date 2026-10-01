@@ -1,0 +1,855 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_048",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 36,
+   "name": "Thunderstep Watch",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 1907,
+    "max_z": 557,
+    "min_x": 1892,
+    "min_z": 542
+   },
+   "settlement_key": "r20_anchor_048",
+   "slot": "outpost_1",
+   "x": 1900,
+   "y": 156,
+   "z": 550
+  },
+  {
+   "id": "anchor_060",
+   "kind": "bandit_frontier",
+   "kind_text": "bandit hideout",
+   "level_at": 38,
+   "name": "Rainchar Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 1783,
+    "max_z": 461,
+    "min_x": 1768,
+    "min_z": 446
+   },
+   "settlement_key": "r20_anchor_060",
+   "slot": "bandit_1",
+   "x": 1776,
+   "y": 161,
+   "z": 454
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_deep_jungle",
+   "share": 55
+  },
+  {
+   "id": "grug_badlands_east",
+   "share": 30
+  },
+  {
+   "id": "grug_swamp",
+   "share": 15
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 64.9
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 21.2
+  },
+  {
+   "id": "grug_badlands_east",
+   "share_pct": 12.6
+  },
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 0.5
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_savanna",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 544,
+   "midpoint": {
+    "x": 1253,
+    "z": 246
+   },
+   "zone": "front_shattered_line"
+  },
+  {
+   "length_nodes": 1004,
+   "midpoint": {
+    "x": 2164,
+    "z": 306
+   },
+   "zone": "front_skyglass_canopy"
+  },
+  {
+   "length_nodes": 840,
+   "midpoint": {
+    "x": 983,
+    "z": 607
+   },
+   "zone": "kragmar_bannerbreak_mesa"
+  },
+  {
+   "length_nodes": 852,
+   "midpoint": {
+    "x": 1736,
+    "z": 1037
+   },
+   "zone": "kragmar_kezamba"
+  },
+  {
+   "length_nodes": 568,
+   "midpoint": {
+    "x": 2319,
+    "z": 1046
+   },
+   "zone": "kragmar_totemwater_reach"
+  },
+  {
+   "length_nodes": 744,
+   "midpoint": {
+    "x": 1141,
+    "z": 1032
+   },
+   "zone": "kragmar_whispering_reedlands"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_048",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 36,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Thunderstep Watch",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 1900,
+   "z": 550
+  },
+  {
+   "anchor": "anchor_060",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 38,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Rainchar Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": 1776,
+   "z": 454
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:jungle_ape",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:serpent"
+  ],
+  "density_budget_day": [
+   "grug_mobs:jungle_ape",
+   "grug_mobs:serpent"
+  ],
+  "density_budget_night": [
+   "grug_mobs:bog_witch",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:panther"
+  ],
+  "night": [
+   "grug_mobs:bog_witch",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:panther"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 11712,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 3664,
+    "box": {
+     "max_x": 2616,
+     "max_z": 996,
+     "min_x": 2552,
+     "min_z": 820
+    },
+    "centroid": {
+     "x": 2573,
+     "z": 905
+    },
+    "id": "B1",
+    "levels": [
+     31,
+     33
+    ]
+   },
+   {
+    "area_nodes2": 1696,
+    "box": {
+     "max_x": 2664,
+     "max_z": 652,
+     "min_x": 2612,
+     "min_z": 568
+    },
+    "centroid": {
+     "x": 2646,
+     "z": 608
+    },
+    "id": "B2",
+    "levels": [
+     35,
+     36
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 81600,
+  "sea_beach_sand_area_nodes2": 5440,
+  "sea_coast_length_nodes": 1112
+ },
+ "drift_band_share_pct": 2.8,
+ "extent": {
+  "centroid": {
+   "x": 1776,
+   "z": 680
+  },
+  "land_area_nodes2": 1141168,
+  "max_x": 2676,
+  "max_z": 1096,
+  "min_x": 908,
+  "min_z": 224
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": 700
+ },
+ "id": "kragmar_thunderroot_wilds",
+ "level_field": {
+  "histogram_pct": {
+   "31": 11.3,
+   "32": 11.7,
+   "33": 12.2,
+   "34": 11.2,
+   "35": 11.4,
+   "36": 10.2,
+   "37": 8.3,
+   "38": 8.8,
+   "39": 7.4,
+   "40": 7.6
+  },
+  "max": 40,
+  "min": 31
+ },
+ "level_max": 40,
+ "level_min": 31,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_thunderroot_wilds.png",
+ "name": "Thunderroot Wilds",
+ "neighbors": [
+  "front_shattered_line",
+  "front_skyglass_canopy",
+  "kragmar_bannerbreak_mesa",
+  "kragmar_kezamba",
+  "kragmar_totemwater_reach",
+  "kragmar_whispering_reedlands"
+ ],
+ "numeric_id": 32,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_048",
+    "kind": "poi",
+    "max_x": 1907,
+    "max_z": 557,
+    "min_x": 1892,
+    "min_z": 542,
+    "name": "Thunderstep Watch"
+   },
+   {
+    "anchor": "anchor_060",
+    "kind": "camp",
+    "max_x": 1783,
+    "max_z": 461,
+    "min_x": 1768,
+    "min_z": 446,
+    "name": "Rainchar Camp"
+   }
+  ]
+ },
+ "protected_share_pct": 0.6,
+ "pvp_rule": "contested",
+ "quests": [
+  {
+   "copper": 85,
+   "description": "Thunderstep's roof runoff cuts across the forest ascent. Bring eight cobble blocks for a shallow gutter beside the shelter, keeping the walking line free. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "r20_anchor_048_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 8 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Gutter Before the Rain",
+   "turnin": "r20_anchor_048_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Rainchar Camp's bandits hold supplies intended for the ascent. Defeat four bandits at that occupied camp in Thunderroot Wilds and report to Rumela.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "r20_anchor_048_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 4 bandit [in kragmar_thunderroot_wilds]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit"
+     ],
+     "type": "kill",
+     "zone": "kragmar_thunderroot_wilds"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Rainchar's Burning Cargo",
+   "turnin": "r20_anchor_048_host",
+   "xp": 1220
+  },
+  {
+   "copper": 100,
+   "description": "The report points across Glassroot Wilds to the Accord's frontier watch. At level 40, defeat three Accord guards at its military outposts or their patrols. This mission concerns armed guards, never villagers, players or Lethariel's capital watch.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "r20_anchor_048_03",
+   "min_level": 40,
+   "objectives": [
+    "kill 3 guard_accord [in elandor_glassroot_wilds]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:guard_accord"
+     ],
+     "type": "kill",
+     "zone": "elandor_glassroot_wilds"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_048_02"
+   ],
+   "reward_items": [],
+   "title": "Across the Glass Passage",
+   "turnin": "r20_anchor_048_host",
+   "xp": 1975
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 5.3,
+  "height_above_sea": {
+   "max": 397,
+   "median": 136,
+   "min": 0,
+   "p10": 65,
+   "p90": 213
+  },
+  "steep_share_pct": 28.0
+ },
+ "relief_profile": "highland",
+ "roads": [
+  {
+   "first_in_zone": [
+    1909,
+    561
+   ],
+   "from": "anchor_048 (Thunderstep Watch, kragmar_thunderroot_wilds)",
+   "id": 28,
+   "kind": "secondary",
+   "last_in_zone": [
+    1954,
+    1050
+   ],
+   "length_in_zone": 506,
+   "length_total": 733,
+   "polyline_simplified": [
+    [
+     1909,
+     561
+    ],
+    [
+     1964,
+     691
+    ],
+    [
+     1955,
+     1048
+    ],
+    [
+     1840,
+     1232
+    ]
+   ],
+   "to": "anchor_012 (Kezamba, kragmar_kezamba)"
+  },
+  {
+   "first_in_zone": [
+    1786,
+    450
+   ],
+   "from": "anchor_060 (Rainchar Camp, kragmar_thunderroot_wilds)",
+   "id": 60,
+   "kind": "trail",
+   "last_in_zone": [
+    1929,
+    610
+   ],
+   "length_in_zone": 562,
+   "length_total": 569,
+   "polyline_simplified": [
+    [
+     1786,
+     450
+    ],
+    [
+     1824,
+     428
+    ],
+    [
+     1856,
+     375
+    ],
+    [
+     1930,
+     383
+    ],
+    [
+     2017,
+     357
+    ],
+    [
+     2028,
+     386
+    ],
+    [
+     1997,
+     501
+    ],
+    [
+     1929,
+     610
+    ]
+   ],
+   "to": "joins road 28"
+  }
+ ],
+ "role": "contested 31-40",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1900,
+    "y": 156,
+    "z": 550
+   },
+   "anchor_id": "anchor_048",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1116,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 1887,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 2650,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": 4052,
+      "straight": 2297,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": 4723,
+      "straight": 1626,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 3544,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 231,
+     "x": 1948,
+     "z": 324
+    },
+    "nearest_road": {
+     "distance": 14
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 686,
+     "x": 2536,
+     "z": 292
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 712,
+     "x": 2612,
+     "z": 576
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 708,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 496,
+      "hits": "kragmar_kezamba"
+     },
+     "south_-z": {
+      "distance": 236,
+      "hits": "front_skyglass_canopy"
+     },
+     "west_-x": {
+      "distance": 908,
+      "hits": "kragmar_bannerbreak_mesa"
+     }
+    }
+   },
+   "key": "r20_anchor_048",
+   "name": "Thunderstep Watch",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_048_host",
+     "npc_name": "Rumela Stormstep",
+     "quests": [
+      "r20_anchor_048_01",
+      "r20_anchor_048_02",
+      "r20_anchor_048_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 1902,
+     "y": 157,
+     "z": 550
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1776,
+    "y": 161,
+    "z": 454
+   },
+   "anchor_id": "anchor_060",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 157,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1032,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 1500,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 1731,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2191,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 2494,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 156,
+     "x": 1832,
+     "z": 308
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 777,
+     "x": 2528,
+     "z": 260
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 828,
+     "x": 2600,
+     "z": 376
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 840,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 560,
+      "hits": "kragmar_kezamba"
+     },
+     "south_-z": {
+      "distance": 156,
+      "hits": "inland_water"
+     },
+     "west_-x": {
+      "distance": 744,
+      "hits": "kragmar_bannerbreak_mesa"
+     }
+    }
+   },
+   "key": "r20_anchor_060",
+   "name": "Rainchar Camp",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_witch",
+   "name": "Bog Witch",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 87.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 65.5
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_ape",
+   "name": "Jungle Ape",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:jungle_spider",
+   "name": "Jungle Spider",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 65.6
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:panther",
+   "name": "Panther",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 65.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 87.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:serpent",
+   "name": "Serpent",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 5440,
+    "levels": [
+     31,
+     39
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 5440,
+    "levels": [
+     31,
+     39
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  }
+ ],
+ "territory_rule": "contested_land",
+ "track_order": 6
+}

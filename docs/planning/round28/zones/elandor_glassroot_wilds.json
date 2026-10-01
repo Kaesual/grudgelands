@@ -1,0 +1,962 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_036",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 36,
+   "name": "Glassroot Gate",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 1939,
+    "max_z": -559,
+    "min_x": 1924,
+    "min_z": -574
+   },
+   "settlement_key": "r20_anchor_036",
+   "slot": "outpost_1",
+   "x": 1932,
+   "y": 171,
+   "z": -566
+  },
+  {
+   "id": "anchor_054",
+   "kind": "bandit_frontier",
+   "kind_text": "bandit hideout",
+   "level_at": 38,
+   "name": "Rootsnare Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 1783,
+    "max_z": -399,
+    "min_x": 1768,
+    "min_z": -414
+   },
+   "settlement_key": "r20_anchor_054",
+   "slot": "bandit_1",
+   "x": 1776,
+   "y": 181,
+   "z": -406
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_deep_forest",
+   "share": 45
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share": 35
+  },
+  {
+   "id": "grug_elf_forest",
+   "share": 10
+  },
+  {
+   "id": "grug_swamp",
+   "share": 10
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 48.0
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 35.4
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 8.6
+  },
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 7.7
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 832,
+   "midpoint": {
+    "x": 841,
+    "z": -761
+   },
+   "zone": "elandor_ashenward_march"
+  },
+  {
+   "length_nodes": 780,
+   "midpoint": {
+    "x": 1612,
+    "z": -1066
+   },
+   "zone": "elandor_lethariel"
+  },
+  {
+   "length_nodes": 760,
+   "midpoint": {
+    "x": 1032,
+    "z": -1155
+   },
+   "zone": "elandor_lorindor"
+  },
+  {
+   "length_nodes": 820,
+   "midpoint": {
+    "x": 2209,
+    "z": -989
+   },
+   "zone": "elandor_moonfall_wood"
+  },
+  {
+   "length_nodes": 536,
+   "midpoint": {
+    "x": 1189,
+    "z": -279
+   },
+   "zone": "front_shattered_line"
+  },
+  {
+   "length_nodes": 1284,
+   "midpoint": {
+    "x": 2056,
+    "z": -231
+   },
+   "zone": "front_skyglass_canopy"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_036",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 36,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Glassroot Gate",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 1932,
+   "z": -566
+  },
+  {
+   "anchor": "anchor_054",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 38,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Rootsnare Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": 1776,
+   "z": -406
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:bone_weevil",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:jungle_ape",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:serpent",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:jungle_ape",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:serpent",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:panther",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf"
+  ],
+  "night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:giant_spider",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:pale_spider",
+   "grug_mobs:panther",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 8272,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 2288,
+    "box": {
+     "max_x": 2528,
+     "max_z": -868,
+     "min_x": 2468,
+     "min_z": -1012
+    },
+    "centroid": {
+     "x": 2491,
+     "z": -941
+    },
+    "id": "B1",
+    "levels": [
+     32,
+     33
+    ]
+   },
+   {
+    "area_nodes2": 1280,
+    "box": {
+     "max_x": 2548,
+     "max_z": -528,
+     "min_x": 2492,
+     "min_z": -624
+    },
+    "centroid": {
+     "x": 2512,
+     "z": -577
+    },
+    "id": "B2",
+    "levels": [
+     36,
+     37
+    ]
+   },
+   {
+    "area_nodes2": 256,
+    "box": {
+     "max_x": 2544,
+     "max_z": -308,
+     "min_x": 2528,
+     "min_z": -332
+    },
+    "centroid": {
+     "x": 2537,
+     "z": -322
+    },
+    "id": "B3",
+    "levels": [
+     39,
+     40
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 100992,
+  "sea_beach_sand_area_nodes2": 4032,
+  "sea_coast_length_nodes": 1312
+ },
+ "drift_band_share_pct": 2.1,
+ "extent": {
+  "centroid": {
+   "x": 1662,
+   "z": -683
+  },
+  "land_area_nodes2": 1254320,
+  "max_x": 2616,
+  "max_z": -192,
+  "min_x": 756,
+  "min_z": -1192
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": -700
+ },
+ "id": "elandor_glassroot_wilds",
+ "level_field": {
+  "histogram_pct": {
+   "31": 8.0,
+   "32": 10.7,
+   "33": 13.2,
+   "34": 13.8,
+   "35": 11.6,
+   "36": 11.0,
+   "37": 6.9,
+   "38": 6.5,
+   "39": 7.9,
+   "40": 10.3
+  },
+  "max": 40,
+  "min": 31
+ },
+ "level_max": 40,
+ "level_min": 31,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_glassroot_wilds.png",
+ "name": "Glassroot Wilds",
+ "neighbors": [
+  "elandor_ashenward_march",
+  "elandor_lethariel",
+  "elandor_lorindor",
+  "elandor_moonfall_wood",
+  "front_shattered_line",
+  "front_skyglass_canopy"
+ ],
+ "numeric_id": 16,
+ "palette_without_host_ground": [
+  "Blightfang Wolf",
+  "Bone Weevil",
+  "Gaunt Stag",
+  "Plaguehide Bear",
+  "Skeleton Archer"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_036",
+    "kind": "poi",
+    "max_x": 1939,
+    "max_z": -559,
+    "min_x": 1924,
+    "min_z": -574,
+    "name": "Glassroot Gate"
+   },
+   {
+    "anchor": "anchor_054",
+    "kind": "camp",
+    "max_x": 1783,
+    "max_z": -399,
+    "min_x": 1768,
+    "min_z": -414,
+    "name": "Rootsnare Camp"
+   }
+  ]
+ },
+ "protected_share_pct": 0.5,
+ "pvp_rule": "contested",
+ "quests": [
+  {
+   "copper": 85,
+   "description": "Rain has loosened the footing beneath Glassroot Gate's cliff passage. Bring ten cobble blocks for the low support so carriers can keep using the route while it is repaired. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "r20_anchor_036_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 10 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stone Under the Passage",
+   "turnin": "r20_anchor_036_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Rootsnare Camp's bandits have taken supplies intended for the passage. Defeat four bandits at the occupied camp in Glassroot Wilds, rather than hunting unrelated forest creatures.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "r20_anchor_036_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 4 bandit [in elandor_glassroot_wilds]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit"
+     ],
+     "type": "kill",
+     "zone": "elandor_glassroot_wilds"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Rootsnare's Stolen Cloth",
+   "turnin": "r20_anchor_036_host",
+   "xp": 1220
+  },
+  {
+   "copper": 100,
+   "description": "The recovered report points across Thunderroot Wilds to the Throng's frontier watch. At level 40, defeat three Throng guards at those military outposts or their patrols. This does not include villagers, players or Kezamba's capital guard.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "r20_anchor_036_03",
+   "min_level": 40,
+   "objectives": [
+    "kill 3 guard_throng [in kragmar_thunderroot_wilds]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:guard_throng"
+     ],
+     "type": "kill",
+     "zone": "kragmar_thunderroot_wilds"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_036_02"
+   ],
+   "reward_items": [],
+   "title": "The Other Rootwatch",
+   "turnin": "r20_anchor_036_host",
+   "xp": 1975
+  }
+ ],
+ "race_region": "elf",
+ "race_track": "elf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 10.6,
+  "height_above_sea": {
+   "max": 316,
+   "median": 145,
+   "min": 0,
+   "p10": 77,
+   "p90": 215
+  },
+  "steep_share_pct": 38.8
+ },
+ "relief_profile": "highland",
+ "roads": [
+  {
+   "first_in_zone": [
+    1924,
+    -578
+   ],
+   "from": "anchor_036 (Glassroot Gate, elandor_glassroot_wilds)",
+   "id": 14,
+   "kind": "secondary",
+   "last_in_zone": [
+    1835,
+    -1004
+   ],
+   "length_in_zone": 642,
+   "length_total": 897,
+   "polyline_simplified": [
+    [
+     1924,
+     -578
+    ],
+    [
+     1908,
+     -629
+    ],
+    [
+     1952,
+     -762
+    ],
+    [
+     1857,
+     -708
+    ],
+    [
+     1827,
+     -746
+    ],
+    [
+     1826,
+     -846
+    ],
+    [
+     1796,
+     -915
+    ],
+    [
+     1832,
+     -977
+    ],
+    [
+     1839,
+     -1082
+    ],
+    [
+     1776,
+     -1232
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    1778,
+    -417
+   ],
+   "from": "anchor_054 (Rootsnare Camp, elandor_glassroot_wilds)",
+   "id": 54,
+   "kind": "trail",
+   "last_in_zone": [
+    1910,
+    -610
+   ],
+   "length_in_zone": 246,
+   "length_total": 246,
+   "polyline_simplified": [
+    [
+     1778,
+     -417
+    ],
+    [
+     1876,
+     -521
+    ],
+    [
+     1910,
+     -610
+    ]
+   ],
+   "to": "joins road 14"
+  }
+ ],
+ "role": "contested 31-40",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1932,
+    "y": 171,
+    "z": -566
+   },
+   "anchor_id": "anchor_036",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1116,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 1955,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2719,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": 4128,
+      "straight": 2300,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": 4938,
+      "straight": 1636,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 3544,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 314,
+     "x": 1932,
+     "z": -252
+    },
+    "nearest_road": {
+     "distance": 14
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 551,
+     "x": 2460,
+     "z": -408
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 560,
+     "x": 2492,
+     "z": -572
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 580,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 316,
+      "hits": "front_skyglass_canopy"
+     },
+     "south_-z": {
+      "distance": 448,
+      "hits": "elandor_moonfall_wood"
+     },
+     "west_-x": {
+      "distance": 1048,
+      "hits": "inland_water"
+     }
+    }
+   },
+   "key": "r20_anchor_036",
+   "name": "Glassroot Gate",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_036_host",
+     "npc_name": "Faeris Rootbinder",
+     "quests": [
+      "r20_anchor_036_01",
+      "r20_anchor_036_02",
+      "r20_anchor_036_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 1934,
+     "y": 172,
+     "z": -566
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1776,
+    "y": 181,
+    "z": -406
+   },
+   "anchor_id": "anchor_054",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 223,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 964,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 1477,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 1739,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 2172,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2502,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 142,
+     "x": 1784,
+     "z": -264
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 684,
+     "x": 2460,
+     "z": -408
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 730,
+     "x": 2496,
+     "z": -528
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 684,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 148,
+      "hits": "front_skyglass_canopy"
+     },
+     "south_-z": {
+      "distance": 600,
+      "hits": "elandor_lethariel"
+     },
+     "west_-x": {
+      "distance": 820,
+      "hits": "elandor_ashenward_march"
+     }
+    }
+   },
+   "key": "r20_anchor_054",
+   "name": "Rootsnare Camp",
+   "npcs": [],
+   "race": "elf",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 55.4
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:bear",
+   "name": "Bear",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 35.6
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_ape",
+   "name": "Jungle Ape",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:jungle_spider",
+   "name": "Jungle Spider",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 90.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:panther",
+   "name": "Panther",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 35.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 44.3
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:serpent",
+   "name": "Serpent",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 4032,
+    "levels": [
+     32,
+     40
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 4032,
+    "levels": [
+     32,
+     40
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 47.7
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:stag",
+   "name": "Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 47.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:wolf",
+   "name": "Wolf",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 47.7
+   }
+  }
+ ],
+ "territory_rule": "contested_land",
+ "track_order": 6
+}

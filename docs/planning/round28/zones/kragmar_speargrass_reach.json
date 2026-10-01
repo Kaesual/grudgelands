@@ -1,0 +1,1447 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_022",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 25,
+   "name": "Speargrass Wellhold",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -857,
+    "max_z": 1575,
+    "min_x": -880,
+    "min_z": 1552
+   },
+   "settlement_key": "r20_anchor_022",
+   "slot": "village_1",
+   "x": -868,
+   "y": 110,
+   "z": 1564
+  },
+  {
+   "id": "anchor_042",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 28,
+   "name": "Cutgrass Watch",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -643,
+    "max_z": 1257,
+    "min_x": -658,
+    "min_z": 1242
+   },
+   "settlement_key": "r20_anchor_042",
+   "slot": "outpost_1",
+   "x": -650,
+   "y": 56,
+   "z": 1250
+  },
+  {
+   "id": "anchor_065",
+   "kind": "mine",
+   "kind_text": "mine",
+   "level_at": 27,
+   "name": "Redpick Yard",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -1041,
+    "max_z": 1289,
+    "min_x": -1060,
+    "min_z": 1270
+   },
+   "settlement_key": "r20_anchor_065",
+   "slot": "mine",
+   "x": -1050,
+   "y": 72,
+   "z": 1280
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_savanna",
+   "share": 55
+  },
+  {
+   "id": "grug_badlands",
+   "share": 40
+  },
+  {
+   "id": "grug_swamp",
+   "share": 5
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_savanna",
+   "share_pct": 58.7
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 40.3
+  },
+  {
+   "id": "grug_blight",
+   "share_pct": 0.5
+  },
+  {
+   "id": "grug_bone_forest",
+   "share_pct": 0.4
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 660,
+   "midpoint": {
+    "x": -703,
+    "z": 1007
+   },
+   "zone": "kragmar_bannerbreak_mesa"
+  },
+  {
+   "length_nodes": 480,
+   "midpoint": {
+    "x": -1154,
+    "z": 1024
+   },
+   "zone": "kragmar_blackwind_rise"
+  },
+  {
+   "length_nodes": 680,
+   "midpoint": {
+    "x": -474,
+    "z": 1405
+   },
+   "zone": "kragmar_gor_drazhak"
+  },
+  {
+   "length_nodes": 408,
+   "midpoint": {
+    "x": -1397,
+    "z": 1968
+   },
+   "zone": "kragmar_mournfen"
+  },
+  {
+   "length_nodes": 796,
+   "midpoint": {
+    "x": -1355,
+    "z": 1495
+   },
+   "zone": "kragmar_nhal_veyr"
+  },
+  {
+   "length_nodes": 996,
+   "midpoint": {
+    "x": -649,
+    "z": 2001
+   },
+   "zone": "kragmar_redtusk_savanna"
+  },
+  {
+   "length_nodes": 84,
+   "midpoint": {
+    "x": -767,
+    "z": 2460
+   },
+   "zone": "kragmar_sunscar_flats"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_042",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 28,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Cutgrass Watch",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -650,
+   "z": 1250
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:speargrass_tiger",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture",
+   "grug_mobs:zebra"
+  ],
+  "density_budget_day": [
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:speargrass_tiger",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture",
+   "grug_mobs:zebra"
+  ],
+  "density_budget_night": [
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:scorpion",
+   "grug_mobs:stone_golem"
+  ],
+  "night": [
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:scorpion",
+   "grug_mobs:stone_golem"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 6688,
+  "bay_water_area_nodes2": 248352,
+  "beaches": [
+   {
+    "area_nodes2": 9104,
+    "box": {
+     "max_x": -996,
+     "max_z": 1952,
+     "min_x": -1312,
+     "min_z": 1804
+    },
+    "centroid": {
+     "x": -1146,
+     "z": 1861
+    },
+    "id": "B1",
+    "levels": [
+     22,
+     23
+    ]
+   },
+   {
+    "area_nodes2": 768,
+    "box": {
+     "max_x": -1324,
+     "max_z": 2088,
+     "min_x": -1356,
+     "min_z": 2044
+    },
+    "centroid": {
+     "x": -1340,
+     "z": 2062
+    },
+    "id": "B2",
+    "levels": [
+     21,
+     21
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 46672,
+  "sea_beach_sand_area_nodes2": 9920,
+  "sea_coast_length_nodes": 1640
+ },
+ "drift_band_share_pct": 9.3,
+ "extent": {
+  "centroid": {
+   "x": -921,
+   "z": 1519
+  },
+  "land_area_nodes2": 788496,
+  "max_x": -460,
+  "max_z": 2488,
+  "min_x": -1420,
+  "min_z": 920
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": -900,
+  "z": 1500
+ },
+ "id": "kragmar_speargrass_reach",
+ "level_field": {
+  "histogram_pct": {
+   "21": 6.6,
+   "22": 8.4,
+   "23": 13.2,
+   "24": 13.6,
+   "25": 12.7,
+   "26": 11.9,
+   "27": 7.4,
+   "28": 9.0,
+   "29": 8.9,
+   "30": 8.3
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_speargrass_reach.png",
+ "name": "Speargrass Reach",
+ "neighbors": [
+  "kragmar_bannerbreak_mesa",
+  "kragmar_blackwind_rise",
+  "kragmar_gor_drazhak",
+  "kragmar_mournfen",
+  "kragmar_nhal_veyr",
+  "kragmar_redtusk_savanna",
+  "kragmar_sunscar_flats"
+ ],
+ "numeric_id": 25,
+ "palette_without_host_ground": [
+  "Crag Eagle",
+  "Mountain Ram"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_022",
+    "kind": "village",
+    "max_x": -857,
+    "max_z": 1575,
+    "min_x": -880,
+    "min_z": 1552,
+    "name": "Speargrass Wellhold"
+   },
+   {
+    "anchor": "anchor_042",
+    "kind": "poi",
+    "max_x": -643,
+    "max_z": 1257,
+    "min_x": -658,
+    "min_z": 1242,
+    "name": "Cutgrass Watch"
+   },
+   {
+    "anchor": "anchor_065",
+    "kind": "poi",
+    "max_x": -1041,
+    "max_z": 1289,
+    "min_x": -1060,
+    "min_z": 1270,
+    "name": "Redpick Yard"
+   }
+  ]
+ },
+ "protected_share_pct": 2.5,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "Wellhold's water jars stand in the sun whenever a shade brace splits. Bring eight acacia planks for the roof above the jars; do not dismantle the village's shelters for timber. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_022_host",
+   "giver_name": "Brakka Jarward",
+   "giver_settlement": "Speargrass Wellhold",
+   "id": "r20_anchor_022_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:acacia_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:acacia_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Shade Before Strength",
+   "turnin": "r20_anchor_022_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Speargrass tigers cross the dry grass by day and stalk the cutters approaching Wellhold. Clear three from Speargrass Reach while the shade is repaired.",
+   "giver": "r20_anchor_022_host",
+   "giver_name": "Brakka Jarward",
+   "giver_settlement": "Speargrass Wellhold",
+   "id": "r20_anchor_022_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 3 speargrass_tiger [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:speargrass_tiger"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stripes in the Cutting Grass",
+   "turnin": "r20_anchor_022_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Cutgrass Watch has a roof cloth but too few sound posts to hold its shade. Bring eight acacia planks for the cutters' waiting place beside the shelter. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_042_host",
+   "giver_name": "Morga Cutgrass",
+   "giver_settlement": "Cutgrass Watch",
+   "id": "r20_anchor_042_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:acacia_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:acacia_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Posts for the Shade",
+   "turnin": "r20_anchor_042_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Speargrass tigers hunt the dry cutting grounds by day. Defeat three in Speargrass Reach so the cutters can bring their bundles back to the watch.",
+   "giver": "r20_anchor_042_host",
+   "giver_name": "Morga Cutgrass",
+   "giver_settlement": "Cutgrass Watch",
+   "id": "r20_anchor_042_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 3 speargrass_tiger [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:speargrass_tiger"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Cutters' Long Walk",
+   "turnin": "r20_anchor_042_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Redpick's sorting trays lie beneath a roof whose braces have begun to split. Bring ten acacia planks so the yard can keep its loads covered before the next caravan. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_065_host",
+   "giver_name": "Gorren Redpick",
+   "giver_settlement": "Redpick Yard",
+   "id": "r20_anchor_065_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 10 default:acacia_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "default:acacia_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Roof Over the Sorting Trays",
+   "turnin": "r20_anchor_065_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Hyenas prowl Speargrass Reach's dry grass and clay near the cutters' water stops. Defeat four while the crew repairs the sorting roof.",
+   "giver": "r20_anchor_065_host",
+   "giver_name": "Gorren Redpick",
+   "giver_settlement": "Redpick Yard",
+   "id": "r20_anchor_065_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 hyena [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:hyena"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Hunters at the Water Shade",
+   "turnin": "r20_anchor_065_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "The cutters can reach the well again, but the jars are unsafe after sunset. Hunt four scorpions on Speargrass Reach's dry grass and clay when they emerge at night.",
+   "giver": "r20_anchor_022_host",
+   "giver_name": "Brakka Jarward",
+   "giver_settlement": "Speargrass Wellhold",
+   "id": "r20_anchor_022_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 scorpion [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:scorpion"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_022_02"
+   ],
+   "reward_items": [],
+   "title": "Night at the Water Jars",
+   "turnin": "r20_anchor_022_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The daytime route is clearer, but goblin raiders gather near the signal paths after sunset. Defeat four in Speargrass Reach during the night watch.",
+   "giver": "r20_anchor_042_host",
+   "giver_name": "Morga Cutgrass",
+   "giver_settlement": "Cutgrass Watch",
+   "id": "r20_anchor_042_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 goblin_raider [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:goblin_raider"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_042_02"
+   ],
+   "reward_items": [],
+   "title": "Raiders at the Signal Fire",
+   "turnin": "r20_anchor_042_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The water stops are safer, but scorpions emerge around the drill stacks after sunset. Defeat four in Speargrass Reach on the night shift.",
+   "giver": "r20_anchor_065_host",
+   "giver_name": "Gorren Redpick",
+   "giver_settlement": "Redpick Yard",
+   "id": "r20_anchor_065_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 scorpion [in kragmar_speargrass_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:scorpion"
+     ],
+     "type": "kill",
+     "zone": "kragmar_speargrass_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_065_02"
+   ],
+   "reward_items": [],
+   "title": "Stings in the Drill Stack",
+   "turnin": "r20_anchor_065_host",
+   "xp": 900
+  },
+  {
+   "copper": 50,
+   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Redpick Yard in Speargrass Reach and speak with Gorren Redpick. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Gorren Redpick there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_022_host",
+   "giver_name": "Brakka Jarward",
+   "giver_settlement": "Speargrass Wellhold",
+   "id": "r20_orc_journey_02",
+   "min_level": 24,
+   "objectives": [
+    "talk to Gorren Redpick (r20_anchor_065)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_065_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Gorren Redpick",
+   "turnin": "r20_anchor_065_host",
+   "xp": 705
+  },
+  {
+   "copper": 50,
+   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Red Ramp Post in Bannerbreak Mesa and speak with Drek Rampbinder. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Drek Rampbinder there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_065_host",
+   "giver_name": "Gorren Redpick",
+   "giver_settlement": "Redpick Yard",
+   "id": "r20_orc_journey_03",
+   "min_level": 31,
+   "objectives": [
+    "talk to Drek Rampbinder (r20_anchor_043)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_043_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Drek Rampbinder",
+   "turnin": "r20_anchor_043_host",
+   "xp": 915
+  }
+ ],
+ "race_region": "orc",
+ "race_track": "orc",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.9,
+  "height_above_sea": {
+   "max": 235,
+   "median": 95,
+   "min": 0,
+   "p10": 46,
+   "p90": 139
+  },
+  "steep_share_pct": 23.6
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1413,
+    1844
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 15,
+   "kind": "primary",
+   "last_in_zone": [
+    -483,
+    1535
+   ],
+   "length_in_zone": 1044,
+   "length_total": 1440,
+   "polyline_simplified": [
+    [
+     -1537,
+     1762
+    ],
+    [
+     -1356,
+     1868
+    ],
+    [
+     -1272,
+     1830
+    ],
+    [
+     -1158,
+     1819
+    ],
+    [
+     -897,
+     1641
+    ],
+    [
+     -825,
+     1606
+    ],
+    [
+     -753,
+     1602
+    ],
+    [
+     -588,
+     1510
+    ],
+    [
+     -504,
+     1524
+    ],
+    [
+     -380,
+     1585
+    ],
+    [
+     -272,
+     1582
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -852,
+    1566
+   ],
+   "from": "anchor_022 (Speargrass Wellhold, kragmar_speargrass_reach)",
+   "id": 24,
+   "kind": "secondary",
+   "last_in_zone": [
+    -636,
+    1543
+   ],
+   "length_in_zone": 234,
+   "length_total": 234,
+   "polyline_simplified": [
+    [
+     -852,
+     1566
+    ],
+    [
+     -697,
+     1520
+    ],
+    [
+     -636,
+     1543
+    ]
+   ],
+   "to": "joins road 15"
+  },
+  {
+   "first_in_zone": [
+    -1345,
+    1563
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 30,
+   "kind": "secondary",
+   "last_in_zone": [
+    -883,
+    1569
+   ],
+   "length_in_zone": 524,
+   "length_total": 802,
+   "polyline_simplified": [
+    [
+     -1535,
+     1649
+    ],
+    [
+     -1412,
+     1584
+    ],
+    [
+     -1388,
+     1526
+    ],
+    [
+     -1324,
+     1578
+    ],
+    [
+     -1268,
+     1568
+    ],
+    [
+     -1205,
+     1589
+    ],
+    [
+     -1116,
+     1663
+    ],
+    [
+     -883,
+     1569
+    ]
+   ],
+   "to": "anchor_022 (Speargrass Wellhold, kragmar_speargrass_reach)"
+  },
+  {
+   "first_in_zone": [
+    -639,
+    1256
+   ],
+   "from": "anchor_042 (Cutgrass Watch, kragmar_speargrass_reach)",
+   "id": 44,
+   "kind": "trail",
+   "last_in_zone": [
+    -563,
+    1511
+   ],
+   "length_in_zone": 320,
+   "length_total": 322,
+   "polyline_simplified": [
+    [
+     -639,
+     1256
+    ],
+    [
+     -587,
+     1285
+    ],
+    [
+     -530,
+     1358
+    ],
+    [
+     -571,
+     1465
+    ],
+    [
+     -563,
+     1511
+    ]
+   ],
+   "to": "joins road 15"
+  },
+  {
+   "first_in_zone": [
+    -1058,
+    1292
+   ],
+   "from": "anchor_065 (Redpick Yard, kragmar_speargrass_reach)",
+   "id": 65,
+   "kind": "trail",
+   "last_in_zone": [
+    -1156,
+    1638
+   ],
+   "length_in_zone": 414,
+   "length_total": 418,
+   "polyline_simplified": [
+    [
+     -1058,
+     1292
+    ],
+    [
+     -1071,
+     1323
+    ],
+    [
+     -1025,
+     1363
+    ],
+    [
+     -1025,
+     1421
+    ],
+    [
+     -1111,
+     1531
+    ],
+    [
+     -1156,
+     1638
+    ]
+   ],
+   "to": "joins road 30"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -868,
+    "y": 110,
+    "z": 1564
+   },
+   "anchor_id": "anchor_022",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Redpick Yard",
+      "road": 754,
+      "straight": 337,
+      "to": "r20_anchor_065",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1342,
+      "straight": 879,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 1421,
+      "straight": 934,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1705,
+      "straight": 1128,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1861,
+      "straight": 1512,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 1922,
+      "straight": 1344,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 389,
+     "x": -480,
+     "z": 1544
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "NW",
+     "distance": 359,
+     "x": -1092,
+     "z": 1844
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 322,
+     "x": -1068,
+     "z": 1816
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 396,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "north_+z": {
+      "distance": 532,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 628,
+      "hits": "kragmar_bannerbreak_mesa"
+     },
+     "west_-x": {
+      "distance": 480,
+      "hits": "kragmar_nhal_veyr"
+     }
+    }
+   },
+   "key": "r20_anchor_022",
+   "name": "Speargrass Wellhold",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_022_host",
+     "npc_name": "Brakka Jarward",
+     "quests": [
+      "r20_anchor_022_01",
+      "r20_anchor_022_02",
+      "r20_anchor_022_03",
+      "r20_orc_journey_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -866,
+     "y": 111,
+     "z": 1564
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -650,
+    "y": 56,
+    "z": 1250
+   },
+   "anchor_id": "anchor_042",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Gor Drazhak",
+      "road": 982,
+      "straight": 696,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": 1507,
+      "straight": 940,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1645,
+      "straight": 1242,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1823,
+      "straight": 1214,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": 1826,
+      "straight": 466,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 2098,
+      "straight": 1332,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 156,
+     "x": -500,
+     "z": 1208
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "NW",
+     "distance": 740,
+     "x": -1092,
+     "z": 1844
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 704,
+     "x": -1068,
+     "z": 1816
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 160,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "north_+z": {
+      "distance": 692,
+      "hits": "kragmar_redtusk_savanna"
+     },
+     "south_-z": {
+      "distance": 216,
+      "hits": "kragmar_bannerbreak_mesa"
+     },
+     "west_-x": {
+      "distance": 700,
+      "hits": "kragmar_nhal_veyr"
+     }
+    }
+   },
+   "key": "r20_anchor_042",
+   "name": "Cutgrass Watch",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_042_host",
+     "npc_name": "Morga Cutgrass",
+     "quests": [
+      "r20_anchor_042_01",
+      "r20_anchor_042_02",
+      "r20_anchor_042_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -648,
+     "y": 57,
+     "z": 1250
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -1050,
+    "y": 72,
+    "z": 1280
+   },
+   "anchor_id": "anchor_065",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Speargrass Wellhold",
+      "road": 754,
+      "straight": 337,
+      "to": "r20_anchor_022",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1452,
+      "straight": 946,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 1531,
+      "straight": 782,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1815,
+      "straight": 1127,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1971,
+      "straight": 1368,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 2032,
+      "straight": 1332,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 274,
+     "x": -1108,
+     "z": 1012
+    },
+    "nearest_road": {
+     "distance": 14
+    },
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 562,
+     "x": -1100,
+     "z": 1840
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "N",
+     "distance": 533,
+     "x": -1076,
+     "z": 1812
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 576,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "north_+z": {
+      "distance": 636,
+      "hits": "bay_water"
+     },
+     "south_-z": {
+      "distance": 300,
+      "hits": "kragmar_blackwind_rise"
+     },
+     "west_-x": {
+      "distance": 292,
+      "hits": "kragmar_nhal_veyr"
+     }
+    }
+   },
+   "key": "r20_anchor_065",
+   "name": "Redpick Yard",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_065_host",
+     "npc_name": "Gorren Redpick",
+     "quests": [
+      "r20_anchor_065_01",
+      "r20_anchor_065_02",
+      "r20_anchor_065_03",
+      "r20_orc_journey_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -1048,
+     "y": 73,
+     "z": 1280
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_hound",
+   "name": "Goblin Raider Hound",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_raider",
+   "name": "Goblin Raider",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_slinger",
+   "name": "Goblin Slinger",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:hyena",
+   "name": "Hyena",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 39.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:stone",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:mesa_golem",
+   "name": "Mesa Golem",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 39.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:scorpion",
+   "name": "Scorpion",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 9920,
+    "levels": [
+     21,
+     23
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 9920,
+    "levels": [
+     21,
+     23
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:speargrass_tiger",
+   "name": "Speargrass Tiger",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 39.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:vulture",
+   "name": "Vulture",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 59.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass"
+   ],
+   "mob": "grug_mobs:zebra",
+   "name": "Zebra",
+   "night": null
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 4
+}

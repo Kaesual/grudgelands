@@ -1,0 +1,1208 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_011",
+   "kind": "capital_orc",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Gor Drazhak",
+   "settlement_key": "gor_drazhak",
+   "slot": "capital",
+   "x": 0,
+   "y": 61,
+   "z": 1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_savanna",
+   "share": 60
+  },
+  {
+   "id": "grug_badlands",
+   "share": 40
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_savanna",
+   "share_pct": 59.5
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 39.9
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.0
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1216,
+   "midpoint": {
+    "x": 10,
+    "z": 1102
+   },
+   "zone": "kragmar_bannerbreak_mesa"
+  },
+  {
+   "length_nodes": 1240,
+   "midpoint": {
+    "x": 8,
+    "z": 1819
+   },
+   "zone": "kragmar_redtusk_savanna"
+  },
+  {
+   "length_nodes": 684,
+   "midpoint": {
+    "x": -478,
+    "z": 1404
+   },
+   "zone": "kragmar_speargrass_reach"
+  },
+  {
+   "length_nodes": 760,
+   "midpoint": {
+    "x": 518,
+    "z": 1504
+   },
+   "zone": "kragmar_whispering_reedlands"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 19,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 4656,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 8992,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 10.8,
+ "extent": {
+  "centroid": {
+   "x": 30,
+   "z": 1461
+  },
+  "land_area_nodes2": 702976,
+  "max_x": 540,
+  "max_z": 1872,
+  "min_x": -500,
+  "min_z": 1064
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": 1500
+ },
+ "id": "kragmar_gor_drazhak",
+ "level_field": {
+  "histogram_pct": {
+   "20": 10.9,
+   "21": 10.6,
+   "22": 11.0,
+   "23": 8.4,
+   "24": 8.4,
+   "25": 8.3,
+   "26": 8.3,
+   "27": 8.2,
+   "28": 8.4,
+   "29": 8.4,
+   "30": 9.0
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/kragmar_gor_drazhak.png",
+ "name": "Gor Drazhak",
+ "neighbors": [
+  "kragmar_bannerbreak_mesa",
+  "kragmar_redtusk_savanna",
+  "kragmar_speargrass_reach",
+  "kragmar_whispering_reedlands"
+ ],
+ "numeric_id": 24,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 129128,
+   "box": {
+    "max_x": 248,
+    "max_z": 1716,
+    "min_x": -162,
+    "min_z": 1288
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": 175,
+     "y": 58,
+     "z": 1586
+    },
+    {
+     "name": "south",
+     "x": -69,
+     "y": 56,
+     "z": 1687
+    },
+    {
+     "name": "west",
+     "x": -140,
+     "y": 56,
+     "z": 1503
+    },
+    {
+     "name": "north",
+     "x": 12,
+     "y": 61,
+     "z": 1309
+    }
+   ],
+   "outline_kind": "palisade",
+   "zone_land_outside_city_pct": 81.6
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 19.7,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Gorla Longladle has a ration pot beside Gor Drazhak's cook-court oven. Bring five raw meat portions for the next watch and its travellers. You can help without learning Cooking.",
+   "giver": "r20_orc_capital_cook",
+   "giver_name": "Gorla Longladle",
+   "giver_settlement": "Gor Drazhak",
+   "id": "r20_orc_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Longladle Ration",
+   "turnin": "r20_orc_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Thorga recommends a stop at Gorla Longladle's cook court. Speak with the cook beside the oven in the warren, then complete the introduction there. The nearby Cooking trainer is not required for this conversation.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "r20_orc_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Gorla Longladle (gor_drazhak)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_orc_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_orc_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "A Bowl at Longladle",
+   "turnin": "r20_orc_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The muster yard's supply edge has been worn down by loaded carts. Bring twelve cobble blocks to Thorga so the watch can reset it without taking stone from occupied homes.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "r20_orc_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 12 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 12,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stone for the Muster Yard",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Speargrass Wellhold in Speargrass Reach and speak with Brakka Jarward. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Brakka Jarward there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "r20_orc_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Brakka Jarward (r20_anchor_022)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_022_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Brakka Jarward",
+   "turnin": "r20_anchor_022_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "orc",
+ "race_track": "orc",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 153,
+   "median": 66,
+   "min": 28,
+   "p10": 53,
+   "p90": 100
+  },
+  "steep_share_pct": 3.6
+ },
+ "relief_profile": "plateau",
+ "roads": [
+  {
+   "first_in_zone": [
+    -481,
+    1536
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 15,
+   "kind": "primary",
+   "last_in_zone": [
+    -272,
+    1582
+   ],
+   "length_in_zone": 224,
+   "length_total": 1440,
+   "polyline_simplified": [
+    [
+     -1537,
+     1762
+    ],
+    [
+     -1356,
+     1868
+    ],
+    [
+     -1272,
+     1830
+    ],
+    [
+     -1158,
+     1819
+    ],
+    [
+     -897,
+     1641
+    ],
+    [
+     -825,
+     1606
+    ],
+    [
+     -753,
+     1602
+    ],
+    [
+     -588,
+     1510
+    ],
+    [
+     -504,
+     1524
+    ],
+    [
+     -380,
+     1585
+    ],
+    [
+     -272,
+     1582
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    272,
+    1634
+   ],
+   "from": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)",
+   "id": 16,
+   "kind": "primary",
+   "last_in_zone": [
+    521,
+    1670
+   ],
+   "length_in_zone": 266,
+   "length_total": 1364,
+   "polyline_simplified": [
+    [
+     272,
+     1634
+    ],
+    [
+     404,
+     1619
+    ],
+    [
+     661,
+     1747
+    ],
+    [
+     848,
+     1749
+    ],
+    [
+     1050,
+     1687
+    ],
+    [
+     1266,
+     1773
+    ],
+    [
+     1536,
+     1758
+    ]
+   ],
+   "to": "anchor_012 (Kezamba, kragmar_kezamba)"
+  },
+  {
+   "first_in_zone": [
+    -101,
+    1834
+   ],
+   "from": "anchor_005 (Sunscar, kragmar_sunscar_flats)",
+   "id": 18,
+   "kind": "primary",
+   "last_in_zone": [
+    -112,
+    1760
+   ],
+   "length_in_zone": 80,
+   "length_total": 799,
+   "polyline_simplified": [
+    [
+     0,
+     2486
+    ],
+    [
+     -104,
+     2306
+    ],
+    [
+     -160,
+     2092
+    ],
+    [
+     -109,
+     1960
+    ],
+    [
+     -97,
+     1796
+    ],
+    [
+     -112,
+     1760
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -290,
+    1118
+   ],
+   "from": "anchor_043 (Red Ramp Post, kragmar_bannerbreak_mesa)",
+   "id": 27,
+   "kind": "secondary",
+   "last_in_zone": [
+    -256,
+    1232
+   ],
+   "length_in_zone": 124,
+   "length_total": 390,
+   "polyline_simplified": [
+    [
+     -367,
+     885
+    ],
+    [
+     -290,
+     1005
+    ],
+    [
+     -304,
+     1084
+    ],
+    [
+     -256,
+     1232
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    509,
+    1344
+   ],
+   "from": "anchor_046 (Reedvoice Station, kragmar_whispering_reedlands)",
+   "id": 47,
+   "kind": "trail",
+   "last_in_zone": [
+    445,
+    1639
+   ],
+   "length_in_zone": 312,
+   "length_total": 522,
+   "polyline_simplified": [
+    [
+     671,
+     1231
+    ],
+    [
+     611,
+     1249
+    ],
+    [
+     512,
+     1336
+    ],
+    [
+     495,
+     1471
+    ],
+    [
+     463,
+     1536
+    ],
+    [
+     445,
+     1639
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    327,
+    1842
+   ],
+   "from": "anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna)",
+   "id": 57,
+   "kind": "trail",
+   "last_in_zone": [
+    353,
+    1634
+   ],
+   "length_in_zone": 216,
+   "length_total": 349,
+   "polyline_simplified": [
+    [
+     328,
+     1965
+    ],
+    [
+     327,
+     1719
+    ],
+    [
+     353,
+     1634
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    -103,
+    1086
+   ],
+   "from": "anchor_058 (Sunderstrap Camp, kragmar_bannerbreak_mesa)",
+   "id": 58,
+   "kind": "trail",
+   "last_in_zone": [
+    -290,
+    1121
+   ],
+   "length_in_zone": 186,
+   "length_total": 1283,
+   "polyline_simplified": [
+    [
+     42,
+     420
+    ],
+    [
+     118,
+     464
+    ],
+    [
+     215,
+     432
+    ],
+    [
+     292,
+     453
+    ],
+    [
+     303,
+     520
+    ],
+    [
+     284,
+     569
+    ],
+    [
+     254,
+     623
+    ],
+    [
+     163,
+     703
+    ],
+    [
+     6,
+     1019
+    ],
+    [
+     -136,
+     1100
+    ],
+    [
+     -290,
+     1121
+    ]
+   ],
+   "to": "joins road 27"
+  },
+  {
+   "first_in_zone": [
+    272,
+    1634
+   ],
+   "from": "end:16",
+   "id": 132,
+   "kind": "primary",
+   "last_in_zone": [
+    182,
+    1586
+   ],
+   "length_in_zone": 108,
+   "length_total": 106,
+   "polyline_simplified": [
+    [
+     272,
+     1634
+    ],
+    [
+     182,
+     1586
+    ]
+   ],
+   "to": "gate_east"
+  },
+  {
+   "first_in_zone": [
+    -112,
+    1760
+   ],
+   "from": "end:18",
+   "id": 133,
+   "kind": "primary",
+   "last_in_zone": [
+    -69,
+    1694
+   ],
+   "length_in_zone": 100,
+   "length_total": 97,
+   "polyline_simplified": [
+    [
+     -112,
+     1760
+    ],
+    [
+     -109,
+     1722
+    ],
+    [
+     -69,
+     1694
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    -272,
+    1582
+   ],
+   "from": "end:15",
+   "id": 134,
+   "kind": "primary",
+   "last_in_zone": [
+    -147,
+    1503
+   ],
+   "length_in_zone": 184,
+   "length_total": 184,
+   "polyline_simplified": [
+    [
+     -272,
+     1582
+    ],
+    [
+     -191,
+     1488
+    ],
+    [
+     -147,
+     1503
+    ]
+   ],
+   "to": "gate_west"
+  },
+  {
+   "first_in_zone": [
+    -256,
+    1232
+   ],
+   "from": "end:27",
+   "id": 135,
+   "kind": "secondary",
+   "last_in_zone": [
+    12,
+    1302
+   ],
+   "length_in_zone": 296,
+   "length_total": 297,
+   "polyline_simplified": [
+    [
+     -256,
+     1232
+    ],
+    [
+     -85,
+     1244
+    ],
+    [
+     12,
+     1302
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 0,
+    "y": 61,
+    "z": 1500
+   },
+   "anchor_id": "anchor_011",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Redtusk Village",
+      "road": 675,
+      "straight": 512,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Cutgrass Watch",
+      "road": 982,
+      "straight": 696,
+      "to": "r20_anchor_042",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 992,
+      "straight": 577,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": 1021,
+      "straight": 729,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 1267,
+      "straight": 732,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Sunscar",
+      "road": 1270,
+      "straight": 1050,
+      "to": "sunscar",
+      "zone": "kragmar_sunscar_flats"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 343,
+     "x": -44,
+     "z": 1840
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 820,
+     "x": 508,
+     "z": 2144
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 779,
+     "x": 492,
+     "z": 2104
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 520,
+      "hits": "kragmar_whispering_reedlands"
+     },
+     "north_+z": {
+      "distance": 352,
+      "hits": "kragmar_redtusk_savanna"
+     },
+     "south_-z": {
+      "distance": 428,
+      "hits": "kragmar_bannerbreak_mesa"
+     },
+     "west_-x": {
+      "distance": 480,
+      "hits": "kragmar_speargrass_reach"
+     }
+    }
+   },
+   "key": "gor_drazhak",
+   "name": "Gor Drazhak",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": 0,
+     "y": 67,
+     "z": 1532
+    },
+    {
+     "npc_id": "r20_orc_capital_envoy",
+     "npc_name": "Thorga Roadspeaker",
+     "quests": [
+      "r20_orc_capital_services",
+      "r20_orc_capital_stores",
+      "r20_orc_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "skull_hall_quest",
+     "tag": "door",
+     "x": -38,
+     "y": 62,
+     "z": 1521
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": 43,
+     "y": 62,
+     "z": 1509
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": 43,
+     "y": 62,
+     "z": 1516
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": 19,
+     "y": 62,
+     "z": 1478
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "bazaar_tannery/bazaar_tannery_vendor_tanner",
+     "vendor_kind": "tanner",
+     "x": -35,
+     "y": 59,
+     "z": 1399
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "bazaar_tannery/bazaar_tannery_station",
+     "tag": "tanning_rack",
+     "x": -29,
+     "y": 59,
+     "z": 1405
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bazaar_tannery/bazaar_tannery_leatherworker",
+     "x": -27,
+     "y": 59,
+     "z": 1403
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "bazaar_carver/bazaar_carver_station",
+     "tag": "carving_bench",
+     "x": -83,
+     "y": 60,
+     "z": 1463
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bazaar_carver/bazaar_carver_woodcarver",
+     "x": -81,
+     "y": 60,
+     "z": 1461
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "war_beast_pen/war_beast_pen_mount_1",
+     "tag": "1",
+     "x": 117,
+     "y": 61,
+     "z": 1521
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "war_beast_pen/war_beast_pen_mount_2",
+     "tag": "2",
+     "x": 117,
+     "y": 61,
+     "z": 1511
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "war_beast_pen/war_beast_pen_mount_3",
+     "tag": "3",
+     "x": 123,
+     "y": 61,
+     "z": 1521
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "war_beast_pen/war_beast_pen_mount_4",
+     "tag": "4",
+     "x": 123,
+     "y": 61,
+     "z": 1511
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "war_beast_pen/war_beast_pen_riding",
+     "x": 114,
+     "y": 61,
+     "z": 1516
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "bone_herb_house/bone_herb_house_station",
+     "tag": "brewing_stand",
+     "x": 58,
+     "y": 65,
+     "z": 1603
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bone_herb_house/bone_herb_house_alchemist",
+     "x": 56,
+     "y": 65,
+     "z": 1601
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "warren_clan_house/warren_clan_house_gate_idle",
+     "tag": "door",
+     "x": -61,
+     "y": 60,
+     "z": 1570
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "warren_cook_court/warren_cook_court_station",
+     "tag": "furnace",
+     "x": -89,
+     "y": 62,
+     "z": 1520
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "warren_cook_court/warren_cook_court_cooking",
+     "x": -87,
+     "y": 62,
+     "z": 1518
+    },
+    {
+     "npc_id": "r20_orc_capital_cook",
+     "npc_name": "Gorla Longladle",
+     "quests": [
+      "r20_orc_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "warren_cook_court/warren_cook_court_quest_cook",
+     "x": -87,
+     "y": 62,
+     "z": 1522
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "warren_weaver/warren_weaver_gate_idle",
+     "tag": "door",
+     "x": -28,
+     "y": 62,
+     "z": 1572
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "warren_weaver/warren_weaver_station",
+     "tag": "tailor_bench",
+     "x": -28,
+     "y": 62,
+     "z": 1564
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "warren_weaver/warren_weaver_tailor",
+     "x": -26,
+     "y": 62,
+     "z": 1566
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "bazaar_armourer/bazaar_armourer_vendor_armourer",
+     "vendor_kind": "armourer",
+     "x": 94,
+     "y": 62,
+     "z": 1499
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "bazaar_armourer/bazaar_armourer_station",
+     "tag": "jewellers_bench",
+     "x": 86,
+     "y": 62,
+     "z": 1492
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bazaar_armourer/bazaar_armourer_goldsmith",
+     "x": 88,
+     "y": 62,
+     "z": 1490
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "bazaar_armourer/bazaar_armourer_jewel",
+     "tag": "jewel",
+     "x": 85,
+     "y": 63,
+     "z": 1495
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "bazaar_smithy/bazaar_smithy_vendor_smith",
+     "vendor_kind": "smith",
+     "x": 57,
+     "y": 59,
+     "z": 1407
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "bazaar_smithy/bazaar_smithy_station",
+     "tag": "forge",
+     "x": 64,
+     "y": 59,
+     "z": 1401
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bazaar_smithy/bazaar_smithy_weaponsmith",
+     "x": 66,
+     "y": 59,
+     "z": 1403
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "bazaar_smithy/bazaar_smithy_armorsmith",
+     "x": 62,
+     "y": 59,
+     "z": 1403
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "bazaar_smithy/bazaar_smithy_weapon",
+     "tag": "weapon",
+     "x": 67,
+     "y": 60,
+     "z": 1399
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "bazaar_smithy/bazaar_smithy_armor",
+     "tag": "armor",
+     "x": 61,
+     "y": 60,
+     "z": 1399
+    },
+    {
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "bone_spirit_hall/bone_spirit_hall_quest",
+     "tag": "door",
+     "x": 43,
+     "y": 62,
+     "z": 1580
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "bazaar_butcher/bazaar_butcher_vendor_butcher",
+     "vendor_kind": "butcher",
+     "x": 138,
+     "y": 58,
+     "z": 1448
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "bazaar_brewhouse/bazaar_brewhouse_vendor_brewer",
+     "vendor_kind": "brewer",
+     "x": 34,
+     "y": 58,
+     "z": 1354
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 50,
+    "guard_post": 21,
+    "housing_manager": 1,
+    "idle": 167,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 3,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 7,
+    "waypoint": 1,
+    "work": 53
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "throng_home",
+ "track_order": 3
+}
