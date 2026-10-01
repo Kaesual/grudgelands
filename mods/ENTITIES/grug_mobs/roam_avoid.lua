@@ -14,10 +14,11 @@
 -- the mob, at the mob's own height. A point hits on a road, bridge or village
 -- (grug_core.world_feature_at, the world protection's analytic corridors and
 -- core boxes) or on a start town or capital city (grug_zones
--- hard_protection_kind_at "town"). Hostile places (bandit and Mirefolk camps,
--- clash sites and the other POI kinds, "camp"/"poi") do not push. With any hit
--- the mob walks away from the hits, the opposite of their mean direction,
--- with the wander leash's own nudge (patrol.lua walk_toward).
+-- hard_protection_kind_at "town"). POIs (including outposts and hostile
+-- camps: world_feature_at "poi" and "camp") do not push; the list is the
+-- ruling's, literally. With any hit the mob walks along the free ring
+-- direction closest to the opposite of the hits' mean direction (all hit:
+-- toward home), with the wander leash's own nudge (patrol.lua walk_toward).
 --
 -- Composition with the wander leash (Round 24 ruling 19, Round 28 ruling 4):
 -- aggro.lua roam_check calls the push only for a free roamer INSIDE its
@@ -41,7 +42,8 @@ for index = 1, PROBES do
 end
 grug_mobs.ROAM_AVOID_DIRS = DIRS
 
--- world_feature_at kinds that push; "camp" and "poi" are hostile places.
+-- world_feature_at kinds that push; "camp" and "poi" (outposts included) do
+-- not.
 local PUSH_FEATURE = {road = true, bridge = true, village = true}
 
 -- Whether one probe point lies on ground the push keeps mobs away from.
@@ -52,13 +54,20 @@ function grug_mobs.roam_avoid_hit(pos)
 	return grug_zones.hard_protection_kind_at(pos) == "town"
 end
 
--- The unit direction (x, z) to walk away from the hits, or nil when nothing
--- hit or every point hit. `hits[i]` belongs to DIRS[i]. Usually the opposite
--- of the hits' mean direction; when the hits cancel out (a mob standing ON a
--- straight road sees it ahead and behind, a crossroads in four directions)
--- the free direction with the most free neighbours, the first such in ring
--- order: off a straight road at a right angle, off a crossroads diagonally.
-function grug_mobs.roam_avoid_away(hits)
+-- The unit direction (x, z) to walk, or nil. `hits[i]` belongs to DIRS[i];
+-- `home_x, home_z` is the vector from the mob to its spawn point (nil without
+-- one). The mob always walks along a FREE ring direction, never toward a hit:
+--   * no hit: nil (no push);
+--   * every point hit: straight toward home (spawns never stand on protected
+--     ground, Round 28 ruling 3), nil without a home or standing on it;
+--   * otherwise the free direction closest to the opposite of the hits' mean
+--     direction; when the hits cancel out (a mob standing ON a straight road
+--     sees it ahead and behind, a crossroads in four directions) the free
+--     direction with the most free neighbours: off a straight road at a right
+--     angle, off a crossroads diagonally.
+-- Ties go to the free direction nearer home, then to ring order.
+local EPSILON = 1e-9
+function grug_mobs.roam_avoid_away(hits, home_x, home_z)
 	local sx, sz, count = 0, 0, 0
 	for index = 1, PROBES do
 		if hits[index] then
@@ -66,20 +75,33 @@ function grug_mobs.roam_avoid_away(hits)
 			count = count + 1
 		end
 	end
-	if count == 0 or count == PROBES then
+	if count == 0 then
 		return nil
 	end
-	local length = sqrt(sx * sx + sz * sz)
-	if length > 0.01 then
-		return -sx / length, -sz / length
+	local home_length = home_x and sqrt(home_x * home_x + home_z * home_z) or 0
+	if count == PROBES then
+		if home_length <= EPSILON then
+			return nil
+		end
+		return home_x / home_length, home_z / home_length
 	end
-	local best, best_free = nil, -1
+	local cancelled = sqrt(sx * sx + sz * sz) <= 0.01
+	local best, best_score, best_home = nil, -math.huge, -math.huge
 	for index = 1, PROBES do
 		if not hits[index] then
-			local free = (hits[(index - 2) % PROBES + 1] and 0 or 1) +
-				(hits[index % PROBES + 1] and 0 or 1)
-			if free > best_free then
-				best, best_free = index, free
+			local d = DIRS[index]
+			local score
+			if cancelled then
+				score = (hits[(index - 2) % PROBES + 1] and 0 or 1) +
+					(hits[index % PROBES + 1] and 0 or 1)
+			else
+				score = -(d[1] * sx + d[2] * sz)
+			end
+			local toward_home = home_length > EPSILON and
+				(d[1] * home_x + d[2] * home_z) / home_length or 0
+			if score > best_score + EPSILON or (score > best_score - EPSILON and
+					toward_home > best_home + EPSILON) then
+				best, best_score, best_home = index, score, toward_home
 			end
 		end
 	end
@@ -120,7 +142,9 @@ function grug_mobs.roam_avoid_tick(self, pos)
 			not grug_core.zone_authority_installed() then
 		return
 	end
-	local away_x, away_z = grug_mobs.roam_avoid_away(grug_mobs.roam_avoid_probe(pos, radius))
+	local home = self._grug_home
+	local away_x, away_z = grug_mobs.roam_avoid_away(grug_mobs.roam_avoid_probe(pos, radius),
+		home and home.x - pos.x, home and home.z - pos.z)
 	if away_x then
 		grug_mobs.walk_toward(self, pos.x + away_x * radius, pos.z + away_z * radius, pos)
 	end

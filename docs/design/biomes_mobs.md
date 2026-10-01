@@ -403,10 +403,11 @@ final naming in items_crafting.md. All aggressive mobs:
 no distance give-up, no soft de-aggro), while camp members, guards, rares and
 other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
 leash. Idle, a free-roaming mob wanders within 32 nodes of its spawn point
-and roams at a calm walk (Round 24); an idle aggressive one also walks away
-from roads, bridges, villages, start towns and capital cities it sees within
-its view range (Round 28 ruling 2, `combat_stats.md` "Road and town push"),
-never during a fight.
+and roams at a calm walk (Round 24); an idle aggressive one also probes
+every 4–5 seconds eight points on a ring at its view range and walks away
+from roads, bridges, villages, start towns and capital cities among them
+(Round 28 ruling 2, `combat_stats.md` "Road and town push"), never during a
+fight.
 
 **Natural spawn and unload distances:** an ordinary `mobs:spawn` row refuses
 positions within **24 nodes** of any connected player. An unload-eligible mob

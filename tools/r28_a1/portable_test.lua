@@ -110,6 +110,7 @@ local world = {authority = true, feature_calls = 0}
 local function feature(pos)
 	world.feature_calls = world.feature_calls + 1
 	local x, z = floor(pos.x + 0.5), floor(pos.z + 0.5)
+	if world.everywhere then return "road" end
 	if world.road and z >= ROAD_Z and z <= ROAD_Z + 7 then return world.road end
 	if x >= 100 and x <= 140 and z >= -20 and z <= 20 then return "village" end
 	if x >= 200 and x <= 240 and z >= -20 and z <= 20 then return "camp" end
@@ -152,41 +153,71 @@ local function hits_of(list)
 end
 local function near(ax, az, bx, bz) return abs(ax - bx) < 1e-9 and abs(az - bz) < 1e-9 end
 check(away(hits_of({})) == nil, "no hit: no push")
-check(away(hits_of({1, 2, 3, 4, 5, 6, 7, 8})) == nil, "surrounded: no push")
-local x, z = away(hits_of({1}))
+check(away(hits_of({}), 5, 0) == nil, "no hit, with a home: no push")
+local ALL = {1, 2, 3, 4, 5, 6, 7, 8}
+check(away(hits_of(ALL)) == nil, "surrounded without a home: no push")
+check(away(hits_of(ALL), 0, 0) == nil, "surrounded standing on the home: no push")
+local x, z = away(hits_of(ALL), 3, -4)
+check(near(x, z, 0.6, -0.8), "surrounded: straight toward home")
+x, z = away(hits_of({1}))
 check(near(x, z, -1, 0), "one hit at +x: walk -x")
 x, z = away(hits_of({3}))
 check(near(x, z, 0, -1), "one hit at +z: walk -z")
 x, z = away(hits_of({2, 3, 4}))
 check(near(x, z, 0, -1), "a road ahead at +z (three points): walk -z")
 x, z = away(hits_of({1, 2}))
-local a = math.atan2(z, x)
-check(abs(a + (math.pi - math.pi / 8)) < 1e-9, "hits at 0 and 45 degrees: walk at 202.5 degrees")
+check(near(x, z, D[5][1], D[5][2]), "hits at 0 and 45 degrees: the tie at 202.5 in ring order")
+x, z = away(hits_of({1, 2}), -1, -1)
+check(near(x, z, D[6][1], D[6][2]), "hits at 0 and 45 degrees: the tie toward home")
 x, z = away(hits_of({1, 5}))
 check(near(x, z, D[3][1], D[3][2]), "on a straight road along x: off it at a right angle")
+x, z = away(hits_of({1, 5}), 0, -10)
+check(near(x, z, D[7][1], D[7][2]), "on a straight road: off it on the home side")
 x, z = away(hits_of({3, 7}))
 check(near(x, z, D[1][1], D[1][2]), "between two roads along x: along them")
 x, z = away(hits_of({1, 3, 5, 7}))
 check(near(x, z, D[2][1], D[2][2]), "on a crossroads: off it diagonally")
+x, z = away(hits_of({1, 3, 5, 7}), -2, -3)
+check(near(x, z, D[6][1], D[6][2]), "on a crossroads: the diagonal toward home")
+-- Every hit pattern, without a home and with homes in several directions:
+-- a free direction, the one closest to the opposite of the mean (by free
+-- neighbours where the hits cancel), ties to the one nearest home, then ring
+-- order.
+local HOMES = {false, {1, 0.3}, {-0.2, -1}, {-1, 1}, {0, 0}}
 for mask = 1, 254 do
 	local list = {}
 	for i = 1, 8 do if floor(mask / 2 ^ (i - 1)) % 2 == 1 then list[#list + 1] = i end end
 	local h = hits_of(list)
-	x, z = away(h)
-	check(x ~= nil and abs(x * x + z * z - 1) < 1e-9, "mask " .. mask .. " gives a unit direction")
-	-- opposite of the hits' mean direction where it has one
 	local sx, sz = 0, 0
 	for _, i in ipairs(list) do sx, sz = sx + D[i][1], sz + D[i][2] end
-	if sqrt(sx * sx + sz * sz) > 0.01 then
-		check(abs(x * sx + z * sz + sqrt(sx * sx + sz * sz)) < 1e-9,
-			"mask " .. mask .. " walks opposite the mean")
-	else
-		check(not h[1] or x ~= D[1][1] or z ~= D[1][2], "mask " .. mask .. " free direction")
-		local free_dir = false
-		for i = 1, 8 do
-			if not h[i] and near(x, z, D[i][1], D[i][2]) then free_dir = true end
+	local cancelled = sqrt(sx * sx + sz * sz) <= 0.01
+	local function score(i)
+		if cancelled then
+			return (h[(i - 2) % 8 + 1] and 0 or 1) + (h[i % 8 + 1] and 0 or 1)
 		end
-		check(free_dir, "mask " .. mask .. " cancelling hits pick a free direction")
+		return -(D[i][1] * sx + D[i][2] * sz)
+	end
+	local top = -math.huge
+	for i = 1, 8 do if not h[i] then top = math.max(top, score(i)) end end
+	for _, home in ipairs(HOMES) do
+		local hx, hz = home and home[1] or nil, home and home[2] or nil
+		x, z = away(h, hx, hz)
+		local label = ("mask %d home %s"):format(mask, home and (hx .. "," .. hz) or "none")
+		local chosen
+		for i = 1, 8 do if near(x or 9, z or 9, D[i][1], D[i][2]) then chosen = i end end
+		check(chosen ~= nil and not h[chosen], label .. ": a free ring direction")
+		check(abs(score(chosen) - top) < 1e-9, label .. ": the best free direction")
+		-- among the equally good ones: nearest home, then the first in ring order
+		local hl = home and sqrt(hx * hx + hz * hz) or 0
+		local function toward(i) return hl > 0 and (D[i][1] * hx + D[i][2] * hz) / hl or 0 end
+		for i = 1, 8 do
+			if not h[i] and i ~= chosen and abs(score(i) - top) < 1e-9 then
+				check(toward(i) < toward(chosen) + 1e-9, label .. ": nearer home than " .. i)
+				if abs(toward(i) - toward(chosen)) < 1e-9 then
+					check(i > chosen, label .. ": ring order before " .. i)
+				end
+			end
+		end
 	end
 end
 
@@ -264,6 +295,22 @@ do
 	end
 	check(firsts[1] and firsts[5] and not firsts[6], "first probe spread over slots 1..5")
 end
+-- surrounded (every ring point hits): the push walks toward home
+world.everywhere = true
+do
+	local m = mob({pos = {x = 10, y = 5, z = 0}})
+	local w = run(m, 12)
+	check(#w >= 2, "surrounded: pushed")
+	for _, walk in ipairs(w) do
+		check(walk.x < 10 and abs(walk.z) < 1e-9, "surrounded: toward home")
+	end
+	m = mob()
+	check(#run(m, 12) == 0, "surrounded at the home: no push")
+	m = mob({pos = {x = 10, y = 5, z = 0}})
+	m._grug_home = nil
+	check(#run(m, 12) == 0, "surrounded without a home: no push")
+end
+world.everywhere = nil
 -- far from any road: probes run but nothing pushes
 world.road = nil
 do
