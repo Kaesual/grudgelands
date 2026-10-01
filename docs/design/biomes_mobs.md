@@ -1291,3 +1291,80 @@ liquid, and not cave pools. They use the existing critter spawn machinery:
 interval 30s, chance 1/4000, local active-object cap 2, no fixed height cap
 (y -30 to the 600 flight ceiling; Round 22 Phase 5). They add ambient
 movement, not a fishing-resource system.
+
+## Round 28 sub-types and loot by band
+
+Rulings 35 and 36 (`docs/planning/round28-questing-leveling-plan.md`); data
+formats in the design frame §4.1–§4.3. All of it is data in
+`mods/ENTITIES/grug_mobs/data/` (`subtypes.json`, `tints.json`,
+`items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
+mob file. A missing or empty file means no data; the shipped files are empty
+until the content lanes fill them, and without data every mob behaves as
+before.
+
+**Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
+`base` registration's original definition: same mesh, animations, verbs,
+speeds and senses, and the base's static drops as the fallback. A role must
+not collide with an existing entity name, and the base must be an ambient
+mob (not a sub-type, guard, king, dragon or other fixed-level actor); a
+violation stops the load.
+
+- **Size:** `size` multiplies `visual_size` and the collision and selection
+  boxes together (a rotated selection box stays rotated). An elite sub-type
+  then gets the elite ×1.4 on top, like any elite.
+- **Disposition:** `neutral`, `aggressive` or `critter`, added to the
+  disposition table under the new name (an existing name is an error); the
+  disposition forces its fields as for every mob (neutral: no acquisition,
+  no group alert; critter: the critter tier).
+- **Tier, name and leader are authored.** `tier` (`normal`/`elite`) is
+  fixed: no spawn roll of the base family may promote a sub-type (the
+  1-in-10 Elder Bear and Silverback rolls only apply to the base names), and
+  the display name is put back if a roll renamed it. `leader: true` marks a
+  named leader (normal tier in 1–30).
+- **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
+  step (the floor is also the fallback where the level field has no value);
+  spawn areas narrow it further.
+- **Zone name and tint:** `display_by_zone` and `tint_by_zone` are read from
+  the zone of the spawn position on the first activation; the zone is
+  persisted with the mob. A tint id from `tints.json` is either a baked
+  texture that replaces the body texture (every material slot carrying the
+  mesh's first non-blank texture; blank overlay and held-item slots keep
+  theirs) or a texture modifier appended to it. Elite and rare tints layer
+  on top. The entity name stays the role, so quest kill matching, density
+  weights and spawn palettes stay per role.
+
+**Families.** A sub-type belongs to its `family`; an existing mob's family is
+its own role (`zombie`, `giant_rat`, `boar` …), so a design puts sub-types
+next to an existing mob by naming that role as the family. Group alert, the
+pack call and the camp swarm answer the same entity name as before and, in
+addition, mobs of the same family when both take part in group alerts
+(`group_attack`). Neutral mobs never do, so a neutral sub-type is a single
+pull and never pulls its aggressive relatives (`combat_stats.md` §4).
+
+**Loot items.** `items.json` entries of kind `signature` and `quest` whose id
+is not registered yet become craft items (`grug_mobs:` ids; an id in another
+mod's namespace must be registered by that mod). Description = the name plus
+the flavour line; the inventory image is a tinted placeholder until the art
+lands, and the `icon` brief stays on the item as `_grug_icon_brief`.
+Signature items are mob materials (`grug_material`). `generic` items are
+existing ones; `reagent` items belong to `grug_professions`.
+
+**Loot by band.** A mob's drop family is its sub-type's `drops` (default its
+family), else its role. The band is `floor((level − 1) / 10) + 1` (1–10 → 1,
+… 51–60 → 6). Where `drops.json` has rows for the family and band, those rows
+replace the mob's static drops (chance 1 in N, `min`/`max`); a leader (the
+sub-type's `leader` flag or a placed leader's `_grug_leader`) adds the
+family's `leader_bonus`. A family without a table, or without rows for that
+band, keeps the definition's static drops. The player-tag rule, the
+profession drop hooks and quality loot apply unchanged; a table can give
+drops to a mob that has no static drops.
+
+**Quest-only drops** (ruling 41) use
+`grug_mobs.register_participant_drop_hook(fn)`: once per kill with at least
+one participant eligible for kill credit, `fn(self, names, death_pos)`
+receives the sorted names of the players the quest kill credit receives
+(online, within 40 m, not of the mob's own faction) and gives items itself.
+
+Code seams for other lanes: `grug_mobs.family_of(name_or_role)`,
+`grug_mobs.subtype(name_or_role)` (the parsed record or nil),
+`grug_mobs.level_band(level)`, `grug_mobs.read_data_json(file)`.

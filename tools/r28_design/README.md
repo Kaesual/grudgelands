@@ -145,7 +145,8 @@ python3 tools/r28_design/ledger.py \
   (`count × M(min(mob level, player level + 5))`, averaged over the area's
   levels, gray rule, elite ×4), kills behind item requests for mob drops
   (quest-only drops: `count × chance`; family drops from `catalog/drops.json`
-  by band, else today's entity drops; drops from earlier quest kills are used
+  by band for the drop family — a sub-type's `drops`, else an existing mob's
+  own role — else today's entity drops; drops from earlier quest kills are used
   first), and gathering behind item requests (ores/gems/fish; bars and alloys
   resolve to their ores; ore 0.10, gem 0.20, fish 0.33 KE at `10 × tier`).
   Crafted items, logs and talk objectives give no XP. When the player is below
