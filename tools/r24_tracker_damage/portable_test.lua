@@ -217,11 +217,12 @@ grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end}
 grug_classes = {get_race = function() return "human" end}
 grug_xp = {get_level = function() return 60 end}
-grug_mobs = {register_on_eligible_kill = function() end}
+grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_money = {}
 grug_quests = {}
 dofile("mods/PLAYER/grug_quests/registry.lua")
 dofile("mods/PLAYER/grug_quests/state.lua")
+dofile("mods/PLAYER/grug_quests/labels.lua")
 dofile("mods/PLAYER/grug_quests/hud.lua")
 local Q = grug_quests
 eq(Q.MAX_TRACKED, 10, "tracker cap constant")

@@ -1,0 +1,100 @@
+{
+  "zone": "kragmar_totemwater_reach",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_047",
+      "anchor": "r20_anchor_047",
+      "givers": [
+        {
+          "npc": "r20_anchor_047_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_047_01",
+      "line": "legacy",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "Rope Rack Timbers",
+      "text": "Totemwater's rope rack needs sound crosspieces before the next river crossing. Bring eight junglewood planks for the covered rack; the river path must stay open beside it. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:junglewood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_047_02",
+      "line": "legacy",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "Jaws at the River Path",
+      "text": "Crocodiles wait on Totemwater Reach's muddy banks where carriers leave the path. Defeat three and give the crossing crew room to work.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:crocodile"
+          ],
+          "zone": "kragmar_totemwater_reach",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_047_03",
+      "line": "legacy",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_047_02"
+      ],
+      "faction": "throng",
+      "title": "Mud Around the Marker",
+      "text": "With the banks clearer, the crew can see bog ooze collecting below the route marker. Break up four in Totemwater Reach's muddy ground before the next load comes through.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bog_ooze"
+          ],
+          "zone": "kragmar_totemwater_reach",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    }
+  ]
+}

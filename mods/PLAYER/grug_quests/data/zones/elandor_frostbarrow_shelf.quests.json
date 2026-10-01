@@ -1,0 +1,332 @@
+{
+  "zone": "elandor_frostbarrow_shelf",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_014",
+      "anchor": "r20_anchor_014",
+      "givers": [
+        {
+          "npc": "r20_anchor_014_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_026",
+      "anchor": "r20_anchor_026",
+      "givers": [
+        {
+          "npc": "r20_anchor_026_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_061",
+      "anchor": "r20_anchor_061",
+      "givers": [
+        {
+          "npc": "r20_anchor_061_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_014_01",
+      "line": "legacy",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Cairn Mortar",
+      "text": "The cairn beside Tarnwatch's bent southern lane has shed its mortar into the caravan track. Bring ten sound cobble blocks for its base; the smith can fit them while the sleds are unloaded. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_014_02",
+      "line": "legacy",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Hooves Above the Sleds",
+      "text": "Ibex come down the conifer slopes by day and knock the loaded sleds against Tarnwatch's hall. Clear four animals from Frostbarrow Shelf while the masons reset the cairn.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:ibex"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_014_03",
+      "line": "legacy",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_014_02"
+      ],
+      "faction": "accord",
+      "title": "The Bell After Dark",
+      "text": "With the sled lane open, Edda can hear raiders signalling beyond the cairn after dark. Defeat four goblin raiders in Frostbarrow Shelf before their night party learns where the caravans sleep.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:goblin_raider"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_026_01",
+      "line": "legacy",
+      "giver": "r20_anchor_026_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Fuel Under Cover",
+      "text": "Rimebell keeps its signal fuel under a roof because wet coal serves no watch. Bring six coal lumps for that dry store while the lookout checks the shelf road. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_026_02",
+      "line": "legacy",
+      "giver": "r20_anchor_026_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Sled Track Pack",
+      "text": "Snow leopards hunt Frostbarrow Shelf's gravel and snowy patches at night. Defeat three near the sled routes before another caravan loses its rear guard.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:snow_leopard"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_026_03",
+      "line": "legacy",
+      "giver": "r20_anchor_026_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_026_02"
+      ],
+      "faction": "accord",
+      "title": "Notches on the Signal Pole",
+      "text": "After the cats are driven back, the watch can read the new notches on its signal pole. They match a goblin slinger band's night signals. Defeat four slingers in Frostbarrow Shelf.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:goblin_slinger"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_061_01",
+      "line": "legacy",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "A Handle for the Cutting",
+      "text": "Tarncut's spare pick has lost its working head, and the sorting crew needs a replacement. Bring one ordinary stone pick, made or traded; no proof of mining is required. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_061_02",
+      "line": "legacy",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Rams on the Haul Lane",
+      "text": "Mountain rams wander Frostbarrow Shelf's rocky ground by day and block the mine's haul approaches. Clear four while the crew sorts the next load.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:mountain_ram"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_061_03",
+      "line": "legacy",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_061_02"
+      ],
+      "faction": "accord",
+      "title": "The Cold Shift",
+      "text": "The daytime lane is open, but snow leopards hunt the shelf's gravel and snow after dusk. Defeat three during the cold shift so the next sled can leave safely.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:snow_leopard"
+          ],
+          "zone": "elandor_frostbarrow_shelf",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_02",
+      "line": "legacy",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_061_host",
+      "min_level": 24,
+      "level": 24,
+      "requires": [],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Word for Kelda Screesort",
+      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Tarncut Mine in Frostbarrow Shelf and speak with Kelda Screesort. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Kelda Screesort there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_061_host"
+        }
+      ],
+      "rewards": {
+        "xp": 705,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_03",
+      "line": "legacy",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Word for Borin Splitbolt",
+      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Splitbolt Station in Stormvault Heights and speak with Borin Splitbolt. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Borin Splitbolt there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "xp": 915,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

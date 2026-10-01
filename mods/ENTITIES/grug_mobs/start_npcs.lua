@@ -287,7 +287,17 @@ end)
 grug_mobs.register_start_socket_role("work", function(socket, start)
 	return "grug_mobs:villager_" .. start.race_id
 end)
+-- A quest giver added at a free quest socket by a zone quest file (Round 28,
+-- grug_quests loader) may name its own race; every other quest shell is of
+-- the settlement's race. grug_quests registers its NPCs at load, before this
+-- resolver runs from mods-loaded placement.
 grug_mobs.register_start_socket_role("quest", function(socket, start)
+	local quests = rawget(_G, "grug_quests")
+	local npc_id = quests and quests.npc_by_socket[start.key .. "/" .. socket.id]
+	local race = npc_id and quests.registered_npcs[npc_id].race
+	if race and core.registered_entities["grug_mobs:elder_" .. race] then
+		return "grug_mobs:elder_" .. race
+	end
 	return "grug_mobs:elder_" .. start.race_id
 end)
 grug_mobs.register_start_socket_role("king", function(socket, start)

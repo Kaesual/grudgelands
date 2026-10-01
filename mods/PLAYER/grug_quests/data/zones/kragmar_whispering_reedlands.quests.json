@@ -1,0 +1,332 @@
+{
+  "zone": "kragmar_whispering_reedlands",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_024",
+      "anchor": "r20_anchor_024",
+      "givers": [
+        {
+          "npc": "r20_anchor_024_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_046",
+      "anchor": "r20_anchor_046",
+      "givers": [
+        {
+          "npc": "r20_anchor_046_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_066",
+      "anchor": "r20_anchor_066",
+      "givers": [
+        {
+          "npc": "r20_anchor_066_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_024_01",
+      "line": "legacy",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "A Landing That Holds",
+      "text": "Whisperreed's landing needs crosspieces strong enough to keep laden travellers above the mud. Bring eight junglewood planks to the sheltered landing workshop; this is a repair delivery, not a boatbuilding lesson. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:junglewood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_024_02",
+      "line": "legacy",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "Tapirs on the Dry Path",
+      "text": "Tapirs crowd the dry paths through Whispering Reedlands by day. Clear four so carriers can bring their loads to Whisperreed Landing without stepping into the pools.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:tapir"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_024_03",
+      "line": "legacy",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_024_02"
+      ],
+      "faction": "throng",
+      "title": "Cold Lights in the Reeds",
+      "text": "The cleared paths are drawing travellers after dusk, when false lights gather over the reeds. Disperse three wisps in Whispering Reedlands at night and return to Taleko.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_046_01",
+      "line": "legacy",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "A Dry Signal Shelf",
+      "text": "Reedvoice's signal shelf has sunk below the driest line on its posts. Bring eight junglewood planks to raise the shelf inside the shelter without blocking the reed-path entrance. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:junglewood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_046_02",
+      "line": "legacy",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "Cats by the Reed Pipes",
+      "text": "Jungle lynx watch Whispering Reedlands' forest margins by day and keep the signal carriers from their paths. Defeat four, then return to Reedvoice Station.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:jungle_lynx"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_046_03",
+      "line": "legacy",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_046_02"
+      ],
+      "faction": "throng",
+      "title": "The False Answering Lights",
+      "text": "The carriers can travel by day, but lights in the wet reeds mimic the station's signals after dusk. Disperse three wisps in Whispering Reedlands at night.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_066_01",
+      "line": "legacy",
+      "giver": "r20_anchor_066_host",
+      "turnin": "r20_anchor_066_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "Timbers Kept Above Water",
+      "text": "Reedstone's timber stacks must stay above the wet ground if the quarry is to remain workable. Bring eight junglewood planks for the raised supports beside its shelter. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:junglewood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_066_02",
+      "line": "legacy",
+      "giver": "r20_anchor_066_host",
+      "turnin": "r20_anchor_066_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "title": "The Quarry Pool Moves",
+      "text": "Bog ooze collects on Whispering Reedlands' muddy ground around the quarry approaches. Break up four so the crew can reach its stored tools.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bog_ooze"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_066_03",
+      "line": "legacy",
+      "giver": "r20_anchor_066_host",
+      "turnin": "r20_anchor_066_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_066_02"
+      ],
+      "faction": "throng",
+      "title": "Jaws Along the Haul Path",
+      "text": "Once the ooze is cleared, the haulers can use the bank path again. Defeat three crocodiles on Whispering Reedlands' muddy banks before the next load leaves Reedstone Cut.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:crocodile"
+          ],
+          "zone": "kragmar_whispering_reedlands",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_troll_journey_02",
+      "line": "legacy",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_066_host",
+      "min_level": 24,
+      "level": 24,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Word for Zali Runoff",
+      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Reedstone Cut in Whispering Reedlands and speak with Zali Runoff. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Zali Runoff there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_066_host"
+        }
+      ],
+      "rewards": {
+        "xp": 705,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_troll_journey_03",
+      "line": "legacy",
+      "giver": "r20_anchor_066_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "race": "troll",
+      "title": "Word for Rumela Stormstep",
+      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Thunderstep Watch in Thunderroot Wilds and speak with Rumela Stormstep. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Rumela Stormstep there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_048_host"
+        }
+      ],
+      "rewards": {
+        "xp": 915,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

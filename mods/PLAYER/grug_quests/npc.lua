@@ -23,33 +23,26 @@ end
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
-	Q.credit_conversation(player, id)
 	local rows = Q.npc_quests(player, id)
 	if #rows == 0 then return false end
 	local esc, entries = core.formspec_escape, {}
-	for _, row in ipairs(rows) do entries[#entries + 1] = esc(row.title .. " (" .. row.status .. ")") end
+	for _, row in ipairs(rows) do
+		entries[#entries + 1] = esc(row.title .. (row.repeatable and " [Repeatable]" or "") ..
+			" (" .. row.status .. ")")
+	end
 	selected = math.min(math.max(tonumber(selected) or 1, 1), #rows)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
 	local detail = def.description .. "\n\n"
-	for _, objective in ipairs(def.objectives) do
-		local mob_names = {}
-		for _, name in ipairs(objective.mobs or {}) do
-			local registered = core.registered_entities[name] or {}
-			mob_names[#mob_names + 1] = registered.description or name
-		end
-		local subject = objective.description
-		if not subject then
-			if objective.type == "item" then
-				subject = "Bring " .. grug_core.item_name(objective.item)
-			elseif objective.type == "talk" then
-				local destination = Q.registered_npcs[objective.npc]
-				subject = "Speak with " .. (destination and destination.title or objective.npc)
-			else subject = "Defeat " .. table.concat(mob_names, ", ") end
-		end
-		detail = detail .. subject .. " × " .. objective.count .. "\n"
+	if def.repeatable then
+		detail = detail .. ("Repeatable (every %s)\n"):format(Q.cooldown_text(def.repeatable.cooldown))
 	end
-	detail = detail .. "\nRewards: " .. def.rewards.xp .. " XP, " .. grug_money.format(def.rewards.copper)
+	-- One line per objective (ruling 41).
+	for _, objective in ipairs(def.objectives) do
+		detail = detail .. (objective.description or Q.objective_action(objective)) ..
+			" × " .. objective.count .. "\n"
+	end
+	detail = detail .. "\nRewards: " .. Q.reward_xp(def) .. " XP, " .. grug_money.format(def.rewards.copper)
 	for _, item in ipairs(def.rewards.items) do
 		local stack = ItemStack(item)
 		detail = detail .. "\n" .. grug_core.item_name(stack) .. " × " .. stack:get_count()

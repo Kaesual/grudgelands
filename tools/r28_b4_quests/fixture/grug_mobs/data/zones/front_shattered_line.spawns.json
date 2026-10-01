@@ -1,0 +1,10 @@
+{
+  "zone": "front_shattered_line",
+  "areas": [
+    {"id": "ghoul_field", "anchor": "clash_1", "shape": {"kind": "circle", "r": 60},
+     "hosts": {"biomes": ["any"]}, "clock": "night", "levels": [42, 46],
+     "species": [{"role": "front_ghoul", "weight": 1}]},
+    {"id": "fallback", "anchor": "zone", "shape": {"kind": "zone"}, "hosts": {"biomes": ["any"]},
+     "clock": "both", "levels": [41, 50], "species": [{"role": "front_ghoul", "weight": 1}], "fallback": true}
+  ]
+}

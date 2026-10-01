@@ -1,0 +1,309 @@
+{
+  "zone": "kragmar_mournfen",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "mournfen_village",
+      "anchor": "mournfen_village",
+      "givers": [
+        {
+          "npc": "r14_undead_steward",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r15_undead_local",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mournfen_outpost",
+      "anchor": "mournfen_outpost",
+      "givers": [
+        {
+          "npc": "r14_undead_scout",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mournfen_bandit_camp",
+      "anchor": "mournfen_bandit_camp",
+      "givers": [
+        {
+          "npc": "r14_undead_captive",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_undead_07_mud_that_moves",
+      "line": "legacy",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_undead_06_tusks_along_the_fen_road"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Mud That Moves",
+      "text": "Bog ooze is choking the village sluice. Break it apart before the water backs into the paths.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bog_ooze"
+          ],
+          "zone": "kragmar_mournfen",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_08_clear_the_sluice",
+      "line": "legacy",
+      "giver": "r14_undead_scout",
+      "turnin": "r14_undead_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_undead_07_mud_that_moves"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Clear the Sluice",
+      "text": "Crocodiles have claimed the outpost channel. Clear the bank for Sera's patrol.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:crocodile"
+          ],
+          "zone": "kragmar_mournfen",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 525,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
+      "line": "legacy",
+      "giver": "r14_undead_scout",
+      "turnin": "r14_undead_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_undead_08_clear_the_sluice"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Fire That the Fen Cannot Drown",
+      "text": "The bandits carried cloth hot without flame, marked by a hooked sun. Defeat them and let Hollis explain what the fen could not cool. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit",
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "kragmar_mournfen",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 805,
+        "copper": 80,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_01",
+      "line": "legacy",
+      "giver": "r15_undead_local",
+      "turnin": "r15_undead_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_undead_06_tusks_along_the_fen_road"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Gel for the Wax Store",
+      "text": "The wax keeper uses local slime gel to seal jars against the fen damp. Bring enough for the raised store shelves.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:slime_gel",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_02",
+      "line": "legacy",
+      "giver": "r15_undead_local",
+      "turnin": "r15_undead_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_undead_06_tusks_along_the_fen_road"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Furrows by the Memorial",
+      "text": "Plague boars root against the stones of the tended memorial. Drive them back into the dead furrows.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:plague_boar"
+          ],
+          "zone": "kragmar_mournfen",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_03",
+      "line": "legacy",
+      "giver": "r14_undead_scout",
+      "turnin": "r14_undead_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_undead_07_mud_that_moves"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Teeth from the Watch Channel",
+      "text": "Bring two ordinary crocodile teeth from Mournfen's muddy banks while helping Sera clear the sluice. They will mark the safest side of the watch channel without another counted crocodile hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:croc_tooth",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 315,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_04",
+      "line": "legacy",
+      "giver": "r14_undead_scout",
+      "turnin": "r14_undead_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_undead_07_mud_that_moves"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "The Sheltered Niche",
+      "text": "Bog ooze pools beneath the observation niche and eats at its supports. Break up the nearest masses.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bog_ooze"
+          ],
+          "zone": "kragmar_mournfen",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 420,
+        "copper": 55,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_05",
+      "line": "legacy",
+      "giver": "r14_undead_captive",
+      "turnin": "r14_undead_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_undead_08_clear_the_sluice"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Names on the Purse Tags",
+      "text": "Two stolen purses may still carry the names scratched into their bone tags. Bring them to the captive so the missing carriers can be entered in the camp account. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:stolen_purse",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 460,
+        "copper": 65,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_undead_local_06",
+      "line": "legacy",
+      "giver": "r14_undead_captive",
+      "turnin": "r14_undead_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_undead_08_clear_the_sluice"
+      ],
+      "faction": "throng",
+      "race": "undead",
+      "title": "Dry Cloth from a Wet Ruin",
+      "text": "The inner-band raiders carry linen that stayed dry inside the ruined enclosure. Bring enough for Hollis to wrap the heat-marked scrap.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 575,
+        "copper": 75,
+        "items": []
+      }
+    }
+  ]
+}

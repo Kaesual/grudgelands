@@ -1,0 +1,308 @@
+{
+  "zone": "elandor_copperfell_foothills",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "copperfell_village",
+      "anchor": "copperfell_village",
+      "givers": [
+        {
+          "npc": "r14_dwarf_steward",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r15_dwarf_local",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copperfell_outpost",
+      "anchor": "copperfell_outpost",
+      "givers": [
+        {
+          "npc": "r14_dwarf_scout",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "copperfell_bandit_camp",
+      "anchor": "copperfell_bandit_camp",
+      "givers": [
+        {
+          "npc": "r14_dwarf_captive",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_dwarf_07_a_ledger_in_the_scrub",
+      "line": "legacy",
+      "giver": "r14_dwarf_steward",
+      "turnin": "r14_dwarf_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_dwarf_06_loose_stone_on_copper_road"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "A Ledger in the Scrub",
+      "text": "Foxes scattered an ore ledger in the scrub. Clear the den so Orrik can recover the pages.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:fox"
+          ],
+          "zone": "elandor_copperfell_foothills",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_dwarf_08_hold_the_marker_stones",
+      "line": "legacy",
+      "giver": "r14_dwarf_scout",
+      "turnin": "r14_dwarf_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_dwarf_07_a_ledger_in_the_scrub"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Hold the Marker Stones",
+      "text": "Goblins use Copperfell's marker stones to signal across the pass at night. Break their signal party so Mara can guide the next ore wagon. Look for this threat after nightfall in the named regional zone.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:goblin_raider",
+            "grug_mobs:goblin_slinger",
+            "grug_mobs:goblin_hound"
+          ],
+          "zone": "elandor_copperfell_foothills",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 525,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_dwarf_09_ash_under_the_nails",
+      "line": "legacy",
+      "giver": "r14_dwarf_scout",
+      "turnin": "r14_dwarf_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_dwarf_08_hold_the_marker_stones"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Ash Under the Nails",
+      "text": "The bandits stole ore tallies and marked them with a hooked sun. Defeat the camp; Tovin waits inside with what he learned. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit",
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "elandor_copperfell_foothills",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 805,
+        "copper": 80,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_01",
+      "line": "legacy",
+      "giver": "r15_dwarf_local",
+      "turnin": "r15_dwarf_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_dwarf_06_loose_stone_on_copper_road"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Stone for the Workyard",
+      "text": "The workshop needs ordinary cobble to reset its cartway after the last rockfall. Bring sound blocks from the local slopes.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_02",
+      "line": "legacy",
+      "giver": "r15_dwarf_local",
+      "turnin": "r15_dwarf_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_dwarf_06_loose_stone_on_copper_road"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Fangs in the Tool Baskets",
+      "text": "Foxes leave fangs among the scattered tool baskets. Bring two ordinary fox fangs from the Copperfell hunt so Dagna can show the workers which animals caused the damage.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:fang",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_03",
+      "line": "legacy",
+      "giver": "r14_dwarf_scout",
+      "turnin": "r14_dwarf_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_dwarf_07_a_ledger_in_the_scrub"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Scraps from the Signal Path",
+      "text": "The goblins on Copperfell's night signal path carry linen scraps. Bring two while helping Mara hold the marker stones; Mara can bind the recovered signal poles with the scraps.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_scrap",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 315,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_04",
+      "line": "legacy",
+      "giver": "r14_dwarf_scout",
+      "turnin": "r14_dwarf_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_dwarf_07_a_ledger_in_the_scrub"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Sure Feet, Loose Stones",
+      "text": "Ibex crowd the shelf beside the guard shelter and send stones through its stores. Thin the herd around the post.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:ibex"
+          ],
+          "zone": "elandor_copperfell_foothills",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 420,
+        "copper": 55,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_05",
+      "line": "legacy",
+      "giver": "r14_dwarf_captive",
+      "turnin": "r14_dwarf_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_dwarf_08_hold_the_marker_stones"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "The Ore Carriers' Purses",
+      "text": "Tovin recognises the ore carriers' tally knots on the stolen purses. Recover two from the camp so he can identify whose winter wages went missing. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:stolen_purse",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 460,
+        "copper": 65,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_dwarf_local_06",
+      "line": "legacy",
+      "giver": "r14_dwarf_captive",
+      "turnin": "r14_dwarf_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_dwarf_08_hold_the_marker_stones"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Cloth Around the Stolen Tools",
+      "text": "The raiders wrapped the stolen tools in their own linen. Bring some of that ordinary camp cloth so Tovin can identify the bundles.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 575,
+        "copper": 75,
+        "items": []
+      }
+    }
+  ]
+}

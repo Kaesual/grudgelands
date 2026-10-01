@@ -1,0 +1,194 @@
+{
+  "zone": "elandor_stormvault_heights",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_027",
+      "anchor": "r20_anchor_027",
+      "givers": [
+        {
+          "npc": "r20_anchor_027_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_028",
+      "anchor": "r20_anchor_028",
+      "givers": [
+        {
+          "npc": "r20_anchor_028_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_027_01",
+      "line": "legacy",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "Shutters Against the Storm",
+      "text": "The wind has pulled Splitbolt's shutters off their braces. Bring eight pine planks for the storm-facing shelter; the snowy pines of Stormvault Heights provide suitable timber. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:pine_wood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_027_02",
+      "line": "legacy",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Frost That Walks",
+      "text": "Frost strays stand on Stormvault Heights' gravel and snow after dark, loosing arrows across the ascent. Defeat four so the watch can reach its storm markers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:frost_stray"
+          ],
+          "zone": "elandor_stormvault_heights",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_027_03",
+      "line": "legacy",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 33,
+      "level": 33,
+      "requires": [
+        "r20_anchor_027_02"
+      ],
+      "faction": "accord",
+      "title": "Slatehook's Cargo",
+      "text": "With the ascent watched again, Borin can point you toward Slatehook Camp in Stormvault Heights. Defeat four bandit archers around that occupied camp; they are camp guards, not the roaming night poachers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "elandor_stormvault_heights",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1300,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_028_01",
+      "line": "legacy",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "Stones for the Sighting Line",
+      "text": "Archshadow's sighting stones no longer line up across the ridge crossing. Bring eight cobble blocks for their low footing so the watch can reset the line without narrowing the passage. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_028_02",
+      "line": "legacy",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "Wings Over the Crossing",
+      "text": "Crag eagles dive over Stormvault Heights' rocky ground by day. Defeat three that threaten travellers using the crossing, then report to Archshadow Post.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:crag_eagle"
+          ],
+          "zone": "elandor_stormvault_heights",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_028_03",
+      "line": "legacy",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [
+        "r20_anchor_028_02"
+      ],
+      "faction": "accord",
+      "title": "The Watch Beyond the Ash Wind",
+      "text": "The ridge report names the Throng watch in Blackwind Rise across the frontier. At level 40, defeat three Throng guards at its military outposts or their patrols. These are armed garrisons, not villagers or players; do not approach Nhal Veyr's stronger city watch.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:guard_throng"
+          ],
+          "zone": "kragmar_blackwind_rise",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1975,
+        "copper": 100,
+        "items": []
+      }
+    }
+  ]
+}

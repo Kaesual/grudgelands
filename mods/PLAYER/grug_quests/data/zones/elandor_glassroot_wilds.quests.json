@@ -1,0 +1,100 @@
+{
+  "zone": "elandor_glassroot_wilds",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_036",
+      "anchor": "r20_anchor_036",
+      "givers": [
+        {
+          "npc": "r20_anchor_036_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_036_01",
+      "line": "legacy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "Stone Under the Passage",
+      "text": "Rain has loosened the footing beneath Glassroot Gate's cliff passage. Bring ten cobble blocks for the low support so carriers can keep using the route while it is repaired. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_036_02",
+      "line": "legacy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "title": "Rootsnare's Stolen Cloth",
+      "text": "Rootsnare Camp's bandits have taken supplies intended for the passage. Defeat four bandits at the occupied camp in Glassroot Wilds, rather than hunting unrelated forest creatures.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit"
+          ],
+          "zone": "elandor_glassroot_wilds",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_036_03",
+      "line": "legacy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [
+        "r20_anchor_036_02"
+      ],
+      "faction": "accord",
+      "title": "The Other Rootwatch",
+      "text": "The recovered report points across Thunderroot Wilds to the Throng's frontier watch. At level 40, defeat three Throng guards at those military outposts or their patrols. This does not include villagers, players or Kezamba's capital guard.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:guard_throng"
+          ],
+          "zone": "kragmar_thunderroot_wilds",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1975,
+        "copper": 100,
+        "items": []
+      }
+    }
+  ]
+}

@@ -620,8 +620,15 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `npc_by_socket` keys actual settlement identity plus socket id, never terrain
   anchor ids. Marker children partition observers through the existing tag
   carrier's one-second 25/30 hysteresis pass; no independent player scan.
-  Quest UI tracks up to ten selected quests (`grug_quests.MAX_TRACKED`, one objective line each) and stores its HUD preference. The
-  102-quest catalog (66 starter + 36 local) requires only V1 overworld content; the Nether is
+  Quest UI tracks up to ten selected quests (`grug_quests.MAX_TRACKED`, one objective line each) and stores its HUD preference.
+  Since Round 28 the content is data: `data/zones/<zone>.quests.json` and
+  `<zone>.front.quests.json`, read by `loader.lua`, checked by `validate.lua`
+  (structure at load, roles/areas/levels/items once every mod loaded; every
+  finding names file and quest); quest NPCs bound to sockets are in
+  `npcs.lua`, new givers at free quest sockets come from the files. Area kill
+  credit reads the mob's `_grug_area` tag; quest-only drops use
+  `grug_mobs.register_participant_drop_hook`; weight rewards
+  `grug_xp.quest_reward`. The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction

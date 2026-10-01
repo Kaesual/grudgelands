@@ -1,0 +1,29 @@
+{
+  "zone": "elandor_highcourt",
+  "hubs": [
+    {
+      "id": "highcourt",
+      "anchor": "capital",
+      "givers": [
+        {"npc": "r20_human_capital_envoy", "lines": ["civic", "front"]},
+        {"npc": "fx_lore_keeper",
+         "new": {"name": "Odran Lorekeep", "race": "dwarf", "socket": "lore_shrine/lore_shrine_quest"},
+         "lines": ["lore"]}
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "fx_lore_01",
+      "line": "lore",
+      "giver": "fx_lore_keeper",
+      "turnin": "fx_lore_keeper",
+      "min_level": 20,
+      "level": 21,
+      "title": "Stones for the Shrine",
+      "text": "The lore shrine needs two cobble blocks. Bring them to me.",
+      "objectives": [{"type": "item", "item": "default:cobble", "count": 2}],
+      "rewards": {"weight": 1, "copper": 4}
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "zone": "kragmar_bannerbreak_mesa",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_043",
+      "anchor": "r20_anchor_043",
+      "givers": [
+        {
+          "npc": "r20_anchor_043_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_044",
+      "anchor": "r20_anchor_044",
+      "givers": [
+        {
+          "npc": "r20_anchor_044_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_043_01",
+      "line": "legacy",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Planks for the Ascent",
+      "text": "The mesa ramp's side supports need replacing before another heavy load climbs it. Bring ten acacia planks to Red Ramp Post's sheltered work area. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:acacia_wood",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_043_02",
+      "line": "legacy",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Shells Among the Planks",
+      "text": "Scorpions emerge on Bannerbreak Mesa's clay and dry grass after dark, hiding among stored planks. Defeat four while the ramp crew keeps its loads under cover.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:scorpion"
+          ],
+          "zone": "kragmar_bannerbreak_mesa",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_043_03",
+      "line": "legacy",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 33,
+      "level": 33,
+      "requires": [
+        "r20_anchor_043_02"
+      ],
+      "faction": "throng",
+      "title": "Sunderstrap's Sentinels",
+      "text": "Once the plank yard is safe, Drek can send you toward Sunderstrap Camp. Defeat four bandit archers guarding its stolen loads in Bannerbreak Mesa.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "kragmar_bannerbreak_mesa",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1300,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_044_01",
+      "line": "legacy",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "A Standard Needs a Footing",
+      "text": "Tornstandard's banner footing is splitting where the supply lane bends. Bring eight cobble blocks for the low base, leaving the working military banner in place. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_044_02",
+      "line": "legacy",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "The Empty Mesa Patrol",
+      "text": "Skeleton raiders cross Bannerbreak Mesa's clay and dry ground at night. Defeat four so dispatch runners can reach the hold before dawn.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:skeleton_raider"
+          ],
+          "zone": "kragmar_bannerbreak_mesa",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_044_03",
+      "line": "legacy",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [
+        "r20_anchor_044_02"
+      ],
+      "faction": "throng",
+      "title": "The Last Hedge Abroad",
+      "text": "The next report concerns the Accord's Last Hedge frontier in Ashenward March. At level 40, defeat three Accord guards at the military outposts or their patrols in that zone. Civilians, players and Highcourt's city watch are not targets.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:guard_accord"
+          ],
+          "zone": "elandor_ashenward_march",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1975,
+        "copper": 100,
+        "items": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,329 @@
+{
+  "zone": "elandor_whitebridge_shire",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_016",
+      "anchor": "r20_anchor_016",
+      "givers": [
+        {
+          "npc": "r20_anchor_016_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_030",
+      "anchor": "r20_anchor_030",
+      "givers": [
+        {
+          "npc": "r20_anchor_030_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_062",
+      "anchor": "r20_anchor_062",
+      "givers": [
+        {
+          "npc": "r20_anchor_062_host",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_016_01",
+      "line": "legacy",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_anchor_016_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Press Frame",
+      "text": "Whitebridge's little market press has lost the brace that keeps its frame square. Bring eight ordinary oak planks for the covered workbench; the nearby boatworkers have already claimed the sound timber in their own stock. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_016_02",
+      "line": "legacy",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_anchor_016_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Poacher's Market",
+      "text": "Poachers set snares along Whitebridge Shire's grass and forest margins at night, then bring their catch past the market close. Remove four of them so the morning wagons can use that approach.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_whitebridge_shire",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_016_03",
+      "line": "legacy",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_anchor_016_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_016_02"
+      ],
+      "faction": "accord",
+      "title": "A Light Beyond the Bridge",
+      "text": "Now the snares are quiet, the watch can distinguish the lights that belong to no traveller. Hunt three wisps after dark among Whitebridge Shire's damp ground and woodland litter; the bridge itself is not their spawning ground.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "elandor_whitebridge_shire",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_030_01",
+      "line": "legacy",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "An Axle for the Empty Cart",
+      "text": "The cart beside Oakspan Tollhouse cannot move until its axle supports are replaced. Bring eight oak planks for the covered cart bay while the road patrol clears the approach. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_030_02",
+      "line": "legacy",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Tollhouse Snares",
+      "text": "Poachers hide their snares in Whitebridge Shire's grass and forest margins at night. Defeat four so the tollhouse crew can recover the road markers in daylight.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_whitebridge_shire",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_030_03",
+      "line": "legacy",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_030_02"
+      ],
+      "faction": "accord",
+      "title": "Night Lights at Oakspan",
+      "text": "After the snare line is removed, strange lights still cross the darker wet ground near Oakspan. Disperse three wisps in Whitebridge Shire after nightfall.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:wisp"
+          ],
+          "zone": "elandor_whitebridge_shire",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_062_01",
+      "line": "legacy",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "Braces for the Pale Face",
+      "text": "Bridgechalk's pale cutting face needs timber braces above the working edge. Bring ten oak planks to the quarry shelter; this shallow worksite is not a newly opened underground mine. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_062_02",
+      "line": "legacy",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "title": "The Surveyor's Snare",
+      "text": "Poachers set snares in Whitebridge Shire's grassy and wooded margins at night, catching the quarry surveyors' route. Defeat four before the crew returns to its markers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:poacher"
+          ],
+          "zone": "elandor_whitebridge_shire",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 820,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_062_03",
+      "line": "legacy",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 23,
+      "level": 23,
+      "requires": [
+        "r20_anchor_062_02"
+      ],
+      "faction": "accord",
+      "title": "A Quarry Hand's Pick",
+      "text": "With the survey route clear, the quarry can put another hand on the stone. Bring an ordinary stone pick to the work shelter; a traded or previously used pick counts. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "copper": 70,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_human_journey_02",
+      "line": "legacy",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 24,
+      "level": 24,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "Word for Halen Chalkthumb",
+      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Bridgechalk Dig in Whitebridge Shire and speak with Halen Chalkthumb. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Halen Chalkthumb there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_062_host"
+        }
+      ],
+      "rewards": {
+        "xp": 705,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_human_journey_03",
+      "line": "legacy",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "accord",
+      "race": "human",
+      "title": "Word for Toren Waterbarrel",
+      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Toren Waterbarrel there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "xp": 915,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

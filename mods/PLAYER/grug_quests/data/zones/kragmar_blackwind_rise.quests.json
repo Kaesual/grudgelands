@@ -1,0 +1,194 @@
+{
+  "zone": "kragmar_blackwind_rise",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "r20_anchor_039",
+      "anchor": "r20_anchor_039",
+      "givers": [
+        {
+          "npc": "r20_anchor_039_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_040",
+      "anchor": "r20_anchor_040",
+      "givers": [
+        {
+          "npc": "r20_anchor_040_host",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_anchor_039_01",
+      "line": "legacy",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Keep the Lamps Burning",
+      "text": "Ashveil reads its wind markers by lamplight, but the covered fuel box is nearly empty. Bring six coal lumps for the lamps before the next night watch. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_039_02",
+      "line": "legacy",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Ash Among Living Branches",
+      "text": "Gravewood treants move among Blackwind Rise's bone-littered trees after dark. Defeat three so the watchers can read the branches' movement without confusing it with the wind.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:gravewood_treant"
+          ],
+          "zone": "kragmar_blackwind_rise",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_039_03",
+      "line": "legacy",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 33,
+      "level": 33,
+      "requires": [
+        "r20_anchor_039_02"
+      ],
+      "faction": "throng",
+      "title": "The Pallcloth Thieves",
+      "text": "Vaska's cleared sightline reveals who is carrying the stolen cloth: Pallcloth Camp's archers. Defeat four bandit archers in that Blackwind Rise camp and return to the watch.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "kragmar_blackwind_rise",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 1300,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_040_01",
+      "line": "legacy",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "The Dispatch Shelf",
+      "text": "Hollowarch's dispatch shelf has sagged under damp message stones. Bring eight local gravewood planks to the roofed station; the old arches themselves must remain untouched. Existing or traded supplies are welcome.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_trees:gravewood_wood",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_040_02",
+      "line": "legacy",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 31,
+      "level": 31,
+      "requires": [],
+      "faction": "throng",
+      "title": "Claws Beneath the Arch",
+      "text": "Plaguehide bears move through Blackwind Rise's bone-forest floor beside the arch approaches. Defeat three before the next carrier attempts the crossing.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:plaguehide_bear"
+          ],
+          "zone": "kragmar_blackwind_rise",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1220,
+        "copper": 85,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_anchor_040_03",
+      "line": "legacy",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 40,
+      "level": 40,
+      "requires": [
+        "r20_anchor_040_02"
+      ],
+      "faction": "throng",
+      "title": "The Watch Under the Storm",
+      "text": "The dispatches name the Accord watch in Stormvault Heights. At level 40, defeat three Accord guards at the frontier outposts or their patrols there. Do not attack civilians, players or Dur Brannoc's city watch for this report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:guard_accord"
+          ],
+          "zone": "elandor_stormvault_heights",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 1975,
+        "copper": 100,
+        "items": []
+      }
+    }
+  ]
+}

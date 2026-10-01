@@ -150,16 +150,28 @@ grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
 grug_classes = {get_race = function() return race end}
 grug_xp = {get_level = function() return 60 end}
-grug_mobs = {register_on_eligible_kill = function() end}
+grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_money = {format = function(copper) return copper .. " copper" end}
+-- The quest content is the per-zone quest files (Round 28 Lane B4), read by
+-- the real loader.
+local json = dofile("tools/r28_b4_quests/json.lua")
+core.get_modpath = function() return ROOT .. "/mods/PLAYER/grug_quests" end
+core.get_current_modname = function() return "grug_quests" end
+core.parse_json = function(text) return (json.decode(text)) end
+core.get_dir_list = function(path)
+	local handle, out = io.popen('ls "' .. path .. '"'), {}
+	for line in handle:lines() do out[#out + 1] = line end
+	handle:close()
+	return out
+end
 local pages = {}
 sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end,
 	get_page = function() return "" end, pages = pages, pages_unordered = {}}
 grug_quests = {}
 local Q = grug_quests
-for _, file in ipairs({"registry", "state", "npc", "content_npcs", "content", "content_regions",
-		"content_civic", "ui", "hud"}) do
+for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader",
+		"ui", "hud"}) do
 	dofile(ROOT .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
 end
 

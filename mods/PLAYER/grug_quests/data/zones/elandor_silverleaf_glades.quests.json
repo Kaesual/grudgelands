@@ -1,0 +1,290 @@
+{
+  "zone": "elandor_silverleaf_glades",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "silverleaf",
+      "anchor": "silverleaf",
+      "givers": [
+        {
+          "npc": "r14_elf_elder",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_elf_start_cook",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_elf_01_roots_laid_bare",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Roots Laid Bare",
+      "text": "Boars expose young roots outside Silverleaf by day. Drive off three, then consider taking spare raw meat to Liora Dewpot at the grove's separate oven.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:boar"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_02_the_grove_s_portion",
+      "line": "legacy",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "The Grove's Portion",
+      "text": "The shared oven feeds everyone returning from silverleaf's outer paths. Bring four raw meat portions to Liora Dewpot beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_03_beneath_the_seed_baskets",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "r14_elf_01_roots_laid_bare"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "A Frame for the Seed Baskets",
+      "text": "The seed baskets need a sound frame before the youngest roots can be covered again. Bring six ordinary oak planks; nearby oak trunks provide them, and traded boards are welcome. Silverwood is not required.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:wood",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "copper": 20,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_04_footfalls_without_breath",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 4,
+      "level": 4,
+      "requires": [
+        "r14_elf_01_roots_laid_bare"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Footfalls Without Breath",
+      "text": "Zombies cross the moss ring outside Silverleaf after nightfall. Defeat three in the level-3-and-up glades. Store repairs and optional tool lessons need not wait for darkness.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:zombie"
+          ],
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 140,
+        "copper": 25,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_05_keepers_of_the_saplings",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 5,
+      "level": 5,
+      "requires": [
+        "r14_elf_03_beneath_the_seed_baskets"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Keepers of the Saplings",
+      "text": "Foxes worry the sapling guards by day on level-4-and-up ground outside Silverleaf. Clear the animals from the tended ring.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:fox"
+          ],
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 180,
+        "copper": 30,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_06_axes_without_leave",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_elf_05_keepers_of_the_saplings"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "The Road to Ilyra Mossveil",
+      "text": "At level 10, follow the road to Starbough Village and speak with Ilyra Mossveil. Starbough Vale is level 11–20 country, so prepare before leaving the safer glades. Complete the conversation with Ilyra; no fighting or return trip is part of this handoff.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_elf_steward"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_10_the_careful_axe",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "The Careful Axe",
+      "text": "Bring a wood axe. Saelin's lesson is about choosing a tree before raising the tool.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_wood",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 15,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_elf_11_stone_s_patient_lesson",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 2,
+      "level": 2,
+      "requires": [
+        "r14_elf_10_the_careful_axe"
+      ],
+      "faction": "accord",
+      "race": "elf",
+      "title": "Stone's Patient Lesson",
+      "text": "Bring a stone pick and learn why stone rewards patience rather than force.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:pick_stone",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "xp": 45,
+        "copper": 15,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_start_cook",
+      "line": "legacy",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "A Shared Grove Supper",
+      "text": "Liora Dewpot wants the grove's evening meal ready before the gatherers return. Bring three coal lumps to the oven in Silverleaf. Existing or traded fuel is welcome; a pickaxe is needed (wood and stone work too) if you choose to mine natural coal yourself.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "xp": 20,
+        "copper": 10,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_elf_capital_intro",
+      "line": "legacy",
+      "giver": "r14_elf_elder",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "accord",
+      "race": "elf",
+      "title": "The Road to Lethariel",
+      "text": "Lethariel's star hall receives travellers looking for the city's trainers, repairs and public workspaces. At level 10, follow the road to Eriath Boughwarden there. The woods beyond the protected city are level 20–30; avoid their wildlife while travelling. Speak with Eriath and complete the introduction in the hall.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_elf_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    }
+  ]
+}
