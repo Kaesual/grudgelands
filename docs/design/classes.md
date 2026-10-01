@@ -46,8 +46,10 @@ Core principles:
   discarded ones. Left click attacks or casts; the wear bar shows the skill's
   charge or cooldown. Appearance follows §2c.
 - **Skills pick up drops within hand reach.** A fresh physical LMB press
-  attempts pickup of the first visible dropped item within 4 m exactly once.
-  Combat range never extends pickup reach; pickup does not also cast.
+  attempts pickup of the first visible dropped item within 4 m exactly once,
+  unless a hostile stands behind it (loot never hides a hostile; the press is
+  then a combat press). Combat range never extends pickup reach; pickup does
+  not also cast.
 - **No global cooldown** (removed 2026-08-09 with the proc model of §2b;
   it was 1.0 s from 2026-08-06 to WP35). A GCD existed to stop instant
   chaining, and the two limiters that replaced it do that job better and
@@ -185,20 +187,26 @@ held skill shows the item of its own slot in first and third person.
 **Mode lock** (Round 28 ruling 14). At key-down the press decides its mode
 for the whole hold:
 
-- **Combat** when the combat ray (non-walkable plants never hide a mob) finds
-  a valid hostile within the larger of hand reach (4 m) and the selected
-  skill's range, and otherwise whenever the press does not start on a gather
-  target (air, out of reach, a node bare hands cannot dig, an NPC or ally).
+- **Combat** when the combat ray (non-walkable plants and dropped items
+  never hide a mob) finds a valid hostile within the larger of hand reach
+  (4 m) and the selected skill's range (Loose: hand reach only, its LMB is
+  Strike or digging), and otherwise whenever the press does not start on a
+  gather target (air, out of reach, an unprotected node bare hands cannot
+  dig, an NPC or ally).
   A combat hold never digs: the held skill item's pointing range drops to
   zero for the hold (the client points at nothing, so it neither digs nor
   shows cracks) and the server refuses any dig. It acts on whatever the
   combat ray finds each step, so it retargets freely (a mob dies, the next
   one steps in).
 - **Gather** when the hand ray's first thing within 4 m is a node bare hands
-  can dig (protected nodes included: their refusal keeps the protection
-  hint and the client's cracks) or a dropped item. A gather hold never swings
-  or casts at an actor, even one that walks into the ray, so a passing
-  neutral mob is not pulled by accident.
+  can dig, any protected node (town ground, walls and undiggable town
+  dressing: the client keeps pointing, so the refused dig keeps the
+  protection hint and, where diggable, the client's cracks) or a dropped item
+  with no hostile behind it. A gather hold never swings or casts at an actor,
+  even one that walks into the ray, so a passing neutral mob is not pulled by
+  accident. On a protected node the hand may not dig, a short tap still casts
+  a selected self/support skill (Blink in a town, the same 200 ms window as
+  below); a hold there only earns the protection hint.
 
 The mode ends on release, cancel, item or slot change, death and leave; the
 pointing range returns then. A release seen within 0.15 s of the decision
@@ -233,7 +241,8 @@ intervening objects matter.
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
   including when inventory is full. That decision does not also cast. The
   hold is a gather hold: it may subsequently dig, never attack, and another
-  drop requires another press.
+  drop requires another press. A hostile behind the drop makes it a combat
+  press instead: no pickup, the attack goes through the loot.
 - **Empty or otherwise inapplicable context** (combat hold): one applicable
   self/support activation per press, otherwise no mechanical effect.
   Retargeting while held may enter combat, never digging.
@@ -278,12 +287,13 @@ reach remains 4 m even with a long-range spell selected.
 Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
 digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
 While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
-pointing range is zero (the same zero range an LMB combat hold uses; whichever
-ends first leaves it to the other), so held RMB shows no repeated place swing (one swing on
-the very press may remain). A full draw takes the bow's 2.5 s (Fletching and
-the draw-speed affix shorten it); a ring around the crosshair fills in
-sixteenths while drawing, turns gold at full draw and disappears on every end
-of the draw (release, cancel, stun, item or weapon change, death, leave). Other instant bow skills retain their LMB casts and
+pointing range is zero (the same zero range an LMB combat hold uses;
+whichever ends first leaves it to the other), so held RMB shows no repeated
+place swing (one swing on the very press may remain). A full draw takes the
+bow's 2.5 s (Fletching and the draw-speed affix shorten it); a ring around the
+crosshair fills in sixteenths while drawing, turns gold at full draw and
+disappears on every end of the draw (release, cancel, stun, item or weapon
+change, death, leave). Other instant bow skills retain their LMB casts and
 authored ammo/cooldowns.
 
 Food owns its whole RMB press, whatever it points at (ruling 2026-09-28). A

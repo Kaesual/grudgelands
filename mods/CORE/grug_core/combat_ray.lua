@@ -121,6 +121,11 @@ local function classify_object(player, origin, range, pointed)
 	return result
 end
 
+local function is_drop(ref)
+	local entity = ref and ref:get_luaentity()
+	return entity ~= nil and entity.name == "__builtin:item"
+end
+
 local function nearer_terminal(candidate, candidate_is_node, best,
 		best_is_node)
 	if not best then
@@ -169,6 +174,9 @@ function grug_core.combat_ray(player, range, opts)
 		if pointed.type == "object" and pointed.ref == player then
 			-- The eye begins inside the player's own selection box. Self is not a
 			-- combat blocker; keep advancing this same ray.
+		elseif pointed.type == "object" and is_drop(pointed.ref) then
+			-- Dropped loot never hides a hostile behind it (Round 28): the ray
+			-- passes through it like the player's own body.
 		elseif pointed.type == "node" then
 			local node = pointed.under and core.get_node_or_nil(pointed.under)
 			local def = node and core.registered_nodes[node.name]

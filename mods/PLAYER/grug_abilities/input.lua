@@ -189,13 +189,16 @@ return function(api)
 		return false
 	end
 	-- LMB mode lock (Round 28 ruling 14), decided once per press: "combat"
-	-- when the combat ray (plants never hide a mob) finds a valid hostile
-	-- within max(hand reach, skill range); otherwise "gather" when the hand
-	-- ray's first thing within reach is a hand-diggable node (protected ones
-	-- too: their refusal keeps the Round 24 hint) or a dropped item;
-	-- otherwise "combat" (air, out of reach, anything else). Combat never
-	-- digs (zero pointing range, can_dig refuses); gather never swings.
+	-- when the combat ray (plants and dropped loot never hide a mob) finds a
+	-- valid hostile within max(hand reach, skill range); otherwise "gather"
+	-- when the hand ray's first thing within reach is a hand-diggable or a
+	-- protected node (the client keeps pointing, so the Round 24 protection
+	-- hint stays) or a dropped item; otherwise "combat" (air, out of reach,
+	-- anything else). Combat never digs (zero pointing range, can_dig
+	-- refuses); gather never swings.
 	local function combat_reach(player, def)
+		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
+		if def.id == "loose" then return HAND_RANGE end
 		return math.max(HAND_RANGE, Q.get_range(player, def))
 	end
 	local function decide_mode(player, def)
@@ -208,7 +211,8 @@ return function(api)
 			if hit.type == "object" then
 				local ent = hit.ref and hit.ref:get_luaentity()
 				if ent and ent.name == "__builtin:item" then return "gather" end
-			elseif hand_diggable(hit, distance) then
+			elseif hand_diggable(hit, distance) or
+					core.is_protected(hit.under, player:get_player_name()) then
 				return "gather"
 			end
 		end
@@ -346,6 +350,16 @@ return function(api)
 			return
 		end
 		s.dig = nil
+		if s.mode == "gather" and hit and hit.type == "node" then
+			-- A gather press on a node the hand may not dig (protected town
+			-- ground): a short tap still casts a self/support skill (Blink in a
+			-- town); holding only earns the protection hint.
+			if fresh and support(def) and castable(def, s) then
+				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
+					node = core.get_node_or_nil(hit.under).name}
+			end
+			return
+		end
 		if s.mode ~= "gather" and not s.empty_used and support(def) then
 			s.empty_used = true
 			cast(player, def, s, nil, true)
@@ -392,9 +406,12 @@ return function(api)
 			s.down, s.rmb = down, right
 			return
 		end
-		-- Food decides from the native pointed thing, never from this ray.
+		-- Food decides from the native pointed thing, never from this ray. A
+		-- held combat press acts on the combat ray alone (below).
 		local hit, distance
-		if def then hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def))) end
+		if def and not (s.mode == "combat" and down and not right) then
+			hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def)))
+		end
 		if right and not s.rmb then right_begin(player, s, def, hit, distance) end
 		if right and s.right == "food" then food_hold(player, s) end
 		if right then

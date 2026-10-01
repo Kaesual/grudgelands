@@ -245,6 +245,7 @@ end
 -- M: input.lua on a fake engine.
 ------------------------------------------------------------------------------
 local clock = 0
+local raycasts = 0 -- input.lua's own rays (the fake combat_ray casts none)
 local hits = {} -- what the next raycast returns (in order of distance)
 local node_at = {} -- "x,y,z" -> node name (default test:dirt)
 local protected = {} -- "x,y,z" -> true
@@ -273,6 +274,7 @@ core = {
 		return group == "grug_ability" and name:sub(1, 15) == "grug_abilities:" and 1 or 0
 	end,
 	raycast = function()
+		raycasts = raycasts + 1
 		local i = 0
 		return function()
 			i = i + 1
@@ -327,18 +329,25 @@ grug_core = {
 	is_stunned = function() return false end,
 	player_has_live_mount = function() return false end,
 	register_on_stun = function() end,
-	-- Combat-ray rules over the same hit list: non-walkable nodes are passed
-	-- through, a walkable node ends the ray, the first actor is classified.
-	combat_ray = function()
+	-- Combat-ray rules over the same hit list: non-walkable nodes and dropped
+	-- items are passed through, a walkable node ends the ray, the first actor
+	-- is classified (out_of_range beyond `range` from the eye).
+	combat_ray = function(_, range)
 		for _, hit in ipairs(hits) do
+			local d = vector.distance(vector.new(0, 1.47, 0), hit.intersection_point)
+			local passed = hit.type == "object" and
+				hit.ref:get_luaentity().name == "__builtin:item"
 			if hit.type == "node" then
 				local def = core.registered_nodes[core.get_node_or_nil(hit.under).name]
 				if def.walkable then return {status = "aim_miss", reason = "node"} end
+			elseif not passed and d > range then
+				return {status = "aim_miss", reason = "out_of_range", target = hit.ref,
+					distance = d, pointed = hit}
 			elseif hit.ref == mob then
-				return {status = "target", reason = "hostile", target = mob, distance = 2,
+				return {status = "target", reason = "hostile", target = mob, distance = d,
 					pointed = hit}
-			else
-				return {status = "aim_miss", reason = "object", target = hit.ref, distance = 2,
+			elseif not passed then
+				return {status = "aim_miss", reason = "object", target = hit.ref, distance = d,
 					pointed = hit}
 			end
 		end
@@ -416,6 +425,7 @@ local NODE_HIT = {type = "node", under = vector.new(0, 1, 2), above = vector.new
 local GRASS_HIT = {type = "node", under = vector.new(0, 1, 1), above = vector.new(0, 1, 0),
 	intersection_point = vector.new(0, 1.47, 0.6)}
 local MOB_NEAR = {type = "object", ref = mob, intersection_point = vector.new(0, 1.47, 1)}
+local FAR_MOB = {type = "object", ref = mob, intersection_point = vector.new(0, 1.47, 10)}
 local DROP_HIT = {type = "object", ref = drop, intersection_point = vector.new(0, 1.2, 1)}
 node_at[pkey(GRASS_HIT.under)] = "test:grass"
 local function aim(...) hits = {...} end
@@ -658,12 +668,78 @@ do -- L5 air, a non-hand node and a dropped item.
 	hold(4)
 	node_at[pkey(NODE_HIT.under)] = nil
 	reset_log()
-	aim(DROP_HIT, MOB_HIT)
+	aim(DROP_HIT)
 	press()
-	check(#writes == 0, "L5 dropped item: gather")
+	check(#writes == 0, "L5 dropped item alone: gather")
 	aim(MOB_NEAR)
 	hold(3)
 	check(#swings == 0, "L5 a pickup press never swings")
+	release()
+	hold(4)
+	-- Loot never hides a hostile behind it: combat, the swing lands through it.
+	reset_log()
+	aim(DROP_HIT, MOB_HIT)
+	press()
+	check(range_of(1) == "0" and swings[1] == "strike",
+		"L5 drop in front of a mob: combat and a swing")
+	release()
+	hold(4)
+end
+
+do -- L10 a protected wall in a town: gather (the hint path); Blink's tap there.
+	select("strike")
+	node_at[pkey(NODE_HIT.under)] = "test:stone"
+	protected[pkey(NODE_HIT.under)] = true
+	aim(NODE_HIT)
+	press()
+	check(#writes == 0 and range_of(1) == "",
+		"L10 protected undiggable wall: gather, the client keeps pointing (hint)")
+	check(not dig_ok(NODE_HIT.under), "L10 the dig is refused (protection violation path)")
+	hold(5)
+	release()
+	hold(4)
+	check(#swings == 0 and #casts == 0, "L10 nothing else happens")
+	-- Blink tapped at protected town ground still casts on release.
+	select("blink")
+	aim(NODE_HIT)
+	press()
+	check(#casts == 0, "L10 Blink waits for the tap decision")
+	release()
+	check(casts[1] == "blink", "L10 Blink tap on protected ground casts")
+	-- Holding there casts nothing.
+	clock = clock + 2000000
+	reset_log()
+	press()
+	hold(6)
+	release()
+	check(#casts == 0, "L10 a hold on protected ground casts nothing")
+	node_at[pkey(NODE_HIT.under)] = nil
+	protected[pkey(NODE_HIT.under)] = nil
+end
+
+do -- L11 Loose's LMB reach is hand reach, not the bow range.
+	select("loose")
+	aim(FAR_MOB)
+	press()
+	hold(3)
+	check(#swings == 0, "L11 Loose: no Strike at a mob 10 m away")
+	release()
+	hold(4)
+	select("strike") -- the fake gives every other skill 20 m
+	aim(FAR_MOB)
+	press()
+	check(swings[1] == "strike", "L11 a 20 m skill does reach it")
+	release()
+	hold(4)
+end
+
+do -- L12 a held combat press casts no hand ray.
+	select("strike")
+	aim(MOB_HIT)
+	press()
+	raycasts = 0
+	hold(5)
+	check(raycasts == 0, "L12 no hand ray while a combat hold is held (" .. raycasts .. ")")
 	release()
 	hold(4)
 end
