@@ -311,7 +311,7 @@ local function run_cast(index, label, pitch, build, expect_ok, dz, talents)
 	grug_abilities.restore_mana(ref, 1000000)
 	local cost = grug_abilities.cost_for(ref, def.cost, "blink").mana or 0
 	local mana = grug_abilities.get_mana(ref)
-	local ok = grug_abilities.try_cast(ref, def, nil, true)
+	local ok = grug_abilities.try_cast(ref, def, nil, function() end)
 	local pos = ref:get_pos()
 	local paid = mana - grug_abilities.get_mana(ref)
 	log(("%s: try_cast=%s pos=%s paid=%d (cost %d) ready=%s"):format(label,

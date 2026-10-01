@@ -266,6 +266,17 @@ eats nothing; one press eats at most one serving. Active RMB food/draw
 suppresses LMB combat/digging. Seeds, buckets, hoes, fishing, mounts and
 ordinary placed items retain their own context-appropriate actions.
 
+### Failure messages
+
+A skill that cannot act says why in the red flash line ("Fireball is not
+ready.", "Not enough mana.", "No room to blink.", "Not enough room at
+target.", "You need an arrow.", ...) — on a fresh press only: the key-down
+decision, the single empty-space or tap cast of a press, or the RMB press that
+starts a bow draw. Held repeats never report. The same message shows at most
+once per second per player; a different message shows at once (Round 28
+ruling 13). A refused skill on a hostile still falls back to Strike, as
+before.
+
 ### Cancellation and native-client limits
 
 Stun, death and item swap cancel pending actions. Our own NPC/node interactions
@@ -474,10 +485,19 @@ Mighty Blow is the design working, not a bug.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
-| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. |
+| Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. Destination below. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
 | Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Renew has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
+
+**Charge destination** (Round 28 ruling 12). The player lands 1.3 m in front
+of the target on the line toward the caster, at the target's feet height.
+Room is checked with Blink's rules: the player's real collision box against
+the nodes' collision boxes, one node of step-up allowed, and a clear ray from
+the caster's eye to the destination eye. A spot without room is searched back
+toward the caster in 0.5 m steps, never past the caster and never more than
+3 m (melee reach) from the target. With no room the cast fails with "Not
+enough room at target." and costs neither rage nor cooldown.
 
 ### The rage ledger (ruling 25, 2026-09-16)
 
