@@ -1963,7 +1963,8 @@ Prefix and suffix of a stat share the inputs; both trinket pools use the same
 `stat_loot`. No input may be another profession's product (a Cut gem is a
 Goldsmith product, so other families use raw gems); the few universal
 reagents anyone can craft are the exception that keeps a family input
-varied. Load fails on a missing entry, an unregistered item or a foreign
+varied. Load fails on a missing entry, an unregistered item, an input declared
+above the enchant tier or a foreign
 product.
 
 ### 6b.3 Eligibility

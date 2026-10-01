@@ -176,6 +176,55 @@ function M.validate_reagents(rows)
 	return rows
 end
 
+-- A reagent id must be new and live in a mod this one may register into
+-- (`allowed_mods`: grug_professions and the mods it depends on), so a data
+-- row can never replace an existing item. Checked before anything registers.
+function M.check_reagent_ids(rows, allowed_mods, registered)
+	for index = 1, #rows do
+		local id = rows[index].id
+		local mod = id:match("^([^:]+):")
+		if not allowed_mods[mod] then
+			fail("reagent " .. id .. " is in mod " .. mod ..
+				", which grug_professions does not depend on")
+		end
+		if registered[id] then fail("reagent " .. id .. " is already a registered item") end
+	end
+end
+
+-- Reagent inputs that are not registered items, as readable offences.
+function M.unregistered_reagent_inputs(reagents, registered)
+	local offences = {}
+	for index = 1, #(reagents or {}) do
+		local row = reagents[index]
+		for input_index = 1, #row.inputs do
+			if not registered[row.inputs[input_index]] then
+				offences[#offences + 1] = "reagent " .. row.id .. " input " ..
+					row.inputs[input_index] .. " is not a registered item"
+			end
+		end
+	end
+	return offences
+end
+
+-- Operation inputs whose declared ingredient tier is above the operation's
+-- tier (the rule profession recipes already follow). `tier_of` is
+-- grug_jobs.ingredient_tier; undeclared items have no tier and pass.
+function M.over_tier_inputs(operations, tier_of)
+	local offences = {}
+	for index = 1, #operations do
+		local op = operations[index]
+		for input_index = 1, #op.inputs do
+			local input = op.inputs[input_index]
+			local tier = tier_of(input)
+			if tier and tier > op.tier then
+				offences[#offences + 1] = op.label .. " (T" .. op.tier .. ") needs " .. input ..
+					", a T" .. tier .. " ingredient"
+			end
+		end
+	end
+	return offences
+end
+
 -- `products` maps an item to the profession whose recipes make it. Returns a
 -- list of offences: an operation or recipe of profession P whose input is a
 -- product of another profession, and a universal reagent that needs any

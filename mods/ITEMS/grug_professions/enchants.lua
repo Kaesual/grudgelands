@@ -110,6 +110,18 @@ core.register_on_mods_loaded(function()
 		checked[#checked + 1] = {profession = operation.profession,
 			inputs = operation.flat_inputs, label = operation.id}
 	end
+	-- No operation input may be declared above the enchant tier, the rule
+	-- profession recipes follow at registration.
+	local operations = {}
+	for _, operation in ipairs(grug_jobs.station_operations()) do
+		operations[#operations + 1] = {tier = operation.tier, inputs = operation.flat_inputs,
+			label = operation.id}
+	end
+	local too_high = data.over_tier_inputs(operations, grug_jobs.ingredient_tier)
+	if #too_high > 0 then
+		error("grug_professions: enchant inputs above their tier:\n" ..
+			table.concat(too_high, "\n"), 0)
+	end
 	local offences = data.foreign_inputs(P.profession_products(), checked, P.REAGENTS)
 	if #offences > 0 then
 		error("grug_professions: cross-profession inputs:\n" ..

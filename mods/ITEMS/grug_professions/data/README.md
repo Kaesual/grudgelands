@@ -33,6 +33,8 @@ an item is not registered, or an input is another profession's product.
 
 `reagents.json`: a list of `{"id", "name", "tier", "method": "grid" |
 "furnace", "inputs", "output_count", "uses"?, "notes"?}`. Grid recipes are
-shapeless; furnace recipes cook one input. Inputs must not be any
-profession's product. The icon is `<mod>_<name>.png` from the item's own mod
+shapeless; furnace recipes cook one input. The id must be a new item in
+grug_professions or a mod it depends on; every input must be a registered
+item and not any profession's product. No enchant input may have a declared
+ingredient tier above the enchant tier. The icon is `<mod>_<name>.png` from the item's own mod
 when that file exists, otherwise a placeholder.

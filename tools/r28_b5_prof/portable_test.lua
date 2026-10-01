@@ -279,6 +279,36 @@ fails_with(bad_reagent(function(row) row.inputs[2] = row.id end), "consumes itse
 fails_with(bad_reagent(function(row, rows) rows[2] = deep_copy(row) end), "listed twice",
 	"duplicate reagent")
 
+-- Reagent ids: only new items in this mod or a dependency.
+local allowed = {grug_professions = true, grug_materials = true}
+local registered_now = {["grug_materials:tin_bar"] = {}}
+check(pcall(data.check_reagent_ids, sample_reagents, allowed, registered_now),
+	"sample reagent id in a dependency is accepted")
+fails_with(function()
+	return data.check_reagent_ids({{id = "grug_mapgen:glitter"}}, allowed, registered_now)
+end, "which grug_professions does not depend on", "reagent in a foreign mod")
+fails_with(function()
+	return data.check_reagent_ids({{id = "grug_materials:tin_bar"}}, allowed, registered_now)
+end, "grug_materials:tin_bar is already a registered item", "reagent replaces an item")
+-- Reagent inputs must be registered.
+local missing = data.unregistered_reagent_inputs(sample_reagents, registered_now)
+eq(#missing, 1, "one unregistered reagent input")
+check(missing[1] and missing[1]:find("input grug_materials:quartz is not a registered item", 1, true),
+	"unregistered input text")
+eq(#data.unregistered_reagent_inputs(sample_reagents, {["grug_materials:tin_bar"] = {},
+	["grug_materials:quartz"] = {}}), 0, "registered reagent inputs pass")
+-- Enchant inputs above the operation tier.
+local tiers = {["grug_materials:iron_bar"] = 2, ["loot:dex_t2"] = 2, ["mine:sword_t2"] = 3}
+local over = data.over_tier_inputs({
+	{tier = 2, label = "enchant:sword:prefix:dex:t2",
+		inputs = {"grug_materials:iron_bar", "loot:dex_t2", "mine:sword_t2"}},
+	{tier = 3, label = "enchant:sword:prefix:dex:t3",
+		inputs = {"grug_materials:iron_bar", "mine:sword_t2", "undeclared:item"}},
+}, function(item) return tiers[item] end)
+eq(#over, 1, "one input above its tier")
+check(over[1] and over[1]:find("enchant:sword:prefix:dex:t2 (T2) needs mine:sword_t2, a T3 ingredient",
+	1, true), "over-tier text")
+
 -- ---------------------------------------------------------------------------
 -- 4. Cross-profession inputs.
 -- ---------------------------------------------------------------------------

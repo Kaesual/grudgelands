@@ -18,8 +18,20 @@ local function inventory_image(id)
 	return PLACEHOLDER
 end
 
+-- Mods a reagent id may live in: this mod and its hard dependencies (read
+-- from mod.conf, so the list cannot drift).
+local ALLOWED_MODS = {grug_professions = true}
+do
+	local file = io.open(core.get_modpath("grug_professions") .. "/mod.conf", "r")
+	local text = file and file:read("*a") or ""
+	if file then file:close() end
+	local depends = text:match("\ndepends%s*=%s*([^\n]*)") or ""
+	for mod in depends:gmatch("[%w_]+") do ALLOWED_MODS[mod] = true end
+end
+
 function P.register_reagents(rows)
 	rows = P.enchant_data.validate_reagents(rows)
+	P.enchant_data.check_reagent_ids(rows, ALLOWED_MODS, core.registered_items)
 	for index = 1, #rows do
 		local row = rows[index]
 		-- The leading ":" allows an id in another mod's namespace (frame §4.5).
@@ -48,3 +60,15 @@ function P.register_reagents(rows)
 end
 
 P.register_reagents(P.read_json("reagents.json"))
+
+core.register_on_mods_loaded(function()
+	for _, row in ipairs(P.REAGENTS) do
+		if core.get_item_group(row.id, "grug_reagent") ~= 1 then
+			error("grug_professions: reagent " .. row.id .. " was overridden", 0)
+		end
+	end
+	local offences = P.enchant_data.unregistered_reagent_inputs(P.REAGENTS, core.registered_items)
+	if #offences > 0 then
+		error("grug_professions: " .. table.concat(offences, "\n"), 0)
+	end
+end)

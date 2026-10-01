@@ -28,6 +28,14 @@ grug_professions.register_reagents({
 		inputs = {"default:flint"}, output_count = 1},
 })
 
+-- A data row may never replace an existing item or land in a foreign mod.
+local replaced_ok, replaced_err = pcall(grug_professions.register_reagents, {
+	{id = "grug_materials:tin_bar", name = "Bad", tier = 1, method = "grid",
+		inputs = {"grug_materials:quartz"}, output_count = 1}})
+local foreign_ok, foreign_err = pcall(grug_professions.register_reagents, {
+	{id = "grug_mapgen:probe_bad", name = "Bad", tier = 1, method = "grid",
+		inputs = {"grug_materials:quartz"}, output_count = 1}})
+
 local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"}
 local OWN = {
 	sword = function(t) return "grug_materials:" .. METALS[t] .. "_bar" end,
@@ -149,6 +157,13 @@ local function run()
 	local cooked = core.get_craft_result({method = "cooking", width = 1, items = {"default:flint"}})
 	check(cooked.item:get_name() == CINDER, "furnace reagent (got " .. cooked.item:to_string() .. ")")
 	check(#grug_professions.REAGENTS == 2, "two sample reagents recorded")
+	check(core.get_item_group(GLITTER, "grug_reagent") == 1, "reagent group")
+	check(not replaced_ok and tostring(replaced_err):find("already a registered item", 1, true),
+		"existing id refused (" .. tostring(replaced_err) .. ")")
+	check(not foreign_ok and tostring(foreign_err):find("does not depend on", 1, true),
+		"foreign mod refused (" .. tostring(foreign_err) .. ")")
+	check(core.registered_items["grug_materials:tin_bar"].description ~= "Bad",
+		"tin bar untouched")
 
 	-- 5. Products per profession, and the cross-profession check catching a
 	-- foreign input.

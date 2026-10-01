@@ -123,8 +123,9 @@ are removed (user decision 2026-10-01). The table lives in
 `stat_loot` per stat and `family_input` per family; format in the Round 28
 design frame §4.4) and is checked at load: every tier present, every stat of
 every family pool has stat loot, every family has an input, every item is
-registered, and no profession recipe or enchant operation uses an item that
-another profession's recipe makes. Until Lane E1 ports the C1 catalogue the
+registered, no input has a declared ingredient tier above the enchant tier,
+and no profession recipe or enchant operation uses an item that another
+profession's recipe makes. Until Lane E1 ports the C1 catalogue the
 shipped table is interim: the old tier reagent (Coal Lump / Venom Gland /
 Slime Gel / Croc Tooth / Stormkelp / Stone Core) as every stat's loot and one
 mined item per tier (Tin Lump / Gold Lump / Silver / Emberglass / Abyssal
@@ -139,8 +140,9 @@ most) anyone can make: one shapeless crafting-grid recipe or one furnace
 recipe from loot, mining or gathering items, never from a profession product.
 They are listed in `mods/ITEMS/grug_professions/data/reagents.json` (`id`,
 `name`, `tier`, `method` grid or furnace, `inputs`, `output_count`; design
-frame §4.5), register as ordinary craft items with their tier as ingredient
-tier, and appear in the Basics book. None exists before Lane E1.
+frame §4.5), register as new craft items (in grug_professions or a mod it
+depends on, never replacing an existing item) with their tier as ingredient
+tier, and appear in the Basics book. Every input must be a registered item. None exists before Lane E1.
 
 ## Equipment and lifetime
 
