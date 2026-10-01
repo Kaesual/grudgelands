@@ -55,8 +55,9 @@ end
 -- their own column at x = 6; the second column leads with WEAPON and OFFHAND
 -- so the pair reads as "hands", with the two trinkets below them. Positions
 -- only — the slot list, its order and its label come from
--- grug_inventory.equipment_slots, so a new slot is one entry there plus one
--- row here.
+-- grug_inventory.equipment_slots (the two hands' label and ghost from the
+-- class rules, grug_inventory.HAND_RULES), so a new slot is one entry there
+-- plus one row here. The Scout's quiver sits left of the armor column.
 local SLOT_POS = {
 	grug_head = {8.3, 1.85},
 	grug_chest = {8.3, 3.05},
@@ -67,6 +68,8 @@ local SLOT_POS = {
 	grug_trinket1 = {9.3, 4.25},
 	grug_trinket2 = {9.3, 5.45},
 }
+local QUIVER_POS = {7.3, 1.85}
+local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
 -- §1). Reused grug_gear art for the five slots with a natural match, dimmed by
@@ -119,6 +122,31 @@ for _, slot in ipairs(grug_inventory.equipment_slots) do
 	end
 end
 
+-- The Scout's quiver slot (Round 28 ruling 26): the first cell of the quiver
+-- list, the arrow total beside it, and the shift-click ring main <-> quiver.
+local function quiver_content(player)
+	local inv = player:get_inventory()
+	local total = grug_inventory.quiver_count(player)
+	local x, y = QUIVER_POS[1], QUIVER_POS[2]
+	local fs = {
+		("label[%.1f,1.25;Quiver]"):format(x),
+		("list[current_player;%s;%.1f,%.1f;1,1;]"):format(
+			grug_inventory.QUIVER_LIST, x, y),
+		("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(x, y, TOOLTIP_W, TOOLTIP_H,
+			esc("Quiver — up to " .. grug_inventory.quiver_capacity() ..
+				" arrows. Drag or shift-click arrows in; click to take up to " ..
+				"100. Shots draw from here first.")),
+		("label[%.1f,%.2f;%s]"):format(x, y + 1.0,
+			esc(total .. "/" .. grug_inventory.quiver_capacity())),
+		"listring[current_player;main]",
+		("listring[current_player;%s]"):format(grug_inventory.QUIVER_LIST),
+	}
+	if inv:get_stack(grug_inventory.QUIVER_LIST, 1):is_empty() then
+		fs[#fs + 1] = ("image[%.1f,%.1f;1,1;%s]"):format(x, y, QUIVER_GHOST)
+	end
+	return table.concat(fs)
+end
+
 local function character_content(player)
 	local class = grug_classes.get_class_def(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
@@ -156,6 +184,10 @@ local function character_content(player)
 			player:get_player_name(), 2.75, 4.55)
 	end
 
+	local class_id = grug_classes.get_class(player)
+	if grug_inventory.has_quiver(player) then
+		fs[#fs + 1] = quiver_content(player)
+	end
 	for _, slot in ipairs(grug_inventory.equipment_slots) do
 		local pos = SLOT_POS[slot.list]
 		if pos then
@@ -171,9 +203,12 @@ local function character_content(player)
 			-- runs the tooltip-RECT loop before the children are drawn, and
 			-- :3714-3717 lets the hovered ITEM tooltip overwrite the very same
 			-- m_tooltip_element afterwards, which is only painted at :3856.
-			local slot_label = slot.list == "grug_weapon" and
-				"Weapon — equip here, then use a combat skill from the hotbar" or
+			local slot_label = grug_inventory.slot_label(class_id, slot.list) or
 				slot.label
+			if slot.list == "grug_weapon" then
+				slot_label = slot_label ..
+					" — equip here, then use a combat skill from the hotbar"
+			end
 			table.insert(fs, ("tooltip[%.1f,%.1f;%.4f,%.4f;%s]"):format(
 				pos[1], pos[2], TOOLTIP_W, TOOLTIP_H, esc(slot_label)))
 			-- The ghost is drawn AFTER the list[] and only for empty slots,
@@ -186,7 +221,8 @@ local function character_content(player)
 			-- in a step or on a hover.
 			if player:get_inventory():get_stack(slot.list, 1):is_empty() then
 				table.insert(fs, ("image[%.1f,%.1f;1,1;%s]"):format(
-					pos[1], pos[2], GHOST_TEXTURE[slot.list]))
+					pos[1], pos[2], grug_inventory.slot_ghost(class_id, slot.list) or
+					GHOST_TEXTURE[slot.list]))
 			end
 		end
 	end
@@ -334,12 +370,6 @@ local function bags_content(player, context)
 	local inv = player:get_inventory()
 	local selected = context.grug_bag or 1
 	local fs = {}
-	local has_quiver = core.get_item_group(
-		inv:get_stack("grug_offhand", 1):get_name(), "grug_quiver") > 0
-	if has_quiver then
-		table.insert(fs, "label[8.3,0.1;Quiver]list[current_player;grug_quiver_content;8.3,0.35;2,2;]")
-		table.insert(fs, "listring[current_player;grug_quiver_content]listring[current_player;main]")
-	end
 	for i = 1, grug_inventory.BAG_COUNT do
 		local x = (i - 1) * 2 + 0.3
 		local field = "grug_open_" .. i
@@ -425,6 +455,15 @@ function grug_inventory.refresh(player, force)
 	end
 end
 
+-- Re-send a cached Character page and nothing else: the money hook below and
+-- the quiver's arrow total use it.
+function grug_inventory.refresh_character(player)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.page == CHARACTER_PAGE then
+		sfinv.set_player_inventory_formspec(player, context)
+	end
+end
+
 grug_xp.register_on_level_change(function(player, old_level, new_level)
 	if old_level ~= nil then
 		grug_inventory.refresh(player)
@@ -450,8 +489,5 @@ end)
 -- Keep the cached Character form current even while inventory is closed, so
 -- opening it shows the latest balance. Other selected pages need no rebuild.
 grug_money.register_on_change(function(player)
-	local context = sfinv.contexts[player:get_player_name()]
-	if context and context.page == "grug_inventory:character" then
-		sfinv.set_player_inventory_formspec(player, context)
-	end
+	grug_inventory.refresh_character(player)
 end)

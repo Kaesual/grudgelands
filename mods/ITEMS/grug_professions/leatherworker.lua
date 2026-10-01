@@ -61,8 +61,4 @@ for index = 1, #bag_outputs do
 		mastery_required = index,
 		hint = "Sew at a Tanning Rack"})
 end
-P.register_recipe("leatherworker", {tier = 1, station = "tanning_rack",
-	inputs = {{"grug_mobs:light_leather", "grug_mobs:light_leather", THREAD},
-		{"grug_mobs:light_leather", "", "grug_mobs:light_leather"}},
-	output = "grug_inventory:quiver", mastery_required = 1,
-	hint = "Sew at a Tanning Rack"})
+

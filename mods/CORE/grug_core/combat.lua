@@ -242,6 +242,13 @@ function grug_core.get_equipped_offhand(player)
 	return nil
 end
 
+-- The item Strike and every melee skill swing (Round 28 ruling 25): the
+-- Scout's Melee slot (its offhand), everyone else's Weapon slot. Same stub
+-- pattern; nil = bare hand.
+function grug_core.get_melee_weapon(player)
+	return grug_core.get_equipped_weapon(player)
+end
+
 -- Fired whenever a player's equipment MAY have changed: an equip/swap through
 -- the character screen, a server-side write to one of the lists (the
 -- class-change unequip), and (re-)join.

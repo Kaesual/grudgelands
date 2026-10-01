@@ -221,8 +221,9 @@ local ARMOR_LIST_SLOT = {
 -- Named one by one, like grug_abilities does: "not an appearance list" and
 -- "a list I have never heard of" are different statements, and only the first
 -- may skip the pass.
+-- The offhand is not drawn beside the weapon, but a Scout's Melee skills show
+-- it in the hand (shown_item), so it is not on this list.
 local IRRELEVANT_LIST = {
-	grug_offhand = true, -- the offhand is not drawn yet (contract §1)
 	grug_trinket1 = true,
 	grug_trinket2 = true,
 }
@@ -266,10 +267,12 @@ end
 -- WHAT A PLAYER IS SHOWN HOLDING (character_visuals.md §4, decided in playtest
 -- round 2). Three cases, in this order:
 --
---   1. the hotbar holds an ABILITY item -> the EQUIPPED weapon. An ability item
---      is an orb wearing the weapon's own art (grug_abilities' skins), and it
---      is the weapon slot that drives its damage -- so the hand shows the
---      weapon, which is also what makes a fighting character look armed.
+--   1. the hotbar holds an ABILITY item -> the item in that skill's hand slot
+--      (its `_grug_ability_slot`: a Scout's bow skills show the Ranged bow,
+--      its Strike and Opening the Melee blade; Round 28 ruling 25). An ability
+--      item is an orb wearing that item's own art (grug_abilities' skins), and
+--      it is that slot that drives its damage -- so the hand shows the weapon,
+--      which is also what makes a fighting character look armed.
 --   2. the hotbar holds anything else the registry knows -> that item. A
 --      pickaxe in the hotbar is a pickaxe in the hand.
 --   3. empty hand, or an item nobody registered -> nothing.
@@ -288,8 +291,9 @@ local function shown_item(player)
 	end
 	if core.get_item_group(name, ABILITY_GROUP) > 0 then
 		-- The cosmetic copy retains broken gear even while combat excludes it.
-		local weapon = grug_inventory.get_cosmetic_weapon(player)
-		return weapon
+		local def = core.registered_items[name]
+		return grug_inventory.get_cosmetic_hand(player,
+			def and def._grug_ability_slot or "weapon")
 	end
 	return wielded
 end

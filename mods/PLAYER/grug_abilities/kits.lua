@@ -206,8 +206,9 @@ core.register_on_mods_loaded(function()
 	end
 end)
 
--- What the equipped weapon is worth for one authoritative full swing: fleshy
--- damage and the shared soft-lock clock interval.
+-- What the melee weapon (grug_core.get_melee_weapon: a Scout's Melee slot,
+-- everyone else's Weapon slot) is worth for one authoritative full swing:
+-- fleshy damage and the shared soft-lock clock interval.
 --
 -- Read during kit/equipment synchronization, clock validation and proc
 -- preparation. Callers that already fetched the equipped stack pass that copy
@@ -222,7 +223,7 @@ end)
 function grug_abilities.swing_stats(player, equipped)
 	local stack = equipped
 	if stack == nil then
-		stack = grug_core.get_equipped_weapon(player)
+		stack = grug_core.get_melee_weapon(player)
 	end
 	if not stack or stack:is_empty() then
 		return bare_hand.damage, bare_hand.interval

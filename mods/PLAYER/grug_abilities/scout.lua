@@ -48,6 +48,9 @@ local function cancel_receipt(player, receipt)
 	if repair then repair.cancel_action(player, receipt) end
 end
 
+-- The bow skills read the Weapon slot, the Scout's "Ranged" slot (Round 28
+-- ruling 25); Strike, Opening and every melee skill read its Melee slot
+-- through grug_core.get_melee_weapon instead.
 local function equipped_bow(player)
 	local stack = grug_core.get_equipped_weapon(player)
 	if not stack or not grug_inventory.is_bow(stack) or
@@ -162,7 +165,7 @@ local function launch(player, ability, count, effect, captured)
 	local bow = equipped_bow(player)
 	local base_damage = arrow_damage(player)
 	if not bow or not base_damage then
-		return false, "Equip a usable bow in your Weapon slot."
+		return false, "Equip a usable bow in your Ranged slot."
 	end
 	if grug_inventory.ammo_count(player) < count then
 		return false, count == 1 and "You need an arrow." or
@@ -329,17 +332,31 @@ local function finish_draw_wear(player)
 	draw_wear_steps[player:get_player_name()] = nil
 end
 
+-- The bow's OWN attack-speed affix in percent (Round 28 ruling 25): the
+-- melee blade beside it has its own swing clock, so the draw does not sum the
+-- whole equipment's affixes.
+local function bow_draw_speed(bow)
+	local items = rawget(_G, "grug_items")
+	if not bow or not items or not items.get_affixes then
+		return 0
+	end
+	local speed = 0
+	for _, affix in ipairs(items.get_affixes(bow)) do
+		if affix.stat == "attack_speed_percent" then
+			speed = speed + (tonumber(affix.value) or 0)
+		end
+	end
+	return math.max(0, speed)
+end
+grug_abilities.bow_draw_speed = bow_draw_speed
+
 -- Full-draw time: the bow's own `_grug_bow_draw_time` minus Fletching, divided
--- by the attack/draw-speed affix, never below MIN_DRAW_TIME.
+-- by the bow's attack/draw-speed affix, never below MIN_DRAW_TIME.
 local function effective_draw_time(player, bow)
 	local def = bow and core.registered_items[bow:get_name()]
 	local base = (def and tonumber(def._grug_bow_draw_time) or MIN_DRAW_TIME) -
 		grug_classes.get_talent_bonus(player, "draw_time_sub")
-	local items = rawget(_G, "grug_items")
-	local totals = items and items.get_equipment_affix_totals and
-		items.get_equipment_affix_totals(player) or {}
-	local speed = math.max(0, tonumber(totals.attack_speed_percent) or 0)
-	return math.max(MIN_DRAW_TIME, base / (1 + speed / 100))
+	return math.max(MIN_DRAW_TIME, base / (1 + bow_draw_speed(bow) / 100))
 end
 grug_abilities.loose_draw_time = function(player)
 	return effective_draw_time(player, equipped_bow(player))
@@ -350,7 +367,7 @@ local function start_draw(player)
 	local name = player:get_player_name()
 	if draws[name] then return true end
 	local bow = equipped_bow(player)
-	if not bow then return false, "Equip a usable bow in your Weapon slot." end
+	if not bow then return false, "Equip a usable bow in your Ranged slot." end
 	if grug_inventory.ammo_count(player) < 1 then
 		return false, "You need an arrow."
 	end
@@ -358,7 +375,7 @@ local function start_draw(player)
 	bow = equipped_bow(player)
 	if not bow then
 		cancel_receipt(player, receipt)
-		return false, "Equip a usable bow in your Weapon slot."
+		return false, "Equip a usable bow in your Ranged slot."
 	end
 	draws[name] = {
 		player = player,
@@ -551,8 +568,8 @@ grug_abilities.register_ability({
 	target_kind = "hostile", talent_gated = true, color = "#876b49",
 	cost = {mana_percent = 15}, charge = 12,
 	charge_talent = "opening_charge_sub", melee = true, range = 3,
-	description = "A charged main-hand swing from behind for increased " ..
-		"weapon damage. Unlocked via talents.",
+	description = "A charged swing of your Melee-slot weapon from behind " ..
+		"for increased weapon damage. Unlocked via talents.",
 	proc_swing = function(user, target, ctx)
 		if not behind_target(user, target) then return nil end
 		local percent = grug_classes.get_talent_bonus(user,

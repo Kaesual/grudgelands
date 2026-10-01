@@ -139,7 +139,8 @@ end
 if core.get_all_craft_recipes(G .. "arrow") then
 	core.clear_craft({output = G .. "arrow"})
 end
-core.register_craft({output = G .. "arrow 200", recipe = {
+-- One craft fills one arrow stack (stack_max 100, Round 28 ruling 26).
+core.register_craft({output = G .. "arrow 100", recipe = {
 	{"", "", M .. "bronze_bar"},
 	{"", "group:stick", ""},
 	{"group:stick", "", ""},
