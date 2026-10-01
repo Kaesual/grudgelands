@@ -32,16 +32,49 @@ local TEMPLATES = {
 	},
 }
 
+-- Shown for an entity that has no readable name of its own.
+local GENERIC_ACTOR = "a hostile creature"
+
+-- A display name, never an entity's technical "mod:name" (mobs_redo falls back
+-- to the registered name when a definition has no description).
+local function readable(text)
+	return type(text) == "string" and text ~= "" and
+		not text:find("^[%w_]+:[%w_]+$") and text or nil
+end
+
+-- The object a hit is credited to. A projectile that carries its shooter
+-- (`_grug_source`, stamped by grug_mobs.stamp_arrow_damage and the dragon
+-- breath) resolves to that shooter while it still exists; a projectile whose
+-- shooter is gone (dead or unloaded) resolves to nil. Anything else is its
+-- own source. Death messages and boss-encounter death counting both use it.
+function grug_core.damage_source(object)
+	local entity = object and not object:is_player() and object:get_luaentity()
+	local shooter = entity and entity._grug_source
+	if not shooter then
+		return object
+	end
+	if shooter:is_player() or shooter:get_luaentity() then
+		return shooter
+	end
+	return nil
+end
+
 local function actor_name(object)
 	if not object then
 		return nil, nil
 	end
-	if object:is_player() then
-		return object:get_player_name(), "player"
+	local source = grug_core.damage_source(object)
+	if source and source:is_player() then
+		return source:get_player_name(), "player"
 	end
+	local shooter = source and source:get_luaentity()
 	local entity = object:get_luaentity()
-	if entity then
-		return entity.description or entity.name or "a hostile creature", "mob"
+	if shooter or entity then
+		-- The shooter's name; with the shooter gone, the projectile's own
+		-- readable label ("an arrow", "a fireball").
+		return readable(shooter and shooter.description) or
+			readable(entity and entity._grug_projectile_label) or
+			GENERIC_ACTOR, "mob"
 	end
 	return nil, nil
 end

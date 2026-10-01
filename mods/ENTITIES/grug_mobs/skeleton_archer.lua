@@ -16,6 +16,7 @@
 -- register_simple_arrow is only used if an arrow ever flies without a
 -- shooter, which cannot happen on this path.
 grug_mobs.register_simple_arrow("grug_mobs:arrow_entity", {
+	label = "an arrow",
 	texture = "grug_mobs_arrow.png",
 	velocity = 16,
 	size = {x = 0.4, y = 0.4},

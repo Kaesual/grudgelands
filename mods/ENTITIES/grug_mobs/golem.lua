@@ -22,6 +22,7 @@
 -- this file. Slower than the skeleton's arrow (12 vs 16): a thrown boulder
 -- should be dodgeable.
 grug_mobs.register_simple_arrow("grug_mobs:rock_entity", {
+	label = "a hurled rock",
 	texture = "grug_mobs_rock.png",
 	velocity = 12,
 	size = {x = 0.5, y = 0.5},
