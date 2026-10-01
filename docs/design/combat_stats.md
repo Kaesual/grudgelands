@@ -1051,7 +1051,7 @@ from the measured mesh bounds of its stand animation, horizontally never
 narrower than its collision footprint, rounded out to 0.05 node
 (`tools/r28_a3/mesh_bounds.py`). The collision box stays the movement
 footprint. The boar family and the Ibex had such boxes already.
-This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
+There is no screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
 ## Ambient pursuit policy

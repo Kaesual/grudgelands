@@ -124,7 +124,7 @@ local function golem_def(description, texture)
 		textures = {{texture}},
 		-- Mesh scale rule (boar.lua): 17.24 units = 1.72 nodes at size 1
 		-- against the box below; upstream uses 1. The elite tier multiplies
-		-- both by 1.6 at runtime (levels.lua), so this is the NORMAL-tier
+		-- both by 1.4 at runtime (levels.lua), so this is the NORMAL-tier
 		-- geometry and must stay that way.
 		visual_size = {x = 1, y = 1},
 		-- Negative y: the mesh spans -10.0..+7.24 units around its origin
