@@ -1,0 +1,35 @@
+{
+  "purpose": "Arithmetic fixture only; no authored zone geometry, quests or C1a loot decisions. See calibration.md for the ledger.py adapter.",
+  "start_level": 20,
+  "human": true,
+  "repeat": 0,
+  "zones": [
+    "elandor_whitebridge_shire",
+    "elandor_lorindor"
+  ],
+  "columns": [
+    "zone",
+    "kind",
+    "level",
+    "min_level",
+    "weight",
+    "count",
+    "source"
+  ],
+  "rows": [
+    [0, "kill", 21, 20, 5, 10, "boar"],
+    [0, "item", 22, 20, 4, 8, "grug_materials:steel_bar"],
+    [0, "kill", 23, 21, 5, 10, "wolf"],
+    [0, "item", 24, 22, 4, 5, "grug_materials:rough_jade"],
+    [0, "item", 24, 22, 2.5, 5, "grug_mobs:fang"],
+    [0, "climax", 24, 22, 6, 1, "poacher"],
+    [0, "talk", 24, 22, 1.5, 1, "r20_anchor_034_host"],
+    [1, "kill", 26, 24, 5, 10, "stag"],
+    [1, "item", 26, 24, 4, 8, "grug_materials:steel_bar"],
+    [1, "kill", 28, 26, 5, 10, "poacher"],
+    [1, "item", 28, 26, 4, 5, "grug_materials:rough_citrine"],
+    [1, "kill", 27, 26, 2.5, 6, "poacher"],
+    [1, "climax", 29, 27, 6, 1, "mirefolk"],
+    [1, "talk", 29, 27, 1.5, 1, "r20_anchor_031_host"]
+  ]
+}

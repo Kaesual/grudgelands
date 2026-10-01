@@ -1,0 +1,31 @@
+{
+  "purpose": "Arithmetic fixture only; no authored zone geometry, quests or C1a loot decisions. See calibration.md for the ledger.py adapter.",
+  "start_level": 50,
+  "human": false,
+  "repeat": 3,
+  "zones": [
+    "front_gravesalt_escarpment"
+  ],
+  "columns": [
+    "zone",
+    "kind",
+    "level",
+    "min_level",
+    "weight",
+    "count",
+    "source"
+  ],
+  "rows": [
+    [0, "kill", 51, 50, 7, 9, "zombie"],
+    [0, "item", 51, 50, 6, 6, "grug_materials:abyssal_steel_bar"],
+    [0, "kill", 53, 51, 7, 9, "skeleton_raider"],
+    [0, "item", 53, 51, 6, 6, "grug_materials:abyssal_steel_bar"],
+    [0, "kill", 55, 53, 7, 9, "blightfang_wolf"],
+    [0, "item", 55, 53, 6, 6, "grug_materials:abyssal_steel_bar"],
+    [0, "kill", 57, 55, 7, 9, "carrion_crow"],
+    [0, "item", 57, 55, 6, 6, "grug_materials:abyssal_steel_bar"],
+    [0, "climax", 58, 56, 8, 1, "skeleton_archer"],
+    [0, "repeat", 55, 53, 3.5, 7, "skeleton_raider"],
+    [0, "repeat", 58, 56, 3.5, 7, "zombie"]
+  ]
+}

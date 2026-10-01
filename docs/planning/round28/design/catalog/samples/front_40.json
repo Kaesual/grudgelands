@@ -1,0 +1,31 @@
+{
+  "purpose": "Arithmetic fixture only; no authored zone geometry, quests or C1a loot decisions. See calibration.md for the ledger.py adapter.",
+  "start_level": 40,
+  "human": false,
+  "repeat": 3,
+  "zones": [
+    "front_shattered_line"
+  ],
+  "columns": [
+    "zone",
+    "kind",
+    "level",
+    "min_level",
+    "weight",
+    "count",
+    "source"
+  ],
+  "rows": [
+    [0, "kill", 41, 40, 6, 8, "skeleton_raider"],
+    [0, "item", 41, 40, 5, 6, "grug_materials:embersteel_bar"],
+    [0, "kill", 43, 41, 6, 8, "sun_dried_husk"],
+    [0, "item", 43, 41, 5, 6, "grug_materials:embersteel_bar"],
+    [0, "kill", 45, 43, 6, 8, "hyena"],
+    [0, "item", 45, 43, 5, 6, "grug_materials:embersteel_bar"],
+    [0, "kill", 47, 45, 6, 8, "carrion_crow"],
+    [0, "item", 47, 45, 5, 6, "grug_materials:embersteel_bar"],
+    [0, "climax", 48, 46, 8, 1, "skeleton_archer"],
+    [0, "repeat", 45, 43, 3, 6, "skeleton_raider"],
+    [0, "repeat", 48, 46, 3, 6, "sun_dried_husk"]
+  ]
+}

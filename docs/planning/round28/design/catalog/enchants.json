@@ -1,0 +1,104 @@
+[
+  {
+    "tier": 1,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "grug_materials:tin_bar",
+      "dagger": "grug_materials:quartz",
+      "greataxe": "grug_materials:copper_bar",
+      "metal_armor": "grug_materials:copper_bar",
+      "shield": "grug_materials:tin_bar",
+      "leather_armor": "grug_materials:quartz",
+      "cloth_armor": "grug_materials:quartz",
+      "bow": "grug_materials:quartz",
+      "caster_weapon": "grug_materials:quartz",
+      "spellbook": "grug_materials:quartz",
+      "trinket": "grug_materials:copper_bar"
+    }
+  },
+  {
+    "tier": 2,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "grug_materials:copper_bar",
+      "dagger": "grug_materials:rough_garnet",
+      "greataxe": "grug_materials:iron_bar",
+      "metal_armor": "default:coal_lump",
+      "shield": "grug_materials:iron_bar",
+      "leather_armor": "grug_materials:copper_bar",
+      "cloth_armor": "grug_materials:quartz",
+      "bow": "grug_materials:rough_garnet",
+      "caster_weapon": "grug_materials:rough_citrine",
+      "spellbook": "grug_materials:rough_citrine",
+      "trinket": "grug_materials:rough_jade"
+    }
+  },
+  {
+    "tier": 3,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "default:coal_lump",
+      "dagger": "grug_materials:rough_garnet",
+      "greataxe": "grug_materials:iron_bar",
+      "metal_armor": "default:coal_lump",
+      "shield": "grug_materials:iron_bar",
+      "leather_armor": "grug_materials:rough_jade",
+      "cloth_armor": "grug_materials:rough_citrine",
+      "bow": "grug_materials:rough_garnet",
+      "caster_weapon": "grug_materials:rough_citrine",
+      "spellbook": "grug_materials:rough_citrine",
+      "trinket": "grug_materials:rough_jade"
+    }
+  },
+  {
+    "tier": 4,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "grug_materials:silver_bar",
+      "dagger": "grug_materials:rough_ruby",
+      "greataxe": "grug_materials:silver_bar",
+      "metal_armor": "grug_materials:silver_bar",
+      "shield": "grug_materials:rough_diamond",
+      "leather_armor": "grug_materials:rough_jade",
+      "cloth_armor": "grug_materials:rough_sapphire",
+      "bow": "grug_materials:rough_ruby",
+      "caster_weapon": "grug_materials:rough_sapphire",
+      "spellbook": "grug_materials:rough_sapphire",
+      "trinket": "grug_materials:rough_diamond"
+    }
+  },
+  {
+    "tier": 5,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "grug_materials:emberglass",
+      "dagger": "grug_materials:rough_ruby",
+      "greataxe": "grug_materials:emberglass",
+      "metal_armor": "grug_materials:emberglass",
+      "shield": "grug_materials:rough_diamond",
+      "leather_armor": "grug_gathering:rock_salt",
+      "cloth_armor": "grug_gathering:stormkelp",
+      "bow": "grug_materials:emberglass",
+      "caster_weapon": "grug_materials:emberglass",
+      "spellbook": "grug_materials:rough_sapphire",
+      "trinket": "grug_materials:rough_diamond"
+    }
+  },
+  {
+    "tier": 6,
+    "stat_loot": {},
+    "family_input": {
+      "sword": "grug_materials:abyssal_crystal",
+      "dagger": "grug_materials:rough_diamond",
+      "greataxe": "grug_materials:abyssal_crystal",
+      "metal_armor": "grug_materials:abyssal_crystal",
+      "shield": "grug_materials:rough_diamond",
+      "leather_armor": "grug_gathering:rock_salt",
+      "cloth_armor": "grug_gathering:stormkelp",
+      "bow": "grug_materials:emberglass",
+      "caster_weapon": "grug_materials:abyssal_crystal",
+      "spellbook": "grug_materials:abyssal_crystal",
+      "trinket": "grug_materials:rough_diamond"
+    }
+  }
+]
