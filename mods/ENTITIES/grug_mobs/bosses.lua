@@ -80,7 +80,10 @@ grug_core.register_on_effective_absorb(function(source, target)
 end)
 
 local function encounter_death(player, reason)
-	local killer = reason and reason.object
+	-- A boss's arrow or breath punches with the projectile; it counts as the
+	-- shooter's kill while that shooter exists (grug_core.damage_source).
+	local killer = reason and reason.object and
+		grug_core.damage_source(reason.object)
 	if not killer then return false end
 	if core.is_player(killer) then
 		local victim_faction = grug_core.get_player_faction(

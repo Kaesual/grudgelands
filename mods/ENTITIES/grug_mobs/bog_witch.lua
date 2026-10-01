@@ -28,6 +28,7 @@ local function hex_hit(self, object)
 end
 
 grug_mobs.register_homing_arrow("grug_mobs:hex_bottle", {
+	label = "a hex bottle",
 	visual = "sprite", visual_size = {x = 0.5, y = 0.5},
 	textures = {"vessels_glass_bottle.png^[colorize:#7b2fa3:120"},
 	velocity = 8, glow = 4, lifetime = 5,

@@ -1,6 +1,7 @@
 -- Dungeon Master: classic ranged fireball family in the deep middle bands.
 
 grug_mobs.register_simple_arrow("grug_mobs:dungeon_fireball", {
+	label = "a fireball",
 	texture = "mobs_tnt_smoke.png^[colorize:#ff6a1a:150", velocity = 7,
 	size = {x = 1, y = 1}, glow = 8, tail = true,
 	tail_texture = "mobs_tnt_smoke.png^[colorize:#ff6a1a:150", lifetime = 6,

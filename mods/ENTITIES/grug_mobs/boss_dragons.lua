@@ -218,8 +218,9 @@ local function projectile_trail(self, dtime)
 	})
 end
 
-local function register_breath_arrow(name, texture, effect)
+local function register_breath_arrow(name, texture, effect, label)
 	grug_mobs.register_homing_arrow(name, {
+		label = label,
 		visual = "sprite",
 		visual_size = {x = 1.4, y = 1.4},
 		textures = {texture},
@@ -237,9 +238,9 @@ local function register_breath_arrow(name, texture, effect)
 end
 
 register_breath_arrow("grug_mobs:ice_breath",
-	"grug_mobs_rock.png^[colorize:#8ee8ff:210", "rime")
+	"grug_mobs_rock.png^[colorize:#8ee8ff:210", "rime", "frost breath")
 register_breath_arrow("grug_mobs:storm_breath",
-	"grug_mobs_rock.png^[colorize:#ff7338:210", "scorch")
+	"grug_mobs_rock.png^[colorize:#ff7338:210", "scorch", "storm breath")
 
 local function distance(a, b)
 	local dx, dy, dz = b.x - a.x, b.y - a.y, b.z - a.z

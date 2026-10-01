@@ -1,6 +1,7 @@
 -- Crystal Shard: ranged middle/deep cave family.
 
 grug_mobs.register_simple_arrow("grug_mobs:crystal_shard_entity", {
+	label = "a crystal shard",
 	texture = "default_mese_crystal_fragment.png", velocity = 8,
 	size = {x = 0.3, y = 0.3}, glow = 6, lifetime = 5,
 })

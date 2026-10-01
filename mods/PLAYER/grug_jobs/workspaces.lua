@@ -370,16 +370,24 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
-local function has_saved_items(pos)
+-- Everything a station holds: its node lists and every player's saved
+-- workspace record. Digging and blasts both release all of it, so other
+-- players' invisible leftovers never block a dig (Round 28 ruling 18).
+local function station_contents(pos, station, drops)
+	for list in pairs(automatic.sizes[station] or {craft = 9}) do
+		default.get_inventory_drops(pos, list, drops)
+	end
 	for key, value in pairs(core.get_meta(pos):to_table().fields or {}) do
 		if key:sub(1, #PREFIX) == PREFIX then
 			local data = core.deserialize(value)
 			for _, list in pairs(data and data.lists or {}) do
-				for _, item in ipairs(list) do if not ItemStack(item):is_empty() then return true end end
+				for _, item in ipairs(list) do
+					if not ItemStack(item):is_empty() then drops[#drops + 1] = item end
+				end
 			end
 		end
 	end
-	return false
+	return drops
 end
 
 local function initialize(pos, station)
@@ -435,26 +443,19 @@ local function install_node(name, station)
 		on_rightclick = function(pos, node, player, stack)
 			initialize(pos, station) workspaces.open(pos, player) return stack
 		end,
-		can_dig = function(pos, player)
-			if not allowed(pos, player, true) or has_saved_items(pos) then return false end
-			local inv = core.get_meta(pos):get_inventory()
-			for list in pairs(automatic.sizes[station] or {craft = 9}) do
-				if not inv:is_empty(list) then return false end
-			end
-			return true
+		-- Anyone the normal protection allows may dig a player-placed station
+		-- at any time, full or not; authored public stations stay undiggable.
+		can_dig = function(pos, player) return allowed(pos, player, true) end,
+		-- node_dig calls this after can_dig and the protection check, with the
+		-- node still in place and before handle_node_drops: the contents join
+		-- the dug station's own drops (digger's inventory, overflow on the
+		-- ground).
+		preserve_metadata = function(pos, _, _, drops)
+			station_contents(pos, station, drops)
 		end,
 		on_blast = function(pos)
 			if grug_jobs.is_public_station(station, pos) then return {} end
-			local drops = {def.drop or name}
-			for list in pairs(automatic.sizes[station] or {craft = 9}) do default.get_inventory_drops(pos, list, drops) end
-			for key, value in pairs(core.get_meta(pos):to_table().fields or {}) do
-				if key:sub(1, #PREFIX) == PREFIX then
-					local data = core.deserialize(value)
-					for _, list in pairs(data and data.lists or {}) do
-						for _, item in ipairs(list) do if not ItemStack(item):is_empty() then drops[#drops + 1] = item end end
-					end
-				end
-			end
+			local drops = station_contents(pos, station, {def.drop or name})
 			core.remove_node(pos)
 			return drops
 		end,

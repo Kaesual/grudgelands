@@ -258,6 +258,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   distance, access, inputs, profession tier and capacity before consuming or
   awarding progress. Partial transfers retain produced remainder without a
   second debit or progress award, and closing a UI loses no contents.
+  Digging a player-placed station is allowed whenever protection allows it
+  and drops all of its contents and every player's saved workspace record
+  (`crafting_equipment_revision.md`, Round 28 ruling 18).
 - Personal processing state, fuel, inputs and outputs persist in the physical
   node. Elapsed server game time may catch up lazily after unload/restart but
   does not promise work during shutdown. Automatic furnace, dual-furnace and

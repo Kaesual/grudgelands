@@ -247,6 +247,12 @@ unchanged (mobs_redo applies its own node damage).
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
   (using the player name) and an unattributed fallback.
+  A projectile (arrow, fireball, the bog witch's hex bottle, dragon breath)
+  names its shooter; when the shooter is gone it uses the projectile's own
+  readable label ("an arrow", "a fireball"). No entity's technical name ever
+  appears; an entity without a readable name is "a hostile creature". Boss
+  encounters credit a projectile death to its shooter the same way
+  (Round 28 ruling 17).
 - **Shore-height ruling (2026-09-17):** shore exits have zero vertical rise:
   the first cardinal dry-land surface beside exposed surface water is exactly
   level with the water surface. Road bridges, decks and fords are
