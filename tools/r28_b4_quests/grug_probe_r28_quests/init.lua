@@ -62,7 +62,7 @@ local function registry_equivalence(Q)
 	eq(differing[1], "r14_human_05_the_missing_flock", "the one difference is Ruling 29")
 	local flock = now.quests.r14_human_05_the_missing_flock
 	eq(flock and flock.objectives[1].mobs[1], "grug_mobs:fox", "Ruling 29: foxes, not the wild turkey")
-	eq(json.encode(now.npcs), json.encode(oracle.npcs), "quest NPCs unchanged")
+	check(json.encode(now.npcs) == json.encode(oracle.npcs), "quest NPCs unchanged")
 	local files = 0
 	for _ in pairs(Q.quest_files) do files = files + 1 end
 	log(("registry: %d quests from %d zone files, %d identical to the generators, differing: %s")
@@ -208,6 +208,14 @@ end
 
 local function run()
 	local Q = grug_quests
+	-- New givers the shipped zone files declare (none until a design adds one).
+	local new = {}
+	for id, npc in pairs(Q.registered_npcs) do
+		if npc.race then new[#new + 1] = ("%s (%s, %s) at %s/%s"):format(id, npc.title, npc.race,
+			npc.settlement, npc.socket) end
+	end
+	table.sort(new)
+	log("new givers from the zone files: " .. (#new > 0 and table.concat(new, "; ") or "none"))
 	local ok, err = pcall(registry_equivalence, Q)
 	check(ok, "registry equivalence: " .. tostring(err))
 	sample(Q)
