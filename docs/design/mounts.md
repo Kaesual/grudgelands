@@ -225,8 +225,11 @@ arbitrary fixed-price wall.
 - The dismount uses the **same detach path** as every other one (§3), so
   the rider is set down on a free neighbouring node rather than inside
   the mount's model. The hard geographic mid-air dismount is the exception:
-  it keeps the rider at the boundary position and clears all residual velocity
-  so gravity begins a straight fall.
+  it keeps the rider at the boundary position, and the rider leaves the mount
+  with no residual velocity (the engine holds an attached player's velocity at
+  zero), so gravity begins a straight fall. No velocity derived from the
+  server-side `get_velocity()` is added: for an attached player that value is
+  the stale speed from before mounting (Round 28 ruling 16).
 - **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
   punches *what the player is attached to* —
   `local target = self.attack:get_attach() or self.attack`

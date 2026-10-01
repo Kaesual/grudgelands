@@ -32,13 +32,6 @@ local function position_node(pos)
 		z = math.floor(pos.z + 0.5)}
 end
 
-local function zero_player_velocity(player)
-	local velocity = player:get_velocity()
-	if velocity then
-		player:add_velocity({x = -velocity.x, y = -velocity.y, z = -velocity.z})
-	end
-end
-
 local function free_dismount_pos(pos)
 	local offsets = {
 		{x = 1, y = 0, z = 0}, {x = -1, y = 0, z = 0},
@@ -109,15 +102,12 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	else
 		restore_player(player, skip_animation)
 	end
+	-- No velocity is subtracted after the detach: an attached player's client
+	-- holds zero velocity (the engine nulls it every step while attached),
+	-- while the server-side get_velocity() still carries the stale speed from
+	-- before mounting, so cancelling it launched the rider (Round 28 ruling 16).
 	if hard then
 		if pos then player:set_pos(pos) end
-		zero_player_velocity(player)
-		if not teardown then
-			core.after(0, function(player_name)
-				local current = core.get_player_by_name(player_name)
-				if current then zero_player_velocity(current) end
-			end, name)
-		end
 	elseif pos then
 		player:set_pos(free_dismount_pos(pos))
 	end

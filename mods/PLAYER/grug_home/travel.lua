@@ -1,20 +1,24 @@
 local COOLDOWN = 1800
+-- The movement-aggregator hold that keeps a respawned player in place, with no
+-- gravity, until the home area is emerged (Round 28 ruling 16).
+local RESPAWN_HOLD = "grug_home:respawn"
 local pending, sessions = {}, {}
 local function name_of(player) return player:get_player_name() end
 local function notify(player, message) core.chat_send_player(name_of(player), message) end
+-- A teleport only writes the position. It never adds a velocity derived from
+-- get_velocity(): the server keeps a dead player's pre-impact speed (it ignores
+-- a dead client's position packets), and subtracting it launched a respawned
+-- player upward by about the speed of the lethal fall.
 local function teleport(player, position)
  grug_mounts.dismount(player, nil, true)
  grug_core.invalidate_combat_identity(player)
  player:set_pos(position)
- local velocity = player:get_velocity()
- if velocity then
-  player:add_velocity({x=-velocity.x,y=-velocity.y,z=-velocity.z})
- end
 end
 function grug_home.cancel(player)
  local name = name_of(player)
  pending[name] = nil
  sessions[name] = {}
+ grug_core.release_movement(player, RESPAWN_HOLD)
 end
 function grug_home.remaining(player)
  local deadline = tonumber(player:get_meta():get_string("grug_home:ready_at")) or 0
@@ -61,8 +65,23 @@ local function claim_arrival(row)
  return vector.new(cell.x, cell.y - 0.49, cell.z)
 end
 
+-- A respawn whose home cannot be prepared ends in the saved start pocket.
+-- Starts are generated during world preparation, so this pocket is loaded
+-- synchronously and its floor/headroom validated before the move.
+local function start_fallback(player)
+ local spawn = grug_core.start_position(grug_factions.get_faction(player),
+  grug_core.get_player_race(name_of(player)))
+ if not spawn then return false end
+ core.load_area(vector.offset(spawn,-2,-2,-2),vector.offset(spawn,2,3,2))
+ local arrival = safe_arrival({pos=spawn})
+ if not arrival then return false end
+ teleport(player, arrival)
+ return true
+end
+
 -- Travel goes to grug_home.get (a placed Claim Stone or the innkeeper home);
--- respawn always goes to the innkeeper home.
+-- respawn always goes to the innkeeper home: the bound one, else the
+-- starting-town innkeeper (grug_home.innkeeper).
 local function request(player, respawn)
  local name = name_of(player)
  local resolve = respawn and grug_home.innkeeper or grug_home.get
@@ -77,13 +96,35 @@ local function request(player, respawn)
  sessions[name] = sessions[name] or {}
  local identity = {session=sessions[name], id=row.id,
   faction=grug_factions.get_faction(player), race=grug_core.get_player_race(name)}
+ if respawn then
+  -- The one respawn teleport: straight to the home's registry arrival, held
+  -- there (no movement, no gravity) until the area is emerged and validated.
+  -- The finish step below releases the hold on every path.
+  grug_core.hold_movement(player, RESPAWN_HOLD)
+  teleport(player, row.arrival)
+ end
  local function land(p, arrival)
-  teleport(p, arrival)
+  -- A respawned player already waits at the arrival; it is not moved again.
+  local at = p:get_pos()
+  if not (respawn and at and vector.distance(at, arrival) < 0.1) then
+   teleport(p, arrival)
+  end
   local actual = p:get_pos()
   if actual and vector.distance(actual, arrival) < 0.1 then
    if not respawn then
     p:get_meta():set_string("grug_home:ready_at", tostring(os.time() + COOLDOWN))
    end
+  end
+ end
+ local function unavailable(p)
+  if not respawn then
+   return notify(p, "Home arrival is unavailable. Please try again.")
+  end
+  grug_core.release_movement(p, RESPAWN_HOLD)
+  if p:get_hp() > 0 and start_fallback(p) then
+   notify(p, "Your home could not be prepared. You woke in your starting town.")
+  else
+   notify(p, "Home arrival is unavailable.")
   end
  end
  -- Prepares one destination and calls arrive(player, current home, failed)
@@ -101,6 +142,7 @@ local function request(player, respawn)
     if pending[name] ~= phase or sessions[name] ~= identity.session then return end
     pending[name] = nil
     local p = core.get_player_by_name(name)
+    if p and respawn then grug_core.release_movement(p, RESPAWN_HOLD) end
     if not p or p:get_hp() <= 0 then return end
     local current = resolve(p)
     if not current or current.id ~= identity.id or
@@ -123,11 +165,11 @@ local function request(player, respawn)
    if pending[name] == phase then
     pending[name] = nil
     local p = core.get_player_by_name(name)
+    if p and respawn then return unavailable(p) end
     if p then notify(p, "Home arrival timed out. Please try again.") end
    end
   end)
  end
- local function unavailable(p) notify(p, "Home arrival is unavailable. Please try again.") end
  prepare(row, function(p, current, failed)
   if failed then return unavailable(p) end
   if not current.claim then
@@ -155,17 +197,6 @@ end
 function grug_home.return_home(player) return request(player, false) end
 function grug_home.respawn(player)
  grug_home.cancel(player)
- if not grug_home.innkeeper(player) then return false end
- -- A revived player must not wait at the death location if emerge fails.
- -- Starts are generated during world preparation; load only this saved pocket
- -- synchronously, validate its floor/headroom, then await the bound home there.
- local spawn = grug_core.start_position(grug_factions.get_faction(player),
-  grug_core.get_player_race(name_of(player)))
- if not spawn then return false end
- core.load_area(vector.offset(spawn,-2,-2,-2),vector.offset(spawn,2,3,2))
- local fallback = safe_arrival({pos=spawn})
- if not fallback then return false end
- teleport(player, fallback)
  return request(player, true)
 end
 core.register_on_joinplayer(grug_home.cancel)

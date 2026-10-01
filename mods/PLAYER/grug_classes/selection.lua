@@ -85,26 +85,17 @@ end
 -- release can never free a player another holder is still freezing.
 local MOVEMENT_HOLD = "class_creation"
 
-local function stop_velocity(player)
-	local velocity = player:get_velocity()
-	if velocity and (velocity.x ~= 0 or velocity.y ~= 0 or velocity.z ~= 0) then
-		player:add_velocity({
-			x = -velocity.x,
-			y = -velocity.y,
-			z = -velocity.z,
-		})
-	end
-end
-
 -- The creation freeze is an EXCLUSIVE HOLD on the grug_core movement
 -- aggregator (ruling 11, 2026-09-16; skill_trees.md §3.9), not a physics
 -- write of its own. `hold_movement` is idempotent AND re-asserting: it
 -- compares against the player's live override and rewrites it on a mismatch,
 -- which is exactly the watchdog this function used to be -- some later mod
 -- may write the field after join, and a frozen player must not drift loose.
+-- No velocity derived from get_velocity() is added here or at the final
+-- placement: that server-side value can be stale (a dead or attached
+-- player's), and cancelling it launched players (Round 28 ruling 16).
 local function reassert_player_lock(player)
 	grug_core.hold_movement(player, MOVEMENT_HOLD)
-	stop_velocity(player)
 	local armor = copy_table(player:get_armor_groups())
 	if armor.immortal ~= 1 then
 		armor.immortal = 1
@@ -147,7 +138,6 @@ local function release_player(player, session)
 	if creation_sessions[name] ~= session then
 		return false
 	end
-	stop_velocity(player)
 	grug_core.release_movement(player, MOVEMENT_HOLD)
 	local armor = copy_table(player:get_armor_groups())
 	armor.immortal = session.previous_immortal
@@ -487,7 +477,6 @@ finish_if_ready = function(player)
 	-- character behind at the unsafe engine spawn.
 	grug_core.invalidate_combat_identity(player)
 	player:set_pos(session.spawn_pos)
-	stop_velocity(player)
 	if not grug_classes.get_class(player) and
 			not grug_classes.set_class(player, class_id) then
 		session.load_failed = "class_unavailable"
