@@ -1071,6 +1071,38 @@ end
 
 -- environmental damage
 
+-- GRUG PATCH (Round 28 ruling 6, combat_stats.md "Environmental damage"): on
+-- a grug_mobs mob each per-mob amount is only an on/off switch (> 0, or true
+-- for suffocation) and grug_mobs/env_damage.lua turns it into a share of
+-- hp_max per second: halved for elite/rare, 0 for bosses and kings. Every
+-- other mob keeps its flat mobs_redo amount. 0 means "nothing happens".
+local function grug_env_damage(self, kind, amount)
+
+	if grug_mobs and grug_mobs.env_damage and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name] then
+
+		if amount == true or (tonumber(amount) or 0) > 0 then
+			return grug_mobs.env_damage(self, kind)
+		end
+
+		return 0
+	end
+
+	return amount
+end
+
+-- GRUG PATCH (Round 28 ruling 6): fall damage `ceil(hp_max * (d - 6) / 20)`
+-- on a grug_mobs mob, the player's shape; vanilla ceil(d - 6) otherwise.
+local function grug_fall_damage(self, excess)
+
+	if grug_mobs and grug_mobs.fall_damage and grug_mobs.registered_cadence
+	and grug_mobs.registered_cadence[self.name] then
+		return grug_mobs.fall_damage(self, excess)
+	end
+
+	return ceil(excess)
+end
+
 function mob_class:do_env_damage()
 
 	local pos = self.object:get_pos() ; if not pos then return end
@@ -1089,9 +1121,14 @@ function mob_class:do_env_damage()
 	local nodef = core.registered_nodes[self.standing_in]
 
 	-- water damage
-	if self.water_damage ~= 0 and nodef.groups.water then
+	-- GRUG PATCH (Round 28 ruling 6): amounts via grug_env_damage, here and in
+	-- the lava, fire, light and suffocation branches below.
+	local grug_amount = nodef.groups.water
+			and grug_env_damage(self, "water", self.water_damage) or 0
 
-		self.health = self.health - self.water_damage
+	if grug_amount ~= 0 then
+
+		self.health = self.health - grug_amount
 
 		effect(py, 5, "mobs_bubble_particle.png", nil, nil, 1, nil)
 
@@ -1100,9 +1137,12 @@ function mob_class:do_env_damage()
 	end
 
 	-- lava damage
-	if self.lava_damage ~= 0 and nodef.groups.lava then
+	grug_amount = nodef.groups.lava
+			and grug_env_damage(self, "lava", self.lava_damage) or 0
 
-		self.health = self.health - self.lava_damage
+	if grug_amount ~= 0 then
+
+		self.health = self.health - grug_amount
 
 		effect(py, 15, "mobs_fire_particle.png", 1, 5, 1, 0.2, 15, true)
 
@@ -1111,9 +1151,12 @@ function mob_class:do_env_damage()
 	end
 
 	-- fire damage
-	if self.fire_damage ~= 0 and nodef.groups.fire then
+	grug_amount = nodef.groups.fire
+			and grug_env_damage(self, "fire", self.fire_damage) or 0
 
-		self.health = self.health - self.fire_damage
+	if grug_amount ~= 0 then
+
+		self.health = self.health - grug_amount
 
 		effect(py, 15, "mobs_fire_particle.png", 1, 5, 1, 0.2, 15, true)
 
@@ -1166,9 +1209,12 @@ function mob_class:do_env_damage()
 			light = core.get_node_light(pos) or 0
 		end
 
-		if light >= self.light_damage_min and light <= self.light_damage_max then
+		grug_amount = grug_env_damage(self, "sun", self.light_damage)
 
-			self.health = self.health - self.light_damage
+		if grug_amount ~= 0
+		and light >= self.light_damage_min and light <= self.light_damage_max then
+
+			self.health = self.health - grug_amount
 
 			effect(py, 5, "mobs_tnt_smoke.png")
 
@@ -1183,12 +1229,16 @@ function mob_class:do_env_damage()
 	and (nodef.node_box == nil or nodef.node_box.type == "regular")
 	and nodef.groups.disable_suffocation ~= 1 then
 
-		local damage = type(self.suffocation) == "number" and self.suffocation or 2
+		local damage = grug_env_damage(self, "suffocation",
+				type(self.suffocation) == "number" and self.suffocation or 2)
 
-		self.health = self.health - damage
+		if damage ~= 0 then
 
-		if self:check_for_death({type = "suffocation",
-				pos = pos, node = self.standing_in}) then return true end
+			self.health = self.health - damage
+
+			if self:check_for_death({type = "suffocation",
+					pos = pos, node = self.standing_in}) then return true end
+		end
 
 		-- try to jump out of block
 		self.object:set_velocity({x = 0, y = self.jump_height, z = 0})
@@ -2556,6 +2606,13 @@ function mob_class:do_states(dtime)
 				self.punch_timer = self.punch_interval
 			end
 
+			-- GRUG PATCH (Round 28 ruling 5, combat_stats.md §3): at most once a
+			-- second a ground melee mob leaves its target's own column and drifts
+			-- sideways off an overlapping engaged mob (grug_mobs/separation.lua).
+			if ground_melee and grug_mobs and grug_mobs.separation_step then
+				grug_mobs.separation_step(self, dtime, s, target_pos)
+			end
+
 			-- make sure flying mobs are inside proper medium
 			if self.fly and dist > self.reach and self:flight_check() then
 
@@ -2738,8 +2795,12 @@ function mob_class:do_states(dtime)
 				if self.at_cliff then
 					self:set_velocity(0)
 					self:set_animation("stand")
+				-- GRUG PATCH (Round 28 ruling 5): the contact run also stops short of
+				-- a visible target's own column, e.g. a target on a step above.
 				elseif grug_obstacle.should_close_contact(
-						dist, self.reach, in_sight) then
+						dist, self.reach, in_sight)
+				and not (in_sight and grug_mobs and grug_mobs.holds_column
+					and grug_mobs.holds_column(self, s, target_pos)) then
 
 					self:set_velocity(self.run_velocity)
 
@@ -2933,11 +2994,18 @@ function mob_class:falling(pos)
 				damage = damage + damage * (add / 100)
 			end
 
-			self.health = self.health - ceil(damage)
+			-- GRUG PATCH (Round 28 ruling 6): percent of hp_max, see
+			-- grug_fall_damage; an immune boss or king takes nothing.
+			damage = grug_fall_damage(self, damage)
 
-			effect(pos, 5, "mobs_tnt_smoke.png", 1, 2, 2, nil)
+			if damage ~= 0 then
 
-			if self:check_for_death({type = "fall"}) then return true end
+				self.health = self.health - damage
+
+				effect(pos, 5, "mobs_tnt_smoke.png", 1, 2, 2, nil)
+
+				if self:check_for_death({type = "fall"}) then return true end
+			end
 		end
 
 		self.old_y = self.object:get_pos().y
@@ -3547,7 +3615,27 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 				self:set_animation("walk")
 			end
 
-			self.pause_timer = 0.25
+			-- GRUG PATCH (Round 28 ruling 8, combat_stats.md §4): no player hit
+			-- (swing, arrow or ability -- all reach here with the player as
+			-- hitter) pauses the mob. The pause made on_step return before
+			-- do_states and so froze the attack clock; several players hitting
+			-- one mob stretched its attack interval a lot. Mob-vs-mob hits keep
+			-- the upstream 0.25 s pause.
+			if not is_player(hitter) then
+				self.pause_timer = 0.25
+			end
+
+			-- GRUG PATCH (Round 28 ruling 7): an authoritative player melee swing
+			-- (Strike and the swing skills: the claimed `grug_authoritative`
+			-- token; casts, Charge and arrows carry `in_ability_punch` instead)
+			-- pushes a normal mob back by KNOCKBACK_PER_SECOND x its swing
+			-- interval. attempt_swing punches with full_punch_interval = the
+			-- weapon's interval after the attack-speed affix, so `punch_interval`
+			-- IS that interval. A position displacement, applied only where the
+			-- mob's box fits (grug_mobs/separation.lua).
+			if grug_authoritative and grug_mobs and grug_mobs.melee_knockback then
+				grug_mobs.melee_knockback(self, hitter, punch_interval)
+			end
 		end
 	end
 
