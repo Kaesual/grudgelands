@@ -8,22 +8,10 @@ local plain = grug_core.plain_text
 
 local function objective_text(objective)
 	local subject = objective.description
-	if objective.type == "item" then
-		subject = "Bring " .. grug_core.item_name(objective.item)
-	elseif objective.type == "talk" then
-		local npc = grug_quests.registered_npcs[objective.npc]
-		subject = "Speak with " .. (npc and npc.title or objective.npc)
-	elseif not subject or subject == "Defeat named threat" then
-		local names = {}
-		for _, name in ipairs(objective.mobs or {}) do
-			local def = core.registered_entities[name]
-			local label = def and def.description
-			if not label or label == "" then label = (name:match("[^:]+$") or name):gsub("_", " ") end
-			names[#names + 1] = label
-		end
-		subject = "Defeat " .. table.concat(names, " or ")
+	if not subject or subject == "Defeat named threat" or objective.type ~= "kill" then
+		subject = grug_quests.objective_action(objective)
 	end
-	return ("%d/%d %s"):format(objective.count, objective.required, subject or "Objective")
+	return ("%d/%d %s"):format(objective.count, objective.required, subject)
 end
 
 -- Cut to one HUD line of at most `width` bytes, never inside a UTF-8
@@ -41,18 +29,24 @@ local function one_line(text, width)
 end
 
 -- One HUD line per tracked quest (Round 24 ruling 23): the objective only,
--- no quest title, or "Return to <turn-in NPC>" once the quest is ready.
+-- no quest title, or "Return to <turn-in NPC>" once the quest is ready. A
+-- travel quest reads "Travel to <NPC>" throughout (Round 28 ruling 39);
+-- several objectives share one compact line, "Wood Axe 0/1, Wood Pickaxe
+-- 0/1" (ruling 41); a repeatable starts with "Repeatable: " (ruling 42).
 -- Two quests with the same objective may read the same (accepted).
 function grug_quests.hud_line(quest, width)
 	local text
-	if quest.ready then
-		local npc = grug_quests.registered_npcs[quest.npc]
+	local npc = grug_quests.registered_npcs[quest.npc]
+	if quest.travel then
+		text = "Travel to " .. (npc and npc.title or tostring(quest.npc))
+	elseif quest.ready then
 		text = "Return to " .. (npc and npc.title or tostring(quest.npc))
+	elseif #quest.objectives > 1 then
+		text = grug_quests.compact_text(quest)
 	else
-		local parts = {}
-		for _, objective in ipairs(quest.objectives) do parts[#parts + 1] = objective_text(objective) end
-		text = table.concat(parts, "; ")
+		text = objective_text(quest.objectives[1])
 	end
+	if quest.repeatable then text = "Repeatable: " .. text end
 	return one_line(text, width)
 end
 
@@ -71,37 +65,21 @@ function grug_quests.hud_text(journal, window)
 	return table.concat(lines, "\n")
 end
 
--- The short subject of an objective for the message feed: the mob, item or
--- NPC name alone ("Small Boar", "Light Leather", "Elder Maren").
-local function feed_subject(objective)
-	if objective.type == "item" then return grug_core.item_name(objective.item) end
-	if objective.type == "talk" then
-		local npc = grug_quests.registered_npcs[objective.npc]
-		return npc and npc.title or tostring(objective.npc)
-	end
-	local names = {}
-	for _, name in ipairs(objective.mobs or {}) do
-		local def = core.registered_entities[name]
-		local label = def and def.description
-		if not label or label == "" then
-			label = (name:match("[^:]+$") or name):gsub("_", " ")
-				:gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end)
-		end
-		names[#names + 1] = plain(label)
-	end
-	return table.concat(names, " or ")
-end
-
--- One feed line per quest (Round 28 ruling 20): every objective as
--- "<subject> <count>/<required>", joined by ", " ("Small Boar 3/10"), cut
--- like a tracker line at the widest tracker width (QUEST_WRAP characters).
-function grug_quests.feed_text(quest)
+-- Every objective as "<subject> <count>/<required>", joined by ", "
+-- ("Small Boar 3/10, Light Leather 0/2").
+function grug_quests.compact_text(quest)
 	local parts = {}
 	for _, objective in ipairs(quest.objectives) do
-		parts[#parts + 1] = ("%s %d/%d"):format(feed_subject(objective),
+		parts[#parts + 1] = ("%s %d/%d"):format(grug_quests.objective_subject(objective),
 			objective.count, objective.required)
 	end
-	return one_line(table.concat(parts, ", "), grug_core.hud_layout.QUEST_WRAP)
+	return table.concat(parts, ", ")
+end
+
+-- One feed line per quest (Round 28 ruling 20): the compact text, cut like a
+-- tracker line at the widest tracker width (QUEST_WRAP characters).
+function grug_quests.feed_text(quest)
+	return one_line(grug_quests.compact_text(quest), grug_core.hud_layout.QUEST_WRAP)
 end
 
 -- player name -> quest id -> {objective counts last seen}. A quest seen for

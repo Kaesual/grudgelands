@@ -386,6 +386,7 @@ grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Mare
 	register_on_change = function(fn) grug_quests._changed = fn end,
 	journal = function() return deep_copy(journal_state) end}
 core.registered_entities["grug_mobs:small_boar"] = {description = "Small Boar"}
+dofile("mods/PLAYER/grug_quests/labels.lua")
 dofile("mods/PLAYER/grug_quests/hud.lua")
 local function quest(id, objectives) return {id = id, objectives = objectives, ready = false} end
 local boar = {type = "kill", mobs = {"grug_mobs:small_boar"}, count = 3, required = 10}
@@ -441,7 +442,8 @@ grug_money = {format = function(c) return c .. " copper" end, get = function() r
 grug_quests.journal = function()
 	return {quests = {{id = "q1", title = "Boar Trouble", description = "Boars eat our crops.",
 		objectives = {{type = "kill", mobs = {"grug_mobs:small_boar"}, count = 3, required = 10}},
-		ready = false, npc = "elder", rewards = {xp = 40, copper = 5, items = {"grug_mobs:leather 2"}}}},
+		ready = false, npc = "elder", rewards = {xp = 40, copper = 5, items = {"grug_mobs:leather 2"}},
+		reward_xp = 40}},
 		tracked = {"q1"}, hud_enabled = true}
 end
 dofile("mods/PLAYER/grug_quests/ui.lua")

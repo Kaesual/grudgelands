@@ -1,0 +1,127 @@
+{
+  "zone": "kragmar_gor_drazhak",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "gor_drazhak",
+      "anchor": "gor_drazhak",
+      "givers": [
+        {
+          "npc": "r20_orc_capital_cook",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_orc_capital_envoy",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_orc_capital_cook",
+      "line": "legacy",
+      "giver": "r20_orc_capital_cook",
+      "turnin": "r20_orc_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "The Longladle Ration",
+      "text": "Gorla Longladle has a ration pot beside Gor Drazhak's cook-court oven. Bring five raw meat portions for the next watch and its travellers. You can help without learning Cooking.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_orc_capital_services",
+      "line": "legacy",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r20_orc_capital_intro"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "A Bowl at Longladle",
+      "text": "Thorga recommends a stop at Gorla Longladle's cook court. Speak with the cook beside the oven in the warren, then complete the introduction there. The nearby Cooking trainer is not required for this conversation.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_orc_capital_cook"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_orc_capital_stores",
+      "line": "legacy",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 20,
+      "level": 20,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Stone for the Muster Yard",
+      "text": "The muster yard's supply edge has been worn down by loaded carts. Bring twelve cobble blocks to Thorga so the watch can reset it without taking stone from occupied homes.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:cobble",
+          "count": 12
+        }
+      ],
+      "rewards": {
+        "xp": 780,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_orc_journey_01",
+      "line": "legacy",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_anchor_022_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Word for Brakka Jarward",
+      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Speargrass Wellhold in Speargrass Reach and speak with Brakka Jarward. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Brakka Jarward there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_022_host"
+        }
+      ],
+      "rewards": {
+        "xp": 615,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

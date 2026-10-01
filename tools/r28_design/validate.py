@@ -59,6 +59,10 @@ QUEST_REQUIRED = ("id", "line", "giver", "turnin", "min_level", "level", "title"
                   "objectives", "rewards")
 LEGACY_QUEST_KEYS = ("xp", "faction", "race")
 LEGACY_OBJECTIVE_KEYS = ("mobs", "mob", "zone", "role")
+# Today's contested-zone quests ask for enemy faction guards (the level-40
+# guard kills). B4's mechanical split keeps them; only legacy kill objectives
+# (`mobs`) may name these two, a new design names mobs only.
+LEGACY_GUARD_TARGETS = ("guard_accord", "guard_throng")
 CLOCKS = ("day", "night", "both")
 DISPOSITIONS = ("neutral", "aggressive", "critter")
 SHAPES = ("circle", "ring", "band", "zone")
@@ -1023,7 +1027,7 @@ class Validator:
                    "±%d (%d-%d)" % (role, levels[0], levels[1], level, LEVEL_SLACK,
                                     level - LEVEL_SLACK, level + LEVEL_SLACK))
 
-    def target_role_ok(self, role, file, path, what="kill target"):
+    def target_role_ok(self, role, file, path, what="kill target", legacy_guard=False):
         if not self.role_def(role)[0]:
             self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
             return False
@@ -1031,6 +1035,8 @@ class Validator:
         if disposition == "critter":
             self.E("E-critter-target", file, path, "critter %s is never a %s (Ruling 29)" % (role, what))
             return False
+        if disposition is None and legacy_guard and role in LEGACY_GUARD_TARGETS:
+            return True
         if disposition is None:
             self.E("E-not-a-mob", file, path, "%s is an NPC or guard, not a %s" % (role, what))
             return False
@@ -1055,8 +1061,9 @@ class Validator:
         roles = self.kill_roles(obj, file, path)
         area_ref = obj.get("area")
         area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if "area" in obj else None
+        legacy_guard = self.legacy and obj.get("roles") is None
         for role in roles:
-            if self.target_role_ok(role, file, path):
+            if self.target_role_ok(role, file, path, legacy_guard=legacy_guard):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
 
@@ -1566,6 +1573,16 @@ def _scenarios():
                 q["objectives"] = [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "zone": False, "count": 3}]
         _save(target / Q_FILE, data)
 
+    def guard_kill(field):
+        def setup(target):
+            data = _load(target / Q_FILE)
+            for q in data["quests"]:
+                if q["id"] == "sample_hunt_01":
+                    q["objectives"] = [{"type": "kill", field: ["grug_mobs:guard_throng" if field == "mobs"
+                                                                else "guard_throng"], "count": 3}]
+            _save(target / Q_FILE, data)
+        return setup
+
     return [
         ("front file on a declared front line", front_ok, False, "!W-front-host-missing"),
         ("front file quest on another line", front_wrong_line, False, "E-front-line"),
@@ -1593,6 +1610,8 @@ def _scenarios():
         ("prerequisite cycle in a front file", front_cycle, False, "E-cycle"),
         ("legacy kill objective with mobs", legacy_kill, True, None),
         ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
+        ("legacy enemy guard kill (split of today's quests)", guard_kill("mobs"), True, "!E-not-a-mob"),
+        ("guard as a designed kill role", guard_kill("roles"), True, "E-not-a-mob"),
     ]
 
 

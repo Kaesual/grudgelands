@@ -1,0 +1,306 @@
+{
+  "zone": "kragmar_redtusk_savanna",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "redtusk_village",
+      "anchor": "redtusk_village",
+      "givers": [
+        {
+          "npc": "r14_orc_steward",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r15_orc_local",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "redtusk_outpost",
+      "anchor": "redtusk_outpost",
+      "givers": [
+        {
+          "npc": "r14_orc_scout",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "redtusk_bandit_camp",
+      "anchor": "redtusk_bandit_camp",
+      "givers": [
+        {
+          "npc": "r14_orc_captive",
+          "lines": [
+            "legacy"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r14_orc_07_teeth_around_the_herd",
+      "line": "legacy",
+      "giver": "r14_orc_steward",
+      "turnin": "r14_orc_steward",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_orc_06_husks_on_redtusk_road"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Teeth Around the Herd",
+      "text": "Hyenas circle the village herd. Thin the pack before it learns the fences.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:hyena"
+          ],
+          "zone": "kragmar_redtusk_savanna",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_08_scour_the_dry_wash",
+      "line": "legacy",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_orc_07_teeth_around_the_herd"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Scour the Dry Wash",
+      "text": "Scorpions fill the dry wash below the outpost. Clear Kesh's patrol route. Look for this threat after nightfall in the named regional zone.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:scorpion"
+          ],
+          "zone": "kragmar_redtusk_savanna",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "xp": 525,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r14_orc_09_no_forge_made_this_brand",
+      "line": "legacy",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_orc_08_scour_the_dry_wash"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "No Forge Made This Brand",
+      "text": "The bandits branded supplies with a hooked sun no orcish forge made. Defeat them and hear Rokka's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:bandit",
+            "grug_mobs:bandit_archer"
+          ],
+          "zone": "kragmar_redtusk_savanna",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 805,
+        "copper": 80,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_01",
+      "line": "legacy",
+      "giver": "r15_orc_local",
+      "turnin": "r15_orc_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_orc_06_husks_on_redtusk_road"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Hide for the Low Annex",
+      "text": "The broad house's low annex needs fresh ties for its hide screens. Bring ordinary leather from the local hunt.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:leather",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_02",
+      "line": "legacy",
+      "giver": "r15_orc_local",
+      "turnin": "r15_orc_local",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r14_orc_06_husks_on_redtusk_road"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Fangs Beyond the Annex",
+      "text": "Bring two ordinary fangs from the hyenas circling Redtusk's herd. Morga will hang them beside the repaired hide screens while Borak's herd patrol is under way.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:fang",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_03",
+      "line": "legacy",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_orc_07_teeth_around_the_herd"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Howls Below the Lookout",
+      "text": "Hyenas wait below the timber lookout and scatter anyone carrying stores uphill. Clear the post's approach.",
+      "objectives": [
+        {
+          "type": "kill",
+          "mobs": [
+            "grug_mobs:hyena"
+          ],
+          "zone": "kragmar_redtusk_savanna",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "xp": 315,
+        "copper": 50,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_04",
+      "line": "legacy",
+      "giver": "r14_orc_scout",
+      "turnin": "r14_orc_scout",
+      "min_level": 11,
+      "level": 11,
+      "requires": [
+        "r14_orc_07_teeth_around_the_herd"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Venom Beside the Palisade",
+      "text": "The scorpions in Redtusk's dry wash emerge after sunset. Bring two ordinary venom sacs from that same outing so Kesh can show the guards what to avoid along the angled palisade.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:venom_sac",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 420,
+        "copper": 55,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_05",
+      "line": "legacy",
+      "giver": "r14_orc_captive",
+      "turnin": "r14_orc_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_orc_08_scour_the_dry_wash"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "The Carriers' Cut",
+      "text": "The bandits kept the carriers' pay in stolen purses instead of adding it to the food stores. Recover two for the captive so the raided herd crews can reclaim their share. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:stolen_purse",
+          "count": 2
+        }
+      ],
+      "rewards": {
+        "xp": 460,
+        "copper": 65,
+        "items": []
+      }
+    },
+    {
+      "id": "r15_orc_local_06",
+      "line": "legacy",
+      "giver": "r14_orc_captive",
+      "turnin": "r14_orc_captive",
+      "min_level": 12,
+      "level": 12,
+      "requires": [
+        "r14_orc_08_scour_the_dry_wash"
+      ],
+      "faction": "throng",
+      "race": "orc",
+      "title": "Bindings from the Loaded Sled",
+      "text": "The stolen freight is tied with the raiders' linen cloth. Bring enough of it for Rokka to compare the knots and brands.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:linen_cloth",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 575,
+        "copper": 75,
+        "items": []
+      }
+    }
+  ]
+}

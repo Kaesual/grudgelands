@@ -113,7 +113,12 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   Without `--atlas` these checks are skipped with one `W-no-atlas` warning.
 - `--legacy` allows the legacy-only fields of B4's mechanical split (`xp`,
   `faction`, `race`; kill objectives with `mobs` entity names and `zone`
-  instead of `roles`).
+  instead of `roles`). Such a legacy kill objective may also name the enemy
+  faction guards (`grug_mobs:guard_accord`, `grug_mobs:guard_throng`) that
+  today's contested-zone quests ask for; a designed `roles` objective may
+  not (`E-not-a-mob`). The split itself is
+  `mods/PLAYER/grug_quests/data/zones/`; the game checks the same rules at
+  load (`grug_quests/validate.lua`).
 - Output: one line per finding, `error [E-code] file: json.path: message` or
   `warning [W-code] …`. Exit 0 = no errors, 1 = errors (or warnings with
   `--strict`), 2 = unreadable files.
@@ -179,12 +184,12 @@ They use `samples/valid/` (a small Dawnmere Fields design with catalogues,
 real zone and NPC ids), `samples/existing_min.json` and `samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 63 variants each give
+`W-loot-unchecked` (only Dawnmere is designed) and that 65 variants each give
 their expected finding (broken designs, plus allowed forms: a settlement-key
 anchor, a leader kill without area, a leader of another zone, a declared
 front file, a capital front giver, both outpost givers declared, the
 single-NPC contested exemption, a new giver at a free socket, legacy kill
-objectives). The ledger test checks the
+objectives, a legacy enemy-guard kill). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
 per-quest bands, `--lines` and `--start-level`. Both print one summary line

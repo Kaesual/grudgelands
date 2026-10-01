@@ -1,0 +1,127 @@
+{
+  "zone": "elandor_dur_brannoc",
+  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "hubs": [
+    {
+      "id": "dur_brannoc",
+      "anchor": "dur_brannoc",
+      "givers": [
+        {
+          "npc": "r20_dwarf_capital_cook",
+          "lines": [
+            "legacy"
+          ]
+        },
+        {
+          "npc": "r20_dwarf_capital_envoy",
+          "lines": [
+            "legacy",
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": [
+    {
+      "id": "r20_dwarf_capital_cook",
+      "line": "legacy",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_dwarf_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Copperpan Supper",
+      "text": "Varda Copperpan has places at the table for late arrivals in Dur Brannoc. Bring five raw meat portions to the bakehouse cook. The meal is a shared provision task, not a Cooking qualification test.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "xp": 380,
+        "copper": 45,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_services",
+      "line": "legacy",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_cook",
+      "min_level": 10,
+      "level": 10,
+      "requires": [
+        "r20_dwarf_capital_intro"
+      ],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "A Seat at Copperpan",
+      "text": "Dorrin recommends the terrace bakehouse before your next climb. Speak with Varda Copperpan at the cook's place beside the oven, then complete the introduction with her. The Cooking trainer has a separate role; you do not need to learn the profession.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_dwarf_capital_cook"
+        }
+      ],
+      "rewards": {
+        "xp": 285,
+        "copper": 40,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_dwarf_capital_stores",
+      "line": "legacy",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 20,
+      "level": 20,
+      "requires": [],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Lamp Coal for the Gate Shift",
+      "text": "The gate shift keeps its lamp fuel apart from the smiths' metal stock. Bring eight coal lumps to Dorrin so the night watch can replenish that reserve without taking the bakehouse's fuel.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "xp": 780,
+        "copper": 60,
+        "items": []
+      }
+    },
+    {
+      "id": "r20_dwarf_journey_01",
+      "line": "legacy",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 21,
+      "level": 21,
+      "requires": [],
+      "faction": "accord",
+      "race": "dwarf",
+      "title": "Word for Edda Tarnmantle",
+      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Tarnwatch Fold in Frostbarrow Shelf and speak with Edda Tarnmantle. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Edda Tarnmantle there. No parcel, fighting errand or return trip is required.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_014_host"
+        }
+      ],
+      "rewards": {
+        "xp": 615,
+        "copper": 50,
+        "items": []
+      }
+    }
+  ]
+}

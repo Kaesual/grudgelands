@@ -215,6 +215,12 @@
     }
   ],
   "entities": {
+    "grug_mobs:guard_throng": {
+      "type": "npc",
+      "description": "Throng Guard",
+      "disposition": null,
+      "drops": []
+    },
     "grug_mobs:boar": {
       "type": "animal",
       "description": "Boar",
