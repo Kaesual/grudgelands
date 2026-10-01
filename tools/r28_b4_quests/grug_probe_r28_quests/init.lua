@@ -13,7 +13,9 @@
 --   3. the sample played end to end by a player stand-in (a headless server
 --      has no client): accept, kill credit, quest drop into the inventory,
 --      turn-in with the weight reward, the repeatable's cooldown, travel
---      credit on accept.
+--      credit on accept;
+--   4. the load-time world checks against a probe spawn area installed into
+--      B1's real registry (level fit, role in area).
 
 local P = "[r28_quests_probe] "
 local dir = core.get_modpath(core.get_current_modname())
@@ -206,8 +208,47 @@ local function play(Q)
 	check(ok, "play: " .. tostring(err))
 end
 
+-- The load-time world checks against B1's real spawn areas: a probe area is
+-- installed into Dawnmere's spawn record for the check and removed again.
+local function area_checks(Q)
+	local SA = grug_mobs.spawn_areas
+	local path = core.get_modpath("grug_mobs") .. "/data/zones/elandor_dawnmere_fields.spawns.json"
+	local handle = assert(io.open(path, "r"))
+	local original = core.parse_json(handle:read("*a"))
+	handle:close()
+	local probe = table.copy(original)
+	probe.areas = {
+		{id = "probe_field", anchor = "start", shape = {kind = "circle", r = 60},
+			hosts = {biomes = {"any"}}, clock = "both", levels = {1, 3},
+			species = {{role = "boar", weight = 1}}},
+		{id = "fallback", anchor = "zone", shape = {kind = "zone"}, hosts = {biomes = {"any"}},
+			clock = "both", levels = {1, 5}, species = {{role = "boar", weight = 1}}, fallback = true},
+	}
+	SA.install_zone("elandor_dawnmere_fields", probe)
+	local function file(level, role)
+		return {name = "elandor_dawnmere_fields.quests.json", zone = "elandor_dawnmere_fields", front = false,
+			data = {zone = "elandor_dawnmere_fields", quests = {{id = "probe_area", line = "hunt",
+				giver = "r14_human_elder", turnin = "r14_human_elder", min_level = 1, level = level,
+				title = "Probe Area", text = "Boars. In the probe field.",
+				objectives = {{type = "kill", roles = {role}, count = 1,
+					area = "elandor_dawnmere_fields/probe_field"}}, rewards = {weight = 1}}}}}
+	end
+	local ok, err = pcall(Q.validate_quest_data, {file(2, "boar")})
+	check(ok, "area objective within level 2 +-3 accepted: " .. tostring(err))
+	ok, err = pcall(Q.validate_quest_data, {file(9, "boar")})
+	check(not ok and tostring(err):find("quest probe_area: objective 1: boar is met at levels 1-3", 1, true)
+		and tostring(err):find("E-level-fit", 1, true), "level outside the slack refused: " .. tostring(err))
+	ok, err = pcall(Q.validate_quest_data, {file(2, "fox")})
+	check(not ok and tostring(err):find("E-role-not-in-area", 1, true), "role outside the area refused: " .. tostring(err))
+	log("area check example: " .. tostring(err):gsub("\n%s*", " | "))
+	SA.install_zone("elandor_dawnmere_fields", original)
+	check(not SA.zone_has_areas("elandor_dawnmere_fields"), "Dawnmere restored without areas")
+end
+
 local function run()
 	local Q = grug_quests
+	local areas_ok, areas_err = pcall(area_checks, Q)
+	check(areas_ok, "area checks: " .. tostring(areas_err))
 	-- New givers the shipped zone files declare (none until a design adds one).
 	local new = {}
 	for id, npc in pairs(Q.registered_npcs) do
