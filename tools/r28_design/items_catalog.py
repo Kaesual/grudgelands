@@ -266,7 +266,8 @@ def build(dump):
         }
     return {
         "about": "Existing items, item groups and mob entities from a headless engine probe "
-                 "(tools/r28_design/dump_items.sh). Regenerate; do not edit by hand.",
+                 "(tools/r28_design/dump_items.sh), without the design catalogue's own sub-types and "
+                 "new loot items. Regenerate; do not edit by hand.",
         "tiers": [{"id": t["id"], "key": t["key"], "levels": [t["min_level"], t["max_level"]],
                    "bar": t["bar_item"]} for t in dump.get("tiers") or []],
         "items": items,
@@ -290,6 +291,8 @@ def render_md(cat):
         "Generated from the real item registry by a headless engine probe",
         "(`tools/r28_design/dump_items.sh`, which also writes",
         "[existing.json](existing.json)). Do not edit by hand; rerun the tool.",
+        "The design catalogue's own sub-types and new loot items are left out",
+        "(see [the catalogue](../design/catalog/README.md)).",
         "",
         "Use these ids in quest item objectives, rewards, drop tables and enchant",
         "inputs. New items go into `catalog/items.json`. Never reference an item",

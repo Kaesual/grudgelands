@@ -10,7 +10,7 @@
 -- registration stub does what init.lua's grug_mobs.register_mob does for this
 -- test: keep the base definition, apply the disposition and the level config.
 --
--- 1. Without data (the shipped empty data/ files): nothing registered, every
+-- 1. Without data (no data/ files at all): nothing registered, every
 --    mob is its own family, the alert rule is the same-name rule for every
 --    pair, every mob at every level drops its static list, no item.
 -- 2. With the sample catalogue tools/r28_b2/sample/data/: registrations,
@@ -299,7 +299,9 @@ end
 -- 1. Without data: today's behaviour.
 ------------------------------------------------------------------------------
 do
-	local w = new_world(ROOT .. "/mods/ENTITIES/grug_mobs")
+	-- A modpath without data/: the shipped catalogue (Lane E1) needs every
+	-- base family, which this test does not load.
+	local w = new_world("/virtual/no_data")
 	check(#w.order == w.base_count and next(grug_mobs.subtypes) == nil,
 		"no data: no sub-type registered")
 	check(w.item_calls == 0, "no data: no loot item registered")

@@ -3,6 +3,8 @@
 Generated from the real item registry by a headless engine probe
 (`tools/r28_design/dump_items.sh`, which also writes
 [existing.json](existing.json)). Do not edit by hand; rerun the tool.
+The design catalogue's own sub-types and new loot items are left out
+(see [the catalogue](../design/catalog/README.md)).
 
 Use these ids in quest item objectives, rewards, drop tables and enchant
 inputs. New items go into `catalog/items.json`. Never reference an item
@@ -113,7 +115,7 @@ Today's static drops (chance = 1 in N). Ruling 36 replaces them with band tables
 | `grug_mobs:light_leather` | Light Leather | 1 | grid, mob drop | boar 2, jungle_boar 2, plague_boar 2 |
 | `grug_mobs:linen_cloth` | Linen Cloth | 2 | mob drop | mirefolk 2 |
 | `grug_mobs:linen_scrap` | Linen Scrap | 1 | mob drop | bog_ooze 3, bog_witch 2, frost_stray 2, goblin_miner 2, goblin_miner_slinger 2, goblin_raider 2, goblin_slinger 2, skeleton_archer 2, skeleton_raider 2, sun_dried_husk 2, zombie 2 |
-| `grug_mobs:raptor_claw` | Raptor Claw |  | mob drop | jungle_lynx 3 |
+| `grug_mobs:raptor_claw` | Small Cat Claw |  | mob drop | jungle_lynx 3 |
 | `grug_mobs:scaled_hide` | Scaled Hide | 4 | grid, mob drop | crocodile 1, reef_lurker 2, scorpion 2, serpent 2, shore_crab 2, viper 2 |
 | `grug_mobs:sharp_feather` | Sharp Feather | 6 | mob drop | crag_eagle 1, vulture 1 |
 | `grug_mobs:shiny_scale` | Shiny Scale | 4 | mob drop | mirefolk 4 |

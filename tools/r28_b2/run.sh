@@ -6,9 +6,11 @@
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with
 # the disposable probe mod staged (never shipped) and a GAME_PATCH that puts
-# the test catalogue sample/data/*.json into the STAGED grug_mobs/data/ (the
-# shipped files stay empty). Copies the server log to OUT_DIR, removes the
-# run directory and exits 0 only on "RESULT PASS".
+# the test catalogue sample/data/*.json into the STAGED grug_mobs/data/ in
+# place of the shipped catalogue (tools/r28_e1 probes that one), with the
+# pre-catalogue enchant table sample/enchants.json. Copies the
+# server log to OUT_DIR, removes the run directory and exits 0 only on
+# "RESULT PASS".
 #
 # Usage: tools/r28_b2/run.sh OUT_DIR [TIMEOUT_SECONDS]
 set -euo pipefail
@@ -26,6 +28,11 @@ for f in subtypes items drops tints; do
 	diff -u --label "a/$rel" --label "b/$rel" "$repo/$rel" "$here/sample/data/$f.json" \
 		>>"$patch_file" || true
 done
+# The shipped enchant table needs the catalogue's loot items, which the test
+# items.json does not have: stage the pre-catalogue table (existing items only).
+rel="mods/ITEMS/grug_professions/data/enchants.json"
+diff -u --label "a/$rel" --label "b/$rel" "$repo/$rel" "$here/sample/enchants.json" \
+	>>"$patch_file" || true
 set +e
 GAME_PATCH="$patch_file" PROBE="$here/grug_probe_r28_b2" KEEP=1 \
 	"$repo/tools/luanti_headless.sh" "$timeout_s" >"$out/headless.txt" 2>&1

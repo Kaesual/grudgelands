@@ -6,6 +6,12 @@
 -- hints and known sources, every alias, every mobs_redo entity with its drops,
 -- and the content-curation lists. tools/r28_design/items_catalog.py turns the
 -- dump into docs/planning/round28/items/existing.{json,md}.
+--
+-- "Existing" means without the design catalogue's own registrations: the
+-- sub-types (grug_mobs.subtype) and the loot items grug_mobs registered from
+-- data/items.json (they carry _grug_icon_brief). The design tools read those
+-- from the catalogue itself, so a role or item there never "collides" with
+-- its own shipped registration.
 
 local P = "[r28_items_probe] "
 local function log(msg) core.log("action", P .. msg) end
@@ -67,7 +73,8 @@ local function run()
 	end
 	local entities = {}
 	for name, def in pairs(core.registered_entities) do
-		if def._cmi_is_mob or def.type == "monster" or def.type == "animal" or def.type == "npc" then
+		if (def._cmi_is_mob or def.type == "monster" or def.type == "animal" or def.type == "npc")
+				and not grug_mobs.subtype(name) then
 			local drops = {}
 			for _, row in ipairs(type(def.drops) == "table" and def.drops or {}) do
 				if type(row) == "table" and type(row.name) == "string" then
@@ -119,7 +126,8 @@ local function run()
 
 	local items, count = {}, 0
 	for name, def in pairs(core.registered_items) do
-		if name ~= "" and name ~= "air" and name ~= "ignore" and name ~= "unknown" then
+		if name ~= "" and name ~= "air" and name ~= "ignore" and name ~= "unknown"
+				and def._grug_icon_brief == nil then
 			count = count + 1
 			local engine = {}
 			for _, recipe in ipairs(core.get_all_craft_recipes(name) or {}) do

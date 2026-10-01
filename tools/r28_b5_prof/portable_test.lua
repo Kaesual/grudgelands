@@ -1,8 +1,9 @@
 -- Round 28 Lane B5 portable test (rulings 27, 28). Loads the REAL files under
 -- minimal stubs and checks:
---   1. the shipped interim data/enchants.json validates against the real
---      stat pools (grug_quality) and yields the 588 operations, each costing
---      own material + stat loot + family input;
+--   1. the shipped data/enchants.json (the Round 28 catalogue, Lane E1; the
+--      same text as docs/planning/round28/design/catalog/enchants.json)
+--      validates against the real stat pools (grug_quality) and yields the
+--      588 operations, each costing own material + stat loot + family input;
 --   2. operations generated from a complete sample catalogue: exact costs,
 --      prefix and suffix share inputs, the trinket's two pools share stat loot;
 --   3. load errors for missing or wrong entries (stat_loot, family_input,
@@ -156,9 +157,12 @@ local function own_of(family)
 end
 
 -- ---------------------------------------------------------------------------
--- 1. The shipped interim data.
+-- 1. The shipped catalogue data.
 -- ---------------------------------------------------------------------------
-local shipped = decode_json(read("mods/ITEMS/grug_professions/data/enchants.json"))
+local shipped_text = read("mods/ITEMS/grug_professions/data/enchants.json")
+eq(shipped_text, read("docs/planning/round28/design/catalog/enchants.json"),
+	"shipped enchants.json is the catalogue's")
+local shipped = decode_json(shipped_text)
 local by_tier = data.validate_enchants(shipped, POOLS)
 local families, stats = data.families_and_stats(POOLS)
 eq(#families, 11, "eleven enchant families")
@@ -166,21 +170,21 @@ local stat_count = 0
 for _ in pairs(stats) do stat_count = stat_count + 1 end
 eq(stat_count, 9, "nine stats")
 local total = 0
-local OLD_REAGENT = {"default:coal_lump", "grug_mobs:venom_gland", "grug_mobs:slime_gel",
-	"grug_mobs:croc_tooth", "grug_gathering:stormkelp", "grug_mobs:stone_core"}
 for _, family in ipairs(families) do
 	local ops = operations(by_tier, family, own_of(family))
 	total = total + #ops
 	for _, op in ipairs(ops) do
 		eq(#op.inputs, 3, family .. " op has three inputs")
 		eq(op.inputs[1], "own:" .. family .. "_t" .. op.tier, family .. " own material first")
-		eq(op.inputs[2], OLD_REAGENT[op.tier], family .. " T" .. op.tier .. " interim stat loot")
+		local row = shipped[op.tier]
+		eq(op.inputs[2], row.stat_loot[op.stat], family .. " T" .. op.tier .. " stat loot")
+		eq(op.inputs[3], row.family_input[family], family .. " T" .. op.tier .. " family input")
 	end
 end
-eq(total, 588, "588 operations from the interim data")
+eq(total, 588, "588 operations from the shipped data")
 eq(#data.referenced_items(by_tier), 6 * (9 + 11), "referenced items listed per tier")
 eq(#data.validate_reagents(decode_json(read("mods/ITEMS/grug_professions/data/reagents.json"))),
-	0, "interim reagents.json is empty")
+	0, "shipped reagents.json is empty (the catalogue has no reagent)")
 
 -- ---------------------------------------------------------------------------
 -- 2. A complete sample catalogue: distinct items per stat, family and tier.

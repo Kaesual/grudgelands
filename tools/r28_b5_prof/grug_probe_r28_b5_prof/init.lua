@@ -2,7 +2,7 @@
 -- tools/r28_b5_prof/run.sh stages it through tools/luanti_headless.sh.
 --
 -- Registers two sample universal reagents through the real loader (the
--- shipped reagents.json is empty until Lane E1), then, once every mod has
+-- shipped reagents.json is empty: the Round 28 catalogue has none), then, once every mod has
 -- loaded, audits the real registry: enchant operations built from
 -- data/enchants.json, no metal fittings anywhere, the six furnace-only
 -- dishes, the sample reagents' crafts and the cross-profession check.
@@ -94,15 +94,15 @@ local function run()
 	-- Sample costs, written out.
 	local sword = grug_jobs.station_operation("enchant:sword:prefix:str:t1")
 	check(sword and table.concat(sword.flat_inputs, ",") ==
-		"grug_materials:bronze_bar,default:coal_lump,default:tin_lump", "sword T1 Heavy cost")
+		"grug_materials:bronze_bar,grug_mobs:boar_tusk,grug_materials:tin_bar", "sword T1 Heavy cost")
 	local staff = grug_jobs.station_operation("enchant:caster_weapon:suffix:int:t3")
 	check(staff and table.concat(staff.flat_inputs, ",") ==
-		"grug_artisans:hardened_wood,grug_mobs:slime_gel,grug_materials:silver_lump",
+		"grug_artisans:hardened_wood,grug_mobs:coded_talisman,grug_materials:rough_citrine",
 		"staff T3 of the Owl cost")
 	local ring = grug_jobs.station_operation("enchant:trinket:suffix:crit_percent:t6")
 	check(ring and table.concat(ring.flat_inputs, ",") ==
-		"grug_artisans:setting_gold_filigreed_abyssal_steel,grug_mobs:stone_core," ..
-		"grug_materials:abyssal_crystal", "trinket T6 of the Eagle cost")
+		"grug_artisans:setting_gold_filigreed_abyssal_steel,grug_mobs:last_laugh_dentures," ..
+		"grug_materials:rough_diamond", "trinket T6 of the Eagle cost")
 
 	-- 2. Metal fittings are gone: no item, no recipe, no group member.
 	for _, metal in ipairs(METALS) do
