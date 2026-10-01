@@ -220,7 +220,7 @@ local function start()
 			end
 			local leader_seen = false
 			for _, object in ipairs(core.get_objects_inside_radius(
-					{x = -100, y = POINTS[3].y, z = -2330}, 80)) do
+					{x = -100, y = POINTS[3].y, z = -2290}, 80)) do
 				local ent = object:get_luaentity()
 				if ent and ent._grug_leader and ent.name == "grug_mobs:bear" then
 					leader_seen = true
@@ -236,6 +236,21 @@ local function start()
 				end
 			end
 			log("camp members " .. members)
+			-- The authored bandit sub-type levels during activation (composed
+			-- look) and must still carry the camp area's level (relevel).
+			local authored = 0
+			for _, object in ipairs(core.get_objects_inside_radius(
+					{x = -160, y = POINTS[3].y, z = -2350}, 120)) do
+				local ent = object:get_luaentity()
+				if ent and ent.name == "grug_mobs:confused_bandit" then
+					authored = authored + 1
+					if ent._grug_level < 9 or ent._grug_level > 10 then
+						fail("authored bandit at level " .. tostring(ent._grug_level))
+					end
+				end
+			end
+			log("authored bandit sub-types in the camp " .. authored)
+			if authored < 1 then fail("no authored bandit sub-type in the camp") end
 			if members < 1 or members > 4 then fail("camp holds " .. members) end
 			if (SA.stats.spawned or 0) < 1 then fail("no ambient area spawn") end
 			log((#failures == 0 and "RESULT PASS" or "RESULT FAIL") ..

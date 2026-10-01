@@ -122,6 +122,12 @@ local function new_env(world)
 			return out
 		end,
 		get_connected_players = function() return world.players or {} end,
+		get_node_light = function(pos, tod)
+			if world.light then return world.light(pos, tod) end
+			if tod then return 15 end
+			local t = tod or world.time or 0.5
+			return (t >= 0.1875 and t <= 0.8125) and 15 or 0
+		end,
 		log = noop,
 		pos_to_string = function(p) return ("(%d,%d,%d)"):format(p.x, p.y, p.z) end,
 		get_meta = function(pos) return world.meta_at(pos) end,
@@ -518,8 +524,14 @@ load_into(AE, MOBS .. "/density.lua")
 load_into(AE, MOBS .. "/camps.lua")
 local G = AE.grug_mobs
 local SA = G.spawn_areas
-local set_tier_calls = 0
-G.set_tier = function(ent, tier) set_tier_calls = set_tier_calls + 1; ent._grug_tier = tier end
+local relevels = 0
+G.relevel = function(ent, level)
+	ent._grug_spawn_level = level
+	if ent._grug_level and ent._grug_level ~= level then
+		ent._grug_level = level
+		relevels = relevels + 1
+	end
+end
 for _, name in ipairs({"grug_mobs:boar", "grug_mobs:fox", "grug_mobs:zombie", "grug_mobs:rabbit",
 		"grug_mobs:shore_crab", "grug_mobs:gull", "grug_mobs:bandit", "grug_mobs:giant_rat",
 		"grug_mobs:wolf", "grug_mobs:bog_ooze", "grug_mobs:bear"}) do
@@ -652,6 +664,8 @@ check(not pcall(SA.install_zone, "front_broken_causeway", {zone = "front_broken_
 	area{id = "f", anchor = "zone", shape = {kind = "zone"}, species = {{role = "boar", weight = 1}}, fallback = true}}}),
 	"no band in a front zone")
 check(not pcall(SA.install_zone, DAWN, {zone = "elandor_goldmead_vale", areas = {}}), "zone mismatch")
+check(not pcall(SA.install_zone, "kragmar_sunscar_flats", {zone = "kragmar_sunscar_flats", areas = {}}),
+	"a zone without areas needs its palette")
 -- The failed installs above must not have touched Dawnmere
 check(SA.get_area(DAWN, "home_day") ~= nil, "failed installs leave other zones intact")
 -- ... nor a zone's own previous data: a broken re-install of Dawnmere
@@ -665,12 +679,12 @@ check(not pcall(SA.install_zone, "kragmar_sunscar_flats", {zone = "kragmar_sunsc
 	leaders = {{role = "bear", anchor = "start", level = 5, respawn = 300}}}), "leader role unique")
 
 -- band on Kragmar: forward = -z
-ok, err = try_install("kragmar_sunscar_flats", {
+ok, err = pcall(SA.install_zone, "kragmar_sunscar_flats", {zone = "kragmar_sunscar_flats", areas = {
 	area{id = "toward_front", anchor = "start", shape = {kind = "band", forward = {0, 300}, side = {-50, 50}},
 		species = {{role = "boar", weight = 1}}},
 	area{id = "f", anchor = "zone", shape = {kind = "zone"}, species = {{role = "zombie", weight = 1}}, fallback = true},
-})
-check(ok, "sunscar band: " .. tostring(err))
+}})
+check(ok, "sunscar band, areas without a palette: " .. tostring(err))
 local tf = SA.get_area("kragmar_sunscar_flats", "toward_front")
 check(SA.in_shape(tf, 10, 2550 - 200) and not SA.in_shape(tf, 10, 2550 + 200), "kragmar band runs toward -z")
 check(not SA.in_shape(tf, 60, 2400), "band side limit")
@@ -760,13 +774,27 @@ check(ent.object:get_pos().x == 24 and ent.object:get_pos().y == GROUND_Y + 1, "
 W.prelevel = true
 check(SA.attempt(P.pos, W.players, "day", 0, 0) == "spawned", "prelevelled spawn")
 local pre = spawned[#spawned]
-check(pre._grug_level == pre._grug_spawn_level and pre._grug_level <= 3 and set_tier_calls == 1,
+check(pre._grug_level == pre._grug_spawn_level and pre._grug_level <= 3 and relevels == 1,
 	"activation-time level replaced by the area level")
 W.prelevel = nil
 pre.object._removed = true
 -- night picks the rat
+W.time = 0.0
 check(SA.attempt(P.pos, W.players, "night", 0, 0) == "spawned" and
 	spawned[#spawned].name == "grug_mobs:giant_rat", "night rat")
+W.time = 0.5
+-- light (today's ABM behaviour): sky exposure, day >= 10, hostile at night <= 5
+G.spawn_role_hostile = function(name) return name ~= "grug_mobs:boar" end
+W.light = function(pos, tod) if tod then return 9 end return 15 end
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "no sky: a cave floor or overhang")
+W.light = function(pos, tod) if tod then return 15 end return 8 end
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "day area below light 10")
+W.light = function(pos, tod) if tod then return 15 end return 9 end
+check(SA.attempt(P.pos, W.players, "night", 0, 0) == "light", "torch-lit ground refuses a hostile at night")
+W.light = function(pos, tod) if tod then return 15 end return 4 end
+check(SA.attempt(P.pos, W.players, "night", 0, 0) == "spawned", "dark open ground at night")
+W.light = nil
+spawned[#spawned].object._removed = true
 -- the road at x = 300 refuses (ruling 3), critters would not be refused
 local PR = player_at(276, GROUND_Y + 1, -2750)
 check(SA.attempt(PR.pos, {PR}, "day", 0, 0) == "protected", "road refuses an area spawn")
@@ -777,7 +805,7 @@ check(SA.attempt(PT.pos, {PT}, "day", 0, 0) == "protected", "start town refuses 
 local P2 = player_at(30, GROUND_Y + 1, -2750)
 check(SA.attempt(P.pos, {P, P2}, "day", 0, 0) == "player_near", "keeps 24 from every player")
 -- clipping: a column in Goldmead (no areas installed there now) is not served
-SA.install_zone("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", areas = {}})
+SA.install_zone("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", palette = {families = {}}, areas = {}})
 local PB = player_at(0, GROUND_Y + 1, -2010)
 check(SA.attempt(PB.pos, {PB}, "day", 0.25, 0) == "no_area_zone", "clipped at the zone border")
 check(SA.attempt(PB.pos, {PB}, "day", 0.75, 0) == "spawned", "same player, a Dawnmere column")
@@ -867,7 +895,7 @@ fire.on_timer({x = 0, y = GROUND_Y + 1, z = -2600}, 30)
 check(metas["0,-2600"].i._grug_camp_target == nil, "fire in an area zone rolls nothing")
 check(#spawned == 0, "fire in an area zone spawns nothing")
 W.players = {player_at(5, GROUND_Y + 1, -1600)}
-SA.install_zone("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", areas = {}})
+SA.install_zone("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", palette = {families = {}}, areas = {}})
 fire.on_timer({x = 0, y = GROUND_Y + 1, z = -1600}, 30)
 check((metas["0,-1600"].i._grug_camp_target or 0) >= 3, "fire in a fallback zone keeps working")
 -- area camp slots
@@ -875,6 +903,8 @@ clear_world()
 local camp = SA.get_area(DAWN, "border_bandits")
 local PCAMP = player_at(-160 + 60, GROUND_Y + 1, -2150)
 W.now = 5000
+G.area_camp_tick(W.now, {player_at(-160 + 75, GROUND_Y + 1, -2150)}, "day")
+check(#spawned == 0, "first fill waits for a player within 64 nodes")
 G.area_camp_tick(W.now, {PCAMP}, "day")
 local members = 0
 for _, e in ipairs(spawned) do
@@ -922,6 +952,8 @@ check(L and L.zone == DAWN and L.pos.x == -160 and L.pos.z == -2150 and L.level 
 check(SA.leader("boar") == nil, "no leader for a plain role")
 local PL = player_at(-100, GROUND_Y + 1, -2150)
 W.now = 10000
+SA.leader_tick(W.now, {player_at(-150, GROUND_Y + 1, -2150)})
+check(#spawned == 0, "no leader appears within 24 nodes of a player")
 SA.leader_tick(W.now, {PL})
 check(#spawned == 1, "leader spawned")
 local leader = spawned[1]
@@ -958,6 +990,7 @@ do
 	local LW = {time = 0.5, zones = {mob_level_at = function() return 42 end},
 		core = setmetatable({}, {__index = function() return function() return "" end end})}
 	local LE = new_env(LW)
+	LE.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET = 5}
 	LE.mobs = {scale_mob = noop}
 	LE.math = setmetatable({round = function(x) return math.floor(x + 0.5) end}, {__index = math})
 	load_into(LE, MOBS .. "/levels.lua")
@@ -976,6 +1009,30 @@ do
 	local tagged = fake(7)
 	LG.ensure_init(tagged)
 	check(tagged._grug_level == 7, "area level replaces the field")
+	-- An authored sub-type of a family with a composed look (a bandit role):
+	-- it levels during activation from the field (42), set_tier refuses
+	-- authored tiers, relevel still hands it the area level with its stats.
+	LG.register_level_cfg("grug_mobs:confused_bandit", {_grug_authored_tier = true})
+	local bandit = {name = "grug_mobs:confused_bandit"}
+	bandit.object = new_object(bandit, {x = 0, y = 0, z = 0})
+	function bandit.object:set_armor_groups() end
+	LG.ensure_init(bandit)
+	check(bandit._grug_level == 42, "activation-time level from the field")
+	LG.set_tier(bandit, "normal")
+	local hp42 = bandit.hp_max
+	LG.relevel(bandit, 9)
+	check(bandit._grug_level == 9 and bandit._grug_spawn_level == 9, "relevel sets the area level")
+	local hp9 = LG.stats_for(9, bandit._grug_tier)
+	check(bandit.hp_max == hp9 and hp9 < hp42 and bandit.health <= hp9, "relevel re-derives the stats")
+	LG.ensure_init(bandit)
+	check(bandit._grug_level == 9, "the next tick keeps it")
+	local fresh = {name = "grug_mobs:confused_bandit"}
+	fresh.object = new_object(fresh, {x = 0, y = 0, z = 0})
+	function fresh.object:set_armor_groups() end
+	LG.relevel(fresh, 9)
+	check(fresh._grug_level == nil and fresh._grug_spawn_level == 9, "before the first tick only the field is set")
+	LG.ensure_init(fresh)
+	check(fresh._grug_level == 9, "and the first tick applies it")
 end
 
 -- ---------------------------------------------------------------------------

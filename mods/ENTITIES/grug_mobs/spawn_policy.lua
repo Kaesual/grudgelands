@@ -710,19 +710,20 @@ end
 -- asked only in the six capital zones. The density budget asks the policy
 -- for several species at one point in a row, so the last answer is kept.
 --
-local capital_zones
+local capital_zones = {} -- zone id -> bool, from the zone authority
 local last_x, last_y, last_z, last_protected
 
+-- A capital zone is one whose zone session publishes a `capital` anchor.
 local function capital_zone(zone_id)
-	if not capital_zones then
-		capital_zones = {}
-		for zone_id_ in pairs(ZONE_MOB_PALETTES) do
-			if grug_zones.anchor(zone_id_, "capital") then
-				capital_zones[zone_id_] = true
-			end
-		end
+	if not zone_id then
+		return false
 	end
-	return capital_zones[zone_id] == true
+	local known = capital_zones[zone_id]
+	if known == nil then
+		known = grug_zones.anchor(zone_id, "capital") ~= nil
+		capital_zones[zone_id] = known
+	end
+	return known
 end
 
 function grug_mobs.protected_spawn_surface(pos)

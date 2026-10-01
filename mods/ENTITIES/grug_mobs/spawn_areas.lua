@@ -5,7 +5,8 @@
 -- (design frame §4.6). It carries
 --   * `palette`  today's named-zone mob palette (world_zones.md §8 families,
 --                the zone's boar tint and lookalike choices) as data; it is
---                the zone's whole surface rule while `areas` is empty;
+--                the zone's whole surface rule while `areas` is empty, so it
+--                is required then and may be dropped once areas exist;
 --   * `critters` the ambient critters that keep their own ABM rows once the
 --                zone has areas (rabbits, turkeys, gulls ...);
 --   * `areas`    spawn areas; the TRIGGER (ruling 34): a zone whose list is
@@ -478,6 +479,11 @@ function SA.install_zone(zone_id, data)
 	if #rec.areas > 0 and not rec.fallback then
 		fail(where, "a zone with areas needs exactly one fallback area")
 	end
+	-- Without areas the palette IS the zone's surface rule: a file that lost
+	-- it (a design file copied over the shipped one) must not empty the zone.
+	if #rec.areas == 0 and not palette then
+		fail(where, "a zone without areas needs its palette (today's spawn rule)")
+	end
 	if data.leaders ~= nil and type(data.leaders) ~= "table" then
 		fail(where, "leaders must be a list")
 	end
@@ -900,19 +906,6 @@ function SA.players_clear(pos, range, players)
 	return true
 end
 
--- Hands a freshly added mob its fixed level. Normally the mob has not levelled
--- yet and ensure_init (levels.lua) reads `_grug_spawn_level` on its first
--- tick. Families with a composed look (`_grug_visual`: bandits, poachers ...)
--- level DURING activation, inside add_mob, from the field; those are
--- re-levelled here (set_tier re-derives stats and tag for the same tier).
-function SA.hand_level(ent, level)
-	ent._grug_spawn_level = level
-	if ent._grug_level and ent._grug_level ~= level then
-		ent._grug_level = level
-		grug_mobs.set_tier(ent, ent._grug_tier or "normal")
-	end
-end
-
 -- Puts one area mob on ground point `g`: the role's entity, the area tag and
 -- a level from the area's range. Returns the entity or nil.
 function SA.spawn_area_mob(area, role, g)
@@ -930,7 +923,7 @@ function SA.spawn_area_mob(area, role, g)
 	end
 	-- Both plain fields, persisted with the mob.
 	ent._grug_area = area.tag
-	SA.hand_level(ent, SA.roll_level(area))
+	grug_mobs.relevel(ent, SA.roll_level(area))
 	return ent
 end
 
@@ -944,6 +937,28 @@ function SA.spawn_refused(name, stand)
 		return "claim"
 	end
 	return nil
+end
+
+-- Today's light behaviour of the ABM rows (coordinator ruling for Round 28):
+--   * surface only: the spot sees the sky (its noon light is 14 or more), so
+--     no cave floor or overhang is picked;
+--   * a day area needs light >= 10 now, like a day row's min_light;
+--   * at night a hostile pick needs light <= 5, like a night row's
+--     max_light, so torch-lit ground stays safe.
+function SA.light_allows(area, name, stand, clock)
+	local noon = core.get_node_light(stand, 0.5)
+	if not noon or noon < 14 then
+		return false
+	end
+	if area.clock == "day" then
+		local light = core.get_node_light(stand)
+		return light ~= nil and light >= 10
+	end
+	if clock == "night" and grug_mobs.spawn_role_hostile(name) then
+		local light = core.get_node_light(stand)
+		return light ~= nil and light <= 5
+	end
+	return true
 end
 
 SA.stats = {}
@@ -992,6 +1007,9 @@ function SA.attempt(player_pos, players, clock, roll_angle, roll_dist)
 	if refused then
 		return count(refused)
 	end
+	if not SA.light_allows(area, name, stand, clock) then
+		return count("light")
+	end
 	if not grug_mobs.area_density_allows(stand, zone_id, clock, area, name,
 			role_weight, total) then
 		return count("density")
@@ -1016,6 +1034,7 @@ end
 local storage = grug_mobs.storage
 local live_leaders = {} -- role -> ObjectRef (runtime only)
 SA.LEADER_RANGE = 96 -- horizontal player distance that wakes a spot
+SA.LEADER_CLEAR = 24 -- never appears closer than this to a player
 local LEADER_REACH = 40
 
 local function leader_alive(role)
@@ -1080,11 +1099,12 @@ function SA.leader_tick(now, players)
 				now >= storage:get_int("leader_next:" .. leader.role) and
 				player_near_xz(leader.x, leader.z, SA.LEADER_RANGE, players) then
 			local pos = leader_ground(leader)
-			if pos and not grug_mobs.claim_refuses_spawn(leader.name, pos) then
+			if pos and SA.players_clear(pos, SA.LEADER_CLEAR, players) and
+					not grug_mobs.claim_refuses_spawn(leader.name, pos) then
 				local ent = grug_mobs.add_mob(pos, {name = leader.name, ignore_count = true})
 				if ent then
 					ent._grug_leader = true
-					SA.hand_level(ent, leader.level)
+					grug_mobs.relevel(ent, leader.level)
 					ent.object:set_properties({static_save = false})
 					live_leaders[leader.role] = ent.object
 					count("leader_spawned")
@@ -1117,7 +1137,10 @@ end
 
 SA.ATTEMPT_PERIOD = 1
 SA.SLOW_PERIOD = 5
-local attempt_acc, slow_acc = 0, 0
+-- The second is cut into SLICES steps; each step serves the players whose
+-- index falls in its slice, so many players' attempts spread over the second.
+local SLICES = 4
+local attempt_acc, slow_acc, slice = 0, 0, 0
 local spawning = core.settings:get_bool("mobs_spawn") ~= false
 
 local function any_areas()
@@ -1132,7 +1155,7 @@ end
 core.register_globalstep(function(dtime)
 	attempt_acc = attempt_acc + dtime
 	slow_acc = slow_acc + dtime
-	if attempt_acc < SA.ATTEMPT_PERIOD then
+	if attempt_acc < SA.ATTEMPT_PERIOD / SLICES then
 		return
 	end
 	attempt_acc = 0
@@ -1142,10 +1165,13 @@ core.register_globalstep(function(dtime)
 	end
 	local players = SA.players()
 	local clock = clock_now()
+	slice = (slice + 1) % SLICES
 	for i = 1, #players do
-		local pos = players[i]:get_pos()
-		if pos and pos.y > -40 then
-			SA.attempt(pos, players, clock)
+		if i % SLICES == slice then
+			local pos = players[i]:get_pos()
+			if pos and pos.y > -40 then
+				SA.attempt(pos, players, clock)
+			end
 		end
 	end
 	if slow_acc >= SA.SLOW_PERIOD then

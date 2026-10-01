@@ -53,7 +53,7 @@
       "hosts": {"biomes": ["any"]},
       "clock": "both",
       "levels": [9, 10],
-      "species": [{"role": "bandit", "weight": 2}, {"role": "bandit_archer", "weight": 1}],
+      "species": [{"role": "confused_bandit", "weight": 2}, {"role": "bandit_archer", "weight": 1}],
       "camp": {"slots": 4, "respawn": [30, 60], "min_player_distance": 16}
     },
     {
@@ -68,6 +68,6 @@
     }
   ],
   "leaders": [
-    {"role": "bear", "anchor": "start", "offset": [-100, 220], "level": 10, "respawn": 300}
+    {"role": "bear", "anchor": "start", "offset": [-100, 260], "level": 10, "respawn": 300}
   ]
 }

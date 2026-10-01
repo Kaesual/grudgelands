@@ -5,9 +5,10 @@
 # the protection query, the policy in a fallback zone and one area attempt.
 #
 # Boots one isolated headless server through tools/luanti_headless.sh with the
-# disposable probe mod staged (never shipped) and the Round 24 probe-player
-# shim (tools/r24_density_xp/probe_player_shim.patch) as a disposable game
-# patch, so mobs_redo counts the probe points as players in range.
+# disposable probe mod staged (never shipped) and one disposable game patch:
+# the Round 24 probe-player shim (tools/r24_density_xp/probe_player_shim.patch,
+# mobs_redo counts the probe points as players in range) and one authored
+# bandit sub-type for the sample's camp area (Lane B2 data format).
 # The portable proof is portable_test.lua next to this file (LuaJIT).
 #
 # Usage: tools/r28_b1/run.sh OUT_DIR [TIMEOUT_SECONDS]
@@ -18,9 +19,18 @@ repo="$(cd "$here/../.." && pwd -P)"
 out="${1:?usage: run.sh OUT_DIR [TIMEOUT_SECONDS]}"
 timeout_s="${2:-290}"
 mkdir -p "$out"
+out="$(cd "$out" && pwd -P)"
+# One disposable game patch: the probe-player shim plus one authored bandit
+# sub-type (grug_probe_r28_b1/subtypes.json, Lane B2's data format) that the
+# sample's camp area spawns.
+patch_file="$out/game.patch"
+cp "$repo/tools/r24_density_xp/probe_player_shim.patch" "$patch_file"
+rel="mods/ENTITIES/grug_mobs/data/subtypes.json"
+diff -u --label "a/$rel" --label "b/$rel" "$repo/$rel" "$here/grug_probe_r28_b1/subtypes.json" \
+	>>"$patch_file" || true
 set +e
 SEED=4242424242 PROBE="$here/grug_probe_r28_b1" \
-	GAME_PATCH="$repo/tools/r24_density_xp/probe_player_shim.patch" KEEP=1 \
+	GAME_PATCH="$patch_file" KEEP=1 \
 	"$repo/tools/luanti_headless.sh" "$timeout_s" >"$out/headless.txt" 2>&1
 boot=$?
 set -e

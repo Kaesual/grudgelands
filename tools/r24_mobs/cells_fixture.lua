@@ -55,6 +55,8 @@ _G.core = {
 }
 _G.grug_core = {
 	DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125,
+	-- Round 28 ruling 3 (protected spawn surface): no road or village here.
+	world_feature_at = function() return nil end,
 	nearest_tag_player_d2 = function() end,
 	start_identities = function()
 		local out = {}
@@ -68,6 +70,7 @@ _G.grug_zones = {
 	mob_level_at = function(pos) return SPOTS[pos.x] and SPOTS[pos.x].level end,
 	race_region_at = function() return "orc" end,
 	pvp_rule_at = function() return "peaceful" end,
+	anchor = function() return nil end,
 }
 local rows, defs = {}, {}
 _G.grug_mobs = {}
@@ -76,6 +79,8 @@ _G.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET =
 _G.mobs = {spawn = function(_, def)
 	rows[#rows + 1] = grug_mobs.prepare_spawn_row(def)
 end}
+-- Round 28: the palettes are data (spawn_areas.lua), loaded first.
+dofile(repo .. "/tools/r28_b1/load_spawn_areas.lua")(repo)
 dofile(mobs_dir .. "spawn_policy.lua")
 dofile(mobs_dir .. "density.lua") -- Lane F: prepare_spawn_row's density hooks
 dofile(mobs_dir .. "levels.lua")

@@ -882,7 +882,8 @@ grug_mobs.register_camp_type("guard_throng", {
 --     players standing in it do not block it;
 --   * levels and species come from the area (fixed range, weights);
 --   * the state lives in memory, keyed by the area tag. The first look at a
---     camp after a start finds it owed in full and fills it at once, which is
+--     camp after a start (a player within 64 nodes, so saved members nearby
+--     are active and counted) fills what is missing at once, which is
 --     what a camp standing in the world should look like when a player walks
 --     up; after that the queue and its due time behave exactly like a fire's,
 --     the dormant catch-up included (due times lag `now` while nobody is
@@ -894,6 +895,9 @@ grug_mobs.register_camp_type("guard_throng", {
 --
 
 local AREA_CAMP_RANGE = PLAYER_RANGE
+-- The first look after a start: within this of the centre the blocks of the
+-- members a camp area may already hold (radius about 40) are active.
+local AREA_CAMP_FIRST = 64
 local area_camps = {} -- tag -> {queue, next_refill}
 
 local function area_camp_interval(camp)
@@ -946,9 +950,13 @@ function grug_mobs.area_camp_tick(now, players, clock)
 			local missing = camp.slots - living
 			local st = area_camps[area.tag]
 			if not st then
-				-- First look since the start: the whole deficit is due now.
-				st = {queue = math.max(missing, 0), next_refill = now, fill = true}
-				area_camps[area.tag] = st
+				-- First look since the start, once a player is close enough that
+				-- the camp's own saved members are active and counted: the whole
+				-- deficit is due now.
+				if SA.player_near_xz(area.cx, area.cz, AREA_CAMP_FIRST, players) then
+					st = {queue = math.max(missing, 0), next_refill = now, fill = true}
+					area_camps[area.tag] = st
+				end
 			elseif missing > st.queue then
 				if st.queue <= 0 then
 					st.next_refill = now + area_camp_interval(camp)
@@ -957,7 +965,7 @@ function grug_mobs.area_camp_tick(now, players, clock)
 			elseif missing < st.queue then
 				st.queue = missing > 0 and missing or 0
 			end
-			if area.clock == "both" or area.clock == clock then
+			if st and (area.clock == "both" or area.clock == clock) then
 				while st.queue > 0 and now >= st.next_refill do
 					if not spawn_area_member(area, players, center_y) then
 						break

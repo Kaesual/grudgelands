@@ -1107,7 +1107,10 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   as data (`families`, Lorindor's `exact_mobs` and `night_fallback`, the
   zone's `boar` tint and its `lookalikes` per family). `critters` lists the
   ambient critters, `areas` the spawn areas, `leaders` the named leaders.
-  A missing file means no palette and no areas.
+  A missing file means no palette and no areas. The palette is required
+  while `areas` is empty (the load fails otherwise, so a design file copied
+  over a shipped one cannot empty a zone) and may be dropped once areas
+  exist.
 - **Trigger:** a zone whose `areas` list is empty keeps its palette and the
   level field exactly as before (every zone ships that way until its content
   lane adds areas). A zone with areas spawns its surface mobs only from
@@ -1130,23 +1133,32 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   species weights; the zone's single `fallback` area applies only where no
   other area matches column, clock and host. A camp area covers its ground
   for that rule but spawns only through its slots.
-- **Ambient spawner.** Once a second per player, one random column in the
-  ring 24–64 nodes around the player (24 = `mob_nospawn_range`) in a zone
+- **Ambient spawner.** Once a second per player (the players spread over
+  the second in four slices), one random column in the ring 24–64 nodes
+  around the player (24 = `mob_nospawn_range`) in a zone
   with areas: the highest natural ground node with air above within ±48 of
   the player (biome surfaces and their fertile and exposed variants; never
   leaves, wood or water), the areas matching it, one (area, species) pick
   weighted by the summed weights, then the gates below; the mob stands on
-  the ground node if its box fits. No per-mob row gate, domain or spawn
+  the ground node if its box fits. **Light** keeps the ABM rows' behaviour:
+  the spot must see the sky (its noon light is at least 14, so no cave
+  floor or overhang), a `day` area needs light ≥ 10, and at night a hostile
+  pick needs light ≤ 5, so torch-lit ground stays safe. No per-mob row gate, domain or spawn
   check applies to an area spawn (the area is the authority), so the start
   gates (`start_band`, Sunscar Husk, Silverleaf Poacher) end where areas
   begin. Every area mob carries `_grug_area = "<zone_id>/<area_id>"`
-  (persisted) and a level rolled uniformly in the area's `levels`
-  (`_grug_spawn_level`, read by `levels.lua` on the first tick instead of
-  the level field, the def floor and the cap). Its wander leash is the
+  (persisted) and a level rolled uniformly in the area's `levels`, handed
+  over right after the spawn (`grug_mobs.relevel`, `levels.lua`): a mob that
+  has not levelled yet takes it on its first tick instead of the level
+  field, the def floor and the cap; a mob that already levelled while
+  activating (families with a composed look, such as bandits) has its level
+  and stats re-derived at once. The tier never changes, authored sub-type
+  tiers included. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row
   or area — on a road corridor or bridge (half width + 1, ±5 vertical), a
-  village's building core, a start town's footprint or a capital city.
+  village's building core, a start town's footprint or a capital city
+  (asked only in zones whose zone session publishes a `capital` anchor).
   No margin beyond them; the idle push of ruling 2 handles the rest. Camps
   and other POIs are not refused; critters may still appear in towns. An
   active housing claim refuses hostile spawns as before.
@@ -1166,7 +1178,9 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   least `camp.min_player_distance` (16) from every player, radius about
   35–40 so two players do not block it. Members roam free under the normal
   wander leash (no camp anchor, no 20-node roam cap) and carry the area tag
-  and level. The first look after a server start fills the camp at once;
+  and level. The first look after a server start, once a player is within
+  64 nodes of the centre (so members already saved there are active and
+  counted), fills what is missing at once;
   later refills follow the slot queue with dormant catch-up (world.md §4a).
   A camp area with a day or night clock refills only in its clock. In a
   zone with areas the bandit camp fires stay scenery (their bandits come
@@ -1175,7 +1189,8 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   standable surface; a centre or spot outside the zone is logged at load),
   fixed level, normal or elite tier as the role is
   registered; `_grug_leader = true`, no area tag. A leader spawns when a
-  player is within 96 nodes of its spot and its timer has run out; it is
+  player is within 96 nodes of its spot, none within 24, and its timer has
+  run out; it is
   never saved with the map, so it exists only while its spot is loaded. A
   kill starts its `respawn` (about 300 s, game time, mod storage); a leader
   that vanished with its unloaded block returns on the next visit.
