@@ -63,7 +63,8 @@ below retains four as a stress fixture, not a recommended C2 quest.
 Quest-only proof for a named normal leader should be guaranteed, not a
 second roll that asks the player to wait five minutes and kill it again.
 
-Climaxes at 1–30 use normal-tier leaders. From 31, optional group elites
+Every selected solo route has reachable normal-tier named climaxes through
+L59, including intermediate lines at 21–30. Optional group elites from L31
 are excluded from the solo baseline; their kill XP is already ×4, so do
 not also multiply the reward weight by four. Reward skill and the trip,
 not the size of the health bar. No rare is a required target.
@@ -136,35 +137,46 @@ states; test the actual state, not a mixture.
 
 The six JSON files in [samples/](samples/) are compact **arithmetic
 fixtures**, not zone quest files. Their ordered rows use the named
-`columns`; `zone` indexes the `zones` list, `source` is an existing base mob,
-catalogue/registered item, group or NPC. `climax` counts the whole normal-tier
-encounter, including its leader. These rows do not propose subtype
+`columns`; `zone` indexes the `zones` list. A `climax` source is an actual
+catalogue leader role and always counts one kill at its fixed level. The
+optional `approaches` entry adds separately counted ordinary helpers to that
+quest. Other sources are existing base labels, catalogue/registered items,
+groups or NPCs. These rows do not propose subtype
 registrations, terrain or giver allocations. Front zone names label destinations;
 production front quests still belong in the reserved host files.
 
 Measured with this adapter, the reconciled C1 drops and `existing.json`
-on 2026-10-01:
+on 2026-10-02:
 
 | Fixture | Templates / counted turn-ins | Solo questing | Solo rewards | Duo questing | Solo flags |
 |---|---:|---:|---:|---:|---|
-| [start.json](samples/start.json), Human | 14 / 14 | 90.50% | 40.02% | 72.12% | None |
-| [home.json](samples/home.json), Human | 10 / 10 | 83.78% | 41.19% | 70.50% | None |
-| [heartland.json](samples/heartland.json), Human, two zones | 14 / 14 | 80.63% | 42.46% | 67.43% | None |
+| [start.json](samples/start.json), Human | 14 / 14 | 91.57% | 40.02% | 72.74% | None |
+| [home.json](samples/home.json), Human | 10 / 10 | 83.82% | 41.19% | 70.52% | None |
+| [heartland.json](samples/heartland.json), Human, two zones | 14 / 14 | 80.65% | 42.46% | 67.44% | None |
 | [contested.json](samples/contested.json), Human, three zones | 15 / 15 | 80.93% | 41.59% | 63.11% | None |
 | [front_40.json](samples/front_40.json), no race bonus | 11 / 15 | 70.94% | 34.29% | 53.93% | None |
 | [front_50.json](samples/front_50.json), no race bonus | 11 / 15 | 71.66% | 34.71% | 54.62% | None |
 
+The named fixtures use Chief Crumb (L10), Requisitioner Hobb (L20),
+Basket-Poacher Thorn (L24), Pearl-Counter Iss (L30), Quartermaster Scrip
+(L33), Bolt-Chewer (L36), Basket-Biter (L39), Standard-Bearer Ninepins
+(L48) and Watch-Captain Huskell (L58). All nine are authored **normal**
+leaders. Reward levels remain in their intended bands; source levels
+come from the actual leader, not the quest reward. The late examples keep
+their previous arithmetic because these new normal leaders have the same
+levels as the former stand-ins. Elites contribute nothing to these totals.
+
 The start sample demands 37 normal kills through five kill quests
-(the last includes the normal leader), four additional expected boars
-for tusks, and 195 gathering XP. Its 1,681 reward XP plus 1,785 kill XP,
-140 incremental drop-kill XP and 195 gathering XP total **3,801 / 4,200**.
-The remaining 399 XP is free play. With the same weights and no Human
-bonus it gives 86.81% questing / 36.33% rewards: within the rough targets,
+(the last counts seven L9 Confused Bandits plus L10 Chief Crumb), four
+additional expected boars for tusks, and 195 gathering XP. Its 1,681 reward XP plus 1,830 kill XP,
+140 incremental drop-kill XP and 195 gathering XP total **3,846 / 4,200**.
+The remaining 354 XP is free play. With the same weights and no Human
+bonus it gives 87.88% questing / 36.33% rewards: within the rough targets,
 without removing the Human advantage. Other race designs are still
 calibrated against their own quests and sources.
 
 The heartland sample selects Whitebridge and Lorindor, fulfilling the
-other-race visit; their contributions are 36.94% and 43.69% of the band.
+other-race visit; their contributions are 36.94% and 43.72% of the band.
 Its six-target cleanup uses 2.5 KE because it is part of the climax
 approach, below the full independent-hunt range. The contested example
 selects 25.02%, 26.99% and 28.92% slices from three zones; each complete
@@ -193,16 +205,18 @@ the tool exclude the remaining free play after the last quest; an exit
 below the next band is not itself an additional XP shortfall.
 
 The adapter below feeds these rows into **the actual `ledger.py` engine**
-in memory. No zone file, tool change or new item is written. Each combat
-row gets a synthetic exact-level source with an explicit `drops` field,
-selected from catalogue subtypes using the fixture's base-mob label.
+in memory. No zone file, tool change or new item is written. Ordinary combat
+rows get synthetic exact-level sources with explicit `drops`, selected
+from catalogue subtypes using the fixture's base-mob label. Climax rows
+use the real normal leader subtype and fixed level, with no area; the
+start approach uses a separate real Confused Bandit source at L9.
 This is an adapter for arithmetic, **not** B2 inheritance: an existing
 `wolf` does not receive `canid` merely because its subtypes use that table.
 Production zones use actual catalogue roles; see the
 [B2 dispatch rule](README.md#b2-loot-dispatch-and-band-coverage).
 This exercises the final tier tables and item carry-over;
-it does not certify subtype level ranges, legal leader placement or a
-finished route. Item gathering uses the existing registry. The T3 recovery
+it checks climax role/level/zone binding but does not certify terrain
+placement or a finished route. Item gathering uses the existing registry. The T3 recovery
 example requests Serrated Fang, not the earlier T2 Fang. Rerun real route
 ledgers with actual subtype ids and areas before accepting C2/C3 content.
 
@@ -228,6 +242,7 @@ for subtype in catalog.subtypes:
     if subtype["tier"] == "normal" and not subtype.get("leader"):
         normal_families.setdefault(subtype["base"], set()).add(subtype["drops"])
 assert all(len(families) == 1 for families in normal_families.values())
+roles = {r["role"]: r for r in catalog.subtypes}
 for path in sorted(root.glob("*.json")):
     sample = json.loads(path.read_text())
     design = C.Design(root)  # Empty catalog/zones; populated only in memory.
@@ -237,7 +252,7 @@ for path in sorted(root.glob("*.json")):
     design.subtypes = []
     previous = {}
     for zone in sample["zones"]:
-        design.spawns[zone] = {"areas": []}
+        design.spawns[zone] = {"areas": [], "leaders": []}
         design.quests[zone] = {"quests": []}
     for i, values in enumerate(sample["rows"]):
         row = dict(zip(sample["columns"], values))
@@ -249,7 +264,32 @@ for path in sorted(root.glob("*.json")):
             "line": "sample", "rewards": {"weight": row["weight"]},
             "requires": [previous[zone]] if zone in previous else [],
         }
-        if kind in ("kill", "climax", "repeat"):
+        if kind == "climax":
+            leader = roles[source]
+            assert leader.get("leader") and leader["tier"] == "normal"
+            assert leader["levels"][0] == leader["levels"][1]
+            assert zone in leader["notes"] and row["count"] == 1
+            level = leader["levels"][0]
+            assert abs(level - row["level"]) <= 3
+            design.subtypes.append(leader)
+            design.spawns[zone]["leaders"].append({
+                "role": source, "level": level, "respawn": 300})
+            quest["climax"] = True
+            quest["objectives"] = []
+            approach = sample.get("approaches", {}).get(source)
+            if approach:
+                helper = roles[approach["role"]]
+                assert not helper.get("leader") and helper["tier"] == "normal"
+                assert helper["levels"][0] <= approach["level"] <= helper["levels"][1]
+                assert abs(approach["level"] - row["level"]) <= 3
+                design.subtypes.append(helper)
+                design.spawns[zone]["areas"].append({
+                    "id": qid, "levels": [approach["level"], approach["level"]],
+                    "species": [{"role": helper["role"], "weight": 1}]})
+                quest["objectives"].append({"type": "kill", "roles": [helper["role"]],
+                    "count": approach["count"], "area": zone + "/" + qid})
+            quest["objectives"].append({"type": "kill", "roles": [source], "count": 1})
+        elif kind in ("kill", "repeat"):
             assert "grug_mobs:" + source in existing["entities"]
             family = next(iter(normal_families["grug_mobs:" + source]))
             role = "fixture_source_%02d" % i

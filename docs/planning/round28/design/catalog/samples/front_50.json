@@ -1,5 +1,5 @@
 {
-  "purpose": "Arithmetic fixture only; no authored geometry or giver allocation. The calibration.md adapter uses integrated catalogue drop families with synthetic exact-level sources.",
+  "purpose": "Arithmetic fixture only; no authored geometry or giver allocation. Climax sources are actual fixed-level normal leaders; other combat rows adapt base labels to integrated catalogue families.",
   "start_level": 50,
   "human": false,
   "repeat": 3,
@@ -24,7 +24,7 @@
     [0, "item", 55, 53, 6, 6, "grug_materials:abyssal_steel_bar"],
     [0, "kill", 57, 55, 7, 9, "carrion_crow"],
     [0, "item", 57, 55, 6, 6, "grug_materials:abyssal_steel_bar"],
-    [0, "climax", 58, 56, 8, 1, "skeleton_archer"],
+    [0, "climax", 58, 56, 8, 1, "watch_captain_huskell"],
     [0, "repeat", 55, 53, 3.5, 7, "skeleton_raider"],
     [0, "repeat", 58, 56, 3.5, 7, "zombie"]
   ]

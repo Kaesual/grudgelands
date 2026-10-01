@@ -30,5 +30,9 @@
   {
     "id": "ochre",
     "modifier": "^[multiply:#c5ab7b"
+  },
+  {
+    "id": "bone_weevil",
+    "texture": "grug_mobs_bone_weevil.png"
   }
 ]

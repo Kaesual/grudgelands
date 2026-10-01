@@ -29,7 +29,7 @@ quartz, rough gems, coal, silver, the two late crystals, salt and kelp
 already provide distinct ingredients. Turning any pair into a new powder
 would add a craft and an icon without adding a useful choice. New universal
 reagents per tier: **0 / 0 / 0 / 0 / 0 / 0**; new items and icons from C1b:
-**0**. The reconciled world-wide count is **88 new signature icons**, with
+**0**. The reconciled world-wide count is **89 new signature icons**, with
 no preallocated quest-only props; see the README's count by tier.
 
 ## Stat vocabulary
@@ -155,8 +155,9 @@ Each is a short plan, not a chain of appointments with other crafters.
 ## Knowledge is the second character's advantage
 
 A new character remembers to keep a few quartz pieces and copper/tin
-bars, saves flexible parts for agility builds, and plans night hunting
-around a daytime gathering trip. A material request can consume loot
+bars, saves flexible parts for agility builds, and knows which both-clock
+camp supplies a stat ingredient during day. Night field hunts offer an
+alternative alongside a daytime gathering trip. A material request can consume loot
 already earned on the hunt, so preparation saves travel and fighting.
 The player sees every profession recipe in the book, including locked
 tiers, and can save an earlier gem that remains useful later.

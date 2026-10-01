@@ -10,7 +10,8 @@ This catalogue follows the [approved frame](../../../round28-design-frame.md).
 Its cast below is the supply brief for the zone lanes, not a replacement for
 their spawn areas. The [atlas](../../zones/index.md) supplies the geography;
 the [mob catalogue](../../mobs/catalogue.md) supplies behaviour. Every one of
-the 38 zones has a distinct, single-location leader role. Zone authors choose
+the 38 zones has a distinct, single-location leader role; all 36 mainland
+zones have a normal solo climax. There are 49 leaders in total. Zone authors choose
 the precise placement, quest counts and small local level slices.
 
 ## Names, appearances and encounters
@@ -19,13 +20,16 @@ the precise placement, quest counts and small local level slices.
   local progression. **Aggressive / Rabid / Giant / Monstrous** always means
   hostile and above its introductory counterpart. Large Rat is the explicit
   L1–3 hostile night lesson; size alone is not a promise of neutrality.
+- **Wary / Watchful** always means neutral. Aggressive roles use Prowling
+  Jungle Lynx and Vigilant Bandit Archer instead. Rabid Rat is size 1.15,
+  larger than Large Rat at 1.05; Monstrous Rat is 1.25.
 - Names such as Sluggish, Moaning and Confused describe character, not an
   undocumented speed, accuracy or intelligence modifier. Archers really
   shoot; scorpions and vipers really poison; web spiders really slow.
 - Boars retain Plague/Jungle identities through zone names and the existing
   baked skins. Gaunt Stags, Blightfang Wolves and Plaguehide Bears similarly
   retain their regional appearance. An ochre rat is still a rat, not a new
-  poison mechanic. Eight tint definitions suffice; other regional bases
+  poison mechanic. Nine tint definitions suffice; other regional bases
   already carry their correct textures. Preserve multi-texture model slots
   when applying a baked skin; do not replace armour or held-item slots.
 - Sun-Dried Husks use the **husk base**, never a recoloured zombie. They do
@@ -33,17 +37,30 @@ the precise placement, quest counts and small local level slices.
   exception and the Undead night truce. Drowned Zombies are walking shore
   enemies, not swimmers. Their quests must not promise daylight survivors
   away from blight ground.
-- Ordinary rats, undead, outlaws, goblins, skeletons, witches, spiders and
-  treants spawn at night. Grazers and boars spawn by day. Foxes and lynxes
-  hunt by day; stalking panthers/leopards by night. Wolves and hyenas work
-  both clocks, as do crocodiles, oozes and serpents. Start scorpions/vipers
-  work both clocks; their older variants use night. Crabs use day and
-  `shore: true`; this deliberately removes the old all-hour crab spawn.
-  Clock is authored in **areas**, never inferred from tint or display name.
+- Night field populations include rats, zombies, outlaws, goblins,
+  skeletons, witches, spiders and treants. **Outlaw camps/hideouts and other
+  supply camps use `clock: "both"`**. T1/T2 tracks add both-clock dry rat
+  burrows/granaries. Every stat has a day-available normal source per route;
+  five minutes of night in a twenty-minute cycle is not a farming plan.
+- Both-clock corpse caches use the band's sunproof husks. A daytime zombie
+  source instead needs actual blight dirt at spawn; shade does not suffice.
+  These small caches supplement the regional field cast in every race's
+  start/home/capital/contested band and both T6 mainland routes. Use the
+  lower-band roles as well as their successors; see the exact role ladder
+  in [README](README.md#daytime-supply-is-mandatory). Never rely on a
+  night-spawn survivor to prove day access.
+- Grazers, boars, foxes and lynxes use day; stalking panthers/leopards use
+  night. Wolves, hyenas, crocodiles, oozes and serpents work both clocks.
+  Start scorpions/vipers work both; their older variants use night. Crabs
+  use day and `shore: true`. Clock is authored in **areas**, never inferred
+  from tint or name. Night roamers can coexist with both-clock camps.
 - Critters stay their existing registrations: rabbit/hare, wild turkey,
   song bird, parrot, bog fowl, gull and the unchanged underground/water
   critters. Ibex, tapir, zebra, ram, stag, Plains Runner and Carrion Crow are
-  neutral combat animals, not critters. No critter is a quest kill target.
+  neutral combat animals, not critters. No critter is a quest kill target
+  or a base for a combat subtype. The two weevils use attacking Stone Mite
+  (same crawler mesh, dogfight) with the existing Bone Weevil texture;
+  the original Bone Weevil stays a critter.
 - A band needs two or three readable steps, not every catalogue role in
   every area. Use exactly one fallback, as the frame/tool require, and
   broad ordinary area rules that cover the other clock if the fallback is
@@ -52,14 +69,20 @@ the precise placement, quest counts and small local level slices.
   and the road/town drift. Camps use approximately 35–40-node radii,
   30–60-second slot refill and a 16-node player exclusion, as the frame says.
 
-**Leaders:** all 26 leaders through level 30 are normal tier; all 12 later
-leaders are optional Group climaxes. The solo budget cannot count their
-kills or drops. A normal leader should be pulled separately from its helpers;
-an archer plus a melee crowd is not made fair simply by having normal stats.
-Each leader role belongs to exactly one zone, with a fixed level and a
-300-second respawn. The frame's leader record has no clock field: do not
-author a quest that relies on a night-only leader registration. Ordinary
-night-spawn enemies can also remain alive into daylight.
+**Leaders:** 37 normal leaders support solo climaxes through L59; 12 elite
+leaders remain optional Group content from L31. The solo budget cannot
+count elite kills or drops. Normal leaders must be reachable and separately
+pullable from helpers; an archer plus a melee crowd is not made fair by
+normal stats. Each role belongs to one fixed spot with a 300-second respawn,
+available both clocks. The record has no clock field; zombies need verified
+blight ground to survive daylight, including Mortuary Clerk Hush.
+
+The [README leader table](README.md#solo-leaders-and-zone-additions) pairs
+new normal resolutions with the optional elite challenges. One zone can
+have several leaders; Whitebridge's L24 Basket-Poacher Thorn supports a
+shorter line before L30 Ferryman Murk. C2/C3 may add zone leaders and
+quest-only items in `zones/<zone_id>.catalog.json` using the coordinator's
+extension rule in that README; shared ingredients remain global.
 
 **Authored tier wins.** Bear and ape subtypes never roll the bases' random
 Elder Bear/Silverback promotions. Their `tier` and display names remain as
@@ -81,17 +104,17 @@ resolve, not a scripted change to the world after the kill.
 Shared supply packages below are **required ordinary sources**, not new
 POIs. Their members can occupy separate areas and clocks. A zone designer
 must preserve the package or arrange an equivalent source within the same
-permitted route. No recipe relies on the other faction, another race's
+permitted route. No universal stat ingredient relies on the other faction, another race's
 11–20 zone, a rare, a critter, an elite, or an island trip.
 
 | Package | Zones | Ordinary role coverage |
 |---|---|---|
 | Start | Each of the six starts, T1 | Small/Aggressive Boar; Large/Rabid Rat, optionally Monstrous Rat; Shore/Giant Crab; Braindead/Sluggish/Drowned Zombie **or** the three start husks; Confused Bandit |
-| Home | Each of the six home zones, T2 | Young/Bristling Boar; Granary/Mangy Rat; Tidepool/Reefclaw Crab; Moaning/Muttering Zombie **or** Muttering/Parched Husk; Quarrelsome Bandit/Watchful Bandit Archer |
-| Capital | Each capital outskirts, level 20–30 | Toll Bandit/Toll Bandit Archer; Debtbound/Stubborn Zombie, or Debtbound/Stubborn Husk at Gor Drazhak |
-| Contested | Each of the six faction contested zones and Causeway, T4 | Entrenched Bandit/Archer; Marching/Unrelenting Zombie, or the matching husks at Bannerbreak |
+| Home | Each of the six home zones, T2 | Young/Bristling Boar; Granary/Mangy Rat; Tidepool/Reefclaw Crab; Moaning/Muttering Zombie **or** Muttering/Parched Husk; Quarrelsome Bandit/Vigilant Bandit Archer |
+| Capital | Each capital outskirts, level 20–30 | Toll Bandit/Toll Bandit Archer; Debtbound/Stubborn Zombie, or Debtbound/Stubborn Husk in daytime caches |
+| Contested | Each of the six faction contested zones and Causeway, T4 | Entrenched Bandit/Archer; Marching/Unrelenting Zombie, or matching husks in daytime caches |
 | Siege | Shattered Line, T5 | Siege Deserter/Archer; Siege-Worn/Unburied Sun-Dried Husk |
-| Last watch | Gravesalt and Skyglass, T6 | Saltroad Deserter/Last-Pay Archer; Saltbound/Last-Watch Zombie |
+| Last watch | Gravesalt and Skyglass, T6 | Saltroad Deserter/Last-Pay Archer; Saltbound/Last-Watch Zombie on blight ground, or the matching sunproof husks |
 
 The rat areas in the home zones, the capital outskirts populations, and
 the later outlaw/undead supply pairs are deliberate authored additions to
@@ -102,13 +125,14 @@ not merely be assumed from this document. Keep supply populations in the
 lower half of the band as well as the upper half so an ingredient is not
 locked behind the finale.
 
-All six T1/T2 tracks have measured coast. Copperfell has the smallest T2
-sea-beach footprint (5,616 nodes² in seed 42): use its actual shore strips
-and small requests, never an arbitrary inland crab circle. Capitals,
-Ashenward, Bannerbreak, Causeway and Shattered Line have no measured sea
-beach. Crab loot is therefore **not** the universal stat source from T3
-on. T6 crabs are optional elite Reef Lurkers in Gravesalt/Skyglass; there
-is deliberately no T5 crab table.
+All six T1/T2 tracks have measured coast. **Raincall is the tightest T2
+coast (4,464 nodes²), followed by Copperfell (5,616)** in seed 42. Raincall's
+west/northwest B1 shore has 3,856 nodes² at L11–13; B2 has only 592 at
+L13–14. Copperfell uses its southwest strips. Give both real `shore: true`
+areas, small requests and throughput checks; never an inland crab circle.
+Capitals, Ashenward, Bannerbreak, Causeway and Shattered Line have no
+measured sea beach. Crab loot is not a universal stat source from T3 on.
+T6 Reef Lurkers are optional elites; there is no T5 crab table.
 
 The following regional cast is added to each shared package. Names are
 atlas zone names; role notes in `subtypes.json` give the exact registrations
@@ -120,9 +144,9 @@ fill every spawn area with all of it.
 | Dwarf | Hearthpine: Small Fox, Young Ibex | Copperfell: fox, ibex, goblin melee/slinger/hound | Dur Brannoc: ibex, ram, goblins | Frostbarrow: ibex, ram, eagle, leopard, goblins, optional stone golem; crabs at shore | Stormvault: ibex, ram, eagle, leopard, goblins, Frost Stray, optional stone golem; shore crabs |
 | Human | Dawnmere: Small Fox; turkey/rabbit critters | Goldmead: fox, poacher | Highcourt: boar, fox, stag | Whitebridge: boar, stag, wolf, bear, spider, wisp, mirefolk; shore crabs | Ashenward: stag, wolf, bear, spider, wisp, poacher, skeleton, treant, crow |
 | Elf | Silverleaf: Small Fox, optional Furtive Poacher; song-bird critter | Starbough: fox, poacher | Lethariel: fox, stag, poacher | Lorindor: stag, poacher, wisp, mirefolk; Moonfall: stag, wolf, bear, spider, poacher, wisp; shore crabs in both | Glassroot: stag, wolf, bear, ape, serpent, panther, jungle spider, wisp, poacher; shore crabs |
-| Undead | Stillgrave: plague boars; blight-ground zombie lesson, hare critter | Mournfen: plague boars, crocodile, ooze, wisp, mirefolk; bog-fowl critter | Nhal Veyr: plague boar, gaunt stag | Ossuary: gaunt stag, blightfang wolf, plaguehide bear, bonelurker spider, skeleton archer, treant, bone weevil; shore crabs | Blackwind: the Ossuary forest families plus March Skeleton Raider; shore crabs |
+| Undead | Stillgrave: plague boars, neutral L5–7 Young Gaunt Stag; blight-ground zombie lesson, hare critter | Mournfen: plague boars, crocodile, ooze, wisp, mirefolk; bog-fowl critter | Nhal Veyr: plague boar, gaunt stag | Ossuary: gaunt stag, blightfang wolf, plaguehide bear, bonelurker spider, skeleton archer, treant, bone weevil; shore crabs | Blackwind: the Ossuary forest families plus March Skeleton Raider; shore crabs |
 | Orc | Sunscar: Young Plains Runner, scorpions; husks replace zombies | Redtusk: zebra, hyena, scorpion; husks | Gor Drazhak: zebra, hyena, scorpion; husks | Speargrass: zebra, hyena, tiger, vulture, goblins, scorpion, optional mesa golem; shore crabs | Bannerbreak: hyena, tiger, vulture, crow, goblins, scorpion, skeleton, optional mesa golem; husks |
-| Troll | Kapok: Young Tapir, Wary Jungle Lynx, vipers; parrot critter | Raincall: tapir, lynx, viper | Kezamba: jungle boar, tapir, lynx, viper | Whispering: tapir, lynx, crocodile, ooze, wisp, mirefolk; Totemwater: tapir, lynx, crocodile, ooze, wisp; shore crabs in both | Thunderroot: ape, serpent, panther, jungle spider, witch; shore crabs |
+| Troll | Kapok: Young Tapir, Prowling Jungle Lynx, vipers; parrot critter | Raincall: tapir, lynx, viper | Kezamba: jungle boar, tapir, lynx, viper | Whispering: tapir, lynx, crocodile, ooze, wisp, mirefolk; Totemwater: tapir, lynx, crocodile, ooze, wisp; shore crabs in both | Thunderroot: ape, serpent, panther, jungle spider, witch; shore crabs |
 
 Heartlands can retain local populations instead of duplicating the capital
 pair: each race already has both universal sources in its own capital.
@@ -130,14 +154,14 @@ The faction's other capitals provide alternative sources while travelling.
 T3 still needs level **21+** sources: a level-20 capital mob drops **T2**,
 even though that capital participates in the 20–30 journey.
 
-| Shared zone | Local cast beyond its supply package | Climax |
+| Shared zone | Local cast beyond its supply package | Solo / optional Group climax |
 |---|---|---|
-| Broken Causeway | Skeleton Raider, Bog Witch, wisp, crow, optional War Construct | War Construct Last-Toll, L40 |
-| Shattered Line | Hyena, tiger, scorpion, vulture, crow, Skeleton Raider, optional mesa golem/War Construct | War Construct Engine Nine, L50 |
-| Gravesalt Escarpment | Blightfang wolf, gaunt stag, plaguehide bear, bonelurker spider, bone weevil, witch, skeleton, crow; optional Reef Lurker | Bog Witch Salt-Counter, L59 |
-| Skyglass Canopy | Ape, serpent, panther, jungle spider, skeleton, crow; optional Reef Lurker | Serpent Glass-Throat, L59 |
-| Wyrmglass Crown | L60 Last-Watch Zombie/Last-Pay Archer beside the existing apex camp; ram, eagle, leopard, Frost Stray, crow, optional stone golem | Stone Golem Rime-Bell, L60 |
-| Stormscale Summit | L60 Last-Watch Zombie/Last-Pay Archer beside the existing apex camp; ape, serpent, panther, jungle spider, witch, skeleton, crow | Jungle Ape Last-Offering, L60 |
+| Broken Causeway | Skeleton Raider, Bog Witch, wisp, crow, optional War Construct | Toll-Taker Senn, L39 normal / Last-Toll, L40 elite |
+| Shattered Line | Hyena, tiger, scorpion, vulture, crow, Skeleton Raider, optional mesa golem/War Construct | Standard-Bearer Ninepins, L48 normal / Engine Nine, L50 elite |
+| Gravesalt Escarpment | Blightfang wolf, gaunt stag, plaguehide bear, bonelurker spider, bone weevil, witch, skeleton, crow; optional Reef Lurker | Watch-Captain Huskell, L58 normal / Salt-Counter, L59 elite |
+| Skyglass Canopy | Ape, serpent, panther, jungle spider, skeleton, crow; optional Reef Lurker | Paymaster Chirr, L58 normal / Glass-Throat, L59 elite |
+| Wyrmglass Crown | L60 Last-Watch Husk/Last-Pay Archer beside the existing apex camp; ram, eagle, leopard, Frost Stray, crow, optional stone golem | Optional Stone Golem Rime-Bell, L60 elite |
+| Stormscale Summit | L60 Last-Watch Husk/Last-Pay Archer beside the existing apex camp; ape, serpent, panther, jungle spider, witch, skeleton, crow | Optional Jungle Ape Last-Offering, L60 elite |
 
 Rift Spawn, dragons, rares, water populations and underground populations
 retain their current spawning/level rules. Loot dispatch still follows
@@ -167,8 +191,10 @@ any subtype's inclusive level range has nonempty rows. Missing bands are
 outside those ranges, not an instruction to suppress the base's static loot.
 
 There are 24 drop families and 86 occurring family/band combinations.
-Each has one signature; rats and T1/T2 crabs have two, as do T3–T6
-zombies and outlaws. Higher bands keep a recognisable material type: tusks remain
+Most have one signature; rats and T1/T2 crabs have two, as do T3–T6
+zombies and outlaws. Bear T3, ooze T3, venomous T4 and stone T6 instead
+reuse generic recipe ingredients for regional requests, with no signature
+needed in those four family/band pairs. Higher bands keep a recognisable material type: tusks remain
 tusks, teeth become molars, jaws and dentures, venom stays venom. The full
 `drops.json` is the family-per-band occurrence list; missing combinations
 are intentional, especially T5 crab and T5 spider. Generic meat, hide,
@@ -200,7 +226,19 @@ different band. Stone leaders add quartz. A leader still rolls the normal
 family table at its own level and can carry the quest's guaranteed prop;
 signature farming never depends on the five-minute respawn.
 
-**Keep recipe feedstock working.** Spider Silk and Sharp Feather are generic
+**Keep recipe feedstock working.** Rotting Flesh is now generic on zombies/
+husks T1–T6 at 1-in-2; T1 health enchants use separate Tattered Flesh.
+Bear Claw stays 1-in-3 on bears T3/T4/T6, Slime Gel 1-in-3 on ooze T2/T3
+(including Mournfen), Venom Sac 1-in-3 on venomous families T4/T5/T6, and
+Stone Core 1-in-3 on stone families T3–T6. Mainland stone sources at
+T3–T5 permit earlier stock for later recipes; those elites are optional
+Group material trips, not solo leveling prerequisites. Unchanged normal
+underground Stone Mites retain their 1-in-8 Stone Core as an alternative;
+their role does not match the `stone` table. These four generic
+materials do not need a second trophy in their former signature slot.
+The README's complete recipe-material table states the intended sources.
+
+Spider Silk and Sharp Feather are generic
 existing materials, not tier-exclusive signatures. Spiders still give silk
 (1–2 guaranteed); T5/T6 outlaws salvage 1–2 at 1-in-2, keeping late Tailors
 supplied without adding spiders to Shattered Line. Scavengers retain Sharp
@@ -226,14 +264,14 @@ placement or ingredient throughput.
 | `int` | `crab_eye` | `clear_crab_eye` | Band's talisman: counted knots and marks |
 | `attack_speed_percent` | `rat_tail` | `sinewy_rat_tail` | Band's weapon strap: supple binding |
 | `crit_percent` | `boar_tusk` | `ridged_boar_tusk` | Band's dental item: force at one sharp point |
-| `max_hp_percent` | `zombie_flesh` | `foul_flesh` | Band's flesh: persistent vitality |
+| `max_hp_percent` | `tattered_flesh` | `foul_flesh` | Band's flesh: persistent vitality |
 | `max_mana_percent` | `crab_eye` | `clear_crab_eye` | Band's talisman: bound intent |
 | `dodge_percent` | `rat_tail` | `sinewy_rat_tail` | Band's weapon strap: freedom of movement |
 | `armor_rating` | `rat_fur_patch` | `dense_rat_fur` | Band's weapon strap: reinforced seams |
 
 | Tier | Flesh | Dental item | Talisman | Weapon strap |
 |---|---|---|---|---|
-| T1 | `zombie_flesh` | — | `bandit_talisman` (requests) | — |
+| T1 | `tattered_flesh` | — | `bandit_talisman` (requests) | — |
 | T2 | `foul_flesh` | — | `knotted_talisman` (requests) | — |
 | T3 | `pickled_flesh` | `stubborn_molar` | `coded_talisman` | `balanced_weapon_strap` |
 | T4 | `leathery_flesh` | `gritted_teeth` | `campaign_talisman` | `reinforced_weapon_strap` |
@@ -241,7 +279,8 @@ placement or ingredient throughput.
 | T6 | `salt_cured_flesh` | `last_laugh_dentures` | `last_pay_talisman` | `unbroken_weapon_strap` |
 
 The first table is the final enchant mapping: it rewards the taught
-daytime/nighttime/shore route in T1/T2, while spreading demand. The second
+daytime/nighttime/shore encounters in T1/T2, while spreading demand.
+Both-clock refuges ensure all five inputs can also be farmed during day. The second
 table names the retained flesh and later common materials. The unused
 T1/T2 dental/strap alternatives were removed. Early outlaw talismans
 remain local requests, never a second recipe for the same stat.
@@ -266,18 +305,18 @@ available enchant inputs. There are no new universal reagents.
 
 | Tier | Signature items | Existing signatures reused | New signature icons | New quest-only icons | New icons total |
 |---|---:|---:|---:|---:|---:|
-| T1 | 11 | 3 | 8 | 0 | 8 |
+| T1 | 11 | 2 | 9 | 0 | 9 |
 | T2 | 17 | 2 | 15 | 0 | 15 |
-| T3 | 23 | 2 | 21 | 0 | 21 |
-| T4 | 20 | 2 | 18 | 0 | 18 |
+| T3 | 21 | 0 | 21 | 0 | 21 |
+| T4 | 19 | 1 | 18 | 0 | 18 |
 | T5 | 10 | 0 | 10 | 0 | 10 |
-| T6 | 17 | 1 | 16 | 0 | 16 |
-| **Total** | **98** | **10** | **88** | **0** | **88** |
+| T6 | 16 | 0 | 16 | 0 | 16 |
+| **Total** | **94** | **5** | **89** | **0** | **89** |
 
-The inventory catalogue contains 118 entries: 98 signatures and 20 reused
+The inventory catalogue contains 119 entries: 94 signatures and 25 reused
 generic items. Thirty entries already have icons.
 The six metal bars in the drop tables are existing items and add no icons.
-The eight mob tints use existing textures/modifiers and add no skins or
+The nine mob tints use existing textures/modifiers and add no skins or
 icons. All new inventory items carry an icon brief for C4.
 
 ## Blockers / questions

@@ -222,7 +222,7 @@
           "max": 1
         },
         {
-          "item": "grug_mobs:zombie_flesh",
+          "item": "grug_mobs:tattered_flesh",
           "chance": 2,
           "min": 1,
           "max": 1
@@ -230,6 +230,12 @@
         {
           "item": "grug_materials:bronze_bar",
           "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
           "min": 1,
           "max": 1
         }
@@ -255,6 +261,12 @@
         },
         {
           "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
           "chance": 2,
           "min": 1,
           "max": 1
@@ -290,6 +302,12 @@
           "chance": 2,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
         }
       ],
       "4": [
@@ -319,6 +337,12 @@
         },
         {
           "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
           "chance": 2,
           "min": 1,
           "max": 1
@@ -354,6 +378,12 @@
           "chance": 2,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
         }
       ],
       "6": [
@@ -383,6 +413,12 @@
         },
         {
           "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
           "chance": 2,
           "min": 1,
           "max": 1
@@ -1042,6 +1078,12 @@
           "chance": 3,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
         }
       ],
       "6": [
@@ -1059,6 +1101,12 @@
         },
         {
           "item": "grug_mobs:salt_bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bear_claw",
           "chance": 3,
           "min": 1,
           "max": 1
@@ -1126,6 +1174,12 @@
       "2": [
         {
           "item": "grug_mobs:thin_slime_gel",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:slime_gel",
           "chance": 3,
           "min": 1,
           "max": 1
@@ -1432,6 +1486,12 @@
           "chance": 3,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_sac",
+          "chance": 3,
+          "min": 1,
+          "max": 1
         }
       ],
       "6": [
@@ -1443,6 +1503,12 @@
         },
         {
           "item": "grug_mobs:glass_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_sac",
           "chance": 3,
           "min": 1,
           "max": 1
@@ -1904,6 +1970,12 @@
           "chance": 25,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
         }
       ],
       "4": [
@@ -1918,6 +1990,12 @@
           "chance": 25,
           "min": 1,
           "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
         }
       ],
       "5": [
@@ -1930,6 +2008,12 @@
         {
           "item": "grug_materials:embersteel_bar",
           "chance": 25,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
           "min": 1,
           "max": 1
         }

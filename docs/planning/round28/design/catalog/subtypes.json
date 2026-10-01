@@ -12,38 +12,14 @@
       3
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; all six starts. Charge retained. Neutral single pull; no group alert.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Small Plague Boar",
-      "kragmar_mournfen": "Small Plague Boar",
-      "kragmar_nhal_veyr": "Small Plague Boar",
-      "kragmar_ossuary_reach": "Small Plague Boar",
-      "kragmar_blackwind_rise": "Small Plague Boar",
-      "front_gravesalt_escarpment": "Small Plague Boar",
-      "kragmar_kapok_cradle": "Small Jungle Boar",
-      "kragmar_raincall_basin": "Small Jungle Boar",
-      "kragmar_kezamba": "Small Jungle Boar",
-      "kragmar_whispering_reedlands": "Small Jungle Boar",
-      "kragmar_totemwater_reach": "Small Jungle Boar",
-      "kragmar_thunderroot_wilds": "Small Jungle Boar",
-      "front_skyglass_canopy": "Small Jungle Boar",
-      "front_stormscale_summit": "Small Jungle Boar"
+      "kragmar_kapok_cradle": "Small Jungle Boar"
     },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "plague_boar",
-      "kragmar_mournfen": "plague_boar",
-      "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_kapok_cradle": "jungle_boar"
     }
   },
   {
@@ -59,38 +35,14 @@
       7
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; all six starts. Charge retained. Hostile successor to the local neutral boar.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Aggressive Plague Boar",
-      "kragmar_mournfen": "Aggressive Plague Boar",
-      "kragmar_nhal_veyr": "Aggressive Plague Boar",
-      "kragmar_ossuary_reach": "Aggressive Plague Boar",
-      "kragmar_blackwind_rise": "Aggressive Plague Boar",
-      "front_gravesalt_escarpment": "Aggressive Plague Boar",
-      "kragmar_kapok_cradle": "Aggressive Jungle Boar",
-      "kragmar_raincall_basin": "Aggressive Jungle Boar",
-      "kragmar_kezamba": "Aggressive Jungle Boar",
-      "kragmar_whispering_reedlands": "Aggressive Jungle Boar",
-      "kragmar_totemwater_reach": "Aggressive Jungle Boar",
-      "kragmar_thunderroot_wilds": "Aggressive Jungle Boar",
-      "front_skyglass_canopy": "Aggressive Jungle Boar",
-      "front_stormscale_summit": "Aggressive Jungle Boar"
+      "kragmar_kapok_cradle": "Aggressive Jungle Boar"
     },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "plague_boar",
-      "kragmar_mournfen": "plague_boar",
-      "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_kapok_cradle": "jungle_boar"
     }
   },
   {
@@ -106,38 +58,14 @@
       14
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; all six homes. Charge retained. Neutral single pull; no group alert.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Young Plague Boar",
       "kragmar_mournfen": "Young Plague Boar",
-      "kragmar_nhal_veyr": "Young Plague Boar",
-      "kragmar_ossuary_reach": "Young Plague Boar",
-      "kragmar_blackwind_rise": "Young Plague Boar",
-      "front_gravesalt_escarpment": "Young Plague Boar",
-      "kragmar_kapok_cradle": "Young Jungle Boar",
-      "kragmar_raincall_basin": "Young Jungle Boar",
-      "kragmar_kezamba": "Young Jungle Boar",
-      "kragmar_whispering_reedlands": "Young Jungle Boar",
-      "kragmar_totemwater_reach": "Young Jungle Boar",
-      "kragmar_thunderroot_wilds": "Young Jungle Boar",
-      "front_skyglass_canopy": "Young Jungle Boar",
-      "front_stormscale_summit": "Young Jungle Boar"
+      "kragmar_raincall_basin": "Young Jungle Boar"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "plague_boar",
       "kragmar_mournfen": "plague_boar",
-      "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_raincall_basin": "jungle_boar"
     }
   },
   {
@@ -153,38 +81,14 @@
       20
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; all six homes. Charge retained. Hostile successor to the local neutral boar.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Bristling Plague Boar",
       "kragmar_mournfen": "Bristling Plague Boar",
-      "kragmar_nhal_veyr": "Bristling Plague Boar",
-      "kragmar_ossuary_reach": "Bristling Plague Boar",
-      "kragmar_blackwind_rise": "Bristling Plague Boar",
-      "front_gravesalt_escarpment": "Bristling Plague Boar",
-      "kragmar_kapok_cradle": "Bristling Jungle Boar",
-      "kragmar_raincall_basin": "Bristling Jungle Boar",
-      "kragmar_kezamba": "Bristling Jungle Boar",
-      "kragmar_whispering_reedlands": "Bristling Jungle Boar",
-      "kragmar_totemwater_reach": "Bristling Jungle Boar",
-      "kragmar_thunderroot_wilds": "Bristling Jungle Boar",
-      "front_skyglass_canopy": "Bristling Jungle Boar",
-      "front_stormscale_summit": "Bristling Jungle Boar"
+      "kragmar_raincall_basin": "Bristling Jungle Boar"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "plague_boar",
       "kragmar_mournfen": "plague_boar",
-      "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_raincall_basin": "jungle_boar"
     }
   },
   {
@@ -200,38 +104,14 @@
       24
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; Highcourt, Nhal Veyr, Kezamba and Whitebridge. Charge retained. Neutral single pull; no group alert.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Furrow Plague Boar",
-      "kragmar_mournfen": "Furrow Plague Boar",
       "kragmar_nhal_veyr": "Furrow Plague Boar",
-      "kragmar_ossuary_reach": "Furrow Plague Boar",
-      "kragmar_blackwind_rise": "Furrow Plague Boar",
-      "front_gravesalt_escarpment": "Furrow Plague Boar",
-      "kragmar_kapok_cradle": "Furrow Jungle Boar",
-      "kragmar_raincall_basin": "Furrow Jungle Boar",
-      "kragmar_kezamba": "Furrow Jungle Boar",
-      "kragmar_whispering_reedlands": "Furrow Jungle Boar",
-      "kragmar_totemwater_reach": "Furrow Jungle Boar",
-      "kragmar_thunderroot_wilds": "Furrow Jungle Boar",
-      "front_skyglass_canopy": "Furrow Jungle Boar",
-      "front_stormscale_summit": "Furrow Jungle Boar"
+      "kragmar_kezamba": "Furrow Jungle Boar"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "plague_boar",
-      "kragmar_mournfen": "plague_boar",
       "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_kezamba": "jungle_boar"
     }
   },
   {
@@ -247,38 +127,14 @@
       30
     ],
     "drops": "boar",
-    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "notes": "Day; Highcourt, Nhal Veyr, Kezamba and Whitebridge. Charge retained. Hostile successor to the local neutral boar.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Monstrous Plague Boar",
-      "kragmar_mournfen": "Monstrous Plague Boar",
       "kragmar_nhal_veyr": "Monstrous Plague Boar",
-      "kragmar_ossuary_reach": "Monstrous Plague Boar",
-      "kragmar_blackwind_rise": "Monstrous Plague Boar",
-      "front_gravesalt_escarpment": "Monstrous Plague Boar",
-      "kragmar_kapok_cradle": "Monstrous Jungle Boar",
-      "kragmar_raincall_basin": "Monstrous Jungle Boar",
-      "kragmar_kezamba": "Monstrous Jungle Boar",
-      "kragmar_whispering_reedlands": "Monstrous Jungle Boar",
-      "kragmar_totemwater_reach": "Monstrous Jungle Boar",
-      "kragmar_thunderroot_wilds": "Monstrous Jungle Boar",
-      "front_skyglass_canopy": "Monstrous Jungle Boar",
-      "front_stormscale_summit": "Monstrous Jungle Boar"
+      "kragmar_kezamba": "Monstrous Jungle Boar"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "plague_boar",
-      "kragmar_mournfen": "plague_boar",
       "kragmar_nhal_veyr": "plague_boar",
-      "kragmar_ossuary_reach": "plague_boar",
-      "kragmar_blackwind_rise": "plague_boar",
-      "front_gravesalt_escarpment": "plague_boar",
-      "kragmar_kapok_cradle": "jungle_boar",
-      "kragmar_raincall_basin": "jungle_boar",
-      "kragmar_kezamba": "jungle_boar",
-      "kragmar_whispering_reedlands": "jungle_boar",
-      "kragmar_totemwater_reach": "jungle_boar",
-      "kragmar_thunderroot_wilds": "jungle_boar",
-      "front_skyglass_canopy": "jungle_boar",
-      "front_stormscale_summit": "jungle_boar"
+      "kragmar_kezamba": "jungle_boar"
     }
   },
   {
@@ -294,50 +150,16 @@
       3
     ],
     "drops": "rat",
-    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Large Grave Rat",
-      "kragmar_mournfen": "Large Grave Rat",
-      "kragmar_nhal_veyr": "Large Grave Rat",
-      "kragmar_ossuary_reach": "Large Grave Rat",
-      "kragmar_blackwind_rise": "Large Grave Rat",
-      "front_gravesalt_escarpment": "Large Grave Rat",
       "kragmar_kapok_cradle": "Large Kapok Rat",
-      "kragmar_raincall_basin": "Large Kapok Rat",
-      "kragmar_kezamba": "Large Kapok Rat",
-      "kragmar_whispering_reedlands": "Large Kapok Rat",
-      "kragmar_totemwater_reach": "Large Kapok Rat",
-      "kragmar_thunderroot_wilds": "Large Kapok Rat",
-      "front_skyglass_canopy": "Large Kapok Rat",
-      "front_stormscale_summit": "Large Kapok Rat",
-      "kragmar_sunscar_flats": "Large Dust Rat",
-      "kragmar_redtusk_savanna": "Large Dust Rat",
-      "kragmar_gor_drazhak": "Large Dust Rat",
-      "kragmar_speargrass_reach": "Large Dust Rat",
-      "kragmar_bannerbreak_mesa": "Large Dust Rat",
-      "front_shattered_line": "Large Dust Rat"
+      "kragmar_sunscar_flats": "Large Dust Rat"
     },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
-      "kragmar_mournfen": "sallow",
-      "kragmar_nhal_veyr": "sallow",
-      "kragmar_ossuary_reach": "sallow",
-      "kragmar_blackwind_rise": "sallow",
-      "front_gravesalt_escarpment": "sallow",
       "kragmar_kapok_cradle": "moss",
-      "kragmar_raincall_basin": "moss",
-      "kragmar_kezamba": "moss",
-      "kragmar_whispering_reedlands": "moss",
-      "kragmar_totemwater_reach": "moss",
-      "kragmar_thunderroot_wilds": "moss",
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss",
-      "kragmar_sunscar_flats": "ochre",
-      "kragmar_redtusk_savanna": "ochre",
-      "kragmar_gor_drazhak": "ochre",
-      "kragmar_speargrass_reach": "ochre",
-      "kragmar_bannerbreak_mesa": "ochre",
-      "front_shattered_line": "ochre"
+      "kragmar_sunscar_flats": "ochre"
     }
   },
   {
@@ -345,7 +167,7 @@
     "family": "rat",
     "base": "grug_mobs:giant_rat",
     "display": "Rabid Rat",
-    "size": 1,
+    "size": 1.15,
     "disposition": "aggressive",
     "tier": "normal",
     "levels": [
@@ -353,50 +175,16 @@
       7
     ],
     "drops": "rat",
-    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Rabid Grave Rat",
-      "kragmar_mournfen": "Rabid Grave Rat",
-      "kragmar_nhal_veyr": "Rabid Grave Rat",
-      "kragmar_ossuary_reach": "Rabid Grave Rat",
-      "kragmar_blackwind_rise": "Rabid Grave Rat",
-      "front_gravesalt_escarpment": "Rabid Grave Rat",
       "kragmar_kapok_cradle": "Rabid Kapok Rat",
-      "kragmar_raincall_basin": "Rabid Kapok Rat",
-      "kragmar_kezamba": "Rabid Kapok Rat",
-      "kragmar_whispering_reedlands": "Rabid Kapok Rat",
-      "kragmar_totemwater_reach": "Rabid Kapok Rat",
-      "kragmar_thunderroot_wilds": "Rabid Kapok Rat",
-      "front_skyglass_canopy": "Rabid Kapok Rat",
-      "front_stormscale_summit": "Rabid Kapok Rat",
-      "kragmar_sunscar_flats": "Rabid Dust Rat",
-      "kragmar_redtusk_savanna": "Rabid Dust Rat",
-      "kragmar_gor_drazhak": "Rabid Dust Rat",
-      "kragmar_speargrass_reach": "Rabid Dust Rat",
-      "kragmar_bannerbreak_mesa": "Rabid Dust Rat",
-      "front_shattered_line": "Rabid Dust Rat"
+      "kragmar_sunscar_flats": "Rabid Dust Rat"
     },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
-      "kragmar_mournfen": "sallow",
-      "kragmar_nhal_veyr": "sallow",
-      "kragmar_ossuary_reach": "sallow",
-      "kragmar_blackwind_rise": "sallow",
-      "front_gravesalt_escarpment": "sallow",
       "kragmar_kapok_cradle": "moss",
-      "kragmar_raincall_basin": "moss",
-      "kragmar_kezamba": "moss",
-      "kragmar_whispering_reedlands": "moss",
-      "kragmar_totemwater_reach": "moss",
-      "kragmar_thunderroot_wilds": "moss",
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss",
-      "kragmar_sunscar_flats": "ochre",
-      "kragmar_redtusk_savanna": "ochre",
-      "kragmar_gor_drazhak": "ochre",
-      "kragmar_speargrass_reach": "ochre",
-      "kragmar_bannerbreak_mesa": "ochre",
-      "front_shattered_line": "ochre"
+      "kragmar_sunscar_flats": "ochre"
     }
   },
   {
@@ -412,50 +200,16 @@
       9
     ],
     "drops": "rat",
-    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection. Optional inland finale-area animal, not another required hunt.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Monstrous Grave Rat",
-      "kragmar_mournfen": "Monstrous Grave Rat",
-      "kragmar_nhal_veyr": "Monstrous Grave Rat",
-      "kragmar_ossuary_reach": "Monstrous Grave Rat",
-      "kragmar_blackwind_rise": "Monstrous Grave Rat",
-      "front_gravesalt_escarpment": "Monstrous Grave Rat",
       "kragmar_kapok_cradle": "Monstrous Kapok Rat",
-      "kragmar_raincall_basin": "Monstrous Kapok Rat",
-      "kragmar_kezamba": "Monstrous Kapok Rat",
-      "kragmar_whispering_reedlands": "Monstrous Kapok Rat",
-      "kragmar_totemwater_reach": "Monstrous Kapok Rat",
-      "kragmar_thunderroot_wilds": "Monstrous Kapok Rat",
-      "front_skyglass_canopy": "Monstrous Kapok Rat",
-      "front_stormscale_summit": "Monstrous Kapok Rat",
-      "kragmar_sunscar_flats": "Monstrous Dust Rat",
-      "kragmar_redtusk_savanna": "Monstrous Dust Rat",
-      "kragmar_gor_drazhak": "Monstrous Dust Rat",
-      "kragmar_speargrass_reach": "Monstrous Dust Rat",
-      "kragmar_bannerbreak_mesa": "Monstrous Dust Rat",
-      "front_shattered_line": "Monstrous Dust Rat"
+      "kragmar_sunscar_flats": "Monstrous Dust Rat"
     },
     "tint_by_zone": {
       "kragmar_stillgrave_hollow": "sallow",
-      "kragmar_mournfen": "sallow",
-      "kragmar_nhal_veyr": "sallow",
-      "kragmar_ossuary_reach": "sallow",
-      "kragmar_blackwind_rise": "sallow",
-      "front_gravesalt_escarpment": "sallow",
       "kragmar_kapok_cradle": "moss",
-      "kragmar_raincall_basin": "moss",
-      "kragmar_kezamba": "moss",
-      "kragmar_whispering_reedlands": "moss",
-      "kragmar_totemwater_reach": "moss",
-      "kragmar_thunderroot_wilds": "moss",
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss",
-      "kragmar_sunscar_flats": "ochre",
-      "kragmar_redtusk_savanna": "ochre",
-      "kragmar_gor_drazhak": "ochre",
-      "kragmar_speargrass_reach": "ochre",
-      "kragmar_bannerbreak_mesa": "ochre",
-      "front_shattered_line": "ochre"
+      "kragmar_sunscar_flats": "ochre"
     }
   },
   {
@@ -471,50 +225,16 @@
       14
     ],
     "drops": "rat",
-    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "notes": "Night in open fields of the six home zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Granary Grave Rat",
       "kragmar_mournfen": "Granary Grave Rat",
-      "kragmar_nhal_veyr": "Granary Grave Rat",
-      "kragmar_ossuary_reach": "Granary Grave Rat",
-      "kragmar_blackwind_rise": "Granary Grave Rat",
-      "front_gravesalt_escarpment": "Granary Grave Rat",
-      "kragmar_kapok_cradle": "Granary Kapok Rat",
       "kragmar_raincall_basin": "Granary Kapok Rat",
-      "kragmar_kezamba": "Granary Kapok Rat",
-      "kragmar_whispering_reedlands": "Granary Kapok Rat",
-      "kragmar_totemwater_reach": "Granary Kapok Rat",
-      "kragmar_thunderroot_wilds": "Granary Kapok Rat",
-      "front_skyglass_canopy": "Granary Kapok Rat",
-      "front_stormscale_summit": "Granary Kapok Rat",
-      "kragmar_sunscar_flats": "Granary Dust Rat",
-      "kragmar_redtusk_savanna": "Granary Dust Rat",
-      "kragmar_gor_drazhak": "Granary Dust Rat",
-      "kragmar_speargrass_reach": "Granary Dust Rat",
-      "kragmar_bannerbreak_mesa": "Granary Dust Rat",
-      "front_shattered_line": "Granary Dust Rat"
+      "kragmar_redtusk_savanna": "Granary Dust Rat"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "sallow",
       "kragmar_mournfen": "sallow",
-      "kragmar_nhal_veyr": "sallow",
-      "kragmar_ossuary_reach": "sallow",
-      "kragmar_blackwind_rise": "sallow",
-      "front_gravesalt_escarpment": "sallow",
-      "kragmar_kapok_cradle": "moss",
       "kragmar_raincall_basin": "moss",
-      "kragmar_kezamba": "moss",
-      "kragmar_whispering_reedlands": "moss",
-      "kragmar_totemwater_reach": "moss",
-      "kragmar_thunderroot_wilds": "moss",
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss",
-      "kragmar_sunscar_flats": "ochre",
-      "kragmar_redtusk_savanna": "ochre",
-      "kragmar_gor_drazhak": "ochre",
-      "kragmar_speargrass_reach": "ochre",
-      "kragmar_bannerbreak_mesa": "ochre",
-      "front_shattered_line": "ochre"
+      "kragmar_redtusk_savanna": "ochre"
     }
   },
   {
@@ -530,50 +250,16 @@
       20
     ],
     "drops": "rat",
-    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "notes": "Night in open fields of the six home zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Mangy Grave Rat",
       "kragmar_mournfen": "Mangy Grave Rat",
-      "kragmar_nhal_veyr": "Mangy Grave Rat",
-      "kragmar_ossuary_reach": "Mangy Grave Rat",
-      "kragmar_blackwind_rise": "Mangy Grave Rat",
-      "front_gravesalt_escarpment": "Mangy Grave Rat",
-      "kragmar_kapok_cradle": "Mangy Kapok Rat",
       "kragmar_raincall_basin": "Mangy Kapok Rat",
-      "kragmar_kezamba": "Mangy Kapok Rat",
-      "kragmar_whispering_reedlands": "Mangy Kapok Rat",
-      "kragmar_totemwater_reach": "Mangy Kapok Rat",
-      "kragmar_thunderroot_wilds": "Mangy Kapok Rat",
-      "front_skyglass_canopy": "Mangy Kapok Rat",
-      "front_stormscale_summit": "Mangy Kapok Rat",
-      "kragmar_sunscar_flats": "Mangy Dust Rat",
-      "kragmar_redtusk_savanna": "Mangy Dust Rat",
-      "kragmar_gor_drazhak": "Mangy Dust Rat",
-      "kragmar_speargrass_reach": "Mangy Dust Rat",
-      "kragmar_bannerbreak_mesa": "Mangy Dust Rat",
-      "front_shattered_line": "Mangy Dust Rat"
+      "kragmar_redtusk_savanna": "Mangy Dust Rat"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "sallow",
       "kragmar_mournfen": "sallow",
-      "kragmar_nhal_veyr": "sallow",
-      "kragmar_ossuary_reach": "sallow",
-      "kragmar_blackwind_rise": "sallow",
-      "front_gravesalt_escarpment": "sallow",
-      "kragmar_kapok_cradle": "moss",
       "kragmar_raincall_basin": "moss",
-      "kragmar_kezamba": "moss",
-      "kragmar_whispering_reedlands": "moss",
-      "kragmar_totemwater_reach": "moss",
-      "kragmar_thunderroot_wilds": "moss",
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss",
-      "kragmar_sunscar_flats": "ochre",
-      "kragmar_redtusk_savanna": "ochre",
-      "kragmar_gor_drazhak": "ochre",
-      "kragmar_speargrass_reach": "ochre",
-      "kragmar_bannerbreak_mesa": "ochre",
-      "front_shattered_line": "ochre"
+      "kragmar_redtusk_savanna": "ochre"
     }
   },
   {
@@ -589,7 +275,7 @@
       5
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; all six start coasts; shore:true only. Neutral single pull."
   },
   {
     "role": "giant_crab",
@@ -604,7 +290,7 @@
       9
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; all six start coasts; shore:true only. Aggressive shore hunter."
   },
   {
     "role": "tidepool_crab",
@@ -619,7 +305,7 @@
       14
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; all six home coasts, with small Raincall/Copperfell requests; shore:true only. Neutral single pull."
   },
   {
     "role": "reefclaw_crab",
@@ -634,7 +320,7 @@
       20
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; all six home coasts, with small Raincall/Copperfell requests; shore:true only. Aggressive shore hunter."
   },
   {
     "role": "bank_crab",
@@ -649,7 +335,7 @@
       24
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; the eight heartland coasts; shore:true only. Neutral single pull."
   },
   {
     "role": "armored_crab",
@@ -664,7 +350,7 @@
       30
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; the eight heartland coasts; shore:true only. Aggressive shore hunter."
   },
   {
     "role": "breakwater_crab",
@@ -679,7 +365,7 @@
       40
     ],
     "drops": "crab",
-    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+    "notes": "Day; Stormvault, Glassroot, Blackwind and Thunderroot shores; shore:true only. Aggressive shore hunter."
   },
   {
     "role": "braindead_zombie",
@@ -694,7 +380,7 @@
       5
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six start zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "sluggish_zombie",
@@ -709,7 +395,7 @@
       7
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six start zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains. Sluggish describes personality, not a speed modifier."
   },
   {
     "role": "drowned_zombie",
@@ -724,7 +410,7 @@
       9
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override. Shore:true; does not become a swimmer."
+    "notes": "Night in the six start zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains. Shore:true; walks, never swims."
   },
   {
     "role": "moaning_zombie",
@@ -739,7 +425,7 @@
       15
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six home zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "muttering_zombie",
@@ -754,7 +440,7 @@
       20
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six home zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "debtbound_zombie",
@@ -769,7 +455,7 @@
       25
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the capital outskirts and selected heartlands outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "stubborn_zombie",
@@ -784,7 +470,7 @@
       30
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the capital outskirts and selected heartlands outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "marching_zombie",
@@ -799,7 +485,7 @@
       35
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six contested zones and Broken Causeway outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "unrelenting_zombie",
@@ -814,7 +500,7 @@
       40
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+    "notes": "Night in the six contested zones and Broken Causeway outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "saltbound_zombie",
@@ -829,14 +515,12 @@
       55
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override.",
+    "notes": "Night in Gravesalt and Skyglass. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains.",
     "display_by_zone": {
-      "front_skyglass_canopy": "Saltbound Vinebound Zombie",
-      "front_stormscale_summit": "Saltbound Vinebound Zombie"
+      "front_skyglass_canopy": "Saltbound Vinebound Zombie"
     },
     "tint_by_zone": {
-      "front_skyglass_canopy": "moss",
-      "front_stormscale_summit": "moss"
+      "front_skyglass_canopy": "moss"
     }
   },
   {
@@ -852,7 +536,7 @@
       60
     ],
     "drops": "zombie",
-    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override.",
+    "notes": "Night in Gravesalt and Skyglass; L60 roles also the islands. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains.",
     "display_by_zone": {
       "front_skyglass_canopy": "Last-Watch Vinebound Zombie",
       "front_stormscale_summit": "Last-Watch Vinebound Zombie"
@@ -875,7 +559,7 @@
       5
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six start zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "sluggish_husk",
@@ -890,7 +574,7 @@
       7
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six start zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "salt_caked_husk",
@@ -905,7 +589,7 @@
       9
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six start zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise. Shore:true; start shore alternative only, not the lower-band supply source."
   },
   {
     "role": "muttering_husk",
@@ -920,7 +604,7 @@
       15
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six home zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "parched_husk",
@@ -935,7 +619,7 @@
       20
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six home zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "debtbound_husk",
@@ -950,7 +634,7 @@
       25
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the capital outskirts and selected heartlands, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "stubborn_husk",
@@ -965,7 +649,7 @@
       30
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the capital outskirts and selected heartlands, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "marching_husk",
@@ -980,7 +664,7 @@
       35
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six contested zones and Broken Causeway, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "unrelenting_husk",
@@ -995,7 +679,7 @@
       40
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in the six contested zones and Broken Causeway, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "siege_husk",
@@ -1010,7 +694,7 @@
       45
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in Shattered Line, mandatory where daylight stat supply lacks blight-ground zombies. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "unburied_husk",
@@ -1025,7 +709,7 @@
       50
     ],
     "drops": "zombie",
-    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+    "notes": "Both clocks at sun-dried corpse caches in Shattered Line, mandatory where daylight stat supply lacks blight-ground zombies. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "small_fox",
@@ -1040,7 +724,7 @@
       7
     ],
     "drops": "fox",
-    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+    "notes": "Day; Accord starts. Hit-and-run bite retained. Neutral; never group-alert."
   },
   {
     "role": "young_fox",
@@ -1055,7 +739,7 @@
       14
     ],
     "drops": "fox",
-    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+    "notes": "Day; Accord homes. Hit-and-run bite retained. Neutral; never group-alert."
   },
   {
     "role": "rabid_fox",
@@ -1070,7 +754,7 @@
       20
     ],
     "drops": "fox",
-    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+    "notes": "Day; Accord homes. Hit-and-run bite retained. Hostile fox; name signals aggression."
   },
   {
     "role": "orchard_fox",
@@ -1085,7 +769,7 @@
       24
     ],
     "drops": "fox",
-    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+    "notes": "Day; Highcourt and Lethariel. Hit-and-run bite retained. Neutral; never group-alert."
   },
   {
     "role": "redfang_fox",
@@ -1100,7 +784,7 @@
       30
     ],
     "drops": "fox",
-    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+    "notes": "Day; Highcourt and Lethariel. Hit-and-run bite retained. Hostile fox; name signals aggression."
   },
   {
     "role": "confused_bandit",
@@ -1115,7 +799,7 @@
       10
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint.",
+    "notes": "Clock both at camps/hideouts in the six start zones; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer.",
     "display_by_zone": {
       "elandor_hearthpine_vale": "Confused Ore Thief",
       "elandor_dawnmere_fields": "Confused Bandit",
@@ -1138,13 +822,13 @@
       15
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the six home zones; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
-    "role": "watchful_bandit_archer",
+    "role": "vigilant_bandit_archer",
     "family": "outlaw",
     "base": "grug_mobs:bandit_archer",
-    "display": "Watchful Bandit Archer",
+    "display": "Vigilant Bandit Archer",
     "size": 1,
     "disposition": "aggressive",
     "tier": "normal",
@@ -1153,7 +837,7 @@
       20
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the six home zones; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "toll_bandit",
@@ -1168,7 +852,7 @@
       25
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the capital outskirts and selected heartlands; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "toll_bandit_archer",
@@ -1183,7 +867,7 @@
       30
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the capital outskirts and selected heartlands; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "entrenched_bandit",
@@ -1198,7 +882,7 @@
       35
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the six contested zones and Broken Causeway; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "entrenched_bandit_archer",
@@ -1213,7 +897,7 @@
       40
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in the six contested zones and Broken Causeway; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "siege_deserter",
@@ -1228,7 +912,7 @@
       45
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in Shattered Line; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "siege_deserter_archer",
@@ -1243,7 +927,7 @@
       50
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in Shattered Line; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "saltroad_deserter",
@@ -1258,7 +942,7 @@
       55
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in Gravesalt and Skyglass; L60 roles also the islands; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "last_pay_archer",
@@ -1273,7 +957,7 @@
       60
     ],
     "drops": "outlaw",
-    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+    "notes": "Clock both at camps/hideouts in Gravesalt and Skyglass; L60 roles also the islands; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "furtive_poacher",
@@ -1288,7 +972,7 @@
       10
     ],
     "drops": "outlaw",
-    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+    "notes": "Clock both at Silverleaf camps; optional night roaming. Ranged arrows. No actual snare or licence mechanic."
   },
   {
     "role": "snaring_poacher",
@@ -1303,10 +987,10 @@
       20
     ],
     "drops": "outlaw",
-    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+    "notes": "Clock both at Goldmead and Starbough camps; optional night roaming. Ranged arrows. No actual snare or licence mechanic."
   },
   {
-    "role": "licensed_poacher",
+    "role": "unlicensed_poacher",
     "family": "outlaw",
     "base": "grug_mobs:poacher",
     "display": "Unlicensed Poacher",
@@ -1318,7 +1002,7 @@
       30
     ],
     "drops": "outlaw",
-    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+    "notes": "Clock both at Whitebridge, Lethariel, Lorindor and Moonfall camps; optional night roaming. Ranged arrows. No actual snare or licence mechanic."
   },
   {
     "role": "wartrail_poacher",
@@ -1333,7 +1017,7 @@
       40
     ],
     "drops": "outlaw",
-    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+    "notes": "Clock both at Ashenward and Glassroot camps; optional night roaming. Ranged arrows. No actual snare or licence mechanic."
   },
   {
     "role": "young_ibex",
@@ -1500,20 +1184,12 @@
     "drops": "grazer",
     "notes": "Day; Highcourt, Lethariel, Whitebridge, Lorindor, Moonfall; gaunt form Nhal Veyr/Ossuary.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Moss-Antler Gaunt Stag",
-      "kragmar_mournfen": "Moss-Antler Gaunt Stag",
       "kragmar_nhal_veyr": "Moss-Antler Gaunt Stag",
-      "kragmar_ossuary_reach": "Moss-Antler Gaunt Stag",
-      "kragmar_blackwind_rise": "Moss-Antler Gaunt Stag",
-      "front_gravesalt_escarpment": "Moss-Antler Gaunt Stag"
+      "kragmar_ossuary_reach": "Moss-Antler Gaunt Stag"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "gaunt_stag",
-      "kragmar_mournfen": "gaunt_stag",
       "kragmar_nhal_veyr": "gaunt_stag",
-      "kragmar_ossuary_reach": "gaunt_stag",
-      "kragmar_blackwind_rise": "gaunt_stag",
-      "front_gravesalt_escarpment": "gaunt_stag"
+      "kragmar_ossuary_reach": "gaunt_stag"
     }
   },
   {
@@ -1531,20 +1207,10 @@
     "drops": "grazer",
     "notes": "Day; Ashenward, Glassroot; gaunt form Blackwind.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Watchful Gaunt Stag",
-      "kragmar_mournfen": "Watchful Gaunt Stag",
-      "kragmar_nhal_veyr": "Watchful Gaunt Stag",
-      "kragmar_ossuary_reach": "Watchful Gaunt Stag",
-      "kragmar_blackwind_rise": "Watchful Gaunt Stag",
-      "front_gravesalt_escarpment": "Watchful Gaunt Stag"
+      "kragmar_blackwind_rise": "Watchful Gaunt Stag"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "gaunt_stag",
-      "kragmar_mournfen": "gaunt_stag",
-      "kragmar_nhal_veyr": "gaunt_stag",
-      "kragmar_ossuary_reach": "gaunt_stag",
-      "kragmar_blackwind_rise": "gaunt_stag",
-      "front_gravesalt_escarpment": "gaunt_stag"
+      "kragmar_blackwind_rise": "gaunt_stag"
     }
   },
   {
@@ -1563,10 +1229,10 @@
     "notes": "Day; Gravesalt."
   },
   {
-    "role": "wary_jungle_lynx",
+    "role": "prowling_jungle_lynx",
     "family": "cat",
     "base": "grug_mobs:jungle_lynx",
-    "display": "Wary Jungle Lynx",
+    "display": "Prowling Jungle Lynx",
     "size": 0.9,
     "disposition": "aggressive",
     "tier": "normal",
@@ -1712,20 +1378,12 @@
     "drops": "canid",
     "notes": "Both clocks; Whitebridge/Moonfall/Ashenward/Glassroot; blight form Ossuary/Blackwind.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Briarpack Blightfang Wolf",
-      "kragmar_mournfen": "Briarpack Blightfang Wolf",
-      "kragmar_nhal_veyr": "Briarpack Blightfang Wolf",
       "kragmar_ossuary_reach": "Briarpack Blightfang Wolf",
-      "kragmar_blackwind_rise": "Briarpack Blightfang Wolf",
-      "front_gravesalt_escarpment": "Briarpack Blightfang Wolf"
+      "kragmar_blackwind_rise": "Briarpack Blightfang Wolf"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "blightfang_wolf",
-      "kragmar_mournfen": "blightfang_wolf",
-      "kragmar_nhal_veyr": "blightfang_wolf",
       "kragmar_ossuary_reach": "blightfang_wolf",
-      "kragmar_blackwind_rise": "blightfang_wolf",
-      "front_gravesalt_escarpment": "blightfang_wolf"
+      "kragmar_blackwind_rise": "blightfang_wolf"
     }
   },
   {
@@ -1758,20 +1416,12 @@
     "drops": "bear",
     "notes": "Day; Whitebridge, Moonfall, Ashenward, Glassroot; plague form Ossuary/Blackwind. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
     "display_by_zone": {
-      "kragmar_stillgrave_hollow": "Territorial Plaguehide Bear",
-      "kragmar_mournfen": "Territorial Plaguehide Bear",
-      "kragmar_nhal_veyr": "Territorial Plaguehide Bear",
       "kragmar_ossuary_reach": "Territorial Plaguehide Bear",
-      "kragmar_blackwind_rise": "Territorial Plaguehide Bear",
-      "front_gravesalt_escarpment": "Territorial Plaguehide Bear"
+      "kragmar_blackwind_rise": "Territorial Plaguehide Bear"
     },
     "tint_by_zone": {
-      "kragmar_stillgrave_hollow": "plaguehide_bear",
-      "kragmar_mournfen": "plaguehide_bear",
-      "kragmar_nhal_veyr": "plaguehide_bear",
       "kragmar_ossuary_reach": "plaguehide_bear",
-      "kragmar_blackwind_rise": "plaguehide_bear",
-      "front_gravesalt_escarpment": "plaguehide_bear"
+      "kragmar_blackwind_rise": "plaguehide_bear"
     }
   },
   {
@@ -1832,7 +1482,7 @@
       20
     ],
     "drops": "mirefolk",
-    "notes": "Night; Mournfen existing mirefolk anchor, slot area."
+    "notes": "Clock both at camps; Mournfen existing mirefolk anchor, slot area."
   },
   {
     "role": "toll_mirefolk",
@@ -1847,7 +1497,7 @@
       30
     ],
     "drops": "mirefolk",
-    "notes": "Night; Whitebridge, Lorindor and Whispering existing mirefolk anchors, slot areas."
+    "notes": "Clock both at camps; Whitebridge, Lorindor and Whispering existing mirefolk anchors, slot areas."
   },
   {
     "role": "wandering_wisp",
@@ -1912,7 +1562,7 @@
   {
     "role": "marrow_weevil",
     "family": "weevil",
-    "base": "grug_mobs:bone_weevil",
+    "base": "grug_mobs:stone_mite",
     "display": "Marrow Weevil",
     "size": 1,
     "disposition": "aggressive",
@@ -1922,12 +1572,16 @@
       40
     ],
     "drops": "weevil",
-    "notes": "Day; Ossuary, Blackwind. The bone weevil fights; cave crawlers stay critters."
+    "notes": "Day; Ossuary and Blackwind. Attacking stone_mite base, dogfight crawler with the existing bone-weevil skin. The original bone_weevil remains a critter; never derive combat roles from a base without attack.",
+    "tint_by_zone": {
+      "kragmar_ossuary_reach": "bone_weevil",
+      "kragmar_blackwind_rise": "bone_weevil"
+    }
   },
   {
     "role": "salt_boring_weevil",
     "family": "weevil",
-    "base": "grug_mobs:bone_weevil",
+    "base": "grug_mobs:stone_mite",
     "display": "Salt-Boring Weevil",
     "size": 1.15,
     "disposition": "aggressive",
@@ -1937,7 +1591,10 @@
       59
     ],
     "drops": "weevil",
-    "notes": "Day; Gravesalt."
+    "notes": "Day; Gravesalt. Attacking stone_mite base, dogfight crawler with the existing bone-weevil skin. The original bone_weevil remains a critter; never derive combat roles from a base without attack.",
+    "tint_by_zone": {
+      "front_gravesalt_escarpment": "bone_weevil"
+    }
   },
   {
     "role": "territorial_ape",
@@ -1982,7 +1639,7 @@
       7
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Sunscar. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "giant_scorpion",
@@ -1997,7 +1654,7 @@
       9
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Sunscar. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "reed_viper",
@@ -2012,7 +1669,7 @@
       7
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Kapok. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "giant_viper",
@@ -2027,7 +1684,7 @@
       9
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Kapok. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "dust_stinger",
@@ -2042,7 +1699,7 @@
       30
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Night; Redtusk, Gor Drazhak and Speargrass. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "reed_fang_viper",
@@ -2057,7 +1714,7 @@
       30
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Night; Raincall and Kezamba. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "war_stinger",
@@ -2072,7 +1729,7 @@
       50
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Night; Bannerbreak and Shattered Line. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "coiled_serpent",
@@ -2087,7 +1744,7 @@
       40
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Glassroot and Thunderroot. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "glass_fang_serpent",
@@ -2102,7 +1759,7 @@
       60
     ],
     "drops": "venomous",
-    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+    "notes": "Both clocks; Skyglass and Stormscale. Existing stacking bite poison; names do not add new effects. Keep poison separate from the first neutral hunt."
   },
   {
     "role": "briar_web_spider",
@@ -2117,7 +1774,7 @@
       40
     ],
     "drops": "spider",
-    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+    "notes": "Night; Whitebridge, Moonfall and Ashenward. Existing web slow; leave a clear retreat."
   },
   {
     "role": "grave_web_spider",
@@ -2132,7 +1789,7 @@
       40
     ],
     "drops": "spider",
-    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+    "notes": "Night; Ossuary and Blackwind. Existing web slow; leave a clear retreat."
   },
   {
     "role": "canopy_web_spider",
@@ -2147,7 +1804,7 @@
       40
     ],
     "drops": "spider",
-    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+    "notes": "Night; Glassroot and Thunderroot. Existing web slow; leave a clear retreat."
   },
   {
     "role": "salt_web_spider",
@@ -2162,7 +1819,7 @@
       59
     ],
     "drops": "spider",
-    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+    "notes": "Night; Gravesalt. Existing web slow; leave a clear retreat."
   },
   {
     "role": "glass_web_spider",
@@ -2177,7 +1834,7 @@
       60
     ],
     "drops": "spider",
-    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+    "notes": "Night; Skyglass and Stormscale. Existing web slow; leave a clear retreat."
   },
   {
     "role": "ore_thieving_goblin",
@@ -2192,7 +1849,7 @@
       30
     ],
     "drops": "goblin",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Copperfell, Dur Brannoc, Frostbarrow and Speargrass; night roamers optional. Melee swarm; first goblin lesson."
   },
   {
     "role": "rubble_goblin_slinger",
@@ -2207,7 +1864,7 @@
       30
     ],
     "drops": "goblin",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Copperfell, Dur Brannoc, Frostbarrow and Speargrass; night roamers optional. Ranged rock projectiles; visible sightlines."
   },
   {
     "role": "ore_guard_hound",
@@ -2222,7 +1879,7 @@
       30
     ],
     "drops": "canid",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Copperfell, Dur Brannoc, Frostbarrow and Speargrass; night roamers optional. Melee guard hound; no projectile attack."
   },
   {
     "role": "siege_goblin",
@@ -2237,7 +1894,7 @@
       40
     ],
     "drops": "goblin",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Stormvault and Bannerbreak; night roamers optional. Melee swarm; first goblin lesson."
   },
   {
     "role": "siege_goblin_slinger",
@@ -2252,7 +1909,7 @@
       40
     ],
     "drops": "goblin",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Stormvault and Bannerbreak; night roamers optional. Ranged rock projectiles; visible sightlines."
   },
   {
     "role": "siege_goblin_hound",
@@ -2267,7 +1924,7 @@
       40
     ],
     "drops": "canid",
-    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+    "notes": "Clock both at camps in Stormvault and Bannerbreak; night roamers optional. Melee guard hound; no projectile attack."
   },
   {
     "role": "barrow_skeleton_archer",
@@ -2282,10 +1939,10 @@
       30
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Ossuary. Arrows; does not burn in sunlight. Existing attack, no new effect."
   },
   {
-    "role": "march_skeleton_archer",
+    "role": "march_skeleton_raider",
     "family": "skeleton",
     "base": "grug_mobs:skeleton_raider",
     "display": "March Skeleton Raider",
@@ -2297,10 +1954,10 @@
       40
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Ashenward, Blackwind, Bannerbreak and Causeway. Arrows; does not burn in sunlight. Existing attack, no new effect."
   },
   {
-    "role": "rime_skeleton_archer",
+    "role": "rime_skeleton_stray",
     "family": "skeleton",
     "base": "grug_mobs:frost_stray",
     "display": "Rime Skeleton Stray",
@@ -2312,10 +1969,10 @@
       40
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Stormvault. Ordinary arrows; ice-blue appearance only; does not burn in sunlight. Existing attack, no new effect."
   },
   {
-    "role": "siege_skeleton_archer",
+    "role": "siege_skeleton_raider",
     "family": "skeleton",
     "base": "grug_mobs:skeleton_raider",
     "display": "Siege Skeleton Raider",
@@ -2327,10 +1984,10 @@
       50
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Shattered Line. Arrows; does not burn in sunlight. Existing attack, no new effect."
   },
   {
-    "role": "last_watch_archer",
+    "role": "last_watch_skeleton_raider",
     "family": "skeleton",
     "base": "grug_mobs:skeleton_raider",
     "display": "Last-Watch Skeleton Raider",
@@ -2342,10 +1999,10 @@
       60
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Gravesalt, Skyglass and Stormscale. Arrows; does not burn in sunlight. Existing attack, no new effect."
   },
   {
-    "role": "crown_frost_archer",
+    "role": "crown_frost_stray",
     "family": "skeleton",
     "base": "grug_mobs:frost_stray",
     "display": "Crown Frost Stray",
@@ -2357,7 +2014,7 @@
       60
     ],
     "drops": "skeleton",
-    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+    "notes": "Night; Wyrmglass. Ordinary arrows; ice-blue appearance only; does not burn in sunlight. Existing attack, no new effect."
   },
   {
     "role": "reed_hex_witch",
@@ -2372,7 +2029,7 @@
       40
     ],
     "drops": "witch",
-    "notes": "Night; reed: Thunderroot and Causeway; salt: Gravesalt and Stormscale. Homing bottle with existing poison/slow; teaching must not promise an ordinary dodgeable arrow."
+    "notes": "Night; Thunderroot and Causeway. Homing bottle with existing poison/slow; not an ordinary dodgeable arrow."
   },
   {
     "role": "salt_hex_witch",
@@ -2387,7 +2044,7 @@
       60
     ],
     "drops": "witch",
-    "notes": "Night; reed: Thunderroot and Causeway; salt: Gravesalt and Stormscale. Homing bottle with existing poison/slow; teaching must not promise an ordinary dodgeable arrow."
+    "notes": "Night; Gravesalt and Stormscale. Homing bottle with existing poison/slow; not an ordinary dodgeable arrow."
   },
   {
     "role": "ridge_crag_eagle",
@@ -2402,7 +2059,7 @@
       40
     ],
     "drops": "scavenger",
-    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+    "notes": "Day; Frostbarrow and Stormvault. Open-air flier; no required dense-canopy flying hunt."
   },
   {
     "role": "dustwing_vulture",
@@ -2417,7 +2074,7 @@
       50
     ],
     "drops": "scavenger",
-    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+    "notes": "Day; Speargrass, Bannerbreak and Shattered Line. Open-air flier; no required dense-canopy flying hunt."
   },
   {
     "role": "watchful_carrion_crow",
@@ -2432,7 +2089,7 @@
       60
     ],
     "drops": "scavenger",
-    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+    "notes": "Both clocks; Ashenward, Bannerbreak, front zones and islands. Open-air flier; no required dense-canopy flying hunt. Neutral retaliation, not a critter."
   },
   {
     "role": "crown_crag_eagle",
@@ -2447,7 +2104,7 @@
       60
     ],
     "drops": "scavenger",
-    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+    "notes": "Day; Wyrmglass. Open-air flier; no required dense-canopy flying hunt."
   },
   {
     "role": "seam_stone_golem",
@@ -2462,7 +2119,7 @@
       40
     ],
     "drops": "stone",
-    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+    "notes": "Both clocks; Frostbarrow and Stormvault. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
   },
   {
     "role": "seam_mesa_golem",
@@ -2477,7 +2134,7 @@
       50
     ],
     "drops": "stone",
-    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+    "notes": "Both clocks; Speargrass, Bannerbreak and Shattered Line. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
   },
   {
     "role": "causeway_construct",
@@ -2492,7 +2149,7 @@
       40
     ],
     "drops": "stone",
-    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+    "notes": "Both clocks; Broken Causeway. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
   },
   {
     "role": "siege_war_construct",
@@ -2507,7 +2164,7 @@
       50
     ],
     "drops": "stone",
-    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+    "notes": "Both clocks; Shattered Line. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
   },
   {
     "role": "crown_stone_golem",
@@ -2522,7 +2179,7 @@
       60
     ],
     "drops": "stone",
-    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+    "notes": "Both clocks; Wyrmglass. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
   },
   {
     "role": "salt_reef_lurker",
@@ -2792,7 +2449,7 @@
       29
     ],
     "drops": "zombie",
-    "notes": "Unique fixed spot in kragmar_nhal_veyr. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Blight dirt only if this zombie must survive daylight. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "notes": "Unique fixed spot in kragmar_nhal_veyr. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Actual blight dirt at the fixed spot is mandatory so this solo climax survives daylight. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
     "leader": true
   },
   {
@@ -3145,6 +2802,230 @@
     ],
     "drops": "ape",
     "notes": "Unique fixed spot in front_stormscale_summit. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
+    "leader": true
+  },
+  {
+    "role": "saltbound_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Saltbound Sun-Dried Husk",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      55
+    ],
+    "drops": "zombie",
+    "notes": "Both clocks at sun-dried corpse caches in Gravesalt and Skyglass, mandatory where daylight stat supply lacks blight-ground zombies. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+  },
+  {
+    "role": "last_watch_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Last-Watch Sun-Dried Husk",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      56,
+      60
+    ],
+    "drops": "zombie",
+    "notes": "Both clocks at sun-dried corpse caches in Gravesalt and Skyglass; L60 roles also the islands, mandatory where daylight stat supply lacks blight-ground zombies. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+  },
+  {
+    "role": "young_gaunt_stag",
+    "family": "stag",
+    "base": "grug_mobs:stag",
+    "display": "Young Gaunt Stag",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "grazer",
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "gaunt_stag"
+    },
+    "notes": "Day; Stillgrave Hollow only. Existing plague-country stag skin; neutral single-pull grazer with retaliation, never a critter. A calm daytime choice beside the boar and blight lessons."
+  },
+  {
+    "role": "basket_poacher_thorn",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Basket-Poacher Thorn",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      24,
+      24
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_whitebridge_shire. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Stolen river baskets identify the poacher before the wetland line ends.",
+    "leader": true
+  },
+  {
+    "role": "quartermaster_scrip",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Quartermaster Scrip",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      33,
+      33
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_ashenward_march. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Forged ration chits lead to the clerk who keeps charging for the same crate.",
+    "leader": true
+  },
+  {
+    "role": "bolt_chewer",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_hound",
+    "display": "Bolt-Chewer",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      36,
+      36
+    ],
+    "drops": "canid",
+    "notes": "Unique fixed spot in elandor_stormvault_heights. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. A trail of chewed lift bolts leads to the goblins' hoarding hound.",
+    "leader": true
+  },
+  {
+    "role": "basket_biter",
+    "family": "poison_small",
+    "base": "grug_mobs:serpent",
+    "display": "Basket-Biter",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "venomous",
+    "notes": "Unique fixed spot in elandor_glassroot_wilds. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Punctured offering baskets identify the serpent beside the empty cache.",
+    "leader": true
+  },
+  {
+    "role": "grave_broker_mute",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Grave-Broker Mute",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      37,
+      37
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_blackwind_rise. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Missing grave tags point to a broker who has sold each burial plot twice.",
+    "leader": true
+  },
+  {
+    "role": "provisioner_rattle",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Provisioner Rattle",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      37,
+      37
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in kragmar_bannerbreak_mesa. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Empty ration tins lead to the goblin counting them as full.",
+    "leader": true
+  },
+  {
+    "role": "bottle_keeper_zek",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Bottle-Keeper Zek",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "witch",
+    "notes": "Unique fixed spot in kragmar_thunderroot_wilds. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Spoiled offerings share the stopper of Zek's bottle.",
+    "leader": true
+  },
+  {
+    "role": "toll_taker_senn",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Toll-Taker Senn",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in front_broken_causeway. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Duplicate bridge tolls end at the collector who charges for both halves.",
+    "leader": true
+  },
+  {
+    "role": "standard_bearer_ninepins",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Standard-Bearer Ninepins",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      48,
+      48
+    ],
+    "drops": "skeleton",
+    "notes": "Unique fixed spot in front_shattered_line. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Recovered march orders identify the patrol's last standing standard-bearer.",
+    "leader": true
+  },
+  {
+    "role": "watch_captain_huskell",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Watch-Captain Huskell",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      58,
+      58
+    ],
+    "drops": "skeleton",
+    "notes": "Unique fixed spot in front_gravesalt_escarpment. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Watch tokens trace the unquiet patrol back to its captain.",
+    "leader": true
+  },
+  {
+    "role": "paymaster_chirr",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Paymaster Chirr",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      58,
+      58
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in front_skyglass_canopy. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Stolen pay packets lead to the deserter paying everyone in promises.",
     "leader": true
   }
 ]

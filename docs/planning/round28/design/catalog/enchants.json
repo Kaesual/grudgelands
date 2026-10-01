@@ -7,7 +7,7 @@
       "int": "grug_mobs:crab_eye",
       "attack_speed_percent": "grug_mobs:rat_tail",
       "crit_percent": "grug_mobs:boar_tusk",
-      "max_hp_percent": "grug_mobs:zombie_flesh",
+      "max_hp_percent": "grug_mobs:tattered_flesh",
       "max_mana_percent": "grug_mobs:crab_eye",
       "dodge_percent": "grug_mobs:rat_tail",
       "armor_rating": "grug_mobs:rat_fur_patch"

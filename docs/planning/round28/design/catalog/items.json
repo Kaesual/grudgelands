@@ -4,14 +4,26 @@
     "name": "Rotting Flesh",
     "tier": 1,
     "family": "zombie",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A stubborn scrap of its former owner.",
     "uses": [
-      "enchant:max_hp_percent:t1",
-      "quest",
-      "existing recipes"
+      "existing recipes",
+      "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
+  },
+  {
+    "id": "grug_mobs:tattered_flesh",
+    "name": "Tattered Flesh",
+    "tier": 1,
+    "family": "zombie",
+    "kind": "signature",
+    "description": "Still hanging together. Barely.",
+    "uses": [
+      "enchant:max_hp_percent:t1",
+      "quest"
+    ],
+    "icon": "A small dusty-pink flap with three ragged ends and one pale tendon across its centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bandit_talisman",
@@ -23,7 +35,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single bandit talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A rough tan wooden disc on a loose brown cord, pierced off-centre with one charcoal notch. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:foul_flesh",
@@ -36,7 +48,7 @@
       "enchant:max_hp_percent:t2",
       "quest"
     ],
-    "icon": "A single foul flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A swollen olive-green lump with a purple bruise and two dangling yellow fibres. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:knotted_talisman",
@@ -48,7 +60,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single knotted talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "Three ochre cord knots stacked around a chipped red bead; the cord forms a short triangular loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:pickled_flesh",
@@ -61,7 +73,7 @@
       "enchant:max_hp_percent:t3",
       "quest"
     ],
-    "icon": "A single pickled flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A square green-grey flesh slice folded once, glistening with amber brine along a curled edge; no jar. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:stubborn_molar",
@@ -75,7 +87,7 @@
       "enchant:crit_percent:t3",
       "quest"
     ],
-    "icon": "A single stubborn molar, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A broad ivory molar with four square cusps and two crooked brown roots. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:coded_talisman",
@@ -89,7 +101,7 @@
       "enchant:max_mana_percent:t3",
       "quest"
     ],
-    "icon": "A single coded talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark triangular wood tag crossed by three pale tally cuts, hung from a tight blue cord loop; no lettering. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:balanced_weapon_strap",
@@ -105,7 +117,7 @@
       "enchant:armor_rating:t3",
       "quest"
     ],
-    "icon": "A single balanced weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A soft tan leather strip bent into a symmetrical U, with a small brass ring at each end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:leathery_flesh",
@@ -118,7 +130,7 @@
       "enchant:max_hp_percent:t4",
       "quest"
     ],
-    "icon": "A single leathery flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thick brown hide-like strip rolled at one end, with a dark stitched-looking natural seam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:gritted_teeth",
@@ -132,7 +144,7 @@
       "enchant:crit_percent:t4",
       "quest"
     ],
-    "icon": "A single gritted teeth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "Four yellow teeth pressed in a tight horizontal row on a narrow red gum ridge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:campaign_talisman",
@@ -146,7 +158,7 @@
       "enchant:max_mana_percent:t4",
       "quest"
     ],
-    "icon": "A single campaign talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dented brass lozenge carrying a simple dark sun mark, tied with faded crimson thread. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:reinforced_weapon_strap",
@@ -162,7 +174,7 @@
       "enchant:armor_rating:t4",
       "quest"
     ],
-    "icon": "A single reinforced weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark chestnut leather loop with two broad steel rivets and a square iron buckle. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:scorched_flesh",
@@ -175,7 +187,7 @@
       "enchant:max_hp_percent:t5",
       "quest"
     ],
-    "icon": "A single scorched flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A charcoal-black flesh shard with a split orange inner edge and an irregular burnt crust. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:clenched_jaw",
@@ -189,7 +201,7 @@
       "enchant:crit_percent:t5",
       "quest"
     ],
-    "icon": "A single clenched jaw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A compact yellowed lower jaw in a squared U, two large teeth jutting inward. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siege_talisman",
@@ -203,7 +215,7 @@
       "enchant:max_mana_percent:t5",
       "quest"
     ],
-    "icon": "A single siege talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A squat iron hexagon blackened at one corner, wrapped in two crossed ochre cords. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siege_weapon_strap",
@@ -219,7 +231,7 @@
       "enchant:armor_rating:t5",
       "quest"
     ],
-    "icon": "A single siege weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A broad black leather strap folded sharply, patched with a scorched iron plate and red stitching. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:salt_cured_flesh",
@@ -232,7 +244,7 @@
       "enchant:max_hp_percent:t6",
       "quest"
     ],
-    "icon": "A single salt-cured flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A flat mauve flesh ribbon stiffened into a zigzag, with large white salt crystals along its rim. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:last_laugh_dentures",
@@ -246,7 +258,7 @@
       "enchant:crit_percent:t6",
       "quest"
     ],
-    "icon": "A single last-laugh dentures, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A crescent of pale dentures with one gold tooth and a dark empty socket at the end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:last_pay_talisman",
@@ -260,7 +272,7 @@
       "enchant:max_mana_percent:t6",
       "quest"
     ],
-    "icon": "A single last-pay talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A pale blue broken coin held in a black cord cage; one white knot closes the loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:unbroken_weapon_strap",
@@ -276,7 +288,7 @@
       "enchant:armor_rating:t6",
       "quest"
     ],
-    "icon": "A single unbroken weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A smooth midnight-blue leather oval reinforced by a continuous pale metal spine and bright clasp. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:boar_tusk",
@@ -305,7 +317,7 @@
       "enchant:crit_percent:t2",
       "quest"
     ],
-    "icon": "A single ridged boar tusk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A long cream tusk curving left, with three dark transverse ridges and a worn ochre root; larger than the plain T1 tusk. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:gnarled_boar_tusk",
@@ -317,7 +329,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single gnarled boar tusk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thick double-curved amber tusk, twisted at its broad root with two deep charcoal grooves and a chipped tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:rat_tail",
@@ -332,7 +344,7 @@
       "enchant:dodge_percent:t1",
       "quest"
     ],
-    "icon": "A single rat tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A slim pink tail curled into an S, with fine brown rings and a tapering pale tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:rat_fur_patch",
@@ -345,7 +357,7 @@
       "enchant:armor_rating:t1",
       "quest"
     ],
-    "icon": "A single rat fur patch, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A small ragged grey fur diamond with four coarse hairs rising from its top edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:sinewy_rat_tail",
@@ -360,7 +372,7 @@
       "enchant:dodge_percent:t2",
       "quest"
     ],
-    "icon": "A single sinewy rat tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thick wine-red tail in a tight hook, its pale sinew ridge visible along the inner curve. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:dense_rat_fur",
@@ -373,7 +385,7 @@
       "enchant:armor_rating:t2",
       "quest"
     ],
-    "icon": "A single dense rat fur, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A wide dark-brown fur tuft with a tawny centre and a dense comb of short black guard hairs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:crab_eye",
@@ -387,7 +399,7 @@
       "enchant:max_mana_percent:t1",
       "quest"
     ],
-    "icon": "A single crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A glossy black eye bead on a short rust-orange stalk, with a single white pinpoint highlight. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:crab_leg",
@@ -399,7 +411,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single crab leg, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A red-orange crab leg bent at two knuckles, ending in a narrow cream hook. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:clear_crab_eye",
@@ -413,7 +425,7 @@
       "enchant:max_mana_percent:t2",
       "quest"
     ],
-    "icon": "A single clear crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A translucent amber eye sphere on a pale forked stalk, showing a dark pupil through a broad cool highlight. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:ridged_crab_shell",
@@ -425,7 +437,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single ridged crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A burnt-orange shell half with three raised cream ribs and a chipped scalloped edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:layered_crab_shell",
@@ -437,7 +449,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single layered crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "Three overlapping blue-grey shell plates stacked like roof tiles with dark seams. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:storm_crab_shell",
@@ -449,7 +461,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single storm crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark teal shell shield with a jagged white rim and two pale diagonal lightning-shaped scratches. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:abyssal_crab_shell",
@@ -461,7 +473,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single abyssal crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A deep violet shell bowl with a black centre and thick turquoise spikes around its outer edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:fox_tail",
@@ -473,7 +485,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A soft rust-red fox tail curling down, with a broad white tip and dark root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:brush_fox_tail",
@@ -485,7 +497,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single brush fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A fan-shaped copper tail with a cream brush edge and a slim black base. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:silver_tip_fox_tail",
@@ -497,7 +509,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single silver-tip fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A long dusky-red tail arcing upwards, ending in a sharp silver-white wedge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:fine_sinew",
@@ -509,7 +521,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single fine sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thin cream sinew thread wound into a loose figure-eight, with one wispy loose end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:tough_sinew",
@@ -521,7 +533,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single tough sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "Two ochre tendon strands twisted into a short rope with blunt fibrous ends. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:braided_sinew",
@@ -533,7 +545,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single braided sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A plait of three golden tendon strands tied into a small round coil. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:ironbound_sinew",
@@ -545,7 +557,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single ironbound sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark tan tendon loop pinched by two dull iron ferrules, with a taut straight centre span. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:rime_sinew",
@@ -557,11 +569,11 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single rime sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A stiff pale-blue tendon coil edged by sparse white frost needles and one uncoiled silver tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:raptor_claw",
-    "name": "Raptor Claw",
+    "name": "Small Cat Claw",
     "tier": 1,
     "family": "feline",
     "kind": "signature",
@@ -569,7 +581,7 @@
     "uses": [
       "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing id and icon retained; deliberately relabel Raptor Claw as Small Cat Claw because its authored sources are cats. No raptor source or alias is added."
   },
   {
     "id": "grug_mobs:hooked_cat_claw",
@@ -581,7 +593,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single hooked cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "An ivory claw with a deep fishhook curve, dark brown socket and narrow pale point. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:shearing_cat_claw",
@@ -593,7 +605,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single shearing cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A broad cream claw shaped like a scissor blade, with a grey bevel and a split brown root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:razor_cat_claw",
@@ -605,7 +617,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single razor cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A slender blue-grey claw with a nearly straight polished edge and a hooked black tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siege_cat_claw",
@@ -617,7 +629,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single siege cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thick soot-stained claw with a cracked amber base and one bright silver scrape along the cutting edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:glass_cat_claw",
@@ -629,7 +641,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single glass cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A translucent cyan claw in a clean crescent, with a violet root and two angular white facets. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:fang",
@@ -654,7 +666,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single serrated fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A yellow fang with three small saw notches along its outer edge and a dark hollow root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:warpack_fang",
@@ -666,7 +678,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single warpack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A broad ivory canine leaning right, with a red-stained base and a deep dark groove down its face. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siegepack_fang",
@@ -678,7 +690,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single siegepack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A chipped charcoal-grey canine with an ochre root, square missing corner and a narrow surviving white tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:saltpack_fang",
@@ -690,20 +702,20 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single saltpack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A pale lavender canine crusted with white salt at its root; its long tip remains dark and smooth. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bear_claw",
     "name": "Bear Claw",
     "tier": 3,
     "family": "bear",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A heavy hook for making a point through armour.",
     "uses": [
-      "quest",
-      "existing recipes"
+      "existing recipes",
+      "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
   },
   {
     "id": "grug_mobs:scarred_bear_claw",
@@ -715,7 +727,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single scarred bear claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A heavy honey-brown claw with two diagonal white scars and a broad square root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:salt_bear_claw",
@@ -727,7 +739,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single salt bear claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A thick slate-blue hook, white salt crystals packed into a broken root and a polished black tip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:blunt_croc_tooth",
@@ -739,7 +751,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single blunt crocodile tooth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A squat cream cone with a rounded worn tip and a wide muddy-green socket. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:ridged_croc_tooth",
@@ -751,7 +763,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single ridged crocodile tooth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A tall olive-ivory tooth with two strong vertical ridges and a flared brown root. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:thin_slime_gel",
@@ -763,20 +775,20 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single thin slime gel, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A shallow translucent lime puddle with a long drooping edge and two tiny trapped bubbles. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:slime_gel",
     "name": "Slime Gel",
     "tier": 3,
     "family": "ooze",
-    "kind": "signature",
+    "kind": "generic",
     "description": "It remembers the shape of its container. Eventually.",
     "uses": [
-      "quest",
-      "existing recipes"
+      "existing recipes",
+      "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
   },
   {
     "id": "grug_mobs:reed_pearl",
@@ -788,7 +800,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single reed pearl, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A small warm-white pearl nestled in a V of two cut green reed blades. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:clouded_reed_pearl",
@@ -800,7 +812,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single clouded reed pearl, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A larger smoky-lilac pearl with a cloudy white swirl, held by one curled dry reed strip. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:wisp_mote",
@@ -812,7 +824,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A small blue-white flame with a rounded luminous heart and a single curling cyan tail. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bound_wisp_mote",
@@ -824,7 +836,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single bound wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A tight violet light sphere encircled by two thin copper-coloured arcs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:restless_wisp_mote",
@@ -836,7 +848,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single restless wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A broken ring of turquoise flame around a dark centre, with three unequal outward sparks. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:mourning_resin",
@@ -848,7 +860,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single mourning resin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A long amber resin tear with a black bark fleck suspended near its pointed end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bitter_resin",
@@ -860,7 +872,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single bitter resin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A squat dark-green resin bead stuck to a splinter of pale bark, with a sharp yellow gleam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bone_chitin",
@@ -872,7 +884,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single bone chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A single off-white insect plate shaped like a shallow shield, with two dark pores at the base. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:layered_bone_chitin",
@@ -884,7 +896,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single layered bone chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "Three ivory insect plates fanned apart, brown hinge lines visible between their thick ridges. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:salt_chitin",
@@ -896,7 +908,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single salt chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A curved blue-white insect plate with a serrated lower rim and salt crystals filling its central groove. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:ape_hair",
@@ -920,7 +932,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single silver ape hair, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A coarse silver hair tuft bound by one dark root, fanning into five long charcoal-tipped strands. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:mild_venom",
@@ -932,7 +944,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single mild venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A pale green drop hanging from the end of a short hollow ivory sting. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:bitter_venom",
@@ -944,7 +956,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single bitter venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark olive venom bead clinging between the two tips of a cracked tan fang. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:concentrated_venom",
@@ -956,20 +968,20 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single concentrated venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dense violet venom droplet in a small translucent membrane, with a narrow yellow glint. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:venom_sac",
     "name": "Venom Sac",
     "tier": 4,
     "family": "venomous",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "existing recipes"
+      "existing recipes",
+      "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
   },
   {
     "id": "grug_mobs:scorch_venom",
@@ -981,7 +993,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single scorch venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A dark red venom clot with an ember-orange centre and a black blistered membrane edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:glass_venom",
@@ -993,7 +1005,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single glass venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A clear cyan venom bead with an angular white reflection, held in a thin violet membrane loop. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:coarse_spider_silk",
@@ -1005,7 +1017,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single coarse spider silk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A loosely wound beige silk hank with two stiff frayed strands sticking sideways. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:spider_silk",
@@ -1030,7 +1042,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single glass spider silk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A narrow crystalline blue silk spindle with sharp white crossed strands and violet shadow beneath. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:stolen_purse",
@@ -1054,7 +1066,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single clasped purse, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A round burgundy leather purse with a broad dull brass clasp and a short tightly drawn neck. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:campaign_purse",
@@ -1066,7 +1078,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single campaign purse, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A flat khaki money pouch with a red patch, square steel catch and one frayed corner. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:etched_bone",
@@ -1078,7 +1090,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single etched bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A short ivory bone chip carrying three dark shallow cuts and a brown broken end. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:marching_bone",
@@ -1090,7 +1102,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single marching bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A long grey shin fragment with a squared bottom, dark worn knee ridge and one ivory scrape. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siege_bone",
@@ -1102,7 +1114,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single siege bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A blackened thick bone segment split down its length, exposing a warm cream interior. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:unquiet_bone",
@@ -1114,7 +1126,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single unquiet bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A pale violet hooked vertebra with a dark central hole and a thin turquoise seam. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:hex_bottle_shard",
@@ -1126,7 +1138,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single hex bottle shard, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A triangular green bottle shard bearing half a purple spiral, with a thick curved base edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:last_hex_shard",
@@ -1138,7 +1150,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single last-hex shard, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A hooked violet glass neck fragment, its black rim split by a single cyan crack. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:barbed_feather",
@@ -1150,7 +1162,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single barbed feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A sandy-brown flight feather with three hooked barbs standing out from its left edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:storm_feather",
@@ -1162,7 +1174,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single storm feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A slate-blue feather bent sharply near its tip, with a white shaft and uneven silver barbs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:ash_feather",
@@ -1174,7 +1186,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single ash feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A short soot-black feather with a ragged burnt tip and two rusty-orange surviving barbs. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:sharp_feather",
@@ -1199,7 +1211,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single chipped core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A rough grey stone sphere with one large chipped corner revealing a dull ochre centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:veined_core",
@@ -1211,7 +1223,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single veined core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A heavy slate core shaped like a rounded cube, split by two branching bright blue mineral veins. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:siege_core",
@@ -1223,20 +1235,20 @@
     "uses": [
       "quest"
     ],
-    "icon": "A single siege core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
+    "icon": "A squat dark iron-and-stone core with a square socket, rust-red bands and a cracked amber centre. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:stone_core",
     "name": "Stone Core",
     "tier": 6,
     "family": "stone",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A fragment of the force that kept stone or machinery moving.",
     "uses": [
-      "quest",
-      "existing recipes"
+      "existing recipes",
+      "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing registered item and icon. Generic recipe feedstock across the listed drop bands; tier is recipe metadata, not a spawn gate."
   },
   {
     "id": "mobs:meat_raw",
@@ -1443,7 +1455,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "An angular folded web with three grey-violet layers and one taut silver strand; bold silhouette, transparent background, no text, 16 by 16 pixel inventory icon."
+    "icon": "Three cream web fans folded over one another, dark gaps separating their thick scalloped edges. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:salt_barbed_feather",
@@ -1455,7 +1467,7 @@
     "uses": [
       "quest"
     ],
-    "icon": "A dark blue-grey feather with white salt tips and a hooked pale quill; bold silhouette, transparent background, no text, 16 by 16 pixel inventory icon."
+    "icon": "A long indigo feather with pale salt crystals on each hooked barb and a clean white quill. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering."
   },
   {
     "id": "grug_mobs:venom_gland",
