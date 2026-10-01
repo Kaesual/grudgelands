@@ -30,8 +30,11 @@ local M = {}
 
 M.SCHEMA = "grug_wp40_world_protection_v1"
 M.INDEX_SCHEMA = "grug_wp40_world_protection_index_v1"
--- Ruling 15: 3 nodes of terrain beside the road edge, +-5 around the surface.
-M.ROAD_SIDE = 3
+-- Ruling 15, narrowed by Round 28 ruling 1: 1 node of terrain beside the
+-- road edge, +-5 around the surface. The vegetation claim exclusion
+-- (`road_layout.lua` EXCLUDE_PAD = 2, `height.lua` road_exclusion_at) stays
+-- strictly wider, so no plant grows on protected road ground.
+M.ROAD_SIDE = 1
 M.ROAD_VERTICAL = 5
 -- Ruling 16: 10 below the placement height, 10 above the highest node.
 M.BOX_BELOW = 10

@@ -291,10 +291,10 @@ World protection (`world.md` §2) is evaluated independently of claims and
 wins everywhere, for the claim owner too (ruling 17).
 
 - **Roads** (ruling 15) are protected, their bridges and future waypoints
-  included: sideways the road's half width plus 3 nodes on each side
-  (primary 7 wide → 13 protected, secondary 5 → 11, trail 3 → 9), vertically
-  ±5 nodes around the road surface. Roads may run through a claim; the road
-  corridor stays protected for everyone there.
+  included: sideways the road's half width plus 1 node on each side (Round
+  28 ruling 1; primary 7 wide → 9 protected, secondary 5 → 7, trail 3 → 5),
+  vertically ±5 nodes around the road surface. Roads may run through a
+  claim; the road corridor stays protected for everyone there.
 - **POIs, villages and camps** (ruling 16) are protected in a box: their
   building core horizontally, and from 10 below the placement height to 10
   above the template's highest node vertically. A claim keeps 16 nodes
