@@ -987,8 +987,9 @@ if old_level ~= nil and
         math.floor(new_level / 2) > math.floor(old_level / 2) then
 ```
 
-On that condition, send one chat line under the existing "Reached level N!"
-(`grug_xp/init.lua:62-64`) only when at least one point is unspent, directing
+On that condition, send one chat line alongside the "Reached level N!"
+level-up banner (`grug_xp/init.lua`, a large centre message since Round 28
+ruling 20, no longer a chat line) only when at least one point is unspent, directing
 the player to Inventory > Talents. No new globalstep, no new HUD element, no
 new packet.
 

@@ -48,8 +48,9 @@ leash; bound actors: leash and give-up distance).
   buying them is the point (§2 is a gold sink).
 - **Trainer dialogue (Round 28 ruling 19):** all four tiers are always
   listed, each with its state: **Owned**, a **Buy <price>** button,
-  greyed **Requires level N**, or greyed **Learn <previous tier> first**
-  (only Buy is a button). A purchase result shows in the flash line and in
+  greyed **Requires level N**, greyed **Learn <previous tier> first**, or
+  greyed **Price pending** while a tier has no valid price (only Buy is a
+  button). A purchase result shows in the flash line and in
   the reopened dialogue, never in chat.
 
 ### 1.1 The four tiers

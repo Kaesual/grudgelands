@@ -321,9 +321,9 @@ the Round 19 top-centre text list:
   ruling 23): per known profession (primary slots, then Cooking) its tier,
   "Crafts: n/m toward tier N+1" (`professions.md` §1 counts; "Highest tier
   reached." at T6) and, while the character's ten-level band caps the tier,
-  the note "Capped by your level: tier N+1 needs character level 10N+1" (or
-  "reach level …, then craft once more" when the count is already full). A
-  counted craft refreshes the tab while it is open.
+  the note "Capped by your level: reach level 10N+1, then craft once more
+  for tier N+1" when the count is full and only the character level blocks
+  the next tier. A counted craft refreshes the tab while it is open.
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Group page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
@@ -349,9 +349,11 @@ them.
 - **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
   one summed into the same line; items picked up off the ground (mob drops,
   dropped items) and boss loot entering the inventory as "+3 Light Leather",
-  summed per item while that line is shown; quest progress as one line per
+  summed per item while that line is shown (also queued boss loot delivered
+  on join and quest reward items at turn-in); quest progress as one line per
   quest, every objective as "<name> n/m" joined by ", " ("Small Boar 3/10"),
-  a quest's newer line replacing its own older one; fishing catches as
+  a quest's newer line replacing its own older one, cut to the widest
+  tracker line (38 characters, "..."); fishing catches as
   "Caught <fish> (+N XP)" (junk: "Caught <item>").
 - **Level-up** is a separate large centre announcement ("Reached level N!",
   double font size, 3 s), not a feed line.

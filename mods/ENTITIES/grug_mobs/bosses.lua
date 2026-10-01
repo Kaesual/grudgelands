@@ -149,7 +149,11 @@ core.register_on_joinplayer(function(player)
 	if #pending == 0 then return end
 	local keep = {}
 	for index = 1, #pending do
-		local leftover = player:get_inventory():add_item("main", ItemStack(pending[index]))
+		local stack = ItemStack(pending[index])
+		local leftover = player:get_inventory():add_item("main", stack)
+		-- Queued loot that arrives now shows in the message feed.
+		local taken = stack:get_count() - leftover:get_count()
+		if taken > 0 then grug_core.feed_item(player, stack, taken) end
 		if not leftover:is_empty() then keep[#keep + 1] = leftover:to_string() end
 	end
 	meta:set_string(pending_key(), #keep > 0 and core.serialize(keep) or "")

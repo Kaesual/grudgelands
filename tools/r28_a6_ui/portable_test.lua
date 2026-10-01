@@ -393,6 +393,10 @@ local axe = {type = "item", item = "grug_mobs:leather", count = 0, required = 1}
 eq(grug_quests.feed_text(quest("q1", {boar})), "Small Boar 3/10", "kill line text")
 eq(grug_quests.feed_text(quest("q2", {axe, {type = "talk", npc = "elder", count = 1, required = 1}})),
 	"Light Leather 0/1, Elder Maren 1/1", "multi-objective line text")
+local long = quest("q9", {deep_copy(boar), deep_copy(axe), {type = "talk", npc = "elder", count = 0, required = 1}})
+local cut = grug_quests.feed_text(long)
+check(#cut <= grug_core.hud_layout.QUEST_WRAP and cut:sub(-3) == "...",
+	"a long quest line is cut like a tracker line (" .. cut .. ")")
 local carol = make_player("carol", nil)
 journal_state = {quests = {quest("q1", {boar})}, tracked = {}, hud_enabled = true}
 for _, fn in ipairs(callbacks.join) do fn(carol) end
@@ -544,13 +548,20 @@ eq(overview[1].name, "Weaponsmith", "primary first")
 eq(overview[1].tier, 2, "weaponsmith tier")
 eq(overview[1].crafts, 7, "crafts in tier")
 eq(overview[1].needed, 15, "needed for the next tier")
-eq(overview[1].capped, true, "level 15 caps tier 2")
+eq(overview[1].capped, false, "7/15 at level 15: crafting, not the level, is missing")
 eq(overview[2].capped, false, "cooking T1 is not capped at level 15")
 local prof_fs = grug_jobs.professions_formspec(overview)
 formspec_ok(prof_fs, "professions tab")
 has(prof_fs, fs_escape("Weaponsmith — Tier 2"), "profession name and tier")
 has(prof_fs, fs_escape("Crafts: 7/15 toward tier 3"), "tier progress")
-has(prof_fs, fs_escape("Capped by your level: tier 3 needs character level 21."), "cap note")
+lacks(prof_fs, "Capped by your level", "no cap note while crafts are missing")
+smith.meta["grug_jobs:crafts:weaponsmith"] = 15
+overview = grug_jobs.profession_overview(smith)
+eq(overview[1].capped, true, "15/15 at level 15: the level blocks tier 3")
+has(grug_jobs.professions_formspec(overview),
+	fs_escape("Capped by your level: reach level 21, then craft once more for tier 3."),
+	"cap note when the level blocks")
+smith.meta["grug_jobs:crafts:weaponsmith"] = 7
 has(prof_fs, fs_escape("Crafts: 10/10 toward tier 2"), "cooking progress")
 char_level = 5
 overview = grug_jobs.profession_overview(smith)

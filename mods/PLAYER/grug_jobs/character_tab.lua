@@ -6,7 +6,8 @@
 -- grug_jobs depends on grug_inventory and not the other way round.
 
 -- One row per known profession, primary slots first, then the secondaries:
--- {name, tier, crafts, needed (nil at T6), capped, next_level}.
+-- {name, tier, crafts, needed (nil at T6), capped, next_level}; `capped`
+-- means the count is full and only the character level holds the tier.
 function grug_jobs.profession_overview(player)
 	local order = {}
 	for slot = 1, grug_jobs.PRIMARY_SLOTS do
@@ -27,7 +28,10 @@ function grug_jobs.profession_overview(player)
 			crafts = needed and math.min(needed,
 				grug_jobs.crafts_in_tier(player, profession)) or 0,
 			needed = needed,
-			capped = needed ~= nil and character_tier <= tier,
+			-- Only when the level is what blocks advancement: the count is
+			-- full and the character's band does not allow the next tier.
+			capped = needed ~= nil and character_tier <= tier and
+				grug_jobs.crafts_in_tier(player, profession) >= needed,
 			next_level = tier * 10 + 1,
 		}
 	end
@@ -62,18 +66,12 @@ function grug_jobs.professions_formspec(rows)
 		end
 		fs[#fs + 1] = ("label[0.2,%.2f;%s]"):format(y + 0.4, esc(progress))
 		if row.capped then
-			-- A saturated count advances on the next current-tier craft once
-			-- the level allows it (state.lua record_craft).
-			local note
-			if row.crafts >= row.needed then
-				note = ("Capped by your level: reach level %d, then craft " ..
-					"once more for tier %d."):format(row.next_level, row.tier + 1)
-			else
-				note = ("Capped by your level: tier %d needs character " ..
-					"level %d."):format(row.tier + 1, row.next_level)
-			end
+			-- The full count advances on the next current-tier craft once the
+			-- level allows it (state.lua record_craft).
 			fs[#fs + 1] = ("label[0.2,%.2f;%s]"):format(y + 0.8,
-				esc(core.colorize(NOTE_COLOR, note)))
+				esc(core.colorize(NOTE_COLOR, ("Capped by your level: reach level " ..
+				"%d, then craft once more for tier %d."):format(row.next_level,
+				row.tier + 1))))
 		end
 	end
 	fs[#fs + 1] = ("label[0.2,6.4;%s]"):format(esc("Only crafts of the current " ..

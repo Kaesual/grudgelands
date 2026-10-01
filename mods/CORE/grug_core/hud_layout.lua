@@ -53,6 +53,9 @@ layout.COMBAT_ICON = 32
 -- the widest caption ("4:59", about nine GUI units per character).
 layout.STATUS_CAPTION = 18
 layout.STATUS_CAPTION_WIDTH = 40
+-- HUD units between the top of the status icon row and the feed's lowest
+-- line (the anchor below uses it, so it is set first).
+layout.FEED_GAP = 6
 -- Widest quest-tracker line in characters; each tracked quest is one line.
 layout.QUEST_WRAP = 38
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
@@ -162,7 +165,7 @@ layout.anchors = {
 	feed = {
 		position = {x = 0.5, y = 1},
 		offset = {x = 0, y = layout.rows.skill.top - 4 - layout.STATUS_CAPTION -
-			2 - layout.STATUS_ICON - 6},
+			2 - layout.STATUS_ICON - layout.FEED_GAP},
 	},
 	-- The level-up announcement (ruling 20): large, above the flash line.
 	banner = {position = {x = 0.5, y = 0.25}, offset = {x = 0, y = 0}},

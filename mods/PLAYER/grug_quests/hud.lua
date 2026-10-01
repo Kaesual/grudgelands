@@ -93,14 +93,15 @@ local function feed_subject(objective)
 end
 
 -- One feed line per quest (Round 28 ruling 20): every objective as
--- "<subject> <count>/<required>", joined by ", " ("Small Boar 3/10").
+-- "<subject> <count>/<required>", joined by ", " ("Small Boar 3/10"), cut
+-- like a tracker line at the widest tracker width (QUEST_WRAP characters).
 function grug_quests.feed_text(quest)
 	local parts = {}
 	for _, objective in ipairs(quest.objectives) do
 		parts[#parts + 1] = ("%s %d/%d"):format(feed_subject(objective),
 			objective.count, objective.required)
 	end
-	return table.concat(parts, ", ")
+	return one_line(table.concat(parts, ", "), grug_core.hud_layout.QUEST_WRAP)
 end
 
 -- player name -> quest id -> {objective counts last seen}. A quest seen for
