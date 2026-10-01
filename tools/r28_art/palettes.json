@@ -1,0 +1,774 @@
+{
+  "tattered_flesh": [
+    "653b40",
+    "915459",
+    "b97879",
+    "d79b96",
+    "a78c77",
+    "d8c6ae",
+    "f3e6cf"
+  ],
+  "foul_flesh": [
+    "393d26",
+    "636b39",
+    "91964e",
+    "b6b574",
+    "544050",
+    "826076",
+    "b39a55",
+    "d7c780"
+  ],
+  "knotted_talisman": [
+    "3c291f",
+    "755232",
+    "aa7a43",
+    "d4ac69",
+    "e7c992",
+    "592829",
+    "943d32",
+    "c36a4c"
+  ],
+  "pickled_flesh": [
+    "333c35",
+    "536456",
+    "7f9278",
+    "adb89b",
+    "725126",
+    "a37a35",
+    "d4a954",
+    "ebd399"
+  ],
+  "stubborn_molar": [
+    "403024",
+    "715135",
+    "9e8058",
+    "b8a27b",
+    "dacba7",
+    "f4e7c9",
+    "fff2dc"
+  ],
+  "coded_talisman": [
+    "282523",
+    "49372c",
+    "705039",
+    "a58260",
+    "e6d5ac",
+    "293c57",
+    "486887",
+    "84a7b5"
+  ],
+  "balanced_weapon_strap": [
+    "493221",
+    "775037",
+    "a57b50",
+    "c79f6e",
+    "e6c89c",
+    "77612e",
+    "b59954",
+    "e3ce8b"
+  ],
+  "leathery_flesh": [
+    "30221b",
+    "503428",
+    "754c34",
+    "9b6a49",
+    "bd8d66",
+    "dbb489"
+  ],
+  "gritted_teeth": [
+    "442624",
+    "7b3833",
+    "ae554a",
+    "d38369",
+    "9b8557",
+    "c6b171",
+    "e6d19b",
+    "f7e7be"
+  ],
+  "campaign_talisman": [
+    "37302a",
+    "75613b",
+    "a0884d",
+    "c4ac6a",
+    "e7d198",
+    "602b32",
+    "9b454b",
+    "c37d70"
+  ],
+  "reinforced_weapon_strap": [
+    "302523",
+    "563327",
+    "825039",
+    "b2764e",
+    "353e43",
+    "65727a",
+    "a3afb1",
+    "d5dcce"
+  ],
+  "scorched_flesh": [
+    "231f20",
+    "3b3030",
+    "55403a",
+    "745048",
+    "a14d30",
+    "d0783e",
+    "eca25c",
+    "f6cc85"
+  ],
+  "clenched_jaw": [
+    "473b2b",
+    "766445",
+    "a18b55",
+    "c2ab70",
+    "dfcc91",
+    "f3e4b9",
+    "282423"
+  ],
+  "siege_talisman": [
+    "242528",
+    "42454a",
+    "70747a",
+    "a0a2a0",
+    "765333",
+    "a47e49",
+    "cfaa69",
+    "e8c98d"
+  ],
+  "siege_weapon_strap": [
+    "222127",
+    "393239",
+    "51424a",
+    "725c57",
+    "4b5054",
+    "929a9a",
+    "873831",
+    "bf6453"
+  ],
+  "salt_cured_flesh": [
+    "493544",
+    "75546d",
+    "a57991",
+    "c89fb0",
+    "9f9bab",
+    "c9c8d2",
+    "e8e6e4",
+    "fff8e8"
+  ],
+  "last_laugh_dentures": [
+    "33303a",
+    "675e67",
+    "a59aa0",
+    "ccc5c2",
+    "eee7d7",
+    "fff9e7",
+    "a67c35",
+    "dfb54f"
+  ],
+  "last_pay_talisman": [
+    "22262f",
+    "39424e",
+    "567586",
+    "8bafb9",
+    "bed5d9",
+    "e7f0eb",
+    "777780",
+    "fff9e7"
+  ],
+  "unbroken_weapon_strap": [
+    "202737",
+    "313e58",
+    "4c6383",
+    "7692a8",
+    "8e9fa8",
+    "b7c9cf",
+    "dce8e8",
+    "f9f6e6"
+  ],
+  "ridged_boar_tusk": [
+    "483a2b",
+    "806645",
+    "aa8957",
+    "c9b080",
+    "e2cf9f",
+    "f7e8c4",
+    "67513a"
+  ],
+  "gnarled_boar_tusk": [
+    "332b27",
+    "62412a",
+    "976133",
+    "bd8846",
+    "d9ab65",
+    "f2d293",
+    "4a3830"
+  ],
+  "rat_fur_patch": [
+    "303034",
+    "505156",
+    "777a7c",
+    "9ea09d",
+    "c5c4b9",
+    "e0dacc"
+  ],
+  "sinewy_rat_tail": [
+    "42252f",
+    "6b3546",
+    "985163",
+    "bc7380",
+    "d79ba0",
+    "a5998b",
+    "e3cab2",
+    "f5dfc8"
+  ],
+  "dense_rat_fur": [
+    "26211f",
+    "453429",
+    "684a33",
+    "8f693f",
+    "ba9159",
+    "d2ad77",
+    "332a25"
+  ],
+  "crab_leg": [
+    "552c22",
+    "8d3f29",
+    "b85a33",
+    "df814c",
+    "f0a363",
+    "bda481",
+    "e4d1ad",
+    "fbedcf"
+  ],
+  "clear_crab_eye": [
+    "35312c",
+    "79532a",
+    "b5853e",
+    "dfb764",
+    "f4d99c",
+    "668f9a",
+    "a9c4c4",
+    "e9f2dc"
+  ],
+  "ridged_crab_shell": [
+    "613320",
+    "985132",
+    "c37341",
+    "e79b60",
+    "9f8b6b",
+    "c8b494",
+    "ead9b5",
+    "fdf0d3"
+  ],
+  "layered_crab_shell": [
+    "282f3a",
+    "465263",
+    "657889",
+    "8a9ba8",
+    "b5c3c6",
+    "dce0d7"
+  ],
+  "storm_crab_shell": [
+    "23393e",
+    "345961",
+    "4b7b80",
+    "76a19f",
+    "a5c0b8",
+    "d7e0d2",
+    "f4f0dc"
+  ],
+  "abyssal_crab_shell": [
+    "252034",
+    "433354",
+    "685177",
+    "96789f",
+    "295761",
+    "488b91",
+    "7fc0bb",
+    "bde1cf"
+  ],
+  "brush_fox_tail": [
+    "2f2420",
+    "623821",
+    "985128",
+    "c7803e",
+    "e4a660",
+    "b99f7b",
+    "e4d3b0",
+    "fff0d3"
+  ],
+  "silver_tip_fox_tail": [
+    "42292b",
+    "724038",
+    "9b5447",
+    "c27a62",
+    "666b79",
+    "9da8ae",
+    "ced7d6",
+    "f0f0e6"
+  ],
+  "fine_sinew": [
+    "6b5d46",
+    "9b8664",
+    "c5b38d",
+    "dfcfab",
+    "f6e9ca",
+    "fff5df"
+  ],
+  "tough_sinew": [
+    "4e3b25",
+    "82603a",
+    "af8952",
+    "d0aa6b",
+    "e8c990",
+    "f6e0b1"
+  ],
+  "braided_sinew": [
+    "584126",
+    "886138",
+    "b98c46",
+    "d8b564",
+    "f1d38c",
+    "fce7b6"
+  ],
+  "ironbound_sinew": [
+    "3f3227",
+    "76583a",
+    "a17c50",
+    "caa570",
+    "3a4148",
+    "6f777d",
+    "a6aeb0",
+    "d5d5c4"
+  ],
+  "rime_sinew": [
+    "354c63",
+    "597992",
+    "86a9c0",
+    "b4ceda",
+    "dce8e9",
+    "f7f5e8",
+    "939fae"
+  ],
+  "hooked_cat_claw": [
+    "362923",
+    "64442e",
+    "9b7952",
+    "bfa681",
+    "e2d1af",
+    "f8ebcf"
+  ],
+  "shearing_cat_claw": [
+    "3d3128",
+    "775538",
+    "a08056",
+    "777c7b",
+    "a7b0ab",
+    "d8d9c5",
+    "f6eccf"
+  ],
+  "razor_cat_claw": [
+    "222732",
+    "3a4658",
+    "5f758c",
+    "8ba3b6",
+    "bcd0d9",
+    "eaf0ec"
+  ],
+  "siege_cat_claw": [
+    "242328",
+    "464045",
+    "71645b",
+    "a47c44",
+    "d0a065",
+    "969997",
+    "ced2c8",
+    "f4edd7"
+  ],
+  "glass_cat_claw": [
+    "3b335a",
+    "715587",
+    "557e9d",
+    "7caec3",
+    "a3d6df",
+    "d4edef",
+    "f7fcf2",
+    "263245"
+  ],
+  "serrated_fang": [
+    "443a2c",
+    "7f6d47",
+    "b2a067",
+    "d3c38b",
+    "eedfba",
+    "fcf1d6"
+  ],
+  "warpack_fang": [
+    "442b2c",
+    "7c3e3b",
+    "af6860",
+    "867960",
+    "b7aa88",
+    "e1d4af",
+    "f9edcf"
+  ],
+  "siegepack_fang": [
+    "292b30",
+    "4c5156",
+    "757c7c",
+    "a5a8a1",
+    "916a37",
+    "c49b57",
+    "dcd9bd",
+    "f8ecd1"
+  ],
+  "saltpack_fang": [
+    "2b2a38",
+    "535064",
+    "888397",
+    "b8afc4",
+    "dcd1e0",
+    "e7e6e2",
+    "fbf7ea"
+  ],
+  "scarred_bear_claw": [
+    "493224",
+    "7d5330",
+    "a6783f",
+    "caa15e",
+    "e4c38b",
+    "cdc5b3",
+    "f3ecda"
+  ],
+  "salt_bear_claw": [
+    "232833",
+    "3c5067",
+    "637e98",
+    "96acba",
+    "c0ccd2",
+    "e6e9e5",
+    "fcf6e6"
+  ],
+  "blunt_croc_tooth": [
+    "363b27",
+    "617048",
+    "929c6c",
+    "a49b76",
+    "cdc29c",
+    "eee0b9",
+    "fcf0d3"
+  ],
+  "ridged_croc_tooth": [
+    "433927",
+    "78633b",
+    "9c955d",
+    "b8b37d",
+    "d7d2a6",
+    "f2eacb"
+  ],
+  "thin_slime_gel": [
+    "3e512b",
+    "667b37",
+    "91a94b",
+    "b6c870",
+    "dae2a1",
+    "f3eed0"
+  ],
+  "reed_pearl": [
+    "304531",
+    "557346",
+    "8ba065",
+    "c2cd91",
+    "898b79",
+    "b9b9a2",
+    "e2dfc4",
+    "fbf4df"
+  ],
+  "clouded_reed_pearl": [
+    "494354",
+    "797085",
+    "a69aad",
+    "c9c1cf",
+    "e9e3e4",
+    "7e643f",
+    "b39568",
+    "dec69e"
+  ],
+  "wisp_mote": [
+    "32495d",
+    "4c7e97",
+    "6bb3c4",
+    "94d7dc",
+    "c3ece9",
+    "f2f9e7"
+  ],
+  "restless_wisp_mote": [
+    "23424d",
+    "346c79",
+    "50a4ac",
+    "88cecf",
+    "bbe8e3",
+    "e6f4e8"
+  ],
+  "mourning_resin": [
+    "3c2b23",
+    "81522b",
+    "b7843c",
+    "d8ac57",
+    "f0cd81",
+    "fce5b4",
+    "524233"
+  ],
+  "bitter_resin": [
+    "293f2b",
+    "4d6a3b",
+    "7b913f",
+    "c3bc5f",
+    "e6dc8c",
+    "917558",
+    "c8b58c",
+    "f0dfbb"
+  ],
+  "bone_chitin": [
+    "403b33",
+    "79715a",
+    "a99e7e",
+    "cfc4a8",
+    "e9e2cb",
+    "fbf4df"
+  ],
+  "layered_bone_chitin": [
+    "493b2c",
+    "7e6648",
+    "ab9470",
+    "cbbb96",
+    "e6d9b9",
+    "f9efd6"
+  ],
+  "salt_chitin": [
+    "3d5268",
+    "668398",
+    "9ab7c9",
+    "c8dce3",
+    "e9f0ed",
+    "fbf9e8"
+  ],
+  "silver_ape_hair": [
+    "292a31",
+    "4d515b",
+    "777e88",
+    "a3abb1",
+    "cdd1d0",
+    "eeede3"
+  ],
+  "mild_venom": [
+    "4b643c",
+    "799559",
+    "a8bd7d",
+    "d5dfb0",
+    "9b8d70",
+    "d5c7a5",
+    "f6eace"
+  ],
+  "bitter_venom": [
+    "3d4728",
+    "667337",
+    "97a14d",
+    "c1c67c",
+    "70583b",
+    "a1845b",
+    "ccb590",
+    "f0dfbb"
+  ],
+  "concentrated_venom": [
+    "332538",
+    "563b63",
+    "805485",
+    "ac84ad",
+    "d4b9d1",
+    "8b843e",
+    "c8be65",
+    "f0e49c"
+  ],
+  "scorch_venom": [
+    "271e26",
+    "4c2631",
+    "81323b",
+    "af4b3e",
+    "d37740",
+    "efa253",
+    "f9ca7e"
+  ],
+  "glass_venom": [
+    "3f3058",
+    "76568e",
+    "a27cad",
+    "3f728b",
+    "73afc6",
+    "a7d7e1",
+    "d9f0ef",
+    "f6faec"
+  ],
+  "coarse_spider_silk": [
+    "625543",
+    "948263",
+    "beac87",
+    "dfceab",
+    "f4e8cf",
+    "fff7e7"
+  ],
+  "glass_spider_silk": [
+    "403551",
+    "6d5784",
+    "577f9c",
+    "8eb7cb",
+    "bfe0e9",
+    "e7f3f0",
+    "fbfbea"
+  ],
+  "clasped_purse": [
+    "3a2430",
+    "652f3f",
+    "91495c",
+    "ba7480",
+    "766139",
+    "aa8c4c",
+    "d7be7b",
+    "f0dca4"
+  ],
+  "campaign_purse": [
+    "383c2f",
+    "666d50",
+    "979b75",
+    "c4c6a1",
+    "8e403b",
+    "bf7465",
+    "76848d",
+    "c2cecb"
+  ],
+  "etched_bone": [
+    "4e3b2b",
+    "806346",
+    "b29a75",
+    "d3c3a0",
+    "ede1c2",
+    "fcf2d8"
+  ],
+  "marching_bone": [
+    "343a3d",
+    "5c6567",
+    "8a9390",
+    "b7bcb1",
+    "ddded0",
+    "f7efda"
+  ],
+  "siege_bone": [
+    "27272a",
+    "444142",
+    "72645a",
+    "a18c70",
+    "c6b491",
+    "e6d3ac",
+    "f9e9c8"
+  ],
+  "unquiet_bone": [
+    "302d44",
+    "605671",
+    "9687a5",
+    "c5b6d3",
+    "e8def0",
+    "408288",
+    "80bfbc",
+    "c2e4d8"
+  ],
+  "hex_bottle_shard": [
+    "293e34",
+    "496947",
+    "7b9465",
+    "afbd92",
+    "523552",
+    "805b85",
+    "b08fae",
+    "dcd4bb"
+  ],
+  "last_hex_shard": [
+    "272234",
+    "4e355f",
+    "79518e",
+    "ab7bb8",
+    "d3b1d5",
+    "367988",
+    "7abfc9",
+    "cce9e4"
+  ],
+  "barbed_feather": [
+    "49392b",
+    "7b5d3e",
+    "a58357",
+    "c9ab7b",
+    "e3caa0",
+    "f6e5c5"
+  ],
+  "storm_feather": [
+    "2f3c50",
+    "536b85",
+    "819bb2",
+    "b1c2cf",
+    "d7e0e1",
+    "f5f1df"
+  ],
+  "ash_feather": [
+    "25242a",
+    "413b41",
+    "635155",
+    "854b36",
+    "b97443",
+    "d6a065"
+  ],
+  "chipped_core": [
+    "35373a",
+    "5c6062",
+    "8b8f8c",
+    "b5b9ae",
+    "725a34",
+    "a28549",
+    "cfb572",
+    "e8d6a2"
+  ],
+  "veined_core": [
+    "29333d",
+    "4c5d6b",
+    "768b96",
+    "a4b8bb",
+    "37687f",
+    "589db7",
+    "92c9d8",
+    "d2e8e4"
+  ],
+  "siege_core": [
+    "292a2c",
+    "4b4743",
+    "777066",
+    "8c4933",
+    "ba7150",
+    "a9813f",
+    "d6b467",
+    "f0d59d"
+  ],
+  "layered_spider_web": [
+    "5b5246",
+    "8b7d65",
+    "b9a98a",
+    "d8cbb0",
+    "eee8d3",
+    "fff8e6"
+  ],
+  "salt_barbed_feather": [
+    "272d4b",
+    "494e78",
+    "737c9f",
+    "a2abc5",
+    "cdd3df",
+    "e9eae8",
+    "fbf5df"
+  ]
+}

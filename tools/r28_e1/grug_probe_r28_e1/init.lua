@@ -7,7 +7,8 @@
 --            disposition and the fields it forces, tier, levels, family,
 --            drop family, leader flag, zone keys and tint ids; every tint's
 --            texture exists; every item registered with the catalogue name
---            (new ones with their icon brief), every drop item registered;
+--            (new ones with their icon brief and their own existing icon
+--            texture <mod>_<name>.png), every drop item registered;
 --   enchant  588 operations, each costing own material + the catalogue's
 --            stat loot + family input;
 --   live     every sub-type spawned once: level in range, name, tier,
@@ -152,6 +153,10 @@ local function item_checks()
 				new = new + 1
 				check(row.icon and def._grug_icon_brief == row.icon and def.short_description == row.name
 					and def.mod_origin == "grug_mobs", row.id .. " new item: name and icon brief")
+				-- Round 28 art: every new item ships its own icon <mod>_<name>.png.
+				local icon = row.id:gsub(":", "_") .. ".png"
+				check(def.inventory_image == icon and texture_exists(icon),
+					row.id .. " inventory image " .. tostring(def.inventory_image) .. " is its own icon")
 				if row.kind == "signature" then
 					check(def.groups.grug_material == 1, row.id .. " is a mob material")
 					check(def._grug_sell_price == row.tier and grug_traders.sell_price(row.id) == row.tier,

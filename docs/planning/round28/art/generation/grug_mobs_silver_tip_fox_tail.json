@@ -1,0 +1,6 @@
+{
+  "id": "grug_mobs:silver_tip_fox_tail",
+  "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, lettering, numbers, watermark or unrelated objects. Not a painted skill badge or a photorealistic render. Exaggerate the few requested distinguishing features into large readable clusters. Subject: Silver-Tip Fox Tail, tier 3: A long dusky-red tail arcing upwards, ending in a sharp silver-white wedge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+  "generation_source": "/home/jan/.codex/generated_images/01a0f9a1-5f24-7a82-a918-f1496dd24654/exec-37ef88c9-f40e-42e4-a111-6a868f902750.png",
+  "source": "docs/planning/round28/art/originals/grug_mobs_silver_tip_fox_tail.png"
+}

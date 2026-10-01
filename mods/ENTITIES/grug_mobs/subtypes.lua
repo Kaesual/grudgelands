@@ -207,8 +207,9 @@ end
 -- Loot items (frame §4.2). Kinds `signature` and `quest` are registered here
 -- unless the id already exists (an existing item used as signature loot keeps
 -- its registration); `generic` items are existing ones and `reagent` items
--- belong to grug_professions. The inventory image is a tinted placeholder
--- until the C4 art lands; the `icon` text is kept as `_grug_icon_brief`.
+-- belong to grug_professions. The inventory image is the item's own icon
+-- `<mod>_<name>.png` from this mod's textures/ (the Round 28 art set), else a
+-- tinted placeholder; the `icon` text is kept as `_grug_icon_brief`.
 -- A new signature item's `tier` (1-6) is its vendor price in copper (the
 -- 1-6c mob-material band, economy.md §3) and its ingredient tier, which
 -- grug_professions registers with grug_jobs (grug_mobs loads before it). A
@@ -223,6 +224,17 @@ local ITEM_GROUPS = {
 	signature = {grug_material = 1},
 	quest = {},
 }
+-- Texture file names shipped in this mod, read once.
+local TEXTURES = {}
+for _, entry in ipairs(core.get_dir_list(core.get_modpath(core.get_current_modname())
+		.. "/textures", false) or {}) do
+	TEXTURES[entry] = true
+end
+
+local function item_image(id, kind)
+	local file = id:gsub(":", "_") .. ".png"
+	return TEXTURES[file] and file or PLACEHOLDER_IMAGE[kind]
+end
 local new_items = {} -- ids this file registered or expects from their own mod
 -- New signature item id -> tier, for the ingredient tiers (grug_professions).
 grug_mobs.loot_item_tiers = {}
@@ -256,7 +268,7 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 			core.register_craftitem(row.id, {
 				description = description,
 				short_description = row.name,
-				inventory_image = PLACEHOLDER_IMAGE[row.kind],
+				inventory_image = item_image(row.id, row.kind),
 				groups = table.copy(ITEM_GROUPS[row.kind]),
 				_grug_icon_brief = row.icon,
 				_grug_sell_price = row.kind == "signature" and row.tier or nil,
