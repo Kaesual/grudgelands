@@ -431,7 +431,8 @@ local function settle_harvest(pos, node, digger, decision)
 end
 
 -- Round 24 ruling 28: every natural ore or gem node a player digs gives
--- gathering XP. grug_xp owns the factors and the formula; a gem is one of the
+-- gathering XP (Round 28 ruling 32: ore 0.10, gem 0.20 kill equivalents).
+-- grug_xp owns the ratios and the formula (gather_xp); a gem is one of the
 -- six regional G1/G2 species (a resource with a `grade`), every other
 -- resource node is an ore. Only this transaction settles a harvest: a player
 -- dig of a natural resource node. Explosions and mobs never reach node_dig,

@@ -760,20 +760,22 @@ function mob_class:item_drop()
 	-- check for drops function
 	if type(drops) == "function" then drops = self.drops(pos) end
 
-	if not drops or #drops == 0 then return end
-
 	-- GRUG PATCH: player-tag drop rule + profession drop hooks
 	-- (combat_stats.md §3, WP6). Only for mobs registered through grug_mobs
 	-- (_grug_drop_rule) — vanilla mobs_redo mobs keep vanilla behavior. The
 	-- filter returns the list to roll (a COPY the hooks may have modified)
 	-- or nil when this mob must not drop at all (no tag / expired tag /
 	-- faction NPC not killed by an enemy player). Logic lives in grug_mobs.
+	-- It runs before the empty-list return: a family drop table by level
+	-- band (Round 28 ruling 36) may give rows to a mob without static drops.
 	if self._grug_drop_rule and grug_mobs and grug_mobs._item_drop_filter then
 
 		drops = grug_mobs._item_drop_filter(self, drops)
 
 		if not drops or #drops == 0 then self.drops = {} ; return end
 	end
+
+	if not drops or #drops == 0 then return end
 
 	-- was mob killed by player?
 	local death_by_player = self.cause_of_death and self.cause_of_death.puncher
@@ -3672,9 +3674,14 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 			if ent and ent._cmi_is_mob then
 
 				-- only alert members of same mob and assigned helper
+				-- GRUG PATCH (Round 28 ruling 35): or of the same family
+				-- (grug_mobs.alert_kin: both group_attack, so neutral
+				-- sub-types stay single pulls).
 				if ent.group_attack and ent.state ~= "attack"
 				and not (is_player(hitter) and ent.owner == hitter_name)
-				and (ent.name == self.name or ent.name == self.group_helper) then
+				and (ent.name == self.name or ent.name == self.group_helper
+				or (grug_mobs and grug_mobs.alert_kin
+				and grug_mobs.alert_kin(self, ent))) then
 					ent:do_attack(hitter)
 				end
 

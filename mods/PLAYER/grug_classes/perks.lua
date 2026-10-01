@@ -16,8 +16,8 @@
 --                           (grug_abilities)
 --   ability_range_bonus     (elf 5)      — added to every ability item's
 --                           pointing/targeting range (grug_abilities)
---   quest_xp_mult           (human 1.1)  — via get_xp_bonus below; LATENT
---                           until quests exist (WP8 passes source="quest")
+--   quest_xp_mult           (human 1.1)  — via get_xp_bonus below; quest
+--                           turn-ins pass source="quest"
 
 function grug_classes.get_race_perk(player, key)
 	local def = grug_classes.get_race_def(player)
@@ -32,9 +32,8 @@ end
 grug_core.get_race_perk = grug_classes.get_race_perk
 
 -- XP multiplier for an XP source (e.g. "quest"). Consumed by
--- grug_xp.add_xp(player, amount, source); today nothing passes a source
--- yet — the human quest-XP passive becomes active with the quest
--- framework (WP8) for free.
+-- grug_xp.add_xp(player, amount, source); quest turn-ins pass "quest",
+-- so the human quest-XP passive applies to every quest reward.
 function grug_classes.get_xp_bonus(player, source)
 	if source == "quest" then
 		return grug_classes.get_race_perk(player, "quest_xp_mult") or 1

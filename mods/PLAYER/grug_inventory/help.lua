@@ -62,7 +62,7 @@ local SECTIONS = {
 		"• Anyone can craft the plain tools, weapons and armor of every material from the Basics book. Professions improve and enchant gear and make special goods.",
 		"• Learn two primary professions plus Cooking, which everyone may add. Learning is free: right-click a trainer. Unlearning a primary profession erases its progress.",
 		"• Trainers: every start town has a Cooking trainer; every capital has trainers for all eight professions, each with a public workstation next to it. Learned recipes appear in that profession's book in the Crafting tab.",
-		"• Weaponsmith (Forge): metal fittings; enchants swords, daggers and battle axes.",
+		"• Weaponsmith (Forge): enchants swords, daggers and battle axes.",
 		"• Armorsmith (Forge): enchants metal armor and shields.",
 		"• Leatherworker (Tanning Rack): leather bags and weapon grips; enchants leather armor.",
 		"• Tailor (Tailor Bench): cloth bags and bolt bundles; enchants cloth armor.",

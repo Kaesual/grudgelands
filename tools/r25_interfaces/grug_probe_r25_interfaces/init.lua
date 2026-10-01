@@ -127,7 +127,7 @@ local function run()
 	local npc = {_grug_socket_role = "housing_manager", _grug_start = "highcourt",
 		_grug_socket = socket.socket, object = {get_pos = function() return socket.pos end}}
 	player.pos = vector.offset(socket.pos, 2, 0, 0)
-	meta["grug_xp:xp"] = tostring(100 * 18 * 18)
+	meta["grug_xp:xp"] = tostring(grug_xp.xp_for_level(19))
 	check(grug_xp.get_level(player) == 19, "stand-in at level 19")
 	check(H.open_manager(player, npc), "Manager dialog opens")
 	check(last_form().fs:find("99 lumps last about 30 days", 1, true) ~= nil,
@@ -135,7 +135,7 @@ local function run()
 	submit(player, "grug_housing:manager", {receive = ""})
 	log("level 19: " .. (last_form().fs:match("label%[0.4,3.85;([^%]]*)%]") or "?"))
 	check(count_item(inv, STONE) == 0, "level 19 gets no stone")
-	meta["grug_xp:xp"] = tostring(100 * 19 * 19)
+	meta["grug_xp:xp"] = tostring(grug_xp.xp_for_level(20))
 	submit(player, "grug_housing:manager", {receive = ""})
 	log("level 20: " .. (last_form().fs:match("label%[0.4,3.85;([^%]]*)%]") or "?"))
 	check(count_item(inv, STONE) == 1, "level 20 receives the Claim Stone")

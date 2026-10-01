@@ -10,7 +10,8 @@ simulated player, and reports real XP (never summed KE) per band and per zone:
                        at the simulated player level (gray rule, tier mult.)
   * drop kills         kills behind item objectives for mob drops: quest-only
                        drops (catalog quest_drops) and family drops
-                       (catalog/drops.json bands, else today's entity drops);
+                       (catalog/drops.json bands of the drop family: a sub-type's
+                       `drops`, else an existing mob's role; else today's entity drops);
                        drops from earlier quest kills are used first
   * gathering          ore/gem/fish units behind item objectives (bars and
                        alloys resolve to their ores)
@@ -119,16 +120,23 @@ class Ledger:
         """Expected drops per kill of a role: {item: expected count}."""
         sub = self.subtypes.get(role)
         out = {}
-        family = (sub or {}).get("drops")
+        # The game's rule (grug_mobs/subtypes.lua band_drop_rows): a sub-type's
+        # drop family, else the existing mob's own role; rows of the band replace
+        # the static drops, a family or band without rows keeps them.
+        family = (sub or {}).get("drops") or role
         table = self.drop_tables.get(family) if family else None
-        if table:
-            mid = (level_range[0] + level_range[1]) // 2
-            band = str(min(6, (max(1, mid) - 1) // 10 + 1))
-            for row in (table.get("bands") or {}).get(band) or []:
+        mid = (level_range[0] + level_range[1]) // 2
+        band = str(min(6, (max(1, mid) - 1) // 10 + 1))
+        rows = (table.get("bands") or {}).get(band) if table else None
+        if rows:
+            for row in rows:
                 lo, hi = row.get("min", 1), row.get("max", 1)
                 out[row["item"]] = out.get(row["item"], 0) + (lo + hi) / 2 / max(1, row.get("chance", 1))
             return out
-        entity = (self.existing.get("entities") or {}).get("grug_mobs:" + role)
+        # Static fallback: an existing mob's own drops; a sub-type's are its
+        # base entity's (the game copies the base definition).
+        base = (sub or {}).get("base") or ("grug_mobs:" + role)
+        entity = (self.existing.get("entities") or {}).get(base)
         if entity:
             for row in entity.get("drops") or []:
                 lo, hi = row.get("min", 1), row.get("max", 1)
