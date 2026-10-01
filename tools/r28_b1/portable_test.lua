@@ -505,6 +505,8 @@ local spawned = {}
 AE.grug_mobs.add_mob = function(pos, def)
 	if W.refuse_add then return nil end
 	local ent = {name = def.name, health = 10}
+	-- a family with a composed look levels from the field during activation
+	if W.prelevel then ent._grug_level = 33 end
 	ent.object = new_object(ent, pos)
 	W.objects[#W.objects + 1] = ent.object
 	spawned[#spawned + 1] = ent
@@ -516,6 +518,8 @@ load_into(AE, MOBS .. "/density.lua")
 load_into(AE, MOBS .. "/camps.lua")
 local G = AE.grug_mobs
 local SA = G.spawn_areas
+local set_tier_calls = 0
+G.set_tier = function(ent, tier) set_tier_calls = set_tier_calls + 1; ent._grug_tier = tier end
 for _, name in ipairs({"grug_mobs:boar", "grug_mobs:fox", "grug_mobs:zombie", "grug_mobs:rabbit",
 		"grug_mobs:shore_crab", "grug_mobs:gull", "grug_mobs:bandit", "grug_mobs:giant_rat",
 		"grug_mobs:wolf", "grug_mobs:bog_ooze", "grug_mobs:bear"}) do
@@ -650,6 +654,15 @@ check(not pcall(SA.install_zone, "front_broken_causeway", {zone = "front_broken_
 check(not pcall(SA.install_zone, DAWN, {zone = "elandor_goldmead_vale", areas = {}}), "zone mismatch")
 -- The failed installs above must not have touched Dawnmere
 check(SA.get_area(DAWN, "home_day") ~= nil, "failed installs leave other zones intact")
+-- ... nor a zone's own previous data: a broken re-install of Dawnmere
+check(not pcall(SA.install_zone, DAWN, {zone = DAWN, areas = {
+	area{id = "x", anchor = "start", shape = {kind = "circle", r = 5}, species = {{role = "boar", weight = 1}}}}}),
+	"broken re-install refused")
+check(SA.get_area(DAWN, "border_bandits") and SA.area_by_tag(DAWN .. "/border_bandits") and
+	SA.leader("bear") and #SA.camp_areas() == 1, "a refused re-install keeps the zone's data")
+-- a leader role can have one spot only
+check(not pcall(SA.install_zone, "kragmar_sunscar_flats", {zone = "kragmar_sunscar_flats", areas = {},
+	leaders = {{role = "bear", anchor = "start", level = 5, respawn = 300}}}), "leader role unique")
 
 -- band on Kragmar: forward = -z
 ok, err = try_install("kragmar_sunscar_flats", {
@@ -743,9 +756,17 @@ local ent = spawned[1]
 check(ent.name == "grug_mobs:boar" and ent._grug_area == DAWN .. "/home_day", "boar with its area tag")
 check(ent._grug_spawn_level >= 1 and ent._grug_spawn_level <= 3, "level from the area")
 check(ent.object:get_pos().x == 24 and ent.object:get_pos().y == GROUND_Y + 1, "stands on the ground")
+-- a mob that levelled during activation is re-levelled to the area
+W.prelevel = true
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "spawned", "prelevelled spawn")
+local pre = spawned[#spawned]
+check(pre._grug_level == pre._grug_spawn_level and pre._grug_level <= 3 and set_tier_calls == 1,
+	"activation-time level replaced by the area level")
+W.prelevel = nil
+pre.object._removed = true
 -- night picks the rat
-check(SA.attempt(P.pos, W.players, "night", 0, 0) == "spawned" and spawned[2].name == "grug_mobs:giant_rat",
-	"night rat")
+check(SA.attempt(P.pos, W.players, "night", 0, 0) == "spawned" and
+	spawned[#spawned].name == "grug_mobs:giant_rat", "night rat")
 -- the road at x = 300 refuses (ruling 3), critters would not be refused
 local PR = player_at(276, GROUND_Y + 1, -2750)
 check(SA.attempt(PR.pos, {PR}, "day", 0, 0) == "protected", "road refuses an area spawn")

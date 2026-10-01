@@ -71,6 +71,8 @@ local SEA_SURFACE = 1
 local FRONT_SIGN = {elandor_mainland = 1, kragmar_mainland = -1}
 
 local zones = {} -- zone_id -> record (see install_zone)
+-- The fallback tables spawn_policy.lua reads, kept current by install_zone.
+local palette_by_zone, boar_by_zone, lookalikes_by_zone = {}, {}, {}
 local area_by_tag = {} -- "zone/area" -> area
 local camp_areas = {} -- camp areas in install order
 local leaders = {} -- role -> leader
@@ -245,6 +247,12 @@ local function parse_area(zone_id, row, where, sign)
 		fallback = row.fallback == true,
 		notes = row.notes,
 	}
+	if area.shape.kind ~= "zone" and grug_zones.id_at(area.cx, area.cz) ~= zone_id then
+		-- The validator only knows the zone outline roughly; real borders are
+		-- warped. Clipping still applies, so this is worth a look, not a stop.
+		core.log("warning", "[grug_mobs] spawn area " .. where ..
+			": its centre lies outside the zone")
+	end
 	if row.fallback ~= nil and type(row.fallback) ~= "boolean" then
 		fail(where, "fallback must be true or false")
 	end
@@ -345,6 +353,10 @@ local function parse_leader(zone_id, row, where)
 	if not is_int(row.respawn, 1) then
 		fail(where, "respawn must be seconds (integer >= 1)")
 	end
+	if grug_zones.id_at(ax + ox, az + oz) ~= zone_id then
+		core.log("warning", "[grug_mobs] spawn areas " .. where ..
+			": the spot lies outside the zone")
+	end
 	return {
 		role = row.role,
 		name = MOD_PREFIX .. row.role,
@@ -426,20 +438,6 @@ function SA.install_zone(zone_id, data)
 	if data.zone ~= zone_id then
 		fail(where, "zone " .. tostring(data.zone) .. " does not match the file")
 	end
-	local old = zones[zone_id]
-	if old then
-		for _, area in ipairs(old.areas) do
-			area_by_tag[area.tag] = nil
-		end
-		for i = #camp_areas, 1, -1 do
-			if camp_areas[i].zone == zone_id then
-				table.remove(camp_areas, i)
-			end
-		end
-		for _, leader in ipairs(old.leaders) do
-			leaders[leader.role] = nil
-		end
-	end
 	local record = grug_zones.get(zone_id)
 	local sign = FRONT_SIGN[record.macro_region]
 	local palette, boar, lookalikes = parse_palette(data.palette, where)
@@ -471,34 +469,57 @@ function SA.install_zone(zone_id, data)
 				fail(where, "a zone with areas needs exactly one fallback area")
 			end
 			rec.fallback = area
-		elseif area.camp then
-			camp_areas[#camp_areas + 1] = area
+		else
+			-- Matching order: every non-fallback area, camps included (they
+			-- cover their ground for the fallback rule).
+			rec.ambient[#rec.ambient + 1] = area
 		end
-		area_by_tag[area.tag] = area
 	end
 	if #rec.areas > 0 and not rec.fallback then
 		fail(where, "a zone with areas needs exactly one fallback area")
 	end
-	-- Matching order: every non-fallback area, camps included (they cover
-	-- their ground for the fallback rule).
-	for i = 1, #rec.areas do
-		if not rec.areas[i].fallback then
-			rec.ambient[#rec.ambient + 1] = rec.areas[i]
-		end
-	end
 	if data.leaders ~= nil and type(data.leaders) ~= "table" then
 		fail(where, "leaders must be a list")
 	end
+	local old = zones[zone_id]
+	local own_roles = {}
 	for i = 1, #(data.leaders or {}) do
 		local leader = parse_leader(zone_id, data.leaders[i],
 			where .. " leaders[" .. i .. "]")
-		if leaders[leader.role] then
+		local taken = leaders[leader.role]
+		if (taken and taken.zone ~= zone_id) or own_roles[leader.role] then
 			fail(where, "leader role " .. leader.role .. " already has a fixed spot")
 		end
-		leaders[leader.role] = leader
+		own_roles[leader.role] = true
 		rec.leaders[#rec.leaders + 1] = leader
 	end
+	-- Everything parsed: replace the zone's previous data in one go.
+	if old then
+		for _, area in ipairs(old.areas) do
+			area_by_tag[area.tag] = nil
+		end
+		for i = #camp_areas, 1, -1 do
+			if camp_areas[i].zone == zone_id then
+				table.remove(camp_areas, i)
+			end
+		end
+		for _, leader in ipairs(old.leaders) do
+			leaders[leader.role] = nil
+		end
+	end
+	for _, area in ipairs(rec.areas) do
+		area_by_tag[area.tag] = area
+		if area.camp then
+			camp_areas[#camp_areas + 1] = area
+		end
+	end
+	for _, leader in ipairs(rec.leaders) do
+		leaders[leader.role] = leader
+	end
 	zones[zone_id] = rec
+	palette_by_zone[zone_id] = palette
+	boar_by_zone[zone_id] = boar
+	lookalikes_by_zone[zone_id] = lookalikes
 	leader_order = {}
 	for role in pairs(leaders) do
 		leader_order[#leader_order + 1] = role
@@ -611,15 +632,10 @@ function SA.camp_areas()
 end
 
 -- The three fallback tables spawn_policy.lua consumes, keyed by zone id:
--- named-zone palettes, the boar tint and the lookalike choices.
+-- named-zone palettes, the boar tint and the lookalike choices. Live tables
+-- (read-only for the caller): a later install_zone shows through.
 function SA.fallback_palettes()
-	local palettes, boars, lookalikes = {}, {}, {}
-	for zone_id, rec in pairs(zones) do
-		palettes[zone_id] = rec.palette
-		boars[zone_id] = rec.boar
-		lookalikes[zone_id] = rec.lookalikes
-	end
-	return palettes, boars, lookalikes
+	return palette_by_zone, boar_by_zone, lookalikes_by_zone
 end
 
 --
@@ -884,6 +900,19 @@ function SA.players_clear(pos, range, players)
 	return true
 end
 
+-- Hands a freshly added mob its fixed level. Normally the mob has not levelled
+-- yet and ensure_init (levels.lua) reads `_grug_spawn_level` on its first
+-- tick. Families with a composed look (`_grug_visual`: bandits, poachers ...)
+-- level DURING activation, inside add_mob, from the field; those are
+-- re-levelled here (set_tier re-derives stats and tag for the same tier).
+function SA.hand_level(ent, level)
+	ent._grug_spawn_level = level
+	if ent._grug_level and ent._grug_level ~= level then
+		ent._grug_level = level
+		grug_mobs.set_tier(ent, ent._grug_tier or "normal")
+	end
+end
+
 -- Puts one area mob on ground point `g`: the role's entity, the area tag and
 -- a level from the area's range. Returns the entity or nil.
 function SA.spawn_area_mob(area, role, g)
@@ -899,10 +928,9 @@ function SA.spawn_area_mob(area, role, g)
 	if not ent then
 		return nil
 	end
-	-- Both plain fields, persisted with the mob; ensure_init (levels.lua)
-	-- reads the level on the first tick, before which nothing has levelled.
+	-- Both plain fields, persisted with the mob.
 	ent._grug_area = area.tag
-	ent._grug_spawn_level = SA.roll_level(area)
+	SA.hand_level(ent, SA.roll_level(area))
 	return ent
 end
 
@@ -1056,7 +1084,7 @@ function SA.leader_tick(now, players)
 				local ent = grug_mobs.add_mob(pos, {name = leader.name, ignore_count = true})
 				if ent then
 					ent._grug_leader = true
-					ent._grug_spawn_level = leader.level
+					SA.hand_level(ent, leader.level)
 					ent.object:set_properties({static_save = false})
 					live_leaders[leader.role] = ent.object
 					count("leader_spawned")

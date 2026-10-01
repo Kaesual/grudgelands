@@ -297,9 +297,12 @@ end
 --     the counting radius; never above its share;
 --   * an area's optional `cap`: at most that many of ITS mobs within the
 --     radius, whatever the budget says.
--- Counted are the free area mobs (an `_grug_area` tag that is not a camp
--- area's) within the same radius as above; camp members, leaders, rares and
--- bosses have their own timers and are neither counted nor limited here.
+-- Counted are the free area mobs of the areas active at the clock (an
+-- `_grug_area` tag of a non-camp area whose clock is `both` or the current
+-- one) within the same radius as above: like the clock casts above, day
+-- animals still about at dusk do not block the night. Camp members, leaders,
+-- rares and bosses have their own timers and are neither counted nor limited
+-- here.
 
 -- Pure; the fixture drives it directly.
 function grug_mobs.area_density_decision(total, same, in_area, budget, share, cap)
@@ -334,7 +337,8 @@ function grug_mobs.area_density_allows(pos, zone_id, clock, area, name, weight,
 		local tag = ent and ent._grug_area
 		if tag and counted(ent) then
 			local tagged = area_by_tag(tag)
-			if not (tagged and tagged.camp) then
+			if not tagged or (not tagged.camp and
+					(tagged.clock == "both" or tagged.clock == clock)) then
 				total = total + 1
 				if ent.name == name then
 					same = same + 1
