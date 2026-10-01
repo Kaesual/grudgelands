@@ -307,10 +307,19 @@ grug_abilities.register_ability({
 		if not target then
 			return false, "No hostile target in your crosshair."
 		end
+		-- Room is checked with the real player box (blink.lua); a target in
+		-- a one-node gap must not pull the caster into the terrain beside it.
+		-- A false return costs neither rage nor cooldown (try_cast).
+		local props = user:get_properties()
+		local tbox = target:get_properties().collisionbox
 		local tpos = target:get_pos()
-		local dir = vector.direction(tpos, user:get_pos())
-		local dest = vector.add(tpos, vector.multiply(dir, 1.3))
-		dest.y = tpos.y
+		local dest = grug_abilities.charge_destination(user:get_pos(),
+			props.eye_height or 1.47,
+			props.collisionbox or {-0.3, 0, -0.3, 0.3, 1.7, 0.3},
+			vector.offset(tpos, 0, tbox and tbox[2] or 0, 0))
+		if not dest then
+			return false, "Not enough room at target."
+		end
 		grug_core.invalidate_combat_identity(user)
 		user:set_pos(dest)
 		grug_abilities.add_rage(user, 15)

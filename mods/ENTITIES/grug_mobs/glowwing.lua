@@ -13,6 +13,8 @@ local glowwing = {
 	textures = {{"grug_mobs_glowwing.png^[colorize:#73e8ff:65"}},
 	visual_size = {x = 1.5, y = 1.5},
 	collisionbox = {-0.15, -0.01, -0.15, 0.15, 0.3, 0.15},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.55, -0.4, -0.55, 0.55, 1.2, 0.3, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 100,

@@ -611,6 +611,9 @@ function grug_mobs.register_homing_arrow(name, def)
 	end
 	mobs:register_arrow(name, def)
 	core.registered_entities[name].initial_properties.pointable = false
+	-- The readable name a death message uses when the shooter is gone
+	-- (grug_core.damage_source); mobs_redo copies no unknown def fields.
+	core.registered_entities[name]._grug_projectile_label = def.label
 end
 
 function grug_mobs.stamp_arrow_damage(ent, mob)
@@ -625,7 +628,8 @@ function grug_mobs.stamp_arrow_damage(ent, mob)
 	ent._grug_attacker_level = mob and mob._grug_level or nil
 end
 
--- opts: texture (sprite, required), velocity (default 14), size, glow,
+-- opts: texture (sprite, required), label (readable name for death messages,
+--       e.g. "an arrow"), velocity (default 14), size, glow,
 --       tail (bool -> particle trail), tail_texture, lifetime,
 --       damage (fallback only, when no shooter stamped one)
 function grug_mobs.register_simple_arrow(name, opts)
@@ -638,6 +642,7 @@ function grug_mobs.register_simple_arrow(name, opts)
 		}, nil)
 	end
 	grug_mobs.register_homing_arrow(name, {
+		label = opts.label,
 		visual = "sprite",
 		visual_size = opts.size or {x = 0.5, y = 0.5},
 		textures = {opts.texture},

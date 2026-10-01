@@ -108,6 +108,12 @@ Round 20 content contract; delivery status belongs in STATUS/BACKLOG.
 
 ## Objective presentation
 
+Progress appears in the message feed (`inventory_equipment.md`, "Message
+feed"): whenever an objective count rises (kill credit, an item gained, a
+conversation), the quest posts one line with every objective as
+"<name> n/m" ("Small Boar 3/10"), replacing that quest's previous line.
+Accepting a quest and falling item counts post nothing; nothing goes to chat.
+
 Item objectives show the concise item name, not description stat/durability lines.
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the
 minimum-level-aware local wildlife roster and remain locally achievable.

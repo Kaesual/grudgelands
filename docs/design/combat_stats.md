@@ -248,6 +248,12 @@ unchanged (mobs_redo applies its own node damage).
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
   (using the player name) and an unattributed fallback.
+  A projectile (arrow, fireball, the bog witch's hex bottle, dragon breath)
+  names its shooter; when the shooter is gone it uses the projectile's own
+  readable label ("an arrow", "a fireball"). No entity's technical name ever
+  appears; an entity without a readable name is "a hostile creature". Boss
+  encounters credit a projectile death to its shooter the same way
+  (Round 28 ruling 17).
 - **Shore-height ruling (2026-09-17):** shore exits have zero vertical rise:
   the first cardinal dry-land surface beside exposed surface water is exactly
   level with the water surface. Road bridges, decks and fords are
@@ -535,7 +541,8 @@ Normal tier at level L:
   their incoming-damage clock plus current-target horizontal movement govern
   disengagement (Round 19 follow-up).
 - **Readability rules for mobs** (decided 2026-08-06, shipped with WP6):
-  elites/rares signal via **scale + tint** — elite `visual_size` ×1.6,
+  elites/rares signal via **scale + tint** — elite `visual_size` ×1.4
+  (Round 28 ruling 9; model, collision and selection box scale together),
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
   violet `#a64dff:90`, nametag prefix `★ ` — plus the `!! ` prefix while
   a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
@@ -1035,14 +1042,25 @@ Startup presentation settings:
 | Critter | `grug_nametag_critter_foreground` / `#ffffff` | `grug_nametag_critter_background` / `#00000040` |
 
 `grug_injured_mob_hp_bars` defaults to `true`. Invalid colors fall back to the
-category default. Ordinary bars retain their existing dimensions and attachment
-path; Round 19 does not retune them. Round 19 gives the two dragons
-explicit world-space anchor/size overrides near their visible head/body:
-Wyrmglass at 5 nodes above origin, Stormscale at 4 nodes, each 3 by 0.25 nodes.
-For these explicit overrides, attachment position compensates parent scale,
-while billboard width/height are already world dimensions and are not divided
-by that scale.
-This changes neither ordinary mobs/guards nor adds a screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
+category default. **Every bar is world-sized** (Round 28 ruling 10): an
+ordinary bar is 0.8 by 0.1 nodes whatever the mob's `visual_size` (a fox drawn
+at 10 and a serpent drawn at 0.3 get the same bar) and hangs 0.12 nodes above
+the mob's selection-box top, just under the nametag, which the engine draws
+0.3 nodes above that top. The two dragons keep explicit world-space profiles
+of 3 by 0.25 nodes, anchored just under their nametag: Wyrmglass at 2.77 nodes
+above origin, Stormscale at 2.97. Billboard width and height are world
+dimensions and are never divided by the parent's scale; only the attachment
+position compensates it. A tier rescale after the bar exists re-attaches the
+bar at the new box top, and the nametag carrier copies the rescaled box.
+
+**Selection boxes match the model** (Round 28 ruling 10). Every mob whose
+rendered mesh clearly exceeds its box (more than a quarter node) has a
+rotated selection box (`rotate = true`, it turns with the mob's yaw) built
+from the measured mesh bounds of its stand animation, horizontally never
+narrower than its collision footprint, rounded out to 0.05 node
+(`tools/r28_a3/mesh_bounds.py`). The collision box stays the movement
+footprint. The boar family and the Ibex had such boxes already.
+There is no screen-space boss HUD. The sprite remains perspective-scaled. Flight visuals use a duration bounded to
 0.05–2 seconds, so near-zero partial bow draws never cause long pursuit.
 
 ## Ambient pursuit policy
@@ -1077,6 +1095,33 @@ above and there is no chase leash. Camp members keep their 20-node roam cap;
 patrollers, named rares, bosses and summons, royals, bespoke no-leash actors,
 NPCs and water-bound swimmers keep their own movement rules. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
+Round 28 ruling 4 keeps the leash anchored at the spawn point with radius 32;
+the spawn areas of Round 28 Section B (planned, not built yet) are to be sized
+so that it keeps mobs inside their area.
+
+**Road and town push (Round 28 ruling 2):** roads and towns should feel safe
+to travel and rest in without becoming a combat refuge. An idle (standing or
+walking: no target, not following, not evading) free-roaming mob with the
+**aggressive** disposition probes every 4–5 seconds of the leash slot (the
+period picked per mob and probe, the first probe of an activation at a random
+slot) eight points on a horizontal ring of radius equal to its `view_range`,
+at its own height. A point hits on a road, bridge or village
+(`grug_core.world_feature_at`) or in a start town or capital city
+(`grug_zones.hard_protection_kind_at` "town"). POIs (including outposts and
+hostile camps) do not push. With any hit the mob walks along a free ring
+direction, never toward a hit: the free direction closest to the opposite of
+the hits' mean direction (when the hits cancel, as for a mob standing on a
+straight road or a crossroads, the free direction with the most free
+neighbours; ties go to the direction nearer its spawn point, then to ring
+order). When all eight points hit it walks straight toward its spawn point
+(no push without one). It uses the wander leash's nudge. Inside the
+wander radius the push steers; outside it the leash walks the mob home and the
+push is not asked, so the two never fight. Neutral mobs, critters, NPCs, camp
+members, patrollers, rares, bosses and the other bound actors are never
+pushed, and pursuit is unchanged: a fighting mob follows its target across any
+road. It is a tendency, not a guarantee (the random walk may carry a mob back
+for a while). Code: `grug_mobs/roam_avoid.lua`, called from `aggro.lua`
+roam_check.
 
 ## Out-of-combat mob recovery
 

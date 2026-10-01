@@ -251,7 +251,9 @@ dofile(ROOT .. "/mods/PLAYER/grug_inventory/equipment.lua")
 dofile(ROOT .. "/mods/PLAYER/grug_inventory/bags.lua")
 local refreshes = 0
 grug_inventory.refresh = function() end
-grug_inventory.refresh_character = function() refreshes = refreshes + 1 end
+grug_inventory.refresh_character_tab = function(_, tab)
+	if tab == "stats" then refreshes = refreshes + 1 end
+end
 local I = grug_inventory
 local Q = I.QUIVER_LIST
 

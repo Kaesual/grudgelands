@@ -83,6 +83,22 @@ local function prerequisite_met(player, tier_id)
 	return false
 end
 
+-- What the Riding Trainer shows for one tier (Round 28 ruling 19), in this
+-- order: "owned"; "level" (the character is below tier.level); "previous"
+-- (the preceding tier is not owned yet -- for a tier not owned this is the
+-- same rule prerequisite_met applies); "pending" (no valid price); "buy".
+-- Returns the state and, for "buy", the price.
+function grug_mounts.tier_state(player, tier_id)
+	local tier = grug_mounts.TIERS[tier_id]
+	if not tier then return nil end
+	if grug_mounts.owns_tier(player, tier_id) then return "owned" end
+	if grug_xp.get_level(player) < tier.level then return "level" end
+	if not prerequisite_met(player, tier_id) then return "previous" end
+	local price = grug_mounts.price_for_tier(tier_id)
+	if not price then return "pending" end
+	return "buy", price
+end
+
 function grug_mounts.purchase(player, tier_id)
 	local tier = grug_mounts.TIERS[tier_id]
 	if not tier then return false, "Unknown riding tier." end

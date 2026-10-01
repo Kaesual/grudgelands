@@ -6,7 +6,7 @@
 --    it and checks the generated surface node against the corridor's surface
 --    node. Across the road (perpendicular, at the surface height) the
 --    protection must be exactly "distance to the centreline <= half width +
---    3" (distances printed); the home-faction probe digger is refused on the
+--    ROAD_SIDE" (distances printed); the home-faction probe digger is refused on the
 --    last protected column and digs the first open one; placing likewise; at
 --    the centre column +5/-5 are refused, +6/-6 allowed. The hint line.
 -- 2. BRIDGE: the same surface check and hint on a real bridge run.
@@ -225,7 +225,7 @@ local function road_scenario(done)
 				"offset %d (distance %.2f), limit %.1f"):format(side, last_in[side].o,
 				last_in[side].d, first_out[side].o, first_out[side].d, reach))
 			check(last_in[side].d <= reach and first_out[side].d > reach,
-				"the corridor edge is half width + 3")
+				"the corridor edge is half width + ROAD_SIDE")
 			check(first_out[side].o == last_in[side].o + 1, "one edge per side")
 			local hint = edit_both(last_in[side].p, "EDGE IN side " .. side, true)
 			check(hint == "Road – protected", "road hint")

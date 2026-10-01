@@ -48,6 +48,8 @@ local function stag_def(description, texture)
 		-- to that instead of to creatura's body-only 0.9.
 		visual_size = {x = 8, y = 8},
 		collisionbox = {-0.5, -0.01, -0.5, 0.5, 1.8, 0.5},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.5, -0.05, -0.7, 0.5, 1.85, 1.2, rotate = true},
 		makes_footstep_sound = true,
 
 		-- wp6_model_notes §3.1 (creatura ranges translated). No punch clip on

@@ -80,7 +80,10 @@ grug_core.register_on_effective_absorb(function(source, target)
 end)
 
 local function encounter_death(player, reason)
-	local killer = reason and reason.object
+	-- A boss's arrow or breath punches with the projectile; it counts as the
+	-- shooter's kill while that shooter exists (grug_core.damage_source).
+	local killer = reason and reason.object and
+		grug_core.damage_source(reason.object)
 	if not killer then return false end
 	if core.is_player(killer) then
 		local victim_faction = grug_core.get_player_faction(
@@ -116,6 +119,9 @@ end
 local function give_or_queue(player, stack)
 	local inv = player:get_inventory()
 	local leftover = inv:add_item("main", stack)
+	-- Loot that entered the inventory shows in the message feed.
+	local taken = ItemStack(stack):get_count() - leftover:get_count()
+	if taken > 0 then grug_core.feed_item(player, stack, taken) end
 	if leftover:is_empty() then return end
 	local meta = player:get_meta()
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}
@@ -146,7 +152,11 @@ core.register_on_joinplayer(function(player)
 	if #pending == 0 then return end
 	local keep = {}
 	for index = 1, #pending do
-		local leftover = player:get_inventory():add_item("main", ItemStack(pending[index]))
+		local stack = ItemStack(pending[index])
+		local leftover = player:get_inventory():add_item("main", stack)
+		-- Queued loot that arrives now shows in the message feed.
+		local taken = stack:get_count() - leftover:get_count()
+		if taken > 0 then grug_core.feed_item(player, stack, taken) end
 		if not leftover:is_empty() then keep[#keep + 1] = leftover:to_string() end
 	end
 	meta:set_string(pending_key(), #keep > 0 and core.serialize(keep) or "")
@@ -395,10 +405,15 @@ local function king_def(race, row)
 			return {skin = "grug_mobs_royal_" .. race .. ".png",
 				level = self._grug_level, weapon_family = row.weapon}
 		end,
-		-- Elite visuals multiply by 1.6; this base makes the authored final
-		-- royal stature exactly 1.15 rather than silently growing to 1.84.
-		visual_size = {x = 0.71875, y = 0.71875},
-		collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3},
+		-- The king is the tallest figure in his hall (Round 28 ruling 9):
+		-- final visual_size 1.6 against his elite guards' 1.4. Elite visuals
+		-- multiply model AND boxes by 1.4, so the authored base is 1.6 / 1.4
+		-- and the box is the player box (character.b3d is 1.70 nodes tall at
+		-- size 1) at that same base: 2.72 nodes once promoted, exactly the
+		-- model's height.
+		visual_size = {x = 8 / 7, y = 8 / 7},
+		collisionbox = {-0.3 * 8 / 7, 0, -0.3 * 8 / 7, 0.3 * 8 / 7, 1.7 * 8 / 7,
+			0.3 * 8 / 7},
 		animation = {
 			stand_start = 0, stand_end = 79, stand_speed = 30,
 			walk_start = 168, walk_end = 187, walk_speed = 30,

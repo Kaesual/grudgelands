@@ -161,12 +161,13 @@ local function normalize_quiver(inventory)
 	end
 end
 
--- The Character page prints the total beside the slot, so a changed quiver
--- re-renders a cached Character page (pages.lua). Nothing else is re-sent.
+-- The Character page's Stats tab prints the total beside the slot, so a
+-- changed quiver re-renders a cached Stats tab (pages.lua). Nothing else is
+-- re-sent.
 local function quiver_changed(player, inventory)
 	normalize_quiver(inventory)
-	if grug_inventory.refresh_character then
-		grug_inventory.refresh_character(player)
+	if grug_inventory.refresh_character_tab then
+		grug_inventory.refresh_character_tab(player, "stats")
 	end
 end
 

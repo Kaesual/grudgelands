@@ -5,7 +5,8 @@
 --
 -- 1. Synthetic roads of every class, serialized and read back through the
 --    real road module, checked against the real road sampler: sideways
---    exactly half width + 3 in and + 4 out, +-5 around the sampler's surface
+--    exactly half width + ROAD_SIDE in (Round 28 ruling 1: 1) and one node
+--    more out, +-5 around the sampler's surface
 --    node in and +-6 out (flat and sloped), round segment ends, an L joint
 --    in the middle of a registered run and on a run boundary, and a bridge
 --    run (bridge exactly where the sampler gives the bridge material).
@@ -72,8 +73,9 @@ end
 
 for _, kind in ipairs({"primary", "secondary", "trail"}) do
 	local hw = HALF[kind]
-	local edge = floor(hw) + 3      -- the last protected column off the centre
-	check(2 * edge + 1 == ({primary = 13, secondary = 11, trail = 9})[kind],
+	local side = wp.ROAD_SIDE
+	local edge = floor(hw) + side   -- the last protected column off the centre
+	check(2 * edge + 1 == ({primary = 9, secondary = 7, trail = 5})[kind],
 		kind .. " protected width")
 	-- Straight along +x at z = 50: flat y = 10 for x 0..20, then 1/4 per node.
 	local points, rq, cls = {}, {}, {}
@@ -89,8 +91,8 @@ for _, kind in ipairs({"primary", "secondary", "trail"}) do
 		for side = -1, 1, 2 do
 			local z_in, z_out = 50 + side * edge, 50 + side * (edge + 1)
 			local s_in = surface_of(S, x, 50) -- the centre column's surface
-			check(P.kind_at(x, s_in, z_in) == "road", kind .. " +3 in at x=" .. x)
-			check(P.kind_at(x, s_in, z_out) == nil, kind .. " +4 out at x=" .. x)
+			check(P.kind_at(x, s_in, z_in) == "road", kind .. " edge in at x=" .. x)
+			check(P.kind_at(x, s_in, z_out) == nil, kind .. " edge out at x=" .. x)
 		end
 		-- every surface column across the road: +-5 in, +-6 out
 		for dz = -floor(hw), floor(hw) do
@@ -104,7 +106,7 @@ for _, kind in ipairs({"primary", "secondary", "trail"}) do
 		check(s == 10 + (x > 20 and floor(floor(2 * (x - 20) / 4 + 0.5) / 2) or 0),
 			kind .. " surface follows the profile at x=" .. x)
 	end
-	-- Segment ends: round caps of radius half width + 3 round both ends.
+	-- Segment ends: round caps of radius half width + side round both ends.
 	local s0 = surface_of(S, 0, 50)
 	check(P.kind_at(-edge, s0, 50) == "road", kind .. " start cap in")
 	check(P.kind_at(-edge - 1, s0, 50) == nil, kind .. " start cap out")
@@ -112,7 +114,7 @@ for _, kind in ipairs({"primary", "secondary", "trail"}) do
 	check(P.kind_at(40 + edge, s40, 50) == "road", kind .. " end cap in")
 	check(P.kind_at(40 + edge + 1, s40, 50) == nil, kind .. " end cap out")
 	-- the corner of the cap is round: the diagonal reach
-	local diagonal = floor((hw + 3) / sqrt(2))
+	local diagonal = floor((hw + side) / sqrt(2))
 	check(P.kind_at(-diagonal, s0, 50 - diagonal) == "road", kind .. " cap diagonal in")
 	check(P.kind_at(-diagonal - 1, s0, 50 - diagonal - 1) == nil, kind ..
 		" cap diagonal out")
@@ -187,8 +189,9 @@ do
 		"bridge landings")
 	check(P.kind_at(12, 8, -30) == "road" and P.kind_at(28, 8, -30) == "road",
 		"road beyond the landings")
-	check(P.kind_at(20, 11, -30 + 5) == "bridge" and P.kind_at(20, 11, -30 + 6) == nil,
-		"bridge sideways reach")
+	local edge = floor(HALF.secondary + wp.ROAD_SIDE)
+	check(P.kind_at(20, 11, -30 + edge) == "bridge" and
+		P.kind_at(20, 11, -30 + edge + 1) == nil, "bridge sideways reach")
 end
 print("synthetic roads: ok")
 

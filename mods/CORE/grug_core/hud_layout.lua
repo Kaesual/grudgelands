@@ -53,6 +53,9 @@ layout.COMBAT_ICON = 32
 -- the widest caption ("4:59", about nine GUI units per character).
 layout.STATUS_CAPTION = 18
 layout.STATUS_CAPTION_WIDTH = 40
+-- HUD units between the top of the status icon row and the feed's lowest
+-- line (the anchor below uses it, so it is set first).
+layout.FEED_GAP = 6
 -- Widest quest-tracker line in characters; each tracked quest is one line.
 layout.QUEST_WRAP = 38
 layout.BAR_TEXTURE = "grug_core_hud_bar.png"
@@ -154,7 +157,24 @@ layout.anchors = {
 		offset = {x = 20, y = 0},
 		alignment = {x = 1, y = 1},
 	},
+	-- The message feed (Round 28 ruling 20, feed.lua): its lines stack upwards
+	-- from FEED_GAP above the TOP of the status icon row, which itself sits
+	-- right above the skill-name row. The row is reserved even when no status
+	-- runs, so the feed never jumps; `offset.y` is the bottom edge of the
+	-- lowest (newest) line. layout.feed_line_offset places each line.
+	feed = {
+		position = {x = 0.5, y = 1},
+		offset = {x = 0, y = layout.rows.skill.top - 4 - layout.STATUS_CAPTION -
+			2 - layout.STATUS_ICON - layout.FEED_GAP},
+	},
+	-- The level-up announcement (ruling 20): large, above the flash line.
+	banner = {position = {x = 0.5, y = 0.25}, offset = {x = 0, y = 0}},
 }
+
+-- Feed geometry: at most FEED_LINES lines of FEED_LINE GUI units each (the
+-- default 16 px font plus a small gap).
+layout.FEED_LINES = 3
+layout.FEED_LINE = 20
 
 local function place(id)
 	local row = layout.rows[id]
@@ -326,6 +346,19 @@ function layout.status_slot(index, count, window)
 	local x = anchor.offset.x + (index - (count + 1) / 2) * pitch
 	local y = anchor.offset.y - (caption_h - layout.STATUS_CAPTION)
 	return {x = x, y = y}, {x = x, y = y + layout.STATUS_ICON / 2 + 2}
+end
+
+-- The centre of feed line `slot` (1 = the lowest, newest line) as a HUD
+-- offset. Text is sized by GUI scaling, so the line pitch is converted to HUD
+-- units, and the whole feed rises by the same amount status_slot lifts the
+-- icon row, so a larger GUI scale never pushes a line into the icons.
+function layout.feed_line_offset(slot, window)
+	local hud, gui = scales(window)
+	local lift = math.ceil(layout.STATUS_CAPTION * gui / hud) -
+		layout.STATUS_CAPTION
+	local line = math.ceil(layout.FEED_LINE * gui / hud)
+	return {x = layout.anchors.feed.offset.x,
+		y = layout.anchors.feed.offset.y - lift - line / 2 - (slot - 1) * line}
 end
 
 -- The minimap's box (grug_map, Round 27 ruling 6), in real screen pixels:

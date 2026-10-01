@@ -214,7 +214,6 @@ local function reel(player, cast, itemstack)
 	local entry = grug_fishing.catch_at(grug_fishing.CATCH_TABLES[band],
 		rng:next(0, grug_fishing.CATCH_TOTAL - 1))
 	local stack = ItemStack(entry.name .. " " .. entry.count)
-	local description = core.registered_items[entry.name].description or entry.name
 	local left = player:get_inventory():add_item("main", stack)
 	if not left:is_empty() then core.add_item(player:get_pos(), left) end
 	-- Return the worn callback stack; a separate set_wielded_item followed by
@@ -223,14 +222,16 @@ local function reel(player, cast, itemstack)
 	core.sound_play("default_water_footstep",
 		{pos = cast.pos, gain = 0.5, max_hear_distance = 12}, true)
 	-- Round 24 ruling 28: a caught fish pays gathering XP from the top of its
-	-- water's zone band (grug_xp owns the formula); junk pays nothing.
-	local notice = "Caught: " .. description
+	-- water's zone band (grug_xp owns the formula); junk pays nothing. The
+	-- catch is one feed line that names the XP too (Round 28 ruling 20), so
+	-- the award itself stays quiet.
+	local notice = "Caught " .. grug_core.item_name(entry.name)
 	if entry.fish then
 		local xp = grug_xp.award_gathering(player, "fish",
-			grug_xp.gathering_reference_level(band))
+			grug_xp.gathering_reference_level(band), true)
 		notice = notice .. " (+" .. xp .. " XP)"
 	end
-	grug_abilities.notify(player, notice)
+	grug_core.feed(player, "fish", notice)
 	return itemstack
 end
 core.register_globalstep(function(dtime)

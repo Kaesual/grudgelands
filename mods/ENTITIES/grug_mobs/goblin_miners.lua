@@ -22,6 +22,8 @@ local function miner_def(description, texture, ranged)
 		visual = "mesh", mesh = "grug_mobs_goblin.b3d",
 		textures = {{texture}}, visual_size = {x = 1, y = 1},
 		collisionbox = {-0.25, -0.01, -0.25, 0.25, 0.9, 0.25},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.3, 0, -0.25, 0.3, 1.25, 0.35, rotate = true},
 		makes_footstep_sound = true, animation = animation,
 		drops = {
 			{name = "grug_mobs:linen_scrap", chance = 2, min = 1, max = 1},

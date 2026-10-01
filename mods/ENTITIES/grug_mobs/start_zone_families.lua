@@ -40,6 +40,8 @@ local fox = ground_defaults({
 	textures = {{"grug_mobs_fox.png"}},
 	visual_size = {x = 10, y = 10},
 	collisionbox = {-0.35, -0.01, -0.35, 0.35, 0.5, 0.35},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.35, -0.05, -0.7, 0.35, 0.8, 0.65, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 1, stand_end = 39, stand_speed = 10,
@@ -129,6 +131,8 @@ local turkey = critter("Wild Turkey", "grug_mobs_wild_turkey.b3d",
 		walk_start = 10, walk_end = 30, walk_speed = 25,
 		run_start = 40, run_end = 60, run_speed = 40,
 	})
+-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+turkey.selectionbox = {-0.65, -0.05, -0.65, 0.65, 1.55, 0.95, rotate = true}
 grug_mobs.register_mob("grug_mobs:wild_turkey", turkey)
 mobs:spawn({name = "grug_mobs:wild_turkey",
 	nodes = {"default:dirt_with_grass"}, interval = 20, chance = 2100,
@@ -143,6 +147,8 @@ local runner = ground_defaults({
 	visual = "mesh", mesh = "grug_mobs_plains_runner.b3d",
 	textures = {{"grug_mobs_plains_runner.png"}}, visual_size = {x = 1, y = 1},
 	collisionbox = {-0.4, -0.01, -0.3, 0.4, 0.8, 0.4},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.4, 0, -0.5, 0.4, 1.2, 0.95, rotate = true},
 	makes_footstep_sound = true,
 	-- The nandu mesh has no attack clip; its run range doubles as the peck.
 	animation = {
@@ -166,6 +172,8 @@ local tapir = ground_defaults({
 	visual = "mesh", mesh = "grug_mobs_tapir.b3d",
 	textures = {{"grug_mobs_tapir.png"}}, visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -0.85, 0.5, 1.2, 1.15, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 25,
@@ -192,6 +200,8 @@ local rat = ground_defaults({
 	visual = "mesh", mesh = "grug_mobs_giant_rat.b3d",
 	textures = {{"grug_mobs_giant_rat.png"}}, visual_size = {x = 1.6, y = 1.6},
 	collisionbox = {-0.64, -0.01, -0.64, 0.64, 0.96, 0.64},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.65, 0, -1.3, 0.65, 0.6, 0.8, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 30,

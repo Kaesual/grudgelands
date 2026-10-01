@@ -122,6 +122,9 @@ for _, slot in ipairs(grug_inventory.equipment_slots) do
 	end
 end
 
+local DAMAGE_REDUCTION_TOOLTIP = "Armor reduction against an enemy of your " ..
+	"level. Higher against lower-level enemies, lower against higher-level ones."
+
 -- The Scout's quiver slot (Round 28 ruling 26): the first cell of the quiver
 -- list, the arrow total beside it, and the shift-click ring main <-> quiver.
 local function quiver_content(player)
@@ -169,7 +172,13 @@ local function character_content(player)
 		("label[2.75,1.70;%s]"):format(esc(mana and
 			("Maximum mana: " .. mana.final) or "Maximum rage: 100")),
 		("label[2.75,2.15;Armor: %.1f]"):format(armor.result),
-		("label[2.75,2.60;Own-level reduction: %.1f%%]"):format(armor_reduction),
+		("label[2.75,2.60;Damage reduction: %.1f%%]"):format(armor_reduction),
+		-- Round 28 ruling 21. A legacy label[] is centred on (y + 7/30) and
+		-- 0.7 spacing units tall, and tooltip[] works in spacing units from
+		-- the same origin (see TOOLTIP_W above), so this rect covers exactly
+		-- this one line and none of its neighbours 0.45 above or below.
+		("tooltip[2.75,%.3f;3.6,0.45;%s]"):format(2.60 + 7 / 30 - 0.225,
+			esc(grug_inventory.wrap_text(DAMAGE_REDUCTION_TOOLTIP, 48))),
 		("label[2.75,3.05;Crit: %.1f%%]"):format(crit),
 		("label[2.75,3.50;Dodge: %.1f%%]"):format(dodge),
 		("label[2.75,3.95;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
@@ -234,13 +243,16 @@ end
 -- every active effect of the status icon row with its name, detail and
 -- remaining time -- the text the row itself has no room for. Same pattern as
 -- the Help page: a button row at y = 0, the selected one styled, the body
--- below it, the choice kept in the sfinv context.
+-- below it, the choice kept in the sfinv context. "Professions" (Round 28
+-- ruling 23) shows each known profession's tier and progress; grug_jobs
+-- builds that body (it depends on this mod, so it is read at build time).
 --
 
 local CHARACTER_PAGE = "grug_inventory:character"
 local TABS = {
 	{id = "stats", label = "Stats", x = 0.0, w = 1.5},
 	{id = "effects", label = "Effects", x = 1.5, w = 1.5},
+	{id = "professions", label = "Professions", x = 3.0, w = 2.0},
 }
 local TAB_Y, TAB_H = 0.0, 0.7
 -- Two columns of six rows fit between the tab row and the inventory at 7.0.
@@ -251,7 +263,10 @@ local NAME_CHARS, DETAIL_CHARS = 28, 34
 local TIME_COLOR = "#f0c75e"
 
 local function selected_tab(context)
-	return context.grug_character_tab == "effects" and "effects" or "stats"
+	for _, tab in ipairs(TABS) do
+		if context.grug_character_tab == tab.id then return tab.id end
+	end
+	return "stats"
 end
 
 local function clip(text, limit)
@@ -311,6 +326,23 @@ local function effects_content(player, context)
 	return table.concat(fs)
 end
 
+local function professions_content(player)
+	local jobs = rawget(_G, "grug_jobs")
+	if jobs and jobs.character_professions_formspec then
+		return jobs.character_professions_formspec(player)
+	end
+	return ""
+end
+
+-- Re-sends the cached inventory form only when the Character page shows tab
+-- `tab` (grug_jobs calls this after a counted craft).
+function grug_inventory.refresh_character_tab(player, tab)
+	local context = sfinv.contexts[player:get_player_name()]
+	if context and context.page == CHARACTER_PAGE and selected_tab(context) == tab then
+		sfinv.set_player_inventory_formspec(player, context)
+	end
+end
+
 local function tab_row(selected)
 	local fs = {}
 	for _, tab in ipairs(TABS) do
@@ -326,8 +358,14 @@ sfinv.register_page(CHARACTER_PAGE, {
 	title = "Character",
 	get = function(self, player, context)
 		local tab = selected_tab(context)
-		local body = tab == "effects" and effects_content(player, context) or
-			character_content(player)
+		local body
+		if tab == "effects" then
+			body = effects_content(player, context)
+		elseif tab == "professions" then
+			body = professions_content(player)
+		else
+			body = character_content(player)
+		end
 		return sfinv.make_formspec(player, context, tab_row(tab) .. body, true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
@@ -455,8 +493,8 @@ function grug_inventory.refresh(player, force)
 	end
 end
 
--- Re-send a cached Character page and nothing else: the money hook below and
--- the quiver's arrow total use it.
+-- Re-send a cached Character page (any tab) and nothing else: the money hook
+-- below uses it; the quiver total uses refresh_character_tab(player, "stats").
 function grug_inventory.refresh_character(player)
 	local context = sfinv.contexts[player:get_player_name()]
 	if context and context.page == CHARACTER_PAGE then

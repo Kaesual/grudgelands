@@ -30,6 +30,16 @@ areas player-placed stations have no individual owner. Show the mode and a
 short explanation in the station UI. Authored loot chests are outside this
 change.
 
+Player-placed furnaces, dual furnaces, brewing stands and profession stations
+can be dug at any time by anyone the normal protection allows (Round 28
+ruling 18): in the open world there is no extra rule, inside a claim the
+claim's rights apply and in foreign home territory the territory rule applies.
+Digging drops every node list **and** every player's saved workspace record
+together with the station itself (to the digger's inventory, overflow on the
+ground), exactly what an explosion releases. A station is never undiggable
+because it still holds items, including other players' invisible leftovers.
+Authored public stations stay undiggable and blast-immune.
+
 Shared 3x3 station ingredients are shared, while output previews depend on the
 viewer's recipe qualification. Ineligible viewers see no craftable result.
 Only a successful qualified output transaction consumes ingredients and awards

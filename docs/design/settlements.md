@@ -462,6 +462,10 @@ Decided 2026-09-15 after the first NPC playtest, and part of that behaviour:
 - **A guard that cannot reach its waypoint keeps patrolling anyway**: it paths
   around the obstacle, then takes the next waypoint, and only if it is still
   stuck and no player is within 48 nodes is it moved there outright.
+- **A patrolling guard turns and walks together** (Round 28 ruling 11): each
+  route step faces the new heading at once and walks along it, and a guard
+  with a patrol loop makes no random turns of its own. Post guards keep their
+  idle glances.
 
 Decided 2026-09-15 after the second NPC playtest (the first one's "hostile
 creatures ignore settlement NPCs" is replaced by the first point here):

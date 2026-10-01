@@ -494,7 +494,7 @@ grug_mobs.register_rare("marrowclaw", {
 -- apply_tier_visuals scales relative to the tier already APPLIED — which at
 -- that moment is still "normal", because set_tier runs before the mob's first
 -- tick and ensure_init then does level, stats, scale and tint in one go
--- (levels.lua). So Korgan's Bane is x2 scale and violet, never x1.6 gold or
+-- (levels.lua). So Korgan's Bane is x2 scale and violet, never x1.4 gold or
 -- x3.2 of both. It keeps the golem's telegraph (telegraph.lua fires for
 -- "elite" AND "rare").
 -- No `texture`: grug_mobs:stone_golem already wears the crags skin.

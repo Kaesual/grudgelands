@@ -18,8 +18,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
   Round 19 removes the pool/armor derivation section. Character shows concise
-  effective Crit and Dodge alongside armor rating/same-level reduction and
-  maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
+  effective Crit and Dodge alongside armor rating, **Damage reduction** (the
+  armor's reduction against an enemy of the character's own level; its tooltip
+  says so and that it is higher against lower-level and lower against
+  higher-level enemies; Round 28 ruling 21) and maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
 - Talents keeps the shared legacy inventory geometry but uses real coordinates
   for its page content. Class, tree selection, rank rows and description occupy
   separate bands; combat statistics belong to Character. Both chains use equally
@@ -293,6 +295,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   distance, access, inputs, profession tier and capacity before consuming or
   awarding progress. Partial transfers retain produced remainder without a
   second debit or progress award, and closing a UI loses no contents.
+  Digging a player-placed station is allowed whenever protection allows it
+  and drops all of its contents and every player's saved workspace record
+  (`crafting_equipment_revision.md`, Round 28 ruling 18).
 - Personal processing state, fuel, inputs and outputs persist in the physical
   node. Elapsed server game time may catch up lazily after unload/restart but
   does not promise work during shutdown. Automatic furnace, dual-furnace and
@@ -348,15 +353,54 @@ the Round 19 top-centre text list:
 - One throttled pass every 0.5 s owns timed ticks, expiry and display refresh, and
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
-- **Character page tabs:** "Stats" (the view as before) and "Effects": icon,
+- **Character page tabs:** "Stats" (the view as before), "Effects": icon,
   name, remaining time and a detail line per status, refreshed about once a
-  minute or on change while that tab is open.
+  minute or on change while that tab is open, and "Professions" (Round 28
+  ruling 23): per known profession (primary slots, then Cooking) its tier,
+  "Crafts: n/m toward tier N+1" (`professions.md` §1 counts; "Highest tier
+  reached." at T6) and, while the character's ten-level band caps the tier,
+  the note "Capped by your level: reach level 10N+1, then craft once more
+  for tier N+1" when the count is full and only the character level blocks
+  the next tier. A counted craft refreshes the tab while it is open.
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Group page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status
   stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
   of `grug_core` and `grug_classes`.
+
+## Message feed and level-up banner (Round 28 ruling 20)
+
+Gains the player just earned appear near their own bars instead of in chat
+(the top-left chat was easy to miss). There is **no chat copy** of any of
+them.
+
+- **Place:** bottom centre, stacked upwards from 6 HUD units above the status
+  icon row, which itself sits right above the skill-name row; the row is
+  reserved even when no status runs, so the feed never moves. Line pitch is
+  20 GUI units converted to HUD units, and the feed rises with the icon row
+  at larger GUI scaling (`grug_core.hud_layout.feed_line_offset`).
+- **Lines:** at most 3, newest at the bottom; each lives 2.5 s and is drawn
+  at 45 % brightness for its last 0.5 s (HUD text has no alpha fade on every
+  client). Colours by kind: loot white, XP purple (`#aa66ff`), quest yellow
+  (`#ffe080`), fishing light blue.
+- **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
+  one summed into the same line; items picked up off the ground (mob drops,
+  dropped items) and boss loot entering the inventory as "+3 Light Leather",
+  summed per item while that line is shown (also queued boss loot delivered
+  on join and quest reward items at turn-in); quest progress as one line per
+  quest, every objective as "<name> n/m" joined by ", " ("Small Boar 3/10"),
+  a quest's newer line replacing its own older one, cut to the widest
+  tracker line (38 characters, "..."); fishing catches as
+  "Caught <fish> (+N XP)" (junk: "Caught <item>").
+- **Level-up** is a separate large centre announcement ("Reached level N!",
+  double font size, 3 s), not a feed line.
+- **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
+  (a line with the key of a shown line replaces it),
+  `grug_core.feed_xp(player, amount)`, `grug_core.feed_item(player, item,
+  count)` and `grug_core.banner(player, text, color)`. `grug_xp.add_xp`
+  posts every positive grant itself; a caller that names the XP in its own
+  line passes `quiet`.
 
 ## 5. Skills page and bound representations
 

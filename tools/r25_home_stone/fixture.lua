@@ -8,7 +8,8 @@
 -- page, on a fake engine. Covers:
 --   R  the Round 17 innkeeper regression (binding, auth, combat, cooldown,
 --      failed/blocked emerge, stale/duplicate callbacks, reconnect, timeout,
---      respawn safety, map output) -- the retired tools/round17/home_micro.lua;
+--      respawn safety (Round 28 ruling 16: one held teleport), map output) --
+--      the retired tools/round17/home_micro.lua;
 --   S  set_home_claim / home_is_claim (refusals, owner, unfuelled message,
 --      Round 26: a draft is refused);
 --   T  travel to the arrival cube, cooldown, respawn stays at the innkeeper;
@@ -100,7 +101,10 @@ rawset(_G, "core", {
 })
 
 local generation, dismounts = 0, 0
+local holds = {} -- the movement aggregator's exclusive holds, by name
 rawset(_G, "grug_core", {factions={accord={}, throng={}},
+ hold_movement=function(_, name) holds[name] = true end,
+ release_movement=function(_, name) holds[name] = nil end,
  get_player_race=function() return player.race end,
  in_combat=function(p) return p.combat end,
  invalidate_combat_identity=function() generation = generation + 1 end,
@@ -221,32 +225,41 @@ check(moves == 1 and home.remaining(player) == 1800, "R arrival charges cooldown
 check(generation == 1 and dismounts == 1, "R dismount and combat identity")
 clock = clock + 10; check(home.remaining(player) == 1790, "R cooldown counts down")
 check(not home.return_home(player), "R cooldown refuses")
-check(callbacks.respawn[1](player), "R respawn hook"); finish()
-check(moves == 3 and home.remaining(player) == 1790, "R respawn keeps cooldown")
+-- Round 28 ruling 16: one teleport, straight to the bound innkeeper, held
+-- until the emerge finishes.
+check(callbacks.respawn[1](player) and moves == 2 and holds["grug_home:respawn"],
+ "R respawn: one teleport, held")
+check(same(player.pos, home.location("highcourt").arrival), "R respawn straight to the innkeeper")
+finish()
+check(moves == 2 and not holds["grug_home:respawn"] and home.remaining(player) == 1790,
+ "R respawn released, no second teleport, keeps cooldown")
 clock = clock + 1800
-check(home.return_home(player), "R cancel request"); home.cancel(player); finish(); check(moves == 3, "R cancel")
+check(home.return_home(player), "R cancel request"); home.cancel(player); finish(); check(moves == 2, "R cancel")
 check(home.return_home(player), "R combat request"); player.combat = true; finish(); player.combat = false
-check(moves == 3, "R combat before arrival")
+check(moves == 2, "R combat before arrival")
 check(home.return_home(player), "R die request"); player.hp = 0; event("die"); player.hp = 20; finish()
-check(moves == 3, "R death cancels")
+check(moves == 2, "R death cancels")
 check(home.return_home(player), "R rebind request"); data["grug_home:id"] = "dawnmere"; finish()
-check(moves == 3, "R rebind stale")
+check(moves == 2, "R rebind stale")
 data["grug_home:id"] = "highcourt"
 check(home.return_home(player), "R reconnect request"); event("leave")
 do local replacement = {}; for k, v in pairs(player) do replacement[k] = v end; player = replacement end
-event("join"); finish(); check(moves == 3, "R reconnect is a new session")
+event("join"); finish(); check(moves == 2, "R reconnect is a new session")
 check(home.return_home(player), "R duplicate request")
 do local job = table.remove(emerge, 1); job.fn(nil, 0, 0); job.fn(nil, 0, 0); deferred() end
-check(moves == 4 and home.remaining(player) == 1800, "R duplicate callback commits once")
+check(moves == 3 and home.remaining(player) == 1800, "R duplicate callback commits once")
 clock = clock + 1800
 local before = moves
-check(callbacks.respawn[1](player) and moves == before + 1, "R respawn to safe start")
-do local wait = vnew(player.pos); finish(core.EMERGE_ERRORED)
- check(moves == before + 1 and same(player.pos, wait) and home.remaining(player) == 0, "R failed respawn stays") end
+check(callbacks.respawn[1](player) and moves == before + 1, "R respawn to the innkeeper")
+finish(core.EMERGE_ERRORED)
+check(moves == before + 2 and same(player.pos, vnew(1, 100.51, 0)) and
+ not holds["grug_home:respawn"] and home.remaining(player) == 0,
+ "R failed respawn: released, falls back to the start pocket")
+before = moves
 check(home.return_home(player), "R timeout request")
 do local tasks = after; after = {}
  for _, t in ipairs(tasks) do if t.delay == 30 then t.fn() end end end
-check(not home.is_pending(player), "R timeout releases"); finish(); check(moves == before + 1, "R late emerge inert")
+check(not home.is_pending(player), "R timeout releases"); finish(); check(moves == before, "R late emerge inert")
 player.pos = vnew(row.pos); check(home.open_innkeeper(player, inn), "R reopen")
 player.pos = vnew(0, 0, 0); fields({bind=true})
 check(home.get(player).id == "highcourt", "R proximity revalidated (still highcourt)")
@@ -301,6 +314,7 @@ check(not home.return_home(player) and last_chat() == "Return home is cooling do
 local highcourt = home.location("highcourt")
 check(callbacks.respawn[1](player), "T respawn hook")
 do local job = finish(); check(same(job.center, highcourt.pos), "T respawn prepares the innkeeper") end
+check(moves == 2, "T respawn is one teleport")
 check(same(player.pos, highcourt.arrival) and home.remaining(player) == 1800, "T respawn at innkeeper")
 check(home.home_is_claim(player), "T respawn keeps the claim home")
 clock = clock + 1800
@@ -430,6 +444,8 @@ rawset(_G, "sfinv", {register_page=function(_, p) page = p end,
  make_formspec=function(_, _, fs) return fs end, contexts={}, set_page=function() end})
 rawset(_G, "grug_zones", {at=function() return nil end})
 rawset(_G, "grug_inventory", {UI={width=10.4, height=11.1}})
+-- Round 27 minimap switch (page.lua asks it); this server has no world map.
+grug_map.minimap = {available=function() return false end, enabled=function() return false end}
 dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 check(page.get(page, player, {}):find("Return home: Claim Stone (1:17)", 1, true), "M map button")
 

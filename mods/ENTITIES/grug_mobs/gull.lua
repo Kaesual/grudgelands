@@ -54,6 +54,8 @@ local gull = {
 	-- matches the hitbox below (wp6_model_notes §3.2).
 	visual_size = {x = 10, y = 10},
 	collisionbox = {-0.2, 0, -0.2, 0.2, 0.4, 0.2},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.3, -0.05, -0.6, 0.3, 0.75, 0.55, rotate = true},
 	makes_footstep_sound = false,
 
 	-- wp6_model_notes §3.2: real stand/walk/fly clips, no punch clip (a

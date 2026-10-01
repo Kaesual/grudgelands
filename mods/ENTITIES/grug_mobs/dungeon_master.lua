@@ -1,6 +1,7 @@
 -- Dungeon Master: classic ranged fireball family in the deep middle bands.
 
 grug_mobs.register_simple_arrow("grug_mobs:dungeon_fireball", {
+	label = "a fireball",
 	texture = "mobs_tnt_smoke.png^[colorize:#ff6a1a:150", velocity = 7,
 	size = {x = 1, y = 1}, glow = 8, tail = true,
 	tail_texture = "mobs_tnt_smoke.png^[colorize:#ff6a1a:150", lifetime = 6,
@@ -22,6 +23,8 @@ local master = {
 		{"grug_mobs_dungeon_master2.png"}, {"grug_mobs_dungeon_master4.png"}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -1, -0.5, 0.5, 1.6, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.9, -1.05, -0.5, 0.9, 1.7, 0.65, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 0, stand_end = 19, stand_speed = 15,

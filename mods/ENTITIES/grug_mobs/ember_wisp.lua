@@ -2,6 +2,7 @@
 -- fly_in keeps the surface-only near-ground bias out of underground flight.
 
 grug_mobs.register_simple_arrow("grug_mobs:ember_entity", {
+	label = "an ember",
 	texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", velocity = 10,
 	size = {x = 0.6, y = 0.6}, glow = 10, tail = true,
 	tail_texture = "mobs_tnt_smoke.png^[colorize:#ff5a1e:170", lifetime = 5,
@@ -22,6 +23,8 @@ local wisp = {
 		"grug_mobs_wisp.png^[colorize:#ff5a1e:140"}},
 	visual_size = {x = 1.25, y = 1.25},
 	collisionbox = {-0.2, 0.2, -0.2, 0.2, 1, 0.2},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.55, 0.2, -0.65, 0.55, 1.1, 0.45, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 40, stand_end = 80, stand_speed = 25,

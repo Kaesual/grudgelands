@@ -325,9 +325,9 @@ for _, id in ipairs(ids) do
 	-- Quest log (ui.lua) and HUD tracker (hud.lua), quest active.
 	set_state({active = {[id] = {}}, completed = completed, tracked = {id}, hud = true})
 	local form = pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = id})
-	local _, after = element(form, "textarea[3.85,1.05;6.25,1.35;;;")
-	local objectives = element(form, "textarea[3.85,2.35;6.25,1.55;;;", after)
-	local rewards = element(form, "textarea[3.85,4.00;6.25,0.75;;;")
+	local _, after = element(form, "textarea[4.10,1.05;6.00,1.35;;;")
+	local objectives = element(form, "textarea[4.10,2.35;6.00,1.55;;;", after)
+	local rewards = element(form, "textarea[4.10,4.00;6.00,0.75;;;")
 	if check(objectives and rewards, "quest log textareas present: " .. id) then
 		local log_lines = lines_of(objectives)
 		eq(#log_lines, #def.objectives, "quest log one line per objective: " .. id)

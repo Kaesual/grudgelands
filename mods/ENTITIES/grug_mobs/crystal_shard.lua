@@ -1,6 +1,7 @@
 -- Crystal Shard: ranged middle/deep cave family.
 
 grug_mobs.register_simple_arrow("grug_mobs:crystal_shard_entity", {
+	label = "a crystal shard",
 	texture = "default_mese_crystal_fragment.png", velocity = 8,
 	size = {x = 0.3, y = 0.3}, glow = 6, lifetime = 5,
 })
@@ -20,6 +21,8 @@ local shard = {
 	textures = {{"grug_mobs_crystal_shard.png"}},
 	visual_size = {x = 10, y = 10},
 	collisionbox = {-0.6, -0.5, -0.6, 0.6, 1.8, 0.6},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-1.5, -0.1, -1.35, 1.5, 1.95, 1.05, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 60, stand_end = 83, stand_speed = 18,

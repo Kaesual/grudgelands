@@ -38,6 +38,8 @@ local function wolf_def(description, texture)
 		-- against the 0.84 box; upstream uses 1.
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.3, -0.01, -0.3, 0.3, 0.84, 0.3},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.3, -0.05, -0.8, 0.3, 0.95, 0.75, rotate = true},
 		makes_footstep_sound = true,
 
 		-- wp6_model_notes §1.4: stand is one frame, there is no punch clip —

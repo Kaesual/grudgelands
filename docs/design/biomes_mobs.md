@@ -403,7 +403,11 @@ final naming in items_crafting.md. All aggressive mobs:
 no distance give-up, no soft de-aggro), while camp members, guards, rares and
 other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
 leash. Idle, a free-roaming mob wanders within 32 nodes of its spawn point
-and roams at a calm walk (Round 24).
+and roams at a calm walk (Round 24); an idle aggressive one also probes
+every 4–5 seconds eight points on a ring at its view range and walks away
+from roads, bridges, villages, start towns and capital cities among them
+(Round 28 ruling 2, `combat_stats.md` "Road and town push"), never during a
+fight.
 
 **Natural spawn and unload distances:** an ordinary `mobs:spawn` row refuses
 positions within **24 nodes** of any connected player. An unload-eligible mob
@@ -589,7 +593,7 @@ and the Mage take damage sooner"):
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
-| Bear (Plaguehide Bear) — elite variant "Elder" ×1.6 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
+| Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
 | Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
