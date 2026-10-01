@@ -1,0 +1,37 @@
+{
+  "purpose": "Arithmetic fixture only; no authored zone geometry, quests or C1a loot decisions. See calibration.md for the ledger.py adapter.",
+  "start_level": 30,
+  "human": true,
+  "repeat": 0,
+  "zones": [
+    "elandor_ashenward_march",
+    "elandor_stormvault_heights",
+    "elandor_glassroot_wilds"
+  ],
+  "columns": [
+    "zone",
+    "kind",
+    "level",
+    "min_level",
+    "weight",
+    "count",
+    "source"
+  ],
+  "rows": [
+    [0, "kill", 31, 30, 4.5, 10, "wolf"],
+    [0, "item", 32, 30, 4, 8, "grug_materials:silversteel_bar"],
+    [0, "kill", 32, 30, 4.5, 10, "zombie"],
+    [0, "item", 33, 31, 4, 4, "grug_materials:rough_sapphire"],
+    [0, "climax", 33, 31, 5, 1, "poacher"],
+    [1, "kill", 34, 33, 4.5, 10, "goblin_raider"],
+    [1, "item", 35, 33, 4, 8, "grug_materials:silversteel_bar"],
+    [1, "kill", 35, 33, 4.5, 10, "goblin_slinger"],
+    [1, "item", 36, 34, 4, 4, "grug_materials:rough_sapphire"],
+    [1, "climax", 36, 34, 5, 1, "goblin_hound"],
+    [2, "kill", 37, 36, 4.5, 10, "jungle_ape"],
+    [2, "item", 38, 36, 4, 8, "grug_materials:silversteel_bar"],
+    [2, "kill", 38, 36, 4.5, 10, "panther"],
+    [2, "item", 39, 37, 4, 4, "grug_materials:rough_sapphire"],
+    [2, "climax", 39, 37, 5, 1, "serpent"]
+  ]
+}
