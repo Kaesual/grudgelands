@@ -70,7 +70,7 @@ rulings replace, it says so.
 - Kill XP today: `floor(10·L·tier_xp × 1.5)` with L = min(mob level,
   player level + 5), split between eligible participants within 40 m; zero
   when the mob is 10+ levels below the player. Track B3 replaces this with
-  `M(L) = 25 + 5L` (design frame §2.1).
+  `M(L) = 25 + 5L` (design frame §2.2).
 - **Telegraph** (elite and rare only): after 4 s of melee the mob stops for
   a 2 s wind-up ("!!" in its name tag, particles), then hits a 90° frontal
   cone with ×3 damage and 1.5 m extra reach; next wind-up 10 s later.
