@@ -20,6 +20,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 DEFAULT_DESIGN = REPO / "docs" / "planning" / "round28" / "design"
 DEFAULT_EXISTING = REPO / "docs" / "planning" / "round28" / "items" / "existing.json"
+DEFAULT_MOBS = REPO / "docs" / "planning" / "round28" / "mobs" / "catalogue.json"
 
 LEVEL_CAP = 60
 TIER_MULT = {"normal": 1, "elite": 4, "rare": 6}
@@ -169,6 +170,12 @@ class Design:
         self.enchants = self._catalog(catalog / "enchants.json", ("enchants", "tiers"))
         self.reagents = self._catalog(catalog / "reagents.json", ("reagents",))
         self.tints = self._tints(catalog / "tints.json")
+        # Where each catalogue row comes from: (file name, zone or None).
+        # Zone catalogues (zones/<zone>.catalog.json) add leader roles and
+        # quest-only items of one zone to the same catalogue.
+        self.subtype_origin = [("catalog/subtypes.json", None)] * len(self.subtypes or [])
+        self.item_origin = [("catalog/items.json", None)] * len(self.items or [])
+        self.zone_catalogs = {}
         self.spawns = {}
         self.quests = {}
         # zones/<host_zone>.front.quests.json: front quests (owned by the
@@ -187,6 +194,21 @@ class Design:
                 data = self._read(path)
                 if data is not None:
                     (self.front if front else self.quests)[zone] = data
+            for path in sorted(zones.glob("*.catalog.json")):
+                zone = path.name[:-len(".catalog.json")]
+                data = self._read(path)
+                if data is None:
+                    continue
+                self.zone_catalogs[zone] = data
+                if not isinstance(data, dict):
+                    continue
+                rel = "zones/" + path.name
+                for key, rows, origin in (("subtypes", "subtypes", "subtype_origin"),
+                                          ("items", "items", "item_origin")):
+                    added = [row for row in data.get(key) or [] if isinstance(row, dict)]
+                    if added:
+                        setattr(self, rows, (getattr(self, rows) or []) + added)
+                        setattr(self, origin, getattr(self, origin) + [(rel, zone)] * len(added))
 
     def zone_quests(self, zone, lines=None):
         """The zone's own quests plus its front file's, optionally only the
