@@ -206,14 +206,20 @@ local function world_view()
 	}
 end
 
-local files = read_files()
-local errors = V.structure(files, Q.registered_npcs)
-if #errors > 0 then fail(errors) end
-register_new_givers(files)
-register_quests(files)
-Q.quest_files = files
+-- Checks, new givers and quests of a set of files; the zone files at load,
+-- a probe's sample files later.
+function Q.load_quest_files(files)
+	local errors = V.structure(files, Q.registered_npcs)
+	if #errors > 0 then fail(errors) end
+	register_new_givers(files)
+	register_quests(files)
+end
 
-function Q.validate_quest_data()
-	local found = V.world(files, world_view())
+-- The world checks, once every mod has loaded.
+function Q.validate_quest_data(files)
+	local found = V.world(files or Q.quest_files, world_view())
 	if #found > 0 then fail(found) end
 end
+
+Q.quest_files = read_files()
+Q.load_quest_files(Q.quest_files)
