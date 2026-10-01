@@ -1,0 +1,292 @@
+{
+  "about": "Minimal stand-in for docs/planning/round28/items/existing.json (self-tests only).",
+  "items": {
+    "mobs:meat_raw": {
+      "type": "craft",
+      "category": "food",
+      "groups": {
+        "food_meat_raw": 1
+      },
+      "tier": 1
+    },
+    "grug_mobs:boar_tusk": {
+      "type": "craft",
+      "category": "mob_drop",
+      "groups": {
+        "grug_material": 1
+      },
+      "tier": null
+    },
+    "grug_mobs:light_leather": {
+      "type": "craft",
+      "category": "mob_drop",
+      "groups": {
+        "grug_leather": 1
+      },
+      "tier": 1
+    },
+    "grug_mobs:zombie_flesh": {
+      "type": "craft",
+      "category": "mob_drop",
+      "groups": {},
+      "tier": null
+    },
+    "grug_mobs:stolen_purse": {
+      "type": "craft",
+      "category": "mob_drop",
+      "groups": {},
+      "tier": null
+    },
+    "default:coal_lump": {
+      "type": "craft",
+      "category": "ore_gem_raw",
+      "groups": {
+        "coal": 1
+      },
+      "tier": 1,
+      "gathering": {
+        "kind": "ore",
+        "tier": 1
+      }
+    },
+    "default:copper_lump": {
+      "type": "craft",
+      "category": "ore_gem_raw",
+      "groups": {},
+      "tier": 1,
+      "gathering": {
+        "kind": "ore",
+        "tier": 1
+      }
+    },
+    "default:tin_lump": {
+      "type": "craft",
+      "category": "ore_gem_raw",
+      "groups": {},
+      "tier": 1,
+      "gathering": {
+        "kind": "ore",
+        "tier": 1
+      }
+    },
+    "default:iron_lump": {
+      "type": "craft",
+      "category": "ore_gem_raw",
+      "groups": {},
+      "tier": 1,
+      "gathering": {
+        "kind": "ore",
+        "tier": 1
+      }
+    },
+    "grug_materials:quartz": {
+      "type": "craft",
+      "category": "ore_gem_raw",
+      "groups": {},
+      "tier": 1,
+      "gathering": {
+        "kind": "ore",
+        "tier": 1
+      }
+    },
+    "grug_materials:copper_bar": {
+      "type": "craft",
+      "category": "bar",
+      "groups": {},
+      "tier": 1,
+      "furnace_inputs": [
+        [
+          "default:copper_lump"
+        ]
+      ]
+    },
+    "grug_materials:tin_bar": {
+      "type": "craft",
+      "category": "bar",
+      "groups": {},
+      "tier": 1,
+      "furnace_inputs": [
+        [
+          "default:tin_lump"
+        ]
+      ]
+    },
+    "grug_materials:bronze_bar": {
+      "type": "craft",
+      "category": "bar",
+      "groups": {},
+      "tier": 1,
+      "alloy_inputs": [
+        "grug_materials:copper_bar",
+        "grug_materials:tin_bar"
+      ]
+    },
+    "grug_materials:iron_bar": {
+      "type": "craft",
+      "category": "bar",
+      "groups": {},
+      "tier": 2,
+      "furnace_inputs": [
+        [
+          "default:iron_lump"
+        ]
+      ]
+    },
+    "grug_materials:axe_wood": {
+      "type": "tool",
+      "category": "tool",
+      "groups": {
+        "axe": 1
+      },
+      "tier": 1
+    },
+    "grug_materials:pick_wood": {
+      "type": "tool",
+      "category": "tool",
+      "groups": {
+        "pickaxe": 1
+      },
+      "tier": 1
+    },
+    "grug_professions:metal_fittings_bronze": {
+      "type": "craft",
+      "category": "profession_material",
+      "groups": {},
+      "tier": 1,
+      "profession_recipes": [
+        {
+          "profession": "weaponsmith",
+          "tier": 1
+        }
+      ]
+    },
+    "default:tree": {
+      "type": "node",
+      "category": "wood",
+      "groups": {
+        "tree": 1
+      },
+      "tier": null
+    },
+    "default:pine_tree": {
+      "type": "node",
+      "category": "wood",
+      "groups": {
+        "tree": 1
+      },
+      "tier": null
+    },
+    "grug_abilities:strike": {
+      "type": "tool",
+      "category": "skill",
+      "groups": {
+        "grug_ability": 1
+      },
+      "tier": null
+    }
+  },
+  "groups": {
+    "tree": {
+      "count": 2,
+      "members": [
+        "default:pine_tree",
+        "default:tree"
+      ],
+      "objective": true,
+      "recommended": true
+    },
+    "cracky": {
+      "count": 1,
+      "members": [
+        "default:tree"
+      ],
+      "objective": false,
+      "recommended": false
+    }
+  },
+  "aliases": {
+    "default:pick_wood": "grug_materials:pick_wood"
+  },
+  "curated_out": [
+    {
+      "name": "default:bronze_ingot",
+      "reason": "content_curation",
+      "registered": false
+    }
+  ],
+  "entities": {
+    "grug_mobs:boar": {
+      "type": "animal",
+      "description": "Boar",
+      "disposition": "neutral",
+      "drops": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        }
+      ]
+    },
+    "grug_mobs:giant_rat": {
+      "type": "monster",
+      "description": "Giant Rat",
+      "disposition": "aggressive",
+      "drops": []
+    },
+    "grug_mobs:zombie": {
+      "type": "monster",
+      "description": "Zombie",
+      "disposition": "aggressive",
+      "drops": []
+    },
+    "grug_mobs:bandit": {
+      "type": "monster",
+      "description": "Bandit",
+      "disposition": "aggressive",
+      "drops": []
+    },
+    "grug_mobs:shore_crab": {
+      "type": "animal",
+      "description": "Shore Crab",
+      "disposition": "neutral",
+      "drops": []
+    },
+    "grug_mobs:rabbit": {
+      "type": "animal",
+      "description": "Rabbit",
+      "disposition": "critter",
+      "drops": []
+    },
+    "grug_mobs:wild_turkey": {
+      "type": "animal",
+      "description": "Wild Turkey",
+      "disposition": "critter",
+      "drops": []
+    },
+    "grug_mobs:guard_accord": {
+      "type": "npc",
+      "description": "Guard",
+      "disposition": null,
+      "drops": []
+    }
+  },
+  "quest_npcs": {
+    "r14_human_elder": {
+      "settlement": "dawnmere",
+      "socket": "hall_quest",
+      "title": "Elian Reed"
+    },
+    "r20_human_start_cook": {
+      "settlement": "dawnmere",
+      "socket": "cook_quest",
+      "title": "Bess"
+    },
+    "r14_human_steward": {
+      "settlement": "goldmead_village",
+      "socket": "quest_steward",
+      "title": "Marta Millward"
+    }
+  },
+  "legacy_quests": {}
+}

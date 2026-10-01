@@ -1,0 +1,15 @@
+[
+  {
+    "tier": 1,
+    "stat_loot": {
+      "str": "grug_mobs:boar_tusk",
+      "dex": "grug_mobs:rat_tail",
+      "int": "grug_mobs:rat_fur_patch"
+    },
+    "family_input": {
+      "sword": "grug_materials:tin_bar",
+      "bow": "grug_materials:quartz",
+      "leather_armor": "grug_materials:glittering_tin"
+    }
+  }
+]

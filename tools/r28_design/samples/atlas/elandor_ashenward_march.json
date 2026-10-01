@@ -1,0 +1,377 @@
+{
+  "id": "elandor_ashenward_march",
+  "name": "Ashenward March",
+  "role": "contested 31-40",
+  "level_min": 31,
+  "level_max": 40,
+  "faction": "contested",
+  "race_track": "human",
+  "race_region": "human",
+  "extent": {
+    "centroid": {
+      "x": 7,
+      "z": -671
+    },
+    "land_area_nodes2": 1533984,
+    "max_x": 988,
+    "max_z": -92,
+    "min_x": -892,
+    "min_z": -1276
+  },
+  "hub": {
+    "x": 0,
+    "z": -700
+  },
+  "front": {
+    "axis": "+z",
+    "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+  },
+  "borders": [
+    {
+      "length_nodes": 832,
+      "midpoint": {
+        "x": 846,
+        "z": -763
+      },
+      "zone": "elandor_glassroot_wilds"
+    },
+    {
+      "length_nodes": 1340,
+      "midpoint": {
+        "x": -27,
+        "z": -1150
+      },
+      "zone": "elandor_highcourt"
+    },
+    {
+      "length_nodes": 500,
+      "midpoint": {
+        "x": 588,
+        "z": -1181
+      },
+      "zone": "elandor_lorindor"
+    },
+    {
+      "length_nodes": 508,
+      "midpoint": {
+        "x": -880,
+        "z": -739
+      },
+      "zone": "elandor_stormvault_heights"
+    },
+    {
+      "length_nodes": 672,
+      "midpoint": {
+        "x": -687,
+        "z": -1109
+      },
+      "zone": "elandor_whitebridge_shire"
+    },
+    {
+      "length_nodes": 1412,
+      "midpoint": {
+        "x": -482,
+        "z": -269
+      },
+      "zone": "front_broken_causeway"
+    },
+    {
+      "length_nodes": 1304,
+      "midpoint": {
+        "x": 496,
+        "z": -195
+      },
+      "zone": "front_shattered_line"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "anchor_031",
+      "kind": "outpost",
+      "name": "Cinderline Watch",
+      "settlement_key": "r20_anchor_031",
+      "slot": "outpost_1",
+      "x": -350,
+      "z": -850
+    },
+    {
+      "id": "anchor_032",
+      "kind": "outpost",
+      "name": "Last Hedge Redoubt",
+      "settlement_key": "r20_anchor_032",
+      "slot": "outpost_2",
+      "x": 300,
+      "z": -450
+    },
+    {
+      "id": "anchor_052",
+      "kind": "bandit_frontier",
+      "name": "Coalbrand Yard",
+      "settlement_key": "r20_anchor_052",
+      "slot": "bandit_1",
+      "x": -24,
+      "z": -406
+    },
+    {
+      "id": "anchor_071",
+      "kind": "clash",
+      "name": "Ashen Wheelbreak",
+      "settlement_key": "r20_anchor_071",
+      "slot": "clash_1",
+      "x": -274,
+      "z": -296
+    },
+    {
+      "id": "anchor_072",
+      "kind": "clash",
+      "name": "Hedgefire Crossing",
+      "settlement_key": "r20_anchor_072",
+      "slot": "clash_2",
+      "x": 250,
+      "z": -320
+    },
+    {
+      "id": "anchor_092",
+      "kind": "rare_route",
+      "name": "Whitefang's Cold Den",
+      "settlement_key": "r20_anchor_092",
+      "slot": "rare_old_whitefang",
+      "x": -180,
+      "z": -650
+    }
+  ],
+  "settlements": [
+    {
+      "key": "r20_anchor_031",
+      "anchor_id": "anchor_031",
+      "npcs": [
+        {
+          "npc_id": "r20_anchor_031_host",
+          "npc_name": "Toren Waterbarrel",
+          "role": "quest",
+          "socket": "quest_host"
+        }
+      ]
+    },
+    {
+      "key": "r20_anchor_052",
+      "anchor_id": "anchor_052",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_032",
+      "anchor_id": "anchor_032",
+      "npcs": [
+        {
+          "npc_id": "r20_anchor_032_host",
+          "npc_name": "Nella Hedgeward",
+          "role": "quest",
+          "socket": "quest_host"
+        }
+      ]
+    },
+    {
+      "key": "r20_anchor_071",
+      "anchor_id": "anchor_071",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_072",
+      "anchor_id": "anchor_072",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_092",
+      "anchor_id": "anchor_092",
+      "npcs": []
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_deep_forest",
+      "share": 50
+    },
+    {
+      "id": "grug_meadows",
+      "share": 30
+    },
+    {
+      "id": "grug_swamp",
+      "share": 20
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 53.2
+    },
+    {
+      "id": "grug_meadows",
+      "share_pct": 32.2
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 13.9
+    },
+    {
+      "id": "grug_badlands",
+      "share_pct": 0.3
+    },
+    {
+      "id": "grug_jungle_fringe",
+      "share_pct": 0.2
+    },
+    {
+      "id": "grug_crags_snowy",
+      "share_pct": 0.1
+    },
+    {
+      "id": "grug_crags",
+      "share_pct": 0.1
+    },
+    {
+      "id": "grug_elf_forest",
+      "share_pct": 0.1
+    },
+    {
+      "id": "grug_savanna",
+      "share_pct": 0.0
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:ashen_treant",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 52.8
+      }
+    },
+    {
+      "mob": "grug_mobs:bear",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.2
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:carrion_crow",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    },
+    {
+      "mob": "grug_mobs:giant_spider",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.2
+      }
+    },
+    {
+      "mob": "grug_mobs:poacher",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.2
+      }
+    },
+    {
+      "mob": "grug_mobs:skeleton_raider",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    },
+    {
+      "mob": "grug_mobs:stag",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.1
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:wisp",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 67.3
+      }
+    },
+    {
+      "mob": "grug_mobs:wolf",
+      "day": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.1
+      },
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.1
+      }
+    },
+    {
+      "mob": "grug_mobs:zombie",
+      "day": null,
+      "night": {
+        "levels": [
+          31,
+          40
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    }
+  ]
+}

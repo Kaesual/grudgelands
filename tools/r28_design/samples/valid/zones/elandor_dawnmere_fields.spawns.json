@@ -1,0 +1,186 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "critters": [
+    "rabbit",
+    "wild_turkey"
+  ],
+  "areas": [
+    {
+      "id": "home_fields_day",
+      "anchor": "start",
+      "offset": [
+        0,
+        0
+      ],
+      "shape": {
+        "kind": "band",
+        "forward": [
+          -400,
+          0
+        ],
+        "side": [
+          -250,
+          250
+        ]
+      },
+      "hosts": {
+        "biomes": [
+          "any"
+        ],
+        "shore": false
+      },
+      "clock": "day",
+      "levels": [
+        1,
+        3
+      ],
+      "species": [
+        {
+          "role": "small_boar",
+          "weight": 3
+        }
+      ],
+      "notes": "Behind the town toward the ocean."
+    },
+    {
+      "id": "home_fields_night",
+      "anchor": "start",
+      "offset": [
+        0,
+        0
+      ],
+      "shape": {
+        "kind": "band",
+        "forward": [
+          -400,
+          0
+        ],
+        "side": [
+          -250,
+          250
+        ]
+      },
+      "hosts": {
+        "biomes": [
+          "meadows"
+        ]
+      },
+      "clock": "night",
+      "levels": [
+        1,
+        3
+      ],
+      "species": [
+        {
+          "role": "large_rat",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "home_beach_night",
+      "anchor": "start",
+      "offset": [
+        0,
+        -380
+      ],
+      "shape": {
+        "kind": "ring",
+        "r": [
+          20,
+          120
+        ]
+      },
+      "hosts": {
+        "biomes": [
+          "any"
+        ],
+        "shore": true
+      },
+      "clock": "night",
+      "levels": [
+        3,
+        5
+      ],
+      "species": [
+        {
+          "role": "braindead_zombie",
+          "weight": 1
+        }
+      ],
+      "cap": 6
+    },
+    {
+      "id": "border_bandits",
+      "anchor": "start",
+      "offset": [
+        -160,
+        200
+      ],
+      "shape": {
+        "kind": "circle",
+        "r": 38
+      },
+      "hosts": {
+        "biomes": [
+          "any"
+        ]
+      },
+      "clock": "both",
+      "levels": [
+        9,
+        10
+      ],
+      "species": [
+        {
+          "role": "confused_bandit",
+          "weight": 1
+        }
+      ],
+      "camp": {
+        "slots": 6,
+        "respawn": [
+          30,
+          60
+        ],
+        "min_player_distance": 16
+      }
+    },
+    {
+      "id": "fallback",
+      "anchor": "zone",
+      "shape": {
+        "kind": "zone"
+      },
+      "hosts": {
+        "biomes": [
+          "any"
+        ]
+      },
+      "clock": "both",
+      "levels": [
+        1,
+        3
+      ],
+      "species": [
+        {
+          "role": "small_boar",
+          "weight": 1
+        }
+      ],
+      "fallback": true
+    }
+  ],
+  "leaders": [
+    {
+      "role": "confused_bandit_chief",
+      "anchor": "start",
+      "offset": [
+        -160,
+        200
+      ],
+      "level": 10,
+      "respawn": 300
+    }
+  ]
+}

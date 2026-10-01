@@ -1,0 +1,16 @@
+[
+  {
+    "id": "grug_materials:glittering_tin",
+    "name": "Glittering Tin",
+    "tier": 1,
+    "method": "grid",
+    "inputs": [
+      "grug_materials:tin_bar",
+      "grug_materials:quartz"
+    ],
+    "output_count": 2,
+    "uses": [
+      "enchant family_input"
+    ]
+  }
+]

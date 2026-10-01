@@ -1,0 +1,320 @@
+{
+  "id": "front_shattered_line",
+  "name": "The Shattered Line",
+  "role": "front zone",
+  "level_min": 41,
+  "level_max": 50,
+  "faction": "contested",
+  "race_region": "orc",
+  "extent": {
+    "centroid": {
+      "x": 722,
+      "z": 23
+    },
+    "land_area_nodes2": 678368,
+    "max_x": 1448,
+    "max_z": 368,
+    "min_x": -8,
+    "min_z": -340
+  },
+  "hub": {
+    "x": 750,
+    "z": 0
+  },
+  "front": {
+    "axis": "z=0",
+    "text": "Battlegrounds band around z = 0: Accord comes from -z (south), Throng from +z (north)."
+  },
+  "borders": [
+    {
+      "length_nodes": 1304,
+      "midpoint": {
+        "x": 492,
+        "z": -199
+      },
+      "zone": "elandor_ashenward_march"
+    },
+    {
+      "length_nodes": 540,
+      "midpoint": {
+        "x": 1190,
+        "z": -285
+      },
+      "zone": "elandor_glassroot_wilds"
+    },
+    {
+      "length_nodes": 524,
+      "midpoint": {
+        "x": 0,
+        "z": 126
+      },
+      "zone": "front_broken_causeway"
+    },
+    {
+      "length_nodes": 632,
+      "midpoint": {
+        "x": 1402,
+        "z": 27
+      },
+      "zone": "front_skyglass_canopy"
+    },
+    {
+      "length_nodes": 1436,
+      "midpoint": {
+        "x": 502,
+        "z": 281
+      },
+      "zone": "kragmar_bannerbreak_mesa"
+    },
+    {
+      "length_nodes": 536,
+      "midpoint": {
+        "x": 1255,
+        "z": 250
+      },
+      "zone": "kragmar_thunderroot_wilds"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "anchor_081",
+      "kind": "clash",
+      "name": "West Trench Mouth",
+      "settlement_key": "r20_anchor_081",
+      "slot": "clash_1",
+      "x": 250,
+      "z": 100
+    },
+    {
+      "id": "anchor_082",
+      "kind": "clash",
+      "name": "Siege Ramp Foot",
+      "settlement_key": "r20_anchor_082",
+      "slot": "clash_2",
+      "x": 782,
+      "z": -116
+    },
+    {
+      "id": "anchor_083",
+      "kind": "clash",
+      "name": "No-Man's Orchard",
+      "settlement_key": "r20_anchor_083",
+      "slot": "clash_3",
+      "x": 1282,
+      "z": 84
+    },
+    {
+      "id": "anchor_100",
+      "kind": "rare_route",
+      "name": "Bonerattle's Siege Halt",
+      "settlement_key": "r20_anchor_100",
+      "slot": "rare_captain_bonerattle",
+      "x": 600,
+      "z": -80
+    }
+  ],
+  "settlements": [
+    {
+      "key": "r20_anchor_081",
+      "anchor_id": "anchor_081",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_082",
+      "anchor_id": "anchor_082",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_083",
+      "anchor_id": "anchor_083",
+      "npcs": []
+    },
+    {
+      "key": "r20_anchor_100",
+      "anchor_id": "anchor_100",
+      "npcs": []
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_badlands",
+      "share": 65
+    },
+    {
+      "id": "grug_savanna",
+      "share": 20
+    },
+    {
+      "id": "grug_swamp",
+      "share": 15
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_badlands",
+      "share_pct": 73.8
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 13.7
+    },
+    {
+      "id": "grug_savanna",
+      "share_pct": 10.5
+    },
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 1.2
+    },
+    {
+      "id": "grug_deep_jungle",
+      "share_pct": 0.3
+    },
+    {
+      "id": "grug_jungle_fringe",
+      "share_pct": 0.3
+    },
+    {
+      "id": "grug_meadows",
+      "share_pct": 0.2
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:carrion_crow",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    },
+    {
+      "mob": "grug_mobs:hyena",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 84.1
+      },
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 84.1
+      }
+    },
+    {
+      "mob": "grug_mobs:mesa_golem",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 73.7
+      },
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 73.7
+      }
+    },
+    {
+      "mob": "grug_mobs:scorpion",
+      "day": null,
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 84.1
+      }
+    },
+    {
+      "mob": "grug_mobs:skeleton_raider",
+      "day": null,
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    },
+    {
+      "mob": "grug_mobs:speargrass_tiger",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 84.1
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:sun_dried_husk",
+      "day": null,
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 84.1
+      }
+    },
+    {
+      "mob": "grug_mobs:vulture",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 73.7
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:war_construct",
+      "day": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 98.1
+      },
+      "night": {
+        "levels": [
+          41,
+          50
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 98.1
+      }
+    }
+  ]
+}

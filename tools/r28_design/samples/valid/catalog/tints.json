@@ -1,0 +1,10 @@
+[
+  {
+    "id": "jungle",
+    "texture": "grug_mobs_boar_jungle.png"
+  },
+  {
+    "id": "plague",
+    "modifier": "^[multiply:#9fbf7f"
+  }
+]
