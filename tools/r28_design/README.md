@@ -202,7 +202,7 @@ builder's dependencies), unlike the other tools.
 
 ```sh
 # optional, once: the atlas's world sample for geometry numbers (~30 s)
-for b in 0 1 2 3; do luajit tools/r28_zone_atlas/sample.lua "$PWD" 42 /tmp/grid 4 $b 4 & done; wait
+mkdir -p /tmp/grid; for b in 0 1 2 3; do luajit tools/r28_zone_atlas/sample.lua "$PWD" 42 /tmp/grid 4 $b 4 & done; wait
 python3 tools/r28_design/overlay.py --design DIR --out /tmp/maps [--grid /tmp/grid] [--zone ZONE ...]
 ```
 
