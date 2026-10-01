@@ -106,6 +106,7 @@ do
 		"=award_kill_xp"))()
 end
 grug_mobs.cleanup_xp_participants = function() end
+grug_mobs.run_participant_drop_hooks = function() end
 
 local mob_count = 0
 local function mob(level, tier, participants, opts)

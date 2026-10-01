@@ -298,7 +298,9 @@ class Validator:
                 for zone in row.get(key) or {}:
                     if self.atlas and zone not in self.atlas.zones:
                         self.E("E-unknown-zone", file, path, "%s names unknown zone %r" % (key, zone))
-        used_families = {row.get("drops") for row in self.subtypes.values()}
+        # An existing mob's drop family is its own role (grug_mobs/subtypes.lua).
+        used_families = ({row.get("drops") for row in self.subtypes.values()}
+                         | {name.split(":", 1)[1] for name in self.ex_entities})
         for i, row in enumerate(d.drops or []):
             file = where / "drops.json"
             path = "drops.json[%d]" % i

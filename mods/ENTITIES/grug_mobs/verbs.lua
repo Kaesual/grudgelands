@@ -349,6 +349,8 @@ function grug_mobs.pack_hunter(def, opts)
 		-- "returns with pack": before running, call every idle mob of the
 		-- same kind in view onto the attacker. Same shape as mobs_redo's own
 		-- group alert (api.lua:2927-3538) — do_attack on the current target.
+		-- Same kind = same entity name, or the same family (Round 28 ruling
+		-- 35, grug_mobs.alert_kin in subtypes.lua).
 		local pos = self.object and self.object:get_pos()
 		local range = opts.alert_range or self.view_range or 10
 		if pos then
@@ -356,7 +358,7 @@ function grug_mobs.pack_hunter(def, opts)
 			for i = 1, #objs do
 				local ent = objs[i]:get_luaentity()
 				if ent and ent._cmi_is_mob and ent ~= self
-						and ent.name == self.name
+						and grug_mobs.alert_kin(self, ent)
 						and ent.state ~= "attack" and ent.state ~= "runaway"
 						and type(ent.do_attack) == "function" then
 					ent:do_attack(target)
@@ -473,7 +475,8 @@ end
 -- flees at low HP, this one calls them the moment ONE camp member acquires a
 -- player, and it only calls members of the SAME camp (plain-field
 -- `_grug_camp_pos`, set by camps.lua) instead of every same-name mob in
--- view. A mirefolk camp therefore comes at you as a camp, while the camp
+-- view. Candidates share the caller's entity name or family (Round 28
+-- ruling 35, grug_mobs.alert_kin). A mirefolk camp therefore comes at you as a camp, while the camp
 -- across the swamp keeps fishing.
 --
 -- Fires ONCE per attack episode: `temp.grug_swarm_called` is set on the
@@ -524,7 +527,7 @@ function grug_mobs.camp_swarm(def, opts)
 		for i = 1, #objs do
 			local ent = objs[i]:get_luaentity()
 			if ent and ent._cmi_is_mob and ent ~= self
-					and ent.name == self.name
+					and grug_mobs.alert_kin(self, ent)
 					and ent.state ~= "attack" and ent.state ~= "runaway"
 					and same_camp(ent._grug_camp_pos, camp)
 					and type(ent.do_attack) == "function" then
