@@ -588,7 +588,9 @@ Normal tier at level L:
   without further player contact** (no "seeding" a wolf and letting
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
-  problem.
+  problem. What drops is the mob's family table for its level band where
+  one exists, else its static list (Round 28 ruling 36, `biomes_mobs.md`
+  "Round 28 sub-types and loot by band").
 - **Bounded-actor soft de-aggro:** where the retained encounter policy enables
   it, beyond ~25 m a chasing actor drops to walk speed. Round 18 ordinary
   damage-sustained world mobs do not use this slowdown or distance give-up;
@@ -852,6 +854,15 @@ Group trinity: a good group = **tank + healer + 1–2 damage dealers**;
 class kits must support this (Warrior: threat/taunt tools, Priest:
 in-combat heals). Pulling several same-level mobs solo is dangerous by
 design (`group_attack` stays on).
+
+**Group alert** (Round 28 ruling 35): a mob that is hit calls mobs within its
+view range that have `group_attack` and are not fighting yet: the same entity
+name (as before) and mobs of the same family when the hit mob has
+`group_attack` too. The pack call (a fleeing pack hunter) and the camp swarm
+use the same rule. A neutral mob never answers or calls anyone, not even a
+mob of its own name (the disposition also switches `group_attack` off), so it
+is always a single pull. Families
+and sub-types: `biomes_mobs.md` "Round 28 sub-types and loot by band".
 
 ## 5. Recovery (solo path)
 

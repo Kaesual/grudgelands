@@ -88,8 +88,8 @@ end
 
 local function dish(id, description, tier, role, inputs)
 	return {id = id, item = "grug_cooking:" .. id, description = description,
-		tier = tier, role = role, inputs = inputs, station = "grid",
-		hint = "Crafting grid",
+		tier = tier, role = role, inputs = inputs, station = inputs and "grid",
+		hint = inputs and "Crafting grid",
 		image = "grug_cooking_dish_" .. id .. ".png"}
 end
 
@@ -103,39 +103,35 @@ local BERRY = "group:grug_cooking_berry"
 local FRUIT = "group:grug_cooking_fruit"
 local EARLY_SPICE = "group:grug_cooking_early_spice"
 
+-- A dish without grid inputs comes only from its raw assembly (below) in the
+-- furnace (Round 28 ruling 27: no direct grid route duplicates that line).
 local DISHES = {
-	dish("hearty_stew", "Hearty Stew", 1, "hearty",
-		{MEAT, STAPLE}),
+	dish("hearty_stew", "Hearty Stew", 1, "hearty"),
 	dish("sweetroot_mash", "Sweetroot Mash", 1, "caster",
 		{ROOT, STAPLE}),
 	dish("corn_crusted_fish", "Corn-Crusted Fish", 1, "hunter",
 		{FISH, G .. "corn"}),
-	dish("pumpkin_stew", "Pumpkin Stew", 2, "hearty",
-		{C .. "pumpkin", MEAT, STAPLE}),
+	dish("pumpkin_stew", "Pumpkin Stew", 2, "hearty"),
 	dish("berry_preserve", "Berry Preserve", 2, "caster",
 		{BERRY, BERRY, C .. "sugar_cane"}),
 	dish("fruit_glazed_roast", "Fruit-Glazed Roast", 2, "hunter",
 		{MEAT, FRUIT}),
-	dish("foragers_pot", "Forager's Pot", 3, "hearty",
-		{G .. "mushroom", MEAT, STAPLE}),
+	dish("foragers_pot", "Forager's Pot", 3, "hearty"),
 	dish("mushroom_skewer", "Mushroom Skewer", 3, "caster",
 		{G .. "mushroom", G .. "mushroom"}),
 	dish("onion_seared_steak", "Onion-Seared Steak", 3, "hunter",
 		{MEAT, EARLY_SPICE, G .. "mushroom"}),
-	dish("marsh_roast", "Marsh Roast", 4, "hearty",
-		{MEAT, G .. "marshbloom", STAPLE}),
+	dish("marsh_roast", "Marsh Roast", 4, "hearty"),
 	dish("marshbloom_chowder", "Marshbloom Chowder", 4, "caster",
 		{FISH, G .. "marshbloom"}),
 	dish("hunters_feast", "Hunter's Feast", 4, "hunter",
 		{MEAT, MEAT, G .. "melon", G .. "mushroom"}),
-	dish("kelp_wrapped_roast", "Kelp-Wrapped Roast", 5, "hearty",
-		{MEAT, G .. "stormkelp", G .. "rock_salt"}),
+	dish("kelp_wrapped_roast", "Kelp-Wrapped Roast", 5, "hearty"),
 	dish("stormkelp_broth", "Stormkelp Broth", 5, "caster",
 		{G .. "stormkelp", FISH, G .. "melon"}),
 	dish("salt_crusted_fish", "Salt-Crusted Fish", 5, "hunter",
 		{FISH, G .. "rock_salt"}),
-	dish("grand_feast", "Grand Feast", 6, "hearty",
-		{MEAT, MEAT, G .. "wild_cocoa", G .. "stormkelp"}),
+	dish("grand_feast", "Grand Feast", 6, "hearty"),
 	dish("jungle_cocoa", "Jungle Cocoa", 6, "caster",
 		{G .. "wild_cocoa", G .. "wild_cocoa", G .. "rock_salt"}),
 	dish("cocoa_rubbed_game", "Cocoa-Rubbed Game", 6, "hunter",
@@ -197,9 +193,11 @@ end
 
 for index = 1, #DISHES do
 	local row = DISHES[index]
-	grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
-		station = row.station, inputs = grid(row.inputs), output = row.item,
-		hint = row.hint})
+	if row.inputs then
+		grug_jobs.register_recipe({profession = "cooking", tier = row.tier,
+			station = row.station, inputs = grid(row.inputs), output = row.item,
+			hint = row.hint})
+	end
 end
 
 local RAW_ASSEMBLIES = {

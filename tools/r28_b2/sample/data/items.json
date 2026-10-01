@@ -1,0 +1,14 @@
+[
+  {"id": "grug_mobs:boar_tusk", "name": "Boar Tusk", "tier": 1, "family": "boar",
+   "kind": "signature", "description": "A yellowed tusk.", "uses": ["enchant:str:t1"]},
+  {"id": "grug_mobs:rat_tail", "name": "Rat Tail", "tier": 1, "family": "rat",
+   "kind": "signature", "description": "Long, bald and surprisingly tough.",
+   "uses": ["enchant:dex:t1"],
+   "icon": "A pale pink rat tail curled into an S on a dark plate."},
+  {"id": "grug_mobs:rat_fur_patch", "name": "Rat Fur Patch", "tier": 1, "family": "rat",
+   "kind": "signature", "description": "Greasy grey fur.", "icon": "A grey tuft of fur."},
+  {"id": "grug_mobs:crop_ledger", "name": "Crop Ledger", "tier": 1, "family": "bandit",
+   "kind": "quest", "description": "Who took what, and when.", "icon": "A stained ledger."},
+  {"id": "grug_materials:glittering_tin", "name": "Glittering Tin", "tier": 1,
+   "kind": "reagent", "description": "Tin with a quartz sparkle.", "icon": "A sparkly tin nugget."}
+]
