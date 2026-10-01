@@ -71,15 +71,76 @@ function grug_quests.hud_text(journal, window)
 	return table.concat(lines, "\n")
 end
 
-local function render(player)
-	return grug_quests.hud_text(grug_quests.journal(player),
-		core.get_player_window_information(player:get_player_name()))
+-- The short subject of an objective for the message feed: the mob, item or
+-- NPC name alone ("Small Boar", "Light Leather", "Elder Maren").
+local function feed_subject(objective)
+	if objective.type == "item" then return grug_core.item_name(objective.item) end
+	if objective.type == "talk" then
+		local npc = grug_quests.registered_npcs[objective.npc]
+		return npc and npc.title or tostring(objective.npc)
+	end
+	local names = {}
+	for _, name in ipairs(objective.mobs or {}) do
+		local def = core.registered_entities[name]
+		local label = def and def.description
+		if not label or label == "" then
+			label = (name:match("[^:]+$") or name):gsub("_", " ")
+				:gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end)
+		end
+		names[#names + 1] = plain(label)
+	end
+	return table.concat(names, " or ")
+end
+
+-- One feed line per quest (Round 28 ruling 20): every objective as
+-- "<subject> <count>/<required>", joined by ", " ("Small Boar 3/10").
+function grug_quests.feed_text(quest)
+	local parts = {}
+	for _, objective in ipairs(quest.objectives) do
+		parts[#parts + 1] = ("%s %d/%d"):format(feed_subject(objective),
+			objective.count, objective.required)
+	end
+	return table.concat(parts, ", ")
+end
+
+-- player name -> quest id -> {objective counts last seen}. A quest seen for
+-- the first time (accepted, or the first pass after join) only records its
+-- counts; afterwards any objective count that ROSE -- a kill credit, an item
+-- gained, a conversation -- posts the quest's line to the feed under the key
+-- "quest:<id>", so a quest's newer line replaces its older one. Falling item
+-- counts (used, dropped) update silently.
+local seen = {}
+
+function grug_quests.progress_changes(previous, journal)
+	local current, changed = {}, {}
+	for _, quest in ipairs(journal.quests) do
+		local counts, before, rose = {}, previous and previous[quest.id], false
+		for index, objective in ipairs(quest.objectives) do
+			counts[index] = objective.count
+			if before and objective.count > (before[index] or 0) then rose = true end
+		end
+		current[quest.id] = counts
+		if rose then changed[#changed + 1] = quest end
+	end
+	return current, changed
+end
+
+local function post_progress(player, journal)
+	local name = player:get_player_name()
+	local current, changed = grug_quests.progress_changes(seen[name], journal)
+	seen[name] = current
+	for _, quest in ipairs(changed) do
+		grug_core.feed(player, "quest", grug_quests.feed_text(quest), "quest:" .. quest.id)
+	end
 end
 
 local function refresh(player)
 	local row = huds[player:get_player_name()]
 	if not row then return end
-	local text = render(player)
+	local journal = grug_quests.journal(player)
+	post_progress(player, journal)
+	local text = grug_quests.hud_text(journal,
+		core.get_player_window_information(player:get_player_name()))
 	if row.text ~= text then player:hud_change(row.id, "text", text); row.text = text end
 end
 
@@ -90,7 +151,10 @@ core.register_on_joinplayer(function(player)
 		text = "", number = 0xffe080, z_index = 1})}
 	refresh(player)
 end)
-core.register_on_leaveplayer(function(player) huds[player:get_player_name()] = nil end)
+core.register_on_leaveplayer(function(player)
+	huds[player:get_player_name()] = nil
+	seen[player:get_player_name()] = nil
+end)
 grug_quests.register_on_change(refresh)
 core.register_on_player_inventory_action(function(player) refresh(player) end)
 core.register_globalstep(function(dtime)

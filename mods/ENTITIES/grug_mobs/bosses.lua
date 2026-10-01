@@ -116,6 +116,9 @@ end
 local function give_or_queue(player, stack)
 	local inv = player:get_inventory()
 	local leftover = inv:add_item("main", stack)
+	-- Loot that entered the inventory shows in the message feed.
+	local taken = ItemStack(stack):get_count() - leftover:get_count()
+	if taken > 0 then grug_core.feed_item(player, stack, taken) end
 	if leftover:is_empty() then return end
 	local meta = player:get_meta()
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}

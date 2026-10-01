@@ -43,6 +43,9 @@ dofile(modpath .. "/hud_layout.lua")
 dofile(modpath .. "/flash.lua")
 -- Player-facing item names for running text (quests, dialogue, tracker).
 dofile(modpath .. "/item_names.lua")
+-- The message feed above the status icon row and the level-up banner
+-- (Round 28 ruling 20); reads hud_layout and the item names above.
+dofile(modpath .. "/feed.lua")
 dofile(modpath .. "/tag_carrier.lua")
 -- The status icon registry (pure data), read by status.lua and combat_hud.lua.
 dofile(modpath .. "/status_icons.lua")
