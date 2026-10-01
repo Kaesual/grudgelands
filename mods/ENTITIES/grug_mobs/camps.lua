@@ -48,7 +48,7 @@
 --     land, where grug_zones.faction_at returns nil;
 --   * a guard camp with `patrol = true` designates ONE of its guards as the
 --     ambient patrol of world.md §4 (see assign_patrol below);
---   * a post refills one slot per 180-360 s instead of the camp's 120-300 s.
+--   * a post refills one slot per 180-360 s instead of the camp's 30-60 s.
 --
 -- RESPAWN SLOTS (world.md §4a), the model this file implements since F5.
 -- The old rule was "count heads, spawn one if below target, then wait
@@ -130,9 +130,11 @@ local META_FIRE_INIT = "_grug_camp_init"
 -- bounds how LATE a due refill can be served (see camp_tick, which shortens
 -- the re-arm when a refill falls due sooner).
 local IDLE_PERIOD = 30
--- biomes_mobs.md §4: "one refill per 120-300 s". Per camp type overridable
--- with respawn_exact / respawn_min / respawn_max (see register_camp_type).
-local RESPAWN_MIN, RESPAWN_MAX = 120, 300
+-- Round 28 ruling 37: a camp-type slot refills after 30-60 s (was 120-300 s),
+-- so a camp that two players clear comes back while they are still around.
+-- Per camp type overridable with respawn_exact / respawn_min / respawn_max
+-- (see register_camp_type); guard posts keep their own slower pair below.
+local RESPAWN_MIN, RESPAWN_MAX = 30, 60
 -- A guard post refills SLOWER than a bandit camp (world.md §4a leaves the
 -- number to the implementation): a wiped outpost that is back to full three
 -- minutes later removes the point of clearing it, and a garrison is meant to
@@ -444,6 +446,13 @@ local function camp_tick(pos, elapsed)
 		-- type is registered again (a mod re-enabled mid-world).
 		core.log("warning", "[grug_mobs] camp fire at " ..
 			core.pos_to_string(pos) .. " has unknown camp type '" .. id .. "'")
+		return IDLE_PERIOD
+	end
+	-- Round 28 ruling 34: in a zone whose data defines spawn areas, bandits
+	-- and mirefolk come from camp AREAS with the area's fixed levels; the
+	-- fire stays scenery there. Guard posts keep spawning everywhere.
+	if cfg.node == CAMP_FIRE_NODE and
+			grug_mobs.spawn_areas.zone_has_areas(grug_zones.id_at(pos.x, pos.z)) then
 		return IDLE_PERIOD
 	end
 	local now = core.get_gametime()
@@ -857,3 +866,111 @@ grug_mobs.register_camp_type("guard_throng", {
 	respawn_min = GUARD_RESPAWN_MIN,
 	respawn_max = GUARD_RESPAWN_MAX,
 })
+
+--
+-- Area camps (Round 28 ruling 37): bandits, poachers and mirefolk around a
+-- defined point, from a spawn area with a `camp` block (spawn_areas.lua).
+--
+-- The slot model above without a node: `slots` members, each death booked
+-- into a refill queue whose due time advances by a roll in the area's
+-- `respawn` [min, max] (30-60 s by the ruling). What differs from a fire:
+--   * members roam FREE under the normal wander leash (`_grug_home` = their
+--     own spawn point, radius 32): no `_grug_camp_pos`, no camp leash, no
+--     roam cap. They carry the area tag, and the head count is by that tag;
+--   * a spot keeps `min_player_distance` (16) from every player instead of
+--     the ambient 24, and the area is sized (radius about 35-40) so two
+--     players standing in it do not block it;
+--   * levels and species come from the area (fixed range, weights);
+--   * the state lives in memory, keyed by the area tag. The first look at a
+--     camp after a start finds it owed in full and fills it at once, which is
+--     what a camp standing in the world should look like when a player walks
+--     up; after that the queue and its due time behave exactly like a fire's,
+--     the dormant catch-up included (due times lag `now` while nobody is
+--     near, and the drain serves what the elapsed time earned);
+--   * a camp area with a day or night clock only refills in its clock.
+-- Ticked every five seconds by spawn_areas.lua's globalstep. The same known
+-- blind spot as count_camp_mobs: a member in an unloaded block reads as dead,
+-- so a camp may briefly hold one too many.
+--
+
+local AREA_CAMP_RANGE = PLAYER_RANGE
+local area_camps = {} -- tag -> {queue, next_refill}
+
+local function area_camp_interval(camp)
+	return math.random(camp.respawn[1], camp.respawn[2])
+end
+
+local function count_area_members(area, center)
+	local n = 0
+	local objs = core.get_objects_inside_radius(center, grug_mobs.spawn_areas.reach(area))
+	for i = 1, #objs do
+		local ent = objs[i]:get_luaentity()
+		if ent and ent._grug_area == area.tag and (ent.health or 0) > 0 then
+			n = n + 1
+		end
+	end
+	return n
+end
+
+-- One member onto a free spot of the area. True when a mob arrived.
+local function spawn_area_member(area, players, center_y)
+	local SA = grug_mobs.spawn_areas
+	for _ = 1, SPOT_TRIES do
+		local x, z = SA.sample_xz(area)
+		if grug_zones.id_at(x, z) == area.zone then
+			local g = SA.ground_at(x, z, center_y, 32)
+			if g and g.y >= 0 and SA.hosts_ok(area, g) then
+				local stand = {x = g.x, y = g.y + 1, z = g.z}
+				local _, role = SA.pick({area}, 1)
+				if SA.players_clear(stand, area.camp.min_player_distance, players) and
+						not SA.spawn_refused("grug_mobs:" .. role, stand) and
+						SA.spawn_area_mob(area, role, g) then
+					return true
+				end
+			end
+		end
+	end
+	return false
+end
+
+function grug_mobs.area_camp_tick(now, players, clock)
+	local SA = grug_mobs.spawn_areas
+	local list = SA.camp_areas()
+	for i = 1, #list do
+		local area = list[i]
+		if SA.player_near_xz(area.cx, area.cz, AREA_CAMP_RANGE, players) then
+			local camp = area.camp
+			local center_y = SA.center_y(area)
+			local living = count_area_members(area,
+				{x = area.cx, y = center_y, z = area.cz})
+			local missing = camp.slots - living
+			local st = area_camps[area.tag]
+			if not st then
+				-- First look since the start: the whole deficit is due now.
+				st = {queue = math.max(missing, 0), next_refill = now, fill = true}
+				area_camps[area.tag] = st
+			elseif missing > st.queue then
+				if st.queue <= 0 then
+					st.next_refill = now + area_camp_interval(camp)
+				end
+				st.queue = missing
+			elseif missing < st.queue then
+				st.queue = missing > 0 and missing or 0
+			end
+			if area.clock == "both" or area.clock == clock then
+				while st.queue > 0 and now >= st.next_refill do
+					if not spawn_area_member(area, players, center_y) then
+						break
+					end
+					st.queue = st.queue - 1
+					if not st.fill then
+						st.next_refill = st.next_refill + area_camp_interval(camp)
+					end
+				end
+				if st.queue <= 0 then
+					st.fill = nil
+				end
+			end
+		end
+	end
+end

@@ -906,6 +906,9 @@ function grug_mobs.register_mob(name, def)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
+-- Round 28: the per-zone spawn data (palettes, spawn areas, leaders) first;
+-- spawn_policy.lua reads the palettes from it.
+dofile(modpath .. "/spawn_areas.lua")
 dofile(modpath .. "/spawn_policy.lua")
 dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()

@@ -1,0 +1,9 @@
+{
+  "zone": "kragmar_speargrass_reach",
+  "palette": {
+    "families": ["goblin_raid", "mountain", "savanna", "scorpion", "speargrass_tiger"]
+  },
+  "critters": [],
+  "areas": [],
+  "leaders": []
+}

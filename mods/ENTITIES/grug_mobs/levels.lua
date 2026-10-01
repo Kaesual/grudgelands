@@ -339,6 +339,12 @@ local function resolve_level(self, cfg, tier)
 		-- source, so there is nothing to cap or clamp.
 		return t.level
 	end
+	if self._grug_spawn_level then
+		-- Round 28 rulings 34 and 38: a spawn area or a named leader hands
+		-- the mob its fixed level before the first tick (spawn_areas.lua). It
+		-- replaces the level field, the def's floor and the source cap.
+		return math.max(1, self._grug_spawn_level)
+	end
 	if cfg.fixed then
 		-- Hand-set level: bypasses the field AND the source cap on purpose
 		-- (the Kraken is L100, kraken.lua).

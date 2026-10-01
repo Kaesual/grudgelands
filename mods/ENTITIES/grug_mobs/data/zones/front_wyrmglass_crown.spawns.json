@@ -1,0 +1,10 @@
+{
+  "zone": "front_wyrmglass_crown",
+  "palette": {
+    "families": ["frost_stray", "mountain", "rift_spawn", "snow_leopard", "war"],
+    "lookalikes": {"cat": "grug_mobs:snow_leopard", "skeleton_archer": "grug_mobs:frost_stray"}
+  },
+  "critters": ["gull"],
+  "areas": [],
+  "leaders": []
+}
