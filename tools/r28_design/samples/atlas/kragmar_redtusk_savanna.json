@@ -1,0 +1,223 @@
+{
+  "id": "kragmar_redtusk_savanna",
+  "name": "Redtusk Savanna",
+  "role": "home zone 11-20",
+  "level_min": 11,
+  "level_max": 20,
+  "faction": "throng",
+  "race_track": "orc",
+  "race_region": "orc",
+  "anchors": [
+    {
+      "id": "anchor_021",
+      "kind": "village",
+      "name": "Redtusk Village",
+      "settlement_key": "redtusk_village",
+      "slot": "village_1",
+      "x": -88,
+      "z": 2004
+    },
+    {
+      "id": "anchor_041",
+      "kind": "outpost",
+      "name": "Redtusk Outpost",
+      "settlement_key": "redtusk_outpost",
+      "slot": "outpost_1",
+      "x": 176,
+      "z": 2074
+    },
+    {
+      "id": "anchor_057",
+      "kind": "bandit_home",
+      "name": "Redtusk Bandit Camp",
+      "settlement_key": "redtusk_bandit_camp",
+      "slot": "bandit_1",
+      "x": 320,
+      "z": 1980
+    },
+    {
+      "id": "anchor_098",
+      "kind": "rare_route",
+      "name": "Ashmaw's Burnt Hollow",
+      "settlement_key": "r20_anchor_098",
+      "slot": "rare_ashmaw",
+      "x": 152,
+      "z": 2084
+    }
+  ],
+  "settlements": [
+    {
+      "key": "redtusk_village",
+      "anchor_id": "anchor_021",
+      "npcs": [
+        {
+          "npc_id": "r14_orc_steward",
+          "npc_name": "Borak Redgrass",
+          "role": "quest",
+          "socket": "quest_steward"
+        },
+        {
+          "npc_id": "r15_orc_local",
+          "npc_name": "Morga Clayhand",
+          "role": "quest",
+          "socket": "quest_local"
+        }
+      ]
+    },
+    {
+      "key": "redtusk_outpost",
+      "anchor_id": "anchor_041",
+      "npcs": [
+        {
+          "npc_id": "r14_orc_scout",
+          "npc_name": "Kesh Longstride",
+          "role": "quest",
+          "socket": "quest_scout"
+        }
+      ]
+    },
+    {
+      "key": "redtusk_bandit_camp",
+      "anchor_id": "anchor_057",
+      "npcs": [
+        {
+          "npc_id": "r14_orc_captive",
+          "npc_name": "Rokka Emberhand",
+          "role": "quest",
+          "socket": "quest_captive"
+        }
+      ]
+    },
+    {
+      "key": "r20_anchor_098",
+      "anchor_id": "anchor_098",
+      "npcs": []
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_savanna",
+      "share": 75
+    },
+    {
+      "id": "grug_badlands",
+      "share": 25
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_savanna",
+      "share_pct": 60.2
+    },
+    {
+      "id": "grug_badlands",
+      "share_pct": 39.5
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 0.2
+    },
+    {
+      "id": "grug_jungle_edge",
+      "share_pct": 0.1
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:boar",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:hare",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 61.1
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:hyena",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.7
+      },
+      "night": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.7
+      }
+    },
+    {
+      "mob": "grug_mobs:scorpion",
+      "day": null,
+      "night": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.7
+      }
+    },
+    {
+      "mob": "grug_mobs:shore_crab",
+      "day": {
+        "area_nodes2": 11280,
+        "levels": [
+          11,
+          15
+        ]
+      },
+      "night": {
+        "area_nodes2": 11280,
+        "levels": [
+          11,
+          15
+        ]
+      }
+    },
+    {
+      "mob": "grug_mobs:sun_dried_husk",
+      "day": null,
+      "night": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.7
+      }
+    },
+    {
+      "mob": "grug_mobs:zebra",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 60.8
+      },
+      "night": null
+    }
+  ]
+}

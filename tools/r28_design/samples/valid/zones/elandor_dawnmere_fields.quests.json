@@ -1,5 +1,5 @@
 {
-  "zone": "sample_fields",
+  "zone": "elandor_dawnmere_fields",
   "identity": "The fields feed the capital; something eats the harvest first.",
   "hubs": [
     {
@@ -41,7 +41,7 @@
             "small_boar"
           ],
           "count": 8,
-          "area": "sample_fields/home_fields_day"
+          "area": "elandor_dawnmere_fields/home_fields_day"
         }
       ],
       "rewards": {
@@ -71,7 +71,7 @@
             "large_rat"
           ],
           "count": 8,
-          "area": "sample_fields/home_fields_night"
+          "area": "elandor_dawnmere_fields/home_fields_night"
         }
       ],
       "rewards": {
@@ -100,7 +100,7 @@
             "braindead_zombie"
           ],
           "count": 8,
-          "area": "sample_fields/home_beach_night"
+          "area": "elandor_dawnmere_fields/home_beach_night"
         }
       ],
       "rewards": {
@@ -129,7 +129,7 @@
             "confused_bandit"
           ],
           "count": 6,
-          "area": "sample_fields/border_bandits"
+          "area": "elandor_dawnmere_fields/border_bandits"
         },
         {
           "type": "item",
@@ -346,7 +346,7 @@
             "large_rat"
           ],
           "count": 10,
-          "area": "sample_fields/home_fields_night"
+          "area": "elandor_dawnmere_fields/home_fields_night"
         }
       ],
       "rewards": {

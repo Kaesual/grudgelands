@@ -1,0 +1,76 @@
+{
+  "id": "elandor_highcourt",
+  "name": "Highcourt",
+  "role": "capital zone",
+  "level_min": 20,
+  "level_max": 30,
+  "faction": "accord",
+  "race_track": "human",
+  "race_region": "human",
+  "anchors": [
+    {
+      "id": "anchor_008",
+      "kind": "capital_human",
+      "name": "Highcourt",
+      "settlement_key": "highcourt",
+      "slot": "capital",
+      "x": 0,
+      "z": -1500
+    }
+  ],
+  "settlements": [
+    {
+      "key": "highcourt",
+      "anchor_id": "anchor_008",
+      "npcs": [
+        {
+          "npc_id": "r20_human_capital_envoy",
+          "npc_name": "Mariel Waybook",
+          "role": "quest",
+          "socket": "chapel_quest"
+        },
+        {
+          "npc_id": "r20_human_capital_cook",
+          "npc_name": "Ansel Ovenward",
+          "role": "quest",
+          "socket": "homes_bakehouse/homes_bakehouse_quest_cook"
+        },
+        {
+          "npc_id": null,
+          "npc_name": null,
+          "role": "quest",
+          "socket": "lore_shrine/lore_shrine_quest"
+        }
+      ]
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_meadows",
+      "share": 80
+    },
+    {
+      "id": "grug_deep_forest",
+      "share": 20
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_meadows",
+      "share_pct": 81.3
+    },
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 18.3
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 0.3
+    },
+    {
+      "id": "grug_elf_forest",
+      "share_pct": 0.1
+    }
+  ],
+  "spawns": []
+}

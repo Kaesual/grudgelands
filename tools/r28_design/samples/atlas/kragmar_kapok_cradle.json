@@ -1,0 +1,187 @@
+{
+  "id": "kragmar_kapok_cradle",
+  "name": "Kapok Cradle",
+  "role": "start zone",
+  "level_min": 1,
+  "level_max": 10,
+  "faction": "throng",
+  "race_track": "troll",
+  "race_region": "troll",
+  "anchors": [
+    {
+      "id": "anchor_006",
+      "kind": "start",
+      "name": "Kapok",
+      "settlement_key": "kapok",
+      "slot": "start",
+      "x": 1800,
+      "z": 2550
+    }
+  ],
+  "settlements": [
+    {
+      "key": "kapok",
+      "anchor_id": "anchor_006",
+      "npcs": [
+        {
+          "npc_id": "r14_troll_elder",
+          "npc_name": "Zalima Rainhum",
+          "role": "quest",
+          "socket": "hall_quest"
+        },
+        {
+          "npc_id": "r20_troll_start_cook",
+          "npc_name": "Zemi Sweetroot",
+          "role": "quest",
+          "socket": "quest_cook"
+        }
+      ]
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_jungle_edge",
+      "share": 90
+    },
+    {
+      "id": "grug_swamp",
+      "share": 10
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_jungle_edge",
+      "share_pct": 85.2
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 14.7
+    },
+    {
+      "id": "grug_deep_jungle",
+      "share_pct": 0.1
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:giant_rat",
+      "day": null,
+      "night": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 96.0,
+        "share_pct": 81.4
+      }
+    },
+    {
+      "mob": "grug_mobs:hare",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 99.9
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:jungle_boar",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:jungle_lynx",
+      "day": {
+        "levels": [
+          4,
+          10
+        ],
+        "policy_share_pct": 41.3,
+        "share_pct": 36.6
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:parrot",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 85.4
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:shore_crab",
+      "day": {
+        "area_nodes2": 44144,
+        "levels": [
+          3,
+          10
+        ]
+      },
+      "night": {
+        "area_nodes2": 44144,
+        "levels": [
+          3,
+          10
+        ]
+      }
+    },
+    {
+      "mob": "grug_mobs:tapir",
+      "day": {
+        "levels": [
+          4,
+          10
+        ],
+        "policy_share_pct": 41.3,
+        "share_pct": 36.6
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:viper",
+      "day": {
+        "levels": [
+          4,
+          10
+        ],
+        "policy_share_pct": 41.3,
+        "share_pct": 36.5
+      },
+      "night": {
+        "levels": [
+          4,
+          10
+        ],
+        "policy_share_pct": 41.3,
+        "share_pct": 36.5
+      }
+    },
+    {
+      "mob": "grug_mobs:zombie",
+      "day": null,
+      "night": {
+        "levels": [
+          3,
+          10
+        ],
+        "policy_share_pct": 88.0,
+        "share_pct": 88.0
+      }
+    }
+  ]
+}

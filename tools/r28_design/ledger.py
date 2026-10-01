@@ -24,7 +24,7 @@ Usage:
   ledger.py --route zone_a,zone_b[:lo-hi],... [--design DIR] [--existing FILE]
             [--start-level N] [--human] [--party solo|duo|both]
             [--repeat N] [--skip-optional] [--solo-group] [--tolerance PCT]
-            [--out FILE] [--strict]
+            [--out FILE] [--strict] [--atlas DIR]
   Exit code 0 (flags are rough guides, Ruling 33); --strict exits 1 when a
   band is flagged; 2 when design files cannot be read.
   ledger.py --self-test
@@ -39,7 +39,8 @@ import r28common as C  # noqa: E402
 
 
 class Route:
-    def __init__(self, spec):
+    def __init__(self, spec, atlas=None):
+        self.atlas = atlas
         self.zones = []
         self.bands = {}
         for part in [p.strip() for p in spec.split(",") if p.strip()]:
@@ -337,6 +338,10 @@ class Ledger:
 def zone_band(route, design, zone):
     if zone in route.bands:
         return route.bands[zone]
+    info = route.atlas.zones.get(zone) if route.atlas else None
+    if info and info.get("levels"):
+        band = C.band_of_level(info["levels"][0])
+        return (band[0], band[1])
     data = design.quests.get(zone) or {}
     levels = sorted(q.get("level", 1) for q in data.get("quests") or [] if isinstance(q, dict)
                     and not q.get("repeatable"))
@@ -446,6 +451,7 @@ def parse(argv):
     ap.add_argument("--route", help="comma-separated zone ids in play order; zone:lo-hi pins its band")
     ap.add_argument("--design", default=str(C.DEFAULT_DESIGN))
     ap.add_argument("--existing", default=str(C.DEFAULT_EXISTING))
+    ap.add_argument("--atlas", help="zone atlas directory: zone bands from the atlas level ranges")
     ap.add_argument("--start-level", type=int, default=1)
     ap.add_argument("--human", action="store_true", help="+10 %% quest XP (Human race perk)")
     ap.add_argument("--party", choices=("solo", "duo", "both"), default="both")
@@ -476,7 +482,17 @@ def main(argv):
     except C.LoadError as err:
         print("warning: %s; gathering and existing drops are unknown" % err, file=sys.stderr)
         existing = {}
-    text, flags = report(design, existing, Route(args.route), args)
+    atlas = None
+    if args.atlas:
+        try:
+            atlas = C.Atlas(args.atlas)
+        except C.LoadError as err:
+            print("error: %s" % err, file=sys.stderr)
+            return 2
+        for zone in Route(args.route).zones:
+            if zone not in atlas.zones:
+                print("warning: %s is not an atlas zone" % zone, file=sys.stderr)
+    text, flags = report(design, existing, Route(args.route, atlas), args)
     print(text)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")
@@ -517,8 +533,8 @@ def self_test():
     args = A()
     args.design, args.start_level, args.human, args.repeat = str(sample), 1, False, 0
     args.skip_optional, args.solo_group, args.tolerance, args.party = False, False, 10, "both"
-    solo, _ = run(design, existing, Route("sample_fields:1-10"), 1, args)
-    duo, _ = run(design, existing, Route("sample_fields:1-10"), 2, args)
+    solo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 1, args)
+    duo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 2, args)
     sacc, dacc = solo.zone_rows[0]["acc"], duo.zone_rows[0]["acc"]
     check(sacc["rewards"] == dacc["rewards"] and sacc["rewards"] > 0, "quest credit is not split")
     check(abs(dacc["kills"] - sacc["kills"] / 2) < sacc["kills"] * 0.15,
@@ -529,12 +545,16 @@ def self_test():
     # request alone at 1 meat per kill would be 5 kills.
     check(any(k["quest"] == "sample_hunt_01" and k["count"] == 8 for k in solo.kill_rows),
           "kill rows list the hunt quest")
-    text, flags = report(design, existing, Route("sample_fields:1-10"), args)
+    text, flags = report(design, existing, Route("elandor_dawnmere_fields:1-10"), args)
     check("Solo" in text and "Two-player party" in text and "1 → 10" in text, "report renders")
+    atlas = C.Atlas(here / "samples" / "atlas")
+    routed = Route("elandor_dawnmere_fields,elandor_goldmead_vale,elandor_highcourt,front_shattered_line", atlas)
+    check([zone_band(routed, design, z) for z in routed.zones] == [(1, 10), (10, 20), (20, 30), (40, 50)],
+          "atlas level ranges give the bands")
     human = A()
     human.__dict__.update(args.__dict__)
     human.human = True
-    hsolo, _ = run(design, existing, Route("sample_fields:1-10"), 1, human)
+    hsolo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 1, human)
     check(hsolo.zone_rows[0]["acc"]["rewards"] > sacc["rewards"], "human option raises rewards")
     if failures:
         for f in failures:

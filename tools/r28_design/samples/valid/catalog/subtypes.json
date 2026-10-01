@@ -5,10 +5,10 @@
     "base": "grug_mobs:boar",
     "display": "Small Boar",
     "display_by_zone": {
-      "sample_jungle": "Small Jungle Boar"
+      "kragmar_kapok_cradle": "Small Jungle Boar"
     },
     "tint_by_zone": {
-      "sample_jungle": "jungle"
+      "kragmar_kapok_cradle": "jungle"
     },
     "size": 0.85,
     "disposition": "neutral",

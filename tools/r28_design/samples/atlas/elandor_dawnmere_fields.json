@@ -1,0 +1,160 @@
+{
+  "id": "elandor_dawnmere_fields",
+  "name": "Dawnmere Fields",
+  "role": "start zone",
+  "level_min": 1,
+  "level_max": 10,
+  "faction": "accord",
+  "race_track": "human",
+  "race_region": "human",
+  "anchors": [
+    {
+      "id": "anchor_002",
+      "kind": "start",
+      "name": "Dawnmere",
+      "settlement_key": "dawnmere",
+      "slot": "start",
+      "x": 0,
+      "z": -2550
+    }
+  ],
+  "settlements": [
+    {
+      "key": "dawnmere",
+      "anchor_id": "anchor_002",
+      "npcs": [
+        {
+          "npc_id": "r14_human_elder",
+          "npc_name": "Elian Reed",
+          "role": "quest",
+          "socket": "hall_quest"
+        },
+        {
+          "npc_id": "r20_human_start_cook",
+          "npc_name": "Bess Honeycrust",
+          "role": "quest",
+          "socket": "quest_cook"
+        }
+      ]
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_meadows",
+      "share": 85
+    },
+    {
+      "id": "grug_deep_forest",
+      "share": 5
+    },
+    {
+      "id": "grug_swamp",
+      "share": 10
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_meadows",
+      "share_pct": 86.3
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 9.2
+    },
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 4.5
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:boar",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:fox",
+      "day": {
+        "levels": [
+          4,
+          10
+        ],
+        "policy_share_pct": 27.1,
+        "share_pct": 24.2
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:giant_rat",
+      "day": null,
+      "night": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 96.7,
+        "share_pct": 83.7
+      }
+    },
+    {
+      "mob": "grug_mobs:rabbit",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:shore_crab",
+      "day": {
+        "area_nodes2": 61024,
+        "levels": [
+          3,
+          10
+        ]
+      },
+      "night": {
+        "area_nodes2": 61024,
+        "levels": [
+          3,
+          10
+        ]
+      }
+    },
+    {
+      "mob": "grug_mobs:wild_turkey",
+      "day": {
+        "levels": [
+          1,
+          10
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 87.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:zombie",
+      "day": null,
+      "night": {
+        "levels": [
+          3,
+          10
+        ],
+        "policy_share_pct": 91.5,
+        "share_pct": 91.5
+      }
+    }
+  ]
+}

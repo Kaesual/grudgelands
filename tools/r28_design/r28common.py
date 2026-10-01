@@ -234,82 +234,97 @@ def split_area_ref(ref, own_zone):
 
 # --- zone atlas (optional) ------------------------------------------------
 
-ANCHOR_KEYS = ("anchors", "pois", "villages", "outposts", "mines", "camps",
-               "hubs", "settlements", "rare_pads", "sockets_by_anchor")
-NPC_KEYS = ("npcs", "quest_npcs", "givers", "quest_givers")
+# The atlas's `role` text -> the short zone role the tools use.
+ZONE_ROLES = (
+    ("start zone", "start"),
+    ("home zone 11-20", "home"),
+    ("capital zone", "capital"),
+    ("home zone 21-30", "heartland"),
+    ("contested", "contested"),
+    ("front zone", "front"),
+    ("dragon island", "island"),
+)
+RACE_FACTION = {"dwarf": "accord", "human": "accord", "elf": "accord",
+                "undead": "throng", "orc": "throng", "troll": "throng"}
+
+
+def biome_id(name):
+    """Atlas biome ids carry the `grug_` prefix; designers may omit it."""
+    return name[5:] if isinstance(name, str) and name.startswith("grug_") else name
 
 
 class Atlas:
-    """Zone atlas facts the validator cross-checks: zone ids, anchor ids,
-    quest NPC ids, logical biome ids, level bands. The loader is tolerant
-    about the exact layout: a JSON file with a `zones` list/object, a single
-    zone record, or a directory of per-zone JSON files."""
+    """The Round 28 zone atlas (docs/planning/round28/zones/<zone_id>.json,
+    written by tools/r28_zone_atlas): zone ids, roles, level bands, faction
+    and race track, anchors, quest NPCs, biomes and today's palette. Accepts
+    the zones directory or one zone file."""
 
     def __init__(self, path):
         self.zones = {}
         path = Path(path)
-        if path.is_dir():
-            for file in sorted(path.rglob("*.json")):
-                self._absorb(read_json(file), file.stem)
-        else:
-            self._absorb(read_json(path), path.stem)
+        files = sorted(path.glob("*.json")) if path.is_dir() else [path]
+        for file in files:
+            data = read_json(file)
+            if isinstance(data, dict) and isinstance(data.get("id"), str) and "anchors" in data:
+                self._zone(data)
+        if not self.zones:
+            raise LoadError("%s: no zone atlas JSON (<zone_id>.json with id and anchors)" % path)
+        self.npc_zone = {}
+        for zid, zone in self.zones.items():
+            for npc in zone["npcs"]:
+                self.npc_zone[npc] = zid
 
-    def _absorb(self, data, fallback_id):
-        if isinstance(data, dict) and "zones" in data:
-            zones = data["zones"]
-            if isinstance(zones, dict):
-                for zid, rec in zones.items():
-                    if isinstance(rec, dict):
-                        self._zone(rec, zid)
-            elif isinstance(zones, list):
-                for rec in zones:
-                    if isinstance(rec, dict):
-                        self._zone(rec, None)
-        elif isinstance(data, dict) and (data.get("id") or data.get("zone")):
-            self._zone(data, fallback_id)
-
-    @staticmethod
-    def _ids(value):
-        out = set()
-        if isinstance(value, dict):
-            for key, row in value.items():
-                out.add(row.get("id", key) if isinstance(row, dict) else key)
-        elif isinstance(value, list):
-            for row in value:
-                if isinstance(row, str):
-                    out.add(row)
-                elif isinstance(row, dict):
-                    rid = row.get("id") or row.get("npc") or row.get("anchor")
-                    if rid:
-                        out.add(rid)
-        return out
-
-    def _zone(self, rec, fallback_id):
-        zid = rec.get("id") or rec.get("zone") or fallback_id
-        if not isinstance(zid, str):
-            return
-        zone = self.zones.setdefault(zid, {"anchors": set(), "npcs": set(), "biomes": set(),
-                                           "levels": None, "kind": None})
-        for key in ANCHOR_KEYS:
-            zone["anchors"] |= self._ids(rec.get(key))
-        for key in NPC_KEYS:
-            zone["npcs"] |= self._ids(rec.get(key))
-        # NPCs may also sit inside hub/anchor records.
-        for key in ANCHOR_KEYS:
-            value = rec.get(key)
-            rows = value.values() if isinstance(value, dict) else value if isinstance(value, list) else []
-            for row in rows:
-                if isinstance(row, dict):
-                    for npc_key in NPC_KEYS:
-                        zone["npcs"] |= self._ids(row.get(npc_key))
-        zone["biomes"] |= self._ids(rec.get("biomes"))
-        levels = rec.get("levels") or rec.get("band")
-        if isinstance(levels, list) and len(levels) == 2 and all(isinstance(v, int) for v in levels):
-            zone["levels"] = levels
-        zone["kind"] = rec.get("kind") or rec.get("type") or zone["kind"]
+    def _zone(self, rec):
+        role_text = str(rec.get("role") or "")
+        role = next((short for prefix, short in ZONE_ROLES if role_text.startswith(prefix)), role_text)
+        race = rec.get("race_track")
+        faction = rec.get("faction")
+        if faction not in ("accord", "throng"):
+            # Contested 31-40 zones belong to their race's faction (shared per
+            # faction); front zones and islands to nobody.
+            faction = RACE_FACTION.get(race) if role == "contested" else None
+        anchors, anchor_kinds = {}, {}
+        for anchor in rec.get("anchors") or []:
+            aid = anchor.get("id")
+            if not aid:
+                continue
+            anchor_kinds[aid] = anchor.get("kind")
+            for ref in (aid, anchor.get("settlement_key"), anchor.get("slot")):
+                if ref:
+                    anchors.setdefault(ref, aid)
+        npcs = {}
+        for settlement in rec.get("settlements") or []:
+            for npc in settlement.get("npcs") or []:
+                if npc.get("npc_id") and npc.get("role") == "quest":
+                    npcs[npc["npc_id"]] = {"settlement": settlement.get("key"),
+                                           "anchor": settlement.get("anchor_id"),
+                                           "socket": npc.get("socket"), "name": npc.get("npc_name")}
+        biomes = {biome_id(b.get("id")) for b in (rec.get("biomes_authored") or []) +
+                  (rec.get("biomes_measured") or []) if b.get("id")}
+        palette = {}
+        for spawn in rec.get("spawns") or []:
+            ranges = [spawn[c]["levels"] for c in ("day", "night")
+                      if isinstance(spawn.get(c), dict) and spawn[c].get("levels")]
+            if spawn.get("mob") and ranges:
+                palette[spawn["mob"]] = [min(r[0] for r in ranges), max(r[1] for r in ranges)]
+        levels = None
+        if isinstance(rec.get("level_min"), int) and isinstance(rec.get("level_max"), int):
+            levels = [rec["level_min"], rec["level_max"]]
+        self.zones[rec["id"]] = {
+            "name": rec.get("name"), "role": role, "levels": levels, "faction": faction,
+            "race": race, "anchors": anchors, "anchor_kinds": anchor_kinds, "npcs": npcs,
+            "biomes": biomes, "palette": palette,
+        }
 
     def all_npcs(self):
-        out = set()
-        for zone in self.zones.values():
-            out |= zone["npcs"]
-        return out
+        return set(self.npc_zone)
+
+    def resolve_anchor(self, zone, ref):
+        """Anchor id for a reference (anchor id, settlement key or slot such
+        as `start`, `capital`, `village_1`); `zone` means the zone hub."""
+        info = self.zones.get(zone)
+        if info is None:
+            return None
+        if ref == "zone":
+            return "zone"
+        return info["anchors"].get(ref)

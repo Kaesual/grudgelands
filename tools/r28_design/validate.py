@@ -195,15 +195,19 @@ class Validator:
         return self.atlas.zones.get(zone) if self.atlas else None
 
     def check_anchor(self, anchor, zone, where, path):
+        """Returns the atlas anchor id ('zone' for the hub) or None."""
         if not isinstance(anchor, str) or not anchor:
             self.E("E-anchor", where, path, "anchor must be a non-empty string")
-            return
-        if anchor in FIXED_ANCHORS or not self.atlas:
-            return
+            return None
         info = self.zone_info(zone)
-        if info is not None and anchor not in info["anchors"]:
-            self.E("E-unknown-anchor", where, path, "anchor %r is not an anchor of %s in the atlas"
-                   % (anchor, zone))
+        if info is None:
+            return None
+        resolved = self.atlas.resolve_anchor(zone, anchor)
+        if resolved is None:
+            refs = sorted(r for r in info["anchors"] if not r.startswith("anchor_") and not r.startswith("r20_"))
+            self.E("E-unknown-anchor", where, path, "anchor %r is not an anchor of %s (anchor id, settlement "
+                   "key or slot; this zone has: %s, or 'zone')" % (anchor, zone, ", ".join(refs) or "none"))
+        return resolved
 
     def check_npc(self, npc, where, path):
         if not isinstance(npc, str) or not npc:
@@ -408,8 +412,7 @@ class Validator:
             areas = []
         seen = set()
         fallbacks = 0
-        front = bool(info and ((info.get("levels") or [0])[0] >= 41 or
-                               str(info.get("kind") or "").lower() in ("front", "island")))
+        front = bool(info and info.get("role") in ("front", "island"))
         for i, area in enumerate(areas):
             path = "areas[%d]" % i
             if not isinstance(area, dict):
@@ -436,7 +439,7 @@ class Validator:
                     self.E("E-hosts", file, path + ".hosts", "shore must be true or false")
                 if info is not None and info["biomes"]:
                     for biome in hosts["biomes"]:
-                        if biome != "any" and biome not in info["biomes"]:
+                        if biome != "any" and C.biome_id(biome) not in info["biomes"]:
                             self.E("E-unknown-biome", file, path + ".hosts", "biome %r is not a biome of %s (%s)"
                                    % (biome, zone, ", ".join(sorted(info["biomes"]))))
             if area.get("clock") not in CLOCKS:
@@ -568,7 +571,7 @@ class Validator:
                 path = "hubs[%s]" % hub["id"]
             if not isinstance(hub.get("id"), str) or not C.SNAKE.match(hub.get("id") or ""):
                 self.E("E-id", file, path, "hub id must be snake_case")
-            self.check_anchor(hub.get("anchor"), zone, file, path + ".anchor")
+            hub_anchor = self.check_anchor(hub.get("anchor"), zone, file, path + ".anchor")
             givers = hub.get("givers") or []
             if len(givers) > MAX_GIVERS_PER_HUB:
                 self.E("E-givers", file, path, "%d givers (at most %d per hub)" % (len(givers), MAX_GIVERS_PER_HUB))
@@ -576,6 +579,15 @@ class Validator:
                 gpath = "%s.givers[%d]" % (path, j)
                 npc = giver.get("npc") if isinstance(giver, dict) else None
                 self.check_npc(npc, file, gpath)
+                where_npc = self.atlas.zones[self.atlas.npc_zone[npc]]["npcs"][npc] \
+                    if self.atlas and npc in self.atlas.npc_zone else None
+                if where_npc is not None:
+                    if self.atlas.npc_zone[npc] != zone:
+                        self.E("E-giver-zone", file, gpath, "%s stands in %s, not in this zone"
+                               % (npc, self.atlas.npc_zone[npc]))
+                    elif hub_anchor not in (None, "zone") and where_npc["anchor"] != hub_anchor:
+                        self.E("E-giver-hub", file, gpath, "%s stands at %s (%s), not at the hub's anchor %s"
+                               % (npc, where_npc["settlement"], where_npc["anchor"], hub.get("anchor")))
                 lines = giver.get("lines") if isinstance(giver, dict) else None
                 if not isinstance(lines, list) or not lines:
                     self.E("E-lines", file, gpath, "giver needs a non-empty 'lines' list")
@@ -746,6 +758,37 @@ class Validator:
         for key in ("optional", "climax", "group"):
             if key in q and not isinstance(q[key], bool):
                 self.E("E-type", file, path + "." + key, "%s must be true or false" % key)
+        self.check_destinations(zone, q, file, path)
+
+    def check_destinations(self, zone, q, file, path):
+        """Ruling 44: no quest sends players into another race's 11-20 zone;
+        and none into the other faction's zones (atlas only)."""
+        if not self.atlas or zone not in self.atlas.zones:
+            return
+        targets = []
+        for obj in q.get("objectives") or []:
+            if not isinstance(obj, dict):
+                continue
+            if obj.get("type") == "kill" and isinstance(obj.get("area"), str):
+                targets.append((C.split_area_ref(obj["area"], zone)[0], "kill area " + obj["area"]))
+            elif obj.get("type") == "talk" and obj.get("npc") in self.atlas.npc_zone:
+                targets.append((self.atlas.npc_zone[obj["npc"]], "travel target " + obj["npc"]))
+        for drop in q.get("quest_drops") or []:
+            if isinstance(drop, dict) and isinstance(drop.get("area"), str):
+                targets.append((C.split_area_ref(drop["area"], zone)[0], "quest-drop area " + drop["area"]))
+        if q.get("turnin") in self.atlas.npc_zone:
+            targets.append((self.atlas.npc_zone[q["turnin"]], "turn-in " + q["turnin"]))
+        own = self.atlas.zones[zone]
+        for target, what in targets:
+            info = self.atlas.zones.get(target)
+            if info is None or target == zone:
+                continue
+            if info["role"] == "home" and info["race"] != own["race"]:
+                self.E("E-race-track", file, path, "%s lies in %s, another race's 11-20 zone (%s; Ruling 44)"
+                       % (what, target, info["race"]))
+            elif info["faction"] and own["faction"] and info["faction"] != own["faction"]:
+                self.W("W-faction", file, path, "%s lies in %s, a zone of the other faction (%s)"
+                       % (what, target, info["faction"]))
 
     def area_roles(self, area):
         return {sp.get("role") for sp in area.get("species") or [] if isinstance(sp, dict)}
@@ -834,7 +877,71 @@ class Validator:
             if not self.only_zones or zone in self.only_zones:
                 self.quests(zone, data, all_areas, hub_givers)
         self.cycles()
+        self.loot_coverage()
         return self.f
+
+    # Which zones of a race track serve each tier's loot (T5/T6: the front).
+    TIER_ROLES = {1: ("start",), 2: ("home",), 3: ("capital", "heartland"), 4: ("contested",),
+                  5: ("front", "island"), 6: ("front", "island")}
+
+    def zone_drops(self, zone, tier):
+        """Items a designed zone's areas drop in band `tier`; None when the
+        zone has no spawn areas yet (today's palette, not checked)."""
+        areas = self.d.areas(zone)
+        if not areas:
+            return None
+        out = set()
+        for area in areas.values():
+            levels = area.get("levels")
+            if not level_range(levels):
+                continue
+            if tier not in range((levels[0] - 1) // 10 + 1, (levels[1] - 1) // 10 + 2):
+                continue
+            for role in self.area_roles(area):
+                source, rec = self.role_def(role)
+                if source == "subtype":
+                    family = self.drop_families.get(rec.get("drops")) or {}
+                    rows = list((family.get("bands") or {}).get(str(tier)) or [])
+                elif source == "existing":
+                    rows = rec.get("drops") or []
+                else:
+                    rows = []
+                out |= {row.get("item") for row in rows if isinstance(row, dict)}
+        return out
+
+    def loot_coverage(self):
+        """Frame 2.5: every stat loot input of a tier is obtainable in every
+        race track's zones of that band (warnings; designed zones only)."""
+        if not self.atlas or not self.d.enchants:
+            return
+        file = self.d.root / "catalog" / "enchants.json"
+        races = sorted({z["race"] for z in self.atlas.zones.values() if z["race"]})
+        for row in self.d.enchants:
+            tier = row.get("tier") if isinstance(row, dict) else None
+            if not is_int(tier, 1, 6):
+                continue
+            roles = self.TIER_ROLES[tier]
+            if tier >= 5:
+                groups = {"front": [z for z, i in self.atlas.zones.items() if i["role"] in roles]}
+            else:
+                groups = {race: [z for z, i in self.atlas.zones.items()
+                                 if i["role"] in roles and i["race"] == race] for race in races}
+            unchecked, drops = [], {}
+            for group, zones in groups.items():
+                found = [d for d in (self.zone_drops(z, tier) for z in zones) if d is not None]
+                if found:
+                    drops[group] = set().union(*found)
+                else:
+                    unchecked.append(group)
+            for stat, item in sorted((row.get("stat_loot") or {}).items()):
+                missing = [g for g in sorted(drops) if item not in drops[g]]
+                if missing:
+                    self.W("W-loot-track", file, "enchants.json[tier %d].stat_loot.%s" % (tier, stat),
+                           "%s drops in no designed T%d zone of: %s" % (item, tier, ", ".join(missing)))
+            if unchecked and drops:
+                self.W("W-loot-unchecked", file, "enchants.json[tier %d]" % tier,
+                       "no designed T%d zones yet for: %s (stat loot not checked there)"
+                       % (tier, ", ".join(unchecked)))
 
     def cycles(self):
         graph = {}
@@ -922,8 +1029,8 @@ def _save(path, data):
 def _mutations():
     """(name, file, mutate(data), expected code). Each runs on a fresh copy of
     samples/valid; the expected code must appear."""
-    Q = "zones/sample_fields.quests.json"
-    S = "zones/sample_fields.spawns.json"
+    Q = "zones/elandor_dawnmere_fields.quests.json"
+    S = "zones/elandor_dawnmere_fields.spawns.json"
 
     def quest(data, qid):
         return next(q for q in data["quests"] if q["id"] == qid)
@@ -941,7 +1048,7 @@ def _mutations():
         quest(d, "sample_hunt_01")["objectives"][0] = {"type": "kill", "roles": ["wild_turkey"], "count": 5}
 
     def wrong_area_role(d):
-        quest(d, "sample_hunt_02")["objectives"][0]["area"] = "sample_fields/home_fields_day"
+        quest(d, "sample_hunt_02")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_fields_day"
 
     def level_fit(d):
         quest(d, "sample_hunt_01")["level"] = 9
@@ -951,7 +1058,7 @@ def _mutations():
         quest(d, "sample_hunt_01")["objectives"][0]["area"] = "other_zone_area"
 
     def missing_area(d):
-        quest(d, "sample_hunt_01")["objectives"][0]["area"] = "sample_vale/meadow"
+        quest(d, "sample_hunt_01")["objectives"][0]["area"] = "elandor_goldmead_vale/meadow"
 
     def unpaired_drop(d):
         quest(d, "sample_hunt_04")["objectives"].pop()
@@ -1023,6 +1130,31 @@ def _mutations():
     def bad_stat(d):
         d[0]["stat_loot"]["luck"] = "grug_mobs:rat_tail"
 
+    def other_race_home(d):
+        q = quest(d, "sample_travel_01")
+        q["objectives"][0]["npc"] = q["turnin"] = "r14_dwarf_steward"
+
+    def other_race_area(d):
+        quest(d, "sample_hunt_01")["objectives"][0]["area"] = "elandor_copperfell_foothills/foothills"
+
+    def other_faction(d):
+        q = quest(d, "sample_travel_01")
+        q["objectives"][0]["npc"] = q["turnin"] = "r14_troll_elder"
+
+    def foreign_giver(d):
+        d["hubs"][0]["givers"][1]["npc"] = "r14_human_scout"
+        for q in d["quests"]:
+            if q["giver"] == "r20_human_start_cook":
+                q["giver"] = "r14_human_scout"
+            if q["turnin"] == "r20_human_start_cook":
+                q["turnin"] = "r14_human_scout"
+
+    def settlement_anchor_ok(d):
+        area(d, "home_fields_night")["anchor"] = "dawnmere"
+
+    def no_tusk(d):
+        d[0]["bands"]["1"] = [row for row in d[0]["bands"]["1"] if row["item"] != "grug_mobs:boar_tusk"]
+
     return [
         ("three givers in a hub", Q, add_giver, "E-givers"),
         ("three lines for a giver", Q, three_lines, "E-lines"),
@@ -1054,6 +1186,12 @@ def _mutations():
         ("iron bar in band 1", "catalog/drops.json", iron_in_band1, "E-metal-tier"),
         ("enchant loot not a signature drop", "catalog/enchants.json", enchant_generic, "E-enchant-loot"),
         ("unknown stat", "catalog/enchants.json", bad_stat, "E-stat"),
+        ("travel into another race's 11-20 zone", Q, other_race_home, "E-race-track"),
+        ("kill area in another race's 11-20 zone", Q, other_race_area, "E-race-track"),
+        ("travel into the other faction", Q, other_faction, "W-faction"),
+        ("giver from another zone", Q, foreign_giver, "E-giver-zone"),
+        ("anchor by settlement key", S, settlement_anchor_ok, None),
+        ("stat loot not dropped in the track", "catalog/drops.json", no_tusk, "W-loot-track"),
     ]
 
 
@@ -1061,12 +1199,13 @@ def self_test():
     here = Path(__file__).resolve().parent
     valid = here / "samples" / "valid"
     existing = here / "samples" / "existing_min.json"
-    atlas = here / "samples" / "atlas_min.json"
+    atlas = here / "samples" / "atlas"
     failures = []
     findings = validate(valid, existing, atlas)
-    if findings.errors() or findings.warnings():
+    # Only Dawnmere is designed: the other race tracks' T1 loot is unchecked.
+    if findings.errors() or findings.codes() != {"W-loot-unchecked"}:
         print_findings(findings, valid)
-        failures.append("the valid sample has findings")
+        failures.append("the valid sample gives exactly W-loot-unchecked with the atlas")
     no_atlas = validate(valid, existing, None)
     if no_atlas.errors() or no_atlas.codes() != {"W-no-atlas"}:
         print_findings(no_atlas, valid)
@@ -1081,7 +1220,9 @@ def self_test():
             mutate(mutated)
             _save(target / rel, mutated)
             got = validate(target, existing, atlas)
-            if code not in got.codes():
+            if code is None and got.errors():
+                failures.append("%s: expected no error, got %s" % (name, sorted(got.codes())))
+            elif code is not None and code not in got.codes():
                 failures.append("%s: expected %s, got %s" % (name, code, sorted(got.codes()) or "nothing"))
         finally:
             shutil.rmtree(tmp)
@@ -1090,7 +1231,7 @@ def self_test():
             print("FAIL " + f)
         print("validate self-test: FAIL (%d)" % len(failures))
         return 1
-    print("validate self-test: PASS (valid sample clean; %d broken variants each caught)" % len(_mutations()))
+    print("validate self-test: PASS (valid sample as expected; %d variants each give their finding)" % len(_mutations()))
     return 0
 
 

@@ -1,0 +1,220 @@
+{
+  "id": "elandor_goldmead_vale",
+  "name": "Goldmead Vale",
+  "role": "home zone 11-20",
+  "level_min": 11,
+  "level_max": 20,
+  "faction": "accord",
+  "race_track": "human",
+  "race_region": "human",
+  "anchors": [
+    {
+      "id": "anchor_015",
+      "kind": "village",
+      "name": "Goldmead Village",
+      "settlement_key": "goldmead_village",
+      "slot": "village_1",
+      "x": -120,
+      "z": -2020
+    },
+    {
+      "id": "anchor_029",
+      "kind": "outpost",
+      "name": "Goldmead Outpost",
+      "settlement_key": "goldmead_outpost",
+      "slot": "outpost_1",
+      "x": 176,
+      "z": -2026
+    },
+    {
+      "id": "anchor_051",
+      "kind": "bandit_home",
+      "name": "Goldmead Bandit Camp",
+      "settlement_key": "goldmead_bandit_camp",
+      "slot": "bandit_1",
+      "x": 320,
+      "z": -1980
+    },
+    {
+      "id": "anchor_091",
+      "kind": "rare_route",
+      "name": "Grimtusk's Rooting",
+      "settlement_key": "r20_anchor_091",
+      "slot": "rare_grimtusk",
+      "x": 152,
+      "z": -2116
+    }
+  ],
+  "settlements": [
+    {
+      "key": "goldmead_village",
+      "anchor_id": "anchor_015",
+      "npcs": [
+        {
+          "npc_id": "r14_human_steward",
+          "npc_name": "Marta Millward",
+          "role": "quest",
+          "socket": "quest_steward"
+        },
+        {
+          "npc_id": "r15_human_local",
+          "npc_name": "Alda Sheaf",
+          "role": "quest",
+          "socket": "quest_local"
+        }
+      ]
+    },
+    {
+      "key": "goldmead_outpost",
+      "anchor_id": "anchor_029",
+      "npcs": [
+        {
+          "npc_id": "r14_human_scout",
+          "npc_name": "Jon Vale",
+          "role": "quest",
+          "socket": "quest_scout"
+        }
+      ]
+    },
+    {
+      "key": "goldmead_bandit_camp",
+      "anchor_id": "anchor_051",
+      "npcs": [
+        {
+          "npc_id": "r14_human_captive",
+          "npc_name": "Pella Thatch",
+          "role": "quest",
+          "socket": "quest_captive"
+        }
+      ]
+    },
+    {
+      "key": "r20_anchor_091",
+      "anchor_id": "anchor_091",
+      "npcs": []
+    }
+  ],
+  "biomes_authored": [
+    {
+      "id": "grug_meadows",
+      "share": 65
+    },
+    {
+      "id": "grug_deep_forest",
+      "share": 20
+    },
+    {
+      "id": "grug_swamp",
+      "share": 15
+    }
+  ],
+  "biomes_measured": [
+    {
+      "id": "grug_meadows",
+      "share_pct": 68.7
+    },
+    {
+      "id": "grug_deep_forest",
+      "share_pct": 23.1
+    },
+    {
+      "id": "grug_swamp",
+      "share_pct": 8.0
+    },
+    {
+      "id": "grug_elf_forest",
+      "share_pct": 0.2
+    }
+  ],
+  "spawns": [
+    {
+      "mob": "grug_mobs:boar",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:fox",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 68.8
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:poacher",
+      "day": null,
+      "night": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 91.5
+      }
+    },
+    {
+      "mob": "grug_mobs:rabbit",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:shore_crab",
+      "day": {
+        "area_nodes2": 16288,
+        "levels": [
+          11,
+          17
+        ]
+      },
+      "night": {
+        "area_nodes2": 16288,
+        "levels": [
+          11,
+          17
+        ]
+      }
+    },
+    {
+      "mob": "grug_mobs:wild_turkey",
+      "day": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 68.5
+      },
+      "night": null
+    },
+    {
+      "mob": "grug_mobs:zombie",
+      "day": null,
+      "night": {
+        "levels": [
+          11,
+          20
+        ],
+        "policy_share_pct": 100.0,
+        "share_pct": 100.0
+      }
+    }
+  ]
+}
