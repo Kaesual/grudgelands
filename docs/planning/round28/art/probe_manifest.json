@@ -1,0 +1,417 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "date": "2026-10-01",
+  "status": "historical probe; user style approval 2026-10-02 (Jan); independent review Claude Opus 5.5: MERGE",
+  "license": "CC0-1.0 (generated project assets, to the extent rights exist); comparison assets retain their existing licenses",
+  "assets": [
+    {
+      "id": "grug_mobs:rat_tail",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: a single detached hairless RAT TAIL, warm dusty rose and muted tan. Thick blunt root at upper left, long fleshy taper curling down in a broad open hook toward the right, slim pointed tip at upper right. One broad simple bend and large empty center; not a coiled snake, no head, no eyes, no gore. Sparse blocky crosswise bands, soft pale pink highlight.",
+      "source": "docs/planning/round28/art/originals/rat_tail.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-84823644-e3c9-4f5d-b217-39c04a843e7b.png",
+      "palette": [
+        "63413e",
+        "94605b",
+        "b77c73",
+        "d59b8e",
+        "f1c3ab",
+        "b69a7e"
+      ],
+      "name": "Rat Tail",
+      "tier": 1,
+      "family": "rat",
+      "icon": "A single rat tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "A flexible length of stubborn sinew.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_rat_tail.png",
+          "sha256": "62837eb35d680dc916d3eae96d2af7913d7983b12d23bf5c84ebd540690f0431",
+          "bytes": 302,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 6
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_rat_tail_32.png",
+          "sha256": "2c092cc6507089d01f16abebd645f3a4bc0a4b948a245a0aaadfa0cef155e403",
+          "bytes": 579,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 6
+        }
+      },
+      "source_sha256": "e569af6883dbf552a9bcc9d7e86ae418d475e58362e60c05054b7f8c63ee64a7",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Open tapered hook survives.\nThin tip uses single pixels."
+    },
+    {
+      "id": "grug_mobs:crab_eye",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: a single detached CRAB EYE on its short thick russet-orange eyestalk, angled from lower left to upper right. Dominant near-black brown round bead at upper right, one large warm ivory square glint on its upper-left side; thick tapered burnt-orange stalk at lower left. Biological bead eye, NOT a human eyeball, no white sclera, no iris, no legs or whole crab, no gore. The stalk and dark bulb form one connected bold silhouette.",
+      "source": "docs/planning/round28/art/originals/crab_eye.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-ee67ea32-3a15-491b-9c0d-b38057c4471e.png",
+      "palette": [
+        "271b18",
+        "493029",
+        "70503b",
+        "ae4d25",
+        "d96e32",
+        "ef9a50",
+        "d3b785",
+        "fff0c9"
+      ],
+      "name": "Crab Eye",
+      "tier": 1,
+      "family": "crab",
+      "icon": "A single crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "A bright bead built to notice movement through shifting water.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_crab_eye.png",
+          "sha256": "bc7cf43c93d6ebf260586a6a08b048c63972d37d17b0ed2d9a3a5a802958b78f",
+          "bytes": 293,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 7
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_crab_eye_32.png",
+          "sha256": "24156b776937379c074ee4ec70893483f127319e4451ecad9bb79bc0c38b15ca",
+          "bytes": 537,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 8
+        }
+      },
+      "source_sha256": "65fac737c9f29f3f9391db272678414ff63597717220db93fa4a60b584f0c595",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Dark bead + orange stalk.\nGlint softens at 16px."
+    },
+    {
+      "id": "grug_mobs:fox_tail",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: a single detached bushy FOX TAIL, curved like a broad flame or comma diagonally from narrow root at lower left to a thick raised body and pointed tip at upper right. Muted burnt-orange fur, chestnut lower shadow, broad cream-white tip occupying the last third. Only three or four large angular tufts on the edge, no fine hairs, no fox body, no gore. Broad asymmetrical silhouette.",
+      "source": "docs/planning/round28/art/originals/fox_tail.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-a74ededc-d85e-4fa8-b714-622f93f8a2d8.png",
+      "palette": [
+        "51291a",
+        "803718",
+        "ac4b1b",
+        "d3702a",
+        "e69a46",
+        "b49b7d",
+        "e0cdb0",
+        "fff0d4"
+      ],
+      "name": "Fox Tail",
+      "tier": 1,
+      "family": "fox",
+      "icon": "A single fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "Soft balance at the end of a very quick animal.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_fox_tail.png",
+          "sha256": "4924b5d671520f361ff61c96f85e6cf3d0f3c8c1c85f7be8924a89f54b36ebac",
+          "bytes": 270,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 7
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_fox_tail_32.png",
+          "sha256": "9b757b754e7caa5b3aef36186f37de8b5cb756980c389b6dcf4e54c29ba3a328",
+          "bytes": 511,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 8
+        }
+      },
+      "source_sha256": "7f65bc9f3543edae7a4b8cbe69c326ca05d9cb14006733ce9017f38f96d8be70",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Cream tip remains distinct.\nSimpler tufts at 16px."
+    },
+    {
+      "id": "grug_mobs:bandit_talisman",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: one humble BANDIT TALISMAN: a small irregular ochre bone charm pendant on a thick short loop of dark brown cord, front view. Cord loop and one bulky counted knot above the charm; pendant is the dominant squat tapering pale bone shape below. Two simple dark notch cuts along one edge as lucky marks, NOT writing or runes. Worn, cheap, rustic thief's keepsake, muted ivory ochre and brown, no metal frame, no jewels, no skull, no extra dangling pieces.",
+      "source": "docs/planning/round28/art/originals/bandit_talisman.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-5f192f37-7733-4fdb-ba1b-059cba58edb7.png",
+      "palette": [
+        "30241a",
+        "60432b",
+        "94704b",
+        "aa874f",
+        "c7a566",
+        "e0c48c",
+        "f3deaf"
+      ],
+      "name": "Bandit Talisman",
+      "tier": 1,
+      "family": "outlaw",
+      "icon": "A single bandit talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_bandit_talisman.png",
+          "sha256": "7a23b5216110cd36f3dd14d7604aafec6bc864ec6f65f105df02c6c45c2b54a3",
+          "bytes": 263,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 7
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_bandit_talisman_32.png",
+          "sha256": "6dc505e35b1b13cf3f056a3a3bf0bf790cae398dfca37ea82d0a8f6a232d712a",
+          "bytes": 553,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 7
+        }
+      },
+      "source_sha256": "e7a7babadcd0b1b3c5b173184ed6c9f63e3a4d664db0b60dea4e4820be306c29",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Cord loop remains visible.\nNotches merge at 16px."
+    },
+    {
+      "id": "grug_mobs:rusted_braces",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: a single abandoned set of RUSTED DENTAL BRACES from a zombie. Funny absurd loot, THE TEETH ARE GONE: a wide U-shaped curved rusty iron dental wire connecting exactly four oversized square silver-grey brackets, orange-brown rust at joints. View slightly from above so the open horseshoe dental arc is unmistakable. Very thick wire to survive at 16 pixels, large simple brackets, muted rusty orange and grey steel. No teeth, no jaw, no gums, no face, no gore, no clothing suspenders, no bracelet gemstones.",
+      "source": "docs/planning/round28/art/originals/rusted_braces.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-07aba7eb-03db-48ac-b429-e483780b307a.png",
+      "palette": [
+        "35332e",
+        "585853",
+        "7d7c74",
+        "a7a498",
+        "dfdace",
+        "754524",
+        "a85f2a",
+        "d28a45"
+      ],
+      "name": "Rusted Braces",
+      "tier": 2,
+      "family": "zombie",
+      "icon": "A single rusted braces, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "The teeth are gone. The commitment remains.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_rusted_braces.png",
+          "sha256": "65712f807d1575ac46f9775d40a77512db90f15d3879974478b93f2ab068e903",
+          "bytes": 256,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 6
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_rusted_braces_32.png",
+          "sha256": "0f5669ac5aaabf673db0e44785315920b13e767358405c10861c1f9b480cc95f",
+          "bytes": 530,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 7
+        }
+      },
+      "source_sha256": "49de4624ab8f4b02a96fc1f86fe4ede386f99f6607497ba6416bc5dcd24ede64",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Four brackets simplify.\nMay read as metal jewellery."
+    },
+    {
+      "id": "grug_mobs:bound_wisp_mote",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, text, lettering, numbers, symbols, watermark or other objects. Not a painted skill badge or a photorealistic render. Subject: a BOUND WISP MOTE, one squat corked glass bottle containing a single pale icy turquoise wandering light. Broad round blue-grey glass body, short narrow neck with muted brown cork; large simple ivory-cyan teardrop of light sealed INSIDE. Glass indicated by two blocky pale-blue edge highlights and a dark slate-blue lower-right rim, no translucent background glow. Magical T3 reagent, subtle cool color accent, simple muted shapes. No label, no runes, no ropes, no handle, no other bottles.",
+      "source": "docs/planning/round28/art/originals/bound_wisp_mote.png",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f956-192c-7601-b34b-b1ac046f0b3e/exec-6c80bdd1-dc7e-4f3a-993b-3aa3751b901e.png",
+      "palette": [
+        "283e50",
+        "47667e",
+        "6993aa",
+        "9bc8d8",
+        "e0f6ed",
+        "80cecc",
+        "79573a",
+        "b28c61"
+      ],
+      "name": "Bound Wisp Mote",
+      "tier": 3,
+      "family": "wisp",
+      "icon": "A single bound wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
+      "description": "A small wandering light, finally persuaded to stay in a bottle.",
+      "outputs": {
+        "16": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_bound_wisp_mote.png",
+          "sha256": "f0a4acb1062fcee5b5301e76a790206abb9bb558ad116c6b8c835f6938b3713f",
+          "bytes": 315,
+          "size": [
+            16,
+            16
+          ],
+          "opaque_colors": 8
+        },
+        "32": {
+          "path": "docs/planning/round28/art/probe/grug_mobs_item_bound_wisp_mote_32.png",
+          "sha256": "df19949c580b77085827eeb11ee5df874bdd134797f2fcad570f7dc30ad1cab3",
+          "bytes": 589,
+          "size": [
+            32,
+            32
+          ],
+          "opaque_colors": 8
+        }
+      },
+      "source_sha256": "070b3498c3e8f1fdc0cec1a2d00f641e78bf3313ab24097e1985d6beda48ac1f",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "visual_note": "Bottle and light survive.\nMay read as a mana potion."
+    }
+  ],
+  "postprocess": {
+    "algorithm": "Crop alpha >= 128 bounding box; fit proportionally into 14x14 or 28x28; premultiplied-alpha BOX downsample; binary alpha threshold 128; nearest fixed material palette, no dithering; center on transparent 16x16 or 32x32 canvas. Both sizes independently use original.",
+    "outline": "No added outline: inspected mob drops use material shadows rather than a consistent 1px black stroke. Generated dark material edges are retained.",
+    "palette": "Per-asset hand-selected muted material ramps, 6-8 colors; exact RGB hex values in each asset. No manual sprite painting.",
+    "rebuild": "python3 tools/r28_art/prepare.py --originals /home/jan/projects/grudgelands-orchestration/archive/r28-art/originals/",
+    "check": "python3 tools/r28_art/prepare.py --check (committed icons and sheets; add --originals /home/jan/projects/grudgelands-orchestration/archive/r28-art/originals/ for the full re-export check)"
+  },
+  "references": [
+    {
+      "name": "Boar tusk",
+      "path": "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_boar_tusk.png",
+      "license_record": "mods/ENTITIES/grug_mobs/LICENSE-media.md",
+      "sha256": "f14e384880cc7d0a04f04bca681f3866f15a15e1f01ea6dc9a1775aa7a6e42d8",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "Grudgelands project",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "name": "Fang",
+      "path": "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_fang.png",
+      "license_record": "mods/ENTITIES/grug_mobs/LICENSE-media.md",
+      "sha256": "6a39dc04a02acf367c9513275d9a4bcc2d6241224c138fad6177473b8f064885",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "Grudgelands project",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "name": "Bear claw",
+      "path": "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_bear_claw.png",
+      "license_record": "mods/ENTITIES/grug_mobs/LICENSE-media.md",
+      "sha256": "522e1dbb916b48651d91a7eb7602df943bb9821f23e2bc5957b5b3512f7e2f77",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "Grudgelands project",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    {
+      "name": "Rotting flesh",
+      "path": "mods/ENTITIES/grug_mobs/textures/grug_mobs_item_zombie_flesh.png",
+      "license_record": "mods/ENTITIES/grug_mobs/LICENSE-media.md",
+      "sha256": "94dbe66413cf8965b3e1024257d64b5435a0991a51238573798c5b85ece04ab1",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "XSSheep / VoxeLibre contributors",
+      "license": "CC-BY-SA-4.0",
+      "source_url": "https://git.minetest.land/VoxeLibre/VoxeLibre",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    {
+      "name": "Bronze ingot",
+      "path": "mods/BASE/default/textures/default_bronze_ingot.png",
+      "license_record": "mods/BASE/default/README.txt",
+      "sha256": "5daab3aadf628788960cf0ef909358fa0eee29585949cc36149ccac99a33c1c1",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "Gambit",
+      "license": "CC-BY-SA-3.0",
+      "source_url": "https://github.com/minetest/minetest_game",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    {
+      "name": "Pumpkin stew",
+      "path": "mods/ITEMS/grug_cooking/textures/grug_cooking_dish_pumpkin_stew.png",
+      "license_record": "mods/ITEMS/grug_cooking/LICENSE-media.md",
+      "sha256": "585b53ef6c813fb0ff40ff9c32d08150b02ef7c850610c6074b4696b7ff97119",
+      "comparison_treatment": "Unmodified source pixels, nearest-neighbour enlargement on dark background; comparison only, not generation input.",
+      "author": "Grudgelands project",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    }
+  ],
+  "catalog": "docs/planning/round28/design/catalog/items.json",
+  "originals": {
+    "archive": "/home/jan/projects/grudgelands-orchestration/archive/r28-art/originals/",
+    "in_git": false,
+    "note": "The generated originals (1254x1254, about 48 MB) are kept outside the repository. A source path docs/planning/round28/art/originals/<file> names <file> in this archive; source_sha256 verifies it. prepare.py --originals <archive> re-exports from them; prepare.py --check without originals verifies the committed icons and sheets."
+  },
+  "id_substitutions": [],
+  "pillow_version": "12.3.0",
+  "script_sha256": "0f70cf5b133b7d51cec09bb50fa8be43f529f727ddfe077745f6307af1fe48be",
+  "contact_sheet": {
+    "path": "docs/planning/round28/art/probe_sheet.png",
+    "sha256": "c82a1acfa094eb360a4bca31dd252b520ed0fb6bfae96d403980b0706a5595fc",
+    "bytes": 92197
+  },
+  "originals_sheet": {
+    "path": "docs/planning/round28/art/originals_sheet.png",
+    "sha256": "e4eed6da8ce69060a2ebc59108e953daaac800b60b1e9e7e133b9097d5a9f2ed",
+    "bytes": 86772
+  },
+  "assessment": {
+    "style": "Six to eight opaque colors, binary transparency, 1px outer margin and material-shadow edges match the native item vocabulary. More shaded than the 2-color fang and 3-color bear claw; simpler than the existing generated tusk and bronze ingot.",
+    "limitations": [
+      "Rusted Braces has the weakest unlabelled meaning at 16px: the four brackets compress into a metal arc; 32px separates them better.",
+      "Bound Wisp Mote can resemble a mana potion at native size; its contained light is clearer at 32px.",
+      "Talisman edge notches merge at 16px; the cord loop and pendant carry recognition."
+    ],
+    "id_substitutions": "None; all six exact IDs exist in the C1 catalog.",
+    "food_reference_path": "The requested grug_food directory does not exist; inspected grug_cooking bread, pumpkin stew and jungle cocoa instead.",
+    "reference_selection": "The sapphire PNG was inspected but is a mineral node overlay, so the final comparison uses the actual Rotting Flesh inventory sprite instead."
+  },
+  "review": {
+    "classification": "non-trivial art probe and export tooling",
+    "implementer": "GPT-6 Astra",
+    "independent_reviewer": "Claude Opus 5.5 (coordinator review, 2026-10-02): MERGE",
+    "critical_high_findings": null,
+    "review_fix_rounds": 0,
+    "elapsed_wall_time": "unknown",
+    "user_style_approval": "2026-10-02 (Jan): Ja, die Icons finde ich gut, der Stil gefällt mir. Bitte so umsetzen.",
+    "runtime": "integrated (mods/ENTITIES/grug_mobs/textures) for the five catalogue probe ids (manifest.json probe_reuse); Rusted Braces is historical only"
+  },
+  "generation": {
+    "calls": 6,
+    "discarded_variants": 0,
+    "input_images": 0,
+    "source_handling": "All six built-in generated PNGs copied byte-for-byte into originals/. No reference images sent to generation. No CLI/API fallback.",
+    "background": "Generated RGBA alpha retained for cropping and downsampling; no chroma-key removal necessary."
+  }
+}

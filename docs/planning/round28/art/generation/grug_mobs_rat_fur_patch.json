@@ -1,0 +1,14 @@
+{
+  "id": "grug_mobs:rat_fur_patch",
+  "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, lettering, numbers, watermark or unrelated objects. Not a painted skill badge or a photorealistic render. Exaggerate the few requested distinguishing features into large readable clusters. Subject: Rat Fur Patch, tier 1: A small ragged grey fur diamond with four coarse hairs rising from its top edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering. CRITICAL native-size readability: Four SHORT BROAD coarse grey fur spikes, each at least one tenth the width of the whole diamond patch, merging into its top edge. Extremely simple three-tone cool grey fur. No thin wispy hair lines or fine fur noise.",
+  "generation_source": "/home/jan/.codex/generated_images/01a0f9a1-5f24-7a82-a918-f1496dd24654/exec-a22f9b6c-cdff-454a-ab59-20f214519868.png",
+  "source": "docs/planning/round28/art/originals/grug_mobs_rat_fur_patch.png",
+  "discarded_variants": [
+    {
+      "id": "grug_mobs:rat_fur_patch",
+      "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, lettering, numbers, watermark or unrelated objects. Not a painted skill badge or a photorealistic render. Exaggerate the few requested distinguishing features into large readable clusters. Subject: Rat Fur Patch, tier 1: A small ragged grey fur diamond with four coarse hairs rising from its top edge. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+      "generation_source": "/home/jan/.codex/generated_images/01a0f9a1-5f24-7a82-a918-f1496dd24654/exec-33eb4e03-ae3a-493e-a155-fb41d5d8823f.png",
+      "source": "docs/planning/round28/art/originals/variants/grug_mobs_rat_fur_patch.png"
+    }
+  ]
+}

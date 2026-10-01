@@ -18,7 +18,7 @@
 --    fields it forces, level clamp, display and tint by zone (persisted,
 --    idempotent, under the elite tint), drops by band with fallback and
 --    leader bonus, family alert, the pack and swarm verbs, the participant
---    drop hook, and the loot items.
+--    drop hook, and the loot items (own icon or tinted placeholder).
 -- 3. Load errors: role collision, duplicate disposition, unknown base,
 --    unknown tint, unknown drop item.
 -- Prints "R28 B2 PORTABLE PASS checks=<n>" or exits 1 listing failures.
@@ -122,6 +122,8 @@ end
 -- Virtual files: a test catalogue in memory, served to subtypes.lua's io.open.
 ------------------------------------------------------------------------------
 local virtual = {}
+-- Virtual directory listings for core.get_dir_list (the mod's textures/).
+local virtual_dirs = {}
 local real_open = io.open
 io.open = function(path, mode)
 	local text = virtual[path]
@@ -170,6 +172,7 @@ local function new_world(modpath)
 		registered_items = {},
 		get_modpath = function() return modpath end,
 		get_current_modname = function() return "grug_mobs" end,
+		get_dir_list = function(path) return virtual_dirs[path] end,
 		parse_json = json_decode,
 		colorize = function(color, text) return "(" .. color .. ")" .. text end,
 		register_craftitem = function(name, def)
@@ -343,6 +346,8 @@ end
 -- 2. The sample catalogue.
 ------------------------------------------------------------------------------
 local SAMPLE = ROOT .. "/tools/r28_b2/sample"
+-- The rat tail has its own icon; the fur patch and the ledger do not.
+virtual_dirs[SAMPLE .. "/textures"] = {"grug_mobs_item_bone.png", "grug_mobs_rat_tail.png"}
 local w = new_world(SAMPLE)
 local R = w.registered
 local boar, small = R["grug_mobs:boar"], R["grug_mobs:small_boar"]
@@ -613,7 +618,10 @@ check(filter_at and empty_at and filter_at < empty_at,
 local tail = w.items["grug_mobs:rat_tail"]
 check(tail and tail.short_description == "Rat Tail"
 	and tail.description:find("^Rat Tail\n") ~= nil, "rat tail: name and flavour line")
-check(tail.inventory_image:find("%^%[multiply:") ~= nil, "placeholder image is a tinted texture")
+check(tail.inventory_image == "grug_mobs_rat_tail.png", "own icon <mod>_<name>.png when it ships")
+check(w.items["grug_mobs:rat_fur_patch"].inventory_image:find("%^%[multiply:") ~= nil
+	and w.items["grug_mobs:crop_ledger"].inventory_image:find("%^%[multiply:") ~= nil,
+	"placeholder image (a tinted texture) without an own icon")
 check(tail._grug_icon_brief == "A pale pink rat tail curled into an S on a dark plate.",
 	"icon brief kept for C4")
 check(tail.groups.grug_material == 1, "signature item is a mob material")

@@ -15,3 +15,6 @@ tools/wp40/results/
 # Workspace state of Claude Code; local worktrees and cached instructions are
 # machine-local and must never become project authority.
 /.claude/
+# Round 28 generated art originals (~48 MB) live outside git, in the archive
+# recorded in docs/planning/round28/art/manifest.json (originals.archive).
+/docs/planning/round28/art/originals/

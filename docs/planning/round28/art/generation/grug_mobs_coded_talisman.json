@@ -1,0 +1,6 @@
+{
+  "id": "grug_mobs:coded_talisman",
+  "prompt": "Use case: stylized-concept. Asset type: ONE inventory loot sprite for Grudgelands, a voxel fantasy RPG. Generate a large square original to reduce to native 16x16 pixel art. Style: extremely simple chunky pixel-art object, broad flat clusters of 3-5 muted material colors, stepped edges, upper-left highlight, dark material-colored shadow along lower-right edge. No continuous black outline. Centered single object filling about 80 percent of the square with clear empty margin, readable silhouette, no tiny details. Background genuinely transparent. No background plate, frame, cast shadow, glow outside silhouette, scenery, lettering, numbers, watermark or unrelated objects. Not a painted skill badge or a photorealistic render. Exaggerate the few requested distinguishing features into large readable clusters. Subject: Coded Talisman, tier 3: A dark triangular wood tag crossed by three pale tally cuts, hung from a tight blue cord loop; no lettering. Readable 16 by 16 pixel inventory silhouette; transparent background, no lettering.",
+  "generation_source": "/home/jan/.codex/generated_images/01a0f9a1-5f24-7a82-a918-f1496dd24654/exec-6213d91f-94e9-4eec-81c2-617d14b8a90b.png",
+  "source": "docs/planning/round28/art/originals/grug_mobs_coded_talisman.png"
+}
