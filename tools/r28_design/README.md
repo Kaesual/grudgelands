@@ -193,6 +193,42 @@ python3 tools/r28_design/ledger.py \
 - Exit 0: the targets are rough guides for the solo route, the duo table is
   informational. `--strict` exits 1 when a band is flagged.
 
+## 4. Design overlay maps: `overlay.py`
+
+Draws a design on top of the zone atlas maps
+(`docs/planning/round28/zones/maps/<zone>.png`, same pixel scale and axes)
+so zone designs can be approved visually. Needs numpy and Pillow (the atlas
+builder's dependencies), unlike the other tools.
+
+```sh
+# optional, once: the atlas's world sample for geometry numbers (~30 s)
+for b in 0 1 2 3; do luajit tools/r28_zone_atlas/sample.lua "$PWD" 42 /tmp/grid 4 $b 4 & done; wait
+python3 tools/r28_design/overlay.py --design DIR --out /tmp/maps [--grid /tmp/grid] [--zone ZONE ...]
+```
+
+For every zone with a spawns or quests file it writes
+`<out>/<zone>.design.png`: each spawn area's shape (circle, ring, band; the
+`zone` shape and the fallback area hatched), coloured by clock (day yellow,
+night blue, both purple; the fill covers only the zone's own land, as the
+game clips areas to their zone), a label `<n> area_id L lo–hi: species`,
+camps as tents, leaders as skulls with name and level, the hubs' quest givers
+(`!`) with their lines, and a side panel listing everything. Anchors and the
+band axis resolve like `validate.py` and `spawn_areas.lua` (anchor id,
+settlement key, slot or `zone`, plus `offset`; `forward` along `front.axis`,
+`side` along +x).
+
+With `--grid` (sampler output of the seed the atlas was built with) each
+area also gets its share on the zone's own land, on water, in other zones
+and on protected ground (Round 28 ruling 3: start towns and capital cities,
+road corridors, village boxes) and the ground its hosts admit (biomes;
+`shore` as sand within 8 nodes of water at sea level, an approximation). The
+tool flags a circle centre off the zone's land or on protected ground, a
+non-shore shape mostly off the zone's land, a mostly protected area, a camp
+crossing a road corridor and an area its hosts admit nowhere, plus leaders
+off the zone's land and givers missing from the atlas (stdout and panel;
+guides, not rules). Without `--grid` the fill mask comes from the map's
+colours (approximate: neighbouring beaches and cities may be hatched too).
+
 ## Self-tests
 
 ```sh
