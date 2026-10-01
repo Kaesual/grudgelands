@@ -20,12 +20,12 @@ content requirements remain explicitly separate from delivered behavior.
   policy. Retired radial buckets have no compatibility path. Section 1 links
   the historical map evidence and the current geography/coverage authorities.
 - Stats derived, never hand-rolled: **HP = 20+5L+0.66L²,
-  raw dmg = 2+0.3L+0.005L², base XP = 10L**. Round 16 applies ×1.5 to
-  kill awards before participant splitting; Round 17 applies the startup
+  raw dmg = 2+0.3L+0.005L², XP = 25+5L** (one kill equivalent, Round 28
+  ruling 30; no further kill multiplier); Round 17 applies the startup
   `grug_mob_damage_scale` (default 1.5) exactly once to non-player damage.
   `combat_stats.md` owns settlement and exceptions. Elite armor 80
   (×3 HP, ×1.8 dmg, ×4 XP), rare armor 70 (×5 / ×2.2 / ×6), and the
-  unassigned boss tier has only ×20 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
+  boss tier has a flat 18,000 HP (normal damage, XP and armor). Speeds: aggressive **4.6**
   (4.4 until 2026-09-16,
   user ruling 2), heartland hunters 4.6
   (partly `dogshoot`), critters 3.4. One behavior verb per family;
