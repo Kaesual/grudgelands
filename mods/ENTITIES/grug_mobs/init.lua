@@ -552,7 +552,7 @@ end
 -- Reads the box off the LIVE OBJECT, never off the def, because only the
 -- object reflects the entity's ACTUAL size right now: mob_activate applies
 -- base_colbox, a child mob is scaled to half, and a tier promotion
--- (levels.lua set_tier: elite x1.6, rare x2) rescales it again. NB the tier
+-- (levels.lua set_tier: elite x1.4, rare x2) rescales it again. NB the tier
 -- scale is NOT yet applied when grug_mobs.add_mob below runs — set_tier is
 -- called by the CALLER afterwards — which is exactly why rares.lua calls this
 -- a second time once the rare has been promoted.
@@ -912,6 +912,7 @@ dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
+dofile(modpath .. "/roam_avoid.lua")
 dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/swimmer.lua")

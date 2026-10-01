@@ -132,39 +132,49 @@ local function remove_hp_bar(row)
 		row.hp_observers = nil
 		row.hp_scale_x = nil
 		row.hp_scale_y = nil
+		row.hp_height = nil
 	end
 end
 
-local function bar_height_and_scale(parent)
-	local properties = parent:get_properties() or {}
+-- Bar size in WORLD units for every mob. The bar is a sprite, and Irrlicht
+-- billboards build their vertices in world space from their own Size, so
+-- the parent's visual_size never reaches them: dividing by it (the old
+-- ordinary-mob path) drew a fox's bar at a tenth of its size and a serpent's
+-- 2.7 nodes wide. Only the attachment OFFSET lives in the parent's scaled
+-- frame (empty-bone translation inherits the scene-node scale), so the
+-- anchor height alone is divided by the parent's y scale.
+local BAR_WIDTH = 0.8
+local BAR_HEIGHT = 0.1
+-- Below the nametag, whose engine offset is selection-box max Y + 0.3 nodes.
+local BAR_LIFT = 0.12
+
+local function bar_geometry(properties, presentation)
 	local box = properties.selectionbox or properties.collisionbox or
 		{0, 0, 0, 0, 1, 0}
 	local scale = properties.visual_size or {x = 1, y = 1}
-	local sx = math.abs(scale.x or 1)
 	local sy = math.abs(scale.y or 1)
-	if sx < 0.01 then sx = 1 end
 	if sy < 0.01 then sy = 1 end
-	local entity = parent:get_luaentity()
-	local registered = entity and core.registered_entities[entity.name]
-	local presentation = entity and entity._grug_hp_bar_presentation
-		or registered and registered._grug_hp_bar_presentation
 	if presentation then
 		local anchor_y = tonumber(presentation.anchor_y)
 		local width = tonumber(presentation.width)
 		local height = tonumber(presentation.height)
 		if anchor_y and width and height and anchor_y >= 0 and width > 0
 				and height > 0 then
-			-- Empty-bone attachment translation inherits the parent's scene-node
-			-- scale. Irrlicht billboards build their vertices in world space from
-			-- their own Size, so their dimensions do not inherit that scale.
 			return anchor_y * 10 / sy, width, height
 		end
 	end
-	-- Preserve the ordinary-mob path: its legacy dimensions vary inversely
-	-- with parent scale. Only explicit profiles above use direct world sizes.
-	-- The attachment position is below the nametag, whose engine offset is
-	-- selection-box max Y + 0.3 nodes.
-	return ((box[5] or 1) + 0.12) * 10 / sy, 0.8 / sx, 0.1 / sy
+	return ((box[5] or 1) + BAR_LIFT) * 10 / sy, BAR_WIDTH, BAR_HEIGHT
+end
+-- Test seam (tools/r28_a3/portable_test.lua): the pure size arithmetic.
+grug_core.hp_bar_geometry = bar_geometry
+
+local function bar_height_and_scale(parent)
+	local properties = parent:get_properties() or {}
+	local entity = parent:get_luaentity()
+	local registered = entity and core.registered_entities[entity.name]
+	local presentation = entity and entity._grug_hp_bar_presentation
+		or registered and registered._grug_hp_bar_presentation
+	return bar_geometry(properties, presentation)
 end
 
 local function ensure_hp_bar(row)
@@ -179,7 +189,7 @@ local function ensure_hp_bar(row)
 	bar:set_attach(parent, "", {x = 0, y = height, z = 0},
 		{x = 0, y = 0, z = 0})
 	row.hp_bar = bar
-	row.hp_scale_x, row.hp_scale_y = sx, sy
+	row.hp_scale_x, row.hp_scale_y, row.hp_height = sx, sy, height
 	return bar
 end
 
@@ -212,12 +222,15 @@ local function refresh_hp_bar(row, observers)
 		math.floor(hp * 100 / hp_max + 0.5)))
 	local bar = ensure_hp_bar(row)
 	if not bar then return end
+	-- A tier promotion rescales the parent after the bar exists: its box top
+	-- and its visual_size both move the anchor, so follow the height too.
 	local height, sx, sy = bar_height_and_scale(row.parent)
-	if row.hp_scale_x ~= sx or row.hp_scale_y ~= sy then
+	if row.hp_scale_x ~= sx or row.hp_scale_y ~= sy
+			or row.hp_height ~= height then
 		bar:set_properties({visual_size = {x = sx, y = sy}})
 		bar:set_attach(row.parent, "", {x = 0, y = height, z = 0},
 			{x = 0, y = 0, z = 0})
-		row.hp_scale_x, row.hp_scale_y = sx, sy
+		row.hp_scale_x, row.hp_scale_y, row.hp_height = sx, sy, height
 	end
 	if row.hp_percent ~= percent then
 		row.hp_percent = percent
@@ -333,6 +346,27 @@ core.register_globalstep(function(dtime)
 	manage_carriers()
 end)
 
+-- The engine draws a nametag at its OWN object's selection-box max Y + 0.3, so
+-- the carrier wears a copy of its parent's box.
+local function copy_parent_box(carrier, parent)
+	local properties = parent:get_properties() or {}
+	carrier:set_properties({
+		selectionbox = properties.selectionbox or properties.collisionbox or
+			{0, 0, 0, 0, 0, 0},
+	})
+end
+
+-- A parent rescaled after its carrier exists (a tier promotion,
+-- grug_mobs levels.lua) re-copies its box so the tag rides on the new top.
+function grug_core.sync_tag_carrier_box(parent)
+	local carrier = parent and carrier_by_parent[parent]
+	if not object_valid(carrier) or not object_valid(parent) then
+		return false
+	end
+	copy_parent_box(carrier, parent)
+	return true
+end
+
 function grug_core.create_tag_carrier(parent, owner_name)
 	if not object_valid(parent) then return nil end
 	local existing = carrier_by_parent[parent]
@@ -345,11 +379,7 @@ function grug_core.create_tag_carrier(parent, owner_name)
 	if not pos then return nil end
 	local carrier = core.add_entity(pos, ENTITY_NAME)
 	if not carrier then return nil end
-	local properties = parent:get_properties() or {}
-	carrier:set_properties({
-		selectionbox = properties.selectionbox or properties.collisionbox or
-			{0, 0, 0, 0, 0, 0},
-	})
+	copy_parent_box(carrier, parent)
 	carrier:set_attach(parent, "", {x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0})
 	managed_carriers[carrier] = {parent = parent, owner_name = owner_name,

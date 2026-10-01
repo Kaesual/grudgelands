@@ -44,6 +44,8 @@ local serpent = {
 	-- nodes) to match the box below. Copied verbatim.
 	visual_size = {x = 0.3, y = 0.3},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -1.3, 0.5, 1.1, 0.8, rotate = true},
 	makes_footstep_sound = false,
 
 	-- wp6_model_notes §2.5: no run range — walk at a higher speed (§0.2).

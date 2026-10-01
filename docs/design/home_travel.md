@@ -21,6 +21,19 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   reconnecting and restarting do not reset it.
 - Death respawns the player at the bound home regardless of the return cooldown,
   without consuming or changing that cooldown. Other death rules are unchanged.
+- **Respawn is one teleport** (Round 28 ruling 16): straight to the bound
+  innkeeper's arrival, or the starting-town innkeeper when none is bound; there
+  is no intermediate stop. The player is held there through the
+  `grug_core` movement aggregator (exclusive hold: no movement, no gravity,
+  other speed effects untouched) until the destination area is emerged and the
+  arrival validated, then released. Only if that preparation fails or times out
+  does the player land in the starting town's saved start pocket, with a message.
+- No teleport (respawn, return travel, mount dismount, character creation)
+  adds a velocity derived from the server-side `get_velocity()`. After a
+  lethal fall the server still holds the pre-impact speed (it ignores a dead
+  client's position packets) while the client is already at rest, so
+  subtracting it launched the player upward by about the fall speed and the
+  second fall killed them again.
 - Load/prepare the destination before final placement. A failed preparation
   charges nothing. Revalidate character session, alive/combat state and binding
   before a delayed return completion; stale or duplicate requests cannot move a

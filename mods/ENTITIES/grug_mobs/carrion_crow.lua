@@ -68,6 +68,8 @@ local crow = {
 	-- wide). Zero asset cost: the same mesh and the same texture.
 	visual_size = {x = 14, y = 14},
 	collisionbox = {-0.3, 0, -0.3, 0.3, 0.6, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.4, -0.05, -0.85, 0.4, 1.05, 0.75, rotate = true},
 	makes_footstep_sound = false,
 
 	-- Frames verified against grug_mobs_gull.b3d itself, not against a def:

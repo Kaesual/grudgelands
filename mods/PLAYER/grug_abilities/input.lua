@@ -6,6 +6,13 @@ return function(api)
 	-- Held food time accrues per observed step, at most this much per step, so
 	-- a server stall cannot turn a click into a hold.
 	local MAX_HELD_STEP_US = 100000
+	-- A skill failure message shows on a fresh press only and the same
+	-- message at most once per NOTICE_US (Round 28 ruling 13).
+	local NOTICE_US = 1000000
+	-- A held retry of a cast that failed inside try_cast (Charge without room)
+	-- waits this long: every try resets the swing boundary, which would keep
+	-- the held Strike fallback from accumulating.
+	local RETRY_US = 250000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -71,6 +78,15 @@ return function(api)
 		reset(player, s)
 		s.cancelled = true
 	end
+	local function report(player, s, message)
+		if not message then return end
+		local now = core.get_us_time()
+		s.notices = s.notices or {}
+		local last = s.notices[message]
+		if last and now - last < NOTICE_US then return end
+		s.notices[message] = now
+		Q.flash(player, message)
+	end
 	local function new_food_press(now)
 		return {started = now, observed = now, held = 0, stage = "press"}
 	end
@@ -86,18 +102,35 @@ return function(api)
 	local function support(def)
 		return def and (def.target_kind == "self" or def.target_kind == "friendly")
 	end
-	local function usable(player, def, s)
-		return def and def.id ~= "loose" and
-			(def.repeat_policy ~= "once" or not s.used) and api.can_cast(player, def)
+	-- Can this press still try a cast of def (Loose casts by RMB only)?
+	local function castable(def, s)
+		return def and def.id ~= "loose" and def.kind == "cast" and
+			(def.repeat_policy ~= "once" or not s.used)
 	end
-	local function cast(player, def, s, hit)
-		if not usable(player, def, s) then return false end
-		if Q.try_cast(player, def, hit, true) then
+	local function silent() end
+	-- `fresh`: this attempt is the press's own decision (key-down, its
+	-- single empty-space or tap cast), so a refusal is reported; held
+	-- repeats stay silent.
+	local function cast(player, def, s, hit, fresh)
+		if not castable(def, s) then return false end
+		local refusal = api.cast_refusal(player, def)
+		if refusal then
+			if fresh then report(player, s, refusal) end
+			return false
+		end
+		local now = core.get_us_time()
+		s.failed = s.failed or {}
+		local failed = s.failed[def.id]
+		if not fresh and failed and now - failed < RETRY_US then return false end
+		local notify = fresh and function(message) report(player, s, message) end or silent
+		if Q.try_cast(player, def, hit, notify) then
+			s.failed[def.id] = nil
 			if def.repeat_policy == "once" then s.used = true end
 			s.cast_press = true -- this physical press cast (see M.cast_this_press)
 			api.delay_strike(player)
 			return true
 		end
+		s.failed[def.id] = now
 		return false
 	end
 	local function interactive(hit, distance)
@@ -124,7 +157,8 @@ return function(api)
 			s.right = "interaction"
 		elseif def and def.id == "loose" then
 			s.right = "bow"
-			Q.start_bow_draw(player)
+			local ok, err = Q.start_bow_draw(player)
+			if not ok then report(player, s, err) end
 		else
 			s.right = "other"
 		end
@@ -193,14 +227,15 @@ return function(api)
 		if hit and hit.type == "object" then
 			s.dig = nil
 			if Q.valid_target(player, hit.ref, "friendly") then
-				if support(def) and not def.offensive then cast(player, def, s, hit) end
+				if support(def) and not def.offensive then cast(player, def, s, hit, fresh) end
 				return
 			end
 			if Q.valid_target(player, hit.ref, "hostile") then
 				if def.kind == "swing" then
-					local chosen = api.swing_ready(player, def) and def or Q.registered.strike
-					api.swing(player, chosen)
-				elseif not cast(player, def, s, hit) then
+					local refusal = api.swing_refusal(player, def)
+					if refusal and fresh then report(player, s, refusal) end
+					api.swing(player, refusal and Q.registered.strike or def)
+				elseif not cast(player, def, s, hit, fresh) then
 					api.swing(player, Q.registered.strike)
 				end
 				return
@@ -213,7 +248,8 @@ return function(api)
 			if not s.dig or not same(s.dig.pos, hit.under) then
 				s.dig = {pos = vector.copy(hit.under), started = now}
 			end
-			if fresh and support(def) and usable(player, def, s) then
+			-- Readiness is checked at the tap, which reports a refusal.
+			if fresh and support(def) and castable(def, s) then
 				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
 					node = core.get_node_or_nil(hit.under).name}
 			end
@@ -222,7 +258,7 @@ return function(api)
 		s.dig = nil
 		if not s.empty_used and support(def) then
 			s.empty_used = true
-			cast(player, def, s, nil)
+			cast(player, def, s, nil, true)
 		end
 	end
 	local M = {}
@@ -290,7 +326,7 @@ return function(api)
 					same(hit.under, pending.pos) and core.get_node_or_nil(hit.under) and
 					core.get_node_or_nil(hit.under).name == pending.node and
 					core.get_us_time() - pending.started < HOLD_US then
-				cast(player, def, s, hit)
+				cast(player, def, s, hit, true)
 			end
 		end
 		s.down = down

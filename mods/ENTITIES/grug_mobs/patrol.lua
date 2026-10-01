@@ -37,8 +37,17 @@ local TICK = 1 -- s between nudges (performance rule: throttled)
 -- `pos` is passed in because both callers already fetched it; y is only used
 -- to keep the yaw horizontal.
 --
+-- The turn is INSTANT (Round 28 ruling 11). mob_class:set_velocity builds the
+-- velocity from the object's CURRENT yaw, and a smoothed turn (the former
+-- `yaw_to_pos(..., 0, 4)`) leaves that yaw where it was for four more steps,
+-- while the walk state refreshes the velocity only about once a second -- so a
+-- gate guard turned round and kept walking the old way for up to a second.
+-- Clearing `delay` also drops a smoothed random turn still in flight, which
+-- would otherwise turn the mob away again right after this.
+--
 function grug_mobs.walk_toward(self, x, z, pos)
-	self:yaw_to_pos(vector.new(x, pos.y, z), 0, 4)
+	self:yaw_to_pos(vector.new(x, pos.y, z), 0, 0)
+	self.delay = 0
 	self.state = "walk"
 	self:set_velocity(self.walk_velocity)
 end

@@ -218,8 +218,9 @@ local function projectile_trail(self, dtime)
 	})
 end
 
-local function register_breath_arrow(name, texture, effect)
+local function register_breath_arrow(name, texture, effect, label)
 	grug_mobs.register_homing_arrow(name, {
+		label = label,
 		visual = "sprite",
 		visual_size = {x = 1.4, y = 1.4},
 		textures = {texture},
@@ -237,9 +238,9 @@ local function register_breath_arrow(name, texture, effect)
 end
 
 register_breath_arrow("grug_mobs:ice_breath",
-	"grug_mobs_rock.png^[colorize:#8ee8ff:210", "rime")
+	"grug_mobs_rock.png^[colorize:#8ee8ff:210", "rime", "frost breath")
 register_breath_arrow("grug_mobs:storm_breath",
-	"grug_mobs_rock.png^[colorize:#ff7338:210", "scorch")
+	"grug_mobs_rock.png^[colorize:#ff7338:210", "scorch", "storm breath")
 
 local function distance(a, b)
 	local dx, dy, dz = b.x - a.x, b.y - a.y, b.z - a.z
@@ -785,6 +786,7 @@ local function whelp_def(opts)
 		view_range = TUNING.view,
 		visual = "mesh", mesh = opts.mesh, textures = {opts.textures},
 		visual_size = opts.whelp_size, collisionbox = opts.whelp_box,
+		selectionbox = opts.whelp_selection,
 		makes_footstep_sound = true, fall_damage = false,
 		animation = opts.animation,
 		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
@@ -808,6 +810,7 @@ local function dragon_def(id, opts, callbacks)
 		view_range = TUNING.view,
 		visual = "mesh", mesh = opts.mesh, textures = {opts.textures},
 		visual_size = opts.size, collisionbox = opts.box,
+		selectionbox = opts.selection,
 		_grug_hp_bar_presentation = opts.hp_bar_presentation,
 		makes_footstep_sound = true, fall_damage = false,
 		animation = opts.animation,
@@ -842,9 +845,15 @@ function grug_mobs.register_dragon_bosses(callbacks)
 		mesh = "grug_mobs_ice_dragon.b3d",
 		textures = {"grug_mobs_ice_dragon.png^grug_mobs_dragon_shading.png"},
 		size = {x = 8, y = 8}, box = {-3, 0, -3, 3, 8, 3},
-		hp_bar_presentation = {anchor_y = 5, width = 3, height = 0.25},
+		-- Rotated selection boxes = measured mesh bounds of the stand clip
+		-- (Round 28, tools/r28_a3); the tall collisionbox stays the movement
+		-- and breath footprint. The bar sits just under the nametag, which
+		-- the engine draws at the selection box's top + 0.3.
+		selection = {-3, -0.65, -4.8, 3, 2.65, 3, rotate = true},
+		hp_bar_presentation = {anchor_y = 2.77, width = 3, height = 0.25},
 		whelp_size = {x = 2.66, y = 2.66},
 		whelp_box = {-1, 0, -1, 1, 2.66, 1},
+		whelp_selection = {-1, -0.2, -1.6, 1, 0.9, 1, rotate = true},
 		arrow = "grug_mobs:ice_breath", effect = "rime",
 		whelp = "grug_mobs:ice_whelp", eye_height = 5,
 		animation = {
@@ -862,9 +871,11 @@ function grug_mobs.register_dragon_bosses(callbacks)
 		mesh = "grug_mobs_jungle_wyvern.b3d",
 		textures = {"grug_mobs_jungle_wyvern.png"},
 		size = {x = 8, y = 8}, box = {-2.4, 0, -2.4, 2.4, 6.4, 2.4},
-		hp_bar_presentation = {anchor_y = 4, width = 3, height = 0.25},
+		selection = {-2.55, -0.35, -4.75, 2.55, 2.85, 3.05, rotate = true},
+		hp_bar_presentation = {anchor_y = 2.97, width = 3, height = 0.25},
 		whelp_size = {x = 2.66, y = 2.66},
 		whelp_box = {-0.8, 0, -0.8, 0.8, 2.13, 0.8},
+		whelp_selection = {-0.85, -0.15, -1.6, 0.85, 0.95, 1.05, rotate = true},
 		arrow = "grug_mobs:storm_breath", effect = "scorch",
 		whelp = "grug_mobs:storm_whelp", eye_height = 4,
 		lightning = true,

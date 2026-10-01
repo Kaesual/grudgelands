@@ -578,8 +578,9 @@ replaced; git history before this rewrite records that model.
   2 nodes beyond the road edge; vegetation, POI content and spawns keep off
   it.
 - Roads and open-world bridges are world-protected (Round 25 ruling 15,
-  `world.md` §2 R1b): the road's half width plus 3 nodes on each side
-  (primary 13, secondary 11, trail 9 nodes) and ±5 nodes around the road
+  `world.md` §2 R1b): the road's half width plus 1 node on each side
+  (Round 28 ruling 1: primary 9, secondary 7, trail 5 nodes, inside the
+  vegetation exclusion above) and ±5 nodes around the road
   surface, checked analytically against the planned centreline segments.
   Claims may contain roads; the corridor stays protected inside them.
 - Starts keep their start-pad fitting (`settlements.md`); capitals keep their
@@ -1546,7 +1547,9 @@ one-cell settlement checks are unchanged.
   necropolis, Gor Drazhak a mesa shelf and Kezamba a drained/stilted cenote
   terrace. None is allowed to depend on accidental v7 land.
 - The six kings are equal civic rulers and killable level-65 elite NPCs. Every
-  king has exactly four level-60 elite royal guards. No capital is a superior
+  king has exactly four level-60 elite royal guards. The king is the tallest
+  figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
+  alike) against his elite guards' 1.4 (2.38 nodes) (Round 28 ruling 9). No capital is a superior
   faction seat. Shared faction services use the same service definition in all
   three capitals; race services and the king remain local. Essential services
   are delivered by separate passive, invulnerable NPCs and never depend on the

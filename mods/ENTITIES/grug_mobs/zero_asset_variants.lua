@@ -96,6 +96,8 @@ local frost_stray = common_ground({
 	}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.98, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -0.7, 0.55, 2.05, 0.7, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 0, stand_end = 40, stand_speed = 15,
@@ -149,6 +151,8 @@ local husk = common_ground({
 	}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.89, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.45, -0.05, -0.3, 0.45, 1.8, 0.65, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 40, stand_end = 49, stand_speed = 2,
@@ -192,6 +196,8 @@ local song_bird = {
 	textures = {{"grug_mobs_gull.png^[multiply:#78aee8"}},
 	visual_size = {x = 8, y = 8},
 	collisionbox = {-0.16, 0, -0.16, 0.16, 0.32, 0.16},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.25, -0.05, -0.5, 0.25, 0.6, 0.45, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 1, stand_end = 100, stand_speed = 30,

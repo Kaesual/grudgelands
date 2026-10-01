@@ -7,7 +7,7 @@
 --
 --   HP = 20 + 5*L + 0.66*L^2
 --   damage = 2 + 0.3*L + 0.005*L^2   XP = 10*L
---   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.6, gold tint
+--   elite: x3 HP, x1.8 dmg, x4 XP, armor 80, scale x1.4, gold tint
 --   rare:  x5 HP, x2.2 dmg, x6 XP, armor 70, scale x2,   violet tint
 --   boss:  18000 HP flat (fixed apex encounter budget)
 --
@@ -73,7 +73,9 @@ local TIERS = {
 	critter = {hp = 1, dmg = 1, xp = 1, armor = nil, scale = 1,
 		tint = nil, prefix = "",
 		level = 1, hp_flat = 1, xp_flat = 0, fall_damage = false},
-	elite = {hp = 3, dmg = 1.8, xp = 4, armor = 80, scale = 1.6,
+	-- Elite scale 1.4 for every elite (Round 28 ruling 9): at 1.6 the city
+	-- watch and the royal guards towered over their own king.
+	elite = {hp = 3, dmg = 1.8, xp = 4, armor = 80, scale = 1.4,
 		tint = "#ffa800:80", prefix = "Elite ", telegraph = true},
 	-- UTF-8 written literally: \u{} escapes are LuaJIT-only (luanti-lua.md).
 	rare = {hp = 5, dmg = 2.2, xp = 6, armor = 70, scale = 2,
@@ -282,6 +284,9 @@ local function apply_tier_visuals(self)
 	local factor = tier_def(tier).scale / tier_def(applied).scale
 	if factor ~= 1 then
 		mobs:scale_mob(self, factor, factor, true)
+		-- The nametag carrier copied the old box when it was made; the tag
+		-- has to ride on the rescaled top (the HP bar follows on its own).
+		grug_core.sync_tag_carrier_box(self.object)
 	end
 	if self._grug_base_texture == nil then
 		self._grug_base_texture = self.base_texture

@@ -66,6 +66,8 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	textures = {{"grug_mobs_kraken.png"}},
 	visual_size = {x = 6, y = 6},
 	collisionbox = {-0.8, 0.0, -0.8, 0.8, 1.8, 0.8},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-2.2, -1.1, -3.05, 2.2, 3.3, 0.95, rotate = true},
 	makes_footstep_sound = false,
 
 	-- One swim loop; punch reuses it, the model has no attack animation.

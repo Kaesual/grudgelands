@@ -88,6 +88,8 @@ local rift = {
 	textures = {{"grug_mobs_rift_spawn.png", "grug_mobs_blank.png"}},
 	visual_size = {x = 2, y = 2},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.69, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.35, -0.05, -0.9, 0.35, 1.65, 0.5, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 0, stand_end = 23, stand_speed = 30,
