@@ -1,0 +1,30 @@
+{
+  "purpose": "Arithmetic fixture only; no authored geometry or giver allocation. Climax sources are actual fixed-level normal leaders; other combat rows adapt base labels to integrated catalogue families.",
+  "start_level": 10,
+  "human": true,
+  "repeat": 0,
+  "zones": [
+    "elandor_goldmead_vale"
+  ],
+  "columns": [
+    "zone",
+    "kind",
+    "level",
+    "min_level",
+    "weight",
+    "count",
+    "source"
+  ],
+  "rows": [
+    [0, "kill", 11, 10, 5, 10, "boar"],
+    [0, "item", 12, 11, 4, 8, "grug_materials:iron_bar"],
+    [0, "kill", 13, 12, 5, 10, "zombie"],
+    [0, "item", 14, 12, 4, 20, "mobs:meat_raw"],
+    [0, "kill", 15, 14, 5, 10, "fox"],
+    [0, "item", 16, 14, 4, 4, "grug_materials:rough_citrine"],
+    [0, "kill", 17, 15, 5, 10, "bandit"],
+    [0, "item", 18, 16, 4, 15, "default:coal_lump"],
+    [0, "climax", 19, 17, 6, 1, "requisitioner_hobb"],
+    [0, "talk", 19, 17, 1.5, 1, "r20_human_capital_envoy"]
+  ]
+}

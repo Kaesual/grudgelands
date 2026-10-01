@@ -1,0 +1,38 @@
+[
+  {
+    "id": "plague_boar",
+    "texture": "grug_mobs_boar_plague.png"
+  },
+  {
+    "id": "jungle_boar",
+    "texture": "grug_mobs_boar_jungle.png"
+  },
+  {
+    "id": "gaunt_stag",
+    "texture": "grug_mobs_stag_gaunt.png"
+  },
+  {
+    "id": "blightfang_wolf",
+    "texture": "grug_mobs_wolf_blightfang.png"
+  },
+  {
+    "id": "plaguehide_bear",
+    "texture": "grug_mobs_bear_plaguehide.png"
+  },
+  {
+    "id": "sallow",
+    "modifier": "^[multiply:#b7bd8a"
+  },
+  {
+    "id": "moss",
+    "modifier": "^[multiply:#9fb785"
+  },
+  {
+    "id": "ochre",
+    "modifier": "^[multiply:#c5ab7b"
+  },
+  {
+    "id": "bone_weevil",
+    "texture": "grug_mobs_bone_weevil.png"
+  }
+]
