@@ -1,0 +1,3150 @@
+[
+  {
+    "role": "small_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Small Boar",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      1,
+      3
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Small Plague Boar",
+      "kragmar_mournfen": "Small Plague Boar",
+      "kragmar_nhal_veyr": "Small Plague Boar",
+      "kragmar_ossuary_reach": "Small Plague Boar",
+      "kragmar_blackwind_rise": "Small Plague Boar",
+      "front_gravesalt_escarpment": "Small Plague Boar",
+      "kragmar_kapok_cradle": "Small Jungle Boar",
+      "kragmar_raincall_basin": "Small Jungle Boar",
+      "kragmar_kezamba": "Small Jungle Boar",
+      "kragmar_whispering_reedlands": "Small Jungle Boar",
+      "kragmar_totemwater_reach": "Small Jungle Boar",
+      "kragmar_thunderroot_wilds": "Small Jungle Boar",
+      "front_skyglass_canopy": "Small Jungle Boar",
+      "front_stormscale_summit": "Small Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "aggressive_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Aggressive Boar",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Aggressive Plague Boar",
+      "kragmar_mournfen": "Aggressive Plague Boar",
+      "kragmar_nhal_veyr": "Aggressive Plague Boar",
+      "kragmar_ossuary_reach": "Aggressive Plague Boar",
+      "kragmar_blackwind_rise": "Aggressive Plague Boar",
+      "front_gravesalt_escarpment": "Aggressive Plague Boar",
+      "kragmar_kapok_cradle": "Aggressive Jungle Boar",
+      "kragmar_raincall_basin": "Aggressive Jungle Boar",
+      "kragmar_kezamba": "Aggressive Jungle Boar",
+      "kragmar_whispering_reedlands": "Aggressive Jungle Boar",
+      "kragmar_totemwater_reach": "Aggressive Jungle Boar",
+      "kragmar_thunderroot_wilds": "Aggressive Jungle Boar",
+      "front_skyglass_canopy": "Aggressive Jungle Boar",
+      "front_stormscale_summit": "Aggressive Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "young_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Young Boar",
+    "size": 0.9,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      14
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Young Plague Boar",
+      "kragmar_mournfen": "Young Plague Boar",
+      "kragmar_nhal_veyr": "Young Plague Boar",
+      "kragmar_ossuary_reach": "Young Plague Boar",
+      "kragmar_blackwind_rise": "Young Plague Boar",
+      "front_gravesalt_escarpment": "Young Plague Boar",
+      "kragmar_kapok_cradle": "Young Jungle Boar",
+      "kragmar_raincall_basin": "Young Jungle Boar",
+      "kragmar_kezamba": "Young Jungle Boar",
+      "kragmar_whispering_reedlands": "Young Jungle Boar",
+      "kragmar_totemwater_reach": "Young Jungle Boar",
+      "kragmar_thunderroot_wilds": "Young Jungle Boar",
+      "front_skyglass_canopy": "Young Jungle Boar",
+      "front_stormscale_summit": "Young Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "bristling_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Bristling Boar",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      15,
+      20
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Bristling Plague Boar",
+      "kragmar_mournfen": "Bristling Plague Boar",
+      "kragmar_nhal_veyr": "Bristling Plague Boar",
+      "kragmar_ossuary_reach": "Bristling Plague Boar",
+      "kragmar_blackwind_rise": "Bristling Plague Boar",
+      "front_gravesalt_escarpment": "Bristling Plague Boar",
+      "kragmar_kapok_cradle": "Bristling Jungle Boar",
+      "kragmar_raincall_basin": "Bristling Jungle Boar",
+      "kragmar_kezamba": "Bristling Jungle Boar",
+      "kragmar_whispering_reedlands": "Bristling Jungle Boar",
+      "kragmar_totemwater_reach": "Bristling Jungle Boar",
+      "kragmar_thunderroot_wilds": "Bristling Jungle Boar",
+      "front_skyglass_canopy": "Bristling Jungle Boar",
+      "front_stormscale_summit": "Bristling Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "furrow_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Furrow Boar",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      21,
+      24
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Furrow Plague Boar",
+      "kragmar_mournfen": "Furrow Plague Boar",
+      "kragmar_nhal_veyr": "Furrow Plague Boar",
+      "kragmar_ossuary_reach": "Furrow Plague Boar",
+      "kragmar_blackwind_rise": "Furrow Plague Boar",
+      "front_gravesalt_escarpment": "Furrow Plague Boar",
+      "kragmar_kapok_cradle": "Furrow Jungle Boar",
+      "kragmar_raincall_basin": "Furrow Jungle Boar",
+      "kragmar_kezamba": "Furrow Jungle Boar",
+      "kragmar_whispering_reedlands": "Furrow Jungle Boar",
+      "kragmar_totemwater_reach": "Furrow Jungle Boar",
+      "kragmar_thunderroot_wilds": "Furrow Jungle Boar",
+      "front_skyglass_canopy": "Furrow Jungle Boar",
+      "front_stormscale_summit": "Furrow Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "monstrous_boar",
+    "family": "boar",
+    "base": "grug_mobs:boar",
+    "display": "Monstrous Boar",
+    "size": 1.25,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      25,
+      30
+    ],
+    "drops": "boar",
+    "notes": "Day. Charge behaviour remains; neutral roles are single pulls. Starts/home zones of all six races; older roles also Highcourt, Nhal Veyr and Kezamba outskirts, Whitebridge.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Monstrous Plague Boar",
+      "kragmar_mournfen": "Monstrous Plague Boar",
+      "kragmar_nhal_veyr": "Monstrous Plague Boar",
+      "kragmar_ossuary_reach": "Monstrous Plague Boar",
+      "kragmar_blackwind_rise": "Monstrous Plague Boar",
+      "front_gravesalt_escarpment": "Monstrous Plague Boar",
+      "kragmar_kapok_cradle": "Monstrous Jungle Boar",
+      "kragmar_raincall_basin": "Monstrous Jungle Boar",
+      "kragmar_kezamba": "Monstrous Jungle Boar",
+      "kragmar_whispering_reedlands": "Monstrous Jungle Boar",
+      "kragmar_totemwater_reach": "Monstrous Jungle Boar",
+      "kragmar_thunderroot_wilds": "Monstrous Jungle Boar",
+      "front_skyglass_canopy": "Monstrous Jungle Boar",
+      "front_stormscale_summit": "Monstrous Jungle Boar"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plague_boar",
+      "kragmar_mournfen": "plague_boar",
+      "kragmar_nhal_veyr": "plague_boar",
+      "kragmar_ossuary_reach": "plague_boar",
+      "kragmar_blackwind_rise": "plague_boar",
+      "front_gravesalt_escarpment": "plague_boar",
+      "kragmar_kapok_cradle": "jungle_boar",
+      "kragmar_raincall_basin": "jungle_boar",
+      "kragmar_kezamba": "jungle_boar",
+      "kragmar_whispering_reedlands": "jungle_boar",
+      "kragmar_totemwater_reach": "jungle_boar",
+      "kragmar_thunderroot_wilds": "jungle_boar",
+      "front_skyglass_canopy": "jungle_boar",
+      "front_stormscale_summit": "jungle_boar"
+    }
+  },
+  {
+    "role": "large_rat",
+    "family": "rat",
+    "base": "grug_mobs:giant_rat",
+    "display": "Large Rat",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      1,
+      3
+    ],
+    "drops": "rat",
+    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Large Grave Rat",
+      "kragmar_mournfen": "Large Grave Rat",
+      "kragmar_nhal_veyr": "Large Grave Rat",
+      "kragmar_ossuary_reach": "Large Grave Rat",
+      "kragmar_blackwind_rise": "Large Grave Rat",
+      "front_gravesalt_escarpment": "Large Grave Rat",
+      "kragmar_kapok_cradle": "Large Kapok Rat",
+      "kragmar_raincall_basin": "Large Kapok Rat",
+      "kragmar_kezamba": "Large Kapok Rat",
+      "kragmar_whispering_reedlands": "Large Kapok Rat",
+      "kragmar_totemwater_reach": "Large Kapok Rat",
+      "kragmar_thunderroot_wilds": "Large Kapok Rat",
+      "front_skyglass_canopy": "Large Kapok Rat",
+      "front_stormscale_summit": "Large Kapok Rat",
+      "kragmar_sunscar_flats": "Large Dust Rat",
+      "kragmar_redtusk_savanna": "Large Dust Rat",
+      "kragmar_gor_drazhak": "Large Dust Rat",
+      "kragmar_speargrass_reach": "Large Dust Rat",
+      "kragmar_bannerbreak_mesa": "Large Dust Rat",
+      "front_shattered_line": "Large Dust Rat"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "sallow",
+      "kragmar_mournfen": "sallow",
+      "kragmar_nhal_veyr": "sallow",
+      "kragmar_ossuary_reach": "sallow",
+      "kragmar_blackwind_rise": "sallow",
+      "front_gravesalt_escarpment": "sallow",
+      "kragmar_kapok_cradle": "moss",
+      "kragmar_raincall_basin": "moss",
+      "kragmar_kezamba": "moss",
+      "kragmar_whispering_reedlands": "moss",
+      "kragmar_totemwater_reach": "moss",
+      "kragmar_thunderroot_wilds": "moss",
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss",
+      "kragmar_sunscar_flats": "ochre",
+      "kragmar_redtusk_savanna": "ochre",
+      "kragmar_gor_drazhak": "ochre",
+      "kragmar_speargrass_reach": "ochre",
+      "kragmar_bannerbreak_mesa": "ochre",
+      "front_shattered_line": "ochre"
+    }
+  },
+  {
+    "role": "rabid_rat",
+    "family": "rat",
+    "base": "grug_mobs:giant_rat",
+    "display": "Rabid Rat",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "rat",
+    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Rabid Grave Rat",
+      "kragmar_mournfen": "Rabid Grave Rat",
+      "kragmar_nhal_veyr": "Rabid Grave Rat",
+      "kragmar_ossuary_reach": "Rabid Grave Rat",
+      "kragmar_blackwind_rise": "Rabid Grave Rat",
+      "front_gravesalt_escarpment": "Rabid Grave Rat",
+      "kragmar_kapok_cradle": "Rabid Kapok Rat",
+      "kragmar_raincall_basin": "Rabid Kapok Rat",
+      "kragmar_kezamba": "Rabid Kapok Rat",
+      "kragmar_whispering_reedlands": "Rabid Kapok Rat",
+      "kragmar_totemwater_reach": "Rabid Kapok Rat",
+      "kragmar_thunderroot_wilds": "Rabid Kapok Rat",
+      "front_skyglass_canopy": "Rabid Kapok Rat",
+      "front_stormscale_summit": "Rabid Kapok Rat",
+      "kragmar_sunscar_flats": "Rabid Dust Rat",
+      "kragmar_redtusk_savanna": "Rabid Dust Rat",
+      "kragmar_gor_drazhak": "Rabid Dust Rat",
+      "kragmar_speargrass_reach": "Rabid Dust Rat",
+      "kragmar_bannerbreak_mesa": "Rabid Dust Rat",
+      "front_shattered_line": "Rabid Dust Rat"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "sallow",
+      "kragmar_mournfen": "sallow",
+      "kragmar_nhal_veyr": "sallow",
+      "kragmar_ossuary_reach": "sallow",
+      "kragmar_blackwind_rise": "sallow",
+      "front_gravesalt_escarpment": "sallow",
+      "kragmar_kapok_cradle": "moss",
+      "kragmar_raincall_basin": "moss",
+      "kragmar_kezamba": "moss",
+      "kragmar_whispering_reedlands": "moss",
+      "kragmar_totemwater_reach": "moss",
+      "kragmar_thunderroot_wilds": "moss",
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss",
+      "kragmar_sunscar_flats": "ochre",
+      "kragmar_redtusk_savanna": "ochre",
+      "kragmar_gor_drazhak": "ochre",
+      "kragmar_speargrass_reach": "ochre",
+      "kragmar_bannerbreak_mesa": "ochre",
+      "front_shattered_line": "ochre"
+    }
+  },
+  {
+    "role": "monstrous_rat",
+    "family": "rat",
+    "base": "grug_mobs:giant_rat",
+    "display": "Monstrous Rat",
+    "size": 1.25,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "rat",
+    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Monstrous Grave Rat",
+      "kragmar_mournfen": "Monstrous Grave Rat",
+      "kragmar_nhal_veyr": "Monstrous Grave Rat",
+      "kragmar_ossuary_reach": "Monstrous Grave Rat",
+      "kragmar_blackwind_rise": "Monstrous Grave Rat",
+      "front_gravesalt_escarpment": "Monstrous Grave Rat",
+      "kragmar_kapok_cradle": "Monstrous Kapok Rat",
+      "kragmar_raincall_basin": "Monstrous Kapok Rat",
+      "kragmar_kezamba": "Monstrous Kapok Rat",
+      "kragmar_whispering_reedlands": "Monstrous Kapok Rat",
+      "kragmar_totemwater_reach": "Monstrous Kapok Rat",
+      "kragmar_thunderroot_wilds": "Monstrous Kapok Rat",
+      "front_skyglass_canopy": "Monstrous Kapok Rat",
+      "front_stormscale_summit": "Monstrous Kapok Rat",
+      "kragmar_sunscar_flats": "Monstrous Dust Rat",
+      "kragmar_redtusk_savanna": "Monstrous Dust Rat",
+      "kragmar_gor_drazhak": "Monstrous Dust Rat",
+      "kragmar_speargrass_reach": "Monstrous Dust Rat",
+      "kragmar_bannerbreak_mesa": "Monstrous Dust Rat",
+      "front_shattered_line": "Monstrous Dust Rat"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "sallow",
+      "kragmar_mournfen": "sallow",
+      "kragmar_nhal_veyr": "sallow",
+      "kragmar_ossuary_reach": "sallow",
+      "kragmar_blackwind_rise": "sallow",
+      "front_gravesalt_escarpment": "sallow",
+      "kragmar_kapok_cradle": "moss",
+      "kragmar_raincall_basin": "moss",
+      "kragmar_kezamba": "moss",
+      "kragmar_whispering_reedlands": "moss",
+      "kragmar_totemwater_reach": "moss",
+      "kragmar_thunderroot_wilds": "moss",
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss",
+      "kragmar_sunscar_flats": "ochre",
+      "kragmar_redtusk_savanna": "ochre",
+      "kragmar_gor_drazhak": "ochre",
+      "kragmar_speargrass_reach": "ochre",
+      "kragmar_bannerbreak_mesa": "ochre",
+      "front_shattered_line": "ochre"
+    }
+  },
+  {
+    "role": "granary_rat",
+    "family": "rat",
+    "base": "grug_mobs:giant_rat",
+    "display": "Granary Rat",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      14
+    ],
+    "drops": "rat",
+    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Granary Grave Rat",
+      "kragmar_mournfen": "Granary Grave Rat",
+      "kragmar_nhal_veyr": "Granary Grave Rat",
+      "kragmar_ossuary_reach": "Granary Grave Rat",
+      "kragmar_blackwind_rise": "Granary Grave Rat",
+      "front_gravesalt_escarpment": "Granary Grave Rat",
+      "kragmar_kapok_cradle": "Granary Kapok Rat",
+      "kragmar_raincall_basin": "Granary Kapok Rat",
+      "kragmar_kezamba": "Granary Kapok Rat",
+      "kragmar_whispering_reedlands": "Granary Kapok Rat",
+      "kragmar_totemwater_reach": "Granary Kapok Rat",
+      "kragmar_thunderroot_wilds": "Granary Kapok Rat",
+      "front_skyglass_canopy": "Granary Kapok Rat",
+      "front_stormscale_summit": "Granary Kapok Rat",
+      "kragmar_sunscar_flats": "Granary Dust Rat",
+      "kragmar_redtusk_savanna": "Granary Dust Rat",
+      "kragmar_gor_drazhak": "Granary Dust Rat",
+      "kragmar_speargrass_reach": "Granary Dust Rat",
+      "kragmar_bannerbreak_mesa": "Granary Dust Rat",
+      "front_shattered_line": "Granary Dust Rat"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "sallow",
+      "kragmar_mournfen": "sallow",
+      "kragmar_nhal_veyr": "sallow",
+      "kragmar_ossuary_reach": "sallow",
+      "kragmar_blackwind_rise": "sallow",
+      "front_gravesalt_escarpment": "sallow",
+      "kragmar_kapok_cradle": "moss",
+      "kragmar_raincall_basin": "moss",
+      "kragmar_kezamba": "moss",
+      "kragmar_whispering_reedlands": "moss",
+      "kragmar_totemwater_reach": "moss",
+      "kragmar_thunderroot_wilds": "moss",
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss",
+      "kragmar_sunscar_flats": "ochre",
+      "kragmar_redtusk_savanna": "ochre",
+      "kragmar_gor_drazhak": "ochre",
+      "kragmar_speargrass_reach": "ochre",
+      "kragmar_bannerbreak_mesa": "ochre",
+      "front_shattered_line": "ochre"
+    }
+  },
+  {
+    "role": "mangy_rat",
+    "family": "rat",
+    "base": "grug_mobs:giant_rat",
+    "display": "Mangy Rat",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      15,
+      20
+    ],
+    "drops": "rat",
+    "notes": "Night. All six start/home zones; dry ground outside town or village protection. The L7-9 role is an alternative inland finale-area animal, not an extra required hunt.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Mangy Grave Rat",
+      "kragmar_mournfen": "Mangy Grave Rat",
+      "kragmar_nhal_veyr": "Mangy Grave Rat",
+      "kragmar_ossuary_reach": "Mangy Grave Rat",
+      "kragmar_blackwind_rise": "Mangy Grave Rat",
+      "front_gravesalt_escarpment": "Mangy Grave Rat",
+      "kragmar_kapok_cradle": "Mangy Kapok Rat",
+      "kragmar_raincall_basin": "Mangy Kapok Rat",
+      "kragmar_kezamba": "Mangy Kapok Rat",
+      "kragmar_whispering_reedlands": "Mangy Kapok Rat",
+      "kragmar_totemwater_reach": "Mangy Kapok Rat",
+      "kragmar_thunderroot_wilds": "Mangy Kapok Rat",
+      "front_skyglass_canopy": "Mangy Kapok Rat",
+      "front_stormscale_summit": "Mangy Kapok Rat",
+      "kragmar_sunscar_flats": "Mangy Dust Rat",
+      "kragmar_redtusk_savanna": "Mangy Dust Rat",
+      "kragmar_gor_drazhak": "Mangy Dust Rat",
+      "kragmar_speargrass_reach": "Mangy Dust Rat",
+      "kragmar_bannerbreak_mesa": "Mangy Dust Rat",
+      "front_shattered_line": "Mangy Dust Rat"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "sallow",
+      "kragmar_mournfen": "sallow",
+      "kragmar_nhal_veyr": "sallow",
+      "kragmar_ossuary_reach": "sallow",
+      "kragmar_blackwind_rise": "sallow",
+      "front_gravesalt_escarpment": "sallow",
+      "kragmar_kapok_cradle": "moss",
+      "kragmar_raincall_basin": "moss",
+      "kragmar_kezamba": "moss",
+      "kragmar_whispering_reedlands": "moss",
+      "kragmar_totemwater_reach": "moss",
+      "kragmar_thunderroot_wilds": "moss",
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss",
+      "kragmar_sunscar_flats": "ochre",
+      "kragmar_redtusk_savanna": "ochre",
+      "kragmar_gor_drazhak": "ochre",
+      "kragmar_speargrass_reach": "ochre",
+      "kragmar_bannerbreak_mesa": "ochre",
+      "front_shattered_line": "ochre"
+    }
+  },
+  {
+    "role": "quiet_shore_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Shore Crab",
+    "size": 0.9,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      3,
+      5
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "giant_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Giant Crab",
+    "size": 1.3,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "tidepool_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Tidepool Crab",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      14
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "reefclaw_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Reefclaw Crab",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      15,
+      20
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "bank_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Bank Crab",
+    "size": 1.05,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      21,
+      24
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "armored_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Armored Crab",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      25,
+      30
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "breakwater_crab",
+    "family": "crab",
+    "base": "grug_mobs:shore_crab",
+    "display": "Breakwater Crab",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "crab",
+    "notes": "Day, shore:true only. T1/T2 every start/home coast; T3 heartland shores; T4 Stormvault, Glassroot, Blackwind and Thunderroot shores. Normal tier; not the elite Reef Lurker."
+  },
+  {
+    "role": "braindead_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Braindead Zombie",
+    "size": 0.9,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      3,
+      5
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "sluggish_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Sluggish Zombie",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "drowned_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Drowned Zombie",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override. Shore:true; does not become a swimmer."
+  },
+  {
+    "role": "moaning_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Moaning Zombie",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      15
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "muttering_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Muttering Zombie",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      16,
+      20
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "debtbound_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Debtbound Zombie",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      25
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "stubborn_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Stubborn Zombie",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      26,
+      30
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "marching_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Marching Zombie",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      35
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "unrelenting_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Unrelenting Zombie",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      36,
+      40
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override."
+  },
+  {
+    "role": "saltbound_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Saltbound Zombie",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      55
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override.",
+    "display_by_zone": {
+      "front_skyglass_canopy": "Saltbound Vinebound Zombie",
+      "front_stormscale_summit": "Saltbound Vinebound Zombie"
+    },
+    "tint_by_zone": {
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss"
+    }
+  },
+  {
+    "role": "last_watch_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Last-Watch Zombie",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      56,
+      60
+    ],
+    "drops": "zombie",
+    "notes": "Night; burns in sun unless spawned on blight dirt. Undead night truce remains. T1/T2 non-orc tracks; T3 all non-arid capitals/heartlands; T4 non-arid contested zones and Causeway; T6 Gravesalt, Skyglass and islands. Sluggish describes the personality, not a speed override.",
+    "display_by_zone": {
+      "front_skyglass_canopy": "Last-Watch Vinebound Zombie",
+      "front_stormscale_summit": "Last-Watch Vinebound Zombie"
+    },
+    "tint_by_zone": {
+      "front_skyglass_canopy": "moss",
+      "front_stormscale_summit": "moss"
+    }
+  },
+  {
+    "role": "befuddled_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Befuddled Sun-Dried Husk",
+    "size": 0.9,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      3,
+      5
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "sluggish_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Sluggish Sun-Dried Husk",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "salt_caked_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Salt-Caked Sun-Dried Husk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "muttering_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Muttering Sun-Dried Husk",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      15
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "parched_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Parched Sun-Dried Husk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      16,
+      20
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "debtbound_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Debtbound Sun-Dried Husk",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      25
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "stubborn_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Stubborn Sun-Dried Husk",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      26,
+      30
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "marching_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Marching Sun-Dried Husk",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      35
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "unrelenting_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Unrelenting Sun-Dried Husk",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      36,
+      40
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "siege_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Siege-Worn Sun-Dried Husk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      45
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "unburied_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Unburied Sun-Dried Husk",
+    "size": 1.2,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      46,
+      50
+    ],
+    "drops": "zombie",
+    "notes": "Night in orc/arid zones (T5 Shattered Line). The husk base remains sunproof; never teach sunlight damage from this target. Same zombie drop family. Salt-Caked is the start shore role."
+  },
+  {
+    "role": "small_fox",
+    "family": "fox",
+    "base": "grug_mobs:fox",
+    "display": "Small Fox",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "fox",
+    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+  },
+  {
+    "role": "young_fox",
+    "family": "fox",
+    "base": "grug_mobs:fox",
+    "display": "Young Fox",
+    "size": 0.9,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      14
+    ],
+    "drops": "fox",
+    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+  },
+  {
+    "role": "rabid_fox",
+    "family": "fox",
+    "base": "grug_mobs:fox",
+    "display": "Rabid Fox",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      15,
+      20
+    ],
+    "drops": "fox",
+    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+  },
+  {
+    "role": "orchard_fox",
+    "family": "fox",
+    "base": "grug_mobs:fox",
+    "display": "Orchard Fox",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      21,
+      24
+    ],
+    "drops": "fox",
+    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+  },
+  {
+    "role": "redfang_fox",
+    "family": "fox",
+    "base": "grug_mobs:fox",
+    "display": "Redfang Fox",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      25,
+      30
+    ],
+    "drops": "fox",
+    "notes": "Day. Accord start/home zones; T3 Highcourt and Lethariel outskirts. Hit-and-run bite retained; neutral roles never group-alert."
+  },
+  {
+    "role": "confused_bandit",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Confused Bandit",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      9,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint.",
+    "display_by_zone": {
+      "elandor_hearthpine_vale": "Confused Ore Thief",
+      "elandor_dawnmere_fields": "Confused Bandit",
+      "elandor_silverleaf_glades": "Confused Wood Thief",
+      "kragmar_stillgrave_hollow": "Confused Grave Robber",
+      "kragmar_sunscar_flats": "Confused Water Thief",
+      "kragmar_kapok_cradle": "Confused Offering Thief"
+    }
+  },
+  {
+    "role": "quarrelsome_bandit",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Quarrelsome Bandit",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      15
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "watchful_bandit_archer",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Watchful Bandit Archer",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      16,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "toll_bandit",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Toll Bandit",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      25
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "toll_bandit_archer",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Toll Bandit Archer",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      26,
+      30
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "entrenched_bandit",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Entrenched Bandit",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      35
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "entrenched_bandit_archer",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Entrenched Bandit Archer",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      36,
+      40
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "siege_deserter",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Siege Deserter",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      45
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "siege_deserter_archer",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Siege Deserter Archer",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      46,
+      50
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "saltroad_deserter",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Saltroad Deserter",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      55
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "last_pay_archer",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Last-Pay Archer",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      56,
+      60
+    ],
+    "drops": "outlaw",
+    "notes": "Night ordinary areas. Starts: defined border point; homes: existing bandit camp; T3: outskirts/heartland extortion areas; T4: six hideouts and Causeway scavengers; T5/T6: clash-site salvage crews, islands beside existing apex camp. Race skin supplied by the existing factory, not the tint."
+  },
+  {
+    "role": "furtive_poacher",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Furtive Poacher",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+  },
+  {
+    "role": "snaring_poacher",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Snaring Poacher",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+  },
+  {
+    "role": "licensed_poacher",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Unlicensed Poacher",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      30
+    ],
+    "drops": "outlaw",
+    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+  },
+  {
+    "role": "wartrail_poacher",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Wartrail Poacher",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "outlaw",
+    "notes": "Night. Silverleaf only at T1; Goldmead/Starbough T2; Whitebridge, Lethariel, Lorindor, Moonfall T3; Ashenward/Glassroot T4. Ranged arrow user. No actual snare or licence mechanic."
+  },
+  {
+    "role": "young_ibex",
+    "family": "ibex",
+    "base": "grug_mobs:ibex",
+    "display": "Young Ibex",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "grazer",
+    "notes": "Day; Hearthpine. Single-pull hill grazer, never a critter."
+  },
+  {
+    "role": "surefoot_ibex",
+    "family": "ibex",
+    "base": "grug_mobs:ibex",
+    "display": "Surefoot Ibex",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "grazer",
+    "notes": "Day; Copperfell, Dur Brannoc, Frostbarrow."
+  },
+  {
+    "role": "ridge_ibex",
+    "family": "ibex",
+    "base": "grug_mobs:ibex",
+    "display": "Ridge Ibex",
+    "size": 1.1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "grazer",
+    "notes": "Day; Stormvault."
+  },
+  {
+    "role": "young_plains_runner",
+    "family": "plains_runner",
+    "base": "grug_mobs:plains_runner",
+    "display": "Young Plains Runner",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "grazer",
+    "notes": "Day; Sunscar. Neutral alternative to the poison lesson."
+  },
+  {
+    "role": "young_tapir",
+    "family": "tapir",
+    "base": "grug_mobs:tapir",
+    "display": "Young Tapir",
+    "size": 0.85,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "grazer",
+    "notes": "Day; Kapok."
+  },
+  {
+    "role": "reed_tapir",
+    "family": "tapir",
+    "base": "grug_mobs:tapir",
+    "display": "Reed Tapir",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "grazer",
+    "notes": "Day; Raincall, Kezamba, Whispering, Totemwater."
+  },
+  {
+    "role": "watchful_zebra",
+    "family": "zebra",
+    "base": "grug_mobs:zebra",
+    "display": "Watchful Zebra",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "grazer",
+    "notes": "Day; Redtusk, Gor Drazhak, Speargrass."
+  },
+  {
+    "role": "hill_ram",
+    "family": "ram",
+    "base": "grug_mobs:mountain_ram",
+    "display": "Hill Ram",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      21,
+      30
+    ],
+    "drops": "grazer",
+    "notes": "Day; Dur Brannoc and Frostbarrow."
+  },
+  {
+    "role": "storm_ridge_ram",
+    "family": "ram",
+    "base": "grug_mobs:mountain_ram",
+    "display": "Storm-Ridge Ram",
+    "size": 1.1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "grazer",
+    "notes": "Day; Stormvault."
+  },
+  {
+    "role": "rimehorn_ram",
+    "family": "ram",
+    "base": "grug_mobs:mountain_ram",
+    "display": "Rimehorn Ram",
+    "size": 1.2,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "grazer",
+    "notes": "Day; Wyrmglass island. Ordinary material source independent of its dragon."
+  },
+  {
+    "role": "moss_antler_stag",
+    "family": "stag",
+    "base": "grug_mobs:stag",
+    "display": "Moss-Antler Stag",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      20,
+      30
+    ],
+    "drops": "grazer",
+    "notes": "Day; Highcourt, Lethariel, Whitebridge, Lorindor, Moonfall; gaunt form Nhal Veyr/Ossuary.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Moss-Antler Gaunt Stag",
+      "kragmar_mournfen": "Moss-Antler Gaunt Stag",
+      "kragmar_nhal_veyr": "Moss-Antler Gaunt Stag",
+      "kragmar_ossuary_reach": "Moss-Antler Gaunt Stag",
+      "kragmar_blackwind_rise": "Moss-Antler Gaunt Stag",
+      "front_gravesalt_escarpment": "Moss-Antler Gaunt Stag"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "gaunt_stag",
+      "kragmar_mournfen": "gaunt_stag",
+      "kragmar_nhal_veyr": "gaunt_stag",
+      "kragmar_ossuary_reach": "gaunt_stag",
+      "kragmar_blackwind_rise": "gaunt_stag",
+      "front_gravesalt_escarpment": "gaunt_stag"
+    }
+  },
+  {
+    "role": "watchful_stag",
+    "family": "stag",
+    "base": "grug_mobs:stag",
+    "display": "Watchful Stag",
+    "size": 1.1,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "grazer",
+    "notes": "Day; Ashenward, Glassroot; gaunt form Blackwind.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Watchful Gaunt Stag",
+      "kragmar_mournfen": "Watchful Gaunt Stag",
+      "kragmar_nhal_veyr": "Watchful Gaunt Stag",
+      "kragmar_ossuary_reach": "Watchful Gaunt Stag",
+      "kragmar_blackwind_rise": "Watchful Gaunt Stag",
+      "front_gravesalt_escarpment": "Watchful Gaunt Stag"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "gaunt_stag",
+      "kragmar_mournfen": "gaunt_stag",
+      "kragmar_nhal_veyr": "gaunt_stag",
+      "kragmar_ossuary_reach": "gaunt_stag",
+      "kragmar_blackwind_rise": "gaunt_stag",
+      "front_gravesalt_escarpment": "gaunt_stag"
+    }
+  },
+  {
+    "role": "salt_antler_stag",
+    "family": "stag",
+    "base": "grug_mobs:gaunt_stag",
+    "display": "Salt-Antler Gaunt Stag",
+    "size": 1.15,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "grazer",
+    "notes": "Day; Gravesalt."
+  },
+  {
+    "role": "wary_jungle_lynx",
+    "family": "cat",
+    "base": "grug_mobs:jungle_lynx",
+    "display": "Wary Jungle Lynx",
+    "size": 0.9,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "feline",
+    "notes": "Day; Kapok. Hostile pack lesson; do not label Small/Young or turn this pack-calling base neutral."
+  },
+  {
+    "role": "reed_jungle_lynx",
+    "family": "cat",
+    "base": "grug_mobs:jungle_lynx",
+    "display": "Reed Jungle Lynx",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "feline",
+    "notes": "Day; Raincall, Kezamba, Whispering, Totemwater; calls nearby family members when hurt."
+  },
+  {
+    "role": "prowling_snow_leopard",
+    "family": "cat",
+    "base": "grug_mobs:snow_leopard",
+    "display": "Prowling Snow Leopard",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "feline",
+    "notes": "Night; Frostbarrow and Stormvault. Silent pounce; no pack-call promise."
+  },
+  {
+    "role": "rime_pelt_leopard",
+    "family": "cat",
+    "base": "grug_mobs:snow_leopard",
+    "display": "Rime-Pelt Snow Leopard",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "feline",
+    "notes": "Night; Wyrmglass. Silent pounce."
+  },
+  {
+    "role": "stalking_panther",
+    "family": "cat",
+    "base": "grug_mobs:panther",
+    "display": "Stalking Panther",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "feline",
+    "notes": "Night; Glassroot, Thunderroot. Silent pounce."
+  },
+  {
+    "role": "glass_shadow_panther",
+    "family": "cat",
+    "base": "grug_mobs:panther",
+    "display": "Glass-Shadow Panther",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "feline",
+    "notes": "Night; Skyglass and Stormscale. Silent pounce."
+  },
+  {
+    "role": "reed_stalking_tiger",
+    "family": "tiger",
+    "base": "grug_mobs:speargrass_tiger",
+    "display": "Reed-Stalking Speargrass Tiger",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      50
+    ],
+    "drops": "feline",
+    "notes": "Day; Speargrass, Bannerbreak and Shattered Line. Pounce; T4 Bannerbreak is a designed extension on its existing savanna hosts."
+  },
+  {
+    "role": "dustpack_hyena",
+    "family": "hyena",
+    "base": "grug_mobs:hyena",
+    "display": "Dustpack Hyena",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "canid",
+    "notes": "Both clocks; Redtusk, Gor Drazhak, Speargrass. Pack calls."
+  },
+  {
+    "role": "warpack_hyena",
+    "family": "hyena",
+    "base": "grug_mobs:hyena",
+    "display": "Warpack Hyena",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      50
+    ],
+    "drops": "canid",
+    "notes": "Both clocks; Bannerbreak and Shattered Line. Pack calls."
+  },
+  {
+    "role": "briarpack_wolf",
+    "family": "wolf",
+    "base": "grug_mobs:wolf",
+    "display": "Briarpack Wolf",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "canid",
+    "notes": "Both clocks; Whitebridge/Moonfall/Ashenward/Glassroot; blight form Ossuary/Blackwind.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Briarpack Blightfang Wolf",
+      "kragmar_mournfen": "Briarpack Blightfang Wolf",
+      "kragmar_nhal_veyr": "Briarpack Blightfang Wolf",
+      "kragmar_ossuary_reach": "Briarpack Blightfang Wolf",
+      "kragmar_blackwind_rise": "Briarpack Blightfang Wolf",
+      "front_gravesalt_escarpment": "Briarpack Blightfang Wolf"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "blightfang_wolf",
+      "kragmar_mournfen": "blightfang_wolf",
+      "kragmar_nhal_veyr": "blightfang_wolf",
+      "kragmar_ossuary_reach": "blightfang_wolf",
+      "kragmar_blackwind_rise": "blightfang_wolf",
+      "front_gravesalt_escarpment": "blightfang_wolf"
+    }
+  },
+  {
+    "role": "saltpack_wolf",
+    "family": "wolf",
+    "base": "grug_mobs:blightfang_wolf",
+    "display": "Saltpack Blightfang Wolf",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "canid",
+    "notes": "Both clocks; Gravesalt. Pack calls."
+  },
+  {
+    "role": "territorial_bear",
+    "family": "bear",
+    "base": "grug_mobs:bear",
+    "display": "Territorial Bear",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "bear",
+    "notes": "Day; Whitebridge, Moonfall, Ashenward, Glassroot; plague form Ossuary/Blackwind. Existing random elite promotion is an optional hazard, never a required target.",
+    "display_by_zone": {
+      "kragmar_stillgrave_hollow": "Territorial Plaguehide Bear",
+      "kragmar_mournfen": "Territorial Plaguehide Bear",
+      "kragmar_nhal_veyr": "Territorial Plaguehide Bear",
+      "kragmar_ossuary_reach": "Territorial Plaguehide Bear",
+      "kragmar_blackwind_rise": "Territorial Plaguehide Bear",
+      "front_gravesalt_escarpment": "Territorial Plaguehide Bear"
+    },
+    "tint_by_zone": {
+      "kragmar_stillgrave_hollow": "plaguehide_bear",
+      "kragmar_mournfen": "plaguehide_bear",
+      "kragmar_nhal_veyr": "plaguehide_bear",
+      "kragmar_ossuary_reach": "plaguehide_bear",
+      "kragmar_blackwind_rise": "plaguehide_bear",
+      "front_gravesalt_escarpment": "plaguehide_bear"
+    }
+  },
+  {
+    "role": "salt_hide_bear",
+    "family": "bear",
+    "base": "grug_mobs:plaguehide_bear",
+    "display": "Salt-Hide Plaguehide Bear",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "bear",
+    "notes": "Day; Gravesalt. Existing random elite promotion remains an optional hazard."
+  },
+  {
+    "role": "reed_crocodile",
+    "family": "crocodile",
+    "base": "grug_mobs:crocodile",
+    "display": "Reed Crocodile",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "crocodile",
+    "notes": "Both clocks; Mournfen, Whispering, Totemwater. Dry banks beside water; ambushes from six nodes. Not a swimmer."
+  },
+  {
+    "role": "sullen_bog_ooze",
+    "family": "ooze",
+    "base": "grug_mobs:bog_ooze",
+    "display": "Sullen Bog Ooze",
+    "size": 0.85,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "ooze",
+    "notes": "Both clocks; Mournfen, Whispering, Totemwater. Slow with touch aura; leave room around its wide box."
+  },
+  {
+    "role": "reed_mirefolk",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Reed Mirefolk",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      20
+    ],
+    "drops": "mirefolk",
+    "notes": "Night; Mournfen existing mirefolk anchor, slot area."
+  },
+  {
+    "role": "toll_mirefolk",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Toll Mirefolk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      30
+    ],
+    "drops": "mirefolk",
+    "notes": "Night; Whitebridge, Lorindor and Whispering existing mirefolk anchors, slot areas."
+  },
+  {
+    "role": "wandering_wisp",
+    "family": "wisp",
+    "base": "grug_mobs:wisp",
+    "display": "Wandering Wisp",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "wisp",
+    "notes": "Night; Mournfen, Whitebridge, Lorindor, Moonfall, Whispering, Totemwater. Blink; open air, no mandatory melee chase under canopy."
+  },
+  {
+    "role": "battle_wisp",
+    "family": "wisp",
+    "base": "grug_mobs:wisp",
+    "display": "Battle Wisp",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "wisp",
+    "notes": "Night; Ashenward, Glassroot, Causeway. Blink; open air."
+  },
+  {
+    "role": "rootbound_treant",
+    "family": "treant",
+    "base": "grug_mobs:ashen_treant",
+    "display": "Rootbound Ashen Treant",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "treant",
+    "notes": "Night; Ashenward. Existing slowing aura."
+  },
+  {
+    "role": "mourning_treant",
+    "family": "treant",
+    "base": "grug_mobs:gravewood_treant",
+    "display": "Mourning Gravewood Treant",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "treant",
+    "notes": "Night; Ossuary and Blackwind. Existing slowing aura."
+  },
+  {
+    "role": "marrow_weevil",
+    "family": "weevil",
+    "base": "grug_mobs:bone_weevil",
+    "display": "Marrow Weevil",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "weevil",
+    "notes": "Day; Ossuary, Blackwind. The bone weevil fights; cave crawlers stay critters."
+  },
+  {
+    "role": "salt_boring_weevil",
+    "family": "weevil",
+    "base": "grug_mobs:bone_weevil",
+    "display": "Salt-Boring Weevil",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "weevil",
+    "notes": "Day; Gravesalt."
+  },
+  {
+    "role": "territorial_ape",
+    "family": "ape",
+    "base": "grug_mobs:jungle_ape",
+    "display": "Territorial Jungle Ape",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "ape",
+    "notes": "Day; Glassroot and Thunderroot. Climbs; random Silverback is optional and not a fixed quest target."
+  },
+  {
+    "role": "glass_knuckle_ape",
+    "family": "ape",
+    "base": "grug_mobs:jungle_ape",
+    "display": "Glass-Knuckle Jungle Ape",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "ape",
+    "notes": "Day; Skyglass and Stormscale. Climbs; random Silverback remains optional."
+  },
+  {
+    "role": "irritable_scorpion",
+    "family": "poison_small",
+    "base": "grug_mobs:scorpion",
+    "display": "Irritable Scorpion",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "giant_scorpion",
+    "family": "poison_small",
+    "base": "grug_mobs:scorpion",
+    "display": "Giant Scorpion",
+    "size": 1.25,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "reed_viper",
+    "family": "poison_small",
+    "base": "grug_mobs:viper",
+    "display": "Reed Viper",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      5,
+      7
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "giant_viper",
+    "family": "poison_small",
+    "base": "grug_mobs:viper",
+    "display": "Giant Viper",
+    "size": 1.25,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      7,
+      9
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "dust_stinger",
+    "family": "poison_small",
+    "base": "grug_mobs:scorpion",
+    "display": "Dust-Stinger Scorpion",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "reed_fang_viper",
+    "family": "poison_small",
+    "base": "grug_mobs:viper",
+    "display": "Reed-Fang Viper",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "war_stinger",
+    "family": "poison_small",
+    "base": "grug_mobs:scorpion",
+    "display": "War-Stinger Scorpion",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      50
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "coiled_serpent",
+    "family": "serpent",
+    "base": "grug_mobs:serpent",
+    "display": "Coiled Serpent",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "glass_fang_serpent",
+    "family": "serpent",
+    "base": "grug_mobs:serpent",
+    "display": "Glass-Fang Serpent",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "venomous",
+    "notes": "Poison stacks per bite; names do not add new poison effects. Scorpions: orc track, night from T2 (both clocks T1); vipers: troll track, night (both clocks T1); serpents: Glassroot/Thunderroot both clocks T4, Skyglass/Stormscale both clocks T6. Keep poison separate from the first neutral hunt."
+  },
+  {
+    "role": "briar_web_spider",
+    "family": "spider",
+    "base": "grug_mobs:giant_spider",
+    "display": "Briar-Web Spider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "spider",
+    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+  },
+  {
+    "role": "grave_web_spider",
+    "family": "spider",
+    "base": "grug_mobs:pale_spider",
+    "display": "Grave-Web Bonelurker Spider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "spider",
+    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+  },
+  {
+    "role": "canopy_web_spider",
+    "family": "spider",
+    "base": "grug_mobs:jungle_spider",
+    "display": "Canopy-Web Jungle Spider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "spider",
+    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+  },
+  {
+    "role": "salt_web_spider",
+    "family": "spider",
+    "base": "grug_mobs:pale_spider",
+    "display": "Salt-Web Bonelurker Spider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "spider",
+    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+  },
+  {
+    "role": "glass_web_spider",
+    "family": "spider",
+    "base": "grug_mobs:jungle_spider",
+    "display": "Glass-Web Jungle Spider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "spider",
+    "notes": "Night. Melee web slow. Briar: Whitebridge/Moonfall/Ashenward; grave: Ossuary/Blackwind; canopy: Glassroot/Thunderroot; salt: Gravesalt; glass: Skyglass/Stormscale. Existing bases preserve their baked skins."
+  },
+  {
+    "role": "ore_thieving_goblin",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Ore-Thieving Goblin",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "goblin",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "rubble_goblin_slinger",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_slinger",
+    "display": "Rubble Goblin Slinger",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "goblin",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "ore_guard_hound",
+    "family": "goblin_hound",
+    "base": "grug_mobs:goblin_hound",
+    "display": "Ore-Guard Hound",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      11,
+      30
+    ],
+    "drops": "canid",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "siege_goblin",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Siege Goblin",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "goblin",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "siege_goblin_slinger",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_slinger",
+    "display": "Siege Goblin Slinger",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "goblin",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "siege_goblin_hound",
+    "family": "goblin_hound",
+    "base": "grug_mobs:goblin_hound",
+    "display": "Siege Goblin Hound",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "canid",
+    "notes": "Night; Copperfell T2, Dur Brannoc/Frostbarrow/Speargrass T3, Stormvault/Bannerbreak T4. Existing swarm and rock projectiles; introduce melee first, then a slinger with visible sightlines."
+  },
+  {
+    "role": "barrow_skeleton_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_archer",
+    "display": "Barrow Skeleton Archer",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      30
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "march_skeleton_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "March Skeleton Raider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "rime_skeleton_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:frost_stray",
+    "display": "Rime Skeleton Stray",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "siege_skeleton_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Siege Skeleton Raider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "last_watch_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Last-Watch Skeleton Raider",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "crown_frost_archer",
+    "family": "skeleton",
+    "base": "grug_mobs:frost_stray",
+    "display": "Crown Frost Stray",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "skeleton",
+    "notes": "Night, arrow user; does not burn in sunlight. Barrow: Ossuary; march: Ashenward/Blackwind/Bannerbreak/Causeway; rime: Stormvault; siege: Shattered; last watch: Gravesalt/Skyglass/Stormscale; crown: Wyrmglass."
+  },
+  {
+    "role": "reed_hex_witch",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Reed-Hex Bog Witch",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "witch",
+    "notes": "Night; reed: Thunderroot and Causeway; salt: Gravesalt and Stormscale. Homing bottle with existing poison/slow; teaching must not promise an ordinary dodgeable arrow."
+  },
+  {
+    "role": "salt_hex_witch",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Salt-Hex Bog Witch",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      51,
+      60
+    ],
+    "drops": "witch",
+    "notes": "Night; reed: Thunderroot and Causeway; salt: Gravesalt and Stormscale. Homing bottle with existing poison/slow; teaching must not promise an ordinary dodgeable arrow."
+  },
+  {
+    "role": "ridge_crag_eagle",
+    "family": "raptor_bird",
+    "base": "grug_mobs:crag_eagle",
+    "display": "Ridge Crag Eagle",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "scavenger",
+    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+  },
+  {
+    "role": "dustwing_vulture",
+    "family": "raptor_bird",
+    "base": "grug_mobs:vulture",
+    "display": "Dustwing Vulture",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      21,
+      50
+    ],
+    "drops": "scavenger",
+    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+  },
+  {
+    "role": "watchful_carrion_crow",
+    "family": "crow",
+    "base": "grug_mobs:carrion_crow",
+    "display": "Watchful Carrion Crow",
+    "size": 1.0,
+    "disposition": "neutral",
+    "tier": "normal",
+    "levels": [
+      31,
+      60
+    ],
+    "drops": "scavenger",
+    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+  },
+  {
+    "role": "crown_crag_eagle",
+    "family": "raptor_bird",
+    "base": "grug_mobs:crag_eagle",
+    "display": "Crown Crag Eagle",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "scavenger",
+    "notes": "Open-air flier; eagles day on dwarf ridges, vulture day in Speargrass/Bannerbreak/Shattered, crow both clocks at Ashenward/Bannerbreak/front/islands. Crow remains neutral, not a critter. No required dense-canopy flying hunt."
+  },
+  {
+    "role": "seam_stone_golem",
+    "family": "golem",
+    "base": "grug_mobs:stone_golem",
+    "display": "Seam Stone Golem",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      21,
+      40
+    ],
+    "drops": "stone",
+    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+  },
+  {
+    "role": "seam_mesa_golem",
+    "family": "golem",
+    "base": "grug_mobs:mesa_golem",
+    "display": "Seam Mesa Golem",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      21,
+      50
+    ],
+    "drops": "stone",
+    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+  },
+  {
+    "role": "causeway_construct",
+    "family": "construct",
+    "base": "grug_mobs:war_construct",
+    "display": "Causeway War Construct",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      31,
+      40
+    ],
+    "drops": "stone",
+    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+  },
+  {
+    "role": "siege_war_construct",
+    "family": "construct",
+    "base": "grug_mobs:war_construct",
+    "display": "Siege War Construct",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "stone",
+    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+  },
+  {
+    "role": "crown_stone_golem",
+    "family": "golem",
+    "base": "grug_mobs:stone_golem",
+    "display": "Crown Stone Golem",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "stone",
+    "notes": "Optional ambient elite, cap 1. Stone: Frostbarrow/Stormvault; mesa: Speargrass/Bannerbreak/Shattered; constructs: Causeway/Shattered; crown: Wyrmglass. Not a 1-30 named leader or mandatory solo material source. Preserve elite telegraph; never ten-kill filler."
+  },
+  {
+    "role": "salt_reef_lurker",
+    "family": "crab",
+    "base": "grug_mobs:reef_lurker",
+    "display": "Salt Reef Lurker",
+    "size": 1,
+    "disposition": "neutral",
+    "tier": "elite",
+    "levels": [
+      51,
+      59
+    ],
+    "drops": "crab",
+    "notes": "Optional elite on Gravesalt/Skyglass shores, shore:true. No required solo stat source; unchanged neutral retaliation."
+  },
+  {
+    "role": "muddled_ore_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Muddled Ore Chief Bracket",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_hearthpine_vale. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "confused_bandit_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Confused Bandit Chief Crumb",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_dawnmere_fields. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "misguided_poacher_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Misguided Poacher Chief Twig",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_silverleaf_glades. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "grave_robber_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Grave Robber Chief Borrow",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_stillgrave_hollow. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "water_thief_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Water Thief Chief Lastdrop",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_sunscar_flats. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "offering_thief_chief",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Offering Thief Chief Tangle",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      10,
+      10
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_kapok_cradle. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "foreman_nog",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Goblin Foreman Nog",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in elandor_copperfell_foothills. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "requisitioner_hobb",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Requisitioner Hobb",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_goldmead_vale. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "snarekeeper_vetch",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Poacher Snarekeeper Vetch",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_starbough_vale. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "reed_counter_silt",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Mirefolk Reed-Counter Silt",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "mirefolk",
+    "notes": "Unique fixed spot in kragmar_mournfen. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "water_broker_korr",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Water-Broker Korr",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_redtusk_savanna. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "tithe_keeper_vek",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Tithe-Keeper Vek",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      20,
+      20
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_raincall_basin. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "ore_factor_brakk",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_slinger",
+    "display": "Goblin Ore-Factor Brakk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in elandor_dur_brannoc. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "tollmaster_penn",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Tollmaster Penn",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_highcourt. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "bough_counter_rusk",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Poacher Bough-Counter Rusk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_lethariel. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "mortuary_clerk_hush",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Zombie Mortuary-Clerk Hush",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "zombie",
+    "notes": "Unique fixed spot in kragmar_nhal_veyr. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Blight dirt only if this zombie must survive daylight. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "ration_broker_garr",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Ration-Broker Garr",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_gor_drazhak. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "offering_broker_takka",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Bandit Offering-Broker Takka",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      29,
+      29
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in kragmar_kezamba. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "powder_counter_nib",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_slinger",
+    "display": "Goblin Powder-Counter Nib",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in elandor_frostbarrow_shelf. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "ferryman_murk",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Mirefolk Ferryman Murk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "mirefolk",
+    "notes": "Unique fixed spot in elandor_whitebridge_shire. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "pearl_counter_iss",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Mirefolk Pearl-Counter Iss",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "mirefolk",
+    "notes": "Unique fixed spot in elandor_lorindor. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "snarewarden_bracken",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Poacher Snarewarden Bracken",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_moonfall_wood. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "marrow_archivist",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_archer",
+    "display": "Skeleton Marrow Archivist",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "skeleton",
+    "notes": "Unique fixed spot in kragmar_ossuary_reach. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "banner_broker_rakk",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Goblin Banner-Broker Rakk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in kragmar_speargrass_reach. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "tollkeeper_ush",
+    "family": "mirefolk",
+    "base": "grug_mobs:mirefolk",
+    "display": "Mirefolk Tollkeeper Ush",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "mirefolk",
+    "notes": "Unique fixed spot in kragmar_whispering_reedlands. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "reed_maw_crocodile",
+    "family": "crocodile",
+    "base": "grug_mobs:crocodile",
+    "display": "Crocodile Reed-Maw",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      30,
+      30
+    ],
+    "drops": "crocodile",
+    "notes": "Unique fixed spot in kragmar_totemwater_reach. Respawn 300 s. Solo normal-tier climax; isolate the pull from helpers. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "split_seam_warden",
+    "family": "golem",
+    "base": "grug_mobs:stone_golem",
+    "display": "Stone Golem Split-Seam",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "stone",
+    "notes": "Unique fixed spot in elandor_stormvault_heights. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "red_receipt_marshal",
+    "family": "outlaw",
+    "base": "grug_mobs:poacher",
+    "display": "Poacher Marshal Red-Receipt",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "outlaw",
+    "notes": "Unique fixed spot in elandor_ashenward_march. Respawn 300 s. Optional Group climax; the solo route budget must work without it. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "canopy_knuckle",
+    "family": "ape",
+    "base": "grug_mobs:jungle_ape",
+    "display": "Jungle Ape Canopy-Knuckle",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "ape",
+    "notes": "Unique fixed spot in elandor_glassroot_wilds. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Preserve this authored name/tier if the inherited random Silverback callback runs; see world.md open point.",
+    "leader": true
+  },
+  {
+    "role": "hollowbell_treant",
+    "family": "treant",
+    "base": "grug_mobs:gravewood_treant",
+    "display": "Gravewood Treant Hollowbell",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "treant",
+    "notes": "Unique fixed spot in kragmar_blackwind_rise. Respawn 300 s. Optional Group climax; the solo route budget must work without it. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "banner_eater",
+    "family": "goblin",
+    "base": "grug_mobs:goblin_raider",
+    "display": "Goblin Banner-Eater",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "goblin",
+    "notes": "Unique fixed spot in kragmar_bannerbreak_mesa. Respawn 300 s. Optional Group climax; the solo route budget must work without it. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "storm_bottle_witch",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Bog Witch Storm-Bottle",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      39,
+      39
+    ],
+    "drops": "witch",
+    "notes": "Unique fixed spot in kragmar_thunderroot_wilds. Respawn 300 s. Optional Group climax; the solo route budget must work without it. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "last_toll_construct",
+    "family": "construct",
+    "base": "grug_mobs:war_construct",
+    "display": "War Construct Last-Toll",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      40,
+      40
+    ],
+    "drops": "stone",
+    "notes": "Unique fixed spot in front_broken_causeway. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "siege_engine_nine",
+    "family": "construct",
+    "base": "grug_mobs:war_construct",
+    "display": "War Construct Engine Nine",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      50,
+      50
+    ],
+    "drops": "stone",
+    "notes": "Unique fixed spot in front_shattered_line. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "salt_counter_witch",
+    "family": "skeleton",
+    "base": "grug_mobs:bog_witch",
+    "display": "Bog Witch Salt-Counter",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      59,
+      59
+    ],
+    "drops": "witch",
+    "notes": "Unique fixed spot in front_gravesalt_escarpment. Respawn 300 s. Optional Group climax; the solo route budget must work without it. The fixed leader record has no clock gate; do not make the quest depend on a night-only leader. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "glass_throat_serpent",
+    "family": "serpent",
+    "base": "grug_mobs:serpent",
+    "display": "Serpent Glass-Throat",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      59,
+      59
+    ],
+    "drops": "venomous",
+    "notes": "Unique fixed spot in front_skyglass_canopy. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "rime_bell_warden",
+    "family": "golem",
+    "base": "grug_mobs:stone_golem",
+    "display": "Stone Golem Rime-Bell",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "stone",
+    "notes": "Unique fixed spot in front_wyrmglass_crown. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
+    "leader": true
+  },
+  {
+    "role": "last_offering_ape",
+    "family": "ape",
+    "base": "grug_mobs:jungle_ape",
+    "display": "Jungle Ape Last-Offering",
+    "size": 1,
+    "disposition": "aggressive",
+    "tier": "elite",
+    "levels": [
+      60,
+      60
+    ],
+    "drops": "ape",
+    "notes": "Unique fixed spot in front_stormscale_summit. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Preserve this authored name/tier if the inherited random Silverback callback runs; see world.md open point.",
+    "leader": true
+  }
+]
