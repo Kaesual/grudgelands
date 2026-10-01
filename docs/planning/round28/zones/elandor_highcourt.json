@@ -1,0 +1,1186 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_008",
+   "kind": "capital_human",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Highcourt",
+   "settlement_key": "highcourt",
+   "slot": "capital",
+   "x": 0,
+   "y": 41,
+   "z": -1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_meadows",
+   "share": 80
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 20
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_meadows",
+   "share_pct": 81.3
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 18.3
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1336,
+   "midpoint": {
+    "x": -25,
+    "z": -1145
+   },
+   "zone": "elandor_ashenward_march"
+  },
+  {
+   "length_nodes": 1452,
+   "midpoint": {
+    "x": -24,
+    "z": -1817
+   },
+   "zone": "elandor_goldmead_vale"
+  },
+  {
+   "length_nodes": 484,
+   "midpoint": {
+    "x": 461,
+    "z": -1465
+   },
+   "zone": "elandor_lorindor"
+  },
+  {
+   "length_nodes": 740,
+   "midpoint": {
+    "x": -502,
+    "z": -1554
+   },
+   "zone": "elandor_whitebridge_shire"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 15,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 8448,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 11248,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 8.8,
+ "extent": {
+  "centroid": {
+   "x": -33,
+   "z": -1486
+  },
+  "land_area_nodes2": 635264,
+  "max_x": 488,
+  "max_z": -1060,
+  "min_x": -552,
+  "min_z": -1892
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": -1500
+ },
+ "id": "elandor_highcourt",
+ "level_field": {
+  "histogram_pct": {
+   "20": 10.1,
+   "21": 11.2,
+   "22": 11.9,
+   "23": 8.9,
+   "24": 9.0,
+   "25": 8.8,
+   "26": 8.5,
+   "27": 8.7,
+   "28": 8.4,
+   "29": 7.0,
+   "30": 7.4
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/elandor_highcourt.png",
+ "name": "Highcourt",
+ "neighbors": [
+  "elandor_ashenward_march",
+  "elandor_goldmead_vale",
+  "elandor_lorindor",
+  "elandor_whitebridge_shire"
+ ],
+ "numeric_id": 8,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 127528,
+   "box": {
+    "max_x": 222,
+    "max_z": -1348,
+    "min_x": -218,
+    "min_z": -1742
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": 185,
+     "y": 39,
+     "z": -1467
+    },
+    {
+     "name": "south",
+     "x": -69,
+     "y": 38,
+     "z": -1372
+    },
+    {
+     "name": "west",
+     "x": -186,
+     "y": 35,
+     "z": -1537
+    },
+    {
+     "name": "north",
+     "x": -21,
+     "y": 44,
+     "z": -1690
+    }
+   ],
+   "outline_kind": "stone",
+   "zone_land_outside_city_pct": 79.9
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 21.0,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Ansel Ovenward is setting a supper beside Highcourt's bakehouse for travellers who arrive after the bread is baked. Bring five raw meat portions for the pot. No Cooking profession is required.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "r20_human_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Bread for the Late Arrivals",
+   "turnin": "r20_human_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Mariel sends new arrivals to Ansel Ovenward in the homes bakehouse. Speak with the cook beside the oven and complete this introduction there; the separate Cooking trainer is optional.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "r20_human_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Ansel Ovenward (highcourt)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_human_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_human_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "The Ovenward Welcome",
+   "turnin": "r20_human_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The river watch needs low stone blocks to reset its supply-yard edge. Bring twelve cobble blocks to Mariel at Highcourt. This asks for ordinary material, not proof that you mined it.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "r20_human_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 12 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 12,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stone for the River Watch",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Whitebridge Market Close in Whitebridge Shire and speak with Merren Oakstamp. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Merren Oakstamp there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "r20_human_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Merren Oakstamp (r20_anchor_016)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_016_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Merren Oakstamp",
+   "turnin": "r20_anchor_016_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "human",
+ "race_track": "human",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 151,
+   "median": 46,
+   "min": 22,
+   "p10": 36,
+   "p90": 76
+  },
+  "steep_share_pct": 2.2
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -428,
+    -1234
+   ],
+   "from": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)",
+   "id": 1,
+   "kind": "primary",
+   "last_in_zone": [
+    -272,
+    -1247
+   ],
+   "length_in_zone": 162,
+   "length_total": 1434,
+   "polyline_simplified": [
+    [
+     -1536,
+     -1633
+    ],
+    [
+     -1452,
+     -1637
+    ],
+    [
+     -1384,
+     -1616
+    ],
+    [
+     -1179,
+     -1498
+    ],
+    [
+     -1107,
+     -1426
+    ],
+    [
+     -946,
+     -1414
+    ],
+    [
+     -865,
+     -1340
+    ],
+    [
+     -705,
+     -1240
+    ],
+    [
+     -545,
+     -1217
+    ],
+    [
+     -272,
+     -1247
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    273,
+    -1358
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 2,
+   "kind": "primary",
+   "last_in_zone": [
+    433,
+    -1394
+   ],
+   "length_in_zone": 170,
+   "length_total": 1355,
+   "polyline_simplified": [
+    [
+     273,
+     -1358
+    ],
+    [
+     339,
+     -1391
+    ],
+    [
+     527,
+     -1407
+    ],
+    [
+     670,
+     -1361
+    ],
+    [
+     848,
+     -1455
+    ],
+    [
+     968,
+     -1445
+    ],
+    [
+     1109,
+     -1504
+    ],
+    [
+     1191,
+     -1487
+    ],
+    [
+     1260,
+     -1502
+    ],
+    [
+     1324,
+     -1475
+    ],
+    [
+     1536,
+     -1489
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    132,
+    -1833
+   ],
+   "from": "anchor_002 (Dawnmere, elandor_dawnmere_fields)",
+   "id": 4,
+   "kind": "primary",
+   "last_in_zone": [
+    128,
+    -1760
+   ],
+   "length_in_zone": 76,
+   "length_total": 796,
+   "polyline_simplified": [
+    [
+     -1,
+     -2486
+    ],
+    [
+     19,
+     -2387
+    ],
+    [
+     -14,
+     -2303
+    ],
+    [
+     47,
+     -2175
+    ],
+    [
+     36,
+     -2088
+    ],
+    [
+     99,
+     -1989
+    ],
+    [
+     98,
+     -1907
+    ],
+    [
+     133,
+     -1831
+    ],
+    [
+     128,
+     -1760
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    -158,
+    -1884
+   ],
+   "from": "anchor_015 (Goldmead Village, elandor_goldmead_vale)",
+   "id": 7,
+   "kind": "secondary",
+   "last_in_zone": [
+    -207,
+    -1759
+   ],
+   "length_in_zone": 140,
+   "length_total": 277,
+   "polyline_simplified": [
+    [
+     -115,
+     -2005
+    ],
+    [
+     -160,
+     -1922
+    ],
+    [
+     -158,
+     -1847
+    ],
+    [
+     -207,
+     -1759
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    408,
+    -1271
+   ],
+   "from": "anchor_034 (Petalbank Wardenry, elandor_lorindor)",
+   "id": 38,
+   "kind": "trail",
+   "last_in_zone": [
+    352,
+    -1392
+   ],
+   "length_in_zone": 136,
+   "length_total": 488,
+   "polyline_simplified": [
+    [
+     632,
+     -1215
+    ],
+    [
+     623,
+     -1167
+    ],
+    [
+     574,
+     -1137
+    ],
+    [
+     475,
+     -1158
+    ],
+    [
+     352,
+     -1392
+    ]
+   ],
+   "to": "joins road 2"
+  },
+  {
+   "first_in_zone": [
+    -546,
+    -1807
+   ],
+   "from": "anchor_067 (Siltbasket Camp, elandor_whitebridge_shire)",
+   "id": 67,
+   "kind": "trail",
+   "last_in_zone": [
+    -513,
+    -1826
+   ],
+   "length_in_zone": 40,
+   "length_total": 500,
+   "polyline_simplified": [
+    [
+     -609,
+     -1769
+    ],
+    [
+     -449,
+     -1853
+    ],
+    [
+     -370,
+     -1840
+    ],
+    [
+     -160,
+     -1920
+    ]
+   ],
+   "to": "joins road 7"
+  },
+  {
+   "first_in_zone": [
+    273,
+    -1358
+   ],
+   "from": "end:2",
+   "id": 86,
+   "kind": "primary",
+   "last_in_zone": [
+    193,
+    -1467
+   ],
+   "length_in_zone": 160,
+   "length_total": 158,
+   "polyline_simplified": [
+    [
+     273,
+     -1358
+    ],
+    [
+     257,
+     -1355
+    ],
+    [
+     220,
+     -1453
+    ],
+    [
+     193,
+     -1467
+    ]
+   ],
+   "to": "gate_east"
+  },
+  {
+   "first_in_zone": [
+    -272,
+    -1247
+   ],
+   "from": "end:1",
+   "id": 87,
+   "kind": "primary",
+   "last_in_zone": [
+    -69,
+    -1364
+   ],
+   "length_in_zone": 250,
+   "length_total": 252,
+   "polyline_simplified": [
+    [
+     -272,
+     -1247
+    ],
+    [
+     -123,
+     -1299
+    ],
+    [
+     -69,
+     -1364
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    128,
+    -1760
+   ],
+   "from": "end:4",
+   "id": 88,
+   "kind": "primary",
+   "last_in_zone": [
+    -21,
+    -1698
+   ],
+   "length_in_zone": 180,
+   "length_total": 179,
+   "polyline_simplified": [
+    [
+     128,
+     -1760
+    ],
+    [
+     94,
+     -1733
+    ],
+    [
+     14,
+     -1731
+    ],
+    [
+     -21,
+     -1698
+    ]
+   ],
+   "to": "gate_north"
+  },
+  {
+   "first_in_zone": [
+    -207,
+    -1759
+   ],
+   "from": "end:7",
+   "id": 89,
+   "kind": "secondary",
+   "last_in_zone": [
+    -21,
+    -1698
+   ],
+   "length_in_zone": 260,
+   "length_total": 260,
+   "polyline_simplified": [
+    [
+     -207,
+     -1759
+    ],
+    [
+     -206,
+     -1730
+    ],
+    [
+     -167,
+     -1684
+    ],
+    [
+     -87,
+     -1712
+    ],
+    [
+     -21,
+     -1698
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 0,
+    "y": 41,
+    "z": -1500
+   },
+   "anchor_id": "anchor_008",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 828,
+      "straight": 577,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Outpost",
+      "road": 866,
+      "straight": 555,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": 880,
+      "straight": 534,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 948,
+      "straight": 661,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": 1192,
+      "straight": 738,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1211,
+      "straight": 683,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 337,
+     "x": 56,
+     "z": -1832
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 764,
+     "x": 532,
+     "z": -2048
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SE",
+     "distance": 713,
+     "x": 496,
+     "z": -2012
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 480,
+      "hits": "elandor_lorindor"
+     },
+     "north_+z": {
+      "distance": 440,
+      "hits": "elandor_ashenward_march"
+     },
+     "south_-z": {
+      "distance": 352,
+      "hits": "elandor_goldmead_vale"
+     },
+     "west_-x": {
+      "distance": 488,
+      "hits": "elandor_whitebridge_shire"
+     }
+    }
+   },
+   "key": "highcourt",
+   "name": "Highcourt",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": 0,
+     "y": 47,
+     "z": -1468
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": 42,
+     "y": 42,
+     "z": -1493
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": 42,
+     "y": 42,
+     "z": -1487
+    },
+    {
+     "npc_id": "r20_human_capital_envoy",
+     "npc_name": "Mariel Waybook",
+     "quests": [
+      "r20_human_capital_services",
+      "r20_human_capital_stores",
+      "r20_human_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "chapel_quest",
+     "tag": "door",
+     "x": -22,
+     "y": 42,
+     "z": -1473
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": 22,
+     "y": 42,
+     "z": -1522
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_1",
+     "tag": "1",
+     "x": 12,
+     "y": 42,
+     "z": -1562
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_2",
+     "tag": "2",
+     "x": 12,
+     "y": 42,
+     "z": -1572
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_3",
+     "tag": "3",
+     "x": 18,
+     "y": 42,
+     "z": -1562
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_stable/market_stable_mount_4",
+     "tag": "4",
+     "x": 18,
+     "y": 42,
+     "z": -1572
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "market_stable/market_stable_riding",
+     "x": 9,
+     "y": 42,
+     "z": -1567
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_workshop/market_workshop_vendor_smith",
+     "vendor_kind": "smith",
+     "x": 58,
+     "y": 42,
+     "z": -1505
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_workshop/market_workshop_station",
+     "tag": "forge",
+     "x": 63,
+     "y": 42,
+     "z": -1516
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_workshop/market_workshop_weaponsmith",
+     "x": 65,
+     "y": 42,
+     "z": -1514
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_workshop/market_workshop_armorsmith",
+     "x": 61,
+     "y": 42,
+     "z": -1514
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "market_workshop/market_workshop_weapon",
+     "tag": "weapon",
+     "x": 66,
+     "y": 43,
+     "z": -1518
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "market_workshop/market_workshop_armor",
+     "tag": "armor",
+     "x": 60,
+     "y": 43,
+     "z": -1518
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "market_counting_house/market_counting_house_gate_idle",
+     "tag": "door",
+     "x": 93,
+     "y": 42,
+     "z": -1535
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_counting_house/market_counting_house_vendor_tailor",
+     "vendor_kind": "tailor",
+     "x": 91,
+     "y": 42,
+     "z": -1540
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_counting_house/market_counting_house_station",
+     "tag": "tailor_bench",
+     "x": 103,
+     "y": 42,
+     "z": -1535
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_counting_house/market_counting_house_tailor",
+     "x": 101,
+     "y": 42,
+     "z": -1533
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_store/market_store_vendor_butcher",
+     "vendor_kind": "butcher",
+     "x": 96,
+     "y": 41,
+     "z": -1510
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_store/market_store_station",
+     "tag": "tanning_rack",
+     "x": 107,
+     "y": 41,
+     "z": -1506
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_store/market_store_leatherworker",
+     "x": 105,
+     "y": 41,
+     "z": -1504
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "martial_wain_shed/martial_wain_shed_station",
+     "tag": "carving_bench",
+     "x": -19,
+     "y": 42,
+     "z": -1564
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "martial_wain_shed/martial_wain_shed_woodcarver",
+     "x": -17,
+     "y": 42,
+     "z": -1566
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "lore_archive/lore_archive_station",
+     "tag": "jewellers_bench",
+     "x": -64,
+     "y": 42,
+     "z": -1485
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "lore_archive/lore_archive_goldsmith",
+     "x": -66,
+     "y": 42,
+     "z": -1487
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "lore_archive/lore_archive_jewel",
+     "tag": "jewel",
+     "x": -61,
+     "y": 43,
+     "z": -1484
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "lore_herb_garden/lore_herb_garden_station",
+     "tag": "brewing_stand",
+     "x": -98,
+     "y": 43,
+     "z": -1466
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "lore_herb_garden/lore_herb_garden_alchemist",
+     "x": -96,
+     "y": 43,
+     "z": -1468
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "homes_tavern/homes_tavern_gate_idle",
+     "tag": "door",
+     "x": 63,
+     "y": 42,
+     "z": -1493
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "homes_bakehouse/homes_bakehouse_vendor_baker",
+     "vendor_kind": "baker",
+     "x": 38,
+     "y": 41,
+     "z": -1432
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "homes_bakehouse/homes_bakehouse_station",
+     "tag": "furnace",
+     "x": 34,
+     "y": 41,
+     "z": -1422
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "homes_bakehouse/homes_bakehouse_cooking",
+     "x": 32,
+     "y": 41,
+     "z": -1424
+    },
+    {
+     "npc_id": "r20_human_capital_cook",
+     "npc_name": "Ansel Ovenward",
+     "quests": [
+      "r20_human_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "homes_bakehouse/homes_bakehouse_quest_cook",
+     "x": 36,
+     "y": 41,
+     "z": -1424
+    },
+    {
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "lore_shrine/lore_shrine_quest",
+     "tag": "door",
+     "x": -97,
+     "y": 43,
+     "z": -1492
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_pond/market_pond_vendor_fishmonger",
+     "vendor_kind": "fishmonger",
+     "x": 131,
+     "y": 46,
+     "z": -1608
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 56,
+    "guard_post": 19,
+    "housing_manager": 1,
+    "idle": 134,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 3,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 7,
+    "waypoint": 1,
+    "work": 36
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "accord_home",
+ "track_order": 3
+}

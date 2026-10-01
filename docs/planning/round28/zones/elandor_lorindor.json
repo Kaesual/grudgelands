@@ -1,0 +1,1428 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_018",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 24,
+   "name": "Lorindor Berrycourt",
+   "protected_box": {
+    "kind": "village",
+    "max_x": 887,
+    "max_z": -1545,
+    "min_x": 864,
+    "min_z": -1568
+   },
+   "settlement_key": "r20_anchor_018",
+   "slot": "village_1",
+   "x": 876,
+   "y": 100,
+   "z": -1556
+  },
+  {
+   "id": "anchor_034",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 29,
+   "name": "Petalbank Wardenry",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 633,
+    "max_z": -1219,
+    "min_x": 618,
+    "min_z": -1234
+   },
+   "settlement_key": "r20_anchor_034",
+   "slot": "outpost_1",
+   "x": 626,
+   "y": 53,
+   "z": -1226
+  },
+  {
+   "id": "anchor_063",
+   "kind": "mine",
+   "kind_text": "mine",
+   "level_at": 29,
+   "name": "Paleroot Cutting",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 1035,
+    "max_z": -1247,
+    "min_x": 1016,
+    "min_z": -1266
+   },
+   "settlement_key": "r20_anchor_063",
+   "slot": "mine",
+   "x": 1026,
+   "y": 178,
+   "z": -1256
+  },
+  {
+   "id": "anchor_068",
+   "kind": "mirefolk",
+   "kind_text": "mirefolk camp",
+   "level_at": 22,
+   "name": "Whitepetal Fenhold",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 1103,
+    "max_z": -1709,
+    "min_x": 1088,
+    "min_z": -1724
+   },
+   "settlement_key": "r20_anchor_068",
+   "slot": "mirefolk",
+   "x": 1096,
+   "y": 41,
+   "z": -1716
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_elf_forest",
+   "share": 50
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 30
+  },
+  {
+   "id": "grug_swamp",
+   "share": 20
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 59.9
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 22.5
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 16.9
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 0.6
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 512,
+   "midpoint": {
+    "x": 583,
+    "z": -1178
+   },
+   "zone": "elandor_ashenward_march"
+  },
+  {
+   "length_nodes": 760,
+   "midpoint": {
+    "x": 1034,
+    "z": -1150
+   },
+   "zone": "elandor_glassroot_wilds"
+  },
+  {
+   "length_nodes": 464,
+   "midpoint": {
+    "x": 561,
+    "z": -1800
+   },
+   "zone": "elandor_goldmead_vale"
+  },
+  {
+   "length_nodes": 476,
+   "midpoint": {
+    "x": 456,
+    "z": -1465
+   },
+   "zone": "elandor_highcourt"
+  },
+  {
+   "length_nodes": 624,
+   "midpoint": {
+    "x": 1329,
+    "z": -1441
+   },
+   "zone": "elandor_lethariel"
+  },
+  {
+   "length_nodes": 400,
+   "midpoint": {
+    "x": 1283,
+    "z": -1786
+   },
+   "zone": "elandor_starbough_vale"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_034",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 29,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Petalbank Wardenry",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 626,
+   "z": -1226
+  },
+  {
+   "anchor": "anchor_068",
+   "level_at_anchor": 22,
+   "name": "Whitepetal Fenhold",
+   "note": "EMPTY today: no camp fire is placed (anchor roster lists only capital, outpost and bandit populations)",
+   "type": "mirefolk",
+   "x": 1096,
+   "z": -1716
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:stag"
+  ],
+  "density_budget_day": [
+   "grug_mobs:stag"
+  ],
+  "density_budget_night": [
+   "grug_mobs:poacher",
+   "grug_mobs:wisp"
+  ],
+  "night": [
+   "grug_mobs:poacher",
+   "grug_mobs:wisp"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 8288,
+  "bay_water_area_nodes2": 74448,
+  "beaches": [
+   {
+    "area_nodes2": 6128,
+    "box": {
+     "max_x": 1068,
+     "max_z": -1764,
+     "min_x": 896,
+     "min_z": -1856
+    },
+    "centroid": {
+     "x": 969,
+     "z": -1799
+    },
+    "id": "B1",
+    "levels": [
+     21,
+     21
+    ]
+   },
+   {
+    "area_nodes2": 2384,
+    "box": {
+     "max_x": 708,
+     "max_z": -1824,
+     "min_x": 644,
+     "min_z": -1948
+    },
+    "centroid": {
+     "x": 665,
+     "z": -1877
+    },
+    "id": "B2",
+    "levels": [
+     21,
+     21
+    ]
+   },
+   {
+    "area_nodes2": 1488,
+    "box": {
+     "max_x": 812,
+     "max_z": -1800,
+     "min_x": 728,
+     "min_z": -1852
+    },
+    "centroid": {
+     "x": 768,
+     "z": -1831
+    },
+    "id": "B3",
+    "levels": [
+     21,
+     21
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 9456,
+  "sea_beach_sand_area_nodes2": 10112,
+  "sea_coast_length_nodes": 1156
+ },
+ "drift_band_share_pct": 9.9,
+ "extent": {
+  "centroid": {
+   "x": 894,
+   "z": -1490
+  },
+  "land_area_nodes2": 558688,
+  "max_x": 1380,
+  "max_z": -1092,
+  "min_x": 424,
+  "min_z": -1948
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 900,
+  "z": -1500
+ },
+ "id": "elandor_lorindor",
+ "level_field": {
+  "histogram_pct": {
+   "21": 10.7,
+   "22": 11.4,
+   "23": 11.1,
+   "24": 11.3,
+   "25": 11.4,
+   "26": 10.7,
+   "27": 8.5,
+   "28": 8.7,
+   "29": 8.1,
+   "30": 8.1
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_lorindor.png",
+ "name": "Lorindor",
+ "neighbors": [
+  "elandor_ashenward_march",
+  "elandor_glassroot_wilds",
+  "elandor_goldmead_vale",
+  "elandor_highcourt",
+  "elandor_lethariel",
+  "elandor_starbough_vale"
+ ],
+ "numeric_id": 14,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_018",
+    "kind": "village",
+    "max_x": 887,
+    "max_z": -1545,
+    "min_x": 864,
+    "min_z": -1568,
+    "name": "Lorindor Berrycourt"
+   },
+   {
+    "anchor": "anchor_034",
+    "kind": "poi",
+    "max_x": 633,
+    "max_z": -1219,
+    "min_x": 618,
+    "min_z": -1234,
+    "name": "Petalbank Wardenry"
+   },
+   {
+    "anchor": "anchor_063",
+    "kind": "poi",
+    "max_x": 1035,
+    "max_z": -1247,
+    "min_x": 1016,
+    "min_z": -1266,
+    "name": "Paleroot Cutting"
+   },
+   {
+    "anchor": "anchor_068",
+    "kind": "camp",
+    "max_x": 1103,
+    "max_z": -1709,
+    "min_x": 1088,
+    "min_z": -1724,
+    "name": "Whitepetal Fenhold"
+   }
+  ]
+ },
+ "protected_share_pct": 2.8,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "Berrycourt's orchard crew needs a low stone rim to keep washed soil against the roots. Bring eight cobble blocks to Lorindor Berrycourt, leaving the tended trees and protected court intact. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "r20_anchor_018_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stones Around the Roots",
+   "turnin": "r20_anchor_018_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "At night, poachers work Lorindor's silver-leaf and forest margins beyond Berrycourt. Defeat four of them while the orchard crew rebuilds the root beds.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "r20_anchor_018_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 poacher [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:poacher"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "No Snares in Berrycourt",
+   "turnin": "r20_anchor_018_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Petalbank's trough has lost the stone kerb that keeps washwater out of the berry baskets. Bring eight cobble blocks for its edge; the covered court must stay open to carriers. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "r20_anchor_034_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Trough's New Kerb",
+   "turnin": "r20_anchor_034_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Poachers enter Lorindor's woodland at night and force Petalbank's wardens away from the gathering routes. Defeat four so the wardens can take their normal posts again.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "r20_anchor_034_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 poacher [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:poacher"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Wardens Without Arrows",
+   "turnin": "r20_anchor_034_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Paleroot's cutters need a spare stone pick for work beside the orchard roots. Bring one to the braced shelter; you may craft it, buy it or use an existing spare. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "r20_anchor_063_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 1 grug_materials:pick_stone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_materials:pick_stone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Gentle Edge",
+   "turnin": "r20_anchor_063_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Poachers cross Lorindor's woodland at night and disturb the survey stakes outside the cutting. Defeat four so the crew can recover its marked line in daylight.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "r20_anchor_063_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 poacher [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:poacher"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Survey Stakes Vanish",
+   "turnin": "r20_anchor_063_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "The snares have gone, but pale lights still lead late pickers away from Lorindor's orchard paths. Disperse three wisps after dark around the damp woodland, then report back to Ilwen.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "r20_anchor_018_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 wisp [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:wisp"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_018_02"
+   ],
+   "reward_items": [],
+   "title": "The Uninvited Lanterns",
+   "turnin": "r20_anchor_018_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The wardens have rehung their own lamps, but other lights still move beyond them after dark. Disperse three wisps in Lorindor's damp woodland and report to Petalbank.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "r20_anchor_034_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 wisp [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:wisp"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_034_02"
+   ],
+   "reward_items": [],
+   "title": "Lanterns We Did Not Hang",
+   "turnin": "r20_anchor_034_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The recovered line leads into damp ground where wisps gather after dark. Disperse three in Lorindor before another cutter mistakes them for work lamps.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "r20_anchor_063_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 wisp [in elandor_lorindor]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:wisp"
+     ],
+     "type": "kill",
+     "zone": "elandor_lorindor"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_063_02"
+   ],
+   "reward_items": [],
+   "title": "Light on the Cutting Marks",
+   "turnin": "r20_anchor_063_host",
+   "xp": 900
+  },
+  {
+   "copper": 50,
+   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Paleroot Cutting in Lorindor and speak with Saevin Rootscribe. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Saevin Rootscribe there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "r20_elf_journey_02",
+   "min_level": 24,
+   "objectives": [
+    "talk to Saevin Rootscribe (r20_anchor_063)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_063_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Saevin Rootscribe",
+   "turnin": "r20_anchor_063_host",
+   "xp": 705
+  },
+  {
+   "copper": 50,
+   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Glassroot Gate in Glassroot Wilds and speak with Faeris Rootbinder. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Faeris Rootbinder there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "r20_elf_journey_03",
+   "min_level": 31,
+   "objectives": [
+    "talk to Faeris Rootbinder (r20_anchor_036)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_036_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Faeris Rootbinder",
+   "turnin": "r20_anchor_036_host",
+   "xp": 915
+  }
+ ],
+ "race_region": "elf",
+ "race_track": "elf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.3,
+  "height_above_sea": {
+   "max": 198,
+   "median": 86,
+   "min": 0,
+   "p10": 36,
+   "p90": 142
+  },
+  "steep_share_pct": 20.3
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    435,
+    -1395
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 2,
+   "kind": "primary",
+   "last_in_zone": [
+    1309,
+    -1481
+   ],
+   "length_in_zone": 936,
+   "length_total": 1355,
+   "polyline_simplified": [
+    [
+     273,
+     -1358
+    ],
+    [
+     339,
+     -1391
+    ],
+    [
+     527,
+     -1407
+    ],
+    [
+     670,
+     -1361
+    ],
+    [
+     848,
+     -1455
+    ],
+    [
+     968,
+     -1445
+    ],
+    [
+     1109,
+     -1504
+    ],
+    [
+     1191,
+     -1487
+    ],
+    [
+     1260,
+     -1502
+    ],
+    [
+     1324,
+     -1475
+    ],
+    [
+     1536,
+     -1489
+    ]
+   ],
+   "to": "anchor_009 (Lethariel, elandor_lethariel)"
+  },
+  {
+   "first_in_zone": [
+    879,
+    -1540
+   ],
+   "from": "anchor_018 (Lorindor Berrycourt, elandor_lorindor)",
+   "id": 11,
+   "kind": "secondary",
+   "last_in_zone": [
+    848,
+    -1455
+   ],
+   "length_in_zone": 96,
+   "length_total": 93,
+   "polyline_simplified": [
+    [
+     879,
+     -1540
+    ],
+    [
+     848,
+     -1455
+    ]
+   ],
+   "to": "joins road 2"
+  },
+  {
+   "first_in_zone": [
+    632,
+    -1215
+   ],
+   "from": "anchor_034 (Petalbank Wardenry, elandor_lorindor)",
+   "id": 38,
+   "kind": "trail",
+   "last_in_zone": [
+    614,
+    -1159
+   ],
+   "length_in_zone": 66,
+   "length_total": 488,
+   "polyline_simplified": [
+    [
+     632,
+     -1215
+    ],
+    [
+     623,
+     -1167
+    ],
+    [
+     574,
+     -1137
+    ],
+    [
+     475,
+     -1158
+    ],
+    [
+     352,
+     -1392
+    ]
+   ],
+   "to": "joins road 2"
+  },
+  {
+   "first_in_zone": [
+    1030,
+    -1244
+   ],
+   "from": "anchor_063 (Paleroot Cutting, elandor_lorindor)",
+   "id": 63,
+   "kind": "trail",
+   "last_in_zone": [
+    1284,
+    -1493
+   ],
+   "length_in_zone": 462,
+   "length_total": 467,
+   "polyline_simplified": [
+    [
+     1030,
+     -1244
+    ],
+    [
+     1060,
+     -1206
+    ],
+    [
+     1098,
+     -1214
+    ],
+    [
+     1130,
+     -1269
+    ],
+    [
+     1129,
+     -1314
+    ],
+    [
+     1224,
+     -1384
+    ],
+    [
+     1223,
+     -1423
+    ],
+    [
+     1284,
+     -1493
+    ]
+   ],
+   "to": "joins road 2"
+  },
+  {
+   "first_in_zone": [
+    1106,
+    -1708
+   ],
+   "from": "anchor_068 (Whitepetal Fenhold, elandor_lorindor)",
+   "id": 68,
+   "kind": "trail",
+   "last_in_zone": [
+    1184,
+    -1488
+   ],
+   "length_in_zone": 298,
+   "length_total": 302,
+   "polyline_simplified": [
+    [
+     1106,
+     -1708
+    ],
+    [
+     1157,
+     -1647
+    ],
+    [
+     1226,
+     -1612
+    ],
+    [
+     1184,
+     -1488
+    ]
+   ],
+   "to": "joins road 2"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 876,
+    "y": 100,
+    "z": -1556
+   },
+   "anchor_id": "anchor_018",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Paleroot Cutting",
+      "road": 1051,
+      "straight": 335,
+      "to": "r20_anchor_063",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Lethariel",
+      "road": 1126,
+      "straight": 926,
+      "to": "lethariel",
+      "zone": "elandor_lethariel"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1147,
+      "straight": 414,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Highcourt",
+      "road": 1360,
+      "straight": 878,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 1784,
+      "straight": 699,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Starbough Village",
+      "road": 1791,
+      "straight": 1124,
+      "to": "starbough_village",
+      "zone": "elandor_starbough_vale"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SW",
+     "distance": 382,
+     "x": 556,
+     "z": -1764
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 215,
+     "x": 820,
+     "z": -1764
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "S",
+     "distance": 211,
+     "x": 912,
+     "z": -1764
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 452,
+      "hits": "elandor_lethariel"
+     },
+     "north_+z": {
+      "distance": 420,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "south_-z": {
+      "distance": 228,
+      "hits": "bay_water"
+     },
+     "west_-x": {
+      "distance": 396,
+      "hits": "elandor_highcourt"
+     }
+    }
+   },
+   "key": "r20_anchor_018",
+   "name": "Lorindor Berrycourt",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_018_host",
+     "npc_name": "Ilwen Petalmeasure",
+     "quests": [
+      "r20_anchor_018_01",
+      "r20_anchor_018_02",
+      "r20_anchor_018_03",
+      "r20_elf_journey_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 878,
+     "y": 101,
+     "z": -1556
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 626,
+    "y": 53,
+    "z": -1226
+   },
+   "anchor_id": "anchor_034",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Lorindor Berrycourt",
+      "road": 1147,
+      "straight": 414,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Highcourt",
+      "road": 1211,
+      "straight": 683,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 1635,
+      "straight": 814,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Outpost",
+      "road": 1673,
+      "straight": 918,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": 1687,
+      "straight": 1089,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1736,
+      "straight": 1245,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 65,
+     "x": 608,
+     "z": -1164
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 572,
+     "x": 820,
+     "z": -1764
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "S",
+     "distance": 594,
+     "x": 840,
+     "z": -1780
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 700,
+      "hits": "elandor_lethariel"
+     },
+     "north_+z": {
+      "distance": 80,
+      "hits": "elandor_ashenward_march"
+     },
+     "south_-z": {
+      "distance": 684,
+      "hits": "elandor_goldmead_vale"
+     },
+     "west_-x": {
+      "distance": 120,
+      "hits": "elandor_ashenward_march"
+     }
+    }
+   },
+   "key": "r20_anchor_034",
+   "name": "Petalbank Wardenry",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_034_host",
+     "npc_name": "Orya Petalward",
+     "quests": [
+      "r20_anchor_034_01",
+      "r20_anchor_034_02",
+      "r20_anchor_034_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 628,
+     "y": 54,
+     "z": -1226
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1026,
+    "y": 178,
+    "z": -1256
+   },
+   "anchor_id": "anchor_063",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Lethariel",
+      "road": 1033,
+      "straight": 812,
+      "to": "lethariel",
+      "zone": "elandor_lethariel"
+     },
+     {
+      "name": "Lorindor Berrycourt",
+      "road": 1051,
+      "straight": 335,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Starbough Village",
+      "road": 1699,
+      "straight": 1161,
+      "to": "starbough_village",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Starbough Bandit Camp",
+      "road": 1775,
+      "straight": 1012,
+      "to": "starbough_bandit_camp",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1983,
+      "straight": 401,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Moonfall Observatory",
+      "road": 2035,
+      "straight": 1352,
+      "to": "r20_anchor_035",
+      "zone": "elandor_moonfall_wood"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 89,
+     "x": 1040,
+     "z": -1168
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 539,
+     "x": 920,
+     "z": -1784
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "S",
+     "distance": 516,
+     "x": 1044,
+     "z": -1772
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 308,
+      "hits": "elandor_lethariel"
+     },
+     "north_+z": {
+      "distance": 96,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "south_-z": {
+      "distance": 548,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 576,
+      "hits": "elandor_ashenward_march"
+     }
+    }
+   },
+   "key": "r20_anchor_063",
+   "name": "Paleroot Cutting",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_063_host",
+     "npc_name": "Saevin Rootscribe",
+     "quests": [
+      "r20_anchor_063_01",
+      "r20_anchor_063_02",
+      "r20_anchor_063_03",
+      "r20_elf_journey_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 1028,
+     "y": 179,
+     "z": -1256
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1096,
+    "y": 41,
+    "z": -1716
+   },
+   "anchor_id": "anchor_068",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Lorindor Berrycourt",
+      "road": null,
+      "straight": 272,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Paleroot Cutting",
+      "road": null,
+      "straight": 465,
+      "to": "r20_anchor_063",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Starbough Bandit Camp",
+      "road": null,
+      "straight": 640,
+      "to": "starbough_bandit_camp",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": null,
+      "straight": 679,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Lethariel",
+      "road": null,
+      "straight": 736,
+      "to": "lethariel",
+      "zone": "elandor_lethariel"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": null,
+      "straight": 820,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 157,
+     "x": 1148,
+     "z": -1864
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "S",
+     "distance": 86,
+     "x": 1076,
+     "z": -1800
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 75,
+     "x": 1056,
+     "z": -1780
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 240,
+      "hits": "elandor_starbough_vale"
+     },
+     "north_+z": {
+      "distance": 544,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "south_-z": {
+      "distance": 88,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 584,
+      "hits": "elandor_goldmead_vale"
+     }
+    }
+   },
+   "key": "r20_anchor_068",
+   "name": "Whitepetal Fenhold",
+   "npcs": [],
+   "race": "elf",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:poacher",
+   "name": "Poacher",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 83.3
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 10112,
+    "levels": [
+     21,
+     21
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 10112,
+    "levels": [
+     21,
+     21
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 23.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:stag",
+   "name": "Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.3
+   }
+  }
+ ],
+ "territory_rule": "accord_home",
+ "track_order": 4
+}

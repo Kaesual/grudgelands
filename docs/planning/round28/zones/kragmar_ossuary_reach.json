@@ -1,0 +1,1353 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_020",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 25,
+   "name": "Ossuary Ledgerstead",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -2369,
+    "max_z": 1611,
+    "min_x": -2392,
+    "min_z": 1588
+   },
+   "settlement_key": "r20_anchor_020",
+   "slot": "village_1",
+   "x": -2380,
+   "y": 50,
+   "z": 1600
+  },
+  {
+   "id": "anchor_038",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 29,
+   "name": "Boneledger Post",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -2261,
+    "max_z": 1241,
+    "min_x": -2276,
+    "min_z": 1226
+   },
+   "settlement_key": "r20_anchor_038",
+   "slot": "outpost_1",
+   "x": -2268,
+   "y": 56,
+   "z": 1234
+  },
+  {
+   "id": "anchor_064",
+   "kind": "mine",
+   "kind_text": "mine",
+   "level_at": 28,
+   "name": "Memoryvein Dig",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -2409,
+    "max_z": 1273,
+    "min_x": -2428,
+    "min_z": 1254
+   },
+   "settlement_key": "r20_anchor_064",
+   "slot": "mine",
+   "x": -2418,
+   "y": 31,
+   "z": 1264
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_blight",
+   "share": 40
+  },
+  {
+   "id": "grug_bone_forest",
+   "share": 50
+  },
+  {
+   "id": "grug_swamp",
+   "share": 10
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_bone_forest",
+   "share_pct": 63.0
+  },
+  {
+   "id": "grug_blight",
+   "share_pct": 29.9
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 7.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 508,
+   "midpoint": {
+    "x": -2210,
+    "z": 1070
+   },
+   "zone": "kragmar_blackwind_rise"
+  },
+  {
+   "length_nodes": 512,
+   "midpoint": {
+    "x": -2232,
+    "z": 2029
+   },
+   "zone": "kragmar_mournfen"
+  },
+  {
+   "length_nodes": 1040,
+   "midpoint": {
+    "x": -2143,
+    "z": 1501
+   },
+   "zone": "kragmar_nhal_veyr"
+  },
+  {
+   "length_nodes": 268,
+   "midpoint": {
+    "x": -2470,
+    "z": 2168
+   },
+   "zone": "kragmar_stillgrave_hollow"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_038",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 29,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Boneledger Post",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -2268,
+   "z": 1234
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:bone_weevil",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:giant_spider",
+   "grug_mobs:gravewood_treant",
+   "grug_mobs:pale_spider",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wolf"
+  ],
+  "night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:giant_spider",
+   "grug_mobs:gravewood_treant",
+   "grug_mobs:pale_spider",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wolf"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 0,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 6384,
+    "box": {
+     "max_x": -2436,
+     "max_z": 1900,
+     "min_x": -2492,
+     "min_z": 1620
+    },
+    "centroid": {
+     "x": -2464,
+     "z": 1757
+    },
+    "id": "B1",
+    "levels": [
+     22,
+     25
+    ]
+   },
+   {
+    "area_nodes2": 3744,
+    "box": {
+     "max_x": -2420,
+     "max_z": 2148,
+     "min_x": -2520,
+     "min_z": 2052
+    },
+    "centroid": {
+     "x": -2453,
+     "z": 2105
+    },
+    "id": "B2",
+    "levels": [
+     21,
+     21
+    ]
+   },
+   {
+    "area_nodes2": 3184,
+    "box": {
+     "max_x": -2432,
+     "max_z": 1348,
+     "min_x": -2484,
+     "min_z": 1180
+    },
+    "centroid": {
+     "x": -2461,
+     "z": 1263
+    },
+    "id": "B3",
+    "levels": [
+     28,
+     29
+    ]
+   },
+   {
+    "area_nodes2": 1952,
+    "box": {
+     "max_x": -2536,
+     "max_z": 2204,
+     "min_x": -2588,
+     "min_z": 2132
+    },
+    "centroid": {
+     "x": -2560,
+     "z": 2173
+    },
+    "id": "B4",
+    "levels": [
+     21,
+     21
+    ]
+   },
+   {
+    "area_nodes2": 496,
+    "box": {
+     "max_x": -2420,
+     "max_z": 1480,
+     "min_x": -2444,
+     "min_z": 1432
+    },
+    "centroid": {
+     "x": -2431,
+     "z": 1458
+    },
+    "id": "B5",
+    "levels": [
+     26,
+     27
+    ]
+   },
+   {
+    "area_nodes2": 352,
+    "box": {
+     "max_x": -2380,
+     "max_z": 1056,
+     "min_x": -2400,
+     "min_z": 1036
+    },
+    "centroid": {
+     "x": -2391,
+     "z": 1045
+    },
+    "id": "B6",
+    "levels": [
+     30,
+     30
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 0,
+  "sea_beach_sand_area_nodes2": 16560,
+  "sea_coast_length_nodes": 1736
+ },
+ "drift_band_share_pct": 8.2,
+ "extent": {
+  "centroid": {
+   "x": -2310,
+   "z": 1568
+  },
+  "land_area_nodes2": 327136,
+  "max_x": -2032,
+  "max_z": 2204,
+  "min_x": -2588,
+  "min_z": 1036
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": -2400,
+  "z": 1500
+ },
+ "id": "kragmar_ossuary_reach",
+ "level_field": {
+  "histogram_pct": {
+   "21": 9.0,
+   "22": 10.3,
+   "23": 11.8,
+   "24": 10.0,
+   "25": 9.4,
+   "26": 10.0,
+   "27": 7.3,
+   "28": 9.3,
+   "29": 10.5,
+   "30": 12.5
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_ossuary_reach.png",
+ "name": "Ossuary Reach",
+ "neighbors": [
+  "kragmar_blackwind_rise",
+  "kragmar_mournfen",
+  "kragmar_nhal_veyr",
+  "kragmar_stillgrave_hollow"
+ ],
+ "numeric_id": 20,
+ "palette_without_host_ground": [
+  "Bear",
+  "Giant Spider",
+  "Stag",
+  "Wolf"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_020",
+    "kind": "village",
+    "max_x": -2369,
+    "max_z": 1611,
+    "min_x": -2392,
+    "min_z": 1588,
+    "name": "Ossuary Ledgerstead"
+   },
+   {
+    "anchor": "anchor_038",
+    "kind": "poi",
+    "max_x": -2261,
+    "max_z": 1241,
+    "min_x": -2276,
+    "min_z": 1226,
+    "name": "Boneledger Post"
+   },
+   {
+    "anchor": "anchor_064",
+    "kind": "poi",
+    "max_x": -2409,
+    "max_z": 1273,
+    "min_x": -2428,
+    "min_z": 1254,
+    "name": "Memoryvein Dig"
+   }
+  ]
+ },
+ "protected_share_pct": 1.9,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "The namekeeper will not let another stone tablet rest on a rotten archive shelf. Bring eight gravewood planks to Ossuary Ledgerstead; the local gravewood trunks make the boards these shelves require. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_020_host",
+   "giver_name": "Sovel Namekeeper",
+   "giver_settlement": "Ossuary Ledgerstead",
+   "id": "r20_anchor_020_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 grug_trees:gravewood_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "grug_trees:gravewood_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Shelves for the Remembered",
+   "turnin": "r20_anchor_020_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Blightfang wolves hunt along Ossuary Reach's bone-forest floor and cut off visitors carrying names to the archive. Defeat four of them without disturbing the memorial plots.",
+   "giver": "r20_anchor_020_host",
+   "giver_name": "Sovel Namekeeper",
+   "giver_settlement": "Ossuary Ledgerstead",
+   "id": "r20_anchor_020_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 blightfang_wolf [in kragmar_ossuary_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:blightfang_wolf"
+     ],
+     "type": "kill",
+     "zone": "kragmar_ossuary_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Teeth Beside the Archive",
+   "turnin": "r20_anchor_020_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Boneledger's stone names have outlasted their wooden shelf. Bring eight gravewood planks for the record shelter so the watch can keep road reports separate from memorial tablets. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "r20_anchor_038_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 grug_trees:gravewood_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "grug_trees:gravewood_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Shelf for Stone Names",
+   "turnin": "r20_anchor_038_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Gravewood treants stir on Ossuary Reach's bone-covered forest floor after dark. Defeat three before the next ledger carrier follows that road.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "r20_anchor_038_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:gravewood_treant"
+     ],
+     "type": "kill",
+     "zone": "kragmar_ossuary_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Hungry Gravewood",
+   "turnin": "r20_anchor_038_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Memoryvein keeps its rock tallies in a shed apart from the memorial stones. Bring eight gravewood planks for that shed's frame, using the local tree's ordinary sawn boards. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "r20_anchor_064_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 grug_trees:gravewood_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "grug_trees:gravewood_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Record Shed Frame",
+   "turnin": "r20_anchor_064_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Gravewood treants move through Ossuary Reach's bone forest after dark and keep the cutters from their return path. Defeat three without disturbing the tended memorials.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "r20_anchor_064_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:gravewood_treant"
+     ],
+     "type": "kill",
+     "zone": "kragmar_ossuary_reach"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Cutters' Uneasy Night",
+   "turnin": "r20_anchor_064_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Once the wolf tracks are cleared, the night watch can reach the older grove. Three gravewood treants there keep tearing at the boundary markers after dark. Put them down in Ossuary Reach and bring the report to Sovel.",
+   "giver": "r20_anchor_020_host",
+   "giver_name": "Sovel Namekeeper",
+   "giver_settlement": "Ossuary Ledgerstead",
+   "id": "r20_anchor_020_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:gravewood_treant"
+     ],
+     "type": "kill",
+     "zone": "kragmar_ossuary_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_020_02"
+   ],
+   "reward_items": [],
+   "title": "The Trees That Refuse Rest",
+   "turnin": "r20_anchor_020_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "With the night grove quiet, the keeper can send carriers farther along the road. Defeat four blightfang wolves in Ossuary Reach so the hungry packs do not take their place.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "r20_anchor_038_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 blightfang_wolf [in kragmar_ossuary_reach]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:blightfang_wolf"
+     ],
+     "type": "kill",
+     "zone": "kragmar_ossuary_reach"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_038_02"
+   ],
+   "reward_items": [],
+   "title": "A Pack on the Ledger Road",
+   "turnin": "r20_anchor_038_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The night route is quiet enough for a new cutting shift. Bring one ordinary stone pick for the crew's spare rack; no special relic or freshly mined stone is required. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "r20_anchor_064_03",
+   "min_level": 23,
+   "objectives": [
+    "bring 1 grug_materials:pick_stone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_materials:pick_stone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_064_02"
+   ],
+   "reward_items": [],
+   "title": "A Tool for Unnamed Stone",
+   "turnin": "r20_anchor_064_host",
+   "xp": 900
+  },
+  {
+   "copper": 50,
+   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Memoryvein Dig in Ossuary Reach and speak with Neris Fossilhand. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Neris Fossilhand there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_020_host",
+   "giver_name": "Sovel Namekeeper",
+   "giver_settlement": "Ossuary Ledgerstead",
+   "id": "r20_undead_journey_02",
+   "min_level": 24,
+   "objectives": [
+    "talk to Neris Fossilhand (r20_anchor_064)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_064_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Neris Fossilhand",
+   "turnin": "r20_anchor_064_host",
+   "xp": 705
+  },
+  {
+   "copper": 50,
+   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Ashveil Watch in Blackwind Rise and speak with Vaska Ashlistener. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Vaska Ashlistener there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "r20_undead_journey_03",
+   "min_level": 31,
+   "objectives": [
+    "talk to Vaska Ashlistener (r20_anchor_039)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_039_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Vaska Ashlistener",
+   "turnin": "r20_anchor_039_host",
+   "xp": 915
+  }
+ ],
+ "race_region": "undead",
+ "race_track": "undead",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.2,
+  "height_above_sea": {
+   "max": 177,
+   "median": 56,
+   "min": 0,
+   "p10": 7,
+   "p90": 84
+  },
+  "steep_share_pct": 10.5
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -2369,
+    1616
+   ],
+   "from": "anchor_020 (Ossuary Ledgerstead, kragmar_ossuary_reach)",
+   "id": 23,
+   "kind": "secondary",
+   "last_in_zone": [
+    -2212,
+    1646
+   ],
+   "length_in_zone": 176,
+   "length_total": 324,
+   "polyline_simplified": [
+    [
+     -2369,
+     1616
+    ],
+    [
+     -2349,
+     1642
+    ],
+    [
+     -2064,
+     1650
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -2045,
+    1102
+   ],
+   "from": "anchor_039 (Ashveil Watch, kragmar_blackwind_rise)",
+   "id": 26,
+   "kind": "secondary",
+   "last_in_zone": [
+    -2038,
+    1109
+   ],
+   "length_in_zone": 8,
+   "length_total": 584,
+   "polyline_simplified": [
+    [
+     -2007,
+     823
+    ],
+    [
+     -2047,
+     865
+    ],
+    [
+     -2036,
+     947
+    ],
+    [
+     -2061,
+     1000
+    ],
+    [
+     -2109,
+     998
+    ],
+    [
+     -2122,
+     1014
+    ],
+    [
+     -2003,
+     1146
+    ],
+    [
+     -2031,
+     1233
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -2258,
+    1224
+   ],
+   "from": "anchor_038 (Boneledger Post, kragmar_ossuary_reach)",
+   "id": 41,
+   "kind": "trail",
+   "last_in_zone": [
+    -2046,
+    1153
+   ],
+   "length_in_zone": 232,
+   "length_total": 276,
+   "polyline_simplified": [
+    [
+     -2258,
+     1224
+    ],
+    [
+     -2208,
+     1199
+    ],
+    [
+     -2108,
+     1190
+    ],
+    [
+     -2010,
+     1133
+    ]
+   ],
+   "to": "joins road 26"
+  },
+  {
+   "first_in_zone": [
+    -2405,
+    1275
+   ],
+   "from": "anchor_064 (Memoryvein Dig, kragmar_ossuary_reach)",
+   "id": 64,
+   "kind": "trail",
+   "last_in_zone": [
+    -2307,
+    1639
+   ],
+   "length_in_zone": 424,
+   "length_total": 430,
+   "polyline_simplified": [
+    [
+     -2405,
+     1275
+    ],
+    [
+     -2289,
+     1442
+    ],
+    [
+     -2336,
+     1542
+    ],
+    [
+     -2307,
+     1639
+    ]
+   ],
+   "to": "joins road 23"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -2380,
+    "y": 50,
+    "z": 1600
+   },
+   "anchor_id": "anchor_020",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Memoryvein Dig",
+      "road": 539,
+      "straight": 338,
+      "to": "r20_anchor_064",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 677,
+      "straight": 589,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1194,
+      "straight": 638,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 1411,
+      "straight": 573,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Boneledger Post",
+      "road": 1462,
+      "straight": 383,
+      "to": "r20_anchor_038",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1535,
+      "straight": 900,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 172,
+     "x": -2208,
+     "z": 1612
+    },
+    "nearest_road": {
+     "distance": 19
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 84,
+     "x": -2464,
+     "z": 1600
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 72,
+     "x": -2452,
+     "z": 1600
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 176,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "north_+z": {
+      "distance": 528,
+      "hits": "kragmar_mournfen"
+     },
+     "south_-z": {
+      "distance": 560,
+      "hits": "kragmar_blackwind_rise"
+     },
+     "west_-x": {
+      "distance": 84,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_020",
+   "name": "Ossuary Ledgerstead",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_020_host",
+     "npc_name": "Sovel Namekeeper",
+     "quests": [
+      "r20_anchor_020_01",
+      "r20_anchor_020_02",
+      "r20_anchor_020_03",
+      "r20_undead_journey_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -2378,
+     "y": 51,
+     "z": 1600
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -2268,
+    "y": 56,
+    "z": 1234
+   },
+   "anchor_id": "anchor_038",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Ashveil Watch",
+      "road": 738,
+      "straight": 472,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 1012,
+      "straight": 538,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1462,
+      "straight": 383,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1540,
+      "straight": 868,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1679,
+      "straight": 1055,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 1757,
+      "straight": 882,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "NE",
+     "distance": 166,
+     "x": -2116,
+     "z": 1300
+    },
+    "nearest_road": {
+     "distance": 14
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 198,
+     "x": -2460,
+     "z": 1184
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 180,
+     "x": -2444,
+     "z": 1196
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 184,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "north_+z": {
+      "distance": 836,
+      "hits": "kragmar_mournfen"
+     },
+     "south_-z": {
+      "distance": 176,
+      "hits": "kragmar_blackwind_rise"
+     },
+     "west_-x": {
+      "distance": 212,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_038",
+   "name": "Boneledger Post",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_038_host",
+     "npc_name": "Mereth Rubbinghand",
+     "quests": [
+      "r20_anchor_038_01",
+      "r20_anchor_038_02",
+      "r20_anchor_038_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -2266,
+     "y": 57,
+     "z": 1234
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -2418,
+    "y": 31,
+    "z": 1264
+   },
+   "anchor_id": "anchor_064",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 539,
+      "straight": 338,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 1027,
+      "straight": 662,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1544,
+      "straight": 916,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 1761,
+      "straight": 894,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Boneledger Post",
+      "road": 1812,
+      "straight": 153,
+      "to": "r20_anchor_038",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1885,
+      "straight": 1134,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 212,
+     "x": -2360,
+     "z": 1060
+    },
+    "nearest_road": {
+     "distance": 17
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 60,
+     "x": -2476,
+     "z": 1280
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 34,
+     "x": -2452,
+     "z": 1260
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 320,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "north_+z": {
+      "distance": 876,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "south_-z": {
+      "distance": 176,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 68,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_064",
+   "name": "Memoryvein Dig",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_064_host",
+     "npc_name": "Neris Fossilhand",
+     "quests": [
+      "r20_anchor_064_01",
+      "r20_anchor_064_02",
+      "r20_anchor_064_03",
+      "r20_undead_journey_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -2416,
+     "y": 32,
+     "z": 1264
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:blightfang_wolf",
+   "name": "Blightfang Wolf",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.7
+   },
+   "disposition": "critter",
+   "hosts": [
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:bone_weevil",
+   "name": "Bone Weevil",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.7
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:gaunt_stag",
+   "name": "Gaunt Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:gravewood_treant",
+   "name": "Gravewood Treant",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:pale_spider",
+   "name": "Bonelurker Spider",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:plaguehide_bear",
+   "name": "Plaguehide Bear",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 16560,
+    "levels": [
+     21,
+     30
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 16560,
+    "levels": [
+     21,
+     30
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter"
+   ],
+   "mob": "grug_mobs:skeleton_archer",
+   "name": "Skeleton Archer",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.7
+   }
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 4
+}

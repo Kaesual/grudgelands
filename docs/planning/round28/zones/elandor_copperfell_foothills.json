@@ -1,0 +1,1400 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_013",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 17,
+   "name": "Copperfell Village",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -1857,
+    "max_z": -2025,
+    "min_x": -1880,
+    "min_z": -2048
+   },
+   "settlement_key": "copperfell_village",
+   "slot": "village_1",
+   "x": -1868,
+   "y": 94,
+   "z": -2036
+  },
+  {
+   "id": "anchor_025",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 16,
+   "name": "Copperfell Outpost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -2093,
+    "max_z": -2093,
+    "min_x": -2108,
+    "min_z": -2108
+   },
+   "settlement_key": "copperfell_outpost",
+   "slot": "outpost_1",
+   "x": -2100,
+   "y": 55,
+   "z": -2100
+  },
+  {
+   "id": "anchor_049",
+   "kind": "bandit_home",
+   "kind_text": "bandit camp",
+   "level_at": 17,
+   "name": "Copperfell Bandit Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": -1557,
+    "max_z": -2055,
+    "min_x": -1580,
+    "min_z": -2078
+   },
+   "settlement_key": "copperfell_bandit_camp",
+   "slot": "bandit_1",
+   "x": -1568,
+   "y": 68,
+   "z": -2066
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_pine_hills",
+   "share": 75
+  },
+  {
+   "id": "grug_crags",
+   "share": 25
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_pine_hills",
+   "share_pct": 91.2
+  },
+  {
+   "id": "grug_crags",
+   "share_pct": 8.6
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 0.0
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1156,
+   "midpoint": {
+    "x": -1694,
+    "z": -1849
+   },
+   "zone": "elandor_dur_brannoc"
+  },
+  {
+   "length_nodes": 524,
+   "midpoint": {
+    "x": -2245,
+    "z": -2006
+   },
+   "zone": "elandor_frostbarrow_shelf"
+  },
+  {
+   "length_nodes": 1736,
+   "midpoint": {
+    "x": -1895,
+    "z": -2392
+   },
+   "zone": "elandor_hearthpine_vale"
+  },
+  {
+   "length_nodes": 256,
+   "midpoint": {
+    "x": -1168,
+    "z": -1918
+   },
+   "zone": "elandor_whitebridge_shire"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_025",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 16,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Copperfell Outpost",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -2100,
+   "z": -2100
+  },
+  {
+   "anchor": "anchor_049",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 17,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Copperfell Bandit Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": -1568,
+   "z": -2066
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox",
+   "grug_mobs:hare",
+   "grug_mobs:ibex",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit"
+  ],
+  "density_budget_day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox",
+   "grug_mobs:ibex"
+  ],
+  "density_budget_night": [
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 2928,
+  "bay_water_area_nodes2": 18640,
+  "beaches": [
+   {
+    "area_nodes2": 2032,
+    "box": {
+     "max_x": -2308,
+     "max_z": -2288,
+     "min_x": -2352,
+     "min_z": -2396
+    },
+    "centroid": {
+     "x": -2327,
+     "z": -2342
+    },
+    "id": "B1",
+    "levels": [
+     12,
+     14
+    ]
+   },
+   {
+    "area_nodes2": 1280,
+    "box": {
+     "max_x": -2424,
+     "max_z": -2452,
+     "min_x": -2464,
+     "min_z": -2560
+    },
+    "centroid": {
+     "x": -2441,
+     "z": -2504
+    },
+    "id": "B2",
+    "levels": [
+     11,
+     12
+    ]
+   },
+   {
+    "area_nodes2": 624,
+    "box": {
+     "max_x": -1216,
+     "max_z": -2136,
+     "min_x": -1252,
+     "min_z": -2196
+    },
+    "centroid": {
+     "x": -1232,
+     "z": -2171
+    },
+    "id": "B3",
+    "levels": [
+     15,
+     16
+    ]
+   },
+   {
+    "area_nodes2": 512,
+    "box": {
+     "max_x": -1200,
+     "max_z": -2060,
+     "min_x": -1220,
+     "min_z": -2112
+    },
+    "centroid": {
+     "x": -1209,
+     "z": -2083
+    },
+    "id": "B4",
+    "levels": [
+     16,
+     17
+    ]
+   },
+   {
+    "area_nodes2": 448,
+    "box": {
+     "max_x": -1152,
+     "max_z": -2004,
+     "min_x": -1192,
+     "min_z": -2024
+    },
+    "centroid": {
+     "x": -1168,
+     "z": -2014
+    },
+    "id": "B5",
+    "levels": [
+     18,
+     18
+    ]
+   },
+   {
+    "area_nodes2": 208,
+    "box": {
+     "max_x": -1220,
+     "max_z": -1996,
+     "min_x": -1236,
+     "min_z": -2004
+    },
+    "centroid": {
+     "x": -1228,
+     "z": -1999
+    },
+    "id": "B6",
+    "levels": [
+     18,
+     18
+    ]
+   },
+   {
+    "area_nodes2": 128,
+    "box": {
+     "max_x": -1236,
+     "max_z": -2032,
+     "min_x": -1260,
+     "min_z": -2044
+    },
+    "centroid": {
+     "x": -1247,
+     "z": -2039
+    },
+    "id": "B7",
+    "levels": [
+     17,
+     17
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 8080,
+  "sea_beach_sand_area_nodes2": 5616,
+  "sea_coast_length_nodes": 1028
+ },
+ "drift_band_share_pct": 6.3,
+ "extent": {
+  "centroid": {
+   "x": -1834,
+   "z": -2134
+  },
+  "land_area_nodes2": 545840,
+  "max_x": -1124,
+  "max_z": -1824,
+  "min_x": -2524,
+  "min_z": -2596
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": -1800,
+  "z": -2050
+ },
+ "id": "elandor_copperfell_foothills",
+ "level_field": {
+  "histogram_pct": {
+   "11": 6.6,
+   "12": 5.5,
+   "13": 6.4,
+   "14": 9.1,
+   "15": 15.1,
+   "16": 14.6,
+   "17": 10.8,
+   "18": 10.6,
+   "19": 10.5,
+   "20": 10.9
+  },
+  "max": 20,
+  "min": 11
+ },
+ "level_max": 20,
+ "level_min": 11,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_copperfell_foothills.png",
+ "name": "Copperfell Foothills",
+ "neighbors": [
+  "elandor_dur_brannoc",
+  "elandor_frostbarrow_shelf",
+  "elandor_hearthpine_vale",
+  "elandor_whitebridge_shire"
+ ],
+ "numeric_id": 2,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_013",
+    "kind": "village",
+    "max_x": -1857,
+    "max_z": -2025,
+    "min_x": -1880,
+    "min_z": -2048,
+    "name": "Copperfell Village"
+   },
+   {
+    "anchor": "anchor_025",
+    "kind": "poi",
+    "max_x": -2093,
+    "max_z": -2093,
+    "min_x": -2108,
+    "min_z": -2108,
+    "name": "Copperfell Outpost"
+   },
+   {
+    "anchor": "anchor_049",
+    "kind": "camp",
+    "max_x": -1557,
+    "max_z": -2055,
+    "min_x": -1580,
+    "min_z": -2078,
+    "name": "Copperfell Bandit Camp"
+   }
+  ]
+ },
+ "protected_share_pct": 1.9,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 50,
+   "description": "Foxes scattered an ore ledger in the scrub. Clear the den so Orrik can recover the pages.",
+   "giver": "r14_dwarf_steward",
+   "giver_name": "Orrik Pineledger",
+   "giver_settlement": "Copperfell Village",
+   "id": "r14_dwarf_07_a_ledger_in_the_scrub",
+   "min_level": 10,
+   "objectives": [
+    "kill 6 fox [in elandor_copperfell_foothills]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:fox"
+     ],
+     "type": "kill",
+     "zone": "elandor_copperfell_foothills"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_06_loose_stone_on_copper_road"
+   ],
+   "reward_items": [],
+   "title": "A Ledger in the Scrub",
+   "turnin": "r14_dwarf_steward",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "The workshop needs ordinary cobble to reset its cartway after the last rockfall. Bring sound blocks from the local slopes.",
+   "giver": "r15_dwarf_local",
+   "giver_name": "Dagna Copperset",
+   "giver_settlement": "Copperfell Village",
+   "id": "r15_dwarf_local_01",
+   "min_level": 10,
+   "objectives": [
+    "bring 8 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "description": "Bring cobble",
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_06_loose_stone_on_copper_road"
+   ],
+   "reward_items": [],
+   "title": "Stone for the Workyard",
+   "turnin": "r15_dwarf_local",
+   "xp": 285
+  },
+  {
+   "copper": 45,
+   "description": "Foxes leave fangs among the scattered tool baskets. Bring two ordinary fox fangs from the Copperfell hunt so Dagna can show the workers which animals caused the damage.",
+   "giver": "r15_dwarf_local",
+   "giver_name": "Dagna Copperset",
+   "giver_settlement": "Copperfell Village",
+   "id": "r15_dwarf_local_02",
+   "min_level": 10,
+   "objectives": [
+    "bring 2 grug_mobs:fang"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:fang",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_06_loose_stone_on_copper_road"
+   ],
+   "reward_items": [],
+   "title": "Fangs in the Tool Baskets",
+   "turnin": "r15_dwarf_local",
+   "xp": 380
+  },
+  {
+   "copper": 60,
+   "description": "Goblins use Copperfell's marker stones to signal across the pass at night. Break their signal party so Mara can guide the next ore wagon. Look for this threat after nightfall in the named regional zone.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "r14_dwarf_08_hold_the_marker_stones",
+   "min_level": 11,
+   "objectives": [
+    "kill 6 goblin_raider or goblin_slinger or goblin_hound [in elandor_copperfell_foothills]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:goblin_raider",
+      "grug_mobs:goblin_slinger",
+      "grug_mobs:goblin_hound"
+     ],
+     "type": "kill",
+     "zone": "elandor_copperfell_foothills"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_07_a_ledger_in_the_scrub"
+   ],
+   "reward_items": [],
+   "title": "Hold the Marker Stones",
+   "turnin": "r14_dwarf_scout",
+   "xp": 525
+  },
+  {
+   "copper": 50,
+   "description": "The goblins on Copperfell's night signal path carry linen scraps. Bring two while helping Mara hold the marker stones; Mara can bind the recovered signal poles with the scraps.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "r15_dwarf_local_03",
+   "min_level": 11,
+   "objectives": [
+    "bring 2 grug_mobs:linen_scrap"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:linen_scrap",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_07_a_ledger_in_the_scrub"
+   ],
+   "reward_items": [],
+   "title": "Scraps from the Signal Path",
+   "turnin": "r14_dwarf_scout",
+   "xp": 315
+  },
+  {
+   "copper": 55,
+   "description": "Ibex crowd the shelf beside the guard shelter and send stones through its stores. Thin the herd around the post.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "r15_dwarf_local_04",
+   "min_level": 11,
+   "objectives": [
+    "kill 5 ibex [in elandor_copperfell_foothills]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:ibex"
+     ],
+     "type": "kill",
+     "zone": "elandor_copperfell_foothills"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_07_a_ledger_in_the_scrub"
+   ],
+   "reward_items": [],
+   "title": "Sure Feet, Loose Stones",
+   "turnin": "r14_dwarf_scout",
+   "xp": 420
+  },
+  {
+   "copper": 80,
+   "description": "The bandits stole ore tallies and marked them with a hooked sun. Defeat the camp; Tovin waits inside with what he learned. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "r14_dwarf_09_ash_under_the_nails",
+   "min_level": 12,
+   "objectives": [
+    "kill 4 bandit or bandit_archer [in elandor_copperfell_foothills]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit",
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "elandor_copperfell_foothills"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_08_hold_the_marker_stones"
+   ],
+   "reward_items": [],
+   "title": "Ash Under the Nails",
+   "turnin": "r14_dwarf_captive",
+   "xp": 805
+  },
+  {
+   "copper": 65,
+   "description": "Tovin recognises the ore carriers' tally knots on the stolen purses. Recover two from the camp so he can identify whose winter wages went missing. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+   "giver": "r14_dwarf_captive",
+   "giver_name": "Tovin Ashthumb",
+   "giver_settlement": "Copperfell Bandit Camp",
+   "id": "r15_dwarf_local_05",
+   "min_level": 12,
+   "objectives": [
+    "bring 2 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:stolen_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_08_hold_the_marker_stones"
+   ],
+   "reward_items": [],
+   "title": "The Ore Carriers' Purses",
+   "turnin": "r14_dwarf_captive",
+   "xp": 460
+  },
+  {
+   "copper": 75,
+   "description": "The raiders wrapped the stolen tools in their own linen. Bring some of that ordinary camp cloth so Tovin can identify the bundles.",
+   "giver": "r14_dwarf_captive",
+   "giver_name": "Tovin Ashthumb",
+   "giver_settlement": "Copperfell Bandit Camp",
+   "id": "r15_dwarf_local_06",
+   "min_level": 12,
+   "objectives": [
+    "bring 5 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "description": "Bring linen cloth",
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_dwarf_08_hold_the_marker_stones"
+   ],
+   "reward_items": [],
+   "title": "Cloth Around the Stolen Tools",
+   "turnin": "r14_dwarf_captive",
+   "xp": 575
+  }
+ ],
+ "race_region": "dwarf",
+ "race_track": "dwarf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.0,
+  "height_above_sea": {
+   "max": 158,
+   "median": 66,
+   "min": 0,
+   "p10": 27,
+   "p90": 102
+  },
+  "steep_share_pct": 10.7
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1792,
+    -2300
+   ],
+   "from": "anchor_001 (Hearthpine, elandor_hearthpine_vale)",
+   "id": 3,
+   "kind": "primary",
+   "last_in_zone": [
+    -1703,
+    -1827
+   ],
+   "length_in_zone": 526,
+   "length_total": 825,
+   "polyline_simplified": [
+    [
+     -1800,
+     -2486
+    ],
+    [
+     -1791,
+     -2415
+    ],
+    [
+     -1816,
+     -2348
+    ],
+    [
+     -1760,
+     -2216
+    ],
+    [
+     -1822,
+     -2039
+    ],
+    [
+     -1780,
+     -1944
+    ],
+    [
+     -1648,
+     -1760
+    ]
+   ],
+   "to": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)"
+  },
+  {
+   "first_in_zone": [
+    -1853,
+    -2026
+   ],
+   "from": "anchor_013 (Copperfell Village, elandor_copperfell_foothills)",
+   "id": 8,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1806,
+    -2002
+   ],
+   "length_in_zone": 56,
+   "length_total": 53,
+   "polyline_simplified": [
+    [
+     -1853,
+     -2026
+    ],
+    [
+     -1806,
+     -2002
+    ]
+   ],
+   "to": "joins road 3"
+  },
+  {
+   "first_in_zone": [
+    -2093,
+    -2110
+   ],
+   "from": "anchor_025 (Copperfell Outpost, elandor_copperfell_foothills)",
+   "id": 31,
+   "kind": "trail",
+   "last_in_zone": [
+    -1798,
+    -2304
+   ],
+   "length_in_zone": 360,
+   "length_total": 368,
+   "polyline_simplified": [
+    [
+     -2093,
+     -2110
+    ],
+    [
+     -2014,
+     -2179
+    ],
+    [
+     -1917,
+     -2220
+    ],
+    [
+     -1795,
+     -2305
+    ]
+   ],
+   "to": "joins road 3"
+  },
+  {
+   "first_in_zone": [
+    -1576,
+    -2080
+   ],
+   "from": "anchor_049 (Copperfell Bandit Camp, elandor_copperfell_foothills)",
+   "id": 49,
+   "kind": "trail",
+   "last_in_zone": [
+    -1783,
+    -2163
+   ],
+   "length_in_zone": 240,
+   "length_total": 240,
+   "polyline_simplified": [
+    [
+     -1576,
+     -2080
+    ],
+    [
+     -1657,
+     -2141
+    ],
+    [
+     -1736,
+     -2139
+    ],
+    [
+     -1783,
+     -2163
+    ]
+   ],
+   "to": "joins road 3"
+  }
+ ],
+ "role": "home zone 11-20",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -1868,
+    "y": 94,
+    "z": -2036
+   },
+   "anchor_id": "anchor_013",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Copperfell Bandit Camp",
+      "road": 493,
+      "straight": 301,
+      "to": "copperfell_bandit_camp",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Hearthpine",
+      "road": 655,
+      "straight": 518,
+      "to": "hearthpine",
+      "zone": "elandor_hearthpine_vale"
+     },
+     {
+      "name": "Copperfell Outpost",
+      "road": 775,
+      "straight": 241,
+      "to": "copperfell_outpost",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Dur Brannoc",
+      "road": 857,
+      "straight": 540,
+      "to": "dur_brannoc",
+      "zone": "elandor_dur_brannoc"
+     },
+     {
+      "name": "Tarnwatch Fold",
+      "road": 1538,
+      "straight": 706,
+      "to": "r20_anchor_014",
+      "zone": "elandor_frostbarrow_shelf"
+     },
+     {
+      "name": "Bridgechalk Dig",
+      "road": 1651,
+      "straight": 1113,
+      "to": "r20_anchor_062",
+      "zone": "elandor_whitebridge_shire"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 176,
+     "x": -1920,
+     "z": -1868
+    },
+    "nearest_road": {
+     "distance": 18
+    },
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 469,
+     "x": -2296,
+     "z": -2228
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 513,
+     "x": -2312,
+     "z": -2292
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 696,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 188,
+      "hits": "elandor_dur_brannoc"
+     },
+     "south_-z": {
+      "distance": 316,
+      "hits": "elandor_hearthpine_vale"
+     },
+     "west_-x": {
+      "distance": 392,
+      "hits": "elandor_frostbarrow_shelf"
+     }
+    }
+   },
+   "key": "copperfell_village",
+   "name": "Copperfell Village",
+   "npcs": [
+    {
+     "npc_id": "r14_dwarf_steward",
+     "npc_name": "Orrik Pineledger",
+     "quests": [
+      "r14_dwarf_07_a_ledger_in_the_scrub"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_steward",
+     "x": -1866,
+     "y": 95,
+     "z": -2036
+    },
+    {
+     "npc_id": "r15_dwarf_local",
+     "npc_name": "Dagna Copperset",
+     "quests": [
+      "r15_dwarf_local_01",
+      "r15_dwarf_local_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_local",
+     "x": -1870,
+     "y": 95,
+     "z": -2038
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "idle": 2,
+    "quest": 2
+   }
+  },
+  {
+   "anchor": {
+    "x": -2100,
+    "y": 55,
+    "z": -2100
+   },
+   "anchor_id": "anchor_025",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Hearthpine",
+      "road": 638,
+      "straight": 541,
+      "to": "hearthpine",
+      "zone": "elandor_hearthpine_vale"
+     },
+     {
+      "name": "Copperfell Village",
+      "road": 775,
+      "straight": 241,
+      "to": "copperfell_village",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Copperfell Bandit Camp",
+      "road": 793,
+      "straight": 533,
+      "to": "copperfell_bandit_camp",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Dur Brannoc",
+      "road": 1498,
+      "straight": 671,
+      "to": "dur_brannoc",
+      "zone": "elandor_dur_brannoc"
+     },
+     {
+      "name": "Tarnwatch Fold",
+      "road": 2178,
+      "straight": 606,
+      "to": "r20_anchor_014",
+      "zone": "elandor_frostbarrow_shelf"
+     },
+     {
+      "name": "Bridgechalk Dig",
+      "road": 2291,
+      "straight": 1329,
+      "to": "r20_anchor_062",
+      "zone": "elandor_whitebridge_shire"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 172,
+     "x": -2260,
+     "z": -2036
+    },
+    "nearest_road": {
+     "distance": 12
+    },
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 233,
+     "x": -2304,
+     "z": -2212
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 273,
+     "x": -2364,
+     "z": -2168
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 896,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 240,
+      "hits": "elandor_dur_brannoc"
+     },
+     "south_-z": {
+      "distance": 408,
+      "hits": "elandor_hearthpine_vale"
+     },
+     "west_-x": {
+      "distance": 208,
+      "hits": "elandor_frostbarrow_shelf"
+     }
+    }
+   },
+   "key": "copperfell_outpost",
+   "name": "Copperfell Outpost",
+   "npcs": [
+    {
+     "npc_id": "r14_dwarf_scout",
+     "npc_name": "Mara Deepwatch",
+     "quests": [
+      "r14_dwarf_08_hold_the_marker_stones",
+      "r14_dwarf_09_ash_under_the_nails",
+      "r15_dwarf_local_03",
+      "r15_dwarf_local_04"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_scout",
+     "x": -2097,
+     "y": 56,
+     "z": -2103
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -1568,
+    "y": 68,
+    "z": -2066
+   },
+   "anchor_id": "anchor_049",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Copperfell Village",
+      "road": 493,
+      "straight": 301,
+      "to": "copperfell_village",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Hearthpine",
+      "road": 673,
+      "straight": 537,
+      "to": "hearthpine",
+      "zone": "elandor_hearthpine_vale"
+     },
+     {
+      "name": "Copperfell Outpost",
+      "road": 793,
+      "straight": 533,
+      "to": "copperfell_outpost",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Dur Brannoc",
+      "road": 1216,
+      "straight": 612,
+      "to": "dur_brannoc",
+      "zone": "elandor_dur_brannoc"
+     },
+     {
+      "name": "Tarnwatch Fold",
+      "road": 1896,
+      "straight": 969,
+      "to": "r20_anchor_014",
+      "zone": "elandor_frostbarrow_shelf"
+     },
+     {
+      "name": "Bridgechalk Dig",
+      "road": 2009,
+      "straight": 949,
+      "to": "r20_anchor_062",
+      "zone": "elandor_whitebridge_shire"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 172,
+     "x": -1544,
+     "z": -2236
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 354,
+     "x": -1244,
+     "z": -2208
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SE",
+     "distance": 310,
+     "x": -1348,
+     "z": -2284
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 372,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 200,
+      "hits": "elandor_dur_brannoc"
+     },
+     "south_-z": {
+      "distance": 172,
+      "hits": "elandor_hearthpine_vale"
+     },
+     "west_-x": {
+      "distance": 716,
+      "hits": "elandor_frostbarrow_shelf"
+     }
+    }
+   },
+   "key": "copperfell_bandit_camp",
+   "name": "Copperfell Bandit Camp",
+   "npcs": [
+    {
+     "npc_id": "r14_dwarf_captive",
+     "npc_name": "Tovin Ashthumb",
+     "quests": [
+      "r15_dwarf_local_05",
+      "r15_dwarf_local_06"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_captive",
+     "x": -1558,
+     "y": 69,
+     "z": -2056
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:boar",
+   "name": "Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 90.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:fox",
+   "name": "Fox",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_hound",
+   "name": "Goblin Raider Hound",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_raider",
+   "name": "Goblin Raider",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_slinger",
+   "name": "Goblin Slinger",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:ibex",
+   "name": "Ibex",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:rabbit",
+   "name": "Rabbit",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 5616,
+    "levels": [
+     11,
+     18
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 5616,
+    "levels": [
+     11,
+     18
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "accord_home",
+ "track_order": 2
+}

@@ -1,0 +1,900 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_086",
+   "kind": "clash",
+   "kind_text": "clash site",
+   "level_at": 60,
+   "name": "Thunder Shore Wreck",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 3007,
+    "max_z": 177,
+    "min_x": 2992,
+    "min_z": 162
+   },
+   "settlement_key": "r20_anchor_086",
+   "slot": "clash_1",
+   "x": 3000,
+   "y": 152,
+   "z": 170
+  },
+  {
+   "id": "anchor_088",
+   "kind": "dragon",
+   "kind_text": "dragon arena",
+   "level_at": 60,
+   "name": "Stormscale Dragonroost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 3275,
+    "max_z": -25,
+    "min_x": 3244,
+    "min_z": -56
+   },
+   "settlement_key": "r20_anchor_088",
+   "slot": "dragon",
+   "x": 3260,
+   "y": 222,
+   "z": -40
+  },
+  {
+   "id": "anchor_090",
+   "kind": "apex_mine",
+   "kind_text": "apex mine camp",
+   "level_at": 60,
+   "name": "Stormscale Gem Camp",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 3215,
+    "max_z": 95,
+    "min_x": 3184,
+    "min_z": 64
+   },
+   "settlement_key": "r20_anchor_090",
+   "slot": "apex_mine",
+   "x": 3200,
+   "y": 217,
+   "z": 80
+  },
+  {
+   "id": "anchor_097",
+   "kind": "rare_route",
+   "kind_text": "rare route",
+   "level_at": 60,
+   "name": "Emerald Coil's Hollow",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 3005,
+    "max_z": -115,
+    "min_x": 2994,
+    "min_z": -126
+   },
+   "settlement_key": "r20_anchor_097",
+   "slot": "rare_emerald_coil",
+   "x": 3000,
+   "y": 309,
+   "z": -120
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_deep_jungle",
+   "share": 50
+  },
+  {
+   "id": "grug_badlands_east",
+   "share": 20
+  },
+  {
+   "id": "grug_swamp",
+   "share": 15
+  },
+  {
+   "id": "grug_beach",
+   "share": 15
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 56.7
+  },
+  {
+   "id": "grug_badlands_east",
+   "share_pct": 22.1
+  },
+  {
+   "id": "grug_beach",
+   "share_pct": 15.7
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 5.5
+  }
+ ],
+ "borders": [],
+ "camps": [],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:jungle_ape",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:serpent"
+  ],
+  "density_budget_day": [
+   "grug_mobs:carrion_crow",
+   "grug_mobs:jungle_ape",
+   "grug_mobs:serpent"
+  ],
+  "density_budget_night": [
+   "grug_mobs:bog_witch",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:panther",
+   "grug_mobs:rift_spawn",
+   "grug_mobs:skeleton_raider",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:bog_witch",
+   "grug_mobs:carrion_crow",
+   "grug_mobs:jungle_spider",
+   "grug_mobs:panther",
+   "grug_mobs:rift_spawn",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:skeleton_raider",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 0,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 19040,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 2368
+ },
+ "drift_band_share_pct": 0.0,
+ "extent": {
+  "centroid": {
+   "x": 3135,
+   "z": -14
+  },
+  "land_area_nodes2": 216480,
+  "max_x": 3404,
+  "max_z": 296,
+  "min_x": 2880,
+  "min_z": -316
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "island",
+  "text": "Offshore dragon island, reached by boat from the Battlegrounds end zone (no land neighbours, no roads)."
+ },
+ "hub": {
+  "x": 3150,
+  "z": 0
+ },
+ "id": "front_stormscale_summit",
+ "level_field": {
+  "histogram_pct": {
+   "60": 100.0
+  },
+  "max": 60,
+  "min": 60
+ },
+ "level_max": 60,
+ "level_min": 60,
+ "level_rule": "Flat level 60.",
+ "map": "maps/front_stormscale_summit.png",
+ "name": "Stormscale Summit",
+ "neighbors": [],
+ "numeric_id": 38,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_086",
+    "kind": "poi",
+    "max_x": 3007,
+    "max_z": 177,
+    "min_x": 2992,
+    "min_z": 162,
+    "name": "Thunder Shore Wreck"
+   },
+   {
+    "anchor": "anchor_088",
+    "kind": "poi",
+    "max_x": 3275,
+    "max_z": -25,
+    "min_x": 3244,
+    "min_z": -56,
+    "name": "Stormscale Dragonroost"
+   },
+   {
+    "anchor": "anchor_090",
+    "kind": "poi",
+    "max_x": 3215,
+    "max_z": 95,
+    "min_x": 3184,
+    "min_z": 64,
+    "name": "Stormscale Gem Camp"
+   },
+   {
+    "anchor": "anchor_097",
+    "kind": "poi",
+    "max_x": 3005,
+    "max_z": -115,
+    "min_x": 2994,
+    "min_z": -126,
+    "name": "Emerald Coil's Hollow"
+   }
+  ]
+ },
+ "protected_share_pct": 1.5,
+ "pvp_rule": "contested",
+ "quests": [],
+ "race_region": "troll",
+ "rares": [
+  {
+   "biome_hint": "the deep jungle",
+   "id": "emerald_coil",
+   "level_at": 60,
+   "mob": "grug_mobs:serpent",
+   "name": "Emerald Coil",
+   "respawn_s": [
+    7200,
+    14400
+   ],
+   "route": [
+    [
+     2952,
+     192,
+     -144
+    ],
+    [
+     3016,
+     274,
+     -80
+    ],
+    [
+     3056,
+     224,
+     -136
+    ]
+   ]
+  }
+ ],
+ "relief": {
+  "cliff_share_pct": 35.1,
+  "height_above_sea": {
+   "max": 309,
+   "median": 193,
+   "min": 0,
+   "p10": 57,
+   "p90": 235
+  },
+  "steep_share_pct": 67.6
+ },
+ "relief_profile": "mountain",
+ "roads": [],
+ "role": "dragon island (60)",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 3000,
+    "y": 152,
+    "z": 170
+   },
+   "anchor_id": "anchor_086",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1164,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1297,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 2741,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 2770,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 3447,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 3502,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 424,
+     "x": 2576,
+     "z": 168
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 54,
+     "x": 2980,
+     "z": 220
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 424,
+     "x": 2576,
+     "z": 164
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 320,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 60,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 432,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 80,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_086",
+   "name": "Thunder Shore Wreck",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": 3260,
+    "y": 222,
+    "z": -40
+   },
+   "anchor_id": "anchor_088",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1428,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1482,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 2988,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 3028,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 3700,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 3747,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 670,
+     "x": 2592,
+     "z": 8
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 116,
+     "x": 3344,
+     "z": 40
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 670,
+     "x": 2592,
+     "z": 12
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 136,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 252,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 220,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 364,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_088",
+   "name": "Stormscale Dragonroost",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": 3200,
+    "y": 217,
+    "z": 80
+   },
+   "anchor_id": "anchor_090",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1382,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1423,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 2948,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 2950,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 3661,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 3670,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 612,
+     "x": 2592,
+     "z": 12
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 125,
+     "x": 3324,
+     "z": 92
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 612,
+     "x": 2592,
+     "z": 12
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 132,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 208,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 384,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 308,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_090",
+   "name": "Stormscale Gem Camp",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": 3000,
+    "y": 309,
+    "z": -120
+   },
+   "anchor_id": "anchor_097",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Glassroot Gate",
+      "road": null,
+      "straight": 1157,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Thunderstep Watch",
+      "road": null,
+      "straight": 1288,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 2720,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 2788,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 3429,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 3517,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 410,
+     "x": 2596,
+     "z": -188
+    },
+    "nearest_road": null,
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 97,
+     "x": 2916,
+     "z": -168
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 429,
+     "x": 2592,
+     "z": 12
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 408,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 352,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 140,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 124,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_097",
+   "name": "Emerald Coil's Hollow",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_witch",
+   "name": "Bog Witch",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 63.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 86.8
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:carrion_crow",
+   "name": "Carrion Crow",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 86.8
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 33888
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:sand"
+   ],
+   "mob": "grug_mobs:gull",
+   "name": "Gull",
+   "night": null,
+   "note": "logical beach biome only"
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 57.4
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_ape",
+   "name": "Jungle Ape",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:jungle_spider",
+   "name": "Jungle Spider",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 57.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:panther",
+   "name": "Panther",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 57.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:rift_spawn",
+   "name": "Rift Spawn",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 57.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 63.5
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:serpent",
+   "name": "Serpent",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:skeleton_raider",
+   "name": "Skeleton Raider",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "contested_land"
+}

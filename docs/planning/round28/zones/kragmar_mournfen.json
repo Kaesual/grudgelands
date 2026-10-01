@@ -1,0 +1,1551 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_019",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 17,
+   "name": "Mournfen Village",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -1889,
+    "max_z": 2031,
+    "min_x": -1912,
+    "min_z": 2008
+   },
+   "settlement_key": "mournfen_village",
+   "slot": "village_1",
+   "x": -1900,
+   "y": 24,
+   "z": 2020
+  },
+  {
+   "id": "anchor_037",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 16,
+   "name": "Mournfen Outpost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -2093,
+    "max_z": 2107,
+    "min_x": -2108,
+    "min_z": 2092
+   },
+   "settlement_key": "mournfen_outpost",
+   "slot": "outpost_1",
+   "x": -2100,
+   "y": 21,
+   "z": 2100
+  },
+  {
+   "id": "anchor_055",
+   "kind": "bandit_home",
+   "kind_text": "bandit camp",
+   "level_at": 17,
+   "name": "Mournfen Bandit Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": -1589,
+    "max_z": 2061,
+    "min_x": -1612,
+    "min_z": 2038
+   },
+   "settlement_key": "mournfen_bandit_camp",
+   "slot": "bandit_1",
+   "x": -1600,
+   "y": 57,
+   "z": 2050
+  },
+  {
+   "id": "anchor_069",
+   "kind": "mirefolk",
+   "kind_text": "mirefolk camp",
+   "level_at": 12,
+   "name": "Blackreed Enclosure",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": -2067,
+    "max_z": 2281,
+    "min_x": -2082,
+    "min_z": 2266
+   },
+   "settlement_key": "r20_anchor_069",
+   "slot": "mirefolk",
+   "x": -2074,
+   "y": 20,
+   "z": 2274
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_blight",
+   "share": 60
+  },
+  {
+   "id": "grug_bone_forest",
+   "share": 10
+  },
+  {
+   "id": "grug_swamp",
+   "share": 30
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_blight",
+   "share_pct": 61.6
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 29.0
+  },
+  {
+   "id": "grug_bone_forest",
+   "share_pct": 8.7
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_savanna",
+   "share_pct": 0.3
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 880,
+   "midpoint": {
+    "x": -1745,
+    "z": 1913
+   },
+   "zone": "kragmar_nhal_veyr"
+  },
+  {
+   "length_nodes": 508,
+   "midpoint": {
+    "x": -2236,
+    "z": 2027
+   },
+   "zone": "kragmar_ossuary_reach"
+  },
+  {
+   "length_nodes": 400,
+   "midpoint": {
+    "x": -1394,
+    "z": 1962
+   },
+   "zone": "kragmar_speargrass_reach"
+  },
+  {
+   "length_nodes": 1500,
+   "midpoint": {
+    "x": -1901,
+    "z": 2301
+   },
+   "zone": "kragmar_stillgrave_hollow"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_037",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 16,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Mournfen Outpost",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -2100,
+   "z": 2100
+  },
+  {
+   "anchor": "anchor_055",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 17,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Mournfen Bandit Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": -1600,
+   "z": 2050
+  },
+  {
+   "anchor": "anchor_069",
+   "level_at_anchor": 12,
+   "name": "Blackreed Enclosure",
+   "note": "EMPTY today: no camp fire is placed (anchor roster lists only capital, outpost and bandit populations)",
+   "type": "mirefolk",
+   "x": -2074,
+   "z": 2274
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:bog_fowl",
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:plague_boar"
+  ],
+  "density_budget_night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 10976,
+  "bay_water_area_nodes2": 50032,
+  "beaches": [
+   {
+    "area_nodes2": 7376,
+    "box": {
+     "max_x": -1364,
+     "max_z": 2392,
+     "min_x": -1524,
+     "min_z": 2252
+    },
+    "centroid": {
+     "x": -1448,
+     "z": 2327
+    },
+    "id": "B1",
+    "levels": [
+     11,
+     13
+    ]
+   },
+   {
+    "area_nodes2": 7024,
+    "box": {
+     "max_x": -1324,
+     "max_z": 2200,
+     "min_x": -1496,
+     "min_z": 2064
+    },
+    "centroid": {
+     "x": -1417,
+     "z": 2136
+    },
+    "id": "B2",
+    "levels": [
+     14,
+     16
+    ]
+   },
+   {
+    "area_nodes2": 320,
+    "box": {
+     "max_x": -1404,
+     "max_z": 2076,
+     "min_x": -1436,
+     "min_z": 2052
+    },
+    "centroid": {
+     "x": -1419,
+     "z": 2065
+    },
+    "id": "B3",
+    "levels": [
+     16,
+     17
+    ]
+   },
+   {
+    "area_nodes2": 160,
+    "box": {
+     "max_x": -1500,
+     "max_z": 2228,
+     "min_x": -1532,
+     "min_z": 2208
+    },
+    "centroid": {
+     "x": -1516,
+     "z": 2221
+    },
+    "id": "B4",
+    "levels": [
+     13,
+     13
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 22448,
+  "sea_beach_sand_area_nodes2": 14928,
+  "sea_coast_length_nodes": 508
+ },
+ "drift_band_share_pct": 9.3,
+ "extent": {
+  "centroid": {
+   "x": -1821,
+   "z": 2127
+  },
+  "land_area_nodes2": 311024,
+  "max_x": -1324,
+  "max_z": 2396,
+  "min_x": -2380,
+  "min_z": 1812
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": -1800,
+  "z": 2050
+ },
+ "id": "kragmar_mournfen",
+ "level_field": {
+  "histogram_pct": {
+   "11": 8.3,
+   "12": 9.8,
+   "13": 11.0,
+   "14": 11.9,
+   "15": 15.9,
+   "16": 13.3,
+   "17": 9.2,
+   "18": 8.9,
+   "19": 6.7,
+   "20": 4.9
+  },
+  "max": 20,
+  "min": 11
+ },
+ "level_max": 20,
+ "level_min": 11,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_mournfen.png",
+ "name": "Mournfen",
+ "neighbors": [
+  "kragmar_nhal_veyr",
+  "kragmar_ossuary_reach",
+  "kragmar_speargrass_reach",
+  "kragmar_stillgrave_hollow"
+ ],
+ "numeric_id": 18,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_019",
+    "kind": "village",
+    "max_x": -1889,
+    "max_z": 2031,
+    "min_x": -1912,
+    "min_z": 2008,
+    "name": "Mournfen Village"
+   },
+   {
+    "anchor": "anchor_037",
+    "kind": "poi",
+    "max_x": -2093,
+    "max_z": 2107,
+    "min_x": -2108,
+    "min_z": 2092,
+    "name": "Mournfen Outpost"
+   },
+   {
+    "anchor": "anchor_055",
+    "kind": "camp",
+    "max_x": -1589,
+    "max_z": 2061,
+    "min_x": -1612,
+    "min_z": 2038,
+    "name": "Mournfen Bandit Camp"
+   },
+   {
+    "anchor": "anchor_069",
+    "kind": "camp",
+    "max_x": -2067,
+    "max_z": 2281,
+    "min_x": -2082,
+    "min_z": 2266,
+    "name": "Blackreed Enclosure"
+   }
+  ]
+ },
+ "protected_share_pct": 2.9,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 50,
+   "description": "Bog ooze is choking the village sluice. Break it apart before the water backs into the paths.",
+   "giver": "r14_undead_steward",
+   "giver_name": "Mordec Silt",
+   "giver_settlement": "Mournfen Village",
+   "id": "r14_undead_07_mud_that_moves",
+   "min_level": 10,
+   "objectives": [
+    "kill 6 bog_ooze [in kragmar_mournfen]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:bog_ooze"
+     ],
+     "type": "kill",
+     "zone": "kragmar_mournfen"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_06_tusks_along_the_fen_road"
+   ],
+   "reward_items": [],
+   "title": "Mud That Moves",
+   "turnin": "r14_undead_steward",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "The wax keeper uses local slime gel to seal jars against the fen damp. Bring enough for the raised store shelves.",
+   "giver": "r15_undead_local",
+   "giver_name": "Edris Wax",
+   "giver_settlement": "Mournfen Village",
+   "id": "r15_undead_local_01",
+   "min_level": 10,
+   "objectives": [
+    "bring 3 grug_mobs:slime_gel"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "description": "Bring slime gel",
+     "item": "grug_mobs:slime_gel",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_06_tusks_along_the_fen_road"
+   ],
+   "reward_items": [],
+   "title": "Gel for the Wax Store",
+   "turnin": "r15_undead_local",
+   "xp": 285
+  },
+  {
+   "copper": 45,
+   "description": "Plague boars root against the stones of the tended memorial. Drive them back into the dead furrows.",
+   "giver": "r15_undead_local",
+   "giver_name": "Edris Wax",
+   "giver_settlement": "Mournfen Village",
+   "id": "r15_undead_local_02",
+   "min_level": 10,
+   "objectives": [
+    "kill 5 plague_boar [in kragmar_mournfen]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:plague_boar"
+     ],
+     "type": "kill",
+     "zone": "kragmar_mournfen"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_06_tusks_along_the_fen_road"
+   ],
+   "reward_items": [],
+   "title": "Furrows by the Memorial",
+   "turnin": "r15_undead_local",
+   "xp": 380
+  },
+  {
+   "copper": 60,
+   "description": "Crocodiles have claimed the outpost channel. Clear the bank for Sera's patrol.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "r14_undead_08_clear_the_sluice",
+   "min_level": 11,
+   "objectives": [
+    "kill 6 crocodile [in kragmar_mournfen]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:crocodile"
+     ],
+     "type": "kill",
+     "zone": "kragmar_mournfen"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_07_mud_that_moves"
+   ],
+   "reward_items": [],
+   "title": "Clear the Sluice",
+   "turnin": "r14_undead_scout",
+   "xp": 525
+  },
+  {
+   "copper": 50,
+   "description": "Bring two ordinary crocodile teeth from Mournfen's muddy banks while helping Sera clear the sluice. They will mark the safest side of the watch channel without another counted crocodile hunt.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "r15_undead_local_03",
+   "min_level": 11,
+   "objectives": [
+    "bring 2 grug_mobs:croc_tooth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:croc_tooth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_07_mud_that_moves"
+   ],
+   "reward_items": [],
+   "title": "Teeth from the Watch Channel",
+   "turnin": "r14_undead_scout",
+   "xp": 315
+  },
+  {
+   "copper": 55,
+   "description": "Bog ooze pools beneath the observation niche and eats at its supports. Break up the nearest masses.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "r15_undead_local_04",
+   "min_level": 11,
+   "objectives": [
+    "kill 5 bog_ooze [in kragmar_mournfen]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:bog_ooze"
+     ],
+     "type": "kill",
+     "zone": "kragmar_mournfen"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_07_mud_that_moves"
+   ],
+   "reward_items": [],
+   "title": "The Sheltered Niche",
+   "turnin": "r14_undead_scout",
+   "xp": 420
+  },
+  {
+   "copper": 80,
+   "description": "The bandits carried cloth hot without flame, marked by a hooked sun. Defeat them and let Hollis explain what the fen could not cool. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
+   "min_level": 12,
+   "objectives": [
+    "kill 4 bandit or bandit_archer [in kragmar_mournfen]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit",
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "kragmar_mournfen"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_08_clear_the_sluice"
+   ],
+   "reward_items": [],
+   "title": "Fire That the Fen Cannot Drown",
+   "turnin": "r14_undead_captive",
+   "xp": 805
+  },
+  {
+   "copper": 65,
+   "description": "Two stolen purses may still carry the names scratched into their bone tags. Bring them to the captive so the missing carriers can be entered in the camp account. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+   "giver": "r14_undead_captive",
+   "giver_name": "Hollis Grey",
+   "giver_settlement": "Mournfen Bandit Camp",
+   "id": "r15_undead_local_05",
+   "min_level": 12,
+   "objectives": [
+    "bring 2 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:stolen_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_08_clear_the_sluice"
+   ],
+   "reward_items": [],
+   "title": "Names on the Purse Tags",
+   "turnin": "r14_undead_captive",
+   "xp": 460
+  },
+  {
+   "copper": 75,
+   "description": "The inner-band raiders carry linen that stayed dry inside the ruined enclosure. Bring enough for Hollis to wrap the heat-marked scrap.",
+   "giver": "r14_undead_captive",
+   "giver_name": "Hollis Grey",
+   "giver_settlement": "Mournfen Bandit Camp",
+   "id": "r15_undead_local_06",
+   "min_level": 12,
+   "objectives": [
+    "bring 5 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "description": "Bring linen cloth",
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_undead_08_clear_the_sluice"
+   ],
+   "reward_items": [],
+   "title": "Dry Cloth from a Wet Ruin",
+   "turnin": "r14_undead_captive",
+   "xp": 575
+  }
+ ],
+ "race_region": "undead",
+ "race_track": "undead",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.0,
+  "height_above_sea": {
+   "max": 80,
+   "median": 26,
+   "min": 0,
+   "p10": 9,
+   "p90": 50
+  },
+  "steep_share_pct": 1.7
+ },
+ "relief_profile": "wetland_delta",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1442,
+    1827
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 15,
+   "kind": "primary",
+   "last_in_zone": [
+    -1414,
+    1843
+   ],
+   "length_in_zone": 34,
+   "length_total": 1440,
+   "polyline_simplified": [
+    [
+     -1537,
+     1762
+    ],
+    [
+     -1356,
+     1868
+    ],
+    [
+     -1272,
+     1830
+    ],
+    [
+     -1158,
+     1819
+    ],
+    [
+     -897,
+     1641
+    ],
+    [
+     -825,
+     1606
+    ],
+    [
+     -753,
+     1602
+    ],
+    [
+     -588,
+     1510
+    ],
+    [
+     -504,
+     1524
+    ],
+    [
+     -380,
+     1585
+    ],
+    [
+     -272,
+     1582
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -1836,
+    2269
+   ],
+   "from": "anchor_004 (Stillgrave, kragmar_stillgrave_hollow)",
+   "id": 17,
+   "kind": "primary",
+   "last_in_zone": [
+    -1937,
+    1950
+   ],
+   "length_in_zone": 356,
+   "length_total": 782,
+   "polyline_simplified": [
+    [
+     -1799,
+     2486
+    ],
+    [
+     -1810,
+     2327
+    ],
+    [
+     -1855,
+     2222
+    ],
+    [
+     -1859,
+     2093
+    ],
+    [
+     -1935,
+     2008
+    ],
+    [
+     -1936,
+     1760
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -1916,
+    2004
+   ],
+   "from": "anchor_019 (Mournfen Village, kragmar_mournfen)",
+   "id": 21,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1936,
+    1984
+   ],
+   "length_in_zone": 32,
+   "length_total": 28,
+   "polyline_simplified": [
+    [
+     -1916,
+     2004
+    ],
+    [
+     -1936,
+     1984
+    ]
+   ],
+   "to": "joins road 17"
+  },
+  {
+   "first_in_zone": [
+    -2090,
+    2095
+   ],
+   "from": "anchor_037 (Mournfen Outpost, kragmar_mournfen)",
+   "id": 40,
+   "kind": "trail",
+   "last_in_zone": [
+    -1905,
+    2049
+   ],
+   "length_in_zone": 204,
+   "length_total": 205,
+   "polyline_simplified": [
+    [
+     -2090,
+     2095
+    ],
+    [
+     -2001,
+     2050
+    ],
+    [
+     -1941,
+     2064
+    ],
+    [
+     -1905,
+     2049
+    ]
+   ],
+   "to": "joins road 17"
+  },
+  {
+   "first_in_zone": [
+    -1593,
+    2036
+   ],
+   "from": "anchor_055 (Mournfen Bandit Camp, kragmar_mournfen)",
+   "id": 55,
+   "kind": "trail",
+   "last_in_zone": [
+    -1553,
+    1908
+   ],
+   "length_in_zone": 140,
+   "length_total": 275,
+   "polyline_simplified": [
+    [
+     -1593,
+     2036
+    ],
+    [
+     -1551,
+     1904
+    ],
+    [
+     -1454,
+     1819
+    ]
+   ],
+   "to": "joins road 15"
+  },
+  {
+   "first_in_zone": [
+    -2066,
+    2264
+   ],
+   "from": "anchor_069 (Blackreed Enclosure, kragmar_mournfen)",
+   "id": 69,
+   "kind": "trail",
+   "last_in_zone": [
+    -1851,
+    2162
+   ],
+   "length_in_zone": 244,
+   "length_total": 246,
+   "polyline_simplified": [
+    [
+     -2066,
+     2264
+    ],
+    [
+     -1851,
+     2162
+    ]
+   ],
+   "to": "joins road 17"
+  }
+ ],
+ "role": "home zone 11-20",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -1900,
+    "y": 24,
+    "z": 2020
+   },
+   "anchor_id": "anchor_019",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Mournfen Outpost",
+      "road": 261,
+      "straight": 215,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Stillgrave",
+      "road": 592,
+      "straight": 539,
+      "to": "stillgrave",
+      "zone": "kragmar_stillgrave_hollow"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 754,
+      "straight": 530,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1194,
+      "straight": 638,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1379,
+      "straight": 301,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Boneledger Post",
+      "road": 1540,
+      "straight": 868,
+      "to": "r20_anchor_038",
+      "zone": "kragmar_ossuary_reach"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 70,
+     "x": -1916,
+     "z": 1952
+    },
+    "nearest_road": {
+     "distance": 22
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 482,
+     "x": -1444,
+     "z": 2176
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 423,
+     "x": -1532,
+     "z": 2228
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 500,
+      "hits": "kragmar_speargrass_reach"
+     },
+     "north_+z": {
+      "distance": 280,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "south_-z": {
+      "distance": 68,
+      "hits": "inland_water"
+     },
+     "west_-x": {
+      "distance": 308,
+      "hits": "kragmar_ossuary_reach"
+     }
+    }
+   },
+   "key": "mournfen_village",
+   "name": "Mournfen Village",
+   "npcs": [
+    {
+     "npc_id": "r14_undead_steward",
+     "npc_name": "Mordec Silt",
+     "quests": [
+      "r14_undead_07_mud_that_moves"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_steward",
+     "x": -1898,
+     "y": 25,
+     "z": 2020
+    },
+    {
+     "npc_id": "r15_undead_local",
+     "npc_name": "Edris Wax",
+     "quests": [
+      "r15_undead_local_01",
+      "r15_undead_local_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_local",
+     "x": -1902,
+     "y": 25,
+     "z": 2018
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "idle": 2,
+    "quest": 2
+   }
+  },
+  {
+   "anchor": {
+    "x": -2100,
+    "y": 21,
+    "z": 2100
+   },
+   "anchor_id": "anchor_037",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Mournfen Village",
+      "road": 261,
+      "straight": 215,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Stillgrave",
+      "road": 761,
+      "straight": 541,
+      "to": "stillgrave",
+      "zone": "kragmar_stillgrave_hollow"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": 971,
+      "straight": 671,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1411,
+      "straight": 573,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1597,
+      "straight": 502,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Boneledger Post",
+      "road": 1757,
+      "straight": 882,
+      "to": "r20_anchor_038",
+      "zone": "kragmar_ossuary_reach"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SW",
+     "distance": 124,
+     "x": -2188,
+     "z": 2012
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 343,
+     "x": -2440,
+     "z": 2052
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 316,
+     "x": -2416,
+     "z": 2104
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 772,
+      "hits": "bay_water"
+     },
+     "north_+z": {
+      "distance": 228,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "south_-z": {
+      "distance": 208,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "west_-x": {
+      "distance": 212,
+      "hits": "kragmar_ossuary_reach"
+     }
+    }
+   },
+   "key": "mournfen_outpost",
+   "name": "Mournfen Outpost",
+   "npcs": [
+    {
+     "npc_id": "r14_undead_scout",
+     "npc_name": "Sera Vane",
+     "quests": [
+      "r14_undead_08_clear_the_sluice",
+      "r14_undead_09_fire_that_the_fen_cannot_drown",
+      "r15_undead_local_03",
+      "r15_undead_local_04"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_scout",
+     "x": -2097,
+     "y": 22,
+     "z": 2097
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -1600,
+    "y": 57,
+    "z": 2050
+   },
+   "anchor_id": "anchor_055",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Nhal Veyr",
+      "road": 1095,
+      "straight": 585,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     },
+     {
+      "name": "Speargrass Wellhold",
+      "road": 1342,
+      "straight": 879,
+      "to": "r20_anchor_022",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 1379,
+      "straight": 301,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Redpick Yard",
+      "road": 1452,
+      "straight": 946,
+      "to": "r20_anchor_065",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 1535,
+      "straight": 900,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 1597,
+      "straight": 502,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 116,
+     "x": -1624,
+     "z": 1936
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 199,
+     "x": -1440,
+     "z": 2168
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 160,
+     "x": -1488,
+     "z": 2164
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 236,
+      "hits": "kragmar_speargrass_reach"
+     },
+     "north_+z": {
+      "distance": 292,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "south_-z": {
+      "distance": 120,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "west_-x": {
+      "distance": 648,
+      "hits": "kragmar_ossuary_reach"
+     }
+    }
+   },
+   "key": "mournfen_bandit_camp",
+   "name": "Mournfen Bandit Camp",
+   "npcs": [
+    {
+     "npc_id": "r14_undead_captive",
+     "npc_name": "Hollis Grey",
+     "quests": [
+      "r15_undead_local_05",
+      "r15_undead_local_06"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_captive",
+     "x": -1590,
+     "y": 58,
+     "z": 2060
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -2074,
+    "y": 20,
+    "z": 2274
+   },
+   "anchor_id": "anchor_069",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Mournfen Outpost",
+      "road": null,
+      "straight": 176,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": null,
+      "straight": 308,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Stillgrave",
+      "road": null,
+      "straight": 389,
+      "to": "stillgrave",
+      "zone": "kragmar_stillgrave_hollow"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": null,
+      "straight": 524,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": null,
+      "straight": 740,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Nhal Veyr",
+      "road": null,
+      "straight": 821,
+      "to": "nhal_veyr",
+      "zone": "kragmar_nhal_veyr"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 60,
+     "x": -2088,
+     "z": 2332
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "SW",
+     "distance": 421,
+     "x": -2448,
+     "z": 2080
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SW",
+     "distance": 379,
+     "x": -2424,
+     "z": 2128
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 232,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "north_+z": {
+      "distance": 68,
+      "hits": "kragmar_stillgrave_hollow"
+     },
+     "south_-z": {
+      "distance": 376,
+      "hits": "kragmar_nhal_veyr"
+     },
+     "west_-x": {
+      "distance": 132,
+      "hits": "kragmar_stillgrave_hollow"
+     }
+    }
+   },
+   "key": "r20_anchor_069",
+   "name": "Blackreed Enclosure",
+   "npcs": [],
+   "race": "undead",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 28.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_fowl",
+   "name": "Bog Fowl",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 28.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_ooze",
+   "name": "Bog Ooze",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 28.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 28.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:crocodile",
+   "name": "Crocodile",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 28.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 90.9
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:sand",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:hare",
+   "name": "Hare",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.3
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:plague_boar",
+   "name": "Plague Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 14928,
+    "levels": [
+     11,
+     17
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 14928,
+    "levels": [
+     11,
+     17
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 36.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 62.7,
+    "share_pct": 62.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 91.5
+   }
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 2
+}

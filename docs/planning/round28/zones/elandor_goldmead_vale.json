@@ -1,0 +1,1468 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_015",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 15,
+   "name": "Goldmead Village",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -109,
+    "max_z": -2009,
+    "min_x": -132,
+    "min_z": -2032
+   },
+   "settlement_key": "goldmead_village",
+   "slot": "village_1",
+   "x": -120,
+   "y": 37,
+   "z": -2020
+  },
+  {
+   "id": "anchor_029",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 15,
+   "name": "Goldmead Outpost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 183,
+    "max_z": -2019,
+    "min_x": 168,
+    "min_z": -2034
+   },
+   "settlement_key": "goldmead_outpost",
+   "slot": "outpost_1",
+   "x": 176,
+   "y": 53,
+   "z": -2026
+  },
+  {
+   "id": "anchor_051",
+   "kind": "bandit_home",
+   "kind_text": "bandit camp",
+   "level_at": 16,
+   "name": "Goldmead Bandit Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 331,
+    "max_z": -1969,
+    "min_x": 308,
+    "min_z": -1992
+   },
+   "settlement_key": "goldmead_bandit_camp",
+   "slot": "bandit_1",
+   "x": 320,
+   "y": 57,
+   "z": -1980
+  },
+  {
+   "id": "anchor_091",
+   "kind": "rare_route",
+   "kind_text": "rare route",
+   "level_at": 14,
+   "name": "Grimtusk's Rooting",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 157,
+    "max_z": -2111,
+    "min_x": 146,
+    "min_z": -2122
+   },
+   "settlement_key": "r20_anchor_091",
+   "slot": "rare_grimtusk",
+   "x": 152,
+   "y": 73,
+   "z": -2116
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_meadows",
+   "share": 65
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 20
+  },
+  {
+   "id": "grug_swamp",
+   "share": 15
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_meadows",
+   "share_pct": 68.7
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 23.1
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 8.0
+  },
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1484,
+   "midpoint": {
+    "x": -163,
+    "z": -2299
+   },
+   "zone": "elandor_dawnmere_fields"
+  },
+  {
+   "length_nodes": 1456,
+   "midpoint": {
+    "x": -24,
+    "z": -1812
+   },
+   "zone": "elandor_highcourt"
+  },
+  {
+   "length_nodes": 464,
+   "midpoint": {
+    "x": 565,
+    "z": -1796
+   },
+   "zone": "elandor_lorindor"
+  },
+  {
+   "length_nodes": 588,
+   "midpoint": {
+    "x": -665,
+    "z": -2031
+   },
+   "zone": "elandor_whitebridge_shire"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_029",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 15,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Goldmead Outpost",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 176,
+   "z": -2026
+  },
+  {
+   "anchor": "anchor_051",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 16,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Goldmead Bandit Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": 320,
+   "z": -1980
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit",
+   "grug_mobs:wild_turkey"
+  ],
+  "density_budget_day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox"
+  ],
+  "density_budget_night": [
+   "grug_mobs:poacher",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:poacher",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 9584,
+  "bay_water_area_nodes2": 21008,
+  "beaches": [
+   {
+    "area_nodes2": 14544,
+    "box": {
+     "max_x": 640,
+     "max_z": -1940,
+     "min_x": 380,
+     "min_z": -2200
+    },
+    "centroid": {
+     "x": 502,
+     "z": -2058
+    },
+    "id": "B1",
+    "levels": [
+     12,
+     17
+    ]
+   },
+   {
+    "area_nodes2": 1248,
+    "box": {
+     "max_x": -760,
+     "max_z": -2212,
+     "min_x": -796,
+     "min_z": -2284
+    },
+    "centroid": {
+     "x": -779,
+     "z": -2250
+    },
+    "id": "B2",
+    "levels": [
+     11,
+     12
+    ]
+   },
+   {
+    "area_nodes2": 400,
+    "box": {
+     "max_x": -728,
+     "max_z": -2164,
+     "min_x": -748,
+     "min_z": -2188
+    },
+    "centroid": {
+     "x": -737,
+     "z": -2177
+    },
+    "id": "B3",
+    "levels": [
+     12,
+     13
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 10288,
+  "sea_beach_sand_area_nodes2": 16288,
+  "sea_coast_length_nodes": 596
+ },
+ "drift_band_share_pct": 6.8,
+ "extent": {
+  "centroid": {
+   "x": -71,
+   "z": -2053
+  },
+  "land_area_nodes2": 572272,
+  "max_x": 640,
+  "max_z": -1656,
+  "min_x": -796,
+  "min_z": -2344
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": -2050
+ },
+ "id": "elandor_goldmead_vale",
+ "level_field": {
+  "histogram_pct": {
+   "11": 12.1,
+   "12": 10.8,
+   "13": 11.1,
+   "14": 12.2,
+   "15": 12.6,
+   "16": 12.1,
+   "17": 9.5,
+   "18": 8.3,
+   "19": 5.9,
+   "20": 5.3
+  },
+  "max": 20,
+  "min": 11
+ },
+ "level_max": 20,
+ "level_min": 11,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_goldmead_vale.png",
+ "name": "Goldmead Vale",
+ "neighbors": [
+  "elandor_dawnmere_fields",
+  "elandor_highcourt",
+  "elandor_lorindor",
+  "elandor_whitebridge_shire"
+ ],
+ "numeric_id": 7,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_015",
+    "kind": "village",
+    "max_x": -109,
+    "max_z": -2009,
+    "min_x": -132,
+    "min_z": -2032,
+    "name": "Goldmead Village"
+   },
+   {
+    "anchor": "anchor_029",
+    "kind": "poi",
+    "max_x": 183,
+    "max_z": -2019,
+    "min_x": 168,
+    "min_z": -2034,
+    "name": "Goldmead Outpost"
+   },
+   {
+    "anchor": "anchor_051",
+    "kind": "camp",
+    "max_x": 331,
+    "max_z": -1969,
+    "min_x": 308,
+    "min_z": -1992,
+    "name": "Goldmead Bandit Camp"
+   },
+   {
+    "anchor": "anchor_091",
+    "kind": "poi",
+    "max_x": 157,
+    "max_z": -2111,
+    "min_x": 146,
+    "min_z": -2122,
+    "name": "Grimtusk's Rooting"
+   }
+  ]
+ },
+ "protected_share_pct": 2.0,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 50,
+   "description": "Foxes have moved into the orchard margins. Give Marta's pickers room to work.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
+   "giver_settlement": "Goldmead Village",
+   "id": "r14_human_07_orchard_watch",
+   "min_level": 10,
+   "objectives": [
+    "kill 6 fox [in elandor_goldmead_vale]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:fox"
+     ],
+     "type": "kill",
+     "zone": "elandor_goldmead_vale"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_06_flock_on_mill_road"
+   ],
+   "reward_items": [],
+   "title": "Orchard Watch",
+   "turnin": "r14_human_steward",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "The granary crew cannot leave the open shed while carts are queued. Bring raw meat for their common pot.",
+   "giver": "r15_human_local",
+   "giver_name": "Alda Sheaf",
+   "giver_settlement": "Goldmead Village",
+   "id": "r15_human_local_01",
+   "min_level": 10,
+   "objectives": [
+    "bring 4 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "description": "Bring raw meat",
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_06_flock_on_mill_road"
+   ],
+   "reward_items": [],
+   "title": "Food for the Granary Crew",
+   "turnin": "r15_human_local",
+   "xp": 285
+  },
+  {
+   "copper": 45,
+   "description": "The orchard crew needs provisions while Marta's watch clears the foxes. Bring four ordinary apples, gathered from nearby apple trees or supplied from your pack.",
+   "giver": "r15_human_local",
+   "giver_name": "Alda Sheaf",
+   "giver_settlement": "Goldmead Village",
+   "id": "r15_human_local_02",
+   "min_level": 10,
+   "objectives": [
+    "bring 4 default:apple"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "default:apple",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_06_flock_on_mill_road"
+   ],
+   "reward_items": [],
+   "title": "Apples for the Orchard Crew",
+   "turnin": "r15_human_local",
+   "xp": 380
+  },
+  {
+   "copper": 60,
+   "description": "The poachers left empty snares around the outpost. Jon wants the hunters found before they return. Look for this threat after nightfall in the named regional zone.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "r14_human_08_empty_snares",
+   "min_level": 11,
+   "objectives": [
+    "kill 6 poacher [in elandor_goldmead_vale]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:poacher"
+     ],
+     "type": "kill",
+     "zone": "elandor_goldmead_vale"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_07_orchard_watch"
+   ],
+   "reward_items": [],
+   "title": "Empty Snares",
+   "turnin": "r14_human_scout",
+   "xp": 525
+  },
+  {
+   "copper": 50,
+   "description": "The night poachers around Goldmead carry ordinary linen cloth. Bring three pieces while helping Jon investigate the empty snares, rather than setting out on a second identical hunt.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "r15_human_local_03",
+   "min_level": 11,
+   "objectives": [
+    "bring 3 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_07_orchard_watch"
+   ],
+   "reward_items": [],
+   "title": "Cloth from the Empty Snares",
+   "turnin": "r14_human_scout",
+   "xp": 315
+  },
+  {
+   "copper": 55,
+   "description": "Foxes keep tripping the warning cords across the lookout's open sightline. Clear the slope so the next alarm means danger.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "r15_human_local_04",
+   "min_level": 11,
+   "objectives": [
+    "kill 5 fox [in elandor_goldmead_vale]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:fox"
+     ],
+     "type": "kill",
+     "zone": "elandor_goldmead_vale"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_07_orchard_watch"
+   ],
+   "reward_items": [],
+   "title": "A Clear Eastern View",
+   "turnin": "r14_human_scout",
+   "xp": 420
+  },
+  {
+   "copper": 80,
+   "description": "The bandits burned a hooked-sun mark into stolen grain tallies. Clear the camp and hear Pella's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "r14_human_09_the_blackened_tally",
+   "min_level": 12,
+   "objectives": [
+    "kill 4 bandit or bandit_archer [in elandor_goldmead_vale]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit",
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "elandor_goldmead_vale"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_08_empty_snares"
+   ],
+   "reward_items": [],
+   "title": "The Blackened Tally",
+   "turnin": "r14_human_captive",
+   "xp": 805
+  },
+  {
+   "copper": 65,
+   "description": "Pella saw the millers' purses thrown beside the scorched grain tallies. Recover two stolen purses from the camp before the bandits divide the harvest pay. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+   "giver": "r14_human_captive",
+   "giver_name": "Pella Thatch",
+   "giver_settlement": "Goldmead Bandit Camp",
+   "id": "r15_human_local_05",
+   "min_level": 12,
+   "objectives": [
+    "bring 2 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:stolen_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_08_empty_snares"
+   ],
+   "reward_items": [],
+   "title": "The Millers' Missing Pay",
+   "turnin": "r14_human_captive",
+   "xp": 460
+  },
+  {
+   "copper": 75,
+   "description": "The raiders tied the gathered grain with their own linen cloth. Bring enough camp cloth for Pella to mark the recovered sacks.",
+   "giver": "r14_human_captive",
+   "giver_name": "Pella Thatch",
+   "giver_settlement": "Goldmead Bandit Camp",
+   "id": "r15_human_local_06",
+   "min_level": 12,
+   "objectives": [
+    "bring 5 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "description": "Bring linen cloth",
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_08_empty_snares"
+   ],
+   "reward_items": [],
+   "title": "Linen Around the Grain",
+   "turnin": "r14_human_captive",
+   "xp": 575
+  }
+ ],
+ "race_region": "human",
+ "race_track": "human",
+ "rares": [
+  {
+   "biome_hint": "the central meadows",
+   "id": "grimtusk",
+   "level_at": 13,
+   "mob": "grug_mobs:boar",
+   "name": "Grimtusk",
+   "respawn_s": [
+    7200,
+    14400
+   ],
+   "route": [
+    [
+     104,
+     64,
+     -2140
+    ],
+    [
+     168,
+     75,
+     -2076
+    ],
+    [
+     208,
+     71,
+     -2132
+    ]
+   ]
+  }
+ ],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 119,
+   "median": 35,
+   "min": 0,
+   "p10": 19,
+   "p90": 65
+  },
+  "steep_share_pct": 2.6
+ },
+ "relief_profile": "lowland",
+ "roads": [
+  {
+   "first_in_zone": [
+    -14,
+    -2317
+   ],
+   "from": "anchor_002 (Dawnmere, elandor_dawnmere_fields)",
+   "id": 4,
+   "kind": "primary",
+   "last_in_zone": [
+    132,
+    -1835
+   ],
+   "length_in_zone": 528,
+   "length_total": 796,
+   "polyline_simplified": [
+    [
+     -1,
+     -2486
+    ],
+    [
+     19,
+     -2387
+    ],
+    [
+     -14,
+     -2303
+    ],
+    [
+     47,
+     -2175
+    ],
+    [
+     36,
+     -2088
+    ],
+    [
+     99,
+     -1989
+    ],
+    [
+     98,
+     -1907
+    ],
+    [
+     133,
+     -1831
+    ],
+    [
+     128,
+     -1760
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    -115,
+    -2005
+   ],
+   "from": "anchor_015 (Goldmead Village, elandor_goldmead_vale)",
+   "id": 7,
+   "kind": "secondary",
+   "last_in_zone": [
+    -158,
+    -1886
+   ],
+   "length_in_zone": 134,
+   "length_total": 277,
+   "polyline_simplified": [
+    [
+     -115,
+     -2005
+    ],
+    [
+     -160,
+     -1922
+    ],
+    [
+     -158,
+     -1847
+    ],
+    [
+     -207,
+     -1759
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    166,
+    -2030
+   ],
+   "from": "anchor_029 (Goldmead Outpost, elandor_goldmead_vale)",
+   "id": 34,
+   "kind": "trail",
+   "last_in_zone": [
+    88,
+    -2012
+   ],
+   "length_in_zone": 84,
+   "length_total": 83,
+   "polyline_simplified": [
+    [
+     166,
+     -2030
+    ],
+    [
+     88,
+     -2012
+    ]
+   ],
+   "to": "joins road 4"
+  },
+  {
+   "first_in_zone": [
+    306,
+    -1969
+   ],
+   "from": "anchor_051 (Goldmead Bandit Camp, elandor_goldmead_vale)",
+   "id": 51,
+   "kind": "trail",
+   "last_in_zone": [
+    131,
+    -1839
+   ],
+   "length_in_zone": 222,
+   "length_total": 225,
+   "polyline_simplified": [
+    [
+     306,
+     -1969
+    ],
+    [
+     131,
+     -1839
+    ]
+   ],
+   "to": "joins road 4"
+  },
+  {
+   "first_in_zone": [
+    -511,
+    -1827
+   ],
+   "from": "anchor_067 (Siltbasket Camp, elandor_whitebridge_shire)",
+   "id": 67,
+   "kind": "trail",
+   "last_in_zone": [
+    -160,
+    -1920
+   ],
+   "length_in_zone": 380,
+   "length_total": 500,
+   "polyline_simplified": [
+    [
+     -609,
+     -1769
+    ],
+    [
+     -449,
+     -1853
+    ],
+    [
+     -370,
+     -1840
+    ],
+    [
+     -160,
+     -1920
+    ]
+   ],
+   "to": "joins road 7"
+  }
+ ],
+ "role": "home zone 11-20",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -120,
+    "y": 37,
+    "z": -2020
+   },
+   "anchor_id": "anchor_015",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Highcourt",
+      "road": 880,
+      "straight": 534,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 1037,
+      "straight": 442,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Outpost",
+      "road": 1076,
+      "straight": 296,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Dawnmere",
+      "road": 1576,
+      "straight": 543,
+      "to": "dawnmere",
+      "zone": "elandor_dawnmere_fields"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1648,
+      "straight": 904,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1687,
+      "straight": 1089,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 136,
+     "x": -120,
+     "z": -1884
+    },
+    "nearest_road": {
+     "distance": 16
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 563,
+     "x": 416,
+     "z": -2192
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 526,
+     "x": 380,
+     "z": -2184
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 700,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 136,
+      "hits": "elandor_highcourt"
+     },
+     "south_-z": {
+      "distance": 304,
+      "hits": "elandor_dawnmere_fields"
+     },
+     "west_-x": {
+      "distance": 532,
+      "hits": "elandor_whitebridge_shire"
+     }
+    }
+   },
+   "key": "goldmead_village",
+   "name": "Goldmead Village",
+   "npcs": [
+    {
+     "npc_id": "r14_human_steward",
+     "npc_name": "Marta Millward",
+     "quests": [
+      "r14_human_07_orchard_watch"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_steward",
+     "x": -118,
+     "y": 38,
+     "z": -2020
+    },
+    {
+     "npc_id": "r15_human_local",
+     "npc_name": "Alda Sheaf",
+     "quests": [
+      "r15_human_local_01",
+      "r15_human_local_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_local",
+     "x": -122,
+     "y": 38,
+     "z": -2022
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "idle": 2,
+    "quest": 2
+   }
+  },
+  {
+   "anchor": {
+    "x": 176,
+    "y": 53,
+    "z": -2026
+   },
+   "anchor_id": "anchor_029",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 522,
+      "straight": 151,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Dawnmere",
+      "road": 686,
+      "straight": 553,
+      "to": "dawnmere",
+      "zone": "elandor_dawnmere_fields"
+     },
+     {
+      "name": "Highcourt",
+      "road": 866,
+      "straight": 555,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": 1076,
+      "straight": 296,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1634,
+      "straight": 1099,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1673,
+      "straight": 918,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 194,
+     "x": 120,
+     "z": -1840
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 291,
+     "x": 420,
+     "z": -2184
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 242,
+     "x": 404,
+     "z": -2108
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 400,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 208,
+      "hits": "elandor_highcourt"
+     },
+     "south_-z": {
+      "distance": 260,
+      "hits": "elandor_dawnmere_fields"
+     },
+     "west_-x": {
+      "distance": 832,
+      "hits": "elandor_whitebridge_shire"
+     }
+    }
+   },
+   "key": "goldmead_outpost",
+   "name": "Goldmead Outpost",
+   "npcs": [
+    {
+     "npc_id": "r14_human_scout",
+     "npc_name": "Jon Vale",
+     "quests": [
+      "r14_human_08_empty_snares",
+      "r14_human_09_the_blackened_tally",
+      "r15_human_local_03",
+      "r15_human_local_04"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_scout",
+     "x": 179,
+     "y": 54,
+     "z": -2029
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 320,
+    "y": 57,
+    "z": -1980
+   },
+   "anchor_id": "anchor_051",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Goldmead Outpost",
+      "road": 522,
+      "straight": 151,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Highcourt",
+      "road": 828,
+      "straight": 577,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Dawnmere",
+      "road": 1022,
+      "straight": 654,
+      "to": "dawnmere",
+      "zone": "elandor_dawnmere_fields"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": 1037,
+      "straight": 442,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1595,
+      "straight": 1179,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 1635,
+      "straight": 814,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "NW",
+     "distance": 188,
+     "x": 228,
+     "z": -1816
+    },
+    "nearest_road": {
+     "distance": 18
+    },
+    "nearest_sea": {
+     "bearing": "SE",
+     "distance": 206,
+     "x": 464,
+     "z": -2128
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "SE",
+     "distance": 151,
+     "x": 416,
+     "z": -2096
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 312,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 204,
+      "hits": "elandor_highcourt"
+     },
+     "south_-z": {
+      "distance": 224,
+      "hits": "elandor_dawnmere_fields"
+     },
+     "west_-x": {
+      "distance": 952,
+      "hits": "elandor_whitebridge_shire"
+     }
+    }
+   },
+   "key": "goldmead_bandit_camp",
+   "name": "Goldmead Bandit Camp",
+   "npcs": [
+    {
+     "npc_id": "r14_human_captive",
+     "npc_name": "Pella Thatch",
+     "quests": [
+      "r15_human_local_05",
+      "r15_human_local_06"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_captive",
+     "x": 330,
+     "y": 58,
+     "z": -1970
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 152,
+    "y": 73,
+    "z": -2116
+   },
+   "anchor_id": "anchor_091",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Goldmead Outpost",
+      "road": null,
+      "straight": 93,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": null,
+      "straight": 216,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": null,
+      "straight": 288,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Dawnmere",
+      "road": null,
+      "straight": 460,
+      "to": "dawnmere",
+      "zone": "elandor_dawnmere_fields"
+     },
+     {
+      "name": "Highcourt",
+      "road": null,
+      "straight": 634,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Lorindor Berrycourt",
+      "road": null,
+      "straight": 915,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SE",
+     "distance": 152,
+     "x": 220,
+     "z": -2252
+    },
+    "nearest_road": {
+     "distance": 84
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 275,
+     "x": 416,
+     "z": -2192
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 238,
+     "x": 380,
+     "z": -2184
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 332,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 288,
+      "hits": "elandor_highcourt"
+     },
+     "south_-z": {
+      "distance": 180,
+      "hits": "elandor_dawnmere_fields"
+     },
+     "west_-x": {
+      "distance": 856,
+      "hits": "inland_water"
+     }
+    }
+   },
+   "key": "r20_anchor_091",
+   "name": "Grimtusk's Rooting",
+   "npcs": [],
+   "race": "human",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:boar",
+   "name": "Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 68.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:fox",
+   "name": "Fox",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:poacher",
+   "name": "Poacher",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 91.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:rabbit",
+   "name": "Rabbit",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 16288,
+    "levels": [
+     11,
+     17
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 16288,
+    "levels": [
+     11,
+     17
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 68.5
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_grass"
+   ],
+   "mob": "grug_mobs:wild_turkey",
+   "name": "Wild Turkey",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  }
+ ],
+ "territory_rule": "accord_home",
+ "track_order": 2
+}

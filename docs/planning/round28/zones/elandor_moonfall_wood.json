@@ -1,0 +1,749 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_035",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 27,
+   "name": "Moonfall Observatory",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 2383,
+    "max_z": -1319,
+    "min_x": 2368,
+    "min_z": -1334
+   },
+   "settlement_key": "r20_anchor_035",
+   "slot": "outpost_1",
+   "x": 2376,
+   "y": 22,
+   "z": -1326
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_elf_forest",
+   "share": 40
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 45
+  },
+  {
+   "id": "grug_swamp",
+   "share": 15
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_elf_forest",
+   "share_pct": 55.2
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 38.0
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 6.5
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.3
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 820,
+   "midpoint": {
+    "x": 2207,
+    "z": -984
+   },
+   "zone": "elandor_glassroot_wilds"
+  },
+  {
+   "length_nodes": 1384,
+   "midpoint": {
+    "x": 2146,
+    "z": -1462
+   },
+   "zone": "elandor_lethariel"
+  },
+  {
+   "length_nodes": 212,
+   "midpoint": {
+    "x": 2504,
+    "z": -2375
+   },
+   "zone": "elandor_silverleaf_glades"
+  },
+  {
+   "length_nodes": 528,
+   "midpoint": {
+    "x": 2309,
+    "z": -2200
+   },
+   "zone": "elandor_starbough_vale"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_035",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 27,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Moonfall Observatory",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 2376,
+   "z": -1326
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:bone_weevil",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bear",
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:gaunt_stag",
+   "grug_mobs:plaguehide_bear",
+   "grug_mobs:stag",
+   "grug_mobs:wolf"
+  ],
+  "density_budget_night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:giant_spider",
+   "grug_mobs:pale_spider",
+   "grug_mobs:poacher",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf"
+  ],
+  "night": [
+   "grug_mobs:blightfang_wolf",
+   "grug_mobs:giant_spider",
+   "grug_mobs:pale_spider",
+   "grug_mobs:poacher",
+   "grug_mobs:skeleton_archer",
+   "grug_mobs:wisp",
+   "grug_mobs:wolf"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 11792,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 4592,
+    "box": {
+     "max_x": 2612,
+     "max_z": -1140,
+     "min_x": 2544,
+     "min_z": -1316
+    },
+    "centroid": {
+     "x": 2570,
+     "z": -1230
+    },
+    "id": "B1",
+    "levels": [
+     28,
+     29
+    ]
+   },
+   {
+    "area_nodes2": 4448,
+    "box": {
+     "max_x": 2700,
+     "max_z": -1504,
+     "min_x": 2624,
+     "min_z": -1696
+    },
+    "centroid": {
+     "x": 2671,
+     "z": -1592
+    },
+    "id": "B2",
+    "levels": [
+     25,
+     26
+    ]
+   },
+   {
+    "area_nodes2": 3632,
+    "box": {
+     "max_x": 2580,
+     "max_z": -2284,
+     "min_x": 2528,
+     "min_z": -2416
+    },
+    "centroid": {
+     "x": 2555,
+     "z": -2351
+    },
+    "id": "B3",
+    "levels": [
+     21,
+     21
+    ]
+   },
+   {
+    "area_nodes2": 3360,
+    "box": {
+     "max_x": 2592,
+     "max_z": -2092,
+     "min_x": 2528,
+     "min_z": -2232
+    },
+    "centroid": {
+     "x": 2561,
+     "z": -2150
+    },
+    "id": "B4",
+    "levels": [
+     21,
+     22
+    ]
+   },
+   {
+    "area_nodes2": 2304,
+    "box": {
+     "max_x": 2704,
+     "max_z": -1920,
+     "min_x": 2604,
+     "min_z": -2040
+    },
+    "centroid": {
+     "x": 2664,
+     "z": -1969
+    },
+    "id": "B5",
+    "levels": [
+     22,
+     23
+    ]
+   },
+   {
+    "area_nodes2": 176,
+    "box": {
+     "max_x": 2604,
+     "max_z": -1708,
+     "min_x": 2588,
+     "min_z": -1716
+    },
+    "centroid": {
+     "x": 2597,
+     "z": -1713
+    },
+    "id": "B6",
+    "levels": [
+     24,
+     25
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 21520,
+  "sea_beach_sand_area_nodes2": 19728,
+  "sea_coast_length_nodes": 2016
+ },
+ "drift_band_share_pct": 1.6,
+ "extent": {
+  "centroid": {
+   "x": 2392,
+   "z": -1608
+  },
+  "land_area_nodes2": 551568,
+  "max_x": 2720,
+  "max_z": -936,
+  "min_x": 1924,
+  "min_z": -2416
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 2400,
+  "z": -1500
+ },
+ "id": "elandor_moonfall_wood",
+ "level_field": {
+  "histogram_pct": {
+   "21": 8.7,
+   "22": 9.4,
+   "23": 12.6,
+   "24": 12.1,
+   "25": 11.0,
+   "26": 9.5,
+   "27": 7.5,
+   "28": 8.3,
+   "29": 9.6,
+   "30": 11.2
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_moonfall_wood.png",
+ "name": "Moonfall Wood",
+ "neighbors": [
+  "elandor_glassroot_wilds",
+  "elandor_lethariel",
+  "elandor_silverleaf_glades",
+  "elandor_starbough_vale"
+ ],
+ "numeric_id": 15,
+ "palette_without_host_ground": [
+  "Blightfang Wolf",
+  "Bone Weevil",
+  "Bonelurker Spider",
+  "Gaunt Stag",
+  "Plaguehide Bear",
+  "Skeleton Archer"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_035",
+    "kind": "poi",
+    "max_x": 2383,
+    "max_z": -1319,
+    "min_x": 2368,
+    "min_z": -1334,
+    "name": "Moonfall Observatory"
+   }
+  ]
+ },
+ "protected_share_pct": 0.3,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "Moonfall's chart table rocks whenever the lookout marks a route. Bring eight oak planks for its frame; the observatory is a shelter for path-watchers, not a new magical instrument. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "r20_anchor_035_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Chart Table Repaired",
+   "turnin": "r20_anchor_035_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Wolves prowl Moonfall Wood's forest floor beneath the fallen boughs. Defeat four so the observers can check the lake paths without abandoning their charts.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "r20_anchor_035_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 wolf [in elandor_moonfall_wood]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:wolf"
+     ],
+     "type": "kill",
+     "zone": "elandor_moonfall_wood"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Fangs Beneath the Fallen Bough",
+   "turnin": "r20_anchor_035_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "The clear paths expose a second hazard: poachers return to the wood at night. Defeat four in Moonfall Wood before the next dawn survey follows their snare line.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "r20_anchor_035_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 4 poacher [in elandor_moonfall_wood]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:poacher"
+     ],
+     "type": "kill",
+     "zone": "elandor_moonfall_wood"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_035_02"
+   ],
+   "reward_items": [],
+   "title": "The Moonlit Snare Line",
+   "turnin": "r20_anchor_035_host",
+   "xp": 900
+  }
+ ],
+ "race_region": "elf",
+ "race_track": "elf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.4,
+  "height_above_sea": {
+   "max": 102,
+   "median": 37,
+   "min": 0,
+   "p10": 11,
+   "p90": 77
+  },
+  "steep_share_pct": 3.1
+ },
+ "relief_profile": "lowland",
+ "roads": [
+  {
+   "first_in_zone": [
+    2366,
+    -1334
+   ],
+   "from": "anchor_035 (Moonfall Observatory, elandor_moonfall_wood)",
+   "id": 39,
+   "kind": "trail",
+   "last_in_zone": [
+    2131,
+    -1276
+   ],
+   "length_in_zone": 308,
+   "length_total": 667,
+   "polyline_simplified": [
+    [
+     2366,
+     -1334
+    ],
+    [
+     2307,
+     -1383
+    ],
+    [
+     2256,
+     -1394
+    ],
+    [
+     2161,
+     -1288
+    ],
+    [
+     1833,
+     -1100
+    ]
+   ],
+   "to": "joins road 14"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 2376,
+    "y": 22,
+    "z": -1326
+   },
+   "anchor_id": "anchor_035",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Lethariel",
+      "road": 1180,
+      "straight": 602,
+      "to": "lethariel",
+      "zone": "elandor_lethariel"
+     },
+     {
+      "name": "Glassroot Gate",
+      "road": 1442,
+      "straight": 880,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
+      "name": "Starbough Village",
+      "road": 1848,
+      "straight": 842,
+      "to": "starbough_village",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Starbough Bandit Camp",
+      "road": 1925,
+      "straight": 1049,
+      "to": "starbough_bandit_camp",
+      "zone": "elandor_starbough_vale"
+     },
+     {
+      "name": "Paleroot Cutting",
+      "road": 2035,
+      "straight": 1352,
+      "to": "r20_anchor_063",
+      "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Lorindor Berrycourt",
+      "road": 2128,
+      "straight": 1518,
+      "to": "r20_anchor_018",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 197,
+     "x": 2184,
+     "z": -1368
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 216,
+     "x": 2580,
+     "z": -1396
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 144,
+     "x": 2520,
+     "z": -1336
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 232,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 316,
+      "hits": "elandor_glassroot_wilds"
+     },
+     "south_-z": {
+      "distance": 968,
+      "hits": "elandor_starbough_vale"
+     },
+     "west_-x": {
+      "distance": 216,
+      "hits": "elandor_lethariel"
+     }
+    }
+   },
+   "key": "r20_anchor_035",
+   "name": "Moonfall Observatory",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_035_host",
+     "npc_name": "Lethen Moonledger",
+     "quests": [
+      "r20_anchor_035_01",
+      "r20_anchor_035_02",
+      "r20_anchor_035_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 2378,
+     "y": 23,
+     "z": -1326
+    }
+   ],
+   "race": "elf",
+   "resident_counts": {
+    "quest": 1
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.6
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:bear",
+   "name": "Bear",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:giant_spider",
+   "name": "Giant Spider",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.6
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:poacher",
+   "name": "Poacher",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 92.6
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 19728,
+    "levels": [
+     21,
+     29
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 19728,
+    "levels": [
+     21,
+     29
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 37.5
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:stag",
+   "name": "Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 37.5
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_forest_litter"
+   ],
+   "mob": "grug_mobs:wolf",
+   "name": "Wolf",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 37.5
+   }
+  }
+ ],
+ "territory_rule": "accord_home",
+ "track_order": 5
+}

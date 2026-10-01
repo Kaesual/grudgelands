@@ -1,0 +1,1036 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_005",
+   "kind": "start",
+   "kind_text": "start town",
+   "level_at": 1,
+   "name": "Sunscar",
+   "settlement_key": "sunscar",
+   "slot": "start",
+   "x": 0,
+   "y": 37,
+   "z": 2550
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_savanna",
+   "share": 95
+  },
+  {
+   "id": "grug_badlands",
+   "share": 5
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_savanna",
+   "share_pct": 87.8
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 12.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1724,
+   "midpoint": {
+    "x": -127,
+    "z": 2300
+   },
+   "zone": "kragmar_redtusk_savanna"
+  },
+  {
+   "length_nodes": 84,
+   "midpoint": {
+    "x": -771,
+    "z": 2456
+   },
+   "zone": "kragmar_speargrass_reach"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:plains_runner",
+   "grug_mobs:rabbit",
+   "grug_mobs:scorpion"
+  ],
+  "density_budget_day": [
+   "grug_mobs:boar",
+   "grug_mobs:plains_runner",
+   "grug_mobs:scorpion"
+  ],
+  "density_budget_night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:scorpion",
+   "grug_mobs:sun_dried_husk"
+  ],
+  "night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:scorpion",
+   "grug_mobs:sun_dried_husk",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 1360,
+  "bay_water_area_nodes2": 414912,
+  "beaches": [
+   {
+    "area_nodes2": 31264,
+    "box": {
+     "max_x": 432,
+     "max_z": 3036,
+     "min_x": -108,
+     "min_z": 2628
+    },
+    "centroid": {
+     "x": 222,
+     "z": 2819
+    },
+    "id": "B1",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 5648,
+    "box": {
+     "max_x": 440,
+     "max_z": 2572,
+     "min_x": 336,
+     "min_z": 2348
+    },
+    "centroid": {
+     "x": 389,
+     "z": 2451
+    },
+    "id": "B2",
+    "levels": [
+     3,
+     8
+    ]
+   },
+   {
+    "area_nodes2": 4752,
+    "box": {
+     "max_x": 556,
+     "max_z": 2400,
+     "min_x": 452,
+     "min_z": 2324
+    },
+    "centroid": {
+     "x": 497,
+     "z": 2358
+    },
+    "id": "B3",
+    "levels": [
+     8,
+     10
+    ]
+   },
+   {
+    "area_nodes2": 4704,
+    "box": {
+     "max_x": -564,
+     "max_z": 2752,
+     "min_x": -660,
+     "min_z": 2624
+    },
+    "centroid": {
+     "x": -611,
+     "z": 2684
+    },
+    "id": "B4",
+    "levels": [
+     3,
+     4
+    ]
+   },
+   {
+    "area_nodes2": 3296,
+    "box": {
+     "max_x": -356,
+     "max_z": 3016,
+     "min_x": -484,
+     "min_z": 2912
+    },
+    "centroid": {
+     "x": -421,
+     "z": 2959
+    },
+    "id": "B5",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 3072,
+    "box": {
+     "max_x": -576,
+     "max_z": 2616,
+     "min_x": -720,
+     "min_z": 2492
+    },
+    "centroid": {
+     "x": -662,
+     "z": 2567
+    },
+    "id": "B6",
+    "levels": [
+     4,
+     8
+    ]
+   },
+   {
+    "area_nodes2": 2368,
+    "box": {
+     "max_x": 520,
+     "max_z": 2492,
+     "min_x": 456,
+     "min_z": 2412
+    },
+    "centroid": {
+     "x": 490,
+     "z": 2451
+    },
+    "id": "B7",
+    "levels": [
+     5,
+     7
+    ]
+   },
+   {
+    "area_nodes2": 1136,
+    "box": {
+     "max_x": -556,
+     "max_z": 2912,
+     "min_x": -640,
+     "min_z": 2860
+    },
+    "centroid": {
+     "x": -596,
+     "z": 2895
+    },
+    "id": "B8",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 1136,
+    "box": {
+     "max_x": -292,
+     "max_z": 2996,
+     "min_x": -344,
+     "min_z": 2936
+    },
+    "centroid": {
+     "x": -322,
+     "z": 2959
+    },
+    "id": "B9",
+    "levels": [
+     3,
+     3
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 944,
+  "sea_beach_sand_area_nodes2": 58208,
+  "sea_coast_length_nodes": 4576
+ },
+ "drift_band_share_pct": 3.5,
+ "extent": {
+  "centroid": {
+   "x": -136,
+   "z": 2600
+  },
+  "land_area_nodes2": 687616,
+  "max_x": 556,
+  "max_z": 3036,
+  "min_x": -776,
+  "min_z": 2240
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": 2550
+ },
+ "id": "kragmar_sunscar_flats",
+ "level_field": {
+  "histogram_pct": {
+   "1": 4.5,
+   "2": 5.7,
+   "3": 56.5,
+   "4": 6.8,
+   "5": 5.9,
+   "6": 5.4,
+   "7": 3.7,
+   "8": 3.9,
+   "9": 3.9,
+   "10": 3.7
+  },
+  "max": 10,
+  "min": 1
+ },
+ "level_max": 10,
+ "level_min": 1,
+ "level_rule": "Start-zone gradient (zones.lua): L1 within 100 nodes of the start anchor, L2 to 150; beyond, band 1 top (L3) behind and beside the town, rising through band 2 (L4-6) and band 3 (L7-10) toward the front border (-z), reaching L10 at the border.",
+ "map": "maps/kragmar_sunscar_flats.png",
+ "name": "Sunscar Flats",
+ "neighbors": [
+  "kragmar_redtusk_savanna",
+  "kragmar_speargrass_reach"
+ ],
+ "numeric_id": 22,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [],
+  "start_town": {
+   "band_nodes": 12,
+   "note": "128-node pad plus a 12-node band (rounded corners); hard protected, no hostile spawns.",
+   "outer_box": {
+    "max_x": 75,
+    "max_z": 2625,
+    "min_x": -76,
+    "min_z": 2474
+   },
+   "pad": {
+    "max_x": 63,
+    "max_z": 2613,
+    "min_x": -64,
+    "min_z": 2486
+   }
+  }
+ },
+ "protected_share_pct": 3.9,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 10,
+   "description": "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_01_tusks_at_the_water_skins",
+   "min_level": 1,
+   "objectives": [
+    "kill 3 boar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:boar"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Tusks at the Water Skins",
+   "turnin": "r14_orc_elder",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "The shared oven feeds everyone returning from sunscar's outer paths. Bring four raw meat portions to Ugra Brothstone beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+   "giver": "r20_orc_start_cook",
+   "giver_name": "Ugra Brothstone",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_02_meat_for_the_long_fire",
+   "min_level": 1,
+   "objectives": [
+    "bring 4 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Meat for the Long Fire",
+   "turnin": "r20_orc_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "Bring a wood axe. Gara will show the safe cut before strength becomes waste.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_10_edge_of_the_first_camp",
+   "min_level": 1,
+   "objectives": [
+    "bring 1 grug_materials:axe_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a wood axe",
+     "item": "grug_materials:axe_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Edge of the First Camp",
+   "turnin": "r14_orc_elder",
+   "xp": 15
+  },
+  {
+   "copper": 10,
+   "description": "Ugra Brothstone keeps Sunscar's long fire supplied beside the oven. Bring three coal lumps for the covered fuel box. Existing or traded coal is welcome; You can mine natural coal with any pickaxe, including wood or stone.",
+   "giver": "r20_orc_start_cook",
+   "giver_name": "Ugra Brothstone",
+   "giver_settlement": "Sunscar",
+   "id": "r20_orc_start_cook",
+   "min_level": 1,
+   "objectives": [
+    "bring 3 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Keep the Long Fire Fed",
+   "turnin": "r20_orc_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 15,
+   "description": "Bring a stone pick. Stone has no pride, but it punishes a careless swing.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_11_stone_has_no_pride",
+   "min_level": 2,
+   "objectives": [
+    "bring 1 grug_materials:pick_stone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a stone pick",
+     "item": "grug_materials:pick_stone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_10_edge_of_the_first_camp"
+   ],
+   "reward_items": [],
+   "title": "Stone Has No Pride",
+   "turnin": "r14_orc_elder",
+   "xp": 45
+  },
+  {
+   "copper": 20,
+   "description": "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_03_rats_under_the_hide_racks",
+   "min_level": 3,
+   "objectives": [
+    "bring 6 default:acacia_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "item": "default:acacia_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_01_tusks_at_the_water_skins"
+   ],
+   "reward_items": [],
+   "title": "Posts Beneath the Hide Racks",
+   "turnin": "r14_orc_elder",
+   "xp": 100
+  },
+  {
+   "copper": 25,
+   "description": "Sun-dried husks walk the outer flats toward Redtusk after nightfall. Defeat three on the level-4-and-up ground between the camp and the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_04_the_thirsting_dead",
+   "min_level": 5,
+   "objectives": [
+    "kill 3 sun_dried_husk"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:sun_dried_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_01_tusks_at_the_water_skins"
+   ],
+   "reward_items": [],
+   "title": "The Thirsting Dead",
+   "turnin": "r14_orc_elder",
+   "xp": 180
+  },
+  {
+   "copper": 30,
+   "description": "Scorpions have crawled under the bedrolls. Clear the camp edge before nightfall. Near the start they hunt by day and by night on level-4-and-up ground.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_05_shells_by_the_bedrolls",
+   "min_level": 5,
+   "objectives": [
+    "kill 5 scorpion"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:scorpion"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_03_rats_under_the_hide_racks"
+   ],
+   "reward_items": [],
+   "title": "Shells by the Bedrolls",
+   "turnin": "r14_orc_elder",
+   "xp": 180
+  },
+  {
+   "copper": 40,
+   "description": "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11\u201320 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r14_orc_06_husks_on_redtusk_road",
+   "min_level": 10,
+   "objectives": [
+    "talk to Borak Redgrass (redtusk_village)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_orc_steward",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_05_shells_by_the_bedrolls"
+   ],
+   "reward_items": [],
+   "title": "The Road to Borak Redgrass",
+   "turnin": "r14_orc_steward",
+   "xp": 285
+  },
+  {
+   "copper": 40,
+   "description": "Gor Drazhak offers public workspaces, trainers and repairs beyond Sunscar's camp. At level 10, follow the road to Thorga Roadspeaker in the skull hall. Its surrounding country is level 20\u201330, so avoid the wildlife and keep to the route. Speak with Thorga and complete this introduction there.",
+   "giver": "r14_orc_elder",
+   "giver_name": "Gara Stonevoice",
+   "giver_settlement": "Sunscar",
+   "id": "r20_orc_capital_intro",
+   "min_level": 10,
+   "objectives": [
+    "talk to Thorga Roadspeaker (gor_drazhak)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_orc_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Road to Gor Drazhak",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 285
+  }
+ ],
+ "race_region": "orc",
+ "race_track": "orc",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.5,
+  "height_above_sea": {
+   "max": 70,
+   "median": 39,
+   "min": 0,
+   "p10": 4,
+   "p90": 55
+  },
+  "steep_share_pct": 3.4
+ },
+ "relief_profile": "lowland",
+ "roads": [
+  {
+   "first_in_zone": [
+    0,
+    2486
+   ],
+   "from": "anchor_005 (Sunscar, kragmar_sunscar_flats)",
+   "id": 18,
+   "kind": "primary",
+   "last_in_zone": [
+    -112,
+    2263
+   ],
+   "length_in_zone": 258,
+   "length_total": 799,
+   "polyline_simplified": [
+    [
+     0,
+     2486
+    ],
+    [
+     -104,
+     2306
+    ],
+    [
+     -160,
+     2092
+    ],
+    [
+     -109,
+     1960
+    ],
+    [
+     -97,
+     1796
+    ],
+    [
+     -112,
+     1760
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    197,
+    2254
+   ],
+   "from": "anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna)",
+   "id": 43,
+   "kind": "trail",
+   "last_in_zone": [
+    -22,
+    2437
+   ],
+   "length_in_zone": 294,
+   "length_total": 486,
+   "polyline_simplified": [
+    [
+     180,
+     2084
+    ],
+    [
+     224,
+     2198
+    ],
+    [
+     210,
+     2237
+    ],
+    [
+     103,
+     2365
+    ],
+    [
+     -22,
+     2437
+    ]
+   ],
+   "to": "joins road 18"
+  }
+ ],
+ "role": "start zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 0,
+    "y": 37,
+    "z": 2550
+   },
+   "anchor_id": "anchor_005",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Redtusk Outpost",
+      "road": 617,
+      "straight": 507,
+      "to": "redtusk_outpost",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": 793,
+      "straight": 553,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Gor Drazhak",
+      "road": 1270,
+      "straight": 1050,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1846,
+      "straight": 654,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Cutgrass Watch",
+      "road": 2101,
+      "straight": 1453,
+      "to": "r20_anchor_042",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 2120,
+      "straight": 1482,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 302,
+     "x": -68,
+     "z": 2256
+    },
+    "nearest_road": {
+     "distance": 64
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 320,
+     "x": 296,
+     "z": 2672
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 289,
+     "x": 272,
+     "z": 2648
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 372,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 440,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 308,
+      "hits": "kragmar_redtusk_savanna"
+     },
+     "west_-x": {
+      "distance": 708,
+      "hits": "bay_water"
+     }
+    }
+   },
+   "key": "sunscar",
+   "name": "Sunscar",
+   "npcs": [
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "yard_vendor",
+     "vendor_kind": "race",
+     "x": 8,
+     "y": 38,
+     "z": 2545
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "idle_tusk_door",
+     "tag": "door",
+     "x": -11,
+     "y": 38,
+     "z": 2528
+    },
+    {
+     "npc_id": "r14_orc_elder",
+     "npc_name": "Gara Stonevoice",
+     "quests": [
+      "r14_orc_01_tusks_at_the_water_skins",
+      "r14_orc_03_rats_under_the_hide_racks",
+      "r14_orc_04_the_thirsting_dead",
+      "r14_orc_05_shells_by_the_bedrolls",
+      "r14_orc_06_husks_on_redtusk_road",
+      "r14_orc_10_edge_of_the_first_camp",
+      "r14_orc_11_stone_has_no_pride",
+      "r20_orc_capital_intro"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "hall_quest",
+     "tag": "door",
+     "x": 3,
+     "y": 38,
+     "z": 2562
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "trainer_cooking",
+     "x": 2,
+     "y": 38,
+     "z": 2540
+    },
+    {
+     "npc_id": "r20_orc_start_cook",
+     "npc_name": "Ugra Brothstone",
+     "quests": [
+      "r14_orc_02_meat_for_the_long_fire",
+      "r20_orc_start_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_cook",
+     "x": 2,
+     "y": 38,
+     "z": 2537
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "cook_oven",
+     "tag": "furnace",
+     "x": 4,
+     "y": 38,
+     "z": 2537
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "guard_patrol": 5,
+    "guard_post": 2,
+    "idle": 6,
+    "innkeeper": 1,
+    "public_station": 1,
+    "quest": 2,
+    "trainer": 1,
+    "vendor": 1,
+    "work": 2
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:boar",
+   "name": "Boar",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:giant_rat",
+   "name": "Giant Rat",
+   "night": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 96.5,
+    "share_pct": 84.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 87.6
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:sand",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:hare",
+   "name": "Hare",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 87.6
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass"
+   ],
+   "mob": "grug_mobs:plains_runner",
+   "name": "Plains Runner",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 33.5,
+    "share_pct": 33.5
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:scorpion",
+   "name": "Scorpion",
+   "night": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 33.5,
+    "share_pct": 33.5
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 58208,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 58208,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:sun_dried_husk",
+   "name": "Sun-Dried Husk",
+   "night": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 33.5,
+    "share_pct": 33.5
+   }
+  }
+ ],
+ "start_rings": {
+  "anchor": [
+   0,
+   2550
+  ],
+  "band_radius": 150,
+  "core_radius": 100
+ },
+ "territory_rule": "throng_home",
+ "track_order": 1
+}
