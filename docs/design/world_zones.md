@@ -1546,7 +1546,9 @@ one-cell settlement checks are unchanged.
   necropolis, Gor Drazhak a mesa shelf and Kezamba a drained/stilted cenote
   terrace. None is allowed to depend on accidental v7 land.
 - The six kings are equal civic rulers and killable level-65 elite NPCs. Every
-  king has exactly four level-60 elite royal guards. No capital is a superior
+  king has exactly four level-60 elite royal guards. The king is the tallest
+  figure in his hall: final `visual_size` 1.6 (2.72 nodes, box and model
+  alike) against his elite guards' 1.4 (2.38 nodes) (Round 28 ruling 9). No capital is a superior
   faction seat. Shared faction services use the same service definition in all
   three capitals; race services and the king remain local. Essential services
   are delivered by separate passive, invulnerable NPCs and never depend on the
