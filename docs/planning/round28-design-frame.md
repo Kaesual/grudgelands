@@ -5,10 +5,11 @@ deliver, in which data formats, inside which budgets and limits. Written by
 the coordinator from the
 [Round 28 plan](round28-questing-leveling-plan.md); the plan's rulings and
 reasons are binding and are not repeated in full. Revised after Astra's
-sparring pass and an independent Opus review. **Status: draft for the
-user's approval, together with the zone atlas, the mob catalogue and the
-design tools** (all under [round28/](round28/)). Points marked
-**(proposal)** are new decisions for the user.
+sparring pass and an independent Opus review. **Status: approved by the
+user on 2026-10-01**, together with the zone atlas, the mob catalogue and
+the design tools (all under [round28/](round28/)); the user's answers on
+routes, difficulty, front shares, islands, metal fittings and new givers
+are written in.
 
 Track B implements exactly these formats; content lanes (E) port the designs
 into the mods.
@@ -52,31 +53,36 @@ into the mods.
 
 ## 2. The player's journey and budgets
 
-### 2.1 Routes (proposal)
+### 2.1 Routes (user, 2026-10-01)
 
-Budgets are planned per **route**, not per zone, so zones with alternatives
-do not each pay a full band.
+Budgets are planned per **route**: the sum over all zones a player of that
+race can use in that band. All percentages in §2.2 are route sums, never
+per zone.
 
-- **Race track 1–30:** start zone (1–10) → home zone (11–20) → capital
-  outskirts (about 20–23) → the race's 21–30 zone(s). Elves (Lorindor,
-  Moonfall Wood) and Trolls (Whispering Reedlands, Totemwater Reach) have
-  two 21–30 zones: each alternative covers at least about 70 % of what the
-  route needs from it, both together more (choice).
-- **Contested 31–40:** one zone per race, shared by the faction; a player
-  may level in any of the faction's three. Each covers the 31–40 band alone
-  at about 80 %; travel handoffs point to more than one.
-- **Front 41–60:** The Broken Causeway (31–40, shared), The Shattered Line
-  (41–50), Gravesalt Escarpment and The Skyglass Canopy (51–59), the
-  islands (60). Quest givers sit in the 31–40 outposts and the capitals
-  (Ruling 43). Each 31–40 outpost giver and one quest giver per capital
-  reserve one of their two lines, named `front`, for the front lane; the
-  front lane writes those quests into `zones/<host_zone>.front.quests.json`
-  (§4.7). Contested zones with a single quest NPC (Glassroot Wilds,
-  Thunderroot Wilds) are exempt, so they keep both lines for their own band. Islands have no boats yet (WP17); they are reachable with
-  flying mounts (from level 45), so island content is level-60 endgame with
-  coin and material incentives, not leveling.
-- **Quests may point into the faction's other 21–30 and 31–40 zones, never
-  into another race's 11–20 zone** (Ruling 44).
+- **1–20, own race only:** start zone (1–10) → home zone (11–20). Each covers
+  its band alone (§2.2).
+- **20–30, the faction's seven zones:** the three capital outskirts (20–30)
+  and the four heartland zones (21–30) of the faction. No single zone covers
+  the band: each offers roughly 35–50 % of it, so a player quests in two to
+  three of them and **visits at least one other race's zone of the own
+  faction**. The own capital and the own race's heartland zone are the
+  natural first stops; travel quests lead on to the sister races' zones.
+  Mounts (from level 15) make the longer routes reasonable.
+- **31–40, four zones:** the faction's three contested zones and The Broken
+  Causeway (shared by both factions). Each offers roughly 30–40 % of the
+  band; a player uses about three of them.
+- **41–60, shared front:** The Shattered Line (41–50), Gravesalt Escarpment
+  and The Skyglass Canopy (51–59), for both factions. Quest givers sit in
+  the 31–40 outposts and the capitals (Ruling 43); each 31–40 outpost giver
+  and one quest giver per capital reserve one of their two lines, named
+  `front`, for the front lane; the front lane writes those quests into
+  `zones/<host_zone>.front.quests.json` (§4.7). Contested zones with a
+  single quest NPC (Glassroot Wilds, Thunderroot Wilds) are exempt.
+- **Islands (60):** not part of leveling; reachable with flying mounts (from
+  level 45, no boats yet, WP17); endgame content with coin and material
+  incentives.
+- **Quests may point into any zone of the own faction from 20 on, and into
+  shared zones; never into another race's 11–20 zone** (Ruling 44).
 
 ### 2.2 XP units (Rulings 30–33)
 
@@ -96,8 +102,8 @@ do not each pay a full band.
 | 10 → 20 | 119 (L10–19) | ≈ 80 % | ≈ 40 % | ≈ 40 % | ≈ 20 % |
 | 20 → 30 | 148 | ≈ 80 % | ≈ 40 % | ≈ 40 % | ≈ 20 % |
 | 30 → 40 | 177 | ≈ 80 % | ≈ 40 % | ≈ 40 % | ≈ 20 % |
-| 40 → 50 | 206 | ≈ 70 % incl. repeatables **(proposal)** | ≈ 35 % | ≈ 35 % | ≈ 30 % |
-| 50 → 60 | 235 | ≈ 70 % incl. repeatables **(proposal)** | ≈ 35 % | ≈ 35 % | ≈ 30 % |
+| 40 → 50 | 206 | ≈ 70 % incl. repeatables | ≈ 35 % | ≈ 35 % | ≈ 30 % |
+| 50 → 60 | 235 | ≈ 70 % incl. repeatables | ≈ 35 % | ≈ 35 % | ≈ 30 % |
 
 Kill counts follow from the "quest-demanded" column. Players should leave
 a start zone at level 10, not 15. The targets apply to a **solo** player
@@ -113,7 +119,7 @@ Ore 0.10, gem 0.20, fish 0.33 KE (reference level capped at player level
 not only XP. The ledger records time for travel, combat, collection,
 respawn and waiting for the right clock separately.
 
-### 2.4 Difficulty promise (proposal)
+### 2.4 Difficulty promise (user, 2026-10-01)
 
 - The **main route** of every band is completable **solo** by every class at
   the band's level with quest-reward and vendor-level equipment.
@@ -130,7 +136,7 @@ respawn and waiting for the right clock separately.
   (a line is a named chain of quests given one after another; ≤ 4 active
   quests per hub). Repeatables belong to one of those two lines (often its
   tail, or a giver's dedicated `bounties` line).
-- **(proposal)** Free quest sockets without an NPC (Highcourt, Dur
+- Free quest sockets without an NPC (Highcourt, Dur
   Brannoc, Lethariel, Gor Drazhak; atlas) may each get one new giver,
   written as `{"npc": "<new id>", "new": {"name", "race", "socket"},
   "lines": [...]}` in the hub (Track E creates the NPC); it counts toward
@@ -286,9 +292,8 @@ drops are rare and tier-matched (bronze in band 1, never iron). Leaders add
   family's **own material** of tier T + `stat_loot[S]` + `family_input[F]`.
   Own materials: Armorsmith the metal bar, Leatherworker the leather grade,
   Tailor the cloth bolt, Woodcarver the seasoned wood, Goldsmith the
-  setting; Weaponsmith the metal bar **(proposal:** today the Weaponsmith
-  uses its own metal fittings; with the Woodcarver no longer needing them,
-  fittings would have no consumer left and can go**)**.
+  setting; Weaponsmith the metal bar (user, 2026-10-01: metal fittings are removed
+  entirely).
 - `family_input` keys: sword, dagger, greataxe (Weaponsmith); metal_armor,
   shield (Armorsmith); leather_armor (Leatherworker); cloth_armor (Tailor);
   bow, caster_weapon (Woodcarver); spellbook, trinket (Goldsmith).
