@@ -94,15 +94,19 @@ when the hands are empty. Guards carry a sword and bandits a dagger.
 **What a player is shown holding** (decided 2026-09-15, playtest round 2) is
 read off the hotbar, in three cases:
 
-1. a **skill** in hand shows the **equipped weapon** — a skill is an orb wearing
-   that weapon's art and takes its damage from the weapon slot, so the hand
-   shows the weapon;
+1. a **skill** in hand shows the **item of that skill's slot** — a skill is an
+   orb wearing that item's art and takes its damage from that slot, so the
+   hand shows the weapon. Since Round 28 the slot is per skill and class: a
+   Scout's bow skills show the bow from its Ranged slot, its Strike and
+   Opening the sword or dagger from its Melee slot; every other class's
+   skills show the Weapon slot;
 2. **any other item** in hand shows that item — a pickaxe is a pickaxe, a torch
    is a torch;
 3. an **empty hand** shows nothing.
 
-So the weapon slot is the single source of *damage*, but it is not automatically
-what the character is carrying: a player who selects a shovel sees a shovel.
+So the skill's slot is the single source of *damage*, but it is not
+automatically what the character is carrying: a player who selects a shovel
+sees a shovel.
 
 It is held the way a weapon is held: **the grip in the fist, the blade straight
 forward at a right angle to the arm, its flat vertical** so the silhouette reads
@@ -147,8 +151,9 @@ a troll's sword are the same object. A humanoid *mob* is deliberately not
 compensated: its scale is its real size, and a giant's weapon should be a
 giant's weapon.
 
-One entity per character, never more. The **offhand is not drawn yet**; shields
-arrive with the offhand work.
+One entity per character, never more. The **offhand is not drawn beside the
+weapon**; only a Scout's Melee skill puts the offhand blade into the hand
+(case 1 above).
 
 ## 5. Rules that hold everywhere
 
@@ -188,8 +193,9 @@ Use individually licensed and visually inspected pinned-reference media for
 seed silhouettes, hoes, the Tailor loom and the shared smith anvil. The
 Goldsmith uses a muted gold anvil head on a dark base; Woodcarver uses an upright
 bench. Cloth/leather bag variants may share a readable shape with a material
-color distinction. Shields, books, bows and the quiver have representative
-inventory art; never use an unwrapped 3D-model texture as an item icon.
+color distinction. Shields, books and bows have representative inventory art
+(the quiver art is the Scout quiver slot's ghost image); never use an
+unwrapped 3D-model texture as an item icon.
 
 Protected exterior product frames and interior stands identify all capital
 professions, following [settlements.md](settlements.md). Fixed display items

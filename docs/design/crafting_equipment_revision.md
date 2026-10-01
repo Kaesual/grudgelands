@@ -138,8 +138,8 @@ crafting qualification or character-level restrictions.
 Tools and weapons are disjoint. Woodcutting Axes, picks, shovels and hoes deal
 no damage, have no damage tooltip and cannot enter the weapon slot. Two-handed
 axes are Battle Axes. Remove wooden/stone weapons. All weapon families start at
-Bronze: Warrior sword, Mage/Priest staff, Scout bow plus backup Bronze sword and
-200 arrows. Ordinary Bronze weapons are usable at level 1 even though their
+Bronze: Warrior sword, Mage/Priest staff, Scout bow plus a Bronze sword in its
+Melee slot and 200 arrows in its quiver slot (Round 28). Ordinary Bronze weapons are usable at level 1 even though their
 base-stat item level is 3; elevated found-item levels retain their own gate.
 Wood/Stone/Bronze tools all retain T1 mining access. Add Stone Hoe.
 
@@ -155,7 +155,8 @@ Wood/Stone/Bronze tools all retain T1 mining access. Add Stone Hoe.
 | Abyssal Steel / T6 | 3000 | 4000 |
 
 Tool budgets describe successful ordinary uses; existing deeper-mining penalties
-and tier access remain. Only the main-hand weapon wears on outgoing accepted
+and tier access remain. Only the acting hand slot (the melee slot or, for a
+Scout's shot, the bow; Round 28) wears on outgoing accepted
 damage/healing actions; reuse existing settlement semantics and debit once per
 action, not per victim. Existing settled incoming combat HP damage selects one intact repairable
 equipped piece uniformly from four armor slots and offhand. PvP uses the same rule; fully absorbed hits do not count. Preserve the existing
@@ -163,7 +164,6 @@ nonlethal-combat notification: no additional fall/environmental or lethal-hit
 wear path is needed. Keep existing
 effective-heal/miss/cancel handling without an added event framework.
 
-Quivers join offhand wear/repair; broken quivers retain accessible stored arrows.
 Creative skips wear. Broken items remain present and repairable; existing
 money-only service and purchase-price-based repair costs remain unchanged.
 

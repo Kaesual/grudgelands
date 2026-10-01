@@ -6,21 +6,23 @@ WP22 delivery and does not rebase the WP44 economy or calibrate mining speeds.
 
 ## Eligible items and wear
 
-Ordinary weapons, shields, spellbooks, quivers, four armor slots, gathering
+Ordinary weapons, shields, spellbooks, four armor slots, gathering
 tools and hoes are repairable. Trinkets, bags, ability tokens, mount skills,
 consumables and decorative items do not wear.
 
 The material budgets and exact event rules are defined in
 [the equipment revision](crafting_equipment_revision.md#equipment-and-lifetime).
 Combat equipment has 1000/1500/2000/2500/3000/4000 qualifying uses across T1–T6.
-Outgoing settled damage or effective in-combat healing wears only the main
-weapon, once per action. Incoming settled nonlethal combat HP loss wears one
-random intact item among the four armor slots and offhand. Pure absorb grants,
+Outgoing settled damage or effective in-combat healing wears only the slot
+that acted, once per action: a synchronous swing or cast wears the melee slot
+(the Scout's Melee offhand, everyone else's Weapon slot), a Scout's shot the
+bow it was loosed from (Round 28). Incoming settled nonlethal combat HP loss
+wears one random intact item among the four armor slots and an offhand shield
+or spellbook (never a weapon carried in the offhand). Pure absorb grants,
 fully absorbed hits and Creative do not spend wear. Existing combat settlement
 semantics remain; no extra fall/environmental wear hook is added.
 
-Broken quivers keep their stored arrows retrievable, but do not supply automatic
-ammunition or accept new arrows until repaired. Tool/hoe budgets are
+Tool/hoe budgets are
 30/60/300/600/1000/1500/2000/3000 from Wood through Abyssal Steel. There is
 no mining depth penalty: a pick too weak for a tier rock cannot dig it at all
 (Round 24 ruling 3).

@@ -139,12 +139,13 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **The Weapon slot enforces the current generated catalog's `_grug_ilvl`
-  directly as its minimum character level.** The documented future ilvl
+- **The hand slots enforce a weapon's current generated `_grug_ilvl`
+  directly as its minimum character level** (the Weapon slot, and the
+  Scout's Melee offhand for its sword or dagger). The documented future ilvl
   65/70/75 endgame items instead carry a level-60 requirement when created.
   Items without a positive `_grug_ilvl`
-  remain unrestricted, and no other equipment slot has this level gate
-  (`grug_inventory/equipment.lua:173-185,330-338`);
+  remain unrestricted, and no shield, spellbook or armor slot has this level
+  gate (`grug_inventory/equipment.lua`, the allow callback);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 - **Consumables use the same `_grug_ilvl` decision helper.** Food, potions and
@@ -304,10 +305,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   valid attack hides it immediately and expiry shows it once; an aim miss
   leaves it visible. There is no smooth progress animation and no periodic
   inventory rewrite.
-- **The weapon slot is the sole swing source.** Ability stacks expose zero
+- **The melee slot is the sole swing source**: the Weapon slot, or the
+  Scout's Melee offhand (Round 28 ruling 25; `grug_core.get_melee_weapon`).
+  Ability stacks expose zero
   native combat damage while retaining native hand digging and animation. Their
   charge wear is not equipment wear. The server builds actual attacks from the
-  equipped usable weapon; cosmetic getters separately retain broken equipment.
+  equipped usable melee weapon; cosmetic getters separately retain broken equipment.
   Selected-skill/fallback scheduling and click arbitration are defined in
   `classes.md` §2b. Native tools/fists are not a second combat stream.
 - **One accepted full swing resolves once.** Against players the order is
@@ -342,7 +345,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
   range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
-  a full draw takes the bow's 2.5 s, and Loose deals
+  a full draw takes the bow's 2.5 s, shortened only by Fletching and the
+  bow's own attack-speed affix (not the rest of the equipment), and Loose deals
   (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for
   draw fraction f — ×0.2 on a tap, ×0.7125 at half, ×2.25 at full draw (user
   ruling 2026-09-28, follow-up) — before Twin
@@ -950,15 +954,21 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
   slot).
-- Equip rules (enforced centrally): occupied hands normally total at most two.
-  The zero-hand Leatherworker quiver is the sole exception: it may accompany a
-  two-handed bow or one-handed melee weapon. Shields and Goldsmith spellbooks
-  are ordinary one-hand offhands; staff and greataxe require an empty offhand.
-  There is no dual-wield or Rogue path in V1.
+- **The offhand is per class** (Round 28 ruling 25): **Warrior** — a shield
+  (only Warriors equip shields); **Mage and Priest** — the "Caster offhand",
+  a Goldsmith spellbook; **Scout** — its **melee weapon** (sword or dagger),
+  shown as "Melee", while its Weapon slot is shown as "Ranged" and takes the
+  bow. **Both hand items always count toward stats for every class.** Strike,
+  Opening and every melee skill swing the Scout's Melee item (bare hand when
+  empty); its bow skills read Ranged. There is no dual-wield: no class
+  swings two weapons at once, and no Rogue path in V1.
+- Equip rules (enforced centrally): occupied hands total at most two.
+  Shields, spellbooks, the bow and every one-hand weapon count one hand;
+  staff and greataxe require an empty offhand.
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
-  items declare a hand count in `_grug_hands` (**greataxe/staff/bow 2,
-  sword/dagger/wand 1**; a missing field means one-handed). Gathering tools,
+  items declare a hand count in `_grug_hands` (**greataxe/staff 2,
+  sword/dagger/wand/bow 1**; a missing field means one-handed). Gathering tools,
   including Woodcutting Axes, are ineligible for Weapon. The weapon/offhand
   `allow_put` refuses pairs whose occupied hands exceed two, in both directions,
   with a message explaining the trade. Eligibility: `inventory_equipment.md` §2.
@@ -966,9 +976,8 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a shield or spellbook costs you the two-handed weapon.**
-  Greataxe and staff users choose between the offhand and their weapon; a bow
-  accepts only the quiver exception. The refusal text says so rather than
-  failing silently.
+  Greataxe and staff users choose between the offhand and their weapon. The
+  refusal text says so rather than failing silently.
 - **No carried light** (user decision 2026-09-29,
   [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) C5):
   torches are not offhand items and nothing carried gives a moving light
