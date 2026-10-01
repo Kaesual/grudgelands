@@ -1,5 +1,5 @@
 {
-  "purpose": "Arithmetic fixture only; no authored zone geometry, quests or C1a loot decisions. See calibration.md for the ledger.py adapter.",
+  "purpose": "Arithmetic fixture only; no authored geometry or giver allocation. The calibration.md adapter uses integrated catalogue drop families with synthetic exact-level sources.",
   "start_level": 1,
   "human": true,
   "repeat": 0,

@@ -8,23 +8,10 @@
     "description": "A stubborn scrap of its former owner.",
     "uses": [
       "enchant:max_hp_percent:t1",
-      "quest"
+      "quest",
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
-  },
-  {
-    "id": "grug_mobs:broken_tooth",
-    "name": "Broken Tooth",
-    "tier": 1,
-    "family": "zombie",
-    "kind": "signature",
-    "description": "Still determined to bite something.",
-    "uses": [
-      "enchant:str:t1",
-      "enchant:crit_percent:t1",
-      "quest"
-    ],
-    "icon": "A single broken tooth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:bandit_talisman",
@@ -34,27 +21,9 @@
     "kind": "signature",
     "description": "A thief's counted knots and lucky marks; intent bound into something small.",
     "uses": [
-      "enchant:int:t1",
-      "enchant:max_mana_percent:t1",
       "quest"
     ],
     "icon": "A single bandit talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
-    "id": "grug_mobs:weapon_strap",
-    "name": "Weapon Strap",
-    "tier": 1,
-    "family": "outlaw",
-    "kind": "signature",
-    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
-    "uses": [
-      "enchant:dex:t1",
-      "enchant:attack_speed_percent:t1",
-      "enchant:dodge_percent:t1",
-      "enchant:armor_rating:t1",
-      "quest"
-    ],
-    "icon": "A single weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:foul_flesh",
@@ -70,20 +39,6 @@
     "icon": "A single foul flesh, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
-    "id": "grug_mobs:rusted_braces",
-    "name": "Rusted Braces",
-    "tier": 2,
-    "family": "zombie",
-    "kind": "signature",
-    "description": "The teeth are gone. The commitment remains.",
-    "uses": [
-      "enchant:str:t2",
-      "enchant:crit_percent:t2",
-      "quest"
-    ],
-    "icon": "A single rusted braces, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
     "id": "grug_mobs:knotted_talisman",
     "name": "Knotted Talisman",
     "tier": 2,
@@ -91,27 +46,9 @@
     "kind": "signature",
     "description": "A thief's counted knots and lucky marks; intent bound into something small.",
     "uses": [
-      "enchant:int:t2",
-      "enchant:max_mana_percent:t2",
       "quest"
     ],
     "icon": "A single knotted talisman, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
-    "id": "grug_mobs:braided_weapon_strap",
-    "name": "Braided Weapon Strap",
-    "tier": 2,
-    "family": "outlaw",
-    "kind": "signature",
-    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
-    "uses": [
-      "enchant:dex:t2",
-      "enchant:attack_speed_percent:t2",
-      "enchant:dodge_percent:t2",
-      "enchant:armor_rating:t2",
-      "quest"
-    ],
-    "icon": "A single braided weapon strap, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:pickled_flesh",
@@ -351,7 +288,8 @@
     "uses": [
       "enchant:str:t1",
       "enchant:crit_percent:t1",
-      "quest"
+      "quest",
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -377,8 +315,7 @@
     "kind": "signature",
     "description": "Dense ivory shaped by rooting through obstinate ground.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single gnarled boar tusk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -486,23 +423,9 @@
     "kind": "signature",
     "description": "Overlapping armour grown without a single rivet.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single ridged crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
-    "id": "grug_mobs:opal_crab_eye",
-    "name": "Opal Crab Eye",
-    "tier": 3,
-    "family": "crab",
-    "kind": "signature",
-    "description": "A bright bead built to notice movement through shifting water.",
-    "uses": [
-      "quest",
-      "optional crafting"
-    ],
-    "icon": "A single opal crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:layered_crab_shell",
@@ -512,23 +435,9 @@
     "kind": "signature",
     "description": "Overlapping armour grown without a single rivet.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single layered crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
-    "id": "grug_mobs:storm_crab_eye",
-    "name": "Storm Crab Eye",
-    "tier": 4,
-    "family": "crab",
-    "kind": "signature",
-    "description": "A bright bead built to notice movement through shifting water.",
-    "uses": [
-      "quest",
-      "optional crafting"
-    ],
-    "icon": "A single storm crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:storm_crab_shell",
@@ -538,23 +447,9 @@
     "kind": "signature",
     "description": "Overlapping armour grown without a single rivet.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single storm crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
-  },
-  {
-    "id": "grug_mobs:abyssal_crab_eye",
-    "name": "Abyssal Crab Eye",
-    "tier": 6,
-    "family": "crab",
-    "kind": "signature",
-    "description": "A bright bead built to notice movement through shifting water.",
-    "uses": [
-      "quest",
-      "optional crafting"
-    ],
-    "icon": "A single abyssal crab eye, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
   {
     "id": "grug_mobs:abyssal_crab_shell",
@@ -564,8 +459,7 @@
     "kind": "signature",
     "description": "Overlapping armour grown without a single rivet.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single abyssal crab shell, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -577,8 +471,7 @@
     "kind": "signature",
     "description": "Soft balance at the end of a very quick animal.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -590,8 +483,7 @@
     "kind": "signature",
     "description": "Soft balance at the end of a very quick animal.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single brush fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -603,8 +495,7 @@
     "kind": "signature",
     "description": "Soft balance at the end of a very quick animal.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single silver-tip fox tail, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -616,8 +507,7 @@
     "kind": "signature",
     "description": "A strong, springy tendon from a sure-footed grazer.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single fine sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -629,8 +519,7 @@
     "kind": "signature",
     "description": "A strong, springy tendon from a sure-footed grazer.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single tough sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -642,8 +531,7 @@
     "kind": "signature",
     "description": "A strong, springy tendon from a sure-footed grazer.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single braided sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -655,8 +543,7 @@
     "kind": "signature",
     "description": "A strong, springy tendon from a sure-footed grazer.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single ironbound sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -668,8 +555,7 @@
     "kind": "signature",
     "description": "A strong, springy tendon from a sure-footed grazer.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single rime sinew, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -681,8 +567,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -694,8 +579,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single hooked cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -707,8 +591,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single shearing cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -720,8 +603,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single razor cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -733,8 +615,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single siege cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -746,8 +627,7 @@
     "kind": "signature",
     "description": "A curved hunting claw made for a precise strike.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single glass cat claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -760,7 +640,7 @@
     "description": "A pack hunter's fang, worn at the edge but sound at the root.",
     "uses": [
       "quest",
-      "optional crafting"
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -772,8 +652,7 @@
     "kind": "signature",
     "description": "A pack hunter's fang, worn at the edge but sound at the root.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single serrated fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -785,8 +664,7 @@
     "kind": "signature",
     "description": "A pack hunter's fang, worn at the edge but sound at the root.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single warpack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -798,8 +676,7 @@
     "kind": "signature",
     "description": "A pack hunter's fang, worn at the edge but sound at the root.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single siegepack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -811,8 +688,7 @@
     "kind": "signature",
     "description": "A pack hunter's fang, worn at the edge but sound at the root.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single saltpack fang, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -825,7 +701,7 @@
     "description": "A heavy hook for making a point through armour.",
     "uses": [
       "quest",
-      "optional crafting"
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -837,8 +713,7 @@
     "kind": "signature",
     "description": "A heavy hook for making a point through armour.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single scarred bear claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -850,8 +725,7 @@
     "kind": "signature",
     "description": "A heavy hook for making a point through armour.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single salt bear claw, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -863,8 +737,7 @@
     "kind": "signature",
     "description": "A squat tooth built for a grip that does not let go.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single blunt crocodile tooth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -876,8 +749,7 @@
     "kind": "signature",
     "description": "A squat tooth built for a grip that does not let go.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single ridged crocodile tooth, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -889,8 +761,7 @@
     "kind": "signature",
     "description": "It remembers the shape of its container. Eventually.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single thin slime gel, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -903,7 +774,7 @@
     "description": "It remembers the shape of its container. Eventually.",
     "uses": [
       "quest",
-      "optional crafting"
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -915,8 +786,7 @@
     "kind": "signature",
     "description": "A smooth bead sorted and carried by the reed-dwellers.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single reed pearl, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -928,8 +798,7 @@
     "kind": "signature",
     "description": "A smooth bead sorted and carried by the reed-dwellers.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single clouded reed pearl, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -941,8 +810,7 @@
     "kind": "signature",
     "description": "A small wandering light, finally persuaded to stay in a bottle.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -954,8 +822,7 @@
     "kind": "signature",
     "description": "A small wandering light, finally persuaded to stay in a bottle.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single bound wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -967,8 +834,7 @@
     "kind": "signature",
     "description": "A small wandering light, finally persuaded to stay in a bottle.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single restless wisp mote, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -980,8 +846,7 @@
     "kind": "signature",
     "description": "A dark bead of resin that still smells of rain and old wood.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single mourning resin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -993,8 +858,7 @@
     "kind": "signature",
     "description": "A dark bead of resin that still smells of rain and old wood.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single bitter resin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1006,8 +870,7 @@
     "kind": "signature",
     "description": "A stiff shell plate that once fitted something unpleasant.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single bone chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1019,8 +882,7 @@
     "kind": "signature",
     "description": "A stiff shell plate that once fitted something unpleasant.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single layered bone chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1032,8 +894,7 @@
     "kind": "signature",
     "description": "A stiff shell plate that once fitted something unpleasant.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single salt chitin, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1045,8 +906,7 @@
     "kind": "signature",
     "description": "A coarse knot of hair from a powerful climber.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1058,8 +918,7 @@
     "kind": "signature",
     "description": "A coarse knot of hair from a powerful climber.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single silver ape hair, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1071,8 +930,7 @@
     "kind": "signature",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single mild venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1084,8 +942,7 @@
     "kind": "signature",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single bitter venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1097,8 +954,7 @@
     "kind": "signature",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single concentrated venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1111,7 +967,7 @@
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
       "quest",
-      "optional crafting"
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1123,8 +979,7 @@
     "kind": "signature",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single scorch venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1136,8 +991,7 @@
     "kind": "signature",
     "description": "A sealed drop of biting venom. The seal is the important part.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single glass venom, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1149,8 +1003,7 @@
     "kind": "signature",
     "description": "A strong silken strand that clings to the unwary.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single coarse spider silk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1159,11 +1012,11 @@
     "name": "Spider Silk",
     "tier": 4,
     "family": "spider",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A strong silken strand that clings to the unwary.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "existing recipes",
+      "quest"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1175,8 +1028,7 @@
     "kind": "signature",
     "description": "A strong silken strand that clings to the unwary.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single glass spider silk, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1188,8 +1040,7 @@
     "kind": "signature",
     "description": "Someone else's purse. The goblin was vague about whose.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1201,8 +1052,7 @@
     "kind": "signature",
     "description": "Someone else's purse. The goblin was vague about whose.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single clasped purse, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1214,8 +1064,7 @@
     "kind": "signature",
     "description": "Someone else's purse. The goblin was vague about whose.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single campaign purse, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1227,8 +1076,7 @@
     "kind": "signature",
     "description": "An old bone marked by a habit that outlived its owner.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single etched bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1240,8 +1088,7 @@
     "kind": "signature",
     "description": "An old bone marked by a habit that outlived its owner.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single marching bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1253,8 +1100,7 @@
     "kind": "signature",
     "description": "An old bone marked by a habit that outlived its owner.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single siege bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1266,8 +1112,7 @@
     "kind": "signature",
     "description": "An old bone marked by a habit that outlived its owner.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single unquiet bone, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1279,8 +1124,7 @@
     "kind": "signature",
     "description": "A thick glass splinter with a stubborn trace of hex.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single hex bottle shard, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1292,8 +1136,7 @@
     "kind": "signature",
     "description": "A thick glass splinter with a stubborn trace of hex.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single last-hex shard, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1305,8 +1148,7 @@
     "kind": "signature",
     "description": "A stiff flight feather, built to catch the smallest change in the air.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single barbed feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1318,8 +1160,7 @@
     "kind": "signature",
     "description": "A stiff flight feather, built to catch the smallest change in the air.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single storm feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1331,8 +1172,7 @@
     "kind": "signature",
     "description": "A stiff flight feather, built to catch the smallest change in the air.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single ash feather, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1341,11 +1181,11 @@
     "name": "Sharp Feather",
     "tier": 6,
     "family": "scavenger",
-    "kind": "signature",
+    "kind": "generic",
     "description": "A stiff flight feather, built to catch the smallest change in the air.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "existing recipes",
+      "quest"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1357,8 +1197,7 @@
     "kind": "signature",
     "description": "A fragment of the force that kept stone or machinery moving.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single chipped core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1370,8 +1209,7 @@
     "kind": "signature",
     "description": "A fragment of the force that kept stone or machinery moving.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single veined core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1383,8 +1221,7 @@
     "kind": "signature",
     "description": "A fragment of the force that kept stone or machinery moving.",
     "uses": [
-      "quest",
-      "optional crafting"
+      "quest"
     ],
     "icon": "A single siege core, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon."
   },
@@ -1397,7 +1234,7 @@
     "description": "A fragment of the force that kept stone or machinery moving.",
     "uses": [
       "quest",
-      "optional crafting"
+      "existing recipes"
     ],
     "notes": "Existing item and icon reused; retain the registered name."
   },
@@ -1597,81 +1434,66 @@
     "notes": "Existing item and icon reused. Modest, band-independent leader bonus; not metal or a signature."
   },
   {
-    "id": "grug_mobs:bandit_ledger",
-    "name": "Bandit Ledger",
-    "tier": 1,
-    "family": "outlaw",
-    "kind": "quest",
-    "description": "An inventory with too many owners crossed out.",
-    "uses": [
-      "quest-only drop"
-    ],
-    "icon": "A single bandit ledger, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
-  },
-  {
-    "id": "grug_mobs:stolen_supply_tag",
-    "name": "Stolen Supply Tag",
-    "tier": 2,
-    "family": "outlaw",
-    "kind": "quest",
-    "description": "A wooden tag proving where a missing shipment went.",
-    "uses": [
-      "quest-only drop"
-    ],
-    "icon": "A single stolen supply tag, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
-  },
-  {
-    "id": "grug_mobs:camp_orders",
-    "name": "Camp Orders",
-    "tier": 3,
-    "family": "outlaw",
-    "kind": "quest",
-    "description": "Directions precise enough to embarrass the person who wrote them.",
-    "uses": [
-      "quest-only drop"
-    ],
-    "icon": "A single camp orders, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
-  },
-  {
-    "id": "grug_mobs:muster_seal",
-    "name": "Muster Seal",
+    "id": "grug_mobs:layered_spider_web",
+    "name": "Layered Spider Web",
     "tier": 4,
-    "family": "skeleton",
-    "kind": "quest",
-    "description": "The stamped authority behind a very persistent order.",
+    "family": "spider",
+    "kind": "signature",
+    "description": "Several nights of patient repairs, undone in one bad morning.",
     "uses": [
-      "quest-only drop"
+      "quest"
     ],
-    "icon": "A single muster seal, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
+    "icon": "An angular folded web with three grey-violet layers and one taut silver strand; bold silhouette, transparent background, no text, 16 by 16 pixel inventory icon."
   },
   {
-    "id": "grug_mobs:siege_manifest",
-    "name": "Siege Manifest",
-    "tier": 5,
-    "family": "outlaw",
-    "kind": "quest",
-    "description": "A list of supplies promised to a battle that never ended.",
-    "uses": [
-      "quest-only drop"
-    ],
-    "icon": "A single siege manifest, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
-  },
-  {
-    "id": "grug_mobs:front_dispatch",
-    "name": "Front Dispatch",
+    "id": "grug_mobs:salt_barbed_feather",
+    "name": "Salt-Barbed Feather",
     "tier": 6,
-    "family": "outlaw",
-    "kind": "quest",
-    "description": "Orders that somebody hoped would arrive unopened.",
+    "family": "scavenger",
+    "kind": "signature",
+    "description": "The wind has sharpened every edge. Handle the quill.",
     "uses": [
-      "quest-only drop"
+      "quest"
     ],
-    "icon": "A single front dispatch, bold readable silhouette, muted natural colours, isolated transparent background, no text; 16 by 16 pixel inventory icon.",
-    "notes": "Reusable quest prop, not a stat reagent; tier labels its first intended band, not a level gate. Drop at chance 1 from the named leader while its quest is active, or at chance 2 from ordinary members with an area constraint. Per eligible participant. Zone lanes may add more specific props."
+    "icon": "A dark blue-grey feather with white salt tips and a hooked pale quill; bold silhouette, transparent background, no text, 16 by 16 pixel inventory icon."
+  },
+  {
+    "id": "grug_mobs:venom_gland",
+    "name": "Venom Gland",
+    "tier": 2,
+    "family": "spider",
+    "kind": "generic",
+    "description": "A sealed pouch, best left that way.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  },
+  {
+    "id": "grug_mobs:croc_tooth",
+    "name": "Crocodile Tooth",
+    "tier": 4,
+    "family": "crocodile",
+    "kind": "generic",
+    "description": "A tooth that once mistook every reed basket for lunch.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
+  },
+  {
+    "id": "grug_mobs:shiny_scale",
+    "name": "Shiny Scale",
+    "tier": 4,
+    "family": "mirefolk",
+    "kind": "generic",
+    "description": "One bright scale from a very wet argument.",
+    "uses": [
+      "existing recipes",
+      "quest"
+    ],
+    "notes": "Existing recipe feedstock; retain its current registration, name and icon."
   }
 ]

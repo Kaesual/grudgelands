@@ -55,6 +55,11 @@ kills behind the pantry line, after loot from previous hunts. A request
 for four tusks at 1-in-3 is twelve expected kills if starting empty;
 eight preceding boars supply 8/3 tusks, leaving four expected extra kills.
 That request and a hunt undertaken simultaneously are one outing.
+Four tusks deliberately test pressure: it spends the whole expected pile
+and leaves nothing for enchanting. The reconciled catalogue limits actual
+T1/T2 compulsory requests to two of a stat ingredient across the band and
+reserves two of the chosen first-enchant ingredient separately. The sample
+below retains four as a stress fixture, not a recommended C2 quest.
 Quest-only proof for a named normal leader should be guaranteed, not a
 second roll that asks the player to wait five minutes and kill it again.
 
@@ -131,18 +136,19 @@ states; test the actual state, not a mixture.
 
 The six JSON files in [samples/](samples/) are compact **arithmetic
 fixtures**, not zone quest files. Their ordered rows use the named
-`columns`; `zone` indexes the `zones` list, `source` is an existing mob,
-item, group or NPC. `climax` counts the whole normal-tier encounter,
-including its leader. They do not propose subtype registrations, terrain,
-giver allocations or drops for C1a. Front zone names label destinations;
+`columns`; `zone` indexes the `zones` list, `source` is an existing base mob,
+catalogue/registered item, group or NPC. `climax` counts the whole normal-tier
+encounter, including its leader. These rows do not propose subtype
+registrations, terrain or giver allocations. Front zone names label destinations;
 production front quests still belong in the reserved host files.
 
-Measured with this adapter and the current `existing.json` on 2026-10-01:
+Measured with this adapter, the reconciled C1 drops and `existing.json`
+on 2026-10-01:
 
 | Fixture | Templates / counted turn-ins | Solo questing | Solo rewards | Duo questing | Solo flags |
 |---|---:|---:|---:|---:|---|
-| [start.json](samples/start.json), Human | 14 / 14 | 90.50% | 40.02% | 72.00% | None |
-| [home.json](samples/home.json), Human | 10 / 10 | 79.24% | 41.19% | 65.95% | None |
+| [start.json](samples/start.json), Human | 14 / 14 | 90.50% | 40.02% | 72.12% | None |
+| [home.json](samples/home.json), Human | 10 / 10 | 83.78% | 41.19% | 70.50% | None |
 | [heartland.json](samples/heartland.json), Human, two zones | 14 / 14 | 80.63% | 42.46% | 67.43% | None |
 | [contested.json](samples/contested.json), Human, three zones | 15 / 15 | 80.93% | 41.59% | 63.11% | None |
 | [front_40.json](samples/front_40.json), no race bonus | 11 / 15 | 70.94% | 34.29% | 53.93% | None |
@@ -173,8 +179,12 @@ including its kills, but only about nine points of turn-in rewards.
 For that sensitivity check set `repeat` to 0 in memory before running
 the adapter; do not add unbounded repeats to make a ledger pass.
 
-All six duo runs report `UNDERSHOOT questing`; these are the six explained
-informational flags from split combat XP. Solo minimum-level top-ups are
+Five duo runs report `UNDERSHOOT questing`; these are explained
+informational flags from split combat XP. Home is within tolerance:
+the integrated one-meat-per-kill table makes its twenty-meat stress order
+cost ten additional solo kills (800 XP), or fifteen additional kills'
+worth of XP per duo member (1,200 XP), after the first ten boars. The old
+registry-based fixture understated that demand. Solo minimum-level top-ups are
 0 XP (start/home), 436 (heartland), 1,045 (contested), 8,674 (front 40)
 and 11,820 (front 50). They fit within the respective free-play budgets;
 the two front values also reflect the tool's repeat-at-the-end ordering.
@@ -184,10 +194,12 @@ below the next band is not itself an additional XP shortfall.
 
 The adapter below feeds these rows into **the actual `ledger.py` engine**
 in memory. No zone file, tool change or new item is written. Each combat
-row gets an exact-level area. Ordinary items use the existing registry's
-drop and gathering data; that makes the start tusk carry-over reproducible
-without depending on the parallel C1a lane. Rerun real route ledgers with
-the integrated C1a drops before accepting C2/C3 content.
+row gets a synthetic exact-level source using its base mob's catalogue
+drop family. This exercises the final tier tables and item carry-over;
+it does not certify subtype level ranges, legal leader placement or a
+finished route. Item gathering uses the existing registry. The T3 recovery
+example requests Serrated Fang, not the earlier T2 Fang. Rerun real route
+ledgers with actual subtype ids and areas before accepting C2/C3 content.
 
 Run from the repository root. Output goes to stdout; keep any redirected
 full reports in the coordinator's output path, not in the repository.
@@ -205,9 +217,19 @@ import r28common as C
 
 root = Path("docs/planning/round28/design/catalog/samples")
 existing = C.load_existing(C.DEFAULT_EXISTING)
+catalog = C.Design(root.parent.parent)
+normal_families = {}
+for subtype in catalog.subtypes:
+    if subtype["tier"] == "normal" and not subtype.get("leader"):
+        normal_families.setdefault(subtype["base"], set()).add(subtype["drops"])
+assert all(len(families) == 1 for families in normal_families.values())
 for path in sorted(root.glob("*.json")):
     sample = json.loads(path.read_text())
     design = C.Design(root)  # Empty catalog/zones; populated only in memory.
+    design.items = catalog.items
+    design.drops = catalog.drops
+    design.reagents = catalog.reagents
+    design.subtypes = []
     previous = {}
     for zone in sample["zones"]:
         design.spawns[zone] = {"areas": []}
@@ -224,16 +246,21 @@ for path in sorted(root.glob("*.json")):
         }
         if kind in ("kill", "climax", "repeat"):
             assert "grug_mobs:" + source in existing["entities"]
+            family = next(iter(normal_families["grug_mobs:" + source]))
+            role = "fixture_source_%02d" % i
+            design.subtypes.append({"role": role, "drops": family,
+                "tier": "normal", "levels": [row["level"], row["level"]]})
             design.spawns[zone]["areas"].append({
                 "id": qid, "levels": [row["level"], row["level"]],
-                "species": [{"role": source, "weight": 1}],
+                "species": [{"role": role, "weight": 1}],
             })
-            quest["objectives"] = [{"type": "kill", "roles": [source],
+            quest["objectives"] = [{"type": "kill", "roles": [role],
                 "count": row["count"], "area": zone + "/" + qid}]
         elif kind == "item":
             is_group = source.startswith("group:")
             key, value = ("group", source[6:]) if is_group else ("item", source)
-            assert value in existing["groups" if is_group else "items"]
+            assert (value in existing["groups"] if is_group else
+                    value in existing["items"] or value in catalog.item_map())
             quest["objectives"] = [{"type": "item", key: value,
                                     "count": row["count"]}]
         else:
@@ -294,8 +321,9 @@ an unplayable solo leader, a missed giver slot or a mandatory long wait.
   Recommend the current-price column for Round 28. If the coordinator
   intends to ship WP44 in this round too, it must select the target
   column with that cutover; C1b does not authorize one.
-- Exact stat-loot bindings and per-track supply await the C1 editor.
-  Sample math cannot certify their eventual drop rates or availability.
+- Stat-loot bindings and rates are reconciled in [README.md](README.md).
+  The adapter exercises those drop tables; sample math still cannot
+  certify zone placement, throughput or reserved enchant stock.
 - No frame change is needed for three-zone budgets or multiple front
   tiers: select route portions and distribute permanent bounty tails
   across the existing reserved hosts, as described above and in

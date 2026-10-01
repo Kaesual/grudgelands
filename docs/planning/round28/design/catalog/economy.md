@@ -1,12 +1,12 @@
-# C1b economy: know the creature, keep the mineral
+# Catalogue economy: know the creature, keep the mineral
 
-Design input for the C1 editor, under the approved
+The reconciled economy, under the approved
 [frame](../../../round28-design-frame.md), especially §2.5 and §4.4–4.5.
 The [enchant table](enchants.json) supplies all eleven equipment families
-at all six tiers. Each `stat_loot: {}` is deliberately a **PLACEHOLDER**:
-the editor fills all nine stat keys from C1a's signature drops. An empty
-map does not authorize an enchant without loot. Do not port these recipes
-until that reconciliation is complete.
+at all six tiers, with all nine stat keys filled. The
+[catalogue README](README.md) records the exact stat table, supply packages,
+drop quantities and request budgets. Zone placement and throughput remain
+the C2/C3 and E lanes' acceptance work.
 
 ## A recipe players can remember
 
@@ -29,11 +29,12 @@ quartz, rough gems, coal, silver, the two late crystals, salt and kelp
 already provide distinct ingredients. Turning any pair into a new powder
 would add a craft and an icon without adding a useful choice. New universal
 reagents per tier: **0 / 0 / 0 / 0 / 0 / 0**; new items and icons from C1b:
-**0**. The world-wide signature/quest item count remains C1a/editor work.
+**0**. The reconciled world-wide count is **88 new signature icons**, with
+no preallocated quest-only props; see the README's count by tier.
 
-## Stat vocabulary for the editor
+## Stat vocabulary
 
-Use five memorable ingredient motifs for nine stats where supply permits.
+Use five memorable ingredient motifs for nine stats.
 These are item *kinds*, not new item registrations or additional drops.
 
 | Stat key | Signature item motif | Reason players can learn |
@@ -46,23 +47,23 @@ These are item *kinds*, not new item registrations or additional drops.
 | `int` | Eye, sensory lens or a caster's focusing charm | Perception becomes understanding. |
 | `max_mana_percent` | The same focus as Intelligence | A focus also holds power. |
 | `max_hp_percent` | Tough flesh, marrow or a resilient tissue | Endurance is something the creature survived with. |
-| `armor_rating` | Shell plate, carapace or dense bone plate | Protection comes from the outside. |
+| `armor_rating` | Dense rat fur at T1/T2; reinforced weapon binding at T3–T6 | Protection comes from covering and reinforced seams. |
 
-At T1, boar tusks, rat tails, crab eyes, zombie/husk flesh and crab shell
-are useful candidates: rats and the boar lookalikes support the six starts,
-crabs the coasts, and the Husk covers Sunscar's undead identity. These
-are suggestions for C1a's actual signatures, **not** a claim that its
-catalogue already supplies them. Fox tails are a good local quest request
-but cannot be the sole universal T1 Dexterity input unless every race's
-start supports that exact item. The same concern applies to jungle-only
-venom, mountain-only cores and elven resin.
+T1/T2 use tusks, tails, eyes, flesh and fur. Fur is the existing catalogue's
+protective covering; no extra crab-shell enchant item is needed. Rat tails
+and fur are separate drops, so the introductory mapping uses **five items**
+for the five motifs. Crabs keep their legs/shell for pantry or repair orders.
+Husks supply the same flesh as zombies without borrowing their sun damage.
+Fox tails remain local quest ingredients, never universal Dexterity inputs.
 
-At T2–T6 keep the five motifs, with recognizably stronger adjectives on
-the tier's existing signature items. Do not invent six grades of every
-body part just to fill this table. A common, coherent signature may be
-shared by related regional families; it counts against each family's
-two-signature ceiling. If C1a needs more than five distinct items to make
-the nine mappings coherent, availability wins over the five-item preference.
+From T3, dental parts, straps, talismans and flesh carry the same meanings.
+A strap balances a weapon and reinforces an armour seam, covering two
+motifs with one item. These **four items** come from normal outlaws and
+zombies/husks in every route. Straps drop one per kill because they serve
+four stats; focusing talismans drop at 1-in-2. This makes a cloth caster's
+Intelligence/Mana plan and a Scout's Dexterity/Speed plan practical without
+creating profession-specific loot. The nine-stat map is shared by all
+professions; only the existing equipment stat pools restrict selections.
 
 For **each** stat and tier, the editor records at least one ordinary,
 solo-accessible source in every race track's band, on both factions.
@@ -94,9 +95,12 @@ Each listed combination produces one bar. Settings use two tin bars,
 two iron bars, steel + copper, two gold bars, embersteel + gold, and
 abyssal steel + gold respectively. Wood grades use ordinary planks and
 the previous grade; no tree species or culture is a mandatory gate.
-Leather and cloth supplies remain C1a's generic loot plus their existing
-universal processing. The editor must check those supplies alongside the
-signature drops; a perfect stat table cannot repair missing cloth.
+Leather and cloth supplies use the reconciled generic loot and existing
+universal processing. Linen scraps remain available on later undead and
+outlaws for thread. Spider Silk is generic recipe feedstock in every spider
+band, and recovered silk also drops from T5/T6 outlaws. Shattered Line has
+no spider family, so those salvaged bundles matter. These are existing
+items, not new reagents or new profession dependencies.
 
 For that supply check, the existing universal material recipes are:
 
@@ -167,10 +171,7 @@ deliveries of scarce enchant signatures.
 
 ## Blockers / questions
 
-- **Expected editor handoff:** all six `stat_loot` maps are PLACEHOLDERs.
-  The available motif choices above were checked against the existing
-  family atlas; exact ids and supply cannot be closed before C1a arrives.
-  Recommend retaining the five motifs, then checking all nine stat keys
-  and every race track against the integrated drop/spawn catalogues.
-- No new design ruling is requested by C1b. The copper cutover condition
-  and outstanding measurements are recorded in [calibration.md](calibration.md).
+- No frame change is needed. The exact bindings are closed; final route
+  placement and throughput remain open in [README.md](README.md).
+- The current-price copper rule and its coordinated WP44 cutover condition
+  remain as recorded in [calibration.md](calibration.md).

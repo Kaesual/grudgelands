@@ -1,7 +1,17 @@
 [
   {
     "tier": 1,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:boar_tusk",
+      "dex": "grug_mobs:rat_tail",
+      "int": "grug_mobs:crab_eye",
+      "attack_speed_percent": "grug_mobs:rat_tail",
+      "crit_percent": "grug_mobs:boar_tusk",
+      "max_hp_percent": "grug_mobs:zombie_flesh",
+      "max_mana_percent": "grug_mobs:crab_eye",
+      "dodge_percent": "grug_mobs:rat_tail",
+      "armor_rating": "grug_mobs:rat_fur_patch"
+    },
     "family_input": {
       "sword": "grug_materials:tin_bar",
       "dagger": "grug_materials:quartz",
@@ -18,7 +28,17 @@
   },
   {
     "tier": 2,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:ridged_boar_tusk",
+      "dex": "grug_mobs:sinewy_rat_tail",
+      "int": "grug_mobs:clear_crab_eye",
+      "attack_speed_percent": "grug_mobs:sinewy_rat_tail",
+      "crit_percent": "grug_mobs:ridged_boar_tusk",
+      "max_hp_percent": "grug_mobs:foul_flesh",
+      "max_mana_percent": "grug_mobs:clear_crab_eye",
+      "dodge_percent": "grug_mobs:sinewy_rat_tail",
+      "armor_rating": "grug_mobs:dense_rat_fur"
+    },
     "family_input": {
       "sword": "grug_materials:copper_bar",
       "dagger": "grug_materials:rough_garnet",
@@ -35,7 +55,17 @@
   },
   {
     "tier": 3,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:stubborn_molar",
+      "dex": "grug_mobs:balanced_weapon_strap",
+      "int": "grug_mobs:coded_talisman",
+      "attack_speed_percent": "grug_mobs:balanced_weapon_strap",
+      "crit_percent": "grug_mobs:stubborn_molar",
+      "max_hp_percent": "grug_mobs:pickled_flesh",
+      "max_mana_percent": "grug_mobs:coded_talisman",
+      "dodge_percent": "grug_mobs:balanced_weapon_strap",
+      "armor_rating": "grug_mobs:balanced_weapon_strap"
+    },
     "family_input": {
       "sword": "default:coal_lump",
       "dagger": "grug_materials:rough_garnet",
@@ -52,7 +82,17 @@
   },
   {
     "tier": 4,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:gritted_teeth",
+      "dex": "grug_mobs:reinforced_weapon_strap",
+      "int": "grug_mobs:campaign_talisman",
+      "attack_speed_percent": "grug_mobs:reinforced_weapon_strap",
+      "crit_percent": "grug_mobs:gritted_teeth",
+      "max_hp_percent": "grug_mobs:leathery_flesh",
+      "max_mana_percent": "grug_mobs:campaign_talisman",
+      "dodge_percent": "grug_mobs:reinforced_weapon_strap",
+      "armor_rating": "grug_mobs:reinforced_weapon_strap"
+    },
     "family_input": {
       "sword": "grug_materials:silver_bar",
       "dagger": "grug_materials:rough_ruby",
@@ -69,7 +109,17 @@
   },
   {
     "tier": 5,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:clenched_jaw",
+      "dex": "grug_mobs:siege_weapon_strap",
+      "int": "grug_mobs:siege_talisman",
+      "attack_speed_percent": "grug_mobs:siege_weapon_strap",
+      "crit_percent": "grug_mobs:clenched_jaw",
+      "max_hp_percent": "grug_mobs:scorched_flesh",
+      "max_mana_percent": "grug_mobs:siege_talisman",
+      "dodge_percent": "grug_mobs:siege_weapon_strap",
+      "armor_rating": "grug_mobs:siege_weapon_strap"
+    },
     "family_input": {
       "sword": "grug_materials:emberglass",
       "dagger": "grug_materials:rough_ruby",
@@ -86,7 +136,17 @@
   },
   {
     "tier": 6,
-    "stat_loot": {},
+    "stat_loot": {
+      "str": "grug_mobs:last_laugh_dentures",
+      "dex": "grug_mobs:unbroken_weapon_strap",
+      "int": "grug_mobs:last_pay_talisman",
+      "attack_speed_percent": "grug_mobs:unbroken_weapon_strap",
+      "crit_percent": "grug_mobs:last_laugh_dentures",
+      "max_hp_percent": "grug_mobs:salt_cured_flesh",
+      "max_mana_percent": "grug_mobs:last_pay_talisman",
+      "dodge_percent": "grug_mobs:unbroken_weapon_strap",
+      "armor_rating": "grug_mobs:unbroken_weapon_strap"
+    },
     "family_input": {
       "sword": "grug_materials:abyssal_crystal",
       "dagger": "grug_materials:rough_diamond",

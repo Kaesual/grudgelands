@@ -1756,7 +1756,7 @@
       40
     ],
     "drops": "bear",
-    "notes": "Day; Whitebridge, Moonfall, Ashenward, Glassroot; plague form Ossuary/Blackwind. Existing random elite promotion is an optional hazard, never a required target.",
+    "notes": "Day; Whitebridge, Moonfall, Ashenward, Glassroot; plague form Ossuary/Blackwind. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
     "display_by_zone": {
       "kragmar_stillgrave_hollow": "Territorial Plaguehide Bear",
       "kragmar_mournfen": "Territorial Plaguehide Bear",
@@ -1787,7 +1787,7 @@
       59
     ],
     "drops": "bear",
-    "notes": "Day; Gravesalt. Existing random elite promotion remains an optional hazard."
+    "notes": "Day; Gravesalt. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier."
   },
   {
     "role": "reed_crocodile",
@@ -1952,7 +1952,7 @@
       40
     ],
     "drops": "ape",
-    "notes": "Day; Glassroot and Thunderroot. Climbs; random Silverback is optional and not a fixed quest target."
+    "notes": "Day; Glassroot and Thunderroot. Climbs. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier."
   },
   {
     "role": "glass_knuckle_ape",
@@ -1967,7 +1967,7 @@
       60
     ],
     "drops": "ape",
-    "notes": "Day; Skyglass and Stormscale. Climbs; random Silverback remains optional."
+    "notes": "Day; Skyglass and Stormscale. Climbs. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier."
   },
   {
     "role": "irritable_scorpion",
@@ -3000,7 +3000,7 @@
       39
     ],
     "drops": "ape",
-    "notes": "Unique fixed spot in elandor_glassroot_wilds. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Preserve this authored name/tier if the inherited random Silverback callback runs; see world.md open point.",
+    "notes": "Unique fixed spot in elandor_glassroot_wilds. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
     "leader": true
   },
   {
@@ -3144,7 +3144,7 @@
       60
     ],
     "drops": "ape",
-    "notes": "Unique fixed spot in front_stormscale_summit. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Preserve this authored name/tier if the inherited random Silverback callback runs; see world.md open point.",
+    "notes": "Unique fixed spot in front_stormscale_summit. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change. Authored tier and display win over inherited random promotion callbacks. This role never rolls Elder Bear or Silverback; normal stays normal, and a fixed elite keeps its authored name and tier.",
     "leader": true
   }
 ]

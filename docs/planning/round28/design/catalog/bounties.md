@@ -44,6 +44,12 @@ Do not charge the same kill twice in the route XP budget. Quest-only
 drops roll per participant; ordinary recovery materials are required
 separately from each player.
 
+Apply the [catalogue consumption budget](README.md#supply-and-consumption):
+recovery bounties never consume the common stat-loot ingredients. Use a
+claimed regional signature or real surplus, reserving the own-material
+feedstock (cloth, silk, hide and thread) for the player's planned enchants.
+An item being generic does not make its supply unlimited.
+
 Use daytime material work alongside a night hunt. Never force waiting
 for an elite, a rare or dawn to fill the solo route. Rares, critters,
 self-destructing Rift Spawn and bosses are not bounty kill targets.

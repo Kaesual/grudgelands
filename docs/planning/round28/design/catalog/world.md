@@ -45,9 +45,10 @@ the precise placement, quest counts and small local level slices.
   critters. Ibex, tapir, zebra, ram, stag, Plains Runner and Carrion Crow are
   neutral combat animals, not critters. No critter is a quest kill target.
 - A band needs two or three readable steps, not every catalogue role in
-  every area. Use a neutral daytime fallback where appropriate and a
-  separate night fallback; never leave Small Boars wandering at night just
-  to fill space. Keep aggressive areas broad enough for the 32-node leash
+  every area. Use exactly one fallback, as the frame/tool require, and
+  broad ordinary area rules that cover the other clock if the fallback is
+  day- or night-only. Never give Small Boars night spawns just to fill space.
+  Keep aggressive areas broad enough for the 32-node leash
   and the road/town drift. Camps use approximately 35–40-node radii,
   30–60-second slot refill and a 16-node player exclusion, as the frame says.
 
@@ -59,6 +60,13 @@ Each leader role belongs to exactly one zone, with a fixed level and a
 300-second respawn. The frame's leader record has no clock field: do not
 author a quest that relies on a night-only leader registration. Ordinary
 night-spawn enemies can also remain alive into daylight.
+
+**Authored tier wins.** Bear and ape subtypes never roll the bases' random
+Elder Bear/Silverback promotions. Their `tier` and display names remain as
+authored; fixed elite ape leaders also keep their own names. The affected
+subtype notes state this explicitly. Unchanged base populations outside
+this catalogue keep their existing rules; no catalogue role or budget
+depends on a random promotion.
 
 The Dawnmere leader is `confused_bandit_chief`, displayed as **Confused
 Bandit Chief Crumb**. Other starts get their own chiefs, with stolen ore,
@@ -150,21 +158,24 @@ drop a fang. Bog witches keep their skeleton combat family and distinct
 witch glass loot.
 
 There are 24 drop families and 86 occurring family/band combinations.
-Each has one signature, except rats, crabs, zombies and outlaws, which
-have two. Higher bands keep a recognisable material type: tusks remain
+Each has one signature; rats and T1/T2 crabs have two, as do T3–T6
+zombies and outlaws. Higher bands keep a recognisable material type: tusks remain
 tusks, teeth become braces and dentures, venom stays venom. The full
 `drops.json` is the family-per-band occurrence list; missing combinations
 are intentional, especially T5 crab and T5 spider. Generic meat, hide,
 cloth, arrows, sticks and bones reuse existing items. Generic raw materials
 may remain useful below the mob's band; metal and signature tiers do not.
 
-Ordinary signature rolls are independent, usually **1 in 3**, one item.
-Flesh and T1 crab legs are **1 in 2**. Thus five crab legs imply ten kills
-before overlap, and five crab eyes imply fifteen: the zone ledger must
-charge the actual drop demand, not treat a pantry request as free XP.
+Ordinary signature rolls are independent, one item: usually **1 in 3**;
+flesh, rat tails/fur, T1/T2 crab eyes, T1 crab legs and T3–T6 talismans are
+**1 in 2**. T3–T6 weapon straps are **guaranteed**, reflecting four stats'
+shared demand. Two crab legs imply four kills before overlap, not a
+five-leg order hidden beside a five-crab hunt. The zone ledger must charge
+the actual drop demand, not treat a pantry request as free XP.
 All ordinary drops are shared party loot. Quest-only props instead use
-the frame's per-eligible-player hook; recommend a guaranteed chief's ledger
-and 1-in-2 ordinary supply tags. Reuse a prop in sequential lines; separate
+the frame's per-eligible-player hook; recommend guaranteed leader evidence
+and 1-in-2 ordinary supply tags. Author a prop only with its actual quest,
+rather than pre-registering six tiered pieces of paperwork. Reuse a prop in sequential lines; separate
 concurrently active requests with distinct quest items when they would
 otherwise consume one another's evidence.
 
@@ -180,7 +191,19 @@ different band. Stone leaders add quartz. A leader still rolls the normal
 family table at its own level and can carry the quest's guaranteed prop;
 signature farming never depends on the five-minute respawn.
 
-## C1b handoff: available on every track
+**Keep recipe feedstock working.** Spider Silk and Sharp Feather are generic
+existing materials, not tier-exclusive signatures. Spiders still give silk
+(1–2 guaranteed); T5/T6 outlaws salvage 1–2 at 1-in-2, keeping late Tailors
+supplied without adding spiders to Shattered Line. Scavengers retain Sharp
+Feathers at 1-in-2 in T3–T6; the existing T5 wand/staff recipes need them
+before the T6 alchemy recipe does. Linen scraps remain 1-in-2 on all undead
+and outlaws for thread; their band cloth also drops at 1-in-2. Felines drop
+Sleek Pelts at 1-in-2 in T5/T6. Existing Venom Glands (spiders, 1-in-6),
+Crocodile Teeth (crocodiles, 1-in-3) and Shiny Scales (mirefolk, 1-in-4)
+remain generic inputs to current alchemy/ornament recipes. These ids keep
+their existing recipe-tier metadata; that is not a new spawn-level gate.
+
+## Available on every track
 
 All ids below have prefix `grug_mobs:`. **Available** here is a design supply
 commitment backed by the cast above; the final zone files and E reachability
@@ -201,18 +224,18 @@ placement or ingredient throughput.
 
 | Tier | Flesh | Dental item | Talisman | Weapon strap |
 |---|---|---|---|---|
-| T1 | `zombie_flesh` | `broken_tooth` | `bandit_talisman` | `weapon_strap` |
-| T2 | `foul_flesh` | `rusted_braces` | `knotted_talisman` | `braided_weapon_strap` |
+| T1 | `zombie_flesh` | — | `bandit_talisman` (requests) | — |
+| T2 | `foul_flesh` | — | `knotted_talisman` (requests) | — |
 | T3 | `pickled_flesh` | `stubborn_molar` | `coded_talisman` | `balanced_weapon_strap` |
 | T4 | `leathery_flesh` | `gritted_teeth` | `campaign_talisman` | `reinforced_weapon_strap` |
 | T5 | `scorched_flesh` | `clenched_jaw` | `siege_talisman` | `siege_weapon_strap` |
 | T6 | `salt_cured_flesh` | `last_laugh_dentures` | `last_pay_talisman` | `unbroken_weapon_strap` |
 
-All four items in **every row** of this second table also qualify as
-available on every track: starts/home zones have their outlaw and zombie
-or husk populations too. This offers C1b a compact four-item alternative
-even in T1/T2. The first table is the preferred introductory mapping because
-it rewards the taught daytime/nighttime/shore route, while spreading demand.
+The first table is the final enchant mapping: it rewards the taught
+daytime/nighttime/shore route in T1/T2, while spreading demand. The second
+table names the retained flesh and later common materials. The unused
+T1/T2 dental/strap alternatives were removed. Early outlaw talismans
+remain local requests, never a second recipe for the same stat.
 T1 `crab_leg` and T2 `ridged_crab_shell` are also universally available, but
 reserved as pantry/local-material choices. Fox Tail is **not** universal:
 do not make an Orc or Troll leave its route to enchant dexterity.
@@ -220,50 +243,37 @@ do not make an Orc or Troll leave its route to enchant dexterity.
 From T3 onward the four core sources occur in the own capital, then every
 own-faction contested zone, then shared front zones. This is stricter than
 merely relying on access to a sister race's zone or Broken Causeway. T6 has
-both sources on **both** mainland front choices. Demand must still be
-reconciled: four stats sharing a strap is a natural mapping, not evidence
-that its drop rate supports a full equipment set. The editor must compare
-C1b recipe quantities with these 1-in-3 rolls before freezing C2.
+both sources on **both** mainland front choices. The editor's
+[demand comparison](README.md#supply-and-consumption) sets one strap per
+ordinary outlaw and keeps compulsory requests away from that shared pile.
 
 ## Item and icon budget
 
 New ordinary signatures are the tier-specific material vocabulary, not
-extra enchant-only drops. Regional signatures support local requests and
-optional material bounties; the editor/zone lanes must assign actual sinks
-before implementation. They are not universally available enchant inputs.
-No universal reagent is authored in C1a; any C1b additions are counted
-separately by the editor.
+extra enchant-only drops. Regional signatures have request briefs in the
+[README](README.md#regional-request-ingredients); each zone lane claims its
+ingredients in actual quests before implementation. They are not universally
+available enchant inputs. There are no new universal reagents.
 
 | Tier | Signature items | Existing signatures reused | New signature icons | New quest-only icons | New icons total |
 |---|---:|---:|---:|---:|---:|
-| T1 | 13 | 3 | 10 | 1 | 11 |
-| T2 | 19 | 2 | 17 | 1 | 18 |
-| T3 | 24 | 2 | 22 | 1 | 23 |
-| T4 | 21 | 3 | 18 | 1 | 19 |
-| T5 | 10 | 0 | 10 | 1 | 11 |
-| T6 | 18 | 2 | 16 | 1 | 17 |
-| **Total** | **105** | **12** | **93** | **6** | **99** |
+| T1 | 11 | 3 | 8 | 0 | 8 |
+| T2 | 17 | 2 | 15 | 0 | 15 |
+| T3 | 23 | 2 | 21 | 0 | 21 |
+| T4 | 20 | 2 | 18 | 0 | 18 |
+| T5 | 10 | 0 | 10 | 0 | 10 |
+| T6 | 17 | 1 | 16 | 0 | 16 |
+| **Total** | **98** | **10** | **88** | **0** | **88** |
 
-The inventory catalogue contains 126 entries: 105 signatures, 15 reused
-generic items, six new quest props. Twenty-seven entries already have icons.
+The inventory catalogue contains 118 entries: 98 signatures and 20 reused
+generic items. Thirty entries already have icons.
 The six metal bars in the drop tables are existing items and add no icons.
 The eight mob tints use existing textures/modifiers and add no skins or
 icons. All new inventory items carry an icon brief for C4.
 
 ## Blockers / questions
 
-- **Bear/ape inherited random elites:** their bases can randomly promote
-  themselves on spawn, while subtype records explicitly say `tier: normal`.
-  These records retain the existing behaviour as an optional hazard and do
-  not use either family for universal stat supply; no 1–30 leader uses those
-  bases. The frame has no separate promotion toggle. Before a zone makes
-  these ordinary roles mandatory solo targets, confirm how B2 reconciles
-  the inherited callback with the authored tier. Recommended: authored
-  normal roles stay normal; existing unchanged base populations may retain
-  their random elites. Fixed elite ape leaders must retain their catalogue
-  name and tier rather than being renamed Silverback by that callback.
-- **Final supply/demand and art total:** the 99 C1a icons exclude C1b's
-  reagents and later zone-only props. Reconcile the stat mapping and recipe
-  quantities with C1b before freezing C2. Recommended: keep the wildlife
-  introduction for T1/T2 and the four-item common supply from T3; cut unused
-  regional signatures if their family is omitted from the final zone casts.
+- No catalogue ruling remains blocked. Authored tiers, stat bindings and
+  drop quantities are reconciled. Zone designers must prove the required
+  sources, claim the regional request ingredients and count any quest props
+  they actually add; see the README's open points.
