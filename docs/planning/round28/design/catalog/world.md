@@ -140,7 +140,9 @@ even though that capital participates in the 20–30 journey.
 | Stormscale Summit | L60 Last-Watch Zombie/Last-Pay Archer beside the existing apex camp; ape, serpent, panther, jungle spider, witch, skeleton, crow | Jungle Ape Last-Offering, L60 |
 
 Rift Spawn, dragons, rares, water populations and underground populations
-retain their current rules. Do not use self-removing Rift Spawn as kill or
+retain their current spawning/level rules. Loot dispatch still follows
+the B2 exact-name rule in the [README](README.md#b2-loot-dispatch-and-band-coverage).
+Do not use self-removing Rift Spawn as kill or
 quest-drop sources. No new subtype clones a dragon, guard or king.
 Islands give additional endgame material/coin reasons to visit; they are
 never required for the 50–60 leveling or enchanting supply promise.
@@ -149,7 +151,7 @@ never required for the 50–60 leveling or enchanting supply promise.
 
 `family` on a subtype controls combat kinship; `drops` selects its loot
 family. The latter can be broader without linking combat behaviours:
-wolf/hyena/hound share **canid** fangs; cats/tigers share **feline** claws;
+the authored wolf/hyena/hound subtypes share **canid** fangs; cat/tiger subtypes share **feline** claws;
 ibex/ram/stag/zebra/tapir/Plains Runner share **grazer** sinew; scorpion,
 viper and serpent share **venomous** samples; golems/constructs share
 **stone** cores. Boars, rats, crabs, foxes and the remaining families keep
@@ -157,10 +159,17 @@ their own tables. A hound does not join a wolf pack merely because both
 drop a fang. Bog witches keep their skeleton combat family and distinct
 witch glass loot.
 
+These names describe subtype supply. Existing base registrations do not
+inherit a subtype's `drops` family. All designed combat populations must
+use the catalogue roles, as specified in the README's B2 dispatch rule;
+for example, existing `wolf` does not use `canid`. Every band touched by
+any subtype's inclusive level range has nonempty rows. Missing bands are
+outside those ranges, not an instruction to suppress the base's static loot.
+
 There are 24 drop families and 86 occurring family/band combinations.
 Each has one signature; rats and T1/T2 crabs have two, as do T3–T6
 zombies and outlaws. Higher bands keep a recognisable material type: tusks remain
-tusks, teeth become braces and dentures, venom stays venom. The full
+tusks, teeth become molars, jaws and dentures, venom stays venom. The full
 `drops.json` is the family-per-band occurrence list; missing combinations
 are intentional, especially T5 crab and T5 spider. Generic meat, hide,
 cloth, arrows, sticks and bones reuse existing items. Generic raw materials

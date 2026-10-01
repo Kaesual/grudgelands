@@ -194,8 +194,13 @@ below the next band is not itself an additional XP shortfall.
 
 The adapter below feeds these rows into **the actual `ledger.py` engine**
 in memory. No zone file, tool change or new item is written. Each combat
-row gets a synthetic exact-level source using its base mob's catalogue
-drop family. This exercises the final tier tables and item carry-over;
+row gets a synthetic exact-level source with an explicit `drops` field,
+selected from catalogue subtypes using the fixture's base-mob label.
+This is an adapter for arithmetic, **not** B2 inheritance: an existing
+`wolf` does not receive `canid` merely because its subtypes use that table.
+Production zones use actual catalogue roles; see the
+[B2 dispatch rule](README.md#b2-loot-dispatch-and-band-coverage).
+This exercises the final tier tables and item carry-over;
 it does not certify subtype level ranges, legal leader placement or a
 finished route. Item gathering uses the existing registry. The T3 recovery
 example requests Serrated Fang, not the earlier T2 Fang. Rerun real route

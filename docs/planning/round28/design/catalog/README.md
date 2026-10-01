@@ -63,6 +63,70 @@ balance and protective seams, giving four ingredients. Eyes become marked
 talismans when the route leaves reliable crab beaches. No Fox Tail, rare
 trophy, elite drop or island material is a universal stat requirement.
 
+## B2 loot dispatch and band coverage
+
+**Zone authors use catalogue subtype roles for every combat source in this
+design.** The family names in the supply/cast tables are shorthand for
+those subtypes, not existing mob roles to paste into `areas.species`.
+Select a `role` from `subtypes.json`, keep its area levels inside its
+`levels`, and use that same role in kill objectives and quest-drop sources.
+Critters and the frame's unchanged populations keep their separate rules.
+
+B2 resolves a subtype's loot through its explicit **`drops`** field.
+Neither its `base` factory nor its combat `family` makes other registrations
+inherit that table. An **existing** mob receives a table only if the drop
+family is named exactly after its role, without `grug_mobs:`. For example:
+
+| Intended source | Use an authored role | Why the existing role is insufficient |
+|---|---|---|
+| T1 rat | `large_rat` (L1–3), `drops: rat` | `giant_rat` does not match family `rat` |
+| T1 bandit | `confused_bandit` (L9–10), `drops: outlaw` | `bandit` does not match `outlaw`; neither do `bandit_archer` or `poacher` |
+| T3/T4 wolf | `briarpack_wolf` (L21–40), `drops: canid` | `wolf` does not match `canid`; shared fangs are not inherited by the base |
+| Sunscar undead | `befuddled_husk` (L3–5), `drops: zombie` | `sun_dried_husk` does not match `zombie` |
+
+Exactly **seven** current drop-family names also match existing roles:
+`boar`, `zombie`, `fox`, `bear`, `crocodile`, `mirefolk`, `wisp`.
+B2 therefore applies their covered-band tables to those exact existing
+registrations too. This does not include lookalikes such as `plague_boar`,
+`jungle_boar` or `plaguehide_bear`. Even where a name matches, the authored
+zone design uses subtypes for its intended levels, disposition and drops.
+No family rename or duplicate base-role table is needed.
+
+**A missing or empty band retains the actor's old static drops; it does
+not mean no loot and does not borrow a neighbouring band's table.** Never
+use that fallback as a designed supply source. Audit of `subtypes.json`
+against `drops.json`: **174 roles, 210 role/band combinations, zero missing
+or empty bands**. Their required union is exactly the catalogue's **86
+nonempty family/band pairs**:
+
+| Drop families | Bands required by their subtype level ranges, all populated |
+|---|---|
+| `boar`, `fox` | T1, T2, T3 |
+| `rat` | T1, T2 |
+| `crab`, `grazer` | T1, T2, T3, T4, T6 |
+| `zombie`, `outlaw`, `feline`, `venomous` | T1–T6 |
+| `canid` | T2–T6 |
+| `bear`, `weevil`, `spider` | T3, T4, T6 |
+| `crocodile`, `ooze`, `mirefolk` | T2, T3 |
+| `wisp`, `goblin` | T2, T3, T4 |
+| `treant` | T3, T4 |
+| `ape`, `witch` | T4, T6 |
+| `skeleton`, `scavenger`, `stone` | T3–T6 |
+
+Other bands are absent because **no authored member can occur there**;
+in particular, there is no T5 crab or spider. Do not widen a subtype's
+level range or substitute its base without revisiting this table. A
+capital subtype spanning L20–25 needs both T2 and T3; both are present.
+The `zombie` table covers all six bands, including the L15 case.
+
+Unconverted palette spawns, underground actors and named rares are outside
+this authored surface supply proof. For an exact-name base match, B2 still
+uses a populated band there; outside that family's listed bands its static
+fallback is intentional. For a nonmatching base name the new family does
+not apply at all. Neither case is counted toward these quests or enchant
+availability. This is not a promise that every unchanged actor keeps its
+old loot: unchanged spawning and loot dispatch are separate concerns.
+
 ## Supply on all six tracks
 
 These are **requirements for future spawn files**, not claims about the
@@ -240,6 +304,11 @@ the validator (including husk substitutions). The actual ledger also
 reproduces the T3 shopping examples: 20 Scout / 32 caster kills for the
 full-set signatures, or 2 / 4 for their first two weapon applications.
 Those checks verify catalogue arithmetic, not authored zone placement.
+The B2 follow-up also checks every subtype's full inclusive level range
+against nonempty band rows, with no exceptions needed. The validator was
+rerun as present on this branch; the coordinator's later tool alignment
+has not been merged here. Rerun the aligned validator and real route
+ledgers after integration, using the subtype-selection rule above.
 
 Zone designers must still prove lower-band supply, clock access, Copperfell
 shore throughput, the capital L20/T3 boundary and solo access to both T6
