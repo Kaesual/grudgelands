@@ -1,0 +1,61 @@
+{
+  "about": "Minimal stand-in for docs/planning/round28/mobs/catalogue.json (self-tests only).",
+  "mobs": [
+    {
+      "entity": "grug_mobs:bandit",
+      "disposition": "aggressive",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:boar",
+      "disposition": "neutral",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:giant_rat",
+      "disposition": "aggressive",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:rabbit",
+      "disposition": "critter",
+      "combat": {
+        "attack_type": null
+      }
+    },
+    {
+      "entity": "grug_mobs:shore_crab",
+      "disposition": "neutral",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:wild_turkey",
+      "disposition": "critter",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:zombie",
+      "disposition": "aggressive",
+      "combat": {
+        "attack_type": "dogfight"
+      }
+    },
+    {
+      "entity": "grug_mobs:training_dummy",
+      "disposition": "neutral",
+      "combat": {
+        "attack_type": null
+      }
+    }
+  ]
+}

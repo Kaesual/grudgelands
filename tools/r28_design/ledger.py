@@ -592,6 +592,8 @@ def self_test():
           "atlas level ranges give the bands")
     # Leaders count at their fixed level; quests in the band of their level.
     check(solo.role_levels("confused_bandit_chief", "elandor_dawnmere_fields") == (10, 10), "leader level")
+    check("confused_bandit_chief" in solo.subtypes and "grug_mobs:crop_ledger" in solo.catalog_items,
+          "zone catalogue roles and items merge into the catalogue")
     check(solo.role_levels("confused_bandit_chief", "elandor_goldmead_vale") == (10, 10),
           "a leader of another zone keeps its fixed level")
     check(set(solo.per_band) == {(1, 10), (10, 20)}, "the level-10 quests count in 10 -> 20 (%s)"

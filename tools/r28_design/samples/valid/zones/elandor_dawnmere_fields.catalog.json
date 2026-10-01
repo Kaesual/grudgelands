@@ -1,0 +1,33 @@
+{
+  "subtypes": [
+    {
+      "role": "confused_bandit_chief",
+      "family": "bandit",
+      "base": "grug_mobs:bandit",
+      "display": "Bandit Chief Odo",
+      "size": 1.1,
+      "disposition": "aggressive",
+      "tier": "normal",
+      "leader": true,
+      "levels": [
+        10,
+        10
+      ],
+      "drops": "bandit"
+    }
+  ],
+  "items": [
+    {
+      "id": "grug_mobs:crop_ledger",
+      "name": "Crop Ledger",
+      "tier": 1,
+      "family": "bandit",
+      "kind": "quest",
+      "description": "Who took what, and when.",
+      "uses": [
+        "quest"
+      ],
+      "icon": "A stained ledger."
+    }
+  ]
+}
