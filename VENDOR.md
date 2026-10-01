@@ -190,8 +190,9 @@ combat-physics rulings:
   retain both their common `+0.5` LOS and their previous collision-box punch
   ray.
 - Ordinary punch damage contributes zero implicit knockback. The existing
-  `damage_groups.knockback` override remains the explicit future-skill seam,
-  including its vertical impulse when non-zero.
+  `damage_groups.knockback` override was the explicit future-skill seam,
+  including its vertical impulse when non-zero. (Round 28: on player hits it
+  no longer survives without the pause; see "Round 28 — mob physics".)
 - Every registered mob/NPC entity gets `collide_with_objects = false` in the
   common registration path. The matching player property lives outside the
   vendored tree in `grug_core`.
@@ -230,8 +231,12 @@ during the swing now land as designed. The marker inventory is unchanged.
 Eight new markers in `mobs/api.lua` (Round 28 rulings 5–8,
 `combat_stats.md`). The logic lives in the wrapper mod
 (`grug_mobs/env_damage.lua`, `grug_mobs/separation.lua`); the vendored file
-only calls it, guarded, and only for mobs in `grug_mobs.registered_cadence`
-(vanilla mobs_redo mobs keep upstream behaviour).
+only calls it, guarded by the presence of the `grug_mobs` functions. Scope:
+only the two environmental-damage helpers are additionally gated by
+`grug_mobs.registered_cadence` (any other mob keeps mobs_redo's flat
+amounts). The pause removal, the knockback call, the separation step and the
+contact-run hold apply to every mobs_redo mob; the game registers its mobs
+only through `grug_mobs`, so in practice that is every Grudgelands mob.
 
 - **Environmental damage in percent** (ruling 6, four markers): two local
   helpers before `do_env_damage()` (`grug_env_damage`, `grug_fall_damage`), one
@@ -247,9 +252,11 @@ only calls it, guarded, and only for mobs in `grug_mobs.registered_cadence`
 - **No pause on player hits** (ruling 8, one marker in `on_punch`'s knockback
   block): `pause_timer = 0.25` is now set only when the hitter is not a
   player. The pause made `on_step` return before `do_states`, which froze the
-  attack clock. Mob-vs-mob hits and the explicit `damage_groups.knockback`
-  velocity seam are unchanged; the dangerous-node escape (`pause_timer = 3`)
-  and the stun tick are unchanged.
+  attack clock. Mob-vs-mob hits keep the pause; the dangerous-node escape
+  (`pause_timer = 3`) and the stun tick are unchanged. Consequence: the
+  `damage_groups.knockback` velocity override no longer survives a player hit
+  (the next AI step overwrites the velocity without the pause), so a future
+  player knockback skill displaces through `grug_mobs.displace_mob` instead.
 - **Melee knockback** (ruling 7, one marker in the same block): an
   authoritative player swing (`grug_authoritative`, i.e. Strike and the swing
   skills; never casts, Charge or arrows, which carry `in_ability_punch`) calls

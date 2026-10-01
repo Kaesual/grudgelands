@@ -41,11 +41,64 @@ local function box_radius(cbox)
 end
 grug_mobs.box_radius = box_radius
 
--- A node blocks a body when it is unknown or unloaded, walkable, or hurts
--- (lava, fire: damage_per_second > 0).
-local function blocks(def)
-	return def == nil or def.name == "ignore" or def.walkable ~= false
-		or (def.damage_per_second or 0) > 0
+-- Collision top of a node above its centre, cached per node name: +0.5 for a
+-- regular (or unknown-shaped) node, the highest y of a "fixed" collision box
+-- (or node box, when a nodebox has no collision box) otherwise. Snow dust
+-- (-6/16) and bottom slabs (0) are low; anything else counts as full.
+local tops = {}
+
+local function fixed_top(box)
+	if box.type ~= "fixed" or type(box.fixed) ~= "table" then
+		return 0.5 -- regular, leveled, wallmounted, connected: a full block
+	end
+	local boxes = type(box.fixed[1]) == "number" and {box.fixed} or box.fixed
+	local top
+	for _, b in ipairs(boxes) do
+		local y = max(b[2], b[5])
+		top = top and max(top, y) or y
+	end
+	return top or 0.5
+end
+
+local function collision_top(def)
+	local top = tops[def.name]
+	if top == nil then
+		local box = def.collision_box
+		if box == nil and def.drawtype == "nodebox" then
+			box = def.node_box
+		end
+		top = type(box) == "table" and fixed_top(box) or 0.5
+		tops[def.name] = top
+	end
+	return top
+end
+
+-- A rotated node keeps its fixed top only when it is turned about the y axis
+-- (facedir 0-3, any 4dir); an upside-down slab is a full obstacle.
+local function top_kept(def, param2)
+	local kind = def.paramtype2
+	if kind == "facedir" or kind == "colorfacedir" then
+		return (param2 or 0) % 32 < 4
+	end
+	return kind ~= "wallmounted" and kind ~= "colorwallmounted"
+end
+
+-- A walkable node whose top is at or below the feet (+EPS) is ground, not an
+-- obstacle: snow dust, or the slab a mob stands on. Deliberately not a
+-- centre-height threshold, so a mob on a slab is never pushed half into a
+-- full block beside it.
+local function low(def, param2, y, feet)
+	return top_kept(def, param2) and y + collision_top(def) <= feet + EPS
+end
+
+-- A node blocks a body when it is unknown or unloaded, hurts (lava, fire:
+-- damage_per_second > 0), or is walkable and reaches above the feet.
+local function blocks(def, param2, y, feet)
+	if def == nil or def.name == "ignore"
+			or (def.damage_per_second or 0) > 0 then
+		return true
+	end
+	return def.walkable ~= false and not low(def, param2, y, feet)
 end
 
 local function supports(def)
@@ -53,31 +106,39 @@ local function supports(def)
 end
 
 -- Pure: may a body with collision box `cbox` stand at `dest`? Every node the
--- box overlaps must be free, and the node right under the feet at the
--- destination's centre must be walkable. `def_at(x, y, z)` returns the node
--- definition at integer node coordinates (nil = unknown/unloaded).
--- Conservative on purpose: slabs, stairs and other partial walkable nodes in
--- the box count as blocked, which simply means no displacement there.
+-- box overlaps must be free (low ground such as snow dust or a slab under the
+-- feet is fine), and there must be walkable ground under the feet at the
+-- destination's centre: the node just under the feet, or the one
+-- below it (a drop of at most half a node, e.g. off a slab or a snow layer).
+-- `def_at(x, y, z)` returns the node definition and param2 at integer node
+-- coordinates (nil = unknown/unloaded). Higher partial nodes (a slab beside
+-- a mob on stone, an upside-down slab, a stair) block: no displacement there.
 function grug_mobs.box_fits_at(dest, cbox, def_at)
+	local feet = dest.y + cbox[2]
 	local x0, x1 = round(dest.x + cbox[1] + EPS), round(dest.x + cbox[4] - EPS)
-	local y0, y1 = round(dest.y + cbox[2] + EPS), round(dest.y + cbox[5] - EPS)
+	local y0, y1 = round(feet + EPS), round(dest.y + cbox[5] - EPS)
 	local z0, z1 = round(dest.z + cbox[3] + EPS), round(dest.z + cbox[6] - EPS)
 	for x = x0, x1 do
 		for y = y0, y1 do
 			for z = z0, z1 do
-				if blocks(def_at(x, y, z)) then
+				local def, param2 = def_at(x, y, z)
+				if blocks(def, param2, y, feet) then
 					return false
 				end
 			end
 		end
 	end
-	return supports(def_at(round(dest.x), round(dest.y + cbox[2] - EPS),
-		round(dest.z)))
+	local cx, cz = round(dest.x), round(dest.z)
+	return supports(def_at(cx, round(feet - EPS), cz))
+		or supports(def_at(cx, round(feet - 0.5 - EPS), cz))
 end
 
 local function engine_def_at(x, y, z)
 	local node = core.get_node_or_nil({x = x, y = y, z = z})
-	return node and core.registered_nodes[node.name]
+	if not node then
+		return nil
+	end
+	return core.registered_nodes[node.name], node.param2
 end
 
 -- Move the mob by (dx, dz) when its box fits there; true when it moved.

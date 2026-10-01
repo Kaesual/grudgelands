@@ -139,8 +139,9 @@ Core principles:
   (combat_stats §2), then apply via `object:punch` so armor groups and mob
   death handling (XP, loot) keep working. Ability (cast) punches carry no
   knockback; only Strike and the melee swing skills push a normal mob back
-  (combat_stats §3, Round 28 ruling 7), and an explicit
-  `damage_groups.knockback` override remains the seam for a future skill.
+  (combat_stats §3, Round 28 ruling 7). A future knockback skill displaces
+  the mob through `grug_mobs.displace_mob`; the `damage_groups.knockback`
+  velocity override no longer survives a player hit.
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
 - **Target-race equipment effects use the same central transaction.** A

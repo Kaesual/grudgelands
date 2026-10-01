@@ -490,18 +490,25 @@ Normal tier at level L:
   and weapon tier does not matter. It is a horizontal **position
   displacement** along attacker → mob (a velocity would be overwritten by the
   next AI step), applied only when the mob's collision box fits at the
-  destination (no walkable, unknown or damaging node, so slabs and stairs
-  count as blocked) and the node under its feet there is walkable; otherwise
-  there is no knockback. Mobs are therefore never pushed into walls or over
-  ledges, and fliers and swimmers (no floor) are not pushed. Only the
+  destination (no unknown or damaging node, and no walkable node reaching
+  above its feet: snow dust or the slab it stands on are ground, a slab or
+  stair beside a mob on full blocks is an obstacle) and the mob is pushed
+  only when the node under its feet there is walkable (at most half a node
+  lower, e.g. off a slab); otherwise there is no knockback. Mobs are
+  therefore never pushed into walls or over ledges. A swimmer on the sea bed
+  or a flier just above the ground can be pushed; one in open water or air
+  (nothing walkable under its feet) cannot. Only the
   **normal and critter** tiers are pushed: no knockback for elite, rare, boss
   or king, nor for a `knock_back = false` mob (the Kraken). Casts, Charge,
   arrows, mob hits and every other punch carry no implicit knockback; several
   players' knockback adds up (accepted). The backpedal abuse stays
   impossible: mobs close at 0.6 m/s (4.6 vs 4.0), well above 0.25 m/s.
-  `damage_groups.knockback` remains the explicit velocity override seam for a
-  future limited/cooldown skill. Implementation: `grug_mobs/separation.lua`,
-  called from `mobs/api.lua` `on_punch`.
+  A future limited/cooldown knockback skill displaces through
+  `grug_mobs.displace_mob` (the same fit test); the old
+  `damage_groups.knockback` velocity override no longer survives a player
+  hit, because without the hit pause the next AI step overwrites the
+  velocity. Implementation: `grug_mobs/separation.lua`, called from
+  `mobs/api.lua` `on_punch`.
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
   actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is

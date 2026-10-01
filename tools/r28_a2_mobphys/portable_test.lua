@@ -26,11 +26,18 @@ local function near(a, b, eps) return math.abs(a - b) <= (eps or 1e-9) end
 -- fake engine
 -- ---------------------------------------------------------------------------
 local nodes = {} -- "x,y,z" -> name; absent = air
+local param2s = {} -- "x,y,z" -> param2; absent = 0
 local function key(x, y, z) return x .. "," .. y .. "," .. z end
 local registered_nodes = {
 	air = {name = "air", walkable = false},
 	stone = {name = "stone"},
-	slab = {name = "slab", walkable = true},
+	-- the real default:snow boxes and a stairs-mod bottom slab
+	snow = {name = "snow", drawtype = "nodebox",
+		node_box = {type = "fixed", fixed = {{-0.5, -0.5, -0.5, 0.5, -0.25, 0.5}}},
+		collision_box = {type = "fixed",
+			fixed = {{-0.5, -0.5, -0.5, 0.5, -6 / 16, 0.5}}}},
+	slab = {name = "slab", drawtype = "nodebox", paramtype2 = "facedir",
+		node_box = {type = "fixed", fixed = {-0.5, -0.5, -0.5, 0.5, 0, 0.5}}},
 	lava = {name = "lava", walkable = false, damage_per_second = 8},
 	grass = {name = "grass", walkable = false},
 	ignore = {name = "ignore", walkable = false},
@@ -43,7 +50,7 @@ _G.core = {
 	get_node_or_nil = function(pos)
 		local k = key(pos.x, pos.y, pos.z)
 		if unloaded[k] then return nil end
-		return {name = nodes[k] or "air"}
+		return {name = nodes[k] or "air", param2 = param2s[k] or 0}
 	end,
 	get_objects_inside_radius = function(pos, radius)
 		local found = {}
@@ -69,7 +76,7 @@ load("mods/ENTITIES/grug_mobs/separation.lua")
 local function def_at(x, y, z)
 	local k = key(x, y, z)
 	if unloaded[k] then return nil end
-	return registered_nodes[nodes[k] or "air"]
+	return registered_nodes[nodes[k] or "air"], param2s[k] or 0
 end
 
 local function floor_plate(y, x0, x1, z0, z1)
@@ -198,7 +205,7 @@ nodes[key(0, 1, 0)] = "lava"
 check(not fits({x = 0, y = 0.5, z = 0}, MOB_BOX, def_at), "K lava blocks")
 nodes[key(0, 1, 0)] = "slab"
 check(not fits({x = 0, y = 0.5, z = 0}, MOB_BOX, def_at),
-	"K partial walkable nodes block (conservative)")
+	"K a slab above the feet of a mob on stone blocks")
 nodes[key(0, 1, 0)] = nil
 nodes[key(0, 0, 0)] = nil -- a hole in the floor under the destination
 check(not fits({x = 0, y = 0.5, z = 0}, MOB_BOX, def_at), "K no floor, no fit")
@@ -215,6 +222,51 @@ check(fits({x = 0, y = 0.5, z = 0}, MOB_BOX, def_at), "K grid restored")
 -- ledge: floor ends at x = 10 (the plate spans x <= 10)
 check(not fits({x = 10.6, y = 0.5, z = 0}, MOB_BOX, def_at),
 	"K never over a ledge")
+
+-- snow dust (collision top -6/16) on the stone floor at y = 0: a mob on the
+-- snow has its feet at y = 1 - 0.375 = 0.625
+local ON_SNOW = 1 - 6 / 16
+for x = 3, 6 do nodes[key(x, 1, 0)] = "snow" end
+check(fits({x = 4, y = ON_SNOW, z = 0}, MOB_BOX, def_at),
+	"K snow: on snow to snow fits")
+check(fits({x = 4.4, y = ON_SNOW, z = 0}, MOB_BOX, def_at),
+	"K snow: box spanning two snow nodes fits")
+check(fits({x = 7.2, y = ON_SNOW, z = 0}, MOB_BOX, def_at),
+	"K snow: off the snow onto bare stone (0.125 lower) fits")
+check(not fits({x = 3, y = 0.5, z = 0}, MOB_BOX, def_at),
+	"K snow: a snow layer above the feet of a mob on stone blocks")
+nodes[key(4, 2, 0)] = "stone"
+check(not fits({x = 4, y = ON_SNOW, z = 0}, MOB_BOX, def_at),
+	"K snow: a full block in the box still blocks")
+nodes[key(4, 2, 0)] = nil
+nodes[key(4, 0, 0)] = nil
+check(fits({x = 4, y = ON_SNOW, z = 0}, MOB_BOX, def_at),
+	"K snow: the snow node itself is support")
+nodes[key(4, 0, 0)] = "stone"
+for x = 3, 6 do nodes[key(x, 1, 0)] = nil end
+
+-- bottom slabs at y = 1 (top at y = 1.0): a mob on a slab has feet at 1.0
+nodes[key(3, 1, 2)], nodes[key(4, 1, 2)] = "slab", "slab"
+check(fits({x = 3.5, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: on slab to slab fits")
+param2s[key(4, 1, 2)] = 2 -- turned about y: still a bottom slab
+check(fits({x = 4, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: a y-rotated slab is still low")
+param2s[key(4, 1, 2)] = 20 -- upside down: the slab fills the top half
+check(not fits({x = 4, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: an upside-down slab blocks")
+param2s[key(4, 1, 2)] = nil
+nodes[key(4, 1, 2)] = "stone"
+check(not fits({x = 3.7, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: never half into the full block beside it")
+nodes[key(4, 1, 2)] = nil
+check(fits({x = 4.3, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: off the slab onto the floor half a node lower fits")
+nodes[key(4, 0, 2)] = nil
+check(not fits({x = 4.3, y = 1.0, z = 2}, MOB_BOX, def_at),
+	"K slab: but not over a hole")
+nodes[key(4, 0, 2)] = "stone"
+nodes[key(3, 1, 2)] = nil
 
 -- melee_knockback end to end on fake objects
 objects = {}

@@ -3585,8 +3585,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 		if v then
 
-			-- GRUG PATCH: ordinary damage carries no implicit knockback. A future
-			-- cooldown skill can still opt in through damage_groups.knockback below.
+			-- GRUG PATCH: ordinary damage carries no implicit knockback. The
+			-- damage_groups.knockback velocity below survives only with the hit
+			-- pause (mob-vs-mob); a player knockback skill uses
+			-- grug_mobs.displace_mob (Round 28 ruling 8).
 			local kb = 0
 			dir = dir or {x = 0, y = 0, z = 0} -- nil check
 
