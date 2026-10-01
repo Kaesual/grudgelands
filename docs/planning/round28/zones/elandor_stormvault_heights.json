@@ -1,0 +1,1527 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_027",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 33,
+   "name": "Splitbolt Station",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -2067,
+    "max_z": -819,
+    "min_x": -2082,
+    "min_z": -834
+   },
+   "settlement_key": "r20_anchor_027",
+   "slot": "outpost_1",
+   "x": -2074,
+   "y": 325,
+   "z": -826
+  },
+  {
+   "id": "anchor_028",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 38,
+   "name": "Archshadow Post",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -1493,
+    "max_z": -443,
+    "min_x": -1508,
+    "min_z": -458
+   },
+   "settlement_key": "r20_anchor_028",
+   "slot": "outpost_2",
+   "x": -1500,
+   "y": 84,
+   "z": -450
+  },
+  {
+   "id": "anchor_050",
+   "kind": "bandit_frontier",
+   "kind_text": "bandit hideout",
+   "level_at": 39,
+   "name": "Slatehook Hideout",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": -1817,
+    "max_z": -399,
+    "min_x": -1832,
+    "min_z": -414
+   },
+   "settlement_key": "r20_anchor_050",
+   "slot": "bandit_1",
+   "x": -1824,
+   "y": 205,
+   "z": -406
+  },
+  {
+   "id": "anchor_093",
+   "kind": "rare_route",
+   "kind_text": "rare route",
+   "level_at": 36,
+   "name": "The Bane's Scar",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": -1869,
+    "max_z": -591,
+    "min_x": -1880,
+    "min_z": -602
+   },
+   "settlement_key": "r20_anchor_093",
+   "slot": "rare_korgans_bane",
+   "x": -1874,
+   "y": 145,
+   "z": -596
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_crags",
+   "share": 75
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share": 25
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_crags",
+   "share_pct": 60.5
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share_pct": 38.0
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 0.5
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 0.4
+  },
+  {
+   "id": "grug_pine_hills",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_bone_forest",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_blight",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_beach",
+   "share_pct": 0.1
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.0
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 516,
+   "midpoint": {
+    "x": -876,
+    "z": -738
+   },
+   "zone": "elandor_ashenward_march"
+  },
+  {
+   "length_nodes": 848,
+   "midpoint": {
+    "x": -1708,
+    "z": -1091
+   },
+   "zone": "elandor_dur_brannoc"
+  },
+  {
+   "length_nodes": 552,
+   "midpoint": {
+    "x": -2246,
+    "z": -1043
+   },
+   "zone": "elandor_frostbarrow_shelf"
+  },
+  {
+   "length_nodes": 756,
+   "midpoint": {
+    "x": -1131,
+    "z": -1068
+   },
+   "zone": "elandor_whitebridge_shire"
+  },
+  {
+   "length_nodes": 1004,
+   "midpoint": {
+    "x": -1159,
+    "z": -321
+   },
+   "zone": "front_broken_causeway"
+  },
+  {
+   "length_nodes": 624,
+   "midpoint": {
+    "x": -2065,
+    "z": -289
+   },
+   "zone": "front_gravesalt_escarpment"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_027",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 33,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Splitbolt Station",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -2074,
+   "z": -826
+  },
+  {
+   "anchor": "anchor_028",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 38,
+   "mobs": [
+    "grug_mobs:guard_accord"
+   ],
+   "name": "Archshadow Post",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": -1500,
+   "z": -450
+  },
+  {
+   "anchor": "anchor_050",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 39,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Slatehook Hideout",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": -1824,
+   "z": -406
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:ibex",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture"
+  ],
+  "density_budget_day": [
+   "grug_mobs:crag_eagle",
+   "grug_mobs:hyena",
+   "grug_mobs:ibex",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:mountain_ram",
+   "grug_mobs:stone_golem",
+   "grug_mobs:vulture"
+  ],
+  "density_budget_night": [
+   "grug_mobs:frost_stray",
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:snow_leopard",
+   "grug_mobs:stone_golem"
+  ],
+  "night": [
+   "grug_mobs:frost_stray",
+   "grug_mobs:goblin_hound",
+   "grug_mobs:goblin_raider",
+   "grug_mobs:goblin_slinger",
+   "grug_mobs:hyena",
+   "grug_mobs:mesa_golem",
+   "grug_mobs:snow_leopard",
+   "grug_mobs:stone_golem"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 2416,
+  "bay_water_area_nodes2": 0,
+  "beaches": [
+   {
+    "area_nodes2": 1008,
+    "box": {
+     "max_x": -2364,
+     "max_z": -688,
+     "min_x": -2412,
+     "min_z": -732
+    },
+    "centroid": {
+     "x": -2388,
+     "z": -708
+    },
+    "id": "B1",
+    "levels": [
+     34,
+     35
+    ]
+   },
+   {
+    "area_nodes2": 928,
+    "box": {
+     "max_x": -2420,
+     "max_z": -468,
+     "min_x": -2460,
+     "min_z": -532
+    },
+    "centroid": {
+     "x": -2444,
+     "z": -502
+    },
+    "id": "B2",
+    "levels": [
+     37,
+     38
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 33712,
+  "sea_beach_sand_area_nodes2": 2064,
+  "sea_coast_length_nodes": 1180
+ },
+ "drift_band_share_pct": 6.8,
+ "extent": {
+  "centroid": {
+   "x": -1652,
+   "z": -690
+  },
+  "land_area_nodes2": 1148464,
+  "max_x": -864,
+  "max_z": -212,
+  "min_x": -2480,
+  "min_z": -1172
+ },
+ "faction": "contested",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": -1800,
+  "z": -700
+ },
+ "id": "elandor_stormvault_heights",
+ "level_field": {
+  "histogram_pct": {
+   "31": 11.3,
+   "32": 11.2,
+   "33": 10.8,
+   "34": 11.5,
+   "35": 11.1,
+   "36": 10.7,
+   "37": 8.5,
+   "38": 8.5,
+   "39": 8.0,
+   "40": 8.3
+  },
+  "max": 40,
+  "min": 31
+ },
+ "level_max": 40,
+ "level_min": 31,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/elandor_stormvault_heights.png",
+ "name": "Stormvault Heights",
+ "neighbors": [
+  "elandor_ashenward_march",
+  "elandor_dur_brannoc",
+  "elandor_frostbarrow_shelf",
+  "elandor_whitebridge_shire",
+  "front_broken_causeway",
+  "front_gravesalt_escarpment"
+ ],
+ "numeric_id": 5,
+ "palette_without_host_ground": [
+  "Hyena",
+  "Vulture"
+ ],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_027",
+    "kind": "poi",
+    "max_x": -2067,
+    "max_z": -819,
+    "min_x": -2082,
+    "min_z": -834,
+    "name": "Splitbolt Station"
+   },
+   {
+    "anchor": "anchor_028",
+    "kind": "poi",
+    "max_x": -1493,
+    "max_z": -443,
+    "min_x": -1508,
+    "min_z": -458,
+    "name": "Archshadow Post"
+   },
+   {
+    "anchor": "anchor_050",
+    "kind": "camp",
+    "max_x": -1817,
+    "max_z": -399,
+    "min_x": -1832,
+    "min_z": -414,
+    "name": "Slatehook Hideout"
+   },
+   {
+    "anchor": "anchor_093",
+    "kind": "poi",
+    "max_x": -1869,
+    "max_z": -591,
+    "min_x": -1880,
+    "min_z": -602,
+    "name": "The Bane's Scar"
+   }
+  ]
+ },
+ "protected_share_pct": 1.5,
+ "pvp_rule": "contested",
+ "quests": [
+  {
+   "copper": 85,
+   "description": "The wind has pulled Splitbolt's shutters off their braces. Bring eight pine planks for the storm-facing shelter; the snowy pines of Stormvault Heights provide suitable timber. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "r20_anchor_027_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 8 default:pine_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:pine_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Shutters Against the Storm",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Frost strays stand on Stormvault Heights' gravel and snow after dark, loosing arrows across the ascent. Defeat four so the watch can reach its storm markers.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "r20_anchor_027_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 4 frost_stray [in elandor_stormvault_heights]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:frost_stray"
+     ],
+     "type": "kill",
+     "zone": "elandor_stormvault_heights"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Frost That Walks",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Archshadow's sighting stones no longer line up across the ridge crossing. Bring eight cobble blocks for their low footing so the watch can reset the line without narrowing the passage. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "r20_anchor_028_01",
+   "min_level": 31,
+   "objectives": [
+    "bring 8 default:cobble"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:cobble",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Stones for the Sighting Line",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "Crag eagles dive over Stormvault Heights' rocky ground by day. Defeat three that threaten travellers using the crossing, then report to Archshadow Post.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "r20_anchor_028_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 3 crag_eagle [in elandor_stormvault_heights]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:crag_eagle"
+     ],
+     "type": "kill",
+     "zone": "elandor_stormvault_heights"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Wings Over the Crossing",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1220
+  },
+  {
+   "copper": 85,
+   "description": "With the ascent watched again, Borin can point you toward Slatehook Camp in Stormvault Heights. Defeat four bandit archers around that occupied camp; they are camp guards, not the roaming night poachers.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "r20_anchor_027_03",
+   "min_level": 33,
+   "objectives": [
+    "kill 4 bandit_archer [in elandor_stormvault_heights]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "elandor_stormvault_heights"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_027_02"
+   ],
+   "reward_items": [],
+   "title": "Slatehook's Cargo",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1300
+  },
+  {
+   "copper": 100,
+   "description": "The ridge report names the Throng watch in Blackwind Rise across the frontier. At level 40, defeat three Throng guards at its military outposts or their patrols. These are armed garrisons, not villagers or players; do not approach Nhal Veyr's stronger city watch.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "r20_anchor_028_03",
+   "min_level": 40,
+   "objectives": [
+    "kill 3 guard_throng [in kragmar_blackwind_rise]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:guard_throng"
+     ],
+     "type": "kill",
+     "zone": "kragmar_blackwind_rise"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_028_02"
+   ],
+   "reward_items": [],
+   "title": "The Watch Beyond the Ash Wind",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1975
+  }
+ ],
+ "race_region": "dwarf",
+ "race_track": "dwarf",
+ "rares": [
+  {
+   "biome_hint": "the high crags",
+   "id": "korgans_bane",
+   "level_at": 36,
+   "mob": "grug_mobs:stone_golem",
+   "name": "Korgan's Bane",
+   "respawn_s": [
+    7200,
+    14400
+   ],
+   "route": [
+    [
+     -1922,
+     153,
+     -620
+    ],
+    [
+     -1858,
+     204,
+     -556
+    ],
+    [
+     -1818,
+     248,
+     -612
+    ]
+   ]
+  }
+ ],
+ "relief": {
+  "cliff_share_pct": 26.4,
+  "height_above_sea": {
+   "max": 473,
+   "median": 225,
+   "min": 0,
+   "p10": 127,
+   "p90": 341
+  },
+  "steep_share_pct": 63.5
+ },
+ "relief_profile": "highland",
+ "roads": [
+  {
+   "first_in_zone": [
+    -2080,
+    -815
+   ],
+   "from": "anchor_027 (Splitbolt Station, elandor_stormvault_heights)",
+   "id": 12,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1233,
+    -1108
+   ],
+   "length_in_zone": 1328,
+   "length_total": 1736,
+   "polyline_simplified": [
+    [
+     -2080,
+     -815
+    ],
+    [
+     -2085,
+     -773
+    ],
+    [
+     -1997,
+     -725
+    ],
+    [
+     -1935,
+     -757
+    ],
+    [
+     -1898,
+     -803
+    ],
+    [
+     -1756,
+     -874
+    ],
+    [
+     -1655,
+     -880
+    ],
+    [
+     -1602,
+     -853
+    ],
+    [
+     -1524,
+     -854
+    ],
+    [
+     -1481,
+     -878
+    ],
+    [
+     -1475,
+     -917
+    ],
+    [
+     -1372,
+     -986
+    ],
+    [
+     -1330,
+     -974
+    ],
+    [
+     -1303,
+     -928
+    ],
+    [
+     -1223,
+     -928
+    ],
+    [
+     -1180,
+     -948
+    ],
+    [
+     -1154,
+     -1008
+    ],
+    [
+     -1202,
+     -1050
+    ],
+    [
+     -1268,
+     -1168
+    ],
+    [
+     -1368,
+     -1212
+    ],
+    [
+     -1485,
+     -1294
+    ],
+    [
+     -1536,
+     -1280
+    ]
+   ],
+   "to": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)"
+  },
+  {
+   "first_in_zone": [
+    -1497,
+    -439
+   ],
+   "from": "anchor_028 (Archshadow Post, elandor_stormvault_heights)",
+   "id": 33,
+   "kind": "trail",
+   "last_in_zone": [
+    -1231,
+    -222
+   ],
+   "length_in_zone": 358,
+   "length_total": 1729,
+   "polyline_simplified": [
+    [
+     -1497,
+     -439
+    ],
+    [
+     -1475,
+     -402
+    ],
+    [
+     -1407,
+     -364
+    ],
+    [
+     -1362,
+     -291
+    ],
+    [
+     -1183,
+     -198
+    ],
+    [
+     -1065,
+     -240
+    ],
+    [
+     -985,
+     -208
+    ],
+    [
+     -792,
+     -212
+    ],
+    [
+     -710,
+     -254
+    ],
+    [
+     -643,
+     -333
+    ],
+    [
+     -580,
+     -368
+    ],
+    [
+     -606,
+     -483
+    ],
+    [
+     -493,
+     -694
+    ],
+    [
+     -405,
+     -785
+    ],
+    [
+     -377,
+     -901
+    ]
+   ],
+   "to": "joins road 13"
+  },
+  {
+   "first_in_zone": [
+    -1835,
+    -399
+   ],
+   "from": "anchor_050 (Slatehook Hideout, elandor_stormvault_heights)",
+   "id": 50,
+   "kind": "trail",
+   "last_in_zone": [
+    -1811,
+    -838
+   ],
+   "length_in_zone": 996,
+   "length_total": 1008,
+   "polyline_simplified": [
+    [
+     -1835,
+     -399
+    ],
+    [
+     -1862,
+     -389
+    ],
+    [
+     -1967,
+     -415
+    ],
+    [
+     -2094,
+     -341
+    ],
+    [
+     -2160,
+     -343
+    ],
+    [
+     -2171,
+     -369
+    ],
+    [
+     -2066,
+     -478
+    ],
+    [
+     -2002,
+     -586
+    ],
+    [
+     -1906,
+     -667
+    ],
+    [
+     -1811,
+     -838
+    ]
+   ],
+   "to": "joins road 12"
+  }
+ ],
+ "role": "contested 31-40",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -2074,
+    "y": 325,
+    "z": -826
+   },
+   "anchor_id": "anchor_027",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1398,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1661,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2404,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 2686,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": 4074,
+      "straight": 1724,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": 4883,
+      "straight": 2404,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 248,
+     "x": -2128,
+     "z": -1068
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 274,
+     "x": -2348,
+     "z": -836
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 318,
+     "x": -2364,
+     "z": -696
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 1192,
+      "hits": "elandor_ashenward_march"
+     },
+     "north_+z": {
+      "distance": 528,
+      "hits": "front_gravesalt_escarpment"
+     },
+     "south_-z": {
+      "distance": 276,
+      "hits": "elandor_frostbarrow_shelf"
+     },
+     "west_-x": {
+      "distance": 308,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_027",
+   "name": "Splitbolt Station",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_027_host",
+     "npc_name": "Borin Splitbolt",
+     "quests": [
+      "r20_anchor_027_01",
+      "r20_anchor_027_02",
+      "r20_anchor_027_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -2072,
+     "y": 326,
+     "z": -826
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -1824,
+    "y": 205,
+    "z": -406
+   },
+   "anchor_id": "anchor_050",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 327,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Splitbolt Station",
+      "road": null,
+      "straight": 489,
+      "to": "r20_anchor_027",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 912,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1255,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 1539,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1934,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 131,
+     "x": -1872,
+     "z": -284
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 575,
+     "x": -2368,
+     "z": -592
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 596,
+     "x": -2392,
+     "z": -224
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 828,
+      "hits": "front_broken_causeway"
+     },
+     "north_+z": {
+      "distance": 124,
+      "hits": "inland_water"
+     },
+     "south_-z": {
+      "distance": 656,
+      "hits": "elandor_dur_brannoc"
+     },
+     "west_-x": {
+      "distance": 660,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_050",
+   "name": "Slatehook Hideout",
+   "npcs": [],
+   "race": "dwarf",
+   "resident_counts": {}
+  },
+  {
+   "anchor": {
+    "x": -1500,
+    "y": 84,
+    "z": -450
+   },
+   "anchor_id": "anchor_028",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 885,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": 1795,
+      "straight": 1218,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1385,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 1738,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": 2824,
+      "straight": 1800,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Tornstandard Hold",
+      "road": null,
+      "straight": 2002,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 155,
+     "x": -1516,
+     "z": -296
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 880,
+     "x": -2368,
+     "z": -592
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 898,
+     "x": -2364,
+     "z": -696
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 548,
+      "hits": "front_broken_causeway"
+     },
+     "north_+z": {
+      "distance": 160,
+      "hits": "front_gravesalt_escarpment"
+     },
+     "south_-z": {
+      "distance": 668,
+      "hits": "elandor_dur_brannoc"
+     },
+     "west_-x": {
+      "distance": 972,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_028",
+   "name": "Archshadow Post",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_028_host",
+     "npc_name": "Alna Archsight",
+     "quests": [
+      "r20_anchor_028_01",
+      "r20_anchor_028_02",
+      "r20_anchor_028_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": -1498,
+     "y": 85,
+     "z": -450
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": -1874,
+    "y": 145,
+    "z": -596
+   },
+   "anchor_id": "anchor_093",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Splitbolt Station",
+      "road": null,
+      "straight": 305,
+      "to": "r20_anchor_027",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Archshadow Post",
+      "road": null,
+      "straight": 401,
+      "to": "r20_anchor_028",
+      "zone": "elandor_stormvault_heights"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 1107,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": null,
+      "straight": 1437,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 1545,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 2100,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 312,
+     "x": -1876,
+     "z": -284
+    },
+    "nearest_road": {
+     "distance": 74
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 494,
+     "x": -2368,
+     "z": -596
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 500,
+     "x": -2364,
+     "z": -696
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 1000,
+      "hits": "elandor_ashenward_march"
+     },
+     "north_+z": {
+      "distance": 312,
+      "hits": "front_gravesalt_escarpment"
+     },
+     "south_-z": {
+      "distance": 468,
+      "hits": "elandor_dur_brannoc"
+     },
+     "west_-x": {
+      "distance": 492,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "r20_anchor_093",
+   "name": "The Bane's Scar",
+   "npcs": [],
+   "race": "dwarf",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:crag_eagle",
+   "name": "Crag Eagle",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:frost_stray",
+   "name": "Frost Stray",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_hound",
+   "name": "Goblin Raider Hound",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_raider",
+   "name": "Goblin Raider",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:snowblock",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:goblin_slinger",
+   "name": "Goblin Slinger",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.0
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 624
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:sand"
+   ],
+   "mob": "grug_mobs:gull",
+   "name": "Gull",
+   "night": null,
+   "note": "logical beach biome only"
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:ibex",
+   "name": "Ibex",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:mountain_ram",
+   "name": "Mountain Ram",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 2064,
+    "levels": [
+     34,
+     40
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 2064,
+    "levels": [
+     34,
+     40
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock"
+   ],
+   "mob": "grug_mobs:snow_leopard",
+   "name": "Snow Leopard",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:gravel",
+    "default:snowblock",
+    "default:stone"
+   ],
+   "mob": "grug_mobs:stone_golem",
+   "name": "Stone Golem",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.9
+   }
+  }
+ ],
+ "territory_rule": "contested_land",
+ "track_order": 5
+}

@@ -704,16 +704,18 @@ function grug_abilities.register_ability(def)
 	end
 	def.cost = def.cost or {}
 	-- Which equipment slot's item this ability wears and (from T4 on) swings
-	-- (weapon-slot design C1). "weapon" is the default and every shipped
-	-- ability takes it -- deliberately INCLUDING the ones that deal no weapon
-	-- damage at all (Blink, Renew, Power Word: Shield): "all skills use the
-	-- weapon skin" is the rule, and an exception list would put the orb back on
-	-- precisely the abilities whose colour is hardest to remember. "offhand"
-	-- exists for WP14's shield abilities and has no user yet -- it is built now
-	-- so WP14 does not pay for the same plumbing twice.
-	def.slot = def.slot or "weapon"
-	assert(def.slot == "weapon" or def.slot == "offhand",
-		"ability slot must be \"weapon\" or \"offhand\"")
+	-- (weapon-slot design C1). "weapon" is the default -- deliberately
+	-- INCLUDING the ones that deal no weapon damage at all (Blink, Renew, Power
+	-- Word: Shield): "all skills use the weapon skin" is the rule, and an
+	-- exception list would put the orb back on precisely the abilities whose
+	-- colour is hardest to remember. A melee skill defaults to "melee", the
+	-- list its swing reads: the Scout's Melee slot (the offhand), everyone
+	-- else's Weapon slot (Round 28 ruling 25, grug_inventory.melee_list). So a
+	-- Scout's bow skills show the bow and Strike or Opening show the blade.
+	-- "offhand" exists for WP14's shield abilities and has no user yet.
+	def.slot = def.slot or (def.melee and "melee" or "weapon")
+	assert(def.slot == "weapon" or def.slot == "offhand" or def.slot == "melee",
+		"ability slot must be \"weapon\", \"offhand\" or \"melee\"")
 	grug_abilities.registered[def.id] = def
 	if def.universal then
 		table.insert(grug_abilities.universal, def)
@@ -757,6 +759,8 @@ function grug_abilities.register_ability(def)
 		range = 4, -- Native pointing/digging has hand reach; casts use server rays.
 		stack_max = 1,
 		groups = {grug_ability = 1, grug_bound_skill = 1, not_in_creative_inventory = 1},
+		-- The hand slot whose item the held skill shows (grug_visuals).
+		_grug_ability_slot = def.slot,
 		on_drop = function()
 			return ItemStack("")
 		end,
@@ -1198,7 +1202,7 @@ attempt_swing = function(player, selected, held, latched)
 		return false
 	end
 
-	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+	local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
 	local weapon_damage, fpi = grug_abilities.swing_stats(player, weapon)
 	local now = core.get_us_time()
 	local entry = swing_progress[name]
@@ -1382,7 +1386,7 @@ grug_core.register_ordinary_melee_input_handler(function(player, target)
 	end
 	local name = player:get_player_name()
 	local now = core.get_us_time()
-	local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+	local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
 	local _, fpi = grug_abilities.swing_stats(player, weapon)
 	local entry = swing_progress[name]
 	local bank_clean = false
@@ -1560,12 +1564,7 @@ end
 -- taking the inventory image is correct for every one of them -- but the day
 -- one does, the ability item would have shown the wrong art in hand.
 local function slot_source(player, slot)
-	local stack
-	if slot == "offhand" then
-		stack = grug_inventory.get_cosmetic_offhand(player)
-	else
-		stack = grug_inventory.get_cosmetic_weapon(player)
-	end
+	local stack = grug_inventory.get_cosmetic_hand(player, slot)
 	if not stack or stack:is_empty() then
 		return ""
 	end
@@ -1772,20 +1771,32 @@ local function skin_source_cache(player)
 	end
 end
 
--- Rewrite the skins of the granted ability items. `slot` limits the pass to one
--- hand; nil means both. Ability items live in "main" only (the allow callback
--- above enforces it), so this is one list, and it writes only the stacks whose
--- token is stale.
-local function sync_skins(player, slot)
+-- Rewrite the skins of the granted ability items. `hand_list` limits the pass
+-- to the skills that read that equipment list; nil means both hands. The
+-- swing clock (apply_swing_caps) follows the melee list. Ability items live in
+-- "main" only (the allow callback above enforces it), so this is one list, and
+-- it writes only the stacks whose token is stale.
+local function sync_skins(player, hand_list)
 	local inv = player:get_inventory()
 	local source_of = skin_source_cache(player)
+	local list_of = {}
+	for _, slot in ipairs({"weapon", "offhand", "melee"}) do
+		list_of[slot] = grug_inventory.hand_list(player, slot)
+	end
+	local clock = hand_list == nil or hand_list == list_of.melee
 	for _, listname in ipairs(representation_lists()) do
 		for i = 1, inv:get_size(listname) do
 			local stack = inv:get_stack(listname, i)
 			local def = item_defs[stack:get_name()]
-			if def and (slot == nil or def.slot == slot) then
-				local changed = apply_skin(stack, def, source_of(def))
-				if def.slot == "weapon" and apply_swing_caps(stack, def, player) then changed = true end
+			if def then
+				local changed = false
+				if hand_list == nil or list_of[def.slot] == hand_list then
+					changed = apply_skin(stack, def, source_of(def))
+				end
+				if clock and def.slot ~= "offhand" and
+						apply_swing_caps(stack, def, player) then
+					changed = true
+				end
 				if changed then inv:set_stack(listname, i, stack) end
 			end
 		end
@@ -1834,15 +1845,17 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 	if listname and SKIN_IRRELEVANT_LIST[listname] then
 		return
 	end
-	-- After the proven-irrelevant return above, only the known offhand can
-	-- avoid changing the weapon. Compare the actual concrete stack so a nested
+	-- After the proven-irrelevant return above, only the hand that does not
+	-- swing (the offhand, or a Scout's Ranged slot) can avoid changing the
+	-- melee weapon. Compare the actual concrete stack so a nested
 	-- second notifier pass does not restart an unchanged clock. A real A -> B
 	-- swap starts B at a full interval instead of granting an instant attack;
 	-- swapping back therefore cannot bypass either weapon's cadence.
-	if listname ~= "grug_offhand" then
+	local melee_list = grug_inventory.melee_list(player)
+	if not (listname and SLOT_OF_LIST[listname] and listname ~= melee_list) then
 		local name = player:get_player_name()
 		local entry = swing_progress[name]
-		local weapon = grug_core.get_equipped_weapon(player) or ItemStack("")
+		local weapon = grug_core.get_melee_weapon(player) or ItemStack("")
 		if reason == "durability_metadata" and entry and
 				not entry.weapon:is_empty() and not weapon:is_empty() and
 				entry.weapon:get_name() == weapon:get_name() then
@@ -1851,7 +1864,7 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 			-- snapshot without disturbing due-time late carry or the input latch.
 			entry.weapon = ItemStack(weapon)
 		elseif (entry and not entry.weapon:equals(weapon))
-				or (not entry and listname == "grug_weapon") then
+				or (not entry and listname == melee_list) then
 			local _, fpi = grug_abilities.swing_stats(player, weapon)
 			grug_core.reset_accumulated_melee(player)
 			swing_progress[name] = {
@@ -1863,7 +1876,7 @@ grug_core.register_on_equipment_change(function(player, listname, reason)
 		end
 	end
 	-- nil (or an unrecognised name) -> nil -> both hands.
-	sync_skins(player, listname and SLOT_OF_LIST[listname])
+	sync_skins(player, listname and SLOT_OF_LIST[listname] and listname or nil)
 end)
 
 -- The list names above are a string contract with a mod we do not depend on.
@@ -1949,7 +1962,7 @@ function grug_abilities.stack_for(player, ability_id)
 	local stack = ItemStack("grug_abilities:" .. ability_id)
 
 	apply_skin(stack, def, skin_source_cache(player)(def))
-	if def.slot == "weapon" then apply_swing_caps(stack, def, player) end
+	if def.slot ~= "offhand" then apply_swing_caps(stack, def, player) end
 	apply_charge_bar(stack, def)
 	grug_abilities.update_stack_description(stack, def, player)
 	stack:set_wear(representation_wear(player, def))

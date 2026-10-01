@@ -6,7 +6,7 @@ local live_quotes = setmetatable({}, {__mode = "k"})
 function grug_repair.eligible(stack)
 	if not stack or stack:is_empty() then return false end
 	local groups = (stack:get_definition() or {}).groups or {}
-	for _, group in ipairs({"grug_equip_weapon", "grug_shield", "grug_spellbook", "grug_quiver",
+	for _, group in ipairs({"grug_equip_weapon", "grug_shield", "grug_spellbook",
 		"grug_equip_head", "grug_equip_chest", "grug_equip_legs", "grug_equip_feet",
 		"pickaxe", "axe", "shovel", "hoe"}) do
 		if (groups[group] or 0) > 0 then return true end

@@ -1,7 +1,7 @@
 -- Equipment slots as player-inventory lists (size 1 each). Items declare
 -- their slot via group (dispatch-via-groups convention), e.g. a helmet
--- carries `groups = {grug_equip_head = 1}`. The trinket slots are reserved:
--- fully functional, but no trinket items exist before post-MVP.
+-- carries `groups = {grug_equip_head = 1}`. The two hand slots are the
+-- exception: what they take depends on the class (HAND_RULES below).
 
 grug_inventory.equipment_slots = {
 	{list = "grug_head", group = "grug_equip_head", label = "Head"},
@@ -14,16 +14,123 @@ grug_inventory.equipment_slots = {
 	{list = "grug_trinket2", group = "grug_equip_trinket", label = "Trinket"},
 }
 
--- The two "hands" lists. The item in the WEAPON slot is the single fixed
--- source of damage and appearance for every sword-type skill, the offhand
--- item the same for shield-type skills (weapon-slot design B1) -- there is
--- deliberately NO fallback to the wielded item, so an empty slot means the
--- connected skills carry no item and hit for the bare-handed baseline.
--- Family-agnostic on purpose: the slot holds whatever carries
--- `grug_equip_weapon`, which is how the future bow family joins without a
--- second slot (B3).
+-- The two "hands" lists. The item in a hand slot is the single fixed source
+-- of damage and appearance for the skills that read it (weapon-slot design
+-- B1) -- there is deliberately NO fallback to the wielded item, so an empty
+-- slot means the connected skills carry no item and hit for the bare-handed
+-- baseline. Which skills read which slot depends on the class (HAND_RULES).
 local WEAPON_LIST = "grug_weapon"
 local OFFHAND_LIST = "grug_offhand"
+
+--
+-- The hand slots per class (Round 28 ruling 25). The two lists keep their
+-- names; what each one accepts, what the Character page calls it, its ghost
+-- image and which one swings for Strike and every melee skill depend on the
+-- class:
+--   * Warrior: a weapon of its families in Weapon, a shield in the offhand
+--     (only Warriors may equip shields).
+--   * Mage and Priest: a weapon of their families in Weapon, a spellbook in
+--     the "Caster offhand".
+--   * Scout: a bow in Weapon, shown as "Ranged", and a sword or dagger in the
+--     offhand, shown as "Melee". Bow skills read Ranged, Strike, Opening and
+--     every other melee skill read Melee.
+-- Why: the Scout has two kinds of skills, and one weapon slot made its melee
+-- skills swing with the bow. A visible per-class offhand makes each slot's
+-- purpose obvious, and both slot items always count toward stats for every
+-- class (grug_quality sums every equipment slot).
+--
+-- `families` narrows the class's weapon families (grug_gear permissions) for
+-- that slot; `group` is the item group an offhand piece must carry instead.
+-- `melee` names the list the melee skills swing (default: Weapon). `hint` is
+-- the refusal sentence for an item that belongs elsewhere.
+--
+local DIM = "^[multiply:#666666"
+local SWORD_GHOST = "grug_gear_item_sword_steel.png" .. DIM
+local STAFF_GHOST = "grug_gear_item_staff_steel.png" .. DIM
+local CASTER_RULES = {
+	weapon = {label = "Weapon", ghost = STAFF_GHOST},
+	offhand = {label = "Caster offhand", group = "grug_spellbook",
+		ghost = "grug_gear_spellbook.png" .. DIM,
+		hint = "the Caster offhand holds a spellbook"},
+}
+grug_inventory.HAND_RULES = {
+	warrior = {
+		weapon = {label = "Weapon", ghost = SWORD_GHOST},
+		offhand = {label = "Shield", group = "grug_shield",
+			ghost = "grug_gear_shield_steel.png" .. DIM,
+			hint = "the Shield slot holds a shield"},
+	},
+	mage = CASTER_RULES,
+	priest = CASTER_RULES,
+	scout = {
+		weapon = {label = "Ranged", families = {bow = true},
+			ghost = "grug_gear_bow_wood.png" .. DIM,
+			hint = "the Ranged slot holds a bow; a sword or dagger goes into " ..
+				"the Melee slot"},
+		offhand = {label = "Melee", families = {sword = true, dagger = true},
+			ghost = SWORD_GHOST,
+			hint = "the Melee slot holds a sword or dagger; a bow goes into " ..
+				"the Ranged slot"},
+		melee = OFFHAND_LIST,
+	},
+}
+local HAND_RULES = grug_inventory.HAND_RULES
+
+local function hand_rule(class_id, list)
+	local rules = HAND_RULES[class_id]
+	if not rules then return nil end
+	if list == WEAPON_LIST then return rules.weapon end
+	if list == OFFHAND_LIST then return rules.offhand end
+	return nil
+end
+
+-- Does the hand `list` take `stack` for a character of `class_id`? Item
+-- identity only; the level gate and the two-handed rule need the player and
+-- the other hand and are checked in the allow callback below. A character
+-- without a class takes nothing into its hands.
+function grug_inventory.hand_accepts(class_id, list, stack)
+	local rule = hand_rule(class_id, list)
+	if not rule or not stack or stack:is_empty() then
+		return false
+	end
+	local name = stack:get_name()
+	if rule.group then
+		return core.get_item_group(name, rule.group) > 0
+	end
+	if core.get_item_group(name, "grug_equip_weapon") == 0 or
+			not grug_gear.class_can_use_weapon(class_id, stack) then
+		return false
+	end
+	return rule.families == nil or
+		rule.families[grug_gear.weapon_family(stack)] == true
+end
+
+-- The Character page's name and ghost image of a slot for this class; nil
+-- for a slot whose look does not depend on the class.
+function grug_inventory.slot_label(class_id, list)
+	local rule = hand_rule(class_id, list)
+	return rule and rule.label or nil
+end
+
+function grug_inventory.slot_ghost(class_id, list)
+	local rule = hand_rule(class_id, list)
+	return rule and rule.ghost or nil
+end
+
+-- The list whose item swings for Strike and every melee skill: the offhand
+-- for a Scout, the Weapon slot for everyone else.
+function grug_inventory.melee_list(player)
+	local rules = HAND_RULES[grug_classes.get_class(player)]
+	return rules and rules.melee or WEAPON_LIST
+end
+
+-- An ability's `slot` ("weapon", "offhand" or "melee") as an equipment list.
+function grug_inventory.hand_list(player, slot)
+	if slot == "melee" then
+		return grug_inventory.melee_list(player)
+	end
+	return slot == "offhand" and OFFHAND_LIST or WEAPON_LIST
+end
 
 local slot_group = {}
 for _, slot in ipairs(grug_inventory.equipment_slots) do
@@ -197,7 +304,7 @@ local function warn_armor_class(player, rank)
 		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor."))
 end
 
-local function warn_weapon_level(player, stack, required, current)
+local function warn_weapon_level(player, stack, label, required, current)
 	local reason = "level:" .. stack:get_name() .. ":" .. required
 	local name = claim_warn(player, reason)
 	if not name then
@@ -205,7 +312,35 @@ local function warn_weapon_level(player, stack, required, current)
 	end
 	core.chat_send_player(name, core.colorize(WARN_COLOR,
 		piece_name(stack) .. " requires level " .. required ..
-		" for the Weapon slot; you are level " .. current .. "."))
+		" for the " .. label .. " slot; you are level " .. current .. "."))
+end
+
+-- An item the hand slot does not take. Silent for anything that is not hand
+-- equipment at all (an apple dragged across the slot); otherwise the refusal
+-- says where the piece belongs, or which classes may use it.
+local function warn_hand_item(player, list, stack)
+	local itemname = stack:get_name()
+	if core.get_item_group(itemname, "grug_equip_weapon") == 0 and
+			core.get_item_group(itemname, "grug_equip_offhand") == 0 then
+		return
+	end
+	local name = claim_warn(player, "hand:" .. list .. ":" .. itemname)
+	if not name then
+		return
+	end
+	local class_id = grug_classes.get_class(player)
+	local rule = hand_rule(class_id, list)
+	local msg
+	if core.get_item_group(itemname, "grug_equip_weapon") > 0 and
+			not grug_gear.class_can_use_weapon(class_id, stack) then
+		msg = "Your class cannot equip " .. piece_name(stack) .. ". " ..
+			grug_gear.usable_by(stack)
+	elseif rule and rule.hint then
+		msg = piece_name(stack) .. " does not fit here: " .. rule.hint .. "."
+	else
+		msg = "Your class cannot equip " .. piece_name(stack) .. " there."
+	end
+	core.chat_send_player(name, core.colorize(WARN_COLOR, msg))
 end
 
 --
@@ -214,27 +349,22 @@ end
 -- One rule, one sentence: two occupied hands must add up to at most two. That
 -- covers "a two-handed weapon needs an empty offhand" and "the offhand needs
 -- the weapon slot empty or one-handed" at once, so both live in the one
--- group-filtered allow_put below rather than in two places that could drift.
+-- allow callback below rather than in two places that could drift. Since
+-- Round 28 only the Battle Axe and the staff are two-handed; the bow is
+-- one-handed, so a Scout's Ranged and Melee slots never collide.
 --
 -- REFUSAL, not repair: the alternative shape -- let the equip through and clear
 -- the other slot from an equipment-change consumer -- is both more expensive
 -- and more dangerous. A consumer that WRITES equipment re-enters the notifier,
 -- which is exactly the recursion its guard exists for, and it would silently
--- move a player's torch out from under them. allow_put refuses before anything
--- moves, and refusing is the only shape that can explain itself at the moment
--- the player asks for the thing.
---
--- WHY THE MESSAGE SPELLS OUT THE TORCH (WP14): with this rule live, carrying
--- a light source costs a greataxe or staff user their weapon (§7 puts the
--- moving light radius in the offhand). §7 wants that to be a decision, not a
--- surprise, so a bare "you cannot do that" would be a bug in the design, not
--- just in the UX. grug_gear says the same thing a second time in the item
--- description, for players who never hit the refusal at all.
+-- move a player's shield out from under them. The allow callback refuses
+-- before anything moves, and refusing is the only shape that can explain
+-- itself at the moment the player asks for the thing.
 --
 
 -- Hand count of an item. Anything that does not declare `_grug_hands` is
--- one-handed -- that default is what keeps the rule additive: torches, shields
--- and every future offhand item need no field at all to be legal.
+-- one-handed -- that default is what keeps the rule additive: shields,
+-- spellbooks and every future offhand item need no field at all to be legal.
 -- Accepts an ItemStack or an item name.
 function grug_inventory.hands_of(item)
 	local itemname = item
@@ -243,7 +373,6 @@ function grug_inventory.hands_of(item)
 	end
 	local def = core.registered_items[itemname]
 	local hands = def and def._grug_hands
-	if hands == 0 then return 0 end
 	if type(hands) == "number" and hands >= 2 then
 		return 2
 	end
@@ -253,8 +382,7 @@ end
 -- The stack in the OTHER hand slot AS THIS ACTION WOULD LEAVE IT. A move whose
 -- source is that slot empties it, and refusing against a stack the same action
 -- is about to remove is how "my staff can never leave the offhand" bugs are
--- built. Cheap insurance: no shipped item carries both hand groups today, but
--- the slot is family-agnostic by design (B3) and WP14 adds offhand items.
+-- built.
 local function other_hand_stack(inventory, other_list, action, info)
 	local stack = inventory:get_stack(other_list, 1)
 	if stack:is_empty() then
@@ -267,36 +395,14 @@ local function other_hand_stack(inventory, other_list, action, info)
 	return stack
 end
 
--- What the OTHER hand is called, for the refusal text.
-local HAND_LABEL = {[WEAPON_LIST] = "weapon slot", [OFFHAND_LIST] = "offhand"}
-
 -- true = the hands are free enough for this, false = refused (and the player
--- has been told why, throttled).
---
--- The rule is one sentence in both directions -- two occupied hands must add up
--- to at most two -- so it is tested that way rather than per target slot: the
--- incoming item may be the two-handed one, or the one already in the other hand
--- may be, and BOTH refuse (B4 says both directions). Testing only the incoming
--- stack on the way into the weapon slot would let a 1H sword join a 2H item
--- sitting in the offhand. Unconstructible today (nothing carries
--- grug_equip_offhand at all, and no item carries both hand groups), which is
--- exactly why it has to be written down rather than discovered by WP14.
+-- has been told why, throttled). Tested in both directions: the incoming item
+-- may be the two-handed one, or the one already in the other hand may be.
 local function allow_hands(player, inventory, to_list, stack, action, info)
 	local other_list = (to_list == WEAPON_LIST) and OFFHAND_LIST or WEAPON_LIST
 	local other = other_hand_stack(inventory, other_list, action, info)
 	if other:is_empty() then
 		return true -- the other hand is free: nothing to cross-check
-	end
-	local incoming_quiver = core.get_item_group(stack:get_name(), "grug_quiver") > 0
-	local other_quiver = core.get_item_group(other:get_name(), "grug_quiver") > 0
-	local incoming_bow = core.get_item_group(stack:get_name(), "grug_bow") > 0
-	local other_bow = core.get_item_group(other:get_name(), "grug_bow") > 0
-	if (incoming_quiver and other_bow) or (other_quiver and incoming_bow) then
-		return true
-	end
-	if incoming_quiver or other_quiver then
-		local weapon = incoming_quiver and other or stack
-		if grug_inventory.hands_of(weapon) <= 1 then return true end
 	end
 	local incoming_2h = grug_inventory.hands_of(stack) >= 2
 	local held_2h = grug_inventory.hands_of(other) >= 2
@@ -310,21 +416,18 @@ local function allow_hands(player, inventory, to_list, stack, action, info)
 		or ("hands:held:" .. other:get_name() .. ":" .. stack:get_name())
 	local name = claim_warn(player, reason)
 	if name then
-		-- WP14: both texts promise a torch's light in the offhand, which no item
-		-- delivers yet (nothing carries grug_equip_offhand, so neither branch of
-		-- this rule can fire at all today). Re-read them when WP14 ships the
-		-- shields and the carried light source.
+		local label = grug_inventory.slot_label(grug_classes.get_class(player),
+			other_list) or "other hand"
 		local msg
 		if incoming_2h then
 			msg = piece_name(stack) .. " is two-handed and needs an empty " ..
-				HAND_LABEL[other_list] .. " — take " .. piece_name(other) ..
-				" out first. A two-handed weapon and an offhand item (a torch's" ..
-				" light, a shield) are a choice between the two, never both."
+				label .. " slot — take " .. piece_name(other) .. " out first." ..
+				" A two-handed weapon and an offhand item are a choice between" ..
+				" the two, never both."
 		else
 			msg = piece_name(other) .. " is two-handed and leaves no hand free" ..
-				" for " .. piece_name(stack) .. " — carrying a torch (or a" ..
-				" shield) costs you the two-handed weapon. Equip a one-handed" ..
-				" weapon to keep both."
+				" for " .. piece_name(stack) .. " — equip a one-handed weapon to" ..
+				" carry both."
 		end
 		core.chat_send_player(name, core.colorize(WARN_COLOR, msg))
 	end
@@ -349,23 +452,25 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 	end
 	local group = to_list and slot_group[to_list]
 	if group then
-		if core.get_item_group(stack:get_name(), group) == 0 then
+		if to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
+			-- The hands follow the class rules (ruling 25), not one group.
+			local class_id = grug_classes.get_class(player)
+			if not grug_inventory.hand_accepts(class_id, to_list, stack) then
+				warn_hand_item(player, to_list, stack)
+				return 0
+			end
+			if core.get_item_group(stack:get_name(), "grug_equip_weapon") > 0 then
+				local allowed, required, current =
+					grug_core.can_use_item_level(player, stack)
+				if not allowed then
+					warn_weapon_level(player, stack,
+						grug_inventory.slot_label(class_id, to_list) or "Weapon",
+						required, current)
+					return 0
+				end
+			end
+		elseif core.get_item_group(stack:get_name(), group) == 0 then
 			return 0
-		end
-		if to_list == WEAPON_LIST then
-			if not grug_gear.can_equip_weapon(player, stack) then
-				local name = claim_warn(player, "weapon_class:" .. stack:get_name())
-				if name then core.chat_send_player(name, core.colorize(WARN_COLOR,
-					"Your class cannot equip " .. piece_name(stack) .. ". " ..
-					grug_gear.usable_by(stack))) end
-				return 0
-			end
-			local allowed, required, current =
-				grug_core.can_use_item_level(player, stack)
-			if not allowed then
-				warn_weapon_level(player, stack, required, current)
-				return 0
-			end
 		end
 		if is_armor_list[to_list] then
 			local rank = core.get_item_group(stack:get_name(), "grug_armor_class")
@@ -376,7 +481,7 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 		elseif to_list == WEAPON_LIST or to_list == OFFHAND_LIST then
 			-- The two-handed rule, both directions (B4). Armor lists and hand
 			-- lists are disjoint, hence the elseif: no equip pays for both
-			-- checks. The weapon-family permission was checked above.
+			-- checks. The class slot rules were checked above.
 			if not allow_hands(player, inventory, to_list, stack, action, info) then
 				return 0
 			end
@@ -552,6 +657,20 @@ function grug_inventory.get_equipped_offhand(player)
 	return stack and not grug_core.equipment_is_broken(stack) and stack or nil
 end
 
+-- The item Strike and every melee skill swing (ruling 25): the Scout's Melee
+-- slot, everyone else's Weapon slot. nil = bare hand.
+function grug_inventory.get_melee_weapon(player)
+	local stack = cached_slot_item(player, grug_inventory.melee_list(player))
+	return stack and grug_gear.can_equip_weapon(player, stack) and
+		not grug_core.equipment_is_broken(stack) and stack or nil
+end
+
+-- The cosmetic item behind an ability's `slot` ("weapon", "offhand" or
+-- "melee"); broken equipment included, like the other cosmetic accessors.
+function grug_inventory.get_cosmetic_hand(player, slot)
+	return cached_slot_item(player, grug_inventory.hand_list(player, slot))
+end
+
 -- Base fallback until grug_quality adds shield and affix rating.
 function grug_core.get_armor_rating(player)
 	local base = grug_inventory.get_equipped_armor(player)
@@ -573,6 +692,10 @@ end
 
 function grug_core.get_equipped_offhand(player)
 	return grug_inventory.get_equipped_offhand(player)
+end
+
+function grug_core.get_melee_weapon(player)
+	return grug_inventory.get_melee_weapon(player)
 end
 
 --
@@ -602,13 +725,16 @@ grug_classes.register_on_class_chosen(function(player)
 		return
 	end
 	local rank = grug_classes.get_armor_rank(player)
+	local class_id = grug_classes.get_class(player)
 	local removed, stuck = {}, {}
-	local restricted_lists = {WEAPON_LIST}
+	local restricted_lists = {WEAPON_LIST, OFFHAND_LIST}
 	for _, list in ipairs(ARMOR_LISTS) do restricted_lists[#restricted_lists + 1] = list end
 	for _, list in ipairs(restricted_lists) do
 		local stack = inv:get_stack(list, 1)
-		local disallowed = list == WEAPON_LIST and
-			not grug_gear.can_equip_weapon(player, stack) or
+		local hand = list == WEAPON_LIST or list == OFFHAND_LIST
+		local disallowed = hand and
+			not grug_inventory.hand_accepts(class_id, list, stack) or
+			not hand and
 			core.get_item_group(stack:get_name(), "grug_armor_class") > rank
 		if not stack:is_empty() and disallowed then
 			local label = piece_name(stack)
@@ -674,9 +800,10 @@ end)
 --
 -- Two-handed: the starter staff IS two-handed (grug_gear), so the grant obeys
 -- the same rule the equip filter does and refuses an occupied offhand rather
--- than creating a state the player could not have reached by hand. Nothing
--- carries `grug_equip_offhand` today and the starter torch lives in `main`, so
--- that branch is insurance, not a case.
+-- than creating a state the player could not have reached by hand.
+--
+-- The Scout (Round 28 ruling 25/26) gets its bow in Ranged, its Bronze Sword in
+-- Melee and its starter arrows in the quiver.
 --
 local STARTER_WEAPON_KEY = "grug_starter_weapon"
 
@@ -689,23 +816,38 @@ grug_inventory.STARTER_WEAPON = {
 	priest = grug_gear.STARTER_STAFF,
 	scout = grug_gear.STARTER_BOW,
 }
+-- The offhand piece a class starts with, where it has one.
+grug_inventory.STARTER_OFFHAND = {
+	scout = grug_gear.STARTER_SWORD,
+}
+grug_inventory.STARTER_ARROWS = {
+	scout = 200,
+}
 local CLASS_STARTER_WEAPON = grug_inventory.STARTER_WEAPON
 
--- Put `stack` where it belongs, or into `main` when the slot cannot take it.
--- Returns "weapon", "main" or nil (nothing anywhere -- a full bag).
-local function place_starter_weapon(player, inv, stack)
-	local free_hands = inv:get_stack(OFFHAND_LIST, 1):is_empty() or
-		grug_inventory.hands_of(stack) < 2
-	if free_hands and grug_gear.can_equip_weapon(player, stack) and
-			inv:get_stack(WEAPON_LIST, 1):is_empty() then
-		inv:set_stack(WEAPON_LIST, 1, stack)
-		return "weapon"
+-- Put `stack` into the hand `list` when the class rules and the other hand
+-- allow it, or into `main` when the slot cannot take it. Returns "slot",
+-- "main" or nil (nothing anywhere -- a full bag).
+local function place_starter_item(player, inv, stack, list)
+	local other_list = list == WEAPON_LIST and OFFHAND_LIST or WEAPON_LIST
+	local other = inv:get_stack(other_list, 1)
+	local free_hands = other:is_empty() or (grug_inventory.hands_of(stack) < 2 and
+		grug_inventory.hands_of(other) < 2)
+	if free_hands and inv:get_stack(list, 1):is_empty() and
+			grug_inventory.hand_accepts(grug_classes.get_class(player), list, stack) then
+		inv:set_stack(list, 1, stack)
+		return "slot"
 	end
 	if inv:room_for_item("main", stack) then
 		inv:add_item("main", stack)
 		return "main"
 	end
 	return nil
+end
+
+local function item_label(itemname)
+	local def = core.registered_items[itemname]
+	return ((def and def.description) or itemname):gsub("\n.*", "")
 end
 
 grug_classes.register_on_class_chosen(function(player, class_id)
@@ -727,57 +869,77 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 	-- The flag is spent only on a character that actually received something,
 	-- for the same reason the join hint below re-arms: a full bag at character
 	-- creation is not the player's fault.
-	local where = place_starter_weapon(player, inv, ItemStack(itemname))
+	local where = place_starter_item(player, inv, ItemStack(itemname), WEAPON_LIST)
 	if not where then
 		return
 	end
 	meta:set_int(STARTER_WEAPON_KEY, 1)
-	if where == "weapon" then
-		-- Server-side equipment write: caches, stats, ability skins, the
-		-- Character page and the visible weapon all hang off this one call.
-		grug_inventory.equipment_changed(player, WEAPON_LIST)
+	local name = player:get_player_name()
+	local function say(item, list, placed)
+		local label = grug_inventory.slot_label(class_id, list) or "Weapon"
+		local where_text = placed == "slot"
+			and (" is equipped in the " .. label .. " slot — your skills take " ..
+				"their damage and their look from it.")
+			or ((placed == "main" and " is in your inventory" or " lies at your feet") ..
+				"; equip it in the " .. label .. " slot on the Character screen.")
+		core.chat_send_player(name, core.colorize("#ffd100",
+			"Your " .. item_label(item) .. where_text))
 	end
-	if class_id == "scout" then
-		-- The class selection inventory is normally empty. Keep the fallback
-		-- lossless nevertheless: a full inventory drops the owed starter item
-		-- at the player instead of silently deleting it.
-		for _, item in ipairs({grug_gear.STARTER_SWORD, "grug_gear:arrow 200"}) do
-			local leftover = inv:add_item("main", ItemStack(item))
-			if not leftover:is_empty() then
-				core.add_item(player:get_pos(), leftover)
-			end
+	say(itemname, WEAPON_LIST, where)
+	-- The class selection inventory is normally empty. Keep the fallbacks
+	-- lossless nevertheless: a full inventory drops the owed starter item at
+	-- the player instead of silently deleting it.
+	local offhand = grug_inventory.STARTER_OFFHAND[class_id]
+	if offhand and core.registered_items[offhand] then
+		local placed = place_starter_item(player, inv, ItemStack(offhand), OFFHAND_LIST)
+		if not placed then
+			core.add_item(player:get_pos(), ItemStack(offhand))
+		end
+		say(offhand, OFFHAND_LIST, placed)
+	end
+	local arrows = grug_inventory.STARTER_ARROWS[class_id]
+	if arrows then
+		local leftover = grug_inventory.add_to_quiver(player,
+			ItemStack("grug_gear:arrow " .. arrows))
+		leftover = inv:add_item("main", leftover)
+		if not leftover:is_empty() then
+			core.add_item(player:get_pos(), leftover)
 		end
 	end
-	local def = core.registered_items[itemname]
-	local label = ((def and def.description) or itemname):gsub("\n.*", "")
-	core.chat_send_player(player:get_player_name(), core.colorize("#ffd100",
-		where == "weapon"
-			and ("Your " .. label .. " is equipped in the Weapon slot — your " ..
-				"skills take their damage and their look from it.")
-			or ("Your " .. label .. " is in your inventory; equip it in the " ..
-				"Weapon slot on the Character screen.")))
+	-- Server-side equipment write: caches, stats, ability skins, the
+	-- Character page and the visible weapon all hang off this one call.
+	grug_inventory.equipment_changed(player)
 end)
 
 -- Startup audit, the grug_traders pattern: one action line when clean, a loud
 -- error otherwise. Every failure it can find is a CONTENT failure that no test
--- outside the engine sees -- a class added without a starter weapon, a starter
--- weapon whose item another mod curated away, or one the equip filter would
--- refuse the moment the grant above wrote it into the slot.
+-- outside the engine sees -- a class added without a starter weapon or hand
+-- rules, a starter item whose item another mod curated away, or one the slot
+-- rules would refuse the moment the grant above wrote it into the slot.
 core.register_on_mods_loaded(function()
 	local report, broken = {}, {}
-	for _, class_id in ipairs(grug_classes.class_ids) do
-		local itemname = CLASS_STARTER_WEAPON[class_id]
-		if not itemname then
-			broken[#broken + 1] = class_id .. " has no starter weapon"
-		elseif not core.registered_items[itemname] then
+	local function audit(class_id, itemname, list)
+		if not core.registered_items[itemname] then
 			broken[#broken + 1] = class_id .. "'s " .. itemname ..
 				" is not a registered item"
-		elseif core.get_item_group(itemname, slot_group[WEAPON_LIST]) == 0 then
+		elseif not grug_inventory.hand_accepts(class_id, list, ItemStack(itemname)) then
 			broken[#broken + 1] = class_id .. "'s " .. itemname ..
-				" cannot go into the weapon slot"
+				" cannot go into the " .. list .. " slot"
 		else
 			report[#report + 1] = class_id .. "=" .. itemname ..
 				(grug_inventory.hands_of(itemname) >= 2 and " (2H)" or "")
+		end
+	end
+	for _, class_id in ipairs(grug_classes.class_ids) do
+		local itemname = CLASS_STARTER_WEAPON[class_id]
+		if not HAND_RULES[class_id] then
+			broken[#broken + 1] = class_id .. " has no hand slot rules"
+		elseif not itemname then
+			broken[#broken + 1] = class_id .. " has no starter weapon"
+		else
+			audit(class_id, itemname, WEAPON_LIST)
+			local offhand = grug_inventory.STARTER_OFFHAND[class_id]
+			if offhand then audit(class_id, offhand, OFFHAND_LIST) end
 		end
 	end
 	if #broken > 0 then
@@ -874,10 +1036,12 @@ local function try_weapon_hint(name)
 		return -- nothing to equip yet: stay armed
 	end
 	meta:set_int(WEAPON_HINT_KEY, 1)
+	local label = grug_inventory.slot_label(grug_classes.get_class(player),
+		WEAPON_LIST) or "Weapon"
 	core.chat_send_player(name, core.colorize("#ffd100",
 		"You have no weapon equipped. Open your inventory and put a weapon " ..
-		"into the Weapon slot on the Character screen — your skills take " ..
-		"their damage and their look from it."))
+		"into the " .. label .. " slot on the Character screen — your skills " ..
+		"take their damage and their look from it."))
 end
 
 local function arm_weapon_hint(player)
@@ -922,8 +1086,8 @@ core.register_globalstep(function(dtime)
 				core.get_item_group(wielded:get_name(), "grug_equip_weapon") > 0 and
 				now - row.warned >= RAW_WEAPON_HINT_INTERVAL then
 			core.chat_send_player(name, core.colorize("#ffd100",
-				"Weapons work from the Character Weapon slot. Equip this weapon " ..
-				"there, then use a combat skill from your hotbar."))
+				"Weapons work from the hand slots on the Character page. Equip " ..
+				"this weapon there, then use a combat skill from your hotbar."))
 			row.warned = now
 		end
 		row.pressed = pressed

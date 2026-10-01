@@ -1,0 +1,1469 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_024",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 24,
+   "name": "Whisperreed Landing",
+   "protected_box": {
+    "kind": "village",
+    "max_x": 887,
+    "max_z": 1615,
+    "min_x": 864,
+    "min_z": 1592
+   },
+   "settlement_key": "r20_anchor_024",
+   "slot": "village_1",
+   "x": 876,
+   "y": 11,
+   "z": 1604
+  },
+  {
+   "id": "anchor_046",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 28,
+   "name": "Reedvoice Station",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 689,
+    "max_z": 1241,
+    "min_x": 674,
+    "min_z": 1226
+   },
+   "settlement_key": "r20_anchor_046",
+   "slot": "outpost_1",
+   "x": 682,
+   "y": 44,
+   "z": 1234
+  },
+  {
+   "id": "anchor_066",
+   "kind": "mine",
+   "kind_text": "mine",
+   "level_at": 27,
+   "name": "Reedstone Cut",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 1035,
+    "max_z": 1313,
+    "min_x": 1016,
+    "min_z": 1294
+   },
+   "settlement_key": "r20_anchor_066",
+   "slot": "mine",
+   "x": 1026,
+   "y": 26,
+   "z": 1304
+  },
+  {
+   "id": "anchor_070",
+   "kind": "mirefolk",
+   "kind_text": "mirefolk camp",
+   "level_at": 23,
+   "name": "Hushwater Nests",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 1103,
+    "max_z": 1771,
+    "min_x": 1088,
+    "min_z": 1756
+   },
+   "settlement_key": "r20_anchor_070",
+   "slot": "mirefolk",
+   "x": 1096,
+   "y": 20,
+   "z": 1764
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_jungle_edge",
+   "share": 45
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share": 25
+  },
+  {
+   "id": "grug_swamp",
+   "share": 30
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 46.9
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 26.5
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 25.5
+  },
+  {
+   "id": "grug_savanna",
+   "share_pct": 0.8
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_badlands_east",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 664,
+   "midpoint": {
+    "x": 699,
+    "z": 1070
+   },
+   "zone": "kragmar_bannerbreak_mesa"
+  },
+  {
+   "length_nodes": 760,
+   "midpoint": {
+    "x": 514,
+    "z": 1505
+   },
+   "zone": "kragmar_gor_drazhak"
+  },
+  {
+   "length_nodes": 1036,
+   "midpoint": {
+    "x": 1326,
+    "z": 1472
+   },
+   "zone": "kragmar_kezamba"
+  },
+  {
+   "length_nodes": 520,
+   "midpoint": {
+    "x": 1190,
+    "z": 2036
+   },
+   "zone": "kragmar_raincall_basin"
+  },
+  {
+   "length_nodes": 428,
+   "midpoint": {
+    "x": 624,
+    "z": 1955
+   },
+   "zone": "kragmar_redtusk_savanna"
+  },
+  {
+   "length_nodes": 736,
+   "midpoint": {
+    "x": 1143,
+    "z": 1027
+   },
+   "zone": "kragmar_thunderroot_wilds"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_046",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 28,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Reedvoice Station",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 682,
+   "z": 1234
+  },
+  {
+   "anchor": "anchor_070",
+   "level_at_anchor": 23,
+   "name": "Hushwater Nests",
+   "note": "EMPTY today: no camp fire is placed (anchor roster lists only capital, outpost and bandit populations)",
+   "type": "mirefolk",
+   "x": 1096,
+   "z": 1764
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:bog_fowl",
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:parrot",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_day": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:tapir"
+  ],
+  "density_budget_night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp"
+  ],
+  "night": [
+   "grug_mobs:bog_ooze",
+   "grug_mobs:crocodile",
+   "grug_mobs:wisp"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 27600,
+  "bay_water_area_nodes2": 59664,
+  "beaches": [
+   {
+    "area_nodes2": 12864,
+    "box": {
+     "max_x": 916,
+     "max_z": 2112,
+     "min_x": 708,
+     "min_z": 1896
+    },
+    "centroid": {
+     "x": 786,
+     "z": 2007
+    },
+    "id": "B1",
+    "levels": [
+     21,
+     22
+    ]
+   },
+   {
+    "area_nodes2": 8528,
+    "box": {
+     "max_x": 1080,
+     "max_z": 2152,
+     "min_x": 928,
+     "min_z": 1912
+    },
+    "centroid": {
+     "x": 1002,
+     "z": 2046
+    },
+    "id": "B2",
+    "levels": [
+     21,
+     22
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 32800,
+  "sea_beach_sand_area_nodes2": 21648,
+  "sea_coast_length_nodes": 824
+ },
+ "drift_band_share_pct": 6.6,
+ "extent": {
+  "centroid": {
+   "x": 932,
+   "z": 1519
+  },
+  "land_area_nodes2": 744800,
+  "max_x": 1412,
+  "max_z": 2156,
+  "min_x": 488,
+  "min_z": 940
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 900,
+  "z": 1500
+ },
+ "id": "kragmar_whispering_reedlands",
+ "level_field": {
+  "histogram_pct": {
+   "21": 8.9,
+   "22": 10.3,
+   "23": 11.0,
+   "24": 11.3,
+   "25": 10.3,
+   "26": 11.3,
+   "27": 8.8,
+   "28": 9.5,
+   "29": 9.0,
+   "30": 9.7
+  },
+  "max": 30,
+  "min": 21
+ },
+ "level_max": 30,
+ "level_min": 21,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_whispering_reedlands.png",
+ "name": "Whispering Reedlands",
+ "neighbors": [
+  "kragmar_bannerbreak_mesa",
+  "kragmar_gor_drazhak",
+  "kragmar_kezamba",
+  "kragmar_raincall_basin",
+  "kragmar_redtusk_savanna",
+  "kragmar_thunderroot_wilds"
+ ],
+ "numeric_id": 30,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_024",
+    "kind": "village",
+    "max_x": 887,
+    "max_z": 1615,
+    "min_x": 864,
+    "min_z": 1592,
+    "name": "Whisperreed Landing"
+   },
+   {
+    "anchor": "anchor_046",
+    "kind": "poi",
+    "max_x": 689,
+    "max_z": 1241,
+    "min_x": 674,
+    "min_z": 1226,
+    "name": "Reedvoice Station"
+   },
+   {
+    "anchor": "anchor_066",
+    "kind": "poi",
+    "max_x": 1035,
+    "max_z": 1313,
+    "min_x": 1016,
+    "min_z": 1294,
+    "name": "Reedstone Cut"
+   },
+   {
+    "anchor": "anchor_070",
+    "kind": "camp",
+    "max_x": 1103,
+    "max_z": 1771,
+    "min_x": 1088,
+    "min_z": 1756,
+    "name": "Hushwater Nests"
+   }
+  ]
+ },
+ "protected_share_pct": 1.9,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 70,
+   "description": "Whisperreed's landing needs crosspieces strong enough to keep laden travellers above the mud. Bring eight junglewood planks to the sheltered landing workshop; this is a repair delivery, not a boatbuilding lesson. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "r20_anchor_024_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Landing That Holds",
+   "turnin": "r20_anchor_024_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Tapirs crowd the dry paths through Whispering Reedlands by day. Clear four so carriers can bring their loads to Whisperreed Landing without stepping into the pools.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "r20_anchor_024_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 tapir [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:tapir"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Tapirs on the Dry Path",
+   "turnin": "r20_anchor_024_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Reedvoice's signal shelf has sunk below the driest line on its posts. Bring eight junglewood planks to raise the shelf inside the shelter without blocking the reed-path entrance. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "r20_anchor_046_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Dry Signal Shelf",
+   "turnin": "r20_anchor_046_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Jungle lynx watch Whispering Reedlands' forest margins by day and keep the signal carriers from their paths. Defeat four, then return to Reedvoice Station.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "r20_anchor_046_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 jungle_lynx [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:jungle_lynx"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Cats by the Reed Pipes",
+   "turnin": "r20_anchor_046_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Reedstone's timber stacks must stay above the wet ground if the quarry is to remain workable. Bring eight junglewood planks for the raised supports beside its shelter. Existing or traded supplies are welcome.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "r20_anchor_066_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 8 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Timbers Kept Above Water",
+   "turnin": "r20_anchor_066_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "Bog ooze collects on Whispering Reedlands' muddy ground around the quarry approaches. Break up four so the crew can reach its stored tools.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "r20_anchor_066_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 bog_ooze [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bog_ooze"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Quarry Pool Moves",
+   "turnin": "r20_anchor_066_host",
+   "xp": 820
+  },
+  {
+   "copper": 70,
+   "description": "The cleared paths are drawing travellers after dusk, when false lights gather over the reeds. Disperse three wisps in Whispering Reedlands at night and return to Taleko.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "r20_anchor_024_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 wisp [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:wisp"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_024_02"
+   ],
+   "reward_items": [],
+   "title": "Cold Lights in the Reeds",
+   "turnin": "r20_anchor_024_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "The carriers can travel by day, but lights in the wet reeds mimic the station's signals after dusk. Disperse three wisps in Whispering Reedlands at night.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "r20_anchor_046_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 wisp [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:wisp"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_046_02"
+   ],
+   "reward_items": [],
+   "title": "The False Answering Lights",
+   "turnin": "r20_anchor_046_host",
+   "xp": 900
+  },
+  {
+   "copper": 70,
+   "description": "Once the ooze is cleared, the haulers can use the bank path again. Defeat three crocodiles on Whispering Reedlands' muddy banks before the next load leaves Reedstone Cut.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "r20_anchor_066_03",
+   "min_level": 23,
+   "objectives": [
+    "kill 3 crocodile [in kragmar_whispering_reedlands]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:crocodile"
+     ],
+     "type": "kill",
+     "zone": "kragmar_whispering_reedlands"
+    }
+   ],
+   "prerequisites": [
+    "r20_anchor_066_02"
+   ],
+   "reward_items": [],
+   "title": "Jaws Along the Haul Path",
+   "turnin": "r20_anchor_066_host",
+   "xp": 900
+  },
+  {
+   "copper": 50,
+   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Reedstone Cut in Whispering Reedlands and speak with Zali Runoff. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Zali Runoff there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "r20_troll_journey_02",
+   "min_level": 24,
+   "objectives": [
+    "talk to Zali Runoff (r20_anchor_066)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_066_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Zali Runoff",
+   "turnin": "r20_anchor_066_host",
+   "xp": 705
+  },
+  {
+   "copper": 50,
+   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Thunderstep Watch in Thunderroot Wilds and speak with Rumela Stormstep. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Rumela Stormstep there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "r20_troll_journey_03",
+   "min_level": 31,
+   "objectives": [
+    "talk to Rumela Stormstep (r20_anchor_048)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_048_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Rumela Stormstep",
+   "turnin": "r20_anchor_048_host",
+   "xp": 915
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.0,
+  "height_above_sea": {
+   "max": 84,
+   "median": 22,
+   "min": 0,
+   "p10": 5,
+   "p90": 53
+  },
+  "steep_share_pct": 0.2
+ },
+ "relief_profile": "wetland_delta",
+ "roads": [
+  {
+   "first_in_zone": [
+    523,
+    1671
+   ],
+   "from": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)",
+   "id": 16,
+   "kind": "primary",
+   "last_in_zone": [
+    1292,
+    1771
+   ],
+   "length_in_zone": 826,
+   "length_total": 1364,
+   "polyline_simplified": [
+    [
+     272,
+     1634
+    ],
+    [
+     404,
+     1619
+    ],
+    [
+     661,
+     1747
+    ],
+    [
+     848,
+     1749
+    ],
+    [
+     1050,
+     1687
+    ],
+    [
+     1266,
+     1773
+    ],
+    [
+     1536,
+     1758
+    ]
+   ],
+   "to": "anchor_012 (Kezamba, kragmar_kezamba)"
+  },
+  {
+   "first_in_zone": [
+    878,
+    1619
+   ],
+   "from": "anchor_024 (Whisperreed Landing, kragmar_whispering_reedlands)",
+   "id": 25,
+   "kind": "secondary",
+   "last_in_zone": [
+    927,
+    1714
+   ],
+   "length_in_zone": 110,
+   "length_total": 108,
+   "polyline_simplified": [
+    [
+     878,
+     1619
+    ],
+    [
+     927,
+     1714
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    671,
+    1231
+   ],
+   "from": "anchor_046 (Reedvoice Station, kragmar_whispering_reedlands)",
+   "id": 47,
+   "kind": "trail",
+   "last_in_zone": [
+    510,
+    1342
+   ],
+   "length_in_zone": 206,
+   "length_total": 522,
+   "polyline_simplified": [
+    [
+     671,
+     1231
+    ],
+    [
+     611,
+     1249
+    ],
+    [
+     512,
+     1336
+    ],
+    [
+     495,
+     1471
+    ],
+    [
+     463,
+     1536
+    ],
+    [
+     445,
+     1639
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    1038,
+    1317
+   ],
+   "from": "anchor_066 (Reedstone Cut, kragmar_whispering_reedlands)",
+   "id": 66,
+   "kind": "trail",
+   "last_in_zone": [
+    1116,
+    1702
+   ],
+   "length_in_zone": 440,
+   "length_total": 446,
+   "polyline_simplified": [
+    [
+     1038,
+     1317
+    ],
+    [
+     1168,
+     1506
+    ],
+    [
+     1163,
+     1572
+    ],
+    [
+     1116,
+     1702
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    1086,
+    1756
+   ],
+   "from": "anchor_070 (Hushwater Nests, kragmar_whispering_reedlands)",
+   "id": 70,
+   "kind": "trail",
+   "last_in_zone": [
+    1037,
+    1688
+   ],
+   "length_in_zone": 90,
+   "length_total": 87,
+   "polyline_simplified": [
+    [
+     1086,
+     1756
+    ],
+    [
+     1037,
+     1688
+    ]
+   ],
+   "to": "joins road 16"
+  }
+ ],
+ "role": "home zone 21-30",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 876,
+    "y": 11,
+    "z": 1604
+   },
+   "anchor_id": "anchor_024",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Reedstone Cut",
+      "road": 787,
+      "straight": 335,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1062,
+      "straight": 870,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1120,
+      "straight": 671,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 1184,
+      "straight": 418,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kezamba",
+      "road": 1244,
+      "straight": 930,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Gor Drazhak",
+      "road": 1385,
+      "straight": 882,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 357,
+     "x": 536,
+     "z": 1712
+    },
+    "nearest_road": {
+     "distance": 15
+    },
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 337,
+     "x": 900,
+     "z": 1940
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "N",
+     "distance": 283,
+     "x": 920,
+     "z": 1884
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 396,
+      "hits": "kragmar_kezamba"
+     },
+     "north_+z": {
+      "distance": 352,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 644,
+      "hits": "kragmar_bannerbreak_mesa"
+     },
+     "west_-x": {
+      "distance": 368,
+      "hits": "kragmar_gor_drazhak"
+     }
+    }
+   },
+   "key": "r20_anchor_024",
+   "name": "Whisperreed Landing",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_024_host",
+     "npc_name": "Taleko Drycord",
+     "quests": [
+      "r20_anchor_024_01",
+      "r20_anchor_024_02",
+      "r20_anchor_024_03",
+      "r20_troll_journey_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 878,
+     "y": 12,
+     "z": 1604
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 682,
+    "y": 44,
+    "z": 1234
+   },
+   "anchor_id": "anchor_046",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1001,
+      "straight": 829,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1184,
+      "straight": 418,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Gor Drazhak",
+      "road": 1267,
+      "straight": 732,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": 1526,
+      "straight": 1089,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1726,
+      "straight": 351,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": 1930,
+      "straight": 1116,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SW",
+     "distance": 122,
+     "x": 596,
+     "z": 1148
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 739,
+     "x": 900,
+     "z": 1940
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "N",
+     "distance": 692,
+     "x": 920,
+     "z": 1884
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 700,
+      "hits": "kragmar_kezamba"
+     },
+     "north_+z": {
+      "distance": 804,
+      "hits": "kragmar_redtusk_savanna"
+     },
+     "south_-z": {
+      "distance": 144,
+      "hits": "kragmar_bannerbreak_mesa"
+     },
+     "west_-x": {
+      "distance": 184,
+      "hits": "kragmar_gor_drazhak"
+     }
+    }
+   },
+   "key": "r20_anchor_046",
+   "name": "Reedvoice Station",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_046_host",
+     "npc_name": "Enashi Reedvoice",
+     "quests": [
+      "r20_anchor_046_01",
+      "r20_anchor_046_02",
+      "r20_anchor_046_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 684,
+     "y": 45,
+     "z": 1234
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1026,
+    "y": 26,
+    "z": 1304
+   },
+   "anchor_id": "anchor_066",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Whisperreed Landing",
+      "road": 787,
+      "straight": 335,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1202,
+      "straight": 949,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kezamba",
+      "road": 1384,
+      "straight": 798,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1662,
+      "straight": 977,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 1726,
+      "straight": 351,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kapok",
+      "road": 1833,
+      "straight": 1467,
+      "to": "kapok",
+      "zone": "kragmar_kapok_cradle"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "SE",
+     "distance": 258,
+     "x": 1160,
+     "z": 1084
+    },
+    "nearest_road": {
+     "distance": 18
+    },
+    "nearest_sea": {
+     "bearing": "N",
+     "distance": 646,
+     "x": 912,
+     "z": 1940
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "N",
+     "distance": 580,
+     "x": 960,
+     "z": 1880
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 332,
+      "hits": "kragmar_kezamba"
+     },
+     "north_+z": {
+      "distance": 808,
+      "hits": "bay_water"
+     },
+     "south_-z": {
+      "distance": 308,
+      "hits": "kragmar_thunderroot_wilds"
+     },
+     "west_-x": {
+      "distance": 528,
+      "hits": "kragmar_gor_drazhak"
+     }
+    }
+   },
+   "key": "r20_anchor_066",
+   "name": "Reedstone Cut",
+   "npcs": [
+    {
+     "npc_id": "r20_anchor_066_host",
+     "npc_name": "Zali Runoff",
+     "quests": [
+      "r20_anchor_066_01",
+      "r20_anchor_066_02",
+      "r20_anchor_066_03",
+      "r20_troll_journey_03"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_host",
+     "x": 1028,
+     "y": 27,
+     "z": 1304
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 1096,
+    "y": 20,
+    "z": 1764
+   },
+   "anchor_id": "anchor_070",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Whisperreed Landing",
+      "road": null,
+      "straight": 272,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": null,
+      "straight": 465,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": null,
+      "straight": 600,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": null,
+      "straight": 673,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Kezamba",
+      "road": null,
+      "straight": 752,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": null,
+      "straight": 806,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "E",
+     "distance": 199,
+     "x": 1288,
+     "z": 1712
+    },
+    "nearest_road": {
+     "distance": 13
+    },
+    "nearest_sea": {
+     "bearing": "NW",
+     "distance": 255,
+     "x": 916,
+     "z": 1944
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 179,
+     "x": 960,
+     "z": 1880
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 200,
+      "hits": "kragmar_kezamba"
+     },
+     "north_+z": {
+      "distance": 360,
+      "hits": "kragmar_raincall_basin"
+     },
+     "south_-z": {
+      "distance": 724,
+      "hits": "kragmar_thunderroot_wilds"
+     },
+     "west_-x": {
+      "distance": 556,
+      "hits": "kragmar_gor_drazhak"
+     }
+    }
+   },
+   "key": "r20_anchor_070",
+   "name": "Hushwater Nests",
+   "npcs": [],
+   "race": "troll",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 27.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_fowl",
+   "name": "Bog Fowl",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 27.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:bog_ooze",
+   "name": "Bog Ooze",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 27.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 27.0
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:crocodile",
+   "name": "Crocodile",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 27.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 71.8
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_lynx",
+   "name": "Jungle Lynx",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 46.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:parrot",
+   "name": "Parrot",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 21648,
+    "levels": [
+     21,
+     22
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 21648,
+    "levels": [
+     21,
+     22
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 71.8
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:tapir",
+   "name": "Tapir",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_bone_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:wisp",
+   "name": "Wisp",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 98.8
+   }
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 4
+}

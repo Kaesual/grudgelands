@@ -1,0 +1,1497 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_021",
+   "kind": "village",
+   "kind_text": "village",
+   "level_at": 16,
+   "name": "Redtusk Village",
+   "protected_box": {
+    "kind": "village",
+    "max_x": -77,
+    "max_z": 2015,
+    "min_x": -100,
+    "min_z": 1992
+   },
+   "settlement_key": "redtusk_village",
+   "slot": "village_1",
+   "x": -88,
+   "y": 51,
+   "z": 2004
+  },
+  {
+   "id": "anchor_041",
+   "kind": "outpost",
+   "kind_text": "outpost",
+   "level_at": 15,
+   "name": "Redtusk Outpost",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 183,
+    "max_z": 2081,
+    "min_x": 168,
+    "min_z": 2066
+   },
+   "settlement_key": "redtusk_outpost",
+   "slot": "outpost_1",
+   "x": 176,
+   "y": 55,
+   "z": 2074
+  },
+  {
+   "id": "anchor_057",
+   "kind": "bandit_home",
+   "kind_text": "bandit camp",
+   "level_at": 16,
+   "name": "Redtusk Bandit Camp",
+   "protected_box": {
+    "kind": "camp",
+    "max_x": 331,
+    "max_z": 1991,
+    "min_x": 308,
+    "min_z": 1968
+   },
+   "settlement_key": "redtusk_bandit_camp",
+   "slot": "bandit_1",
+   "x": 320,
+   "y": 88,
+   "z": 1980
+  },
+  {
+   "id": "anchor_098",
+   "kind": "rare_route",
+   "kind_text": "rare route",
+   "level_at": 15,
+   "name": "Ashmaw's Burnt Hollow",
+   "protected_box": {
+    "kind": "poi",
+    "max_x": 157,
+    "max_z": 2089,
+    "min_x": 146,
+    "min_z": 2078
+   },
+   "settlement_key": "r20_anchor_098",
+   "slot": "rare_ashmaw",
+   "x": 152,
+   "y": 36,
+   "z": 2084
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_savanna",
+   "share": 75
+  },
+  {
+   "id": "grug_badlands",
+   "share": 25
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_savanna",
+   "share_pct": 60.2
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 39.5
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1232,
+   "midpoint": {
+    "x": 8,
+    "z": 1814
+   },
+   "zone": "kragmar_gor_drazhak"
+  },
+  {
+   "length_nodes": 1004,
+   "midpoint": {
+    "x": -654,
+    "z": 2000
+   },
+   "zone": "kragmar_speargrass_reach"
+  },
+  {
+   "length_nodes": 1724,
+   "midpoint": {
+    "x": -127,
+    "z": 2305
+   },
+   "zone": "kragmar_sunscar_flats"
+  },
+  {
+   "length_nodes": 432,
+   "midpoint": {
+    "x": 628,
+    "z": 1949
+   },
+   "zone": "kragmar_whispering_reedlands"
+  }
+ ],
+ "camps": [
+  {
+   "anchor": "anchor_041",
+   "count": [
+    2,
+    3
+   ],
+   "level_at_anchor": 15,
+   "mobs": [
+    "grug_mobs:guard_throng"
+   ],
+   "name": "Redtusk Outpost",
+   "respawn_s": [
+    180,
+    360
+   ],
+   "type": "guard post",
+   "x": 176,
+   "z": 2074
+  },
+  {
+   "anchor": "anchor_057",
+   "count": [
+    3,
+    5
+   ],
+   "level_at_anchor": 16,
+   "mobs": [
+    "grug_mobs:bandit",
+    "grug_mobs:bandit_archer"
+   ],
+   "name": "Redtusk Bandit Camp",
+   "radius": 12,
+   "respawn_s": [
+    120,
+    300
+   ],
+   "type": "bandit",
+   "x": 320,
+   "z": 1980
+  }
+ ],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:hare",
+   "grug_mobs:hyena",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit",
+   "grug_mobs:zebra"
+  ],
+  "density_budget_day": [
+   "grug_mobs:boar",
+   "grug_mobs:hyena",
+   "grug_mobs:zebra"
+  ],
+  "density_budget_night": [
+   "grug_mobs:hyena",
+   "grug_mobs:scorpion",
+   "grug_mobs:sun_dried_husk"
+  ],
+  "night": [
+   "grug_mobs:hyena",
+   "grug_mobs:scorpion",
+   "grug_mobs:sun_dried_husk",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 3968,
+  "bay_water_area_nodes2": 57344,
+  "beaches": [
+   {
+    "area_nodes2": 3760,
+    "box": {
+     "max_x": 568,
+     "max_z": 2204,
+     "min_x": 460,
+     "min_z": 2104
+    },
+    "centroid": {
+     "x": 512,
+     "z": 2140
+    },
+    "id": "B1",
+    "levels": [
+     12,
+     14
+    ]
+   },
+   {
+    "area_nodes2": 3056,
+    "box": {
+     "max_x": 564,
+     "max_z": 2332,
+     "min_x": 448,
+     "min_z": 2292
+    },
+    "centroid": {
+     "x": 513,
+     "z": 2311
+    },
+    "id": "B2",
+    "levels": [
+     11,
+     11
+    ]
+   },
+   {
+    "area_nodes2": 2624,
+    "box": {
+     "max_x": -700,
+     "max_z": 2372,
+     "min_x": -768,
+     "min_z": 2292
+    },
+    "centroid": {
+     "x": -735,
+     "z": 2337
+    },
+    "id": "B3",
+    "levels": [
+     11,
+     11
+    ]
+   },
+   {
+    "area_nodes2": 992,
+    "box": {
+     "max_x": 724,
+     "max_z": 2152,
+     "min_x": 668,
+     "min_z": 2120
+    },
+    "centroid": {
+     "x": 694,
+     "z": 2135
+    },
+    "id": "B4",
+    "levels": [
+     13,
+     14
+    ]
+   },
+   {
+    "area_nodes2": 224,
+    "box": {
+     "max_x": -724,
+     "max_z": 2276,
+     "min_x": -740,
+     "min_z": 2256
+    },
+    "centroid": {
+     "x": -731,
+     "z": 2265
+    },
+    "id": "B5",
+    "levels": [
+     11,
+     12
+    ]
+   },
+   {
+    "area_nodes2": 192,
+    "box": {
+     "max_x": 464,
+     "max_z": 2232,
+     "min_x": 444,
+     "min_z": 2204
+    },
+    "centroid": {
+     "x": 455,
+     "z": 2219
+    },
+    "id": "B6",
+    "levels": [
+     12,
+     12
+    ]
+   },
+   {
+    "area_nodes2": 144,
+    "box": {
+     "max_x": 652,
+     "max_z": 2160,
+     "min_x": 648,
+     "min_z": 2136
+    },
+    "centroid": {
+     "x": 651,
+     "z": 2148
+    },
+    "id": "B7",
+    "levels": [
+     13,
+     14
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 6912,
+  "sea_beach_sand_area_nodes2": 11280,
+  "sea_coast_length_nodes": 1132
+ },
+ "drift_band_share_pct": 4.3,
+ "extent": {
+  "centroid": {
+   "x": -88,
+   "z": 2060
+  },
+  "land_area_nodes2": 612128,
+  "max_x": 724,
+  "max_z": 2424,
+  "min_x": -772,
+  "min_z": 1688
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": 2050
+ },
+ "id": "kragmar_redtusk_savanna",
+ "level_field": {
+  "histogram_pct": {
+   "11": 7.9,
+   "12": 11.1,
+   "13": 11.8,
+   "14": 13.9,
+   "15": 13.5,
+   "16": 12.0,
+   "17": 9.0,
+   "18": 8.7,
+   "19": 7.1,
+   "20": 5.1
+  },
+  "max": 20,
+  "min": 11
+ },
+ "level_max": 20,
+ "level_min": 11,
+ "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
+ "map": "maps/kragmar_redtusk_savanna.png",
+ "name": "Redtusk Savanna",
+ "neighbors": [
+  "kragmar_gor_drazhak",
+  "kragmar_speargrass_reach",
+  "kragmar_sunscar_flats",
+  "kragmar_whispering_reedlands"
+ ],
+ "numeric_id": 23,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [
+   {
+    "anchor": "anchor_021",
+    "kind": "village",
+    "max_x": -77,
+    "max_z": 2015,
+    "min_x": -100,
+    "min_z": 1992,
+    "name": "Redtusk Village"
+   },
+   {
+    "anchor": "anchor_041",
+    "kind": "poi",
+    "max_x": 183,
+    "max_z": 2081,
+    "min_x": 168,
+    "min_z": 2066,
+    "name": "Redtusk Outpost"
+   },
+   {
+    "anchor": "anchor_057",
+    "kind": "camp",
+    "max_x": 331,
+    "max_z": 1991,
+    "min_x": 308,
+    "min_z": 1968,
+    "name": "Redtusk Bandit Camp"
+   },
+   {
+    "anchor": "anchor_098",
+    "kind": "poi",
+    "max_x": 157,
+    "max_z": 2089,
+    "min_x": 146,
+    "min_z": 2078,
+    "name": "Ashmaw's Burnt Hollow"
+   }
+  ]
+ },
+ "protected_share_pct": 1.4,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 50,
+   "description": "Hyenas circle the village herd. Thin the pack before it learns the fences.",
+   "giver": "r14_orc_steward",
+   "giver_name": "Borak Redgrass",
+   "giver_settlement": "Redtusk Village",
+   "id": "r14_orc_07_teeth_around_the_herd",
+   "min_level": 10,
+   "objectives": [
+    "kill 6 hyena [in kragmar_redtusk_savanna]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:hyena"
+     ],
+     "type": "kill",
+     "zone": "kragmar_redtusk_savanna"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_06_husks_on_redtusk_road"
+   ],
+   "reward_items": [],
+   "title": "Teeth Around the Herd",
+   "turnin": "r14_orc_steward",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "The broad house's low annex needs fresh ties for its hide screens. Bring ordinary leather from the local hunt.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "r15_orc_local_01",
+   "min_level": 10,
+   "objectives": [
+    "bring 2 mobs:leather"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "description": "Bring ordinary leather",
+     "item": "mobs:leather",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_06_husks_on_redtusk_road"
+   ],
+   "reward_items": [],
+   "title": "Hide for the Low Annex",
+   "turnin": "r15_orc_local",
+   "xp": 285
+  },
+  {
+   "copper": 45,
+   "description": "Bring two ordinary fangs from the hyenas circling Redtusk's herd. Morga will hang them beside the repaired hide screens while Borak's herd patrol is under way.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "r15_orc_local_02",
+   "min_level": 10,
+   "objectives": [
+    "bring 2 grug_mobs:fang"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:fang",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_06_husks_on_redtusk_road"
+   ],
+   "reward_items": [],
+   "title": "Fangs Beyond the Annex",
+   "turnin": "r15_orc_local",
+   "xp": 380
+  },
+  {
+   "copper": 60,
+   "description": "Scorpions fill the dry wash below the outpost. Clear Kesh's patrol route. Look for this threat after nightfall in the named regional zone.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "r14_orc_08_scour_the_dry_wash",
+   "min_level": 11,
+   "objectives": [
+    "kill 6 scorpion [in kragmar_redtusk_savanna]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "mobs": [
+      "grug_mobs:scorpion"
+     ],
+     "type": "kill",
+     "zone": "kragmar_redtusk_savanna"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_07_teeth_around_the_herd"
+   ],
+   "reward_items": [],
+   "title": "Scour the Dry Wash",
+   "turnin": "r14_orc_scout",
+   "xp": 525
+  },
+  {
+   "copper": 50,
+   "description": "Hyenas wait below the timber lookout and scatter anyone carrying stores uphill. Clear the post's approach.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "r15_orc_local_03",
+   "min_level": 11,
+   "objectives": [
+    "kill 4 hyena [in kragmar_redtusk_savanna]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:hyena"
+     ],
+     "type": "kill",
+     "zone": "kragmar_redtusk_savanna"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_07_teeth_around_the_herd"
+   ],
+   "reward_items": [],
+   "title": "Howls Below the Lookout",
+   "turnin": "r14_orc_scout",
+   "xp": 315
+  },
+  {
+   "copper": 55,
+   "description": "The scorpions in Redtusk's dry wash emerge after sunset. Bring two ordinary venom sacs from that same outing so Kesh can show the guards what to avoid along the angled palisade.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "r15_orc_local_04",
+   "min_level": 11,
+   "objectives": [
+    "bring 2 grug_mobs:venom_sac"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:venom_sac",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_07_teeth_around_the_herd"
+   ],
+   "reward_items": [],
+   "title": "Venom Beside the Palisade",
+   "turnin": "r14_orc_scout",
+   "xp": 420
+  },
+  {
+   "copper": 80,
+   "description": "The bandits branded supplies with a hooked sun no orcish forge made. Defeat them and hear Rokka's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "r14_orc_09_no_forge_made_this_brand",
+   "min_level": 12,
+   "objectives": [
+    "kill 4 bandit or bandit_archer [in kragmar_redtusk_savanna]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "mobs": [
+      "grug_mobs:bandit",
+      "grug_mobs:bandit_archer"
+     ],
+     "type": "kill",
+     "zone": "kragmar_redtusk_savanna"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_08_scour_the_dry_wash"
+   ],
+   "reward_items": [],
+   "title": "No Forge Made This Brand",
+   "turnin": "r14_orc_captive",
+   "xp": 805
+  },
+  {
+   "copper": 65,
+   "description": "The bandits kept the carriers' pay in stolen purses instead of adding it to the food stores. Recover two for the captive so the raided herd crews can reclaim their share. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+   "giver": "r14_orc_captive",
+   "giver_name": "Rokka Emberhand",
+   "giver_settlement": "Redtusk Bandit Camp",
+   "id": "r15_orc_local_05",
+   "min_level": 12,
+   "objectives": [
+    "bring 2 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:stolen_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_08_scour_the_dry_wash"
+   ],
+   "reward_items": [],
+   "title": "The Carriers' Cut",
+   "turnin": "r14_orc_captive",
+   "xp": 460
+  },
+  {
+   "copper": 75,
+   "description": "The stolen freight is tied with the raiders' linen cloth. Bring enough of it for Rokka to compare the knots and brands.",
+   "giver": "r14_orc_captive",
+   "giver_name": "Rokka Emberhand",
+   "giver_settlement": "Redtusk Bandit Camp",
+   "id": "r15_orc_local_06",
+   "min_level": 12,
+   "objectives": [
+    "bring 5 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "description": "Bring linen cloth",
+     "item": "grug_mobs:linen_cloth",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_orc_08_scour_the_dry_wash"
+   ],
+   "reward_items": [],
+   "title": "Bindings from the Loaded Sled",
+   "turnin": "r14_orc_captive",
+   "xp": 575
+  }
+ ],
+ "race_region": "orc",
+ "race_track": "orc",
+ "rares": [
+  {
+   "biome_hint": "the savanna",
+   "id": "ashmaw",
+   "level_at": 15,
+   "mob": "grug_mobs:boar",
+   "name": "Ashmaw",
+   "respawn_s": [
+    7200,
+    14400
+   ],
+   "route": [
+    [
+     104,
+     25,
+     2060
+    ],
+    [
+     168,
+     34,
+     2124
+    ],
+    [
+     208,
+     71,
+     2068
+    ]
+   ]
+  }
+ ],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 144,
+   "median": 60,
+   "min": 0,
+   "p10": 16,
+   "p90": 98
+  },
+  "steep_share_pct": 3.0
+ },
+ "relief_profile": "rolling_hills",
+ "roads": [
+  {
+   "first_in_zone": [
+    -112,
+    2261
+   ],
+   "from": "anchor_005 (Sunscar, kragmar_sunscar_flats)",
+   "id": 18,
+   "kind": "primary",
+   "last_in_zone": [
+    -102,
+    1835
+   ],
+   "length_in_zone": 450,
+   "length_total": 799,
+   "polyline_simplified": [
+    [
+     0,
+     2486
+    ],
+    [
+     -104,
+     2306
+    ],
+    [
+     -160,
+     2092
+    ],
+    [
+     -109,
+     1960
+    ],
+    [
+     -97,
+     1796
+    ],
+    [
+     -112,
+     1760
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -82,
+    1988
+   ],
+   "from": "anchor_021 (Redtusk Village, kragmar_redtusk_savanna)",
+   "id": 20,
+   "kind": "secondary",
+   "last_in_zone": [
+    -108,
+    1920
+   ],
+   "length_in_zone": 86,
+   "length_total": 84,
+   "polyline_simplified": [
+    [
+     -82,
+     1988
+    ],
+    [
+     -80,
+     1942
+    ],
+    [
+     -108,
+     1920
+    ]
+   ],
+   "to": "joins road 18"
+  },
+  {
+   "first_in_zone": [
+    180,
+    2084
+   ],
+   "from": "anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna)",
+   "id": 43,
+   "kind": "trail",
+   "last_in_zone": [
+    198,
+    2253
+   ],
+   "length_in_zone": 186,
+   "length_total": 486,
+   "polyline_simplified": [
+    [
+     180,
+     2084
+    ],
+    [
+     224,
+     2198
+    ],
+    [
+     210,
+     2237
+    ],
+    [
+     103,
+     2365
+    ],
+    [
+     -22,
+     2437
+    ]
+   ],
+   "to": "joins road 18"
+  },
+  {
+   "first_in_zone": [
+    328,
+    1965
+   ],
+   "from": "anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna)",
+   "id": 57,
+   "kind": "trail",
+   "last_in_zone": [
+    327,
+    1844
+   ],
+   "length_in_zone": 128,
+   "length_total": 349,
+   "polyline_simplified": [
+    [
+     328,
+     1965
+    ],
+    [
+     327,
+     1719
+    ],
+    [
+     353,
+     1634
+    ]
+   ],
+   "to": "joins road 16"
+  }
+ ],
+ "role": "home zone 11-20",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -88,
+    "y": 51,
+    "z": 2004
+   },
+   "anchor_id": "anchor_021",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Gor Drazhak",
+      "road": 675,
+      "straight": 512,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Sunscar",
+      "road": 793,
+      "straight": 553,
+      "to": "sunscar",
+      "zone": "kragmar_sunscar_flats"
+     },
+     {
+      "name": "Redtusk Outpost",
+      "road": 1168,
+      "straight": 273,
+      "to": "redtusk_outpost",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 1251,
+      "straight": 409,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Cutgrass Watch",
+      "road": 1507,
+      "straight": 940,
+      "to": "r20_anchor_042",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 1526,
+      "straight": 1089,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 168,
+     "x": -76,
+     "z": 1836
+    },
+    "nearest_road": {
+     "distance": 17
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 564,
+     "x": 424,
+     "z": 2240
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 563,
+     "x": 352,
+     "z": 2356
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 748,
+      "hits": "kragmar_whispering_reedlands"
+     },
+     "north_+z": {
+      "distance": 256,
+      "hits": "kragmar_sunscar_flats"
+     },
+     "south_-z": {
+      "distance": 172,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "west_-x": {
+      "distance": 588,
+      "hits": "kragmar_speargrass_reach"
+     }
+    }
+   },
+   "key": "redtusk_village",
+   "name": "Redtusk Village",
+   "npcs": [
+    {
+     "npc_id": "r14_orc_steward",
+     "npc_name": "Borak Redgrass",
+     "quests": [
+      "r14_orc_07_teeth_around_the_herd"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_steward",
+     "x": -86,
+     "y": 52,
+     "z": 2004
+    },
+    {
+     "npc_id": "r15_orc_local",
+     "npc_name": "Morga Clayhand",
+     "quests": [
+      "r15_orc_local_01",
+      "r15_orc_local_02"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_local",
+     "x": -90,
+     "y": 52,
+     "z": 2002
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "idle": 2,
+    "quest": 2
+   }
+  },
+  {
+   "anchor": {
+    "x": 176,
+    "y": 55,
+    "z": 2074
+   },
+   "anchor_id": "anchor_041",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Sunscar",
+      "road": 617,
+      "straight": 507,
+      "to": "sunscar",
+      "zone": "kragmar_sunscar_flats"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": 1168,
+      "straight": 273,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Gor Drazhak",
+      "road": 1644,
+      "straight": 600,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": 2220,
+      "straight": 172,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Cutgrass Watch",
+      "road": 2475,
+      "straight": 1167,
+      "to": "r20_anchor_042",
+      "zone": "kragmar_speargrass_reach"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 2494,
+      "straight": 981,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 173,
+     "x": 144,
+     "z": 2244
+    },
+    "nearest_road": {
+     "distance": 11
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 298,
+     "x": 424,
+     "z": 2240
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 309,
+     "x": 460,
+     "z": 2196
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 532,
+      "hits": "kragmar_whispering_reedlands"
+     },
+     "north_+z": {
+      "distance": 172,
+      "hits": "kragmar_sunscar_flats"
+     },
+     "south_-z": {
+      "distance": 208,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "west_-x": {
+      "distance": 892,
+      "hits": "kragmar_speargrass_reach"
+     }
+    }
+   },
+   "key": "redtusk_outpost",
+   "name": "Redtusk Outpost",
+   "npcs": [
+    {
+     "npc_id": "r14_orc_scout",
+     "npc_name": "Kesh Longstride",
+     "quests": [
+      "r14_orc_08_scour_the_dry_wash",
+      "r14_orc_09_no_forge_made_this_brand",
+      "r15_orc_local_03",
+      "r15_orc_local_04"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_scout",
+     "x": 179,
+     "y": 56,
+     "z": 2071
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 320,
+    "y": 88,
+    "z": 1980
+   },
+   "anchor_id": "anchor_057",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Gor Drazhak",
+      "road": 992,
+      "straight": 577,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Reedvoice Station",
+      "road": 1001,
+      "straight": 829,
+      "to": "r20_anchor_046",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1120,
+      "straight": 671,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": 1251,
+      "straight": 409,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Red Ramp Post",
+      "road": 1656,
+      "straight": 1306,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1662,
+      "straight": 977,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 132,
+     "x": 316,
+     "z": 1848
+    },
+    "nearest_road": {
+     "distance": 17
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 249,
+     "x": 500,
+     "z": 2152
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 211,
+     "x": 484,
+     "z": 2112
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 324,
+      "hits": "kragmar_whispering_reedlands"
+     },
+     "north_+z": {
+      "distance": 292,
+      "hits": "kragmar_sunscar_flats"
+     },
+     "south_-z": {
+      "distance": 136,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "west_-x": {
+      "distance": 984,
+      "hits": "kragmar_speargrass_reach"
+     }
+    }
+   },
+   "key": "redtusk_bandit_camp",
+   "name": "Redtusk Bandit Camp",
+   "npcs": [
+    {
+     "npc_id": "r14_orc_captive",
+     "npc_name": "Rokka Emberhand",
+     "quests": [
+      "r15_orc_local_05",
+      "r15_orc_local_06"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_captive",
+     "x": 330,
+     "y": 89,
+     "z": 1990
+    }
+   ],
+   "race": "orc",
+   "resident_counts": {
+    "quest": 1
+   }
+  },
+  {
+   "anchor": {
+    "x": 152,
+    "y": 36,
+    "z": 2084
+   },
+   "anchor_id": "anchor_098",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Redtusk Outpost",
+      "road": null,
+      "straight": 26,
+      "to": "redtusk_outpost",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Redtusk Bandit Camp",
+      "road": null,
+      "straight": 198,
+      "to": "redtusk_bandit_camp",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Redtusk Village",
+      "road": null,
+      "straight": 253,
+      "to": "redtusk_village",
+      "zone": "kragmar_redtusk_savanna"
+     },
+     {
+      "name": "Sunscar",
+      "road": null,
+      "straight": 490,
+      "to": "sunscar",
+      "zone": "kragmar_sunscar_flats"
+     },
+     {
+      "name": "Gor Drazhak",
+      "road": null,
+      "straight": 603,
+      "to": "gor_drazhak",
+      "zone": "kragmar_gor_drazhak"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": null,
+      "straight": 869,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 160,
+     "x": 144,
+     "z": 2244
+    },
+    "nearest_road": {
+     "distance": 28
+    },
+    "nearest_sea": {
+     "bearing": "NE",
+     "distance": 314,
+     "x": 424,
+     "z": 2240
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 327,
+     "x": 444,
+     "z": 2232
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 560,
+      "hits": "bay_water"
+     },
+     "north_+z": {
+      "distance": 164,
+      "hits": "kragmar_sunscar_flats"
+     },
+     "south_-z": {
+      "distance": 212,
+      "hits": "kragmar_gor_drazhak"
+     },
+     "west_-x": {
+      "distance": 880,
+      "hits": "kragmar_speargrass_reach"
+     }
+    }
+   },
+   "key": "r20_anchor_098",
+   "name": "Ashmaw's Burnt Hollow",
+   "npcs": [],
+   "race": "orc",
+   "resident_counts": {}
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:boar",
+   "name": "Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 61.1
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:sand",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:hare",
+   "name": "Hare",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:hyena",
+   "name": "Hyena",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:scorpion",
+   "name": "Scorpion",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 11280,
+    "levels": [
+     11,
+     15
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 11280,
+    "levels": [
+     11,
+     15
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:mesa_clay"
+   ],
+   "mob": "grug_mobs:sun_dried_husk",
+   "name": "Sun-Dried Husk",
+   "night": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     20
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 60.8
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dry_dirt_with_dry_grass"
+   ],
+   "mob": "grug_mobs:zebra",
+   "name": "Zebra",
+   "night": null
+  }
+ ],
+ "territory_rule": "throng_home",
+ "track_order": 2
+}

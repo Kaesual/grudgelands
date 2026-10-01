@@ -1,0 +1,1298 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_010",
+   "kind": "capital_undead",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Nhal Veyr",
+   "settlement_key": "nhal_veyr",
+   "slot": "capital",
+   "x": -1800,
+   "y": 46,
+   "z": 1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_blight",
+   "share": 75
+  },
+  {
+   "id": "grug_bone_forest",
+   "share": 25
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_blight",
+   "share_pct": 75.2
+  },
+  {
+   "id": "grug_bone_forest",
+   "share_pct": 24.1
+  },
+  {
+   "id": "grug_savanna",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_badlands",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 896,
+   "midpoint": {
+    "x": -1692,
+    "z": 1072
+   },
+   "zone": "kragmar_blackwind_rise"
+  },
+  {
+   "length_nodes": 872,
+   "midpoint": {
+    "x": -1742,
+    "z": 1918
+   },
+   "zone": "kragmar_mournfen"
+  },
+  {
+   "length_nodes": 1044,
+   "midpoint": {
+    "x": -2148,
+    "z": 1502
+   },
+   "zone": "kragmar_ossuary_reach"
+  },
+  {
+   "length_nodes": 804,
+   "midpoint": {
+    "x": -1351,
+    "z": 1495
+   },
+   "zone": "kragmar_speargrass_reach"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 17,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 5280,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 8368,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 12.2,
+ "extent": {
+  "centroid": {
+   "x": -1759,
+   "z": 1500
+  },
+  "land_area_nodes2": 657088,
+  "max_x": -1324,
+  "max_z": 1956,
+  "min_x": -2208,
+  "min_z": 1032
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": -1800,
+  "z": 1500
+ },
+ "id": "kragmar_nhal_veyr",
+ "level_field": {
+  "histogram_pct": {
+   "20": 10.2,
+   "21": 11.0,
+   "22": 11.5,
+   "23": 9.2,
+   "24": 8.6,
+   "25": 9.1,
+   "26": 9.0,
+   "27": 8.2,
+   "28": 8.2,
+   "29": 7.7,
+   "30": 7.3
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/kragmar_nhal_veyr.png",
+ "name": "Nhal Veyr",
+ "neighbors": [
+  "kragmar_blackwind_rise",
+  "kragmar_mournfen",
+  "kragmar_ossuary_reach",
+  "kragmar_speargrass_reach"
+ ],
+ "numeric_id": 19,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 126840,
+   "box": {
+    "max_x": -1642,
+    "max_z": 1728,
+    "min_x": -1998,
+    "min_z": 1274
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": -1671,
+     "y": 42,
+     "z": 1562
+    },
+    {
+     "name": "south",
+     "x": -1864,
+     "y": 44,
+     "z": 1708
+    },
+    {
+     "name": "west",
+     "x": -1962,
+     "y": 52,
+     "z": 1557
+    },
+    {
+     "name": "north",
+     "x": -1858,
+     "y": 44,
+     "z": 1308
+    }
+   ],
+   "outline_kind": "stone",
+   "zone_land_outside_city_pct": 80.7
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 21.1,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Velis Mourningbowl has set bowls for Nhal Veyr's vigil keepers. Bring five raw meat portions to the cook in the mourners' hall so the preserved stores can last another shift. This does not require the Cooking profession.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "r20_undead_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Bowls for the Vigil",
+   "turnin": "r20_undead_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Ossa asks you to meet Velis Mourningbowl at the homes mourners' hall. Speak with the cook at the oven and complete this introduction there. The Cooking trainer remains a separate, optional service.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "r20_undead_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Velis Mourningbowl (nhal_veyr)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_undead_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_undead_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "The Vigil Table",
+   "turnin": "r20_undead_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The vigil lamps must outlast each watch, even when the covered courtyard is wet. Bring eight coal lumps to Ossa for the lamp reserve. Ordinary carried or traded fuel is sufficient.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "r20_undead_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 8 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Coal for the Vigil Lamps",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Sovel Namekeeper there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "r20_undead_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Sovel Namekeeper (r20_anchor_020)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_020_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Sovel Namekeeper",
+   "turnin": "r20_anchor_020_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "undead",
+ "race_track": "undead",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.4,
+  "height_above_sea": {
+   "max": 251,
+   "median": 52,
+   "min": 26,
+   "p10": 41,
+   "p90": 113
+  },
+  "steep_share_pct": 9.6
+ },
+ "relief_profile": "plateau",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1537,
+    1762
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 15,
+   "kind": "primary",
+   "last_in_zone": [
+    -1444,
+    1825
+   ],
+   "length_in_zone": 116,
+   "length_total": 1440,
+   "polyline_simplified": [
+    [
+     -1537,
+     1762
+    ],
+    [
+     -1356,
+     1868
+    ],
+    [
+     -1272,
+     1830
+    ],
+    [
+     -1158,
+     1819
+    ],
+    [
+     -897,
+     1641
+    ],
+    [
+     -825,
+     1606
+    ],
+    [
+     -753,
+     1602
+    ],
+    [
+     -588,
+     1510
+    ],
+    [
+     -504,
+     1524
+    ],
+    [
+     -380,
+     1585
+    ],
+    [
+     -272,
+     1582
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -1937,
+    1948
+   ],
+   "from": "anchor_004 (Stillgrave, kragmar_stillgrave_hollow)",
+   "id": 17,
+   "kind": "primary",
+   "last_in_zone": [
+    -1936,
+    1760
+   ],
+   "length_in_zone": 192,
+   "length_total": 782,
+   "polyline_simplified": [
+    [
+     -1799,
+     2486
+    ],
+    [
+     -1810,
+     2327
+    ],
+    [
+     -1855,
+     2222
+    ],
+    [
+     -1859,
+     2093
+    ],
+    [
+     -1935,
+     2008
+    ],
+    [
+     -1936,
+     1760
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -2210,
+    1646
+   ],
+   "from": "anchor_020 (Ossuary Ledgerstead, kragmar_ossuary_reach)",
+   "id": 23,
+   "kind": "secondary",
+   "last_in_zone": [
+    -2064,
+    1650
+   ],
+   "length_in_zone": 148,
+   "length_total": 324,
+   "polyline_simplified": [
+    [
+     -2369,
+     1616
+    ],
+    [
+     -2349,
+     1642
+    ],
+    [
+     -2064,
+     1650
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -2022,
+    1118
+   ],
+   "from": "anchor_039 (Ashveil Watch, kragmar_blackwind_rise)",
+   "id": 26,
+   "kind": "secondary",
+   "last_in_zone": [
+    -2031,
+    1233
+   ],
+   "length_in_zone": 130,
+   "length_total": 584,
+   "polyline_simplified": [
+    [
+     -2007,
+     823
+    ],
+    [
+     -2047,
+     865
+    ],
+    [
+     -2036,
+     947
+    ],
+    [
+     -2061,
+     1000
+    ],
+    [
+     -2109,
+     998
+    ],
+    [
+     -2122,
+     1014
+    ],
+    [
+     -2003,
+     1146
+    ],
+    [
+     -2031,
+     1233
+    ]
+   ],
+   "to": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)"
+  },
+  {
+   "first_in_zone": [
+    -1535,
+    1649
+   ],
+   "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
+   "id": 30,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1346,
+    1561
+   ],
+   "length_in_zone": 266,
+   "length_total": 802,
+   "polyline_simplified": [
+    [
+     -1535,
+     1649
+    ],
+    [
+     -1412,
+     1584
+    ],
+    [
+     -1388,
+     1526
+    ],
+    [
+     -1324,
+     1578
+    ],
+    [
+     -1268,
+     1568
+    ],
+    [
+     -1205,
+     1589
+    ],
+    [
+     -1116,
+     1663
+    ],
+    [
+     -883,
+     1569
+    ]
+   ],
+   "to": "anchor_022 (Speargrass Wellhold, kragmar_speargrass_reach)"
+  },
+  {
+   "first_in_zone": [
+    -2045,
+    1152
+   ],
+   "from": "anchor_038 (Boneledger Post, kragmar_ossuary_reach)",
+   "id": 41,
+   "kind": "trail",
+   "last_in_zone": [
+    -2010,
+    1133
+   ],
+   "length_in_zone": 42,
+   "length_total": 276,
+   "polyline_simplified": [
+    [
+     -2258,
+     1224
+    ],
+    [
+     -2208,
+     1199
+    ],
+    [
+     -2108,
+     1190
+    ],
+    [
+     -2010,
+     1133
+    ]
+   ],
+   "to": "joins road 26"
+  },
+  {
+   "first_in_zone": [
+    -1552,
+    1906
+   ],
+   "from": "anchor_055 (Mournfen Bandit Camp, kragmar_mournfen)",
+   "id": 55,
+   "kind": "trail",
+   "last_in_zone": [
+    -1454,
+    1819
+   ],
+   "length_in_zone": 136,
+   "length_total": 275,
+   "polyline_simplified": [
+    [
+     -1593,
+     2036
+    ],
+    [
+     -1551,
+     1904
+    ],
+    [
+     -1454,
+     1819
+    ]
+   ],
+   "to": "joins road 15"
+  },
+  {
+   "first_in_zone": [
+    -1488,
+    1086
+   ],
+   "from": "anchor_056 (Pallcloth Den, kragmar_blackwind_rise)",
+   "id": 56,
+   "kind": "trail",
+   "last_in_zone": [
+    -1422,
+    1590
+   ],
+   "length_in_zone": 590,
+   "length_total": 1756,
+   "polyline_simplified": [
+    [
+     -1805,
+     441
+    ],
+    [
+     -1872,
+     486
+    ],
+    [
+     -1846,
+     538
+    ],
+    [
+     -1805,
+     556
+    ],
+    [
+     -1714,
+     514
+    ],
+    [
+     -1637,
+     513
+    ],
+    [
+     -1648,
+     554
+    ],
+    [
+     -1614,
+     566
+    ],
+    [
+     -1601,
+     593
+    ],
+    [
+     -1616,
+     650
+    ],
+    [
+     -1601,
+     701
+    ],
+    [
+     -1516,
+     762
+    ],
+    [
+     -1456,
+     757
+    ],
+    [
+     -1471,
+     864
+    ],
+    [
+     -1431,
+     976
+    ],
+    [
+     -1568,
+     1193
+    ],
+    [
+     -1503,
+     1280
+    ],
+    [
+     -1517,
+     1404
+    ],
+    [
+     -1422,
+     1590
+    ]
+   ],
+   "to": "joins road 30"
+  },
+  {
+   "first_in_zone": [
+    -1535,
+    1649
+   ],
+   "from": "end:30",
+   "id": 192,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1663,
+    1562
+   ],
+   "length_in_zone": 176,
+   "length_total": 177,
+   "polyline_simplified": [
+    [
+     -1535,
+     1649
+    ],
+    [
+     -1558,
+     1646
+    ],
+    [
+     -1623,
+     1561
+    ],
+    [
+     -1663,
+     1562
+    ]
+   ],
+   "to": "gate_east"
+  },
+  {
+   "first_in_zone": [
+    -1537,
+    1762
+   ],
+   "from": "end:15",
+   "id": 193,
+   "kind": "primary",
+   "last_in_zone": [
+    -1551,
+    1650
+   ],
+   "length_in_zone": 120,
+   "length_total": 118,
+   "polyline_simplified": [
+    [
+     -1537,
+     1762
+    ],
+    [
+     -1551,
+     1650
+    ]
+   ],
+   "to": "joins road 192"
+  },
+  {
+   "first_in_zone": [
+    -1936,
+    1760
+   ],
+   "from": "end:17",
+   "id": 194,
+   "kind": "primary",
+   "last_in_zone": [
+    -1864,
+    1716
+   ],
+   "length_in_zone": 96,
+   "length_total": 95,
+   "polyline_simplified": [
+    [
+     -1936,
+     1760
+    ],
+    [
+     -1864,
+     1716
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    -2064,
+    1650
+   ],
+   "from": "end:23",
+   "id": 195,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1970,
+    1557
+   ],
+   "length_in_zone": 142,
+   "length_total": 143,
+   "polyline_simplified": [
+    [
+     -2064,
+     1650
+    ],
+    [
+     -2011,
+     1616
+    ],
+    [
+     -1970,
+     1557
+    ]
+   ],
+   "to": "gate_west"
+  },
+  {
+   "first_in_zone": [
+    -2031,
+    1233
+   ],
+   "from": "end:26",
+   "id": 196,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1858,
+    1300
+   ],
+   "length_in_zone": 216,
+   "length_total": 215,
+   "polyline_simplified": [
+    [
+     -2031,
+     1233
+    ],
+    [
+     -2033,
+     1250
+    ],
+    [
+     -1963,
+     1288
+    ],
+    [
+     -1858,
+     1300
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -1800,
+    "y": 46,
+    "z": 1500
+   },
+   "anchor_id": "anchor_010",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Ossuary Ledgerstead",
+      "road": 677,
+      "straight": 589,
+      "to": "r20_anchor_020",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Village",
+      "road": 754,
+      "straight": 530,
+      "to": "mournfen_village",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Mournfen Outpost",
+      "road": 971,
+      "straight": 671,
+      "to": "mournfen_outpost",
+      "zone": "kragmar_mournfen"
+     },
+     {
+      "name": "Boneledger Post",
+      "road": 1012,
+      "straight": 538,
+      "to": "r20_anchor_038",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Memoryvein Dig",
+      "road": 1027,
+      "straight": 662,
+      "to": "r20_anchor_064",
+      "zone": "kragmar_ossuary_reach"
+     },
+     {
+      "name": "Mournfen Bandit Camp",
+      "road": 1095,
+      "straight": 585,
+      "to": "mournfen_bandit_camp",
+      "zone": "kragmar_mournfen"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 366,
+     "x": -2156,
+     "z": 1416
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 639,
+     "x": -2436,
+     "z": 1436
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NE",
+     "distance": 612,
+     "x": -1296,
+     "z": 1848
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 468,
+      "hits": "kragmar_speargrass_reach"
+     },
+     "north_+z": {
+      "distance": 460,
+      "hits": "kragmar_mournfen"
+     },
+     "south_-z": {
+      "distance": 468,
+      "hits": "kragmar_blackwind_rise"
+     },
+     "west_-x": {
+      "distance": 380,
+      "hits": "kragmar_ossuary_reach"
+     }
+    }
+   },
+   "key": "nhal_veyr",
+   "name": "Nhal Veyr",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": -1800,
+     "y": 52,
+     "z": 1532
+    },
+    {
+     "npc_id": "r20_undead_capital_envoy",
+     "npc_name": "Ossa Quietregister",
+     "quests": [
+      "r20_undead_capital_services",
+      "r20_undead_capital_stores",
+      "r20_undead_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "vigil_hall_quest",
+     "tag": "door",
+     "x": -1838,
+     "y": 47,
+     "z": 1521
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": -1757,
+     "y": 47,
+     "z": 1509
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": -1757,
+     "y": 47,
+     "z": 1516
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": -1781,
+     "y": 47,
+     "z": 1478
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_bone_store/market_bone_store_station",
+     "tag": "jewellers_bench",
+     "x": -1871,
+     "y": 47,
+     "z": 1450
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_bone_store/market_bone_store_goldsmith",
+     "x": -1873,
+     "y": 47,
+     "z": 1452
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "market_bone_store/market_bone_store_jewel",
+     "tag": "jewel",
+     "x": -1870,
+     "y": 48,
+     "z": 1447
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_cart_yard/market_cart_yard_mount_1",
+     "tag": "1",
+     "x": -1893,
+     "y": 48,
+     "z": 1496
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_cart_yard/market_cart_yard_mount_2",
+     "tag": "2",
+     "x": -1893,
+     "y": 48,
+     "z": 1486
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_cart_yard/market_cart_yard_mount_3",
+     "tag": "3",
+     "x": -1887,
+     "y": 48,
+     "z": 1496
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "market_cart_yard/market_cart_yard_mount_4",
+     "tag": "4",
+     "x": -1887,
+     "y": 48,
+     "z": 1486
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "market_cart_yard/market_cart_yard_riding",
+     "x": -1896,
+     "y": 48,
+     "z": 1491
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_bonesmith/market_bonesmith_vendor_smith",
+     "vendor_kind": "smith",
+     "x": -1908,
+     "y": 50,
+     "z": 1494
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_bonesmith/market_bonesmith_station",
+     "tag": "forge",
+     "x": -1919,
+     "y": 50,
+     "z": 1489
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_bonesmith/market_bonesmith_weaponsmith",
+     "x": -1917,
+     "y": 50,
+     "z": 1487
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_bonesmith/market_bonesmith_armorsmith",
+     "x": -1917,
+     "y": 50,
+     "z": 1491
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "market_bonesmith/market_bonesmith_weapon",
+     "tag": "weapon",
+     "x": -1921,
+     "y": 51,
+     "z": 1486
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "market_bonesmith/market_bonesmith_armor",
+     "tag": "armor",
+     "x": -1921,
+     "y": 51,
+     "z": 1492
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "market_shroud_house/market_shroud_house_gate_idle",
+     "tag": "door",
+     "x": -1832,
+     "y": 47,
+     "z": 1411
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_shroud_house/market_shroud_house_vendor_tailor",
+     "vendor_kind": "tailor",
+     "x": -1827,
+     "y": 47,
+     "z": 1409
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_shroud_house/market_shroud_house_station",
+     "tag": "tailor_bench",
+     "x": -1832,
+     "y": 47,
+     "z": 1421
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_shroud_house/market_shroud_house_tailor",
+     "x": -1834,
+     "y": 47,
+     "z": 1419
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "market_physic/market_physic_vendor_herbalist",
+     "vendor_kind": "herbalist",
+     "x": -1854,
+     "y": 48,
+     "z": 1399
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_physic/market_physic_station",
+     "tag": "brewing_stand",
+     "x": -1849,
+     "y": 48,
+     "z": 1387
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_physic/market_physic_alchemist",
+     "x": -1847,
+     "y": 48,
+     "z": 1389
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "market_charnel/market_charnel_station",
+     "tag": "tanning_rack",
+     "x": -1902,
+     "y": 49,
+     "z": 1434
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "market_charnel/market_charnel_leatherworker",
+     "x": -1900,
+     "y": 49,
+     "z": 1432
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "vigil_candle_works/vigil_candle_works_station",
+     "tag": "carving_bench",
+     "x": -1808,
+     "y": 48,
+     "z": 1622
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "vigil_candle_works/vigil_candle_works_woodcarver",
+     "x": -1810,
+     "y": 48,
+     "z": 1620
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "homes_lane_house/homes_lane_house_gate_idle",
+     "tag": "door",
+     "x": -1814,
+     "y": 47,
+     "z": 1386
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "homes_mourners_hall/homes_mourners_hall_station",
+     "tag": "furnace",
+     "x": -1782,
+     "y": 47,
+     "z": 1414
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "homes_mourners_hall/homes_mourners_hall_cooking",
+     "x": -1784,
+     "y": 47,
+     "z": 1412
+    },
+    {
+     "npc_id": "r20_undead_capital_cook",
+     "npc_name": "Velis Mourningbowl",
+     "quests": [
+      "r20_undead_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "homes_mourners_hall/homes_mourners_hall_quest_cook",
+     "x": -1780,
+     "y": 47,
+     "z": 1412
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vigil_embalmer/vigil_embalmer_vendor_embalmer",
+     "vendor_kind": "embalmer",
+     "x": -1791,
+     "y": 47,
+     "z": 1599
+    }
+   ],
+   "race": "undead",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 50,
+    "guard_post": 21,
+    "housing_manager": 1,
+    "idle": 140,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 2,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 6,
+    "waypoint": 1,
+    "work": 50
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "throng_home",
+ "track_order": 3
+}

@@ -262,10 +262,9 @@ function grug_mobs.award_kill_xp(self)
 				xp = math.floor(xp / count)
 			end
 			if xp > 0 then
+				-- The gain shows in the message feed (grug_xp.add_xp), not chat.
 				grug_xp.add_xp(player, xp, "kill")
 				if grug_core.trinket_xp_kill then grug_core.trinket_xp_kill(player) end
-				core.chat_send_player(player:get_player_name(),
-					core.colorize("#aa66ff", "+" .. xp .. " XP"))
 			end
 		end
 	end
@@ -916,6 +915,9 @@ dofile(modpath .. "/roam_avoid.lua")
 dofile(modpath .. "/idle_health.lua")
 dofile(modpath .. "/flight.lua")
 dofile(modpath .. "/swimmer.lua")
+-- Round 28 rulings 5-7: environmental damage shares, separation, knockback.
+dofile(modpath .. "/env_damage.lua")
+dofile(modpath .. "/separation.lua")
 dofile(modpath .. "/verbs.lua")
 dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")

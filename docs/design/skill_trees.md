@@ -580,7 +580,7 @@ ratio** (Last Word). The Scout's base-kit Sprint is a tenth, and it is not a
 talent — [scout.md](scout.md) §2 carries it.
 
 `combat_stats.md` §2 owns the armor formula and the named Crit/Dodge cap
-exceptions. Character shows resulting armor rating and same-level reduction;
+exceptions. Character shows resulting armor rating and Damage reduction (same-level);
 Help explains Unbroken's multiplier and cap rules. Talents contains only build
 selection, descriptions and purchases (Round 19). Talents that are *not* marked `‼` stay inside every cap, so
 Turn Aside's +20 dodge is clamped at 30 % like any gear roll.
@@ -987,8 +987,9 @@ if old_level ~= nil and
         math.floor(new_level / 2) > math.floor(old_level / 2) then
 ```
 
-On that condition, send one chat line under the existing "Reached level N!"
-(`grug_xp/init.lua:62-64`) only when at least one point is unspent, directing
+On that condition, send one chat line alongside the "Reached level N!"
+level-up banner (`grug_xp/init.lua`, a large centre message since Round 28
+ruling 20, no longer a chat line) only when at least one point is unspent, directing
 the player to Inventory > Talents. No new globalstep, no new HUD element, no
 new packet.
 

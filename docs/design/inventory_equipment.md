@@ -1,6 +1,6 @@
 # Inventory, Character Screen & Equipment
 
-Decided spec (last revised 2026-09-18; established 2026-08-06).
+Decided spec (last revised 2026-10-01; established 2026-08-06).
 Implementation: WP15 (character screen +
 bags), WP10 (workbench UIs), WP14 (offhand slot), WP35 (weapon slot +
 hand count), WP38 (native swing capability/pointability bridge), WP39
@@ -18,8 +18,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
   Round 19 removes the pool/armor derivation section. Character shows concise
-  effective Crit and Dodge alongside armor rating/same-level reduction and
-  maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
+  effective Crit and Dodge alongside armor rating, **Damage reduction** (the
+  armor's reduction against an enemy of the character's own level; its tooltip
+  says so and that it is higher against lower-level and lower against
+  higher-level enemies; Round 28 ruling 21) and maximum pools. General formulas and the B/C/G/T/S legend belong to Help.
 - Talents keeps the shared legacy inventory geometry but uses real coordinates
   for its page content. Class, tree selection, rank rows and description occupy
   separate bands; combat statistics belong to Character. Both chains use equally
@@ -59,6 +61,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     one- or two-character `label[]`s ("H", "C", "L", "F", "W", "O", "T1",
     "T2") — legibility beats prettiness here, and the existing hover
     tooltips carry the full name either way.
+  - The two hand slots take their ghost and tooltip label from the class
+    (Round 28): Warrior sword / shield ("Weapon" / "Shield"), Mage and
+    Priest staff / spellbook ("Weapon" / "Caster offhand"), Scout bow / sword
+    ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
 - Further pages: **Bags**, existing **Crafting** (3×3 grid).
 - Armor visuals on the player model (multiskin layering à la lottarmor):
   Phase 3.
@@ -69,10 +75,31 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   below; offhand mechanics: `combat_stats.md` §7 / WP14). Armor keeps its
   own column on the character page; **Weapon and Offhand sit next to each
   other** so the pair reads as "hands".
+- **The hand slots are per class** (Round 28 ruling 25). The two lists keep
+  their names (`grug_weapon`, `grug_offhand`); what each one accepts, its
+  label and its ghost image depend on the class
+  (`grug_inventory.HAND_RULES`):
+
+  | Class | Weapon slot | Offhand slot |
+  |---|---|---|
+  | Warrior | "Weapon": sword, dagger, Battle Axe | "Shield": shields (only Warriors equip shields) |
+  | Mage, Priest | "Weapon": staff, wand, dagger | "Caster offhand": spellbooks |
+  | Scout | "Ranged": bows | "Melee": sword or dagger |
+
+  Why: the Scout has two kinds of skills, and with one weapon slot its melee
+  skills swung with the bow. A visible per-class offhand makes each slot's
+  purpose obvious, and then it is fair that **both slot items always count
+  toward stats for every class** (`grug_quality` sums every equipment slot).
+  A wrong item is refused with a message that names the slot it belongs in.
+  A character without a class (still in creation) equips nothing in its
+  hands.
 - **The Weapon slot** (decided 2026-08-08, shipped with WP35). The item in
-  it is the **single, fixed source of damage and appearance** for every
-  skill of its type — sword-type skills read the weapon slot, shield-type
-  skills read the offhand (`combat_stats.md` §2, `classes.md` §2b). There
+  a hand slot is the **single, fixed source of damage and appearance** for
+  every skill that reads it (`combat_stats.md` §2, `classes.md` §2b): Strike
+  and every melee skill read the **melee slot** — the Scout's Melee offhand,
+  everyone else's Weapon slot — the Scout's bow skills read Ranged, every
+  other skill reads the Weapon slot, and shield-type skills would read the
+  offhand. There
   is **no fallback to the wielded item**: an empty slot means the connected
   skills carry no item, look as they did before the slot existed and hit
   for the bare-handed baseline. **Weapons are therefore no longer hotbar
@@ -90,7 +117,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **A fresh character starts with its class's weapon already in the slot**
     (decided 2026-09-15, playtest round 2). A **Warrior** gets the Bronze Sword,
     a **Priest** and a **Mage** the Bronze Staff, and a **Scout** the Bronze
-    Bow plus a backup Bronze Sword and 200 arrows; the grant fires once per
+    Bow in Ranged, the Bronze Sword in Melee and 200 arrows in its quiver
+    (Round 28); the grant fires once per
     character when the class is chosen — not at faction choice, where no class
     exists yet — and writes the equipment list server-side through
     `grug_inventory.equipment_changed`, so the ability skins and the visible
@@ -100,8 +128,10 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     torch stays in `main`; torches are not offhand items (no carried light,
     `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
-    Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger.
-    All share the Weapon slot. Level and occupied-hand checks also apply.
+    Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger. The
+    hand-slot table above says which slot takes which family. Level and
+    occupied-hand checks also apply; the level check covers a weapon in
+    either hand.
     Ordinary T1 weapons require level 1 despite base-stat item level 3;
     elevated found-item levels retain their own requirement. Common `Usable by`
     tooltip text lists permitted classes; it never changes with the viewer.
@@ -114,7 +144,9 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
   (decided 2026-08-08): every weapon declares `_grug_hands` —
-  **Battle Axe 2, staff 2, bow 2, sword 1, dagger 1, wand 1**.
+  **Battle Axe 2, staff 2, sword 1, dagger 1, wand 1, bow 1** (the bow is
+  one-handed since Round 28: only the Scout uses it, beside its Melee
+  blade).
   An item **without** the field counts as
   one-handed, which is what keeps the rule additive for shields and every
   future offhand item.
@@ -122,15 +154,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     hands must add up to at most two hands.** A two-handed weapon refuses
     an occupied offhand, and an occupied two-handed hand refuses anything
     into the other slot.
-  - Enforced in the **same group-filtered `allow_put`** as the armor rank,
+  - Enforced in the **same `allow_put`** as the armor rank,
     as a **refusal with a chat message that says why** (throttled — the
     allow callback fires repeatedly while a stack is dragged) — never by
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
     fires. Rationale: the consequence is a gameplay rule, not a
     technicality — carrying a shield or spellbook costs you the
-    two-handed weapon. *(The offhand direction fires for every item that
-    carries `grug_equip_offhand`: shields, spellbooks and the quiver.)*
+    two-handed weapon.
 - **2 Trinket slots** — **no longer reserved** (decided 2026-08-08).
   UI, meta and the group-filtered `allow_put` shipped with WP15; what
   was missing was an item family, and **trinket items now ship in the
@@ -177,10 +208,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   notification after `sfinv` and `player_api`; a genuine nested equipment
   write may cause the documented second notification pass.
 - **Weapon level requirement is implemented here:** the same `allow_put`
-  filter reads the generated item's `_grug_ilvl` directly for the Weapon slot,
-  rejects it when that value exceeds the character's level, and says so in
-  chat (`grug_inventory/equipment.lua:173-195,316-356`). Items without a
-  positive `_grug_ilvl` and every non-Weapon slot are unrestricted. Rejecting
+  filter reads a weapon's generated `_grug_ilvl` (or `_grug_req_level`)
+  directly in either hand slot, rejects it when that value exceeds the
+  character's level, and says so in chat, naming the slot
+  (`grug_inventory/equipment.lua`). Items without a positive level, shields,
+  spellbooks and the armor slots are unrestricted. Rejecting
   the equip is deliberate — letting the item sit in the slot without effect
   would be an invisible failure.
 - **Armor classes are bound to the character class** (decided
@@ -221,15 +253,20 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   The **small 8-slot cloth bag is the
   exception and stays vendor-sellable**: it is the floor tier of its
   item category (professions.md §4), so it is bought, not crafted-only.
-- Offhand accepts shields, Goldsmith spellbooks and the Leatherworker quiver.
-  A two-handed bow explicitly permits the zero-hand quiver; shield and book
-  remain illegal beside it. One-handed melee may retain the quiver, while
-  staff and greataxe require empty Offhand. The quiver has four arrow-only
-  slots of up to 200 arrows each (800 total) and no combat stat or affix.
-  It wears as an offhand; a broken quiver permits arrow retrieval but no refill
-  or automatic ammunition until repaired. Removing a filled quiver
-  transfers all arrows to `main` atomically or refuses unchanged if they do not
-  all fit.
+- **The quiver is a Scout-only slot** (Round 28 ruling 26), drawn left of the
+  armor column on the Character page with the arrow total beside it. There is
+  no quiver item and no Leatherworker quiver recipe; non-Scouts have no quiver
+  slot. It holds up to **500 arrows**; arrows stack to **100** in any
+  inventory. Internally the list `grug_quiver_content` carries five stacks of
+  100, but only its first cell is drawn and it always holds min(total, 100):
+  **clicking the slot takes up to 100 arrows as one stack**. Arrows enter by
+  **drag** (onto the slot), **shift-click** (from the inventory) and **pickup**
+  while the quiver has room; anything else is refused. Shots draw from the
+  quiver first, then `main`; a talent refund returns to the quiver first. A
+  drag of part of a stack onto the slot while it shows a full 100 moves the
+  whole stack in (the engine treats that drop as a whole-stack swap).
+  No item drop on death, so the quiver keeps its arrows like the equipped
+  items do.
 - No item drop or XP loss on death (Round 18).
 
 ## 4. Crafting model (revised 2026-09-21)
@@ -316,15 +353,54 @@ the Round 19 top-centre text list:
 - One throttled pass every 0.5 s owns timed ticks, expiry and display refresh, and
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
-- **Character page tabs:** "Stats" (the view as before) and "Effects": icon,
+- **Character page tabs:** "Stats" (the view as before), "Effects": icon,
   name, remaining time and a detail line per status, refreshed about once a
-  minute or on change while that tab is open.
+  minute or on change while that tab is open, and "Professions" (Round 28
+  ruling 23): per known profession (primary slots, then Cooking) its tier,
+  "Crafts: n/m toward tier N+1" (`professions.md` §1 counts; "Highest tier
+  reached." at T6) and, while the character's ten-level band caps the tier,
+  the note "Capped by your level: reach level 10N+1, then craft once more
+  for tier N+1" when the count is full and only the character level blocks
+  the next tier. A counted craft refreshes the tab while it is open.
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Group page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
   keep using the one central registry rather than per-consumer status
   stores. Art provenance: `tools/r26_icons/` and the `LICENSE-media.md` files
   of `grug_core` and `grug_classes`.
+
+## Message feed and level-up banner (Round 28 ruling 20)
+
+Gains the player just earned appear near their own bars instead of in chat
+(the top-left chat was easy to miss). There is **no chat copy** of any of
+them.
+
+- **Place:** bottom centre, stacked upwards from 6 HUD units above the status
+  icon row, which itself sits right above the skill-name row; the row is
+  reserved even when no status runs, so the feed never moves. Line pitch is
+  20 GUI units converted to HUD units, and the feed rises with the icon row
+  at larger GUI scaling (`grug_core.hud_layout.feed_line_offset`).
+- **Lines:** at most 3, newest at the bottom; each lives 2.5 s and is drawn
+  at 45 % brightness for its last 0.5 s (HUD text has no alpha fade on every
+  client). Colours by kind: loot white, XP purple (`#aa66ff`), quest yellow
+  (`#ffe080`), fishing light blue.
+- **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
+  one summed into the same line; items picked up off the ground (mob drops,
+  dropped items) and boss loot entering the inventory as "+3 Light Leather",
+  summed per item while that line is shown (also queued boss loot delivered
+  on join and quest reward items at turn-in); quest progress as one line per
+  quest, every objective as "<name> n/m" joined by ", " ("Small Boar 3/10"),
+  a quest's newer line replacing its own older one, cut to the widest
+  tracker line (38 characters, "..."); fishing catches as
+  "Caught <fish> (+N XP)" (junk: "Caught <item>").
+- **Level-up** is a separate large centre announcement ("Reached level N!",
+  double font size, 3 s), not a feed line.
+- **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
+  (a line with the key of a shown line replaces it),
+  `grug_core.feed_xp(player, amount)`, `grug_core.feed_item(player, item,
+  count)` and `grug_core.banner(player, text, color)`. `grug_xp.add_xp`
+  posts every positive grant itself; a caller that names the XP in its own
+  line passes `quiet`.
 
 ## 5. Skills page and bound representations
 

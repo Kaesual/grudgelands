@@ -19,10 +19,16 @@ function grug_gear.weapon_family(stack)
  return nil
 end
 
-function grug_gear.can_equip_weapon(player, stack)
+-- The family gate by class id, for callers that have no player at hand (the
+-- starter audit and the slot rules in grug_inventory/equipment.lua).
+function grug_gear.class_can_use_weapon(class_id, stack)
  local family = grug_gear.weapon_family(stack)
- local allowed = CLASS_WEAPONS[grug_classes.get_class(player)]
+ local allowed = CLASS_WEAPONS[class_id]
  return family ~= nil and allowed ~= nil and allowed[family] == true
+end
+
+function grug_gear.can_equip_weapon(player, stack)
+ return grug_gear.class_can_use_weapon(grug_classes.get_class(player), stack)
 end
 
 function grug_gear.usable_by(stack)

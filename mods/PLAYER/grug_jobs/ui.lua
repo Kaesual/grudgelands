@@ -262,10 +262,22 @@ local function recipe_unlocked(player, recipe)
 		grug_jobs.recipe_progress_unlocked(player, recipe)
 end
 
+-- Discovery is a Basics rule only; profession recipes are never "undiscovered".
 local function recipe_discovered(player, recipe)
 	if recipe.profession ~= "general" then return true end
 	return type(grug_jobs.recipe_discovered) ~= "function" or
 		grug_jobs.recipe_discovered(player, recipe)
+end
+
+-- Whether view `book` lists `recipe` (Round 28 ruling 24). A profession book
+-- lists its whole T1-T6 catalogue, locked recipes included (greyed). Basics
+-- lists what discovery revealed. The station view keeps listing only what
+-- the player can craft there: Basics as discovered plus unlocked profession
+-- recipes.
+local function recipe_listed(player, recipe, book)
+	if recipe.profession == "general" then return recipe_discovered(player, recipe) end
+	if book == "station" then return recipe_unlocked(player, recipe) end
+	return true
 end
 
 function grug_jobs.book_undiscovered_counts(player, records)
@@ -279,14 +291,27 @@ function grug_jobs.book_undiscovered_counts(player, records)
 	return counts
 end
 
-local function listed_records(player, records, search)
+-- Per tier, the profession recipes the player cannot craft yet (the
+-- profession book's "N locked" line).
+function grug_jobs.book_locked_counts(player, records)
+	local counts = {0, 0, 0, 0, 0, 0}
+	for index = 1, #records do
+		local recipe = records[index]
+		if recipe.profession ~= "general" and not recipe_unlocked(player, recipe) then
+			counts[recipe.tier] = counts[recipe.tier] + 1
+		end
+	end
+	return counts
+end
+
+local function listed_records(player, records, search, book)
 	search = tostring(search or ""):lower()
 	local result = {}
 	for index = 1, #records do
 		local recipe = records[index]
 		local text = (recipe.output_name .. " " .. item_label(recipe.output_name) ..
 			" " .. (recipe.label or "") .. " " .. (recipe.hint or "")):lower()
-		if recipe_unlocked(player, recipe) and recipe_discovered(player, recipe) and
+		if recipe_listed(player, recipe, book) and
 				(search == "" or text:find(search, 1, true)) then
 			result[#result + 1] = recipe
 		end
@@ -373,9 +398,11 @@ local function book_output_index(book)
 	return cached
 end
 
--- True when `book` lists a recipe for `item` for this player, exactly as
--- listed_records decides with an empty search; `station` filters like
--- book_records does.
+-- True when `book` lists a CRAFTABLE recipe for `item` for this player:
+-- listed as listed_records decides with an empty search, and not locked. A
+-- greyed (locked) profession recipe is listed but never a navigation target,
+-- so locked ingredients stay inert (items_crafting.md section 2.2).
+-- `station` filters like book_records does.
 local function book_knows(player, book, item, station)
 	local list = book_output_index(book)[item]
 	if not list then return false end
@@ -550,9 +577,28 @@ function grug_jobs._book_recipe_background_cells(recipe)
 	return grug_jobs._book_recipe_cells(recipe)
 end
 
+-- Why a listed profession recipe is greyed: the tier it needs and the
+-- character-band floor of that tier (items_crafting.md section 2.2), or the
+-- mastery reason the progression gate gives.
+local LOCKED_COLOR = "#8a8a8a"
+
+local function locked_text(player, recipe)
+	if recipe.profession == "general" then return nil end
+	local unlocked, reason = grug_jobs.recipe_progress_unlocked(player, recipe)
+	if unlocked then return nil end
+	local profession = grug_jobs.PROFESSIONS[recipe.profession]
+	if profession and grug_jobs.profession_level(player, recipe.profession) < recipe.tier then
+		return ("Locked: needs %s tier %d (character level %d+)."):format(
+			profession.name, recipe.tier, (recipe.tier - 1) * 10 + 1)
+	end
+	return "Locked: " .. tostring(reason or "not available yet.")
+end
+
 -- `clickable(item)` decides whether an ingredient cell links to a recipe;
+-- `locked` is the lock line of a greyed recipe (nil when craftable);
 -- returns {[cell index] = item} for the linked cells.
-local function append_recipe(fs, recipe, alternative, alternative_count, clickable)
+local function append_recipe(fs, recipe, alternative, alternative_count, clickable,
+		locked)
 	local links = {}
 	local station_icon, station_item = grug_jobs.book_station_icon(recipe.station)
 	if recipe.station ~= "grid" then
@@ -626,6 +672,7 @@ local function append_recipe(fs, recipe, alternative, alternative_count, clickab
 	if recipe.operation == "enchant" then
 		hint = "Select this enchant at the station. Add your equipment and these materials. " .. hint
 	end
+	if locked then hint = locked .. " " .. hint end
 	fs[#fs + 1] = ("textarea[1.25,8.45;8.1,1.0;;;%s]"):format(esc(hint))
 	if recipe.shapeless then fs[#fs + 1] = "label[4.18,5.75;Shapeless]" end
 	fs[#fs + 1] = "button[6.75,6.35;0.65,0.65;grug_jobs_alt_prev;<]"
@@ -638,9 +685,17 @@ local function append_recipe(fs, recipe, alternative, alternative_count, clickab
 	return links
 end
 
+-- An output is greyed when none of its listed routes can be crafted yet.
+local function output_locked(player, routes)
+	for index = 1, #routes do
+		if recipe_unlocked(player, routes[index]) then return false end
+	end
+	return true
+end
+
 local function make_formspec(player, book, station, state)
 	local records = grug_jobs.book_records(player, book, station)
-	local listed = listed_records(player, records, state.search)
+	local listed = listed_records(player, records, state.search, book)
 	local outputs, alternatives = output_groups(listed)
 	local pages = math.max(1, math.ceil(#outputs / ITEMS_PER_PAGE))
 	state.page = math.max(1, math.min(tonumber(state.page) or 1, pages))
@@ -651,7 +706,11 @@ local function make_formspec(player, book, station, state)
 	local alternative_count = choices and #choices or 1
 	state.alternative = ((tonumber(state.alternative) or 1) - 1) %
 		alternative_count + 1
-	local counts = grug_jobs.book_undiscovered_counts(player, records)
+	-- A profession book counts locked recipes per tier; Basics and the
+	-- station view count undiscovered Basics recipes as before.
+	local profession_book = grug_jobs.PROFESSIONS[book] ~= nil
+	local counts = profession_book and grug_jobs.book_locked_counts(player, records) or
+		grug_jobs.book_undiscovered_counts(player, records)
 	local fs = {
 		"formspec_version[4]size[10,10.4]",
 		-- Leave typing opt-in; preserve the chosen focus on subsequent updates.
@@ -671,24 +730,52 @@ local function make_formspec(player, book, station, state)
 		if name then
 			local column = (slot - 1) % 7
 			local row = math.floor((slot - 1) / 7)
-			fs[#fs + 1] = ("item_image_button[%.2f,%.2f;1,1;%s;grug_jobs_item_%d;]"):format(
-				0.30 + column * 1.35, 1.45 + row * 1.25, esc(alternatives[name][1].output_name), slot)
-			fs[#fs + 1] = ("tooltip[grug_jobs_item_%d;%s]"):format(slot,
-				esc(alternatives[name][1].label or item_label(name)))
+			local x, y = 0.30 + column * 1.35, 1.45 + row * 1.25
+			local first_route = alternatives[name][1]
+			local tooltip = first_route.label or item_label(name)
+			if output_locked(player, alternatives[name]) then
+				-- Greyed: the item under a dark veil, with an invisible button on
+				-- top (a box[] would swallow the click), the same overlay
+				-- technique as the ingredient cells.
+				local field = "grug_jobs_item_" .. slot
+				fs[#fs + 1] = ("item_image[%.2f,%.2f;1,1;%s]"):format(x, y,
+					esc(first_route.output_name))
+				fs[#fs + 1] = ("box[%.2f,%.2f;1,1;#101010b0]"):format(x, y)
+				fs[#fs + 1] = ("style[%s;border=false;bgimg=%s;bgimg_hovered=%s;" ..
+					"bgimg_pressed=%s]"):format(field, CELL_OVERLAY, CELL_OVERLAY,
+					CELL_OVERLAY)
+				fs[#fs + 1] = ("image_button[%.2f,%.2f;1,1;%s;%s;;false;false]"):format(
+					x, y, CELL_OVERLAY, field)
+				tooltip = tooltip .. "\n" .. core.colorize(LOCKED_COLOR,
+					locked_text(player, first_route) or "Locked")
+			else
+				fs[#fs + 1] = ("item_image_button[%.2f,%.2f;1,1;%s;grug_jobs_item_%d;]"):format(
+					x, y, esc(first_route.output_name), slot)
+			end
+			fs[#fs + 1] = ("tooltip[grug_jobs_item_%d;%s]"):format(slot, esc(tooltip))
 		end
 	end
 	local count_text = {}
-	for tier = 1, 6 do count_text[#count_text + 1] = "T" .. tier .. ": " .. counts[tier] end
-	fs[#fs + 1] = ("label[0.30,4.02;Undiscovered — %s]"):format(
-		esc(table.concat(count_text, "   ")))
-	fs[#fs + 1] = "label[0.30,4.35;Acquire the main material to reveal more recipes.]"
+	if profession_book then
+		for tier = 1, 6 do
+			count_text[#count_text + 1] = "T" .. tier .. ": " .. counts[tier] .. " locked"
+		end
+		fs[#fs + 1] = ("label[0.30,4.02;%s]"):format(esc(table.concat(count_text, "  ")))
+		fs[#fs + 1] = "label[0.30,4.35;Greyed recipes unlock as your profession tier rises.]"
+	else
+		for tier = 1, 6 do count_text[#count_text + 1] = "T" .. tier .. ": " .. counts[tier] end
+		fs[#fs + 1] = ("label[0.30,4.02;Undiscovered — %s]"):format(
+			esc(table.concat(count_text, "   ")))
+		fs[#fs + 1] = "label[0.30,4.35;Acquire the main material to reveal more recipes.]"
+	end
 	fs[#fs + 1] = "box[0.25,4.65;9.5,0.04;#8c6b3ccc]"
 	state.cell_items = {}
 	if choices then
-		state.cell_items = append_recipe(fs, choices[state.alternative],
+		local recipe = choices[state.alternative]
+		state.cell_items = append_recipe(fs, recipe,
 			state.alternative, #choices, function(item)
 				return ingredient_target(player, book, station, item) ~= nil
-			end)
+			end, locked_text(player, recipe))
 	else
 		fs[#fs + 1] = "label[3.05,6.65;No discovered recipes match.]"
 	end
@@ -740,10 +827,14 @@ local function show_ingredient(player, state, item)
 	state.book, state.station = book, station
 	state.search, state.output, state.alternative, state.page = "", item, 1, 1
 	local outputs, alternatives = output_groups(listed_records(player,
-		grug_jobs.book_records(player, book, station), ""))
+		grug_jobs.book_records(player, book, station), "", book))
 	local choices, shaping = alternatives[item] or {}, shaping_routes()
 	for index = 1, #choices do
-		if not is_inverse_route(choices[index], shaping) then state.alternative = index break end
+		if not is_inverse_route(choices[index], shaping) and
+				recipe_unlocked(player, choices[index]) then
+			state.alternative = index
+			break
+		end
 	end
 	for index = 1, #outputs do
 		if outputs[index] == item then

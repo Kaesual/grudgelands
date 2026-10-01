@@ -44,6 +44,18 @@ local function selected(journal, context)
 	return quest, quest and 1 or nil
 end
 
+-- The detail column right of the quest list (Round 28 ruling 22). sfinv uses
+-- legacy coordinates: a textarea[] is drawn PADDING (0.3 units) left of its
+-- given x (guiFormSpecMenu.cpp parseTextArea: `pos -= padding`), while
+-- textlist[], label[], checkbox[] and button[] are not shifted. The list
+-- ends at 0.15 + 3.45 = 3.60, so text drawn from TEXT_X keeps a visible
+-- DETAIL_GAP from it, and every other element of the column uses COLUMN_X
+-- to start at the same edge as the text. The right edge stays where it was.
+local PADDING, DETAIL_GAP = 0.3, 0.2
+local TEXT_X = 3.60 + PADDING + DETAIL_GAP
+local COLUMN_X = TEXT_X - PADDING
+local TEXT_W = 6.0
+
 local function content(player, context)
 	local journal = grug_quests.journal(player)
 	local quest, selected_index = selected(journal, context)
@@ -62,17 +74,19 @@ local function content(player, context)
 			:format(table.concat(rows, ","), selected_index or 1),
 	}
 	if not quest then
-		fs[#fs + 1] = "textarea[3.85,0.65;6.35,2.0;;;Your quest log is empty. Talk to a quest giver to begin.]"
+		fs[#fs + 1] = ("textarea[%.2f,0.65;%.2f,2.0;;;%s]"):format(TEXT_X, TEXT_W + 0.1,
+			"Your quest log is empty. Talk to a quest giver to begin.")
 		return table.concat(fs)
 	end
-	fs[#fs + 1] = "label[3.85,0.65;" .. esc(quest.title) .. "]"
-	fs[#fs + 1] = "textarea[3.85,1.05;6.25,1.35;;;" ..
-		esc(grug_inventory.wrap_text(quest.description, 58)) .. "]"
+	fs[#fs + 1] = ("label[%.2f,0.65;%s]"):format(COLUMN_X, esc(quest.title))
+	fs[#fs + 1] = ("textarea[%.2f,1.05;%.2f,1.35;;;%s]"):format(TEXT_X, TEXT_W,
+		esc(grug_inventory.wrap_text(quest.description, 58)))
 	local objectives = {}
 	for _, objective in ipairs(quest.objectives) do
 		objectives[#objectives + 1] = objective_label(objective)
 	end
-	fs[#fs + 1] = "textarea[3.85,2.35;6.25,1.55;;;" .. esc(table.concat(objectives, "\n")) .. "]"
+	fs[#fs + 1] = ("textarea[%.2f,2.35;%.2f,1.55;;;%s]"):format(TEXT_X, TEXT_W,
+		esc(table.concat(objectives, "\n")))
 	local rewards = {}
 	if quest.rewards.xp > 0 then rewards[#rewards + 1] = quest.rewards.xp .. " XP" end
 	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
@@ -80,21 +94,26 @@ local function content(player, context)
 		local stack = ItemStack(item)
 		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
 	end
-	fs[#fs + 1] = "textarea[3.85,4.00;6.25,0.75;;;Rewards: " .. esc(table.concat(rewards, ", ")) .. "]"
-	fs[#fs + 1] = ("checkbox[3.85,4.78;grug_quest_track;Track on HUD;%s]")
-		:format(tracked(journal, quest.id) and "true" or "false")
+	fs[#fs + 1] = ("textarea[%.2f,4.00;%.2f,0.75;;;%s]"):format(TEXT_X, TEXT_W,
+		esc("Rewards: " .. table.concat(rewards, ", ")))
+	fs[#fs + 1] = ("checkbox[%.2f,4.78;grug_quest_track;Track on HUD;%s]")
+		:format(COLUMN_X, tracked(journal, quest.id) and "true" or "false")
 	if context.grug_quest_abandon == quest.id then
-		fs[#fs + 1] = "button[3.85,5.35;2.05,0.65;grug_quest_confirm;Confirm abandon]"
-		fs[#fs + 1] = "button[6.05,5.35;1.35,0.65;grug_quest_cancel;Cancel]"
+		fs[#fs + 1] = ("button[%.2f,5.35;2.05,0.65;grug_quest_confirm;Confirm abandon]")
+			:format(COLUMN_X)
+		fs[#fs + 1] = ("button[%.2f,5.35;1.35,0.65;grug_quest_cancel;Cancel]")
+			:format(COLUMN_X + 2.2)
 	else
-		fs[#fs + 1] = "button[3.85,5.35;1.55,0.65;grug_quest_abandon;Abandon]"
+		fs[#fs + 1] = ("button[%.2f,5.35;1.55,0.65;grug_quest_abandon;Abandon]")
+			:format(COLUMN_X)
 	end
 	if quest.ready then
 		local npc = grug_quests.registered_npcs[quest.npc]
-		fs[#fs + 1] = "label[3.85,6.15;Ready to return to " ..
-			esc(npc and npc.title or quest.npc) .. ".]"
+		fs[#fs + 1] = ("label[%.2f,6.15;%s]"):format(COLUMN_X,
+			esc("Ready to return to " .. (npc and npc.title or quest.npc) .. "."))
 	elseif context.grug_quest_notice then
-		fs[#fs + 1] = "label[3.85,6.15;" .. esc(context.grug_quest_notice) .. "]"
+		fs[#fs + 1] = ("label[%.2f,6.15;%s]"):format(COLUMN_X,
+			esc(context.grug_quest_notice))
 	end
 	return table.concat(fs)
 end

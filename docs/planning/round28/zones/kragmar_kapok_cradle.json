@@ -1,0 +1,1108 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_006",
+   "kind": "start",
+   "kind_text": "start town",
+   "level_at": 1,
+   "name": "Kapok",
+   "settlement_key": "kapok",
+   "slot": "start",
+   "x": 1800,
+   "y": 7,
+   "z": 2550
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_jungle_edge",
+   "share": 90
+  },
+  {
+   "id": "grug_swamp",
+   "share": 10
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_jungle_edge",
+   "share_pct": 85.2
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 14.7
+  },
+  {
+   "id": "grug_deep_jungle",
+   "share_pct": 0.1
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1536,
+   "midpoint": {
+    "x": 1883,
+    "z": 2278
+   },
+   "zone": "kragmar_raincall_basin"
+  },
+  {
+   "length_nodes": 216,
+   "midpoint": {
+    "x": 2584,
+    "z": 2159
+   },
+   "zone": "kragmar_totemwater_reach"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:parrot",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit",
+   "grug_mobs:tapir",
+   "grug_mobs:viper"
+  ],
+  "density_budget_day": [
+   "grug_mobs:jungle_boar",
+   "grug_mobs:jungle_lynx",
+   "grug_mobs:tapir",
+   "grug_mobs:viper"
+  ],
+  "density_budget_night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:viper",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:viper",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 4832,
+  "bay_water_area_nodes2": 243312,
+  "beaches": [
+   {
+    "area_nodes2": 14928,
+    "box": {
+     "max_x": 1560,
+     "max_z": 2912,
+     "min_x": 1380,
+     "min_z": 2600
+    },
+    "centroid": {
+     "x": 1488,
+     "z": 2765
+    },
+    "id": "B1",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 13904,
+    "box": {
+     "max_x": 2680,
+     "max_z": 2376,
+     "min_x": 2420,
+     "min_z": 2168
+    },
+    "centroid": {
+     "x": 2564,
+     "z": 2283
+    },
+    "id": "B2",
+    "levels": [
+     6,
+     10
+    ]
+   },
+   {
+    "area_nodes2": 6176,
+    "box": {
+     "max_x": 2360,
+     "max_z": 2632,
+     "min_x": 2160,
+     "min_z": 2516
+    },
+    "centroid": {
+     "x": 2258,
+     "z": 2573
+    },
+    "id": "B3",
+    "levels": [
+     3,
+     4
+    ]
+   },
+   {
+    "area_nodes2": 2688,
+    "box": {
+     "max_x": 1812,
+     "max_z": 3008,
+     "min_x": 1660,
+     "min_z": 2932
+    },
+    "centroid": {
+     "x": 1737,
+     "z": 2962
+    },
+    "id": "B4",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 2480,
+    "box": {
+     "max_x": 2104,
+     "max_z": 2852,
+     "min_x": 2048,
+     "min_z": 2768
+    },
+    "centroid": {
+     "x": 2075,
+     "z": 2800
+    },
+    "id": "B5",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 1472,
+    "box": {
+     "max_x": 2200,
+     "max_z": 2684,
+     "min_x": 2128,
+     "min_z": 2624
+    },
+    "centroid": {
+     "x": 2157,
+     "z": 2651
+    },
+    "id": "B6",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 800,
+    "box": {
+     "max_x": 2408,
+     "max_z": 2552,
+     "min_x": 2368,
+     "min_z": 2512
+    },
+    "centroid": {
+     "x": 2391,
+     "z": 2532
+    },
+    "id": "B7",
+    "levels": [
+     4,
+     4
+    ]
+   },
+   {
+    "area_nodes2": 592,
+    "box": {
+     "max_x": 2120,
+     "max_z": 2760,
+     "min_x": 2064,
+     "min_z": 2720
+    },
+    "centroid": {
+     "x": 2092,
+     "z": 2744
+    },
+    "id": "B8",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 176,
+    "box": {
+     "max_x": 2444,
+     "max_z": 2460,
+     "min_x": 2436,
+     "min_z": 2436
+    },
+    "centroid": {
+     "x": 2438,
+     "z": 2446
+    },
+    "id": "B9",
+    "levels": [
+     5,
+     5
+    ]
+   },
+   {
+    "area_nodes2": 144,
+    "box": {
+     "max_x": 1256,
+     "max_z": 2392,
+     "min_x": 1236,
+     "min_z": 2376
+    },
+    "centroid": {
+     "x": 1247,
+     "z": 2384
+    },
+    "id": "B10",
+    "levels": [
+     9,
+     9
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 2368,
+  "sea_beach_sand_area_nodes2": 44144,
+  "sea_coast_length_nodes": 3520
+ },
+ "drift_band_share_pct": 3.1,
+ "extent": {
+  "centroid": {
+   "x": 1900,
+   "z": 2541
+  },
+  "land_area_nodes2": 604704,
+  "max_x": 2680,
+  "max_z": 3008,
+  "min_x": 1228,
+  "min_z": 2152
+ },
+ "faction": "throng",
+ "front": {
+  "axis": "-z",
+  "text": "Battlegrounds lie south (-z); the home coast/ocean is north (+z)."
+ },
+ "hub": {
+  "x": 1800,
+  "z": 2550
+ },
+ "id": "kragmar_kapok_cradle",
+ "level_field": {
+  "histogram_pct": {
+   "1": 5.2,
+   "2": 6.5,
+   "3": 46.8,
+   "4": 7.2,
+   "5": 6.8,
+   "6": 6.2,
+   "7": 5.8,
+   "8": 5.5,
+   "9": 4.9,
+   "10": 5.0
+  },
+  "max": 10,
+  "min": 1
+ },
+ "level_max": 10,
+ "level_min": 1,
+ "level_rule": "Start-zone gradient (zones.lua): L1 within 100 nodes of the start anchor, L2 to 150; beyond, band 1 top (L3) behind and beside the town, rising through band 2 (L4-6) and band 3 (L7-10) toward the front border (-z), reaching L10 at the border.",
+ "map": "maps/kragmar_kapok_cradle.png",
+ "name": "Kapok Cradle",
+ "neighbors": [
+  "kragmar_raincall_basin",
+  "kragmar_totemwater_reach"
+ ],
+ "numeric_id": 27,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [],
+  "start_town": {
+   "band_nodes": 12,
+   "note": "128-node pad plus a 12-node band (rounded corners); hard protected, no hostile spawns.",
+   "outer_box": {
+    "max_x": 1875,
+    "max_z": 2625,
+    "min_x": 1724,
+    "min_z": 2474
+   },
+   "pad": {
+    "max_x": 1863,
+    "max_z": 2613,
+    "min_x": 1736,
+    "min_z": 2486
+   }
+  }
+ },
+ "protected_share_pct": 4.3,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 10,
+   "description": "Jungle boars turn up the yam beds outside Kapok by day. Drive off three, and bring spare raw meat to Zemi Sweetroot at the separate oven shelter.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_01_boars_in_the_yam_beds",
+   "min_level": 1,
+   "objectives": [
+    "kill 3 jungle_boar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:jungle_boar"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Boars in the Yam Beds",
+   "turnin": "r14_troll_elder",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "The shared oven feeds everyone returning from kapok's outer paths. Bring four raw meat portions to Zemi Sweetroot beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_02_fill_the_evening_pot",
+   "min_level": 1,
+   "objectives": [
+    "bring 4 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Fill the Evening Pot",
+   "turnin": "r20_troll_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "Bring a wood axe and Zalima will show how to keep the handle dry and the cut clean.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_10_a_dry_handled_axe",
+   "min_level": 1,
+   "objectives": [
+    "bring 1 grug_materials:axe_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a wood axe",
+     "item": "grug_materials:axe_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Dry-Handled Axe",
+   "turnin": "r14_troll_elder",
+   "xp": 15
+  },
+  {
+   "copper": 10,
+   "description": "Zemi Sweetroot has moved the common pot under Kapok's oven shelter before the rain arrives. Bring three coal lumps for the dry fuel basket. Traded supplies count; mining coal yourself only requires a pickaxe; wood and stone picks work too.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "r20_troll_start_cook",
+   "min_level": 1,
+   "objectives": [
+    "bring 3 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Pot Before the Rain",
+   "turnin": "r20_troll_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 15,
+   "description": "Bring a stone pick for a lesson in reading rock beneath moss and root.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_11_stone_beneath_the_moss",
+   "min_level": 2,
+   "objectives": [
+    "bring 1 grug_materials:pick_stone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a stone pick",
+     "item": "grug_materials:pick_stone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_10_a_dry_handled_axe"
+   ],
+   "reward_items": [],
+   "title": "Stone Beneath the Moss",
+   "turnin": "r14_troll_elder",
+   "xp": 45
+  },
+  {
+   "copper": 20,
+   "description": "Kapok's dry baskets need a new frame above the wet ground. Bring six junglewood planks for the supports. Ordinary planks from local jungle trunks, existing supplies and traded boards all count.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_03_teeth_in_the_basket_weave",
+   "min_level": 3,
+   "objectives": [
+    "bring 6 default:junglewood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "item": "default:junglewood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_01_boars_in_the_yam_beds"
+   ],
+   "reward_items": [],
+   "title": "A Dry Frame for the Baskets",
+   "turnin": "r14_troll_elder",
+   "xp": 100
+  },
+  {
+   "copper": 25,
+   "description": "Zombies wander the rootways beyond Kapok after nightfall. Defeat three on level-3-and-up ground. The basket repair and optional tool lessons are available without waiting for the night patrol.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_04_dead_in_the_rootways",
+   "min_level": 4,
+   "objectives": [
+    "kill 3 zombie"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_01_boars_in_the_yam_beds"
+   ],
+   "reward_items": [],
+   "title": "Dead in the Rootways",
+   "turnin": "r14_troll_elder",
+   "xp": 140
+  },
+  {
+   "copper": 30,
+   "description": "Vipers shelter beneath the broad leaves beside the homes. Clear the nearest nests. Near the start they hunt by day and by night on level-4-and-up ground.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_05_vipers_under_broad_leaves",
+   "min_level": 5,
+   "objectives": [
+    "kill 5 viper"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:viper"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_03_teeth_in_the_basket_weave"
+   ],
+   "reward_items": [],
+   "title": "Vipers Under Broad Leaves",
+   "turnin": "r14_troll_elder",
+   "xp": 180
+  },
+  {
+   "copper": 40,
+   "description": "At level 10, follow the route to Raincall Village and speak with Daro Kapok. Raincall Basin is level 11\u201320 country; prepare your equipment and avoid wandering into its hunters. Complete this handoff with Daro, with no fighting errand or return trip.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r14_troll_06_claws_on_raincall_road",
+   "min_level": 10,
+   "objectives": [
+    "talk to Daro Kapok (raincall_village)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_troll_steward",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r14_troll_05_vipers_under_broad_leaves"
+   ],
+   "reward_items": [],
+   "title": "The Road to Daro Kapok",
+   "turnin": "r14_troll_steward",
+   "xp": 285
+  },
+  {
+   "copper": 40,
+   "description": "Kezamba's shrine receives travellers looking for trainers, repairs and the city's public workspaces. At level 10, follow the road to Nalo Pathdrum there. The country around the city is level 20\u201330; leave its wildlife alone on the journey. Speak with Nalo and complete the introduction at the shrine.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "r20_troll_capital_intro",
+   "min_level": 10,
+   "objectives": [
+    "talk to Nalo Pathdrum (kezamba)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_troll_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Road to Kezamba",
+   "turnin": "r20_troll_capital_envoy",
+   "xp": 285
+  }
+ ],
+ "race_region": "troll",
+ "race_track": "troll",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.2,
+  "height_above_sea": {
+   "max": 70,
+   "median": 15,
+   "min": 0,
+   "p10": 4,
+   "p90": 33
+  },
+  "steep_share_pct": 1.0
+ },
+ "relief_profile": "lowland",
+ "roads": [
+  {
+   "first_in_zone": [
+    1800,
+    2486
+   ],
+   "from": "anchor_006 (Kapok, kragmar_kapok_cradle)",
+   "id": 19,
+   "kind": "primary",
+   "last_in_zone": [
+    1515,
+    2334
+   ],
+   "length_in_zone": 358,
+   "length_total": 984,
+   "polyline_simplified": [
+    [
+     1800,
+     2486
+    ],
+    [
+     1794,
+     2453
+    ],
+    [
+     1742,
+     2407
+    ],
+    [
+     1617,
+     2338
+    ],
+    [
+     1544,
+     2348
+    ],
+    [
+     1470,
+     2288
+    ],
+    [
+     1472,
+     2168
+    ],
+    [
+     1439,
+     1952
+    ],
+    [
+     1389,
+     1853
+    ],
+    [
+     1422,
+     1774
+    ]
+   ],
+   "to": "joins road 16"
+  },
+  {
+   "first_in_zone": [
+    1637,
+    2326
+   ],
+   "from": "anchor_023 (Raincall Village, kragmar_raincall_basin)",
+   "id": 22,
+   "kind": "secondary",
+   "last_in_zone": [
+    1629,
+    2343
+   ],
+   "length_in_zone": 22,
+   "length_total": 389,
+   "polyline_simplified": [
+    [
+     1873,
+     2060
+    ],
+    [
+     1866,
+     2082
+    ],
+    [
+     1780,
+     2140
+    ],
+    [
+     1629,
+     2343
+    ]
+   ],
+   "to": "joins road 19"
+  }
+ ],
+ "role": "start zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 1800,
+    "y": 7,
+    "z": 2550
+   },
+   "anchor_id": "anchor_006",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Raincall Village",
+      "road": 707,
+      "straight": 512,
+      "to": "raincall_village",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Raincall Outpost",
+      "road": 945,
+      "straight": 572,
+      "to": "raincall_outpost",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Raincall Bandit Camp",
+      "road": 1089,
+      "straight": 543,
+      "to": "raincall_bandit_camp",
+      "zone": "kragmar_raincall_basin"
+     },
+     {
+      "name": "Kezamba",
+      "road": 1639,
+      "straight": 1050,
+      "to": "kezamba",
+      "zone": "kragmar_kezamba"
+     },
+     {
+      "name": "Whisperreed Landing",
+      "road": 1694,
+      "straight": 1322,
+      "to": "r20_anchor_024",
+      "zone": "kragmar_whispering_reedlands"
+     },
+     {
+      "name": "Reedstone Cut",
+      "road": 1833,
+      "straight": 1467,
+      "to": "r20_anchor_066",
+      "zone": "kragmar_whispering_reedlands"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "S",
+     "distance": 222,
+     "x": 1800,
+     "z": 2328
+    },
+    "nearest_road": {
+     "distance": 64
+    },
+    "nearest_sea": {
+     "bearing": "NW",
+     "distance": 352,
+     "x": 1504,
+     "z": 2740
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "NW",
+     "distance": 310,
+     "x": 1524,
+     "z": 2692
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 536,
+      "hits": "coastal_shelf"
+     },
+     "north_+z": {
+      "distance": 424,
+      "hits": "coastal_shelf"
+     },
+     "south_-z": {
+      "distance": 220,
+      "hits": "kragmar_raincall_basin"
+     },
+     "west_-x": {
+      "distance": 464,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "kapok",
+   "name": "Kapok",
+   "npcs": [
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "clearing_vendor",
+     "vendor_kind": "race",
+     "x": 1807,
+     "y": 8,
+     "z": 2546
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "idle_lodge_door",
+     "tag": "door",
+     "x": 1798,
+     "y": 8,
+     "z": 2567
+    },
+    {
+     "npc_id": "r14_troll_elder",
+     "npc_name": "Zalima Rainhum",
+     "quests": [
+      "r14_troll_01_boars_in_the_yam_beds",
+      "r14_troll_03_teeth_in_the_basket_weave",
+      "r14_troll_04_dead_in_the_rootways",
+      "r14_troll_05_vipers_under_broad_leaves",
+      "r14_troll_06_claws_on_raincall_road",
+      "r14_troll_10_a_dry_handled_axe",
+      "r14_troll_11_stone_beneath_the_moss",
+      "r20_troll_capital_intro"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "hall_quest",
+     "tag": "door",
+     "x": 1803,
+     "y": 8,
+     "z": 2567
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "trainer_cooking",
+     "x": 1802,
+     "y": 8,
+     "z": 2540
+    },
+    {
+     "npc_id": "r20_troll_start_cook",
+     "npc_name": "Zemi Sweetroot",
+     "quests": [
+      "r14_troll_02_fill_the_evening_pot",
+      "r20_troll_start_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_cook",
+     "x": 1802,
+     "y": 8,
+     "z": 2537
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "cook_oven",
+     "tag": "furnace",
+     "x": 1804,
+     "y": 8,
+     "z": 2537
+    }
+   ],
+   "race": "troll",
+   "resident_counts": {
+    "guard_patrol": 5,
+    "guard_post": 2,
+    "idle": 6,
+    "innkeeper": 1,
+    "public_station": 1,
+    "quest": 2,
+    "trainer": 1,
+    "vendor": 1,
+    "work": 2
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:giant_rat",
+   "name": "Giant Rat",
+   "night": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 96.0,
+    "share_pct": 81.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 99.9
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:sand",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:hare",
+   "name": "Hare",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:jungle_boar",
+   "name": "Jungle Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 41.3,
+    "share_pct": 36.6
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:jungle_lynx",
+   "name": "Jungle Lynx",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 85.4
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:parrot",
+   "name": "Parrot",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 44144,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 44144,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 41.3,
+    "share_pct": 36.6
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_rainforest_litter",
+    "grug_nodes:dirt_with_canopy_litter"
+   ],
+   "mob": "grug_mobs:tapir",
+   "name": "Tapir",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 41.3,
+    "share_pct": 36.5
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_rainforest_litter"
+   ],
+   "mob": "grug_mobs:viper",
+   "name": "Viper",
+   "night": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 41.3,
+    "share_pct": 36.5
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     3,
+     10
+    ],
+    "policy_share_pct": 88.0,
+    "share_pct": 88.0
+   }
+  }
+ ],
+ "start_rings": {
+  "anchor": [
+   1800,
+   2550
+  ],
+  "band_radius": 150,
+  "core_radius": 100
+ },
+ "territory_rule": "throng_home",
+ "track_order": 1
+}

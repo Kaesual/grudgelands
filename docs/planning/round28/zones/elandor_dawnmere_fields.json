@@ -1,0 +1,1067 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_002",
+   "kind": "start",
+   "kind_text": "start town",
+   "level_at": 1,
+   "name": "Dawnmere",
+   "settlement_key": "dawnmere",
+   "slot": "start",
+   "x": 0,
+   "y": 36,
+   "z": -2550
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_meadows",
+   "share": 85
+  },
+  {
+   "id": "grug_deep_forest",
+   "share": 5
+  },
+  {
+   "id": "grug_swamp",
+   "share": 10
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_meadows",
+   "share_pct": 86.3
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 9.2
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 4.5
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1492,
+   "midpoint": {
+    "x": -162,
+    "z": -2294
+   },
+   "zone": "elandor_goldmead_vale"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 0,
+ "casts": {
+  "day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox",
+   "grug_mobs:hare",
+   "grug_mobs:jungle_boar",
+   "grug_mobs:plague_boar",
+   "grug_mobs:rabbit",
+   "grug_mobs:wild_turkey"
+  ],
+  "density_budget_day": [
+   "grug_mobs:boar",
+   "grug_mobs:fox"
+  ],
+  "density_budget_night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:zombie"
+  ],
+  "night": [
+   "grug_mobs:giant_rat",
+   "grug_mobs:zombie"
+  ]
+ },
+ "civic_no_hostiles": false,
+ "coast": {
+  "bank_sand_area_nodes2": 4320,
+  "bay_water_area_nodes2": 595648,
+  "beaches": [
+   {
+    "area_nodes2": 22112,
+    "box": {
+     "max_x": -132,
+     "max_z": -2904,
+     "min_x": -536,
+     "min_z": -3140
+    },
+    "centroid": {
+     "x": -356,
+     "z": -3053
+    },
+    "id": "B1",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 8592,
+    "box": {
+     "max_x": 196,
+     "max_z": -2980,
+     "min_x": -20,
+     "min_z": -3112
+    },
+    "centroid": {
+     "x": 87,
+     "z": -3065
+    },
+    "id": "B2",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 7296,
+    "box": {
+     "max_x": 480,
+     "max_z": -2708,
+     "min_x": 268,
+     "min_z": -2912
+    },
+    "centroid": {
+     "x": 386,
+     "z": -2820
+    },
+    "id": "B3",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 7168,
+    "box": {
+     "max_x": -720,
+     "max_z": -2292,
+     "min_x": -844,
+     "min_z": -2440
+    },
+    "centroid": {
+     "x": -791,
+     "z": -2386
+    },
+    "id": "B4",
+    "levels": [
+     7,
+     10
+    ]
+   },
+   {
+    "area_nodes2": 5344,
+    "box": {
+     "max_x": -640,
+     "max_z": -2492,
+     "min_x": -724,
+     "min_z": -2660
+    },
+    "centroid": {
+     "x": -681,
+     "z": -2578
+    },
+    "id": "B5",
+    "levels": [
+     4,
+     6
+    ]
+   },
+   {
+    "area_nodes2": 3968,
+    "box": {
+     "max_x": -604,
+     "max_z": -2676,
+     "min_x": -652,
+     "min_z": -2852
+    },
+    "centroid": {
+     "x": -629,
+     "z": -2762
+    },
+    "id": "B6",
+    "levels": [
+     3,
+     4
+    ]
+   },
+   {
+    "area_nodes2": 1664,
+    "box": {
+     "max_x": 264,
+     "max_z": -2900,
+     "min_x": 208,
+     "min_z": -2976
+    },
+    "centroid": {
+     "x": 234,
+     "z": -2929
+    },
+    "id": "B7",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 896,
+    "box": {
+     "max_x": 416,
+     "max_z": -2200,
+     "min_x": 388,
+     "min_z": -2268
+    },
+    "centroid": {
+     "x": 405,
+     "z": -2221
+    },
+    "id": "B8",
+    "levels": [
+     8,
+     10
+    ]
+   },
+   {
+    "area_nodes2": 736,
+    "box": {
+     "max_x": 376,
+     "max_z": -2596,
+     "min_x": 340,
+     "min_z": -2636
+    },
+    "centroid": {
+     "x": 358,
+     "z": -2615
+    },
+    "id": "B9",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 352,
+    "box": {
+     "max_x": 496,
+     "max_z": -2632,
+     "min_x": 476,
+     "min_z": -2648
+    },
+    "centroid": {
+     "x": 487,
+     "z": -2639
+    },
+    "id": "B10",
+    "levels": [
+     3,
+     3
+    ]
+   },
+   {
+    "area_nodes2": 320,
+    "box": {
+     "max_x": -668,
+     "max_z": -2416,
+     "min_x": -712,
+     "min_z": -2436
+    },
+    "centroid": {
+     "x": -690,
+     "z": -2425
+    },
+    "id": "B11",
+    "levels": [
+     7,
+     8
+    ]
+   },
+   {
+    "area_nodes2": 208,
+    "box": {
+     "max_x": 492,
+     "max_z": -2676,
+     "min_x": 480,
+     "min_z": -2700
+    },
+    "centroid": {
+     "x": 488,
+     "z": -2688
+    },
+    "id": "B12",
+    "levels": [
+     3,
+     3
+    ]
+   }
+  ],
+  "inland_water_area_nodes2": 12368,
+  "sea_beach_sand_area_nodes2": 61024,
+  "sea_coast_length_nodes": 4064
+ },
+ "drift_band_share_pct": 1.7,
+ "extent": {
+  "centroid": {
+   "x": -112,
+   "z": -2660
+  },
+  "land_area_nodes2": 816912,
+  "max_x": 496,
+  "max_z": -2196,
+  "min_x": -844,
+  "min_z": -3140
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": 0,
+  "z": -2550
+ },
+ "id": "elandor_dawnmere_fields",
+ "level_field": {
+  "histogram_pct": {
+   "1": 3.8,
+   "2": 4.7,
+   "3": 64.0,
+   "4": 6.3,
+   "5": 5.4,
+   "6": 4.4,
+   "7": 2.5,
+   "8": 3.3,
+   "9": 3.0,
+   "10": 2.6
+  },
+  "max": 10,
+  "min": 1
+ },
+ "level_max": 10,
+ "level_min": 1,
+ "level_rule": "Start-zone gradient (zones.lua): L1 within 100 nodes of the start anchor, L2 to 150; beyond, band 1 top (L3) behind and beside the town, rising through band 2 (L4-6) and band 3 (L7-10) toward the front border (+z), reaching L10 at the border.",
+ "map": "maps/elandor_dawnmere_fields.png",
+ "name": "Dawnmere Fields",
+ "neighbors": [
+  "elandor_goldmead_vale"
+ ],
+ "numeric_id": 6,
+ "palette_without_host_ground": [],
+ "protected": {
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": [],
+  "start_town": {
+   "band_nodes": 12,
+   "note": "128-node pad plus a 12-node band (rounded corners); hard protected, no hostile spawns.",
+   "outer_box": {
+    "max_x": 75,
+    "max_z": -2475,
+    "min_x": -76,
+    "min_z": -2626
+   },
+   "pad": {
+    "max_x": 63,
+    "max_z": -2487,
+    "min_x": -64,
+    "min_z": -2614
+   }
+  }
+ },
+ "protected_share_pct": 3.0,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 10,
+   "description": "Boars root through the outer seed rows by day. Drive off three beyond Dawnmere's fence, and take spare raw meat to Bess Honeycrust beside the village oven.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_01_boars_beyond_the_fence",
+   "min_level": 1,
+   "objectives": [
+    "kill 3 boar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:boar"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Boars Beyond the Fence",
+   "turnin": "r14_human_elder",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "The shared oven feeds everyone returning from dawnmere's outer paths. Bring four raw meat portions to Bess Honeycrust beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+   "giver": "r20_human_start_cook",
+   "giver_name": "Bess Honeycrust",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_02_the_smokehouse_share",
+   "min_level": 1,
+   "objectives": [
+    "bring 4 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Smokehouse Share",
+   "turnin": "r20_human_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 10,
+   "description": "Bring a wood axe and Elian will explain safe trees, shared timber and the first repair.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_10_a_woodsman_s_edge",
+   "min_level": 1,
+   "objectives": [
+    "bring 1 grug_materials:axe_wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a wood axe",
+     "item": "grug_materials:axe_wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Woodsman's Edge",
+   "turnin": "r14_human_elder",
+   "xp": 15
+  },
+  {
+   "copper": 10,
+   "description": "Bess Honeycrust has a second oven ready for Dawnmere's returning field hands. Bring three coal lumps for its fuel store. Traded supplies count; mining natural coal yourself only requires a pickaxe; wood and stone picks work too.",
+   "giver": "r20_human_start_cook",
+   "giver_name": "Bess Honeycrust",
+   "giver_settlement": "Dawnmere",
+   "id": "r20_human_start_cook",
+   "min_level": 1,
+   "objectives": [
+    "bring 3 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Second Oven",
+   "turnin": "r20_human_start_cook",
+   "xp": 20
+  },
+  {
+   "copper": 15,
+   "description": "Bring a stone pick for a short lesson before the road leaves the soft fields.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_11_a_pick_for_the_road",
+   "min_level": 2,
+   "objectives": [
+    "bring 1 grug_materials:pick_stone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "description": "Bring a stone pick",
+     "item": "grug_materials:pick_stone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_10_a_woodsman_s_edge"
+   ],
+   "reward_items": [],
+   "title": "A Pick for the Road",
+   "turnin": "r14_human_elder",
+   "xp": 45
+  },
+  {
+   "copper": 20,
+   "description": "The granary's damaged braces leave the baskets open to pests. Bring six oak planks to repair the store frame. Boards already in your pack or obtained by trade count too.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_03_granary_teeth",
+   "min_level": 3,
+   "objectives": [
+    "bring 6 default:wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "item": "default:wood",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_01_boars_beyond_the_fence"
+   ],
+   "reward_items": [],
+   "title": "Braces for the Granary",
+   "turnin": "r14_human_elder",
+   "xp": 100
+  },
+  {
+   "copper": 25,
+   "description": "Zombies approach Dawnmere's lantern road after nightfall. Defeat three beyond the houses in the level-3-and-up fields. The daytime repair work and optional tool lessons remain alternatives while the road is quiet.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_04_shapes_by_lanternlight",
+   "min_level": 4,
+   "objectives": [
+    "kill 3 zombie"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "mobs": [
+      "grug_mobs:zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_01_boars_beyond_the_fence"
+   ],
+   "reward_items": [],
+   "title": "Shapes by Lanternlight",
+   "turnin": "r14_human_elder",
+   "xp": 140
+  },
+  {
+   "copper": 30,
+   "description": "Wild turkeys draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_05_the_missing_flock",
+   "min_level": 5,
+   "objectives": [
+    "kill 5 wild_turkey"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "mobs": [
+      "grug_mobs:wild_turkey"
+     ],
+     "type": "kill",
+     "zone": false
+    }
+   ],
+   "prerequisites": [
+    "r14_human_03_granary_teeth"
+   ],
+   "reward_items": [],
+   "title": "The Missing Flock",
+   "turnin": "r14_human_elder",
+   "xp": 180
+  },
+  {
+   "copper": 40,
+   "description": "At level 10, travel to Goldmead Village and speak with Marta Millward. Goldmead Vale is level 11\u201320 country; follow the road instead of trying to clear every creature. Complete this handoff with Marta there.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r14_human_06_flock_on_mill_road",
+   "min_level": 10,
+   "objectives": [
+    "talk to Marta Millward (goldmead_village)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_human_steward",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r14_human_05_the_missing_flock"
+   ],
+   "reward_items": [],
+   "title": "The Road to Marta Millward",
+   "turnin": "r14_human_steward",
+   "xp": 285
+  },
+  {
+   "copper": 40,
+   "description": "Highcourt has public workspaces, profession trainers and repair services beyond Dawnmere's small yard. At level 10, follow the road to Mariel Waybook at the chapel. The surrounding country is level 20\u201330, so travel by the road instead of testing its wildlife. Speak with Mariel and complete the introduction there.",
+   "giver": "r14_human_elder",
+   "giver_name": "Elian Reed",
+   "giver_settlement": "Dawnmere",
+   "id": "r20_human_capital_intro",
+   "min_level": 10,
+   "objectives": [
+    "talk to Mariel Waybook (highcourt)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_human_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Road to Highcourt",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 285
+  }
+ ],
+ "race_region": "human",
+ "race_track": "human",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 0.1,
+  "height_above_sea": {
+   "max": 63,
+   "median": 32,
+   "min": 0,
+   "p10": 5,
+   "p90": 47
+  },
+  "steep_share_pct": 1.3
+ },
+ "relief_profile": "lowland",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1,
+    -2486
+   ],
+   "from": "anchor_002 (Dawnmere, elandor_dawnmere_fields)",
+   "id": 4,
+   "kind": "primary",
+   "last_in_zone": [
+    -13,
+    -2319
+   ],
+   "length_in_zone": 180,
+   "length_total": 796,
+   "polyline_simplified": [
+    [
+     -1,
+     -2486
+    ],
+    [
+     19,
+     -2387
+    ],
+    [
+     -14,
+     -2303
+    ],
+    [
+     47,
+     -2175
+    ],
+    [
+     36,
+     -2088
+    ],
+    [
+     99,
+     -1989
+    ],
+    [
+     98,
+     -1907
+    ],
+    [
+     133,
+     -1831
+    ],
+    [
+     128,
+     -1760
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  }
+ ],
+ "role": "start zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": 0,
+    "y": 36,
+    "z": -2550
+   },
+   "anchor_id": "anchor_002",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Goldmead Outpost",
+      "road": 686,
+      "straight": 553,
+      "to": "goldmead_outpost",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Goldmead Bandit Camp",
+      "road": 1022,
+      "straight": 654,
+      "to": "goldmead_bandit_camp",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Highcourt",
+      "road": 1366,
+      "straight": 1050,
+      "to": "highcourt",
+      "zone": "elandor_highcourt"
+     },
+     {
+      "name": "Goldmead Village",
+      "road": 1576,
+      "straight": 543,
+      "to": "goldmead_village",
+      "zone": "elandor_goldmead_vale"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 2134,
+      "straight": 1425,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Petalbank Wardenry",
+      "road": 2173,
+      "straight": 1465,
+      "to": "r20_anchor_034",
+      "zone": "elandor_lorindor"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "N",
+     "distance": 229,
+     "x": -36,
+     "z": -2324
+    },
+    "nearest_road": {
+     "distance": 64
+    },
+    "nearest_sea": {
+     "bearing": "E",
+     "distance": 362,
+     "x": 352,
+     "z": -2636
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "E",
+     "distance": 345,
+     "x": 328,
+     "z": -2656
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 476,
+      "hits": "bay_water"
+     },
+     "north_+z": {
+      "distance": 236,
+      "hits": "elandor_goldmead_vale"
+     },
+     "south_-z": {
+      "distance": 552,
+      "hits": "coastal_shelf"
+     },
+     "west_-x": {
+      "distance": 696,
+      "hits": "coastal_shelf"
+     }
+    }
+   },
+   "key": "dawnmere",
+   "name": "Dawnmere",
+   "npcs": [
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "green_vendor",
+     "vendor_kind": "race",
+     "x": 6,
+     "y": 37,
+     "z": -2554
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "home_innkeeper",
+     "tag": "door",
+     "x": 11,
+     "y": 37,
+     "z": -2541
+    },
+    {
+     "npc_id": "r14_human_elder",
+     "npc_name": "Elian Reed",
+     "quests": [
+      "r14_human_01_boars_beyond_the_fence",
+      "r14_human_03_granary_teeth",
+      "r14_human_04_shapes_by_lanternlight",
+      "r14_human_05_the_missing_flock",
+      "r14_human_06_flock_on_mill_road",
+      "r14_human_10_a_woodsman_s_edge",
+      "r14_human_11_a_pick_for_the_road",
+      "r20_human_capital_intro"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "hall_quest",
+     "tag": "door",
+     "x": -11,
+     "y": 37,
+     "z": -2542
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "trainer_cooking",
+     "x": 2,
+     "y": 37,
+     "z": -2540
+    },
+    {
+     "npc_id": "r20_human_start_cook",
+     "npc_name": "Bess Honeycrust",
+     "quests": [
+      "r14_human_02_the_smokehouse_share",
+      "r20_human_start_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "quest_cook",
+     "x": 2,
+     "y": 37,
+     "z": -2537
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "cook_oven",
+     "tag": "furnace",
+     "x": 4,
+     "y": 37,
+     "z": -2537
+    }
+   ],
+   "race": "human",
+   "resident_counts": {
+    "guard_patrol": 5,
+    "guard_post": 2,
+    "idle": 6,
+    "innkeeper": 1,
+    "public_station": 1,
+    "quest": 2,
+    "trainer": 1,
+    "vendor": 1,
+    "work": 2
+   }
+  }
+ ],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:boar",
+   "name": "Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     4,
+     10
+    ],
+    "policy_share_pct": 27.1,
+    "share_pct": 24.2
+   },
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:fox",
+   "name": "Fox",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_silver_litter"
+   ],
+   "mob": "grug_mobs:giant_rat",
+   "name": "Giant Rat",
+   "night": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 96.7,
+    "share_pct": 83.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 100.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:rabbit",
+   "name": "Rabbit",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 61024,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "disposition": "neutral",
+   "hosts": [
+    "default:sand (dry, within 6 nodes of water)"
+   ],
+   "mob": "grug_mobs:shore_crab",
+   "name": "Shore Crab",
+   "night": {
+    "area_nodes2": 61024,
+    "levels": [
+     3,
+     10
+    ]
+   },
+   "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     10
+    ],
+    "policy_share_pct": 100.0,
+    "share_pct": 87.0
+   },
+   "disposition": "critter",
+   "hosts": [
+    "default:dirt_with_grass"
+   ],
+   "mob": "grug_mobs:wild_turkey",
+   "name": "Wild Turkey",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [
+    "default:dirt_with_coniferous_litter",
+    "default:dirt_with_grass",
+    "default:dirt_with_rainforest_litter",
+    "default:dry_dirt_with_dry_grass",
+    "default:gravel",
+    "default:sand",
+    "default:snowblock",
+    "grug_nodes:blight_dirt",
+    "grug_nodes:dirt_with_canopy_litter",
+    "grug_nodes:dirt_with_forest_litter",
+    "grug_nodes:dirt_with_silver_litter",
+    "grug_nodes:mesa_clay",
+    "grug_nodes:mud"
+   ],
+   "mob": "grug_mobs:zombie",
+   "name": "Zombie",
+   "night": {
+    "levels": [
+     3,
+     10
+    ],
+    "policy_share_pct": 91.5,
+    "share_pct": 91.5
+   }
+  }
+ ],
+ "start_rings": {
+  "anchor": [
+   0,
+   -2550
+  ],
+  "band_radius": 150,
+  "core_radius": 100
+ },
+ "territory_rule": "accord_home",
+ "track_order": 1
+}

@@ -32,7 +32,7 @@ end
 local SECTIONS = {
 	{id = "start", label = "Start", x = 0.0, w = 1.5, text = body({
 		heading("Your first steps"),
-		"• Your starter weapon is already in the Weapon slot on the Character page. Open the Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
+		"• Your starter weapon is already equipped on the Character page. Open the Skills tab, drag a combat skill onto your hotbar, select it and left-click a creature to fight.",
 		"• Talk to the people of your start town. A yellow ! above someone means they have a quest for you.",
 		"• Craft a Wooden Pickaxe early: stone and ore need a pickaxe. Dirt, sand and other loose ground dig by hand (or with a skill selected), a shovel is fastest. The Basics book in the Crafting tab shows tools, weapons and armor you can make.",
 		"",
@@ -64,7 +64,7 @@ local SECTIONS = {
 		"• Trainers: every start town has a Cooking trainer; every capital has trainers for all eight professions, each with a public workstation next to it. Learned recipes appear in that profession's book in the Crafting tab.",
 		"• Weaponsmith (Forge): metal fittings; enchants swords, daggers and battle axes.",
 		"• Armorsmith (Forge): enchants metal armor and shields.",
-		"• Leatherworker (Tanning Rack): leather bags, the quiver and weapon grips; enchants leather armor.",
+		"• Leatherworker (Tanning Rack): leather bags and weapon grips; enchants leather armor.",
 		"• Tailor (Tailor Bench): cloth bags and bolt bundles; enchants cloth armor.",
 		"• Woodcarver (Carving Bench): enchants staves, wands and bows.",
 		"• Goldsmith (Jeweller's Bench): cuts gems; makes trinkets, spellbooks and settings; enchants trinkets and spellbooks.",
@@ -94,7 +94,9 @@ local SECTIONS = {
 		"• Basics shows starter recipes right away. Finding a recipe's main material reveals further recipes, even when it is carried in a bag. This only reveals recipes: crafting itself has no level requirement.",
 		"",
 		heading("Skills and combat"),
-		"• Skills use the weapon in your Weapon slot, never one in the hotbar. Select a skill and left-click a target; if the skill is not ready, you strike with your weapon.",
+		"• Skills use the items in your hand slots on the Character page, never one in the hotbar. Select a skill and left-click a target; if the skill is not ready, you strike with your weapon.",
+		"• Hand slots by class: Warriors carry a weapon and a shield (only Warriors use shields), Mages and Priests a weapon and a spellbook in the Caster offhand. Scouts carry a bow in the Ranged slot for the bow skills and a sword or dagger in the Melee slot for Strike and every melee skill. Both hand items always count toward your stats.",
+		"• Scouts have a quiver slot for up to 500 arrows: drag or shift-click arrows onto it, and picked-up arrows go there first. Click it to take up to 100 arrows. Shots use the quiver first, then your inventory. Arrows stack to 100.",
 		"• The Skills tab keeps every unlocked skill and bought mount: drag an icon into your inventory. Drop icons you do not need; you can drag them back at any time.",
 		"",
 		heading("Bags, food and repair"),

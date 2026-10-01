@@ -52,8 +52,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   never adds mana.
 - **Melee damage** = weapon damage + floor(melee attribute/10), where the
   attribute is Dexterity for Scout and Strength for other classes. Since 2026-08-08,
-  **"weapon damage" has a source: the item in the WEAPON SLOT**
-  (`inventory_equipment.md` §2) — the single, fixed source for every
+  **"weapon damage" has a source: the melee weapon** — the item in the
+  WEAPON SLOT, or for the Scout the Melee offhand (Round 28 ruling 25;
+  `inventory_equipment.md` §2) — the single, fixed source for every
   sword-type skill, with **no fallback to the wielded item**. An empty slot
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.
@@ -139,12 +140,13 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **The Weapon slot enforces the current generated catalog's `_grug_ilvl`
-  directly as its minimum character level.** The documented future ilvl
+- **The hand slots enforce a weapon's current generated `_grug_ilvl`
+  directly as its minimum character level** (the Weapon slot, and the
+  Scout's Melee offhand for its sword or dagger). The documented future ilvl
   65/70/75 endgame items instead carry a level-60 requirement when created.
   Items without a positive `_grug_ilvl`
-  remain unrestricted, and no other equipment slot has this level gate
-  (`grug_inventory/equipment.lua:173-185,330-338`);
+  remain unrestricted, and no shield, spellbook or armor slot has this level
+  gate (`grug_inventory/equipment.lua`, the allow callback);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 - **Consumables use the same `_grug_ilvl` decision helper.** Food, potions and
@@ -214,8 +216,8 @@ Two optional target-race systems use the central pipeline:
 ### Environmental damage, deaths and shore movement
 
 Environmental damage to players scales with the **actual** pool
-(`player:get_properties().hp_max`, maximum HP below). Mob damage from nodes is
-unchanged (mobs_redo applies its own node damage).
+(`player:get_properties().hp_max`, maximum HP below). Mobs follow the same
+idea (Round 28 ruling 6), see "Mobs" at the end of this list.
 
 - A player whose head point is inside an opaque, walkable, non-liquid full
   regular cube takes **floor(5% of maximum HP) per second, minimum 1 HP**.
@@ -243,6 +245,21 @@ unchanged (mobs_redo applies its own node damage).
   damage**; other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
+- **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a
+  share of its `hp_max` per environment tick (mobs_redo ticks once per
+  second), rounded up and at least 1 HP: **sun 5 %** (every mob with
+  `light_damage > 0`, inside its light window), **lava 20 %**, **fire 10 %**,
+  **water 10 %** (only mobs that water hurts) and **suffocation 5 %**. Fall
+  damage has the player's shape, **`ceil(hp_max × (d − 6) / 20)`** for a fall
+  of `d` nodes (after the floor's `fall_damage_add_percent`). The per-mob
+  definition values (`light_damage`, `lava_damage`, `fire_damage`,
+  `water_damage`, `suffocation`, `fall_damage`) are only on/off switches.
+  **Elite and rare** tiers take **half**; the **boss tier (dragons) and the
+  kings are immune**. Other `damage_per_second` nodes and `air_damage` keep
+  mobs_redo's flat amounts. *Why:* flat amounts made high-level mobs nearly
+  immortal (an L30 zombie, 764 HP, needed 6.4 minutes in the sun; now 20 s).
+  Implementation: `grug_mobs/env_damage.lua`, called from `mobs/api.lua`
+  `do_env_damage()` and `falling()`.
 - Every player death sends exactly **one** short English line to all players.
   The selected template distinguishes fall, drowning, lava/fire node damage,
   suffocation, a mob punch (using the mob's display name), a player punch
@@ -310,10 +327,12 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   valid attack hides it immediately and expiry shows it once; an aim miss
   leaves it visible. There is no smooth progress animation and no periodic
   inventory rewrite.
-- **The weapon slot is the sole swing source.** Ability stacks expose zero
+- **The melee slot is the sole swing source**: the Weapon slot, or the
+  Scout's Melee offhand (Round 28 ruling 25; `grug_core.get_melee_weapon`).
+  Ability stacks expose zero
   native combat damage while retaining native hand digging and animation. Their
   charge wear is not equipment wear. The server builds actual attacks from the
-  equipped usable weapon; cosmetic getters separately retain broken equipment.
+  equipped usable melee weapon; cosmetic getters separately retain broken equipment.
   Selected-skill/fallback scheduling and click arbitration are defined in
   `classes.md` §2b. Native tools/fists are not a second combat stream.
 - **One accepted full swing resolves once.** Against players the order is
@@ -348,7 +367,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
 - Fireball keeps **6% base mana**, **1.0 s server cast cadence**, **20 m initial
   range**, **20 m/s nominal speed**, baseline weapon damage + spell power and
   its existing talent effects. Scout arrows retain bounded draw and ammo rules:
-  a full draw takes the bow's 2.5 s, and Loose deals
+  a full draw takes the bow's 2.5 s, shortened only by Fletching and the
+  bow's own attack-speed affix (not the rest of the equipment), and Loose deals
   (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for
   draw fraction f — ×0.2 on a tap, ×0.7125 at half, ×2.25 at full draw (user
   ruling 2026-09-28, follow-up) — before Twin
@@ -471,15 +491,47 @@ Normal tier at level L:
   `skeleton_raider.lua:27`, `spider.lua:19`, `wolf.lua:19` and
   `zombie.lua:21`; the exceptions are `kraken.lua:34` and
   `start_villagers.lua:936`.
-- **Ordinary hits have zero knockback.** Damage never becomes an implicit
-  displacement magnitude. `damage_groups.knockback` remains the explicit
-  override seam for a future limited/cooldown skill
-  (`mobs/api.lua:3455-3481`).
+- **Knockback: player melee swings only** (Round 28 ruling 7). Strike and the
+  melee swing skills (Mighty Blow, Hamstring, Opening: every authoritative
+  swing) push a normal mob back by **`c × swing interval`** with
+  **c = 0.25 m per second** (`grug_mobs.KNOCKBACK_PER_SECOND`, one constant to
+  tune by feel): dagger 0.7 s → 0.175 m, sword 1.0 s → 0.25 m, battle axe
+  1.4 s → 0.35 m. The interval is the weapon's actual interval after the
+  attack-speed affix, so knockback per second is the same for every weapon
+  and weapon tier does not matter. It is a horizontal **position
+  displacement** along attacker → mob (a velocity would be overwritten by the
+  next AI step), applied only when the mob's collision box fits at the
+  destination (no unknown or damaging node, and no walkable node reaching
+  above its feet: snow dust or the slab it stands on are ground, a slab or
+  stair beside a mob on full blocks is an obstacle) and the mob is pushed
+  only when the node under its feet there is walkable (at most half a node
+  lower, e.g. off a slab); otherwise there is no knockback. Mobs are
+  therefore never pushed into walls or over ledges. A swimmer on the sea bed
+  or a flier just above the ground can be pushed; one in open water or air
+  (nothing walkable under its feet) cannot. Only the
+  **normal and critter** tiers are pushed: no knockback for elite, rare, boss
+  or king, nor for a `knock_back = false` mob (the Kraken). Casts, Charge,
+  arrows, mob hits and every other punch carry no implicit knockback; several
+  players' knockback adds up (accepted). The backpedal abuse stays
+  impossible: mobs close at 0.6 m/s (4.6 vs 4.0), well above 0.25 m/s.
+  A future limited/cooldown knockback skill displaces through
+  `grug_mobs.displace_mob` (the same fit test); the old
+  `damage_groups.knockback` velocity override no longer survives a player
+  hit, because without the hit pause the next AI step overwrites the
+  velocity. Implementation: `grug_mobs/separation.lua`, called from
+  `mobs/api.lua` `on_punch`.
 - **Actors do not collide with other objects.** Mobs, NPCs and players use
   `collide_with_objects = false`; terrain collision is unchanged. This removes
-  actor-on-actor climbing and deliberately permits visual overlap, which the
-  runtime playtest must judge (`mobs/api.lua:3967-3975`;
-  `grug_core/init.lua:70`).
+  actor-on-actor climbing (`grug_core/init.lua:70`). The visible overlap is
+  limited by **separation** (Round 28 ruling 5, kept deliberately simple): an
+  engaged ground melee mob does not enter its target's own column — the
+  contact run stops while a visible target is within the two collision radii
+  plus 0.5 m horizontally, and once a second a mob found inside that column
+  (radii sum) is moved out of it — and engaged mobs whose bodies overlap
+  drift apart sideways (perpendicular to the line to their own target), at
+  most 0.5 m per second. The same fit test as knockback applies; no
+  pathfinding. Implementation: `grug_mobs/separation.lua`, called from the
+  dogfight branch of `mobs/api.lua` `do_states()`.
 - **The 4.6 > 4.0 inequality holds except for named, long-cooldown skills**
   (`skill_trees.md` §5, ruling 10 of 2026-09-16): "skills may explicitly
   **break the base inequalities** (mob 4.4 > player 4.0, stat caps, roots)…
@@ -726,6 +778,11 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   claims the timer only after line of sight succeeds. A blocked ready swing
   therefore stays banked (`mobs/api.lua:2491-2819`;
   `mobs/grug_obstacle.lua:4-237`).
+- **Hits never stall a mob's attack clock** (Round 28 ruling 8). No player
+  hit — melee swing, arrow or ability, with or without knockback — pauses the
+  mob. mobs_redo set a 0.25 s pause on every landed hit, which skipped the
+  attack state and therefore the punch timer; several players hitting one mob
+  stretched its attack interval a lot. Mob-vs-mob hits keep that pause.
 - **Close cover triggers navigation** (decided 2026-09-17). If a ground melee
   mob has spent about **1 s** inside reach without line of sight, it starts the
   existing bounded A* search despite already being close. It does not abandon
@@ -957,15 +1014,21 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - The engine has **no native offhand**; we build `grug_offhand` after
   VoxeLibre's `mcl_offhand` pattern (inventory list `"offhand"` + HUD
   slot).
-- Equip rules (enforced centrally): occupied hands normally total at most two.
-  The zero-hand Leatherworker quiver is the sole exception: it may accompany a
-  two-handed bow or one-handed melee weapon. Shields and Goldsmith spellbooks
-  are ordinary one-hand offhands; staff and greataxe require an empty offhand.
-  There is no dual-wield or Rogue path in V1.
+- **The offhand is per class** (Round 28 ruling 25): **Warrior** — a shield
+  (only Warriors equip shields); **Mage and Priest** — the "Caster offhand",
+  a Goldsmith spellbook; **Scout** — its **melee weapon** (sword or dagger),
+  shown as "Melee", while its Weapon slot is shown as "Ranged" and takes the
+  bow. **Both hand items always count toward stats for every class.** Strike,
+  Opening and every melee skill swing the Scout's Melee item (bare hand when
+  empty); its bow skills read Ranged. There is no dual-wield: no class
+  swings two weapons at once, and no Rogue path in V1.
+- Equip rules (enforced centrally): occupied hands total at most two.
+  Shields, spellbooks, the bow and every one-hand weapon count one hand;
+  staff and greataxe require an empty offhand.
 - **The mechanism of the two-handed rule** (decided 2026-08-08, shipped
   with WP35 — the weapon slot is the first place it can be enforced):
-  items declare a hand count in `_grug_hands` (**greataxe/staff/bow 2,
-  sword/dagger/wand 1**; a missing field means one-handed). Gathering tools,
+  items declare a hand count in `_grug_hands` (**greataxe/staff 2,
+  sword/dagger/wand/bow 1**; a missing field means one-handed). Gathering tools,
   including Woodcutting Axes, are ineligible for Weapon. The weapon/offhand
   `allow_put` refuses pairs whose occupied hands exceed two, in both directions,
   with a message explaining the trade. Eligibility: `inventory_equipment.md` §2.
@@ -973,9 +1036,8 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   unequip of the other slot.
 - Consequence, and it is a gameplay rule rather than a technicality:
   **carrying a shield or spellbook costs you the two-handed weapon.**
-  Greataxe and staff users choose between the offhand and their weapon; a bow
-  accepts only the quiver exception. The refusal text says so rather than
-  failing silently.
+  Greataxe and staff users choose between the offhand and their weapon. The
+  refusal text says so rather than failing silently.
 - **No carried light** (user decision 2026-09-29,
   [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) C5):
   torches are not offhand items and nothing carried gives a moving light

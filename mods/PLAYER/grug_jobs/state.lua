@@ -118,7 +118,7 @@ function grug_jobs.crafts_in_tier(player, profession)
 	return math.max(0, player:get_meta():get_int(META_CRAFTS .. profession))
 end
 
-function grug_jobs.record_craft(player, profession, tier)
+local function record_craft(player, profession, tier)
 	if not grug_jobs.has(player, profession) then return false, 0 end
 	local current = grug_jobs.profession_level(player, profession)
 	local meta = player:get_meta()
@@ -152,6 +152,16 @@ function grug_jobs.record_craft(player, profession, tier)
 			(current * 10 + 1) .. " to advance.")
 	end
 	return false, current
+end
+
+-- Every counted craft also refreshes the Character page's Professions tab
+-- when that tab is the open view (Round 28 ruling 23); otherwise nothing.
+function grug_jobs.record_craft(player, profession, tier)
+	local advanced, level = record_craft(player, profession, tier)
+	if grug_inventory.refresh_character_tab then
+		grug_inventory.refresh_character_tab(player, "professions")
+	end
+	return advanced, level
 end
 
 -- Shared progression authority for recipe books and the actual craft gate.

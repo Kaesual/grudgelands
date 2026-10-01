@@ -86,7 +86,10 @@ function grug_repair.wear_outgoing(player, action_id)
 		end
 		return true
 	end
-	wear_stack(player, "grug_weapon", 1)
+	-- A synchronous action is a melee swing or a cast: it wears the melee list
+	-- (the Scout's Melee slot, everyone else's Weapon slot). The Scout's shots
+	-- are captured above and wear the bow they captured.
+	wear_stack(player, grug_inventory.melee_list(player), 1)
 
 end
 
@@ -136,7 +139,10 @@ grug_core.register_on_settled_incoming_hit(function(player)
 	local inv = player:get_inventory()
 	for _, list in ipairs({"grug_head", "grug_chest", "grug_legs", "grug_feet", "grug_offhand"}) do
 		local stack = inv:get_stack(list, 1)
-		if grug_repair.eligible(stack) and not grug_core.equipment_is_broken(stack) then
+		-- A weapon in the offhand (the Scout's Melee blade) wears when it
+		-- strikes, not when its wearer is hit.
+		if grug_repair.eligible(stack) and not grug_core.equipment_is_broken(stack) and
+				core.get_item_group(stack:get_name(), "grug_equip_weapon") == 0 then
 			candidates[#candidates + 1] = list
 		end
 	end

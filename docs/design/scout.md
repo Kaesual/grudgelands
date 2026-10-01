@@ -37,7 +37,7 @@ decided specifications under the shared arithmetic in `skill_trees.md`.
 | | |
 |---|---|
 | **Armour** | leather — armor class 2 (`inventory_equipment.md:184-193`) |
-| **Weapons** | bow (ranged); dagger / 1H sword (one-handed melee). Battle Axes are Warrior-only. Scout melee and ranged damage use Dexterity; equipped-main-hand authority remains unchanged. |
+| **Weapons** | bow in the Weapon slot, shown as **"Ranged"**; dagger / 1H sword in the offhand, shown as **"Melee"** (Round 28 ruling 25). Battle Axes are Warrior-only. Bow skills read Ranged; Strike, Opening and every melee skill read Melee (bare hand when empty). Both items always count toward stats. Scout melee and ranged damage use Dexterity. |
 | **Resource** | **mana** — ruling 14, decided. The bar uses the class-neutral level pool `round(20 + 5L + 0.66L²)` before mana-percent gear/talents (`combat_stats.md` §2); Intelligence does not add mana |
 | **Trees** | **Quarry** (bow) and **Veil** (blade and evasion) — `skill_trees.md` §2.7/§2.8, named by ruling 27 |
 | **Attributes** | Dexterity-led; growth **+2 Dex / +1 Str / +1 Int** per level, against `combat_stats.md:40-41`'s Warrior +3 Str/+1 Dex, Mage +3 Int/+1 Dex, Priest +1 Str/+2 Int/+1 Dex |
@@ -71,7 +71,7 @@ ceiling of two talent buttons puts the worst case at 7 of 8.
 
 | Ability | Kind | Cost | Cooldown | Effect | Existing mechanic it reuses |
 |---|---|---|---|---|---|
-| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the weapon slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for draw fraction f (tap ×0.2, half ×0.7125, full ×2.25); nominal speed 40 + 15 f m/s (tap 40, full draw 55) | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
+| **Loose** | cast | 1 arrow | none (ammo-limited) | Requires a bow in the Ranged slot. A **homing** arrow locked to the current crosshair hostile at release, initially within 25 m. Full draw **2.5 s**; damage = (bow damage + Dexterity ranged bonus + Strong Draw) × (0.2 + 2.05 f²) for draw fraction f (tap ×0.2, half ×0.7125, full ×2.25); nominal speed 40 + 15 f m/s (tap 40, full draw 55) | Shared release validation, bounded target-following flight, owner/target lifecycle and once-only impact (`combat_stats.md`) |
 | **Snare Shot** | cast | 8 % base mana + 1 arrow | 12 s | The arrow slows the target by 50 % for 4 s | `grug_mobs.slow` for mobs and the player movement aggregator — the same two paths Hamstring uses (`kits.lua:421-430`) |
 | **Sidestep** | cast | 10 % base mana | 30 s | Dodge chance **+15** percentage points for 4 s, **inside** the 30 % cap. A base ability has no ranks; the Veil tree shortens its cooldown (Slip Away) and replaces it (Shake Loose) | `grug_classes.get_crit_chance`'s twin `get_dodge_chance` (`grug_classes/stats.lua:128-140`) and the timed-window table of `skill_trees.md` §3.2 |
 | **Sprint** ‼ | cast | 15 % base mana | **300 s** | Movement speed **+50 % for 10 s** — 6.0 nodes/s against the ordinary aggressive band's 4.6 | the speed aggregator of `skill_trees.md` §3.9, as one named modifier with its own duration |
@@ -93,11 +93,15 @@ any kind (§8).
 
 The active catalog has six universal plain tier bows beginning at Bronze.
 Woodcarver owns named fixed-tier bow enchantments, not the plain recipe.
-Bows are two-handed and may share Offhand only with the zero-hand quiver.
-Shooting works without a quiver: ammunition is consumed atomically from the
-equipped quiver first and then `main`. The Scout starts with its Bronze Bow
-equipped and receives 200 arrows plus a Bronze Sword in `main`; it does not start
-with a quiver.
+Bows are one-handed (Round 28 ruling 25): the bow sits in the Weapon slot,
+shown as "Ranged", and the Scout's sword or dagger in the offhand, shown as
+"Melee", so the Scout never swaps between bow and blade. The **quiver is a
+Scout-only slot** (ruling 26), not an item: up to **500 arrows**, arrows stack
+to **100** everywhere, clicking the slot takes up to 100 as one stack, arrows
+enter by drag, shift-click and pickup while it has room
+(`inventory_equipment.md` §3). Ammunition is consumed atomically from the
+quiver first and then `main`. The Scout starts with its Bronze Bow in Ranged,
+its Bronze Sword in Melee and 200 arrows in the quiver.
 
 Historical baseline measured before Round 11:
 
@@ -120,11 +124,12 @@ The active contract is:
   HP and Mana. Loose multiplies (bow damage + Dexterity ranged bonus + Strong Draw) by
   `0.2 + 2.05 f²` of the draw fraction f (user ruling 2026-09-28); Twin Shot's
   second-arrow percentage and Longshot's +4 apply after it. Fletching and the
-  draw-speed affix shorten the draw to at least 0.5 s. One bow per material tier,
-  material-named under §3.0.3. Round 21 arrows craft 200 per batch from 1 Bronze Bar +
-  2 Sticks diagonally, without feathers (approved 2026-09-24). Plain bows and arrows are Basics; Woodcarver
-  owns named bow enchantments. Leatherworker makes the optional four-stack
-  Offhand quiver at Apprentice.
+  bow's OWN draw-speed (attack-speed) affix shorten the draw to at least 0.5 s;
+  the Melee blade's affixes do not (Round 28). One bow per material tier,
+  material-named under §3.0.3. Arrows craft 100 (one stack) per batch from 1
+  Bronze Bar + 2 Sticks diagonally, without feathers (Round 21, approved
+  2026-09-24; one stack since Round 28). Plain bows and arrows are Basics;
+  Woodcarver owns named bow enchantments. There is no quiver item.
 - `combat_stats.md` §2 defines the delivered bow flow: a bow is drawn up to a
   maximum by holding RMB and releases a targeted homing arrow on RMB release;
   Loose LMB uses melee Strike or hand digging. Draw affects damage (the curve
@@ -160,8 +165,8 @@ The downstream contract is:
   leather is the **Scout's armor line** and remains a legal light avoidance
   set for the Warrior. A Scout at rank 2 wears leather and cloth, and the
   below-inclusive rule needs no change beyond the new class's rank.
-- The **Leatherworker** owns the six grades, leather bags and the current
-  four-stack quiver. No profession is created; the Scout is an intended wearer.
+- The **Leatherworker** owns the six grades and leather bags. No profession
+  is created; the Scout is an intended wearer.
 - `character_visuals.md` §3 defines leather as its own complete armor family.
   SCOUT reuses those shipped overlays without adding or borrowing art.
 - `items_crafting.md` §10 P2 records that the old Phase-2 Rogue/signature-
@@ -237,7 +242,7 @@ Ruling 12 in one table. Nothing here is rejected; it is sequenced.
 | **Poison** | 7 and 12 | nowhere. `classes.md:475-487`'s Phase-2 Rogue plan is retired in this lane's `classes.md` commit, so no work package owns a player poison stat any more |
 | **Traps** | 12 | nowhere. Ruling 7 allowed them "if cheap"; ruling 12 removed the option, and they were the one idea in the class that needed a placed-entity lifecycle |
 | **A third resource** | 14: the Scout uses mana | nowhere; §1 |
-| **A starter quiver** | omitted: the Scout starts without one | The Leatherworker's optional four-stack quiver ships in V1; arrows also work directly from `main` (§3) |
+| **A quiver item** | removed in Round 28 (ruling 26) | the quiver is a Scout-only slot that every Scout has from the start (§3) |
 | **Additional Scout-specific leather art** | unnecessary | the dedicated six-tier leather family already ships and is shared with every legal wearer |
 
 What that leaves is a class made entirely of numbers, durations and flags on
@@ -346,9 +351,9 @@ conflicts if version 1 had stealth (§8).
 | **WP11 (skill trees)** | the Scout's 16 talents run on the shared talent machinery | `skill_trees.md` §4 |
 | **The speed aggregator** | ruling 11's `grug_core` aggregator drives Sprint, Snare Shot and Shake Loose | `skill_trees.md` §3.9; `docs/research/mob-pressure-task-card.md` |
 | **Weapon ladder §3.0.3** | six tier bows, the below-ladder starter bow, dedicated centre-grip pose and ballistic ability consumer | `items_crafting.md` §9; `character_visuals.md` §6 |
-| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 200 (Round 21 calibration); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
+| **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 100, one stack (Round 21 calibration, Round 28 stack size); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
-| **Professions** | none created. Leatherworker owns the grades/current quiver; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
+| **Professions** | none created. Leatherworker owns the leather grades; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
 | **Combat stat consumers** | the ranged damage term, Scout dodge consumer and shared cap overrides are delivered | `combat_stats.md` §2; `skill_trees.md` §3.2 |

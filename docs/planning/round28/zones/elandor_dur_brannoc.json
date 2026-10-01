@@ -1,0 +1,1205 @@
+{
+ "anchors": [
+  {
+   "id": "anchor_007",
+   "kind": "capital_dwarf",
+   "kind_text": "capital",
+   "level_at": 24,
+   "name": "Dur Brannoc",
+   "settlement_key": "dur_brannoc",
+   "slot": "capital",
+   "x": -1800,
+   "y": 69,
+   "z": -1500
+  }
+ ],
+ "biomes_authored": [
+  {
+   "id": "grug_pine_hills",
+   "share": 60
+  },
+  {
+   "id": "grug_crags",
+   "share": 40
+  }
+ ],
+ "biomes_measured": [
+  {
+   "id": "grug_pine_hills",
+   "share_pct": 51.8
+  },
+  {
+   "id": "grug_crags",
+   "share_pct": 47.1
+  },
+  {
+   "id": "grug_crags_snowy",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_meadows",
+   "share_pct": 0.2
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 0.2
+  }
+ ],
+ "borders": [
+  {
+   "length_nodes": 1160,
+   "midpoint": {
+    "x": -1693,
+    "z": -1854
+   },
+   "zone": "elandor_copperfell_foothills"
+  },
+  {
+   "length_nodes": 932,
+   "midpoint": {
+    "x": -2121,
+    "z": -1455
+   },
+   "zone": "elandor_frostbarrow_shelf"
+  },
+  {
+   "length_nodes": 844,
+   "midpoint": {
+    "x": -1706,
+    "z": -1086
+   },
+   "zone": "elandor_stormvault_heights"
+  },
+  {
+   "length_nodes": 920,
+   "midpoint": {
+    "x": -1271,
+    "z": -1499
+   },
+   "zone": "elandor_whitebridge_shire"
+  }
+ ],
+ "camps": [],
+ "capital_street_count": 19,
+ "casts": {
+  "day": [],
+  "density_budget_day": [],
+  "density_budget_night": [],
+  "night": []
+ },
+ "civic_no_hostiles": true,
+ "coast": {
+  "bank_sand_area_nodes2": 7584,
+  "bay_water_area_nodes2": 0,
+  "beaches": [],
+  "inland_water_area_nodes2": 11920,
+  "sea_beach_sand_area_nodes2": 0,
+  "sea_coast_length_nodes": 0
+ },
+ "drift_band_share_pct": 10.5,
+ "extent": {
+  "centroid": {
+   "x": -1709,
+   "z": -1488
+  },
+  "land_area_nodes2": 628160,
+  "max_x": -1216,
+  "max_z": -1060,
+  "min_x": -2160,
+  "min_z": -1888
+ },
+ "faction": "accord",
+ "front": {
+  "axis": "+z",
+  "text": "Battlegrounds lie north (+z); the home coast/ocean is south (-z)."
+ },
+ "hub": {
+  "x": -1800,
+  "z": -1500
+ },
+ "id": "elandor_dur_brannoc",
+ "level_field": {
+  "histogram_pct": {
+   "20": 13.2,
+   "21": 11.1,
+   "22": 12.2,
+   "23": 8.7,
+   "24": 8.4,
+   "25": 8.4,
+   "26": 7.5,
+   "27": 7.4,
+   "28": 7.6,
+   "29": 6.8,
+   "30": 8.5
+  },
+  "max": 30,
+  "min": 20
+ },
+ "level_max": 30,
+ "level_min": 20,
+ "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "map": "maps/elandor_dur_brannoc.png",
+ "name": "Dur Brannoc",
+ "neighbors": [
+  "elandor_copperfell_foothills",
+  "elandor_frostbarrow_shelf",
+  "elandor_stormvault_heights",
+  "elandor_whitebridge_shire"
+ ],
+ "numeric_id": 3,
+ "palette_without_host_ground": [],
+ "protected": {
+  "capital_city": {
+   "area_nodes2": 126664,
+   "box": {
+    "max_x": -1614,
+    "max_z": -1280,
+    "min_x": -2042,
+    "min_z": -1700
+   },
+   "gates": [
+    {
+     "name": "east",
+     "x": -1639,
+     "y": 80,
+     "z": -1573
+    },
+    {
+     "name": "south",
+     "x": -1745,
+     "y": 68,
+     "z": -1388
+    },
+    {
+     "name": "west",
+     "x": -1986,
+     "y": 67,
+     "z": -1555
+    },
+    {
+     "name": "north",
+     "x": -1739,
+     "y": 72,
+     "z": -1668
+    }
+   ],
+   "outline_kind": "stone",
+   "zone_land_outside_city_pct": 79.8
+  },
+  "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
+  "settlement_boxes": []
+ },
+ "protected_share_pct": 21.8,
+ "pvp_rule": "peaceful",
+ "quests": [
+  {
+   "copper": 45,
+   "description": "Varda Copperpan has places at the table for late arrivals in Dur Brannoc. Bring five raw meat portions to the bakehouse cook. The meal is a shared provision task, not a Cooking qualification test.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "r20_dwarf_capital_cook",
+   "min_level": 10,
+   "objectives": [
+    "bring 5 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Copperpan Supper",
+   "turnin": "r20_dwarf_capital_cook",
+   "xp": 380
+  },
+  {
+   "copper": 40,
+   "description": "Dorrin recommends the terrace bakehouse before your next climb. Speak with Varda Copperpan at the cook's place beside the oven, then complete the introduction with her. The Cooking trainer has a separate role; you do not need to learn the profession.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "r20_dwarf_capital_services",
+   "min_level": 10,
+   "objectives": [
+    "talk to Varda Copperpan (dur_brannoc)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_dwarf_capital_cook",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "r20_dwarf_capital_intro"
+   ],
+   "reward_items": [],
+   "title": "A Seat at Copperpan",
+   "turnin": "r20_dwarf_capital_cook",
+   "xp": 285
+  },
+  {
+   "copper": 60,
+   "description": "The gate shift keeps its lamp fuel apart from the smiths' metal stock. Bring eight coal lumps to Dorrin so the night watch can replenish that reserve without taking the bakehouse's fuel.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "r20_dwarf_capital_stores",
+   "min_level": 20,
+   "objectives": [
+    "bring 8 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Lamp Coal for the Gate Shift",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 780
+  },
+  {
+   "copper": 50,
+   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Tarnwatch Fold in Frostbarrow Shelf and speak with Edda Tarnmantle. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Edda Tarnmantle there. No parcel, fighting errand or return trip is required.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "r20_dwarf_journey_01",
+   "min_level": 21,
+   "objectives": [
+    "talk to Edda Tarnmantle (r20_anchor_014)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_014_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Word for Edda Tarnmantle",
+   "turnin": "r20_anchor_014_host",
+   "xp": 615
+  }
+ ],
+ "race_region": "dwarf",
+ "race_track": "dwarf",
+ "rares": [],
+ "relief": {
+  "cliff_share_pct": 1.0,
+  "height_above_sea": {
+   "max": 236,
+   "median": 76,
+   "min": 48,
+   "p10": 64,
+   "p90": 104
+  },
+  "steep_share_pct": 6.4
+ },
+ "relief_profile": "plateau",
+ "roads": [
+  {
+   "first_in_zone": [
+    -1536,
+    -1633
+   ],
+   "from": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)",
+   "id": 1,
+   "kind": "primary",
+   "last_in_zone": [
+    -1235,
+    -1525
+   ],
+   "length_in_zone": 334,
+   "length_total": 1434,
+   "polyline_simplified": [
+    [
+     -1536,
+     -1633
+    ],
+    [
+     -1452,
+     -1637
+    ],
+    [
+     -1384,
+     -1616
+    ],
+    [
+     -1179,
+     -1498
+    ],
+    [
+     -1107,
+     -1426
+    ],
+    [
+     -946,
+     -1414
+    ],
+    [
+     -865,
+     -1340
+    ],
+    [
+     -705,
+     -1240
+    ],
+    [
+     -545,
+     -1217
+    ],
+    [
+     -272,
+     -1247
+    ]
+   ],
+   "to": "anchor_008 (Highcourt, elandor_highcourt)"
+  },
+  {
+   "first_in_zone": [
+    -1702,
+    -1825
+   ],
+   "from": "anchor_001 (Hearthpine, elandor_hearthpine_vale)",
+   "id": 3,
+   "kind": "primary",
+   "last_in_zone": [
+    -1648,
+    -1760
+   ],
+   "length_in_zone": 88,
+   "length_total": 825,
+   "polyline_simplified": [
+    [
+     -1800,
+     -2486
+    ],
+    [
+     -1791,
+     -2415
+    ],
+    [
+     -1816,
+     -2348
+    ],
+    [
+     -1760,
+     -2216
+    ],
+    [
+     -1822,
+     -2039
+    ],
+    [
+     -1780,
+     -1944
+    ],
+    [
+     -1648,
+     -1760
+    ]
+   ],
+   "to": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)"
+  },
+  {
+   "first_in_zone": [
+    -2149,
+    -1700
+   ],
+   "from": "anchor_014 (Tarnwatch Fold, elandor_frostbarrow_shelf)",
+   "id": 9,
+   "kind": "secondary",
+   "last_in_zone": [
+    -2064,
+    -1697
+   ],
+   "length_in_zone": 88,
+   "length_total": 477,
+   "polyline_simplified": [
+    [
+     -2389,
+     -1585
+    ],
+    [
+     -2395,
+     -1624
+    ],
+    [
+     -2366,
+     -1681
+    ],
+    [
+     -2273,
+     -1768
+    ],
+    [
+     -2248,
+     -1768
+    ],
+    [
+     -2167,
+     -1704
+    ],
+    [
+     -2064,
+     -1697
+    ]
+   ],
+   "to": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)"
+  },
+  {
+   "first_in_zone": [
+    -1370,
+    -1214
+   ],
+   "from": "anchor_027 (Splitbolt Station, elandor_stormvault_heights)",
+   "id": 12,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1536,
+    -1280
+   ],
+   "length_in_zone": 200,
+   "length_total": 1736,
+   "polyline_simplified": [
+    [
+     -2080,
+     -815
+    ],
+    [
+     -2085,
+     -773
+    ],
+    [
+     -1997,
+     -725
+    ],
+    [
+     -1935,
+     -757
+    ],
+    [
+     -1898,
+     -803
+    ],
+    [
+     -1756,
+     -874
+    ],
+    [
+     -1655,
+     -880
+    ],
+    [
+     -1602,
+     -853
+    ],
+    [
+     -1524,
+     -854
+    ],
+    [
+     -1481,
+     -878
+    ],
+    [
+     -1475,
+     -917
+    ],
+    [
+     -1372,
+     -986
+    ],
+    [
+     -1330,
+     -974
+    ],
+    [
+     -1303,
+     -928
+    ],
+    [
+     -1223,
+     -928
+    ],
+    [
+     -1180,
+     -948
+    ],
+    [
+     -1154,
+     -1008
+    ],
+    [
+     -1202,
+     -1050
+    ],
+    [
+     -1268,
+     -1168
+    ],
+    [
+     -1368,
+     -1212
+    ],
+    [
+     -1485,
+     -1294
+    ],
+    [
+     -1536,
+     -1280
+    ]
+   ],
+   "to": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)"
+  },
+  {
+   "first_in_zone": [
+    -2114,
+    -1311
+   ],
+   "from": "anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf)",
+   "id": 32,
+   "kind": "trail",
+   "last_in_zone": [
+    -2128,
+    -1696
+   ],
+   "length_in_zone": 424,
+   "length_total": 628,
+   "polyline_simplified": [
+    [
+     -2290,
+     -1244
+    ],
+    [
+     -2246,
+     -1242
+    ],
+    [
+     -2071,
+     -1346
+    ],
+    [
+     -2066,
+     -1550
+    ],
+    [
+     -2128,
+     -1696
+    ]
+   ],
+   "to": "joins road 9"
+  },
+  {
+   "first_in_zone": [
+    -1536,
+    -1633
+   ],
+   "from": "end:1",
+   "id": 109,
+   "kind": "primary",
+   "last_in_zone": [
+    -1631,
+    -1573
+   ],
+   "length_in_zone": 150,
+   "length_total": 149,
+   "polyline_simplified": [
+    [
+     -1536,
+     -1633
+    ],
+    [
+     -1605,
+     -1631
+    ],
+    [
+     -1631,
+     -1573
+    ]
+   ],
+   "to": "gate_east"
+  },
+  {
+   "first_in_zone": [
+    -1536,
+    -1280
+   ],
+   "from": "end:12",
+   "id": 110,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1745,
+    -1380
+   ],
+   "length_in_zone": 288,
+   "length_total": 290,
+   "polyline_simplified": [
+    [
+     -1536,
+     -1280
+    ],
+    [
+     -1741,
+     -1332
+    ],
+    [
+     -1745,
+     -1380
+    ]
+   ],
+   "to": "gate_south"
+  },
+  {
+   "first_in_zone": [
+    -2064,
+    -1697
+   ],
+   "from": "end:9",
+   "id": 111,
+   "kind": "secondary",
+   "last_in_zone": [
+    -1994,
+    -1555
+   ],
+   "length_in_zone": 172,
+   "length_total": 172,
+   "polyline_simplified": [
+    [
+     -2064,
+     -1697
+    ],
+    [
+     -1994,
+     -1555
+    ]
+   ],
+   "to": "gate_west"
+  },
+  {
+   "first_in_zone": [
+    -1648,
+    -1760
+   ],
+   "from": "end:3",
+   "id": 112,
+   "kind": "primary",
+   "last_in_zone": [
+    -1739,
+    -1676
+   ],
+   "length_in_zone": 144,
+   "length_total": 144,
+   "polyline_simplified": [
+    [
+     -1648,
+     -1760
+    ],
+    [
+     -1700,
+     -1736
+    ],
+    [
+     -1739,
+     -1676
+    ]
+   ],
+   "to": "gate_north"
+  }
+ ],
+ "role": "capital zone",
+ "seed": "42",
+ "settlements": [
+  {
+   "anchor": {
+    "x": -1800,
+    "y": 69,
+    "z": -1500
+   },
+   "anchor_id": "anchor_007",
+   "distances": {
+    "hubs": [
+     {
+      "name": "Copperfell Village",
+      "road": 857,
+      "straight": 540,
+      "to": "copperfell_village",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Tarnwatch Fold",
+      "road": 877,
+      "straight": 609,
+      "to": "r20_anchor_014",
+      "zone": "elandor_frostbarrow_shelf"
+     },
+     {
+      "name": "Rimebell Watch",
+      "road": 1085,
+      "straight": 559,
+      "to": "r20_anchor_026",
+      "zone": "elandor_frostbarrow_shelf"
+     },
+     {
+      "name": "Copperfell Bandit Camp",
+      "road": 1216,
+      "straight": 612,
+      "to": "copperfell_bandit_camp",
+      "zone": "elandor_copperfell_foothills"
+     },
+     {
+      "name": "Bridgechalk Dig",
+      "road": 1326,
+      "straight": 766,
+      "to": "r20_anchor_062",
+      "zone": "elandor_whitebridge_shire"
+     },
+     {
+      "name": "Tarncut Mine",
+      "road": 1336,
+      "straight": 651,
+      "to": "r20_anchor_061",
+      "zone": "elandor_frostbarrow_shelf"
+     }
+    ],
+    "nearest_other_zone_land": {
+     "bearing": "W",
+     "distance": 313,
+     "x": -2104,
+     "z": -1424
+    },
+    "nearest_road": {
+     "distance": 50
+    },
+    "nearest_sea": {
+     "bearing": "W",
+     "distance": 673,
+     "x": -2460,
+     "z": -1632
+    },
+    "nearest_sea_beach_sand": {
+     "bearing": "W",
+     "distance": 677,
+     "x": -2456,
+     "z": -1332
+    },
+    "to_zone_edge": {
+     "east_+x": {
+      "distance": 560,
+      "hits": "elandor_whitebridge_shire"
+     },
+     "north_+z": {
+      "distance": 440,
+      "hits": "elandor_stormvault_heights"
+     },
+     "south_-z": {
+      "distance": 328,
+      "hits": "elandor_copperfell_foothills"
+     },
+     "west_-x": {
+      "distance": 332,
+      "hits": "elandor_frostbarrow_shelf"
+     }
+    }
+   },
+   "key": "dur_brannoc",
+   "name": "Dur Brannoc",
+   "npcs": [
+    {
+     "role": "king",
+     "role_text": "king",
+     "socket": "king",
+     "x": -1800,
+     "y": 75,
+     "z": -1468
+    },
+    {
+     "npc_id": "r20_dwarf_capital_envoy",
+     "npc_name": "Dorrin Gateledger",
+     "quests": [
+      "r20_dwarf_capital_services",
+      "r20_dwarf_capital_stores",
+      "r20_dwarf_journey_01"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "ancestor_hall_quest",
+     "tag": "door",
+     "x": -1838,
+     "y": 70,
+     "z": -1479
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_race",
+     "vendor_kind": "race",
+     "x": -1757,
+     "y": 70,
+     "z": -1491
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "vendor_general",
+     "vendor_kind": "general",
+     "x": -1757,
+     "y": 70,
+     "z": -1484
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": -1781,
+     "y": 70,
+     "z": -1522
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "forge_pack_stable/forge_pack_stable_mount_1",
+     "tag": "1",
+     "x": -1871,
+     "y": 70,
+     "z": -1488
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "forge_pack_stable/forge_pack_stable_mount_2",
+     "tag": "2",
+     "x": -1861,
+     "y": 70,
+     "z": -1488
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "forge_pack_stable/forge_pack_stable_mount_3",
+     "tag": "3",
+     "x": -1871,
+     "y": 70,
+     "z": -1482
+    },
+    {
+     "role": "mount_display",
+     "role_text": "mount display",
+     "socket": "forge_pack_stable/forge_pack_stable_mount_4",
+     "tag": "4",
+     "x": -1861,
+     "y": 70,
+     "z": -1482
+    },
+    {
+     "role": "riding_trainer",
+     "role_text": "riding trainer",
+     "socket": "forge_pack_stable/forge_pack_stable_riding",
+     "x": -1866,
+     "y": 70,
+     "z": -1491
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "forge_smithy/forge_smithy_vendor_smith",
+     "vendor_kind": "smith",
+     "x": -1805,
+     "y": 70,
+     "z": -1433
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "forge_smithy/forge_smithy_station",
+     "tag": "forge",
+     "x": -1816,
+     "y": 70,
+     "z": -1438
+    },
+    {
+     "profession": "weaponsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "forge_smithy/forge_smithy_weaponsmith",
+     "x": -1814,
+     "y": 70,
+     "z": -1440
+    },
+    {
+     "profession": "armorsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "forge_smithy/forge_smithy_armorsmith",
+     "x": -1814,
+     "y": 70,
+     "z": -1436
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "forge_smithy/forge_smithy_weapon",
+     "tag": "weapon",
+     "x": -1818,
+     "y": 71,
+     "z": -1441
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "forge_smithy/forge_smithy_armor",
+     "tag": "armor",
+     "x": -1818,
+     "y": 71,
+     "z": -1435
+    },
+    {
+     "role": "housing_manager",
+     "role_text": "housing steward",
+     "socket": "forge_guild_house/forge_guild_house_gate_idle",
+     "tag": "door",
+     "x": -1820,
+     "y": 69,
+     "z": -1414
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "forge_guild_house/forge_guild_house_station",
+     "tag": "tailor_bench",
+     "x": -1820,
+     "y": 69,
+     "z": -1404
+    },
+    {
+     "profession": "tailor",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "forge_guild_house/forge_guild_house_tailor",
+     "x": -1822,
+     "y": 69,
+     "z": -1406
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "forge_ore_yard/forge_ore_yard_station",
+     "tag": "jewellers_bench",
+     "x": -1843,
+     "y": 69,
+     "z": -1406
+    },
+    {
+     "profession": "goldsmith",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "forge_ore_yard/forge_ore_yard_goldsmith",
+     "x": -1845,
+     "y": 69,
+     "z": -1408
+    },
+    {
+     "role": "gear_display",
+     "role_text": "gear display",
+     "socket": "forge_ore_yard/forge_ore_yard_jewel",
+     "tag": "jewel",
+     "x": -1840,
+     "y": 70,
+     "z": -1405
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "forge_store/forge_store_station",
+     "tag": "tanning_rack",
+     "x": -1904,
+     "y": 72,
+     "z": -1493
+    },
+    {
+     "profession": "leatherworker",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "forge_store/forge_store_leatherworker",
+     "x": -1902,
+     "y": 72,
+     "z": -1495
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "deep_carvers/deep_carvers_vendor_deep_mason_stall",
+     "vendor_kind": "mason",
+     "x": -1765,
+     "y": 73,
+     "z": -1576
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "deep_carvers/deep_carvers_station",
+     "tag": "carving_bench",
+     "x": -1759,
+     "y": 73,
+     "z": -1587
+    },
+    {
+     "profession": "woodcarver",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "deep_carvers/deep_carvers_woodcarver",
+     "x": -1757,
+     "y": 73,
+     "z": -1585
+    },
+    {
+     "role": "innkeeper",
+     "role_text": "innkeeper (respawn bind)",
+     "socket": "terrace_alehouse/terrace_alehouse_gate_idle",
+     "tag": "door",
+     "x": -1674,
+     "y": 75,
+     "z": -1535
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "terrace_brewhouse/terrace_brewhouse_vendor_brewer",
+     "vendor_kind": "brewer",
+     "x": -1889,
+     "y": 71,
+     "z": -1453
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "terrace_brewhouse/terrace_brewhouse_station",
+     "tag": "brewing_stand",
+     "x": -1900,
+     "y": 71,
+     "z": -1459
+    },
+    {
+     "profession": "alchemist",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "terrace_brewhouse/terrace_brewhouse_alchemist",
+     "x": -1898,
+     "y": 71,
+     "z": -1461
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "terrace_bakehouse/terrace_bakehouse_vendor_baker",
+     "vendor_kind": "baker",
+     "x": -1826,
+     "y": 67,
+     "z": -1371
+    },
+    {
+     "role": "public_station",
+     "role_text": "public station",
+     "socket": "terrace_bakehouse/terrace_bakehouse_station",
+     "tag": "furnace",
+     "x": -1831,
+     "y": 67,
+     "z": -1360
+    },
+    {
+     "profession": "cooking",
+     "role": "trainer",
+     "role_text": "profession trainer",
+     "socket": "terrace_bakehouse/terrace_bakehouse_cooking",
+     "x": -1833,
+     "y": 67,
+     "z": -1362
+    },
+    {
+     "npc_id": "r20_dwarf_capital_cook",
+     "npc_name": "Varda Copperpan",
+     "quests": [
+      "r20_dwarf_capital_cook"
+     ],
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "terrace_bakehouse/terrace_bakehouse_quest_cook",
+     "x": -1829,
+     "y": 67,
+     "z": -1362
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "garrison_armoury/garrison_armoury_vendor_armourer",
+     "vendor_kind": "armourer",
+     "x": -1869,
+     "y": 70,
+     "z": -1512
+    },
+    {
+     "role": "quest",
+     "role_text": "quest giver",
+     "socket": "deep_hall_of_record/deep_hall_of_record_quest",
+     "x": -1721,
+     "y": 72,
+     "z": -1548
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "deep_memory_hall/deep_memory_hall_vendor_deep_embalmer",
+     "vendor_kind": "embalmer",
+     "x": -1730,
+     "y": 74,
+     "z": -1609
+    },
+    {
+     "role": "vendor",
+     "role_text": "vendor",
+     "socket": "terrace_market/terrace_market_vendor_butcher",
+     "vendor_kind": "butcher",
+     "x": -1716,
+     "y": 72,
+     "z": -1507
+    }
+   ],
+   "race": "dwarf",
+   "resident_counts": {
+    "gear_display": 3,
+    "guard_patrol": 50,
+    "guard_post": 19,
+    "housing_manager": 1,
+    "idle": 125,
+    "innkeeper": 1,
+    "king": 1,
+    "mount_display": 4,
+    "public_station": 7,
+    "quest": 3,
+    "riding_trainer": 1,
+    "trainer": 8,
+    "vendor": 9,
+    "waypoint": 1,
+    "work": 54
+   }
+  }
+ ],
+ "spawns": [],
+ "territory_rule": "accord_home",
+ "track_order": 3
+}
