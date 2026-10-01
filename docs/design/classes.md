@@ -172,10 +172,38 @@ The equipped Weapon slot is the combat source, never a weapon in the hotbar.
 
 ### Left click and held input
 
-The current first visible crosshair target determines the action. Held LMB may
-move between combat, hand digging and empty space without releasing. Every
-operation checks its own reach: 4 m interaction/digging, 3 m Strike, and the
-selected spell's authored range. Solid terrain and intervening objects matter.
+**Mode lock** (Round 28 ruling 14). At key-down the press decides its mode
+for the whole hold:
+
+- **Combat** when the combat ray (non-walkable plants never hide a mob) finds
+  a valid hostile within the larger of hand reach (4 m) and the selected
+  skill's range, and otherwise whenever the press does not start on a gather
+  target (air, out of reach, a node bare hands cannot dig, an NPC or ally).
+  A combat hold never digs: the held skill item's pointing range drops to
+  zero for the hold (the client points at nothing, so it neither digs nor
+  shows cracks) and the server refuses any dig. It acts on whatever the
+  combat ray finds each step, so it retargets freely (a mob dies, the next
+  one steps in).
+- **Gather** when the hand ray's first thing within 4 m is a node bare hands
+  can dig (protected nodes included: their refusal keeps the protection
+  hint and the client's cracks) or a dropped item. A gather hold never swings
+  or casts at an actor, even one that walks into the ray, so a passing
+  neutral mob is not pulled by accident.
+
+The mode ends on release, cancel, item or slot change, death and leave; the
+pointing range returns then. A release seen within 0.15 s of the decision
+keeps the mode (a native punch can report a press before the control report
+does). The zero range reaches the client one round trip after the server
+sees the press: a press on a mob within 4 m reports itself at once and the
+client does not dig for 0.15 s after a punch anyway, but a press on air or on
+a mob beyond 4 m is seen with the next control report, so cracks may flash
+briefly if the crosshair slides onto a diggable node within that window
+(accepted by the user, 2026-10-01). The node is never removed.
+
+Within its mode, the current first visible crosshair target determines the
+action. Every operation checks its own reach: 4 m interaction/digging, 3 m
+Strike, and the selected spell's authored range. Solid terrain and
+intervening objects matter.
 
 - **Hostile:** use the selected applicable ready skill immediately. If it is
   unavailable (including cooldown, resources or applicability), use ordinary
@@ -189,14 +217,16 @@ selected spell's authored range. Solid terrain and intervening objects matter.
   waits approximately 200 ms, whether it is ready or not: short release
   casts (an unready skill reports its refusal at that tap); continued hold
   digs. Without a selected self/support skill, digging begins immediately.
-  Leaving the initial node discards its pending release-cast. Later held retargeting enters
-  digging directly; a cooldown becoming ready cannot interrupt the dig.
+  Leaving the initial node discards its pending release-cast. Later held
+  retargeting within the gather hold digs the new node directly; a cooldown
+  becoming ready cannot interrupt the dig.
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
-  including when inventory is full. That decision does not also cast. Holding
-  may subsequently dig or attack, but another drop requires another press.
-- **Empty or otherwise inapplicable context:** one applicable self/support
-  activation per press, otherwise no mechanical effect. Retargeting while held
-  may enter combat or digging.
+  including when inventory is full. That decision does not also cast. The
+  hold is a gather hold: it may subsequently dig, never attack, and another
+  drop requires another press.
+- **Empty or otherwise inapplicable context** (combat hold): one applicable
+  self/support activation per press, otherwise no mechanical effect.
+  Retargeting while held may enter combat, never digging.
 
 Block progress belongs to the current node and is lost on retargeting. Apples,
 plants and torches require positive digging time; the initial torch timing is
@@ -238,7 +268,8 @@ reach remains 4 m even with a long-range spell selected.
 Loose is the explicit exception to LMB casting: **LMB uses melee Strike or hand
 digging; hold RMB to draw, release RMB to shoot.** Its tooltip states both.
 While the bow is drawn or held drawn, walk speed is ×0.5 and the Loose item's
-pointing range is zero, so held RMB shows no repeated place swing (one swing on
+pointing range is zero (the same zero range an LMB combat hold uses; whichever
+ends first leaves it to the other), so held RMB shows no repeated place swing (one swing on
 the very press may remain). A full draw takes the bow's 2.5 s (Fletching and
 the draw-speed affix shorten it); a ring around the crosshair fills in
 sixteenths while drawing, turns gold at full draw and disappears on every end

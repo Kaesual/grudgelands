@@ -11,7 +11,14 @@
 --   M  messages (ruling 13): a refusal shows on a fresh press only, never on
 --      held repeats; the same message at most once per second, another
 --      message at once; the cast-gate, swing-gate, try_cast, tap, empty-air
---      and bow-start refusals all reach the flash line.
+--      and bow-start refusals all reach the flash line; held retries of a
+--      failed cast at most every 0.25 s.
+--   L  LMB mode lock (ruling 14): combat on a mob (plants never hide it), on
+--      air and on nodes bare hands cannot dig; gather on a hand-diggable node
+--      (protected too) or a dropped item; combat holds zero the pointing
+--      range once and never dig, gather holds never swing; the grace for a
+--      native press; slot change, leave and join restore; the bow shares
+--      the zero range.
 -- Prints "R28 A4 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -238,21 +245,33 @@ end
 -- M: input.lua on a fake engine.
 ------------------------------------------------------------------------------
 local clock = 0
-local hits = {} -- what the next raycast returns (in order)
-local NODE = {name = "test:dirt"}
+local hits = {} -- what the next raycast returns (in order of distance)
+local node_at = {} -- "x,y,z" -> node name (default test:dirt)
+local protected = {} -- "x,y,z" -> true
+local function pkey(p) return p.x .. "," .. p.y .. "," .. p.z end
 local flashes, swings, casts = {}, {}, {}
 local mob = {get_luaentity = function() return {name = "test:mob"} end}
+local drop = {get_luaentity = function() return {name = "__builtin:item"} end}
 local try_cast_result = {} -- id -> {ok, message}
 local refusals = {} -- id -> cast or swing refusal message
+local joins, leaves = {}, {}
 
 core = {
-	registered_nodes = {["test:dirt"] = {groups = {crumbly = 3}}},
+	registered_nodes = {
+		["test:dirt"] = {walkable = true, groups = {crumbly = 3}},
+		["test:grass"] = {walkable = false, groups = {snappy = 3}},
+		["test:stone"] = {walkable = true, groups = {cracky = 3}},
+	},
 	registered_entities = {},
 	get_us_time = function() return clock end,
 	check_player_privs = function() return true end,
-	get_node_or_nil = function() return NODE end,
-	is_protected = function() return false end,
-	get_dig_params = function() return {diggable = true} end,
+	get_node_or_nil = function(pos) return {name = node_at[pkey(pos)] or "test:dirt"} end,
+	is_protected = function(pos) return protected[pkey(pos)] == true end,
+	-- Bare hands dig crumbly and snappy nodes, never cracky ones.
+	get_dig_params = function(groups) return {diggable = (groups.crumbly or groups.snappy) ~= nil} end,
+	get_item_group = function(name, group)
+		return group == "grug_ability" and name:sub(1, 15) == "grug_abilities:" and 1 or 0
+	end,
 	raycast = function()
 		local i = 0
 		return function()
@@ -262,16 +281,69 @@ core = {
 	end,
 	register_on_mods_loaded = function() end,
 	register_on_dieplayer = function() end,
-	register_on_leaveplayer = function() end,
+	register_on_leaveplayer = function(f) leaves[#leaves + 1] = f end,
+	register_on_joinplayer = function(f) joins[#joins + 1] = f end,
 }
-function ItemStack()
-	return {get_tool_capabilities = function() return {} end, get_name = function() return "" end}
+
+-- Item stacks with string meta; the inventory stores copies like the engine.
+local function new_stack(name, meta)
+	local st = {name = name or "", meta = {}}
+	for k, v in pairs(meta or {}) do st.meta[k] = v end
+	function st:get_name() return self.name end
+	function st:get_tool_capabilities() return {} end
+	function st:get_meta()
+		local m = self.meta
+		return {
+			get_string = function(_, k) return m[k] or "" end,
+			set_string = function(_, k, v) if v == "" then m[k] = nil else m[k] = v end end,
+		}
+	end
+	return st
 end
+local function copy_stack(st) return new_stack(st.name, st.meta) end
+function ItemStack(name) return new_stack(type(name) == "string" and name or "") end
+
+local main = {}
+for i = 1, 8 do main[i] = new_stack("") end
+local writes = {} -- {via = "wield" | "set_stack", index, range, skip}
+local wield_index = 1
+local inventory = {
+	get_stack = function(_, list, i) assert(list == "main"); return copy_stack(main[i]) end,
+	set_stack = function(_, list, i, st)
+		assert(list == "main")
+		main[i] = copy_stack(st)
+		writes[#writes + 1] = {via = "set_stack", index = i, range = st.meta.range or ""}
+	end,
+	get_list = function(_, list)
+		assert(list == "main")
+		local out = {}
+		for i, st in ipairs(main) do out[i] = copy_stack(st) end
+		return out
+	end,
+}
+
 grug_core = {
 	combat_eye_pos = function() return vector.new(0, 1.47, 0) end,
 	is_stunned = function() return false end,
 	player_has_live_mount = function() return false end,
 	register_on_stun = function() end,
+	-- Combat-ray rules over the same hit list: non-walkable nodes are passed
+	-- through, a walkable node ends the ray, the first actor is classified.
+	combat_ray = function()
+		for _, hit in ipairs(hits) do
+			if hit.type == "node" then
+				local def = core.registered_nodes[core.get_node_or_nil(hit.under).name]
+				if def.walkable then return {status = "aim_miss", reason = "node"} end
+			elseif hit.ref == mob then
+				return {status = "target", reason = "hostile", target = mob, distance = 2,
+					pointed = hit}
+			else
+				return {status = "aim_miss", reason = "object", target = hit.ref, distance = 2,
+					pointed = hit}
+			end
+		end
+		return {status = "aim_miss", reason = "empty"}
+	end,
 }
 
 local defs = {
@@ -307,9 +379,12 @@ grug_abilities = {
 	end,
 }
 
-local selected
+local function wielded_def()
+	local name = main[wield_index].name
+	return name:sub(1, 15) == "grug_abilities:" and defs[name:sub(16)] or nil
+end
 local input = dofile(ROOT .. "/mods/PLAYER/grug_abilities/input.lua")({
-	selected = function() return selected end,
+	selected = function() return wielded_def() end,
 	swing = function(_, def) swings[#swings + 1] = def.id end,
 	cast_refusal = function(_, def) return refusals[def.id] end,
 	swing_refusal = function(_, def) return refusals[def.id] end,
@@ -321,10 +396,16 @@ local controls = {dig = false, place = false}
 local player = {
 	get_player_name = function() return "p" end,
 	get_player_control = function() return controls end,
-	get_wielded_item = function()
-		return {get_name = function() return selected and ("grug_abilities:" .. selected.id) or "" end}
+	get_inventory = function() return inventory end,
+	get_wield_list = function() return "main" end,
+	get_wield_index = function() return wield_index end,
+	get_wielded_item = function() return copy_stack(main[wield_index]) end,
+	set_wielded_item = function(_, st, skip)
+		main[wield_index] = copy_stack(st)
+		writes[#writes + 1] = {via = "wield", index = wield_index,
+			range = st.meta.range or "", skip = skip}
+		return true
 	end,
-	get_wield_index = function() return 1 end,
 	get_hp = function() return 20 end,
 	get_look_dir = function() return vector.new(0, 0, 1) end,
 }
@@ -332,7 +413,12 @@ local player = {
 local MOB_HIT = {type = "object", ref = mob, intersection_point = vector.new(0, 1.47, 2)}
 local NODE_HIT = {type = "node", under = vector.new(0, 1, 2), above = vector.new(0, 1, 1),
 	intersection_point = vector.new(0, 1.47, 1.5)}
-local function aim(hit) hits = hit and {hit} or {} end
+local GRASS_HIT = {type = "node", under = vector.new(0, 1, 1), above = vector.new(0, 1, 0),
+	intersection_point = vector.new(0, 1.47, 0.6)}
+local MOB_NEAR = {type = "object", ref = mob, intersection_point = vector.new(0, 1.47, 1)}
+local DROP_HIT = {type = "object", ref = drop, intersection_point = vector.new(0, 1.2, 1)}
+node_at[pkey(GRASS_HIT.under)] = "test:grass"
+local function aim(...) hits = {...} end
 local function step(dt)
 	clock = clock + (dt or 50000)
 	input.step(player)
@@ -340,10 +426,11 @@ end
 local function press(dt) controls.dig = true; step(dt) end
 local function release(dt) controls.dig = false; step(dt) end
 local function hold(n) for _ = 1, n do step() end end
-local function reset_log() flashes, swings, casts = {}, {}, {} end
+local function reset_log() flashes, swings, casts, writes = {}, {}, {}, {} end
 local function select(id)
-	selected = defs[id]
+	main[wield_index] = new_stack("grug_abilities:" .. id)
 	controls.dig, controls.place = false, false
+	clock = clock + 1000000 -- past every grace and throttle window
 	step()
 	reset_log()
 end
@@ -352,6 +439,7 @@ local function count(list, value)
 	for _, v in ipairs(list) do if v == value then n = n + 1 end end
 	return n
 end
+local function range_of(i) return main[i].meta.range or "" end
 
 do -- M1 cast-gate refusal: fresh press shows, held repeats do not.
 	select("fireball")
@@ -437,7 +525,7 @@ end
 do -- M4 self skill: empty-air press and the node tap.
 	select("blink")
 	try_cast_result.blink = {ok = false, message = "No room to blink."}
-	aim(nil)
+	aim()
 	press()
 	check(#flashes == 1 and flashes[1] == "No room to blink.", "M4 empty-air cast refusal shows")
 	hold(5)
@@ -466,7 +554,7 @@ end
 do -- M5 bow start refusal on the RMB press.
 	select("loose")
 	bow_error = "You need an arrow."
-	aim(nil)
+	aim()
 	controls.place = true
 	step()
 	check(#flashes == 1 and flashes[1] == "You need an arrow.", "M5 bow start refusal shows")
@@ -475,6 +563,176 @@ do -- M5 bow start refusal on the RMB press.
 	controls.place = false
 	step()
 	bow_error = nil
+end
+
+------------------------------------------------------------------------------
+-- L: the LMB mode lock (ruling 14).
+------------------------------------------------------------------------------
+local function range_writes(value)
+	local n = 0
+	for _, w in ipairs(writes) do if w.range == value then n = n + 1 end end
+	return n
+end
+local function dig_ok(hit_pos)
+	return input.can_dig(player, hit_pos, core.get_node_or_nil(hit_pos))
+end
+
+do -- L1 key-down on a mob: combat; zero range for the hold, never digs.
+	select("strike")
+	aim(MOB_HIT)
+	press()
+	check(range_of(1) == "0" and #writes == 1 and writes[1].via == "wield" and
+		writes[1].skip == true, "L1 combat sets range 0 via set_wielded_item(stack, true)")
+	check(swings[1] == "strike", "L1 combat swings at the mob")
+	-- The crosshair slips onto the node beside the mob: no dig, no pending.
+	aim(NODE_HIT)
+	hold(3)
+	check(not dig_ok(NODE_HIT.under), "L1 can_dig refuses in a combat hold")
+	-- The mob steps back in (retarget freely): swings resume.
+	local before = #swings
+	aim(MOB_HIT)
+	hold(2)
+	check(#swings > before, "L1 combat retargets freely")
+	check(#writes == 1, "L1 no further range writes while held")
+	release()
+	check(range_of(1) == "" and #writes == 2 and writes[2].via == "wield" and
+		writes[2].skip == true, "L1 release restores the range")
+end
+
+do -- L2 key-down on a hand-diggable node: gather; never swings, no writes.
+	select("strike")
+	aim(NODE_HIT)
+	press()
+	check(#writes == 0 and range_of(1) == "", "L2 gather leaves the range alone")
+	check(dig_ok(NODE_HIT.under), "L2 gather may dig the node")
+	aim(MOB_NEAR, NODE_HIT) -- a mob walks into the ray, in front of the node
+	hold(5)
+	check(#swings == 0 and #casts == 0, "L2 gather never swings at a passing mob")
+	release()
+	hold(4)
+	check(#writes == 0, "L2 no range writes at all")
+end
+
+do -- L3 key-down on a protected diggable node: gather (Round 24 hint stays).
+	select("strike")
+	protected[pkey(NODE_HIT.under)] = true
+	aim(NODE_HIT)
+	press()
+	check(#writes == 0, "L3 protected diggable node is gather")
+	check(not dig_ok(NODE_HIT.under), "L3 the dig itself is still refused (hint path)")
+	release()
+	hold(4)
+	protected[pkey(NODE_HIT.under)] = nil
+end
+
+do -- L4 a plant in front of a mob never hides it: combat.
+	select("strike")
+	aim(GRASS_HIT, MOB_HIT)
+	press()
+	check(range_of(1) == "0" and swings[1] == "strike", "L4 grass in front of a mob: combat")
+	release()
+	hold(4)
+	-- Grass alone is a hand-diggable node: gather.
+	reset_log()
+	aim(GRASS_HIT)
+	press()
+	check(#writes == 0, "L4 grass alone: gather")
+	release()
+	hold(4)
+end
+
+do -- L5 air, a non-hand node and a dropped item.
+	select("blink")
+	aim()
+	press()
+	check(range_of(1) == "0" and casts[1] == "blink", "L5 air: combat, one empty-space cast")
+	release()
+	hold(4)
+	check(range_of(1) == "", "L5 air hold restored")
+	select("strike")
+	node_at[pkey(NODE_HIT.under)] = "test:stone"
+	aim(NODE_HIT)
+	press()
+	check(range_of(1) == "0", "L5 a node bare hands cannot dig: combat")
+	release()
+	hold(4)
+	node_at[pkey(NODE_HIT.under)] = nil
+	reset_log()
+	aim(DROP_HIT, MOB_HIT)
+	press()
+	check(#writes == 0, "L5 dropped item: gather")
+	aim(MOB_NEAR)
+	hold(3)
+	check(#swings == 0, "L5 a pickup press never swings")
+	release()
+	hold(4)
+end
+
+do -- L6 a native press seen before the control report keeps its mode.
+	select("strike")
+	aim(MOB_HIT)
+	input.press(player) -- native punch: controls.dig not yet reported
+	check(range_of(1) == "0", "L6 native press decides combat")
+	step() -- control report still false, within the grace
+	check(range_of(1) == "0" and #writes == 1, "L6 grace keeps the zero range")
+	press() -- the control report arrives
+	hold(2)
+	check(#writes == 1, "L6 no second decision, no rewrite")
+	release()
+	hold(3)
+	check(range_of(1) == "" and #writes == 2, "L6 release after the grace restores")
+end
+
+do -- L7 a slot change mid-hold restores the old stack.
+	select("strike")
+	main[2] = new_stack("grug_abilities:fireball")
+	aim(MOB_HIT)
+	press()
+	check(range_of(1) == "0", "L7 combat on slot 1")
+	wield_index = 2
+	step() -- carried press into a new item: cancel
+	check(range_of(1) == "" and writes[#writes].via == "set_stack" and
+		writes[#writes].index == 1, "L7 slot 1 restored by set_stack after the switch")
+	check(range_of(2) == "", "L7 the new item is untouched")
+	release()
+	hold(4)
+	wield_index = 1
+end
+
+do -- L8 the bow draw and a combat hold share the zero range.
+	select("loose")
+	aim(MOB_HIT)
+	press()
+	input.hold_range(player, "bow", true)
+	check(range_of(1) == "0", "L8 both owners: zero range")
+	release()
+	hold(4) -- LMB ends; the bow still draws
+	check(range_of(1) == "0", "L8 LMB release keeps the bow's zero range")
+	input.hold_range(player, "bow", false)
+	check(range_of(1) == "", "L8 the last owner restores the range")
+	input.hold_range(player, "bow", true)
+	aim(NODE_HIT)
+	press() -- gather press while drawing: the bow keeps its range
+	release()
+	hold(4)
+	check(range_of(1) == "0", "L8 a gather press never clears the bow's range")
+	input.hold_range(player, "bow", false)
+	check(range_of(1) == "", "L8 bow release restores")
+end
+
+do -- L9 leave restores; join clears every saved zero range.
+	select("strike")
+	aim(MOB_HIT)
+	press()
+	check(range_of(1) == "0", "L9 combat hold")
+	for _, f in ipairs(leaves) do f(player) end
+	check(range_of(1) == "", "L9 leave restores before the save")
+	controls.dig = false
+	main[3] = new_stack("grug_abilities:charge", {range = "0"})
+	main[4] = new_stack("test:pick", {range = "0"})
+	for _, f in ipairs(joins) do f(player) end
+	check(range_of(3) == "" and range_of(4) == "0", "L9 join clears skill stacks only")
+	main[3], main[4] = new_stack(""), new_stack("")
 end
 
 if failures == 0 then
