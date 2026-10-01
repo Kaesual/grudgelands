@@ -52,8 +52,9 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   never adds mana.
 - **Melee damage** = weapon damage + floor(melee attribute/10), where the
   attribute is Dexterity for Scout and Strength for other classes. Since 2026-08-08,
-  **"weapon damage" has a source: the item in the WEAPON SLOT**
-  (`inventory_equipment.md` §2) — the single, fixed source for every
+  **"weapon damage" has a source: the melee weapon** — the item in the
+  WEAPON SLOT, or for the Scout the Melee offhand (Round 28 ruling 25;
+  `inventory_equipment.md` §2) — the single, fixed source for every
   sword-type skill, with **no fallback to the wielded item**. An empty slot
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.

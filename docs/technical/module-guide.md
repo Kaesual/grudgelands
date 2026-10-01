@@ -204,7 +204,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `fleshy = 0`, empty `groupcaps`, `max_drop_level = 0`,
   `punch_attack_uses = 0` and blocking hand/dig_immediate node pointabilities.
   The ability stack never wears. Round 11's REPAIR hook spends wear on the
-  concrete main hand once on a qualifying settled
+  acting hand slot (the melee weapon, or the captured bow for a shot) once on a qualifying settled
   action. The accepted transaction stays
   exact attacker+ray-target and claim-once; the mobs_redo/PvP finish seam pays
   cost, resets charge, grants rage and applies post-effects only on its existing
