@@ -30,7 +30,10 @@ Usage:
   ledger.py --self-test
 """
 import argparse
+import json
+import shutil
 import sys
+import tempfile
 from collections import defaultdict
 from pathlib import Path
 
@@ -90,10 +93,12 @@ class Ledger:
         return (sub or {}).get("tier", "normal")
 
     def role_levels(self, role, zone, area_ref=None, own_zone=None):
+        # A named leader (this zone first, else any zone: leader roles are
+        # unique fixed spots) is met at its fixed level.
         target_zone = C.split_area_ref(area_ref, own_zone or zone)[0] if area_ref else zone
-        leader = self.design.leaders(target_zone).get(role)
-        if leader and isinstance(leader.get("level"), int):
-            return (leader["level"], leader["level"])
+        found = self.design.find_leader(role, target_zone)
+        if found and isinstance(found[1].get("level"), int):
+            return (found[1]["level"], found[1]["level"])
         if area_ref:
             azone, aid = C.split_area_ref(area_ref, own_zone or zone)
             area = self.design.areas(azone).get(aid)
@@ -218,6 +223,11 @@ class Ledger:
             self.zone_rows.append(row)
             return acc
         quests = self.design.zone_quests(zone, self.lines)
+        if not self.lines or "front" not in self.lines:
+            # Front quests (front files, line `front`) belong to the front
+            # ledger; a race or contested route counts them only when
+            # --lines names `front`.
+            quests = [q for q in quests if q.get("line") != "front"]
         one_time = [q for q in quests if not q.get("repeatable")]
         repeatables = [q for q in quests if q.get("repeatable")]
         plan = self.ordered(zone, one_time)
@@ -574,6 +584,8 @@ def self_test():
           "atlas level ranges give the bands")
     # Leaders count at their fixed level; quests in the band of their level.
     check(solo.role_levels("confused_bandit_chief", "elandor_dawnmere_fields") == (10, 10), "leader level")
+    check(solo.role_levels("confused_bandit_chief", "elandor_goldmead_vale") == (10, 10),
+          "a leader of another zone keeps its fixed level")
     check(set(solo.per_band) == {(1, 10), (10, 20)}, "the level-10 quests count in 10 -> 20 (%s)"
           % sorted(solo.per_band))
     lined = A()
@@ -581,6 +593,27 @@ def self_test():
     lined.lines_set = ["hunt"]
     hunt, _ = run(design, existing, Route("elandor_dawnmere_fields"), 1, lined)
     check(hunt.zone_rows[0]["quests"] == 4, "--lines hunt keeps the four hunt quests")
+    # Front quests count only when --lines names `front`.
+    tmp = Path(tempfile.mkdtemp(prefix="r28_ledger_"))
+    try:
+        shutil.copytree(sample, tmp / "design")
+        front_quest = {"id": "sample_front_01", "line": "front", "giver": "r20_human_start_cook",
+                       "turnin": "r20_human_start_cook", "min_level": 1, "level": 1, "requires": [],
+                       "title": "Front", "text": "Front. Quest.", "objectives": [],
+                       "rewards": {"weight": 1}}
+        (tmp / "design" / "zones" / "elandor_dawnmere_fields.front.quests.json").write_text(
+            json.dumps({"zone": "elandor_dawnmere_fields", "quests": [front_quest]}))
+        fdesign = C.Design(tmp / "design")
+        plain, _ = run(fdesign, existing, Route("elandor_dawnmere_fields"), 1, args)
+        fronted = A()
+        fronted.__dict__.update(args.__dict__)
+        fronted.lines_set = ["front"]
+        front, _ = run(fdesign, existing, Route("elandor_dawnmere_fields"), 1, fronted)
+        check(plain.zone_rows[0]["quests"] == 11 and front.zone_rows[0]["quests"] == 1,
+              "front quests count only with --lines front (%d, %d)"
+              % (plain.zone_rows[0]["quests"], front.zone_rows[0]["quests"]))
+    finally:
+        shutil.rmtree(tmp)
     started = A()
     started.__dict__.update(args.__dict__)
     started.start_level = 5

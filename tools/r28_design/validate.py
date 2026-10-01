@@ -66,8 +66,9 @@ FIXED_ANCHORS = ("start", "capital", "zone")
 FRONT_LINE = "front"
 FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
             "bow", "caster_weapon", "spellbook", "trinket")
-# Area or leader centres further outside the atlas's rough zone outline than
-# this are errors; closer ones are warnings (borders are warped).
+# An area or leader centre beyond the zone's land extent BOX by more than this
+# is an error (a sign or axis mistake); outside the approximate border
+# outline it is only a warning (that outline misjudges 5-17 % of real land).
 ZONE_MARGIN = 96
 
 
@@ -129,8 +130,10 @@ class Validator:
                           if row.get("registered") is not False and row.get("name") not in self.curated}
         self.aliases = self.ex.get("aliases") or {}
         self.npcs = set(self.ex.get("quest_npcs") or {})
+        self.new_npcs, self.used_sockets = {}, {}
         if atlas:
             self.npcs |= atlas.all_npcs()
+        self.registered_npcs = set(self.npcs)
 
     # -- small helpers ---------------------------------------------------
     def E(self, code, where, path, msg):
@@ -522,9 +525,10 @@ class Validator:
                 self.E("E-type", file, path, "respawn must be seconds (integer >= 1)")
 
     def check_in_zone(self, zone, anchor, offset, shape, file, path):
-        """Frame 4.6: anchor + offset (the centre of a circle, ring or leader
-        spot) lies in the zone; most of a circle, ring or band should too.
-        Uses the atlas's rough outline (extent box and border lines)."""
+        """Frame 4.6: anchor + offset (the centre of a circle or ring, a band's
+        origin, a leader spot) lies in the zone; most of the shape should too.
+        Error only beyond the zone's extent box by more than ZONE_MARGIN;
+        the approximate border outline gives warnings."""
         if not self.atlas or not isinstance(shape, dict) or shape.get("kind") == "zone":
             return
         base = self.atlas.position(zone, anchor) if isinstance(anchor, str) else None
@@ -533,6 +537,17 @@ class Validator:
         if not (isinstance(offset, list) and len(offset) == 2 and all(is_int(v) for v in offset)):
             offset = [0, 0]
         cx, cz = base[0] + offset[0], base[1] + offset[1]
+        overshoot = self.atlas.box_overshoot(zone, cx, cz)
+        if overshoot > ZONE_MARGIN:
+            self.E("E-outside-zone", file, path, "centre (%d, %d) lies %d nodes beyond the extent of %s "
+                   "(sign or axis mistake?)" % (cx, cz, overshoot, zone))
+            return
+        near_anchor = any(abs(cx - ax) <= 24 and abs(cz - az) <= 24
+                          for ax, az in self.atlas.zones[zone]["anchor_pos"].values())
+        out = self.atlas.outside_by(zone, cx, cz)
+        if out > 0 and not near_anchor:
+            self.W("W-area-outside", file, path, "centre (%d, %d) lies about %d nodes outside the approximate "
+                   "outline of %s" % (cx, cz, out, zone))
         kind = shape.get("kind")
         samples = []
         if kind == "band":
@@ -546,38 +561,20 @@ class Validator:
                     f = fwd[0] + (fwd[1] - fwd[0]) * i / 4.0
                     sd = side[0] + (side[1] - side[0]) * j / 4.0
                     samples.append((cx + sd, cz + sign * f))
-            inside = [p for p in samples if self.atlas.outside_by(zone, *p) <= 0]
-            if not inside:
-                self.E("E-outside-zone", file, path, "the band lies entirely outside %s" % zone)
-            elif len(inside) * 2 < len(samples):
-                self.W("W-area-outside", file, path, "most of the band lies outside %s (%d of %d sample points "
-                       "inside)" % (zone, len(inside), len(samples)))
-            return
-        out = self.atlas.outside_by(zone, cx, cz)
-        near_anchor = any(abs(cx - ax) <= 24 and abs(cz - az) <= 24
-                          for ax, az in self.atlas.zones[zone]["anchor_pos"].values())
-        if out > ZONE_MARGIN and not near_anchor:
-            self.E("E-outside-zone", file, path, "centre (%d, %d) lies about %d nodes outside %s"
-                   % (cx, cz, out, zone))
-            return
-        if out > 0 and not near_anchor:
-            self.W("W-area-outside", file, path, "centre (%d, %d) lies near or just outside the border of %s "
-                   "(about %d nodes; borders are approximate)" % (cx, cz, zone, out))
-        radii = []
-        if kind == "circle" and is_num(shape.get("r")):
+        elif kind == "circle" and is_num(shape.get("r")):
             radii = [shape["r"] / 2.0, shape["r"]]
+            samples = [(cx + r * math.cos(math.pi * k / 4.0), cz + r * math.sin(math.pi * k / 4.0))
+                       for r in radii for k in range(8)]
         elif kind == "ring" and isinstance(shape.get("r"), list) and len(shape["r"]) == 2 \
                 and all(is_num(v) for v in shape["r"]):
             radii = [shape["r"][0], sum(shape["r"]) / 2.0, shape["r"][1]]
-        for r in radii:
-            for k in range(8):
-                angle = math.pi * k / 4.0
-                samples.append((cx + r * math.cos(angle), cz + r * math.sin(angle)))
+            samples = [(cx + r * math.cos(math.pi * k / 4.0), cz + r * math.sin(math.pi * k / 4.0))
+                       for r in radii for k in range(8)]
         if samples:
-            inside = sum(1 for p in samples if self.atlas.outside_by(zone, *p) <= 0)
+            inside = sum(1 for pt in samples if self.atlas.outside_by(zone, *pt) <= 0)
             if inside * 2 < len(samples):
-                self.W("W-area-outside", file, path, "most of the %s lies outside %s (%d of %d sample points "
-                       "inside)" % (kind, zone, inside, len(samples)))
+                self.W("W-area-outside", file, path, "most of the %s lies outside the approximate outline of %s "
+                       "(%d of %d sample points inside)" % (kind, zone, inside, len(samples)))
 
     def check_offset(self, offset, file, path):
         if offset is None:
@@ -647,7 +644,10 @@ class Validator:
             for j, giver in enumerate(givers):
                 gpath = "%s.givers[%d]" % (path, j)
                 npc = giver.get("npc") if isinstance(giver, dict) else None
-                self.check_npc(npc, file, gpath)
+                if isinstance(giver, dict) and "new" in giver:
+                    self.check_new_giver(zone, hub, hub_anchor, giver, file, gpath)
+                else:
+                    self.check_npc(npc, file, gpath)
                 where_npc = self.atlas.zones[self.atlas.npc_zone[npc]]["npcs"][npc] \
                     if self.atlas and npc in self.atlas.npc_zone else None
                 if where_npc is not None:
@@ -682,6 +682,55 @@ class Validator:
         self.front_reserve(zone, giver_lines, file)
         return giver_lines
 
+    def collect_new_givers(self):
+        """New givers declared at free quest sockets (`"new": {...}`) are valid
+        giver and turn-in NPCs everywhere in the design."""
+        for zone, data in self.d.quests.items():
+            for hub in (data or {}).get("hubs") or [] if isinstance(data, dict) else []:
+                for giver in (hub or {}).get("givers") or [] if isinstance(hub, dict) else []:
+                    if isinstance(giver, dict) and "new" in giver and isinstance(giver.get("npc"), str):
+                        if giver["npc"] not in self.new_npcs:
+                            self.new_npcs[giver["npc"]] = zone
+
+    def check_new_giver(self, zone, hub, hub_anchor, giver, file, path):
+        npc, new = giver.get("npc"), giver.get("new")
+        if not isinstance(npc, str) or not C.SNAKE.match(npc):
+            self.E("E-new-giver", file, path, "a new giver's npc id %r must be snake_case" % npc)
+        elif npc in self.registered_npcs:
+            self.E("E-new-giver", file, path, "%s is already a registered quest NPC; drop 'new'" % npc)
+        elif self.new_npcs.get(npc) != zone:
+            self.E("E-duplicate", file, path, "new giver %s is also declared in %s" % (npc, self.new_npcs.get(npc)))
+        if not isinstance(new, dict):
+            self.E("E-new-giver", file, path, "'new' must be {\"name\", \"race\", \"socket\"}")
+            return
+        for key in ("name", "race", "socket"):
+            if not isinstance(new.get(key), str) or not new[key].strip():
+                self.E("E-new-giver", file, path, "new giver needs a non-empty %r" % key)
+        for key in new:
+            if key not in ("name", "race", "socket"):
+                self.W("W-unknown-key", file, path + ".new", "unknown field %r" % key)
+        if isinstance(new.get("race"), str) and new["race"] not in C.RACE_FACTION:
+            self.W("W-new-giver", file, path, "race %r is not one of %s" % (new["race"], ", ".join(sorted(C.RACE_FACTION))))
+        info = self.zone_info(zone)
+        if info is None or not isinstance(new.get("socket"), str):
+            return
+        key = (hub_anchor, new["socket"])
+        if key not in info["free_sockets"]:
+            free = sorted("%s at %s" % (sock, info["free_sockets"][(anc, sock)]["settlement"])
+                          for anc, sock in info["free_sockets"])
+            self.E("E-new-giver", file, path, "socket %r is not a free quest socket of the hub's settlement "
+                   "(%s; free in %s: %s)" % (new["socket"], hub.get("anchor"), zone, "; ".join(free) or "none"))
+        elif key in self.used_sockets:
+            self.E("E-duplicate", file, path, "free socket %s is already used by %s" % (new["socket"],
+                                                                                     self.used_sockets[key]))
+        else:
+            self.used_sockets[key] = npc
+
+    def npc_zone(self, npc):
+        if self.atlas and npc in self.atlas.npc_zone:
+            return self.atlas.npc_zone[npc]
+        return self.new_npcs.get(npc) if self.atlas else None
+
     def front_reserve(self, zone, giver_lines, file):
         """Frame 2.1: each 31-40 outpost giver and one quest giver per capital
         reserve one of their two lines, `front`, for the front lane. A
@@ -693,9 +742,13 @@ class Validator:
                    "(reserved for the front lane)")
         if info is None or info["role"] != "contested" or len(info["npcs"]) <= 1:
             return
-        for npc, lines in giver_lines.items():
-            where = info["npcs"].get(npc)
-            if where and info["anchor_kinds"].get(where["anchor"]) == "outpost" and FRONT_LINE not in lines:
+        for npc in sorted(info["npcs"]):
+            if info["anchor_kinds"].get(info["npcs"][npc]["anchor"]) != "outpost":
+                continue
+            if npc not in giver_lines:
+                self.E("E-front-reserve", file, "hubs", "outpost quest NPC %s must be declared as a giver "
+                       "(with the line 'front', reserved for the front lane)" % npc)
+            elif FRONT_LINE not in giver_lines[npc]:
                 self.E("E-front-reserve", file, "hubs", "outpost giver %s must declare the line 'front' "
                        "(one of its two lines, reserved for the front lane)" % npc)
 
@@ -894,13 +947,13 @@ class Validator:
                 continue
             if obj.get("type") == "kill" and isinstance(obj.get("area"), str):
                 targets.append((C.split_area_ref(obj["area"], zone)[0], "kill area " + obj["area"]))
-            elif obj.get("type") == "talk" and obj.get("npc") in self.atlas.npc_zone:
-                targets.append((self.atlas.npc_zone[obj["npc"]], "travel target " + obj["npc"]))
+            elif obj.get("type") == "talk" and self.npc_zone(obj.get("npc")):
+                targets.append((self.npc_zone(obj["npc"]), "travel target " + obj["npc"]))
         for drop in q.get("quest_drops") or []:
             if isinstance(drop, dict) and isinstance(drop.get("area"), str):
                 targets.append((C.split_area_ref(drop["area"], zone)[0], "quest-drop area " + drop["area"]))
-        if q.get("turnin") in self.atlas.npc_zone:
-            targets.append((self.atlas.npc_zone[q["turnin"]], "turn-in " + q["turnin"]))
+        if self.npc_zone(q.get("turnin")):
+            targets.append((self.npc_zone(q["turnin"]), "turn-in " + q["turnin"]))
         own = self.atlas.zones[zone]
         for target, what in targets:
             info = self.atlas.zones.get(target)
@@ -936,14 +989,15 @@ class Validator:
 
     def target_levels(self, zone, role, area_ref, area, file, path, all_areas):
         """Level range a kill or quest-drop target is met at: a named leader
-        of the zone has its fixed level (and no area), an area its levels,
+        (of this zone, else of any zone: leader roles are unique fixed spots)
+        has its fixed level and no area; an area its levels,
         otherwise the zone's areas hosting the role, else the role's levels."""
-        target_zone = C.split_area_ref(area_ref, zone)[0] if isinstance(area_ref, str) else zone
-        leader = self.d.leaders(target_zone).get(role)
-        if leader is not None:
+        found = self.d.find_leader(role, zone)
+        if found is not None:
+            leader_zone, leader = found
             if area_ref:
                 self.E("E-leader-area", file, path, "%s is a leader at a fixed spot of %s, not in an area: "
-                       "drop the area" % (role, target_zone))
+                       "drop the area" % (role, leader_zone))
             return (leader["level"], leader["level"]) if is_int(leader.get("level"), 1) else None
         if area_ref:
             if area is None:
@@ -1014,6 +1068,8 @@ class Validator:
             self.W("W-no-atlas", self.d.root, "$", "no zone atlas given (--atlas): zone, anchor, biome and "
                    "zone-band checks skipped; NPCs checked against today's quest registry only")
         self.catalogs()
+        self.collect_new_givers()
+        self.npcs |= set(self.new_npcs)
         all_areas = {zone: self.d.areas(zone) for zone in self.d.spawns}
         # Quest ids of every zone (front files included) first: requires may
         # cross zones.
@@ -1106,7 +1162,7 @@ class Validator:
 
     def cycles(self):
         graph = {}
-        for zone, data in self.d.quests.items():
+        for zone, data in list(self.d.quests.items()) + list(self.d.front.items()):
             for q in (data or {}).get("quests") or [] if isinstance(data, dict) else []:
                 if isinstance(q, dict) and isinstance(q.get("id"), str):
                     graph[q["id"]] = [r for r in q.get("requires") or [] if isinstance(r, str)]
@@ -1319,6 +1375,9 @@ def _mutations():
     def leader_outside(d):
         d["leaders"][0]["offset"] = [120, 560]
 
+    def band_origin_outside(d):
+        area(d, "home_fields_day")["offset"] = [0, 700]
+
     def band_outside(d):
         area(d, "home_fields_day")["shape"]["forward"] = [600, 900]
 
@@ -1385,7 +1444,8 @@ def _mutations():
         ("stat loot not dropped in the track", "catalog/drops.json", no_tusk, "W-loot-track"),
         ("area centre outside the zone", S, bandits_outside, "E-outside-zone"),
         ("leader outside the zone", S, leader_outside, "E-outside-zone"),
-        ("band entirely outside the zone", S, band_outside, "E-outside-zone"),
+        ("band reaching outside the outline (warning only)", S, band_outside, "W-area-outside"),
+        ("band origin beyond the zone's extent", S, band_origin_outside, "E-outside-zone"),
         ("target levels not contained in quest level ±3", Q, level_containment, "E-level-fit"),
         ("quest-drop source levels not contained", Q, drop_level, "E-level-fit"),
         ("kill objective on a leader, no area", Q, kill_leader, "!W-role-not-in-zone"),
@@ -1454,6 +1514,51 @@ def _scenarios():
                 "quests": [_simple_quest("sample_%s_01" % zone.split("_")[1], npc, lines[0], level)]})
         return setup
 
+    def outposts(declared):
+        def setup(target):
+            zone = "elandor_ashenward_march"
+            hubs = [{"id": "hub_%d" % i, "anchor": anchor, "givers": [{"npc": npc, "lines": ["watch", "front"]}]}
+                    for i, (anchor, npc) in enumerate(declared)]
+            _save(target / "zones" / ("%s.quests.json" % zone), {
+                "zone": zone, "hubs": hubs,
+                "quests": [_simple_quest("sample_ashenward_%d" % i, npc, "watch", 31)
+                           for i, (_, npc) in enumerate(declared)]})
+        return setup
+
+    LORE = "r28_highcourt_lorekeeper"
+
+    def new_giver(socket, npc=LORE):
+        def setup(target):
+            _save(target / "zones" / "elandor_highcourt.quests.json", {
+                "zone": "elandor_highcourt",
+                "hubs": [{"id": "court", "anchor": "capital", "givers": [
+                    {"npc": npc, "new": {"name": "Odile Quill", "race": "human", "socket": socket},
+                     "lines": ["lore", "front"]}]}],
+                "quests": [_simple_quest("sample_highcourt_01", npc, "lore", 22)]})
+            # The new NPC is a valid travel target anywhere in the design.
+            data = _load(target / Q_FILE)
+            for q in data["quests"]:
+                if q["id"] == "sample_travel_01":
+                    q["objectives"][0]["npc"] = q["turnin"] = npc
+            _save(target / Q_FILE, data)
+        return setup
+
+    def leader_elsewhere(target):
+        spawns_file = target / "zones" / "elandor_dawnmere_fields.spawns.json"
+        spawns = _load(spawns_file)
+        leader = spawns.pop("leaders")[0]
+        _save(spawns_file, spawns)
+        leader.update(anchor="village_1", offset=[0, 0])
+        _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
+              {"zone": "elandor_goldmead_vale", "areas": [], "leaders": [leader]})
+
+    def front_cycle(target):
+        front_ok(target)
+        path = target / "zones" / "elandor_dawnmere_fields.front.quests.json"
+        data = _load(path)
+        data["quests"][0]["requires"] = ["sample_front_01"]
+        _save(path, data)
+
     def legacy_kill(target):
         data = _load(target / Q_FILE)
         for q in data["quests"]:
@@ -1475,6 +1580,17 @@ def _scenarios():
                                                     "capital", 22), False, "E-front-reserve"),
         ("capital with a front giver", contested("elandor_highcourt", "r20_human_capital_envoy",
                                                  ["civic", "front"], "capital", 22), False, "!E-front-reserve"),
+        ("both outpost givers declared with front", outposts([("outpost_1", "r20_anchor_031_host"),
+                                                              ("outpost_2", "r20_anchor_032_host")]),
+         False, "!E-front-reserve"),
+        ("an outpost quest NPC not declared", outposts([("outpost_1", "r20_anchor_031_host")]), False,
+         "E-front-reserve"),
+        ("new giver at a free quest socket", new_giver("lore_shrine/lore_shrine_quest"), False, None),
+        ("new giver at an occupied socket", new_giver("chapel_quest"), False, "E-new-giver"),
+        ("new giver reusing a registered id", new_giver("lore_shrine/lore_shrine_quest",
+                                                        "r20_human_capital_envoy"), False, "E-new-giver"),
+        ("leader of another zone as a drop source", leader_elsewhere, False, "!W-role-not-in-zone"),
+        ("prerequisite cycle in a front file", front_cycle, False, "E-cycle"),
         ("legacy kill objective with mobs", legacy_kill, True, None),
         ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
     ]

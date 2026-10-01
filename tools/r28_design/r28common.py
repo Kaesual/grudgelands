@@ -206,6 +206,16 @@ class Design:
         data = self.spawns.get(zone) or {}
         return {row.get("role"): row for row in data.get("leaders") or [] if isinstance(row, dict)}
 
+    def find_leader(self, role, zone=None):
+        """(zone, leader) for a leader role: the given zone first, then every
+        zone (leader roles are unique fixed spots). None if no zone has it."""
+        if zone is not None and role in self.leaders(zone):
+            return zone, self.leaders(zone)[role]
+        for other in sorted(self.spawns):
+            if role in self.leaders(other):
+                return other, self.leaders(other)[role]
+        return None
+
     def _read(self, path):
         try:
             data = read_json(path)
@@ -316,13 +326,19 @@ class Atlas:
             for ref in (aid, anchor.get("settlement_key"), anchor.get("slot")):
                 if ref:
                     anchors.setdefault(ref, aid)
-        npcs = {}
+        npcs, free_sockets = {}, {}
         for settlement in rec.get("settlements") or []:
             for npc in settlement.get("npcs") or []:
-                if npc.get("npc_id") and npc.get("role") == "quest":
-                    npcs[npc["npc_id"]] = {"settlement": settlement.get("key"),
-                                           "anchor": settlement.get("anchor_id"),
-                                           "socket": npc.get("socket"), "name": npc.get("npc_name")}
+                if npc.get("role") != "quest":
+                    continue
+                where = {"settlement": settlement.get("key"), "anchor": settlement.get("anchor_id"),
+                         "socket": npc.get("socket"), "name": npc.get("npc_name")}
+                if npc.get("npc_id"):
+                    npcs[npc["npc_id"]] = where
+                elif npc.get("socket"):
+                    # A quest socket nobody occupies yet: a design may place a
+                    # new giver there.
+                    free_sockets[(settlement.get("anchor_id"), npc["socket"])] = where
         biomes = {biome_id(b.get("id")) for b in (rec.get("biomes_authored") or []) +
                   (rec.get("biomes_measured") or []) if b.get("id")}
         palette = {}
@@ -349,6 +365,7 @@ class Atlas:
             "biomes": biomes, "palette": palette, "anchor_pos": anchor_pos, "extent": extent,
             "hub": (hub["x"], hub["z"]) if isinstance(hub.get("x"), int) else None,
             "borders": borders, "front_sign": -1 if axis.startswith("-") else 1,
+            "free_sockets": free_sockets,
         }
 
     def all_npcs(self):
@@ -373,6 +390,15 @@ class Atlas:
             return info["hub"]
         aid = info["anchors"].get(ref)
         return info["anchor_pos"].get(aid) if aid else None
+
+    def box_overshoot(self, zone, x, z):
+        """How far (nodes) a point lies outside the zone's land extent box;
+        None when unknown. Large values mean a sign or axis mistake."""
+        info = self.zones.get(zone)
+        if info is None or info["extent"] is None:
+            return None
+        min_x, max_x, min_z, max_z = info["extent"]
+        return max(0, min_x - x, x - max_x, min_z - z, z - max_z)
 
     def outside_by(self, zone, x, z):
         """Rough in-zone test: how far (nodes) a point lies outside the zone;
