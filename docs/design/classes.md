@@ -221,7 +221,7 @@ briefly if the crosshair slides onto a diggable node within that window
 Within its mode, the current first visible crosshair target determines the
 action. Every operation checks its own reach: 4 m interaction/digging, 3 m
 Strike, and the selected spell's authored range. Solid terrain and
-intervening objects matter.
+intervening objects (dropped items excepted) matter.
 
 - **Hostile:** use the selected applicable ready skill immediately. If it is
   unavailable (including cooldown, resources or applicability), use ordinary

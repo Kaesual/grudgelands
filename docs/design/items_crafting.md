@@ -618,7 +618,7 @@ The protection line does not depend on the wielded item (bare hand, skill,
 any tool or item). A selected skill produces no tier, broken-pick or level
 line (with a skill, LMB on an unprotected node the hand cannot dig is a
 combat press, never a dig; on any protected node it is a gathering press, so
-the protection line shows; `classes.md` §2b). Undiggable town dressing (`diggable = false`: capital service props,
+the protection line shows, unless a hostile is aimed at; `classes.md` §2b). Undiggable town dressing (`diggable = false`: capital service props,
 camp displays) gives only the protection line. A press that already cast a
 self or support skill gives no protection line on its punch; the skill hand's
 refused dig still reports it. Protected

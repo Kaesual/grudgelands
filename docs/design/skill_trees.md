@@ -363,7 +363,7 @@ because the fix belongs to `classes.md` §3 rather than to WP11.
 | 4 | **Whitehot** *(capstone)* | Blaze | 4 | **1** | **effect** ‼ | the first Fireball that **crits** starts an 8 s window in which Fireball costs **3% instead of 6% base mana** and deals **+6**. *Limit: 8 s, **120 s cooldown** on the trigger.* | the central cost seam and Fireball values | `whitehot_window` |
 | 5 | **Deep Well** | Cinder | 1 | 5 | — | max mana +3 / 6 / 9 / 12 / 15 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
 | 6 | **Far Cast** | Cinder | 2 | 4 | — | Fireball acquisition range 20 m → 21.5 / 23 / 24.5 / 26 m at release; no later range expiry | `grug_abilities.get_range` and the current combat ray at release; the ability stack mirrors targeting reach | `fireball_range_add` |
-| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first thing the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
+| 7 | **Cinderfall** *(keystone)* | Cinder | 3 | 3 | **new skill** | cast, 12% base mana, 10 s cooldown, 20 m; a burst at the first solid contact or actor the crosshair ray meets, dealing `5 / 7 / 9 + spell power` to every hostile within 3 m of it | new; `grug_core.combat_ray` plus the radius loop | — |
 | 8 | **Ashfall** | Cinder | 4 | 3 | — | Cinderfall's radius 3 m → 4 / 5 / 6 m | the new Cinderfall registration | `cinderfall_radius_add` |
 
 Far Cast increases acquisition reach only. Once released, Fireball follows its
