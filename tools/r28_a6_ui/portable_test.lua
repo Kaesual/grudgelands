@@ -336,6 +336,22 @@ ent:on_punch(alice)
 eq(line_text(alice, 1), "+3 Light Leather", "a refused pickup reports nothing")
 alice._full = nil
 
+-- Cost (a comparison, not a gate): one post plus the expiry passes it causes.
+do
+	advance(3)
+	local before_writes = alice.writes
+	local started = os.clock()
+	for i = 1, 2000 do
+		grug_core.feed_xp(alice, 10)
+		if i % 20 == 0 then grug_core.feed(alice, "quest", "Small Boar " .. i, "quest:x") end
+		run_steps(0.1)
+	end
+	local elapsed = os.clock() - started
+	print(("feed cost: %.1f us per post incl. one expiry pass, %.2f HUD writes per post (stub engine)")
+		:format(elapsed / 2100 * 1e6, (alice.writes - before_writes) / 2100))
+	advance(3)
+end
+
 ------------------------------------------------------------------------------
 -- 2. grug_xp: feed instead of chat.
 ------------------------------------------------------------------------------
