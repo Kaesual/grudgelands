@@ -240,6 +240,12 @@ function Q.turn_in(player, id)
 			return false, "Your inventory changed."
 		end
 	end
+	-- The reward items are in the inventory now (settlement checked they fit):
+	-- one message-feed line each (Round 28 ruling 20).
+	for _, reward in ipairs(def.rewards.items) do
+		local stack = ItemStack(reward)
+		grug_core.feed_item(player, stack, stack:get_count())
+	end
 	state.active[id], state.completed[id] = nil, true
 	untrack(state, id)
 	save(player, state)

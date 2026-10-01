@@ -66,8 +66,9 @@ function grug_xp.set_xp(player, xp)
 	if new_level ~= old_level then
 		run_level_callbacks(player, old_level, new_level)
 		if new_level > old_level then
-			core.chat_send_player(player:get_player_name(),
-				core.colorize("#ffd100", "Reached level " .. new_level .. "!"))
+			-- Round 28 ruling 20: a large centre announcement, no chat line.
+			grug_core.banner(player, "Reached level " .. new_level .. "!",
+				grug_core.hud_layout.COLOR.xp)
 			local pos = player:get_pos()
 			if pos then
 				core.add_particlespawner({
@@ -93,11 +94,16 @@ end
 -- grug_classes loads after grug_xp, hence the runtime global probe. No
 -- caller passes "quest" yet — the quest framework (WP8) gets the bonus
 -- for free by tagging its rewards.
-function grug_xp.add_xp(player, amount, source)
+-- Every positive grant shows in the message feed (Round 28 ruling 20,
+-- grug_core.feed_xp) unless `quiet` is true: a caller that already names
+-- the XP in its own feed line (a fishing catch) passes it.
+function grug_xp.add_xp(player, amount, source, quiet)
 	if source and core.global_exists("grug_classes") then
 		amount = math.floor(amount * grug_classes.get_xp_bonus(player, source) + 0.5)
 	end
-	return grug_xp.set_xp(player, grug_xp.get_xp(player) + amount)
+	local ok, granted = grug_xp.set_xp(player, grug_xp.get_xp(player) + amount)
+	if ok and not quiet and granted > 0 then grug_core.feed_xp(player, granted) end
+	return ok, granted
 end
 
 --
@@ -128,10 +134,11 @@ function grug_xp.gathering_xp(kind, reference_level, player_level)
 end
 
 -- Awards and returns the gathering XP of one ore/gem node or one fish.
-function grug_xp.award_gathering(player, kind, reference_level)
+-- `quiet` as in add_xp.
+function grug_xp.award_gathering(player, kind, reference_level, quiet)
 	local amount = grug_xp.gathering_xp(kind, reference_level,
 		grug_xp.get_level(player))
-	grug_xp.add_xp(player, amount, "gathering")
+	grug_xp.add_xp(player, amount, "gathering", quiet)
 	return amount
 end
 

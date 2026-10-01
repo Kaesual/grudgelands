@@ -119,6 +119,9 @@ end
 local function give_or_queue(player, stack)
 	local inv = player:get_inventory()
 	local leftover = inv:add_item("main", stack)
+	-- Loot that entered the inventory shows in the message feed.
+	local taken = ItemStack(stack):get_count() - leftover:get_count()
+	if taken > 0 then grug_core.feed_item(player, stack, taken) end
 	if leftover:is_empty() then return end
 	local meta = player:get_meta()
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}
@@ -149,7 +152,11 @@ core.register_on_joinplayer(function(player)
 	if #pending == 0 then return end
 	local keep = {}
 	for index = 1, #pending do
-		local leftover = player:get_inventory():add_item("main", ItemStack(pending[index]))
+		local stack = ItemStack(pending[index])
+		local leftover = player:get_inventory():add_item("main", stack)
+		-- Queued loot that arrives now shows in the message feed.
+		local taken = stack:get_count() - leftover:get_count()
+		if taken > 0 then grug_core.feed_item(player, stack, taken) end
 		if not leftover:is_empty() then keep[#keep + 1] = leftover:to_string() end
 	end
 	meta:set_string(pending_key(), #keep > 0 and core.serialize(keep) or "")

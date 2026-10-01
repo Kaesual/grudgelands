@@ -33,34 +33,61 @@ local function permitted(player, entity)
 	return false
 end
 
-local function formspec(player)
-	local fs = {"formspec_version[3]size[8,6]",
+-- Every tier is listed with its state (Round 28 ruling 19), so a player sees
+-- the whole ladder and why a tier is not for sale yet. Only "buy" has a
+-- button; the other blocked states are greyed text.
+local GREY = "#8a8a8a"
+local OWNED = "#7ae08a"
+local NOTICE = {[true] = "#7ae08a", [false] = "#ff6b6b"}
+
+-- One row per tier: {id, name, level, state, price, previous}. Pure, so the
+-- portable fixture renders it without an engine.
+function grug_mounts.trainer_formspec(rows, notice)
+	local fs = {"formspec_version[3]size[10,6]",
 		"label[0.4,0.4;Riding Trainer]",
 		"label[0.4,0.85;Universal skill — no profession slot]"}
-	local level = grug_xp.get_level(player)
-	local row = 0
-	for tier_id = 1, 4 do
-		local tier = grug_mounts.TIERS[tier_id]
-		if level >= tier.level then
-			local y = 1.5 + row * 0.85
-			fs[#fs + 1] = ("label[0.4,%.2f;%s (L%d)]")
-				:format(y, esc(tier.name), tier.level)
-			local price = grug_mounts.price_for_tier(tier_id)
-			if grug_mounts.owns_tier(player, tier_id) or not price then
-				fs[#fs + 1] = ("label[5.0,%.2f;%s]"):format(y,
-					grug_mounts.owns_tier(player, tier_id) and "Owned" or "Price pending")
+	for index, row in ipairs(rows) do
+		local y = 1.5 + (index - 1) * 0.85
+		local name = ("%s (L%d)"):format(row.name, row.level)
+		local open = row.state == "buy" or row.state == "owned"
+		fs[#fs + 1] = ("label[0.4,%.2f;%s]"):format(y,
+			esc(open and name or core.colorize(GREY, name)))
+		if row.state == "buy" then
+			fs[#fs + 1] = ("button[5.0,%.2f;3.0,0.65;buy_%d;%s]"):format(y - 0.3,
+				row.id, esc("Buy " .. row.price))
+		else
+			local text
+			if row.state == "owned" then
+				text = core.colorize(OWNED, "Owned")
+			elseif row.state == "level" then
+				text = core.colorize(GREY, ("Requires level %d"):format(row.level))
+			elseif row.state == "previous" then
+				text = core.colorize(GREY, "Learn " .. row.previous .. " first")
 			else
-				fs[#fs + 1] = ("button[4.8,%.2f;2.7,0.65;buy_%d;Buy %s]")
-					:format(y - 0.2, tier_id, esc(grug_money.format(price)))
+				text = core.colorize(GREY, "Price pending")
 			end
-			row = row + 1
+			fs[#fs + 1] = ("label[5.0,%.2f;%s]"):format(y, esc(text))
 		end
 	end
-	if row == 0 then
-		fs[#fs + 1] = "label[0.4,1.5;First riding tier unlocks at level 15.]"
+	if notice then
+		fs[#fs + 1] = ("label[0.4,5.0;%s]"):format(esc(core.colorize(
+			NOTICE[notice.ok == true], notice.text)))
 	end
-	fs[#fs + 1] = "button_exit[6,5.1;1.5,0.6;close;Close]"
+	fs[#fs + 1] = "button_exit[8.1,5.1;1.5,0.6;close;Close]"
 	return table.concat(fs)
+end
+
+local function formspec(player, notice)
+	local rows = {}
+	for tier_id = 1, 4 do
+		local tier = grug_mounts.TIERS[tier_id]
+		local state, price = grug_mounts.tier_state(player, tier_id)
+		local previous = grug_mounts.TIERS[tier_id - 1]
+		rows[tier_id] = {id = tier_id, name = tier.name, level = tier.level,
+			state = state, price = price and grug_money.format(price),
+			previous = previous and previous.name}
+	end
+	return grug_mounts.trainer_formspec(rows, notice)
 end
 
 function grug_mounts.open_trainer(player, entity)
@@ -90,9 +117,13 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		end
 	end
 	if selected then
-		local _, message = grug_mounts.purchase(player, selected)
-		core.chat_send_player(name, message)
-		core.show_formspec(name, formname, formspec(player))
+		-- The result goes to the flash line, never to chat, and stays in the
+		-- reopened form (whose box may cover the flash line).
+		local ok, message = grug_mounts.purchase(player, selected)
+		grug_core.flash(player, message, ok and grug_core.FLASH_COLOR.notice or
+			grug_core.FLASH_COLOR.error)
+		core.show_formspec(name, formname, formspec(player,
+			{ok = ok == true, text = message}))
 	end
 	return true
 end)
