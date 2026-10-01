@@ -532,8 +532,8 @@ end
 -- (spawn_areas.lua hands an area's or leader's fixed level). Before the
 -- first tick only the field is written and ensure_init applies it; a mob
 -- that already levelled (families with a composed look level during
--- activation) gets its stats re-derived at the same wounded fraction and its
--- tag refreshed. Unlike set_tier it applies to every tier, authored
+-- activation) gets its stats re-derived at the same wounded fraction, its
+-- tag refreshed and its composed look (armour bracket) recomposed. Unlike set_tier it applies to every tier, authored
 -- sub-types included.
 function grug_mobs.relevel(ent, level)
 	if not ent or not ent.object then
@@ -546,4 +546,7 @@ function grug_mobs.relevel(ent, level)
 	ent._grug_level = level
 	apply_stats(ent, true)
 	update_tag(ent)
+	if grug_mobs.refresh_visual then
+		grug_mobs.refresh_visual(ent)
+	end
 end

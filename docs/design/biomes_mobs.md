@@ -1141,8 +1141,9 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   leaves, wood or water), the areas matching it, one (area, species) pick
   weighted by the summed weights, then the gates below; the mob stands on
   the ground node if its box fits. **Light** keeps the ABM rows' behaviour:
-  the spot must see the sky (its noon light is at least 14, so no cave
-  floor or overhang), a `day` area needs light ≥ 10, and at night a hostile
+  the spot's natural light at noon must be at least 10 (the day rows'
+  `min_light`; no cave floor and no roofed room even under a lamp, while
+  ground under a leaf canopy counts), a `day` area needs light ≥ 10, and at night a hostile
   pick needs light ≤ 5, so torch-lit ground stays safe. No per-mob row gate, domain or spawn
   check applies to an area spawn (the area is the authority), so the start
   gates (`start_band`, Sunscar Husk, Silverleaf Poacher) end where areas
@@ -1151,8 +1152,8 @@ matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
   over right after the spawn (`grug_mobs.relevel`, `levels.lua`): a mob that
   has not levelled yet takes it on its first tick instead of the level
   field, the def floor and the cap; a mob that already levelled while
-  activating (families with a composed look, such as bandits) has its level
-  and stats re-derived at once. The tier never changes, authored sub-type
+  activating (families with a composed look, such as bandits) has its level,
+  stats and composed look (armour bracket) re-derived at once. The tier never changes, authored sub-type
   tiers included. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row

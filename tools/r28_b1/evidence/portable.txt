@@ -1,4 +1,4 @@
 fallback identity: 426816 spawn_policy_allows decisions identical over 38 zones and 78 mobs
-cost spawn_policy_allows (stubbed world): before 0.207 us, after 0.145 us per call
-cost area attempt (stubbed world): 1.39 us
-R28 B1 PORTABLE PASS checks=466887
+cost spawn_policy_allows (stubbed world): before 0.260 us, after 0.140 us per call
+cost area attempt (stubbed world): 1.47 us
+R28 B1 PORTABLE PASS checks=466889

@@ -122,6 +122,10 @@ local function new_env(world)
 			return out
 		end,
 		get_connected_players = function() return world.players or {} end,
+		get_natural_light = function(pos, tod)
+			if world.natural then return world.natural(pos, tod) end
+			return 15
+		end,
 		get_node_light = function(pos, tod)
 			if world.light then return world.light(pos, tod) end
 			if tod then return 15 end
@@ -783,10 +787,17 @@ W.time = 0.0
 check(SA.attempt(P.pos, W.players, "night", 0, 0) == "spawned" and
 	spawned[#spawned].name == "grug_mobs:giant_rat", "night rat")
 W.time = 0.5
--- light (today's ABM behaviour): sky exposure, day >= 10, hostile at night <= 5
+-- light (today's ABM behaviour): natural noon light >= 10, day >= 10,
+-- hostile at night <= 5
 G.spawn_role_hostile = function(name) return name ~= "grug_mobs:boar" end
-W.light = function(pos, tod) if tod then return 9 end return 15 end
-check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "no sky: a cave floor or overhang")
+W.natural, W.light = function() return 0 end, function() return 0 end
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "cave floor refused")
+W.natural, W.light = function() return 2 end, function() return 14 end
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "roofed room under a lamp refused")
+W.natural, W.light = function() return 12 end, function() return 12 end
+check(SA.attempt(P.pos, W.players, "day", 0, 0) == "spawned", "ground under a leaf canopy spawns")
+spawned[#spawned].object._removed = true
+W.natural = nil
 W.light = function(pos, tod) if tod then return 15 end return 8 end
 check(SA.attempt(P.pos, W.players, "day", 0, 0) == "light", "day area below light 10")
 W.light = function(pos, tod) if tod then return 15 end return 9 end

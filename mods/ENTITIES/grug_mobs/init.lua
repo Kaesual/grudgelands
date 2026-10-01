@@ -632,6 +632,18 @@ function grug_mobs.copy_base_def(name)
 	return def and table.copy(def) or nil
 end
 
+-- name -> `_grug_visual` of the families with a composed look, so a mob whose
+-- level changes after activation (grug_mobs.relevel) can recompose its
+-- level-dependent look (a guard's or bandit's armour bracket).
+local visual_configs = {}
+
+function grug_mobs.refresh_visual(self)
+	local cfg = self and visual_configs[self.name]
+	if cfg then
+		apply_visual(self, cfg)
+	end
+end
+
 function grug_mobs.register_mob(name, def)
 	base_defs[name] = table.copy(def)
 	local hp_bar_presentation = def._grug_hp_bar_presentation
@@ -769,6 +781,7 @@ function grug_mobs.register_mob(name, def)
 	end
 
 	local visual_cfg = def._grug_visual
+	visual_configs[name] = visual_cfg
 	if visual_cfg then
 		local old_after_activate = def.after_activate
 		def.after_activate = function(self, staticdata, mob_def, dtime)

@@ -940,14 +940,15 @@ function SA.spawn_refused(name, stand)
 end
 
 -- Today's light behaviour of the ABM rows (coordinator ruling for Round 28):
---   * surface only: the spot sees the sky (its noon light is 14 or more), so
---     no cave floor or overhang is picked;
+--   * surface only: the spot's NATURAL light at noon is 10 or more (the day
+--     rows' min_light), so no cave floor and no roofed room is picked, even
+--     under a lamp, while the ground under a leaf canopy still counts;
 --   * a day area needs light >= 10 now, like a day row's min_light;
 --   * at night a hostile pick needs light <= 5, like a night row's
 --     max_light, so torch-lit ground stays safe.
 function SA.light_allows(area, name, stand, clock)
-	local noon = core.get_node_light(stand, 0.5)
-	if not noon or noon < 14 then
+	local noon = core.get_natural_light(stand, 0.5)
+	if not noon or noon < 10 then
 		return false
 	end
 	if area.clock == "day" then
