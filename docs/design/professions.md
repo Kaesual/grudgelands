@@ -73,7 +73,7 @@ Two free main professions per player, unchanged. The roster is organised
 
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
-| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical weapons and mining tools |
+| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical-weapon enchantments; plain weapons and tools are Basics |
 | **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments; plain shields are Basics |
 | **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and leather bags |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
@@ -125,10 +125,8 @@ It is also the only cut that keeps **§4's social supply chain** alive. A
 profession that serves exactly one class serves exactly one customer per
 group; a material profession serves several classes at once, which is
 what makes a crafter worth finding on a server with a handful of players
-online. The cross-buys are deliberate and already load-bearing: the
-Woodcarver buys metal fittings from the Weaponsmith (`items_crafting.md`
-§3.6a) the same way Tailors and Alchemists buy leather from the
-Leatherworker (§3 below).
+online. Trade stays voluntary: since Round 28 no profession needs another
+profession's product (§3 below).
 
 V1 repair is the explicit exception to profession ownership: every profession
 trainer repairs every repairable item for gold only. Housing craft stations
@@ -160,26 +158,33 @@ The active caster roster is two-handed staff or one-handed wand plus a
 Goldsmith spellbook. Plain staff/wand recipes are Basics; Woodcarver owns their
 enchantments. Scepters and orbs are absent from fresh V1 worlds.
 
-## 3. Cross-profession supply loops
+## 3. Self-contained professions (Round 28)
 
-Leather supply scales with participation, via the loot table (decided
-2026-08-06): **if a Leatherworker damaged a leather-dropping mob, the
-mob drops ×5 leather** (rides on the WP6 player-tag flag — the tag
-records the profession). Cross-profession demand is intended: Tailors
-need small amounts of leather for some recipes, Alchemists a bit for
-their alchemist gear — trade, not self-sufficiency.
+**No profession needs another profession's product** (Round 28 ruling 28,
+user decision 2026-10-01). *Why:* forcing players to have items made by
+another profession turned out to be much worse in practice than expected.
+Variety comes from loot tables per tier band instead: every enchant consumes
+the profession's **own material** of the tier (metal bar, leather grade,
+cloth bolt, graded wood or setting), **one loot item of the tier** chosen by
+the stat, and **one mining or gathering item** chosen by the equipment
+family (`items_crafting.md` §6b.2). A few universal reagents anyone can craft
+(for example a tin and quartz mix) add variety to those family inputs; the
+Goldsmith may refine base gems further for its own recipes only. The load
+check fails when any profession recipe or enchant operation uses an item made
+by another profession's recipe. The Weaponsmith metal fittings that the
+Woodcarver used to buy are removed.
 
-Added 2026-08-07, the same pattern in the other direction: **the
-Woodcarver buys metal fittings from the Weaponsmith.** Every Woodcarver enchant operation
-needs a Weaponsmith-made fitting of its enchant tier
-(`items_crafting.md` §3.6a) — the §3.2 family is literally called
-"metal-shod staff".
+Materials everyone can make on the crafting grid (leather grades, cloth
+bolts, graded wood) are not profession products. Leather supply still scales
+with participation via the loot table (decided 2026-08-06): **if a
+Leatherworker damaged a leather-dropping mob, the mob drops ×5 leather**
+(rides on the WP6 player-tag flag — the tag records the profession), so
+Tailors and Alchemists who want leather for bags or apothecary gear can buy
+it, but they can also tan it themselves.
 
-Weapon Grips remain Leatherworker components. The current named enchant
-catalog does not consume them: Woodcarver uses graded wood, a matching metal
-fitting and the enchant-tier reagent. Grips have no current enchant demand;
-any future supply-loop use must be specified explicitly rather than inferred
-from the retired improvement workflow.
+Weapon Grips remain Leatherworker components without a current consumer; any
+future use must be specified explicitly and must not make another profession
+depend on them.
 
 ## 4. Vendor floor rule
 

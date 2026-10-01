@@ -10,10 +10,10 @@ function M.route_key(recipe)
 		signature}, "\0")
 end
 
-local source = dofile(core.get_modpath(core.get_current_modname()) ..
-	"/basics_routes.lua")
-for index = 1, #source do
-	local declaration = source[index]
+-- Adds one route to the catalog. Content registered from data files (the
+-- Round 28 universal reagents) declares its routes here at load time, in the
+-- same shape as a basics_routes.lua row.
+function M.declare(declaration)
 	local key = M.route_key({station = declaration.station,
 		output_name = declaration.output, method = declaration.method,
 		width = declaration.width, shapeless = declaration.shapeless,
@@ -28,6 +28,10 @@ for index = 1, #source do
 	end
 	M.declarations[key] = declaration
 end
+
+local source = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/basics_routes.lua")
+for index = 1, #source do M.declare(source[index]) end
 
 function M.bind(records)
 	local used, general = {}, {}

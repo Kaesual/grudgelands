@@ -280,8 +280,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   visibility rule nor character level restricts universal recipe crafting.
 - Everyone uses the familiar 3×3 layouts to make plain weapons, tools and
   metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
-  and processed wood is also profession-free. Professional fittings, grips and
-  other improvement materials remain trade goods but are never base-item inputs.
+  and processed wood is also profession-free. Professional components such as
+  grips and settings are never base-item inputs.
 - Named enchant application and replacement use the owning profession station.
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
   Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are

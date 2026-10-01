@@ -148,14 +148,14 @@
       },
       "tier": 1
     },
-    "grug_professions:metal_fittings_bronze": {
+    "grug_materials:cut_quartz": {
       "type": "craft",
-      "category": "profession_material",
+      "category": "gem_cut",
       "groups": {},
       "tier": 1,
       "profession_recipes": [
         {
-          "profession": "weaponsmith",
+          "profession": "goldsmith",
           "tier": 1
         }
       ]

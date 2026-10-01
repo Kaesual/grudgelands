@@ -1,0 +1,164 @@
+[
+  {
+    "tier": 1,
+    "stat_loot": {
+      "str": "default:coal_lump",
+      "dex": "default:coal_lump",
+      "int": "default:coal_lump",
+      "attack_speed_percent": "default:coal_lump",
+      "crit_percent": "default:coal_lump",
+      "max_hp_percent": "default:coal_lump",
+      "max_mana_percent": "default:coal_lump",
+      "dodge_percent": "default:coal_lump",
+      "armor_rating": "default:coal_lump"
+    },
+    "family_input": {
+      "sword": "default:tin_lump",
+      "dagger": "default:tin_lump",
+      "greataxe": "default:tin_lump",
+      "metal_armor": "default:tin_lump",
+      "shield": "default:tin_lump",
+      "leather_armor": "default:tin_lump",
+      "cloth_armor": "default:tin_lump",
+      "bow": "default:tin_lump",
+      "caster_weapon": "default:tin_lump",
+      "spellbook": "default:tin_lump",
+      "trinket": "default:tin_lump"
+    }
+  },
+  {
+    "tier": 2,
+    "stat_loot": {
+      "str": "grug_mobs:venom_gland",
+      "dex": "grug_mobs:venom_gland",
+      "int": "grug_mobs:venom_gland",
+      "attack_speed_percent": "grug_mobs:venom_gland",
+      "crit_percent": "grug_mobs:venom_gland",
+      "max_hp_percent": "grug_mobs:venom_gland",
+      "max_mana_percent": "grug_mobs:venom_gland",
+      "dodge_percent": "grug_mobs:venom_gland",
+      "armor_rating": "grug_mobs:venom_gland"
+    },
+    "family_input": {
+      "sword": "default:gold_lump",
+      "dagger": "default:gold_lump",
+      "greataxe": "default:gold_lump",
+      "metal_armor": "default:gold_lump",
+      "shield": "default:gold_lump",
+      "leather_armor": "default:gold_lump",
+      "cloth_armor": "default:gold_lump",
+      "bow": "default:gold_lump",
+      "caster_weapon": "default:gold_lump",
+      "spellbook": "default:gold_lump",
+      "trinket": "default:gold_lump"
+    }
+  },
+  {
+    "tier": 3,
+    "stat_loot": {
+      "str": "grug_mobs:slime_gel",
+      "dex": "grug_mobs:slime_gel",
+      "int": "grug_mobs:slime_gel",
+      "attack_speed_percent": "grug_mobs:slime_gel",
+      "crit_percent": "grug_mobs:slime_gel",
+      "max_hp_percent": "grug_mobs:slime_gel",
+      "max_mana_percent": "grug_mobs:slime_gel",
+      "dodge_percent": "grug_mobs:slime_gel",
+      "armor_rating": "grug_mobs:slime_gel"
+    },
+    "family_input": {
+      "sword": "grug_materials:silver_lump",
+      "dagger": "grug_materials:silver_lump",
+      "greataxe": "grug_materials:silver_lump",
+      "metal_armor": "grug_materials:silver_lump",
+      "shield": "grug_materials:silver_lump",
+      "leather_armor": "grug_materials:silver_lump",
+      "cloth_armor": "grug_materials:silver_lump",
+      "bow": "grug_materials:silver_lump",
+      "caster_weapon": "grug_materials:silver_lump",
+      "spellbook": "grug_materials:silver_lump",
+      "trinket": "grug_materials:silver_lump"
+    }
+  },
+  {
+    "tier": 4,
+    "stat_loot": {
+      "str": "grug_mobs:croc_tooth",
+      "dex": "grug_mobs:croc_tooth",
+      "int": "grug_mobs:croc_tooth",
+      "attack_speed_percent": "grug_mobs:croc_tooth",
+      "crit_percent": "grug_mobs:croc_tooth",
+      "max_hp_percent": "grug_mobs:croc_tooth",
+      "max_mana_percent": "grug_mobs:croc_tooth",
+      "dodge_percent": "grug_mobs:croc_tooth",
+      "armor_rating": "grug_mobs:croc_tooth"
+    },
+    "family_input": {
+      "sword": "grug_materials:emberglass",
+      "dagger": "grug_materials:emberglass",
+      "greataxe": "grug_materials:emberglass",
+      "metal_armor": "grug_materials:emberglass",
+      "shield": "grug_materials:emberglass",
+      "leather_armor": "grug_materials:emberglass",
+      "cloth_armor": "grug_materials:emberglass",
+      "bow": "grug_materials:emberglass",
+      "caster_weapon": "grug_materials:emberglass",
+      "spellbook": "grug_materials:emberglass",
+      "trinket": "grug_materials:emberglass"
+    }
+  },
+  {
+    "tier": 5,
+    "stat_loot": {
+      "str": "grug_gathering:stormkelp",
+      "dex": "grug_gathering:stormkelp",
+      "int": "grug_gathering:stormkelp",
+      "attack_speed_percent": "grug_gathering:stormkelp",
+      "crit_percent": "grug_gathering:stormkelp",
+      "max_hp_percent": "grug_gathering:stormkelp",
+      "max_mana_percent": "grug_gathering:stormkelp",
+      "dodge_percent": "grug_gathering:stormkelp",
+      "armor_rating": "grug_gathering:stormkelp"
+    },
+    "family_input": {
+      "sword": "grug_materials:abyssal_crystal",
+      "dagger": "grug_materials:abyssal_crystal",
+      "greataxe": "grug_materials:abyssal_crystal",
+      "metal_armor": "grug_materials:abyssal_crystal",
+      "shield": "grug_materials:abyssal_crystal",
+      "leather_armor": "grug_materials:abyssal_crystal",
+      "cloth_armor": "grug_materials:abyssal_crystal",
+      "bow": "grug_materials:abyssal_crystal",
+      "caster_weapon": "grug_materials:abyssal_crystal",
+      "spellbook": "grug_materials:abyssal_crystal",
+      "trinket": "grug_materials:abyssal_crystal"
+    }
+  },
+  {
+    "tier": 6,
+    "stat_loot": {
+      "str": "grug_mobs:stone_core",
+      "dex": "grug_mobs:stone_core",
+      "int": "grug_mobs:stone_core",
+      "attack_speed_percent": "grug_mobs:stone_core",
+      "crit_percent": "grug_mobs:stone_core",
+      "max_hp_percent": "grug_mobs:stone_core",
+      "max_mana_percent": "grug_mobs:stone_core",
+      "dodge_percent": "grug_mobs:stone_core",
+      "armor_rating": "grug_mobs:stone_core"
+    },
+    "family_input": {
+      "sword": "grug_materials:abyssal_crystal",
+      "dagger": "grug_materials:abyssal_crystal",
+      "greataxe": "grug_materials:abyssal_crystal",
+      "metal_armor": "grug_materials:abyssal_crystal",
+      "shield": "grug_materials:abyssal_crystal",
+      "leather_armor": "grug_materials:abyssal_crystal",
+      "cloth_armor": "grug_materials:abyssal_crystal",
+      "bow": "grug_materials:abyssal_crystal",
+      "caster_weapon": "grug_materials:abyssal_crystal",
+      "spellbook": "grug_materials:abyssal_crystal",
+      "trinket": "grug_materials:abyssal_crystal"
+    }
+  }
+]
