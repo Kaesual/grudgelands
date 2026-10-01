@@ -18,7 +18,16 @@ standalone Codex CLI was updated to 0.155.1 (`codex update`) because
 Codex"); `codex exec --ephemeral -s read-only --json -o` was re-verified
 for `gpt-6-astra` and `gpt-5.6-sol`, the remaining commands of §5 were not
 re-run. Model slugs come from `~/.codex/models_cache.json` (`gpt-6-astra`,
-not `gpt-astra-6`).
+not `gpt-astra-6`). 2026-10-01: `codex-cli 0.159.3`; the user config now
+defaults to `model = "gpt-6-astra"`; the cache also lists `gpt-6.1-sol`,
+`gpt-6-sol` and `gpt-5.6-sol`. `codex exec --ephemeral -s read-only -m
+gpt-6-astra` was re-verified from Claude's command runner (no unsandboxed
+rerun needed), and the `image_generation` feature (the built-in image tool)
+is enabled. Not yet re-run on 0.159.3: `workspace-write` with the writable
+roots, `resume`, and image generation inside `exec`; the first Astra lane of
+Round 28 re-verifies them. Never use reasoning effort `ultra`: the model
+cache describes it as automatic task delegation, which breaks "a worker never
+delegates".
 
 ## 1. Roles and invariants
 
@@ -28,10 +37,6 @@ not `gpt-astra-6`).
   reviewers. Never copy the Claude-to-Codex commands below into a Codex
   coordinator's same-provider workflow, or invoke Claude CLI from Claude for
   its own subagents. Native thread limits do not permit that workaround.
-- **Current documentation session:** no Claude tasks/CLI calls; the user's Claude
-  credits are exhausted. Use native Sol/Astra only as routed by the user.
-  This session restriction does not remove the general cross-provider ability.
-
 - **One orchestrator per session**, whichever CLI the user is talking to. The
   other CLI is a **worker**: one OS process per lane, its own worktree, port
   block, output directory and brief. A worker never delegates further and
@@ -64,9 +69,9 @@ codex --version                       # record in the lane's output dir
 grep -E '^(model|model_reasoning_effort)' ~/.codex/config.toml
 ```
 
-The user config sets `model = "gpt-5.6-sol"` and
-`model_reasoning_effort = "high"`; pass `-m`/`-c` explicitly anyway so the
-record does not depend on the config file. The repository is a trusted
+The user config sets `model = "gpt-6-astra"` (since 2026-10-01; earlier
+`gpt-5.6-sol`) and `model_reasoning_effort = "high"`; pass `-m`/`-c`
+explicitly anyway so the record does not depend on the config file. The repository is a trusted
 project in `~/.codex/config.toml`.
 
 **Sandboxes.** Two sandboxes nest here: Claude's command-runner sandbox

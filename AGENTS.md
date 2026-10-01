@@ -134,8 +134,9 @@ bounded shutdown and unchanged later on-demand cave generation. Current contract
 coordinates native Astra implementation/measurement and independent Sol review.
 Delivered on local main and synchronized; receipt:
 [full-speed preparation](docs/research/pregen-fullspeed.md).
-No Claude task is authorized. The previous documentation-only round
-is complete: [receipt](docs/maintenance/documentation-round.md).
+(Historical: that round ran without Claude tasks; the restriction ended with
+the documentation round, [receipt](docs/maintenance/documentation-round.md).
+Current routing: [agent model policy](docs/process/agent-model-policy.md).)
 
 Game delivery and pending acceptance: [project status](docs/STATUS.md).
 Round 21 and earlier follow-ups are locally delivered; GUI acceptance remains user-run.

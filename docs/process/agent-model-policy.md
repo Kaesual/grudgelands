@@ -14,9 +14,7 @@ provider are delegated through native subagents, never through that provider's
 CLI. CLI delegation is exclusively cross-provider: Claude may invoke Codex CLI;
 Codex may invoke Claude CLI, subject to current model/task authorization. This
 applies to both implementation and independent review. A native slot/thread
-limit does not authorize a same-provider CLI workaround. The current development
-session excludes all Claude tasks because the user's Claude credits are
-exhausted; see `../maintenance/documentation-round.md` for active session routing.
+limit does not authorize a same-provider CLI workaround.
 
 **Day-to-day routing rule (decided 2026-09-14):** the role assignments below
 are *defaults*, not mandates. The user decides per session which model
@@ -31,7 +29,7 @@ are whatever the user chose that day. Where this
 policy and a process document overlap on non-model process, the process
 document governs; this policy governs model choice. At adoption, the model
 labels mean GPT-5.6 Sol, Claude Opus ("Opus"), Claude Fable ("Fable"), and
-GPT-5.6 Terra.
+GPT-5.6 Terra. GPT-6 Astra ("Astra") was added on 2026-10-01 (Section 2.5).
 
 Model names in completed reports and historical contracts remain factual
 history, not current routing instructions. Any future-facing instruction that
@@ -165,6 +163,28 @@ Terra must not own:
 Research is not automatically low-risk. Terra may gather a bounded evidence
 set; Sol, Opus, or Fable performs any complex synthesis or ruling.
 
+### 2.5 GPT-6 Astra — creative design and art
+
+Added by the user on 2026-10-01 (Round 28), after Astra had already
+coordinated, implemented, designed content cards and generated art in
+Rounds 9–26 under per-session user routing. Codex CLI slug `gpt-6-astra`.
+
+Prefer Astra for:
+
+- creative game design written as data and short prose within a frozen
+  frame: zone and quest content, mob variants, loot and recipe tables,
+  names and texts;
+- art generated with Codex's built-in image generation (icons and similar
+  assets), following the asset pipeline of the round;
+- implementation or coordination only when the user routes it that way for
+  the session.
+
+Astra's creative output is a proposal against an explicit frame (principles,
+limits, data schemas, measured facts); it does not decide project authority
+or rulings. Its non-trivial work receives an independent review under
+Section 5 by Opus or Sol. Astra may review another model's work when the user
+routes it so; the independence rules of Section 5 apply unchanged.
+
 ## 3. Routing guide
 
 | Task shape | Default route |
@@ -177,6 +197,7 @@ set; Sol, Opus, or Fable performs any complex synthesis or ruling.
 | Independent review of Sol implementation | Prefer Opus |
 | Independent review of Opus implementation | Prefer Sol |
 | Bounded fact gathering or deterministic clerical work | Terra, with strong-agent interpretation when needed |
+| Creative game content within a frozen frame (zones, quests, mobs, loot, names, texts) or generated art | Astra, reviewed by Opus or Sol |
 
 When both Sol and Opus are reasonable, use this tie-breaker:
 
@@ -213,7 +234,8 @@ below the capability its risk requires.
 
 - Every change that is not trivial under the definition below receives at
   least one full independent review before integration by a different Sol or
-  Opus agent in a context that has not worked on the reviewed change. The
+  Opus agent (or Astra when the user routes it so) in a context that has not
+  worked on the reviewed change. The
   reviewer must not have implemented any part of that change or authored a
   contested ruling being reviewed. A Fable reviewer may replace or supplement
   that gate only when explicitly authorized under Section 2.3.
@@ -273,10 +295,10 @@ supports a change; do not create local WP exceptions.
 Model context limits, pricing, and product behavior change over time and are
 not policy invariants. Record durable observed working characteristics and
 routing outcomes rather than hard-coding transient vendor claims. A version
-update presented under one of the four adopted labels retains that role
+update presented under one of the adopted labels retains that role
 provisionally and is checked through calibration; a new or renamed model class
 is not used for consequential work until its project role is explicitly added
-here.
+here. GPT-6 Astra's role was added in Section 2.5 on 2026-10-01.
 
 **Adoption-package calibration record (2026-08-22):** implementing model
 GPT-5.6 Sol; reviewing model Claude Opus; classification: non-trivial (model
@@ -289,3 +311,11 @@ classification: non-trivial (process authority); initial review findings 0
 Critical / 2 High; two fix rounds; observed elapsed wall time `unknown`. The
 focused re-review verdict and immutable review hashes belong in the amendment
 commit message.
+
+**Astra amendment calibration record (2026-10-01):** implementing model
+Claude Opus 5.5 (coordinator); reviewing model Claude Opus 5.5 (fresh
+context, plan and amendment together); classification: non-trivial (model
+routing authority); findings on the amendment (initial review) 0 Critical /
+0 High, two Medium and four Low fixed in one fix round; focused re-review
+verdicts and the reviewed hashes are in the commit message; observed elapsed
+wall time `unknown`.
