@@ -1405,9 +1405,37 @@ grug_core.register_ordinary_melee_input_handler(function(player, target)
 	swing_input_latch[name] = nil
 end)
 
-function grug_abilities.try_cast(user, def, pointed_thing, quiet)
-	local function notice(message)
-		if not quiet then grug_abilities.flash(user, message) end
+-- Why `user` cannot cast `def` right now (class, unlock, cooldown, cast
+-- interval, resource), or nil when nothing stands in the way. One wording for
+-- the dispatcher below and the contextual input gate (input.lua), which asks
+-- before it reaches the dispatcher.
+local function cast_refusal(user, def)
+	-- Universal abilities have no class to be (E1) — without this a Mage
+	-- using the universal Strike was told "You are no Warrior".
+	if not def.universal and grug_classes.get_class(user) ~= def.class then
+		return "You are no " ..
+			grug_classes.registered_classes[def.class].name .. "."
+	end
+	if not grug_abilities.is_unlocked(user, def.id) then
+		return "This skill is not unlocked."
+	end
+	if not grug_abilities.ready(user, def.id) then
+		return def.name .. " is not ready."
+	end
+	if not cast_interval_ready(user, def) then
+		return def.name .. " cast interval is not ready."
+	end
+	local cost = grug_abilities.cost_for(user, def.cost, def.id)
+	if not affordable(user, cost) then
+		return "Not enough " .. (cost.mana and "mana" or "rage") .. "."
+	end
+	return nil
+end
+
+-- `notify(message)` receives every refusal message; without it they flash.
+function grug_abilities.try_cast(user, def, pointed_thing, notify)
+	local notice = notify or function(message)
+		grug_abilities.flash(user, message)
 	end
 	-- A cast is a synchronous boundary even if the player switches back before
 	-- the 0.5 s wield watcher sees it. Stop swing input and discard ordinary tool
@@ -1425,34 +1453,14 @@ function grug_abilities.try_cast(user, def, pointed_thing, quiet)
 	if refuse_mounted_attack(user) then
 		return
 	end
-	-- Universal abilities have no class to be (E1) — without this a Mage
-	-- using the universal Strike was told "You are no Warrior".
-	if not def.universal and grug_classes.get_class(user) ~= def.class then
-		notice("You are no " ..
-			grug_classes.registered_classes[def.class].name .. ".")
-		return
-	end
-	if not grug_abilities.is_unlocked(user, def.id) then
-		notice("This skill is not unlocked.")
-		return
-	end
-	-- Cast skills: ready check, affordable check, cast, spend, arm the
-	-- cooldown. No GCD anywhere (classes.md core principles, WP38).
-	local name = user:get_player_name()
-	cooldowns[name] = cooldowns[name] or {}
-	if not grug_abilities.ready(user, def.id) then
-		notice(def.name .. " is not ready.")
-		return
-	end
-	if not cast_interval_ready(user, def) then
-		notice(def.name .. " cast interval is not ready.")
+	-- Cast skills: class, unlock, ready and affordable checks, cast, spend,
+	-- arm the cooldown. No GCD anywhere (classes.md core principles, WP38).
+	local refusal = cast_refusal(user, def)
+	if refusal then
+		notice(refusal)
 		return
 	end
 	local effective_cost = grug_abilities.cost_for(user, def.cost, def.id)
-	if not affordable(user, effective_cost) then
-		notice("Not enough " .. (effective_cost.mana and "mana" or "rage") .. ".")
-		return
-	end
 	-- A false return means "no valid cast" (e.g. no target): no cost, no
 	-- cooldown. def is passed through for the target-lock helpers
 	-- (range checks). The cast succeeded, so it arms the one cooldown it
@@ -2547,9 +2555,11 @@ end)
 grug_abilities.delay_strike = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/strike_delay.lua")(swing_progress)
 
--- Pure Blink targeting (map access injectable for the headless probe).
-grug_abilities.blink_destination = dofile(core.get_modpath(
-	core.get_current_modname()) .. "/blink.lua")
+-- Pure Blink and Charge targeting (map access injectable for probes).
+local destinations = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/blink.lua")
+grug_abilities.blink_destination = destinations.blink
+grug_abilities.charge_destination = destinations.charge
 -- Crosshair state overlay and the progress ring; scout.lua (bow draw) and
 -- input.lua (eating) drive the ring.
 grug_abilities.crosshair = dofile(core.get_modpath(core.get_current_modname()) ..
@@ -2565,14 +2575,18 @@ grug_abilities.input = dofile(core.get_modpath(core.get_current_modname()) ..
 	"/input.lua")({
 	selected = function(player) return item_defs[player:get_wielded_item():get_name()] end,
 	swing = function(player, def) return attempt_swing(player, def, true, false) end,
-	can_cast = function(player, def)
-		return def.kind == "cast" and grug_abilities.is_unlocked(player, def.id) and
-			grug_abilities.ready(player, def.id) and cast_interval_ready(player, def) and
-			affordable(player, grug_abilities.cost_for(player, def.cost, def.id))
-	end,
-	swing_ready = function(player, def)
-		return grug_abilities.charge_ready(player, def) and
-			affordable(player, grug_abilities.cost_for(player, def.cost, def.id))
+	-- Refusal messages (nil = go): the input gate asks these before it
+	-- reaches try_cast or the swing, so it reports the reason itself.
+	cast_refusal = cast_refusal,
+	swing_refusal = function(player, def)
+		if not grug_abilities.charge_ready(player, def) then
+			return def.name .. " is not ready."
+		end
+		local cost = grug_abilities.cost_for(player, def.cost, def.id)
+		if not affordable(player, cost) then
+			return "Not enough " .. (cost.mana and "mana" or "rage") .. "."
+		end
+		return nil
 	end,
 	delay_strike = grug_abilities.delay_strike,
 	within_hand_reach = within_hand_reach,

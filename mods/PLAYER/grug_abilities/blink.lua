@@ -1,11 +1,12 @@
--- Blink destination (docs/design/classes.md §5, Blink row and its targeting
--- note). Returns a function
+-- Teleport destinations: Blink (docs/design/classes.md §5, Blink row and its
+-- targeting note) and Charge (§3, Charge row). Returns
 --
---   destination(eye, dir, distance, eye_height, box[, world]) -> feet | nil
+--   {blink = function(eye, dir, distance, eye_height, box[, world]) -> feet | nil,
+--    charge = function(from, eye_height, box, target[, world]) -> feet | nil}
 --
--- that knows nothing about the caster beyond those arguments and reads the
--- map only through `world` (default: the live map), so the headless probe can
--- call it against built test geometry. nil means "no room to blink".
+-- Both know nothing about the caster beyond those arguments and read the map
+-- only through `world` (default: the live map), so probes and fixtures can
+-- call them against built test geometry. nil means "no room".
 --
 -- Node semantics: walkable nodes are solid with their real collision boxes;
 -- non-walkable nodes (air, plants, torches, liquids) are passable. Unloaded
@@ -105,30 +106,34 @@ local function settle(world, box, x, y, z, rise)
 	return nil
 end
 
-return function(eye, dir, distance, eye_height, box, world)
+-- The first spot around p that `accept` takes: as is, then nudged to the
+-- column centre (a box straddling the edge of a block beside the aimed point
+-- fits there without climbing it), then lifted onto whatever is in the way by
+-- at most `rise`, as is and centred.
+local function fit_spot(world, box, p, rise, accept)
+	local cx, cz = floor(p.x + 0.5), floor(p.z + 0.5)
+	local spot = settle(world, box, p.x, p.y, p.z, 0)
+	if accept(spot) then return spot end
+	spot = settle(world, box, cx, p.y, cz, 0)
+	if accept(spot) then return spot end
+	if rise > 0 then
+		spot = settle(world, box, p.x, p.y, p.z, rise)
+		if accept(spot) then return spot end
+		spot = settle(world, box, cx, p.y, cz, rise)
+		if accept(spot) then return spot end
+	end
+	return nil
+end
+
+local function blink(eye, dir, distance, eye_height, box, world)
 	world = world or LIVE
 	local from = vector.offset(eye, 0, -eye_height, 0)
 	local function accept(feet)
 		return feet and vector.distance(from, feet) >= MIN_MOVE and
 			world.ray(eye, vector.offset(feet, 0, eye_height, 0)) == nil
 	end
-	-- The first accepted spot around p: as is, then nudged to the column
-	-- centre (a box straddling the edge of a block beside the aimed point
-	-- fits there without climbing it), then lifted onto whatever is in the
-	-- way by at most `rise`, as is and centred.
 	local function fit(p, rise)
-		local cx, cz = floor(p.x + 0.5), floor(p.z + 0.5)
-		local spot = settle(world, box, p.x, p.y, p.z, 0)
-		if accept(spot) then return spot end
-		spot = settle(world, box, cx, p.y, cz, 0)
-		if accept(spot) then return spot end
-		if rise > 0 then
-			spot = settle(world, box, p.x, p.y, p.z, rise)
-			if accept(spot) then return spot end
-			spot = settle(world, box, cx, p.y, cz, rise)
-			if accept(spot) then return spot end
-		end
-		return nil
+		return fit_spot(world, box, p, rise, accept)
 	end
 	local point, normal = world.ray(eye,
 		vector.add(eye, vector.multiply(dir, distance)))
@@ -204,3 +209,45 @@ return function(eye, dir, distance, eye_height, box, world)
 	end
 	return nil
 end
+
+-- Charge stops this far in front of the target, on the approach line.
+local CHARGE_GAP = 1.3
+-- ... and never farther than melee reach (the Strike range) from it.
+local CHARGE_REACH = 3
+
+-- Charge: the caster's feet `from`, the target's feet `target`. The preferred
+-- spot is CHARGE_GAP in front of the target toward the caster, at the
+-- target's feet height. A spot without room is searched back toward the
+-- caster in STEP metres, never past the caster and never beyond CHARGE_REACH
+-- from the target, allowing one node of step-up like Blink. Every spot needs
+-- a clear ray from the caster's eye to the destination eye (no charging
+-- through walls). Charging into the air is allowed (falling is fine).
+local function charge(from, eye_height, box, target, world)
+	world = world or LIVE
+	local eye = vector.offset(from, 0, eye_height, 0)
+	local function accept(feet)
+		return feet ~= nil and
+			world.ray(eye, vector.offset(feet, 0, eye_height, 0)) == nil
+	end
+	local dx, dz = from.x - target.x, from.z - target.z
+	local span = math.sqrt(dx * dx + dz * dz)
+	-- Straight above or below the target there is no approach line: only the
+	-- target's own column is tried.
+	local ux, uz = 0, 0
+	if span > EPS then
+		ux, uz = dx / span, dz / span
+	end
+	local d = CHARGE_GAP
+	while d <= CHARGE_REACH + EPS and (d == CHARGE_GAP or d <= span + EPS) do
+		local spot = fit_spot(world, box,
+			vector.new(target.x + ux * d, target.y, target.z + uz * d),
+			MAX_RISE, accept)
+		if spot then
+			return spot
+		end
+		d = d + STEP
+	end
+	return nil
+end
+
+return {blink = blink, charge = charge}

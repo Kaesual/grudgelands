@@ -978,7 +978,8 @@ scenario("real_casts", function(origin)
 		{0.2, function()
 			look_at(fake, vector.offset(mob:get_pos(), 0, 1, 0))
 			local lines0 = #debug_lines
-			local ok = grug_abilities.try_cast(ref, grug_abilities.registered.smite, nil, true)
+			local ok = grug_abilities.try_cast(ref, grug_abilities.registered.smite, nil,
+				function() end)
 			local logged = false
 			for i = lines0 + 1, #debug_lines do
 				if debug_lines[i].event == "cast_ray" then logged = true end
