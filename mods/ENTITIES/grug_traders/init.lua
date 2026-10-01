@@ -183,6 +183,14 @@ core.register_on_mods_loaded(function()
 		end
 	end
 
+	-- Round 28 family drop tables by level band (grug_mobs/subtypes.lua):
+	-- they replace a mob's static drops, so their items are mob drops too.
+	for itemname, families in pairs(grug_mobs.band_drop_items()) do
+		for family in pairs(families) do
+			note(itemname, "drops.json " .. family)
+		end
+	end
+
 	if #function_forms > 0 then
 		-- Logged ONCE, not per mob: this is the known static-analysis blind
 		-- spot, not a defect. The items those functions return are covered by

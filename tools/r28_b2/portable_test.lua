@@ -617,8 +617,17 @@ check(tail.inventory_image:find("%^%[multiply:") ~= nil, "placeholder image is a
 check(tail._grug_icon_brief == "A pale pink rat tail curled into an S on a dark plate.",
 	"icon brief kept for C4")
 check(tail.groups.grug_material == 1, "signature item is a mob material")
+check(tail._grug_sell_price == 1 and grug_mobs.loot_item_tiers["grug_mobs:rat_tail"] == 1,
+	"signature tier 1: 1c vendor price and ingredient tier 1")
 check(w.items["grug_mobs:crop_ledger"] ~= nil, "quest item registered")
-check(w.items["grug_mobs:boar_tusk"] == nil, "existing id not re-registered")
+check(w.items["grug_mobs:crop_ledger"]._grug_sell_price == nil
+	and grug_mobs.loot_item_tiers["grug_mobs:crop_ledger"] == nil,
+	"quest item: no vendor price, no ingredient tier")
+check(w.items["grug_mobs:boar_tusk"] == nil
+	and grug_mobs.loot_item_tiers["grug_mobs:boar_tusk"] == nil, "existing id not re-registered")
+local band_items = grug_mobs.band_drop_items()
+check(band_items["grug_mobs:rat_fur_patch"] and band_items["grug_mobs:rat_fur_patch"].rat
+	and band_items["grug_mobs:rat_tail"].rat, "band drop items: band rows and leader bonus")
 check(w.items["grug_materials:glittering_tin"] == nil, "reagent left to its own lane")
 check(w.item_calls == 3, "exactly three new items")
 

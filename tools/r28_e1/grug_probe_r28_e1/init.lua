@@ -154,6 +154,12 @@ local function item_checks()
 					and def.mod_origin == "grug_mobs", row.id .. " new item: name and icon brief")
 				if row.kind == "signature" then
 					check(def.groups.grug_material == 1, row.id .. " is a mob material")
+					check(def._grug_sell_price == row.tier and grug_traders.sell_price(row.id) == row.tier,
+						row.id .. " sells for " .. row.tier .. "c")
+					check(grug_jobs.ingredient_tier(row.id) == row.tier,
+						row.id .. " ingredient tier " .. row.tier)
+				else
+					check(def._grug_sell_price == nil, row.id .. " quest item has no price")
 				end
 			else
 				existing = existing + 1

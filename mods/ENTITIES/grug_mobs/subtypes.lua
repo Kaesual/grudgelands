@@ -209,6 +209,10 @@ end
 -- its registration); `generic` items are existing ones and `reagent` items
 -- belong to grug_professions. The inventory image is a tinted placeholder
 -- until the C4 art lands; the `icon` text is kept as `_grug_icon_brief`.
+-- A new signature item's `tier` (1-6) is its vendor price in copper (the
+-- 1-6c mob-material band, economy.md §3) and its ingredient tier, which
+-- grug_professions registers with grug_jobs (grug_mobs loads before it). A
+-- quest item has neither: traders do not buy quest props.
 --
 
 local PLACEHOLDER_IMAGE = {
@@ -220,6 +224,8 @@ local ITEM_GROUPS = {
 	quest = {},
 }
 local new_items = {} -- ids this file registered or expects from their own mod
+-- New signature item id -> tier, for the ingredient tiers (grug_professions).
+grug_mobs.loot_item_tiers = {}
 
 local ITEM_KINDS = {signature = true, quest = true, generic = true, reagent = true}
 
@@ -239,6 +245,9 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 			if type(row.name) ~= "string" or row.name == "" then
 				fail("items.json", row.id, "needs a name")
 			end
+			if row.kind == "signature" and not is_int(row.tier, 1, 6) then
+				fail("items.json", row.id, "needs a tier 1..6")
+			end
 			local description = row.name
 			if type(row.description) == "string" and row.description ~= "" then
 				description = description .. "\n" ..
@@ -250,7 +259,11 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 				inventory_image = PLACEHOLDER_IMAGE[row.kind],
 				groups = table.copy(ITEM_GROUPS[row.kind]),
 				_grug_icon_brief = row.icon,
+				_grug_sell_price = row.kind == "signature" and row.tier or nil,
 			})
+			if row.kind == "signature" then
+				grug_mobs.loot_item_tiers[row.id] = row.tier
+			end
 		end
 	end
 end
@@ -332,6 +345,25 @@ function grug_mobs.band_drop_rows(self)
 	if entry.leader_bonus and (self._grug_leader or (sub and sub.leader)) then
 		for i = 1, #entry.leader_bonus do
 			out[#out + 1] = table.copy(entry.leader_bonus[i])
+		end
+	end
+	return out
+end
+
+-- Every item the band tables and leader bonuses name -> set of the drop
+-- families naming it (the trader audit, grug_traders/init.lua).
+function grug_mobs.band_drop_items()
+	local out = {}
+	for family, entry in pairs(DROPS) do
+		local lists = {entry.leader_bonus or {}}
+		for _, rows in pairs(entry.bands) do
+			lists[#lists + 1] = rows
+		end
+		for _, rows in ipairs(lists) do
+			for _, row in ipairs(rows) do
+				out[row.name] = out[row.name] or {}
+				out[row.name][family] = true
+			end
 		end
 	end
 	return out
