@@ -125,11 +125,12 @@ design frame §4.4) and is checked at load: every tier present, every stat of
 every family pool has stat loot, every family has an input, every item is
 registered, no input has a declared ingredient tier above the enchant tier,
 and no profession recipe or enchant operation uses an item that another
-profession's recipe makes. Until Lane E1 ports the C1 catalogue the
-shipped table is interim: the old tier reagent (Coal Lump / Venom Gland /
-Slime Gel / Croc Tooth / Stormkelp / Stone Core) as every stat's loot and one
-mined item per tier (Tin Lump / Gold Lump / Silver / Emberglass / Abyssal
-Crystal / Abyssal Crystal) as every family's input.
+profession's recipe makes. The shipped table is the reviewed Round 28
+catalogue (`docs/planning/round28/design/catalog/enchants.json`, its README
+lists the stat loot per tier): five mob signatures per tier at T1/T2 (tusk,
+tail, eye, flesh, fur) and four from T3 (tooth, strap, talisman, flesh; the
+strap also covers Armor), and per family a mined or gathered input (bar,
+quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp).
 
 These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);
@@ -142,7 +143,8 @@ They are listed in `mods/ITEMS/grug_professions/data/reagents.json` (`id`,
 `name`, `tier`, `method` grid or furnace, `inputs`, `output_count`; design
 frame §4.5), register as new craft items (in grug_professions or a mod it
 depends on, never replacing an existing item) with their tier as ingredient
-tier, and appear in the Basics book. Every input must be a registered item. None exists before Lane E1.
+tier, and appear in the Basics book. Every input must be a registered item. The Round 28
+catalogue defines none (the shipped list is empty).
 
 ## Equipment and lifetime
 

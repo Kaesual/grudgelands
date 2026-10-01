@@ -639,7 +639,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
-| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; raptor claw 1/3 (item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
+| **Jungle Lynx** (the Raptor slot) — jungle_edge from L4 (Kapok band 2, Round 24; was L10), deep jungle | hunts in packs (wolf drop table) | day | 4.6 | meat 1/1; leather 1/2 `[leather]`; Small Cat Claw 1/3 (`raptor_claw` item id kept) | big-cat retint of the panther mesh — the §8.2 fallback was **executed**: the paleotest velociraptor's media license could not be verified per file |
 | Panther | stalks (silent approach, pounce burst) | night | 4.6 heartland | meat 1/1; leather 1/2 `[leather]`; sleek pelt 1/4 | animalworld leopard retint |
 | Serpent | poisons (hit applies 1 dmg/2 s, 6 s) | day | 4.6 | scaled hide 1/2 `[leather]`; venom sac 1/3 (alchemy reagent) | animalworld cobra |
 | Jungle Ape — elite variant "Silverback" (bear-mirror: bear drop table), rolled **1 in 10 at spawn** | territorial (radius ~20 m) | day | 4.6 | meat ×2; heavy leather 1/2 `[leather]`; ape hair 1/4 | animalworld monkey upscaled |
@@ -1408,9 +1408,12 @@ Rulings 35 and 36 (`docs/planning/round28-questing-leveling-plan.md`); data
 formats in the design frame §4.1–§4.3. All of it is data in
 `mods/ENTITIES/grug_mobs/data/` (`subtypes.json`, `tints.json`,
 `items.json`, `drops.json`), loaded by `grug_mobs/subtypes.lua` after every
-mob file. A missing or empty file means no data; the shipped files are empty
-until the content lanes fill them, and without data every mob behaves as
-before.
+mob file. A missing or empty file means no data, and without data every mob
+behaves as before. The shipped files are copies of the reviewed design
+catalogue (`docs/planning/round28/design/catalog/`; Lane E1): 188 sub-types
+(49 leaders), 9 tints, 119 items (94 signatures, of which 89 new, and 25
+existing generic materials) and 24 drop families. The catalogue is the
+source; edit both together.
 
 **Sub-types.** Each record registers `grug_mobs:<role>` as a copy of its
 `base` registration's original definition: same mesh, animations, verbs,

@@ -2886,7 +2886,7 @@
   },
   {
     "role": "bolt_chewer",
-    "family": "goblin",
+    "family": "goblin_hound",
     "base": "grug_mobs:goblin_hound",
     "display": "Bolt-Chewer",
     "size": 1.1,
@@ -2902,7 +2902,7 @@
   },
   {
     "role": "basket_biter",
-    "family": "poison_small",
+    "family": "serpent",
     "base": "grug_mobs:serpent",
     "display": "Basket-Biter",
     "size": 1.1,

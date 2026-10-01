@@ -1,1 +1,2045 @@
-[]
+[
+  {
+    "family": "boar",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:light_leather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:boar_tusk",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:light_leather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ridged_boar_tusk",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:light_leather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:gnarled_boar_tusk",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "rat",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:rat_tail",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:rat_fur_patch",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sinewy_rat_tail",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:dense_rat_fur",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "crab",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:crab_eye",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:crab_leg",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:clear_crab_eye",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ridged_crab_shell",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:layered_crab_shell",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:scaled_hide",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:storm_crab_shell",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:scaled_hide",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:abyssal_crab_shell",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "zombie",
+    "bands": {
+      "1": [
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:tattered_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:bronze_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "grug_mobs:linen_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:foul_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:iron_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:pickled_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stubborn_molar",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:leathery_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:gritted_teeth",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:silversteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:scorched_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:clenched_jaw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:embersteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:salt_cured_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:last_laugh_dentures",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:abyssal_steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:zombie_flesh",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:bone",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "fox",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:fox_tail",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:brush_fox_tail",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:silver_tip_fox_tail",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "outlaw",
+    "bands": {
+      "1": [
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bandit_talisman",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:bronze_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "grug_mobs:linen_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:knotted_talisman",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:iron_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:coded_talisman",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:balanced_weapon_strap",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:campaign_talisman",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:reinforced_weapon_strap",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:silversteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:siege_talisman",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:siege_weapon_strap",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:embersteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:spider_silk",
+          "chance": 2,
+          "min": 1,
+          "max": 2
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:last_pay_talisman",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:unbroken_weapon_strap",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:abyssal_steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:linen_scrap",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:spider_silk",
+          "chance": 2,
+          "min": 1,
+          "max": 2
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:linen_scrap",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "grazer",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:fine_sinew",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:tough_sinew",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:braided_sinew",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ironbound_sinew",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:rime_sinew",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "feline",
+    "bands": {
+      "1": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:raptor_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:hooked_cat_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:shearing_cat_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:razor_cat_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sleek_pelt",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:siege_cat_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sleek_pelt",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:glass_cat_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "canid",
+    "bands": {
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:serrated_fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:warpack_fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:siegepack_fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:saltpack_fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "bear",
+    "bands": {
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:scarred_bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:salt_bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bear_claw",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "crocodile",
+    "bands": {
+      "2": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:blunt_croc_tooth",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:croc_tooth",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ridged_croc_tooth",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:croc_tooth",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "mobs:meat_raw",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "ooze",
+    "bands": {
+      "2": [
+        {
+          "item": "grug_mobs:thin_slime_gel",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:slime_gel",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:slime_gel",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "mirefolk",
+    "bands": {
+      "2": [
+        {
+          "item": "grug_mobs:linen_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:reed_pearl",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:shiny_scale",
+          "chance": 4,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:clouded_reed_pearl",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:shiny_scale",
+          "chance": 4,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:linen_scrap",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "wisp",
+    "bands": {
+      "2": [
+        {
+          "item": "grug_mobs:wisp_mote",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:bound_wisp_mote",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:restless_wisp_mote",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "treant",
+    "bands": {
+      "3": [
+        {
+          "item": "default:stick",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item": "default:apple",
+          "chance": 4,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:mourning_resin",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "default:stick",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item": "default:apple",
+          "chance": 4,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bitter_resin",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "default:stick",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "weevil",
+    "bands": {
+      "3": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bone_chitin",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:layered_bone_chitin",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:salt_chitin",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "ape",
+    "bands": {
+      "4": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ape_hair",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "mobs:meat_raw",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:heavy_leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:silver_ape_hair",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "mobs:meat_raw",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "venomous",
+    "bands": {
+      "1": [
+        {
+          "item": "grug_mobs:mild_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "2": [
+        {
+          "item": "grug_mobs:bitter_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:concentrated_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:scaled_hide",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_sac",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:scaled_hide",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:scorch_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_sac",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:scaled_hide",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:glass_venom",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_sac",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:bone",
+        "chance": 1,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  {
+    "family": "spider",
+    "bands": {
+      "3": [
+        {
+          "item": "grug_mobs:coarse_spider_silk",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:spider_silk",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item": "grug_mobs:venom_gland",
+          "chance": 6,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:spider_silk",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item": "grug_mobs:layered_spider_web",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:venom_gland",
+          "chance": 6,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:glass_spider_silk",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:spider_silk",
+          "chance": 1,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item": "grug_mobs:venom_gland",
+          "chance": 6,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "goblin",
+    "bands": {
+      "2": [
+        {
+          "item": "grug_mobs:linen_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stolen_purse",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:iron_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "3": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:clasped_purse",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:campaign_purse",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:silversteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:linen_scrap",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "skeleton",
+    "bands": {
+      "3": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bone",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:arrow",
+          "chance": 5,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:etched_bone",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bone",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:arrow",
+          "chance": 5,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:marching_bone",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:silversteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bone",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:arrow",
+          "chance": 5,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:siege_bone",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:embersteel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:bone",
+          "chance": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:arrow",
+          "chance": 5,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:unquiet_bone",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:abyssal_steel_bar",
+          "chance": 50,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:bone",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "witch",
+    "bands": {
+      "4": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:hex_bottle_shard",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:heavy_cloth",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:last_hex_shard",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_mobs:bone",
+        "chance": 1,
+        "min": 2,
+        "max": 3
+      }
+    ]
+  },
+  {
+    "family": "scavenger",
+    "bands": {
+      "3": [
+        {
+          "item": "grug_mobs:feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:meat_raw",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:barbed_feather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sharp_feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:meat_raw",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:storm_feather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sharp_feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:meat_raw",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:ash_feather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sharp_feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "mobs:meat_raw",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:sharp_feather",
+          "chance": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:salt_barbed_feather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": []
+  },
+  {
+    "family": "stone",
+    "bands": {
+      "3": [
+        {
+          "item": "grug_mobs:chipped_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:steel_bar",
+          "chance": 25,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "4": [
+        {
+          "item": "grug_mobs:veined_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:silversteel_bar",
+          "chance": 25,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "5": [
+        {
+          "item": "grug_mobs:siege_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:embersteel_bar",
+          "chance": 25,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "6": [
+        {
+          "item": "grug_mobs:stone_core",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_materials:abyssal_steel_bar",
+          "chance": 25,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "leader_bonus": [
+      {
+        "item": "grug_materials:quartz",
+        "chance": 1,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  }
+]
