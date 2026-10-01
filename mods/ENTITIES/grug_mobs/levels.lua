@@ -375,6 +375,9 @@ function grug_mobs.register_level_cfg(name, def)
 		fixed = def._grug_fixed_level,
 		tier = tier,
 		xp_override = def._grug_xp_reward,
+		-- A sub-type's tier is authored data (subtypes.lua, Round 28 ruling
+		-- 35): no spawn roll a base family carries may promote it.
+		authored = def._grug_authored_tier == true,
 	}
 	def.armor = tier_def(tier).armor or def.armor or 100
 	-- Def-time normalization, exactly like the armor line above and for the
@@ -495,7 +498,8 @@ end
 -- Promote/demote a live mob to a registered tier: applies the
 -- multipliers, scale, tint and nametag. Idempotent, and safe to call before
 -- the mob's first tick (the tier is stored and picked up by ensure_init).
--- Used by the rare spawner and by any def-independent tier decision.
+-- Used by the rare spawner and by any def-independent tier decision. A
+-- critter and a sub-type (authored tier) keep the tier of their definition.
 function grug_mobs.set_tier(ent, tier)
 	if not ent or not ent.object then
 		return
@@ -505,7 +509,7 @@ function grug_mobs.set_tier(ent, tier)
 	-- mob name today, but a future elite roll must not be able to turn a
 	-- 1 HP rabbit into a x3-HP telegraphing elite by accident.
 	local cfg = level_cfg[ent.name]
-	if cfg and cfg.tier == "critter" then
+	if cfg and (cfg.tier == "critter" or cfg.authored) then
 		return
 	end
 	ent._grug_tier = TIERS[tier] and tier or "normal"
