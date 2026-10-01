@@ -1,0 +1,103 @@
+ACTION[Server]: [r28_a5_probe] stage E: registry
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:hex_bottle carries a readable label (a hex bottle)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:rock_entity carries a readable label (a hurled rock)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:ember_entity carries a readable label (an ember)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:ice_breath carries a readable label (frost breath)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:storm_breath carries a readable label (storm breath)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:arrow_entity carries a readable label (an arrow)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:dungeon_fireball carries a readable label (a fireball)
+ACTION[Server]: [r28_a5_probe] ok   E grug_mobs:crystal_shard_entity carries a readable label (a crystal shard)
+ACTION[Server]: [r28_a5_probe] ok   E station grug_brewing:brewing_stand drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_brewing:brewing_stand_active drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_jobs:forge drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_jobs:tanning_rack drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_jobs:tailor_bench drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_jobs:carving_bench drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_jobs:jewellers_bench drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_smelting:dual_furnace drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station grug_smelting:dual_furnace_active drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station default:furnace drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E station default:furnace_active drops its contents when dug
+ACTION[Server]: [r28_a5_probe] ok   E mob projectiles found: 8
+ACTION[Server]: [r28_a5_probe] ok   E station nodes found: 11
+ACTION[Server]: [r28_a5_probe] world preparation ready at t=33.8s
+ACTION[Server]: [r28_a5_probe] ok   human start position
+ACTION[Server]: [r28_a5_probe] stage D: death messages
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:arrow_entity added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by an arrow.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:hex_bottle added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by a hex bottle.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:dungeon_fireball added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by a fireball.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:ice_breath added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by frost breath.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:storm_breath added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by storm breath.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:rock_entity added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by a hurled rock.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:ember_entity added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by an ember.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] ok   D grug_mobs:crystal_shard_entity added
+ACTION[Server]: [r28_a5_probe] ok   D live shooter named: probe was defeated by Probe Archer.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source is the live shooter
+ACTION[Server]: [r28_a5_probe] ok   D shooter gone, readable fallback: probe was defeated by a crystal shard.
+ACTION[Server]: [r28_a5_probe] ok   D damage_source of a gone shooter is nil
+ACTION[Server]: [r28_a5_probe] stage R: respawn
+ACTION[Server]: [r28_a5_probe] ok   R unbound has an innkeeper home
+ACTION[Server]: [r28_a5_probe] ok   R unbound respawn handled
+ACTION[Server]: [r28_a5_probe] ok   R unbound one teleport straight to the innkeeper arrival
+ACTION[Server]: [r28_a5_probe] ok   R unbound held without gravity or movement
+ACTION[Server]: [r28_a5_probe] R unbound held for 0.09 s while the home emerged
+ACTION[Server]: [r28_a5_probe] ok   R unbound gravity handed back
+ACTION[Server]: [r28_a5_probe] ok   R unbound still exactly one teleport
+ACTION[Server]: [r28_a5_probe] ok   R unbound no velocity added
+ACTION[Server]: [r28_a5_probe] ok   R unbound stands on a solid floor (default:cobble)
+ACTION[Server]: [r28_a5_probe] ok   R capital has an innkeeper home
+ACTION[Server]: [r28_a5_probe] ok   R capital home is the bound highcourt
+ACTION[Server]: [r28_a5_probe] ok   R capital respawn handled
+ACTION[Server]: [r28_a5_probe] ok   R capital one teleport straight to the innkeeper arrival
+ACTION[Server]: [r28_a5_probe] ok   R capital held without gravity or movement
+ACTION[Server]: [r28_a5_probe] R capital held for 1.27 s while the home emerged
+ACTION[Server]: [r28_a5_probe] ok   R capital gravity handed back
+ACTION[Server]: [r28_a5_probe] ok   R capital still exactly one teleport
+ACTION[Server]: [r28_a5_probe] ok   R capital no velocity added
+ACTION[Server]: [r28_a5_probe] ok   R capital stands on a solid floor (default:cobble)
+ACTION[Server]: [r28_a5_probe] stage S: stations
+ACTION[Server]: [r28_a5_probe] ok   S an unprotected spot
+ACTION[Server]: [r28_a5_probe] S spot (120,98,-2550) territory accord_home
+ACTION[Server]: [r28_a5_probe] ok   S a forge station node: grug_jobs:forge
+ACTION[Server]: [r28_a5_probe] ok   S a full furnace can be dug
+ACTION[Server]: [r28_a5_probe] ok   S furnace removed
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:furnace
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:iron_lump 4
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:coal_lump 5
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:steel_ingot 2
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:gold_lump 3
+ACTION[Server]: [r28_a5_probe] ok   S a full forge can be dug
+ACTION[Server]: [r28_a5_probe] ok   S digger received grug_jobs:forge
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:steel_ingot 7
+ACTION[Server]: [r28_a5_probe] ok   S digger received default:mese_crystal 1
+ACTION[Server]: [r28_a5_probe] ok   S the start town is protected
+ACTION[Server]: [r28_a5_probe] ok   S protection refuses the dig
+ACTION[Server]: [r28_a5_probe] RESULT PASS checks=94 failures=0 t=35.3s
