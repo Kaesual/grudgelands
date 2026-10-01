@@ -273,6 +273,9 @@ function grug_mobs.award_kill_xp(self)
 	for _, player in ipairs(eligible) do
 		for _, callback in ipairs(eligible_kill_callbacks) do callback(player, self, death_pos) end
 	end
+	-- Quest-only drops (Round 28 ruling 41) roll per participant over the same
+	-- set (aggro.lua run_participant_drop_hooks).
+	grug_mobs.run_participant_drop_hooks(self, eligible, death_pos)
 	grug_mobs.cleanup_xp_participants(self)
 	return true
 end
@@ -618,7 +621,19 @@ local function apply_visual(self, cfg)
 	grug_visuals.apply_entity(self, cfg, grug_mobs.set_base_texture)
 end
 
+-- The definition of every registration as it was handed in (verbs already
+-- installed, none of the wrappers below), for sub-types (subtypes.lua, Round
+-- 28 ruling 35) that reuse a base's model, animations and behaviour.
+local base_defs = {}
+
+-- A fresh deep copy of a registration's original definition, or nil.
+function grug_mobs.copy_base_def(name)
+	local def = base_defs[name]
+	return def and table.copy(def) or nil
+end
+
 function grug_mobs.register_mob(name, def)
+	base_defs[name] = table.copy(def)
 	local hp_bar_presentation = def._grug_hp_bar_presentation
 	if not def._grug_fixed_level and
 			(def.walk_velocity or 1) > grug_mobs.CALM_WALK_MAX then
@@ -1001,3 +1016,6 @@ dofile(modpath .. "/bone_weevil.lua")
 dofile(modpath .. "/bog_fowl.lua")
 -- After the mob files: a rare spec names an already registered mob.
 dofile(modpath .. "/rares.lua")
+-- Round 28 rulings 35 and 36: data-driven sub-types copy a registered base,
+-- loot items and drop tables by level band.
+dofile(modpath .. "/subtypes.lua")

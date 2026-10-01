@@ -653,10 +653,46 @@ function grug_mobs.run_drop_hooks(self, drops, tagger_name)
 end
 
 --
+-- Participant drop hooks (Round 28 ruling 41: quest-only drops).
+-- fn(self, participants, death_pos) runs once per kill that has at least one
+-- participant eligible for kill credit: the names of the players the quest
+-- kill credit receives (online, within 40 m, not of the mob's own faction),
+-- sorted. The hook gives items to those players itself; nothing here rolls.
+--
+
+local participant_drop_hooks = {}
+
+function grug_mobs.register_participant_drop_hook(fn)
+	participant_drop_hooks[#participant_drop_hooks + 1] = fn
+end
+
+-- Called by award_kill_xp (init.lua) with its eligible player list.
+function grug_mobs.run_participant_drop_hooks(self, eligible, death_pos)
+	if #participant_drop_hooks == 0 then
+		return
+	end
+	local names = {}
+	for _, player in ipairs(eligible) do
+		if not grug_factions.same_faction(player, self.object) then
+			names[#names + 1] = player:get_player_name()
+		end
+	end
+	if #names == 0 then
+		return
+	end
+	for _, fn in ipairs(participant_drop_hooks) do
+		fn(self, names, death_pos)
+	end
+end
+
+--
 -- Loot gate, called from the GRUG PATCH in mobs/api.lua item_drop (only for
--- mobs registered through grug_mobs, i.e. `_grug_drop_rule`). Returns the
--- drop list to roll — a COPY, so the hooks can never corrupt the def's own
--- table — or nil when this mob must not drop anything at all.
+-- mobs registered through grug_mobs, i.e. `_grug_drop_rule`), also when the
+-- definition has no static drops. Returns the drop list to roll — a COPY, so
+-- the hooks can never corrupt the def's own table — or nil when this mob must
+-- not drop anything at all. The list is the mob's family table for its level
+-- band (Round 28 ruling 36, subtypes.lua band_drop_rows) where one exists,
+-- else the definition's static drops.
 --
 --   (a) faction NPC: loot only from a PvP kill by an ENEMY-faction player;
 --       NPC-vs-mob and friendly kills never drop (kills LotT's armor litter)
@@ -687,9 +723,12 @@ end
 function grug_mobs._item_drop_filter(self, drops)
 	local tagger = grug_mobs.player_drop_tagger(self)
 	if not tagger then return nil end
-	local copy = {}
-	for i = 1, #drops do
-		copy[i] = table.copy(drops[i])
+	local copy = grug_mobs.band_drop_rows(self)
+	if not copy then
+		copy = {}
+		for i = 1, #(drops or {}) do
+			copy[i] = table.copy(drops[i])
+		end
 	end
 	return grug_mobs.run_drop_hooks(self, copy, tagger)
 end

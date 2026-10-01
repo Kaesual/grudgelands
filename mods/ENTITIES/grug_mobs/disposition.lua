@@ -43,6 +43,17 @@ classify("aggressive", {
 	"war_construct", "wisp", "wolf", "zombie",
 })
 
+-- Sub-types (subtypes.lua, Round 28 ruling 35) add their own entity names to
+-- the same table; a name that is already classified is an error.
+function grug_mobs.register_disposition(name, disposition)
+	if disposition ~= "critter" and disposition ~= "neutral"
+			and disposition ~= "aggressive" then
+		error("[grug_mobs] unknown disposition " .. tostring(disposition) ..
+			" for " .. name)
+	end
+	classify(disposition, {name:match("^grug_mobs:(.+)$") or name})
+end
+
 local function role_disposition(name)
 	if name:match("^grug_mobs:king_") then return "aggressive" end
 	-- Guards and royal guards are DISPLAY's guard role, independent of ambient
