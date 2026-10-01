@@ -172,6 +172,8 @@ _G.core = {get_timeofday = function() return timeofday end,
 	get_item_group = function() return 0 end,
 	settings = {get = function() return nil end}}
 _G.grug_core = {DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125,
+	-- Round 28 ruling 3 (protected spawn surface): no road or village here.
+	world_feature_at = function() return nil end,
 	start_identities = function()
 		local out = {}
 		for i, start in ipairs(STARTS) do
@@ -384,7 +386,8 @@ do
 	-- the tested species is eligible.
 	local saved_zones = _G.grug_zones
 	local stub_zone
-	_G.grug_zones = {id_at = function() return stub_zone end}
+	_G.grug_zones = {id_at = function() return stub_zone end,
+		anchor = function() return nil end}
 	local lone_ok, cases = true, 0
 	for _, zone in ipairs(gm.density_zone_ids()) do
 		for _, clock in ipairs({"day", "night"}) do
@@ -499,6 +502,7 @@ do
 		biome_at = function() return "grug_savanna" end,
 		race_region_at = function() return "orc" end,
 		pvp_rule_at = function() return "faction" end,
+		anchor = function() return nil end,
 	}
 	_G.core.get_objects_inside_radius = function(_, radius)
 		check(radius == 128, "count radius is mobs_redo's 2 x active_block_range x 16")

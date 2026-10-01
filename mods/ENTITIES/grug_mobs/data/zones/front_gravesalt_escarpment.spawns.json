@@ -1,0 +1,10 @@
+{
+  "zone": "front_gravesalt_escarpment",
+  "palette": {
+    "families": ["bog_witch", "forest", "rift_spawn", "war"],
+    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
+  },
+  "critters": ["bone_weevil", "gull"],
+  "areas": [],
+  "leaders": []
+}

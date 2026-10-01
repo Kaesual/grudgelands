@@ -1,0 +1,10 @@
+{
+  "zone": "elandor_glassroot_wilds",
+  "palette": {
+    "families": ["forest", "jungle", "wisp"],
+    "lookalikes": {"cat": "grug_mobs:panther", "spider": "grug_mobs:jungle_spider"}
+  },
+  "critters": [],
+  "areas": [],
+  "leaders": []
+}

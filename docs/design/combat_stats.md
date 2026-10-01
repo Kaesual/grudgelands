@@ -623,7 +623,8 @@ Normal tier at level L:
 - **Level floors** (`_grug_min_level`): a mob whose family belongs to a
   later zone keeps its floor even where the field reads lower — zombie 3,
   jungle lynx 4 (band 2 of Kapok, Round 24), wolf/hyena 10, guard 20. The floor is also the fallback
-  where the level field has no value.
+  where the level field has no value. An area or leader level (Round 28)
+  replaces floor and field.
 - **Guard levels** come from the separate `grug_core.guard_level_at`
   field (world.md §1) with its own cap of **70** (the mob axis stays
   1–60), and a guard at level **≥ 60 is promoted to elite
@@ -691,7 +692,13 @@ level field applies; in the six starting zones the start-zone gradient
 applies instead (band 1 behind the start, rising toward the front, band 3
 only shortly before the front border; `world_zones.md` §2, Round 24). It is
 the same surface level for spawns and for the mapgen's level-banded
-content. Capital city zones contain no ambient hostile mobs. Guards use
+content, except that in a zone whose data defines spawn areas (Round 28
+ruling 34, `biomes_mobs.md` §4.2) a surface mob from an area takes a level
+rolled in its area's fixed range and a named leader its fixed level; the
+field keeps serving every zone without areas, the depth axis, water, rares,
+guards and the mapgen. Capital city zones contain no ambient hostile mobs
+while they have no areas; with areas they spawn outside the protected city
+only (ruling 3). Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
@@ -1167,8 +1174,9 @@ patrollers, named rares, bosses and summons, royals, bespoke no-leash actors,
 NPCs and water-bound swimmers keep their own movement rules. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
 Round 28 ruling 4 keeps the leash anchored at the spawn point with radius 32;
-the spawn areas of Round 28 Section B (planned, not built yet) are to be sized
-so that it keeps mobs inside their area.
+spawn areas (`biomes_mobs.md` §4.2) are sized so that it keeps mobs inside
+their area. Members of a camp AREA (ruling 37) roam free under this leash;
+only the camp fires keep the 20-node roam cap.
 
 **Road and town push (Round 28 ruling 2):** roads and towns should feel safe
 to travel and rest in without becoming a combat refuge. An idle (standing or

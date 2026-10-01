@@ -292,6 +292,8 @@ check(rare_added == 2 and marked == 2, "rare: hostile rare outside claims placed
 -- 4. The Round 24 budget never sees the claim
 -- ---------------------------------------------------------------------------
 _G.grug_core = {DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125,
+	-- Round 28 ruling 3 (protected spawn surface): no road or village here.
+	world_feature_at = function() return nil end,
 	start_identities = function()
 		local out = {}
 		for i = 1, 6 do out[i] = {anchor = {x = -90000 + i * 1000, y = 0, z = -90000}} end
@@ -304,6 +306,7 @@ _G.grug_zones = {
 	race_region_at = function() return "human" end,
 	pvp_rule_at = function() return "peaceful" end,
 	faction_at = function() return "accord" end,
+	anchor = function() return nil end,
 }
 local objects = {}
 _G.core = {

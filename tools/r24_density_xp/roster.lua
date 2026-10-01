@@ -61,6 +61,8 @@ return function(repo)
 	end})
 	_G.ItemStack = stub_fn
 
+	-- Round 28: the palettes are data (spawn_areas.lua), loaded first.
+	dofile(repo .. "/tools/r28_b1/load_spawn_areas.lua")(repo)
 	dofile(dir .. "/spawn_policy.lua")
 	dofile(dir .. "/density.lua")
 	local gm = _G.grug_mobs
@@ -105,7 +107,8 @@ return function(repo)
 	local source = assert(io.open(dir .. "/init.lua")):read("*a")
 	local files = {}
 	for file in source:gmatch('dofile%(modpath %.%. "/([%w_]+%.lua)"%)') do
-		if file ~= "spawn_policy.lua" and file ~= "density.lua" then
+		if file ~= "spawn_policy.lua" and file ~= "density.lua" and
+				file ~= "spawn_areas.lua" then
 			files[#files + 1] = file
 		end
 	end

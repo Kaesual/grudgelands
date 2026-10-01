@@ -1,0 +1,6 @@
+[
+  {"role": "confused_bandit", "family": "bandit", "base": "grug_mobs:bandit",
+   "display": "Confused Bandit", "size": 1.0, "disposition": "aggressive",
+   "levels": [9, 10], "drops": "bandit",
+   "notes": "Lane B1 probe only: an authored sub-type of a family with a composed look."}
+]

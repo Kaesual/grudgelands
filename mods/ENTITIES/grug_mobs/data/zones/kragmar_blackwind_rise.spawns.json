@@ -1,0 +1,9 @@
+{
+  "zone": "kragmar_blackwind_rise",
+  "palette": {
+    "families": ["forest", "gravewood_treant"]
+  },
+  "critters": ["bone_weevil", "gull"],
+  "areas": [],
+  "leaders": []
+}

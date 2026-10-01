@@ -1,0 +1,9 @@
+{
+  "zone": "elandor_frostbarrow_shelf",
+  "palette": {
+    "families": ["goblin_raid", "ibex", "mountain", "snow_leopard"]
+  },
+  "critters": [],
+  "areas": [],
+  "leaders": []
+}

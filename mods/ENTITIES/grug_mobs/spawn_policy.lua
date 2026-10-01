@@ -23,106 +23,15 @@ local NIGHT_FALLBACKS = {
 	swamp = "grug_mobs:bog_ooze",
 }
 
--- Closed named-zone mob palettes, transcribed from world_zones.md Section 8.
--- Capitals deliberately have empty palettes. Lorindor is intentionally
--- literal: its row names pale stags, not the complete forest family.
-local ZONE_MOB_PALETTES = {
-	elandor_hearthpine_vale = {
-		settled = true, fox = true, ibex = true, giant_rat = true,
-	},
-	elandor_copperfell_foothills = {
-		settled = true, fox = true, ibex = true, goblin_raid = true,
-	},
-	elandor_dur_brannoc = {},
-	elandor_frostbarrow_shelf = {
-		mountain = true, ibex = true, goblin_raid = true, snow_leopard = true,
-	},
-	elandor_stormvault_heights = {
-		mountain = true, frost_stray = true, ibex = true, goblin_raid = true,
-		snow_leopard = true,
-	},
-	elandor_dawnmere_fields = {
-		settled = true, fox = true, wild_turkey = true, giant_rat = true,
-	},
-	elandor_goldmead_vale = {
-		settled = true, poacher = true, fox = true, wild_turkey = true,
-	},
-	elandor_highcourt = {},
-	elandor_whitebridge_shire = {
-		settled = true, forest = true, poacher = true, wisp = true,
-	},
-	elandor_ashenward_march = {
-		forest = true, war = true, poacher = true, wisp = true,
-		ashen_treant = true,
-	},
-	elandor_silverleaf_glades = {
-		settled = true, song_bird = true, poacher = true, fox = true,
-		giant_rat = true,
-	},
-	elandor_starbough_vale = {settled = true, poacher = true, fox = true},
-	elandor_lethariel = {},
-	elandor_lorindor = {
-		exact_mobs = {["grug_mobs:stag"] = true},
-		night_fallback = {forest = true},
-		poacher = true, wisp = true,
-	},
-	elandor_moonfall_wood = {forest = true, poacher = true, wisp = true},
-	elandor_glassroot_wilds = {forest = true, jungle = true, wisp = true},
-	kragmar_stillgrave_hollow = {settled = true, giant_rat = true},
-	kragmar_mournfen = {settled = true, swamp = true, wisp = true},
-	kragmar_nhal_veyr = {},
-	kragmar_ossuary_reach = {forest = true, gravewood_treant = true},
-	kragmar_blackwind_rise = {forest = true, gravewood_treant = true},
-	kragmar_sunscar_flats = {
-		settled = true, sun_dried_husk = true, plains_runner = true,
-		giant_rat = true, scorpion = true,
-	},
-	kragmar_redtusk_savanna = {
-		settled = true, savanna = true, sun_dried_husk = true,
-		scorpion = true,
-	},
-	kragmar_gor_drazhak = {},
-	kragmar_speargrass_reach = {
-		savanna = true, mountain = true, scorpion = true, goblin_raid = true,
-		speargrass_tiger = true,
-	},
-	kragmar_bannerbreak_mesa = {
-		mountain = true, war = true, scorpion = true, goblin_raid = true,
-	},
-	kragmar_kapok_cradle = {
-		settled = true, jungle_edge = true, tapir = true, giant_rat = true,
-		viper = true,
-	},
-	kragmar_raincall_basin = {
-		settled = true, jungle_edge = true, tapir = true, viper = true,
-	},
-	kragmar_kezamba = {},
-	kragmar_whispering_reedlands = {
-		jungle_edge = true, swamp = true, tapir = true, wisp = true,
-	},
-	kragmar_totemwater_reach = {
-		jungle_edge = true, swamp = true, tapir = true, wisp = true,
-	},
-	kragmar_thunderroot_wilds = {jungle = true, bog_witch = true},
-	front_wyrmglass_crown = {
-		mountain = true, war = true, frost_stray = true, snow_leopard = true,
-		rift_spawn = true,
-	},
-	front_gravesalt_escarpment = {
-		forest = true, war = true, bog_witch = true, rift_spawn = true,
-	},
-	front_broken_causeway = {
-		war = true, wisp = true, war_construct = true, bog_witch = true,
-	},
-	front_shattered_line = {
-		mountain = true, war = true, sun_dried_husk = true,
-		scorpion = true, war_construct = true, speargrass_tiger = true,
-	},
-	front_skyglass_canopy = {jungle = true, war = true, rift_spawn = true},
-	front_stormscale_summit = {
-		jungle = true, war = true, bog_witch = true, rift_spawn = true,
-	},
-}
+-- Closed named-zone mob palettes (world_zones.md Section 8), the boar tint
+-- and the lookalike choices per zone. Since Round 28 they are data: the
+-- `palette` of each zone's data/zones/<zone_id>.spawns.json, read by
+-- spawn_areas.lua. Capitals deliberately have empty palettes. Lorindor is
+-- intentionally literal: its row names pale stags, not the complete forest
+-- family. A zone whose data defines spawn areas (ruling 34) ignores its
+-- palette for surface mobs; see spawn_policy_allows.
+local ZONE_MOB_PALETTES, BOAR_VARIANT_BY_ZONE, ZONE_LOOKALIKE_SELECTION =
+	grug_mobs.spawn_areas.fallback_palettes()
 
 -- A mob may name more than one Section 8 family where the catalog says so.
 -- Existing mobs:spawn node lists remain the narrower habitat selector.
@@ -197,23 +106,8 @@ local MOB_PALETTES = {
 
 -- Boars share one family budget and one visual identity per named zone. The
 -- node whitelist remains a habitat check, but a biome patch inside a zone may
--- no longer switch the family to a second lookalike registration.
-local BOAR_VARIANT_BY_ZONE = {
-	elandor_hearthpine_vale = "grug_mobs:boar",
-	elandor_copperfell_foothills = "grug_mobs:boar",
-	elandor_dawnmere_fields = "grug_mobs:boar",
-	elandor_goldmead_vale = "grug_mobs:boar",
-	elandor_whitebridge_shire = "grug_mobs:boar",
-	elandor_silverleaf_glades = "grug_mobs:boar",
-	elandor_starbough_vale = "grug_mobs:boar",
-	kragmar_stillgrave_hollow = "grug_mobs:plague_boar",
-	kragmar_mournfen = "grug_mobs:plague_boar",
-	kragmar_sunscar_flats = "grug_mobs:boar",
-	kragmar_redtusk_savanna = "grug_mobs:boar",
-	kragmar_kapok_cradle = "grug_mobs:jungle_boar",
-	kragmar_raincall_basin = "grug_mobs:jungle_boar",
-}
-
+-- no longer switch the family to a second lookalike registration. The zone's
+-- tint is its palette's `boar` (BOAR_VARIANT_BY_ZONE above).
 local BOAR_VARIANTS = {
 	["grug_mobs:boar"] = true,
 	["grug_mobs:plague_boar"] = true,
@@ -222,7 +116,8 @@ local BOAR_VARIANTS = {
 
 -- Other shared-model regional tints use the same zone-level selection. Rows
 -- with genuinely different silhouettes or combat roles are not folded into
--- this table merely because their imported mesh is shared.
+-- this table merely because their imported mesh is shared. A zone's choice
+-- per family is its palette's `lookalikes` (ZONE_LOOKALIKE_SELECTION above).
 local LOOKALIKE_FAMILY = {
 	["grug_mobs:zombie"] = "zombie",
 	["grug_mobs:sun_dried_husk"] = "zombie",
@@ -235,45 +130,6 @@ local LOOKALIKE_FAMILY = {
 	["grug_mobs:skeleton_archer"] = "skeleton_archer",
 	["grug_mobs:skeleton_raider"] = "skeleton_archer",
 	["grug_mobs:frost_stray"] = "skeleton_archer",
-}
-
-local ZONE_LOOKALIKE_SELECTION = {
-	kragmar_sunscar_flats = {zombie = "grug_mobs:sun_dried_husk"},
-	kragmar_redtusk_savanna = {zombie = "grug_mobs:sun_dried_husk"},
-	elandor_glassroot_wilds = {
-		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
-	},
-	kragmar_thunderroot_wilds = {
-		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
-	},
-	front_stormscale_summit = {
-		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	front_wyrmglass_crown = {
-		cat = "grug_mobs:snow_leopard",
-		skeleton_archer = "grug_mobs:frost_stray",
-	},
-	elandor_ashenward_march = {
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	kragmar_bannerbreak_mesa = {
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	front_gravesalt_escarpment = {
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	front_broken_causeway = {
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	front_shattered_line = {
-		zombie = "grug_mobs:sun_dried_husk",
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
-	front_skyglass_canopy = {
-		spider = "grug_mobs:jungle_spider", cat = "grug_mobs:panther",
-		skeleton_archer = "grug_mobs:skeleton_raider",
-	},
 }
 
 -- Kraken has an independent authority instead of a named-zone mob palette:
@@ -338,7 +194,10 @@ local RACE_FACTIONS = {
 --
 -- Capitals (their protected cities, plan D76) are hard-protected too and are
 -- deliberately NOT covered here: their named zones' mob palettes are empty,
--- so no ordinary row reaches the city or the ground around it anyway.
+-- so no ordinary row reaches the city or the ground around it anyway. Round
+-- 28 ruling 3 adds the capital city for every ambient non-critter spawn
+-- (grug_mobs.protected_spawn_surface below), which spawn areas in a capital
+-- zone's outskirts need.
 local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
 local START_PAD_HIGH = 63
 local START_BAND = 12
@@ -833,6 +692,57 @@ local function zone_allows(mob_name, zone_id)
 	return night_fallback_allows(mob_name, zone_palette)
 end
 
+--
+-- Round 28 ruling 3: no ambient non-critter spawn on the exact protected
+-- surface: a road corridor or bridge and a village's building core
+-- (grug_core.world_feature_at, the half width + 1 corridor of ruling 1 and
+-- the village boxes), a start town's footprint and a capital city
+-- (grug_zones.hard_protection_kind_at "town"). No margin beyond them: the
+-- idle push of ruling 2 keeps aggressive mobs off roads and towns, a margin
+-- of aggro range would empty land trails run through. Camps and other POIs
+-- are not refused, and critters may still appear in towns.
+--
+-- Called for ABM rows (spawn_policy_allows, ordinary natural rows only) and
+-- for every non-critter area spawn (spawn_areas.lua). `pos` is where the mob
+-- stands or the node it stands on: the road corridor reaches +-5 around the
+-- road surface and the other shapes are full columns, so both answer alike.
+-- The start footprint is the plain-number test above; the capital query is
+-- asked only in the six capital zones. The density budget asks the policy
+-- for several species at one point in a row, so the last answer is kept.
+--
+local capital_zones = {} -- zone id -> bool, from the zone authority
+local last_x, last_y, last_z, last_protected
+
+-- A capital zone is one whose zone session publishes a `capital` anchor.
+local function capital_zone(zone_id)
+	if not zone_id then
+		return false
+	end
+	local known = capital_zones[zone_id]
+	if known == nil then
+		known = grug_zones.anchor(zone_id, "capital") ~= nil
+		capital_zones[zone_id] = known
+	end
+	return known
+end
+
+function grug_mobs.protected_spawn_surface(pos)
+	local x, y, z = pos.x, pos.y, pos.z
+	if x == last_x and y == last_y and z == last_z then
+		return last_protected
+	end
+	local protected = grug_mobs.in_start_footprint(x, z, y)
+	if not protected then
+		local kind = grug_core.world_feature_at(pos)
+		protected = kind == "road" or kind == "bridge" or kind == "village"
+	end
+	if not protected and capital_zone(grug_zones.id_at(x, z)) then
+		protected = grug_zones.hard_protection_kind_at(pos) == "town"
+	end
+	last_x, last_y, last_z, last_protected = x, y, z, protected
+	return protected
+end
+
 -- Allocation-free spawn policy. Unknown ABM families fail closed.
 function grug_mobs.spawn_policy_allows(mob_name, pos)
 	-- Before every other authority, the Kraken's included: a start footprint
@@ -856,6 +766,20 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if pos.y < 0 then
 		return false
 	end
+	local zone_id = grug_zones.id_at(pos.x, pos.z)
+	-- Round 28 ruling 34: a zone whose data defines spawn areas spawns its
+	-- surface mobs only from them (spawn_areas.lua). Its ABM rows keep the
+	-- critters its data lists; crabs and every other row are refused. The
+	-- Gull keeps its beach host.
+	if zone_id and grug_mobs.spawn_areas.zone_has_areas(zone_id) then
+		if not grug_mobs.spawn_areas.zone_critter(zone_id, mob_name) then
+			return false
+		end
+		if mob_name == "grug_mobs:gull" then
+			return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
+		end
+		return true
+	end
 	local local_level = grug_zones.mob_level_at(pos)
 	if not local_level or local_level < (natural_min_levels[mob_name] or 1) then
 		return false
@@ -865,16 +789,22 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	-- the level splits every such shore between the neutral Shore Crab below
 	-- level 45 and the elite Reef Lurker from 45 to 60. The node host is
 	-- enforced by mobs_redo before this allocation-free policy callback.
+	local allowed
 	if mob_name == "grug_mobs:gull" then
-		return grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
+		allowed = grug_zones.biome_at(pos.x, pos.z) == "grug_beach"
+	elseif mob_name == "grug_mobs:shore_crab" then
+		allowed = local_level < 45
+	elseif mob_name == "grug_mobs:reef_lurker" then
+		allowed = local_level >= 45 and local_level <= 60
+	else
+		allowed = zone_allows(mob_name, zone_id)
 	end
-	if mob_name == "grug_mobs:shore_crab" then
-		return local_level < 45
+	-- Ruling 3, last: only an otherwise allowed ordinary natural row pays it.
+	if allowed and ambient_density_spawns[mob_name] and
+			grug_mobs.protected_spawn_surface(pos) then
+		return false
 	end
-	if mob_name == "grug_mobs:reef_lurker" then
-		return local_level >= 45 and local_level <= 60
-	end
-	return zone_allows(mob_name, grug_zones.id_at(pos.x, pos.z))
+	return allowed
 end
 
 -- Round 24 ruling 27: the budgeted species a zone can host at a clock, with

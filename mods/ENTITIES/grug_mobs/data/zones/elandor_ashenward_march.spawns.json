@@ -1,0 +1,10 @@
+{
+  "zone": "elandor_ashenward_march",
+  "palette": {
+    "families": ["ashen_treant", "forest", "poacher", "war", "wisp"],
+    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
+  },
+  "critters": [],
+  "areas": [],
+  "leaders": []
+}

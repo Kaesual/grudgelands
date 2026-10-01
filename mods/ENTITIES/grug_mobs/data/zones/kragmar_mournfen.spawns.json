@@ -1,0 +1,10 @@
+{
+  "zone": "kragmar_mournfen",
+  "palette": {
+    "families": ["settled", "swamp", "wisp"],
+    "boar": "grug_mobs:plague_boar"
+  },
+  "critters": ["bog_fowl", "hare"],
+  "areas": [],
+  "leaders": []
+}

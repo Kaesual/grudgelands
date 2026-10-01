@@ -1,0 +1,10 @@
+{
+  "zone": "elandor_goldmead_vale",
+  "palette": {
+    "families": ["fox", "poacher", "settled", "wild_turkey"],
+    "boar": "grug_mobs:boar"
+  },
+  "critters": ["rabbit", "wild_turkey"],
+  "areas": [],
+  "leaders": []
+}
