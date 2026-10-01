@@ -12,8 +12,9 @@
 --    the reference medians, the shares and the single-species case.
 -- 3. Drives grug_mobs.density_allows against a stub object list: total
 --    budget, per-point shares with level-gated species, excluded rares/camps.
--- 4. Gathering XP (grug_xp.gathering_xp): the table at several player
---    levels, ore/gem tiers and fishing bands, and its rounding.
+-- 4. Gathering XP (grug_xp.gather_xp, Round 28 ruling 32 ratios): the table
+--    at several player levels, ore/gem tiers and fishing bands, and its
+--    rounding.
 -- The tool-level gate matrix (ruling 29) is tool_gate_fixture.lua.
 -- Prints "R24 DENSITY/XP FIXTURE PASS checks=<n>" or raises.
 
@@ -612,7 +613,7 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- 4. Gathering XP (ruling 28)
+-- 4. Gathering XP (ruling 28; kill-equivalent ratios since Round 28 ruling 32)
 -- ---------------------------------------------------------------------------
 do
 	_G.grug_core = {}
@@ -623,8 +624,8 @@ do
 	setmetatable(_G.core, {__index = function() return function() end end})
 	dofile(repo .. "/mods/PLAYER/grug_xp/init.lua")
 	local X = _G.grug_xp
-	check(X.GATHERING_XP_FACTOR.ore == 1.5 and X.GATHERING_XP_FACTOR.gem == 3 and
-		X.GATHERING_XP_FACTOR.fish == 5, "factors 1.5 / 3 / 5")
+	check(X.GATHER_XP_RATIO.ore == 0.10 and X.GATHER_XP_RATIO.gem == 0.20 and
+		X.GATHER_XP_RATIO.fish == 0.33, "ratios 0.10 / 0.20 / 0.33")
 	local levels = {1, 3, 5, 10, 15, 20, 30, 45, 60}
 	local rows = {
 		{"ore T1 (coal..quartz)", "ore", 1}, {"ore T2 (gold)", "ore", 2},
@@ -641,9 +642,9 @@ do
 		local reference = X.gathering_reference_level(row[3])
 		local cells = {}
 		for _, level in ipairs(levels) do
-			local xp = X.gathering_xp(row[2], reference, level)
-			local expected = math.floor(X.GATHERING_XP_FACTOR[row[2]] *
-				math.min(10 * row[3], level + 5) + 0.5)
+			local xp = X.gather_xp(row[2], reference, level)
+			local expected = math.floor(X.GATHER_XP_RATIO[row[2]] *
+				(25 + 5 * math.min(10 * row[3], level + 5)) + 0.5)
 			check(xp == expected, row[1] .. " at level " .. level)
 			check(xp > 0, row[1] .. " at level " .. level .. " pays (no gray rule)")
 			cells[#cells + 1] = ("%4d"):format(xp)
@@ -651,19 +652,19 @@ do
 		print(("%-26s %s"):format(row[1], table.concat(cells, " ")))
 	end
 	-- Worked values: rounding half up, cap at player level + 5, no gray rule.
-	check(X.gathering_xp("ore", 10, 1) == 9, "coal at level 1: 1.5 x 6 = 9")
-	check(X.gathering_xp("ore", 10, 2) == 11, "coal at level 2: 1.5 x 7 = 10.5 -> 11")
-	check(X.gathering_xp("ore", 10, 60) == 15, "coal at level 60 still pays 15")
-	check(X.gathering_xp("gem", 40, 30) == 105, "G2 gem at level 30: 3 x 35")
-	check(X.gathering_xp("fish", 60, 60) == 300, "band 6 fish at level 60: 300")
-	check(X.gathering_xp("fish", 10, 1) == 30, "band 1 fish at level 1: 5 x 6")
+	check(X.gather_xp("ore", 10, 1) == 6, "coal at level 1: 0.1 x M(6) = 5.5 -> 6")
+	check(X.gather_xp("ore", 10, 3) == 7, "coal at level 3: 0.1 x M(8) = 6.5 -> 7")
+	check(X.gather_xp("ore", 10, 60) == 8, "coal at level 60 still pays 0.1 x M(10) = 7.5 -> 8")
+	check(X.gather_xp("gem", 40, 30) == 40, "G2 gem at level 30: 0.2 x M(35)")
+	check(X.gather_xp("fish", 60, 60) == 107, "band 6 fish at level 60: 0.33 x M(60) = 107.25")
+	check(X.gather_xp("fish", 10, 1) == 18, "band 1 fish at level 1: 0.33 x M(6) = 18.15")
 	-- Award goes through add_xp with source "gathering" (no quest bonus).
 	local seen
 	local real_add = X.add_xp
 	X.add_xp = function(player, amount, source) seen = {amount, source} end
 	X.get_level = function() return 12 end
-	check(X.award_gathering({}, "gem", 20) == 51 and seen[1] == 51 and
-		seen[2] == "gathering", "award_gathering at level 12: 3 x min(20, 17) = 51")
+	check(X.award_gathering({}, "gem", 20) == 22 and seen[1] == 22 and
+		seen[2] == "gathering", "award_gathering at level 12: 0.2 x M(min(20, 17)) = 22")
 	X.add_xp = real_add
 end
 
