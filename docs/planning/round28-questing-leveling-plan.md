@@ -398,8 +398,8 @@ interfaces are frozen in the C0 framework document before Track B starts.
 34. **Spawn areas replace the level field for mobs.** Per zone a list of area
     rules, each relative to an anchor (start anchor, capital anchor, village,
     outpost, mine, camp, POI or rare pad): shape (radius/ring, a band along
-    the zone's front axis, a side by ±x), host class (sand/shore, grass/soil,
-    forest litter, rock, swamp …), clock (day, night, both), species with
+    the zone's front axis, a side by ±x), host (refined in the design frame §4.6:
+    atlas biome ids plus a shore flag), clock (day, night, both), species with
     weights, a **fixed level range**, optional caps and respawn settings.
     Areas may overlap; every zone has a catch-all rule so no land is empty;
     capital zones get areas outside the city. The density budget keeps its
@@ -597,8 +597,9 @@ faces the Battlegrounds toward +z, the ocean is behind toward −z):
   day, **Drowned Zombies** at night (aggressive, L7–9).
 - **Finale near the border** to the next zone: a bandit area ("Confused
   Bandits", L9–10) around a defined point; no POI needed.
-- **Four lines:** 2× kill (elder), 2× gathering (elder: tools, ores, bars;
-  cook: coal, meat, drops). First kill quests "Kill 10 Small Boars"
+- **Four lines** (2× kill, 2× gather, at most two per giver; split in the
+  design frame §2.5): elder: hunt line (kills) and tools line (tools, ores,
+  bars); cook: pantry line (mob-drop requests) and kitchen line (coal, meat). First kill quests "Kill 10 Small Boars"
   ("During the day, Small Boars have been stealing our crops south of
   Dawnmere …") and "Kill 10 Large Rats" ("Large Rats have been reported to
   roam south of Dawnmere after nightfall …"). First gathering quests
@@ -655,7 +656,7 @@ tint only (no new skins; mob UV layouts do not suit image generation).
 | **B3 — XP** | Rulings 30–33 (`grug_xp` incl. `grug_xp.quest_reward(level, weight)`, kill XP in `levels.lua`, gathering, fishing), `progression.md` | Opus | C0, A3 and A6 merged (`levels.lua`, feed calls) |
 | **B4 — Quest system** | Rulings 29, 39–42, the per-zone split of quest content (content migration) | Opus | C0, A6 merged; uses B1's area lookup, B2's drop-hook API and B3's reward helper (merges after B1, B2, B3) |
 | **B5 — Professions** | Rulings 27, 28 (mechanism, fittings removed) | Opus | C0 |
-| **C1 — Catalogues** | Section C1 | Astra | C0 |
+| **C1a/C1b — Catalogues** | Section C1 (world catalogue; economy catalogue), then one editor pass | Astra (2 lanes) | C0 |
 | **C2 — Human track** | Section C2 | Astra | C1 reviewed |
 | **C3a–e — Race tracks** | the five other race tracks | Astra (5 lanes) | C2 approved |
 | **C3f — Contested** | the six 31–40 zones | Astra | C2 approved |
