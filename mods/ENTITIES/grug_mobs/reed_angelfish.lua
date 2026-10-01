@@ -42,7 +42,8 @@ grug_mobs.register_mob("grug_mobs:reed_angelfish", {
 	textures = {{"grug_mobs_reed_angelfish.png"}},
 	visual_size = {x = 10, y = 10},
 	collisionbox = {-0.15, -0.15, -0.15, 0.15, 0.15, 0.15},
-	selectionbox = {-0.22, -0.2, -0.22, 0.22, 0.25, 0.22},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.25, -0.05, -0.5, 0.25, 0.7, 0.3, rotate = true},
 	makes_footstep_sound = false,
 	animation = {
 		stand_start = 1, stand_end = 20, stand_speed = 20,

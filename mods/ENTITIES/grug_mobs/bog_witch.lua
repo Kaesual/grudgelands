@@ -51,6 +51,8 @@ local witch = {
 		"vessels_glass_bottle.png^[colorize:#7b2fa3:120"}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.98, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -0.7, 0.55, 2.05, 0.7, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 1, stand_end = 40, stand_speed = 15,

@@ -398,10 +398,15 @@ local function king_def(race, row)
 			return {skin = "grug_mobs_royal_" .. race .. ".png",
 				level = self._grug_level, weapon_family = row.weapon}
 		end,
-		-- Elite visuals multiply by 1.6; this base makes the authored final
-		-- royal stature exactly 1.15 rather than silently growing to 1.84.
-		visual_size = {x = 0.71875, y = 0.71875},
-		collisionbox = {-0.3, 0, -0.3, 0.3, 1.7, 0.3},
+		-- The king is the tallest figure in his hall (Round 28 ruling 9):
+		-- final visual_size 1.6 against his elite guards' 1.4. Elite visuals
+		-- multiply model AND boxes by 1.4, so the authored base is 1.6 / 1.4
+		-- and the box is the player box (character.b3d is 1.70 nodes tall at
+		-- size 1) at that same base: 2.72 nodes once promoted, exactly the
+		-- model's height.
+		visual_size = {x = 8 / 7, y = 8 / 7},
+		collisionbox = {-0.3 * 8 / 7, 0, -0.3 * 8 / 7, 0.3 * 8 / 7, 1.7 * 8 / 7,
+			0.3 * 8 / 7},
 		animation = {
 			stand_start = 0, stand_end = 79, stand_speed = 30,
 			walk_start = 168, walk_end = 187, walk_speed = 30,

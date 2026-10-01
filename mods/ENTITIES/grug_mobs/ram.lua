@@ -44,6 +44,8 @@ local ram = {
 	-- the box below; upstream uses 1.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.45, -0.01, -0.45, 0.45, 1.29, 0.45},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.45, -0.05, -0.55, 0.45, 1.3, 0.9, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §1.7: stand is the single frame 0, no punch clip on

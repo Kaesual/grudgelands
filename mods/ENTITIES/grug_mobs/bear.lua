@@ -4,7 +4,7 @@
 -- up after 20 nodes instead of the default 40, so leaving its patch is
 -- enough. Day mob, aggressive speed.
 --
--- Elite variant "Elder Bear" (§3.1: elite ×1.6 scale): rolled per spawn in
+-- Elite variant "Elder Bear" (§3.1: elite ×1.4 scale): rolled per spawn in
 -- the mobs:spawn rows below, no second registration and no extra texture
 -- (wp6_model_notes §0.4 — elites are a runtime tint + scale).
 
@@ -44,6 +44,8 @@ local function bear_def(description, texture)
 		-- box (wp6_model_notes §1.5).
 		visual_size = {x = 3, y = 3},
 		collisionbox = {-0.7, -0.01, -0.7, 0.7, 1.39, 0.7},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.7, -0.05, -1.1, 0.7, 1.15, 1, rotate = true},
 		makes_footstep_sound = true,
 
 		-- wp6_model_notes §1.5: no punch clip — reuse the walk range at run
@@ -77,7 +79,7 @@ end
 -- on_step — so before grug_mobs.ensure_init has assigned a level. That is
 -- exactly the case grug_mobs.set_tier documents: with no _grug_level yet it
 -- only records the tier and returns, and ensure_init then applies level,
--- elite multipliers, ×1.6 scale, gold tint and nametag together on the first
+-- elite multipliers, ×1.4 scale, gold tint and nametag together on the first
 -- tick. `description` is a plain entity field (levels.lua tag_text reads it)
 -- and is set first, so the very first nametag already says "Elite Elder
 -- Bear". Both fields are plain values and persist in staticdata.

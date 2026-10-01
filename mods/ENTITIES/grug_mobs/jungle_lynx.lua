@@ -51,6 +51,8 @@ local lynx = {
 	-- the 0.95 box; upstream (animalworld) uses 1.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, 0, -1.5, 0.5, 0.9, 0.75, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.4: no run range — walk at a higher speed (§0.2).

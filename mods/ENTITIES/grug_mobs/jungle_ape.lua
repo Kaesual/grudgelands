@@ -7,7 +7,7 @@
 -- _grug_leash_range (aggro.lua) — an ape gives up after 20 nodes instead of
 -- the default 40, so leaving its patch is enough. Identical to bear.lua.
 --
--- Elite variant "Silverback" (§3.1, ×1.6 scale): rolled per spawn in the
+-- Elite variant "Silverback" (§3.1, ×1.4 scale): rolled per spawn in the
 -- mobs:spawn row below, no second registration and no extra texture
 -- (wp6_model_notes §0.4 — elites are a runtime tint + scale).
 --
@@ -53,6 +53,8 @@ local ape = {
 	-- spider.lua applied to the Giant Spider).
 	visual_size = {x = 1.5, y = 1.5},
 	collisionbox = {-0.75, -0.01, -0.75, 0.75, 1.43, 0.75},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.75, -0.05, -1.5, 0.75, 1.4, 0.9, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §2.7: stand does NOT start at 0 on this mesh, and no
@@ -87,7 +89,7 @@ grug_mobs.register_mob("grug_mobs:jungle_ape", ape)
 -- i.e. AFTER on_activate but BEFORE the first on_step — so before
 -- grug_mobs.ensure_init has assigned a level. grug_mobs.set_tier documents
 -- exactly that case: with no _grug_level yet it only records the tier, and
--- ensure_init then applies level, elite multipliers, x1.6 scale, gold tint
+-- ensure_init then applies level, elite multipliers, x1.4 scale, gold tint
 -- and nametag together on the first tick. `description` is a plain entity
 -- field (levels.lua tag_text reads it) and is set first, so the very first
 -- nametag already says "Elite Silverback". Both fields persist in staticdata.

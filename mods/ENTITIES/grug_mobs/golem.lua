@@ -5,7 +5,7 @@
 -- The ONLY family in the catalog that ships as tier ELITE out of the box
 -- (§3.1: "**elite** (armor 80, telegraphed slam)"). `_grug_tier = "elite"` in
 -- the def is the whole implementation: levels.lua then owns armor 80, the
--- x3 HP / x1.8 damage / x4 XP multipliers, the x1.6 scale, the gold tint and
+-- x3 HP / x1.8 damage / x4 XP multipliers, the x1.4 scale, the gold tint and
 -- the "Elite " nametag prefix — and init.lua's do_custom wrapper starts
 -- calling telegraph.lua for it, which IS the "telegraphed slam" of the design
 -- row: 2 s wind-up (root + "!! " nametag + particle burst), then a x3 damage

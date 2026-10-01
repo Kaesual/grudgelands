@@ -43,6 +43,8 @@ local function spider_def(description, texture)
 		-- Upstream {-0.7, -0.5, -0.7, 0.7, 0, 0.7} × 1.5. Do not "fix" this
 		-- to a 0-based box or the spider sinks into the ground.
 		collisionbox = {-1.05, -0.75, -1.05, 1.05, 0, 1.05},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-1.35, -0.8, -1.05, 1.35, 0.05, 1.4, rotate = true},
 		makes_footstep_sound = false,
 
 		-- wp6_model_notes §4.1 (mobs_monster ranges, native mobs_redo).

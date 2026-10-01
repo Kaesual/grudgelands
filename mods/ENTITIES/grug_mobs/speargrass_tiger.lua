@@ -16,6 +16,8 @@ local tiger = {
 	textures = {{"grug_mobs_speargrass_tiger.png"}},
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.5, -0.01, -0.5, 0.5, 0.95, 0.5},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -1.7, 0.5, 1.4, 1.05, rotate = true},
 	makes_footstep_sound = true,
 	animation = {
 		stand_start = 0, stand_end = 100, stand_speed = 50,

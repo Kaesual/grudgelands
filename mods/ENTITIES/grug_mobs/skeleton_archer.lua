@@ -108,6 +108,8 @@ local skeleton = {
 	-- the 1.98 box; upstream uses 1.
 	visual_size = {x = 1, y = 1},
 	collisionbox = {-0.3, -0.01, -0.3, 0.3, 1.98, 0.3},
+	-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+	selectionbox = {-0.5, -0.05, -0.7, 0.55, 2.05, 0.7, rotate = true},
 	makes_footstep_sound = true,
 
 	-- wp6_model_notes §1.3: no melee clip — `punch` reuses the shoot range.

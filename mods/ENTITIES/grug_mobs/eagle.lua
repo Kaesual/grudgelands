@@ -73,6 +73,8 @@ local function eagle_def(description, texture)
 		-- spread), upstream uses 1 and the box below is upstream's.
 		visual_size = {x = 1, y = 1},
 		collisionbox = {-0.3, -0.01, -0.3, 0.3, 0.5, 0.3},
+		-- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
+		selectionbox = {-0.9, -0.1, -0.85, 0.95, 1.3, 0.95, rotate = true},
 		makes_footstep_sound = false,
 
 		-- wp6_model_notes §2.3: there is NO walk/run range on this mesh, only
