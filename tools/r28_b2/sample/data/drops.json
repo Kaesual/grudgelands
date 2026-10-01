@@ -5,7 +5,7 @@
   ]}},
   {"family": "rat", "bands": {"1": [
     {"item": "grug_mobs:rat_tail", "chance": 1}
-  ]}, "leader_bonus": [
+  ], "2": []}, "leader_bonus": [
     {"item": "grug_mobs:rat_fur_patch", "chance": 1, "min": 2, "max": 3}
   ]},
   {"family": "zombie", "bands": {"1": [

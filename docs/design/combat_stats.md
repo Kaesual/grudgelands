@@ -859,8 +859,9 @@ design (`group_attack` stays on).
 view range that have `group_attack` and are not fighting yet: the same entity
 name (as before) and mobs of the same family when the hit mob has
 `group_attack` too. The pack call (a fleeing pack hunter) and the camp swarm
-use the same rule. The neutral disposition switches `group_attack` off, so a
-neutral mob is a single pull and never answers or calls a relative. Families
+use the same rule. A neutral mob never answers or calls anyone, not even a
+mob of its own name (the disposition also switches `group_attack` off), so it
+is always a single pull. Families
 and sub-types: `biomes_mobs.md` "Round 28 sub-types and loot by band".
 
 ## 5. Recovery (solo path)

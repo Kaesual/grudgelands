@@ -1306,8 +1306,11 @@ before.
 `base` registration's original definition: same mesh, animations, verbs,
 speeds and senses, and the base's static drops as the fallback. A role must
 not collide with an existing entity name, and the base must be an ambient
-mob (not a sub-type, guard, king, dragon or other fixed-level actor); a
-violation stops the load.
+mob (not a sub-type, guard, king, dragon or other fixed-level actor), and an
+aggressive sub-type needs a base with an attack (an aggressive copy of a
+critter would chase players and never strike); a violation stops the load.
+Everything else of the base comes along, including its sun burn (zombie
+sub-types burn like the Zombie).
 
 - **Size:** `size` multiplies `visual_size` and the collision and selection
   boxes together (a rotated selection box stays rotated). An elite sub-type
@@ -1338,8 +1341,9 @@ its own role (`zombie`, `giant_rat`, `boar` …), so a design puts sub-types
 next to an existing mob by naming that role as the family. Group alert, the
 pack call and the camp swarm answer the same entity name as before and, in
 addition, mobs of the same family when both take part in group alerts
-(`group_attack`). Neutral mobs never do, so a neutral sub-type is a single
-pull and never pulls its aggressive relatives (`combat_stats.md` §4).
+(`group_attack`). A neutral mob never answers or calls anyone, not even its
+own name (a neutral sub-type of a pack or swarm family stays a single pull;
+`combat_stats.md` §4).
 
 **Loot items.** `items.json` entries of kind `signature` and `quest` whose id
 is not registered yet become craft items (`grug_mobs:` ids; an id in another
@@ -1347,7 +1351,8 @@ mod's namespace must be registered by that mod). Description = the name plus
 the flavour line; the inventory image is a tinted placeholder until the art
 lands, and the `icon` brief stays on the item as `_grug_icon_brief`.
 Signature items are mob materials (`grug_material`). `generic` items are
-existing ones; `reagent` items belong to `grug_professions`.
+existing ones; `reagent` items belong to `grug_professions`. Any other kind is
+a load error.
 
 **Loot by band.** A mob's drop family is its sub-type's `drops` (default its
 family), else its role. The band is `floor((level − 1) / 10) + 1` (1–10 → 1,
@@ -1355,7 +1360,8 @@ family), else its role. The band is `floor((level − 1) / 10) + 1` (1–10 → 
 replace the mob's static drops (chance 1 in N, `min`/`max`); a leader (the
 sub-type's `leader` flag or a placed leader's `_grug_leader`) adds the
 family's `leader_bonus`. A family without a table, or without rows for that
-band, keeps the definition's static drops. The player-tag rule, the
+band (missing or an empty list), keeps the definition's static drops (a
+sub-type's are its base's). The player-tag rule, the
 profession drop hooks and quality loot apply unchanged; a table can give
 drops to a mob that has no static drops.
 

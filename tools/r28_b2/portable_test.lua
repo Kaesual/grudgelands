@@ -198,6 +198,7 @@ local function new_world(modpath)
 		guard_level_at = function() return 60 end,
 		id_at = function(x) return x < 0 and KAPOK or "elandor_dawnmere_fields" end,
 	}
+	_G.grug_xp = {mob_xp = function(l) return 25 + 5 * l end, LEVEL_OFFSET = 5}
 	_G.grug_factions = {same_faction = function(player, _) return player.same_faction == true end}
 	_G.grug_mobs = {}
 	w.rows = {}
@@ -233,6 +234,7 @@ local function new_world(modpath)
 	dofile(dir .. "wolf.lua")
 	dofile(dir .. "start_zone_families.lua")
 	dofile(dir .. "bear.lua")
+	dofile(dir .. "rabbit.lua")
 	w.base_count = #w.order
 	dofile(dir .. "subtypes.lua")
 	for _, fn in ipairs(w.mods_loaded) do fn() end
@@ -305,13 +307,18 @@ do
 	for _, a in ipairs(w.order) do
 		if grug_mobs.family_of(a) ~= a:match(":(.+)$") then fam_equal = false end
 		for _, b in ipairs(w.order) do
-			local ea = {name = a, group_attack = w.registered[a].group_attack}
-			local eb = {name = b, group_attack = w.registered[b].group_attack}
-			if grug_mobs.alert_kin(ea, eb) ~= (a == b) then all_equal = false end
+			local da, db = w.registered[a], w.registered[b]
+			local ea = {name = a, group_attack = da.group_attack, _grug_disposition = da._grug_disposition}
+			local eb = {name = b, group_attack = db.group_attack, _grug_disposition = db._grug_disposition}
+			-- Today a neutral mob never helps (group_attack is off, and no
+			-- neutral family carries the pack or swarm verb).
+			local today = a == b and da._grug_disposition ~= "neutral"
+			if grug_mobs.alert_kin(ea, eb) ~= today then all_equal = false end
+			if da._grug_disposition == "neutral" and da.group_attack ~= false then all_equal = false end
 		end
 	end
 	check(fam_equal, "no data: every mob is its own family (its role)")
-	check(all_equal, "no data: alert kin == same entity name for every pair (" ..
+	check(all_equal, "no data: alert kin == same entity name (never neutral) for every pair (" ..
 		#w.order .. " mobs)")
 	local static_ok = true
 	for _, name in ipairs(w.order) do
@@ -480,6 +487,7 @@ check(z5 == "grug_materials:bronze_bar/20/1-1 grug_mobs:zombie_flesh/1/1-1"
 check(rows_of(drops_at("grug_mobs:zombie", 15)):find("grug_materials:iron_bar/10/1-1", 1, true),
 	"zombie band 2 without rows: static drops (iron) as fallback")
 check(rows_of(drops_at("grug_mobs:large_rat", 2)) == "grug_mobs:rat_tail/1/1-1", "large rat band 1")
+check(same(drops_at("grug_mobs:large_rat", 15), rat.drops), "empty band list: the base's static drops")
 check(rows_of(drops_at("grug_mobs:rat_king_odo", 10)) ==
 	"grug_mobs:rat_fur_patch/1/2-3 grug_mobs:rat_tail/1/1-1", "leader sub-type gets the bonus")
 check(rows_of(drops_at("grug_mobs:large_rat", 2, {_grug_leader = true})) ==
@@ -496,7 +504,10 @@ drops_at("grug_mobs:rat_king_odo", 10)
 check(hooked == 2, "profession drop hooks see the band rows")
 
 -- Family alert.
-local function ent(name) return {name = name, group_attack = R[name].group_attack} end
+local function ent(name)
+	return {name = name, group_attack = R[name].group_attack,
+		_grug_disposition = R[name]._grug_disposition}
+end
 check(grug_mobs.family_of("grug_mobs:small_boar") == "boar"
 	and grug_mobs.family_of("small_boar") == "boar"
 	and grug_mobs.family_of("grug_mobs:boar") == "boar", "family_of: sub-type, role, existing")
@@ -514,8 +525,10 @@ check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:giant_r
 	"family rat does not include the giant rat (its own family)")
 check(not grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:braindead_zombie")),
 	"other family: no alert")
-check(grug_mobs.alert_kin(ent("grug_mobs:small_boar"), ent("grug_mobs:small_boar")),
-	"same name always (today's rule)")
+check(grug_mobs.alert_kin(ent("grug_mobs:large_rat"), ent("grug_mobs:large_rat")),
+	"same name (today's rule)")
+check(not grug_mobs.alert_kin(ent("grug_mobs:young_wolf"), ent("grug_mobs:young_wolf")),
+	"neutral: not even the same name")
 
 -- The swarm verb (giant-rat base): one engaged large rat calls kin only.
 local player = {is_player_stub = true, get_pos = function() return {x = 0, y = 0, z = 0} end}
@@ -552,6 +565,19 @@ end
 wolf_def.do_custom(fleeing, 1)
 check(mate.called == player and pup.called == nil, "pack: wolf yes, neutral young wolf no")
 check(grizzled.called == player, "pack: the aggressive grizzled wolf answers (family)")
+
+-- A fleeing neutral young wolf calls nobody, not even another young wolf.
+local young = idle("grug_mobs:young_wolf")
+young.state, young.attack, young.hp_max, young.health = "attack", player, 100, 10
+young.yaw_to_pos = function() end
+local pup2, mate2 = idle("grug_mobs:young_wolf"), idle("grug_mobs:wolf")
+w.objects = {}
+for _, e in ipairs({young, pup2, mate2}) do
+	w.objects[#w.objects + 1] = {get_luaentity = function() return e end}
+end
+R["grug_mobs:young_wolf"].do_custom(young, 1)
+check(young.state == "runaway", "the young wolf flees (the pack verb ran)")
+check(pup2.called == nil and mate2.called == nil, "pack: a neutral young wolf is a single pull")
 
 -- Participant drop hook.
 local got = {}
@@ -626,6 +652,12 @@ bad_world({subtypes = st():gsub('"aggressive"', '"angry"')}, "unknown dispositio
 bad_world({drops = '[{"family": "boar", "bands": {"1": [{"item": "grug_mobs:nope", "chance": 1}]}}]'},
 	"unknown drop item", "unknown item grug_mobs:nope")
 bad_world({drops = '[{"family": "boar", "bands": {"7": []}}]'}, "band key out of range", "is not 1..6")
+bad_world({items = '[{"id": "grug_mobs:x_item", "name": "X", "kind": "trophy"}]'}, "unknown item kind",
+	"kind must be signature, generic, reagent or quest")
+-- The rabbit (critter) has no attack_type: an aggressive sub-type of it would
+-- acquire players and never strike.
+bad_world({subtypes = st():gsub("grug_mobs:boar", "grug_mobs:rabbit")},
+	"aggressive sub-type of a base without attack_type", "has no attack_type")
 bad_world({tints = '[{"id": "t", "texture": "a.png", "modifier": "^[x"}]'}, "tint with both kinds",
 	"exactly one of texture or modifier")
 

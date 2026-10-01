@@ -94,11 +94,14 @@ function grug_mobs.subtype(name_or_role)
 end
 
 -- Do `a` and `b` answer each other's call for help (mobs_redo's group alert,
--- the pack_hunter and camp_swarm verbs)? The same entity name always did and
--- still does. Across a family both must take part in group alerts
--- (`group_attack`); the neutral disposition switches that off, so a neutral
--- sub-type stays a single pull and never pulls its aggressive relatives.
+-- the pack_hunter and camp_swarm verbs)? A neutral mob never does, not even
+-- with its own name: a neutral sub-type of a pack or swarm family stays a
+-- single pull. Otherwise the same entity name always did and still does;
+-- across a family both must take part in group alerts (`group_attack`).
 function grug_mobs.alert_kin(a, b)
+	if a._grug_disposition == "neutral" or b._grug_disposition == "neutral" then
+		return false
+	end
 	if a.name == b.name then
 		return true
 	end
@@ -218,10 +221,15 @@ local ITEM_GROUPS = {
 }
 local new_items = {} -- ids this file registered or expects from their own mod
 
+local ITEM_KINDS = {signature = true, quest = true, generic = true, reagent = true}
+
 for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) do
 	if type(row) ~= "table" or type(row.id) ~= "string"
 			or not row.id:match("^[%w_]+:[%w_]+$") then
 		fail("items.json", i, "needs an id 'mod:name'")
+	end
+	if not ITEM_KINDS[row.kind] then
+		fail("items.json", row.id, "kind must be signature, generic, reagent or quest")
 	end
 	if PLACEHOLDER_IMAGE[row.kind] and not core.registered_items[row.id] then
 		if row.id:sub(1, 10) ~= "grug_mobs:" then
@@ -305,7 +313,7 @@ function grug_mobs.level_band(level)
 end
 
 -- The drop rows of this mob from its family table, or nil when the family
--- has no table or the table has no rows for the mob's band: the caller then
+-- has no table or the table has no (or an empty) row list for the mob's band: the caller then
 -- keeps the definition's static drops (aggro.lua _item_drop_filter). A leader
 -- (sub-type `leader`, or `_grug_leader` on a placed leader) adds the
 -- family's leader_bonus. The rows are fresh tables every call.
@@ -314,7 +322,7 @@ function grug_mobs.band_drop_rows(self)
 	local sub = SUBTYPES[role]
 	local entry = DROPS[sub and sub.drops or role]
 	local rows = entry and entry.bands[grug_mobs.level_band(self._grug_level)]
-	if not rows then
+	if not rows or #rows == 0 then
 		return nil
 	end
 	local out = {}
@@ -394,6 +402,11 @@ local function register_subtype(i, row)
 	end
 	if not DISPOSITIONS[row.disposition] then
 		fail(file, role, "disposition must be neutral, aggressive or critter")
+	end
+	-- An aggressive mob acquires players on sight; without an attack type it
+	-- would chase them and never strike.
+	if row.disposition == "aggressive" and not def.attack_type then
+		fail(file, role, "aggressive, but base " .. base .. " has no attack_type")
 	end
 	local tier = row.tier or "normal"
 	if tier ~= "normal" and tier ~= "elite" then

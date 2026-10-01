@@ -133,7 +133,10 @@ class Ledger:
                 lo, hi = row.get("min", 1), row.get("max", 1)
                 out[row["item"]] = out.get(row["item"], 0) + (lo + hi) / 2 / max(1, row.get("chance", 1))
             return out
-        entity = (self.existing.get("entities") or {}).get("grug_mobs:" + role)
+        # Static fallback: an existing mob's own drops; a sub-type's are its
+        # base entity's (the game copies the base definition).
+        base = (sub or {}).get("base") or ("grug_mobs:" + role)
+        entity = (self.existing.get("entities") or {}).get(base)
         if entity:
             for row in entity.get("drops") or []:
                 lo, hi = row.get("min", 1), row.get("max", 1)
