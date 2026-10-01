@@ -1,0 +1,15 @@
+[
+  {"family": "boar", "bands": {"1": [
+    {"item": "mobs:meat_raw", "chance": 1, "min": 1, "max": 1},
+    {"item": "grug_mobs:boar_tusk", "chance": 1}
+  ]}},
+  {"family": "rat", "bands": {"1": [
+    {"item": "grug_mobs:rat_tail", "chance": 1}
+  ]}, "leader_bonus": [
+    {"item": "grug_mobs:rat_fur_patch", "chance": 1, "min": 2, "max": 3}
+  ]},
+  {"family": "zombie", "bands": {"1": [
+    {"item": "grug_mobs:zombie_flesh", "chance": 1},
+    {"item": "grug_materials:bronze_bar", "chance": 20}
+  ]}}
+]
