@@ -72,44 +72,63 @@ local function offerable(player, def, state)
 		if not def.repeatable then return false, "This quest is not available." end
 		local left = cooldown_left(def, state)
 		if left > 0 then
-			return false, ("Repeatable again in %d min."):format(math.ceil(left / 60))
+			return false, ("Repeatable again in %s."):format(Q.cooldown_text(left))
 		end
 	end
 	return permitted(player, def, state)
 end
--- Item objectives draw from one snapshot in order, so two objectives never
--- count the same item twice; group objectives take matching names in sorted
--- order (deterministic).
+-- Item objectives draw from one snapshot, so two objectives never count the
+-- same item twice: exact items first, then groups (matching names in sorted
+-- order, deterministic). `allocation[index]` (item name -> count) is what
+-- objective `index` counts; the turn-in takes exactly that, so the readiness
+-- shown and the items taken can never disagree. A travel quest's
+-- conversation is complete from the start (ruling 39).
 local function progress(player, def, active, snapshot)
 	local counts, rows, ready = table.copy(snapshot or holdings(player)), {}, true
-	local names
-	for index, objective in ipairs(def.objectives) do
-		local count
-		if objective.type == "kill" or objective.type == "talk" then count = active[index] or 0
-		elseif objective.item then
-			count = math.min(objective.count, counts[objective.item] or 0)
-			counts[objective.item] = (counts[objective.item] or 0) - count
-		else
-			if not names then
-				names = {}
-				for name in pairs(counts) do names[#names + 1] = name end
-				table.sort(names)
-			end
-			count = 0
-			for _, name in ipairs(names) do
-				if count >= objective.count then break end
-				if counts[name] > 0 and accepts(objective, name) then
-					local take = math.min(objective.count - count, counts[name])
-					counts[name], count = counts[name] - take, count + take
+	local allocation, names = {}, nil
+	local function take(index, name, wanted)
+		local amount = math.min(wanted, counts[name] or 0)
+		if amount > 0 then
+			counts[name] = counts[name] - amount
+			allocation[index][name] = (allocation[index][name] or 0) + amount
+		end
+		return amount
+	end
+	for pass = 1, 2 do
+		for index, objective in ipairs(def.objectives) do
+			if objective.type == "item" and (pass == 1) == (objective.item ~= nil) then
+				allocation[index] = {}
+				if objective.item then
+					take(index, objective.item, objective.count)
+				else
+					if not names then
+						names = {}
+						for name in pairs(counts) do names[#names + 1] = name end
+						table.sort(names)
+					end
+					local got = 0
+					for _, name in ipairs(names) do
+						if got >= objective.count then break end
+						if accepts(objective, name) then got = got + take(index, name, objective.count - got) end
+					end
 				end
 			end
+		end
+	end
+	for index, objective in ipairs(def.objectives) do
+		local count
+		if objective.type == "talk" then count = objective.count
+		elseif objective.type == "kill" then count = active[index] or 0
+		else
+			count = 0
+			for _, amount in pairs(allocation[index]) do count = count + amount end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
 			mobs = objective.mobs, npc = objective.npc, count = count,
 			required = objective.count, description = objective.description}
 		if count < objective.count then ready = false end
 	end
-	return rows, ready
+	return rows, ready, allocation
 end
 function Q.status(player, id)
 	local def, state = Q.registered_quests[id], load(player)
@@ -160,13 +179,10 @@ function Q.accept(player, id)
 	local count = 0
 	for _ in pairs(state.active) do count = count + 1 end
 	if count >= 20 then return false, "Your quest log is full (20 quests). Complete or abandon a quest first." end
-	-- A travel quest's conversation counts from the start (ruling 39): the
-	-- destination shows its "?" at once; the turn-in still needs the visit.
-	local counters = {}
-	for index, objective in ipairs(def.objectives) do
-		if objective.type == "talk" then counters[index] = objective.count end
-	end
-	state.active[id] = counters
+	-- A travel quest's conversation counts from the start (ruling 39, see
+	-- progress): the destination shows its "?" at once; the turn-in still
+	-- needs the visit.
+	state.active[id] = {}
 	if #state.tracked < Q.MAX_TRACKED then state.tracked[#state.tracked + 1] = id end
 	save(player, state)
 	changed(player)
@@ -224,25 +240,25 @@ function Q.journal(player)
 end
 -- Preflight copies every owned slot. Removing requirements and adding rewards
 -- to the same copies accounts for space freed by this very hand-in.
-local function settlement(player, def)
+local function settlement(player, def, active)
 	local inv, rows = player:get_inventory(), {}
 	for _, list in ipairs(owned_lists(player)) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			rows[#rows + 1] = {list = list, index = index, expected = ItemStack(stack), replacement = ItemStack(stack)}
 		end
 	end
-	for _, objective in ipairs(def.objectives) do
-		if objective.type == "item" then
-			local remaining = objective.count
+	local _, ready, allocation = progress(player, def, active)
+	if not ready then return nil, "You no longer have all required items." end
+	for _, taken in pairs(allocation) do
+		for name, amount in pairs(taken) do
 			for _, row in ipairs(rows) do
 				local stack = row.replacement
-				if remaining > 0 and accepts(objective, stack:get_name()) then
-					local take = math.min(remaining, stack:get_count())
-					stack:take_item(take)
-					remaining = remaining - take
+				if amount > 0 and stack:get_name() == name then
+					local count = math.min(amount, stack:get_count())
+					stack:take_item(count)
+					amount = amount - count
 				end
 			end
-			if remaining > 0 then return nil, "You no longer have all required items." end
 		end
 	end
 	for _, reward in ipairs(def.rewards.items) do
@@ -268,7 +284,7 @@ function Q.turn_in(player, id)
 	local _, ready = progress(player, def, state.active[id])
 	if not ready then return false, "The objectives are not complete." end
 	if grug_money.get(player) + def.rewards.copper > grug_money.MAX then return false, "Your coin purse cannot hold the reward." end
-	local rows, error_message = settlement(player, def)
+	local rows, error_message = settlement(player, def, state.active[id])
 	if not rows then return false, error_message end
 	local inv = player:get_inventory()
 	for _, row in ipairs(rows) do
@@ -346,6 +362,8 @@ end
 -- group never competes for them. `participants` are player names (B2's
 -- participant drop hook: the same set kill credit uses).
 function Q.roll_quest_drops(mob, participants, pos)
+	-- Most kills drop nothing for quests: one set lookup ends them here.
+	if not Q.quest_drop_mobs[mob.name] then return end
 	for _, name in ipairs(participants) do
 		local player = core.get_player_by_name(name)
 		if player then

@@ -547,6 +547,44 @@ Q.credit_kill(ann, mob("boar"), AT)
 check(Q.turn_in(ann, "fx_legacy"), "turn in the legacy quest")
 eq(granted_xp[#granted_xp], "ann 50 quest", "legacy fixed XP")
 
+-- A group objective overlapping an exact-item objective (review case): the
+-- readiness shown and the items taken use one allocation, exact items first.
+Q.register_quest("fx_overlap_a", {title = "Overlap A", description = "A.", npc = "r14_human_elder",
+	objectives = {{type = "item", group = "tree", count = 5}, {type = "item", item = "default:tree", count = 5}},
+	rewards = {xp = 1}})
+Q.register_quest("fx_overlap_b", {title = "Overlap B", description = "B.", npc = "r14_human_elder",
+	objectives = {{type = "item", group = "tree", count = 5}, {type = "item", item = "default:pine_tree", count = 5}},
+	rewards = {xp = 1}})
+local function overlap(id, first, second)
+	local p = make_player("ov_" .. id, 60)
+	p:give(first)
+	p:give(second)
+	check(Q.accept(p, id), "accept " .. id)
+	eq(Q.status(p, id), "ready", id .. ": five apple and five pine logs satisfy both objectives")
+	check(Q.turn_in(p, id), id .. ": the turn-in takes what progress counted")
+	eq(p:count("default:tree") + p:count("default:pine_tree"), 0, id .. ": all ten logs taken")
+	local q = make_player("ov2_" .. id, 60)
+	q:give(first)
+	check(Q.accept(q, id), "accept " .. id .. " with five logs")
+	eq(Q.status(q, id), "active", id .. ": five logs do not satisfy both")
+	local ok2 = Q.turn_in(q, id)
+	eq(ok2, false, id .. ": no turn-in that progress calls incomplete")
+	eq(q:count(first:match("^%S+")), 5, id .. ": nothing taken")
+end
+overlap("fx_overlap_a", "default:tree 5", "default:pine_tree 5")
+overlap("fx_overlap_b", "default:pine_tree 5", "default:tree 5")
+-- Persisted talk counters never matter: a travel quest is complete from the start.
+local tim = make_player("tim", 10)
+serial[#serial + 1] = {active = {fx_travel = {}}, completed = {}, tracked = {}, hud = true}
+tim:get_meta():set_string("grug_quests:state", tostring(#serial))
+eq(Q.status(tim, "fx_travel"), "ready", "travel quest with empty persisted counters is ready")
+-- The drop hook ends at once for mobs no quest drop names.
+math.random = function() error("no roll expected") end
+drop_hooks[1](mob("small_boar", "elandor_dawnmere_fields/home_fields_day"), {"ann", "bob"}, AT)
+check(not Q.quest_drop_mobs["grug_mobs:small_boar"] and Q.quest_drop_mobs["grug_mobs:confused_bandit"],
+	"quest-drop mob set")
+math.random = random
+
 -- The new giver's quest goes through its dialogue.
 level_of.ann = 20
 has(dialogue(ann, "fx_lore_keeper", "fx_lore_01"), "Stones for the Shrine", "new giver offers its quest")
@@ -712,6 +750,18 @@ for _, case in ipairs(cases) do
 				name .. ": message names the file and " .. where .. ": " .. hit)
 		end
 	end
+end
+-- A new giver of an unknown race: a logged warning, not an error (as validate.py).
+do
+	local warnings = {}
+	local log_fn = core.log
+	core.log = function(level, text) if level == "warning" then warnings[#warnings + 1] = text end end
+	local mutated = deep_copy(base_files)
+	mutated[2].data.hubs[1].givers[2].new.race = "gnome"
+	eq(#V.structure(mutated, npcs_before), 0, "unknown new-giver race is no error")
+	core.log = log_fn
+	check(warnings[1] and warnings[1]:find("race gnome", 1, true) and warnings[1]:find("W-new-giver", 1, true)
+		and warnings[1]:find("zones/elandor_highcourt.quests.json", 1, true), "unknown race logged: " .. tostring(warnings[1]))
 end
 -- The loader stops the load with every finding listed.
 local broken = deep_copy(base_files)

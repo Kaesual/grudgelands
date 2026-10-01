@@ -192,3 +192,11 @@ Quest content is data, one file per zone, read at load by
   level fit (every level a target is met at lies within the quest's reward
   level ±3). `tools/r28_design/validate.py` checks the same rules on the
   design files, plus the atlas checks.
+- Item objectives allocate held items exact items first, then groups; the
+  turn-in takes exactly what the progress counted.
+- **For content lanes: zone files depend on each other.** `requires` crosses
+  zones: today each race's home-zone file requires three quests and its
+  capital file one quest of the start zone, and a front file needs its
+  host's `front` line. Removing a required quest or a host's `front` line
+  stops the load, so replace dependent zone files in one change (or keep the
+  required ids).

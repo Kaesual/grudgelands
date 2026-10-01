@@ -3,6 +3,8 @@ grug_quests.registered_quests = quests
 grug_quests.registered_npcs = npcs
 grug_quests.quests_by_npc = {}
 grug_quests.npc_by_socket = {}
+-- Entity names any quest-only drop can come from (roll_quest_drops' early exit).
+grug_quests.quest_drop_mobs = {}
 local function integer(n)
 	return type(n) == "number" and n >= 0 and n <= 2147483647 and n % 1 == 0
 end
@@ -63,6 +65,7 @@ function grug_quests.register_quest(id, def)
 	for _, drop in ipairs(def.quest_drops) do
 		assert(type(drop.item) == "string" and integer(drop.chance) and drop.chance > 0 and
 			type(drop.mobs) == "table" and #drop.mobs > 0, "Invalid quest drop")
+		for _, name in ipairs(drop.mobs) do grug_quests.quest_drop_mobs[name] = true end
 	end
 	local requirements = {"Minimum level: " .. def.min_level}
 	if #def.prerequisites > 0 then

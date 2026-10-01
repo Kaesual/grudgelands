@@ -25,6 +25,7 @@ V.FRONT_LINE = "front"
 V.LEGACY_GUARDS = {["grug_mobs:guard_accord"] = true, ["grug_mobs:guard_throng"] = true}
 
 local SNAKE = "^[a-z][a-z0-9_]*$"
+V.RACES = {dwarf = true, human = true, elf = true, undead = true, orc = true, troll = true}
 
 local function int(value, lo, hi)
 	return type(value) == "number" and value % 1 == 0 and (not lo or value >= lo) and
@@ -192,6 +193,11 @@ function V.structure(files, npcs)
 								if type(new) ~= "table" or not text(new.name) or not text(new.race) or
 										not text(new.socket) then
 									add(where, "'new' must be {\"name\", \"race\", \"socket\"} [E-new-giver]")
+								elseif not V.RACES[new.race] then
+									-- A warning, as in validate.py: the giver keeps the
+									-- settlement's race (start_npcs.lua).
+									core.log("warning", ("[grug_quests] zones/%s: %s: race %s is not one of " ..
+										"dwarf, elf, human, orc, troll, undead [W-new-giver]"):format(file.name, where, new.race))
 								end
 							elseif not npcs[npc] then
 								add(where, "is not a registered quest NPC [E-unknown-npc]")
