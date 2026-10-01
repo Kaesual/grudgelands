@@ -90,7 +90,7 @@ local function guard_tick(self, dtime)
 		self._grug_elite_checked = true
 		if (self._grug_level or 0) >= ELITE_LEVEL
 				and (self._grug_tier or "normal") == "normal" then
-			-- x3 HP, x1.8 damage, armor 80, x1.6 scale, gold tint — and the
+			-- x3 HP, x1.8 damage, armor 80, x1.4 scale, gold tint — and the
 			-- 2 s wind-up telegraph (telegraph.lua fires for elite/rare).
 			grug_mobs.set_tier(self, "elite")
 		end
@@ -116,6 +116,11 @@ local function guard_tick(self, dtime)
 	-- exactly the mob the stuck rescue was written for (patrol.lua).
 	local route = self._grug_patrol_route
 	if route then
+		-- A route carrier walks its loop straight (Round 28 ruling 11):
+		-- mobs_redo's random walk turns (30 % per walk-state pass) made a
+		-- gate guard veer off between the 1 Hz route nudges. A plain field,
+		-- so it also rides in staticdata; post guards keep their idle turns.
+		self.randomly_turn = false
 		grug_mobs.route_tick(self, dtime, route.points, route, "wp", true)
 	end
 	-- A START SETTLEMENT's post guard holds its authored socket and faces its
