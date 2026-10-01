@@ -290,6 +290,8 @@ charged effect. Enemy target memory is UI state and never supplies aim.
   Node/object press events supplement sampled controls; a fresh press may
   pick up one visible drop within 4 m. Native enemy punch packets are input
   only and cannot create damage, rage, threat, wear or procs by themselves.
+  Dropped items never block the combat ray: a hostile behind loot is aimed
+  at, struck and shown red as if the loot were not there.
   `classes.md` §2b owns current input arbitration and accepted engine limits.
 - **One server-authoritative clock owns all swing-ability damage.** LMB held
   with a swing selected allows attempts; it never creates partial or fast

@@ -282,16 +282,15 @@ local function reset_draw_stack(player)
 	for index, stack in ipairs(inv and inv:get_list("main") or {}) do
 		if stack:get_name() == "grug_abilities:loose" then
 			local meta = stack:get_meta()
-			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source or
-					meta:get_string("range") ~= "" then
+			if stack:get_wear() ~= 0 or meta:get_string("wield_image") ~= source then
 				stack:set_wear(0)
 				meta:set_string("wield_image", source)
-				meta:set_string("range", "")
 				inv:set_stack("main", index, stack)
 			end
-			return
+			break
 		end
 	end
+	if grug_abilities.input then grug_abilities.input.hold_range(player, "bow", false) end
 end
 
 local function clear_draw(player)
@@ -317,10 +316,6 @@ local function set_draw_wear(player, fraction)
 			stack:set_wear(math.floor((9 - step) / 9 * 65534))
 			local meta = stack:get_meta()
 			meta:set_string("wield_image", staged_bow_image(player, stage))
-			-- Zero pointing range (tool.cpp getToolRange reads meta "range"):
-			-- while drawn the client points at nothing, so held RMB repeats no
-			-- node placement and plays no place swing. Same write as the stage.
-			meta:set_string("range", "0")
 			inv:set_stack("main", index, stack)
 			return
 		end
@@ -385,6 +380,10 @@ local function start_draw(player)
 		action_id = receipt,
 	}
 	set_draw_wear(player, 0)
+	-- Zero pointing range while drawn (input.lua hold_range, shared with an
+	-- LMB combat hold): the client points at nothing, so held RMB repeats no
+	-- node placement and plays no place swing.
+	grug_abilities.input.hold_range(player, "bow", true)
 	grug_abilities.crosshair.set_ring(player, 0, "bow")
 	grug_core.set_move_stance(player, DRAW_STANCE, DRAW_STANCE_FACTOR)
 	return true
@@ -456,8 +455,8 @@ end)
 
 grug_core.register_on_stun(clear_draw)
 core.register_on_dieplayer(clear_draw)
--- A crash mid-draw leaves the saved Loose stack drawn (wear, stage image,
--- range "0"); every join starts from the undrawn stack.
+-- A crash mid-draw leaves the saved Loose stack drawn (wear, stage image);
+-- every join starts from the undrawn stack (input.lua clears the range).
 core.register_on_joinplayer(function(player) reset_draw_stack(player) end)
 core.register_on_leaveplayer(function(player)
 	clear_draw(player)

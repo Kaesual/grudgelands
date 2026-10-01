@@ -13,6 +13,10 @@ return function(api)
 	-- waits this long: every try resets the swing boundary, which would keep
 	-- the held Strike fallback from accumulating.
 	local RETRY_US = 250000
+	-- An LMB mode outlives a release seen this soon after it was decided: a
+	-- native punch reports the press before the next control report (up to
+	-- one dedicated_server_step later) does.
+	local MODE_GRACE_US = 150000
 	local pickup_delegate
 	local entity_rightclick = {} -- entity name -> unwrapped on_rightclick
 	local function food_api() return rawget(_G, "grug_food") end
@@ -67,9 +71,56 @@ return function(api)
 		if not s then s = {}; states[name] = s end
 		return s
 	end
+	-- Zero pointing range on the held skill stack (tool.cpp getToolRange
+	-- reads meta "range"): the client then points at nothing, so it neither
+	-- digs, cracks nor punches. Owners ("combat": an LMB combat hold, "bow":
+	-- a Loose draw) share the one meta key; the stack points again once the
+	-- last owner lets go. Written with set_wielded_item(stack, true): sent at
+	-- once and without the wield-change animation a meta change would play.
+	local ranges = {} -- player name -> {owners = {}, list, index, item}
+	local function write_range(player, r, value)
+		local inv = player:get_inventory()
+		local stack = inv and inv:get_stack(r.list, r.index)
+		if not stack or stack:get_name() ~= r.item then return end
+		local meta = stack:get_meta()
+		if meta:get_string("range") == value then return end
+		meta:set_string("range", value)
+		if player:get_wield_list() == r.list and player:get_wield_index() == r.index then
+			player:set_wielded_item(stack, true)
+		else
+			inv:set_stack(r.list, r.index, stack)
+		end
+	end
+	local function hold_range(player, owner, on)
+		local name = player:get_player_name()
+		local r = ranges[name]
+		if on then
+			local list, index = player:get_wield_list(), player:get_wield_index()
+			local item = player:get_wielded_item():get_name()
+			if r and (r.list ~= list or r.index ~= index or r.item ~= item) then
+				write_range(player, r, "") -- another stack: let the old one go
+				r = nil
+			end
+			r = r or {owners = {}, list = list, index = index, item = item}
+			ranges[name] = r
+			r.owners[owner] = true
+			write_range(player, r, "0")
+		elseif r and r.owners[owner] then
+			r.owners[owner] = nil
+			if next(r.owners) == nil then
+				ranges[name] = nil
+				write_range(player, r, "")
+			end
+		end
+	end
+	local function end_mode(player, s)
+		if s.mode == "combat" then hold_range(player, "combat", false) end
+		s.mode, s.mode_at = nil, nil
+	end
 	-- Drop every pending action of the previous item or press.
 	local function reset(player, s)
 		end_food_hold(player)
+		end_mode(player, s)
 		s.pending, s.dig, s.right, s.food = nil, nil, nil, nil
 		if Q.cancel_bow_draw then Q.cancel_bow_draw(player) end
 	end
@@ -90,14 +141,18 @@ return function(api)
 	local function new_food_press(now)
 		return {started = now, observed = now, held = 0, stage = "press"}
 	end
-	local function hand_node(player, hit, distance)
+	-- A node within hand reach that bare hands can dig, protection aside.
+	local function hand_diggable(hit, distance)
 		if not hit or hit.type ~= "node" or distance > HAND_RANGE then return false end
 		local node = core.get_node_or_nil(hit.under)
 		local def = node and core.registered_nodes[node.name]
-		if not def or def.diggable == false or
-				core.is_protected(hit.under, player:get_player_name()) then return false end
+		if not def or def.diggable == false then return false end
 		local caps = ItemStack(""):get_tool_capabilities()
 		return core.get_dig_params(def.groups or {}, caps).diggable == true
+	end
+	local function hand_node(player, hit, distance)
+		return hand_diggable(hit, distance) and
+			not core.is_protected(hit.under, player:get_player_name())
 	end
 	local function support(def)
 		return def and (def.target_kind == "self" or def.target_kind == "friendly")
@@ -132,6 +187,43 @@ return function(api)
 		end
 		s.failed[def.id] = now
 		return false
+	end
+	-- LMB mode lock (Round 28 ruling 14), decided once per press: "combat"
+	-- when the combat ray (plants and dropped loot never hide a mob) finds a
+	-- valid hostile within max(hand reach, skill range); otherwise "gather"
+	-- when the hand ray's first thing within reach is a hand-diggable or a
+	-- protected node (the client keeps pointing, so the Round 24 protection
+	-- hint stays) or a dropped item; otherwise "combat" (air, out of reach,
+	-- anything else). Combat never digs (zero pointing range, can_dig
+	-- refuses); gather never swings.
+	local function combat_reach(player, def)
+		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
+		if def.id == "loose" then return HAND_RANGE end
+		return math.max(HAND_RANGE, Q.get_range(player, def))
+	end
+	local function decide_mode(player, def)
+		local r = grug_core.combat_ray(player, combat_reach(player, def))
+		if r.status == "target" and Q.valid_target(player, r.target, "hostile") then
+			return "combat"
+		end
+		local hit, distance = ray(player, HAND_RANGE)
+		if hit and distance <= HAND_RANGE then
+			if hit.type == "object" then
+				local ent = hit.ref and hit.ref:get_luaentity()
+				if ent and ent.name == "__builtin:item" then return "gather" end
+			elseif hand_diggable(hit, distance) or
+					core.is_protected(hit.under, player:get_player_name()) then
+				return "gather"
+			end
+		end
+		return "combat"
+	end
+	-- What a combat hold acts on: the combat ray's first actor, else nothing.
+	local function combat_hit(player, def)
+		local r = grug_core.combat_ray(player, combat_reach(player, def))
+		if not r.target or r.reason == "out_of_range" then return nil end
+		return {type = "object", ref = r.target,
+			intersection_point = r.pointed and r.pointed.intersection_point}, r.distance or 0
 	end
 	local function interactive(hit, distance)
 		if not hit or distance > HAND_RANGE then return false end
@@ -226,6 +318,8 @@ return function(api)
 		end
 		if hit and hit.type == "object" then
 			s.dig = nil
+			-- Gather never swings or casts at an actor that crosses the ray.
+			if s.mode == "gather" then return end
 			if Q.valid_target(player, hit.ref, "friendly") then
 				if support(def) and not def.offensive then cast(player, def, s, hit, fresh) end
 				return
@@ -244,7 +338,7 @@ return function(api)
 			-- this press's initial pickup attempt and non-healable service NPCs.
 			return
 		end
-		if hand_node(player, hit, distance) then
+		if s.mode ~= "combat" and hand_node(player, hit, distance) then
 			if not s.dig or not same(s.dig.pos, hit.under) then
 				s.dig = {pos = vector.copy(hit.under), started = now}
 			end
@@ -256,7 +350,17 @@ return function(api)
 			return
 		end
 		s.dig = nil
-		if not s.empty_used and support(def) then
+		if s.mode == "gather" and hit and hit.type == "node" then
+			-- A gather press on a node the hand may not dig (protected town
+			-- ground): a short tap still casts a self/support skill (Blink in a
+			-- town); holding only earns the protection hint.
+			if fresh and support(def) and castable(def, s) then
+				s.pending = {pos = vector.copy(hit.under), started = now, id = def.id,
+					node = core.get_node_or_nil(hit.under).name}
+			end
+			return
+		end
+		if s.mode ~= "gather" and not s.empty_used and support(def) then
 			s.empty_used = true
 			cast(player, def, s, nil, true)
 		end
@@ -266,6 +370,10 @@ return function(api)
 	local function step(player, press)
 		local s, controls = state(player), player:get_player_control()
 		local down, right = controls.dig == true or press == true, controls.place == true
+		-- LMB released: the hold's mode ends (after the grace, see MODE_GRACE_US).
+		if not down and s.mode and core.get_us_time() - s.mode_at >= MODE_GRACE_US then
+			end_mode(player, s)
+		end
 		local item, slot = player:get_wielded_item():get_name(), player:get_wield_index()
 		local def = selected(player)
 		-- One native RMB action per physical press (see M.food_native).
@@ -298,9 +406,12 @@ return function(api)
 			s.down, s.rmb = down, right
 			return
 		end
-		-- Food decides from the native pointed thing, never from this ray.
+		-- Food decides from the native pointed thing, never from this ray. A
+		-- held combat press acts on the combat ray alone (below).
 		local hit, distance
-		if def then hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def))) end
+		if def and not (s.mode == "combat" and down and not right) then
+			hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def)))
+		end
 		if right and not s.rmb then right_begin(player, s, def, hit, distance) end
 		if right and s.right == "food" then food_hold(player, s) end
 		if right then
@@ -313,6 +424,14 @@ return function(api)
 			release_right(player, s)
 			s.rmb, s.down = false, down
 			return -- Scout settles the release before another weapon action.
+		end
+		if down and def and not s.mode then
+			-- Key-down (or a press first seen after an RMB action): lock the mode.
+			s.mode, s.mode_at = decide_mode(player, def), core.get_us_time()
+			if s.mode == "combat" then hold_range(player, "combat", true) end
+		end
+		if down and def and s.mode == "combat" then
+			hit, distance = combat_hit(player, def)
 		end
 		if down and not s.down then
 			s.used, s.empty_used, s.cast_press = false, false, false
@@ -359,6 +478,8 @@ return function(api)
 		return state(player).right
 	end
 	function M.cancel(player) cancel(player, state(player)) end
+	-- The bow draw (scout.lua) is the other owner of the zero pointing range.
+	function M.hold_range(player, owner, on) hold_range(player, owner, on) end
 	-- Crosshair feedback (crosshair.lua): is the first thing within hand reach
 	-- something a press would interact with? The same ray and classification
 	-- an RMB press uses, plus a dropped item (the LMB pickup of `activate`).
@@ -436,7 +557,7 @@ return function(api)
 			local eating = is_food(player:get_wielded_item():get_name())
 			return not (eating and player:get_player_control().place and s.right)
 		end
-		if not selected(player) or not allowed(player) or s.cancelled or
+		if not selected(player) or not allowed(player) or s.cancelled or s.mode == "combat" or
 				not player:get_player_control().dig or player:get_player_control().place or
 				s.right or not api.within_hand_reach(player, pos) then
 			return false
@@ -506,6 +627,24 @@ return function(api)
 	end)
 	grug_core.register_on_stun(M.cancel)
 	core.register_on_dieplayer(M.cancel)
-	core.register_on_leaveplayer(function(player) states[player:get_player_name()] = nil end)
+	core.register_on_leaveplayer(function(player)
+		local name = player:get_player_name()
+		local r = ranges[name]
+		if r then write_range(player, r, "") end -- never saved without pointing
+		ranges[name], states[name] = nil, nil
+	end)
+	-- A crash mid-hold saves a skill stack without pointing range; every join
+	-- starts with all of them pointing.
+	core.register_on_joinplayer(function(player)
+		local inv = player:get_inventory()
+		for index, stack in ipairs(inv and inv:get_list("main") or {}) do
+			local meta = stack:get_meta()
+			if meta:get_string("range") ~= "" and
+					core.get_item_group(stack:get_name(), "grug_ability") > 0 then
+				meta:set_string("range", "")
+				inv:set_stack("main", index, stack)
+			end
+		end
+	end)
 	return M
 end
