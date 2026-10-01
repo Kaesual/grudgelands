@@ -451,6 +451,12 @@
           "max": 1
         },
         {
+          "item": "grug_mobs:fang",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
           "item": "grug_mobs:fox_tail",
           "chance": 3,
           "min": 1,
@@ -466,6 +472,12 @@
         },
         {
           "item": "mobs:leather",
+          "chance": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item": "grug_mobs:fang",
           "chance": 3,
           "min": 1,
           "max": 1

@@ -586,7 +586,7 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Boar (exists; per-biome tint: Plague Boar in blight, Jungle Boar east) | charges — a mid-range **rush**: the stalker impulse flattened horizontally, triggered at 4–10 m with an 8 s cooldown | day | 4.6 (WP6 retune to 4.4, band raise 2026-09-16) | meat 1/1 ×1–2; light leather 1/2 `[leather]`; tusk 1/3 | grug_mobs_boar.b3d (have) |
 | Rabbit/Hare (tints) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_rabbit |
-| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | zombie flesh 1/1; linen scrap 1/2; steel ingot 1/10 | mobs_mc_zombie (have) |
+| Zombie (exists) | damage-sustained pursuit; 15 s without incoming damage plus moving target | night (in grug_blight: 24 h — Undead identity) | 4.6 | the zombie band table (Round 28, "Loot by band"): rotting flesh 1/2; linen scrap 1/2; the band's flesh 1/2 (T3+ also its tooth 1/3) and cloth (linen cloth from band 2, heavy cloth from band 3) 1/2; the band's tier bar 1/50. Static fallback, unused while the table covers every band: zombie flesh 1/1; linen scrap 1/2; iron bar 1/10 | mobs_mc_zombie (have) |
 | Bandit (camp humanoid; two fixed camps per race region) | defends camp (leashes to camp, group) | 24 h | 4.6 | linen cloth 1/1 ×1–2 (home camp) / heavy cloth (frontier camp); copper coins | character.b3d + bandit skins (LotT-derived) |
 | **Bandit Archer** (added 2026-09-16, ruling 3) — the same camp, one slot in three | dogshoot (ranged); view range **16** | 24 h | **4.0** in combat, like the Skeleton Archer (no soft de-aggro); roams at the Bandit's calm walk 1 (Round 24) | the Bandit's table **plus arrows 1/3** | character.b3d + the same bandit skins; the Skeleton Archer's arrow entity, no new art |
 
@@ -1481,6 +1481,24 @@ band (missing or an empty list), keeps the definition's static drops (a
 sub-type's are its base's). The player-tag rule, the
 profession drop hooks and quality loot apply unchanged; a table can give
 drops to a mob that has no static drops.
+
+Seven drop families are named after existing roles, so those existing mobs
+(not only their sub-types) use the band tables in the bands listed, and their
+static rows above apply only outside them:
+
+- **Boar** (bands 1–3): meat 1/1 ×1 (was ×1–2), light leather 1/2, the band's
+  tusk 1/3 (Boar Tusk, Ridged, Gnarled).
+- **Zombie** (all bands): see its row above; the guaranteed flesh becomes 1/2
+  and the bar 1/10 becomes the band's tier bar at 1/50.
+- **Fox** (bands 1–3): meat 1/1, leather 1/3 (was 1/2), Fang 1/3 kept in bands
+  1–2 (quests ask for it), the band's tail 1/3 (Fox Tail, Brush, Silver-Tip).
+- **Bear** (bands 3, 4, 6): meat 1/1 ×1 (was ×2), heavy leather 1/3 (was
+  1/2), Bear Claw 1/3 (was 1/4), from band 4 also the band's claw 1/3.
+- **Crocodile** (bands 2–3): meat 1/1, Crocodile Tooth 1/3 and the band's
+  tooth 1/3; no guaranteed Scaled Hide any more.
+- **Wisp** (bands 2–4): the band's mote 1/3 (it had no drops).
+- **Mirefolk** (bands 2–3): linen cloth (band 2) or heavy cloth (band 3) 1/2,
+  the band's reed pearl 1/3, Shiny Scale 1/4; no Raw Fish any more.
 
 **Quest-only drops** (ruling 41) use
 `grug_mobs.register_participant_drop_hook(fn)`: once per kill with at least

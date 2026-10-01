@@ -14,6 +14,12 @@ Edit the catalogue and this copy together and rerun
 `python3 tools/r28_design/validate.py --design docs/planning/round28/design --atlas docs/planning/round28/zones`.
 `reagents.json` is an empty list: the catalogue defines no universal reagent.
 
+Until the zone spawn areas land (Round 28 lanes E2/E3), only existing mobs
+named after a drop family drop catalogue loot (Boar tusks, Zombie flesh and
+teeth), so only Strength, Critical chance and Maximum HP enchants can be made,
+none at T5: 245 of the 588 operations
+([crafting_equipment_revision.md](../../../../docs/design/crafting_equipment_revision.md)).
+
 ## Format
 
 `enchants.json`: one entry per tier 1–6,
