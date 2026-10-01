@@ -66,7 +66,9 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   `front`, which the host's `quests.json` must declare for that giver
   (`E-front-line`); the host's own quests never use `front`. In a contested
   zone every outpost giver declares `front` (`E-front-reserve`), except in
-  zones with a single quest NPC (Glassroot, Thunderroot). A front file whose
+  zones with a single quest NPC (Glassroot, Thunderroot); in a capital at
+  least one giver declares it.
+- Reward items are `[{"item": id, "count": n}]`. A front file whose
   host `quests.json` does not exist yet is checked against the atlas only
   (`W-front-host-missing`).
 - Area references are `zone_id/area_id`; a bare id is accepted with a warning
@@ -165,9 +167,9 @@ They use `samples/valid/` (a small Dawnmere Fields design with catalogues,
 real zone and NPC ids), `samples/existing_min.json` and `samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 53 variants each give
+`W-loot-unchecked` (only Dawnmere is designed) and that 55 variants each give
 their expected finding (broken designs, plus allowed forms: a settlement-key
-anchor, a leader kill without area, a declared front file, the single-NPC
+anchor, a leader kill without area, a declared front file, a capital front giver, the single-NPC
 contested exemption, legacy kill objectives). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,

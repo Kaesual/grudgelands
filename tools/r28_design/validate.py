@@ -683,10 +683,14 @@ class Validator:
         return giver_lines
 
     def front_reserve(self, zone, giver_lines, file):
-        """Frame 2.1: each 31-40 outpost giver reserves one of its two lines
-        for the front lane. A contested zone with a single quest NPC carries
-        its own lines and is exempt."""
+        """Frame 2.1: each 31-40 outpost giver and one quest giver per capital
+        reserve one of their two lines, `front`, for the front lane. A
+        contested zone with a single quest NPC keeps both lines (exempt)."""
         info = self.zone_info(zone)
+        if info is not None and info["role"] == "capital" and giver_lines and \
+                not any(FRONT_LINE in lines for lines in giver_lines.values()):
+            self.E("E-front-reserve", file, "hubs", "one quest giver of the capital declares the line 'front' "
+                   "(reserved for the front lane)")
         if info is None or info["role"] != "contested" or len(info["npcs"]) <= 1:
             return
         for npc, lines in giver_lines.items():
@@ -867,13 +871,10 @@ class Validator:
                     self.E("E-rewards", file, path + ".rewards", "copper must be an integer >= 0")
                 for j, item in enumerate(rewards.get("items") or []):
                     ipath = "%s.rewards.items[%d]" % (path, j)
-                    name, count = None, 1
-                    if isinstance(item, dict):
-                        name, count = item.get("item"), item.get("count", 1)
-                    elif isinstance(item, str):
-                        parts = item.split()
-                        name = parts[0]
-                        count = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 1
+                    if not isinstance(item, dict):
+                        self.E("E-rewards", file, ipath, "reward items are {\"item\": id, \"count\": n}")
+                        continue
+                    name, count = item.get("item"), item.get("count", 1)
                     self.check_item_ref(name, file, ipath, "reward item")
                     if not is_int(count, 1):
                         self.E("E-rewards", file, ipath, "reward count must be an integer >= 1")
@@ -1445,12 +1446,12 @@ def _scenarios():
     def front_host_missing(target):
         front_file(target, giver="r14_human_steward", host="elandor_goldmead_vale")
 
-    def contested(zone, npc, lines):
+    def contested(zone, npc, lines, anchor="outpost_1", level=31):
         def setup(target):
             _save(target / "zones" / ("%s.quests.json" % zone), {
-                "zone": zone, "hubs": [{"id": "outpost", "anchor": "outpost_1",
+                "zone": zone, "hubs": [{"id": "hub", "anchor": anchor,
                                         "givers": [{"npc": npc, "lines": lines}]}],
-                "quests": [_simple_quest("sample_%s_01" % zone.split("_")[1], npc, lines[0], 31)]})
+                "quests": [_simple_quest("sample_%s_01" % zone.split("_")[1], npc, lines[0], level)]})
         return setup
 
     def legacy_kill(target):
@@ -1470,6 +1471,10 @@ def _scenarios():
                                                          ["watch"]), False, "E-front-reserve"),
         ("single-NPC contested zone is exempt", contested("elandor_glassroot_wilds", "r20_anchor_036_host",
                                                           ["watch", "roots"]), False, "!E-front-reserve"),
+        ("capital without a front giver", contested("elandor_highcourt", "r20_human_capital_envoy", ["civic"],
+                                                    "capital", 22), False, "E-front-reserve"),
+        ("capital with a front giver", contested("elandor_highcourt", "r20_human_capital_envoy",
+                                                 ["civic", "front"], "capital", 22), False, "!E-front-reserve"),
         ("legacy kill objective with mobs", legacy_kill, True, None),
         ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
     ]
