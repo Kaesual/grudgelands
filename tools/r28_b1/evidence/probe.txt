@@ -1,0 +1,33 @@
+ACTION[Main]: [r28_b1_probe] sample installed: elandor_dawnmere_fields has areas = true
+ACTION[Emerge-0]: [r28_b1_probe] emerged 4 areas in 27.4 s
+ACTION[Server]: [r28_b1_probe] point home_fields (0, 56, -2740) zone elandor_dawnmere_fields
+ACTION[Server]: [r28_b1_probe] point beach (-380, 12, -2990) zone elandor_dawnmere_fields
+ACTION[Server]: [r28_b1_probe] point camp_leader (-120, 55, -2330) zone elandor_goldmead_vale
+ACTION[Server]: [r28_b1_probe] point front (120, 39, -2330) zone elandor_dawnmere_fields
+ACTION[Server]: [r28_b1_probe] cost density_allows (today's ABM budget check) 0.6 us/call (200 calls)
+ACTION[Server]: [r28_b1_probe] cost protected_spawn_surface 0.95 us/call (4000 points); spawn_policy_allows in Goldmead 0.66 us/call (10000 calls, 5170 allowed, each allowed ordinary row pays one protection query)
+ACTION[Server]: [r28_b1_probe] window day start
+ACTION[Server]: [r28_b1_probe] census day@35 home_fields [boar@home_fields_day=15 rabbit@critter=2 wild_turkey@critter=1]
+ACTION[Server]: [r28_b1_probe] census day@35 beach [rabbit@critter=3 shore_crab@home_beach=2 wild_turkey@critter=2 zombie@fallback=9]
+ACTION[Server]: [r28_b1_probe] census day@35 camp_leader [boar@toward_front=6 confused_bandit@border_bandits=2 fox@toward_front=5 fox@walked_in=1 rabbit@critter=1]
+ACTION[Server]: [r28_b1_probe] census day@35 front [boar@toward_front=8 fox@toward_front=7 rabbit@critter=2 wild_turkey@critter=2]
+ACTION[Server]: [r28_b1_probe] census day@70 home_fields [boar@home_fields_day=15 rabbit@critter=2 wild_turkey@critter=1]
+ACTION[Server]: [r28_b1_probe] census day@70 beach [rabbit@critter=4 shore_crab@home_beach=1 wild_turkey@critter=1 zombie@fallback=12]
+ACTION[Server]: [r28_b1_probe] census day@70 camp_leader [boar@toward_front=6 boar@walked_in=1 confused_bandit@border_bandits=2 fox@toward_front=6 rabbit@critter=2 wild_turkey@critter=1]
+ACTION[Server]: [r28_b1_probe] census day@70 front [boar@toward_front=9 fox@toward_front=7 rabbit@critter=2 wild_turkey@critter=1]
+ACTION[Server]: [r28_b1_probe] attempt outcomes day: density=70 leader_spawned=1 light=1 no_area_zone=39 no_ground=56 protected=3 spawned=89
+ACTION[Server]: [r28_b1_probe] window night start
+ACTION[Server]: [r28_b1_probe] census night@35 home_fields [boar@home_fields_day=15 giant_rat@home_fields_night=15 rabbit@critter=2 wild_turkey@critter=2]
+ACTION[Server]: [r28_b1_probe] census night@35 beach [rabbit@critter=2 shore_crab@home_beach=4 wild_turkey@critter=1 zombie@fallback=19]
+ACTION[Server]: [r28_b1_probe] census night@35 camp_leader [boar@toward_front=6 boar@walked_in=1 confused_bandit@border_bandits=2 fox@toward_front=7 rabbit@critter=1 wild_turkey@critter=1 zombie@fallback=7 zombie@walked_in=2]
+ACTION[Server]: [r28_b1_probe] census night@35 front [boar@toward_front=9 fox@toward_front=7 rabbit@critter=4 wild_turkey@critter=1 zombie@fallback=18]
+ACTION[Server]: [r28_b1_probe] census night@70 home_fields [boar@home_fields_day=15 giant_rat@home_fields_night=22 rabbit@critter=3 wild_turkey@critter=2]
+ACTION[Server]: [r28_b1_probe] census night@70 beach [rabbit@critter=2 shore_crab@home_beach=5 wild_turkey@critter=2 zombie@fallback=18]
+ACTION[Server]: [r28_b1_probe] census night@70 camp_leader [boar@toward_front=7 boar@walked_in=1 confused_bandit@border_bandits=3 fox@toward_front=7 rabbit@critter=1 zombie@fallback=19 zombie@walked_in=3]
+ACTION[Server]: [r28_b1_probe] census night@70 front [boar@toward_front=8 fox@toward_front=7 rabbit@critter=3 wild_turkey@critter=1 zombie@fallback=21]
+ACTION[Server]: [r28_b1_probe] attempt outcomes night: density=127 leader_spawned=1 light=5 no_area=6 no_area_zone=74 no_ground=115 no_room=11 protected=3 spawned=174
+ACTION[Server]: [r28_b1_probe] cost area attempt (refused, incl. add_mob when spawned) 89.5 us mean over 341
+ACTION[Server]: [r28_b1_probe] cost area attempt (spawned, incl. add_mob when spawned) 387.2 us mean over 174
+ACTION[Server]: [r28_b1_probe] camp members 4
+ACTION[Server]: [r28_b1_probe] authored bandit sub-types in the camp 4
+ACTION[Server]: [r28_b1_probe] RESULT PASS failures=0

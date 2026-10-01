@@ -1,0 +1,11 @@
+{
+  "zone": "kragmar_redtusk_savanna",
+  "palette": {
+    "families": ["savanna", "scorpion", "settled", "sun_dried_husk"],
+    "boar": "grug_mobs:boar",
+    "lookalikes": {"zombie": "grug_mobs:sun_dried_husk"}
+  },
+  "critters": ["hare"],
+  "areas": [],
+  "leaders": []
+}

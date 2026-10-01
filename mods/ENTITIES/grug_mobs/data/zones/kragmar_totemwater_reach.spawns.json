@@ -1,0 +1,9 @@
+{
+  "zone": "kragmar_totemwater_reach",
+  "palette": {
+    "families": ["jungle_edge", "swamp", "tapir", "wisp"]
+  },
+  "critters": ["bog_fowl", "parrot"],
+  "areas": [],
+  "leaders": []
+}

@@ -1,0 +1,73 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "notes": "Round 28 Lane B1 engine-probe sample with existing mobs only. Never shipped: tools/r28_b1/run.sh installs it in a disposable probe.",
+  "palette": {
+    "families": ["fox", "giant_rat", "settled", "wild_turkey"],
+    "boar": "grug_mobs:boar"
+  },
+  "critters": ["rabbit", "wild_turkey"],
+  "areas": [
+    {
+      "id": "home_fields_day",
+      "anchor": "start",
+      "offset": [0, 0],
+      "shape": {"kind": "band", "forward": [-600, 0], "side": [-300, 300]},
+      "hosts": {"biomes": ["any"], "shore": false},
+      "clock": "day",
+      "levels": [1, 3],
+      "species": [{"role": "boar", "weight": 3}]
+    },
+    {
+      "id": "home_fields_night",
+      "anchor": "anchor_002",
+      "shape": {"kind": "band", "forward": [-600, 0], "side": [-300, 300]},
+      "hosts": {"biomes": ["any"]},
+      "clock": "night",
+      "levels": [1, 3],
+      "species": [{"role": "giant_rat", "weight": 1}]
+    },
+    {
+      "id": "home_beach",
+      "anchor": "dawnmere",
+      "offset": [-350, -500],
+      "shape": {"kind": "circle", "r": 200},
+      "hosts": {"biomes": ["any"], "shore": true},
+      "clock": "both",
+      "levels": [3, 5],
+      "species": [{"role": "shore_crab", "weight": 1}]
+    },
+    {
+      "id": "toward_front",
+      "anchor": "start",
+      "shape": {"kind": "band", "forward": [0, 400], "side": [-400, 400]},
+      "hosts": {"biomes": ["meadows", "deep_forest"]},
+      "clock": "day",
+      "levels": [5, 7],
+      "species": [{"role": "fox", "weight": 1}, {"role": "boar", "weight": 1}]
+    },
+    {
+      "id": "border_bandits",
+      "anchor": "start",
+      "offset": [-160, 200],
+      "shape": {"kind": "circle", "r": 38},
+      "hosts": {"biomes": ["any"]},
+      "clock": "both",
+      "levels": [9, 10],
+      "species": [{"role": "confused_bandit", "weight": 2}, {"role": "bandit_archer", "weight": 1}],
+      "camp": {"slots": 4, "respawn": [30, 60], "min_player_distance": 16}
+    },
+    {
+      "id": "fallback",
+      "anchor": "zone",
+      "shape": {"kind": "zone"},
+      "hosts": {"biomes": ["any"]},
+      "clock": "both",
+      "levels": [3, 6],
+      "species": [{"role": "zombie", "weight": 1}],
+      "fallback": true
+    }
+  ],
+  "leaders": [
+    {"role": "bear", "anchor": "start", "offset": [-100, 260], "level": 10, "respawn": 300}
+  ]
+}

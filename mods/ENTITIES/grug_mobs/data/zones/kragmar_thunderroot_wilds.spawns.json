@@ -1,0 +1,10 @@
+{
+  "zone": "kragmar_thunderroot_wilds",
+  "palette": {
+    "families": ["bog_witch", "jungle"],
+    "lookalikes": {"cat": "grug_mobs:panther", "spider": "grug_mobs:jungle_spider"}
+  },
+  "critters": [],
+  "areas": [],
+  "leaders": []
+}

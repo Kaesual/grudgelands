@@ -1,0 +1,10 @@
+{
+  "zone": "elandor_hearthpine_vale",
+  "palette": {
+    "families": ["fox", "giant_rat", "ibex", "settled"],
+    "boar": "grug_mobs:boar"
+  },
+  "critters": ["rabbit"],
+  "areas": [],
+  "leaders": []
+}

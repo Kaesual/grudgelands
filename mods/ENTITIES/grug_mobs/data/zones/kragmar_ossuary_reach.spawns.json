@@ -1,0 +1,9 @@
+{
+  "zone": "kragmar_ossuary_reach",
+  "palette": {
+    "families": ["forest", "gravewood_treant"]
+  },
+  "critters": ["bone_weevil"],
+  "areas": [],
+  "leaders": []
+}

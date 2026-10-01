@@ -1,0 +1,10 @@
+{
+  "zone": "elandor_copperfell_foothills",
+  "palette": {
+    "families": ["fox", "goblin_raid", "ibex", "settled"],
+    "boar": "grug_mobs:boar"
+  },
+  "critters": ["rabbit"],
+  "areas": [],
+  "leaders": []
+}

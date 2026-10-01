@@ -340,6 +340,12 @@ local function resolve_level(self, cfg, tier)
 		-- source, so there is nothing to cap or clamp.
 		return t.level
 	end
+	if self._grug_spawn_level then
+		-- Round 28 rulings 34 and 38: a spawn area or a named leader hands
+		-- the mob its fixed level before the first tick (spawn_areas.lua). It
+		-- replaces the level field, the def's floor and the source cap.
+		return math.max(1, self._grug_spawn_level)
+	end
 	if cfg.fixed then
 		-- Hand-set level: bypasses the field AND the source cap on purpose
 		-- (the Kraken is L100, kraken.lua).
@@ -520,4 +526,27 @@ function grug_mobs.set_tier(ent, tier)
 	apply_tier_visuals(ent)
 	apply_stats(ent, true) -- keep the wounded fraction
 	update_tag(ent)
+end
+
+-- Round 28 rulings 34 and 38: give a live mob a new level, tier untouched
+-- (spawn_areas.lua hands an area's or leader's fixed level). Before the
+-- first tick only the field is written and ensure_init applies it; a mob
+-- that already levelled (families with a composed look level during
+-- activation) gets its stats re-derived at the same wounded fraction, its
+-- tag refreshed and its composed look (armour bracket) recomposed. Unlike set_tier it applies to every tier, authored
+-- sub-types included.
+function grug_mobs.relevel(ent, level)
+	if not ent or not ent.object then
+		return
+	end
+	ent._grug_spawn_level = level
+	if not ent._grug_level or ent._grug_level == level then
+		return
+	end
+	ent._grug_level = level
+	apply_stats(ent, true)
+	update_tag(ent)
+	if grug_mobs.refresh_visual then
+		grug_mobs.refresh_visual(ent)
+	end
 end
