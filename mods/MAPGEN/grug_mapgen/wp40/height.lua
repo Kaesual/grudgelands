@@ -1120,6 +1120,17 @@ local function height_factory(dependencies)
 			end
 			return value
 		end
+		-- The island landing beach's pull on a land column (`landing_beach_at`)
+		-- where it grades it: natural inland water and its banks keep their
+		-- ground (the grading reads neighbours: recompute first).
+		local function landing_graded_at(x, z)
+			local beach_y, weight = landing_beach_at(x, z)
+			if not beach_y then return nil end
+			natural_height_at(x, z)
+			local block, slot = column(x, z)
+			if block.nwater[slot] or block.nbank[slot] then return nil end
+			return beach_y, weight
+		end
 		local function fit_land(x, z, owner, incoming)
 			local terrain_y, kind, feature_id = incoming, nil, nil
 			local value, fitting = fitting_grade_at(grids.selected, x, z,
@@ -1135,16 +1146,8 @@ local function height_factory(dependencies)
 				terrain_y, kind, feature_id = keep_trough(x, z, value, terrain_y),
 					"land_grade", fitting.id
 			end
-			-- An island landing beach; natural inland water and its banks keep
-			-- their ground (the grading reads neighbours: recompute first).
-			local beach_y, weight = landing_beach_at(x, z)
-			if beach_y then
-				natural_height_at(x, z)
-				local block, slot = column(x, z)
-				if not block.nwater[slot] and not block.nbank[slot] then
-					terrain_y = lerp_node(terrain_y, beach_y, weight)
-				end
-			end
+			local beach_y, weight = landing_graded_at(x, z)
+			if beach_y then terrain_y = lerp_node(terrain_y, beach_y, weight) end
 			return terrain_y, kind, feature_id
 		end
 
@@ -1752,7 +1755,7 @@ local function height_factory(dependencies)
 			if owner == nil then return nil end
 			-- An island landing beach is sand up to three nodes above the
 			-- water, mountain island or not.
-			if landing_beach_at(x, z) and final_values_at(x, z) <= WATER_LEVEL + 3 then
+			if landing_graded_at(x, z) and final_values_at(x, z) <= WATER_LEVEL + 3 then
 				return "sand"
 			end
 			local material = bank_material(x, z, owner, WATER_LEVEL,

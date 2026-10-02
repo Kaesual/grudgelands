@@ -183,4 +183,7 @@ player can step ashore from a boat. No waystone, shipwright or NPC.
   on the checked seeds); the boat water of §7 and its nine-node floor
   further out are unchanged, as are the channels and the boat paths.
 - Behind the beach the island rises as its natural terrain does (on most
-  seeds a steep mountain flank); the landing adds no path up the island.
+  seeds a steep mountain flank, 150–450 nodes high). **No path up the island
+  is built** (user 2026-10-02: pier and beach only for now; a path goes to
+  the backlog). The road router cannot lay one: its trails from the beaches
+  to the island POIs lost their beach end or failed on the checked seeds.

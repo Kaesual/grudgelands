@@ -359,9 +359,10 @@ occupying a position (`world_zones.md` §7):
   hard-flight bands come from the same 2D distance field. Each channel carries
   two boat approaches, one northern and one southern, joining its
   Battlegrounds endpoint to two inward-shore island beaches at fixed landing
-  points, each with a wooden pier ([boats.md](boats.md) §7.1). Both are usable by both factions; their north/south orientation only
-  roughly equalizes travel from Kragmar and Elandor. They have no ordinary
-  surface, guard or mob-level result.
+  points, each with a wooden pier ([boats.md](boats.md) §7.1). Both are
+  usable by both factions; their north/south orientation only roughly
+  equalizes travel from Kragmar and Elandor. They have no ordinary surface,
+  guard or mob-level result.
 
 **Kraken Guard pursuit** (travel plan ruling 7, user 2026-10-02; supersedes
 the residual-allowance model decided 2026-08-13). The deep sea is dangerous
