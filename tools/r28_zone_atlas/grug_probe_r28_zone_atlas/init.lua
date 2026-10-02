@@ -76,11 +76,12 @@ local function run()
 			if o.mobs then row.mobs = table.copy(o.mobs) end
 			objectives[#objectives + 1] = row
 		end
-		local description = def.description:gsub("\n\nRequirements:.*$", "")
+		-- The text as the giver reads it on this seed (placeholders filled).
+		local description = grug_quests.quest_text(def, true):gsub("\n\nRequirements:.*$", "")
 		out.quests[#out.quests + 1] = {id = id, title = def.title, npc = def.npc,
-			turnin_npc = def.turnin_npc, min_level = def.min_level,
+			turnin_npc = def.turnin_npc, min_level = def.min_level, level = def.level,
 			prerequisites = table.copy(def.prerequisites), objectives = objectives,
-			xp = def.rewards.xp, copper = def.rewards.copper,
+			xp = grug_quests.reward_xp(def), copper = def.rewards.copper,
 			reward_items = table.copy(def.rewards.items), description = description,
 			repeatable = def.repeatable}
 	end

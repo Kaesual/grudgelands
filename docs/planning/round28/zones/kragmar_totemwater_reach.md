@@ -58,18 +58,24 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Tokai Knotreader | 2402, 4, 1350 | r20_anchor_047_01, r20_anchor_047_02, r20_anchor_047_03 |
+| quest_host | quest giver | Tokai Knotreader | 2402, 4, 1350 | totemwater_front_bannerbreak, totemwater_knots_01, totemwater_knots_02, totemwater_knots_03, totemwater_knots_04, totemwater_tides_01, totemwater_tides_02, totemwater_tides_bounty, totemwater_tides_optional_wisps |
 
 Distances: zone edge N 752 (kragmar_raincall_basin), S 340 (inland_water), E 292 (coastal_shelf), W 288 (kragmar_kezamba); nearest other-zone land 269 W; sea 164 E; sea-beach sand 121 E; nearest road 10.
 Nearest hubs (straight / by road): Thunderstep Watch 844 / 1071; Kezamba 618 / 1158; Raincall Bandit Camp 1028 / 1960; Whisperreed Landing 1545 / 2197; Reedstone Cut 1375 / 2336.
 
-### Current quests (3, given in this zone)
+### Current quests (9, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_047_01 | Rope Rack Timbers | Tokai Knotreader (Totemwater Post) | 21 | bring 8 default:junglewood | 820 | - |
-| r20_anchor_047_02 | Jaws at the River Path | Tokai Knotreader (Totemwater Post) | 21 | kill 3 crocodile or reed_crocodile [in kragmar_totemwater_reach] | 820 | - |
-| r20_anchor_047_03 | Mud Around the Marker | Tokai Knotreader (Totemwater Post) | 23 | kill 4 bog_ooze or sullen_bog_ooze [in kragmar_totemwater_reach] | 900 | r20_anchor_047_02 |
+| totemwater_knots_01 | A Future Trampled Flat | Tokai Knotreader (Totemwater Post) | 20 | kill 6 reed_tapir [in kragmar_totemwater_reach/jungle] | 405 | - |
+| totemwater_tides_optional_wisps | Optional: Lights Over the Fish Traps | Tokai Knotreader (Totemwater Post) | 21 | kill 6 wandering_wisp [in kragmar_totemwater_reach/jungle] | 350 | - |
+| totemwater_knots_02 | Our Ancestors Are Not Cushions | Tokai Knotreader (Totemwater Post) | 24 | kill 6 reed_jungle_lynx [in kragmar_totemwater_reach/totemwood] | 450 | totemwater_knots_01 |
+| totemwater_tides_01 | A Trap Full of Pincers | Tokai Knotreader (Totemwater Post) | 24 | kill 6 armored_crab [in kragmar_totemwater_reach/shallows] | 465 | - |
+| totemwater_knots_03 | Read by Restless Light | Tokai Knotreader (Totemwater Post) | 26 | bring 2 grug_mobs:bound_wisp_mote | 320 | totemwater_knots_02 |
+| totemwater_tides_02 | Put the Shells to Work | Tokai Knotreader (Totemwater Post) | 26 | bring 2 grug_mobs:layered_crab_shell | 320 | totemwater_tides_01 |
+| totemwater_knots_04 | The Name Beneath the Water | Tokai Knotreader (Totemwater Post) | 28 | kill 1 reed_maw_crocodile | 765 | totemwater_knots_03 |
+| totemwater_tides_bounty | Bounty: What the Tide Brings (repeatable) | Tokai Knotreader (Totemwater Post) | 28 | kill 6 armored_crab [in kragmar_totemwater_reach/breakers] | 255 | totemwater_tides_02 |
+| totemwater_front_bannerbreak | The Knot Toward the Mesa | Tokai Knotreader (Totemwater Post) | 29 | talk to Yarra Standardmender (r20_anchor_044) | 88 | totemwater_knots_04 |
 
 ## Mobs by spawn region
 

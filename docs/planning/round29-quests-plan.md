@@ -1,7 +1,8 @@
 # Quests on the new world — plan draft for Round 29
 
 Draft by the Round 28 coordinator (Claude Opus 5.5), 2026-10-02. Status:
-**draft for discussion with the user**; open questions are marked **Q**.
+**approved 2026-10-02 and delivered in Round 29** (completion note at the
+end); the questions marked **Q** are answered in §6.
 It becomes part of the Round 29 plan ("Economy and travel",
 `economy-vendor-plan.md` §10) together with the economy lanes, WP17 and
 the mapgen bundle.
@@ -178,3 +179,23 @@ Q6 reuse `r28-c2`). Scheduling: [round29-plan.md](round29-plan.md).
   only in specific zones?
 - **Q6** Reuse Astra's Round 28 Human quests as the basis of Q2 (re-checked
   against the new regions and rules), or start fresh?
+
+## Completion (2026-10-02)
+
+Delivered in Round 29 as planned
+([round plan completion](round29-plan.md#completion-2026-10-02)): Q1
+(placeholders, compass-word check, copper from weight, ledger routes,
+region maps built at start), the six race tracks Q2–Q7 (Opus structure,
+Astra text pass, Opus review; Human 54, Dwarf 58, Elf 71, Undead 53, Orc 48,
+Troll 63 quests), the contested zones Q8a/Q8t (35 / 30) and the front and
+islands Q9a/Q9t (40 / 39), plus the quest-tooling lane T. The user read a
+sample per track before the merge (Q3). 491 quests in 42 files replace the
+240 legacy quests; every target forms on six seeds.
+
+Rulings added during the round: an entry quest of a 20–30 zone requires
+nothing from another zone (sister access); every 20–30 zone offers at least
+about 30 % of the band on its own, the extras as "Optional:" quests;
+never "{name:X} {zone_area:X}"; every heartland hands on; the front budget
+counts two repeats per bounty (N = 2, [quests.md](../design/quests.md)).
+Open: enemy-guard and PvP quests are not expressible in the new format
+([BACKLOG](../../BACKLOG.md#round-29-carry-overs)).

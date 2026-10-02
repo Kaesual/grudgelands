@@ -565,15 +565,16 @@ def build(args):
         for o in q["objectives"]:
             if o["type"] == "kill":
                 txt = "kill %d %s" % (o["count"], " or ".join(m.split(":")[-1] for m in o.get("mobs", [])))
-                if o.get("zone"):
-                    txt += " [in %s]" % o["zone"]
+                if o.get("area"):
+                    txt += " [in %s]" % o["area"]
             elif o["type"] == "item":
-                txt = "bring %d %s" % (o["count"], o["item"])
+                txt = "bring %d %s" % (o["count"], o.get("item") or "group:" + o["group"])
             else:
                 npc = quest_npcs.get(o.get("npc"), {})
                 txt = "talk to %s (%s)" % (npc.get("title", o.get("npc")), npc.get("settlement", "?"))
             objs.append(txt)
-        return {"id": q["id"], "title": q["title"], "giver": q["npc"],
+        title = q["title"] + (" (repeatable)" if q.get("repeatable") else "")
+        return {"id": q["id"], "title": title, "giver": q["npc"],
                 "turnin": q["turnin_npc"], "min_level": q["min_level"], "xp": q["xp"],
                 "copper": q["copper"], "prerequisites": q.get("prerequisites") or [],
                 "objectives": objs, "objectives_raw": q["objectives"],

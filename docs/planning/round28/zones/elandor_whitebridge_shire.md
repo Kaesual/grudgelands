@@ -65,7 +65,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Merren Oakstamp | -922, 31, -1556 | r20_anchor_016_01, r20_anchor_016_02, r20_anchor_016_03, r20_human_journey_02 |
+| quest_host | quest giver | Merren Oakstamp | -922, 31, -1556 | whitebridge_baskets_01, whitebridge_baskets_02, whitebridge_baskets_03, whitebridge_journey_dur_brannoc, whitebridge_journey_frostbarrow, whitebridge_journey_lorindor |
 
 Distances: zone edge N 564 (elandor_stormvault_heights), S 460 (bay_water), E 444 (elandor_highcourt), W 304 (elandor_dur_brannoc); nearest other-zone land 304 W; sea 365 S; sea-beach sand 299 S; nearest road 17.
 Nearest hubs (straight / by road): Bridgechalk Dig 335 / 386; Oakspan Tollhouse 422 / 584; Cinderline Watch 910 / 1283; Dur Brannoc 878 / 1421; Highcourt 926 / 1475.
@@ -76,7 +76,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Jessa Axlewright | -616, 47, -1266 | r20_anchor_030_01, r20_anchor_030_02, r20_anchor_030_03 |
+| quest_host | quest giver | Jessa Axlewright | -616, 47, -1266 | whitebridge_bounty_spiders, whitebridge_river_01, whitebridge_river_02, whitebridge_river_siltbasket |
 
 Distances: zone edge N 128 (elandor_ashenward_march), S 676 (elandor_goldmead_vale), E 128 (elandor_highcourt), W 732 (elandor_dur_brannoc); nearest other-zone land 91 NE; sea 753 SW; sea-beach sand 683 SW; nearest road 11.
 Nearest hubs (straight / by road): Whitebridge Market Close 422 / 584; Bridgechalk Dig 456 / 618; Cinderline Watch 495 / 798; Highcourt 661 / 990; Goldmead Bandit Camp 1179 / 1637.
@@ -87,26 +87,28 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Halen Chalkthumb | -1072, 29, -1256 | r20_anchor_062_01, r20_anchor_062_02, r20_anchor_062_03, r20_human_journey_03 |
+| quest_host | quest giver | Halen Chalkthumb | -1072, 29, -1256 | whitebridge_materials_01, whitebridge_materials_02, whitebridge_materials_bears |
 
 Distances: zone edge N 196 (elandor_stormvault_heights), S 692 (coastal_shelf), E 592 (elandor_highcourt), W 276 (elandor_dur_brannoc); nearest other-zone land 195 N; sea 660 S; sea-beach sand 601 S; nearest road 13.
 Nearest hubs (straight / by road): Whitebridge Market Close 335 / 386; Oakspan Tollhouse 456 / 618; Cinderline Watch 830 / 1318; Dur Brannoc 766 / 1331; Highcourt 1101 / 1509.
 
-### Current quests (11, given in this zone)
+### Current quests (13, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_016_01 | The Press Frame | Merren Oakstamp (Whitebridge Market Close) | 21 | bring 8 default:wood | 820 | - |
-| r20_anchor_016_02 | The Poacher's Market | Merren Oakstamp (Whitebridge Market Close) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_whitebridge_shire] | 820 | - |
-| r20_anchor_030_01 | An Axle for the Empty Cart | Jessa Axlewright (Oakspan Tollhouse) | 21 | bring 8 default:wood | 820 | - |
-| r20_anchor_030_02 | The Tollhouse Snares | Jessa Axlewright (Oakspan Tollhouse) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_whitebridge_shire] | 820 | - |
-| r20_anchor_062_01 | Braces for the Pale Face | Halen Chalkthumb (Bridgechalk Dig) | 21 | bring 10 default:wood | 820 | - |
-| r20_anchor_062_02 | The Surveyor's Snare | Halen Chalkthumb (Bridgechalk Dig) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_whitebridge_shire] | 820 | - |
-| r20_anchor_016_03 | A Light Beyond the Bridge | Merren Oakstamp (Whitebridge Market Close) | 23 | kill 3 wisp or wandering_wisp [in elandor_whitebridge_shire] | 900 | r20_anchor_016_02 |
-| r20_anchor_030_03 | Night Lights at Oakspan | Jessa Axlewright (Oakspan Tollhouse) | 23 | kill 3 wisp or wandering_wisp [in elandor_whitebridge_shire] | 900 | r20_anchor_030_02 |
-| r20_anchor_062_03 | A Quarry Hand's Pick | Halen Chalkthumb (Bridgechalk Dig) | 23 | bring 1 grug_materials:pick_stone | 900 | r20_anchor_062_02 |
-| r20_human_journey_02 | Word for Halen Chalkthumb | Merren Oakstamp (Whitebridge Market Close) | 24 | talk to Halen Chalkthumb (r20_anchor_062) | 705 | - |
-| r20_human_journey_03 | Word for Toren Waterbarrel | Halen Chalkthumb (Bridgechalk Dig) | 31 | talk to Toren Waterbarrel (r20_anchor_031) | 915 | - |
+| whitebridge_baskets_01 | Sold Twice, Delivered Never | Merren Oakstamp (Whitebridge Market Close) | 21 | kill 5 unlicensed_poacher [in elandor_whitebridge_shire/oakwood] | 405 | - |
+| whitebridge_river_siltbasket | Optional: The Siltbasket Toll | Jessa Axlewright (Oakspan Tollhouse) | 21 | kill 6 toll_mirefolk [in elandor_whitebridge_shire/siltbasket] | 405 | - |
+| whitebridge_baskets_02 | The Pack at the Back Door | Merren Oakstamp (Whitebridge Market Close) | 22 | kill 5 briarpack_wolf [in elandor_whitebridge_shire/meadows] | 420 | whitebridge_baskets_01 |
+| whitebridge_baskets_03 | Thorn's Double Sale | Merren Oakstamp (Whitebridge Market Close) | 23 | kill 1 basket_poacher_thorn | 580 | whitebridge_baskets_02 |
+| whitebridge_materials_01 | A Measure That Stays Put | Halen Chalkthumb (Bridgechalk Dig) | 23 | bring 6 group:wood; bring 6 grug_materials:steel_bar | 290 | - |
+| whitebridge_journey_dur_brannoc | A Ledger for the Dwarves | Merren Oakstamp (Whitebridge Market Close) | 24 | talk to Dorrin Gateledger (dur_brannoc) | 145 | whitebridge_baskets_03 |
+| whitebridge_journey_frostbarrow | Cold Storage | Merren Oakstamp (Whitebridge Market Close) | 24 | talk to Edda Tarnmantle (r20_anchor_014) | 145 | whitebridge_baskets_03 |
+| whitebridge_journey_lorindor | The Other End of the River Trade | Merren Oakstamp (Whitebridge Market Close) | 24 | talk to Ilwen Petalmeasure (r20_anchor_018) | 145 | whitebridge_baskets_03 |
+| whitebridge_materials_bears | Optional: Bears in the Stores | Halen Chalkthumb (Bridgechalk Dig) | 25 | kill 5 territorial_bear [in elandor_whitebridge_shire/briarwood] | 465 | - |
+| whitebridge_river_01 | The Basket Toll | Jessa Axlewright (Oakspan Tollhouse) | 27 | kill 5 toll_mirefolk [in elandor_whitebridge_shire/ferry_camp] | 495 | - |
+| whitebridge_bounty_spiders | Bounty: Briar-Web Spiders (repeatable) | Jessa Axlewright (Oakspan Tollhouse) | 28 | kill 6 briar_web_spider [in elandor_whitebridge_shire/thornwood] | 340 | whitebridge_river_01 |
+| whitebridge_river_02 | Murk's Final Fare | Jessa Axlewright (Oakspan Tollhouse) | 28 | kill 1 ferryman_murk | 680 | whitebridge_river_01 |
+| whitebridge_materials_02 | A Survey for the Heights | Halen Chalkthumb (Bridgechalk Dig) | 29 | talk to Borin Splitbolt (r20_anchor_027) | 170 | whitebridge_materials_01 |
 
 ## Mobs by spawn region
 

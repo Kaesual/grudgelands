@@ -59,35 +59,42 @@ Share of land per level: L1 5.2%, L2 6.5%, L3 46.8%, L4 7.2%, L5 6.8%, L6 6.2%, 
 
 ### Kapok (`kapok`, anchor_006) at 1800, 7, 2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | clearing_vendor | vendor | vendor kind: race | 1807, 8, 2546 | - |
 | idle_lodge_door | innkeeper (respawn bind) |  | 1798, 8, 2567 | - |
-| hall_quest | quest giver | Zalima Rainhum | 1803, 8, 2567 | r14_troll_01_boars_in_the_yam_beds, r14_troll_03_teeth_in_the_basket_weave, r14_troll_04_dead_in_the_rootways, r14_troll_05_vipers_under_broad_leaves, r14_troll_06_claws_on_raincall_road, r14_troll_10_a_dry_handled_axe, r14_troll_11_stone_beneath_the_moss, r20_troll_capital_intro |
+| hall_quest | quest giver | Zalima Rainhum | 1803, 8, 2567 | kapok_departure, kapok_hunt_01, kapok_hunt_02, kapok_hunt_03, kapok_hunt_04, kapok_hunt_05, kapok_tools_01, kapok_tools_02, kapok_tools_03, kapok_tools_04 |
+| travel_waypoint | waypoint |  | 1788, 8, 2555 | - |
 | trainer_cooking | profession trainer | trains: cooking | 1802, 8, 2540 | - |
-| quest_cook | quest giver | Zemi Sweetroot | 1802, 8, 2537 | r14_troll_02_fill_the_evening_pot, r20_troll_start_cook |
+| quest_cook | quest giver | Zemi Sweetroot | 1802, 8, 2537 | kapok_kitchen_01, kapok_kitchen_02, kapok_kitchen_03, kapok_pantry_01, kapok_pantry_02, kapok_pantry_03 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 424 (coastal_shelf), S 220 (kragmar_raincall_basin), E 536 (coastal_shelf), W 464 (coastal_shelf); nearest other-zone land 222 S; sea 352 NW; sea-beach sand 310 NW; nearest road 64.
 Nearest hubs (straight / by road): Raincall Village 512 / 707; Raincall Outpost 572 / 945; Raincall Bandit Camp 543 / 1089; Kezamba 1050 / 1639; Whisperreed Landing 1322 / 1694.
 
-### Current quests (10, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_troll_01_boars_in_the_yam_beds | Boars in the Yam Beds | Zalima Rainhum (Kapok) | 1 | kill 3 jungle_boar or small_boar | 20 | - |
-| r14_troll_02_fill_the_evening_pot | Fill the Evening Pot | Zemi Sweetroot (Kapok) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_troll_10_a_dry_handled_axe | A Dry-Handled Axe | Zalima Rainhum (Kapok) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_troll_start_cook | The Pot Before the Rain | Zemi Sweetroot (Kapok) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_troll_11_stone_beneath_the_moss | Stone Beneath the Moss | Zalima Rainhum (Kapok) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_troll_10_a_dry_handled_axe |
-| r14_troll_03_teeth_in_the_basket_weave | A Dry Frame for the Baskets | Zalima Rainhum (Kapok) | 3 | bring 6 default:junglewood | 100 | r14_troll_01_boars_in_the_yam_beds |
-| r14_troll_04_dead_in_the_rootways | Dead in the Rootways | Zalima Rainhum (Kapok) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_troll_01_boars_in_the_yam_beds |
-| r14_troll_05_vipers_under_broad_leaves | Vipers Under Broad Leaves | Zalima Rainhum (Kapok) | 5 | kill 5 viper or reed_viper | 180 | r14_troll_03_teeth_in_the_basket_weave |
-| r14_troll_06_claws_on_raincall_road | The Road to Daro Kapok | Zalima Rainhum (Kapok) | 10 | talk to Daro Kapok (raincall_village) | 285 | r14_troll_05_vipers_under_broad_leaves |
-| r20_troll_capital_intro | The Road to Kezamba | Zalima Rainhum (Kapok) | 10 | talk to Nalo Pathdrum (kezamba) | 285 | - |
+| kapok_hunt_01 | A Boar Has No Use for Beads | Zalima Rainhum (Kapok) | 1 | kill 8 small_boar [in kragmar_kapok_cradle/yam_beds] | 105 | - |
+| kapok_kitchen_01 | The Pot Is Waiting | Zemi Sweetroot (Kapok) | 1 | bring 5 group:tree | 30 | - |
+| kapok_tools_01 | Save Your Knuckles | Zalima Rainhum (Kapok) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| kapok_hunt_02 | One Squeak, Many Cousins | Zalima Rainhum (Kapok) | 2 | kill 8 large_rat [in kragmar_kapok_cradle/yam_beds] | 105 | kapok_hunt_01 |
+| kapok_kitchen_02 | Heat Before Hospitality | Zemi Sweetroot (Kapok) | 2 | bring 5 default:coal_lump | 60 | kapok_kitchen_01 |
+| kapok_tools_02 | A Lesson Under the Moss | Zalima Rainhum (Kapok) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | kapok_tools_01 |
+| kapok_hunt_03 | The Roots Remember Feet | Zalima Rainhum (Kapok) | 3 | kill 6 braindead_zombie [in kragmar_kapok_cradle/rootways] | 135 | kapok_hunt_02 |
+| kapok_pantry_01 | You Chew It, You Patch It | Zemi Sweetroot (Kapok) | 3 | bring 2 grug_mobs:rat_fur_patch | 60 | kapok_hunt_02 |
+| kapok_kitchen_03 | A Hunter Worth Inviting | Zemi Sweetroot (Kapok) | 4 | bring 5 mobs:meat | 75 | kapok_kitchen_02, kapok_hunt_01 |
+| kapok_pantry_02 | Guests with Pincers | Zemi Sweetroot (Kapok) | 4 | bring 2 grug_mobs:crab_leg | 90 | kapok_pantry_01 |
+| kapok_pantry_03 | Supper Above the Mud | Zemi Sweetroot (Kapok) | 5 | bring 2 grug_mobs:fine_sinew | 110 | kapok_pantry_02 |
+| kapok_tools_03 | What the Fire Leaves | Zalima Rainhum (Kapok) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 83 | kapok_tools_02 |
+| kapok_hunt_04 | Read the Tusks | Zalima Rainhum (Kapok) | 7 | kill 8 aggressive_boar [in kragmar_kapok_cradle/thornwood] | 245 | kapok_hunt_03 |
+| kapok_tools_04 | Two Voices in the Fire | Zalima Rainhum (Kapok) | 7 | bring 3 grug_materials:bronze_bar | 130 | kapok_tools_03 |
+| kapok_hunt_05 | Luck Stolen Twice | Zalima Rainhum (Kapok) | 8 | kill 6 confused_bandit [in kragmar_kapok_cradle/thieves_camp]; kill 1 offering_thief_chief | 315 | kapok_hunt_04 |
+| kapok_departure | Roots Hold, Feet Travel | Zalima Rainhum (Kapok) | 9 | talk to Daro Kapok (raincall_village) | 70 | kapok_hunt_05 |
 
 ## Mobs by spawn region
 

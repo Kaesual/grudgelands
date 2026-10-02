@@ -402,259 +402,433 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 50,
-   "description": "Bog ooze is choking the village sluice. Break it apart before the water backs into the paths.",
+   "copper": 21,
+   "description": "Every morning the Rooting Plague Boars dig up another burial in the Mournfen Blightfields, which lies in the northwest of Mournfen, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
    "giver": "r14_undead_steward",
    "giver_name": "Mordec Silt",
    "giver_settlement": "Mournfen Village",
-   "id": "r14_undead_07_mud_that_moves",
+   "id": "mournfen_fen_01",
+   "min_level": 9,
+   "objectives": [
+    "kill 8 young_boar [in kragmar_mournfen/blightfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/blightfields",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:young_boar"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_departure"
+   ],
+   "reward_items": [],
+   "title": "The Fen Gives Them Back",
+   "turnin": "r14_undead_steward",
+   "xp": 320
+  },
+  {
+   "copper": 13,
+   "description": "Eight Raw Meat, please; I need to render tallow for the vigil candles. Some mourners complain that remembering the departed should not smell quite so much like supper. They still cup their hands around the flame when the draught comes.",
+   "giver": "r15_undead_local",
+   "giver_name": "Edris Wax",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_stores_01",
    "min_level": 10,
    "objectives": [
-    "kill 6 bog_ooze or sullen_bog_ooze [in kragmar_mournfen]"
+    "bring 8 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "By the Light of Supper",
+   "turnin": "r15_undead_local",
+   "xp": 200
+  },
+  {
+   "copper": 5,
+   "description": "Sera Vane has found the same tally marks among the reeds she watches from Mournfen Outpost. Go there and tell her what you saw in the burial rows. I would like to be mistaken about this, but I have had a very long time to recognise a theft.",
+   "giver": "r14_undead_steward",
+   "giver_name": "Mordec Silt",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_fen_02",
+   "min_level": 11,
+   "objectives": [
+    "talk to Sera Vane (mournfen_outpost)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_undead_scout",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_fen_01"
+   ],
+   "reward_items": [],
+   "title": "The Marks in the Reeds",
+   "turnin": "r14_undead_scout",
+   "xp": 85
+  },
+  {
+   "copper": 23,
+   "description": "I watched the Reed Mirefolk in Blackreed Enclosure, north from here, settle a day's wages with bones from our barrows. Kill eight of them to disrupt the trade, and watch for Reed Crocodiles around the enclosure. They scratch each payment on a reed for Mirefolk Reed-Counter Silt; apparently robbing the dead requires excellent records.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_watch_01",
+   "min_level": 11,
+   "objectives": [
+    "kill 8 reed_mirefolk [in kragmar_mournfen/blackreed_enclosure]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/blackreed_enclosure",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:reed_mirefolk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_fen_02"
+   ],
+   "reward_items": [],
+   "title": "Somebody's Grandfather as Wages",
+   "turnin": "r14_undead_scout",
+   "xp": 405
+  },
+  {
+   "copper": 23,
+   "description": "Mourners see the Wandering Wisps over the Mournfen Wispfen, which lies in the west of Mournfen, after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_watch_02",
+   "min_level": 13,
+   "objectives": [
+    "kill 7 wandering_wisp [in kragmar_mournfen/wispfen]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/wispfen",
+     "count": 7,
+     "mobs": [
+      "grug_mobs:wandering_wisp"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_watch_01"
+   ],
+   "reward_items": [],
+   "title": "A Light Can Lie",
+   "turnin": "r14_undead_scout",
+   "xp": 450
+  },
+  {
+   "copper": 23,
+   "description": "The Plague Tuskers in the Mournfen Barrowfields, which lies in the heart of Mournfen, now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Cairn Sun-Dried Husks among the barrows; I have enough names awaiting entry without yours.",
+   "giver": "r14_undead_steward",
+   "giver_name": "Mordec Silt",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_fen_03",
+   "min_level": 14,
+   "objectives": [
+    "kill 7 bristling_boar [in kragmar_mournfen/barrowfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/barrowfields",
+     "count": 7,
+     "mobs": [
+      "grug_mobs:bristling_boar"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_fen_02"
+   ],
+   "reward_items": [],
+   "title": "Visiting Hours Are Cancelled",
+   "turnin": "r14_undead_steward",
+   "xp": 473
+  },
+  {
+   "copper": 16,
+   "description": "One by one, the lantern hooks along the barrow paths have rusted through. Mine and smelt six Iron Bars for replacements, and bring me four Coal Lumps for the work. I would like the next funeral procession to arrive with the same number of people it set out with.",
+   "giver": "r15_undead_local",
+   "giver_name": "Edris Wax",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_stores_02",
+   "min_level": 14,
+   "objectives": [
+    "bring 6 grug_materials:iron_bar",
+    "bring 4 default:coal_lump"
    ],
    "objectives_raw": [
     {
      "count": 6,
-     "mobs": [
-      "grug_mobs:bog_ooze",
-      "grug_mobs:sullen_bog_ooze"
-     ],
-     "type": "kill",
-     "zone": "kragmar_mournfen"
+     "item": "grug_materials:iron_bar",
+     "type": "item"
+    },
+    {
+     "count": 4,
+     "item": "default:coal_lump",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_undead_06_tusks_along_the_fen_road"
+    "mournfen_stores_01"
    ],
    "reward_items": [],
-   "title": "Mud That Moves",
-   "turnin": "r14_undead_steward",
-   "xp": 380
+   "title": "Lanterns Belong Above the Mud",
+   "turnin": "r15_undead_local",
+   "xp": 300
   },
   {
-   "copper": 40,
-   "description": "The wax keeper uses local slime gel to seal jars against the fen damp. Bring enough for the raised store shelves.",
+   "copper": 16,
+   "description": "Bring me three Wisp Motes from the Wandering Wisps that appear in the Mournfen Wispfen after dark. I need them for the vigil candles. When the last visitor leaves, I like there to be a little light left behind.",
    "giver": "r15_undead_local",
    "giver_name": "Edris Wax",
    "giver_settlement": "Mournfen Village",
-   "id": "r15_undead_local_01",
-   "min_level": 10,
+   "id": "mournfen_wax_01",
+   "min_level": 15,
    "objectives": [
-    "bring 3 grug_mobs:slime_gel"
+    "bring 3 grug_mobs:wisp_mote"
    ],
    "objectives_raw": [
     {
      "count": 3,
-     "item": "grug_mobs:slime_gel",
+     "item": "grug_mobs:wisp_mote",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_undead_06_tusks_along_the_fen_road"
+    "mournfen_watch_02"
    ],
    "reward_items": [],
-   "title": "Gel for the Wax Store",
+   "title": "A Flame Worth Keeping",
    "turnin": "r15_undead_local",
-   "xp": 285
-  },
-  {
-   "copper": 45,
-   "description": "Plague boars root against the stones of the tended memorial. Drive them back into the dead furrows.",
-   "giver": "r15_undead_local",
-   "giver_name": "Edris Wax",
-   "giver_settlement": "Mournfen Village",
-   "id": "r15_undead_local_02",
-   "min_level": 10,
-   "objectives": [
-    "kill 5 plague_boar or young_boar [in kragmar_mournfen]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "mobs": [
-      "grug_mobs:plague_boar",
-      "grug_mobs:young_boar"
-     ],
-     "type": "kill",
-     "zone": "kragmar_mournfen"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_06_tusks_along_the_fen_road"
-   ],
-   "reward_items": [],
-   "title": "Furrows by the Memorial",
-   "turnin": "r15_undead_local",
-   "xp": 380
-  },
-  {
-   "copper": 60,
-   "description": "Crocodiles have claimed the outpost channel. Clear the bank for Sera's patrol.",
-   "giver": "r14_undead_scout",
-   "giver_name": "Sera Vane",
-   "giver_settlement": "Mournfen Outpost",
-   "id": "r14_undead_08_clear_the_sluice",
-   "min_level": 11,
-   "objectives": [
-    "kill 6 crocodile or reed_crocodile [in kragmar_mournfen]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 6,
-     "mobs": [
-      "grug_mobs:crocodile",
-      "grug_mobs:reed_crocodile"
-     ],
-     "type": "kill",
-     "zone": "kragmar_mournfen"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_07_mud_that_moves"
-   ],
-   "reward_items": [],
-   "title": "Clear the Sluice",
-   "turnin": "r14_undead_scout",
-   "xp": 525
-  },
-  {
-   "copper": 50,
-   "description": "Bring two ordinary crocodile teeth from Mournfen's muddy banks while helping Sera clear the sluice. They will mark the safest side of the watch channel without another counted crocodile hunt.",
-   "giver": "r14_undead_scout",
-   "giver_name": "Sera Vane",
-   "giver_settlement": "Mournfen Outpost",
-   "id": "r15_undead_local_03",
-   "min_level": 11,
-   "objectives": [
-    "bring 2 grug_mobs:croc_tooth"
-   ],
-   "objectives_raw": [
-    {
-     "count": 2,
-     "item": "grug_mobs:croc_tooth",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_07_mud_that_moves"
-   ],
-   "reward_items": [],
-   "title": "Teeth from the Watch Channel",
-   "turnin": "r14_undead_scout",
    "xp": 315
   },
   {
-   "copper": 55,
-   "description": "Bog ooze pools beneath the observation niche and eats at its supports. Break up the nearest masses.",
-   "giver": "r14_undead_scout",
-   "giver_name": "Sera Vane",
-   "giver_settlement": "Mournfen Outpost",
-   "id": "r15_undead_local_04",
-   "min_level": 11,
+   "copper": 10,
+   "description": "Each night the Grave Gnawers burrow into the Mournfen Barrowfields, undoing another day's careful burial work. Kill six and return to me. You may take this task again twenty minutes after handing it in; eternal rest has proved surprisingly demanding to maintain.",
+   "giver": "r14_undead_steward",
+   "giver_name": "Mordec Silt",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_bounty_fen",
+   "min_level": 16,
    "objectives": [
-    "kill 5 bog_ooze or sullen_bog_ooze [in kragmar_mournfen]"
+    "kill 6 mangy_rat [in kragmar_mournfen/barrowfields]"
    ],
    "objectives_raw": [
     {
-     "count": 5,
+     "area": "kragmar_mournfen/barrowfields",
+     "count": 6,
      "mobs": [
-      "grug_mobs:bog_ooze",
-      "grug_mobs:sullen_bog_ooze"
+      "grug_mobs:mangy_rat"
      ],
-     "type": "kill",
-     "zone": "kragmar_mournfen"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_undead_07_mud_that_moves"
+    "mournfen_fen_03"
    ],
    "reward_items": [],
-   "title": "The Sheltered Niche",
+   "title": "Repeatable: The Graves Need Minding (repeatable)",
+   "turnin": "r14_undead_steward",
+   "xp": 210
+  },
+  {
+   "copper": 23,
+   "description": "The Pauper Shamblers rise at night across the Mournfen Gravemoor east of Mournfen Village, with no one left to claim them. Lay six to rest. I shall enter each in the burial book, though I have only numbers to give them. A number is a poor memorial, but a blank page is worse.",
+   "giver": "r14_undead_steward",
+   "giver_name": "Mordec Silt",
+   "giver_settlement": "Mournfen Village",
+   "id": "mournfen_fen_04",
+   "min_level": 16,
+   "objectives": [
+    "kill 6 muttering_zombie [in kragmar_mournfen/gravemoor]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/gravemoor",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:muttering_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_fen_03"
+   ],
+   "reward_items": [],
+   "title": "A Place in the Book",
+   "turnin": "r14_undead_steward",
+   "xp": 518
+  },
+  {
+   "copper": 21,
+   "description": "The trail of stolen barrow goods ends at the Mournfen Bandit Camp east from here, where the Bandit Lookouts discourage inquiries with arrows. Close the distance and kill six. They are holding Hollis Grey there; I need his account of things, preferably before it requires a medium.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_watch_03",
+   "min_level": 17,
+   "objectives": [
+    "kill 6 vigilant_bandit_archer [in kragmar_mournfen/bandit_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/bandit_camp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:vigilant_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_watch_02"
+   ],
+   "reward_items": [],
+   "title": "Arrows Over the Evidence",
    "turnin": "r14_undead_scout",
-   "xp": 420
-  },
-  {
-   "copper": 80,
-   "description": "The bandits carried cloth hot without flame, marked by a hooked sun. Defeat them and let Hollis explain what the fen could not cool. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
-   "giver": "r14_undead_scout",
-   "giver_name": "Sera Vane",
-   "giver_settlement": "Mournfen Outpost",
-   "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
-   "min_level": 12,
-   "objectives": [
-    "kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_mournfen]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:bandit_archer",
-      "grug_mobs:quarrelsome_bandit"
-     ],
-     "type": "kill",
-     "zone": "kragmar_mournfen"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_08_clear_the_sluice"
-   ],
-   "reward_items": [],
-   "title": "Fire That the Fen Cannot Drown",
-   "turnin": "r14_undead_captive",
-   "xp": 805
-  },
-  {
-   "copper": 65,
-   "description": "Two stolen purses may still carry the names scratched into their bone tags. Bring them to the captive so the missing carriers can be entered in the camp account. Accept this request before the camp fight; ordinary carried or traded purses also count.",
-   "giver": "r14_undead_captive",
-   "giver_name": "Hollis Grey",
-   "giver_settlement": "Mournfen Bandit Camp",
-   "id": "r15_undead_local_05",
-   "min_level": 12,
-   "objectives": [
-    "bring 2 grug_mobs:stolen_purse"
-   ],
-   "objectives_raw": [
-    {
-     "count": 2,
-     "item": "grug_mobs:stolen_purse",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_08_clear_the_sluice"
-   ],
-   "reward_items": [],
-   "title": "Names on the Purse Tags",
-   "turnin": "r14_undead_captive",
    "xp": 460
   },
   {
-   "copper": 75,
-   "description": "The inner-band raiders carry linen that stayed dry inside the ruined enclosure. Bring enough for Hollis to wrap the heat-marked scrap.",
+   "copper": 31,
+   "description": "I counted every sack they carried to the Mournfen Mire Nests east from here; there was precious little else to do from a cage. Mirefolk Reed-Counter Silt counts the bones there and pays the bandits in pearls. Kill five Reed Mirefolk at the nests and the Reed-Counter as well, then take word to Sera Vane at the outpost. I would dearly like my last memory of this place to be of their accounts failing to add up.",
    "giver": "r14_undead_captive",
    "giver_name": "Hollis Grey",
    "giver_settlement": "Mournfen Bandit Camp",
-   "id": "r15_undead_local_06",
-   "min_level": 12,
+   "id": "mournfen_testimony_01",
+   "min_level": 18,
    "objectives": [
-    "bring 5 grug_mobs:linen_cloth"
+    "kill 5 reed_mirefolk [in kragmar_mournfen/mire_nests]",
+    "kill 1 reed_counter_silt"
    ],
    "objectives_raw": [
     {
+     "area": "kragmar_mournfen/mire_nests",
      "count": 5,
-     "item": "grug_mobs:linen_cloth",
-     "type": "item"
+     "mobs": [
+      "grug_mobs:reed_mirefolk"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:reed_counter_silt"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_undead_08_clear_the_sluice"
+    "mournfen_watch_04"
    ],
    "reward_items": [],
-   "title": "Dry Cloth from a Wet Ruin",
+   "title": "Strike Out the Counter",
+   "turnin": "r14_undead_scout",
+   "xp": 720
+  },
+  {
+   "copper": 5,
+   "description": "With fewer lookouts, you have a chance to reach Hollis Grey in the Mournfen Bandit Camp. Go and speak with him; he has spent weeks watching the bandits carry sacks away. Captivity gives a man time to notice things, particularly when he no longer needs to sleep.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_watch_04",
+   "min_level": 18,
+   "objectives": [
+    "talk to Hollis Grey (mournfen_bandit_camp)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_undead_captive",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_watch_03"
+   ],
+   "reward_items": [],
+   "title": "The Witness Is Still Talking",
    "turnin": "r14_undead_captive",
-   "xp": 575
+   "xp": 115
+  },
+  {
+   "copper": 13,
+   "description": "Wandering Wisps are gathering over the Mournfen Deepfen, which lies in the southwest of Mournfen, after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_bounty_watch",
+   "min_level": 19,
+   "objectives": [
+    "kill 6 wandering_wisp [in kragmar_mournfen/deepfen]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_mournfen/deepfen",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:wandering_wisp"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_watch_04"
+   ],
+   "reward_items": [],
+   "title": "Repeatable: Six Fewer False Lights (repeatable)",
+   "turnin": "r14_undead_scout",
+   "xp": 300
+  },
+  {
+   "copper": 8,
+   "description": "Hollis is out of that cage, and the Reed-Counter's tally is closed for good. Go to Nhal Veyr and tell Ossa Quietregister in the Vigil Hall what the mirefolk were buying; the capital's register has gaps where our dead should be, and someone must account for them.",
+   "giver": "r14_undead_scout",
+   "giver_name": "Sera Vane",
+   "giver_settlement": "Mournfen Outpost",
+   "id": "mournfen_departure",
+   "min_level": 19,
+   "objectives": [
+    "talk to Ossa Quietregister (nhal_veyr)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_undead_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "mournfen_testimony_01"
+   ],
+   "reward_items": [],
+   "title": "Names Missing From the Register",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 180
   }
  ],
  "race_region": "undead",
@@ -996,7 +1170,11 @@
      "npc_id": "r14_undead_steward",
      "npc_name": "Mordec Silt",
      "quests": [
-      "r14_undead_07_mud_that_moves"
+      "mournfen_bounty_fen",
+      "mournfen_fen_01",
+      "mournfen_fen_02",
+      "mournfen_fen_03",
+      "mournfen_fen_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1009,8 +1187,9 @@
      "npc_id": "r15_undead_local",
      "npc_name": "Edris Wax",
      "quests": [
-      "r15_undead_local_01",
-      "r15_undead_local_02"
+      "mournfen_stores_01",
+      "mournfen_stores_02",
+      "mournfen_wax_01"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1125,10 +1304,12 @@
      "npc_id": "r14_undead_scout",
      "npc_name": "Sera Vane",
      "quests": [
-      "r14_undead_08_clear_the_sluice",
-      "r14_undead_09_fire_that_the_fen_cannot_drown",
-      "r15_undead_local_03",
-      "r15_undead_local_04"
+      "mournfen_bounty_watch",
+      "mournfen_departure",
+      "mournfen_watch_01",
+      "mournfen_watch_02",
+      "mournfen_watch_03",
+      "mournfen_watch_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1242,8 +1423,7 @@
      "npc_id": "r14_undead_captive",
      "npc_name": "Hollis Grey",
      "quests": [
-      "r15_undead_local_05",
-      "r15_undead_local_06"
+      "mournfen_testimony_01"
      ],
      "role": "quest",
      "role_text": "quest giver",

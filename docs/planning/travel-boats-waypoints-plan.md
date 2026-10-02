@@ -1,8 +1,8 @@
 # WP17 boats and waypoints — plan for Round 29
 
 Design session with the user, 2026-10-02. Input for the Round 29 coordinator
-("Economy and travel", `economy-vendor-plan.md` §10). Nothing here is built
-yet. The rulings below **supersede** the contrary parts of `boats.md`,
+("Economy and travel", `economy-vendor-plan.md` §10). Delivered in Round 29
+([completion](#completion-2026-10-02) at the end). The rulings below **supersede** the contrary parts of `boats.md`,
 `world.md` §2b/§6, `items_crafting.md` §3.0.5, `biomes_mobs.md` §3.1 and the
 WP17 scope card; lane D folds them into those files.
 
@@ -294,3 +294,32 @@ Waypoints
     afterwards.
 17. Right-click an enemy faction's waystone (e.g. reached through the
     Battlegrounds) → refused, nothing unlocked.
+
+## Completion (2026-10-02)
+
+Delivered in Round 29
+([round plan completion](round29-plan.md#completion-2026-10-02)): lane B with
+K (`f6652818`: boats as water mounts, the Shipwright, the Kraken retune),
+lane W with its mapgen part (`e3e10df5`: the waystone node, start pads,
+capital waystones, the shipwright socket, waystone travel and the map
+marker), the check of §4 item 4 in lane M-geo (`33ac05f9`: the wider
+Battlegrounds and the middle road), the art in lane A (`7e696133`) and the
+two boat prices in E4 (Boat 1s10c, Improved Boat 7s). Coordinator rulings:
+a purchase is ownership only, the item is recovered from the Skills page;
+another tier's item replaces the active mount or boat.
+
+Lane D items, where they live:
+
+- `boats.md`, `mounts.md` (water mode), `world.md` §2b and §6,
+  `items_crafting.md` §3.0.5, `biomes_mobs.md` §3.1 (Kraken values),
+  `settlements.md` (Shipwright socket, start pads, display hulls as
+  scenery): lane B and lane W, in-lane.
+- `world_map.md` (marker kind `waypoint`): lane W.
+- `economy-vendor-plan.md` E4 (both boat prices): lane E4.
+- `round28-design-frame.md` §2.1 (islands boat-only): corrected during
+  Round 28 (`3f1405e5`).
+- `work-package-scopes.md` WP17, BACKLOG, ROADMAP and README: Round 29
+  lane D. WP17 is delivered.
+
+The GUI test list (§7) is part of the
+[Round 29 playtest checklist](round29-plan.md#playtest-checklist).

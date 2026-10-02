@@ -58,35 +58,42 @@ Share of land per level: L1 4.5%, L2 5.7%, L3 56.5%, L4 6.8%, L5 5.9%, L6 5.4%, 
 
 ### Sunscar (`sunscar`, anchor_005) at 0, 37, 2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | yard_vendor | vendor | vendor kind: race | 8, 38, 2545 | - |
 | idle_tusk_door | innkeeper (respawn bind) |  | -11, 38, 2528 | - |
-| hall_quest | quest giver | Gara Stonevoice | 3, 38, 2562 | r14_orc_01_tusks_at_the_water_skins, r14_orc_03_rats_under_the_hide_racks, r14_orc_04_the_thirsting_dead, r14_orc_05_shells_by_the_bedrolls, r14_orc_06_husks_on_redtusk_road, r14_orc_10_edge_of_the_first_camp, r14_orc_11_stone_has_no_pride, r20_orc_capital_intro |
+| hall_quest | quest giver | Gara Stonevoice | 3, 38, 2562 | sunscar_bounty, sunscar_departure, sunscar_hunt_01, sunscar_hunt_02, sunscar_hunt_03, sunscar_hunt_04, sunscar_hunt_05, sunscar_tools_01, sunscar_tools_02, sunscar_tools_03, sunscar_tools_04 |
+| travel_waypoint | waypoint |  | -11, 38, 2534 | - |
 | trainer_cooking | profession trainer | trains: cooking | 2, 38, 2540 | - |
-| quest_cook | quest giver | Ugra Brothstone | 2, 38, 2537 | r14_orc_02_meat_for_the_long_fire, r20_orc_start_cook |
+| quest_cook | quest giver | Ugra Brothstone | 2, 38, 2537 | sunscar_kitchen_01, sunscar_kitchen_02, sunscar_kitchen_03, sunscar_pantry_01, sunscar_pantry_02 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 440 (coastal_shelf), S 308 (kragmar_redtusk_savanna), E 372 (coastal_shelf), W 708 (bay_water); nearest other-zone land 302 S; sea 320 E; sea-beach sand 289 E; nearest road 64.
 Nearest hubs (straight / by road): Redtusk Outpost 507 / 617; Redtusk Village 553 / 793; Gor Drazhak 1050 / 1270; Redtusk Bandit Camp 654 / 1846; Cutgrass Watch 1453 / 2101.
 
-### Current quests (10, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_orc_01_tusks_at_the_water_skins | Tusks at the Water Skins | Gara Stonevoice (Sunscar) | 1 | kill 3 boar or small_boar | 20 | - |
-| r14_orc_02_meat_for_the_long_fire | Meat for the Long Fire | Ugra Brothstone (Sunscar) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_orc_10_edge_of_the_first_camp | Edge of the First Camp | Gara Stonevoice (Sunscar) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_orc_start_cook | Keep the Long Fire Fed | Ugra Brothstone (Sunscar) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_orc_11_stone_has_no_pride | Stone Has No Pride | Gara Stonevoice (Sunscar) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_orc_10_edge_of_the_first_camp |
-| r14_orc_03_rats_under_the_hide_racks | Posts Beneath the Hide Racks | Gara Stonevoice (Sunscar) | 3 | bring 6 default:acacia_wood | 100 | r14_orc_01_tusks_at_the_water_skins |
-| r14_orc_04_the_thirsting_dead | The Thirsting Dead | Gara Stonevoice (Sunscar) | 5 | kill 3 sun_dried_husk or befuddled_husk or sluggish_husk | 180 | r14_orc_01_tusks_at_the_water_skins |
-| r14_orc_05_shells_by_the_bedrolls | Shells by the Bedrolls | Gara Stonevoice (Sunscar) | 5 | kill 5 scorpion or irritable_scorpion | 180 | r14_orc_03_rats_under_the_hide_racks |
-| r14_orc_06_husks_on_redtusk_road | The Road to Borak Redgrass | Gara Stonevoice (Sunscar) | 10 | talk to Borak Redgrass (redtusk_village) | 285 | r14_orc_05_shells_by_the_bedrolls |
-| r20_orc_capital_intro | The Road to Gor Drazhak | Gara Stonevoice (Sunscar) | 10 | talk to Thorga Roadspeaker (gor_drazhak) | 285 | - |
+| sunscar_hunt_01 | A Drink Too Far | Gara Stonevoice (Sunscar) | 1 | kill 8 small_boar [in kragmar_sunscar_flats/wellfields] | 105 | - |
+| sunscar_kitchen_01 | Grandmother's Fire | Ugra Brothstone (Sunscar) | 1 | bring 5 group:tree | 30 | - |
+| sunscar_tools_01 | Put Those Hands to Work | Gara Stonevoice (Sunscar) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| sunscar_hunt_02 | No Hides for Rat Beds | Gara Stonevoice (Sunscar) | 2 | kill 8 large_rat [in kragmar_sunscar_flats/wellfields] | 105 | sunscar_hunt_01 |
+| sunscar_kitchen_02 | Give the Oven a Roar | Ugra Brothstone (Sunscar) | 2 | bring 5 default:coal_lump | 60 | sunscar_kitchen_01 |
+| sunscar_tools_02 | Leave the Splinters Behind | Gara Stonevoice (Sunscar) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | sunscar_tools_01 |
+| sunscar_pantry_01 | Supper Has Too Many Legs | Ugra Brothstone (Sunscar) | 3 | bring 3 grug_mobs:crab_leg | 90 | - |
+| sunscar_hunt_03 | Earn Your Breath | Gara Stonevoice (Sunscar) | 4 | kill 8 young_plains_runner [in kragmar_sunscar_flats/runner_plains] | 150 | sunscar_hunt_02 |
+| sunscar_kitchen_03 | A Bowl You Earned | Ugra Brothstone (Sunscar) | 4 | bring 10 mobs:meat_raw | 100 | sunscar_kitchen_02, sunscar_hunt_02 |
+| sunscar_hunt_04 | Let the Thirst End | Gara Stonevoice (Sunscar) | 5 | kill 8 sluggish_husk [in kragmar_sunscar_flats/saltflats] | 165 | sunscar_hunt_03 |
+| sunscar_pantry_02 | Keep Dinner Off the Dirt | Ugra Brothstone (Sunscar) | 5 | bring 3 grug_mobs:fine_sinew | 83 | sunscar_pantry_01, sunscar_hunt_03 |
+| sunscar_tools_03 | A Lesson in the Coals | Gara Stonevoice (Sunscar) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 110 | sunscar_tools_02 |
+| sunscar_tools_04 | Let Bronze Do the Talking | Gara Stonevoice (Sunscar) | 7 | bring 3 grug_materials:bronze_bar | 130 | sunscar_tools_03 |
+| sunscar_hunt_05 | The Last Drop Is Ours | Gara Stonevoice (Sunscar) | 8 | kill 6 confused_bandit [in kragmar_sunscar_flats/thieves_camp]; kill 1 water_thief_chief | 315 | sunscar_hunt_04 |
+| sunscar_bounty | Bounty: A Thirst for Trouble (repeatable) | Gara Stonevoice (Sunscar) | 9 | kill 6 confused_bandit [in kragmar_sunscar_flats/thieves_camp] | 105 | sunscar_hunt_05 |
+| sunscar_departure | Carry Sunscar With You | Gara Stonevoice (Sunscar) | 9 | talk to Borak Redgrass (redtusk_village) | 70 | sunscar_hunt_05 |
 
 ## Mobs by spawn region
 

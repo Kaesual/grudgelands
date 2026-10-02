@@ -64,8 +64,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Orrik Pineledger | -1866, 95, -2036 | r14_dwarf_07_a_ledger_in_the_scrub |
-| quest_local | quest giver | Dagna Copperset | -1870, 95, -2038 | r15_dwarf_local_01, r15_dwarf_local_02 |
+| quest_steward | quest giver | Orrik Pineledger | -1866, 95, -2036 | copperfell_bounty_rats, copperfell_survey_01, copperfell_survey_02, copperfell_survey_03 |
+| quest_local | quest giver | Dagna Copperset | -1870, 95, -2038 | copperfell_workyard_01, copperfell_workyard_02, copperfell_workyard_03 |
 
 Distances: zone edge N 188 (elandor_dur_brannoc), S 316 (elandor_hearthpine_vale), E 696 (coastal_shelf), W 392 (elandor_frostbarrow_shelf); nearest other-zone land 176 N; sea 469 SW; sea-beach sand 513 SW; nearest road 18.
 Nearest hubs (straight / by road): Copperfell Bandit Camp 301 / 493; Hearthpine 518 / 655; Copperfell Outpost 241 / 775; Dur Brannoc 540 / 857; Tarnwatch Fold 706 / 1538.
@@ -76,7 +76,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Mara Deepwatch | -2097, 56, -2103 | r14_dwarf_08_hold_the_marker_stones, r14_dwarf_09_ash_under_the_nails, r15_dwarf_local_03, r15_dwarf_local_04 |
+| quest_scout | quest giver | Mara Deepwatch | -2097, 56, -2103 | copperfell_bounty_gnawers, copperfell_watch_01, copperfell_watch_02, copperfell_watch_03, copperfell_watch_04 |
 
 Distances: zone edge N 240 (elandor_dur_brannoc), S 408 (elandor_hearthpine_vale), E 896 (coastal_shelf), W 208 (elandor_frostbarrow_shelf); nearest other-zone land 172 W; sea 233 SW; sea-beach sand 273 W; nearest road 12.
 Nearest hubs (straight / by road): Hearthpine 541 / 638; Copperfell Village 241 / 775; Copperfell Bandit Camp 533 / 793; Dur Brannoc 671 / 1498; Tarnwatch Fold 606 / 2178.
@@ -87,24 +87,31 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Tovin Ashthumb | -1558, 69, -2056 | r15_dwarf_local_05, r15_dwarf_local_06 |
+| quest_captive | quest giver | Tovin Ashthumb | -1558, 69, -2056 | copperfell_bounty_dig, copperfell_departure, copperfell_dig_01, copperfell_dig_02 |
 
 Distances: zone edge N 200 (elandor_dur_brannoc), S 172 (elandor_hearthpine_vale), E 372 (coastal_shelf), W 716 (elandor_frostbarrow_shelf); nearest other-zone land 172 S; sea 354 SE; sea-beach sand 310 SE; nearest road 16.
 Nearest hubs (straight / by road): Copperfell Village 301 / 493; Hearthpine 537 / 673; Copperfell Outpost 533 / 793; Dur Brannoc 612 / 1216; Tarnwatch Fold 969 / 1896.
 
-### Current quests (9, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_dwarf_07_a_ledger_in_the_scrub | A Ledger in the Scrub | Orrik Pineledger (Copperfell Village) | 10 | kill 6 fox or young_fox [in elandor_copperfell_foothills] | 380 | r14_dwarf_06_loose_stone_on_copper_road |
-| r15_dwarf_local_01 | Stone for the Workyard | Dagna Copperset (Copperfell Village) | 10 | bring 8 default:cobble | 285 | r14_dwarf_06_loose_stone_on_copper_road |
-| r15_dwarf_local_02 | Fangs in the Tool Baskets | Dagna Copperset (Copperfell Village) | 10 | bring 2 grug_mobs:fang | 380 | r14_dwarf_06_loose_stone_on_copper_road |
-| r14_dwarf_08_hold_the_marker_stones | Hold the Marker Stones | Mara Deepwatch (Copperfell Outpost) | 11 | kill 6 goblin_raider or goblin_slinger or goblin_hound or ore_thieving_goblin [in elandor_copperfell_foothills] | 525 | r14_dwarf_07_a_ledger_in_the_scrub |
-| r15_dwarf_local_03 | Scraps from the Signal Path | Mara Deepwatch (Copperfell Outpost) | 11 | bring 2 grug_mobs:linen_scrap | 315 | r14_dwarf_07_a_ledger_in_the_scrub |
-| r15_dwarf_local_04 | Sure Feet, Loose Stones | Mara Deepwatch (Copperfell Outpost) | 11 | kill 5 ibex [in elandor_copperfell_foothills] | 420 | r14_dwarf_07_a_ledger_in_the_scrub |
-| r14_dwarf_09_ash_under_the_nails | Ash Under the Nails | Mara Deepwatch (Copperfell Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_copperfell_foothills] | 805 | r14_dwarf_08_hold_the_marker_stones |
-| r15_dwarf_local_05 | The Ore Carriers' Purses | Tovin Ashthumb (Copperfell Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_dwarf_08_hold_the_marker_stones |
-| r15_dwarf_local_06 | Cloth Around the Stolen Tools | Tovin Ashthumb (Copperfell Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_dwarf_08_hold_the_marker_stones |
+| copperfell_survey_01 | The Surveyor Has Tusks | Orrik Pineledger (Copperfell Village) | 9 | kill 8 young_boar [in elandor_copperfell_foothills/lower_pines] | 320 | hearthpine_departure |
+| copperfell_workyard_01 | Keep the Rails Together | Dagna Copperset (Copperfell Village) | 10 | bring 4 grug_materials:iron_bar; bring 4 default:coal_lump | 255 | hearthpine_departure |
+| copperfell_survey_02 | An Appetite for Figures | Orrik Pineledger (Copperfell Village) | 11 | kill 8 granary_rat [in elandor_copperfell_foothills/lower_pines] | 340 | copperfell_survey_01 |
+| copperfell_bounty_rats | Bounty: Accounts Receivable, Barely (repeatable) | Orrik Pineledger (Copperfell Village) | 12 | kill 6 granary_rat [in elandor_copperfell_foothills/lower_pines] | 170 | copperfell_survey_02 |
+| copperfell_workyard_02 | A Handle on the Problem | Dagna Copperset (Copperfell Village) | 12 | bring 3 grug_mobs:ridged_boar_tusk | 225 | copperfell_workyard_01 |
+| copperfell_survey_03 | Orrik Sends Useful Hands | Orrik Pineledger (Copperfell Village) | 13 | talk to Mara Deepwatch (copperfell_outpost) | 95 | copperfell_survey_02 |
+| copperfell_watch_01 | The Road Has Gone Hollow | Mara Deepwatch (Copperfell Outpost) | 14 | kill 8 mangy_rat [in elandor_copperfell_foothills/pine_slopes] | 450 | copperfell_survey_03 |
+| copperfell_watch_02 | Surefoot, Someone Else's Problem | Mara Deepwatch (Copperfell Outpost) | 14 | kill 8 surefoot_ibex [in elandor_copperfell_foothills/pine_slopes] | 400 | copperfell_survey_03 |
+| copperfell_watch_03 | A Toll Paid in Bruises | Mara Deepwatch (Copperfell Outpost) | 15 | kill 8 quarrelsome_bandit or vigilant_bandit_archer [in elandor_copperfell_foothills/bandit_camp] | 473 | copperfell_watch_02 |
+| copperfell_workyard_03 | The Guild's Good Name | Dagna Copperset (Copperfell Village) | 15 | bring 2 grug_materials:rough_jade | 440 | copperfell_workyard_02 |
+| copperfell_watch_04 | One Carter Still Missing | Mara Deepwatch (Copperfell Outpost) | 16 | talk to Tovin Ashthumb (copperfell_bandit_camp) | 110 | copperfell_watch_03 |
+| copperfell_bounty_gnawers | Bounty: Another Wheel Down (repeatable) | Mara Deepwatch (Copperfell Outpost) | 17 | kill 6 mangy_rat [in elandor_copperfell_foothills/pine_slopes] | 220 | copperfell_watch_04 |
+| copperfell_dig_01 | I Know Where They Sold It | Tovin Ashthumb (Copperfell Bandit Camp) | 17 | kill 8 rubble_goblin_slinger or ore_guard_hound [in elandor_copperfell_foothills/goblin_dig] | 600 | copperfell_watch_04 |
+| copperfell_dig_02 | Our Wages, Nog's Problem | Tovin Ashthumb (Copperfell Bandit Camp) | 18 | kill 1 foreman_nog; bring 3 grug_mobs:stolen_purse | 600 | copperfell_dig_01 |
+| copperfell_bounty_dig | Bounty: Rocks in Lieu of Rent (repeatable) | Tovin Ashthumb (Copperfell Bandit Camp) | 19 | kill 6 rubble_goblin_slinger [in elandor_copperfell_foothills/goblin_dig] | 300 | copperfell_dig_02 |
+| copperfell_departure | A Familiar Stamp | Tovin Ashthumb (Copperfell Bandit Camp) | 19 | talk to Dorrin Gateledger (dur_brannoc) | 180 | copperfell_dig_02 |
 
 ## Mobs by spawn region
 

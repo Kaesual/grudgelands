@@ -2,11 +2,11 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 240 quests (Rounds 14, 15 and 20: 66 starter quests, 36
-optional local quests, the capital, regional and travel quests), kept since
-Round 28 as one data file per zone (`quests.md`, "Quest data"); each zone's
-Round 28 design replaces its file. The broader named-zone WP9 story remains
-open.
+The game ships 491 quests (Round 29), one data file per zone (`quests.md`,
+"Quest data"): one track per race from the start zone to its heartland, the
+contested 31–40 zones and the 41–60 front with its repeatable and island
+bounties. They replaced the 240 quests of Rounds 14, 15 and 20. The broader
+named-zone WP9 story remains open.
 
 ## 1. Leveling pace
 
@@ -147,10 +147,8 @@ Revised 2026-09-23, Round 18:
 - Main-questline beats use hard `min_level` gates (`story.md`).
 - Quest descriptions show their minimum level and named prerequisite quests.
 - Quest XP uses the authored reward level rather than the receiver's level
-  and does not scale at hand-in. New quests (Round 28) author a weight in
-  kill equivalents ("XP units and level curve"); the split older quests in
-  the zone files still carry the fixed integers ("Current fixed quest reward
-  table") until their zone's design replaces them.
+  and does not scale at hand-in. Every quest authors a weight in kill
+  equivalents ("XP units and level curve").
 - The final quest at each starting settlement is handed in to the next
   regional giver, so completion and the following regional quest meet at the
   same NPC.
@@ -235,47 +233,3 @@ carried over to the new unit.
   anti-cheat or autoclicker check (user ruling). A caught fish shows its XP in
   its feed line ("Caught Silver Trout (+N XP)"); ore XP shows as an
   ordinary "+N XP" feed line.
-
-## Current fixed quest reward table
-
-**Legacy values.** These fixed integers were sized against the pre-Round-28
-quadratic curve (interval `200L − 100`) and stay unchanged until new quest
-files with Ruling 32 weights replace the quests (moved to Round 29). Against the new curve
-they are mis-sized: a level-1 quest is 0.5–0.7 kill equivalents (6–8 % of
-the level), levels 3–5 are 2.5–3.6 KE (29–39 % of a level), and from level 10
-on every quest is 3.8–9.5 KE, 36–85 % of a whole level (the old design meant
-15–35 %; the new interval at level 10 is 800 instead of 1,900). Example: the
-L10–12 regional and local quests of one start town add 4,430 XP, which takes
-a player from level 10 to about level 14 by rewards alone.
-
-Rewards below are per quest, shared by the racial variants that still ship
-the split older quests (the Orc track's designed quests replaced its variant in
-Round 29). They are fixed catalog values before any applicable racial
-modifier; no runtime level scaling.
-
-| Quest position / work | Intended level | XP |
-| --- | ---: | ---: |
-| Starter 1 | 1 | 20 |
-| Starter 2 (parallel cook delivery) | 1 | 20 |
-| Starter 3 | 3 | 100 |
-| Starter 4 | 4 | 140 |
-| Starter 5 | 5 | 180 |
-| Starter 6 (conversation-only regional handoff) | 10 | 285 |
-| Regional 7 | 10 | 380 |
-| Regional 8 (hard) | 11 | 525 |
-| Regional 9 (camp finale) | 12 | 805 |
-| Optional axe lesson | 1 | 15 |
-| Optional pick lesson | 2 | 45 |
-| Village local 1 / 2 | 10 | 285 / 380 |
-| Outpost local 1 / 2 | 11 | 315 / 420 |
-| Camp local 1 / 2 | 12 | 460 / 575 |
-
-Ordinary rewards used 15%, 20% or 25% of the intended level interval of the
-old quadratic curve; the camp finale used 35%. Kill XP earned while doing the objective is additional and
-continues to use the shared participation/split rules.
-
-Round 20 conversation-only travel handoffs use the existing light/lesson rate:
-15% of the authored target-level interval (old curve), rounded to a fixed integer catalog
-reward. They award no kill XP and do not scale to the receiving player's level.
-Comparable light quests provide the coin budget; no new reward currency or
-travel-distance formula is introduced.

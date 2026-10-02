@@ -200,86 +200,39 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 45,
-   "description": "Ansel Ovenward is setting a supper beside Highcourt's bakehouse for travellers who arrive after the bread is baked. Bring five raw meat portions for the pot. No Cooking profession is required.",
+   "copper": 38,
+   "description": "There are Debtbound Zombies wandering the Highcourt Commons, in the southeast of Highcourt, at night, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why. Highcourt can surely spare the dead another demand for payment.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_accounts_01",
+   "min_level": 19,
+   "objectives": [
+    "kill 5 debtbound_zombie [in elandor_highcourt/commons]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/commons",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:debtbound_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Dead Cannot Owe Toll",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 390
+  },
+  {
+   "copper": 13,
+   "description": "I paid for river baskets and received a very confident promise, which has proved difficult to put bread in. Find Merren Oakstamp at Whitebridge Market Close in Whitebridge Shire and ask what became of my order. Follow the road, or visit the stables about a mount if your feet have already lodged a complaint.",
    "giver": "r20_human_capital_cook",
    "giver_name": "Ansel Ovenward",
    "giver_settlement": "Highcourt",
-   "id": "r20_human_capital_cook",
-   "min_level": 10,
-   "objectives": [
-    "bring 5 mobs:meat_raw"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "item": "mobs:meat_raw",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Bread for the Late Arrivals",
-   "turnin": "r20_human_capital_cook",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "Mariel sends new arrivals to Ansel Ovenward in the homes bakehouse. Speak with the cook beside the oven and complete this introduction there; the separate Cooking trainer is optional.",
-   "giver": "r20_human_capital_envoy",
-   "giver_name": "Mariel Waybook",
-   "giver_settlement": "Highcourt",
-   "id": "r20_human_capital_services",
-   "min_level": 10,
-   "objectives": [
-    "talk to Ansel Ovenward (highcourt)"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "npc": "r20_human_capital_cook",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [
-    "r20_human_capital_intro"
-   ],
-   "reward_items": [],
-   "title": "The Ovenward Welcome",
-   "turnin": "r20_human_capital_cook",
-   "xp": 285
-  },
-  {
-   "copper": 60,
-   "description": "The river watch needs low stone blocks to reset its supply-yard edge. Bring twelve cobble blocks to Mariel at Highcourt. This asks for ordinary material, not proof that you mined it.",
-   "giver": "r20_human_capital_envoy",
-   "giver_name": "Mariel Waybook",
-   "giver_settlement": "Highcourt",
-   "id": "r20_human_capital_stores",
-   "min_level": 20,
-   "objectives": [
-    "bring 12 default:cobble"
-   ],
-   "objectives_raw": [
-    {
-     "count": 12,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Stone for the River Watch",
-   "turnin": "r20_human_capital_envoy",
-   "xp": 780
-  },
-  {
-   "copper": 50,
-   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Whitebridge Market Close in Whitebridge Shire and speak with Merren Oakstamp. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Merren Oakstamp there. No parcel, fighting errand or return trip is required.",
-   "giver": "r20_human_capital_envoy",
-   "giver_name": "Mariel Waybook",
-   "giver_settlement": "Highcourt",
-   "id": "r20_human_journey_01",
+   "id": "highcourt_dispatch_01",
    "min_level": 21,
    "objectives": [
     "talk to Merren Oakstamp (r20_anchor_016)"
@@ -291,11 +244,326 @@
      "type": "talk"
     }
    ],
+   "prerequisites": [
+    "highcourt_accounts_01"
+   ],
+   "reward_items": [],
+   "title": "The Empty River Baskets",
+   "turnin": "r20_anchor_016_host",
+   "xp": 135
+  },
+  {
+   "copper": 19,
+   "description": "My bread board rocks, and the royal kitchen has offered to lend me a peg with more conditions than a peace treaty. Bring me one Gnarled Boar Tusk from a Furrow Boar by day on the Highcourt Commons, which lies in the southeast of Highcourt. Their yellow names mean they only fight back when struck. I would rather settle the matter with the boar.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_provisions_01",
+   "min_level": 21,
+   "objectives": [
+    "bring 1 grug_mobs:gnarled_boar_tusk"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_mobs:gnarled_boar_tusk",
+     "type": "item"
+    }
+   ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Merren Oakstamp",
-   "turnin": "r20_anchor_016_host",
-   "xp": 615
+   "title": "A Peg for the Bread Board",
+   "turnin": "r20_human_capital_cook",
+   "xp": 203
+  },
+  {
+   "copper": 38,
+   "description": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day on the Highcourt Commons. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_provisions_venison",
+   "min_level": 21,
+   "objectives": [
+    "kill 6 moss_antler_stag [in elandor_highcourt/commons]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/commons",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:moss_antler_stag"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: Venison for the Long Table",
+   "turnin": "r20_human_capital_cook",
+   "xp": 405
+  },
+  {
+   "copper": 38,
+   "description": "The complaints lead to Toll Bandit Archers in the Highcourt Deer Park southwest of Highcourt, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_accounts_02",
+   "min_level": 24,
+   "objectives": [
+    "kill 5 toll_bandit_archer [in elandor_highcourt/deer_park]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/deer_park",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:toll_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_accounts_01"
+   ],
+   "reward_items": [],
+   "title": "An Arrow Is Not a Receipt",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 450
+  },
+  {
+   "copper": 38,
+   "description": "The petitions now include Tithe Revenants in the Highcourt Orchards, which lie in the west of Highcourt. They rise at night to demand payments nobody remembers owing. Lay five of them to rest after dark. I would prefer the dead stop collecting before the living start believing them.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_accounts_tithes",
+   "min_level": 24,
+   "objectives": [
+    "kill 5 stubborn_zombie [in elandor_highcourt/orchards]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/orchards",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:stubborn_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_accounts_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: Tithes After Dark",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 465
+  },
+  {
+   "copper": 38,
+   "description": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Redfang Vixens by day in the Highcourt Orchards, which lie in the west of Highcourt. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_provisions_02",
+   "min_level": 24,
+   "objectives": [
+    "kill 5 redfang_fox [in elandor_highcourt/orchards]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/orchards",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:redfang_fox"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Pies Have Consequences",
+   "turnin": "r20_human_capital_cook",
+   "xp": 450
+  },
+  {
+   "copper": 51,
+   "description": "Bandit Tollmaster Penn conducts his business at the Highcourt Toll Camp west from here, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Bandit Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_accounts_03",
+   "min_level": 27,
+   "objectives": [
+    "kill 5 toll_bandit_archer [in elandor_highcourt/toll_camp]",
+    "kill 1 tollmaster_penn"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/toll_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:toll_bandit_archer"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:tollmaster_penn"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_accounts_02"
+   ],
+   "reward_items": [],
+   "title": "The Last Unauthorised Stamp",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 680
+  },
+  {
+   "copper": 26,
+   "description": "The gardeners are replanting the Highcourt Outer Fields, in the northwest of Highcourt, yet again, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_bounty_razorbacks",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 monstrous_boar [in elandor_highcourt/outer_fields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_highcourt/outer_fields",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:monstrous_boar"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_provisions_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Razorbacks (repeatable)",
+   "turnin": "r20_human_capital_cook",
+   "xp": 330
+  },
+  {
+   "copper": 13,
+   "description": "The watch at Cinderline eats my bread and stands between the Accord's homes and the fighting. Go to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel; tell him the person who dealt with Penn is ready to help. Get yourself to level 30 before making the journey into contested country. Eat before you leave, too; courage is no breakfast.",
+   "giver": "r20_human_capital_cook",
+   "giver_name": "Ansel Ovenward",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_dispatch_02",
+   "min_level": 29,
+   "objectives": [
+    "talk to Toren Waterbarrel (r20_anchor_031)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_031_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_accounts_03"
+   ],
+   "reward_items": [],
+   "title": "Bread for the March",
+   "turnin": "r20_anchor_031_host",
+   "xp": 170
+  },
+  {
+   "copper": 600,
+   "description": "The crown's chart of Stormscale Summit, northeast from here across the water, has more empty space than I'm comfortable signing. Take a boat from the coast; the Shipwright at the stables sells them. Follow the shelf and the channel to avoid the Kraken in deep water, then defeat six Last Watchmen on the Stormscale Wreck Shore after dark. I'd like the next expedition to find somewhere to land, and you to come home to your payment.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_front_01",
+   "min_level": 60,
+   "objectives": [
+    "kill 6 last_watch_zombie [in front_stormscale_summit/wreck_shore]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_stormscale_summit/wreck_shore",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:last_watch_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Optional: Beyond the Ink",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 0
+  },
+  {
+   "copper": 800,
+   "description": "Jungle Ape Last-Offering receives visitors in the Stormscale Thunderwood northeast from here, and the survivors describe an appalling welcome. Take a full group by boat to Stormscale Summit and defeat that elite ape. For once, the crown is prepared to reward a complete failure of diplomacy.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_front_02",
+   "min_level": 60,
+   "objectives": [
+    "kill 1 last_offering_ape"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:last_offering_ape"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_front_01"
+   ],
+   "reward_items": [],
+   "title": "Group: An Audience Nobody Requested",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 0
+  },
+  {
+   "copper": 600,
+   "description": "The court tailors have discovered Silver Ape Hair, and their enthusiasm survives every description of the journey. Take a boat to Stormscale Summit and collect four tufts from Glass-Knuckle Jungle Apes in the Stormscale Thunderwood by day. Bring them to me for payment; I handle the purse so you needn't hear about hems. This bounty is available again one hour after each turn-in.",
+   "giver": "r20_human_capital_envoy",
+   "giver_name": "Mariel Waybook",
+   "giver_settlement": "Highcourt",
+   "id": "highcourt_front_bounty",
+   "min_level": 60,
+   "objectives": [
+    "bring 4 grug_mobs:silver_ape_hair"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_mobs:silver_ape_hair",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "highcourt_front_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Fashion at a Safe Distance (repeatable)",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 0
   }
  ],
  "race_region": "human",
@@ -1041,9 +1309,13 @@
      "npc_id": "r20_human_capital_envoy",
      "npc_name": "Mariel Waybook",
      "quests": [
-      "r20_human_capital_services",
-      "r20_human_capital_stores",
-      "r20_human_journey_01"
+      "highcourt_accounts_01",
+      "highcourt_accounts_02",
+      "highcourt_accounts_03",
+      "highcourt_accounts_tithes",
+      "highcourt_front_01",
+      "highcourt_front_02",
+      "highcourt_front_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1104,6 +1376,14 @@
      "x": 9,
      "y": 42,
      "z": -1567
+    },
+    {
+     "role": "shipwright",
+     "role_text": "shipwright",
+     "socket": "market_stable/market_stable_shipwright",
+     "x": 9,
+     "y": 42,
+     "z": -1575
     },
     {
      "role": "vendor",
@@ -1325,7 +1605,12 @@
      "npc_id": "r20_human_capital_cook",
      "npc_name": "Ansel Ovenward",
      "quests": [
-      "r20_human_capital_cook"
+      "highcourt_bounty_razorbacks",
+      "highcourt_dispatch_01",
+      "highcourt_dispatch_02",
+      "highcourt_provisions_01",
+      "highcourt_provisions_02",
+      "highcourt_provisions_venison"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1366,6 +1651,7 @@
     "public_station": 7,
     "quest": 3,
     "riding_trainer": 1,
+    "shipwright": 1,
     "trainer": 8,
     "vendor": 7,
     "waypoint": 1,

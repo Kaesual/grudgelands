@@ -336,256 +336,98 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "The cairn beside Tarnwatch's bent southern lane has shed its mortar into the caravan track. Bring ten sound cobble blocks for its base; the smith can fit them while the sleds are unloaded. Existing or traded supplies are welcome.",
+   "copper": 51,
+   "description": "I can hear a loaded sled through a gale, but a Crag Snow Leopard gives no warning before it pounces. Kill eight Crag Snow Leopards at night along the sled track in the Frostbarrow Pinewood, which lies in the south of Frostbarrow Shelf. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
    "giver": "r20_anchor_014_host",
    "giver_name": "Edda Tarnmantle",
    "giver_settlement": "Tarnwatch Fold",
-   "id": "r20_anchor_014_01",
+   "id": "frostbarrow_sleds_01",
    "min_level": 21,
    "objectives": [
-    "bring 10 default:cobble"
+    "kill 8 prowling_snow_leopard [in elandor_frostbarrow_shelf/pinewood]"
    ],
    "objectives_raw": [
     {
-     "count": 10,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Cairn Mortar",
-   "turnin": "r20_anchor_014_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Ibex come down the conifer slopes by day and knock the loaded sleds against Tarnwatch's hall. Clear four animals from Frostbarrow Shelf while the masons reset the cairn.",
-   "giver": "r20_anchor_014_host",
-   "giver_name": "Edda Tarnmantle",
-   "giver_settlement": "Tarnwatch Fold",
-   "id": "r20_anchor_014_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 ibex or surefoot_ibex [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
+     "area": "elandor_frostbarrow_shelf/pinewood",
+     "count": 8,
      "mobs": [
-      "grug_mobs:ibex",
-      "grug_mobs:surefoot_ibex"
+      "grug_mobs:prowling_snow_leopard"
      ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Hooves Above the Sleds",
+   "title": "No Bell on Those Cats",
    "turnin": "r20_anchor_014_host",
-   "xp": 820
+   "xp": 540
   },
   {
-   "copper": 70,
-   "description": "Rimebell keeps its signal fuel under a roof because wet coal serves no watch. Bring six coal lumps for that dry store while the lookout checks the shelf road. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_026_host",
-   "giver_name": "Hedra Rimebell",
-   "giver_settlement": "Rimebell Watch",
-   "id": "r20_anchor_026_01",
+   "copper": 45,
+   "description": "Bank Crabs have taken a liking to the sled landing on the Frostbarrow Shingle south from here, and to the runners of anything parked there. Clear six of them by day if you can spare the time. They only pinch back, but they mean it.",
+   "giver": "r20_anchor_014_host",
+   "giver_name": "Edda Tarnmantle",
+   "giver_settlement": "Tarnwatch Fold",
+   "id": "frostbarrow_sleds_optional",
    "min_level": 21,
    "objectives": [
-    "bring 6 default:coal_lump"
+    "kill 6 bank_crab [in elandor_frostbarrow_shelf/shingle]"
    ],
    "objectives_raw": [
     {
+     "area": "elandor_frostbarrow_shelf/shingle",
      "count": 6,
-     "item": "default:coal_lump",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Fuel Under Cover",
-   "turnin": "r20_anchor_026_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Snow leopards hunt Frostbarrow Shelf's gravel and snowy patches at night. Defeat three near the sled routes before another caravan loses its rear guard.",
-   "giver": "r20_anchor_026_host",
-   "giver_name": "Hedra Rimebell",
-   "giver_settlement": "Rimebell Watch",
-   "id": "r20_anchor_026_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 3 snow_leopard [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
      "mobs": [
-      "grug_mobs:snow_leopard"
+      "grug_mobs:bank_crab"
      ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Sled Track Pack",
-   "turnin": "r20_anchor_026_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Tarncut's spare pick has lost its working head, and the sorting crew needs a replacement. Bring one ordinary stone pick, made or traded; no proof of mining is required. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_061_host",
-   "giver_name": "Kelda Screesort",
-   "giver_settlement": "Tarncut Mine",
-   "id": "r20_anchor_061_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 1 grug_materials:pick_stone"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "item": "grug_materials:pick_stone",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Handle for the Cutting",
-   "turnin": "r20_anchor_061_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Mountain rams wander Frostbarrow Shelf's rocky ground by day and block the mine's haul approaches. Clear four while the crew sorts the next load.",
-   "giver": "r20_anchor_061_host",
-   "giver_name": "Kelda Screesort",
-   "giver_settlement": "Tarncut Mine",
-   "id": "r20_anchor_061_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 mountain_ram [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:mountain_ram"
-     ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Rams on the Haul Lane",
-   "turnin": "r20_anchor_061_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "With the sled lane open, Edda can hear raiders signalling beyond the cairn after dark. Defeat four goblin raiders in Frostbarrow Shelf before their night party learns where the caravans sleep.",
-   "giver": "r20_anchor_014_host",
-   "giver_name": "Edda Tarnmantle",
-   "giver_settlement": "Tarnwatch Fold",
-   "id": "r20_anchor_014_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 4 goblin_raider or ore_thieving_goblin [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:goblin_raider",
-      "grug_mobs:ore_thieving_goblin"
-     ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_014_02"
+    "frostbarrow_sleds_01"
    ],
    "reward_items": [],
-   "title": "The Bell After Dark",
+   "title": "Optional: Pinched Runners",
    "turnin": "r20_anchor_014_host",
-   "xp": 900
+   "xp": 473
   },
   {
-   "copper": 70,
-   "description": "After the cats are driven back, the watch can read the new notches on its signal pole. They match a goblin slinger band's night signals. Defeat four slingers in Frostbarrow Shelf.",
-   "giver": "r20_anchor_026_host",
-   "giver_name": "Hedra Rimebell",
-   "giver_settlement": "Rimebell Watch",
-   "id": "r20_anchor_026_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 4 goblin_slinger or rubble_goblin_slinger [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:goblin_slinger",
-      "grug_mobs:rubble_goblin_slinger"
-     ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_026_02"
-   ],
-   "reward_items": [],
-   "title": "Notches on the Signal Pole",
-   "turnin": "r20_anchor_026_host",
-   "xp": 900
-  },
-  {
-   "copper": 70,
-   "description": "The daytime lane is open, but snow leopards hunt the shelf's gravel and snow after dusk. Defeat three during the cold shift so the next sled can leave safely.",
-   "giver": "r20_anchor_061_host",
-   "giver_name": "Kelda Screesort",
-   "giver_settlement": "Tarncut Mine",
-   "id": "r20_anchor_061_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 snow_leopard [in elandor_frostbarrow_shelf]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:snow_leopard"
-     ],
-     "type": "kill",
-     "zone": "elandor_frostbarrow_shelf"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_061_02"
-   ],
-   "reward_items": [],
-   "title": "The Cold Shift",
-   "turnin": "r20_anchor_061_host",
-   "xp": 900
-  },
-  {
-   "copper": 50,
-   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Tarncut Mine in Frostbarrow Shelf and speak with Kelda Screesort. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Kelda Screesort there. No parcel, fighting errand or return trip is required.",
+   "copper": 26,
+   "description": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Crag Snow Leopards in the Frostbarrow Pinewood at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
    "giver": "r20_anchor_014_host",
    "giver_name": "Edda Tarnmantle",
    "giver_settlement": "Tarnwatch Fold",
-   "id": "r20_dwarf_journey_02",
-   "min_level": 24,
+   "id": "frostbarrow_bounty_leopards",
+   "min_level": 22,
+   "objectives": [
+    "kill 6 prowling_snow_leopard [in elandor_frostbarrow_shelf/pinewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_frostbarrow_shelf/pinewood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:prowling_snow_leopard"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_sleds_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Pawprints Beside the Runners (repeatable)",
+   "turnin": "r20_anchor_014_host",
+   "xp": 270
+  },
+  {
+   "copper": 13,
+   "description": "Kelda Screesort says Tarncut Mine is managing, which means she's doing three dwarves' work and resenting the other two. Go speak with her there and say Edda sent you. She'll grumble, but she'll find a use for willing hands.",
+   "giver": "r20_anchor_014_host",
+   "giver_name": "Edda Tarnmantle",
+   "giver_settlement": "Tarnwatch Fold",
+   "id": "frostbarrow_sleds_02",
+   "min_level": 22,
    "objectives": [
     "talk to Kelda Screesort (r20_anchor_061)"
    ],
@@ -596,20 +438,242 @@
      "type": "talk"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "frostbarrow_sleds_01"
+   ],
    "reward_items": [],
-   "title": "Word for Kelda Screesort",
+   "title": "An Extra Pair for Kelda",
    "turnin": "r20_anchor_061_host",
-   "xp": 705
+   "xp": 140
   },
   {
-   "copper": 50,
-   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Splitbolt Station in Stormvault Heights and speak with Borin Splitbolt. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Borin Splitbolt there. No parcel, fighting errand or return trip is required.",
+   "copper": 45,
+   "description": "I spent half the morning hauling a sled back onto the track while a Hill Ram watched me chew my beard. Cull six Hill Rams by day along the haul lane in the Frostbarrow Snowpines, which lie in the heart of Frostbarrow Shelf. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
    "giver": "r20_anchor_061_host",
    "giver_name": "Kelda Screesort",
    "giver_settlement": "Tarncut Mine",
-   "id": "r20_dwarf_journey_03",
-   "min_level": 31,
+   "id": "frostbarrow_cutting_01",
+   "min_level": 23,
+   "objectives": [
+    "kill 6 hill_ram [in elandor_frostbarrow_shelf/snowpines]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_frostbarrow_shelf/snowpines",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:hill_ram"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Horns Have Right of Way",
+   "turnin": "r20_anchor_061_host",
+   "xp": 525
+  },
+  {
+   "copper": 13,
+   "description": "Hedra Rimebell keeps the signal lantern at Rimebell Watch, and she sees trouble on the shore long before it reaches the sleds. Walk up and tell her Edda sent you; a watch with one pair of eyes needs a second pair of hands.",
+   "giver": "r20_anchor_014_host",
+   "giver_name": "Edda Tarnmantle",
+   "giver_settlement": "Tarnwatch Fold",
+   "id": "frostbarrow_sleds_hedra",
+   "min_level": 23,
+   "objectives": [
+    "talk to Hedra Rimebell (r20_anchor_026)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_026_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_sleds_01"
+   ],
+   "reward_items": [],
+   "title": "A Lantern at Rimebell",
+   "turnin": "r20_anchor_026_host",
+   "xp": 145
+  },
+  {
+   "copper": 38,
+   "description": "Every dwarf looks at the ore; a good miner looks at what's holding the roof above it. Bring me four Steel Bars for the deep shaft's brackets. I'll give you a Steel Pickaxe for the rock down there, and we'll both have done something useful before lunch.",
+   "giver": "r20_anchor_061_host",
+   "giver_name": "Kelda Screesort",
+   "giver_settlement": "Tarncut Mine",
+   "id": "frostbarrow_cutting_02",
+   "min_level": 24,
+   "objectives": [
+    "bring 4 grug_materials:steel_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_materials:steel_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_cutting_01"
+   ],
+   "reward_items": [
+    "grug_materials:pick_steel 1"
+   ],
+   "title": "What Holds the Roof",
+   "turnin": "r20_anchor_061_host",
+   "xp": 465
+  },
+  {
+   "copper": 45,
+   "description": "A landing should let you get out of a boat, not persuade you to climb back in. Kill six Barnacle Pinchers on the Frostbarrow Icy Shore southwest from here by day. They'll attack without waiting for an invitation, so get your footing before you get their attention.",
+   "giver": "r20_anchor_026_host",
+   "giver_name": "Hedra Rimebell",
+   "giver_settlement": "Rimebell Watch",
+   "id": "frostbarrow_watch_01",
+   "min_level": 24,
+   "objectives": [
+    "kill 6 armored_crab [in elandor_frostbarrow_shelf/icy_shore]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_frostbarrow_shelf/icy_shore",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Landing Bites Back",
+   "turnin": "r20_anchor_026_host",
+   "xp": 543
+  },
+  {
+   "copper": 38,
+   "description": "Use your Steel Pickaxe to look for Rough Garnet deep beneath these mines, below the copper and jade, and bring me two pieces. Pack food and see that you have light. Keep a route back to the surface. I count a trip successful when the stone and the miner both come back up; one without the other is just paperwork.",
+   "giver": "r20_anchor_061_host",
+   "giver_name": "Kelda Screesort",
+   "giver_settlement": "Tarncut Mine",
+   "id": "frostbarrow_cutting_03",
+   "min_level": 26,
+   "objectives": [
+    "bring 2 grug_materials:rough_garnet"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_materials:rough_garnet",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_cutting_02"
+   ],
+   "reward_items": [],
+   "title": "Bring Yourself Back Too",
+   "turnin": "r20_anchor_061_host",
+   "xp": 480
+  },
+  {
+   "copper": 45,
+   "description": "From the watch I count fresh tracks every night in the Frostbarrow Rimewood, which lies in the north of Frostbarrow Shelf, and every one of them belongs to a Crag Snow Leopard. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
+   "giver": "r20_anchor_026_host",
+   "giver_name": "Hedra Rimebell",
+   "giver_settlement": "Rimebell Watch",
+   "id": "frostbarrow_watch_optional",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 prowling_snow_leopard [in elandor_frostbarrow_shelf/rimewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_frostbarrow_shelf/rimewood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:prowling_snow_leopard"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_watch_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: Eyes in the Rimewood",
+   "turnin": "r20_anchor_026_host",
+   "xp": 595
+  },
+  {
+   "copper": 32,
+   "description": "The tide has brought us another welcome committee with claws. Kill six Barnacle Pinchers on the Frostbarrow Rime Shore southwest from here by day and return for your bounty. This job is repeatable thirty minutes after you hand it in; the sea has never respected a finished shift.",
+   "giver": "r20_anchor_026_host",
+   "giver_name": "Hedra Rimebell",
+   "giver_settlement": "Rimebell Watch",
+   "id": "frostbarrow_bounty_pinchers",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 armored_crab [in elandor_frostbarrow_shelf/rime_shore]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_frostbarrow_shelf/rime_shore",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_watch_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Claws with the Tide (repeatable)",
+   "turnin": "r20_anchor_026_host",
+   "xp": 425
+  },
+  {
+   "copper": 64,
+   "description": "Goblin Powder-Counter Nib stole our blasting powder and is counting the barrels in the Frostbarrow Rimewood north from here. Go by daylight, when the leopards there have bedded down and only rams and the odd eagle are about. Clear your approach first, then pull Nib away from his barrels and fight him alone; he hits like a goblin who knows exactly how much powder he has left. Kill him before he finishes his sums.",
+   "giver": "r20_anchor_061_host",
+   "giver_name": "Kelda Screesort",
+   "giver_settlement": "Tarncut Mine",
+   "id": "frostbarrow_cutting_04",
+   "min_level": 28,
+   "objectives": [
+    "kill 1 powder_counter_nib"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:powder_counter_nib"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "frostbarrow_cutting_03"
+   ],
+   "reward_items": [],
+   "title": "An Explosive Miscalculation",
+   "turnin": "r20_anchor_061_host",
+   "xp": 850
+  },
+  {
+   "copper": 13,
+   "description": "With Nib's sums settled, Tarncut can dig again without flinching at every echo. Borin Splitbolt holds Splitbolt Station in Stormvault Heights, where the Accord needs dwarves who keep their heads under falling stone. Go and report to him; tell him Kelda says you came back up every time.",
+   "giver": "r20_anchor_061_host",
+   "giver_name": "Kelda Screesort",
+   "giver_settlement": "Tarncut Mine",
+   "id": "frostbarrow_departure",
+   "min_level": 29,
    "objectives": [
     "talk to Borin Splitbolt (r20_anchor_027)"
    ],
@@ -620,11 +684,13 @@
      "type": "talk"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "frostbarrow_cutting_04"
+   ],
    "reward_items": [],
-   "title": "Word for Borin Splitbolt",
+   "title": "A Miner for Splitbolt",
    "turnin": "r20_anchor_027_host",
-   "xp": 915
+   "xp": 175
   }
  ],
  "race_region": "dwarf",
@@ -876,10 +942,11 @@
      "npc_id": "r20_anchor_014_host",
      "npc_name": "Edda Tarnmantle",
      "quests": [
-      "r20_anchor_014_01",
-      "r20_anchor_014_02",
-      "r20_anchor_014_03",
-      "r20_dwarf_journey_02"
+      "frostbarrow_bounty_leopards",
+      "frostbarrow_sleds_01",
+      "frostbarrow_sleds_02",
+      "frostbarrow_sleds_hedra",
+      "frostbarrow_sleds_optional"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -993,9 +1060,9 @@
      "npc_id": "r20_anchor_026_host",
      "npc_name": "Hedra Rimebell",
      "quests": [
-      "r20_anchor_026_01",
-      "r20_anchor_026_02",
-      "r20_anchor_026_03"
+      "frostbarrow_bounty_pinchers",
+      "frostbarrow_watch_01",
+      "frostbarrow_watch_optional"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1109,10 +1176,11 @@
      "npc_id": "r20_anchor_061_host",
      "npc_name": "Kelda Screesort",
      "quests": [
-      "r20_anchor_061_01",
-      "r20_anchor_061_02",
-      "r20_anchor_061_03",
-      "r20_dwarf_journey_03"
+      "frostbarrow_cutting_01",
+      "frostbarrow_cutting_02",
+      "frostbarrow_cutting_03",
+      "frostbarrow_cutting_04",
+      "frostbarrow_departure"
      ],
      "role": "quest",
      "role_text": "quest giver",

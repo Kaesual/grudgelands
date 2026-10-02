@@ -64,6 +64,18 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 29 complete locally, 2026-10-02 (not pushed).** "Economy and
+travel": 491 new quests on the Round 28 framework (one track per race, the
+contested 31–40 zones, the 41–60 front with repeatable and island bounties)
+replace the 240 legacy quests; WP44 (one price module, 5% buy-back,
+income-derived mount, boat and respec prices); WP17 (boats as water mounts
+with the Shipwright, waystones at every start and capital, the Kraken
+retune); a mapgen bundle (gems by depth, `apex_sockets` removed, mapgen band
+data, the Battlegrounds 50 % wider with a middle road); a read-only
+[performance review](docs/research/perf-review-2026-10.md) that becomes
+Round 30. Next: fresh world and GUI test.
+[Plan, completion and playtest checklist](docs/planning/round29-plan.md#completion-2026-10-02).
+
 **Round 28 complete and pushed, 2026-10-02.** The 2026-09-30 playtest fixes (Track A),
 the questing and leveling framework (Track B: sub-types and loot by band,
 kill XP `25 + 5L` with its curve, per-zone quest data, self-contained
@@ -73,7 +85,6 @@ and zone names. Quest content per race track, the front and the islands
 moved to Round 29 ([quests plan](docs/planning/round29-quests-plan.md), with
 the [economy lanes](docs/planning/economy-vendor-plan.md),
 [WP17](docs/planning/travel-boats-waypoints-plan.md) and a mapgen bundle).
-Next: fresh world and spawn playtest, then Round 29 planning.
 [Plan, completion and playtest checklist](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02).
 
 **Round 27 delivered, 2026-09-30.** WP50: our own round minimap
@@ -433,8 +444,9 @@ current state). It is **derived, never authoritative**:
 - **Zone data holds rules, never coordinates:** maps differ per seed. Surface
   spawns come from the recipe's regions built on the seed's own terrain
   ([spawn_regions.md](docs/design/spawn_regions.md)); no hand-placed areas.
-  Gameplay level bands that differ from the mapgen's live in
-  `grug_core/zone_bands.lua`; the mapgen bands change only in a mapgen round.
+  A zone's level band is its mapgen zone record
+  (`grug_mapgen/wp40/source/simple_map.lua`, served by `grug_zones`); it
+  changes only in a mapgen round.
 - **After a recipe change** run `tools/r28_regions/run.sh <zones>` (region
   images and stats on several seeds, then `quest_targets.py`) and
   `tools/r28_world/run.sh` (world view, level fit across borders; the border
@@ -450,6 +462,33 @@ current state). It is **derived, never authoritative**:
   placeholders the code fills per seed
   ([spawn_regions.md](docs/design/spawn_regions.md#directions)); never a
   fixed compass word. Quest files that require each other change together.
+
+### Economy and travel (since Round 29)
+
+- **Every vendor payout comes from one price module**
+  (`grug_traders/prices.lua`, pure rules in `price_rules.lua`): items carry
+  no price field and there is no `set_price`; a new sellable needs a class
+  and a tier, a new recipe must pass the load audit (output ≤ inputs).
+  Mount, boat and respec prices come from `tools/r29_e4/income.py`
+  (`--check` compares the shipped tables). Rules:
+  [economy.md](docs/design/economy.md).
+- **Quests pay copper from their weight** unless `rewards.copper` is set
+  ([quests.md](docs/design/quests.md)); the front budget counts two repeats
+  per bounty. Quest checks: `quest_targets.py` (every target on the region
+  stats of three seeds; the coordinator also used six), `validate.py
+  --game`, `ledger.py --track <race>`.
+- **Boats are water mounts** in `grug_mounts` (tiers 5 and 6 next to the
+  four riding tiers); **waystones** are a mapgen node at every start and
+  capital, travel goes through `grug_home/travel.lua` (one shared path with
+  home return and respawn; `waypoints.lua`, pure rules in
+  `waypoints_core.lua`). Rules: [boats.md](docs/design/boats.md),
+  [world.md](docs/design/world.md) §6.
+- **Gems are depth-tiered** (T1 Citrine … T6 Diamond, each only in its own
+  tier rock); there are no G1/G2 grades and no apex sockets.
+- Round 29 fixtures and probes live in `tools/r29_<lane>/` (`b` boats,
+  `w` waystones, `e1` prices and `band_payout.sh`, `e4` income, `mres`
+  gems, `mgeo` bands and middle road, `q1` placeholders, `t`
+  `quest_targets.py`, `p` playtest fixes).
 
 ## Task-specific implementation references
 

@@ -366,254 +366,459 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 50,
-   "description": "Foxes have moved into the orchard margins. Give Marta's pickers room to work.",
+   "copper": 18,
+   "description": "Crumb's accounts name Requisitioner Hobb as the man he answered to. Hobb's collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the Goldmead Orchards, which lie in the south of Goldmead Vale; the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
    "giver": "r14_human_steward",
    "giver_name": "Marta Millward",
    "giver_settlement": "Goldmead Village",
-   "id": "r14_human_07_orchard_watch",
-   "min_level": 10,
+   "id": "goldmead_harvest_01",
+   "min_level": 9,
    "objectives": [
-    "kill 6 fox or young_fox [in elandor_goldmead_vale]"
+    "kill 8 young_fox [in elandor_goldmead_vale/orchards]"
    ],
    "objectives_raw": [
     {
-     "count": 6,
+     "area": "elandor_goldmead_vale/orchards",
+     "count": 8,
      "mobs": [
-      "grug_mobs:fox",
       "grug_mobs:young_fox"
      ],
-     "type": "kill",
-     "zone": "elandor_goldmead_vale"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_human_06_flock_on_mill_road"
+    "dawnmere_departure"
    ],
    "reward_items": [],
-   "title": "Orchard Watch",
+   "title": "A Harvest Worth Stealing",
    "turnin": "r14_human_steward",
-   "xp": 380
+   "xp": 280
   },
   {
-   "copper": 40,
-   "description": "The granary crew cannot leave the open shed while carts are queued. Bring raw meat for their common pot.",
+   "copper": 10,
+   "description": "Our grain counters have worked through dinner again, which improves neither their sums nor their company. Bring me eight cuts of Raw Meat here in Goldmead Village; whatever you saved from the road will do. They deserve a meal they cannot accidentally enter as grain.",
    "giver": "r15_human_local",
    "giver_name": "Alda Sheaf",
    "giver_settlement": "Goldmead Village",
-   "id": "r15_human_local_01",
+   "id": "goldmead_stores_01",
    "min_level": 10,
    "objectives": [
-    "bring 4 mobs:meat_raw"
+    "bring 8 mobs:meat_raw"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "count": 8,
      "item": "mobs:meat_raw",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_human_06_flock_on_mill_road"
+    "dawnmere_departure"
    ],
    "reward_items": [],
-   "title": "Food for the Granary Crew",
+   "title": "Feed the Counters",
    "turnin": "r15_human_local",
-   "xp": 285
+   "xp": 160
   },
   {
-   "copper": 45,
-   "description": "The orchard crew needs provisions while Marta's watch clears the foxes. Bring four ordinary apples, gathered from nearby apple trees or supplied from your pack.",
-   "giver": "r15_human_local",
-   "giver_name": "Alda Sheaf",
+   "copper": 18,
+   "description": "I can account for every sack that leaves Goldmead, except the ones leaving a mouthful at a time. Kill eight Granary Rats after dark in the same Goldmead Orchards. Work the edges and keep your distance between fights; a squealing rat is an invitation to all its neighbours.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
    "giver_settlement": "Goldmead Village",
-   "id": "r15_human_local_02",
-   "min_level": 10,
+   "id": "goldmead_harvest_02",
+   "min_level": 11,
    "objectives": [
-    "bring 4 default:apple"
+    "kill 8 granary_rat [in elandor_goldmead_vale/orchards]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
-     "item": "default:apple",
-     "type": "item"
+     "area": "elandor_goldmead_vale/orchards",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:granary_rat"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_human_06_flock_on_mill_road"
+    "goldmead_harvest_01"
    ],
    "reward_items": [],
-   "title": "Apples for the Orchard Crew",
-   "turnin": "r15_human_local",
-   "xp": 380
+   "title": "The Granary Has Teeth",
+   "turnin": "r14_human_steward",
+   "xp": 298
   },
   {
-   "copper": 60,
-   "description": "The poachers left empty snares around the outpost. Jon wants the hunters found before they return. Look for this threat after nightfall in the named regional zone.",
-   "giver": "r14_human_scout",
-   "giver_name": "Jon Vale",
-   "giver_settlement": "Goldmead Outpost",
-   "id": "r14_human_08_empty_snares",
-   "min_level": 11,
+   "copper": 16,
+   "description": "Hobb has sent enough paper promises to patch every roof in Goldmead; our granary doors need something sturdier. Bring me six Iron Bars and four Coal Lumps from the valley's ore. Check what pick the rock needs before digging, then smelt the iron in a furnace. The grain we still have deserves a sound door.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_supplies_01",
+   "min_level": 12,
    "objectives": [
-    "kill 6 poacher or snaring_poacher [in elandor_goldmead_vale]"
+    "bring 6 grug_materials:iron_bar",
+    "bring 4 default:coal_lump"
    ],
    "objectives_raw": [
     {
      "count": 6,
-     "mobs": [
-      "grug_mobs:poacher",
-      "grug_mobs:snaring_poacher"
-     ],
-     "type": "kill",
-     "zone": "elandor_goldmead_vale"
-    }
-   ],
-   "prerequisites": [
-    "r14_human_07_orchard_watch"
-   ],
-   "reward_items": [],
-   "title": "Empty Snares",
-   "turnin": "r14_human_scout",
-   "xp": 525
-  },
-  {
-   "copper": 50,
-   "description": "The night poachers around Goldmead carry ordinary linen cloth. Bring three pieces while helping Jon investigate the empty snares, rather than setting out on a second identical hunt.",
-   "giver": "r14_human_scout",
-   "giver_name": "Jon Vale",
-   "giver_settlement": "Goldmead Outpost",
-   "id": "r15_human_local_03",
-   "min_level": 11,
-   "objectives": [
-    "bring 3 grug_mobs:linen_cloth"
-   ],
-   "objectives_raw": [
+     "item": "grug_materials:iron_bar",
+     "type": "item"
+    },
     {
-     "count": 3,
-     "item": "grug_mobs:linen_cloth",
+     "count": 4,
+     "item": "default:coal_lump",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_human_07_orchard_watch"
+    "goldmead_harvest_01"
    ],
    "reward_items": [],
-   "title": "Cloth from the Empty Snares",
-   "turnin": "r14_human_scout",
-   "xp": 315
+   "title": "Iron Before Promises",
+   "turnin": "r14_human_steward",
+   "xp": 285
   },
   {
-   "copper": 55,
-   "description": "Foxes keep tripping the warning cords across the lookout's open sightline. Clear the slope so the next alarm means danger.",
-   "giver": "r14_human_scout",
-   "giver_name": "Jon Vale",
-   "giver_settlement": "Goldmead Outpost",
-   "id": "r15_human_local_04",
-   "min_level": 11,
+   "copper": 21,
+   "description": "Ridgeback Tuskers are flattening the Goldmead Wheatfields, in the west of Goldmead Vale, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_harvest_03",
+   "min_level": 13,
    "objectives": [
-    "kill 5 fox or young_fox [in elandor_goldmead_vale]"
+    "kill 8 bristling_boar [in elandor_goldmead_vale/wheatfields]"
    ],
    "objectives_raw": [
     {
-     "count": 5,
+     "area": "elandor_goldmead_vale/wheatfields",
+     "count": 8,
      "mobs": [
-      "grug_mobs:fox",
-      "grug_mobs:young_fox"
+      "grug_mobs:bristling_boar"
      ],
-     "type": "kill",
-     "zone": "elandor_goldmead_vale"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_human_07_orchard_watch"
+    "goldmead_harvest_02"
    ],
    "reward_items": [],
-   "title": "A Clear Eastern View",
+   "title": "Tusks in the Wheat",
+   "turnin": "r14_human_steward",
+   "xp": 400
+  },
+  {
+   "copper": 5,
+   "description": "You have seen what threatens our harvest; Jon Vale has been watching the people who take it. Follow the road to Goldmead Outpost and speak with him about Hobb's collectors. He counts wagons more patiently than anyone I know, though I doubt he would welcome that on his gravestone.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_harvest_04",
+   "min_level": 13,
+   "objectives": [
+    "talk to Jon Vale (goldmead_outpost)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_human_scout",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_harvest_02"
+   ],
+   "reward_items": [],
+   "title": "Jon Has the Other Half",
+   "turnin": "r14_human_scout",
+   "xp": 95
+  },
+  {
+   "copper": 21,
+   "description": "Hobb's Roadside Bandits hold the Goldmead Bandit Camp east from here day and night, demanding payment from people who have already paid. Defeat eight of them. Watch for their Bandit Lookouts and approach from the edge; a collector with a bow is much less persuasive once you are beside him.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "goldmead_watch_01",
+   "min_level": 14,
+   "objectives": [
+    "kill 8 quarrelsome_bandit [in elandor_goldmead_vale/bandit_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_goldmead_vale/bandit_camp",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:quarrelsome_bandit"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_harvest_04"
+   ],
+   "reward_items": [],
+   "title": "Collectors Without a Collection",
    "turnin": "r14_human_scout",
    "xp": 420
   },
   {
-   "copper": 80,
-   "description": "The bandits burned a hooked-sun mark into stolen grain tallies. Clear the camp and hear Pella's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
-   "giver": "r14_human_scout",
-   "giver_name": "Jon Vale",
-   "giver_settlement": "Goldmead Outpost",
-   "id": "r14_human_09_the_blackened_tally",
-   "min_level": 12,
+   "copper": 16,
+   "description": "The granary has its iron; now we must see the shipment safely packed. Bring me four more Iron Bars and six planks of any wood here in Goldmead Village. I will count and seal the load myself, and the next collector who calls it his wages can explain that to my face.",
+   "giver": "r14_human_steward",
+   "giver_name": "Marta Millward",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_supplies_02",
+   "min_level": 15,
    "objectives": [
-    "kill 4 bandit or bandit_archer [in elandor_goldmead_vale]"
+    "bring 4 grug_materials:iron_bar",
+    "bring 6 group:wood"
    ],
    "objectives_raw": [
     {
      "count": 4,
-     "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:bandit_archer"
-     ],
-     "type": "kill",
-     "zone": "elandor_goldmead_vale"
-    }
-   ],
-   "prerequisites": [
-    "r14_human_08_empty_snares"
-   ],
-   "reward_items": [],
-   "title": "The Blackened Tally",
-   "turnin": "r14_human_captive",
-   "xp": 805
-  },
-  {
-   "copper": 65,
-   "description": "Pella saw the millers' purses thrown beside the scorched grain tallies. Recover two stolen purses from the camp before the bandits divide the harvest pay. Accept this request before the camp fight; ordinary carried or traded purses also count.",
-   "giver": "r14_human_captive",
-   "giver_name": "Pella Thatch",
-   "giver_settlement": "Goldmead Bandit Camp",
-   "id": "r15_human_local_05",
-   "min_level": 12,
-   "objectives": [
-    "bring 2 grug_mobs:stolen_purse"
-   ],
-   "objectives_raw": [
+     "item": "grug_materials:iron_bar",
+     "type": "item"
+    },
     {
-     "count": 2,
-     "item": "grug_mobs:stolen_purse",
+     "count": 6,
+     "group": "wood",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_human_08_empty_snares"
+    "goldmead_supplies_01"
    ],
    "reward_items": [],
-   "title": "The Millers' Missing Pay",
-   "turnin": "r14_human_captive",
-   "xp": 460
+   "title": "Counted and Sealed",
+   "turnin": "r14_human_steward",
+   "xp": 330
   },
   {
-   "copper": 75,
-   "description": "The raiders tied the gathered grain with their own linen cloth. Bring enough camp cloth for Pella to mark the recovered sacks.",
-   "giver": "r14_human_captive",
-   "giver_name": "Pella Thatch",
-   "giver_settlement": "Goldmead Bandit Camp",
-   "id": "r15_human_local_06",
-   "min_level": 12,
+   "copper": 18,
+   "description": "A cart that gets past Hobb's men still has to pass the Thicket Vixens in the Goldmead Thickets west of Goldmead Outpost. Hunt six by day. Their red names mean they attack on sight, so keep a clear way out of the brush. I want the drivers home with their boots still occupied.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "goldmead_watch_02",
+   "min_level": 15,
    "objectives": [
-    "bring 5 grug_mobs:linen_cloth"
+    "kill 6 rabid_fox [in elandor_goldmead_vale/thickets]"
    ],
    "objectives_raw": [
     {
-     "count": 5,
+     "area": "elandor_goldmead_vale/thickets",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:rabid_fox"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_watch_01"
+   ],
+   "reward_items": [],
+   "title": "Teeth Along the Cart Track",
+   "turnin": "r14_human_scout",
+   "xp": 368
+  },
+  {
+   "copper": 13,
+   "description": "The Roadside Bandits at the Goldmead Bandit Camp east from here are carrying our packing cloth as though they bought it. Bring me two lengths of Linen Cloth from them; cloth you saved from an earlier fight will do. Their camp is occupied day and night, so fit the errand around your other work. I would like one shipment to reach its buyer with both its wrapping and its contents intact.",
+   "giver": "r15_human_local",
+   "giver_name": "Alda Sheaf",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_stores_02",
+   "min_level": 16,
+   "objectives": [
+    "bring 2 grug_mobs:linen_cloth"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_human_08_empty_snares"
+    "goldmead_stores_01",
+    "goldmead_watch_01"
    ],
    "reward_items": [],
-   "title": "Linen Around the Grain",
+   "title": "Cloth Around the Truth",
+   "turnin": "r15_human_local",
+   "xp": 275
+  },
+  {
+   "copper": 10,
+   "description": "Another batch of Roadside Bandits is collecting at the Goldmead Bandit Camp east from here; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "goldmead_bounty_bandits",
+   "min_level": 17,
+   "objectives": [
+    "kill 8 quarrelsome_bandit [in elandor_goldmead_vale/bandit_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_goldmead_vale/bandit_camp",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:quarrelsome_bandit"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_watch_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Roadside Bandits (repeatable)",
+   "turnin": "r14_human_scout",
+   "xp": 220
+  },
+  {
+   "copper": 21,
+   "description": "Hobb listed me between grain and packing cloth, then had the nerve to ask whether I could write. His Bandit Lookouts guard the Goldmead Requisition Camp west from here day and night; defeat eight of them. Approach from the edge and break their line of fire when you need to. I would lend a hand, but they requisitioned my good boots too.",
+   "giver": "r14_human_captive",
+   "giver_name": "Pella Thatch",
+   "giver_settlement": "Goldmead Bandit Camp",
+   "id": "goldmead_testimony_01",
+   "min_level": 17,
+   "objectives": [
+    "kill 8 vigilant_bandit_archer [in elandor_goldmead_vale/requisition_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_goldmead_vale/requisition_camp",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:vigilant_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_watch_03"
+   ],
+   "reward_items": [],
+   "title": "Nobody Requisitions Pella",
    "turnin": "r14_human_captive",
-   "xp": 575
+   "xp": 460
+  },
+  {
+   "copper": 5,
+   "description": "Pella Thatch is being held in the Goldmead Bandit Camp east from here, where Hobb's men have entered her in their accounts as cargo. Clear your approach and speak with her about what she has seen. She knows Hobb's ledgers and remembers every stolen sack. Best not to mention the cargo entry unless you have time to hear her opinion of it.",
+   "giver": "r14_human_scout",
+   "giver_name": "Jon Vale",
+   "giver_settlement": "Goldmead Outpost",
+   "id": "goldmead_watch_03",
+   "min_level": 17,
+   "objectives": [
+    "talk to Pella Thatch (goldmead_bandit_camp)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_human_captive",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_watch_02"
+   ],
+   "reward_items": [],
+   "title": "A Witness, Not Cargo",
+   "turnin": "r14_human_captive",
+   "xp": 110
+  },
+  {
+   "copper": 10,
+   "description": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the Goldmead Hedgerows, which run in the northeast of Goldmead Vale, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
+   "giver": "r15_human_local",
+   "giver_name": "Alda Sheaf",
+   "giver_settlement": "Goldmead Village",
+   "id": "goldmead_bounty_rats",
+   "min_level": 18,
+   "objectives": [
+    "kill 8 mangy_rat [in elandor_goldmead_vale/hedgerows]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_goldmead_vale/hedgerows",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:mangy_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_harvest_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Burrow Gnawers (repeatable)",
+   "turnin": "r15_human_local",
+   "xp": 240
+  },
+  {
+   "copper": 26,
+   "description": "Bandit Requisitioner Hobb keeps his books in the Goldmead Requisition Camp west from here, and every line makes our grain his property. Defeat him, by day or night, and come back to me. I know what those books say; what I need now is someone to stop him enforcing them. Nobody requisitions Pella Thatch.",
+   "giver": "r14_human_captive",
+   "giver_name": "Pella Thatch",
+   "giver_settlement": "Goldmead Bandit Camp",
+   "id": "goldmead_testimony_02",
+   "min_level": 18,
+   "objectives": [
+    "kill 1 requisitioner_hobb"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:requisitioner_hobb"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_testimony_01"
+   ],
+   "reward_items": [],
+   "title": "Hobb's Last Requisition",
+   "turnin": "r14_human_captive",
+   "xp": 600
+  },
+  {
+   "copper": 5,
+   "description": "Every false requisition Hobb wrote carried a capital toll mark, and I can tell you exactly whose grain he stole. Go to Highcourt and give Mariel Waybook our account. If anyone asks what you are carrying, say testimony. I have had quite enough of being counted as freight.",
+   "giver": "r14_human_captive",
+   "giver_name": "Pella Thatch",
+   "giver_settlement": "Goldmead Bandit Camp",
+   "id": "goldmead_departure",
+   "min_level": 19,
+   "objectives": [
+    "talk to Mariel Waybook (highcourt)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_human_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "goldmead_testimony_02"
+   ],
+   "reward_items": [],
+   "title": "Highcourt Must Hear This",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 120
   }
  ],
  "race_region": "human",
@@ -938,7 +1143,12 @@
      "npc_id": "r14_human_steward",
      "npc_name": "Marta Millward",
      "quests": [
-      "r14_human_07_orchard_watch"
+      "goldmead_harvest_01",
+      "goldmead_harvest_02",
+      "goldmead_harvest_03",
+      "goldmead_harvest_04",
+      "goldmead_supplies_01",
+      "goldmead_supplies_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -951,8 +1161,9 @@
      "npc_id": "r15_human_local",
      "npc_name": "Alda Sheaf",
      "quests": [
-      "r15_human_local_01",
-      "r15_human_local_02"
+      "goldmead_bounty_rats",
+      "goldmead_stores_01",
+      "goldmead_stores_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1067,10 +1278,10 @@
      "npc_id": "r14_human_scout",
      "npc_name": "Jon Vale",
      "quests": [
-      "r14_human_08_empty_snares",
-      "r14_human_09_the_blackened_tally",
-      "r15_human_local_03",
-      "r15_human_local_04"
+      "goldmead_bounty_bandits",
+      "goldmead_watch_01",
+      "goldmead_watch_02",
+      "goldmead_watch_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1184,8 +1395,9 @@
      "npc_id": "r14_human_captive",
      "npc_name": "Pella Thatch",
      "quests": [
-      "r15_human_local_05",
-      "r15_human_local_06"
+      "goldmead_departure",
+      "goldmead_testimony_01",
+      "goldmead_testimony_02"
      ],
      "role": "quest",
      "role_text": "quest giver",

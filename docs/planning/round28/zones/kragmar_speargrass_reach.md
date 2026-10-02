@@ -59,7 +59,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Brakka Jarward | -866, 111, 1564 | r20_anchor_022_01, r20_anchor_022_02, r20_anchor_022_03, r20_orc_journey_02 |
+| quest_host | quest giver | Brakka Jarward | -866, 111, 1564 | speargrass_grass_01, speargrass_grass_02, speargrass_journeys_01 |
 
 Distances: zone edge N 532 (coastal_shelf), S 628 (kragmar_bannerbreak_mesa), E 396 (kragmar_gor_drazhak), W 480 (kragmar_nhal_veyr); nearest other-zone land 389 E; sea 359 NW; sea-beach sand 322 NW; nearest road 16.
 Nearest hubs (straight / by road): Redpick Yard 337 / 754; Mournfen Bandit Camp 879 / 1350; Nhal Veyr 934 / 1462; Mournfen Village 1128 / 1741; Ossuary Ledgerstead 1512 / 1924.
@@ -70,7 +70,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Morga Cutgrass | -648, 57, 1250 | r20_anchor_042_01, r20_anchor_042_02, r20_anchor_042_03 |
+| quest_host | quest giver | Morga Cutgrass | -648, 57, 1250 | speargrass_watch_01, speargrass_watch_02, speargrass_watch_03 |
 
 Distances: zone edge N 692 (kragmar_redtusk_savanna), S 216 (kragmar_bannerbreak_mesa), E 160 (kragmar_gor_drazhak), W 700 (kragmar_nhal_veyr); nearest other-zone land 156 E; sea 740 NW; sea-beach sand 704 NW; nearest road 13.
 Nearest hubs (straight / by road): Gor Drazhak 696 / 982; Redtusk Village 940 / 1507; Mournfen Bandit Camp 1242 / 1645; Redtusk Bandit Camp 1214 / 1823; Red Ramp Post 466 / 1830.
@@ -81,26 +81,24 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Gorren Redpick | -1048, 73, 1280 | r20_anchor_065_01, r20_anchor_065_02, r20_anchor_065_03, r20_orc_journey_03 |
+| quest_host | quest giver | Gorren Redpick | -1048, 73, 1280 | speargrass_bounty, speargrass_yard_01, speargrass_yard_02 |
 
 Distances: zone edge N 636 (bay_water), S 300 (kragmar_blackwind_rise), E 576 (kragmar_gor_drazhak), W 292 (kragmar_nhal_veyr); nearest other-zone land 274 S; sea 562 N; sea-beach sand 533 N; nearest road 14.
 Nearest hubs (straight / by road): Speargrass Wellhold 337 / 754; Mournfen Bandit Camp 946 / 1460; Nhal Veyr 782 / 1572; Mournfen Village 1127 / 1851; Ossuary Ledgerstead 1368 / 2034.
 
-### Current quests (11, given in this zone)
+### Current quests (9, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_022_01 | Shade Before Strength | Brakka Jarward (Speargrass Wellhold) | 21 | bring 8 default:acacia_wood | 820 | - |
-| r20_anchor_022_02 | Stripes in the Cutting Grass | Brakka Jarward (Speargrass Wellhold) | 21 | kill 3 speargrass_tiger [in kragmar_speargrass_reach] | 820 | - |
-| r20_anchor_042_01 | Posts for the Shade | Morga Cutgrass (Cutgrass Watch) | 21 | bring 8 default:acacia_wood | 820 | - |
-| r20_anchor_042_02 | The Cutters' Long Walk | Morga Cutgrass (Cutgrass Watch) | 21 | kill 3 speargrass_tiger [in kragmar_speargrass_reach] | 820 | - |
-| r20_anchor_065_01 | Roof Over the Sorting Trays | Gorren Redpick (Redpick Yard) | 21 | bring 10 default:acacia_wood | 820 | - |
-| r20_anchor_065_02 | Hunters at the Water Shade | Gorren Redpick (Redpick Yard) | 21 | kill 4 hyena [in kragmar_speargrass_reach] | 820 | - |
-| r20_anchor_022_03 | Night at the Water Jars | Brakka Jarward (Speargrass Wellhold) | 23 | kill 4 scorpion or dust_stinger [in kragmar_speargrass_reach] | 900 | r20_anchor_022_02 |
-| r20_anchor_042_03 | Raiders at the Signal Fire | Morga Cutgrass (Cutgrass Watch) | 23 | kill 4 goblin_raider [in kragmar_speargrass_reach] | 900 | r20_anchor_042_02 |
-| r20_anchor_065_03 | Stings in the Drill Stack | Gorren Redpick (Redpick Yard) | 23 | kill 4 scorpion or dust_stinger [in kragmar_speargrass_reach] | 900 | r20_anchor_065_02 |
-| r20_orc_journey_02 | Word for Gorren Redpick | Brakka Jarward (Speargrass Wellhold) | 24 | talk to Gorren Redpick (r20_anchor_065) | 705 | - |
-| r20_orc_journey_03 | Word for Drek Rampbinder | Gorren Redpick (Redpick Yard) | 31 | talk to Drek Rampbinder (r20_anchor_043) | 915 | - |
+| speargrass_grass_01 | Still Using Those Ankles | Brakka Jarward (Speargrass Wellhold) | 21 | kill 8 dust_stinger [in kragmar_speargrass_reach/plains] | 608 | - |
+| speargrass_journeys_01 | Promises Outlast Breath | Brakka Jarward (Speargrass Wellhold) | 22 | talk to Ossa Quietregister (nhal_veyr) | 210 | speargrass_grass_01 |
+| speargrass_yard_01 | The Yard Eats Steel | Gorren Redpick (Redpick Yard) | 23 | bring 4 grug_materials:steel_bar | 653 | - |
+| speargrass_grass_02 | Optional: Count the Cutters Home | Brakka Jarward (Speargrass Wellhold) | 24 | kill 8 reed_stalking_tiger [in kragmar_speargrass_reach/tallgrass] | 675 | speargrass_grass_01 |
+| speargrass_yard_02 | Optional: Put the Claws to Work | Gorren Redpick (Redpick Yard) | 25 | bring 3 grug_mobs:shearing_cat_claw | 543 | speargrass_yard_01 |
+| speargrass_watch_01 | Optional: Teeth Beyond the Watch | Morga Cutgrass (Cutgrass Watch) | 26 | kill 8 dustpack_hyena [in kragmar_speargrass_reach/hunting_grounds] | 743 | - |
+| speargrass_bounty | Bounty: Stripes on the Payroll (repeatable) | Gorren Redpick (Redpick Yard) | 28 | kill 6 reed_stalking_tiger [in kragmar_speargrass_reach/hunting_grounds] | 425 | speargrass_yard_02 |
+| speargrass_watch_02 | Our Colours Are Not for Sale | Morga Cutgrass (Cutgrass Watch) | 28 | kill 8 ore_thieving_goblin or rubble_goblin_slinger [in kragmar_speargrass_reach/goblin_camp]; kill 1 banner_broker_rakk | 1105 | - |
+| speargrass_watch_03 | Stand Where the Ash Falls | Morga Cutgrass (Cutgrass Watch) | 29 | talk to Vaska Ashlistener (r20_anchor_039) | 255 | speargrass_watch_02 |
 
 ## Mobs by spawn region
 

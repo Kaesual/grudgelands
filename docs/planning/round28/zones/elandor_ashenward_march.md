@@ -58,7 +58,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Toren Waterbarrel | -348, 54, -850 | r20_anchor_031_01, r20_anchor_031_02, r20_anchor_031_03 |
+| quest_host | quest giver | Toren Waterbarrel | -348, 54, -850 | ashenward_bounty_raiders, ashenward_rations_01, ashenward_rations_02, ashenward_rations_03, ashenward_road_glassroot, ashenward_road_last_hedge, ashenward_road_stormvault, cinderline_front_01, cinderline_front_02, cinderline_front_03, cinderline_front_04, cinderline_front_05 |
 
 Distances: zone edge N 504 (front_broken_causeway), S 332 (elandor_highcourt), E 1156 (elandor_glassroot_wilds), W 544 (elandor_stormvault_heights); nearest other-zone land 291 S; sea 1247 SW; sea-beach sand 1177 SW; nearest road 11.
 Nearest hubs (straight / by road): Last Hedge Redoubt 708 / 1987; Tornstandard Hold 1574 / 3287; Glassroot Gate 2288 / 3841; Archshadow Post 1184 / 4005; Splitbolt Station 1724 / 4214.
@@ -69,21 +69,41 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Nella Hedgeward | 302, 72, -570 | r20_anchor_032_01, r20_anchor_032_02, r20_anchor_032_03 |
+| quest_host | quest giver | Nella Hedgeward | 302, 72, -570 | ashenward_bounty_shamblers, ashenward_hedge_01, ashenward_hedge_02, ashenward_hedge_03, ashenward_hedge_04, ashenward_hedge_webs, lasthedge_front_01, lasthedge_front_02, lasthedge_front_03, lasthedge_front_04, lasthedge_front_05, lasthedge_front_06, lasthedge_front_07, lasthedge_front_bounty |
 
 Distances: zone edge N 192 (front_shattered_line), S 620 (elandor_highcourt), E 588 (elandor_glassroot_wilds), W 996 (front_broken_causeway); nearest other-zone land 190 N; sea 1302 SE; sea-beach sand 1310 S; nearest road 14.
 Nearest hubs (straight / by road): Tornstandard Hold 1164 / 1851; Cinderline Watch 708 / 1987; Red Ramp Post 1594 / 2935; Hollowarch Station 2095 / 4326; Glassroot Gate 1636 / 4361.
 
-### Current quests (6, given in this zone)
+### Current quests (26, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_031_01 | A Wall Against Embers | Toren Waterbarrel (Cinderline Watch) | 31 | bring 10 default:cobble | 1220 | - |
-| r20_anchor_031_02 | The Ashen Wood Stirs | Toren Waterbarrel (Cinderline Watch) | 31 | kill 3 ashen_treant or rootbound_treant [in elandor_ashenward_march] | 1220 | - |
-| r20_anchor_032_01 | Posts for the Last Hedge | Nella Hedgeward (Last Hedge Redoubt) | 31 | bring 8 default:wood | 1220 | - |
-| r20_anchor_032_02 | Dead on the Dispatch Road | Nella Hedgeward (Last Hedge Redoubt) | 31 | kill 4 skeleton_raider or march_skeleton_raider [in elandor_ashenward_march] | 1220 | - |
-| r20_anchor_031_03 | Coalbrand's Watchers | Toren Waterbarrel (Cinderline Watch) | 33 | kill 4 bandit_archer [in elandor_ashenward_march] | 1300 | r20_anchor_031_02 |
-| r20_anchor_032_03 | Standards Across the Mesa | Nella Hedgeward (Last Hedge Redoubt) | 40 | kill 3 guard_throng [in kragmar_bannerbreak_mesa] | 1975 | r20_anchor_032_02 |
+| ashenward_rations_01 | Three Crates Out, Two Crates In | Toren Waterbarrel (Cinderline Watch) | 30 | kill 5 entrenched_bandit [in elandor_ashenward_march/ration_camp] | 540 | - |
+| ashenward_rations_02 | The Trees Can Pay for That | Toren Waterbarrel (Cinderline Watch) | 31 | kill 5 rootbound_treant [in elandor_ashenward_march/cinderwood]; bring 2 grug_mobs:bitter_resin | 555 | ashenward_rations_01 |
+| ashenward_bounty_raiders | Bounty: No Rations for the Dead (repeatable) | Toren Waterbarrel (Cinderline Watch) | 32 | kill 6 march_skeleton_raider [in elandor_ashenward_march/ashfields] | 370 | ashenward_rations_01 |
+| ashenward_rations_03 | The Account of Quartermaster Scrip | Toren Waterbarrel (Cinderline Watch) | 32 | kill 1 quartermaster_scrip | 760 | ashenward_rations_02 |
+| ashenward_road_glassroot | An Answer for Faeris | Toren Waterbarrel (Cinderline Watch) | 32 | talk to Faeris Rootbinder (r20_anchor_036) | 190 | ashenward_rations_03 |
+| ashenward_road_stormvault | Bread for the Mountain Watch | Toren Waterbarrel (Cinderline Watch) | 32 | talk to Borin Splitbolt (r20_anchor_027) | 190 | ashenward_rations_03 |
+| ashenward_hedge_01 | Honey Is Not Worth a Driver | Nella Hedgeward (Last Hedge Redoubt) | 34 | kill 4 territorial_bear [in elandor_ashenward_march/hedgewood] | 500 | - |
+| ashenward_road_last_hedge | One More Pair of Hands | Toren Waterbarrel (Cinderline Watch) | 34 | talk to Nella Hedgeward (r20_anchor_032) | 195 | ashenward_rations_03 |
+| ashenward_hedge_webs | Webs Across the Wagon Road | Nella Hedgeward (Last Hedge Redoubt) | 35 | kill 4 briar_web_spider [in elandor_ashenward_march/hedgewood] | 513 | ashenward_hedge_01 |
+| ashenward_hedge_02 | A Uniform Is Not a Target | Nella Hedgeward (Last Hedge Redoubt) | 37 | kill 5 entrenched_bandit_archer [in elandor_ashenward_march/coalbrand_yard] | 770 | ashenward_hedge_webs |
+| ashenward_hedge_03 | The Price of an Empty Pot | Nella Hedgeward (Last Hedge Redoubt) | 37 | kill 5 wartrail_poacher [in elandor_ashenward_march/poacher_camp] | 770 | ashenward_hedge_02 |
+| ashenward_bounty_shamblers | Bounty: Let the Watch Come Home (repeatable) | Nella Hedgeward (Last Hedge Redoubt) | 38 | kill 8 unrelenting_zombie [in elandor_ashenward_march/warfields] | 440 | ashenward_hedge_02 |
+| ashenward_hedge_04 | Group: The Last Receipt | Nella Hedgeward (Last Hedge Redoubt) | 38 | kill 1 red_receipt_marshal | 1320 | ashenward_hedge_03 |
+| cinderline_front_01 | Bread Before Banners | Toren Waterbarrel (Cinderline Watch) | 40 | kill 5 causeway_mire_husk [in front_broken_causeway/floodmeadows] | 823 | - |
+| cinderline_front_02 | The Night Shift Never Left | Toren Waterbarrel (Cinderline Watch) | 40 | kill 5 causeway_toll_skeleton [in front_broken_causeway/floodmeadows] | 823 | - |
+| lasthedge_front_01 | Nobody's Laughing Here | Nella Hedgeward (Last Hedge Redoubt) | 40 | kill 5 warpack_hyena [in front_shattered_line/approaches] | 823 | - |
+| cinderline_front_05 | Toll Collectors in the Alderwood | Toren Waterbarrel (Cinderline Watch) | 41 | kill 5 causeway_brigand [in front_broken_causeway/alderwood] | 1080 | cinderline_front_01 |
+| lasthedge_front_02 | The Fletchers' Bright Idea | Nella Hedgeward (Last Hedge Redoubt) | 41 | bring 3 grug_mobs:siege_cat_claw | 960 | lasthedge_front_01 |
+| cinderline_front_03 | What the War Left Standing | Toren Waterbarrel (Cinderline Watch) | 43 | kill 5 causeway_mire_husk or causeway_brigand [in front_broken_causeway/battlefield] | 1250 | cinderline_front_01, cinderline_front_02 |
+| cinderline_front_04 | Cinderline Still Stands | Toren Waterbarrel (Cinderline Watch) | 44 | talk to Alna Archsight (r20_anchor_028) | 250 | cinderline_front_03 |
+| lasthedge_front_03 | A Sentry Needs Somewhere to Stand | Nella Hedgeward (Last Hedge Redoubt) | 44 | kill 5 war_stinger [in front_shattered_line/ramparts] | 1275 | lasthedge_front_02 |
+| lasthedge_front_07 | Raiders in the Trenches | Nella Hedgeward (Last Hedge Redoubt) | 45 | kill 5 siege_skeleton_raider [in front_shattered_line/trenches] | 1275 | lasthedge_front_03 |
+| lasthedge_front_04 | Nobody Left to Rally | Nella Hedgeward (Last Hedge Redoubt) | 47 | kill 5 siege_skeleton_raider [in front_shattered_line/breach]; kill 1 standard_bearer_ninepins | 1620 | lasthedge_front_07 |
+| lasthedge_front_bounty | Bounty: Room for a Lookout (repeatable) | Nella Hedgeward (Last Hedge Redoubt) | 47 | kill 5 reed_stalking_tiger [in front_shattered_line/siegecrest] | 663 | lasthedge_front_04 |
+| lasthedge_front_05 | Group: An End to the Grinding | Nella Hedgeward (Last Hedge Redoubt) | 49 | kill 1 siege_engine_nine | 1100 | lasthedge_front_04 |
+| lasthedge_front_06 | A Recommendation with Mud on It | Nella Hedgeward (Last Hedge Redoubt) | 49 | talk to Borin Splitbolt (r20_anchor_027) | 275 | lasthedge_front_04 |
 
 ## Mobs by spawn region
 

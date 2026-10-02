@@ -26,17 +26,19 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   protected places. Six starting towns and six capitals give each people
   its own home, architecture and surroundings.
 - **Quests and character progression.** Follow your starting town's stories,
-  help local inhabitants and take on stronger enemies. The current catalog
-  contains 240 quests across starts, capitals and named regions,
-  with a journal, quest tracker, world atlas and minimap to help you find
-  your way.
+  help local inhabitants and take on stronger enemies. Nearly 500 quests
+  lead each people from its starting town through its homelands and the
+  contested borderlands to the war front at level 60, with repeatable
+  bounties, a journal, quest tracker, world atlas and minimap to help you
+  find your way.
 - **Crafting and equipment.** Make basic gear, choose two of seven primary
   professions, and improve your equipment with enchantments. Weaponsmith,
   Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith each
   have their own recipes; Cooking is available alongside them.
 - **Life between adventures.** Grow crops, go fishing, prepare food, visit
-  vendors and save for a mount. Bind your home at an innkeeper so you can
-  return after a journey.
+  vendors and save for a mount or a boat. Bind your home at an innkeeper so
+  you can return after a journey, and travel between the waystones of your
+  faction's towns.
 - **Adventure together.** Choose one of two factions and six peoples, then
   form a party with up to ten players of your faction. Party health displays
   and atlas markers help you stay together while exploring and fighting.
@@ -51,16 +53,21 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 29](docs/planning/round29-plan.md#completion-2026-10-02), "Economy and
+travel", is complete locally and awaits a playtest on a fresh world. New
+quests take every people from its starting town to the war front, with
+directions that fit each world and repeatable bounties at the front and on
+the dragon islands. Vendors now buy loot and materials at prices set by tier,
+and mounts, boats and talent resets cost what a player earns in a set time.
+Boats, sold by a Shipwright in every capital, are the way to the dragon
+islands, and waystones in every starting town and capital connect your
+faction's homes; gems now lie at their own depth, and the Battlegrounds are
+wider with a road across the middle.
 [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
-is complete and awaits a playtest on a fresh world. Every zone now places its
-creatures by rules that read the world's own terrain, in named kinds per
-region whose levels rise smoothly from the start town toward the next zone,
-with loot that matches their level and named leaders at their camps. Leveling
-follows a gentler curve, the quest log shows each target's level range, and
-the zone or town you are in shows under the minimap. Playtest fixes ship
-alongside: a message feed above your bars, per-class offhands, Scout ranged
-and melee slots with a quiver, mob environmental damage in percent of max HP,
-melee knockback, mobs that keep away from roads, and a Professions tab.
+places every zone's creatures by rules that read the world's own terrain,
+with levels that rise toward the next zone, loot that matches their level
+and named leaders at their camps; leveling follows a gentler curve, and a
+message feed, per-class offhands and Scout slots ship alongside.
 [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
 awaits a short playtest. Our own round minimap
 replaces the built-in one: north up, drawn from the world map, it shows quest
@@ -106,47 +113,44 @@ longer-term balancing remain ongoing. A [startup correction](docs/research/round
 fixes the new fish registration and native arrow recipe binding; isolated server
 startup and the 200-arrow Basics recipe are verified.
 
-Boats and waypoints, the full geographic PvP system and the war-front battles
-are still unfinished; the two island dragons already fight, but only boats will
-reach their islands. The current quest catalog reaches level 40 and does not
-yet cover the full journey through every region; new quests written for the
-new creature regions, the front and the islands come next.
+The full geographic PvP system and the war-front battles are still
+unfinished, and the main story from level 41 to 60 with its finale is still
+to come on top of the front quests.
 
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 40 of 54 tracked work-package identities are complete, 3 are
-canceled and 11 are open, several with playable portions (after the
+**Delivered:** 42 of 54 tracked work-package identities are complete, 3 are
+canceled and 9 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
-(playtest fixes, the questing and leveling framework, the mob catalogue and
-rule-based spawn regions for all 38 zones), independently reviewed and
-pushed; Round 24 is the latest accepted state.
+[Round 29](docs/planning/round29-plan.md#completion-2026-10-02)
+(the new quests, the economy pass WP44, boats and waystones WP17, and a mapgen
+bundle), independently reviewed and merged locally; Round 28 is the latest
+pushed state and Round 24 the latest accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 29](docs/planning/round29-plan.md#playtest-checklist),
 [Round 28](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 [Round 27](docs/planning/round27-minimap-plan.md#playtest-checklist) and
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 playtests remain separate.
 
-**Ready for further work:** the first release still needs boats and
-waypoints, geographic PvP and the story from level 41 to 60 with its finale.
-Next is Round 29, "Economy and travel": new quest files per race track, the
-front and the islands on the Round 28 framework, the economy pass, boats and
-waypoints, and a mapgen bundle. Crafting finishes and masterwork and the
-deep spawn pulse follow; the [roadmap](ROADMAP.md) records the V1 scope and
-order.
+**Ready for further work:** the first release still needs geographic PvP
+and the main story from level 41 to 60 with its finale. Next is Round 30, a
+performance round from the
+[performance review](docs/research/perf-review-2026-10.md): quest state and
+map updates, mob pathing, a cache for the spawn regions and fewer spawn
+checks. Crafting finishes and masterwork and the deep spawn pulse follow;
+the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** until the new quest files replace them, the 240 older quests
-give more XP than the new curve intends, and a few of their kill targets do
-not spawn in their zone's new regions; The Broken Causeway's plants and ores
-still match level 31–40. Loot sells at placeholder prices until the economy
-pass. The confusing Cooking feedback now has a distinct success message;
+**Caveats:** Round 29 needs a fresh world. Quests cannot yet ask you to
+fight enemy guards or players. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Performance and first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
+the [latest playtest checklist](docs/planning/round29-plan.md#playtest-checklist),
+the [Round 28 checklist](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 the [Round 27 checklist](docs/planning/round27-minimap-plan.md#playtest-checklist),
 the [Round 26 checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#completion-2026-09-29).
@@ -158,10 +162,9 @@ and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#
 The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
-- **Toward the first release:** boats and waypoint travel, which also open
-  the way to the two offshore dragons, the story up to level 60 and its
-  finale, and geographic PvP. Economy balance and reliable everyday play are
-  part of that work too.
+- **Toward the first release:** the main story up to level 60 and its
+  finale, and geographic PvP. Performance with many players, balance and
+  reliable everyday play are part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
   creatures and terrain, and scripted faction clashes on the war front. Other
   plans include further classes, dungeons, regional bosses, reputation and
@@ -263,7 +266,7 @@ investigations and delivery records.
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
-| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): planned water travel; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
+| Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Decision routing | [Round 18 decisions](docs/design/playtest_quality_revision.md): where the Round 18 playtest-quality rules now live. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 

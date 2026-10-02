@@ -400,166 +400,681 @@
  "pvp_rule": "contested",
  "quests": [
   {
-   "copper": 85,
-   "description": "Ashveil reads its wind markers by lamplight, but the covered fuel box is nearly empty. Bring six coal lumps for the lamps before the next night watch. Existing or traded supplies are welcome.",
+   "copper": 112,
+   "description": "Bonewood Plaguehide Bears have taken to opening our dispatches, usually with the runner still attached. Hunt them by day in the Blackwind Bonewood, which lies in the northeast of Blackwind Rise, and kill four. I prefer bad news delivered with all its limbs.",
    "giver": "r20_anchor_039_host",
    "giver_name": "Vaska Ashlistener",
    "giver_settlement": "Ashveil Watch",
-   "id": "r20_anchor_039_01",
-   "min_level": 31,
+   "id": "blackwind_ashes_01",
+   "min_level": 29,
    "objectives": [
-    "bring 6 default:coal_lump"
+    "kill 4 territorial_bear [in kragmar_blackwind_rise/bonewood]"
    ],
    "objectives_raw": [
     {
-     "count": 6,
-     "item": "default:coal_lump",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Keep the Lamps Burning",
-   "turnin": "r20_anchor_039_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Gravewood treants move among Blackwind Rise's bone-littered trees after dark. Defeat three so the watchers can read the branches' movement without confusing it with the wind.",
-   "giver": "r20_anchor_039_host",
-   "giver_name": "Vaska Ashlistener",
-   "giver_settlement": "Ashveil Watch",
-   "id": "r20_anchor_039_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 3 gravewood_treant or mourning_treant [in kragmar_blackwind_rise]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:gravewood_treant",
-      "grug_mobs:mourning_treant"
-     ],
-     "type": "kill",
-     "zone": "kragmar_blackwind_rise"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Ash Among Living Branches",
-   "turnin": "r20_anchor_039_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Hollowarch's dispatch shelf has sagged under damp message stones. Bring eight local gravewood planks to the roofed station; the old arches themselves must remain untouched. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_040_host",
-   "giver_name": "Orrel Hollowstep",
-   "giver_settlement": "Hollowarch Station",
-   "id": "r20_anchor_040_01",
-   "min_level": 31,
-   "objectives": [
-    "bring 8 grug_trees:gravewood_wood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "grug_trees:gravewood_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Dispatch Shelf",
-   "turnin": "r20_anchor_040_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Plaguehide bears move through Blackwind Rise's bone-forest floor beside the arch approaches. Defeat three before the next carrier attempts the crossing.",
-   "giver": "r20_anchor_040_host",
-   "giver_name": "Orrel Hollowstep",
-   "giver_settlement": "Hollowarch Station",
-   "id": "r20_anchor_040_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 3 plaguehide_bear or territorial_bear [in kragmar_blackwind_rise]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:plaguehide_bear",
-      "grug_mobs:territorial_bear"
-     ],
-     "type": "kill",
-     "zone": "kragmar_blackwind_rise"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Claws Beneath the Arch",
-   "turnin": "r20_anchor_040_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Vaska's cleared sightline reveals who is carrying the stolen cloth: Pallcloth Camp's archers. Defeat four bandit archers in that Blackwind Rise camp and return to the watch.",
-   "giver": "r20_anchor_039_host",
-   "giver_name": "Vaska Ashlistener",
-   "giver_settlement": "Ashveil Watch",
-   "id": "r20_anchor_039_03",
-   "min_level": 33,
-   "objectives": [
-    "kill 4 bandit_archer [in kragmar_blackwind_rise]"
-   ],
-   "objectives_raw": [
-    {
+     "area": "kragmar_blackwind_rise/bonewood",
      "count": 4,
      "mobs": [
-      "grug_mobs:bandit_archer"
+      "grug_mobs:territorial_bear"
      ],
-     "type": "kill",
-     "zone": "kragmar_blackwind_rise"
+     "type": "kill"
     }
    ],
-   "prerequisites": [
-    "r20_anchor_039_02"
-   ],
+   "prerequisites": [],
    "reward_items": [],
-   "title": "The Pallcloth Thieves",
+   "title": "Bad News Travels on Legs",
    "turnin": "r20_anchor_039_host",
-   "xp": 1300
+   "xp": 630
   },
   {
-   "copper": 100,
-   "description": "The dispatches name the Accord watch in Stormvault Heights. At level 40, defeat three Accord guards at the frontier outposts or their patrols there. Do not attack civilians, players or Dur Brannoc's city watch for this report.",
-   "giver": "r20_anchor_040_host",
-   "giver_name": "Orrel Hollowstep",
-   "giver_settlement": "Hollowarch Station",
-   "id": "r20_anchor_040_03",
-   "min_level": 40,
+   "copper": 128,
+   "description": "Roots ought to stay buried, a rule the Lichen Gravewood Treants ignore after dark in the Blackwind Bonewood. Fell four and bring me two portions of Bitter Resin for Ashveil's lamps. Yes, I hear the irony; I am choosing to ignore it.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "blackwind_ashes_02",
+   "min_level": 31,
    "objectives": [
-    "kill 3 guard_accord [in elandor_stormvault_heights]"
+    "kill 4 mourning_treant [in kragmar_blackwind_rise/bonewood]",
+    "bring 2 grug_mobs:bitter_resin"
    ],
    "objectives_raw": [
     {
-     "count": 3,
+     "area": "kragmar_blackwind_rise/bonewood",
+     "count": 4,
      "mobs": [
-      "grug_mobs:guard_accord"
+      "grug_mobs:mourning_treant"
      ],
-     "type": "kill",
-     "zone": "elandor_stormvault_heights"
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:bitter_resin",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r20_anchor_040_02"
+    "blackwind_ashes_01"
    ],
    "reward_items": [],
-   "title": "The Watch Under the Storm",
+   "title": "Trees Without Leave",
+   "turnin": "r20_anchor_039_host",
+   "xp": 740
+  },
+  {
+   "copper": 48,
+   "description": "Drek Rampbinder grows anxious when Ashveil falls silent, though he calls it concern for the supply lines. Report to him at Red Ramp Post on Bannerbreak Mesa and tell him our watch still holds. He may thump you on the shoulder; brace yourself, that is orcish relief.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "blackwind_ashes_03",
+   "min_level": 32,
+   "objectives": [
+    "talk to Drek Rampbinder (r20_anchor_043)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_043_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_ashes_02"
+   ],
+   "reward_items": [],
+   "title": "Still Standing, Still Dead",
+   "turnin": "r20_anchor_043_host",
+   "xp": 285
+  },
+  {
+   "copper": 64,
+   "description": "The Bonewood Plaguehide Bears in the Blackwind Bonewood remain unmoved by our casualty reports. Kill six during daylight and collect your pay. Twenty minutes after payment, I can offer the bounty again; apparently we are budgeting for an endless appetite.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "blackwind_ashes_bounty",
+   "min_level": 32,
+   "objectives": [
+    "kill 6 territorial_bear [in kragmar_blackwind_rise/bonewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_blackwind_rise/bonewood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:territorial_bear"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_ashes_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: A Recurring Appetite (repeatable)",
+   "turnin": "r20_anchor_039_host",
+   "xp": 380
+  },
+  {
+   "copper": 112,
+   "description": "Everyone wants a glorious last stand until they discover the supply crates have been eaten. Kill four Marrow Weevils by day in the Blackwind Webwood, which lies in the east of Blackwind Rise, before they chew through another shipment. I have already had one last stand, and I intend to provision this one properly.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "blackwind_arch_01",
+   "min_level": 33,
+   "objectives": [
+    "kill 4 marrow_weevil [in kragmar_blackwind_rise/webwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_blackwind_rise/webwood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:marrow_weevil"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Crates Before Glory",
    "turnin": "r20_anchor_040_host",
-   "xp": 1975
+   "xp": 700
+  },
+  {
+   "copper": 48,
+   "description": "Orrel Hollowstep keeps Hollowarch Station supplied while the Accord tests how much pressure its defenders can bear. Go to him; he needs someone who can finish a job before the next crisis arrives. Eternity has done nothing for his patience.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "blackwind_ashes_04",
+   "min_level": 33,
+   "objectives": [
+    "talk to Orrel Hollowstep (r20_anchor_040)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_040_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_ashes_02"
+   ],
+   "reward_items": [],
+   "title": "Orrel Is Still Waiting",
+   "turnin": "r20_anchor_040_host",
+   "xp": 293
+  },
+  {
+   "copper": 160,
+   "description": "Grave-Broker Mute sells linen stolen from our dead at the Blackwind Bandit Hideout east from here. Kill four of his Entrenched Bandits or Entrenched Bandit Archers in any combination, and kill Mute as well. Some of us are still wearing what he considers stock.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "blackwind_arch_02",
+   "min_level": 35,
+   "objectives": [
+    "kill 4 entrenched_bandit or entrenched_bandit_archer [in kragmar_blackwind_rise/bandit_hideout]",
+    "kill 1 grave_broker_mute"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_blackwind_rise/bandit_hideout",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:entrenched_bandit",
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:grave_broker_mute"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_arch_01"
+   ],
+   "reward_items": [],
+   "title": "An End to the Brokerage",
+   "turnin": "r20_anchor_040_host",
+   "xp": 1025
+  },
+  {
+   "copper": 112,
+   "description": "The Entrenched Bandit Archers at the Pallcloth Den west from here take every Throng banner as an invitation to shoot. Kill four before another carrier has to crawl home beneath one; my people have enough trouble keeping their limbs attached.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "blackwind_arch_03",
+   "min_level": 37,
+   "objectives": [
+    "kill 4 entrenched_bandit_archer [in kragmar_blackwind_rise/pallcloth_den]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_blackwind_rise/pallcloth_den",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_arch_02"
+   ],
+   "reward_items": [],
+   "title": "An Answer for Pallcloth Den",
+   "turnin": "r20_anchor_040_host",
+   "xp": 753
+  },
+  {
+   "copper": 64,
+   "description": "Night brings Grave-Web Bonelurker Spiders to the Blackwind Hollowwood, which lies in the southeast of Blackwind Rise, and by morning our supply routes look ready for embalming. Kill six and return for payment. The bounty opens again twenty minutes after you collect; I shall keep a line in the accounts for unwanted shrouds.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "blackwind_arch_bounty",
+   "min_level": 37,
+   "objectives": [
+    "kill 6 grave_web_spider [in kragmar_blackwind_rise/hollowwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_blackwind_rise/hollowwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:grave_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_arch_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Threads Across the Supply Line (repeatable)",
+   "turnin": "r20_anchor_040_host",
+   "xp": 440
+  },
+  {
+   "copper": 128,
+   "description": "The Gravewood Treant Hollowbell tolls in the Blackwind Hollowwood, east from here, as though the whole station were overdue for burial. Gather a group and kill it; even the dead should know better than to face that thing alone. I would like to hear the wind through the arches again.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "blackwind_arch_group",
+   "min_level": 38,
+   "objectives": [
+    "kill 1 hollowbell_treant"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:hollowbell_treant"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "blackwind_arch_03"
+   ],
+   "reward_items": [],
+   "title": "Group: Silence for Hollowbell",
+   "turnin": "r20_anchor_040_host",
+   "xp": 880
+  },
+  {
+   "copper": 280,
+   "description": "Mud has taken the names from their coats, but the Mire-Cured Husks still report for duty. Lay five to rest by day in the Causeway Toll Fields, which lie in the west of The Broken Causeway. Accord or Throng, a body deserves better than another shift in that mud.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_01",
+   "min_level": 47,
+   "objectives": [
+    "kill 5 causeway_mire_husk [in front_broken_causeway/toll_fields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/toll_fields",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_mire_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "No Names Left to Call",
+   "turnin": "r20_anchor_040_host",
+   "xp": 945
+  },
+  {
+   "copper": 280,
+   "description": "The Fordwater Zombies still hold out their hands for a fare, though I doubt any remember the crossing. Destroy five after dark at the Causeway Last Ford, which lies in the west of The Broken Causeway. Keep your coins; I have tried paying, and the service is dreadful.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_02",
+   "min_level": 47,
+   "objectives": [
+    "kill 5 causeway_ford_zombie [in front_broken_causeway/last_ford]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/last_ford",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_ford_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Fare for Nobody",
+   "turnin": "r20_anchor_040_host",
+   "xp": 945
+  },
+  {
+   "copper": 320,
+   "description": "War Construct Last-Toll waits in the Causeway Toll Fields southeast from here; whoever built it neglected to include a closing hour. Take a group and destroy it, because it will make spare parts of a lone fighter. We have quite enough spare parts here already.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_03",
+   "min_level": 48,
+   "objectives": [
+    "kill 1 last_toll_construct"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:last_toll_construct"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_hollow_01"
+   ],
+   "reward_items": [],
+   "title": "Group: Close the Account",
+   "turnin": "r20_anchor_040_host",
+   "xp": 1100
+  },
+  {
+   "copper": 800,
+   "description": "I set the dead in order, and the Saltpack Blightfang Wolves scatter them again before the graves are ready. Kill five by day in the Gravesalt Bonewood, which lies in the northwest of Gravesalt Escarpment. There is only so much dignity I can retrieve from a muzzle.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_04",
+   "min_level": 50,
+   "objectives": [
+    "kill 5 saltpack_wolf [in front_gravesalt_escarpment/bonewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/bonewood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:saltpack_wolf"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Dead Are Not Rations",
+   "turnin": "r20_anchor_040_host",
+   "xp": 1140
+  },
+  {
+   "copper": 800,
+   "description": "Saltroad Deserters are stripping the Gravesalt Tomb Galleries, which lie in the south of Gravesalt Escarpment, day and night. They call the tombs abandoned. Kill five of the robbers; some of us take a very long time to answer the door.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_05",
+   "min_level": 51,
+   "objectives": [
+    "kill 5 saltroad_deserter [in front_gravesalt_escarpment/tomb_galleries]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/tomb_galleries",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:saltroad_deserter"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_hollow_04"
+   ],
+   "reward_items": [],
+   "title": "The Owners Still Object",
+   "turnin": "r20_anchor_040_host",
+   "xp": 1140
+  },
+  {
+   "copper": 200,
+   "description": "Vaska Ashlistener hears the Last Watch in the wind, and lately she has heard little worth smiling about. Go speak with her at Ashveil Watch in Blackwind Rise and say Orrel Hollowstep trusts your work. I should warn you: she hears muttering just as clearly.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_06",
+   "min_level": 52,
+   "objectives": [
+    "talk to Vaska Ashlistener (r20_anchor_039)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_039_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_hollow_05"
+   ],
+   "reward_items": [],
+   "title": "Someone Who Listens",
+   "turnin": "r20_anchor_039_host",
+   "xp": 290
+  },
+  {
+   "copper": 500,
+   "description": "Salt-Web Bonelurker Spiders in the Gravesalt Bonewood, which lies in the northwest of Gravesalt Escarpment, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
+   "giver": "r20_anchor_040_host",
+   "giver_name": "Orrel Hollowstep",
+   "giver_settlement": "Hollowarch Station",
+   "id": "bw_front_hollow_bounty",
+   "min_level": 52,
+   "objectives": [
+    "kill 5 salt_web_spider [in front_gravesalt_escarpment/bonewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/bonewood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:salt_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_hollow_05"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Premature Shrouds (repeatable)",
+   "turnin": "r20_anchor_040_host",
+   "xp": 725
+  },
+  {
+   "copper": 800,
+   "description": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Sun-Dried Husks to rest by day in the Gravesalt Tomb Fen, which lies in the southwest of Gravesalt Escarpment. Preserving someone ought to mean more than keeping them upright.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_01",
+   "min_level": 53,
+   "objectives": [
+    "kill 5 saltbound_husk [in front_gravesalt_escarpment/tomb_fen]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/tomb_fen",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:saltbound_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "What the Salt Holds",
+   "turnin": "r20_anchor_039_host",
+   "xp": 1200
+  },
+  {
+   "copper": 1000,
+   "description": "The Salt-Hex Bog Witches whisper hexes over the dead, and the dead cannot rest while they listen. Kill four after dark in the Gravesalt Tomb Fen, which lies in the southwest of Gravesalt Escarpment, and bring me two Last-Hex Shards. I will read every hex carved into them, and then the dead can stop listening.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_02",
+   "min_level": 53,
+   "objectives": [
+    "kill 4 salt_hex_witch [in front_gravesalt_escarpment/tomb_fen]",
+    "bring 2 grug_mobs:last_hex_shard"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/tomb_fen",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:salt_hex_witch"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:last_hex_shard",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Let Me Have the Last Word",
+   "turnin": "r20_anchor_039_host",
+   "xp": 1500
+  },
+  {
+   "copper": 800,
+   "description": "Nobody came to relieve the Last-Watch Mummies, so they gave their posts everything, even the years after death. Lay five to rest by day on the Gravesalt Whitewall, which lies in the northeast of Gravesalt Escarpment. Let them go with more respect than their commanders ever showed them.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_03",
+   "min_level": 57,
+   "objectives": [
+    "kill 5 last_watch_husk [in front_gravesalt_escarpment/whitewall]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/whitewall",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_watch_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_ashveil_01"
+   ],
+   "reward_items": [],
+   "title": "Relief Long Overdue",
+   "turnin": "r20_anchor_039_host",
+   "xp": 1260
+  },
+  {
+   "copper": 1300,
+   "description": "Watch-Captain Huskell is still calling the roll in the Gravesalt Ossuary Wood southwest from here. Destroy four Last-Watch Skeleton Raiders there at night and put Huskell to rest. He has mistaken obedience for peace long enough.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_04",
+   "min_level": 57,
+   "objectives": [
+    "kill 4 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]",
+    "kill 1 watch_captain_huskell"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/ossuary_wood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:last_watch_skeleton_raider"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:watch_captain_huskell"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_ashveil_02",
+    "bw_front_ashveil_03"
+   ],
+   "reward_items": [],
+   "title": "Dismissed, Captain",
+   "turnin": "r20_anchor_039_host",
+   "xp": 2080
+  },
+  {
+   "copper": 600,
+   "description": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Skeleton Raiders at night in the Gravesalt Ossuary Wood, which lies in the west of Gravesalt Escarpment, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_bounty",
+   "min_level": 57,
+   "objectives": [
+    "kill 5 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]",
+    "bring 2 grug_mobs:unquiet_bone"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/ossuary_wood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_watch_skeleton_raider"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:unquiet_bone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_ashveil_04"
+   ],
+   "reward_items": [],
+   "title": "Bounty: A Patient Listener (repeatable)",
+   "turnin": "r20_anchor_039_host",
+   "xp": 945
+  },
+  {
+   "copper": 800,
+   "description": "Bog Witch Salt-Counter sits in the Gravesalt Mourning Mire south from here, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
+   "giver": "r20_anchor_039_host",
+   "giver_name": "Vaska Ashlistener",
+   "giver_settlement": "Ashveil Watch",
+   "id": "bw_front_ashveil_05",
+   "min_level": 58,
+   "objectives": [
+    "kill 1 salt_counter_witch"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:salt_counter_witch"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "bw_front_ashveil_04"
+   ],
+   "reward_items": [],
+   "title": "Group: Nobody's Number",
+   "turnin": "r20_anchor_039_host",
+   "xp": 1300
   }
  ],
  "race_region": "undead",
@@ -916,9 +1431,17 @@
      "npc_id": "r20_anchor_039_host",
      "npc_name": "Vaska Ashlistener",
      "quests": [
-      "r20_anchor_039_01",
-      "r20_anchor_039_02",
-      "r20_anchor_039_03"
+      "blackwind_ashes_01",
+      "blackwind_ashes_02",
+      "blackwind_ashes_03",
+      "blackwind_ashes_04",
+      "blackwind_ashes_bounty",
+      "bw_front_ashveil_01",
+      "bw_front_ashveil_02",
+      "bw_front_ashveil_03",
+      "bw_front_ashveil_04",
+      "bw_front_ashveil_05",
+      "bw_front_ashveil_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1130,9 +1653,18 @@
      "npc_id": "r20_anchor_040_host",
      "npc_name": "Orrel Hollowstep",
      "quests": [
-      "r20_anchor_040_01",
-      "r20_anchor_040_02",
-      "r20_anchor_040_03"
+      "blackwind_arch_01",
+      "blackwind_arch_02",
+      "blackwind_arch_03",
+      "blackwind_arch_bounty",
+      "blackwind_arch_group",
+      "bw_front_hollow_01",
+      "bw_front_hollow_02",
+      "bw_front_hollow_03",
+      "bw_front_hollow_04",
+      "bw_front_hollow_05",
+      "bw_front_hollow_06",
+      "bw_front_hollow_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",

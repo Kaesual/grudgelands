@@ -59,35 +59,42 @@ Share of land per level: L1 4.5%, L2 5.6%, L3 57.4%, L4 6.7%, L5 6.0%, L6 5.7%, 
 
 ### Stillgrave (`stillgrave`, anchor_004) at -1800, 36, 2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | court_vendor | vendor | vendor kind: race | -1793, 37, 2545 | - |
 | idle_warden_door | innkeeper (respawn bind) |  | -1813, 37, 2582 | - |
-| hall_quest | quest giver | Veyra Pall | -1798, 37, 2560 | r14_undead_01_boars_in_the_dead_furrows, r14_undead_03_gnawing_in_the_crypt_stores, r14_undead_04_the_uncalled_dead, r14_undead_05_furrows_gone_sour, r14_undead_06_tusks_along_the_fen_road, r14_undead_10_a_handle_that_will_not_rot, r14_undead_11_a_pick_among_headstones, r20_undead_capital_intro |
+| hall_quest | quest giver | Veyra Pall | -1798, 37, 2560 | stillgrave_departure, stillgrave_hunt_01, stillgrave_hunt_02, stillgrave_hunt_03, stillgrave_hunt_04, stillgrave_hunt_05, stillgrave_hunt_bounty, stillgrave_tools_01, stillgrave_tools_02, stillgrave_tools_03, stillgrave_tools_04 |
+| travel_waypoint | waypoint |  | -1814, 37, 2572 | - |
 | trainer_cooking | profession trainer | trains: cooking | -1798, 37, 2540 | - |
-| quest_cook | quest giver | Neral Saltkeeper | -1798, 37, 2537 | r14_undead_02_salt_for_what_remains, r20_undead_start_cook |
+| quest_cook | quest giver | Neral Saltkeeper | -1798, 37, 2537 | stillgrave_kitchen_01, stillgrave_kitchen_02, stillgrave_kitchen_03, stillgrave_pantry_01, stillgrave_pantry_02 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 512 (coastal_shelf), S 284 (kragmar_mournfen), E 340 (coastal_shelf), W 668 (coastal_shelf); nearest other-zone land 254 SW; sea 336 E; sea-beach sand 320 E; nearest road 64.
 Nearest hubs (straight / by road): Mournfen Village 539 / 592; Mournfen Outpost 541 / 761; Nhal Veyr 1050 / 1265; Ossuary Ledgerstead 1113 / 1727; Mournfen Bandit Camp 539 / 1969.
 
-### Current quests (10, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_undead_01_boars_in_the_dead_furrows | Boars in the Dead Furrows | Veyra Pall (Stillgrave) | 1 | kill 3 plague_boar or small_boar | 20 | - |
-| r14_undead_02_salt_for_what_remains | Salt for What Remains | Neral Saltkeeper (Stillgrave) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_undead_10_a_handle_that_will_not_rot | A Handle That Will Not Rot | Veyra Pall (Stillgrave) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_undead_start_cook | Salt Against the Damp | Neral Saltkeeper (Stillgrave) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_undead_11_a_pick_among_headstones | A Pick Among Headstones | Veyra Pall (Stillgrave) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_undead_10_a_handle_that_will_not_rot |
-| r14_undead_03_gnawing_in_the_crypt_stores | Dry Shelves for the Crypt Stores | Veyra Pall (Stillgrave) | 3 | bring 6 grug_trees:gravewood_wood | 100 | r14_undead_01_boars_in_the_dead_furrows |
-| r14_undead_04_the_uncalled_dead | The Uncalled Dead | Veyra Pall (Stillgrave) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_undead_01_boars_in_the_dead_furrows |
-| r14_undead_05_furrows_gone_sour | Stones Against the Sour Furrows | Veyra Pall (Stillgrave) | 5 | bring 8 default:cobble | 180 | r14_undead_03_gnawing_in_the_crypt_stores |
-| r14_undead_06_tusks_along_the_fen_road | The Road to Mordec Silt | Veyra Pall (Stillgrave) | 10 | talk to Mordec Silt (mournfen_village) | 285 | r14_undead_05_furrows_gone_sour |
-| r20_undead_capital_intro | The Road to Nhal Veyr | Veyra Pall (Stillgrave) | 10 | talk to Ossa Quietregister (nhal_veyr) | 285 | - |
+| stillgrave_hunt_01 | Please Leave the Residents Buried | Veyra Pall (Stillgrave) | 1 | kill 8 small_boar [in kragmar_stillgrave_hollow/dead_furrows] | 105 | - |
+| stillgrave_kitchen_01 | The Fire Still Eats | Neral Saltkeeper (Stillgrave) | 1 | bring 5 group:tree | 30 | - |
+| stillgrave_tools_01 | Hands to Work | Veyra Pall (Stillgrave) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| stillgrave_hunt_02 | Family Comes Running | Veyra Pall (Stillgrave) | 2 | kill 8 large_rat [in kragmar_stillgrave_hollow/dead_furrows] | 105 | stillgrave_hunt_01 |
+| stillgrave_kitchen_02 | A Little Warmth, Professionally | Neral Saltkeeper (Stillgrave) | 2 | bring 5 default:coal_lump | 60 | stillgrave_kitchen_01 |
+| stillgrave_tools_02 | Leave the Headstones | Veyra Pall (Stillgrave) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | stillgrave_tools_01 |
+| stillgrave_hunt_03 | No Names to Call Them By | Veyra Pall (Stillgrave) | 3 | kill 8 braindead_zombie [in kragmar_stillgrave_hollow/ashfields] | 158 | stillgrave_hunt_02 |
+| stillgrave_pantry_01 | A Sack Ought to Hold Something | Neral Saltkeeper (Stillgrave) | 3 | bring 2 grug_mobs:rat_fur_patch | 60 | stillgrave_hunt_02 |
+| stillgrave_kitchen_03 | Mourning Is Hungry Work | Neral Saltkeeper (Stillgrave) | 4 | bring 10 mobs:meat_raw | 100 | stillgrave_kitchen_02, stillgrave_hunt_03 |
+| stillgrave_hunt_04 | The Moor Changes Tenants | Veyra Pall (Stillgrave) | 5 | kill 8 rabid_rat [in kragmar_stillgrave_hollow/blightmoor] | 193 | stillgrave_hunt_03 |
+| stillgrave_tools_03 | An Introduction in the Furnace | Veyra Pall (Stillgrave) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 110 | stillgrave_tools_02 |
+| stillgrave_pantry_02 | Broth and Loose Ends | Neral Saltkeeper (Stillgrave) | 6 | bring 2 grug_mobs:crab_leg; bring 1 grug_mobs:fine_sinew | 120 | stillgrave_pantry_01, stillgrave_hunt_04 |
+| stillgrave_tools_04 | Something to Take With You | Veyra Pall (Stillgrave) | 7 | bring 3 grug_materials:bronze_bar | 130 | stillgrave_tools_03 |
+| stillgrave_hunt_05 | Borrow Has Had Long Enough | Veyra Pall (Stillgrave) | 8 | kill 6 confused_bandit [in kragmar_stillgrave_hollow/robbers_camp]; kill 1 grave_robber_chief | 315 | stillgrave_hunt_04 |
+| stillgrave_departure | Older Graves, Deeper Water | Veyra Pall (Stillgrave) | 9 | talk to Mordec Silt (mournfen_village) | 35 | stillgrave_hunt_05 |
+| stillgrave_hunt_bounty | Repeatable: A Census With Teeth (repeatable) | Veyra Pall (Stillgrave) | 9 | kill 6 monstrous_rat [in kragmar_stillgrave_hollow/deadlands] | 140 | stillgrave_hunt_05 |
 
 ## Mobs by spawn region
 

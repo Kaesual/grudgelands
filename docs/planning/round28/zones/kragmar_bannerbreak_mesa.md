@@ -58,7 +58,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Drek Rampbinder | -372, 78, 874 | r20_anchor_043_01, r20_anchor_043_02, r20_anchor_043_03 |
+| quest_host | quest giver | Drek Rampbinder | -372, 78, 874 | bannerbreak_ramp_01, bannerbreak_ramp_02, bannerbreak_ramp_03, bannerbreak_ramp_bounty, bb_front_ramp_01, bb_front_ramp_02, bb_front_ramp_03, bb_front_ramp_04, bb_front_ramp_05, bb_front_ramp_bounty |
 
 Distances: zone edge N 236 (kragmar_gor_drazhak), S 480 (front_broken_causeway), E 1292 (kragmar_thunderroot_wilds), W 552 (kragmar_blackwind_rise); nearest other-zone land 238 N; sea 1207 NW; sea-beach sand 1170 NW; nearest road 13.
 Nearest hubs (straight / by road): Hollowarch Station 1140 / 1520; Tornstandard Hold 708 / 1704; Last Hedge Redoubt 1594 / 2935; Thunderstep Watch 2283 / 3936; Ashveil Watch 1644 / 4043.
@@ -69,21 +69,39 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Yarra Standardmender | 278, 130, 594 | r20_anchor_044_01, r20_anchor_044_02, r20_anchor_044_03 |
+| quest_host | quest giver | Yarra Standardmender | 278, 130, 594 | bannerbreak_standard_01, bannerbreak_standard_02, bannerbreak_standard_03, bannerbreak_standard_04, bannerbreak_standard_bounty, bannerbreak_standard_group, bb_front_torn_01, bb_front_torn_02, bb_front_torn_03, bb_front_torn_04, bb_front_torn_05, bb_front_torn_06, bb_front_torn_07, bb_front_torn_bounty |
 
 Distances: zone edge N 516 (kragmar_gor_drazhak), S 224 (front_shattered_line), E 692 (kragmar_thunderroot_wilds), W 1204 (kragmar_blackwind_rise); nearest other-zone land 216 SW; sea 1478 N; sea-beach sand 1437 N; nearest road 11.
 Nearest hubs (straight / by road): Red Ramp Post 708 / 1704; Last Hedge Redoubt 1164 / 1851; Hollowarch Station 1744 / 3094; Cinderline Watch 1574 / 3287; Thunderstep Watch 1626 / 4369.
 
-### Current quests (6, given in this zone)
+### Current quests (24, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_043_01 | Planks for the Ascent | Drek Rampbinder (Red Ramp Post) | 31 | bring 10 default:acacia_wood | 1220 | - |
-| r20_anchor_043_02 | Shells Among the Planks | Drek Rampbinder (Red Ramp Post) | 31 | kill 4 scorpion or war_stinger [in kragmar_bannerbreak_mesa] | 1220 | - |
-| r20_anchor_044_01 | A Standard Needs a Footing | Yarra Standardmender (Tornstandard Hold) | 31 | bring 8 default:cobble | 1220 | - |
-| r20_anchor_044_02 | The Empty Mesa Patrol | Yarra Standardmender (Tornstandard Hold) | 31 | kill 4 skeleton_raider or march_skeleton_raider [in kragmar_bannerbreak_mesa] | 1220 | - |
-| r20_anchor_043_03 | Sunderstrap's Sentinels | Drek Rampbinder (Red Ramp Post) | 33 | kill 4 bandit_archer [in kragmar_bannerbreak_mesa] | 1300 | r20_anchor_043_02 |
-| r20_anchor_044_03 | The Last Hedge Abroad | Yarra Standardmender (Tornstandard Hold) | 40 | kill 3 guard_accord [in elandor_ashenward_march] | 1975 | r20_anchor_044_02 |
+| bannerbreak_ramp_01 | The Last Laugh | Drek Rampbinder (Red Ramp Post) | 29 | kill 4 warpack_hyena [in kragmar_bannerbreak_mesa/badlands] | 630 | - |
+| bannerbreak_standard_01 | Inspect Your Bedroll | Yarra Standardmender (Tornstandard Hold) | 29 | kill 4 war_stinger [in kragmar_bannerbreak_mesa/badlands]; bring 2 grug_mobs:venom_sac | 720 | - |
+| bannerbreak_ramp_02 | A Blade for Yarra | Drek Rampbinder (Red Ramp Post) | 31 | talk to Yarra Standardmender (r20_anchor_044) | 278 | bannerbreak_ramp_01 |
+| bannerbreak_standard_02 | Where the Rain Fights Back | Yarra Standardmender (Tornstandard Hold) | 32 | talk to Rumela Stormstep (r20_anchor_048) | 285 | bannerbreak_standard_01 |
+| bannerbreak_standard_03 | A Scout Is Worth More | Yarra Standardmender (Tornstandard Hold) | 33 | kill 4 reed_stalking_tiger [in kragmar_bannerbreak_mesa/warplains] | 700 | bannerbreak_standard_01 |
+| bannerbreak_ramp_03 | Rattle's Bad Arithmetic | Drek Rampbinder (Red Ramp Post) | 34 | kill 4 siege_goblin or siege_goblin_slinger [in kragmar_bannerbreak_mesa/supply_camp]; kill 1 provisioner_rattle | 1025 | bannerbreak_ramp_01 |
+| bannerbreak_ramp_bounty | Bounty: Teeth After Dark (repeatable) | Drek Rampbinder (Red Ramp Post) | 35 | kill 6 warpack_hyena [in kragmar_bannerbreak_mesa/warplains] | 410 | bannerbreak_ramp_03 |
+| bannerbreak_standard_04 | A Soldier's Due | Yarra Standardmender (Tornstandard Hold) | 37 | kill 4 unrelenting_husk [in kragmar_bannerbreak_mesa/redcut_flats] | 753 | bannerbreak_standard_03 |
+| bannerbreak_standard_bounty | Bounty: Arrows from Sunderstrap Camp (repeatable) | Yarra Standardmender (Tornstandard Hold) | 37 | kill 6 entrenched_bandit_archer [in kragmar_bannerbreak_mesa/sunderstrap_camp] | 440 | bannerbreak_standard_04 |
+| bannerbreak_standard_group | Group: No Banner for Supper | Yarra Standardmender (Tornstandard Hold) | 38 | kill 1 banner_eater | 880 | bannerbreak_standard_04 |
+| bb_front_ramp_01 | Make the Mud Keep Them | Drek Rampbinder (Red Ramp Post) | 40 | kill 5 causeway_mire_husk [in front_broken_causeway/floodmeadows] | 823 | - |
+| bb_front_torn_01 | Nobody Laughs at Supper | Yarra Standardmender (Tornstandard Hold) | 40 | kill 5 warpack_hyena [in front_shattered_line/approaches] | 823 | - |
+| bb_front_torn_02 | Mind the Boots | Yarra Standardmender (Tornstandard Hold) | 40 | kill 5 war_stinger [in front_shattered_line/bluffs] | 823 | - |
+| bb_front_ramp_02 | No Marching After Death | Drek Rampbinder (Red Ramp Post) | 41 | kill 5 causeway_ford_zombie [in front_broken_causeway/reedmire] | 840 | bb_front_ramp_01 |
+| bb_front_torn_03 | A Standard with Claws | Yarra Standardmender (Tornstandard Hold) | 42 | kill 4 reed_stalking_tiger [in front_shattered_line/bluffs]; bring 2 grug_mobs:siege_cat_claw | 1103 | bb_front_torn_01 |
+| bb_front_ramp_03 | Teeth in the Dark | Drek Rampbinder (Red Ramp Post) | 43 | kill 5 causeway_fenrunner_wolf [in front_broken_causeway/wraithwood] | 1000 | bb_front_ramp_01 |
+| bb_front_torn_04 | Stings for Our Side | Yarra Standardmender (Tornstandard Hold) | 45 | kill 5 war_stinger [in front_shattered_line/ramparts]; bring 2 grug_mobs:scorch_venom | 1170 | bb_front_torn_02 |
+| bb_front_ramp_04 | Payment in Full | Drek Rampbinder (Red Ramp Post) | 46 | kill 4 causeway_aqueduct_bowman [in front_broken_causeway/toll_camp]; kill 1 toll_taker_senn | 1590 | bb_front_ramp_02, bb_front_ramp_03 |
+| bb_front_ramp_bounty | Bounty: Bad Career Choices (repeatable) | Drek Rampbinder (Red Ramp Post) | 46 | kill 5 causeway_brigand [in front_broken_causeway/wraithwood] | 650 | bb_front_ramp_04 |
+| bb_front_torn_05 | Let That Banner Fall | Yarra Standardmender (Tornstandard Hold) | 46 | kill 4 siege_skeleton_raider [in front_shattered_line/breach]; kill 1 standard_bearer_ninepins | 1590 | bb_front_torn_03, bb_front_torn_04 |
+| bb_front_ramp_05 | A Name Worth Sending | Drek Rampbinder (Red Ramp Post) | 47 | talk to Orrel Hollowstep (r20_anchor_040) | 265 | bb_front_ramp_04 |
+| bb_front_torn_06 | Group: Break the War Machine | Yarra Standardmender (Tornstandard Hold) | 48 | kill 1 siege_engine_nine | 1100 | bb_front_torn_05 |
+| bb_front_torn_bounty | Bounty: Stripes at the Front (repeatable) | Yarra Standardmender (Tornstandard Hold) | 48 | kill 5 reed_stalking_tiger [in front_shattered_line/siegecrest] | 810 | bb_front_torn_05 |
+| bb_front_torn_07 | Send a Fighter, Save a Banner | Yarra Standardmender (Tornstandard Hold) | 49 | talk to Nalo Pathdrum (kezamba) | 275 | bb_front_torn_05 |
 
 ## Mobs by spawn region
 

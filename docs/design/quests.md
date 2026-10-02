@@ -5,7 +5,9 @@ Round 28 questing redesign, 2026-10-01 (rulings 29, 39–45;
 [plan](../planning/round28-questing-leveling-plan.md),
 [design frame](../planning/round28-design-frame.md) §4.7); text placeholders
 and quest copper by Round 29 Lane Q1, 2026-10-02
-([quests plan](../planning/round29-quests-plan.md) §3–4).
+([quests plan](../planning/round29-quests-plan.md) §3–4); the Round 29
+quest files and the front bounty baseline
+([round plan](../planning/round29-plan.md#completion-2026-10-02)).
 
 
 ### Confirmed by the user
@@ -75,8 +77,7 @@ and quest copper by Round 29 Lane Q1, 2026-10-02
   prerequisite quests. `min_level` gates accepting; the reward XP is
   `grug_xp.quest_reward(level, weight)`, the authored weight in kill
   equivalents at the quest's reward `level` (`progression.md`); the
-  receiver's current level never changes the reward. The split older quests
-  keep their fixed XP until their zone's design replaces them.
+  receiver's current level never changes the reward.
 - Repeated packets and repeated dialogue clicks must not duplicate rewards.
   Persist active/completed state and HUD preference across reconnect/restart.
 - Dependent quests remain hidden until every prerequisite has been turned in.
@@ -99,9 +100,10 @@ hysteresis. The optional quest HUD (up to ten one-line entries) sits at screen
 middle-right, with right-aligned text and edge padding, clear of the top-right
 minimap.
 
-Round 20 expanded authored journeys to 240 quests including revision of the
-initial 102; Round 28 split them into the per-zone quest files (below), and
-each zone's design replaces its file. This is an editorial budget, not a filler quota.
+Round 29 replaced the 240 quests of Rounds 14–20 with 491 quests in the
+per-zone quest files (below): one track per race from the start zone to its
+heartland, the contested 31–40 zones, and the 41–60 front with repeatable
+and island bounties. This is an editorial budget, not a filler quota.
 Offer roughly three independent local starter tasks across the adventure giver
 and a separate cook near an oven. Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking
@@ -111,8 +113,9 @@ Each race has a level-10 capital/service introduction, followed by capital and
 regional bundles and explicit destination-only travel handoffs. Keep existing
 regional giver identities and add hosts at authored peaceful villages, outposts
 and mining camps. Existing hostile camps do not acquire friendly quest hosts.
-Enemy-guard objectives use existing reachable guards and contribution credit;
-no civilian kills, player kills, king finale, Nether or future warfront AI.
+Kill objectives name spawn-recipe roles and leaders only, so the quest
+format has no enemy-guard objective; no civilian kills, player kills, king
+finale, Nether or future warfront AI.
 Rewards follow the quest's reward level (`progression.md`), not the
 receiver's current level. Content, actor sockets and local materials
 must agree with the current world roster. Exact cards/IDs are maintained in the
@@ -161,13 +164,7 @@ instead of 2.
   roles the recipe never spawns and none of which is a leader (a leader of
   any zone counts: a front file names the front's leaders) is reported as a
   load-time warning (W-recipe-target). Critters
-  are never kill targets (Ruling 29), nor rares (Ruling 38). The split older
-  quests keep entity names (`mobs`) and an optional named-zone filter
-  (`zone`, matched at the death position), and some of them ask for enemy
-  faction guards in the contested zones. Where one of an older kill
-  objective's targets is spawned by its kill zone's recipe, it names no
-  target that recipe never spawns (Round 29), so the objective line shows
-  only names met there.
+  are never kill targets (Ruling 29), nor rares (Ruling 38).
 - **Item**: one item, or any member of an item group (`group:tree`: "any
   log"), and a count. Objectives of one quest draw from the holdings in
   order, so two objectives never count the same item twice. An item that
@@ -197,6 +194,13 @@ again in N min.". Its first completion counts for every quest that requires
 it; a repeat starts its counters from zero. Repeatables are given by existing
 NPCs on one of their two lines; bounties are repeatables (`round28-design-frame.md` §4.8).
 
+**Front bounty baseline** (Round 29): the 41–60 leveling budget of a
+faction's front route counts **two repeats per bounty** (N = 2;
+`ledger.py --track <race> --repeat 2`). At N = 2 the front quests carry
+about 67–73 % of the 41–50 and 51–60 bands for both factions; further
+repeats are extra, never part of the baseline. Island bounties pay coin and
+materials and count nothing toward leveling.
+
 ## Quest data (per zone)
 
 Quest content is data, one file per zone, read at load by
@@ -214,8 +218,6 @@ Quest content is data, one file per zone, read at load by
 - New givers stand at a free quest socket of the hub's settlement
   (`{"npc", "new": {"name", "race", "socket"}, "lines"}`): the socket-bound
   NPC system places the quest giver there with that name and race.
-- The split older quests carry legacy fields (fixed `xp`, `mobs`, `zone`,
-  `faction` and `race` gates, the line `legacy`).
 - The loader checks every file at load and stops the server with every
   finding listed, each naming the file and the quest: givers and lines per
   hub, front lines, objective shapes, known NPCs, items, groups and roles,
@@ -293,9 +295,7 @@ salvage bounty of weight 0).
 target or place, direction in a title and compass word, naming file and
 quest. Offline: `python3 tools/r28_design/validate.py --game --atlas
 docs/planning/round28/zones/ --zone <your zones>` (the same rules with the
-codes of its README; **without** `--legacy`, which would let a new quest
-through with a fixed `xp` or without `weight` — that option is only for
-checking the whole legacy set) and `python3 tools/r28_design/ledger.py --game --track <race>
+codes of its README) and `python3 tools/r28_design/ledger.py --game --track <race>
 [--sister <zone>]` for the route budget (31–40 the faction's three contested
 zones, 41–50 The Broken Causeway and The Shattered Line, 51–60 Gravesalt
 Escarpment and The Skyglass Canopy, each with the faction's front quests).

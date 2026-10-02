@@ -61,7 +61,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Borin Splitbolt | -2072, 326, -826 | r20_anchor_027_01, r20_anchor_027_02, r20_anchor_027_03 |
+| quest_host | quest giver | Borin Splitbolt | -2072, 326, -826 | splitbolt_front_01, splitbolt_front_02, splitbolt_front_03, splitbolt_front_04, splitbolt_front_05, splitbolt_front_06, splitbolt_front_07, splitbolt_front_08, splitbolt_front_bounty, stormvault_bounty_strays, stormvault_passes_01, stormvault_passes_02, stormvault_passes_03, stormvault_road_archshadow, stormvault_road_ashenward |
 
 Distances: zone edge N 432 (front_gravesalt_escarpment), S 276 (elandor_frostbarrow_shelf), E 1192 (elandor_ashenward_march), W 308 (coastal_shelf); nearest other-zone land 248 S; sea 274 W; sea-beach sand 318 NW; nearest road 13.
 Nearest hubs (straight / by road): Archshadow Post 628 / 2195; Cinderline Watch 1724 / 4214; Last Hedge Redoubt 2388 / 5354; Tornstandard Hold 2746 / 6655; Glassroot Gate 4008 / 7209.
@@ -72,21 +72,42 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Alna Archsight | -1498, 258, -570 | r20_anchor_028_01, r20_anchor_028_02, r20_anchor_028_03 |
+| quest_host | quest giver | Alna Archsight | -1498, 258, -570 | archshadow_front_01, archshadow_front_02, archshadow_front_03, archshadow_front_04, archshadow_front_05, archshadow_front_bounty, stormvault_bounty_shamblers, stormvault_sighting_01, stormvault_sighting_02, stormvault_sighting_03, stormvault_sighting_04, stormvault_sighting_05 |
 
 Distances: zone edge N 160 (front_broken_causeway), S 548 (elandor_dur_brannoc), E 516 (front_broken_causeway), W 900 (coastal_shelf); nearest other-zone land 158 N; sea 868 W; sea-beach sand 873 W; nearest road 13.
 Nearest hubs (straight / by road): Splitbolt Station 628 / 2195; Cinderline Watch 1184 / 4005; Last Hedge Redoubt 1800 / 5145; Tornstandard Hold 2123 / 6446; Glassroot Gate 3434 / 6999.
 
-### Current quests (6, given in this zone)
+### Current quests (27, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_027_01 | Shutters Against the Storm | Borin Splitbolt (Splitbolt Station) | 31 | bring 8 default:pine_wood | 1220 | - |
-| r20_anchor_027_02 | The Frost That Walks | Borin Splitbolt (Splitbolt Station) | 31 | kill 4 frost_stray or rime_skeleton_stray [in elandor_stormvault_heights] | 1220 | - |
-| r20_anchor_028_01 | Stones for the Sighting Line | Alna Archsight (Archshadow Post) | 31 | bring 8 default:cobble | 1220 | - |
-| r20_anchor_028_02 | Wings Over the Crossing | Alna Archsight (Archshadow Post) | 31 | kill 3 crag_eagle or ridge_crag_eagle [in elandor_stormvault_heights] | 1220 | - |
-| r20_anchor_027_03 | Slatehook's Cargo | Borin Splitbolt (Splitbolt Station) | 33 | kill 4 bandit_archer [in elandor_stormvault_heights] | 1300 | r20_anchor_027_02 |
-| r20_anchor_028_03 | The Watch Beyond the Ash Wind | Alna Archsight (Archshadow Post) | 40 | kill 3 guard_throng [in kragmar_blackwind_rise] | 1975 | r20_anchor_028_02 |
+| stormvault_passes_01 | Postage and Talons | Borin Splitbolt (Splitbolt Station) | 30 | kill 5 ridge_crag_eagle [in elandor_stormvault_heights/eagle_crags] | 540 | - |
+| stormvault_passes_02 | The Mountain's Night Shift | Borin Splitbolt (Splitbolt Station) | 31 | kill 5 rime_skeleton_stray [in elandor_stormvault_heights/eagle_crags] | 555 | stormvault_passes_01 |
+| stormvault_passes_03 | A Proper Introduction to Rock | Borin Splitbolt (Splitbolt Station) | 31 | bring 4 grug_materials:silversteel_bar | 380 | stormvault_passes_01 |
+| stormvault_bounty_strays | Bounty: Bones Off the Road (repeatable) | Borin Splitbolt (Splitbolt Station) | 32 | kill 6 rime_skeleton_stray [in elandor_stormvault_heights/passes] | 370 | stormvault_passes_02 |
+| stormvault_road_ashenward | Good News Travels on Foot | Borin Splitbolt (Splitbolt Station) | 32 | talk to Toren Waterbarrel (r20_anchor_031) | 190 | stormvault_passes_02 |
+| stormvault_road_archshadow | Alna Keeps Count | Borin Splitbolt (Splitbolt Station) | 34 | talk to Alna Archsight (r20_anchor_028) | 195 | stormvault_passes_02 |
+| stormvault_sighting_01 | Some Assembly Stolen | Alna Archsight (Archshadow Post) | 34 | kill 6 siege_goblin or siege_goblin_slinger [in elandor_stormvault_heights/goblin_camp] | 718 | - |
+| stormvault_sighting_02 | No More Bolts for Bolt-Chewer | Alna Archsight (Archshadow Post) | 35 | kill 1 bolt_chewer | 820 | stormvault_sighting_01 |
+| stormvault_sighting_04 | A Clearer View of Trouble | Alna Archsight (Archshadow Post) | 36 | bring 2 grug_materials:emberglass | 525 | stormvault_sighting_01 |
+| stormvault_sighting_03 | A Toll Paid in Arrows | Alna Archsight (Archshadow Post) | 37 | kill 5 entrenched_bandit_archer [in elandor_stormvault_heights/slatehook] | 770 | stormvault_sighting_02 |
+| stormvault_bounty_shamblers | Bounty: An Overdue Dismissal (repeatable) | Alna Archsight (Archshadow Post) | 38 | kill 8 unrelenting_zombie [in elandor_stormvault_heights/frostfields] | 440 | stormvault_sighting_03 |
+| stormvault_sighting_05 | Group: A Crack Is Not a Weakness | Alna Archsight (Archshadow Post) | 38 | kill 1 split_seam_warden | 1320 | stormvault_sighting_03 |
+| archshadow_front_01 | Bad Workmanship, Worse Company | Alna Archsight (Archshadow Post) | 45 | kill 5 causeway_brigand or causeway_aqueduct_bowman [in front_broken_causeway/wraithwood] | 1300 | - |
+| archshadow_front_02 | A Runesmith's Awkward Questions | Alna Archsight (Archshadow Post) | 47 | bring 3 grug_mobs:siege_bone | 1350 | archshadow_front_01 |
+| archshadow_front_03 | Collection Ends Here | Alna Archsight (Archshadow Post) | 48 | kill 5 causeway_aqueduct_bowman [in front_broken_causeway/toll_camp]; kill 1 toll_taker_senn | 1620 | archshadow_front_02 |
+| archshadow_front_bounty | Bounty: An Arrow Too Many (repeatable) | Alna Archsight (Archshadow Post) | 48 | kill 5 causeway_aqueduct_bowman [in front_broken_causeway/gallows_wood] | 675 | archshadow_front_03 |
+| archshadow_front_04 | Group: No More Toll | Alna Archsight (Archshadow Post) | 49 | kill 1 last_toll_construct | 1100 | archshadow_front_03 |
+| archshadow_front_05 | Fit for Borin's Crew | Alna Archsight (Archshadow Post) | 49 | talk to Borin Splitbolt (r20_anchor_027) | 275 | archshadow_front_03 |
+| splitbolt_front_01 | No Shoring, No Sense | Borin Splitbolt (Splitbolt Station) | 50 | kill 6 salt_boring_weevil [in front_gravesalt_escarpment/saltflats] | 1425 | - |
+| splitbolt_front_02 | Rope with Opinions | Borin Splitbolt (Splitbolt Station) | 50 | kill 6 salt_web_spider [in front_gravesalt_escarpment/bonewood] | 1425 | - |
+| splitbolt_front_03 | Something for the Mortar Crew | Borin Splitbolt (Splitbolt Station) | 53 | bring 3 grug_mobs:salt_chitin | 1650 | splitbolt_front_01, splitbolt_front_02 |
+| splitbolt_front_04 | Leave the Graves Out of It | Borin Splitbolt (Splitbolt Station) | 54 | kill 6 salt_hex_witch [in front_gravesalt_escarpment/tomb_fen] | 1830 | splitbolt_front_03 |
+| splitbolt_front_bounty | Bounty: Keep the Night Shift Moving (repeatable) | Borin Splitbolt (Splitbolt Station) | 54 | kill 5 salt_web_spider [in front_gravesalt_escarpment/tombwood] | 900 | splitbolt_front_05 |
+| splitbolt_front_05 | An Overdue Dismissal | Borin Splitbolt (Splitbolt Station) | 55 | kill 5 last_pay_archer [in front_gravesalt_escarpment/saltroad_cliffs] | 1678 | splitbolt_front_04 |
+| splitbolt_front_07 | The Whitewall Dead | Borin Splitbolt (Splitbolt Station) | 56 | kill 6 last_watch_husk [in front_gravesalt_escarpment/whitewall] | 1890 | splitbolt_front_05 |
+| splitbolt_front_06 | Someone Who Came Back | Borin Splitbolt (Splitbolt Station) | 57 | talk to Eriath Boughwarden (lethariel) | 315 | splitbolt_front_08 |
+| splitbolt_front_08 | The Last Watch Ends | Borin Splitbolt (Splitbolt Station) | 57 | kill 5 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]; kill 1 watch_captain_huskell | 2240 | splitbolt_front_07 |
 
 ## Mobs by spawn region
 

@@ -61,35 +61,42 @@ Share of land per level: L1 4.8%, L2 6.0%, L3 53.8%, L4 7.4%, L5 6.2%, L6 5.5%, 
 
 ### Silverleaf (`silverleaf`, anchor_003) at 1800, 36, -2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | court_vendor | vendor | vendor kind: race | 1807, 37, -2554 | - |
 | home_innkeeper | innkeeper (respawn bind) |  | 1765, 37, -2572 | - |
-| hall_quest | quest giver | Saelin Dewbough | 1820, 37, -2536 | r14_elf_01_roots_laid_bare, r14_elf_03_beneath_the_seed_baskets, r14_elf_04_footfalls_without_breath, r14_elf_05_keepers_of_the_saplings, r14_elf_06_axes_without_leave, r14_elf_10_the_careful_axe, r14_elf_11_stone_s_patient_lesson, r20_elf_capital_intro |
+| hall_quest | quest giver | Saelin Dewbough | 1820, 37, -2536 | silverleaf_departure, silverleaf_hunt_01, silverleaf_hunt_02, silverleaf_hunt_03, silverleaf_hunt_04, silverleaf_hunt_05, silverleaf_tools_01, silverleaf_tools_02, silverleaf_tools_03, silverleaf_tools_04 |
+| travel_waypoint | waypoint |  | 1756, 37, -2573 | - |
 | trainer_cooking | profession trainer | trains: cooking | 1802, 37, -2540 | - |
-| quest_cook | quest giver | Liora Dewpot | 1802, 37, -2537 | r14_elf_02_the_grove_s_portion, r20_elf_start_cook |
+| quest_cook | quest giver | Liora Dewpot | 1802, 37, -2537 | silverleaf_kitchen_01, silverleaf_kitchen_02, silverleaf_kitchen_03, silverleaf_pantry_01, silverleaf_pantry_02, silverleaf_pantry_03 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 236 (elandor_starbough_vale), S 408 (coastal_shelf), E 740 (coastal_shelf), W 444 (bay_water); nearest other-zone land 235 N; sea 342 SW; sea-beach sand 305 SW; nearest road 64.
 Nearest hubs (straight / by road): Starbough Village 539 / 696; Starbough Outpost 541 / 774; Starbough Bandit Camp 512 / 944; Lethariel 1050 / 1289; Paleroot Cutting 1508 / 2175.
 
-### Current quests (10, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_elf_01_roots_laid_bare | Roots Laid Bare | Saelin Dewbough (Silverleaf) | 1 | kill 3 boar or small_boar | 20 | - |
-| r14_elf_02_the_grove_s_portion | The Grove's Portion | Liora Dewpot (Silverleaf) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_elf_10_the_careful_axe | The Careful Axe | Saelin Dewbough (Silverleaf) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_elf_start_cook | A Shared Grove Supper | Liora Dewpot (Silverleaf) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_elf_11_stone_s_patient_lesson | Stone's Patient Lesson | Saelin Dewbough (Silverleaf) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_elf_10_the_careful_axe |
-| r14_elf_03_beneath_the_seed_baskets | A Frame for the Seed Baskets | Saelin Dewbough (Silverleaf) | 3 | bring 6 default:wood | 100 | r14_elf_01_roots_laid_bare |
-| r14_elf_04_footfalls_without_breath | Footfalls Without Breath | Saelin Dewbough (Silverleaf) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_elf_01_roots_laid_bare |
-| r14_elf_05_keepers_of_the_saplings | Keepers of the Saplings | Saelin Dewbough (Silverleaf) | 5 | kill 5 fox or small_fox | 180 | r14_elf_03_beneath_the_seed_baskets |
-| r14_elf_06_axes_without_leave | The Road to Ilyra Mossveil | Saelin Dewbough (Silverleaf) | 10 | talk to Ilyra Mossveil (starbough_village) | 285 | r14_elf_05_keepers_of_the_saplings |
-| r20_elf_capital_intro | The Road to Lethariel | Saelin Dewbough (Silverleaf) | 10 | talk to Eriath Boughwarden (lethariel) | 285 | - |
+| silverleaf_hunt_01 | A Century Down the Snout | Saelin Dewbough (Silverleaf) | 1 | kill 8 small_boar [in elandor_silverleaf_glades/home_glades] | 105 | - |
+| silverleaf_kitchen_01 | The Oven Keeps No Seasons | Liora Dewpot (Silverleaf) | 1 | bring 5 group:tree | 30 | - |
+| silverleaf_tools_01 | Begin with the Grain | Saelin Dewbough (Silverleaf) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| silverleaf_hunt_02 | The Ferns Have Teeth | Saelin Dewbough (Silverleaf) | 2 | kill 8 large_rat [in elandor_silverleaf_glades/home_glades] | 105 | silverleaf_hunt_01 |
+| silverleaf_kitchen_02 | Embers Before Eloquence | Liora Dewpot (Silverleaf) | 2 | bring 5 default:coal_lump | 60 | silverleaf_kitchen_01 |
+| silverleaf_tools_02 | A Lesson That Holds Its Edge | Saelin Dewbough (Silverleaf) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | silverleaf_tools_01 |
+| silverleaf_hunt_03 | Let the Grass Remember Footsteps | Saelin Dewbough (Silverleaf) | 3 | kill 6 braindead_zombie [in elandor_silverleaf_glades/strand] | 135 | silverleaf_hunt_02 |
+| silverleaf_pantry_01 | The Basket-Mender's Due | Liora Dewpot (Silverleaf) | 3 | bring 2 grug_mobs:rat_fur_patch | 60 | silverleaf_hunt_02 |
+| silverleaf_hunt_04 | Eight Shadows in the Seedbeds | Saelin Dewbough (Silverleaf) | 4 | kill 8 small_fox [in elandor_silverleaf_glades/foxglades] | 165 | silverleaf_hunt_03 |
+| silverleaf_kitchen_03 | Enough for the Latecomers | Liora Dewpot (Silverleaf) | 4 | bring 10 mobs:meat_raw | 100 | silverleaf_kitchen_02 |
+| silverleaf_pantry_02 | A Shore Supper | Liora Dewpot (Silverleaf) | 4 | bring 2 grug_mobs:crab_leg | 100 | silverleaf_pantry_01 |
+| silverleaf_pantry_03 | Dust Is Not a Seasoning | Liora Dewpot (Silverleaf) | 5 | bring 2 grug_mobs:fox_tail | 110 | silverleaf_pantry_02, silverleaf_hunt_04 |
+| silverleaf_tools_03 | A Hall Should Not Creak | Saelin Dewbough (Silverleaf) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 110 | silverleaf_tools_02 |
+| silverleaf_tools_04 | The Third Metal | Saelin Dewbough (Silverleaf) | 7 | bring 3 grug_materials:bronze_bar | 130 | silverleaf_tools_03 |
+| silverleaf_hunt_05 | A Forest Is Not a Woodpile | Saelin Dewbough (Silverleaf) | 8 | kill 7 furtive_poacher or confused_bandit [in elandor_silverleaf_glades/poacher_camp]; kill 1 misguided_poacher_chief | 350 | silverleaf_hunt_04 |
+| silverleaf_departure | Beyond the First Ring | Saelin Dewbough (Silverleaf) | 9 | talk to Ilyra Mossveil (starbough_village) | 35 | silverleaf_hunt_05 |
 
 ## Mobs by spawn region
 

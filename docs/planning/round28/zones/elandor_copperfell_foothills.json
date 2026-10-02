@@ -412,255 +412,465 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 50,
-   "description": "Foxes scattered an ore ledger in the scrub. Clear the den so Orrik can recover the pages.",
+   "copper": 21,
+   "description": "I paid a surveyor to mark our claims, and the Rooting Boars have submitted their own revisions. Kill eight of them by day in the Copperfell Lower Pines, which lie in the south of Copperfell Foothills. We cannot run a mine on measurements taken by snout.",
    "giver": "r14_dwarf_steward",
    "giver_name": "Orrik Pineledger",
    "giver_settlement": "Copperfell Village",
-   "id": "r14_dwarf_07_a_ledger_in_the_scrub",
-   "min_level": 10,
+   "id": "copperfell_survey_01",
+   "min_level": 9,
    "objectives": [
-    "kill 6 fox or young_fox [in elandor_copperfell_foothills]"
+    "kill 8 young_boar [in elandor_copperfell_foothills/lower_pines]"
    ],
    "objectives_raw": [
     {
-     "count": 6,
-     "mobs": [
-      "grug_mobs:fox",
-      "grug_mobs:young_fox"
-     ],
-     "type": "kill",
-     "zone": "elandor_copperfell_foothills"
-    }
-   ],
-   "prerequisites": [
-    "r14_dwarf_06_loose_stone_on_copper_road"
-   ],
-   "reward_items": [],
-   "title": "A Ledger in the Scrub",
-   "turnin": "r14_dwarf_steward",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "The workshop needs ordinary cobble to reset its cartway after the last rockfall. Bring sound blocks from the local slopes.",
-   "giver": "r15_dwarf_local",
-   "giver_name": "Dagna Copperset",
-   "giver_settlement": "Copperfell Village",
-   "id": "r15_dwarf_local_01",
-   "min_level": 10,
-   "objectives": [
-    "bring 8 default:cobble"
-   ],
-   "objectives_raw": [
-    {
+     "area": "elandor_copperfell_foothills/lower_pines",
      "count": 8,
-     "item": "default:cobble",
-     "type": "item"
+     "mobs": [
+      "grug_mobs:young_boar"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_dwarf_06_loose_stone_on_copper_road"
+    "hearthpine_departure"
    ],
    "reward_items": [],
-   "title": "Stone for the Workyard",
-   "turnin": "r15_dwarf_local",
-   "xp": 285
+   "title": "The Surveyor Has Tusks",
+   "turnin": "r14_dwarf_steward",
+   "xp": 320
   },
   {
-   "copper": 45,
-   "description": "Foxes leave fangs among the scattered tool baskets. Bring two ordinary fox fangs from the Copperfell hunt so Dagna can show the workers which animals caused the damage.",
+   "copper": 16,
+   "description": "Hear that clatter from the workyard? That's what a rail sounds like when its clamps have had enough. Bring me four Iron Bars and four Coal Lumps for replacements, and I'll give you an Iron Pickaxe for the harder rock below.",
    "giver": "r15_dwarf_local",
    "giver_name": "Dagna Copperset",
    "giver_settlement": "Copperfell Village",
-   "id": "r15_dwarf_local_02",
+   "id": "copperfell_workyard_01",
    "min_level": 10,
    "objectives": [
-    "bring 2 grug_mobs:fang"
-   ],
-   "objectives_raw": [
-    {
-     "count": 2,
-     "item": "grug_mobs:fang",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_dwarf_06_loose_stone_on_copper_road"
-   ],
-   "reward_items": [],
-   "title": "Fangs in the Tool Baskets",
-   "turnin": "r15_dwarf_local",
-   "xp": 380
-  },
-  {
-   "copper": 60,
-   "description": "Goblins use Copperfell's marker stones to signal across the pass at night. Break their signal party so Mara can guide the next ore wagon. Look for this threat after nightfall in the named regional zone.",
-   "giver": "r14_dwarf_scout",
-   "giver_name": "Mara Deepwatch",
-   "giver_settlement": "Copperfell Outpost",
-   "id": "r14_dwarf_08_hold_the_marker_stones",
-   "min_level": 11,
-   "objectives": [
-    "kill 6 goblin_raider or goblin_slinger or goblin_hound or ore_thieving_goblin [in elandor_copperfell_foothills]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 6,
-     "mobs": [
-      "grug_mobs:goblin_raider",
-      "grug_mobs:goblin_slinger",
-      "grug_mobs:goblin_hound",
-      "grug_mobs:ore_thieving_goblin"
-     ],
-     "type": "kill",
-     "zone": "elandor_copperfell_foothills"
-    }
-   ],
-   "prerequisites": [
-    "r14_dwarf_07_a_ledger_in_the_scrub"
-   ],
-   "reward_items": [],
-   "title": "Hold the Marker Stones",
-   "turnin": "r14_dwarf_scout",
-   "xp": 525
-  },
-  {
-   "copper": 50,
-   "description": "The goblins on Copperfell's night signal path carry linen scraps. Bring two while helping Mara hold the marker stones; Mara can bind the recovered signal poles with the scraps.",
-   "giver": "r14_dwarf_scout",
-   "giver_name": "Mara Deepwatch",
-   "giver_settlement": "Copperfell Outpost",
-   "id": "r15_dwarf_local_03",
-   "min_level": 11,
-   "objectives": [
-    "bring 2 grug_mobs:linen_scrap"
-   ],
-   "objectives_raw": [
-    {
-     "count": 2,
-     "item": "grug_mobs:linen_scrap",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_dwarf_07_a_ledger_in_the_scrub"
-   ],
-   "reward_items": [],
-   "title": "Scraps from the Signal Path",
-   "turnin": "r14_dwarf_scout",
-   "xp": 315
-  },
-  {
-   "copper": 55,
-   "description": "Ibex crowd the shelf beside the guard shelter and send stones through its stores. Thin the herd around the post.",
-   "giver": "r14_dwarf_scout",
-   "giver_name": "Mara Deepwatch",
-   "giver_settlement": "Copperfell Outpost",
-   "id": "r15_dwarf_local_04",
-   "min_level": 11,
-   "objectives": [
-    "kill 5 ibex [in elandor_copperfell_foothills]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "mobs": [
-      "grug_mobs:ibex"
-     ],
-     "type": "kill",
-     "zone": "elandor_copperfell_foothills"
-    }
-   ],
-   "prerequisites": [
-    "r14_dwarf_07_a_ledger_in_the_scrub"
-   ],
-   "reward_items": [],
-   "title": "Sure Feet, Loose Stones",
-   "turnin": "r14_dwarf_scout",
-   "xp": 420
-  },
-  {
-   "copper": 80,
-   "description": "The bandits stole ore tallies and marked them with a hooked sun. Defeat the camp; Tovin waits inside with what he learned. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
-   "giver": "r14_dwarf_scout",
-   "giver_name": "Mara Deepwatch",
-   "giver_settlement": "Copperfell Outpost",
-   "id": "r14_dwarf_09_ash_under_the_nails",
-   "min_level": 12,
-   "objectives": [
-    "kill 4 bandit or bandit_archer [in elandor_copperfell_foothills]"
+    "bring 4 grug_materials:iron_bar",
+    "bring 4 default:coal_lump"
    ],
    "objectives_raw": [
     {
      "count": 4,
-     "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:bandit_archer"
-     ],
-     "type": "kill",
-     "zone": "elandor_copperfell_foothills"
+     "item": "grug_materials:iron_bar",
+     "type": "item"
+    },
+    {
+     "count": 4,
+     "item": "default:coal_lump",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_dwarf_08_hold_the_marker_stones"
+    "hearthpine_departure"
    ],
-   "reward_items": [],
-   "title": "Ash Under the Nails",
-   "turnin": "r14_dwarf_captive",
-   "xp": 805
+   "reward_items": [
+    "grug_materials:pick_iron 1"
+   ],
+   "title": "Keep the Rails Together",
+   "turnin": "r15_dwarf_local",
+   "xp": 255
   },
   {
-   "copper": 65,
-   "description": "Tovin recognises the ore carriers' tally knots on the stolen purses. Recover two from the camp so he can identify whose winter wages went missing. Accept this request before the camp fight; ordinary carried or traded purses also count.",
-   "giver": "r14_dwarf_captive",
-   "giver_name": "Tovin Ashthumb",
-   "giver_settlement": "Copperfell Bandit Camp",
-   "id": "r15_dwarf_local_05",
+   "copper": 21,
+   "description": "A Granary Rat ate six months of accounts last night and left the cover, which I consider criticism. Kill eight Granary Rats in the Copperfell Lower Pines after dark. Those books record what the miners are owed, and teeth are no excuse for missing wages.",
+   "giver": "r14_dwarf_steward",
+   "giver_name": "Orrik Pineledger",
+   "giver_settlement": "Copperfell Village",
+   "id": "copperfell_survey_02",
+   "min_level": 11,
+   "objectives": [
+    "kill 8 granary_rat [in elandor_copperfell_foothills/lower_pines]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/lower_pines",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:granary_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_survey_01"
+   ],
+   "reward_items": [],
+   "title": "An Appetite for Figures",
+   "turnin": "r14_dwarf_steward",
+   "xp": 340
+  },
+  {
+   "copper": 10,
+   "description": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Granary Rats in the Copperfell Lower Pines at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
+   "giver": "r14_dwarf_steward",
+   "giver_name": "Orrik Pineledger",
+   "giver_settlement": "Copperfell Village",
+   "id": "copperfell_bounty_rats",
    "min_level": 12,
    "objectives": [
-    "bring 2 grug_mobs:stolen_purse"
+    "kill 6 granary_rat [in elandor_copperfell_foothills/lower_pines]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/lower_pines",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:granary_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_survey_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Accounts Receivable, Barely (repeatable)",
+   "turnin": "r14_dwarf_steward",
+   "xp": 170
+  },
+  {
+   "copper": 13,
+   "description": "Half the workyard is sharing one sound handle, and the other half is waiting to borrow it. Bring me three Ridged Boar Tusks from Rooting Boars in the Copperfell Lower Pines by day; any you saved will do. I'll see to the fitting, you see to the tusks.",
+   "giver": "r15_dwarf_local",
+   "giver_name": "Dagna Copperset",
+   "giver_settlement": "Copperfell Village",
+   "id": "copperfell_workyard_02",
+   "min_level": 12,
+   "objectives": [
+    "bring 3 grug_mobs:ridged_boar_tusk"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:ridged_boar_tusk",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_workyard_01"
+   ],
+   "reward_items": [],
+   "title": "A Handle on the Problem",
+   "turnin": "r15_dwarf_local",
+   "xp": 225
+  },
+  {
+   "copper": 5,
+   "description": "Speak to Mara Deepwatch at Copperfell Outpost and tell her Orrik sent you; her latest request for help uses the word 'urgent' hard enough to tear the paper. I'd send a clerk, but she was quite specific about the axe.",
+   "giver": "r14_dwarf_steward",
+   "giver_name": "Orrik Pineledger",
+   "giver_settlement": "Copperfell Village",
+   "id": "copperfell_survey_03",
+   "min_level": 13,
+   "objectives": [
+    "talk to Mara Deepwatch (copperfell_outpost)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_dwarf_scout",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_survey_02"
+   ],
+   "reward_items": [],
+   "title": "Orrik Sends Useful Hands",
+   "turnin": "r14_dwarf_scout",
+   "xp": 95
+  },
+  {
+   "copper": 23,
+   "description": "A cart wheel went through the ground, and I've no wish to see a carter follow it. Hunt eight Burrow Gnawers after dark on the Copperfell Pine Slopes, which lie in the heart of Copperfell Foothills. They tunnel while we sleep; tonight we interrupt the shift.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "copperfell_watch_01",
+   "min_level": 14,
+   "objectives": [
+    "kill 8 mangy_rat [in elandor_copperfell_foothills/pine_slopes]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/pine_slopes",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:mangy_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_survey_03"
+   ],
+   "reward_items": [],
+   "title": "The Road Has Gone Hollow",
+   "turnin": "r14_dwarf_scout",
+   "xp": 450
+  },
+  {
+   "copper": 21,
+   "description": "Surefoot Ibex never seem to fall, but everything they stand on does. Cull eight on the Copperfell Pine Slopes by day before another load of slate comes down on the carters.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "copperfell_watch_02",
+   "min_level": 14,
+   "objectives": [
+    "kill 8 surefoot_ibex [in elandor_copperfell_foothills/pine_slopes]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/pine_slopes",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:surefoot_ibex"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_survey_03"
+   ],
+   "reward_items": [],
+   "title": "Surefoot, Someone Else's Problem",
+   "turnin": "r14_dwarf_scout",
+   "xp": 400
+  },
+  {
+   "copper": 23,
+   "description": "The last carter to refuse their 'road toll' came back without his cart. Go to the Copperfell Bandit Camp east from here and defeat eight outlaws in all, counting Roadside Bandits and Bandit Lookouts. Use cover to close on the lookouts; an arrow doesn't care how stout your argument is.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "copperfell_watch_03",
+   "min_level": 15,
+   "objectives": [
+    "kill 8 quarrelsome_bandit or vigilant_bandit_archer [in elandor_copperfell_foothills/bandit_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/bandit_camp",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:quarrelsome_bandit",
+      "grug_mobs:vigilant_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_watch_02"
+   ],
+   "reward_items": [],
+   "title": "A Toll Paid in Bruises",
+   "turnin": "r14_dwarf_scout",
+   "xp": 473
+  },
+  {
+   "copper": 21,
+   "description": "Every load we approve bears the guild seal, and I won't carve our name into rubbish. Bring me two pieces of Rough Jade from deep beneath the foothills, below the copper. Take your Iron Pickaxe, mind your light, and leave yourself a way back. I'd rather wait for the seal than replace the miner.",
+   "giver": "r15_dwarf_local",
+   "giver_name": "Dagna Copperset",
+   "giver_settlement": "Copperfell Village",
+   "id": "copperfell_workyard_03",
+   "min_level": 15,
+   "objectives": [
+    "bring 2 grug_materials:rough_jade"
    ],
    "objectives_raw": [
     {
      "count": 2,
+     "item": "grug_materials:rough_jade",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_workyard_02"
+   ],
+   "reward_items": [],
+   "title": "The Guild's Good Name",
+   "turnin": "r15_dwarf_local",
+   "xp": 440
+  },
+  {
+   "copper": 5,
+   "description": "Tovin Ashthumb hasn't come home, and I won't write his name under lost cargo. He's still a captive at the bandit camp you just raided; go speak with him while their watch is thin. He may know where the ore went, but first let him know we remembered him.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "copperfell_watch_04",
+   "min_level": 16,
+   "objectives": [
+    "talk to Tovin Ashthumb (copperfell_bandit_camp)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r14_dwarf_captive",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_watch_03"
+   ],
+   "reward_items": [],
+   "title": "One Carter Still Missing",
+   "turnin": "r14_dwarf_captive",
+   "xp": 110
+  },
+  {
+   "copper": 10,
+   "description": "I've patched the track, and something underneath is already undoing my work. Kill six Burrow Gnawers on the Copperfell Pine Slopes at night and report back for payment. This bounty is repeatable twenty minutes after you hand it in; I'll have the next shovel of gravel ready.",
+   "giver": "r14_dwarf_scout",
+   "giver_name": "Mara Deepwatch",
+   "giver_settlement": "Copperfell Outpost",
+   "id": "copperfell_bounty_gnawers",
+   "min_level": 17,
+   "objectives": [
+    "kill 6 mangy_rat [in elandor_copperfell_foothills/pine_slopes]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/pine_slopes",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:mangy_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_watch_04"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Another Wheel Down (repeatable)",
+   "turnin": "r14_dwarf_scout",
+   "xp": 220
+  },
+  {
+   "copper": 26,
+   "description": "They tied my hands, not my ears; I heard the bandits selling our ore to the goblins at the Copperfell Goblin Dig west from here. Defeat eight of the dig's guards in all, counting Rubble Goblin Slingers and Ore-Guard Hounds. The slingers throw rocks and the hounds rush in, so don't let one distract you from the other.",
+   "giver": "r14_dwarf_captive",
+   "giver_name": "Tovin Ashthumb",
+   "giver_settlement": "Copperfell Bandit Camp",
+   "id": "copperfell_dig_01",
+   "min_level": 17,
+   "objectives": [
+    "kill 8 rubble_goblin_slinger or ore_guard_hound [in elandor_copperfell_foothills/goblin_dig]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_copperfell_foothills/goblin_dig",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:rubble_goblin_slinger",
+      "grug_mobs:ore_guard_hound"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_watch_04"
+   ],
+   "reward_items": [],
+   "title": "I Know Where They Sold It",
+   "turnin": "r14_dwarf_captive",
+   "xp": 600
+  },
+  {
+   "copper": 26,
+   "description": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three Stolen Purses from Rubble Goblin Slingers at the Copperfell Goblin Dig and kill Nog himself there. Draw him away from his crew if you can. I'd like our wages back without owing you a funeral.",
+   "giver": "r14_dwarf_captive",
+   "giver_name": "Tovin Ashthumb",
+   "giver_settlement": "Copperfell Bandit Camp",
+   "id": "copperfell_dig_02",
+   "min_level": 18,
+   "objectives": [
+    "kill 1 foreman_nog",
+    "bring 3 grug_mobs:stolen_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:foreman_nog"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 3,
      "item": "grug_mobs:stolen_purse",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_dwarf_08_hold_the_marker_stones"
+    "copperfell_dig_01"
    ],
    "reward_items": [],
-   "title": "The Ore Carriers' Purses",
+   "title": "Our Wages, Nog's Problem",
    "turnin": "r14_dwarf_captive",
-   "xp": 460
+   "xp": 600
   },
   {
-   "copper": 75,
-   "description": "The raiders wrapped the stolen tools in their own linen. Bring some of that ordinary camp cloth so Tovin can identify the bundles.",
+   "copper": 13,
+   "description": "More Rubble Goblin Slingers have moved into the Copperfell Goblin Dig, and they're still throwing our mountain at us. Defeat six there and come back for your pay. This bounty is repeatable thirty minutes after you hand it in; I'll keep the account open.",
    "giver": "r14_dwarf_captive",
    "giver_name": "Tovin Ashthumb",
    "giver_settlement": "Copperfell Bandit Camp",
-   "id": "r15_dwarf_local_06",
-   "min_level": 12,
+   "id": "copperfell_bounty_dig",
+   "min_level": 19,
    "objectives": [
-    "bring 5 grug_mobs:linen_cloth"
+    "kill 6 rubble_goblin_slinger [in elandor_copperfell_foothills/goblin_dig]"
    ],
    "objectives_raw": [
     {
-     "count": 5,
-     "item": "grug_mobs:linen_cloth",
-     "type": "item"
+     "area": "elandor_copperfell_foothills/goblin_dig",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:rubble_goblin_slinger"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_dwarf_08_hold_the_marker_stones"
+    "copperfell_dig_02"
    ],
    "reward_items": [],
-   "title": "Cloth Around the Stolen Tools",
+   "title": "Bounty: Rocks in Lieu of Rent (repeatable)",
    "turnin": "r14_dwarf_captive",
-   "xp": 575
+   "xp": 300
+  },
+  {
+   "copper": 8,
+   "description": "I know the counting-house stamp on Nog's purses, and someone in Dur Brannoc has been putting a respectable seal on rotten business. Follow the main road to the capital and tell Dorrin Gateledger what we found.",
+   "giver": "r14_dwarf_captive",
+   "giver_name": "Tovin Ashthumb",
+   "giver_settlement": "Copperfell Bandit Camp",
+   "id": "copperfell_departure",
+   "min_level": 19,
+   "objectives": [
+    "talk to Dorrin Gateledger (dur_brannoc)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_dwarf_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "copperfell_dig_02"
+   ],
+   "reward_items": [],
+   "title": "A Familiar Stamp",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 180
   }
  ],
  "race_region": "dwarf",
@@ -922,7 +1132,10 @@
      "npc_id": "r14_dwarf_steward",
      "npc_name": "Orrik Pineledger",
      "quests": [
-      "r14_dwarf_07_a_ledger_in_the_scrub"
+      "copperfell_bounty_rats",
+      "copperfell_survey_01",
+      "copperfell_survey_02",
+      "copperfell_survey_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -935,8 +1148,9 @@
      "npc_id": "r15_dwarf_local",
      "npc_name": "Dagna Copperset",
      "quests": [
-      "r15_dwarf_local_01",
-      "r15_dwarf_local_02"
+      "copperfell_workyard_01",
+      "copperfell_workyard_02",
+      "copperfell_workyard_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1051,10 +1265,11 @@
      "npc_id": "r14_dwarf_scout",
      "npc_name": "Mara Deepwatch",
      "quests": [
-      "r14_dwarf_08_hold_the_marker_stones",
-      "r14_dwarf_09_ash_under_the_nails",
-      "r15_dwarf_local_03",
-      "r15_dwarf_local_04"
+      "copperfell_bounty_gnawers",
+      "copperfell_watch_01",
+      "copperfell_watch_02",
+      "copperfell_watch_03",
+      "copperfell_watch_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1168,8 +1383,10 @@
      "npc_id": "r14_dwarf_captive",
      "npc_name": "Tovin Ashthumb",
      "quests": [
-      "r15_dwarf_local_05",
-      "r15_dwarf_local_06"
+      "copperfell_bounty_dig",
+      "copperfell_departure",
+      "copperfell_dig_01",
+      "copperfell_dig_02"
      ],
      "role": "quest",
      "role_text": "quest giver",

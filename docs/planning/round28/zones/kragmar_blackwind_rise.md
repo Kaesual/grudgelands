@@ -61,7 +61,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Vaska Ashlistener | -2016, 108, 834 | r20_anchor_039_01, r20_anchor_039_02, r20_anchor_039_03 |
+| quest_host | quest giver | Vaska Ashlistener | -2016, 108, 834 | blackwind_ashes_01, blackwind_ashes_02, blackwind_ashes_03, blackwind_ashes_04, blackwind_ashes_bounty, bw_front_ashveil_01, bw_front_ashveil_02, bw_front_ashveil_03, bw_front_ashveil_04, bw_front_ashveil_05, bw_front_ashveil_bounty |
 
 Distances: zone edge N 284 (kragmar_nhal_veyr), S 576 (front_gravesalt_escarpment), E 1096 (kragmar_bannerbreak_mesa), W 236 (coastal_shelf); nearest other-zone land 252 NE; sea 227 W; sea-beach sand 267 W; nearest road 11.
 Nearest hubs (straight / by road): Red Ramp Post 1644 / 4043; Tornstandard Hold 2307 / 4476; Hollowarch Station 617 / 5434; Last Hedge Redoubt 2710 / 5708; Thunderstep Watch 3921 / 6312.
@@ -72,21 +72,38 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Orrel Hollowstep | -1466, 100, 554 | r20_anchor_040_01, r20_anchor_040_02, r20_anchor_040_03 |
+| quest_host | quest giver | Orrel Hollowstep | -1466, 100, 554 | blackwind_arch_01, blackwind_arch_02, blackwind_arch_03, blackwind_arch_bounty, blackwind_arch_group, bw_front_hollow_01, bw_front_hollow_02, bw_front_hollow_03, bw_front_hollow_04, bw_front_hollow_05, bw_front_hollow_06, bw_front_hollow_bounty |
 
 Distances: zone edge N 548 (kragmar_nhal_veyr), S 136 (front_gravesalt_escarpment), E 544 (kragmar_bannerbreak_mesa), W 936 (coastal_shelf); nearest other-zone land 138 S; sea 817 W; sea-beach sand 835 W; nearest road 13.
 Nearest hubs (straight / by road): Red Ramp Post 1140 / 1520; Tornstandard Hold 1744 / 3094; Last Hedge Redoubt 2095 / 4326; Thunderstep Watch 3370 / 5327; Ashveil Watch 617 / 5434.
 
-### Current quests (6, given in this zone)
+### Current quests (23, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_039_01 | Keep the Lamps Burning | Vaska Ashlistener (Ashveil Watch) | 31 | bring 6 default:coal_lump | 1220 | - |
-| r20_anchor_039_02 | Ash Among Living Branches | Vaska Ashlistener (Ashveil Watch) | 31 | kill 3 gravewood_treant or mourning_treant [in kragmar_blackwind_rise] | 1220 | - |
-| r20_anchor_040_01 | The Dispatch Shelf | Orrel Hollowstep (Hollowarch Station) | 31 | bring 8 grug_trees:gravewood_wood | 1220 | - |
-| r20_anchor_040_02 | Claws Beneath the Arch | Orrel Hollowstep (Hollowarch Station) | 31 | kill 3 plaguehide_bear or territorial_bear [in kragmar_blackwind_rise] | 1220 | - |
-| r20_anchor_039_03 | The Pallcloth Thieves | Vaska Ashlistener (Ashveil Watch) | 33 | kill 4 bandit_archer [in kragmar_blackwind_rise] | 1300 | r20_anchor_039_02 |
-| r20_anchor_040_03 | The Watch Under the Storm | Orrel Hollowstep (Hollowarch Station) | 40 | kill 3 guard_accord [in elandor_stormvault_heights] | 1975 | r20_anchor_040_02 |
+| blackwind_ashes_01 | Bad News Travels on Legs | Vaska Ashlistener (Ashveil Watch) | 29 | kill 4 territorial_bear [in kragmar_blackwind_rise/bonewood] | 630 | - |
+| blackwind_ashes_02 | Trees Without Leave | Vaska Ashlistener (Ashveil Watch) | 31 | kill 4 mourning_treant [in kragmar_blackwind_rise/bonewood]; bring 2 grug_mobs:bitter_resin | 740 | blackwind_ashes_01 |
+| blackwind_ashes_03 | Still Standing, Still Dead | Vaska Ashlistener (Ashveil Watch) | 32 | talk to Drek Rampbinder (r20_anchor_043) | 285 | blackwind_ashes_02 |
+| blackwind_ashes_bounty | Bounty: A Recurring Appetite (repeatable) | Vaska Ashlistener (Ashveil Watch) | 32 | kill 6 territorial_bear [in kragmar_blackwind_rise/bonewood] | 380 | blackwind_ashes_02 |
+| blackwind_arch_01 | Crates Before Glory | Orrel Hollowstep (Hollowarch Station) | 33 | kill 4 marrow_weevil [in kragmar_blackwind_rise/webwood] | 700 | - |
+| blackwind_ashes_04 | Orrel Is Still Waiting | Vaska Ashlistener (Ashveil Watch) | 33 | talk to Orrel Hollowstep (r20_anchor_040) | 293 | blackwind_ashes_02 |
+| blackwind_arch_02 | An End to the Brokerage | Orrel Hollowstep (Hollowarch Station) | 35 | kill 4 entrenched_bandit or entrenched_bandit_archer [in kragmar_blackwind_rise/bandit_hideout]; kill 1 grave_broker_mute | 1025 | blackwind_arch_01 |
+| blackwind_arch_03 | An Answer for Pallcloth Den | Orrel Hollowstep (Hollowarch Station) | 37 | kill 4 entrenched_bandit_archer [in kragmar_blackwind_rise/pallcloth_den] | 753 | blackwind_arch_02 |
+| blackwind_arch_bounty | Bounty: Threads Across the Supply Line (repeatable) | Orrel Hollowstep (Hollowarch Station) | 37 | kill 6 grave_web_spider [in kragmar_blackwind_rise/hollowwood] | 440 | blackwind_arch_03 |
+| blackwind_arch_group | Group: Silence for Hollowbell | Orrel Hollowstep (Hollowarch Station) | 38 | kill 1 hollowbell_treant | 880 | blackwind_arch_03 |
+| bw_front_hollow_01 | No Names Left to Call | Orrel Hollowstep (Hollowarch Station) | 47 | kill 5 causeway_mire_husk [in front_broken_causeway/toll_fields] | 945 | - |
+| bw_front_hollow_02 | A Fare for Nobody | Orrel Hollowstep (Hollowarch Station) | 47 | kill 5 causeway_ford_zombie [in front_broken_causeway/last_ford] | 945 | - |
+| bw_front_hollow_03 | Group: Close the Account | Orrel Hollowstep (Hollowarch Station) | 48 | kill 1 last_toll_construct | 1100 | bw_front_hollow_01 |
+| bw_front_hollow_04 | The Dead Are Not Rations | Orrel Hollowstep (Hollowarch Station) | 50 | kill 5 saltpack_wolf [in front_gravesalt_escarpment/bonewood] | 1140 | - |
+| bw_front_hollow_05 | The Owners Still Object | Orrel Hollowstep (Hollowarch Station) | 51 | kill 5 saltroad_deserter [in front_gravesalt_escarpment/tomb_galleries] | 1140 | bw_front_hollow_04 |
+| bw_front_hollow_06 | Someone Who Listens | Orrel Hollowstep (Hollowarch Station) | 52 | talk to Vaska Ashlistener (r20_anchor_039) | 290 | bw_front_hollow_05 |
+| bw_front_hollow_bounty | Bounty: Premature Shrouds (repeatable) | Orrel Hollowstep (Hollowarch Station) | 52 | kill 5 salt_web_spider [in front_gravesalt_escarpment/bonewood] | 725 | bw_front_hollow_05 |
+| bw_front_ashveil_01 | What the Salt Holds | Vaska Ashlistener (Ashveil Watch) | 53 | kill 5 saltbound_husk [in front_gravesalt_escarpment/tomb_fen] | 1200 | - |
+| bw_front_ashveil_02 | Let Me Have the Last Word | Vaska Ashlistener (Ashveil Watch) | 53 | kill 4 salt_hex_witch [in front_gravesalt_escarpment/tomb_fen]; bring 2 grug_mobs:last_hex_shard | 1500 | - |
+| bw_front_ashveil_03 | Relief Long Overdue | Vaska Ashlistener (Ashveil Watch) | 57 | kill 5 last_watch_husk [in front_gravesalt_escarpment/whitewall] | 1260 | bw_front_ashveil_01 |
+| bw_front_ashveil_04 | Dismissed, Captain | Vaska Ashlistener (Ashveil Watch) | 57 | kill 4 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]; kill 1 watch_captain_huskell | 2080 | bw_front_ashveil_02, bw_front_ashveil_03 |
+| bw_front_ashveil_bounty | Bounty: A Patient Listener (repeatable) | Vaska Ashlistener (Ashveil Watch) | 57 | kill 5 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]; bring 2 grug_mobs:unquiet_bone | 945 | bw_front_ashveil_04 |
+| bw_front_ashveil_05 | Group: Nobody's Number | Vaska Ashlistener (Ashveil Watch) | 58 | kill 1 salt_counter_witch | 1300 | bw_front_ashveil_04 |
 
 ## Mobs by spawn region
 

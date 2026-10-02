@@ -44,12 +44,12 @@ Share of land per level: L20 9.0%, L21 10.2%, L22 12.4%, L23 10.0%, L24 9.9%, L2
 
 ### Lethariel (`lethariel`, anchor_009) at 1800, 55, -1500
 
-Residents/guards: gear_display 3, guard_patrol 43, guard_post 14, housing_manager 1, idle 127, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, trainer 8, vendor 9, waypoint 1, work 48.
+Residents/guards: gear_display 3, guard_patrol 43, guard_post 14, housing_manager 1, idle 127, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, shipwright 1, trainer 8, vendor 9, waypoint 1, work 48.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | 1762, 61, -1525 | - |
-| star_hall_quest | quest giver | Eriath Boughwarden | 1775, 56, -1495 | r20_elf_capital_services, r20_elf_capital_stores, r20_elf_journey_01 |
+| star_hall_quest | quest giver | Eriath Boughwarden | 1775, 56, -1495 | lethariel_front_01, lethariel_front_02, lethariel_front_03, lethariel_front_04, lethariel_front_05, lethariel_front_bounty, lethariel_wardens_01, lethariel_wardens_02, lethariel_wardens_03, lethariel_wardens_04, lethariel_wardens_opt_01, lethariel_wardens_opt_02 |
 | vendor_race | vendor | vendor kind: race | 1817, 56, -1525 | - |
 | vendor_general | vendor | vendor kind: general | 1824, 56, -1525 | - |
 | travel_waypoint | waypoint |  | 1825, 56, -1514 | - |
@@ -58,6 +58,7 @@ Residents/guards: gear_display 3, guard_patrol 43, guard_post 14, housing_manage
 | market_stable/market_stable_mount_3 | mount display |  | 1818, 56, -1561 | - |
 | market_stable/market_stable_mount_4 | mount display |  | 1818, 56, -1571 | - |
 | market_stable/market_stable_riding | riding trainer |  | 1809, 56, -1566 | - |
+| market_stable/market_stable_shipwright | shipwright |  | 1809, 56, -1574 | - |
 | market_bowyer/market_bowyer_vendor_bowyer | vendor | vendor kind: bowyer | 1858, 56, -1510 | - |
 | market_bowyer/market_bowyer_woodcarver | profession trainer | trains: woodcarver | 1865, 56, -1519 | - |
 | market_weaver/market_weaver_gate_idle | housing steward |  | 1804, 57, -1590 | - |
@@ -65,7 +66,7 @@ Residents/guards: gear_display 3, guard_patrol 43, guard_post 14, housing_manage
 | market_weaver/market_weaver_tailor | profession trainer | trains: tailor | 1812, 57, -1588 | - |
 | market_bakehouse/market_bakehouse_vendor_baker | vendor | vendor kind: baker | 1879, 55, -1520 | - |
 | market_bakehouse/market_bakehouse_cooking | profession trainer | trains: cooking | 1885, 55, -1529 | - |
-| market_bakehouse/market_bakehouse_quest_cook | quest giver | Mirael Petalpot | 1881, 55, -1529 | r20_elf_capital_cook |
+| market_bakehouse/market_bakehouse_quest_cook | quest giver | Mirael Petalpot | 1881, 55, -1529 | lethariel_dispatch_01, lethariel_dispatch_02, lethariel_provisions_01, lethariel_provisions_bounty, lethariel_provisions_opt_01 |
 | martial_armoury/martial_armoury_vendor_armourer | vendor | vendor kind: armourer | 1739, 57, -1450 | - |
 | martial_armoury/martial_armoury_weaponsmith | profession trainer | trains: weaponsmith | 1730, 57, -1457 | - |
 | martial_armoury/martial_armoury_armorsmith | profession trainer | trains: armorsmith | 1730, 57, -1453 | - |
@@ -86,14 +87,27 @@ Public stations: market_bowyer/market_bowyer_station (carving_bench), market_wea
 Distances: zone edge N 496 (elandor_glassroot_wilds), S 428 (elandor_starbough_vale), E 424 (elandor_moonfall_wood), W 488 (elandor_lorindor); nearest other-zone land 376 SW; sea 666 SW; sea-beach sand 586 SW; nearest road 50.
 Nearest hubs (straight / by road): Starbough Village 530 / 812; Starbough Bandit Camp 590 / 889; Paleroot Cutting 812 / 1033; Lorindor Berrycourt 926 / 1126; Glassroot Gate 825 / 1133.
 
-### Current quests (4, given in this zone)
+### Current quests (17, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_elf_capital_cook | The Petalpot Share | Mirael Petalpot (Lethariel) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_elf_capital_services | Petalpot Hospitality | Eriath Boughwarden (Lethariel) | 10 | talk to Mirael Petalpot (lethariel) | 285 | r20_elf_capital_intro |
-| r20_elf_capital_stores | Boards for the Grove Patrol | Eriath Boughwarden (Lethariel) | 20 | bring 10 default:wood | 780 | - |
-| r20_elf_journey_01 | Word for Ilwen Petalmeasure | Eriath Boughwarden (Lethariel) | 21 | talk to Ilwen Petalmeasure (r20_anchor_018) | 615 | - |
+| lethariel_provisions_01 | Before the Speeches Begin | Mirael Petalpot (Lethariel) | 20 | bring 5 mobs:meat_raw; bring 1 grug_mobs:braided_sinew | 195 | - |
+| lethariel_wardens_01 | A Debt Beyond the Grave | Eriath Boughwarden (Lethariel) | 20 | kill 6 debtbound_zombie [in elandor_lethariel/glades] | 325 | - |
+| lethariel_dispatch_01 | The Missing Half of the Pie | Mirael Petalpot (Lethariel) | 21 | talk to Ilwen Petalmeasure (r20_anchor_018) | 135 | lethariel_provisions_01 |
+| lethariel_dispatch_02 | Bread Does Not Keep Star-Time | Mirael Petalpot (Lethariel) | 21 | talk to Lethen Moonledger (r20_anchor_035) | 135 | lethariel_provisions_01 |
+| lethariel_wardens_02 | No Charge for the Grass | Eriath Boughwarden (Lethariel) | 21 | kill 4 toll_bandit [in elandor_lethariel/glades] | 270 | lethariel_wardens_01 |
+| lethariel_provisions_bounty | Bounty: Hunger Returns to Court (repeatable) | Mirael Petalpot (Lethariel) | 22 | bring 8 mobs:meat_raw | 210 | lethariel_provisions_01 |
+| lethariel_provisions_opt_01 | Optional: The Hall Notices Everything | Mirael Petalpot (Lethariel) | 24 | bring 2 grug_mobs:silver_tip_fox_tail | 300 | lethariel_provisions_01 |
+| lethariel_wardens_opt_01 | Optional: A Forester's Right of Way | Eriath Boughwarden (Lethariel) | 24 | kill 6 redfang_fox [in elandor_lethariel/greatwood] | 375 | lethariel_wardens_02 |
+| lethariel_wardens_opt_02 | Optional: The Last Collection | Eriath Boughwarden (Lethariel) | 25 | kill 6 stubborn_zombie [in elandor_lethariel/greatwood] | 375 | lethariel_wardens_02 |
+| lethariel_wardens_03 | What the Seal Was For | Eriath Boughwarden (Lethariel) | 27 | kill 5 unlicensed_poacher [in elandor_lethariel/poacher_camp]; kill 1 bough_counter_rusk | 660 | lethariel_wardens_02 |
+| lethariel_wardens_04 | Where the Writ Wears Thin | Eriath Boughwarden (Lethariel) | 29 | talk to Faeris Rootbinder (r20_anchor_036) | 263 | lethariel_wardens_03 |
+| lethariel_front_01 | The Healers Are Waiting | Eriath Boughwarden (Lethariel) | 55 | bring 3 grug_mobs:glass_venom | 1678 | - |
+| lethariel_front_02 | Threads Across the Living Path | Eriath Boughwarden (Lethariel) | 55 | kill 6 glass_web_spider [in front_skyglass_canopy/rootways] | 1678 | - |
+| lethariel_front_03 | A Disagreement in the Branches | Eriath Boughwarden (Lethariel) | 57 | kill 6 glass_knuckle_ape [in front_skyglass_canopy/high_canopy] | 1920 | lethariel_front_01, lethariel_front_02 |
+| lethariel_front_04 | The Price of Another War | Eriath Boughwarden (Lethariel) | 58 | kill 5 last_pay_archer [in front_skyglass_canopy/paymaster_camp]; kill 1 paymaster_chirr | 2240 | lethariel_front_03 |
+| lethariel_front_bounty | Bounty: Eyes Beyond the Lanterns (repeatable) | Eriath Boughwarden (Lethariel) | 58 | kill 5 glass_shadow_panther [in front_skyglass_canopy/high_canopy] | 960 | lethariel_front_04 |
+| lethariel_front_05 | Group: Beneath the Waiting Coils | Eriath Boughwarden (Lethariel) | 59 | kill 1 glass_throat_serpent | 1280 | lethariel_front_04 |
 
 ## Mobs by spawn region
 

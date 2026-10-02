@@ -63,16 +63,17 @@ Earlier delivery narratives are preserved in the
   appears, at any depth; a weaker pick cannot dig it at all. Loose ground
   needs no tool, and decorative rocks do not drive access.
 - **Regional materials add identity without blocking universal progression.**
-  Quartz is universal; Citrine/Garnet/Jade are G1 and
-  Diamond/Sapphire/Ruby G2. Each race region selects one G1, one G2, one
-  cultural material and one signature wood. Foreign G2 and cultural resources
-  come through contested/deep routes and trade, never through a mandatory
-  faction monopoly.
+  Each race region selects one cultural material and one signature wood;
+  foreign cultural resources come through contested/deep routes and trade,
+  never through a mandatory faction monopoly. Gems are not regional (Round
+  29): one gem per tier rock — Citrine, Jade, Garnet, Sapphire, Ruby,
+  Diamond — found everywhere at its depth; Quartz is universal.
 - **The economy stays ledger-only.** Copper/silver/gold are one integer;
   physical Gold is a separate crafting material. The target Common weapon
   axis is 25c/65c/1s60c/4s/10s/25s and vendor buy-back is ceiling-rounded 5%.
   A simple estimate of reliable net solo income after ordinary costs
-  calibrates mount and respec prices; the Claim Stone is free.
+  calibrates mount, boat and respec prices (Round 29); the Claim Stone is
+  free.
 - **Combat supports solo play and the tank/healer/damage trinity.** Threat,
   taunt and healing threat make group roles matter, but content is sized for
   two or three players and remains beatable without a healer. Level 60 takes
@@ -80,25 +81,25 @@ Earlier delivery narratives are preserved in the
   the destination.
 - **Travel has separate systems.** Delivered innkeeper home return binds one of
   twelve faction-compatible homes, returns instantly outside combat on a personal
-  30-minute cooldown and owns death respawn. Planned visit-unlocked waypoints
-  connect every start and every capital. Since Round 25 the player's own Claim Stone can
+  30-minute cooldown and owns death respawn. Visit-unlocked waystones
+  connect every start and every capital of a faction (Round 29). Since Round 25 the player's own Claim Stone can
   replace the innkeeper as travel-home target; respawn stays at the
   innkeeper. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
   second; damage dismounts. Battlegrounds permit flight, enemy territory allows
   land mounts only, and every exterior-ocean column forbids flight. Boats are
-  the deliberate exception to earning travel: the base boat costs five wood at
-  level 1, and only the twice-as-fast improved boat needs a recipe taught once
-  by a shipwright from level 30. Any damage ejects a rider from a boat exactly
-  as it dismounts one from a mount.
+  water mounts (Round 29): the Shipwright in every capital sells the Boat
+  from level 15 and the twice-as-fast Improved Boat from level 30, and any
+  damage ejects a rider from a boat exactly as it dismounts one from a
+  mount.
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
   it in parallel without becoming allies.
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. WP41's exact PvP transaction, WP17 boats/waypoints and WP44
-economy remain unfinished; WP24 Housing is delivered and awaits the
-playtest. [BACKLOG](BACKLOG.md) distinguishes them.
+running code. WP41's exact PvP transaction and the WP9 story from level 41
+remain unfinished; WP17 boats/waypoints and the WP44 economy are delivered
+(Round 29) and await the playtest. [BACKLOG](BACKLOG.md) distinguishes them.
 
 ## V1 scope
 
@@ -128,13 +129,14 @@ B1–B7) settle the rest:
   gradients. Public-release evidence remains open.
 - [x] Threat/taunt, populations, kings/dragons, homing ranged attacks, dispositions,
   nametags and injured bars. The dragon encounters are delivered (WP23 closed
-  2026-09-29); boat access to their islands is WP17.
+  2026-09-29); boats reach their islands since Round 29 (WP17).
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
-  WP44 target economy and broader item/loot scope remain separate.
+  The WP44 economy is delivered in Round 29; broader item/loot scope remains separate.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs. Since Round 28 quests are
-  per-zone data with area, item-group and quest-drop objectives and repeatables.
+  per-zone data with area, item-group and quest-drop objectives and repeatables;
+  Round 29 replaces the catalog with 491 quests up to the front at 60.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
   Round 27, our own round minimap with the same markers; innkeeper home
   return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
@@ -164,38 +166,43 @@ B1–B7) settle the rest:
   naming rule; rule-based spawn regions for all 38 zones
   ([spawn_regions.md](docs/design/spawn_regions.md)); The Broken Causeway
   41–50 and Gravesalt/Skyglass 51–60; quest-log level ranges and zone
-  names. Complete and pushed 2026-10-02. Next: fresh world and spawn
-  playtest, then Round 29 planning.
+  names. Complete and pushed 2026-10-02; the spawn playtest (2026-10-02)
+  fed Round 29.
+- [x] **Round 29 "Economy and travel"**
+  ([completion](docs/planning/round29-plan.md#completion-2026-10-02)):
+  491 quests on the Round 28 framework replace the 240 legacy quests (one
+  track per race, the contested 31–40 zones, the 41–60 front with
+  repeatable and island bounties); the spawn playtest fixes; a mapgen bundle
+  (gems by depth, `apex_sockets` removed, mapgen band data, the
+  Battlegrounds 50 % wider with a middle road). Local, not pushed. Next:
+  fresh world and GUI test.
+- [x] **WP17 travel (V1)**, Round 29: boats as water mounts from the
+  Shipwright in every capital, the Kraken retune, and visit-unlocked
+  waystones at every start and capital. Innkeeper return and the Claim Stone
+  travel home were already delivered.
+- [x] **WP44 economy, a lighter pass**, Round 29: one price module for every
+  payout, 5% buy-back on vendor goods, the vendor rule, the audit fixes,
+  quest copper from weight and mount, boat and respec prices from a simple
+  income estimate. It absorbed the price remainders of WP7, WP11, WP22, WP30
+  and WP31.
 
 ### Remaining work
 
-- [ ] **Round 29 "Economy and travel"** (plans approved 2026-10-02, round
-  plan to follow): new quest files per race track, the front and the islands
-  on the Round 28 framework, replacing the 240 legacy quests
-  ([quests plan](docs/planning/round29-quests-plan.md)); the WP44 economy
-  lanes ([economy plan](docs/planning/economy-vendor-plan.md)); WP17
-  ([travel plan](docs/planning/travel-boats-waypoints-plan.md)); a mapgen
-  bundle: gem depth tiers and `apex_sockets` removal (economy plan), the
-  Battlegrounds 50 % larger in z with one road across them (travel plan
-  §4), mapgen band data for the Causeway and Gravesalt/Skyglass. Items:
-  [BACKLOG](BACKLOG.md#round-28-carry-overs-and-round-29).
-- [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
-  waypoints at every start and capital. Innkeeper return and the Claim Stone
-  travel home are already delivered. Planned for Round 29.
+- [ ] **Round 30 performance** (next): the
+  [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
+  with the user's rulings of 2026-10-02 (quest state and map UI, mob pathing
+  and allocation, the region-map file cache and boot memory, per-player
+  ticks; fewer spawn ABMs). Items:
+  [BACKLOG](BACKLOG.md#round-30--performance).
 - [ ] **WP41 (V1):** exact geographic PvP transaction and shared eligibility seam.
-- [ ] **WP9 (V1):** the level-41–60 main questline and the finale; Round 20's
-  240 quests reach level 40. Round 29's front quests cover part of 41–60;
-  the main storyline and finale are reassessed after them.
-- [ ] **WP44 economy, a lighter pass:** price tables, 5% buy-back, the audit
-  fixes, rescaled quest copper and a simple income estimate for respec and
-  mount prices. It absorbs the price remainders of WP7, WP11, WP22, WP30 and
-  WP31. The running economy keeps its legacy curve and 25% buy-back until then;
-  Round 28's loot prices (tier = copper) are placeholders. Planned for Round 29.
+- [ ] **WP9 (V1):** the level-41–60 main questline and the finale. Round 29's
+  front quests and bounties carry the 41–60 leveling; the main storyline and
+  the finale are reassessed on top of them.
 - [ ] **WP5 / WP10 items and professions:** cultural/PvP finishes, masterwork
-  (an item-level-70 upgrade), the loot/demand audit (planned with Round 29's
-  price calibration), then cultural finishing and helper services. Selected
-  enchanting, ordinary gear, found-item loot, loot by band and seven
-  self-contained profession catalogs already exist.
+  (an item-level-70 upgrade), then cultural finishing and helper services.
+  Selected enchanting, ordinary gear, found-item loot, loot by band, seven
+  self-contained profession catalogs and the loot/demand audit (Round 29's
+  price calibration) already exist.
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are

@@ -63,7 +63,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Sovel Namekeeper | -2378, 51, 1600 | r20_anchor_020_01, r20_anchor_020_02, r20_anchor_020_03, r20_undead_journey_02 |
+| quest_host | quest giver | Sovel Namekeeper | -2378, 51, 1600 | ossuary_names_01, ossuary_names_02, ossuary_names_03, ossuary_names_bounty |
 
 Distances: zone edge N 528 (kragmar_mournfen), S 560 (kragmar_blackwind_rise), E 176 (kragmar_nhal_veyr), W 84 (coastal_shelf); nearest other-zone land 172 E; sea 84 W; sea-beach sand 72 W; nearest road 19.
 Nearest hubs (straight / by road): Memoryvein Dig 338 / 539; Nhal Veyr 589 / 687; Mournfen Village 638 / 1179; Mournfen Outpost 573 / 1396; Boneledger Post 383 / 1406.
@@ -74,7 +74,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Mereth Rubbinghand | -2266, 57, 1234 | r20_anchor_038_01, r20_anchor_038_02, r20_anchor_038_03 |
+| quest_host | quest giver | Mereth Rubbinghand | -2266, 57, 1234 | ossuary_rubbings_01, ossuary_rubbings_02, ossuary_rubbings_03 |
 
 Distances: zone edge N 836 (kragmar_mournfen), S 176 (kragmar_blackwind_rise), E 184 (kragmar_nhal_veyr), W 212 (coastal_shelf); nearest other-zone land 166 NE; sea 198 W; sea-beach sand 180 W; nearest road 14.
 Nearest hubs (straight / by road): Ashveil Watch 472 / 738; Nhal Veyr 538 / 940; Ossuary Ledgerstead 383 / 1406; Mournfen Village 868 / 1437; Mournfen Bandit Camp 1055 / 1653.
@@ -85,7 +85,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Neris Fossilhand | -2416, 32, 1264 | r20_anchor_064_01, r20_anchor_064_02, r20_anchor_064_03, r20_undead_journey_03 |
+| quest_host | quest giver | Neris Fossilhand | -2416, 32, 1264 | ossuary_dig_01, ossuary_dig_02, ossuary_dig_03, ossuary_dig_04 |
 
 Distances: zone edge N 876 (kragmar_stillgrave_hollow), S 176 (coastal_shelf), E 320 (kragmar_nhal_veyr), W 68 (coastal_shelf); nearest other-zone land 212 S; sea 60 W; sea-beach sand 34 W; nearest road 17.
 Nearest hubs (straight / by road): Ossuary Ledgerstead 338 / 539; Nhal Veyr 662 / 1036; Mournfen Village 916 / 1529; Mournfen Outpost 894 / 1746; Boneledger Post 153 / 1756.
@@ -94,17 +94,17 @@ Nearest hubs (straight / by road): Ossuary Ledgerstead 338 / 539; Nhal Veyr 662 
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_020_01 | Shelves for the Remembered | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_020_02 | Teeth Beside the Archive | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach] | 820 | - |
-| r20_anchor_038_01 | A Shelf for Stone Names | Mereth Rubbinghand (Boneledger Post) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_038_02 | The Hungry Gravewood | Mereth Rubbinghand (Boneledger Post) | 21 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 820 | - |
-| r20_anchor_064_01 | The Record Shed Frame | Neris Fossilhand (Memoryvein Dig) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_064_02 | The Cutters' Uneasy Night | Neris Fossilhand (Memoryvein Dig) | 21 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 820 | - |
-| r20_anchor_020_03 | The Trees That Refuse Rest | Sovel Namekeeper (Ossuary Ledgerstead) | 23 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 900 | r20_anchor_020_02 |
-| r20_anchor_038_03 | A Pack on the Ledger Road | Mereth Rubbinghand (Boneledger Post) | 23 | kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach] | 900 | r20_anchor_038_02 |
-| r20_anchor_064_03 | A Tool for Unnamed Stone | Neris Fossilhand (Memoryvein Dig) | 23 | bring 1 grug_materials:pick_stone | 900 | r20_anchor_064_02 |
-| r20_undead_journey_02 | Word for Neris Fossilhand | Sovel Namekeeper (Ossuary Ledgerstead) | 24 | talk to Neris Fossilhand (r20_anchor_064) | 705 | - |
-| r20_undead_journey_03 | Word for Vaska Ashlistener | Neris Fossilhand (Memoryvein Dig) | 31 | talk to Vaska Ashlistener (r20_anchor_039) | 915 | - |
+| ossuary_names_01 | Misfiled in a Wolf | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | kill 8 briarpack_wolf [in kragmar_ossuary_reach/bonewood] | 675 | - |
+| ossuary_names_02 | Paper Remembers | Sovel Namekeeper (Ossuary Ledgerstead) | 22 | talk to Mereth Rubbinghand (r20_anchor_038) | 210 | ossuary_names_01 |
+| ossuary_names_03 | Optional: The Trees Have Taken to Walking | Sovel Namekeeper (Ossuary Ledgerstead) | 22 | kill 8 mourning_treant [in kragmar_ossuary_reach/bonewood] | 560 | ossuary_names_01 |
+| ossuary_names_bounty | Repeatable: Teeth in the Catalogue (repeatable) | Sovel Namekeeper (Ossuary Ledgerstead) | 22 | kill 6 briarpack_wolf [in kragmar_ossuary_reach/ashfields] | 270 | ossuary_names_01 |
+| ossuary_rubbings_01 | Under the New Names | Mereth Rubbinghand (Boneledger Post) | 24 | kill 8 barrow_skeleton_archer [in kragmar_ossuary_reach/barrowlands] | 750 | - |
+| ossuary_rubbings_02 | Optional: A Hand I Might Recognise | Mereth Rubbinghand (Boneledger Post) | 24 | bring 3 grug_mobs:etched_bone | 375 | - |
+| ossuary_dig_01 | Optional: Disturbing the Workings | Neris Fossilhand (Memoryvein Dig) | 25 | kill 8 territorial_bear [in kragmar_ossuary_reach/webwood] | 620 | - |
+| ossuary_dig_02 | Optional: Hold Up the Past | Neris Fossilhand (Memoryvein Dig) | 25 | bring 6 grug_materials:steel_bar | 388 | - |
+| ossuary_rubbings_03 | A Chisel Leaves Its Signature | Mereth Rubbinghand (Boneledger Post) | 25 | talk to Neris Fossilhand (r20_anchor_064) | 233 | ossuary_rubbings_01 |
+| ossuary_dig_03 | Filed Under Theft | Neris Fossilhand (Memoryvein Dig) | 27 | kill 4 grave_web_spider [in kragmar_ossuary_reach/deepwood]; kill 1 marrow_archivist | 1073 | - |
+| ossuary_dig_04 | Ashveil Keeps Its Own Records | Neris Fossilhand (Memoryvein Dig) | 28 | talk to Vaska Ashlistener (r20_anchor_039) | 170 | ossuary_dig_03 |
 
 ## Mobs by spawn region
 

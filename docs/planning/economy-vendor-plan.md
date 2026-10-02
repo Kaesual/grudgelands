@@ -1,8 +1,9 @@
 # Economy, vendors, loot prices and gem tiers — plan
 
-Design session with the user on 2026-10-02 (Claude Opus 5.5). Plan only:
-nothing here is implemented yet. Implementation runs later as lanes
-coordinated by the Round 28 coordinator (§8). This plan absorbs **WP44**
+Design session with the user on 2026-10-02 (Claude Opus 5.5). Delivered in
+Round 29 ([lane status](#lane-status-round-29-2026-10-02) at the end); the
+lanes of §8 ran inside the
+[Round 29 plan](round29-plan.md#completion-2026-10-02). This plan absorbs **WP44**
 (economy, lighter pass) and adds the new vendor model, the loot price
 formula and the depth-tiered gems.
 
@@ -421,6 +422,23 @@ plan; nothing here is scheduled yet.
 - Outpost seed (Round 28 item 46): after the playtest. WP34, WP46, WP48
   and the small Round 26/27 carry-overs: only when a playtest asks for
   them.
+
+## Lane status (Round 29, 2026-10-02)
+
+- **E1** delivered (`a429db63`): one price module (`grug_traders/prices.lua`,
+  `price_rules.lua`), the vendor rule and shelves of §2.3, the 5 % buy-back,
+  the gear axis, the anti-loop `≤` audit with free world materials worth 0,
+  claim-station repair (D7), the loot text pass. Band medians per kill
+  4.3 / 9.0 / 16.7 / 39.0 / 147.6 / 239.3c. Left: a few band-3 outliers
+  without a T3 replacement; band 5 lands above its target and band 4 below.
+- **E2** delivered as Round 29 lane M-res (`56753932`): §6 in the mapgen
+  and every recipe; the WP43 projection re-pinned once.
+- **E3** dropped: quest lane Q1 computes copper from weight (§4) whenever a
+  quest omits it, and the new quest files replace the legacy ones.
+- **E4** delivered (`8b3324fc`): below.
+- **E5** done in the lanes (design docs of §7) and in Round 29 lane D
+  (status files, WP44 delivered).
+- The user kept the E4 prices (2026-10-02): no band-5 loot smoothing now.
 
 ## E4 completion (2026-10-02)
 

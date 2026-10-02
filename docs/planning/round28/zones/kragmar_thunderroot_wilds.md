@@ -57,18 +57,25 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Rumela Stormstep | 1902, 164, 670 | r20_anchor_048_01, r20_anchor_048_02, r20_anchor_048_03 |
+| quest_host | quest giver | Rumela Stormstep | 1902, 164, 670 | thunderroot_rainchar_01, thunderroot_rainchar_02, thunderroot_rainchar_03, thunderroot_rainchar_04, thunderroot_rainchar_group, thunderroot_storm_01, thunderroot_storm_02, thunderroot_storm_03, thunderroot_storm_04, thunderroot_storm_bounty |
 
 Distances: zone edge N 376 (kragmar_kezamba), S 268 (front_skyglass_canopy), E 768 (coastal_shelf), W 940 (kragmar_bannerbreak_mesa); nearest other-zone land 260 S; sea 704 E; sea-beach sand 680 E; nearest road 13.
 Nearest hubs (straight / by road): Red Ramp Post 2283 / 3936; Tornstandard Hold 1626 / 4369; Hollowarch Station 3370 / 5327; Last Hedge Redoubt 2024 / 5601; Ashveil Watch 3921 / 6312.
 
-### Current quests (3, given in this zone)
+### Current quests (10, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_048_01 | A Gutter Before the Rain | Rumela Stormstep (Thunderstep Watch) | 31 | bring 8 default:cobble | 1220 | - |
-| r20_anchor_048_02 | Rainchar's Burning Cargo | Rumela Stormstep (Thunderstep Watch) | 31 | kill 4 bandit or entrenched_bandit [in kragmar_thunderroot_wilds] | 1220 | - |
-| r20_anchor_048_03 | Across the Glass Passage | Rumela Stormstep (Thunderstep Watch) | 40 | kill 3 guard_accord [in elandor_glassroot_wilds] | 1975 | r20_anchor_048_02 |
+| thunderroot_storm_01 | An Unhelpful Chorus | Rumela Stormstep (Thunderstep Watch) | 29 | kill 4 territorial_ape [in kragmar_thunderroot_wilds/canopy] | 630 | - |
+| thunderroot_storm_02 | Thunder Needs No Cork | Rumela Stormstep (Thunderstep Watch) | 31 | kill 4 reed_hex_witch [in kragmar_thunderroot_wilds/bogs]; bring 2 grug_mobs:hex_bottle_shard | 740 | thunderroot_storm_01 |
+| thunderroot_storm_03 | Rain for the Ashes | Rumela Stormstep (Thunderstep Watch) | 32 | talk to Vaska Ashlistener (r20_anchor_039) | 285 | thunderroot_storm_02 |
+| thunderroot_rainchar_01 | Listen for the Hiss | Rumela Stormstep (Thunderstep Watch) | 34 | kill 4 coiled_serpent [in kragmar_thunderroot_wilds/witchmire] | 718 | - |
+| thunderroot_storm_04 | Messages Wrapped in Silk | Rumela Stormstep (Thunderstep Watch) | 34 | kill 4 canopy_web_spider [in kragmar_thunderroot_wilds/deepwood] | 700 | thunderroot_storm_02 |
+| thunderroot_storm_bounty | Bounty: The Chorus Returns (repeatable) | Rumela Stormstep (Thunderstep Watch) | 34 | kill 6 territorial_ape [in kragmar_thunderroot_wilds/deepwood] | 410 | thunderroot_storm_04 |
+| thunderroot_rainchar_02 | A Debt at Rainchar Camp | Rumela Stormstep (Thunderstep Watch) | 37 | kill 4 entrenched_bandit_archer [in kragmar_thunderroot_wilds/rainchar_camp] | 753 | thunderroot_rainchar_01 |
+| thunderroot_rainchar_03 | Zek Keeps the Wrong Company | Rumela Stormstep (Thunderstep Watch) | 38 | kill 4 territorial_ape [in kragmar_thunderroot_wilds/stormglades]; kill 1 bottle_keeper_zek | 1100 | thunderroot_rainchar_02 |
+| thunderroot_rainchar_group | Group: A Storm Too Many | Rumela Stormstep (Thunderstep Watch) | 38 | kill 1 storm_bottle_witch | 880 | thunderroot_rainchar_03 |
+| thunderroot_rainchar_04 | Carry the Thunder | Rumela Stormstep (Thunderstep Watch) | 39 | talk to Yarra Standardmender (r20_anchor_044) | 338 | thunderroot_rainchar_03 |
 
 ## Mobs by spawn region
 

@@ -59,18 +59,26 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Lethen Moonledger | 2378, 23, -1326 | r20_anchor_035_01, r20_anchor_035_02, r20_anchor_035_03 |
+| quest_host | quest giver | Lethen Moonledger | 2378, 23, -1326 | moonfall_snares_01, moonfall_snares_02, moonfall_snares_03, moonfall_snares_04, moonfall_snares_opt_01, moonfall_snares_opt_02, moonfall_stars_01, moonfall_stars_02, moonfall_stars_03, moonfall_stars_bounty, moonfall_stars_opt_01 |
 
 Distances: zone edge N 316 (elandor_glassroot_wilds), S 968 (elandor_starbough_vale), E 232 (coastal_shelf), W 216 (elandor_lethariel); nearest other-zone land 197 W; sea 216 E; sea-beach sand 144 E; nearest road 13.
 Nearest hubs (straight / by road): Lethariel 602 / 1182; Glassroot Gate 779 / 1311; Starbough Village 842 / 1850; Starbough Bandit Camp 1049 / 1926; Paleroot Cutting 1352 / 2037.
 
-### Current quests (3, given in this zone)
+### Current quests (11, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_035_01 | A Chart Table Repaired | Lethen Moonledger (Moonfall Observatory) | 21 | bring 8 default:wood | 820 | - |
-| r20_anchor_035_02 | Fangs Beneath the Fallen Bough | Lethen Moonledger (Moonfall Observatory) | 21 | kill 4 wolf or briarpack_wolf [in elandor_moonfall_wood] | 820 | - |
-| r20_anchor_035_03 | The Moonlit Snare Line | Lethen Moonledger (Moonfall Observatory) | 23 | kill 4 poacher or unlicensed_poacher [in elandor_moonfall_wood] | 900 | r20_anchor_035_02 |
+| moonfall_stars_01 | The Stars Have No Need to Howl | Lethen Moonledger (Moonfall Observatory) | 21 | kill 5 briarpack_wolf [in elandor_moonfall_wood/eaves] | 338 | - |
+| moonfall_snares_01 | The Wrong Kind of Binding | Lethen Moonledger (Moonfall Observatory) | 22 | kill 4 unlicensed_poacher [in elandor_moonfall_wood/eaves] | 280 | - |
+| moonfall_snares_02 | A Clear View Needs Sound Wood | Lethen Moonledger (Moonfall Observatory) | 24 | bring 10 group:wood | 150 | moonfall_snares_01 |
+| moonfall_stars_02 | A Bear in the Calculation | Lethen Moonledger (Moonfall Observatory) | 24 | kill 5 territorial_bear [in elandor_moonfall_wood/deepwood] | 375 | moonfall_stars_01 |
+| moonfall_stars_03 | One Light, Properly Accounted For | Lethen Moonledger (Moonfall Observatory) | 25 | bring 1 grug_mobs:bound_wisp_mote | 233 | moonfall_stars_02 |
+| moonfall_stars_bounty | Bounty: Keep the View Clear (repeatable) | Lethen Moonledger (Moonfall Observatory) | 25 | kill 6 briar_web_spider [in elandor_moonfall_wood/deepwood] | 310 | moonfall_stars_03 |
+| moonfall_stars_opt_01 | Optional: An Astronomer's Ankles | Lethen Moonledger (Moonfall Observatory) | 25 | kill 5 armored_crab [in elandor_moonfall_wood/moonstrand] | 388 | moonfall_stars_02 |
+| moonfall_snares_opt_01 | Optional: Teeth Along the Trail | Lethen Moonledger (Moonfall Observatory) | 27 | kill 6 territorial_bear [in elandor_moonfall_wood/elderwood] | 413 | moonfall_snares_02 |
+| moonfall_snares_03 | A Warden in Name Alone | Lethen Moonledger (Moonfall Observatory) | 28 | kill 1 snarewarden_bracken | 680 | moonfall_snares_02 |
+| moonfall_snares_opt_02 | Optional: Thread Across the Stars | Lethen Moonledger (Moonfall Observatory) | 28 | kill 6 briar_web_spider [in elandor_moonfall_wood/elderwood] | 425 | moonfall_snares_02 |
+| moonfall_snares_04 | Beyond the Last Snare | Lethen Moonledger (Moonfall Observatory) | 29 | talk to Faeris Rootbinder (r20_anchor_036) | 175 | moonfall_snares_03 |
 
 ## Mobs by spawn region
 

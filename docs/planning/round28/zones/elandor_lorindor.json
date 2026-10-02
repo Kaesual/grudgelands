@@ -370,295 +370,423 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "Berrycourt's orchard crew needs a low stone rim to keep washed soil against the roots. Bring eight cobble blocks to Lorindor Berrycourt, leaving the tended trees and protected court intact. Existing or traded supplies are welcome.",
+   "copper": 32,
+   "description": "I count the harvest in baskets, but I know something is wrong when I cannot hear the birds. Defeat five Unlicensed Poachers after dark in the Lorindor Berrywoods southeast of Lorindor Berrycourt, where their nets have emptied the branches. A berrywood ought to offer more than fruit and silence.",
    "giver": "r20_anchor_018_host",
    "giver_name": "Ilwen Petalmeasure",
    "giver_settlement": "Lorindor Berrycourt",
-   "id": "r20_anchor_018_01",
+   "id": "lorindor_berries_01",
    "min_level": 21,
    "objectives": [
-    "bring 8 default:cobble"
+    "kill 5 unlicensed_poacher [in elandor_lorindor/berrywoods]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:cobble",
-     "type": "item"
+     "area": "elandor_lorindor/berrywoods",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:unlicensed_poacher"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Stones Around the Roots",
+   "title": "The Harvest Should Have a Song",
    "turnin": "r20_anchor_018_host",
-   "xp": 820
+   "xp": 338
   },
   {
-   "copper": 70,
-   "description": "At night, poachers work Lorindor's silver-leaf and forest margins beyond Berrycourt. Defeat four of them while the orchard crew rebuilds the root beds.",
+   "copper": 32,
+   "description": "The Toll Mirefolk at Whitepetal Fenhold southeast from here demand a pearl for every crate my carters carry. Defeat five of them, by day or night, and approach from the edge of the camp so they cannot all rush you together. At these rates, I shall soon be packing pearls and charging extra for the berries.",
    "giver": "r20_anchor_018_host",
    "giver_name": "Ilwen Petalmeasure",
    "giver_settlement": "Lorindor Berrycourt",
-   "id": "r20_anchor_018_02",
-   "min_level": 21,
+   "id": "lorindor_berries_02",
+   "min_level": 22,
    "objectives": [
-    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
+    "kill 5 toll_mirefolk [in elandor_lorindor/fenhold]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "area": "elandor_lorindor/fenhold",
+     "count": 5,
      "mobs": [
-      "grug_mobs:poacher",
-      "grug_mobs:unlicensed_poacher"
+      "grug_mobs:toll_mirefolk"
      ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "No Snares in Berrycourt",
-   "turnin": "r20_anchor_018_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Petalbank's trough has lost the stone kerb that keeps washwater out of the berry baskets. Bring eight cobble blocks for its edge; the covered court must stay open to carriers. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_034_host",
-   "giver_name": "Orya Petalward",
-   "giver_settlement": "Petalbank Wardenry",
-   "id": "r20_anchor_034_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 8 default:cobble"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Trough's New Kerb",
-   "turnin": "r20_anchor_034_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Poachers enter Lorindor's woodland at night and force Petalbank's wardens away from the gathering routes. Defeat four so the wardens can take their normal posts again.",
-   "giver": "r20_anchor_034_host",
-   "giver_name": "Orya Petalward",
-   "giver_settlement": "Petalbank Wardenry",
-   "id": "r20_anchor_034_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:poacher",
-      "grug_mobs:unlicensed_poacher"
-     ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Wardens Without Arrows",
-   "turnin": "r20_anchor_034_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Paleroot's cutters need a spare stone pick for work beside the orchard roots. Bring one to the braced shelter; you may craft it, buy it or use an existing spare. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_063_host",
-   "giver_name": "Saevin Rootscribe",
-   "giver_settlement": "Paleroot Cutting",
-   "id": "r20_anchor_063_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 1 grug_materials:pick_stone"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "item": "grug_materials:pick_stone",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Gentle Edge",
-   "turnin": "r20_anchor_063_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Poachers cross Lorindor's woodland at night and disturb the survey stakes outside the cutting. Defeat four so the crew can recover its marked line in daylight.",
-   "giver": "r20_anchor_063_host",
-   "giver_name": "Saevin Rootscribe",
-   "giver_settlement": "Paleroot Cutting",
-   "id": "r20_anchor_063_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:poacher",
-      "grug_mobs:unlicensed_poacher"
-     ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Survey Stakes Vanish",
-   "turnin": "r20_anchor_063_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "The snares have gone, but pale lights still lead late pickers away from Lorindor's orchard paths. Disperse three wisps after dark around the damp woodland, then report back to Ilwen.",
-   "giver": "r20_anchor_018_host",
-   "giver_name": "Ilwen Petalmeasure",
-   "giver_settlement": "Lorindor Berrycourt",
-   "id": "r20_anchor_018_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 wisp [in elandor_lorindor]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:wisp"
-     ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_018_02"
+    "lorindor_berries_01"
    ],
    "reward_items": [],
-   "title": "The Uninvited Lanterns",
+   "title": "A Pearl for Every Basket",
    "turnin": "r20_anchor_018_host",
-   "xp": 900
+   "xp": 350
   },
   {
-   "copper": 70,
-   "description": "The wardens have rehung their own lamps, but other lights still move beyond them after dark. Disperse three wisps in Lorindor's damp woodland and report to Petalbank.",
-   "giver": "r20_anchor_034_host",
-   "giver_name": "Orya Petalward",
-   "giver_settlement": "Petalbank Wardenry",
-   "id": "r20_anchor_034_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 wisp [in elandor_lorindor]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:wisp"
-     ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_034_02"
-   ],
-   "reward_items": [],
-   "title": "Lanterns We Did Not Hang",
-   "turnin": "r20_anchor_034_host",
-   "xp": 900
-  },
-  {
-   "copper": 70,
-   "description": "The recovered line leads into damp ground where wisps gather after dark. Disperse three in Lorindor before another cutter mistakes them for work lamps.",
-   "giver": "r20_anchor_063_host",
-   "giver_name": "Saevin Rootscribe",
-   "giver_settlement": "Paleroot Cutting",
-   "id": "r20_anchor_063_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 wisp [in elandor_lorindor]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:wisp"
-     ],
-     "type": "kill",
-     "zone": "elandor_lorindor"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_063_02"
-   ],
-   "reward_items": [],
-   "title": "Light on the Cutting Marks",
-   "turnin": "r20_anchor_063_host",
-   "xp": 900
-  },
-  {
-   "copper": 50,
-   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Paleroot Cutting in Lorindor and speak with Saevin Rootscribe. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Saevin Rootscribe there. No parcel, fighting errand or return trip is required.",
+   "copper": 26,
+   "description": "The Unlicensed Poachers return to the Lorindor Berrywoods southeast of Lorindor Berrycourt whenever they think we have stopped listening. Defeat six after dark and return to me for Berrycourt's payment. This bounty remains available for further hunts; I intend to hear birds here next harvest too.",
    "giver": "r20_anchor_018_host",
    "giver_name": "Ilwen Petalmeasure",
    "giver_settlement": "Lorindor Berrycourt",
-   "id": "r20_elf_journey_02",
+   "id": "lorindor_berries_bounty",
+   "min_level": 22,
+   "objectives": [
+    "kill 6 unlicensed_poacher [in elandor_lorindor/berrywoods]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/berrywoods",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:unlicensed_poacher"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_berries_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Keep a Song in the Branches (repeatable)",
+   "turnin": "r20_anchor_018_host",
+   "xp": 270
+  },
+  {
+   "copper": 19,
+   "description": "These roots held the earth before anyone thought to call us the Accord; I mean to repay the favour. Alloy iron with coal and bring me four Steel Bars here at the cutting for the props. Check your pick before seeking the deeper seams: respect for stone begins with the right tool.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "lorindor_cutting_01",
    "min_level": 24,
    "objectives": [
-    "talk to Saevin Rootscribe (r20_anchor_063)"
+    "bring 4 grug_materials:steel_bar"
    ],
    "objectives_raw": [
     {
-     "count": 1,
-     "npc": "r20_anchor_063_host",
-     "type": "talk"
+     "count": 4,
+     "item": "grug_materials:steel_bar",
+     "type": "item"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Saevin Rootscribe",
+   "title": "Give the Old Roots a Brace",
    "turnin": "r20_anchor_063_host",
-   "xp": 705
+   "xp": 225
   },
   {
-   "copper": 50,
-   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Glassroot Gate in Glassroot Wilds and speak with Faeris Rootbinder. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Faeris Rootbinder there. No parcel, fighting errand or return trip is required.",
+   "copper": 13,
+   "description": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf knows what stone will bear, and I value her judgment. Make the journey to her and say I sent you to help with her work. She will probably ask whether I have measured anything properly yet; tell her the roots remain entirely satisfied.",
    "giver": "r20_anchor_063_host",
    "giver_name": "Saevin Rootscribe",
    "giver_settlement": "Paleroot Cutting",
-   "id": "r20_elf_journey_03",
-   "min_level": 31,
+   "id": "lorindor_cutting_02",
+   "min_level": 24,
    "objectives": [
-    "talk to Faeris Rootbinder (r20_anchor_036)"
+    "talk to Kelda Screesort (r20_anchor_061)"
    ],
    "objectives_raw": [
     {
      "count": 1,
-     "npc": "r20_anchor_036_host",
+     "npc": "r20_anchor_061_host",
      "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_cutting_01"
+   ],
+   "reward_items": [],
+   "title": "A Rootscribe Recommends You",
+   "turnin": "r20_anchor_061_host",
+   "xp": 150
+  },
+  {
+   "copper": 13,
+   "description": "Some of those toll pearls reach Highcourt, and I would like our human neighbours to know what bought them. Travel to Highcourt and speak with Mariel Waybook about Lorindor's tolls; she keeps the road accounts there. Between her ledger and mine, we may find where an honest delivery becomes somebody else's profit.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "lorindor_journeys_01",
+   "min_level": 24,
+   "objectives": [
+    "talk to Mariel Waybook (highcourt)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_human_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_berries_02"
+   ],
+   "reward_items": [],
+   "title": "Let the Ledgers Agree",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 150
+  },
+  {
+   "copper": 13,
+   "description": "Merren Oakstamp says my crates arrive half empty, as though the berries have taken a stroll. Speak with her at Whitebridge Market Close in Whitebridge Shire about the missing deliveries. It is a long journey through the human lands; a mount will spare your feet for the work awaiting you.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "lorindor_journeys_02",
+   "min_level": 24,
+   "objectives": [
+    "talk to Merren Oakstamp (r20_anchor_016)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_016_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_berries_02"
+   ],
+   "reward_items": [],
+   "title": "Berries Do Not Walk Away",
+   "turnin": "r20_anchor_016_host",
+   "xp": 150
+  },
+  {
+   "copper": 32,
+   "description": "A traveller sees a light between the trunks and thinks someone has left a lantern for them. Extinguish five Wandering Wisps after dark in the Lorindor Elderwood, which lies in the west of Lorindor, before that kindness turns into another lost traveller. They appear only at night; keep the path in sight while you work.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "lorindor_wardenry_01",
+   "min_level": 24,
+   "objectives": [
+    "kill 5 wandering_wisp [in elandor_lorindor/elderwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/elderwood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:wandering_wisp"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Faeris Rootbinder",
-   "turnin": "r20_anchor_036_host",
-   "xp": 915
+   "title": "Do Not Follow That Light",
+   "turnin": "r20_anchor_034_host",
+   "xp": 375
+  },
+  {
+   "copper": 19,
+   "description": "Even roots that have held for centuries appreciate a brace before they need it. Bring me four Steel Bars here at the cutting for payment; this is a standing order you may fill again. I would rather replace a prop than write a song about the tunnel it failed to hold.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "lorindor_cutting_bounty",
+   "min_level": 25,
+   "objectives": [
+    "bring 4 grug_materials:steel_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_materials:steel_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_cutting_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: A Little Help for Old Roots (repeatable)",
+   "turnin": "r20_anchor_063_host",
+   "xp": 233
+  },
+  {
+   "copper": 26,
+   "description": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the Lorindor Elderwood and return for the Wardenry's payment. Further watches carry the same bounty.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "lorindor_wardenry_bounty",
+   "min_level": 25,
+   "objectives": [
+    "kill 6 wandering_wisp [in elandor_lorindor/elderwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/elderwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:wandering_wisp"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_wardenry_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: The Wardens' Night Watch (repeatable)",
+   "turnin": "r20_anchor_034_host",
+   "xp": 300
+  },
+  {
+   "copper": 32,
+   "description": "The Barnacle Pinchers on the Lorindor Shell Strand southeast from here have made our daytime shore patrol a rather undignified dance. Kill five by day so the wardens can walk their rounds. Leave the Bank Crabs alone; they have kept their side of the peace.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "lorindor_wardenry_opt_01",
+   "min_level": 25,
+   "objectives": [
+    "kill 5 armored_crab [in elandor_lorindor/shell_strand]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/shell_strand",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_wardenry_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: Passage at Ankle Height",
+   "turnin": "r20_anchor_034_host",
+   "xp": 388
+  },
+  {
+   "copper": 32,
+   "description": "The Moss-Antler Stags are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the Lorindor Paleroots, which lie in the northeast of Lorindor. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
+   "giver": "r20_anchor_063_host",
+   "giver_name": "Saevin Rootscribe",
+   "giver_settlement": "Paleroot Cutting",
+   "id": "lorindor_cutting_opt_01",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 moss_antler_stag [in elandor_lorindor/paleroots]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/paleroots",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:moss_antler_stag"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_cutting_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: What the Bark Cannot Bear",
+   "turnin": "r20_anchor_063_host",
+   "xp": 413
+  },
+  {
+   "copper": 45,
+   "description": "All those stolen tolls pass through the hands of Mirefolk Pearl-Counter Iss at the Lorindor Pearl Camp north from here. Defeat four Toll Mirefolk there and then Iss, by day or night. I have checked the accounts twice: we owe them nothing, and our carters deserve to travel without paying for that conclusion.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "lorindor_berries_03",
+   "min_level": 28,
+   "objectives": [
+    "kill 4 toll_mirefolk [in elandor_lorindor/pearl_camp]",
+    "kill 1 pearl_counter_iss"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/pearl_camp",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:toll_mirefolk"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:pearl_counter_iss"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_berries_02"
+   ],
+   "reward_items": [],
+   "title": "Close the Pearl Account",
+   "turnin": "r20_anchor_018_host",
+   "xp": 595
+  },
+  {
+   "copper": 32,
+   "description": "Among the Lorindor Paleroots, which lie in the northeast of Lorindor, Wandering Wisps make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
+   "giver": "r20_anchor_034_host",
+   "giver_name": "Orya Petalward",
+   "giver_settlement": "Petalbank Wardenry",
+   "id": "lorindor_wardenry_opt_02",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 wandering_wisp [in elandor_lorindor/paleroots]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lorindor/paleroots",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:wandering_wisp"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_wardenry_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: A Light Between Every Root",
+   "turnin": "r20_anchor_034_host",
+   "xp": 425
+  },
+  {
+   "copper": 13,
+   "description": "With Iss gone, Lorindor's accounts balance for the first time in a season, and it is time you kept accounts somewhere harder. Toren Waterbarrel at Cinderline Watch in Ashenward March feeds a garrison on the contested border and could use someone who counts as carefully as you fight. Follow the road out of Lorindor into the march, and finish your training first; the Accord's seal grows thin there.",
+   "giver": "r20_anchor_018_host",
+   "giver_name": "Ilwen Petalmeasure",
+   "giver_settlement": "Lorindor Berrycourt",
+   "id": "lorindor_berries_04",
+   "min_level": 29,
+   "objectives": [
+    "talk to Toren Waterbarrel (r20_anchor_031)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_031_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lorindor_berries_03"
+   ],
+   "reward_items": [],
+   "title": "Accounts on the Border",
+   "turnin": "r20_anchor_031_host",
+   "xp": 175
   }
  ],
  "race_region": "elf",
@@ -990,10 +1118,13 @@
      "npc_id": "r20_anchor_018_host",
      "npc_name": "Ilwen Petalmeasure",
      "quests": [
-      "r20_anchor_018_01",
-      "r20_anchor_018_02",
-      "r20_anchor_018_03",
-      "r20_elf_journey_02"
+      "lorindor_berries_01",
+      "lorindor_berries_02",
+      "lorindor_berries_03",
+      "lorindor_berries_04",
+      "lorindor_berries_bounty",
+      "lorindor_journeys_01",
+      "lorindor_journeys_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1107,9 +1238,10 @@
      "npc_id": "r20_anchor_034_host",
      "npc_name": "Orya Petalward",
      "quests": [
-      "r20_anchor_034_01",
-      "r20_anchor_034_02",
-      "r20_anchor_034_03"
+      "lorindor_wardenry_01",
+      "lorindor_wardenry_bounty",
+      "lorindor_wardenry_opt_01",
+      "lorindor_wardenry_opt_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1223,10 +1355,10 @@
      "npc_id": "r20_anchor_063_host",
      "npc_name": "Saevin Rootscribe",
      "quests": [
-      "r20_anchor_063_01",
-      "r20_anchor_063_02",
-      "r20_anchor_063_03",
-      "r20_elf_journey_03"
+      "lorindor_cutting_01",
+      "lorindor_cutting_02",
+      "lorindor_cutting_bounty",
+      "lorindor_cutting_opt_01"
      ],
      "role": "quest",
      "role_text": "quest giver",

@@ -44,12 +44,12 @@ Share of land per level: L20 12.8%, L21 12.0%, L22 10.1%, L23 6.7%, L24 7.7%, L2
 
 ### Kezamba (`kezamba`, anchor_012) at 1800, 36, 1500
 
-Residents/guards: gear_display 3, guard_patrol 60, guard_post 13, housing_manager 1, idle 103, innkeeper 1, king 1, mount_display 4, public_station 7, quest 2, riding_trainer 1, trainer 8, vendor 7, waypoint 1, work 53.
+Residents/guards: gear_display 3, guard_patrol 60, guard_post 13, housing_manager 1, idle 103, innkeeper 1, king 1, mount_display 4, public_station 7, quest 2, riding_trainer 1, shipwright 1, trainer 8, vendor 7, waypoint 1, work 53.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | 1811, 42, 1469 | - |
-| shrine_quest | quest giver | Nalo Pathdrum | 1762, 37, 1527 | r20_troll_capital_services, r20_troll_capital_stores, r20_troll_journey_01 |
+| shrine_quest | quest giver | Nalo Pathdrum | 1762, 37, 1527 | kezamba_front_blackwind, kezamba_front_thunderroot, kezamba_offerings_01, kezamba_offerings_02, kezamba_offerings_03, kezamba_offerings_04, kz_front_01, kz_front_02, kz_front_03, kz_front_04, kz_front_05, kz_front_bounty |
 | vendor_race | vendor | vendor kind: race | 1776, 37, 1487 | - |
 | vendor_general | vendor | vendor kind: general | 1776, 37, 1493 | - |
 | travel_waypoint | waypoint |  | 1762, 37, 1476 | - |
@@ -66,6 +66,7 @@ Residents/guards: gear_display 3, guard_patrol 60, guard_post 13, housing_manage
 | canopy_stable/canopy_stable_mount_3 | mount display |  | 1697, 37, 1475 | - |
 | canopy_stable/canopy_stable_mount_4 | mount display |  | 1687, 37, 1475 | - |
 | canopy_stable/canopy_stable_riding | riding trainer |  | 1692, 37, 1484 | - |
+| canopy_stable/canopy_stable_shipwright | shipwright |  | 1684, 37, 1484 | - |
 | totem_scriptorium/totem_scriptorium_goldsmith | profession trainer | trains: goldsmith | 1873, 38, 1476 | - |
 | totem_scriptorium/totem_scriptorium_jewel | gear display |  | 1868, 39, 1473 | - |
 | shore_tailor/shore_tailor_gate_idle | housing steward |  | 1725, 38, 1518 | - |
@@ -73,7 +74,7 @@ Residents/guards: gear_display 3, guard_patrol 60, guard_post 13, housing_manage
 | shore_tailor/shore_tailor_tailor | profession trainer | trains: tailor | 1723, 38, 1523 | - |
 | shore_store/shore_store_leatherworker | profession trainer | trains: leatherworker | 1716, 40, 1590 | - |
 | shore_smokehouse/shore_smokehouse_cooking | profession trainer | trains: cooking | 1684, 40, 1554 | - |
-| shore_smokehouse/shore_smokehouse_quest_cook | quest giver | Teshani Smokereed | 1688, 40, 1554 | r20_troll_capital_cook |
+| shore_smokehouse/shore_smokehouse_quest_cook | quest giver | Teshani Smokereed | 1688, 40, 1554 | kezamba_dispatch_totemwater, kezamba_dispatch_whispering, kezamba_smokehouse_01, kezamba_smokehouse_02, kezamba_smokehouse_bounty, kezamba_smokehouse_optional_revenants |
 | shore_carvers/shore_carvers_woodcarver | profession trainer | trains: woodcarver | 1749, 39, 1588 | - |
 | shore_market/shore_market_vendor_brewer | vendor | vendor kind: brewer | 1652, 34, 1489 | - |
 | shore_butcher/shore_butcher_vendor_butcher | vendor | vendor kind: butcher | 1629, 36, 1501 | - |
@@ -83,14 +84,28 @@ Public stations: vine_herbalist/vine_herbalist_station (brewing_stand), canopy_a
 Distances: zone edge N 364 (kragmar_raincall_basin), S 492 (kragmar_thunderroot_wilds), E 296 (kragmar_totemwater_reach), W 528 (kragmar_whispering_reedlands); nearest other-zone land 296 E; sea 782 E; sea-beach sand 739 E; nearest road 50.
 Nearest hubs (straight / by road): Raincall Bandit Camp 560 / 1008; Thunderstep Watch 836 / 1089; Totemwater Post 618 / 1158; Whisperreed Landing 930 / 1244; Reedstone Cut 798 / 1384.
 
-### Current quests (4, given in this zone)
+### Current quests (18, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_troll_capital_cook | Smoke Above the Cenote | Teshani Smokereed (Kezamba) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_troll_capital_services | The Smokereed Welcome | Nalo Pathdrum (Kezamba) | 10 | talk to Teshani Smokereed (kezamba) | 285 | r20_troll_capital_intro |
-| r20_troll_capital_stores | Boards for the Rain Stores | Nalo Pathdrum (Kezamba) | 20 | bring 10 default:junglewood | 780 | - |
-| r20_troll_journey_01 | Word for Taleko Drycord | Nalo Pathdrum (Kezamba) | 21 | talk to Taleko Drycord (r20_anchor_024) | 615 | - |
+| kezamba_offerings_01 | The Spirits Left Footprints | Nalo Pathdrum (Kezamba) | 20 | kill 6 toll_bandit [in kragmar_kezamba/canopy] | 390 | - |
+| kezamba_smokehouse_01 | Smoke Cannot Fill a Belly | Teshani Smokereed (Kezamba) | 20 | bring 8 mobs:meat_raw | 260 | - |
+| kezamba_dispatch_totemwater | Even Seers Need Supper | Teshani Smokereed (Kezamba) | 21 | talk to Tokai Knotreader (r20_anchor_047) | 68 | kezamba_smokehouse_01 |
+| kezamba_dispatch_whispering | Regards from the Smokehouse | Teshani Smokereed (Kezamba) | 21 | talk to Taleko Drycord (r20_anchor_024) | 68 | kezamba_smokehouse_01 |
+| kezamba_offerings_02 | Tusks Between the Prayers | Nalo Pathdrum (Kezamba) | 23 | kill 6 monstrous_boar [in kragmar_kezamba/vinewood] | 450 | kezamba_offerings_01 |
+| kezamba_smokehouse_02 | Keep Supper Hanging | Teshani Smokereed (Kezamba) | 24 | bring 2 grug_mobs:gnarled_boar_tusk | 300 | kezamba_smokehouse_01 |
+| kezamba_smokehouse_bounty | Bounty: The Smoke Must Rise (repeatable) | Teshani Smokereed (Kezamba) | 25 | kill 6 monstrous_boar [in kragmar_kezamba/vinewood] | 233 | kezamba_smokehouse_02 |
+| kezamba_offerings_03 | A Bow Behind Every Bargain | Nalo Pathdrum (Kezamba) | 27 | kill 6 toll_bandit_archer [in kragmar_kezamba/tollcamp] | 578 | kezamba_offerings_02 |
+| kezamba_offerings_04 | The Price of a Prayer | Nalo Pathdrum (Kezamba) | 28 | kill 1 offering_broker_takka | 765 | kezamba_offerings_03 |
+| kezamba_smokehouse_optional_revenants | Optional: The Debt That Walks | Teshani Smokereed (Kezamba) | 28 | kill 6 stubborn_zombie [in kragmar_kezamba/wildwood] | 425 | kezamba_smokehouse_02 |
+| kezamba_front_blackwind | A Voice for Ashveil | Nalo Pathdrum (Kezamba) | 29 | talk to Vaska Ashlistener (r20_anchor_039) | 88 | kezamba_offerings_04 |
+| kezamba_front_thunderroot | Carry the Drumbeat | Nalo Pathdrum (Kezamba) | 29 | talk to Rumela Stormstep (r20_anchor_048) | 88 | kezamba_offerings_04 |
+| kz_front_01 | The Fruit Has Other Owners | Nalo Pathdrum (Kezamba) | 50 | kill 5 glass_knuckle_ape [in front_skyglass_canopy/cloudwood] | 1140 | - |
+| kz_front_02 | Teach the Drum to Scratch | Nalo Pathdrum (Kezamba) | 51 | kill 4 glass_shadow_panther [in front_skyglass_canopy/cloudwood]; bring 2 grug_mobs:glass_cat_claw | 1450 | - |
+| kz_front_03 | The Canopy Names Its Price | Nalo Pathdrum (Kezamba) | 53 | kill 5 glass_fang_serpent [in front_skyglass_canopy/rootways]; bring 2 grug_mobs:glass_venom | 1500 | kz_front_01 |
+| kz_front_04 | Promises with Bowstrings | Nalo Pathdrum (Kezamba) | 57 | kill 4 last_pay_archer [in front_skyglass_canopy/paymaster_camp]; kill 1 paymaster_chirr | 2080 | kz_front_02, kz_front_03 |
+| kz_front_bounty | Bounty: Paws Between Drumbeats (repeatable) | Nalo Pathdrum (Kezamba) | 57 | kill 5 glass_shadow_panther [in front_skyglass_canopy/high_canopy] | 945 | kz_front_04 |
+| kz_front_05 | Group: More Than One Voice | Nalo Pathdrum (Kezamba) | 58 | kill 1 glass_throat_serpent | 1300 | kz_front_04 |
 
 ## Mobs by spawn region
 
