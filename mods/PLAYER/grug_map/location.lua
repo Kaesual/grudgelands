@@ -10,7 +10,8 @@
 --   * the entry banner shows a new location top centre for DISPLAY seconds,
 --     debounced (location_view.lua);
 --   * the Map tab gets one marker per zone with its name and level band in
---     the tooltip, placed once at startup from the analytic world.
+--     the tooltip, placed once at startup from the analytic world (whose
+--     zone grid a later start reads from the world folder).
 --
 -- Pure rules: location_view.lua.
 
@@ -100,6 +101,97 @@ local function sample_grid(view)
 		max_z = view.max_z, cells = cells}, seen
 end
 
+-- The sampled grid depends on the world alone, so a later start of the same
+-- world reads it from the world folder (Round 30 P3; the placement itself
+-- runs every start, its markers may move). Key: the world-layout cache's
+-- parts (grug_mapgen.wp40.world_key: seed, mapgen tree, mapgen settings,
+-- interpreter), the zone queries' seam (grug_core/zone_authority.lua), this
+-- file (the sampling rule), the view and the step. The file ends in a
+-- SHA-256 over every byte before it; anything that does not decode samples
+-- afresh and replaces the file.
+local GRID_FORMAT = "grug_map_zone_grid_v1"
+local GRID_FILE = core.get_worldpath() .. "/grug_map_zone_grid.txt"
+
+local function read_file(path)
+	local file = io.open(path, "rb")
+	if not file then return nil end
+	local data = file:read("*a")
+	file:close()
+	return data
+end
+
+-- The grid's key (one line), or nil when this start has no world key.
+local function grid_key(view)
+	local mapgen = rawget(_G, "grug_mapgen")
+	local world = type(mapgen) == "table" and type(mapgen.wp40) == "table" and
+		mapgen.wp40.world_key
+	local seam = read_file(core.get_modpath("grug_core") .. "/zone_authority.lua")
+	local rule = read_file(core.get_modpath("grug_map") .. "/location.lua")
+	if type(world) ~= "table" or not seam or not rule then return nil end
+	return core.sha256(table.concat({GRID_FORMAT, world.seed, world.source, world.settings,
+		world.interpreter, core.sha256(seam), core.sha256(rule), view.min_x, view.max_x,
+		view.min_z, view.max_z, GRID_STEP}, "\n"))
+end
+
+-- The file of a grid: the zone ids, then one byte per cell (the id's index,
+-- 0 for no zone land).
+local function encode_grid(key, grid)
+	local ids, index, bytes = {}, {}, {}
+	for n = 1, grid.nx * grid.nz do
+		local id = grid.cells[n]
+		if id and not index[id] then
+			ids[#ids + 1] = id
+			index[id] = #ids
+		end
+		bytes[n] = string.char(id and index[id] or 0)
+	end
+	assert(#ids < 256, "too many zones for the zone grid file")
+	local head = table.concat({GRID_FORMAT, "\nkey ", key, "\nids ", table.concat(ids, " "),
+		"\ngrid ", grid.nx, " ", grid.nz, "\n", table.concat(bytes), "\n"})
+	return head .. "end " .. core.sha256(head) .. "\n"
+end
+
+-- {grid, seen} from the file bytes, or nil when they do not match the key.
+local function decode_grid(bytes, key, view)
+	if type(bytes) ~= "string" then return nil end
+	local head, digest = bytes:match("^(.*\n)end (%x+)\n$")
+	if not head or core.sha256(head) ~= digest then return nil end
+	local format, k, id_line, nx, nz, pos = head:match(
+		"^([^\n]*)\nkey (%x+)\nids ([^\n]*)\ngrid (%d+) (%d+)\n()")
+	if format ~= GRID_FORMAT or k ~= key then return nil end
+	nx, nz = tonumber(nx), tonumber(nz)
+	if #head ~= pos + nx * nz then return nil end
+	local ids = {}
+	for id in id_line:gmatch("%S+") do ids[#ids + 1] = id end
+	local cells, seen = {}, {}
+	for n = 1, nx * nz do
+		local b = head:byte(pos + n - 1)
+		if b > #ids then return nil end
+		local id = b > 0 and ids[b] or false
+		cells[n] = id
+		if id then seen[id] = true end
+	end
+	return {nx = nx, nz = nz, step = GRID_STEP, min_x = view.min_x, max_z = view.max_z,
+		cells = cells}, seen
+end
+
+-- The zone grid of this world: from the file when it is current, else
+-- sampled (and stored). Returns grid, seen and how it was obtained.
+local function zone_grid(view)
+	local key = grid_key(view)
+	if key then
+		local ok, grid, seen = pcall(decode_grid, read_file(GRID_FILE), key, view)
+		if ok and grid then return grid, seen, "from the file" end
+	end
+	local grid, seen = sample_grid(view)
+	if not key then return grid, seen, "sampled, not cached (no world key)" end
+	if not core.safe_file_write(GRID_FILE, encode_grid(key, grid)) then
+		core.log("warning", "[grug_map] the zone grid file could not be written: " .. GRID_FILE)
+		return grid, seen, "sampled"
+	end
+	return grid, seen, "sampled and stored"
+end
+
 local function place_zone_markers()
 	if not grug_core.zone_authority_installed() then return end
 	local started = core.get_us_time()
@@ -120,7 +212,7 @@ local function place_zone_markers()
 		obstacles[#obstacles + 1] = L.text_obstacle(row[1], row[2], row[3], row[4],
 			GAP_UNITS, nodes)
 	end
-	local grid, seen = sample_grid(view)
+	local grid, seen, source = zone_grid(view)
 	local sampled = core.get_us_time()
 	local records, order = {}, {}
 	for id in pairs(seen) do
@@ -142,9 +234,9 @@ local function place_zone_markers()
 		end
 	end
 	local finished = core.get_us_time()
-	core.log("action", ("[grug_map] placed %d zone markers in %.2f s (grid %dx%d, " ..
-		"sampling %.2f s)"):format(#zone_markers, (finished - started) / 1e6,
-		grid.nx, grid.nz, (sampled - started) / 1e6))
+	core.log("action", ("[grug_map] placed %d zone markers in %.3f s (grid %dx%d %s " ..
+		"in %.3f s)"):format(#zone_markers, (finished - started) / 1e6,
+		grid.nx, grid.nz, source, (sampled - started) / 1e6))
 end
 
 -- After providers.lua's own mods-loaded hook (registered earlier, so it runs
