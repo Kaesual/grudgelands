@@ -483,8 +483,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     eligible participant.
   - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
     `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
-    `palette` (the old ABM path, kept for a zone without recipe). It builds a
-    zone's region map on first need through the pure
+    `palette` (the old ABM path, kept for a zone without recipe). It builds
+    every recipe zone's region map at server start (mods loaded) through the
+    lazy `SR.map` and the pure
     `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
     the review images are what spawns. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
@@ -678,7 +679,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
   log, tracker and feed (item names only, never tooltip text) and carries
   each objective's target level range, computed once at load by
-  `validate.lua` (Lane Q0). The catalog requires only V1 overworld content; the Nether is
+  `validate.lua` (Lane Q0), and fills the quest text placeholders (Round 29
+  Q1): titles (`{name:...}` only) at load, texts on first display through
+  `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
+  `registry.lua` computes the copper of a quest without `rewards.copper`
+  (`quest_copper`). The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction

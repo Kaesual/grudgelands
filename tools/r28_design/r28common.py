@@ -21,6 +21,10 @@ REPO = Path(__file__).resolve().parents[2]
 DEFAULT_DESIGN = REPO / "docs" / "planning" / "round28" / "design"
 DEFAULT_EXISTING = REPO / "docs" / "planning" / "round28" / "items" / "existing.json"
 DEFAULT_MOBS = REPO / "docs" / "planning" / "round28" / "mobs" / "catalogue.json"
+# The shipped zone files (--game): spawn recipes and quest files live in the
+# game since Round 28; the catalogue stays in the design directory.
+GAME_ZONE_DIRS = (REPO / "mods" / "ENTITIES" / "grug_mobs" / "data" / "zones",
+                  REPO / "mods" / "PLAYER" / "grug_quests" / "data" / "zones")
 
 LEVEL_CAP = 60
 TIER_MULT = {"normal": 1, "elite": 4, "rare": 6}
@@ -159,8 +163,11 @@ class Design:
     """Every design file under one design directory, loaded leniently; the
     validator reports structural problems, the ledger only needs the data."""
 
-    def __init__(self, root):
+    def __init__(self, root, zone_dirs=None):
         self.root = Path(root)
+        # Where the zone files are read: the design's zones/ directory, or
+        # other directories (GAME_ZONE_DIRS for the shipped files).
+        self.zone_dirs = [Path(d) for d in zone_dirs] if zone_dirs else [self.root / "zones"]
         self.files = {}
         self.errors = []
         catalog = self.root / "catalog"
@@ -182,34 +189,45 @@ class Design:
         # zones/<host_zone>.front.quests.json: front quests (owned by the
         # front design lane) given by the host zone's givers on line `front`.
         self.front = {}
-        zones = self.root / "zones"
-        if zones.is_dir():
-            for path in sorted(zones.glob("*.spawns.json")):
-                zone = path.name[:-len(".spawns.json")]
-                data = self._read(path)
-                if data is not None:
-                    self.spawns[zone] = data
-            for path in sorted(zones.glob("*.quests.json")):
-                front = path.name.endswith(".front.quests.json")
-                zone = path.name[:-len(".front.quests.json" if front else ".quests.json")]
-                data = self._read(path)
-                if data is not None:
-                    (self.front if front else self.quests)[zone] = data
-            for path in sorted(zones.glob("*.catalog.json")):
-                zone = path.name[:-len(".catalog.json")]
-                data = self._read(path)
-                if data is None:
-                    continue
-                self.zone_catalogs[zone] = data
-                if not isinstance(data, dict):
-                    continue
-                rel = "zones/" + path.name
-                for key, rows, origin in (("subtypes", "subtypes", "subtype_origin"),
-                                          ("items", "items", "item_origin")):
-                    added = [row for row in data.get(key) or [] if isinstance(row, dict)]
-                    if added:
-                        setattr(self, rows, (getattr(self, rows) or []) + added)
-                        setattr(self, origin, getattr(self, origin) + [(rel, zone)] * len(added))
+        for zones in self.zone_dirs:
+            if zones.is_dir():
+                self._zones(zones)
+
+    def _zones(self, zones):
+        for path in sorted(zones.glob("*.spawns.json")):
+            zone = path.name[:-len(".spawns.json")]
+            data = self._read(path)
+            if data is not None:
+                self.spawns[zone] = data
+        for path in sorted(zones.glob("*.quests.json")):
+            front = path.name.endswith(".front.quests.json")
+            zone = path.name[:-len(".front.quests.json" if front else ".quests.json")]
+            data = self._read(path)
+            if data is not None:
+                (self.front if front else self.quests)[zone] = data
+        for path in sorted(zones.glob("*.catalog.json")):
+            zone = path.name[:-len(".catalog.json")]
+            data = self._read(path)
+            if data is None:
+                continue
+            self.zone_catalogs[zone] = data
+            if not isinstance(data, dict):
+                continue
+            rel = "zones/" + path.name
+            for key, rows, origin in (("subtypes", "subtypes", "subtype_origin"),
+                                      ("items", "items", "item_origin")):
+                added = [row for row in data.get(key) or [] if isinstance(row, dict)]
+                if added:
+                    setattr(self, rows, (getattr(self, rows) or []) + added)
+                    setattr(self, origin, getattr(self, origin) + [(rel, zone)] * len(added))
+
+    def zone_file(self, name):
+        """The path of a zone file (`<zone>.quests.json`, ...): where it was
+        read, else in the first zone directory."""
+        for zones in self.zone_dirs:
+            if (zones / name).exists():
+                return zones / name
+        return self.zone_dirs[0] / name
 
     def zone_quests(self, zone, lines=None):
         """The zone's own quests plus its front file's, optionally only the
@@ -822,6 +840,87 @@ def species_text(area):
     return "; ".join(parts)
 
 
+# --- zones and their gameplay level bands -----------------------------------
+
+SIMPLE_MAP = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "source" / "simple_map.lua"
+ZONE_BANDS = REPO / "mods" / "CORE" / "grug_core" / "zone_bands.lua"
+# zone(n,"id","Name","race",faction|false,"territory","pvp",lo,hi,...  ,true) = capital
+ZONE_ROW = re.compile(r'^\s*zone\((\d+),"(\w+)","([^"]*)","(\w+)",(false|"\w+"),"\w+","\w+",(\d+),(\d+),')
+
+
+def zone_band_overrides(path=ZONE_BANDS):
+    """{zone_id: (lo, hi)} of grug_core/zone_bands.lua (the gameplay bands
+    that differ from the mapgen's)."""
+    text = Path(path).read_text(encoding="utf-8")
+    block = re.search(r"M\.bands\s*=\s*\{(.*?)\n\}", text, re.S)
+    return {zone: (int(lo), int(hi)) for zone, lo, hi in
+            re.findall(r"(\w+)\s*=\s*\{\s*(\d+)\s*,\s*(\d+)\s*\}", block.group(1) if block else "")}
+
+
+def zone_records(source=SIMPLE_MAP):
+    """{zone_id: {"id", "number", "name", "race", "faction" ("accord",
+    "throng" or None for contested, front and island zones), "levels" (lo,
+    hi), "capital"}} of every zone: the mapgen's zone rows with the gameplay
+    level bands, as grug_zones serves them in the game."""
+    # The gameplay bands: today grug_core/zone_bands.lua over the mapgen rows.
+    # When the mapgen rows carry them (Round 29 lane M-geo deletes that file),
+    # this one line becomes `overrides = {}` (and zone_band_overrides goes).
+    overrides = zone_band_overrides()
+    out = {}
+    for line in Path(source).read_text(encoding="utf-8").splitlines():
+        m = ZONE_ROW.match(line)
+        if m:
+            number, zid, name, race, faction, lo, hi = m.groups()
+            out[zid] = {"id": zid, "number": int(number), "name": name, "race": race,
+                        "faction": None if faction == "false" else faction.strip('"'),
+                        "levels": overrides.get(zid, (int(lo), int(hi))),
+                        "capital": line.rstrip().endswith(",true),")}
+    if not out:
+        raise LoadError("%s: no zone rows found" % source)
+    return out
+
+
+def track_route(race, sister=None, records=None):
+    """The leveling route of a race (frame section 2.1, round29-quests-plan
+    section 3.1) as [(zone, lines, levels, label)] in play order: start zone
+    (1-10), home zone (11-20), own capital and heartland zone(s) (20-30) plus
+    an optional sister zone of the faction, the faction's three contested
+    zones (31-40, own race's first), then the two 41-50 and the two 51-60
+    zones together with the faction's front quests (line `front` of its
+    contested zones and capitals) of that band. `lines` is None (every line
+    but `front`) or ("front",); `levels` limits a host entry to the quests
+    whose reward level lies in that band."""
+    records = records or zone_records()
+    faction = RACE_FACTION.get(race)
+    if faction is None:
+        raise ValueError("unknown race %r (one of %s)" % (race, ", ".join(sorted(RACE_FACTION))))
+    zones = sorted(records.values(), key=lambda r: r["number"])
+
+    def pick(test):
+        return [r["id"] for r in zones if test(r)]
+
+    own = [r for r in zones if r["race"] == race and r["faction"] == faction]
+    route = [(z, None, None, "start") for z in pick(lambda r: r in own and r["levels"][0] == 1)]
+    route += [(z, None, None, "home") for z in pick(lambda r: r in own and r["levels"] == (11, 20))]
+    route += [(z, None, None, "capital") for z in pick(lambda r: r in own and r["capital"])]
+    route += [(z, None, None, "heartland") for z in
+              pick(lambda r: r in own and r["levels"] == (21, 30) and not r["capital"])]
+    if sister:
+        info = records.get(sister)
+        if not info or info["faction"] != faction or info["race"] == race or info["levels"][1] != 30:
+            raise ValueError("sister zone %r is not a 20-30 zone of another race of the %s" % (sister, faction))
+        route.append((sister, None, None, "sister"))
+    contested = pick(lambda r: r["faction"] is None and r["levels"] == (31, 40) and
+                     RACE_FACTION.get(r["race"]) == faction)
+    contested.sort(key=lambda z: records[z]["race"] != race)
+    route += [(z, None, None, "contested") for z in contested]
+    hosts = contested + pick(lambda r: r["faction"] == faction and r["capital"])
+    for band in ((41, 50), (51, 60)):
+        route += [(z, None, None, "front") for z in pick(lambda r: r["faction"] is None and r["levels"] == band)]
+        route += [(z, ("front",), band, "front quests") for z in hosts]
+    return route
+
+
 # --- zone atlas (optional) ------------------------------------------------
 
 # The atlas's `role` text -> the short zone role the tools use.
@@ -860,9 +959,14 @@ class Atlas:
         if not self.zones:
             raise LoadError("%s: no zone atlas JSON (<zone_id>.json with id and anchors)" % path)
         self.npc_zone = {}
+        # Named places of quest text placeholders ({dir_of:<place>:...}): a
+        # settlement key or the anchor id of a settlement (the game's
+        # settlement roster), any zone -> the place's name.
+        self.places = {}
         for zid, zone in self.zones.items():
             for npc in zone["npcs"]:
                 self.npc_zone[npc] = zid
+            self.places.update(zone["places"])
 
     def _zone(self, rec):
         role_text = str(rec.get("role") or "")
@@ -873,11 +977,13 @@ class Atlas:
             # Contested 31-40 zones belong to their race's faction (shared per
             # faction); front zones and islands to nobody.
             faction = RACE_FACTION.get(race) if role == "contested" else None
-        anchors, anchor_kinds, anchor_pos, anchor_refs = {}, {}, {}, {}
+        anchors, anchor_kinds, anchor_pos, anchor_refs, places = {}, {}, {}, {}, {}
         for anchor in rec.get("anchors") or []:
             aid = anchor.get("id")
             if not aid:
                 continue
+            if anchor.get("settlement_key"):
+                places[aid] = places[anchor["settlement_key"]] = anchor.get("name")
             anchor_kinds[aid] = anchor.get("kind")
             # The spawn recipe's `from` names an anchor by id or slot only.
             for ref in (aid, anchor.get("slot")):
@@ -928,7 +1034,7 @@ class Atlas:
             "biomes": biomes, "palette": palette, "anchor_pos": anchor_pos, "extent": extent,
             "hub": (hub["x"], hub["z"]) if isinstance(hub.get("x"), int) else None,
             "borders": borders, "front_sign": -1 if axis.startswith("-") else 1,
-            "free_sockets": free_sockets,
+            "free_sockets": free_sockets, "places": places,
             # Camp POIs (bandit, mirefolk, guard post) for a recipe camp's
             # site; None for an atlas file without `camps`.
             "pois": [{"poi": c.get("type"), "name": c.get("name"), "anchor": c.get("anchor")}

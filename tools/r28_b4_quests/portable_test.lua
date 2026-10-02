@@ -330,16 +330,30 @@ local function subtypes_appended(got, expected)
 	end
 	return json.encode(got) == json.encode(was)
 end
+-- Round 29 Q1: no fixed compass word in a quest text; two legacy texts
+-- changed only that word (title or description; beside it at most the
+-- appended sub-types above).
+local COMPASS_EDITS = {r15_human_local_04 = "A Clear Lookout",
+	r20_anchor_014_01 = "beside Tarnwatch's bent lane"}
+local function compass_edit(id, got, expected)
+	if not got or not COMPASS_EDITS[id] then return false end
+	local was = deep_copy(expected)
+	was.title, was.description = got.title, got.description
+	return subtypes_appended(got, was) and
+		(got.title .. got.description):find(COMPASS_EDITS[id], 1, true) ~= nil
+end
 table.sort(differing)
 local unexplained, recipe_subtypes = {}, 0
 for _, id in ipairs(differing) do
 	if DAWNMERE[id] then DAWNMERE[id] = "seen"
+	elseif compass_edit(id, now.quests[id], oracle.quests[id]) then COMPASS_EDITS[id] = "seen"
 	elseif subtypes_appended(now.quests[id], oracle.quests[id]) then recipe_subtypes = recipe_subtypes + 1
 	else unexplained[#unexplained + 1] = id end
 end
 eq(table.concat(unexplained, " "), "", "beyond the three Dawnmere kill quests (Ruling 29, Lane S1) " ..
 	"only appended kill sub-types and dropped unspawned targets differ (S2 rule 11, R29 P3)")
 for id, seen in pairs(DAWNMERE) do eq(seen, "seen", id .. " differs from the oracle") end
+for id, seen in pairs(COMPASS_EDITS) do eq(seen, "seen", id .. ": only the compass word changed") end
 print(("  %d further legacy kill quests take their zone recipe's sub-types"):format(recipe_subtypes))
 for id, mobs in pairs({
 	r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},

@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "Crop Thieves",
-      "text": "During the day, Small Boars have been stealing our crops south of town. Drive them off before the harvest is gone.",
+      "text": "During the day, Small Boars have been stealing our crops {zone_area:home_fields}. Drive them off before the harvest is gone.",
       "objectives": [
         {
           "type": "kill",
@@ -63,7 +63,7 @@
         "sample_hunt_01"
       ],
       "title": "Night Gnawers",
-      "text": "Large Rats roam south of town after nightfall. Thin them out before they reach the granary.",
+      "text": "Large Rats roam {dir_of:dawnmere:home_fields} after nightfall. Thin them out before they reach the granary.",
       "objectives": [
         {
           "type": "kill",
@@ -120,8 +120,8 @@
       "requires": [
         "sample_hunt_03"
       ],
-      "title": "The Chief's Ledger",
-      "text": "Confused Bandits camp near the border, day and night. Scatter them and bring back the chief's ledger.",
+      "title": "The Ledger of the {name:confused_bandit_chief}",
+      "text": "Confused Bandits hold the {name:border_bandits} {dir_from_giver:border_bandits}, day and night. Scatter them and bring back the chief's ledger.",
       "objectives": [
         {
           "type": "kill",
@@ -193,7 +193,7 @@
         "sample_tools_01"
       ],
       "title": "Logs for the Fence",
-      "text": "The fence needs mending. Bring five logs of any tree from the woods east of town.",
+      "text": "The fence needs mending. Bring five logs of any tree from the woods near town.",
       "objectives": [
         {
           "type": "item",
@@ -264,7 +264,7 @@
       "level": 2,
       "requires": [],
       "title": "Meat for the Pot",
-      "text": "Bring me five pieces of raw meat. Boars graze south of town by day. Raw meat goes into the oven, not your mouth.",
+      "text": "Bring me five pieces of raw meat. Boars graze {zone_area:meadows} by day. Raw meat goes into the oven, not your mouth.",
       "objectives": [
         {
           "type": "item",

@@ -231,7 +231,7 @@ function Q.journal(player)
 	for _, id in ipairs(ids) do
 		local def = Q.registered_quests[id]
 		local objectives, ready = progress(player, def, state.active[id], counts)
-		rows[#rows + 1] = {id = id, title = def.title, description = def.description,
+		rows[#rows + 1] = {id = id, title = def.title, description = Q.quest_text(def),
 			objectives = objectives, ready = ready, npc = def.turnin_npc,
 			repeatable = def.repeatable ~= nil, travel = Q.is_travel(def),
 			rewards = table.copy(def.rewards), reward_xp = Q.reward_xp(def)}

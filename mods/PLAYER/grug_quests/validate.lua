@@ -25,6 +25,7 @@ V.FRONT_LINE = "front"
 V.LEGACY_GUARDS = {["grug_mobs:guard_accord"] = true, ["grug_mobs:guard_throng"] = true}
 
 local SNAKE = "^[a-z][a-z0-9_]*$"
+local P = Q.placeholders
 V.RACES = {dwarf = true, human = true, elf = true, undead = true, orc = true, troll = true}
 
 local function int(value, lo, hi)
@@ -140,6 +141,30 @@ local function check_rewards(add, where, rewards)
 		if type(item) ~= "table" or type(item.item) ~= "string" or
 				(item.count ~= nil and not int(item.count, 1)) then
 			add(where, ("reward item %d must be {\"item\": id, \"count\": n >= 1} [E-rewards]"):format(i))
+		end
+	end
+end
+
+-- Placeholders and compass words in the title and text (Round 29 Q1,
+-- labels.lua): the placeholder syntax, directions only in the text, no fixed
+-- compass word. Whether each target and place exists is a world check.
+local function check_texts(add, where, quest)
+	for _, key in ipairs({"title", "text"}) do
+		if text(quest[key]) then
+			local found, problems = P.scan(quest[key])
+			for _, problem in ipairs(problems) do
+				add(where, ("%s: %s [E-placeholder]"):format(key, problem))
+			end
+			for _, p in ipairs(found) do
+				if key == "title" and P.DIRECTIONS[p.kind] then
+					add(where, ("title: %s: a title takes only {name:...}; directions belong in the text " ..
+						"[E-placeholder]"):format(p.raw))
+				end
+			end
+			for _, word in ipairs(P.compass_words(quest[key])) do
+				add(where, ("%s: fixed compass word '%s'; write a direction placeholder or neutral " ..
+					"wording [E-compass]"):format(key, word))
+			end
 		end
 	end
 end
@@ -270,6 +295,7 @@ function V.structure(files, npcs)
 			end
 			if not text(quest.title) then add(where, "title must be a non-empty string [E-text]") end
 			if not text(quest.text) then add(where, "text must be a non-empty string [E-text]") end
+			check_texts(add, where, quest)
 			if type(quest.objectives) ~= "table" or #quest.objectives == 0 then
 				add(where, "objectives must be a non-empty list [E-objective]")
 			else
@@ -431,6 +457,29 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(kill_zone))
 end
 
+-- Every placeholder's target (a kind or camp of the zone's recipe or a
+-- leader) and place (a settlement key or anchor id) exists. "From here"
+-- points at a compact target: an open kind spreads over many patches, so it
+-- takes the zone phrasing or a named place (a warning).
+local function check_placeholders(add, warn, where, world, zone, quest)
+	for _, key in ipairs({"title", "text"}) do
+		for _, p in ipairs((P.scan(quest[key]))) do
+			local ref = p.args[#p.args]
+			local target, reason = world.placeholder_target(zone, ref)
+			if not target then
+				add(where, ("%s: %s: %s [E-placeholder-target]"):format(key, p.raw, tostring(reason)))
+			elseif p.kind == "dir_from_giver" and target.type == "open" then
+				warn(where, ("%s: %s: %s is an open kind spread over many patches; use {zone_area:...} or " ..
+					"{dir_of:<place>:...} [W-placeholder-spread]"):format(key, p.raw, ref))
+			end
+			if p.kind == "dir_of" and not world.place(p.args[1]) then
+				add(where, ("%s: %s: %s is not a settlement key or anchor id [E-placeholder-place]")
+					:format(key, p.raw, p.args[1]))
+			end
+		end
+	end
+end
+
 -- Roles, areas, levels and items against the registries. Returns the errors
 -- and the warnings.
 function V.world(files, world)
@@ -471,6 +520,7 @@ function V.world(files, world)
 		for _, item in ipairs(quest.rewards.items or {}) do
 			check_item(add, row.where, world, item.item, "reward item")
 		end
+		check_placeholders(add, warn, row.where, world, zone, quest)
 	end
 	return errors, warnings
 end
