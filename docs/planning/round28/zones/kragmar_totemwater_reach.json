@@ -106,33 +106,24 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:bog_fowl",
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:parrot",
-   "grug_mobs:tapir"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:reed_crocodile",
+   "grug_mobs:reed_jungle_lynx",
+   "grug_mobs:reed_tapir",
+   "grug_mobs:sullen_bog_ooze"
   ],
-  "density_budget_day": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:tapir"
-  ],
-  "density_budget_night": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:wisp"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:wisp"
+   "grug_mobs:reed_crocodile",
+   "grug_mobs:sullen_bog_ooze",
+   "grug_mobs:wandering_wisp"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 10960,
+  "bank_sand_area_nodes2": 10992,
   "bay_water_area_nodes2": 0,
   "beaches": [
    {
@@ -172,7 +163,7 @@
     ]
    },
    {
-    "area_nodes2": 5040,
+    "area_nodes2": 5024,
     "box": {
      "max_x": 2620,
      "max_z": 1744,
@@ -227,7 +218,7 @@
    }
   ],
   "inland_water_area_nodes2": 19056,
-  "sea_beach_sand_area_nodes2": 50992,
+  "sea_beach_sand_area_nodes2": 50976,
   "sea_coast_length_nodes": 2564
  },
  "drift_band_share_pct": 1.8,
@@ -280,7 +271,6 @@
   "kragmar_thunderroot_wilds"
  ],
  "numeric_id": 31,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -331,13 +321,14 @@
    "id": "r20_anchor_047_02",
    "min_level": 21,
    "objectives": [
-    "kill 3 crocodile [in kragmar_totemwater_reach]"
+    "kill 3 crocodile or reed_crocodile [in kragmar_totemwater_reach]"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:crocodile"
+      "grug_mobs:crocodile",
+      "grug_mobs:reed_crocodile"
      ],
      "type": "kill",
      "zone": "kragmar_totemwater_reach"
@@ -358,13 +349,14 @@
    "id": "r20_anchor_047_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 bog_ooze [in kragmar_totemwater_reach]"
+    "kill 4 bog_ooze or sullen_bog_ooze [in kragmar_totemwater_reach]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:bog_ooze"
+      "grug_mobs:bog_ooze",
+      "grug_mobs:sullen_bog_ooze"
      ],
      "type": "kill",
      "zone": "kragmar_totemwater_reach"
@@ -401,7 +393,7 @@
     1349
    ],
    "from": "anchor_047 (Totemwater Post, kragmar_totemwater_reach)",
-   "id": 48,
+   "id": 49,
    "kind": "trail",
    "last_in_zone": [
     2142,
@@ -443,18 +435,18 @@
    "distances": {
     "hubs": [
      {
+      "name": "Thunderstep Watch",
+      "road": 1071,
+      "straight": 844,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
       "name": "Kezamba",
       "road": 1158,
       "straight": 618,
       "to": "kezamba",
       "zone": "kragmar_kezamba"
-     },
-     {
-      "name": "Thunderstep Watch",
-      "road": 1191,
-      "straight": 943,
-      "to": "r20_anchor_048",
-      "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Raincall Bandit Camp",
@@ -554,42 +546,49 @@
   {
    "day": {
     "levels": [
-     21,
+     25,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 25.4
+    "share_pct": 4.6
    },
-   "disposition": "critter",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_fowl",
-   "name": "Bog Fowl",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
    "night": null
   },
   {
    "day": {
     "levels": [
      21,
-     30
+     24
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 25.4
+    "share_pct": 4.0
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 8.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_ooze",
-   "name": "Bog Ooze",
+   "hosts": [],
+   "mob": "grug_mobs:reed_crocodile",
+   "name": "Reed Crocodile",
    "night": {
     "levels": [
      21,
-     30
+     23
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 25.4
+    "share_pct": 1.6
    }
   },
   {
@@ -598,40 +597,12 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 25.4
+    "share_pct": 66.7
    },
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:crocodile",
-   "name": "Crocodile",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 25.4
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 74.6
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:jungle_lynx",
-   "name": "Jungle Lynx",
+   "hosts": [],
+   "mob": "grug_mobs:reed_jungle_lynx",
+   "name": "Reed Jungle Lynx",
    "night": null
   },
   {
@@ -640,20 +611,17 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 36.8
+    "share_pct": 60.2
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter"
-   ],
-   "mob": "grug_mobs:parrot",
-   "name": "Parrot",
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:reed_tapir",
+   "name": "Reed Tapir",
    "night": null
   },
   {
    "day": {
-    "area_nodes2": 50992,
+    "area_nodes2": 50976,
     "levels": [
      21,
      30
@@ -666,7 +634,7 @@
    "mob": "grug_mobs:shore_crab",
    "name": "Shore Crab",
    "night": {
-    "area_nodes2": 50992,
+    "area_nodes2": 50976,
     "levels": [
      21,
      30
@@ -678,40 +646,34 @@
    "day": {
     "levels": [
      21,
-     30
+     23
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 74.6
+    "share_pct": 8.4
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:tapir",
-   "name": "Tapir",
-   "night": null
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:sullen_bog_ooze",
+   "name": "Bubbling Bog Ooze",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 28.3
+   }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:wisp",
-   "name": "Wisp",
+   "hosts": [],
+   "mob": "grug_mobs:wandering_wisp",
+   "name": "Wandering Wisp",
    "night": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 98.4
    }
   }
  ],

@@ -63,22 +63,25 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit"
+   "grug_mobs:aggressive_boar",
+   "grug_mobs:braindead_zombie",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:giant_crab",
+   "grug_mobs:quiet_shore_crab",
+   "grug_mobs:sluggish_zombie",
+   "grug_mobs:small_boar",
+   "grug_mobs:young_gaunt_stag"
   ],
-  "density_budget_day": [
-   "grug_mobs:plague_boar"
-  ],
-  "density_budget_night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:zombie"
+   "grug_mobs:braindead_zombie",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:drowned_zombie",
+   "grug_mobs:large_rat",
+   "grug_mobs:monstrous_rat",
+   "grug_mobs:rabid_rat",
+   "grug_mobs:sluggish_zombie"
   ]
  },
  "civic_no_hostiles": false,
@@ -319,7 +322,6 @@
   "kragmar_ossuary_reach"
  ],
  "numeric_id": 17,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [],
@@ -352,16 +354,16 @@
    "id": "r14_undead_01_boars_in_the_dead_furrows",
    "min_level": 1,
    "objectives": [
-    "kill 3 plague_boar"
+    "kill 3 plague_boar or small_boar"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:plague_boar"
+      "grug_mobs:plague_boar",
+      "grug_mobs:small_boar"
      ],
-     "type": "kill",
-     "zone": false
+     "type": "kill"
     }
    ],
    "prerequisites": [],
@@ -408,7 +410,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a wood axe",
      "item": "grug_materials:axe_wood",
      "type": "item"
     }
@@ -457,7 +458,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a stone pick",
      "item": "grug_materials:pick_stone",
      "type": "item"
     }
@@ -505,13 +505,15 @@
    "id": "r14_undead_04_the_uncalled_dead",
    "min_level": 4,
    "objectives": [
-    "kill 3 zombie"
+    "kill 3 zombie or braindead_zombie or sluggish_zombie"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:zombie"
+      "grug_mobs:zombie",
+      "grug_mobs:braindead_zombie",
+      "grug_mobs:sluggish_zombie"
      ],
      "type": "kill"
     }
@@ -688,28 +690,28 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 1302,
+      "road": 1265,
       "straight": 1050,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1742,
+      "road": 1727,
       "straight": 1113,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1927,
+      "road": 1969,
       "straight": 539,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 2087,
+      "road": 1985,
       "straight": 1397,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
@@ -846,66 +848,142 @@
  ],
  "spawns": [
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:giant_rat",
-   "name": "Giant Rat",
-   "night": {
+   "day": {
     "levels": [
-     1,
+     5,
      10
     ],
-    "policy_share_pct": 96.6,
-    "share_pct": 85.8
+    "share_pct": 47.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:aggressive_boar",
+   "name": "Aggressive Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     3,
+     4
+    ],
+    "share_pct": 30.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:braindead_zombie",
+   "name": "Braindead Zombie",
+   "night": {
+    "levels": [
+     3,
+     4
+    ],
+    "share_pct": 33.3
    }
   },
   {
    "day": {
     "levels": [
-     1,
+     9,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 93.7
+    "share_pct": 1.3
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:sand",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:hare",
-   "name": "Hare",
-   "night": null
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:confused_bandit",
+   "name": "Confused Bandit",
+   "night": {
+    "levels": [
+     9,
+     10
+    ],
+    "share_pct": 1.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:drowned_zombie",
+   "name": "Monstrous Drowned Zombie",
+   "night": {
+    "levels": [
+     8,
+     10
+    ],
+    "share_pct": 28.8
+   }
   },
   {
    "day": {
     "levels": [
-     1,
+     7,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 5.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:giant_crab",
+   "name": "Monstrous Crab",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:large_rat",
+   "name": "Large Rat",
+   "night": {
+    "levels": [
+     1,
+     4
+    ],
+    "share_pct": 32.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_rat",
+   "name": "Monstrous Rat",
+   "night": {
+    "levels": [
+     8,
+     10
+    ],
+    "share_pct": 27.2
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     3,
+     6
+    ],
+    "share_pct": 7.2
    },
    "disposition": "neutral",
-   "hosts": [
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:plague_boar",
-   "name": "Plague Boar",
+   "hosts": [],
+   "mob": "grug_mobs:quiet_shore_crab",
+   "name": "Small Crab",
    "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_rat",
+   "name": "Aggressive Rat",
+   "night": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 20.3
+   }
   },
   {
    "day": {
@@ -933,38 +1011,50 @@
   {
    "day": {
     "levels": [
-     3,
-     10
+     5,
+     7
     ],
-    "policy_share_pct": 81.1,
-    "share_pct": 81.1
+    "share_pct": 5.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:sluggish_zombie",
+   "name": "Sluggish Zombie",
    "night": {
     "levels": [
-     3,
-     10
+     5,
+     7
     ],
-    "policy_share_pct": 89.7,
-    "share_pct": 83.4
+    "share_pct": 29.7
    }
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     4
+    ],
+    "share_pct": 37.0
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:small_boar",
+   "name": "Small Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 25.6
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_gaunt_stag",
+   "name": "Young Gaunt Stag",
+   "night": null
   }
  ],
  "start_rings": {

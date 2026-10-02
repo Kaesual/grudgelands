@@ -55,29 +55,29 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:plains_runner",
-   "grug_mobs:rabbit",
-   "grug_mobs:scorpion"
+   "grug_mobs:aggressive_boar",
+   "grug_mobs:befuddled_husk",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:giant_crab",
+   "grug_mobs:giant_scorpion",
+   "grug_mobs:irritable_scorpion",
+   "grug_mobs:quiet_shore_crab",
+   "grug_mobs:sluggish_husk",
+   "grug_mobs:small_boar",
+   "grug_mobs:young_plains_runner"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:plains_runner",
-   "grug_mobs:scorpion"
-  ],
-  "density_budget_night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:scorpion",
-   "grug_mobs:sun_dried_husk"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:scorpion",
-   "grug_mobs:sun_dried_husk",
-   "grug_mobs:zombie"
+   "grug_mobs:befuddled_husk",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:giant_scorpion",
+   "grug_mobs:irritable_scorpion",
+   "grug_mobs:large_rat",
+   "grug_mobs:monstrous_rat",
+   "grug_mobs:rabid_rat",
+   "grug_mobs:salt_caked_husk",
+   "grug_mobs:sluggish_husk"
   ]
  },
  "civic_no_hostiles": false,
@@ -300,7 +300,6 @@
   "kragmar_speargrass_reach"
  ],
  "numeric_id": 22,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [],
@@ -333,16 +332,16 @@
    "id": "r14_orc_01_tusks_at_the_water_skins",
    "min_level": 1,
    "objectives": [
-    "kill 3 boar"
+    "kill 3 boar or small_boar"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:boar"
+      "grug_mobs:boar",
+      "grug_mobs:small_boar"
      ],
-     "type": "kill",
-     "zone": false
+     "type": "kill"
     }
    ],
    "prerequisites": [],
@@ -389,7 +388,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a wood axe",
      "item": "grug_materials:axe_wood",
      "type": "item"
     }
@@ -438,7 +436,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a stone pick",
      "item": "grug_materials:pick_stone",
      "type": "item"
     }
@@ -486,13 +483,15 @@
    "id": "r14_orc_04_the_thirsting_dead",
    "min_level": 5,
    "objectives": [
-    "kill 3 sun_dried_husk"
+    "kill 3 sun_dried_husk or befuddled_husk or sluggish_husk"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:sun_dried_husk"
+      "grug_mobs:sun_dried_husk",
+      "grug_mobs:befuddled_husk",
+      "grug_mobs:sluggish_husk"
      ],
      "type": "kill"
     }
@@ -514,16 +513,16 @@
    "id": "r14_orc_05_shells_by_the_bedrolls",
    "min_level": 5,
    "objectives": [
-    "kill 5 scorpion"
+    "kill 5 scorpion or irritable_scorpion"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:scorpion"
+      "grug_mobs:scorpion",
+      "grug_mobs:irritable_scorpion"
      ],
-     "type": "kill",
-     "zone": false
+     "type": "kill"
     }
    ],
    "prerequisites": [
@@ -649,7 +648,7 @@
     2254
    ],
    "from": "anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna)",
-   "id": 43,
+   "id": 44,
    "kind": "trail",
    "last_in_zone": [
     -22,
@@ -870,115 +869,179 @@
   {
    "day": {
     "levels": [
-     1,
+     8,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 26.6
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:aggressive_boar",
+   "name": "Aggressive Boar",
    "night": null
   },
   {
-   "day": null,
+   "day": {
+    "levels": [
+     3,
+     4
+    ],
+    "share_pct": 28.3
+   },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:giant_rat",
-   "name": "Giant Rat",
+   "hosts": [],
+   "mob": "grug_mobs:befuddled_husk",
+   "name": "Braindead Sun-Dried Husk",
    "night": {
     "levels": [
-     1,
-     10
+     3,
+     4
     ],
-    "policy_share_pct": 96.5,
-    "share_pct": 84.0
+    "share_pct": 32.2
    }
   },
   {
    "day": {
     "levels": [
-     1,
+     9,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 87.6
-   },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:sand",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:hare",
-   "name": "Hare",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     1,
-     10
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 87.6
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass"
-   ],
-   "mob": "grug_mobs:plains_runner",
-   "name": "Plains Runner",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     4,
-     10
-    ],
-    "policy_share_pct": 33.5,
-    "share_pct": 33.5
+    "share_pct": 1.3
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:scorpion",
-   "name": "Scorpion",
+   "hosts": [],
+   "mob": "grug_mobs:confused_bandit",
+   "name": "Confused Bandit",
    "night": {
     "levels": [
-     4,
+     9,
      10
     ],
-    "policy_share_pct": 33.5,
-    "share_pct": 33.5
+    "share_pct": 1.3
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     7,
+     10
+    ],
+    "share_pct": 6.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:giant_crab",
+   "name": "Monstrous Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     8,
+     9
+    ],
+    "share_pct": 26.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:giant_scorpion",
+   "name": "Monstrous Scorpion",
+   "night": {
+    "levels": [
+     8,
+     9
+    ],
+    "share_pct": 26.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 25.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:irritable_scorpion",
+   "name": "Aggressive Scorpion",
+   "night": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 1.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:large_rat",
+   "name": "Large Rat",
+   "night": {
+    "levels": [
+     1,
+     4
+    ],
+    "share_pct": 34.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_rat",
+   "name": "Monstrous Rat",
+   "night": {
+    "levels": [
+     8,
+     10
+    ],
+    "share_pct": 28.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     3,
+     6
+    ],
+    "share_pct": 8.2
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:quiet_shore_crab",
+   "name": "Small Crab",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_rat",
+   "name": "Aggressive Rat",
+   "night": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 23.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:salt_caked_husk",
+   "name": "Monstrous Salt-Caked Husk",
+   "night": {
+    "levels": [
+     8,
+     9
+    ],
+    "share_pct": 2.1
    }
   },
   {
@@ -1005,22 +1068,52 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
+   "day": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 1.9
+   },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:sun_dried_husk",
-   "name": "Sun-Dried Husk",
+   "hosts": [],
+   "mob": "grug_mobs:sluggish_husk",
+   "name": "Sluggish Sun-Dried Husk",
    "night": {
     "levels": [
-     4,
-     10
+     5,
+     7
     ],
-    "policy_share_pct": 33.5,
-    "share_pct": 33.5
+    "share_pct": 30.0
    }
+  },
+  {
+   "day": {
+    "levels": [
+     1,
+     4
+    ],
+    "share_pct": 36.2
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:small_boar",
+   "name": "Small Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 23.7
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_plains_runner",
+   "name": "Young Plains Runner",
+   "night": null
   }
  ],
  "start_rings": {

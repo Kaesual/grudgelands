@@ -78,10 +78,20 @@
  "camps": [],
  "capital_street_count": 14,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:orchard_fox",
+   "grug_mobs:redfang_fox",
+   "grug_mobs:unlicensed_poacher"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_zombie",
+   "grug_mobs:stubborn_zombie",
+   "grug_mobs:toll_bandit",
+   "grug_mobs:unlicensed_poacher"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
@@ -133,7 +143,7 @@
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/elandor_lethariel.png",
  "name": "Lethariel",
  "neighbors": [
@@ -143,7 +153,6 @@
   "elandor_starbough_vale"
  ],
  "numeric_id": 13,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
    "area_nodes2": 158548,
@@ -418,7 +427,7 @@
   {
    "first_in_zone": [
     1835,
-    -1006
+    -1007
    ],
    "from": "anchor_036 (Glassroot Gate, elandor_glassroot_wilds)",
    "id": 14,
@@ -428,43 +437,39 @@
     -1232
    ],
    "length_in_zone": 242,
-   "length_total": 897,
+   "length_total": 766,
    "polyline_simplified": [
     [
-     1924,
-     -578
+     1935,
+     -698
     ],
     [
-     1908,
-     -629
+     1947,
+     -768
     ],
     [
-     1952,
-     -762
-    ],
-    [
-     1857,
+     1858,
      -708
     ],
     [
-     1827,
-     -746
+     1825,
+     -753
     ],
     [
-     1826,
-     -846
+     1825,
+     -850
     ],
     [
      1796,
-     -915
+     -916
     ],
     [
-     1832,
-     -977
+     1834,
+     -983
     ],
     [
      1839,
-     -1082
+     -1083
     ],
     [
      1776,
@@ -475,18 +480,18 @@
   },
   {
    "first_in_zone": [
-    2129,
+    2130,
     -1275
    ],
    "from": "anchor_035 (Moonfall Observatory, elandor_moonfall_wood)",
-   "id": 39,
+   "id": 40,
    "kind": "trail",
    "last_in_zone": [
-    1833,
+    1834,
     -1100
    ],
-   "length_in_zone": 348,
-   "length_total": 667,
+   "length_in_zone": 350,
+   "length_total": 668,
    "polyline_simplified": [
     [
      2366,
@@ -497,15 +502,15 @@
      -1383
     ],
     [
-     2256,
-     -1394
+     2258,
+     -1395
     ],
     [
      2161,
      -1288
     ],
     [
-     1833,
+     1834,
      -1100
     ]
    ],
@@ -517,7 +522,7 @@
     -1232
    ],
    "from": "end:14",
-   "id": 150,
+   "id": 153,
    "kind": "secondary",
    "last_in_zone": [
     1774,
@@ -543,7 +548,7 @@
     -1489
    ],
    "from": "end:2",
-   "id": 151,
+   "id": 154,
    "kind": "primary",
    "last_in_zone": [
     1658,
@@ -573,7 +578,7 @@
     -1760
    ],
    "from": "end:5",
-   "id": 152,
+   "id": 155,
    "kind": "primary",
    "last_in_zone": [
     1795,
@@ -635,18 +640,18 @@
       "zone": "elandor_lorindor"
      },
      {
+      "name": "Glassroot Gate",
+      "road": 1133,
+      "straight": 825,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
+     },
+     {
       "name": "Starbough Outpost",
       "road": 1176,
       "straight": 671,
       "to": "starbough_outpost",
       "zone": "elandor_starbough_vale"
-     },
-     {
-      "name": "Moonfall Observatory",
-      "road": 1180,
-      "straight": 602,
-      "to": "r20_anchor_035",
-      "zone": "elandor_moonfall_wood"
      }
     ],
     "nearest_other_zone_land": {
@@ -1072,7 +1077,112 @@
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_zombie",
+   "name": "Debtbound Zombie",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 69.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 58.8
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 69.8
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:orchard_fox",
+   "name": "Orchard Fox",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     25,
+     30
+    ],
+    "share_pct": 68.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:redfang_fox",
+   "name": "Redfang Vixen",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_zombie",
+   "name": "Tithe Revenant",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 68.5
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     23
+    ],
+    "share_pct": 28.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:unlicensed_poacher",
+   "name": "Unlicensed Poacher",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 30.2
+   }
+  }
+ ],
  "territory_rule": "accord_home",
  "track_order": 3
 }

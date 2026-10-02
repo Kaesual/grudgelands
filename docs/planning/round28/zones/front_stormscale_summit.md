@@ -48,22 +48,23 @@ Share of land per level: L60 100.0%
 
 No quest is given in this zone today.
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| bog_witch | Bog Witch | aggressive | - | 63.5% of land, L60 | dirt_with_rainforest_litter, dirt_with_bone_litter, dirt_with_canopy_litter, mud |
-| carrion_crow | Carrion Crow | neutral | 86.8% of land, L60 | 86.8% of land, L60 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, snowblock … |
+| glass_fang_serpent | Glass-Fang Serpent | aggressive | 52.7% of land, L60 | - |  |
+| glass_knuckle_ape | Glass-Knuckle Jungle Ape | aggressive | 45.5% of land, L60 | - |  |
+| glass_shadow_panther | Glass-Shadow Panther | aggressive | - | 45.5% of land, L60 |  |
+| glass_web_spider | Glass-Web Jungle Spider | aggressive | - | 45.5% of land, L60 |  |
 | gull | Gull | critter | 33888 nodes² | - | sand |
-| jungle_ape | Jungle Ape | aggressive | 57.4% of land, L60 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| jungle_spider | Jungle Spider | aggressive | - | 57.4% of land, L60 | dirt_with_rainforest_litter, dirt_with_canopy_litter, dirt_with_forest_litter, dirt_with_silver_litter |
-| panther | Panther | aggressive | - | 57.4% of land, L60 | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| rift_spawn | Rift Spawn | aggressive | - | 57.4% of land, L60 | dirt_with_rainforest_litter, gravel, snowblock, dirt_with_bone_litter, dirt_with_canopy_litter |
-| serpent | Serpent | aggressive | 63.5% of land, L60 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter, mud |
-| skeleton_raider | Skeleton Raider | aggressive | - | 100.0% of land, L60 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| zombie | Zombie | aggressive | - | 100.0% of land, L60 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| last_pay_archer | Last-Pay Archer | aggressive | 25.9% of land, L60 | 25.9% of land, L60 |  |
+| last_watch_husk | Last-Watch Mummy | aggressive | 28.6% of land, L60 | - |  |
+| last_watch_skeleton_raider | Last-Watch Skeleton Raider | aggressive | - | 25.9% of land, L60 |  |
+| last_watch_zombie | Last Watchman | aggressive | - | 28.6% of land, L60 |  |
+| salt_hex_witch | Salt-Hex Bog Witch | aggressive | - | 28.6% of land, L60 |  |
+| watchful_carrion_crow | Battlefield Crow | neutral | 47.3% of land, L60 | - |  |
 
 **Rares (knowledge rewards, not quest targets):** Emerald Coil (serpent, the deep jungle, route 2952,-144 → 3016,-80 → 3056,-136, L60, respawn 2-4 h)
 

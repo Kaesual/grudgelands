@@ -72,34 +72,42 @@ Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_stat
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 512 (coastal_shelf), S 284 (kragmar_mournfen), E 340 (coastal_shelf), W 668 (coastal_shelf); nearest other-zone land 254 SW; sea 336 E; sea-beach sand 320 E; nearest road 64.
-Nearest hubs (straight / by road): Mournfen Village 539 / 592; Mournfen Outpost 541 / 761; Nhal Veyr 1050 / 1302; Ossuary Ledgerstead 1113 / 1742; Mournfen Bandit Camp 539 / 1927.
+Nearest hubs (straight / by road): Mournfen Village 539 / 592; Mournfen Outpost 541 / 761; Nhal Veyr 1050 / 1265; Ossuary Ledgerstead 1113 / 1727; Mournfen Bandit Camp 539 / 1969.
 
 ### Current quests (10, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_undead_01_boars_in_the_dead_furrows | Boars in the Dead Furrows | Veyra Pall (Stillgrave) | 1 | kill 3 plague_boar | 20 | - |
+| r14_undead_01_boars_in_the_dead_furrows | Boars in the Dead Furrows | Veyra Pall (Stillgrave) | 1 | kill 3 plague_boar or small_boar | 20 | - |
 | r14_undead_02_salt_for_what_remains | Salt for What Remains | Neral Saltkeeper (Stillgrave) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_undead_10_a_handle_that_will_not_rot | A Handle That Will Not Rot | Veyra Pall (Stillgrave) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_undead_start_cook | Salt Against the Damp | Neral Saltkeeper (Stillgrave) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_undead_11_a_pick_among_headstones | A Pick Among Headstones | Veyra Pall (Stillgrave) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_undead_10_a_handle_that_will_not_rot |
 | r14_undead_03_gnawing_in_the_crypt_stores | Dry Shelves for the Crypt Stores | Veyra Pall (Stillgrave) | 3 | bring 6 grug_trees:gravewood_wood | 100 | r14_undead_01_boars_in_the_dead_furrows |
-| r14_undead_04_the_uncalled_dead | The Uncalled Dead | Veyra Pall (Stillgrave) | 4 | kill 3 zombie | 140 | r14_undead_01_boars_in_the_dead_furrows |
+| r14_undead_04_the_uncalled_dead | The Uncalled Dead | Veyra Pall (Stillgrave) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_undead_01_boars_in_the_dead_furrows |
 | r14_undead_05_furrows_gone_sour | Stones Against the Sour Furrows | Veyra Pall (Stillgrave) | 5 | bring 8 default:cobble | 180 | r14_undead_03_gnawing_in_the_crypt_stores |
 | r14_undead_06_tusks_along_the_fen_road | The Road to Mordec Silt | Veyra Pall (Stillgrave) | 10 | talk to Mordec Silt (mournfen_village) | 285 | r14_undead_05_furrows_gone_sour |
 | r20_undead_capital_intro | The Road to Nhal Veyr | Veyra Pall (Stillgrave) | 10 | talk to Ossa Quietregister (nhal_veyr) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| giant_rat | Giant Rat | aggressive | - | 85.8% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| hare | Hare | critter | 93.7% of land, L1-10 | - | dirt_with_rainforest_litter, dry_dirt_with_dry_grass, sand, blight_dirt, mud |
-| plague_boar | Plague Boar | neutral | 100.0% of land, L1-10 | - | blight_dirt, dirt_with_bone_litter, mud |
+| aggressive_boar | Aggressive Boar | aggressive | 47.5% of land, L5-10 | - |  |
+| braindead_zombie | Braindead Zombie | aggressive | 30.1% of land, L3-4 | 33.3% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.3% of land, L9-10 | 1.3% of land, L9-10 |  |
+| drowned_zombie | Monstrous Drowned Zombie | aggressive | - | 28.8% of land, L8-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 5.6% of land, L7-10 | - |  |
+| large_rat | Large Rat | aggressive | - | 32.9% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 27.2% of land, L8-10 |  |
+| quiet_shore_crab | Small Crab | neutral | 7.2% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 20.3% of land, L5-7 |  |
 | shore_crab | Shore Crab | neutral | 53648 nodes², L3-10 | 53648 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| zombie | Zombie | aggressive | 81.1% of land, L3-10 | 83.4% of land, L3-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| sluggish_zombie | Sluggish Zombie | aggressive | 5.4% of land, L5-7 | 29.7% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 37.0% of land, L1-4 | - |  |
+| young_gaunt_stag | Young Gaunt Stag | neutral | 25.6% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 

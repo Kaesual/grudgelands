@@ -13,15 +13,15 @@ Race track (elf): step 5 of the track Silverleaf Glades → Starbough Vale → L
 | Fact | Value |
 |---|---|
 | Land extent | x 1924..2720, z -2416..-936 (centroid 2392, -1608) |
-| Land area | 551568 nodes² (≈ 0.55 km²) |
+| Land area | 551584 nodes² (≈ 0.55 km²) |
 | Hub point (authored) | 2400, -1500 |
 | Height above sea | min 0, p10 11, median 37, p90 77, max 102 |
 | Slope | 3.1% steep (>1 node/node), 0.4% cliff (>2) |
 | Biomes (measured) | elf_forest 55.2%, deep_forest 38.0%, swamp 6.5%, jungle_fringe 0.3% |
 | Neighbours (land border) | elandor_glassroot_wilds (820 nodes, mid 2207,-984), elandor_lethariel (1384 nodes, mid 2146,-1462), elandor_silverleaf_glades (212 nodes, mid 2504,-2375), elandor_starbough_vale (528 nodes, mid 2309,-2200) |
-| Sea coast | 2016 nodes of coastline; sea-beach sand 19728 nodes²; lake/river-bank sand 11792 nodes² |
-| Water inside | bay 0 nodes², rivers/lakes 21520 nodes² |
-| Protected / drift band | 0.3% of land protected (towns, villages, camps/POIs, road corridors); 1.6% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
+| Sea coast | 2016 nodes of coastline; sea-beach sand 19744 nodes²; lake/river-bank sand 11680 nodes² |
+| Water inside | bay 0 nodes², rivers/lakes 21504 nodes² |
+| Protected / drift band | 0.4% of land protected (towns, villages, camps/POIs, road corridors); 1.6% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 **Sea beaches (sand within ~60 nodes of sea water; ≥ 128 nodes²):**
 
@@ -62,31 +62,31 @@ Residents/guards: quest 1.
 | quest_host | quest giver | Lethen Moonledger | 2378, 23, -1326 | r20_anchor_035_01, r20_anchor_035_02, r20_anchor_035_03 |
 
 Distances: zone edge N 316 (elandor_glassroot_wilds), S 968 (elandor_starbough_vale), E 232 (coastal_shelf), W 216 (elandor_lethariel); nearest other-zone land 197 W; sea 216 E; sea-beach sand 144 E; nearest road 13.
-Nearest hubs (straight / by road): Lethariel 602 / 1180; Glassroot Gate 880 / 1442; Starbough Village 842 / 1848; Starbough Bandit Camp 1049 / 1925; Paleroot Cutting 1352 / 2035.
+Nearest hubs (straight / by road): Lethariel 602 / 1182; Glassroot Gate 779 / 1311; Starbough Village 842 / 1850; Starbough Bandit Camp 1049 / 1926; Paleroot Cutting 1352 / 2037.
 
 ### Current quests (3, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
 | r20_anchor_035_01 | A Chart Table Repaired | Lethen Moonledger (Moonfall Observatory) | 21 | bring 8 default:wood | 820 | - |
-| r20_anchor_035_02 | Fangs Beneath the Fallen Bough | Lethen Moonledger (Moonfall Observatory) | 21 | kill 4 wolf [in elandor_moonfall_wood] | 820 | - |
-| r20_anchor_035_03 | The Moonlit Snare Line | Lethen Moonledger (Moonfall Observatory) | 23 | kill 4 poacher [in elandor_moonfall_wood] | 900 | r20_anchor_035_02 |
+| r20_anchor_035_02 | Fangs Beneath the Fallen Bough | Lethen Moonledger (Moonfall Observatory) | 21 | kill 4 wolf or briarpack_wolf [in elandor_moonfall_wood] | 820 | - |
+| r20_anchor_035_03 | The Moonlit Snare Line | Lethen Moonledger (Moonfall Observatory) | 23 | kill 4 poacher or unlicensed_poacher [in elandor_moonfall_wood] | 900 | r20_anchor_035_02 |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| bear | Bear | aggressive | 92.6% of land, L21-30 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| giant_spider | Giant Spider | aggressive | - | 92.6% of land, L21-30 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| poacher | Poacher | aggressive | - | 92.6% of land, L21-30 | dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| shore_crab | Shore Crab | neutral | 19728 nodes², L21-29 | 19728 nodes², L21-29 | sand (dry, within 6 nodes of water) |
-| stag | Stag | neutral | 37.5% of land, L21-30 | - | dirt_with_grass, dirt_with_forest_litter |
-| wisp | Wisp | aggressive | - | 100.0% of land, L21-30 | dirt_with_rainforest_litter, dirt_with_bone_litter, dirt_with_canopy_litter, dirt_with_forest_litter, dirt_with_silver_litter, mud |
-| wolf | Wolf | aggressive | 37.5% of land, L21-30 | 37.5% of land, L21-30 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_forest_litter |
-
-In the palette but no host ground in this zone: Blightfang Wolf, Bone Weevil, Bonelurker Spider, Gaunt Stag, Plaguehide Bear, Skeleton Archer.
+| armored_crab | Barnacle Pincher | aggressive | 4.7% of land, L25-30 | - |  |
+| bank_crab | Bank Crab | neutral | 2.0% of land, L24 | - |  |
+| briar_web_spider | Briar-Web Spider | aggressive | - | 64.5% of land, L24-30 |  |
+| briarpack_wolf | Briarpack Wolf | aggressive | 30.0% of land, L21-23 | 30.0% of land, L21-23 |  |
+| moss_antler_stag | Moss-Antler Stag | neutral | 95.3% of land, L21-30 | - |  |
+| shore_crab | Shore Crab | neutral | 19744 nodes², L21-29 | 19744 nodes², L21-29 | sand (dry, within 6 nodes of water) |
+| territorial_bear | Bramble Bear | aggressive | 65.4% of land, L24-30 | - |  |
+| unlicensed_poacher | Unlicensed Poacher | aggressive | - | 30.0% of land, L21-23 |  |
+| wandering_wisp | Wandering Wisp | aggressive | - | 40.8% of land, L24-27 |  |
 
 **Camps and guard posts:**
 
@@ -96,7 +96,7 @@ In the palette but no host ground in this zone: Blightfang Wolf, Bone Weevil, Bo
 
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
-| 39 | trail | anchor_035 (Moonfall Observatory, elandor_moonfall_wood) | joins road 14 | 667 / 308 | 2366,-1334 → 2131,-1276 |
+| 40 | trail | anchor_035 (Moonfall Observatory, elandor_moonfall_wood) | joins road 14 | 668 / 308 | 2366,-1334 → 2131,-1276 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

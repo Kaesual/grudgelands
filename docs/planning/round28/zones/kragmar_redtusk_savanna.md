@@ -13,14 +13,14 @@ Race track (orc): step 2 of the track Sunscar Flats → Redtusk Savanna → Gor 
 | Fact | Value |
 |---|---|
 | Land extent | x -772..724, z 1688..2424 (centroid -88, 2060) |
-| Land area | 612128 nodes² (≈ 0.61 km²) |
+| Land area | 612144 nodes² (≈ 0.61 km²) |
 | Hub point (authored) | 0, 2050 |
 | Height above sea | min 0, p10 16, median 60, p90 98, max 144 |
 | Slope | 3.0% steep (>1 node/node), 0.1% cliff (>2) |
 | Biomes (measured) | savanna 60.2%, badlands 39.5%, swamp 0.2%, jungle_edge 0.1% |
 | Neighbours (land border) | kragmar_gor_drazhak (1232 nodes, mid 8,1814), kragmar_speargrass_reach (1004 nodes, mid -654,2000), kragmar_sunscar_flats (1724 nodes, mid -127,2305), kragmar_whispering_reedlands (432 nodes, mid 628,1949) |
-| Sea coast | 1132 nodes of coastline; sea-beach sand 11280 nodes²; lake/river-bank sand 3968 nodes² |
-| Water inside | bay 57344 nodes², rivers/lakes 6912 nodes² |
+| Sea coast | 1132 nodes of coastline; sea-beach sand 11280 nodes²; lake/river-bank sand 3952 nodes² |
+| Water inside | bay 57344 nodes², rivers/lakes 6896 nodes² |
 | Protected / drift band | 1.4% of land protected (towns, villages, camps/POIs, road corridors); 4.3% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 **Sea beaches (sand within ~60 nodes of sea water; ≥ 128 nodes²):**
@@ -92,40 +92,46 @@ Residents/guards: quest 1.
 | quest_captive | quest giver | Rokka Emberhand | 330, 89, 1990 | r15_orc_local_05, r15_orc_local_06 |
 
 Distances: zone edge N 292 (kragmar_sunscar_flats), S 136 (kragmar_gor_drazhak), E 324 (kragmar_whispering_reedlands), W 984 (kragmar_speargrass_reach); nearest other-zone land 132 S; sea 249 NE; sea-beach sand 211 NE; nearest road 17.
-Nearest hubs (straight / by road): Gor Drazhak 577 / 992; Reedvoice Station 829 / 1001; Whisperreed Landing 671 / 1120; Redtusk Village 409 / 1251; Red Ramp Post 1306 / 1656.
+Nearest hubs (straight / by road): Gor Drazhak 577 / 992; Reedvoice Station 829 / 1001; Whisperreed Landing 671 / 1120; Redtusk Village 409 / 1251; Red Ramp Post 1306 / 1660.
 
 ### Current quests (9, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_orc_07_teeth_around_the_herd | Teeth Around the Herd | Borak Redgrass (Redtusk Village) | 10 | kill 6 hyena [in kragmar_redtusk_savanna] | 380 | r14_orc_06_husks_on_redtusk_road |
+| r14_orc_07_teeth_around_the_herd | Teeth Around the Herd | Borak Redgrass (Redtusk Village) | 10 | kill 6 hyena or dustpack_hyena [in kragmar_redtusk_savanna] | 380 | r14_orc_06_husks_on_redtusk_road |
 | r15_orc_local_01 | Hide for the Low Annex | Morga Clayhand (Redtusk Village) | 10 | bring 2 mobs:leather | 285 | r14_orc_06_husks_on_redtusk_road |
 | r15_orc_local_02 | Fangs Beyond the Annex | Morga Clayhand (Redtusk Village) | 10 | bring 2 grug_mobs:fang | 380 | r14_orc_06_husks_on_redtusk_road |
-| r14_orc_08_scour_the_dry_wash | Scour the Dry Wash | Kesh Longstride (Redtusk Outpost) | 11 | kill 6 scorpion [in kragmar_redtusk_savanna] | 525 | r14_orc_07_teeth_around_the_herd |
-| r15_orc_local_03 | Howls Below the Lookout | Kesh Longstride (Redtusk Outpost) | 11 | kill 4 hyena [in kragmar_redtusk_savanna] | 315 | r14_orc_07_teeth_around_the_herd |
+| r14_orc_08_scour_the_dry_wash | Scour the Dry Wash | Kesh Longstride (Redtusk Outpost) | 11 | kill 6 scorpion or dust_stinger [in kragmar_redtusk_savanna] | 525 | r14_orc_07_teeth_around_the_herd |
+| r15_orc_local_03 | Howls Below the Lookout | Kesh Longstride (Redtusk Outpost) | 11 | kill 4 hyena or dustpack_hyena [in kragmar_redtusk_savanna] | 315 | r14_orc_07_teeth_around_the_herd |
 | r15_orc_local_04 | Venom Beside the Palisade | Kesh Longstride (Redtusk Outpost) | 11 | bring 2 grug_mobs:venom_sac | 420 | r14_orc_07_teeth_around_the_herd |
-| r14_orc_09_no_forge_made_this_brand | No Forge Made This Brand | Kesh Longstride (Redtusk Outpost) | 12 | kill 4 bandit or bandit_archer [in kragmar_redtusk_savanna] | 805 | r14_orc_08_scour_the_dry_wash |
+| r14_orc_09_no_forge_made_this_brand | No Forge Made This Brand | Kesh Longstride (Redtusk Outpost) | 12 | kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_redtusk_savanna] | 805 | r14_orc_08_scour_the_dry_wash |
 | r15_orc_local_05 | The Carriers' Cut | Rokka Emberhand (Redtusk Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_orc_08_scour_the_dry_wash |
 | r15_orc_local_06 | Bindings from the Loaded Sled | Rokka Emberhand (Redtusk Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_orc_08_scour_the_dry_wash |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| hare | Hare | critter | 61.1% of land, L11-20 | - | dirt_with_rainforest_litter, dry_dirt_with_dry_grass, sand, blight_dirt, mud |
-| hyena | Hyena | aggressive | 99.7% of land, L11-20 | 99.7% of land, L11-20 | dry_dirt_with_dry_grass, mesa_clay |
-| scorpion | Scorpion | aggressive | - | 99.7% of land, L11-20 | dry_dirt_with_dry_grass, mesa_clay |
+| bristling_boar | Ridgeback Tusker | aggressive | 55.4% of land, L15-20 | - |  |
+| dust_stinger | Dust-Stinger Scorpion | aggressive | - | 28.5% of land, L11-13 |  |
+| dustpack_hyena | Dustpack Hyena | aggressive | 28.5% of land, L11-13 | - |  |
+| granary_rat | Granary Rat | aggressive | - | 38.2% of land, L14 |  |
+| mangy_rat | Burrow Gnawer | aggressive | - | 57.2% of land, L15-20 |  |
+| muttering_husk | Cairn Sun-Dried Husk | aggressive | - | 2.1% of land, L11-15 |  |
+| parched_husk | Pauper Mummy | aggressive | 10.2% of land, L18-20 | 29.9% of land, L16-20 |  |
+| quarrelsome_bandit | Roadside Bandit | aggressive | - | 28.5% of land, L11-13 |  |
+| reefclaw_crab | Reefclaw Snapper | aggressive | 0.7% of land, L15-17 | - |  |
 | shore_crab | Shore Crab | neutral | 11280 nodes², L11-15 | 11280 nodes², L11-15 | sand (dry, within 6 nodes of water) |
-| sun_dried_husk | Sun-Dried Husk | aggressive | - | 99.7% of land, L11-20 | dry_dirt_with_dry_grass, mesa_clay |
-| zebra | Zebra | neutral | 60.8% of land, L11-20 | - | dry_dirt_with_dry_grass |
+| tidepool_crab | Tidepool Crab | neutral | 2.1% of land, L11-14 | - |  |
+| vigilant_bandit_archer | Bandit Lookout | aggressive | 2.0% of land, L18-20 | 2.0% of land, L18-20 |  |
+| watchful_zebra | Waterhole Zebra | neutral | 85.7% of land, L11-20 | - |  |
 
 **Camps and guard posts:**
 
 - anchor_041 Redtusk Outpost at 176, 2074: guard post, guard_throng × 2-3, respawn 180-360 s, level there L15.
-- anchor_057 Redtusk Bandit Camp at 320, 1980: bandit, bandit/bandit_archer × 3-5, respawn 120-300 s, level there L16.
+- anchor_057 Redtusk Bandit Camp at 320, 1980: bandit, bandit/bandit_archer × 3-5, respawn 30-60 s, level there L16.
 
 **Rares (knowledge rewards, not quest targets):** Ashmaw (boar, the savanna, route 104,2060 → 168,2124 → 208,2068, L15, respawn 2-4 h)
 
@@ -135,8 +141,8 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 18 | primary | anchor_005 (Sunscar, kragmar_sunscar_flats) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 799 / 450 | -112,2261 → -102,1835 |
 | 20 | secondary | anchor_021 (Redtusk Village, kragmar_redtusk_savanna) | joins road 18 | 84 / 86 | -82,1988 → -108,1920 |
-| 43 | trail | anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna) | joins road 18 | 486 / 186 | 180,2084 → 198,2253 |
-| 57 | trail | anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna) | joins road 16 | 349 / 128 | 328,1965 → 327,1844 |
+| 44 | trail | anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna) | joins road 18 | 486 / 186 | 180,2084 → 198,2253 |
+| 58 | trail | anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna) | joins road 16 | 349 / 128 | 328,1965 → 327,1844 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

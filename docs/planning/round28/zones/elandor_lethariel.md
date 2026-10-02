@@ -25,7 +25,7 @@ Race track (elf): step 3 of the track Silverleaf Glades → Starbough Vale → L
 
 ## Levels
 
-Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.
+Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.
 
 Share of land per level: L20 9.0%, L21 10.2%, L22 12.4%, L23 10.0%, L24 9.9%, L25 7.8%, L26 7.4%, L27 8.4%, L28 8.9%, L29 8.0%, L30 8.1%
 
@@ -84,7 +84,7 @@ Residents/guards: gear_display 3, guard_patrol 43, guard_post 14, housing_manage
 Public stations: market_bowyer/market_bowyer_station (carving_bench), market_weaver/market_weaver_station (tailor_bench), market_bakehouse/market_bakehouse_station (furnace), martial_armoury/martial_armoury_station (forge), martial_store/martial_store_station (tanning_rack), mere_lore_hall/mere_lore_hall_station (jewellers_bench), homes_brewhouse/homes_brewhouse_station (brewing_stand).
 
 Distances: zone edge N 496 (elandor_glassroot_wilds), S 428 (elandor_starbough_vale), E 424 (elandor_moonfall_wood), W 488 (elandor_lorindor); nearest other-zone land 376 SW; sea 666 SW; sea-beach sand 586 SW; nearest road 50.
-Nearest hubs (straight / by road): Starbough Village 530 / 812; Starbough Bandit Camp 590 / 889; Paleroot Cutting 812 / 1033; Lorindor Berrycourt 926 / 1126; Starbough Outpost 671 / 1176.
+Nearest hubs (straight / by road): Starbough Village 530 / 812; Starbough Bandit Camp 590 / 889; Paleroot Cutting 812 / 1033; Lorindor Berrycourt 926 / 1126; Glassroot Gate 825 / 1133.
 
 ### Current quests (4, given in this zone)
 
@@ -95,11 +95,19 @@ Nearest hubs (straight / by road): Starbough Village 530 / 812; Starbough Bandit
 | r20_elf_capital_stores | Boards for the Grove Patrol | Eriath Boughwarden (Lethariel) | 20 | bring 10 default:wood | 780 | - |
 | r20_elf_journey_01 | Word for Ilwen Petalmeasure | Eriath Boughwarden (Lethariel) | 21 | talk to Ilwen Petalmeasure (r20_anchor_018) | 615 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
-Empty palette: no ambient surface mobs.
+| Mob | Name | Disposition | Day | Night | Host nodes |
+|---|---|---|---|---|---|
+| debtbound_zombie | Debtbound Zombie | aggressive | - | 69.8% of land, L20-25 |  |
+| moss_antler_stag | Moss-Antler Stag | neutral | 58.8% of land, L20-30 | - |  |
+| orchard_fox | Orchard Fox | neutral | 69.8% of land, L21-24 | - |  |
+| redfang_fox | Redfang Vixen | aggressive | 68.5% of land, L25-30 | - |  |
+| stubborn_zombie | Tithe Revenant | aggressive | - | 68.5% of land, L26-30 |  |
+| toll_bandit | Toll Bandit | aggressive | - | 28.0% of land, L20-23 |  |
+| unlicensed_poacher | Unlicensed Poacher | aggressive | 1.4% of land, L28-30 | 30.2% of land, L28-30 |  |
 
 ## Roads and trails touching the zone
 
@@ -107,11 +115,11 @@ Empty palette: no ambient surface mobs.
 |---|---|---|---|---|---|
 | 2 | primary | anchor_008 (Highcourt, elandor_highcourt) | anchor_009 (Lethariel, elandor_lethariel) | 1355 / 232 | 1311,-1480 → 1536,-1489 |
 | 5 | primary | anchor_003 (Silverleaf, elandor_silverleaf_glades) | anchor_009 (Lethariel, elandor_lethariel) | 810 / 180 | 1849,-1932 → 1853,-1760 |
-| 14 | secondary | anchor_036 (Glassroot Gate, elandor_glassroot_wilds) | anchor_009 (Lethariel, elandor_lethariel) | 897 / 242 | 1835,-1006 → 1776,-1232 |
-| 39 | trail | anchor_035 (Moonfall Observatory, elandor_moonfall_wood) | joins road 14 | 667 / 348 | 2129,-1275 → 1833,-1100 |
-| 150 | secondary | end:14 | gate_south | 141 / 142 | 1776,-1232 → 1774,-1371 |
-| 151 | primary | end:2 | gate_west | 137 / 138 | 1536,-1489 → 1658,-1461 |
-| 152 | primary | end:5 | gate_north | 81 / 84 | 1853,-1760 → 1795,-1722 |
+| 14 | secondary | anchor_036 (Glassroot Gate, elandor_glassroot_wilds) | anchor_009 (Lethariel, elandor_lethariel) | 766 / 242 | 1835,-1007 → 1776,-1232 |
+| 40 | trail | anchor_035 (Moonfall Observatory, elandor_moonfall_wood) | joins road 14 | 668 / 350 | 2130,-1275 → 1834,-1100 |
+| 153 | secondary | end:14 | gate_south | 141 / 142 | 1776,-1232 → 1774,-1371 |
+| 154 | primary | end:2 | gate_west | 137 / 138 | 1536,-1489 → 1658,-1461 |
+| 155 | primary | end:5 | gate_north | 81 / 84 | 1853,-1760 → 1795,-1722 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

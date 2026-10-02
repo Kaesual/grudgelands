@@ -87,29 +87,6 @@ SOCKET_ROLE_TEXT = {
     "mount_display": "mount display", "gear_display": "gear display",
 }
 
-# Top node of each logical biome (r7_r6_manifest.lua SURFACE_ROWS).
-BIOME_TOP = {
-    "grug_badlands": "grug_nodes:mesa_clay", "grug_badlands_east": "grug_nodes:mesa_clay",
-    "grug_beach": "default:sand", "grug_blight": "grug_nodes:blight_dirt",
-    "grug_bone_forest": "grug_nodes:dirt_with_bone_litter", "grug_crags": "default:gravel",
-    "grug_crags_snowy": "default:snowblock", "grug_deep_forest": "grug_nodes:dirt_with_forest_litter",
-    "grug_deep_jungle": "grug_nodes:dirt_with_canopy_litter",
-    "grug_elf_forest": "grug_nodes:dirt_with_silver_litter",
-    "grug_jungle_edge": "default:dirt_with_rainforest_litter",
-    "grug_jungle_fringe": "grug_nodes:dirt_with_canopy_litter", "grug_meadows": "default:dirt_with_grass",
-    "grug_pine_hills": "default:dirt_with_coniferous_litter",
-    "grug_savanna": "default:dry_dirt_with_dry_grass", "grug_swamp": "grug_nodes:mud",
-}
-
-# Zones whose palette has `war` or `mountain` (spawn_policy.lua): there the
-# skeleton archer's own check admits every host node of its rows.
-WAR_OR_MOUNTAIN_ZONES = {
-    "elandor_frostbarrow_shelf", "elandor_stormvault_heights", "elandor_ashenward_march",
-    "kragmar_speargrass_reach", "kragmar_bannerbreak_mesa", "front_wyrmglass_crown",
-    "front_gravesalt_escarpment", "front_broken_causeway", "front_shattered_line",
-    "front_skyglass_canopy", "front_stormscale_summit",
-}
-
 WATER_NAMES = {1: "deep_ocean", 2: "coastal_shelf", 3: "bay_water", 4: "land",
                5: "dragon_channel", 6: "inland_water"}
 
@@ -727,42 +704,23 @@ def build(args):
     for zid, f in zone_facts.items():
         zp = zone_probe.get(zid)
         num = zones[zid]["numeric_id"]
-        spawns, no_host = [], []
+        spawns = []
         if zp:
-            land_pts = max(1, zp["land_points"])
+            # the zone's spawn regions on this seed (probe): share of its
+            # land cells whose region spawns the mob at that clock, and the
+            # role's level range there
+            land_cells = max(1, zp["land_points"])
             for sp in zp["spawns"]:
                 name = sp["name"]
-                if name in ("grug_mobs:shore_crab", "grug_mobs:reef_lurker", "grug_mobs:gull"):
-                    continue
                 row = {"mob": name, "name": mob_name(name),
                        "disposition": mobs.get(name, {}).get("disposition"),
                        "hosts": sorted(hosts.get(name, []))}
-                # the policy's points, kept only on biomes whose top node is
-                # one of the species' surface host nodes
-                host_set = hosts.get(name, set())
-                if name == "grug_mobs:skeleton_archer" and zid not in WAR_OR_MOUNTAIN_ZONES:
-                    # its own spawn check: outside a war or mountain palette
-                    # only bone litter and blight dirt (skeleton_archer.lua)
-                    host_set = {"grug_nodes:dirt_with_bone_litter", "grug_nodes:blight_dirt"}
-                    row["hosts"] = sorted(host_set)
                 for clock in ("day", "night"):
                     c = sp[clock]
-                    n, lo, hi = 0, None, None
-                    for b, bc in (c.get("biomes") or {}).items():
-                        if BIOME_TOP.get(b) in host_set:
-                            n += bc["count"]
-                            if bc.get("min") is not None:
-                                lo = bc["min"] if lo is None else min(lo, bc["min"])
-                                hi = bc["max"] if hi is None else max(hi, bc["max"])
-                    row[clock] = None if n == 0 else {
-                        "share_pct": round(100 * n / land_pts, 1), "levels": [lo, hi],
-                        "policy_share_pct": round(100 * c["count"] / land_pts, 1)}
-                    if c["count"] and n == 0:
-                        row.setdefault("policy_only", []).append(clock)
-                if row["day"] or row["night"]:
-                    spawns.append(row)
-                elif row.get("policy_only"):
-                    no_host.append(row["name"])
+                    row[clock] = None if not c["count"] else {
+                        "share_pct": round(100 * c["count"] / land_cells, 1),
+                        "levels": [c["min"], c["max"]]}
+                spawns.append(row)
             zb = sea_beach & (G.zone == num)
             lv = G.level[zb]
             for name, cond in (("grug_mobs:shore_crab", lv < 45), ("grug_mobs:reef_lurker", lv >= 45)):
@@ -786,7 +744,6 @@ def build(args):
                           "density_budget_day": zp["density_day"],
                           "density_budget_night": zp["density_night"]}
         f["spawns"] = sorted(spawns, key=lambda s: s["mob"])
-        f["palette_without_host_ground"] = sorted(no_host)
 
     # camps, guards, rares
     for zid, f in zone_facts.items():
@@ -858,7 +815,7 @@ def build(args):
                 "band 3 (L7-10) toward the front border (%s), reaching L10 at the border." % f["front"]["axis"])
             f["start_rings"] = {"anchor": [a["x"], a["z"]], "core_radius": 100, "band_radius": 150}
         elif f["role"] == "capital zone":
-            f["level_rule"] = "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone."
+            f["level_rule"] = "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand."
         elif f["role"].startswith("dragon"):
             f["level_rule"] = "Flat level 60."
         else:
@@ -1035,10 +992,10 @@ def zone_markdown(f, zones, settlement_by_key):
         w("")
     else:
         w("No quest is given in this zone today.\n")
-    w("## Current mob palette (before Round 28)\n")
-    w("Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, "
-      "kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach "
-      "sand). Share = of the zone's dry land (not a density); levels = the level field there.\n")
+    w("## Mobs by spawn region\n")
+    w("Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). "
+      "Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the "
+      "role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).\n")
     if f["spawns"]:
         w("| Mob | Name | Disposition | Day | Night | Host nodes |\n|---|---|---|---|---|---|")
         for s in f["spawns"]:
@@ -1048,9 +1005,7 @@ def zone_markdown(f, zones, settlement_by_key):
                 (" …" if len(s["hosts"]) > 6 else "")))
         w("")
     else:
-        w("Empty palette: no ambient surface mobs.\n")
-    if f.get("palette_without_host_ground"):
-        w("In the palette but no host ground in this zone: %s.\n" % ", ".join(f["palette_without_host_ground"]))
+        w("No spawn region: no ambient surface mobs.\n")
     if f["camps"]:
         w("**Camps and guard posts:**\n")
         for c in f["camps"]:
@@ -1097,7 +1052,7 @@ def index_markdown(zone_order, meta, probe, seed):
     w("# Round 28 zone facts atlas\n")
     w("Measured facts for the design round (plan "
       "[round28-questing-leveling-plan.md](../../round28-questing-leveling-plan.md), Sections B and C): "
-      "geometry, anchors, hubs and NPCs, roads, protected areas, beaches, relief, the current mob palette and "
+      "geometry, anchors, hubs and NPCs, roads, protected areas, beaches, relief, the mobs of the spawn regions and "
       "level field, and the current quests for all 38 zones. One Markdown file, one JSON file and one PNG map per "
       "zone; `maps/world.png` is the overview.\n")
     w("**Seed %s** (the project's standard evidence seed). Generated by `tools/r28_zone_atlas/run.sh` "
@@ -1109,7 +1064,7 @@ def index_markdown(zone_order, meta, probe, seed):
       "and 21-30 zones at z ≈ -1500, contested 31-40 zones at z ≈ -700. Their front is **north (+z)**; their "
       "home ocean is south.")
     w("- **Throng (Kragmar) is north (+z)**, mirrored: start z ≈ 2550 → 2050 → 1500 → 700. Front **south (-z)**.")
-    w("- **Battlegrounds**: one land band around **z = 0** (about -300..300), four zones west to east: Gravesalt "
+    w("- **Battlegrounds**: one land band around **z = 0** (about -360..360 since Round 29), four zones west to east: Gravesalt "
       "Escarpment (51-60), The Broken Causeway (41-50), The Shattered Line (41-50), The Skyglass Canopy "
       "(51-60). The two dragon islands (60) lie offshore west (x ≈ -3150) and east (x ≈ 3150).")
     w("- Race columns: dwarf/undead x ≈ -1800, human/orc x ≈ 0, elf/troll x ≈ 1800; side zones at x ≈ ±900 "
@@ -1118,10 +1073,10 @@ def index_markdown(zone_order, meta, probe, seed):
     w("- **Seed-independent:** zone list, names, level ranges, rules and biome palettes; hub points; every "
       "anchor's x/z (starts, capitals, villages, outposts, mines, camps, clash sites, dragons, apex mines, rare "
       "routes); POI names; start-town footprint (128-node pad + 12 band); start-band radii; NPC sockets of start "
-      "towns and POIs relative to their anchor; quests, quest givers and mob palettes.")
+      "towns and POIs relative to their anchor; quests, quest givers and spawn recipes.")
     w("- **Seed-dependent (bounded):** zone borders and coastline (warped within ~150-300 nodes), terrain "
       "heights (anchor y), beaches, rivers and lakes, roads and trails, capital city outlines/gates/plots (and "
-      "with them capital NPC positions), biome patches, and the level field near borders (the start-zone "
+      "with them capital NPC positions), biome patches, spawn regions, and the level field near borders (the start-zone "
       "gradient measures the distance to the front border). Treat these as *shape* guidance: an area rule "
       "relative to an anchor, a beach host class or a road works on every seed; an absolute coordinate on a "
       "beach or a border does not.\n")
@@ -1130,7 +1085,7 @@ def index_markdown(zone_order, meta, probe, seed):
       "coast, protected share and Ruling 2 drift band), Sea beaches (B1… with boxes), Levels (rule + measured "
       "histogram), Anchors (all POIs with ids and coordinates), Protected areas, Hubs/NPCs/quests (socket, "
       "role, NPC name, quests given; distances to zone edges, sea, beach sand, road and the nearest hubs by "
-      "straight line and by road), Current mob palette (day/night share of land and level range), camps and "
+      "straight line and by road), Mobs by spawn region (day/night share of land cells and level range), camps and "
       "rares, Roads and trails (endpoints, lengths, entry/exit points).")
     w("- `<zone_id>.json`: the same and more (simplified road polylines, raw quest objectives and texts, "
       "capital gates, settlement boxes, border midpoints).")
@@ -1144,7 +1099,7 @@ def index_markdown(zone_order, meta, probe, seed):
       "diamond mine, red X bandit camp, teal X mirefolk, orange + clash, pink dot rare route, black triangle "
       "dragon; B1… = sea beaches; dashed circles in start zones = the 100/150 start bands.\n")
     w("## Zones\n")
-    w("| # | Id | Name | Role / track | Levels | Hub | Extent (x; z) | Biomes (measured, top 3) | POIs | Quests | Day palette | Night palette |")
+    w("| # | Id | Name | Role / track | Levels | Hub | Extent (x; z) | Biomes (measured, top 3) | POIs | Quests | Day mobs | Night mobs |")
     w("|---|---|---|---|---|---|---|---|---|---|---|---|")
     for f in zone_order:
         e = f["extent"]
@@ -1176,13 +1131,10 @@ def index_markdown(zone_order, meta, probe, seed):
         for c in probe["camp_types"]) + ".")
     w("- Rares: " + ", ".join("%s (%s)" % (r["name"], r["mob"].split(":")[-1]) for r in probe["rares"]) + ".\n")
     w("## Limits of these facts\n")
-    w("- The mob palette is the spawn policy evaluated in the engine on a 24-node grid of dry land "
-      "(`grug_mobs.spawn_allowed`, by day and by night), then kept only where the logical biome's top node "
-      "is one of the species' surface host nodes (ABM node lists). Crabs are measured on sea-beach sand, "
-      "gulls on the beach biome. The skeleton archer's own node check is applied by zone palette (outside "
-      "war/mountain palettes only bone litter and blight dirt). Coast sand/gravel replacing the biome top "
-      "near water and the start-town ground are not modelled. Shares are of the zone's dry land, not "
-      "densities.")
+    w("- The mobs per zone are its spawn regions on this seed (the recipe's region map, "
+      "`grug_mobs.spawn_regions`, built in the engine): per species the share of the zone's land cells "
+      "(32 x 32 nodes) whose kind or camp spawns it at that clock, with the role's level range. Crabs are "
+      "measured on sea-beach sand, gulls on the beach biome. Shares are of land cells, not densities.")
     w("- Sand is the coast/bank material rule of `height.lua` on dry land, sampled every 4 nodes; vegetation "
       "and structures are not modelled.")
     w("- Road distances follow road and trail centrelines (joined where two roads come within 4 nodes) plus "

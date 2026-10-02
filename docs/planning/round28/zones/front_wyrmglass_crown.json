@@ -91,44 +91,19 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
+   "grug_mobs:crown_crag_eagle",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_husk",
+   "grug_mobs:rimehorn_ram",
+   "grug_mobs:watchful_carrion_crow"
   ],
-  "density_budget_day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
-  ],
-  "density_budget_night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:frost_stray",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:snow_leopard",
-   "grug_mobs:stone_golem",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:frost_stray",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:snow_leopard",
-   "grug_mobs:stone_golem",
-   "grug_mobs:zombie"
+   "grug_mobs:crown_frost_stray",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_zombie",
+   "grug_mobs:rime_pelt_leopard"
   ]
  },
  "civic_no_hostiles": false,
@@ -176,10 +151,6 @@
  "name": "The Wyrmglass Crown",
  "neighbors": [],
  "numeric_id": 33,
- "palette_without_host_ground": [
-  "Hyena",
-  "Vulture"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -259,14 +230,14 @@
      {
       "name": "Hollowarch Station",
       "road": null,
-      "straight": 1574,
+      "straight": 1597,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 1654,
+      "straight": 1705,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
      },
@@ -355,14 +326,14 @@
      {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 1807,
+      "straight": 1838,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
      },
      {
       "name": "Hollowarch Station",
       "road": null,
-      "straight": 1854,
+      "straight": 1888,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
@@ -451,14 +422,14 @@
      {
       "name": "Hollowarch Station",
       "road": null,
-      "straight": 1768,
+      "straight": 1796,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 1781,
+      "straight": 1820,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
      },
@@ -529,70 +500,26 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:carrion_crow",
-   "name": "Carrion Crow",
-   "night": {
-    "levels": [
-     60,
-     60
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     60,
-     60
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 81.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:crag_eagle",
-   "name": "Crag Eagle",
+   "hosts": [],
+   "mob": "grug_mobs:crown_crag_eagle",
+   "name": "Crown Crag Eagle",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:frost_stray",
-   "name": "Frost Stray",
+   "hosts": [],
+   "mob": "grug_mobs:crown_frost_stray",
+   "name": "Crown Frost Stray",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 30.5
    }
   },
   {
@@ -614,55 +541,18 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 69.5
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:mountain_ram",
-   "name": "Mountain Ram",
-   "night": null
-  },
-  {
-   "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:rift_spawn",
-   "name": "Rift Spawn",
+   "hosts": [],
+   "mob": "grug_mobs:last_pay_archer",
+   "name": "Last-Pay Archer",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:snow_leopard",
-   "name": "Snow Leopard",
-   "night": {
-    "levels": [
-     60,
-     60
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 69.5
    }
   },
   {
@@ -671,54 +561,69 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 18.6
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock",
-    "default:stone"
-   ],
-   "mob": "grug_mobs:stone_golem",
-   "name": "Stone Golem",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_husk",
+   "name": "Last-Watch Mummy",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_zombie",
+   "name": "Last Watchman",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 85.0
+    "share_pct": 18.6
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:rime_pelt_leopard",
+   "name": "Rime-Pelt Snow Leopard",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 81.4
    }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "share_pct": 11.8
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:rimehorn_ram",
+   "name": "Rimehorn Ram",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "share_pct": 18.6
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_carrion_crow",
+   "name": "Battlefield Crow",
+   "night": null
   }
  ],
  "territory_rule": "contested_land"

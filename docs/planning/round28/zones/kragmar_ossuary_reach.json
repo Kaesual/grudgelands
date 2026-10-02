@@ -144,37 +144,20 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:bone_weevil",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:briarpack_wolf",
+   "grug_mobs:marrow_weevil",
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:territorial_bear"
   ],
-  "density_budget_day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
-  ],
-  "density_budget_night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:giant_spider",
-   "grug_mobs:gravewood_treant",
-   "grug_mobs:pale_spider",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:wolf"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:giant_spider",
-   "grug_mobs:gravewood_treant",
-   "grug_mobs:pale_spider",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:wolf"
+   "grug_mobs:barrow_skeleton_archer",
+   "grug_mobs:briarpack_wolf",
+   "grug_mobs:grave_web_spider",
+   "grug_mobs:mourning_treant"
   ]
  },
  "civic_no_hostiles": false,
@@ -345,12 +328,6 @@
   "kragmar_stillgrave_hollow"
  ],
  "numeric_id": 20,
- "palette_without_host_ground": [
-  "Bear",
-  "Giant Spider",
-  "Stag",
-  "Wolf"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -419,13 +396,14 @@
    "id": "r20_anchor_020_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 blightfang_wolf [in kragmar_ossuary_reach]"
+    "kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:blightfang_wolf"
+      "grug_mobs:blightfang_wolf",
+      "grug_mobs:briarpack_wolf"
      ],
      "type": "kill",
      "zone": "kragmar_ossuary_reach"
@@ -470,13 +448,14 @@
    "id": "r20_anchor_038_02",
    "min_level": 21,
    "objectives": [
-    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:gravewood_treant"
+      "grug_mobs:gravewood_treant",
+      "grug_mobs:mourning_treant"
      ],
      "type": "kill",
      "zone": "kragmar_ossuary_reach"
@@ -521,13 +500,14 @@
    "id": "r20_anchor_064_02",
    "min_level": 21,
    "objectives": [
-    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:gravewood_treant"
+      "grug_mobs:gravewood_treant",
+      "grug_mobs:mourning_treant"
      ],
      "type": "kill",
      "zone": "kragmar_ossuary_reach"
@@ -548,13 +528,14 @@
    "id": "r20_anchor_020_03",
    "min_level": 23,
    "objectives": [
-    "kill 3 gravewood_treant [in kragmar_ossuary_reach]"
+    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:gravewood_treant"
+      "grug_mobs:gravewood_treant",
+      "grug_mobs:mourning_treant"
      ],
      "type": "kill",
      "zone": "kragmar_ossuary_reach"
@@ -577,13 +558,14 @@
    "id": "r20_anchor_038_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 blightfang_wolf [in kragmar_ossuary_reach]"
+    "kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:blightfang_wolf"
+      "grug_mobs:blightfang_wolf",
+      "grug_mobs:briarpack_wolf"
      ],
      "type": "kill",
      "zone": "kragmar_ossuary_reach"
@@ -774,7 +756,7 @@
     1224
    ],
    "from": "anchor_038 (Boneledger Post, kragmar_ossuary_reach)",
-   "id": 41,
+   "id": 42,
    "kind": "trail",
    "last_in_zone": [
     -2046,
@@ -808,7 +790,7 @@
     1275
    ],
    "from": "anchor_064 (Memoryvein Dig, kragmar_ossuary_reach)",
-   "id": 64,
+   "id": 65,
    "kind": "trail",
    "last_in_zone": [
     -2307,
@@ -858,38 +840,38 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 677,
+      "road": 687,
       "straight": 589,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Mournfen Village",
-      "road": 1194,
+      "road": 1179,
       "straight": 638,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 1411,
+      "road": 1396,
       "straight": 573,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 1462,
+      "road": 1406,
       "straight": 383,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
      },
      {
-      "name": "Mournfen Bandit Camp",
-      "road": 1535,
-      "straight": 900,
-      "to": "mournfen_bandit_camp",
-      "zone": "kragmar_mournfen"
+      "name": "Ashveil Watch",
+      "road": 1566,
+      "straight": 847,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
      }
     ],
     "nearest_other_zone_land": {
@@ -975,35 +957,35 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 1012,
+      "road": 940,
       "straight": 538,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1462,
+      "road": 1406,
       "straight": 383,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Village",
-      "road": 1540,
+      "road": 1437,
       "straight": 868,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1679,
+      "road": 1653,
       "straight": 1055,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 1757,
+      "road": 1654,
       "straight": 882,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
@@ -1091,38 +1073,38 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 1027,
+      "road": 1036,
       "straight": 662,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Mournfen Village",
-      "road": 1544,
+      "road": 1529,
       "straight": 916,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 1761,
+      "road": 1746,
       "straight": 894,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 1812,
+      "road": 1756,
       "straight": 153,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
      },
      {
-      "name": "Mournfen Bandit Camp",
-      "road": 1885,
-      "straight": 1134,
-      "to": "mournfen_bandit_camp",
-      "zone": "kragmar_mournfen"
+      "name": "Ashveil Watch",
+      "road": 1916,
+      "straight": 587,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
      }
     ],
     "nearest_other_zone_land": {
@@ -1195,96 +1177,77 @@
   {
    "day": {
     "levels": [
-     21,
+     25,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.7
+    "share_pct": 7.7
    },
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:blightfang_wolf",
-   "name": "Blightfang Wolf",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.7
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.7
-   },
-   "disposition": "critter",
-   "hosts": [
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:bone_weevil",
-   "name": "Bone Weevil",
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
    "night": null
   },
   {
    "day": {
     "levels": [
-     21,
-     30
+     24,
+     24
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.7
+    "share_pct": 4.0
    },
    "disposition": "neutral",
-   "hosts": [
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:gaunt_stag",
-   "name": "Gaunt Stag",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:gravewood_treant",
-   "name": "Gravewood Treant",
+   "hosts": [],
+   "mob": "grug_mobs:barrow_skeleton_archer",
+   "name": "Barrow Skeleton Archer",
    "night": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.7
+    "share_pct": 57.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 29.9
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:briarpack_wolf",
+   "name": "Briarpack Wolf",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 9.3
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:pale_spider",
-   "name": "Bonelurker Spider",
+   "hosts": [],
+   "mob": "grug_mobs:grave_web_spider",
+   "name": "Grave-Web Bonelurker Spider",
    "night": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.7
+    "share_pct": 62.3
    }
   },
   {
@@ -1293,18 +1256,41 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.7
+    "share_pct": 64.5
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:plaguehide_bear",
-   "name": "Plaguehide Bear",
+   "hosts": [],
+   "mob": "grug_mobs:marrow_weevil",
+   "name": "Marrow Weevil",
    "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     27
+    ],
+    "share_pct": 25.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:mourning_treant",
+   "name": "Lichen Gravewood Treant",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 15.1
+   }
   },
   {
    "day": {
@@ -1330,22 +1316,18 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:skeleton_archer",
-   "name": "Skeleton Archer",
-   "night": {
+   "day": {
     "levels": [
-     21,
+     24,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.7
-   }
+    "share_pct": 57.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:territorial_bear",
+   "name": "Bramble Bear",
+   "night": null
   }
  ],
  "territory_rule": "throng_home",

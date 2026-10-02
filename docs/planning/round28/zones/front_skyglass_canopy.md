@@ -10,37 +10,38 @@ Map: [maps/front_skyglass_canopy.png](maps/front_skyglass_canopy.png). Machine-r
 
 | Fact | Value |
 |---|---|
-| Land extent | x 1368..2600, z -264..340 (centroid 2015, 31) |
-| Land area | 563648 nodes² (≈ 0.56 km²) |
+| Land extent | x 1368..2616, z -372..472 (centroid 2024, 35) |
+| Land area | 794704 nodes² (≈ 0.79 km²) |
 | Hub point (authored) | 2000, 0 |
-| Height above sea | min 0, p10 85, median 160, p90 215, max 287 |
-| Slope | 44.1% steep (>1 node/node), 12.0% cliff (>2) |
-| Biomes (measured) | jungle_fringe 71.3%, elf_forest 18.6%, deep_forest 8.9%, deep_jungle 0.5%, badlands 0.4%, swamp 0.2%, badlands_east 0.1%, savanna 0.0% |
-| Neighbours (land border) | elandor_glassroot_wilds (1292 nodes, mid 2053,-236), front_shattered_line (636 nodes, mid 1397,24), kragmar_thunderroot_wilds (1016 nodes, mid 2165,311) |
-| Sea coast | 984 nodes of coastline; sea-beach sand 3568 nodes²; lake/river-bank sand 2608 nodes² |
-| Water inside | bay 0 nodes², rivers/lakes 60384 nodes² |
-| Protected / drift band | 0.2% of land protected (towns, villages, camps/POIs, road corridors); 0.0% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
+| Height above sea | min 0, p10 86, median 164, p90 221, max 288 |
+| Slope | 44.6% steep (>1 node/node), 12.6% cliff (>2) |
+| Biomes (measured) | jungle_fringe 77.2%, elf_forest 14.0%, deep_forest 7.6%, deep_jungle 0.7%, badlands 0.4%, badlands_east 0.2%, savanna 0.0% |
+| Neighbours (land border) | elandor_glassroot_wilds (1268 nodes, mid 1940,-338), front_shattered_line (760 nodes, mid 1398,-13), kragmar_thunderroot_wilds (1324 nodes, mid 2056,422) |
+| Sea coast | 1444 nodes of coastline; sea-beach sand 3840 nodes²; lake/river-bank sand 5600 nodes² |
+| Water inside | bay 0 nodes², rivers/lakes 72496 nodes² |
+| Protected / drift band | 0.3% of land protected (towns, villages, camps/POIs, road corridors); 0.7% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 **Sea beaches (sand within ~60 nodes of sea water; ≥ 128 nodes²):**
 
 | Id | Centre | Box | Area | Levels |
 |---|---|---|---|---|
-| B1 | 2513, -122 | x 2492..2536, z -180..-68 | 1952 | L52-56 |
-| B2 | 2555, 104 | x 2544..2576, z 32..172 | 1536 | L55-59 |
+| B1 | 2513, -122 | x 2496..2536, z -180..-68 | 1936 | L54-57 |
+| B2 | 2555, 104 | x 2544..2576, z 32..172 | 1504 | L56-60 |
+| B3 | 2537, -322 | x 2528..2544, z -332..-308 | 256 | L51 |
 
 ## Levels
 
 Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.
 
-Share of land per level: L51 12.4%, L52 8.7%, L53 9.1%, L54 10.9%, L55 10.1%, L56 11.2%, L57 13.2%, L58 11.8%, L59 12.7%
+Share of land per level: L51 15.8%, L52 10.8%, L53 9.3%, L54 9.8%, L55 8.5%, L56 10.0%, L57 9.1%, L58 8.2%, L59 9.5%, L60 9.0%
 
 ## Anchors
 
 | Id | Kind | Name | x | y | z | Level there | Protected box |
 |---|---|---|---|---|---|---|---|
-| anchor_084 | clash site | Skyroot Crossing | 1832 | 179 | -96 | 55 | poi x 1824..1839, z -104..-89 |
-| anchor_085 | clash site | Cloudwatch Fall | 2176 | 207 | 104 | 57 | poi x 2168..2183, z 96..111 |
-| anchor_094 | rare route | Silkfang's Loom | 2026 | 126 | 94 | 58 | poi x 2020..2031, z 88..99 |
+| anchor_084 | clash site | Skyroot Crossing | 1832 | 179 | -96 | 56 | poi x 1824..1839, z -104..-89 |
+| anchor_085 | clash site | Cloudwatch Fall | 2176 | 212 | 104 | 58 | poi x 2168..2183, z 96..111 |
+| anchor_094 | rare route | Silkfang's Loom | 2026 | 127 | 94 | 59 | poi x 2020..2031, z 88..99 |
 
 ## Protected areas
 
@@ -53,25 +54,33 @@ Share of land per level: L51 12.4%, L52 8.7%, L53 9.1%, L54 10.9%, L55 10.1%, L5
 
 No quest is given in this zone today.
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| carrion_crow | Carrion Crow | neutral | 100.0% of land, L51-59 | 100.0% of land, L51-59 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, snowblock … |
-| jungle_ape | Jungle Ape | aggressive | 71.9% of land, L51-59 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| jungle_spider | Jungle Spider | aggressive | - | 99.2% of land, L51-59 | dirt_with_rainforest_litter, dirt_with_canopy_litter, dirt_with_forest_litter, dirt_with_silver_litter |
-| panther | Panther | aggressive | - | 71.9% of land, L51-59 | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| reef_lurker | Reef Lurker | neutral | 3568 nodes², L52-59 | 3568 nodes², L52-59 | sand (dry, within 6 nodes of water) |
-| rift_spawn | Rift Spawn | aggressive | - | 71.9% of land, L51-59 | dirt_with_rainforest_litter, gravel, snowblock, dirt_with_bone_litter, dirt_with_canopy_litter |
-| serpent | Serpent | aggressive | 72.1% of land, L51-59 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter, mud |
-| skeleton_raider | Skeleton Raider | aggressive | - | 100.0% of land, L51-59 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| zombie | Zombie | aggressive | - | 100.0% of land, L51-59 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| glass_fang_serpent | Glass-Fang Serpent | aggressive | 40.7% of land, L54-60 | - |  |
+| glass_knuckle_ape | Glass-Knuckle Jungle Ape | aggressive | 58.1% of land, L51-60 | - |  |
+| glass_shadow_panther | Glass-Shadow Panther | aggressive | - | 58.1% of land, L51-60 |  |
+| glass_web_spider | Glass-Web Jungle Spider | aggressive | - | 37.1% of land, L54-57 |  |
+| last_pay_archer | Last-Pay Archer | aggressive | 1.1% of land, L58-60 | 1.1% of land, L58-60 |  |
+| last_watch_husk | Last-Watch Mummy | aggressive | 30.0% of land, L58-60 | 1.1% of land, L58-60 |  |
+| last_watch_skeleton_raider | Last-Watch Skeleton Raider | aggressive | - | 40.7% of land, L54-60 |  |
+| last_watch_zombie | Last Watchman | aggressive | - | 28.9% of land, L58-60 |  |
+| reef_lurker | Reef Lurker | neutral | 3840 nodes², L51-60 | 3840 nodes², L51-60 | sand (dry, within 6 nodes of water) |
+| saltbound_husk | Saltbound Sun-Dried Husk | aggressive | 37.1% of land, L54-55 | - |  |
+| saltbound_zombie | Saltbound Zombie | aggressive | - | 32.9% of land, L51-55 |  |
+| saltroad_deserter | Saltroad Deserter | aggressive | 30.3% of land, L51-53 | - |  |
+| watchful_carrion_crow | Battlefield Crow | neutral | 2.6% of land, L54-57 | - |  |
 
-**Rares (knowledge rewards, not quest targets):** Silkfang (jungle_spider, the jungle fringe, route 1978,70 → 2042,134 → 2082,78, L58, respawn 2-4 h)
+**Rares (knowledge rewards, not quest targets):** Silkfang (jungle_spider, the jungle fringe, route 1978,70 → 2042,134 → 2082,78, L59, respawn 2-4 h)
 
 ## Roads and trails touching the zone
 
-No road or trail.
+| Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
+|---|---|---|---|---|---|
+| 61 | trail | anchor_060 (Rainchar Camp, kragmar_thunderroot_wilds) | joins road 28 | 891 / 190 | 1915,410 → 2017,417 |
+
+Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

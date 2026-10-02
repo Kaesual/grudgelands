@@ -66,7 +66,7 @@ Residents/guards: idle 2, quest 2.
 | quest_local | quest giver | Alda Sheaf | -122, 38, -2022 | r15_human_local_01, r15_human_local_02 |
 
 Distances: zone edge N 136 (elandor_highcourt), S 304 (elandor_dawnmere_fields), E 700 (coastal_shelf), W 532 (elandor_whitebridge_shire); nearest other-zone land 136 N; sea 563 E; sea-beach sand 526 E; nearest road 16.
-Nearest hubs (straight / by road): Highcourt 534 / 880; Goldmead Bandit Camp 442 / 1037; Goldmead Outpost 296 / 1076; Dawnmere 543 / 1576; Oakspan Tollhouse 904 / 1648.
+Nearest hubs (straight / by road): Highcourt 534 / 880; Goldmead Bandit Camp 442 / 1037; Goldmead Outpost 296 / 1076; Dawnmere 543 / 1576; Petalbank Wardenry 1089 / 1687.
 
 ### Goldmead Outpost (`goldmead_outpost`, anchor_029) at 176, 53, -2026
 
@@ -77,7 +77,7 @@ Residents/guards: quest 1.
 | quest_scout | quest giver | Jon Vale | 179, 54, -2029 | r14_human_08_empty_snares, r14_human_09_the_blackened_tally, r15_human_local_03, r15_human_local_04 |
 
 Distances: zone edge N 208 (elandor_highcourt), S 260 (elandor_dawnmere_fields), E 400 (coastal_shelf), W 832 (elandor_whitebridge_shire); nearest other-zone land 194 N; sea 291 SE; sea-beach sand 242 E; nearest road 11.
-Nearest hubs (straight / by road): Goldmead Bandit Camp 151 / 522; Dawnmere 553 / 686; Highcourt 555 / 866; Goldmead Village 296 / 1076; Oakspan Tollhouse 1099 / 1634.
+Nearest hubs (straight / by road): Goldmead Bandit Camp 151 / 522; Dawnmere 553 / 686; Highcourt 555 / 866; Goldmead Village 296 / 1076; Petalbank Wardenry 918 / 1673.
 
 ### Goldmead Bandit Camp (`goldmead_bandit_camp`, anchor_051) at 320, 57, -1980
 
@@ -88,40 +88,45 @@ Residents/guards: quest 1.
 | quest_captive | quest giver | Pella Thatch | 330, 58, -1970 | r15_human_local_05, r15_human_local_06 |
 
 Distances: zone edge N 204 (elandor_highcourt), S 224 (elandor_dawnmere_fields), E 312 (coastal_shelf), W 952 (elandor_whitebridge_shire); nearest other-zone land 188 NW; sea 206 SE; sea-beach sand 151 SE; nearest road 18.
-Nearest hubs (straight / by road): Goldmead Outpost 151 / 522; Highcourt 577 / 828; Dawnmere 654 / 1022; Goldmead Village 442 / 1037; Oakspan Tollhouse 1179 / 1595.
+Nearest hubs (straight / by road): Goldmead Outpost 151 / 522; Highcourt 577 / 828; Dawnmere 654 / 1022; Goldmead Village 442 / 1037; Petalbank Wardenry 814 / 1635.
 
 ### Current quests (9, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_human_07_orchard_watch | Orchard Watch | Marta Millward (Goldmead Village) | 10 | kill 6 fox [in elandor_goldmead_vale] | 380 | r14_human_06_flock_on_mill_road |
+| r14_human_07_orchard_watch | Orchard Watch | Marta Millward (Goldmead Village) | 10 | kill 6 fox or young_fox [in elandor_goldmead_vale] | 380 | r14_human_06_flock_on_mill_road |
 | r15_human_local_01 | Food for the Granary Crew | Alda Sheaf (Goldmead Village) | 10 | bring 4 mobs:meat_raw | 285 | r14_human_06_flock_on_mill_road |
 | r15_human_local_02 | Apples for the Orchard Crew | Alda Sheaf (Goldmead Village) | 10 | bring 4 default:apple | 380 | r14_human_06_flock_on_mill_road |
-| r14_human_08_empty_snares | Empty Snares | Jon Vale (Goldmead Outpost) | 11 | kill 6 poacher [in elandor_goldmead_vale] | 525 | r14_human_07_orchard_watch |
+| r14_human_08_empty_snares | Empty Snares | Jon Vale (Goldmead Outpost) | 11 | kill 6 poacher or snaring_poacher [in elandor_goldmead_vale] | 525 | r14_human_07_orchard_watch |
 | r15_human_local_03 | Cloth from the Empty Snares | Jon Vale (Goldmead Outpost) | 11 | bring 3 grug_mobs:linen_cloth | 315 | r14_human_07_orchard_watch |
-| r15_human_local_04 | A Clear Eastern View | Jon Vale (Goldmead Outpost) | 11 | kill 5 fox [in elandor_goldmead_vale] | 420 | r14_human_07_orchard_watch |
+| r15_human_local_04 | A Clear Eastern View | Jon Vale (Goldmead Outpost) | 11 | kill 5 fox or young_fox [in elandor_goldmead_vale] | 420 | r14_human_07_orchard_watch |
 | r14_human_09_the_blackened_tally | The Blackened Tally | Jon Vale (Goldmead Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_goldmead_vale] | 805 | r14_human_08_empty_snares |
 | r15_human_local_05 | The Millers' Missing Pay | Pella Thatch (Goldmead Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_human_08_empty_snares |
 | r15_human_local_06 | Linen Around the Grain | Pella Thatch (Goldmead Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_human_08_empty_snares |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 68.8% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| poacher | Poacher | aggressive | - | 91.5% of land, L11-20 | dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| rabbit | Rabbit | critter | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| bristling_boar | Ridgeback Tusker | aggressive | 49.4% of land, L15-20 | - |  |
+| granary_rat | Granary Rat | aggressive | - | 41.0% of land, L11-14 |  |
+| mangy_rat | Burrow Gnawer | aggressive | - | 42.8% of land, L15-20 |  |
+| moaning_zombie | Cairn Zombie | aggressive | - | 26.3% of land, L11-15 |  |
+| muttering_zombie | Pauper Shambler | aggressive | - | 23.5% of land, L16-20 |  |
+| quarrelsome_bandit | Roadside Bandit | aggressive | 2.1% of land, L14-15 | 2.1% of land, L14-15 |  |
+| rabid_fox | Thicket Vixen | aggressive | 16.9% of land, L15-20 | - |  |
 | shore_crab | Shore Crab | neutral | 16288 nodes², L11-17 | 16288 nodes², L11-17 | sand (dry, within 6 nodes of water) |
-| wild_turkey | Wild Turkey | critter | 68.5% of land, L11-20 | - | dirt_with_grass |
-| zombie | Zombie | aggressive | - | 100.0% of land, L11-20 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| snaring_poacher | Snaring Poacher | aggressive | - | 19.0% of land, L11-13 |  |
+| vigilant_bandit_archer | Bandit Lookout | aggressive | 3.7% of land, L16-20 | 3.7% of land, L16-20 |  |
+| young_boar | Rooting Boar | neutral | 67.3% of land, L11-14 | - |  |
+| young_fox | Bracken Fox | neutral | 30.1% of land, L11-13 | - |  |
 
 **Camps and guard posts:**
 
 - anchor_029 Goldmead Outpost at 176, -2026: guard post, guard_accord × 2-3, respawn 180-360 s, level there L15.
-- anchor_051 Goldmead Bandit Camp at 320, -1980: bandit, bandit/bandit_archer × 3-5, respawn 120-300 s, level there L16.
+- anchor_051 Goldmead Bandit Camp at 320, -1980: bandit, bandit/bandit_archer × 3-5, respawn 30-60 s, level there L16.
 
 **Rares (knowledge rewards, not quest targets):** Grimtusk (boar, the central meadows, route 104,-2140 → 168,-2076 → 208,-2132, L13, respawn 2-4 h)
 
@@ -131,9 +136,9 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 4 | primary | anchor_002 (Dawnmere, elandor_dawnmere_fields) | anchor_008 (Highcourt, elandor_highcourt) | 796 / 528 | -14,-2317 → 132,-1835 |
 | 7 | secondary | anchor_015 (Goldmead Village, elandor_goldmead_vale) | anchor_008 (Highcourt, elandor_highcourt) | 277 / 134 | -115,-2005 → -158,-1886 |
-| 34 | trail | anchor_029 (Goldmead Outpost, elandor_goldmead_vale) | joins road 4 | 83 / 84 | 166,-2030 → 88,-2012 |
-| 51 | trail | anchor_051 (Goldmead Bandit Camp, elandor_goldmead_vale) | joins road 4 | 225 / 222 | 306,-1969 → 131,-1839 |
-| 67 | trail | anchor_067 (Siltbasket Camp, elandor_whitebridge_shire) | joins road 7 | 500 / 380 | -511,-1827 → -160,-1920 |
+| 35 | trail | anchor_029 (Goldmead Outpost, elandor_goldmead_vale) | joins road 4 | 83 / 84 | 166,-2030 → 88,-2012 |
+| 52 | trail | anchor_051 (Goldmead Bandit Camp, elandor_goldmead_vale) | joins road 4 | 225 / 222 | 306,-1969 → 131,-1839 |
+| 68 | trail | anchor_067 (Siltbasket Camp, elandor_whitebridge_shire) | joins road 7 | 500 / 380 | -511,-1827 → -160,-1920 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

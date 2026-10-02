@@ -118,34 +118,21 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_ape",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:serpent"
+   "grug_mobs:glass_fang_serpent",
+   "grug_mobs:glass_knuckle_ape",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_husk",
+   "grug_mobs:watchful_carrion_crow"
   ],
-  "density_budget_day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_ape",
-   "grug_mobs:serpent"
-  ],
-  "density_budget_night": [
-   "grug_mobs:bog_witch",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:bog_witch",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:zombie"
+   "grug_mobs:glass_shadow_panther",
+   "grug_mobs:glass_web_spider",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_skeleton_raider",
+   "grug_mobs:last_watch_zombie",
+   "grug_mobs:salt_hex_witch"
   ]
  },
  "civic_no_hostiles": false,
@@ -193,7 +180,6 @@
  "name": "Stormscale Summit",
  "neighbors": [],
  "numeric_id": 38,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -297,28 +283,28 @@
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 1164,
+      "straight": 1208,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 1297,
+      "straight": 1369,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 2741,
+      "straight": 2757,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 2770,
+      "straight": 2800,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
@@ -393,28 +379,28 @@
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 1428,
+      "straight": 1477,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 1482,
+      "straight": 1534,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 2988,
+      "straight": 3007,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 3028,
+      "straight": 3051,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
@@ -489,30 +475,30 @@
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 1382,
+      "straight": 1428,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 1423,
+      "straight": 1481,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
-      "name": "Last Hedge Redoubt",
-      "road": null,
-      "straight": 2948,
-      "to": "r20_anchor_032",
-      "zone": "elandor_ashenward_march"
-     },
-     {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 2950,
+      "straight": 2969,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 2972,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
      },
      {
       "name": "Red Ramp Post",
@@ -585,28 +571,28 @@
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 1157,
+      "straight": 1209,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 1288,
+      "straight": 1354,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 2720,
+      "straight": 2737,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 2788,
+      "straight": 2816,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
@@ -672,24 +658,18 @@
  ],
  "spawns": [
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_witch",
-   "name": "Bog Witch",
-   "night": {
+   "day": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 63.5
-   }
+    "share_pct": 52.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:glass_fang_serpent",
+   "name": "Glass-Fang Serpent",
+   "night": null
   },
   {
    "day": {
@@ -697,34 +677,40 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 86.8
+    "share_pct": 45.5
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:carrion_crow",
-   "name": "Carrion Crow",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:glass_knuckle_ape",
+   "name": "Glass-Knuckle Jungle Ape",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:glass_shadow_panther",
+   "name": "Glass-Shadow Panther",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 86.8
+    "share_pct": 45.5
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:glass_web_spider",
+   "name": "Glass-Web Jungle Spider",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "share_pct": 45.5
    }
   },
   {
@@ -746,75 +732,18 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 57.4
+    "share_pct": 25.9
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:jungle_ape",
-   "name": "Jungle Ape",
-   "night": null
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:jungle_spider",
-   "name": "Jungle Spider",
+   "hosts": [],
+   "mob": "grug_mobs:last_pay_archer",
+   "name": "Last-Pay Archer",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 57.4
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:panther",
-   "name": "Panther",
-   "night": {
-    "levels": [
-     60,
-     60
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 57.4
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:rift_spawn",
-   "name": "Rift Spawn",
-   "night": {
-    "levels": [
-     60,
-     60
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 57.4
+    "share_pct": 25.9
    }
   },
   {
@@ -823,77 +752,69 @@
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 63.5
+    "share_pct": 28.6
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:serpent",
-   "name": "Serpent",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_husk",
+   "name": "Last-Watch Mummy",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:skeleton_raider",
-   "name": "Skeleton Raider",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_skeleton_raider",
+   "name": "Last-Watch Skeleton Raider",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 25.9
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_zombie",
+   "name": "Last Watchman",
    "night": {
     "levels": [
      60,
      60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 28.6
    }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:salt_hex_witch",
+   "name": "Salt-Hex Bog Witch",
+   "night": {
+    "levels": [
+     60,
+     60
+    ],
+    "share_pct": 28.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     60,
+     60
+    ],
+    "share_pct": 47.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_carrion_crow",
+   "name": "Battlefield Crow",
+   "night": null
   }
  ],
  "territory_rule": "contested_land"

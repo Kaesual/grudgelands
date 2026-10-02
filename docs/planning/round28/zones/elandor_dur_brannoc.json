@@ -86,10 +86,22 @@
  "camps": [],
  "capital_street_count": 19,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:hill_ram",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:rubble_goblin_slinger",
+   "grug_mobs:surefoot_ibex"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_zombie",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:rubble_goblin_slinger",
+   "grug_mobs:stubborn_zombie",
+   "grug_mobs:toll_bandit",
+   "grug_mobs:toll_bandit_archer"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
@@ -141,7 +153,7 @@
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/elandor_dur_brannoc.png",
  "name": "Dur Brannoc",
  "neighbors": [
@@ -151,7 +163,6 @@
   "elandor_whitebridge_shire"
  ],
  "numeric_id": 3,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
    "area_nodes2": 126664,
@@ -324,7 +335,7 @@
     -1525
    ],
    "length_in_zone": 334,
-   "length_total": 1434,
+   "length_total": 1402,
    "polyline_simplified": [
     [
      -1536,
@@ -343,24 +354,32 @@
      -1498
     ],
     [
-     -1107,
-     -1426
+     -1136,
+     -1441
     ],
     [
-     -946,
-     -1414
+     -1035,
+     -1393
     ],
     [
-     -865,
-     -1340
+     -961,
+     -1391
     ],
     [
-     -705,
-     -1240
+     -871,
+     -1357
     ],
     [
-     -545,
-     -1217
+     -778,
+     -1356
+    ],
+    [
+     -591,
+     -1303
+    ],
+    [
+     -432,
+     -1234
     ],
     [
      -272,
@@ -573,7 +592,7 @@
     -1311
    ],
    "from": "anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf)",
-   "id": 32,
+   "id": 33,
    "kind": "trail",
    "last_in_zone": [
     -2128,
@@ -611,7 +630,7 @@
     -1633
    ],
    "from": "end:1",
-   "id": 109,
+   "id": 111,
    "kind": "primary",
    "last_in_zone": [
     -1631,
@@ -641,7 +660,7 @@
     -1280
    ],
    "from": "end:12",
-   "id": 110,
+   "id": 112,
    "kind": "secondary",
    "last_in_zone": [
     -1745,
@@ -671,7 +690,7 @@
     -1697
    ],
    "from": "end:9",
-   "id": 111,
+   "id": 113,
    "kind": "secondary",
    "last_in_zone": [
     -1994,
@@ -697,7 +716,7 @@
     -1760
    ],
    "from": "end:3",
-   "id": 112,
+   "id": 114,
    "kind": "primary",
    "last_in_zone": [
     -1739,
@@ -764,7 +783,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 1326,
+      "road": 1331,
       "straight": 766,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1199,7 +1218,132 @@
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_zombie",
+   "name": "Debtbound Zombie",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 53.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "share_pct": 79.6
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:hill_ram",
+   "name": "Hill Ram",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_thieving_goblin",
+   "name": "Ore-Thieving Goblin",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rubble_goblin_slinger",
+   "name": "Rubble Goblin Slinger",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_zombie",
+   "name": "Tithe Revenant",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 52.2
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 83.1
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:surefoot_ibex",
+   "name": "Surefoot Ibex",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 27.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit_archer",
+   "name": "Toll Bandit Archer",
+   "night": {
+    "levels": [
+     26,
+     27
+    ],
+    "share_pct": 16.3
+   }
+  }
+ ],
  "territory_rule": "accord_home",
  "track_order": 3
 }
