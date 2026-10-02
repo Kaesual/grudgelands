@@ -136,7 +136,7 @@ local layout = grug_core.hud_layout
 local QUESTS = {}
 rawset(_G, "grug_quests", {registered_npcs = {},
 	marker_states = function() return QUESTS, 1 end,
-	register_on_change = function(fn) quest_changes[#quest_changes + 1] = fn end})
+	register_on_markers_changed = function(fn) quest_changes[#quest_changes + 1] = fn end})
 local PARTY = {}
 local party_views, party_changes = 0, {}
 rawset(_G, "grug_parties", {view = function(player)

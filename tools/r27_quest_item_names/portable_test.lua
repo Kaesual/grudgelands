@@ -150,7 +150,8 @@ local faction, race = "accord", "human"
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
 grug_classes = {get_race = function() return race end}
-grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end}
+grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end,
+	register_on_level_change = function() end}
 -- Quest texts fill their placeholders (labels.lua); a stand-in region map
 -- names every kind or camp by its id and every direction "nearby" (this test
 -- reads item names).
