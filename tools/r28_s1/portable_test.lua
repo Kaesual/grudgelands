@@ -22,7 +22,7 @@
 --    recipe camps (first fill, respawn window, levels, radius), leaders
 --    (spot, level, never saved, 24-node clearance, 300 s after a kill), the
 --    level overlay, the quest seams (get_area, area_roles, zone_area_ids,
---    leader), describe and direction. The leader's 1.15 size and 2x HP are
+--    leader), describe and direction. The leader's 1.15 size and 1.5x HP are
 --    checked with the real registration in tools/r28_b2/portable_test.lua;
 --    here levels.lua's HP factor.
 -- Prints "R28 S1 PORTABLE PASS checks=<n>" or raises on the first failure.
@@ -950,7 +950,7 @@ do
 	check(SR.describe(DAWN, "bandit_camp", "of", "no_such_place") == nil, "unknown place")
 end
 
--- levels.lua: a definition's HP factor (the leader's 2x) on top of level and tier.
+-- levels.lua: a definition's HP factor (the leader's 1.5x) on top of level and tier.
 do
 	local LE = setmetatable({}, {__index = _G})
 	LE._G = LE
@@ -968,7 +968,7 @@ do
 	local LG = LE.grug_mobs
 	LG.ensure_tag_carrier = noop
 	LG.register_level_cfg("grug_mobs:plain", {})
-	LG.register_level_cfg("grug_mobs:chief", {_grug_hp_scale = 2})
+	LG.register_level_cfg("grug_mobs:chief", {_grug_hp_scale = 1.5})
 	local function fake(name)
 		local self = {name = name}
 		self.object = new_object(self, {x = 0, y = 0, z = 0})
@@ -979,7 +979,8 @@ do
 	LG.ensure_init(a)
 	LG.ensure_init(b)
 	check(a._grug_level == 10 and b._grug_level == 10, "both at the gameplay level 10")
-	check(b.hp_max == 2 * a.hp_max and a.hp_max == LG.stats_for(10, "normal"), "HP x2 for a leader definition")
+	check(b.hp_max == math.floor(1.5 * a.hp_max + 0.5) and b.hp_max > a.hp_max and
+		a.hp_max == LG.stats_for(10, "normal"), "HP x1.5 for a leader definition")
 end
 
 print(("B: %d regions, build %.0f ms; spawner, drift, density, camps, leaders, overlay, seams"):format(

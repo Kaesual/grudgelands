@@ -147,7 +147,7 @@ end
 --   XP = ratio x M(min(reference level, player level + 5)), rounded half up
 --
 -- The reference level is the top of a ten-level band: 10 x harvest tier for
--- an ore or gem node (T1 10 .. T5 50), 10 x the water's zone band for a fish
+-- an ore or gem node (T1 10 .. T6 60), 10 x the water's zone band for a fish
 -- (10 .. 60). No gray rule: T1 always pays. Source "gathering" carries no race
 -- or class bonus (grug_classes.get_xp_bonus scales only "quest").
 --

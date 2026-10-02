@@ -130,7 +130,9 @@ catalogue (`docs/planning/round28/design/catalog/enchants.json`, its README
 lists the stat loot per tier): five mob signatures per tier at T1/T2 (tusk,
 tail, eye, flesh, fur) and four from T3 (tooth, strap, talisman, flesh; the
 strap also covers Armor), and per family a mined or gathered input (bar,
-quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp).
+quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp). Since
+Round 29 every gem input is the depth-tiered gem of the enchant tier or a
+lower one (`items_crafting.md` §3.0.1); the catalogue copy changed with it.
 
 **Sources.** The catalogue's sub-types spawn from the zone spawn recipes,
 which all 38 zones have since Round 28; every stat loot item of T1–T6 drops

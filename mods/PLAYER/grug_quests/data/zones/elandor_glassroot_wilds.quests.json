@@ -55,7 +55,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:bandit",
             "grug_mobs:entrenched_bandit"
           ],
           "zone": "elandor_glassroot_wilds",

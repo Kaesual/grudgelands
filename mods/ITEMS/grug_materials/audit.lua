@@ -198,7 +198,7 @@ local function check_tools()
 				caps.grug_resource.maxlevel ~= tier - 1 then
 				fail("invalid Grudgelands pick contract: " .. name)
 			end
-			for harvest_tier = 1, 5 do
+			for harvest_tier = 1, #grug_materials.TIERS do
 				if not caps.grug_resource.times[harvest_tier] then
 					fail("incomplete resource capability on " .. name)
 				end

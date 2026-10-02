@@ -299,9 +299,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   dragon channels remain full-column exceptions.
 
   Natural resources need the pick of the layer where they first appear, at any
-  depth: T1 digs Copper, Tin, Coal, Iron and Quartz; T2 Gold and all G1 gems
-  (Citrine, Garnet, Jade); T3 Silver; T4 Emberglass and all G2 gems (Diamond,
-  Sapphire, Ruby); T5 Abyssal Crystal. A weaker pick cannot dig the ore at all
+  depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold and
+  Jade; T3 Silver and Garnet; T4 Emberglass and Sapphire; T5 Abyssal Crystal
+  and Ruby; T6 Diamond. Each gem occurs only in the rock of its own tier,
+  everywhere (`items_crafting.md` §3.0.1). A weaker pick cannot dig the ore at all
   (the former under-tier shatter path is retired). Crafted storage/building
   blocks are never natural resources: any real pick recovers them where
   territory allows, and they always drop themselves.
@@ -350,7 +351,7 @@ occupying a position (`world_zones.md` §7):
   deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
   drops or XP). It has no ordinary surface, guard or mob-level result: the
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
-  ownership, movement, damage and decay are decided in [boats.md](boats.md);
+  summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.
 - **Dragon channels:** separate full-column immutable masks between the
   mainland and the two offshore islands. They are required boat routes and
@@ -362,38 +363,22 @@ occupying a position (`world_zones.md` §7):
   roughly equalizes travel from Kragmar and Elandor. They have no ordinary
   surface, guard or mob-level result.
 
-**Kraken Guard pursuit — approved future WP17 scope** (decided 2026-08-13).
-The position-dependent pursuit below remains a boat-system prerequisite; the
-current bespoke guard is not evidence that it is delivered. The deep sea is
-dangerous because of what the guard does, not because water damages a boat:
+**Kraken Guard pursuit** (travel plan ruling 7, user 2026-10-02; supersedes
+the residual-allowance model decided 2026-08-13). The deep sea is dangerous
+because of what the guard does, not because water damages a boat:
 
 - The Kraken Guard **spawns only in `deep_ocean`**. Neither the coastal shelf,
   nor planned zone water, nor a dragon channel ever spawns one.
-- **In deep ocean it never gives up.** While the guard itself stands in a
-  deep-ocean column, three §3/§4 rules are suspended: the 40-metre drag leash,
-  the 45-metre chase give-up and the 25-metre soft de-aggro that would drop it
-  to walking speed. Its current decided run speed is 5 nodes/s
-  (`biomes_mobs.md` §3.1), below the improved boat's 8; danger must not be
-  justified by the superseded 8.8-nodes/s outrunning assumption.
-- **Everywhere else it retains the bounded land-actor rules.** The Round 18–19
-  ambient pursuit changes do not apply to this bespoke guard. In shelf water, in
-  planned zone water and inside a dragon channel all three of those rules
-  apply again, together with the rest of the §4 model — threat reset, the
-  accelerated untouchable run home to its post and the teleport backstop. Full
-  hunting speed is a deep-ocean privilege, not a property of the mob.
-- **The switch is evaluated at the guard's own current position and takes
-  effect immediately**, and a guard that has begun to evade never reverses
-  that decision until it is home. Crossing the boundary is not itself a reset:
-  a pursuit dragged in from open water ends as soon as its **ordinary**
-  allowance is spent. A guard already pulled more than 40 metres from where
-  that chase began therefore leashes on its first tick under ordinary rules,
-  while one that crossed early keeps whatever remains of the 40-metre drag and
-  the 15-second contact window. That residual is deliberate — it is what keeps
-  a guard at the shelf edge dangerous instead of farmable from safe water —
-  and it is bounded by the same 40 metres, so a single chase can never be
-  walked across the whole 80-node shelf.
-- A dragon channel is safe passage for that reason alone; no separate
-  channel exception is needed.
+- **It swims 10 nodes/s while it stands in a deep-ocean column and 5 nodes/s
+  everywhere else**, with a view range of 40. Ten is above the improved
+  boat's 8, and any hit ejects a boat's rider into the water (`boats.md` §6),
+  so a guard that sees a boat in deep ocean catches it and ends the trip.
+- **The leash is simple:** the guard ignores the generic leash and soft
+  de-aggro, and once a second it checks its own position; outside deep ocean
+  it drops its target and holds position. Shelf water, planned zone water and
+  the dragon channels are therefore never pursued into beyond the deep-ocean
+  edge, and a dragon channel is safe passage for that reason alone; no
+  separate channel exception is needed.
 
 The `open_sea_at` adapter is true only for `deep_ocean`; it is false for
 planned zone water, shelf and dragon channel (`world_zones.md` §13.3).
@@ -653,7 +638,8 @@ belongs in the mapgen environment and uses a y-range fast path above the band.
 
 Deep mining pays in raw materials rather than a separate gear-drop layer. The
 first resource-calibration pass uses these bounded density multipliers for
-ordinary continental ores, G1/G2 gems and Abyssal Crystal:
+ordinary continental ores, Diamond (the only gem below −1000) and Abyssal
+Crystal:
 
 | Depth | Resource density |
 |---|---:|
@@ -709,20 +695,38 @@ separate travel feature, part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
 WP17).
 
-**Waypoint network** (Diablo/PoE model, decided 2026-08-06):
+**Waypoint network** (Diablo/PoE model, decided 2026-08-06; built in Round 29,
+[travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
 - Waypoints: every race starting settlement and every capital, and no others
-  (no zone-hub waypoints; user decision 2026-09-29). A capital's waypoint pad
-  may stand anywhere in the city (WP audit A5).
-- **Unlocked by visiting, per character** (player meta); the world map shows
-  discovered waypoints when waypoint integration is delivered. The initial
-  cartographic atlas has no fog of war (`world_map.md`). Showing terrain or a waypoint on the
-  map never unlocks waypoint travel; only visiting the waypoint does.
-- Teleporting works **only while standing at a waypoint**
-  (waypoint → waypoint), instant and free — travel time is the cost;
-  mounts stay relevant.
-- **No waypoints in enemy territory** (not unlockable or usable there) and
-  none in ordinary ocean or on the dragon islands.
+  (no zone-hub waypoints; user decision 2026-09-29). Each is a **waystone**
+  node (`grug_mapgen:waystone`) the mapgen places at the centre of the
+  settlement's waypoint pad, in the cell of its `travel_waypoint` socket
+  ([settlements.md](settlements.md#waypoint-pads)). A faction's network is its
+  three starts and three capitals, six waystones.
+- **Unlocked by visiting, per character** (player meta
+  `grug_home:waypoints`): standing within 8 nodes horizontally (and 8 up or
+  down) of an own-faction waystone, checked once a second, or right-clicking
+  it, discovers it with one flash and chat line "Waypoint discovered: <name>".
+  The character's own start counts as discovered from creation.
+- **Right-click** opens the list of the six own-faction waypoints: "You are
+  here", **Travel** (discovered) or a greyed "Not yet visited".
+- **Travel** works **only while standing at a waystone** (within the same
+  reach), waystone to waystone: instant, free, no cooldown, alive and out of
+  combat. It runs through the innkeeper return's own path (`grug_home.travel`
+  in `grug_home/travel.lua`: dismount, emerge, re-validation on the next
+  server step, safe arrival) and arrives beside the destination stone (the
+  socket's arrival side first, then the next free side). A failed preparation
+  leaves the player in place with a message. It never touches the 30-minute
+  home cooldown. Travel time is the cost; mounts stay relevant.
+- **No waypoints in enemy territory**: an enemy faction's waystone is inert
+  (no unlock, no use, one line on right-click). None stand in ordinary ocean
+  or on the dragon islands.
+- The world map and the minimap show discovered waypoints as the marker kind
+  `waypoint` ([world_map.md](world_map.md)); undiscovered ones are not shown.
+  The initial cartographic atlas has no fog of war. Showing terrain or a
+  waypoint on the map never unlocks waypoint travel; only visiting the
+  waystone does. There is no `/unstuck`.
 - Phase 2 extension: **Nether crossings** link authored, level-equivalent
   named-zone portal pairs into enemy territory
   (`TODO-design-nether.md` until specced).
@@ -738,11 +742,13 @@ innkeeper. This replaces the former Home Stone channel (10-second cast,
 
 
 **Boats** are the third travel mode next to walking/riding and the waypoint
-network, and the only access to both dragon islands. Their complete contract —
-always-craftable base boat, the shipwright's level-30 improved boat, one
-player per boat, eject on damage and the 24-hour decay of an unused boat —
-lives in [boats.md](boats.md); the water they move through is classified in
-§2b above. Boats never teleport and are not part of the waypoint network.
+network, and the only access to both dragon islands. A boat is a water mount:
+an owner-bound skill item bought from the Shipwright at every capital stable
+(base boat at level 15, improved boat at level 30), summoned only while the
+player stands or swims in water, ejected by any hit, and never left empty in
+the world. The complete contract lives in [boats.md](boats.md); the water they
+move through is classified in §2b above. Boats never teleport and are not part
+of the waypoint network.
 
 ## 7. Races
 

@@ -375,8 +375,8 @@ end
 check(small.selectionbox.rotate == true, "rotated selection box stays rotated")
 local rat, large = R["grug_mobs:giant_rat"], R["grug_mobs:large_rat"]
 -- A leader (Lane S1): the one leader size in place of the catalogue's 1.3,
--- and twice the HP of its level and tier.
-check(grug_mobs.LEADER.size == 1.15 and grug_mobs.LEADER.hp == 2, "leader constants 1.15 x size, 2 x HP")
+-- and 1.5 times the HP of its level and tier.
+check(grug_mobs.LEADER.size == 1.15 and grug_mobs.LEADER.hp == 1.5, "leader constants 1.15 x size, 1.5 x HP")
 near(R["grug_mobs:rat_king_odo"].visual_size.x, rat.visual_size.x * 1.15, "rat king visual: leader size")
 near(R["grug_mobs:rat_king_odo"].collisionbox[5], rat.collisionbox[5] * 1.15, "rat king box top: leader size")
 do
@@ -384,7 +384,7 @@ do
 	local king = spawn(w, "grug_mobs:rat_king_odo")
 	grug_mobs.ensure_init(king)
 	local hp = grug_mobs.stats_for(king._grug_level, king._grug_tier)
-	check(king._grug_level == 10 and king.hp_max == 2 * hp, "leader HP x2 (" ..
+	check(king._grug_level == 10 and king.hp_max == math.floor(1.5 * hp + 0.5), "leader HP x1.5 (" ..
 		tostring(king.hp_max) .. " vs " .. hp .. ")")
 	local plain = spawn(w, "grug_mobs:braindead_zombie")
 	grug_mobs.ensure_init(plain)

@@ -1110,12 +1110,6 @@ local function settlement_factory()
 		local projection = content.wp43_projection()
 		local surface_by_id = {}
 		for index = 1, #surfaces do surface_by_id[surfaces[index].id] = surfaces[index] end
-		local race_assignment = {}
-		for index = 1, #(projection.race_regions or {}) do
-			local row = projection.race_regions[index]
-			local race = row.race or row._projection_key
-			if race then race_assignment[race] = row end
-		end
 		local tier_by_y = projection.tiers
 		local cultural_registration = {}
 		for index = 1, #cultural_registrations do
@@ -1202,35 +1196,6 @@ local function settlement_factory()
 			if not id then fail("fail_settlement", "overlay exclusion kind differs") end
 			return "route_or_water", id
 		end
-		local apex_columns = {}
-		do
-			local anchors = {}
-			for index = 1, #(source.anchors or {}) do
-				anchors[source.anchors[index].id] = source.anchors[index]
-			end
-			for index = 1, #(source.apex_sockets or {}) do
-				local socket = source.apex_sockets[index]
-				local anchor = anchors[socket.anchor_id]
-				if not anchor then fail("fail_settlement", "apex anchor identity differs") end
-				local x = anchor.position.x + socket.offset.x
-				local z = anchor.position.z + socket.offset.z
-				local key = tostring(x) .. "/" .. tostring(z)
-				if apex_columns[key] then
-					fail("fail_settlement", "duplicate apex socket column")
-				end
-				-- The socket column's protected floor (Round 24 ruling 30).
-				apex_columns[key] = planner_source.protection_floor_y(
-					"exclude:active:hard:" .. socket.id, x, z)
-			end
-			if #(source.apex_sockets or {}) ~= 24 then
-				fail("fail_settlement", "apex socket population differs")
-			end
-		end
-		local function overlaps_apex(x, y, z)
-			local floor = apex_columns[tostring(x) .. "/" .. tostring(z)]
-			return floor ~= nil and y >= floor
-		end
-
 		local retained_volume = evidence_only and 1 or MAX_VOLUME
 		local original_data = retained_array("r6_settlement_original_data",
 			retained_volume, 0)
@@ -1764,16 +1729,6 @@ local function settlement_factory()
 			return nil
 		end
 
-		local function regional_allowed(resource, race)
-			if resource.scope == "universal" then return true end
-			local assignment = race_assignment[race]
-			if not assignment then return false end
-			if resource.scope == "regional_g1" then
-				return assignment.g1 == resource.key
-			end
-			return assignment.g2 == resource.key
-		end
-
 		local function coordinate_less(left, right)
 			if left.digest ~= right.digest then
 				return hash.less_bytes(left.digest, right.digest)
@@ -1848,7 +1803,7 @@ local function settlement_factory()
 			integer(owner_x, "evidence owner x", -30912, 30927, "fail_ledger")
 			integer(owner_z, "evidence owner z", -30912, 30927, "fail_ledger")
 			local result = {cultural = {}, decorations = {}, rejections = {},
-				witnesses = {}, apex_overlaps = 0}
+				witnesses = {}}
 			local occupied, occupied_positions, written = {}, {}, {}
 			local evidence_air_cid, air_kind, air_param2 =
 				contract.r5.resolve(1, 0, 0)
@@ -1943,9 +1898,6 @@ local function settlement_factory()
 					for z = candidate.z - 2, candidate.z + 2 do
 						for y = candidate.y - 1, candidate.y + 7 do
 							for x = candidate.x - 2, candidate.x + 2 do
-								if overlaps_apex(x, y, z) then
-									result.apex_overlaps = result.apex_overlaps + 1
-								end
 								local key = occupied_key(x, y, z)
 								occupied[key] = 1
 								occupied_positions[key] = {x, y, z}
@@ -2128,9 +2080,6 @@ local function settlement_factory()
 							for z = candidate.z + min_fz, candidate.z + max_fz do
 								for y = candidate.y + min_fy, candidate.y + max_fy do
 									for x = candidate.x + min_fx, candidate.x + max_fx do
-										if overlaps_apex(x, y, z) then
-											result.apex_overlaps = result.apex_overlaps + 1
-										end
 										local key = occupied_key(x, y, z)
 										occupied[key] = -1
 										occupied_positions[key] = {x, y, z}
@@ -2324,15 +2273,13 @@ local function settlement_factory()
 			end
 
 			local resource_rows, rejections, witnesses = {}, {}, {}
-			local apex_overlaps = 0
 			local union_host = 0
 			local counted_host = false
 			for resource_index = 1, #resources do
 				local resource = resources[resource_index]
 				local denominator = resource.denominators[tier]
-				local allowed = regional_allowed(resource, race)
 				local eligible = 0
-				if denominator and allowed then
+				if denominator then
 					counted_host = true
 					for z = min_z, min_z + 15 do
 						for y = min_y, min_y + 15 do
@@ -2396,9 +2343,6 @@ local function settlement_factory()
 						-- The frontier rank of a voxel is fixed for the whole vein.
 						local rank_memo = {}
 						census_occupancy[local_index(root.x, root.y, root.z)] = resource_index
-						if overlaps_apex(root.x, root.y, root.z) then
-							apex_overlaps = apex_overlaps + 1
-						end
 						placed = placed + 1
 						while #vein_nodes < target do
 							local frontier_count = 0
@@ -2444,9 +2388,6 @@ local function settlement_factory()
 								y = next_node.y, z = next_node.z}
 							census_occupancy[local_index(next_node.x, next_node.y,
 								next_node.z)] = resource_index
-							if overlaps_apex(next_node.x, next_node.y, next_node.z) then
-								apex_overlaps = apex_overlaps + 1
-							end
 							placed = placed + 1
 						end
 						if #vein_nodes < target then
@@ -2467,8 +2408,7 @@ local function settlement_factory()
 			if counted_host then union_host = substrate_counts[host_name] or 0 end
 			return {substrate = substrate, resources = resource_rows,
 				region_host = {count = union_host, tier = tier, band = band},
-				rejections = rejections, witnesses = witnesses,
-				apex_overlaps = apex_overlaps}
+				rejections = rejections, witnesses = witnesses}
 		end
 
 		local function run_at(plan, column, y)
@@ -2501,7 +2441,7 @@ local function settlement_factory()
 			analytic_p7_material_ref = analytic_p7_material_ref,
 			analytic_p7_support_ref = analytic_p7_support_ref,
 			decoration_support_ref = decoration_support_ref,
-			regional_allowed = regional_allowed, coordinate_less = coordinate_less,
+			coordinate_less = coordinate_less,
 			frontier_min = frontier_min,
 			run_class_policy = run_class_policy,
 			capture_private_buffers = capture_private_buffers,
@@ -3147,8 +3087,8 @@ local function settlement_factory()
 			end
 			for resource_index = 1, #resources do
 				local resource = resources[resource_index]
-				-- Water class and regional assignment are immutable for a complete
-				-- column and resource. Claims remain live outside base eligibility.
+				-- Water class is immutable for a complete column. Claims remain
+				-- live outside base eligibility.
 				local allowed_columns = 0
 				local active_tier = false
 				for y = min_y, max_y do
@@ -3164,10 +3104,7 @@ local function settlement_factory()
 							local column = column_index(x, z)
 							local base = (column - 1) * COLUMN_STRIDE
 							local water_class = plan.column_values[base + 1]
-							local race_ref = plan.column_values[base + 4]
-							local race = race_ref ~= 0 and plan.stable_refs[race_ref] or nil
-							local allowed = (water_class == 1 or water_class == 2) and
-								helpers.regional_allowed(resource, race)
+							local allowed = water_class == 1 or water_class == 2
 							if allowed then allowed_columns = allowed_columns + 1 end
 							resource_column_state[column] =
 								resource_column_state[column] >= 2 and

@@ -28,8 +28,8 @@ Decided 2026-09-21; Round 14 user Go.
 - Separate the shared map base from marker records and world-to-screen mapping.
   Markers must remain extensible for hover tooltips and/or click actions; do not
   bake labels and all marker semantics irreversibly into one raster.
-- Map visibility never unlocks waypoint travel. Actual visit-unlock remains
-  WP17's authority; this first map slice has no Housing or travel dependency.
+- Map visibility never unlocks waypoint travel. Actual visit-unlock is the
+  waystones' authority ([world.md](world.md) §6); a map marker grants no travel.
 - Since Round 27 the same base image also feeds our own HUD minimap, which
   replaces Luanti's native minimap (see [Minimap](#minimap)). No client mods
   or native-minimap bitmap extraction are used.
@@ -55,8 +55,15 @@ trainers, kings and innkeepers but below quest, party and player markers. NPC/bo
 entities, load terrain, reveal health or indicate respawn state. All NPC/player
 hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
-is necessary. Map markers confer no remote interaction or travel. Waypoints
-remain a later package.
+is necessary. Map markers confer no remote interaction or travel.
+
+Round 29 (WP17): every **discovered** waystone of the player's own network
+(three starts, three capitals; [world.md](world.md) §6) is a marker of kind
+`waypoint` at the stone, labelled "<settlement> Waystone", with the icon
+`grug_map_waypoint.png` (a grey standing stone with a blue rune, first
+version). Undiscovered and enemy waystones are not shown. The provider is
+`waypoint` in `grug_map/providers.lua`, fed by `grug_home.known_waypoints`; a
+marker never unlocks or starts travel.
 
 ## Innkeeper home travel
 
@@ -177,12 +184,14 @@ drawn from the base image above. The gliding version (approved in playtest,
   shows less detail than it could, though still more than normal.
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
-  locked), the Housing Steward, profession and Riding trainers, innkeepers
-  and the player's home (the bound innkeeper or Claim Stone). Settlements,
+  locked), the Housing Steward, profession and Riding trainers, innkeepers,
+  the player's home (the bound innkeeper or Claim Stone) and discovered
+  waystones (Round 29). Settlements,
   camps, kings and dragons stay on the Map tab only. Markers glide with the
   map and are hidden unless the whole icon lies inside the hole. The minimap
   has 24 marker slots; when more markers fall inside the circle, quest givers
-  keep a slot first, then the Steward, home, innkeeper and trainers, and the
+  keep a slot first, then the Steward, home, innkeeper, trainers and
+  waystones, and the
   kept ones are drawn in their usual order. Markers are not clustered or
   moved apart.
 - **Party members** (online, same party) have nine slots of their own: a cyan

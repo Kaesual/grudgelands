@@ -77,7 +77,7 @@ local function loader(directory)
 
 	M.mask = mask
 
-	-- The travel plaza reserved for WP17.
+	-- The travel plaza (WP17), the waystone at its pad's centre.
 	local PLAZA = {x1 = -44, z1 = -30, x2 = -32, z2 = -18}
 
 	-- THE STREETS. The four avenues are five wide on the two axes; the lanes
@@ -357,8 +357,8 @@ local function loader(directory)
 			street(run[1], run[2], run[3], run[4], run[5], run[6])
 		end
 
-		-- 3. THE TRAVEL PLAZA reserved for WP17: paving, two kerb rings and
-		-- nothing above the ground course.
+		-- 3. THE TRAVEL PLAZA (WP17): paving, two kerb rings and nothing
+		-- above the ground course but the waystone (step 10b).
 		do
 			local ok, bx, bz = mask.pad_area(PLAZA.x1, PLAZA.z1, PLAZA.x2,
 				PLAZA.z2)
@@ -742,12 +742,15 @@ local function loader(directory)
 			end
 		end
 
-		-- 10b. THE RESERVED SQUARE IS EMPTIED LAST. WP17's travel pad needs room
+		-- 10b. THE RESERVED SQUARE IS EMPTIED LAST. The travel pad needs room
 		-- and sky, and the scatter routines above -- the basin flora, the
 		-- canopy, the undergrowth -- write where they are told and know nothing
 		-- about it. Clearing it after them is one line; teaching four shared
-		-- routines about one composition's reservation is four files.
+		-- routines about one composition's reservation is four files. The
+		-- waystone (Round 29, WP17) goes in after the clear, at the pad's
+		-- centre in the travel waypoint socket's cell; grug_home owns it.
 		buf:clear(PLAZA.x1, 1, PLAZA.z1, PLAZA.x2, 24, PLAZA.z2)
+		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 11. The sockets the composition owns.
 		local function socket(id, role, x, y, z, face, extra)

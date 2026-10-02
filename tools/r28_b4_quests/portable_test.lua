@@ -305,7 +305,10 @@ eq(extra, 0, "no quest beyond the oracle")
 -- its three kill quests (a zone with a spawn recipe spawns only those). The
 -- S2 recipe lanes do the same for their zones' legacy kill quests (S2 rule
 -- 11): a quest whose only change is sub-types appended to its kill
--- objectives' mob lists is such an addition.
+-- objectives' mob lists is such an addition. Round 29 P3 then dropped the
+-- targets the kill zone's recipe never spawns wherever one that does
+-- remains: the oracle's names may be missing, in their order, before the
+-- appended sub-types.
 local DAWNMERE = {r14_human_01_boars_beyond_the_fence = true,
 	r14_human_04_shapes_by_lanternlight = true, r14_human_05_the_missing_flock = true}
 local function subtypes_appended(got, expected)
@@ -314,11 +317,13 @@ local function subtypes_appended(got, expected)
 	for i, objective in ipairs(was.objectives) do
 		local now_mobs = got.objectives[i] and got.objectives[i].mobs
 		if objective.type == "kill" and objective.mobs and now_mobs then
-			for k, name in ipairs(objective.mobs) do
-				if now_mobs[k] ~= name then return false end
+			if #now_mobs == 0 then return false end
+			local k = 1
+			for _, name in ipairs(objective.mobs) do
+				if now_mobs[k] == name then k = k + 1 end
 			end
-			for k = #objective.mobs + 1, #now_mobs do
-				if not now_mobs[k]:match("^grug_mobs:") then return false end
+			for j = k, #now_mobs do
+				if not now_mobs[j]:match("^grug_mobs:") then return false end
 			end
 			objective.mobs = now_mobs
 		end
@@ -333,7 +338,7 @@ for _, id in ipairs(differing) do
 	else unexplained[#unexplained + 1] = id end
 end
 eq(table.concat(unexplained, " "), "", "beyond the three Dawnmere kill quests (Ruling 29, Lane S1) " ..
-	"only appended kill sub-types differ (S2 rule 11)")
+	"only appended kill sub-types and dropped unspawned targets differ (S2 rule 11, R29 P3)")
 for id, seen in pairs(DAWNMERE) do eq(seen, "seen", id .. " differs from the oracle") end
 print(("  %d further legacy kill quests take their zone recipe's sub-types"):format(recipe_subtypes))
 for id, mobs in pairs({
@@ -342,15 +347,16 @@ for id, mobs in pairs({
 		"grug_mobs:sluggish_zombie"},
 }) do
 	local got, was = now.quests[id], deep_copy(oracle.quests[id])
-	eq(json.encode(got.objectives[1].mobs), json.encode(mobs), id .. ": base role plus sub-types")
+	-- Round 29 P3: Dawnmere's recipe never spawns the base role.
+	eq(json.encode(got.objectives[1].mobs), json.encode({unpack(mobs, 2)}), id .. ": the sub-types only")
 	eq(json.encode(was.objectives[1].mobs), json.encode({mobs[1]}), id .. ": the oracle had the base role")
 	was.objectives[1].mobs = got.objectives[1].mobs
 	eq(json.encode(got), json.encode(was), id .. ": nothing else changed")
 end
 local flock = now.quests.r14_human_05_the_missing_flock
 local before = deep_copy(oracle.quests.r14_human_05_the_missing_flock)
-eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:fox","grug_mobs:small_fox"]',
-	"Ruling 29: foxes replace the wild turkey (Lane S1: and the Small Fox)")
+eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:small_fox"]',
+	"Ruling 29: foxes replace the wild turkey (Lane S1: the Small Fox; R29 P3: only it)")
 eq(before.objectives[1].mobs[1], "grug_mobs:wild_turkey", "the oracle had the critter target")
 before.objectives[1].mobs = flock.objectives[1].mobs
 before.description = before.description:gsub("^Wild turkeys", "Foxes")

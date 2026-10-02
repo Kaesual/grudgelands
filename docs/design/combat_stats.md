@@ -460,13 +460,14 @@ Normal tier at level L:
   Stone/Mesa Golem. The Bandit Archer and two Skeleton ranged families remain
   **4.0**; harmless critters that never attack remain **3.4**. The Bog Ooze
   remains **2.6** because its roster role is explicitly the one slow tank. The
-  deep-sea Kraken Guard's shipped value is **5.0**. The ordinary 4.6 band keeps
+  deep-sea Kraken Guard runs **10** inside a deep-ocean column and **5**
+  elsewhere (`world.md` §2b). The ordinary 4.6 band keeps
   the Swiftness Draught below it (4.0 × 1.10 = 4.4), and continues to feed the
   pursuit policy of §4. Current definition
   sites for the changed families: `grug_mobs/stag.lua:21`, `ram.lua:26`, `zebra.lua:20`,
   `carrion_crow.lua:54`, `zombie.lua:29` and `golem.lua:87`; the exceptions
   are `bandit_archer.lua:81`, `skeleton_archer.lua:88`,
-  `skeleton_raider.lua:52`, `bog_ooze.lua:38` and `kraken.lua:54`.
+  `skeleton_raider.lua:52`, `bog_ooze.lua:38` and `kraken.lua`.
 - **Roaming pace (Round 24):** every mob roams at a calm walk and uses its
   full speed only in combat. mobs_redo moves an idle mob at `walk_velocity`
   and a fighting one at `run_velocity`, so `walk_velocity` is at most

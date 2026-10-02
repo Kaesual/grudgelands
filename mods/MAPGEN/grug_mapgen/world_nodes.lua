@@ -40,6 +40,33 @@ return function(engine, directory, nodes, gathering)
   drop="default:sand",
  })
 
+ -- The waystone (Round 29, WP17): written by the settlement writer at the
+ -- centre of every waypoint pad, so it must exist before the settlement
+ -- content is resolved. A standing stone one and a half nodes tall; it can
+ -- never be dug or blown up. What a right-click does is grug_home's (travel).
+ engine.register_node("grug_mapgen:waystone", {
+  description="Waystone",
+  drawtype="nodebox",
+  tiles={"grug_mapgen_waystone_top.png","grug_mapgen_waystone_top.png",
+   "grug_mapgen_waystone.png"},
+  paramtype="light",
+  light_source=4,
+  node_box={type="fixed",fixed={{-0.4,-0.5,-0.4,0.4,-0.3,0.4},
+   {-0.25,-0.3,-0.25,0.25,1,0.25}}},
+  groups={not_in_creative_inventory=1},
+  diggable=false,
+  is_ground_content=false,
+  drop="",
+  on_blast=function() end,
+  sounds=default.node_sound_stone_defaults(),
+  on_rightclick=function(pos, _, clicker)
+   local home=rawget(_G,"grug_home")
+   if home and home.use_waystone and clicker and clicker:is_player() then
+    home.use_waystone(clicker, pos)
+   end
+  end,
+ })
+
  -- This occupies the air node immediately above the source-water surface;
  -- its thin box sits at the bottom of that node and never replaces water.
  engine.register_node(catalog.freshwater[1], {

@@ -101,7 +101,8 @@ function M.collect_markers(player, only)
 	-- The Steward draws above the trainer books that often stand beside it.
 	-- Zone markers (Round 28 M1) draw under everything else.
 	local layers = {zone = 0.5, settlement = 1, hostile = 1, trainer = 2, boss = 2,
-		innkeeper = 2, home = 2, steward = 2.5, quest = 3, party = 4, player = 5}
+		innkeeper = 2, home = 2, waypoint = 2, steward = 2.5, quest = 3, party = 4,
+		player = 5}
 	table.sort(result, function(a, b)
 		local al, bl = layers[a.kind] or 1, layers[b.kind] or 1
 		if al ~= bl then return al < bl end

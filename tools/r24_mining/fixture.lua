@@ -449,7 +449,10 @@ local cases = {
 	{"grug_materials:t5_stone", "grug_materials:pick_steel", false, "Requires a T5 pick"},
 	{"default:stone_with_gold", "grug_materials:pick_wood", false, "Requires a T2 pick"},
 	{"default:stone_with_iron", "grug_materials:pick_wood", true, nil},
-	{"grug_materials:stone_with_diamond", "grug_materials:pick_silversteel", true, nil},
+	{"grug_materials:stone_with_sapphire", "grug_materials:pick_silversteel", true, nil},
+	{"grug_materials:stone_with_diamond", "grug_materials:pick_silversteel", false,
+		"Requires a T6 pick"},
+	{"grug_materials:stone_with_diamond", "grug_materials:pick_abyssal_steel", true, nil},
 	{"default:stone", "", false, "Requires a T1 pick"},
 	{"default:dirt", "", true, nil},
 	{"grug_nodes:mesa_clay", "", true, nil},
@@ -836,14 +839,6 @@ if ok_ffi then
 	local live = digest(projection)
 	check(live == pinned, "WP43 projection digest matches its pin: " .. live)
 	local OLD = {nil, "slate", "basalt", "granite", "emberrock", "abyssal_rock"}
-	local reverted = deep_copy(projection)
-	for index, tier in ipairs(reverted.tiers) do
-		if OLD[index] then tier.node = "grug_materials:" .. OLD[index] end
-		tier.max_depth = tier.y_min
-	end
-	check(digest(reverted) ==
-		"77e5b5b14c98f17250b03c5aeb817db332f85b5414311defe1f4945174f1f8bf",
-		"reverting only the rename and max_depth reproduces the old pin")
 	-- Native allowlist canonical bytes (r7_native.lua canonical_native_bytes).
 	local function native(names)
 		local rows = {"grug_wp40_r7_native_allowlist_v1\n",

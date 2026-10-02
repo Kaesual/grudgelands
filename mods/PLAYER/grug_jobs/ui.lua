@@ -54,15 +54,34 @@ local function item_label(name)
 	return definition and definition.description ~= "" and definition.description or name
 end
 
-local function inferred_tier(name)
+-- An item's material tier, or nil when nothing declares one: its own tier,
+-- a gear bracket, a registered ingredient tier (bars, graded wood), else its
+-- level band.
+local function declared_tier(name)
 	local definition = core.registered_items and core.registered_items[name] or {}
-	local tier = tonumber(definition._grug_tier)
-	if tier and tier >= 1 and tier <= 6 then return math.floor(tier) end
+	local sources = {definition._grug_tier, definition._grug_bracket,
+		grug_jobs.ingredient_tier and grug_jobs.ingredient_tier(name)}
+	for index = 1, 3 do
+		local tier = tonumber(sources[index])
+		if tier and tier >= 1 and tier <= 6 then return math.floor(tier) end
+	end
 	local level = tonumber(definition._grug_ilvl)
 	if level and level > 0 then
 		return math.min(6, math.floor((level - 1) / 10) + 1)
 	end
-	return 1
+	return nil
+end
+
+-- A Basics route's tier: its output's, else the highest of its inputs'
+-- (an untiered pick, block or rod takes its bar's tier), else 1.
+local function inferred_tier(name, inputs)
+	local tier = declared_tier(name)
+	if tier then return tier end
+	for _, input in ipairs(inputs or {}) do
+		local input_tier = input ~= "" and declared_tier(input) or nil
+		if input_tier and input_tier > (tier or 0) then tier = input_tier end
+	end
+	return tier or 1
 end
 
 local function method_for_station(station)
@@ -129,7 +148,7 @@ local function engine_record(name, engine, station)
 	end
 	return {
 		profession = "general",
-		tier = inferred_tier(name),
+		tier = inferred_tier(name, slots),
 		station = station,
 		inputs = engine.items or {},
 		flat_inputs = grug_jobs._flatten_inputs(engine.items or {}),
@@ -181,7 +200,7 @@ local function engine_general_recipes()
 					inputs[input] = grug_jobs._item_name(recipe.inputs[input])
 				end
 				result[#result + 1] = {
-					profession = "general", tier = inferred_tier(recipe.output),
+					profession = "general", tier = inferred_tier(output_name(recipe.output), inputs),
 					station = "dual_furnace", inputs = recipe.inputs,
 					flat_inputs = grug_jobs._flatten_inputs(recipe.inputs),
 					display_items = inputs, display_width = 2, width = 2,

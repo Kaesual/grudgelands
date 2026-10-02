@@ -831,7 +831,7 @@ local function zones_factory(dependencies)
 			local recipe = source.hard_protection_recipes[recipe_index]
 			recipe_by_id[recipe.id] = recipe
 		end
-		-- Hard protection: start towns, protected cities and apex socket columns.
+		-- Hard protection: start towns and protected cities.
 		-- Vertically each is protected from its own floor `y_min` upward
 		-- (Round 24 ruling 30): the placement height (the final surface at its
 		-- centre column, `height.lua`) minus the source's protection depth.
@@ -871,13 +871,7 @@ local function zones_factory(dependencies)
 				y_min = height_hard.y_min,
 			}
 			local bbox
-			if recipe.shape == "exact_column" then
-				local center = source_hard.center
-				if type(center) ~= "table" then fail("hard socket center missing") end
-				internal.center = center
-				bbox = {min_x = center.x, max_x = center.x + 1,
-					min_z = center.z, max_z = center.z + 1}
-			elseif recipe.shape == "capital_city_outline" then
+			if recipe.shape == "capital_city_outline" then
 				-- A capital's protected city (plan D76): indexed by the reserved
 				-- square that bounds it, answered by the horizontal session's
 				-- capital protection (`capital_protection.lua`).
@@ -924,9 +918,7 @@ local function zones_factory(dependencies)
 		}, SPARSE_SCHEMA)
 
 		local function hard_horizontal_member(row, x, z)
-			if row.shape == "exact_column" then
-				return x == row.center.x and z == row.center.z
-			elseif row.shape == "capital_city_outline" then
+			if row.shape == "capital_city_outline" then
 				local member = row.member
 				if not member then
 					member = horizontal.capital_protection_member(row.anchor_id)
@@ -1047,31 +1039,23 @@ local function zones_factory(dependencies)
 			return integer(placement_y, "placement height") - PROTECTION_DEPTH
 		end
 
-		-- Claim Stone placement (Round 25 ruling 27): the id and kind ("town"
-		-- for a capital's city or a start town, "landmark" for an exact
-		-- column) of the first hard footprint holding a column of the inclusive
-		-- x/z rectangle, or nil. Exact: an exact column by its coordinates, an
-		-- outline by its own membership over the columns the rectangle shares
-		-- with its index box (only for the few footprints whose box it meets).
-		-- The caller widens the rectangle by the ruling's distance.
+		-- Claim Stone placement (Round 25 ruling 27): the id and kind ("town":
+		-- a capital's city or a start town) of the first hard footprint holding
+		-- a column of the inclusive x/z rectangle, or nil. Exact: an outline by
+		-- its own membership over the columns the rectangle shares with its
+		-- index box (only for the few footprints whose box it meets). The
+		-- caller widens the rectangle by the ruling's distance.
 		function session.hard_footprint_in(min_x, min_z, max_x, max_z)
 			min_x, min_z = normalize_xz(min_x, min_z, "hard rectangle min")
 			max_x, max_z = normalize_xz(max_x, max_z, "hard rectangle max")
 			for index = 1, #hard_rows do
 				local row = hard_rows[index]
-				if row.shape == "exact_column" then
-					local c = row.center
-					if c.x >= min_x and c.x <= max_x and c.z >= min_z and c.z <= max_z then
-						return row.id, "landmark"
-					end
-				else
-					local box = row.bbox
-					local x0, x1 = math.max(min_x, box.min_x), math.min(max_x, box.max_x)
-					local z0, z1 = math.max(min_z, box.min_z), math.min(max_z, box.max_z)
-					for z = z0, z1 do
-						for x = x0, x1 do
-							if hard_horizontal_member(row, x, z) then return row.id, "town" end
-						end
+				local box = row.bbox
+				local x0, x1 = math.max(min_x, box.min_x), math.min(max_x, box.max_x)
+				local z0, z1 = math.max(min_z, box.min_z), math.min(max_z, box.max_z)
+				for z = z0, z1 do
+					for x = x0, x1 do
+						if hard_horizontal_member(row, x, z) then return row.id, "town" end
 					end
 				end
 			end
@@ -1159,17 +1143,13 @@ local function zones_factory(dependencies)
 
 		-- What a hard-protected position belongs to, for player feedback only
 		-- (Round 24 ruling 7): "town" for a capital's protected city or a start
-		-- town, "landmark" for an exact protected column; nil otherwise.
+		-- town; nil otherwise. (The R7 functional-anchor columns answer
+		-- "landmark" in `r7_zone_overlay.lua`.)
 		function session.hard_protection_kind_at(position)
 			local x, y, z, outside = normalize_position(position,
 				"hard protection query")
-			local row = not outside and hard_row_at(x, y, z) or nil
-			if not row then return nil end
-			if row.shape == "capital_city_outline" or
-					row.shape == "start_town_outline" then
-				return "town"
-			end
-			return "landmark"
+			if not outside and hard_row_at(x, y, z) then return "town" end
+			return nil
 		end
 
 		function session.pvp_rule_at(position)

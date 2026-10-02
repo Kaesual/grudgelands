@@ -387,9 +387,9 @@ end
 local DISPOSITIONS = {neutral = true, aggressive = true, critter = true}
 
 -- Named leaders (sub-types with `"leader": true`, design frame §2.4): one
--- size factor in place of the catalogue's and twice the HP of their level
--- and tier (the user's first try, 2026-10-02). The one place for both.
-grug_mobs.LEADER = {size = 1.15, hp = 2}
+-- size factor in place of the catalogue's and 1.5 times the HP of their
+-- level and tier (user, 2026-10-02: 2x was too strong). The one place for both.
+grug_mobs.LEADER = {size = 1.15, hp = 1.5}
 
 local function scale_box(box, s)
 	local out = {}

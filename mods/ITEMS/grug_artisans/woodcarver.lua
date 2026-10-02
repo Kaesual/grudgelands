@@ -5,18 +5,13 @@ local tiers = {
 	{key = "seasoned", name = "Seasoned", gear = "bronze", grip = "light"},
 	{key = "polished", name = "Polished", gear = "iron", grip = "cured"},
 	{key = "hardened", name = "Hardened", gear = "steel", grip = "heavy"},
-	{key = "inlaid", name = "Inlaid", gear = "silversteel", grip = "scaled",
-		main_gem = "ruby", offhand_gem = "sapphire"},
-	{key = "lacquered", name = "Lacquered", gear = "embersteel", grip = "sleek",
-		main_gem = "diamond", offhand_gem = "ruby"},
+	{key = "inlaid", name = "Inlaid", gear = "silversteel", grip = "scaled"},
+	{key = "lacquered", name = "Lacquered", gear = "embersteel", grip = "sleek"},
 	{key = "heartwood", name = "Heartwood", gear = "abyssal_steel",
-		grip = "nightscale", main_gem = "sapphire", offhand_gem = "diamond"},
+		grip = "nightscale"},
 }
 
 A.register_ingredient("group:wood", 1)
-A.register_ingredient("grug_materials:cut_diamond", 4)
-A.register_ingredient("grug_materials:cut_sapphire", 4)
-A.register_ingredient("grug_materials:cut_ruby", 4)
 
 for tier = 1, #tiers do
 	local row = tiers[tier]

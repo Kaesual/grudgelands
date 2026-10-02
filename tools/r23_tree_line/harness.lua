@@ -34,7 +34,7 @@ function H.new(repo)
 		end
 		return {schema = "grug_wp43_projection_v1", tiers = m.TIERS,
 			resources = m.RESOURCES, race_regions = {},
-			density = {g1 = m.DENSITY.g1, g2 = m.DENSITY.g2,
+			density = {gem = m.DENSITY.gem,
 				abyssal_crystal = m.DENSITY.abyssal_crystal, deep_bands = bands}}
 	end
 	B.projection = projection()

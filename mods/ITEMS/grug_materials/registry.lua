@@ -121,73 +121,73 @@ function grug_materials.natural_groups(groups)
 	return groups
 end
 
--- Natural resource taxonomy. `scope` distinguishes universal progression
--- inputs from the G1/G2 species selected by a race-region column.
+-- Natural resource taxonomy. Every resource occurs on the whole map; only
+-- depth decides where. The six gems (`gem = true`) are depth-tiered (economy
+-- plan §6): each occurs only in the tier rock of its harvest tier.
 grug_materials.RESOURCES = {
 	{key = "coal", name = "Coal", natural_node = "default:stone_with_coal",
-		raw_item = "default:coal_lump", harvest_tier = 1, scope = "universal"},
+		raw_item = "default:coal_lump", harvest_tier = 1},
 	{key = "copper", name = "Copper", natural_node = "default:stone_with_copper",
-		raw_item = "default:copper_lump", harvest_tier = 1, scope = "universal"},
+		raw_item = "default:copper_lump", harvest_tier = 1},
 	{key = "tin", name = "Tin", natural_node = "default:stone_with_tin",
-		raw_item = "default:tin_lump", harvest_tier = 1, scope = "universal"},
+		raw_item = "default:tin_lump", harvest_tier = 1},
 	{key = "iron", name = "Iron", natural_node = "default:stone_with_iron",
-		raw_item = "default:iron_lump", harvest_tier = 1, scope = "universal"},
+		raw_item = "default:iron_lump", harvest_tier = 1},
 	{key = "quartz", name = "Quartz",
 		natural_node = "grug_materials:stone_with_quartz",
 		raw_item = "grug_materials:quartz", cut_item = "grug_materials:cut_quartz",
-		harvest_tier = 1, scope = "universal"},
-	{key = "gold", name = "Gold", natural_node = "default:stone_with_gold",
-		raw_item = "default:gold_lump", harvest_tier = 2, scope = "universal"},
+		harvest_tier = 1},
 	{key = "citrine", name = "Citrine",
 		natural_node = "grug_materials:stone_with_citrine",
 		raw_item = "grug_materials:rough_citrine",
 		cut_item = "grug_materials:cut_citrine",
 		block_node = "grug_materials:citrine_block",
-		harvest_tier = 2, scope = "regional", grade = "G1"},
-	{key = "garnet", name = "Garnet",
-		natural_node = "grug_materials:stone_with_garnet",
-		raw_item = "grug_materials:rough_garnet",
-		cut_item = "grug_materials:cut_garnet",
-		block_node = "grug_materials:garnet_block",
-		harvest_tier = 2, scope = "regional", grade = "G1"},
+		harvest_tier = 1, gem = true},
+	{key = "gold", name = "Gold", natural_node = "default:stone_with_gold",
+		raw_item = "default:gold_lump", harvest_tier = 2},
 	{key = "jade", name = "Jade",
 		natural_node = "grug_materials:stone_with_jade",
 		raw_item = "grug_materials:rough_jade",
 		cut_item = "grug_materials:cut_jade",
 		block_node = "grug_materials:jade_block",
-		harvest_tier = 2, scope = "regional", grade = "G1"},
+		harvest_tier = 2, gem = true},
 	{key = "silver", name = "Silver",
 		natural_node = "grug_materials:stone_with_silver",
-		raw_item = "grug_materials:silver_lump", harvest_tier = 3,
-		scope = "universal"},
+		raw_item = "grug_materials:silver_lump", harvest_tier = 3},
+	{key = "garnet", name = "Garnet",
+		natural_node = "grug_materials:stone_with_garnet",
+		raw_item = "grug_materials:rough_garnet",
+		cut_item = "grug_materials:cut_garnet",
+		block_node = "grug_materials:garnet_block",
+		harvest_tier = 3, gem = true},
 	{key = "emberglass", name = "Emberglass",
 		natural_node = "grug_materials:stone_with_emberglass",
 		raw_item = "grug_materials:emberglass",
 		block_node = "grug_materials:emberglass_block",
-		harvest_tier = 4, scope = "universal"},
-	{key = "diamond", name = "Diamond",
-		natural_node = "grug_materials:stone_with_diamond",
-		raw_item = "grug_materials:rough_diamond",
-		cut_item = "grug_materials:cut_diamond",
-		block_node = "grug_materials:diamond_block",
-		harvest_tier = 4, scope = "regional", grade = "G2"},
+		harvest_tier = 4},
 	{key = "sapphire", name = "Sapphire",
 		natural_node = "grug_materials:stone_with_sapphire",
 		raw_item = "grug_materials:rough_sapphire",
 		cut_item = "grug_materials:cut_sapphire",
 		block_node = "grug_materials:sapphire_block",
-		harvest_tier = 4, scope = "regional", grade = "G2"},
+		harvest_tier = 4, gem = true},
+	{key = "abyssal_crystal", name = "Abyssal Crystal",
+		natural_node = "grug_materials:abyssal_crystal_ore",
+		raw_item = "grug_materials:abyssal_crystal",
+		block_node = "grug_materials:abyssal_crystal_block",
+		harvest_tier = 5},
 	{key = "ruby", name = "Ruby",
 		natural_node = "grug_materials:stone_with_ruby",
 		raw_item = "grug_materials:rough_ruby",
 		cut_item = "grug_materials:cut_ruby",
 		block_node = "grug_materials:ruby_block",
-		harvest_tier = 4, scope = "regional", grade = "G2"},
-	{key = "abyssal_crystal", name = "Abyssal Crystal",
-		natural_node = "grug_materials:abyssal_crystal_ore",
-		raw_item = "grug_materials:abyssal_crystal",
-		block_node = "grug_materials:abyssal_crystal_block",
-		harvest_tier = 5, scope = "universal"},
+		harvest_tier = 5, gem = true},
+	{key = "diamond", name = "Diamond",
+		natural_node = "grug_materials:stone_with_diamond",
+		raw_item = "grug_materials:rough_diamond",
+		cut_item = "grug_materials:cut_diamond",
+		block_node = "grug_materials:diamond_block",
+		harvest_tier = 6, gem = true},
 }
 
 grug_materials.RESOURCE_BY_KEY = {}
@@ -267,11 +267,6 @@ function grug_materials.processed(key)
 	return grug_materials.PROCESSED_BY_KEY[key]
 end
 
-grug_materials.GEM_GRADES = {
-	G1 = {"citrine", "garnet", "jade"},
-	G2 = {"diamond", "sapphire", "ruby"},
-}
-
 grug_materials.CULTURAL_MATERIALS = {
 	sunwax = {race = "human", key = "sunwax", name = "Sunwax", item = "grug_materials:sunwax",
 		source = "wild waxcomb or apiary cache"},
@@ -305,29 +300,24 @@ grug_materials.SIGNATURE_WOODS = {
 }
 
 grug_materials.RACE_REGIONS = {
-	human = {race = "human", faction = "accord", g1 = "citrine", g2 = "diamond",
-		cultural = "sunwax", signature_wood = "oak"},
-	dwarf = {race = "dwarf", faction = "accord", g1 = "garnet", g2 = "sapphire",
-		cultural = "runeslate", signature_wood = "mountain_pine"},
-	elf = {race = "elf", faction = "accord", g1 = "jade", g2 = "sapphire",
-		cultural = "moonresin", signature_wood = "silverwood"},
-	orc = {race = "orc", faction = "throng", g1 = "garnet", g2 = "diamond",
-		cultural = "red_ochre", signature_wood = "spikethorn_acacia"},
-	troll = {race = "troll", faction = "throng", g1 = "jade", g2 = "ruby",
-		cultural = "spirit_resin", signature_wood = "kapok"},
-	undead = {race = "undead", faction = "throng", g1 = "citrine", g2 = "ruby",
-		cultural = "gravesalt", signature_wood = "gravewood"},
+	human = {race = "human", faction = "accord", cultural = "sunwax",
+		signature_wood = "oak"},
+	dwarf = {race = "dwarf", faction = "accord", cultural = "runeslate",
+		signature_wood = "mountain_pine"},
+	elf = {race = "elf", faction = "accord", cultural = "moonresin",
+		signature_wood = "silverwood"},
+	orc = {race = "orc", faction = "throng", cultural = "red_ochre",
+		signature_wood = "spikethorn_acacia"},
+	troll = {race = "troll", faction = "throng", cultural = "spirit_resin",
+		signature_wood = "kapok"},
+	undead = {race = "undead", faction = "throng", cultural = "gravesalt",
+		signature_wood = "gravewood"},
 }
 
 grug_materials.DENSITY = {
-	g1 = {
-		shape = "sparse_upper_rises_through_t4_flat_t5_t6",
-		deep_multiplier = true,
-	},
-	g2 = {
-		harvest_tier = 4,
-		host_nodes_per_ore = {[4] = 2048, [5] = 1024, [6] = 512},
-	},
+	-- Every gem: one per this many host nodes of its own tier rock, nowhere
+	-- else (economy plan §6.1). Only Diamond (T6) reaches the deep bands.
+	gem = {host_nodes_per_ore = 512},
 	abyssal_crystal = {
 		first_tier = 5,
 		host_nodes_per_ore = {[5] = 512, [6] = 256},
@@ -428,7 +418,7 @@ local function validate_registry()
 				items[resource.raw_item] then
 			registry_error("duplicate resource key/node/item at " .. resource.key)
 		end
-		if resource.harvest_tier < 1 or resource.harvest_tier > 5 then
+		if resource.harvest_tier < 1 or resource.harvest_tier > TIER_COUNT then
 			registry_error("invalid harvest tier for " .. resource.key)
 		end
 		resource_keys[resource.key] = true
@@ -475,24 +465,28 @@ local function validate_registry()
 		end
 	end
 
-	for grade, keys in pairs(grug_materials.GEM_GRADES) do
-		for _, key in ipairs(keys) do
-			local resource = grug_materials.RESOURCE_BY_KEY[key]
-			if not resource or resource.grade ~= grade or resource.scope ~= "regional" then
-				registry_error("invalid " .. grade .. " member " .. key)
+	local gem_tiers = {}
+	for _, resource in ipairs(grug_materials.RESOURCES) do
+		if resource.gem then
+			if gem_tiers[resource.harvest_tier] or not resource.cut_item or
+					not resource.block_node then
+				registry_error("invalid gem row " .. resource.key)
 			end
+			gem_tiers[resource.harvest_tier] = true
+		end
+	end
+	for tier = 1, TIER_COUNT do
+		if not gem_tiers[tier] then
+			registry_error("no gem of tier " .. tier)
 		end
 	end
 
 	local race_count = 0
 	for race, row in pairs(grug_materials.RACE_REGIONS) do
 		race_count = race_count + 1
-		local g1 = grug_materials.RESOURCE_BY_KEY[row.g1]
-		local g2 = grug_materials.RESOURCE_BY_KEY[row.g2]
 		local cultural = grug_materials.CULTURAL_MATERIALS[row.cultural]
 		local wood = grug_materials.SIGNATURE_WOODS[row.signature_wood]
-		if row.race ~= race or not g1 or g1.grade ~= "G1" or not g2 or
-				g2.grade ~= "G2" or not cultural or cultural.race ~= race or
+		if row.race ~= race or not cultural or cultural.race ~= race or
 				not wood or wood.race ~= race then
 			registry_error("incomplete race-region row " .. race)
 		end

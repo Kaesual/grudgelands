@@ -230,7 +230,12 @@ walls. Four full-size racial mount displays stand behind the Riding Trainer;
 authored bounded movement/rest regions preserve clearance from posts, roof,
 fence, other displays and public access. Ground displays walk briefly and pause;
 flying appearances remain grounded (`mounts.md` §1). Geometry is shared and
-skinned by each capital's architectural palette.
+skinned by each capital's architectural palette. The stable publishes one
+`shipwright` socket beside the Riding Trainer (plot-local x = 8, the Trainer's
+row; Round 29), so all six capitals have the shipwright's spot; the plot's
+residents stand along the west fence (x = −8), clear of the mount displays'
+lanes. The role handler is `grug_mounts`' (boats); a socket without a handler
+places nobody.
 
 The shared gatehouse upper-floor stair opening removes exactly one additional
 obstructing block in the ascent direction. Treads, rise, passage, deck and room
@@ -546,6 +551,34 @@ respawn follow [home_travel.md](home_travel.md). No other V1 home points exist;
 a player's Claim Stone can be an additional travel-home target
 ([housing.md](housing.md) §8).
 
+## Waypoint pads
+
+Round 29 (WP17; rules in [world.md](world.md) §6). Every start and every
+capital has one waypoint pad with a **waystone** (`grug_mapgen:waystone`,
+registered in `grug_mapgen/world_nodes.lua` so the settlement content resolves
+it) at its centre, in the cell of the settlement's `travel_waypoint` socket
+(role `waypoint`; no NPC stands there). Players arrive beside the stone.
+
+- **Capitals:** the existing kerbed plaza with the stone cross and diamond
+  (reach 6, Lethariel 5, Kezamba a cross only) gets the waystone at the cross's
+  centre; nothing else stands on the plaza.
+- **Starts:** a pad in the capitals' style at reach 3, drawn into the ground
+  course (`dressing.waypoint_pad`): a cross and the diamond round it in the
+  start palette's signature stone, the diamond's inside paved with the lane
+  material, the waystone in the middle. It is laid on open ground after the
+  buildings and lights and before the trees and flora, inside the start's
+  footprint, near the innkeeper and reachable from a lane (pad centre in
+  start-local x/z):
+
+  | Start | Centre | Where |
+  |---|---|---|
+  | Hearthpine | (−9, 12) | litter west of the street, 11 nodes from the inn door |
+  | Dawnmere | (14, −6) | turf between the green's east kerb and the east lane, 15 nodes from the inn door |
+  | Silverleaf | (−44, −23) | the west end of the south lane, 9 nodes from the guest house door |
+  | Stillgrave | (−14, 22) | blight beside the west lane, 10 nodes from the warden's door |
+  | Sunscar | (−11, −16) | flats north of the south lane, 6 nodes from the tusk house door |
+  | Kapok Cradle | (−12, 5) | litter west of the boardwalk road between the cross lanes |
+
 ## Housing Stewards (Round 25)
 
 Each capital's Housing Steward ([housing.md](housing.md) §7.2) is the gate
@@ -578,8 +611,8 @@ footprints. It neither adds duplicate bosses/guards/resources nor expands
 terrain reservations. The frontier bandit camp's building core is 16 nodes
 (user decision 2026-09-29, WP audit E1: the art and code stay, the former
 24-node design value is corrected). Whitebridge and Whispering
-Reedlands retain shipwright workplaces/display hulls; boat teaching is future
-WP17 work.
+Reedlands keep their display hulls as plain scenery; the Shipwright who sells
+boats stands at every capital stable (above; [boats.md](boats.md) §2).
 
 Thirty peaceful regional sites (villages, outposts and mines) each provide one
 quest host. Hostile new camps do not gain friendly residents. Each starting

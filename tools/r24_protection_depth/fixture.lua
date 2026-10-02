@@ -7,7 +7,7 @@
 -- round each capital anchor, since only the vertical rule is under test here)
 -- plus the R7 anchor roster and functional-anchor overlay, then checks:
 --   1. every hard footprint type -- start town (centre and band), capital,
---      apex socket column, outpost column, bandit column -- is protected at
+--      outpost column, bandit column -- is protected at
 --      its bound (placement height - 100) and at bound + 1, and not at
 --      bound - 1, through territory_rule_at, hard_protection_kind_at and
 --      world_protected_for_faction for both factions; protection stays
@@ -15,7 +15,7 @@
 --      answers, and the contested deep still starts at y = -701;
 --   2. the capital guard level is 60 inside the capital's volume only;
 --   3. mapgen: the protected floor planner_source.protection_floor_y hands
---      the P8 resource pass for every anchor envelope and apex socket core,
+--      the P8 resource pass for every anchor envelope,
 --      and the P8 column predicate r30_resource_column_open (production
 --      code of r6_settlement.lua) above, at and below that floor;
 --   4. ruling 30 addendum (below the floor everything is ordinary ground):
@@ -218,22 +218,6 @@ local function runtime_checks(W)
 				" generic guard level below the bound")
 		end
 	end
-	-- Apex socket columns: the socket column's own surface.
-	local anchor_by_id = {}
-	for _, a in ipairs(source.anchors) do anchor_by_id[a.id] = a end
-	for _, socket in ipairs(source.apex_sockets) do
-		local a = anchor_by_id[socket.anchor_id]
-		local x, z = a.position.x + socket.offset.x, a.position.z + socket.offset.z
-		local placement = placement_y(P, x, z)
-		local bound = placement - DEPTH
-		check_volume(W, socket.id, x, z, bound, "landmark")
-		row("socket", socket.id, x, z, placement, bound)
-		-- 3. its P8 floor: its own bound, or lower where its apex mine's
-		-- envelope holds the column with a lower floor (lowest floor wins;
-		-- exact values in the overlap check below)
-		check(P.protection_floor_y("exclude:active:hard:" .. socket.id, x, z) <= bound,
-			socket.id .. " P8 floor")
-	end
 	-- Outpost and bandit functional columns: the roster's anchor y.
 	for _, r in ipairs(W.roster.rows) do
 		if r.family == "outpost" or r.family == "bandit" then
@@ -267,12 +251,10 @@ local function mapgen_checks(W)
 	end
 	check(envelopes == #source.anchors, "every anchor has an envelope floor")
 	-- Overlapping square envelopes (POIs, villages, camps, outposts, apex
-	-- mines) and apex socket cores: every column of every overlap takes the
-	-- LOWEST floor of all shapes holding it, not the floor of the one shape
+	-- mines): every column of every overlap takes the LOWEST floor of all
+	-- shapes holding it, not the floor of the one shape
 	-- static_exclusion_values_at answers first.
 	local squares = {}
-	local hard_by_id = {}
-	for _, hard in ipairs(source.hard_protection) do hard_by_id[hard.id] = hard end
 	for _, exclusion in ipairs(source.claim_exclusions) do
 		if exclusion.recipe_id == "exclude_anchor_blend_v1" then
 			local a = anchor_by_id[exclusion.source_id]
@@ -280,12 +262,6 @@ local function mapgen_checks(W)
 				local record = S.anchor(source.zones[a.zone_numeric_id].id, a.slot_id)
 				squares[#squares + 1] = {id = exclusion.id, center = exclusion.center,
 					width = exclusion.total_width, floor = record.y - DEPTH}
-			end
-		elseif exclusion.recipe_id == "exclude_active_core_v1" then
-			local hard = hard_by_id[exclusion.source_id]
-			if hard.recipe_id == "hard_apex_socket_column_v1" then
-				squares[#squares + 1] = {id = exclusion.id, center = hard.center,
-					width = 1, floor = placement_y(P, hard.center.x, hard.center.z) - DEPTH}
 			end
 		end
 	end

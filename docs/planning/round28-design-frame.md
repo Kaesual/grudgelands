@@ -405,8 +405,8 @@ regions for any seed. The build and the full format:
   POI's own fire is scenery, so the recipe camp is its only population.
 - **Leaders** (§2.4): a leader-flagged role `at` a camp's centre or
   `{"kind": id, "pick": "farthest_from_roads"}`; level = the top of their
-  region, the same on every seed; `respawn` (about 300 s). Every leader is 1.15× size with twice the
-  HP of its level and tier, whatever the catalogue `size` says.
+  region, the same on every seed; `respawn` (about 300 s). Every leader is 1.15× size with 1.5× the
+  HP of its level and tier (2× until the Round 29 spawn playtest), whatever the catalogue `size` says.
 - `critters`: ambient critters that keep spawning in the zone.
 - **Quests** name an area as `<zone>/<kind or camp id>`; a mob remembers the
   kind or camp it spawned from, and area-limited objectives credit by that

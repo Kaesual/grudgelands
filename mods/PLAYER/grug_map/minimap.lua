@@ -3,8 +3,9 @@
 -- of the pre-rendered world map, top right in the native minimap's box
 -- (grug_core.hud_layout.minimap_box), with the player's arrow, party
 -- members (rim arrows when outside), quest givers with their state, the
--- Housing Steward, trainers, innkeepers and the player's home. Under it a
--- line names the player's location (Round 28 M1, location.lua).
+-- Housing Steward, trainers, innkeepers, the player's home and discovered
+-- waystones (Round 29). Under it a line names the player's location (Round
+-- 28 M1, location.lua).
 --
 -- Glide (test variant for the playtest): the arrow stays in the centre and
 -- the map moves under it pixel by pixel, every server step. The map is ONE
@@ -43,13 +44,15 @@ local SEA = "#1c3a52"
 -- Kinds shown (ruling 8); settlements, camps, kings and dragons stay on the
 -- Map tab only.
 local SHOWN = {quest = true, steward = true, trainer = true, innkeeper = true,
-	home = true}
+	home = true, waypoint = true}
 local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
 	locked = "grug_map_quest_locked.png", ready = "grug_map_quest_ready.png",
 	active = "grug_map_quest_active.png"}
-local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png"}
+local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png",
+	waypoint = "grug_map_waypoint.png"}
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
-local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5}
+local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5,
+	waypoint = 6}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
 -- The location line (Round 28 M1, location.lua): centred under the bezel,
 -- LOCATION_GAP HUD px below it, in the feed's calm notice colour.
@@ -188,8 +191,8 @@ local function create(player, state)
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
--- their state, the Steward, trainers, innkeepers and home.
-local PROVIDERS = {quest = true, service = true, home = true}
+-- their state, the Steward, trainers, innkeepers, home and waystones.
+local PROVIDERS = {quest = true, service = true, home = true, waypoint = true}
 local function static_markers(player)
 	local result = {}
 	for _, marker in ipairs(atlas.collect_markers(player, PROVIDERS)) do
