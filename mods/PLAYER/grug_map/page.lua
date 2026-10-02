@@ -53,6 +53,9 @@ local REGION_LABELS = {
 	{"The Contested Front", 0, 0, 4.6, 1.3},
 	{"Wyrmglass Crown", -3150, 0, 2.4, 2.0}, {"Stormscale Summit", 3150, 0, 2.4, 2.0},
 }
+-- The map's width and the region names, for the zone markers' placement
+-- (location.lua keeps them clear of every marker and name).
+grug_map.page_layout = {map_w = MAP_W, region_labels = REGION_LABELS}
 -- Dark text over a light halo of four offset copies reads on land and sea.
 local LABEL_TEXT, LABEL_HALO, HALO = "#2a1c10", "#f3e8c8", 0.025
 local HALO_OFFSETS = {{-HALO, -HALO}, {HALO, -HALO}, {-HALO, HALO}, {HALO, HALO}}
@@ -86,6 +89,9 @@ end
 
 local function current_zone(player)
 	if not grug_core.zone_authority_installed() then return "World map loading" end
+	-- The same text as the minimap line and the entry banner (Round 28 M1).
+	local text = grug_map.location and grug_map.location.text_of(player) or ""
+	if text ~= "" then return text end
 	local zone = grug_zones.at(player:get_pos())
 	return zone and (zone.display_name or humanize(zone.id)) or "Open sea"
 end

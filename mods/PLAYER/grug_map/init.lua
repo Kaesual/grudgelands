@@ -9,3 +9,5 @@ dofile(modpath .. "/minimap.lua")
 grug_map.minimap.install(installed)
 dofile(modpath .. "/providers.lua")
 dofile(modpath .. "/page.lua")
+-- After page.lua (its layout places the zone markers) and providers.lua.
+dofile(modpath .. "/location.lua")

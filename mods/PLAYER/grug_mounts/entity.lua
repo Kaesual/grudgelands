@@ -172,10 +172,13 @@ local function update_warning(player, record, kind)
 	end
 	local text = warning_text(kind)
 	if not record.hud_id then
+		-- Below the zone banner (grug_core.hud_layout.flight_warning_offset).
+		local layout = grug_core.hud_layout
 		record.hud_id = player:hud_add({
 			hud_elem_type = "text",
-			position = {x = 0.5, y = 0.14},
-			offset = {x = 0, y = 0},
+			position = layout.anchors.flight_warning.position,
+			offset = layout.flight_warning_offset(
+				core.get_player_window_information(player:get_player_name())),
 			alignment = {x = 0, y = 0},
 			number = 0xffbf35,
 			text = text,
