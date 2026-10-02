@@ -296,10 +296,7 @@ class Ledger:
             kind = obj.get("type")
             count = obj.get("count", 1)
             if kind == "kill":
-                roles = obj.get("roles") or ([obj["role"]] if obj.get("role") else [])
-                if not roles and (obj.get("mobs") or obj.get("mob")):
-                    roles = [m.split(":", 1)[1] if m.startswith("grug_mobs:") else m
-                             for m in (obj.get("mobs") or [obj["mob"]]) if isinstance(m, str)]
+                roles = obj.get("roles") or []
                 role = roles[0] if roles else None
                 levels = self.role_levels(role, zone, obj.get("area"), zone) if role else None
                 if not levels:
@@ -314,13 +311,7 @@ class Ledger:
             elif kind == "item":
                 self.item_objective(zone, q, obj, count, quest_drops, acc)
         rewards = q.get("rewards") or {}
-        if rewards.get("weight") is None and ("xp" in rewards or "xp" in q):
-            # Legacy quest from B4's mechanical split: a fixed XP number.
-            xp = rewards.get("xp", q.get("xp")) or 0
-            if self.human:
-                xp = C.round_half_up(xp * C.HUMAN_QUEST_BONUS)
-        else:
-            xp = C.quest_xp(rewards.get("weight") or 0, q.get("level", 1), self.human)
+        xp = C.quest_xp(rewards.get("weight") or 0, q.get("level", 1), self.human)
         self.xp += xp
         acc["rewards"] += xp
 

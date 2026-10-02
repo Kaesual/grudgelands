@@ -34,7 +34,6 @@ for tier = 1, #tiers do
 	elseif tier == 5 then
 		P.register_ingredient("grug_mobs:sleek_pelt", tier)
 	end
-	core.clear_craft({output = row.output})
 	core.register_craft({output = row.output, recipe = {row.inputs}})
 
 	local grip = P.register_item(C .. "weapon_grip_" .. row.key,

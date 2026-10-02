@@ -4,7 +4,7 @@
 --   1. the range each source gives, cached on the registered objectives at
 --      load: an area kind (only the objective's roles), a camp, a leader,
 --      the recipe zone's kinds without an area, a catalogue role and a base
---      mob in a zone without a recipe, a legacy zone filter, a quest-drop
+--      mob in a zone without a recipe, a quest-drop
 --      item, an item naming its source roles, and items without a range;
 --   2. the text in the quest log and the dialogue; the HUD tracker line
 --      stays as it was;
@@ -199,7 +199,6 @@ local function register_named(quest_root)
 		for _, quest in ipairs(read_json(quest_root .. "/data/zones/" .. name).quests or {}) do
 			local function mobs(row)
 				for _, role in ipairs(row.roles or {}) do core.registered_entities["grug_mobs:" .. role] = {} end
-				for _, mob in ipairs(row.mobs or {}) do core.registered_entities[mob] = {} end
 			end
 			for _, objective in ipairs(quest.objectives) do
 				mobs(objective)
@@ -283,8 +282,7 @@ eq(range("q0_camp", 1), "9-10", "camp: catalogue 8-10 within the camp's belt 9-1
 eq(range("q0_camp", 2), "9-10", "quest-drop item: its dropping targets' levels")
 eq(range("q0_leader"), "10-10", "leader: its fixed level")
 eq(range("q0_zone_roles"), "5-8", "no area in a recipe zone: the zone's kinds hosting the role")
-eq(range("q0_legacy_base"), "1-4", "base mob in a recipe zone adds nothing; its sub-type gives 1-4")
-eq(range("q0_legacy_filter"), "11-15", "legacy zone filter: the filter zone's band 11-20 within 12 +-3")
+eq(range("q0_base_mix"), "1-4", "base mob in a recipe zone adds nothing; its sub-type gives 1-4")
 eq(range("q0_tusks"), "1-4", "item naming its source roles")
 eq(range("q0_plain", 1), "none", "plain item: no range")
 eq(range("q0_plain", 2), "none", "group item: no range")

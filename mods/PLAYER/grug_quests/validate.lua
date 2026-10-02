@@ -20,13 +20,26 @@ V.LEVEL_SLACK = 3
 V.MAX_GIVERS_PER_HUB = 2
 V.MAX_LINES_PER_GIVER = 2
 V.FRONT_LINE = "front"
--- Today's contested-zone quests ask for enemy faction guards. Only legacy
--- kill objectives (`mobs`, the mechanical split) may name them.
-V.LEGACY_GUARDS = {["grug_mobs:guard_accord"] = true, ["grug_mobs:guard_throng"] = true}
 
 local SNAKE = "^[a-z][a-z0-9_]*$"
 local P = Q.placeholders
 V.RACES = {dwarf = true, human = true, elf = true, undead = true, orc = true, troll = true}
+
+local function key_set(keys)
+	local out = {}
+	for _, key in ipairs(keys) do out[key] = true end
+	return out
+end
+-- The fields a quest, an objective, its rewards and a quest drop may carry
+-- (design frame section 4.7; `lesson` ... `notes` are design notes the game
+-- does not read). Any other field is refused, so a field nothing reads can
+-- never sit in a file looking as if it did something.
+V.QUEST_KEYS = key_set({"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
+	"objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min", "optional", "climax",
+	"group", "notes"})
+V.OBJECTIVE_KEYS = key_set({"type", "count", "roles", "area", "item", "group", "npc"})
+V.REWARD_KEYS = key_set({"weight", "copper", "items"})
+V.DROP_KEYS = key_set({"item", "chance", "roles", "area"})
 
 local function int(value, lo, hi)
 	return type(value) == "number" and value % 1 == 0 and (not lo or value >= lo) and
@@ -41,15 +54,25 @@ local function list(value)
 	return type(value) == "table" and (next(value) == nil or value[1] ~= nil)
 end
 
--- Kill and drop targets as entity names: design `roles` or legacy `mobs`.
+-- Kill and drop targets (`roles`) as entity names.
 function V.target_names(row)
 	local out = {}
-	if type(row.roles) == "table" then
-		for i, role in ipairs(row.roles) do out[i] = "grug_mobs:" .. tostring(role) end
-	elseif type(row.mobs) == "table" then
-		for i, name in ipairs(row.mobs) do out[i] = tostring(name) end
+	for i, role in ipairs(type(row.roles) == "table" and row.roles or {}) do
+		out[i] = "grug_mobs:" .. tostring(role)
 	end
 	return out
+end
+
+-- Every field of `row` outside `allowed`, sorted.
+local function unknown_keys(add, where, row, allowed)
+	local unknown = {}
+	for key in pairs(row) do
+		if not allowed[key] then unknown[#unknown + 1] = tostring(key) end
+	end
+	table.sort(unknown)
+	for _, key in ipairs(unknown) do
+		add(where, ("unknown field '%s' [E-unknown-key]"):format(key))
+	end
 end
 
 -- "zone/area"; a bare area id means the quest file's own zone.
@@ -85,6 +108,7 @@ V.each_quest = each_quest
 local function check_objective(add, where, quest, objective, index)
 	where = ("%s: objective %d"):format(where, index)
 	if type(objective) ~= "table" then add(where, "must be an object [E-objective]"); return end
+	unknown_keys(add, where, objective, V.OBJECTIVE_KEYS)
 	if objective.type == "talk" then
 		if #quest.objectives ~= 1 then add(where, "a talk objective must be the quest's only objective [E-talk-only]") end
 		if objective.npc ~= quest.turnin then
@@ -95,11 +119,8 @@ local function check_objective(add, where, quest, objective, index)
 	end
 	if not int(objective.count, 1) then add(where, "count must be an integer >= 1 [E-objective]") end
 	if objective.type == "kill" then
-		local roles, mobs = objective.roles, objective.mobs
-		if not ((type(roles) == "table" and #roles > 0) or (type(mobs) == "table" and #mobs > 0)) then
+		if not (type(objective.roles) == "table" and #objective.roles > 0) then
 			add(where, "a kill objective needs a non-empty 'roles' list [E-objective]")
-		elseif roles and mobs then
-			add(where, "name the targets once ('roles'; 'mobs' is legacy-only) [E-objective]")
 		end
 		if objective.area ~= nil and type(objective.area) ~= "string" then
 			add(where, "area must be 'zone_id/area_id' [E-area]")
@@ -123,12 +144,11 @@ end
 
 local function check_rewards(add, where, rewards)
 	if type(rewards) ~= "table" then add(where, "rewards must be an object [E-rewards]"); return end
-	if rewards.weight ~= nil then
-		if type(rewards.weight) ~= "number" or rewards.weight < 0 then
-			add(where, "rewards.weight must be a number >= 0 (kill equivalents) [E-rewards]")
-		end
-	elseif not int(rewards.xp, 0) then
+	unknown_keys(add, where .. ": rewards", rewards, V.REWARD_KEYS)
+	if rewards.weight == nil then
 		add(where, "rewards need a 'weight' (kill equivalents at the reward level) [E-required]")
+	elseif type(rewards.weight) ~= "number" or rewards.weight < 0 then
+		add(where, "rewards.weight must be a number >= 0 (kill equivalents) [E-rewards]")
 	end
 	if rewards.copper ~= nil and not int(rewards.copper, 0) then
 		add(where, "copper must be an integer >= 0 [E-rewards]")
@@ -262,6 +282,7 @@ function V.structure(files, npcs)
 		if type(quest) ~= "table" then
 			add(where, "must be an object [E-type]")
 		else
+			unknown_keys(add, where, quest, V.QUEST_KEYS)
 			for _, key in ipairs({"id", "line", "giver", "turnin", "min_level", "level", "title",
 					"text", "objectives", "rewards"}) do
 				if quest[key] == nil then add(where, ("missing required field '%s' [E-required]"):format(key)) end
@@ -321,6 +342,7 @@ function V.structure(files, npcs)
 				if type(drop) ~= "table" then
 					add(dwhere, "must be an object [E-type]")
 				else
+					unknown_keys(add, dwhere, drop, V.DROP_KEYS)
 					if not wanted[drop.item] then
 						add(dwhere, ("quest drop %s has no item objective in this quest [E-quest-drop-pair]")
 							:format(tostring(drop.item)))
@@ -408,7 +430,7 @@ local function target_levels(add, where, world, zone, name, area_ref)
 	return nil
 end
 
-local function check_target(add, where, world, zone, name, area_ref, level, what, legacy)
+local function check_target(add, where, world, zone, name, area_ref, level, what)
 	local role = name:match("^grug_mobs:(.+)$") or name
 	if not world.entity(name) then
 		add(where, ("role %s is neither a sub-type nor an existing mob [E-unknown-role]"):format(role))
@@ -419,7 +441,7 @@ local function check_target(add, where, world, zone, name, area_ref, level, what
 		add(where, ("critter %s is never a %s (Ruling 29) [E-critter-target]"):format(role, what))
 		return
 	end
-	if disposition == nil and not (legacy and V.LEGACY_GUARDS[name]) then
+	if disposition == nil then
 		add(where, ("%s is an NPC or guard, not a %s [E-not-a-mob]"):format(role, what))
 		return
 	end
@@ -437,28 +459,22 @@ end
 -- A kill objective without an area in a zone with a spawn recipe, none of
 -- whose targets that recipe spawns (a kind or a camp of the zone) and none
 -- of which is a leader (a leader of any zone counts: it stands at its own
--- rule-placed spot, so a front file may name another zone's leader; with a
--- `zone` filter only the filter zone's leaders): in such
+-- rule-placed spot, so a front file may name another zone's leader): in such
 -- a zone only the recipe's roles appear on the surface (Lane S1), so the
 -- quest cannot be met there. A warning, not an error: the targets may live
 -- in another zone on purpose.
 local function check_recipe_targets(warn, where, world, zone, objective)
 	if objective.area then return end
-	local kill_zone = type(objective.zone) == "string" and objective.zone or zone
-	local areas = world.zone_areas(kill_zone)
+	local areas = world.zone_areas(zone)
 	if #areas == 0 then return end
 	for _, name in ipairs(V.target_names(objective)) do
-		-- Guards stand at their guard posts, never in a recipe's regions.
-		if V.LEGACY_GUARDS[name] then return end
 		local role = name:match("^grug_mobs:(.+)$") or name
-		-- A zone-filtered (legacy) objective counts only kills in that zone.
-		local leader = world.leader(role)
-		if leader and (type(objective.zone) ~= "string" or leader.zone == kill_zone) then return end
+		if world.leader(role) then return end
 		for _, area in ipairs(areas) do
 			if area.roles[role] then return end
 		end
 	end
-	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(kill_zone))
+	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(zone))
 end
 
 -- Every placeholder's target (a kind or camp of the zone's recipe or a
@@ -497,8 +513,7 @@ function V.world(files, world)
 			if objective.type == "kill" then
 				local area = V.area_ref(objective.area, zone)
 				for _, name in ipairs(V.target_names(objective)) do
-					check_target(add, where, world, zone, name, area, quest.level, "kill target",
-						objective.roles == nil)
+					check_target(add, where, world, zone, name, area, quest.level, "kill target")
 				end
 				check_recipe_targets(warn, where, world, zone, objective)
 			elseif objective.type == "item" then
@@ -509,7 +524,7 @@ function V.world(files, world)
 				end
 				for _, name in ipairs(objective.roles and V.target_names(objective) or {}) do
 					check_target(add, where, world, zone, name, V.area_ref(objective.area, zone), quest.level,
-						"item source", false)
+						"item source")
 				end
 			end
 		end
@@ -518,7 +533,7 @@ function V.world(files, world)
 			check_item(add, where, world, drop.item, "quest drop")
 			for _, name in ipairs(V.target_names(drop)) do
 				check_target(add, where, world, zone, name, V.area_ref(drop.area, zone), quest.level,
-					"quest-drop source", false)
+					"quest-drop source")
 			end
 		end
 		for _, item in ipairs(quest.rewards.items or {}) do
@@ -533,7 +548,7 @@ end
 -- are met at, so a player can judge them without a signal word in the name.
 -- Per role, first match: a named leader's fixed level; in the objective's
 -- area (a kind or camp) that role's levels there; the role's levels in the
--- kinds and camps of the kill zone's recipe (the level-fit check's source);
+-- kinds and camps of the quest zone's recipe (the level-fit check's source);
 -- its catalogue levels within the quest level +- LEVEL_SLACK; a base mob
 -- (no catalogue row) in a zone without a recipe: the zone's level band
 -- within the quest level +- LEVEL_SLACK. A recipe zone spawns only its own
@@ -569,19 +584,18 @@ end
 -- the quest drops of its item. The union over the roles.
 function V.objective_levels(world, zone, quest, objective)
 	local lo, hi
-	local function add(names, area_ref, kill_zone)
+	local function add(names, area_ref)
 		for _, name in ipairs(names) do
-			local a, b = role_range(world, kill_zone, quest.level, name:match("^grug_mobs:(.+)$") or name, area_ref)
+			local a, b = role_range(world, zone, quest.level, name:match("^grug_mobs:(.+)$") or name, area_ref)
 			if a then lo, hi = math.min(lo or a, a), math.max(hi or b, b) end
 		end
 	end
 	if objective.type == "kill" then
-		add(V.target_names(objective), V.area_ref(objective.area, zone),
-			type(objective.zone) == "string" and objective.zone or zone)
+		add(V.target_names(objective), V.area_ref(objective.area, zone))
 	elseif objective.type == "item" then
-		if objective.roles then add(V.target_names(objective), V.area_ref(objective.area, zone), zone) end
+		if objective.roles then add(V.target_names(objective), V.area_ref(objective.area, zone)) end
 		for _, drop in ipairs(objective.item and quest.quest_drops or {}) do
-			if drop.item == objective.item then add(V.target_names(drop), V.area_ref(drop.area, zone), zone) end
+			if drop.item == objective.item then add(V.target_names(drop), V.area_ref(drop.area, zone)) end
 		end
 	end
 	return lo and {lo, hi} or nil

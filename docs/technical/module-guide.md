@@ -402,6 +402,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     api.lua patch reads off `self`, and every callable, must be
     (re-)installed from the `do_custom`/`do_punch` wrappers on each
     activation, not written in the def.
+  - **`core.add_entity` stores the staticdata of that moment**
+    (`ServerEnvironment::addActiveObjectRaw`): fields written after the
+    call reach the mapblock only at the entity's next deactivation. A block
+    saved and unloaded in between keeps that first snapshot, and the
+    deactivation then stores a second copy, so the entity comes back twice.
+    Pass what identifies the entity in `add_entity`'s staticdata
+    (`start_npcs.lua` `place`: `_grug_unplaced`, Round 30).
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently

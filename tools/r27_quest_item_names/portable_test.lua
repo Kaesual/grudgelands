@@ -90,7 +90,8 @@ end
 -- 1. The helper itself.
 ------------------------------------------------------------------------------
 grug_core = {register_tag_visibility = function() end,
-	hud_layout = {side_text_width = function() return 38 end}}
+	hud_layout = {side_text_width = function() return 38 end},
+	settlement_sockets_at = function() return {} end}
 dofile("mods/CORE/grug_core/item_names.lua")
 local name_of = grug_core.item_name
 
@@ -149,9 +150,15 @@ local faction, race = "accord", "human"
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
 grug_classes = {get_race = function() return race end}
-grug_xp = {get_level = function() return 60 end}
-grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
+grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end}
+-- Quest texts fill their placeholders (labels.lua); a stand-in region map
+-- names every kind or camp by its id and every direction "nearby" (this test
+-- reads item names).
+grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
+	spawn_regions = {leader = function() return nil end, get_area = function(_, id) return {name = id} end,
+		describe = function() return {phrase = "nearby"} end}}
 grug_money = {format = function(copper) return copper .. " copper" end}
+grug_zones = {get = function(zone) return {display_name = zone} end}
 -- The quest content is the per-zone quest files (Round 28 Lane B4), read by
 -- the real loader.
 local json = dofile("tools/r28_b4_quests/json.lua")
@@ -180,7 +187,7 @@ end
 Q.register_npc("fixture_giver", {settlement = "fixture", socket = "quest", title = "Fixture Giver"})
 Q.register_quest("zz_fixture_rewards", {title = "Fixture Rewards", description = "Fixture.",
 	npc = "fixture_giver", objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
-	rewards = {xp = 1, copper = 1, items = {"mobs:meat_raw 3", "grug_materials:axe_wood"}}})
+	rewards = {weight = 1, copper = 1, items = {"mobs:meat_raw 3", "grug_materials:axe_wood"}}})
 
 local ids, used_items, item_quests = {}, {}, {}
 local function use(item, id)
@@ -189,7 +196,7 @@ end
 for id, def in pairs(Q.registered_quests) do
 	ids[#ids + 1] = id
 	for _, objective in ipairs(def.objectives) do
-		if objective.type == "item" then use(objective.item, id) end
+		if objective.type == "item" and objective.item then use(objective.item, id) end
 		for _, mob in ipairs(objective.mobs or {}) do
 			core.registered_entities[mob] = core.registered_entities[mob] or {}
 		end
@@ -286,7 +293,6 @@ end
 local stats_in_descriptions = 0
 for _, id in ipairs(ids) do
 	local def = Q.registered_quests[id]
-	faction, race = def.faction or "accord", def.race or "human"
 	-- Hand-written quest text: no embedded stats.
 	local hit = stat_hit(def.description) or stat_hit(def.title)
 	for _, objective in ipairs(def.objectives) do
@@ -309,15 +315,17 @@ for _, id in ipairs(ids) do
 		if check(detail ~= nil, "dialogue detail present: " .. id) then
 			check(stat_hit(detail) == nil, "dialogue free of stats: " .. id .. " " .. tostring(stat_hit(detail)))
 			check(not detail:find(ESC, 1, true), "dialogue free of escapes: " .. id)
-			-- Description lines, a blank line, one line per objective, a blank
-			-- line, the reward line and one line per reward item.
-			local want = #lines_of(def.description) + 1 + #def.objectives + 1 + 1 + #def.rewards.items
+			-- Description lines, a blank line, a repeatable's cooldown line, one
+			-- line per objective, a blank line, the reward line and one line per
+			-- reward item.
+			local cooldown = def.repeatable and 1 or 0
+			local want = #lines_of(def.description) + 1 + cooldown + #def.objectives + 1 + 1 + #def.rewards.items
 			eq(#lines_of(detail), want, "dialogue line count (one line per item): " .. id)
 			local detail_lines = lines_of(detail)
-			local first = #lines_of(def.description) + 2
+			local first = #lines_of(def.description) + 2 + cooldown
 			for index, objective in ipairs(def.objectives) do
 				local line = detail_lines[first + index - 1] or ""
-				if objective.type == "item" then
+				if objective.type == "item" and objective.item then
 					if not objective.description then
 						eq(line, "Bring " .. expected[objective.item] .. " × " .. objective.count,
 							"dialogue objective line: " .. id)
@@ -346,7 +354,7 @@ for _, id in ipairs(ids) do
 		for index, objective in ipairs(def.objectives) do
 			local line = log_lines[index] or ""
 			check(one_clean_line(line), "quest log objective clean: " .. id .. " " .. ("%q"):format(line))
-			if objective.type == "item" then
+			if objective.type == "item" and objective.item then
 				eq(line, ("Bring %s: 0/%d"):format(expected[objective.item], objective.count),
 					"quest log objective line: " .. id)
 				record("quest log objective", line)
@@ -355,14 +363,24 @@ for _, id in ipairs(ids) do
 		check(one_clean_line(rewards), "quest log rewards one clean line: " .. id .. " " .. ("%q"):format(rewards))
 		if #def.rewards.items > 0 then record("quest log rewards", rewards) end
 	end
+	-- The HUD's one compact line (quests.md): "0/4 Bring Iron Bar" for one
+	-- objective, "Iron Bar 0/4, Coal Lump 0/4" for several, "Repeatable: "
+	-- first. Checked where every objective names one exact item.
+	local hud_want
+	for index, objective in ipairs(def.objectives) do
+		if objective.type ~= "item" or not objective.item then hud_want = nil; break end
+		local name = expected[objective.item]
+		hud_want = #def.objectives == 1 and ("0/%d Bring %s"):format(objective.count, name) or
+			(index > 1 and hud_want .. ", " or "") .. ("%s 0/%d"):format(name, objective.count)
+	end
+	if hud_want and def.repeatable then hud_want = "Repeatable: " .. hud_want end
 	local journal = Q.journal(player)
 	for _, width in ipairs({38, 400}) do
 		local text = Q.hud_text(journal, nil)
 		local line = Q.hud_line(journal.quests[1], width)
 		check(one_clean_line(line) and one_clean_line(text), "HUD line clean: " .. id .. " " .. ("%q"):format(line))
-		if width == 400 and def.objectives[1].type == "item" then
-			eq(line, ("0/%d Bring %s"):format(def.objectives[1].count, expected[def.objectives[1].item]),
-				"HUD objective line: " .. id)
+		if width == 400 and hud_want then
+			eq(line, hud_want, "HUD objective line: " .. id)
 			record("HUD tracker", line)
 		end
 	end

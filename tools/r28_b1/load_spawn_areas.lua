@@ -26,8 +26,11 @@ return function(repo)
 		end
 	end
 	local function noop() end
+	local mapgen_dir = repo .. "/mods/MAPGEN/grug_mapgen"
 	local core_fields = {
-		get_modpath = function() return mobs_dir end,
+		-- spawn_regions.lua reads the mapgen's settlement roster for the camp
+		-- POIs of a recipe (grug_mapgen/wp40/r7_settlement.lua).
+		get_modpath = function(name) return name == "grug_mapgen" and mapgen_dir or mobs_dir end,
 		get_current_modname = function() return "grug_mobs" end,
 		get_dir_list = function() return files end,
 		parse_json = json.parse,

@@ -87,8 +87,6 @@ local function cooldown_left(def, state)
 	return ready_at and math.max(0, ready_at - Q.clock()) or 0
 end
 local function permitted(player, def, state)
-	if def.faction and def.faction ~= grug_factions.get_faction(player) then return false, "This quest belongs to another faction." end
-	if def.race and def.race ~= grug_classes.get_race(player) then return false, "This quest belongs to another homeland." end
 	if grug_xp.get_level(player) < def.min_level then return false, "Requires level " .. def.min_level .. "." end
 	for _, id in ipairs(def.prerequisites) do
 		if not state.completed[id] then return false, "Complete the preceding quest first." end
@@ -174,12 +172,11 @@ function Q.status(player, id)
 end
 -- What quest `def` shows at `npc` for this player: "ready", "active",
 -- "available" or "locked" (with the reason), or nil when it is not listed
--- there. `faction` and `race` are the player's, read once per pass; `pass`
--- carries one holdings snapshot through the pass (`pass.counts`).
-local function status_at(player, npc, def, state, faction, race, pass)
+-- there. `pass` carries one holdings snapshot through the pass
+-- (`pass.counts`).
+local function status_at(player, npc, def, state, pass)
 	local id = def.id
 	if state.completed[id] and def.repeatable == nil then return nil end
-	if (def.faction and def.faction ~= faction) or (def.race and def.race ~= race) then return nil end
 	for _, prior in ipairs(def.prerequisites) do
 		if not state.completed[prior] then return nil end
 	end
@@ -196,10 +193,9 @@ end
 -- One bounded state/holdings snapshot for one NPC viewer.
 function Q.npc_quests(player, npc)
 	local state, rows, pass = load(player), {}, {}
-	local faction, race = grug_factions.get_faction(player), grug_classes.get_race(player)
 	for id in pairs(Q.quests_by_npc[npc] or {}) do
 		local def = Q.registered_quests[id]
-		local status, reason = status_at(player, npc, def, state, faction, race, pass)
+		local status, reason = status_at(player, npc, def, state, pass)
 		if status then
 			rows[#rows + 1] = {id = id, title = def.title, status = status, reason = reason,
 				repeatable = def.repeatable ~= nil}
@@ -226,11 +222,10 @@ function Q.marker_states(player)
 		return memo.states, memo.version
 	end
 	local states, pass = {}, {}
-	local faction, race = grug_factions.get_faction(player), grug_classes.get_race(player)
 	for npc, ids in pairs(Q.quests_by_npc) do
 		local best
 		for id in pairs(ids) do
-			local status = status_at(player, npc, Q.registered_quests[id], state, faction, race, pass)
+			local status = status_at(player, npc, Q.registered_quests[id], state, pass)
 			if status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then best = status end
 		end
 		states[npc] = best
@@ -429,9 +424,8 @@ end
 -- the role; an area limit is matched by the area tag the mob spawned with
 -- (`_grug_area` = "<zone>/<kind or camp>", spawn_regions.lua), never by
 -- where it died. Leaders carry no area.
-local function mob_counts(target, mob, pos)
+local function mob_counts(target, mob)
 	if target.area and mob._grug_area ~= target.area then return false end
-	if target.zone and grug_zones.id_at(pos.x, pos.z) ~= target.zone then return false end
 	for _, name in ipairs(target.mobs) do
 		if name == mob.name then return true end
 	end
@@ -446,7 +440,7 @@ function Q.credit_kill(player, mob, pos)
 		local def = Q.registered_quests[id]
 		if permitted(player, def, state) then
 			for index, objective in ipairs(def.objectives) do
-				if objective.type == "kill" and mob_counts(objective, mob, pos) then
+				if objective.type == "kill" and mob_counts(objective, mob) then
 					local before = counters[index] or 0
 					local after = math.min(objective.count, before + 1)
 					if after ~= before then
@@ -484,7 +478,7 @@ function Q.roll_quest_drops(mob, participants, pos)
 				local def = Q.registered_quests[id]
 				if #def.quest_drops > 0 and permitted(player, def, state) then
 					for _, drop in ipairs(def.quest_drops) do
-						if mob_counts(drop, mob, pos) then
+						if mob_counts(drop, mob) then
 							local needed = 0
 							for _, objective in ipairs(def.objectives) do
 								if objective.item == drop.item then needed = needed + objective.count end

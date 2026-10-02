@@ -110,19 +110,14 @@ local function arrow_cell(view, position, zoom)
 	return math.floor(sx / ARROW_STEP + 0.5), math.floor(sy / ARROW_STEP + 0.5)
 end
 
-local function home_status(player)
-	local remaining = grug_home.remaining(player)
-	return grug_home.is_pending(player) and "Preparing arrival" or
-		(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
-end
-
 -- Everything the form shows that can change while the tab is open, read
 -- without building the form (Round 30, perf review #3): the zoom, the
 -- selection, the location label, the minimap switch, each arrow's grid
 -- place and heading frame, the quest markers' version
--- (grug_quests.marker_states), the home and its status and the discovered
--- waystones. Every other marker and label is fixed for the server's run;
--- scroll values are transport state (see page_content).
+-- (grug_quests.marker_states), the home (which innkeeper or Claim Stone is
+-- marked as home) and the discovered waystones. Every other marker and label
+-- is fixed for the server's run; scroll values are transport state (see
+-- page_content).
 local function signature(player, context)
 	local zoom, view, name = context.grug_map_zoom or 1, atlas.view(), player:get_player_name()
 	local parts = {zoom, context.grug_map_selected or "", current_zone(player),
@@ -141,7 +136,7 @@ local function signature(player, context)
 	local _, version = grug_quests.marker_states(player)
 	parts[#parts + 1] = version
 	local home = grug_home.get(player)
-	parts[#parts + 1] = home and home.id .. " " .. home_status(player) or ""
+	parts[#parts + 1] = home and home.id or ""
 	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
 	return table.concat(parts, "|")
 end
@@ -250,11 +245,8 @@ local function page_content(player, context)
 		fs[#fs + 1] = ("label[0.15,0.62;Selected: %s]"):
 			format(esc(context.grug_map_detail:match("[^\n]*")))
 	end
-	local home = grug_home.get(player)
-	if home then
-		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.65;grug_map_home;Return home: %s (%s)]"):
-			format(MAP_X, MAP_Y + MAP_H + 0.59, MAP_W, esc(home.label), esc(home_status(player)))
-	end
+	-- Return home lives on the Character page (Round 30 ruling): its live
+	-- countdown costs a small form there, not this one.
 	-- Scrollbar starting values are transport state, not render semantics:
 	-- they stay out of the signature. Only signatures actually sent to the
 	-- client may advance session.signature.
@@ -321,11 +313,6 @@ sfinv.register_page(PAGE, {
 		end
 		if fields.grug_map_minimap and grug_map.minimap.available() then
 			grug_map.minimap.set_enabled(player, fields.grug_map_minimap == "true")
-			sfinv.set_player_inventory_formspec(player, context)
-			return true
-		end
-		if fields.grug_map_home then
-			grug_home.return_home(player)
 			sfinv.set_player_inventory_formspec(player, context)
 			return true
 		end

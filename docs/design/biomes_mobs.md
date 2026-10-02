@@ -48,21 +48,22 @@ content requirements remain explicitly separate from delivered behavior.
   follow the fixed disposition contract below. Density target ~1
   visible mob per 15–20 m of wilderness travel.
 - **Density is a per-zone budget** (Round 24 ruling 27, 2026-09-29;
-  `mods/ENTITIES/grug_mobs/density.lua`), independent of how many species a
-  zone allows: **15 by day, 23 by night** = 1.5 × the pre-Round-24 median
-  area population (10 / 15, measured per land column on the biome-top hosts
-  by the Round 24 density fixture, retired in Round 30; git history keeps
-  it), times an optional per-zone multiplier `grug_mobs.ZONE_DENSITY` for
-  later tuning. The spawn regions share it out per region and roster (§4.2
-  "Density"). Round 24 also shared it per spawn point among the ABM rows of
-  the named-zone palettes; no zone has had a palette since the Round 28
-  spawn recipes, and Round 30 retired those surface rows (§4), so that part
-  is gone. Critters, underground rows, the Kraken and Reed Angelfish, NPCs,
-  authored guards, camps, patrols, kings, dragons, summoned/encounter adds,
-  bosses and named rares are neither counted nor limited. An ordinary
-  (non-critter) ABM row above y = -40, today the Kraken's, keeps the Round 16
-  rule (1.3x attempt frequency and a nearest-integer 1.3x species cap); the
-  Rift Spawn's surface row states its final numbers (§4).
+  `mods/ENTITIES/grug_mobs/density.lua`): the zone budget is **15 by day,
+  23 by night** (1.5 × the pre-Round-24 median area population of 10 / 15),
+  times an optional per-zone multiplier `grug_mobs.ZONE_DENSITY` for later
+  tuning. Since Round 28 the region spawner is what spends it: each kind's
+  density class scales it, and the roster's roles share it (§4.2 Spawn
+  regions, [spawn_regions.md](spawn_regions.md)). The Round 24
+  per-point budget of the zone *palettes* (species sharing the budget by
+  their row caps around an ABM spawn point) applied to no zone after the
+  spawn recipes replaced the palettes (0 of 38 zones, its fixture retired),
+  and Round 30 removed it with the surface ABM rows it governed (§4).
+  Critters, underground rows, the Kraken and Reed Angelfish, NPCs, authored
+  guards, camps, patrols, kings, dragons, summoned/encounter adds, bosses and
+  named rares are neither counted nor limited. An ordinary (non-critter) ABM
+  row above y = −40, today the Kraken's, keeps the Round 16 rule (1.3x
+  attempt frequency and a nearest-integer 1.3x species cap); the Rift
+  Spawn's surface row states its final numbers (§4).
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.

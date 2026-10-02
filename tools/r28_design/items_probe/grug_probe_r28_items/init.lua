@@ -188,7 +188,6 @@ local function run()
 	for id, def in pairs(grug_quests.registered_quests or {}) do
 		local row = scalars(def)
 		row.description = nil
-		row.xp = def.rewards and def.rewards.xp
 		row.prerequisites = def.prerequisites
 		quests[id] = row
 	end

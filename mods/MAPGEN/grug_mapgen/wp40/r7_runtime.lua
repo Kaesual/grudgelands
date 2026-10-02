@@ -482,7 +482,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			successor = r7_successor_factory(p9g_successor, anchor_successor,
 				settlement_configs, settlement_keys,
 				world_factory(world_catalog, content_set.p9g, habitat_registry),
-				dofile(wp40_directory .. "/road_writer.lua")(core_api))
+				dofile(wp40_directory .. "/road_writer.lua")(core_api, source))
 		end
 		local consumer_payload = consumer_payload_factory(source, sha256_hex)
 		local constructor, session, writer, zones_session, settlement_fixture,

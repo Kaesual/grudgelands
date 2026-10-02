@@ -461,7 +461,9 @@ replaced; git history before this rewrite records that model.
 - **Island approaches.** Each island keeps two boat approaches, one northern
   and one southern, each ending at a landing beach at a fixed point in the
   source data. The northern and southern boat routes to either island are
-  roughly equal in length. Both approaches are open to both factions.
+  roughly equal in length. Both approaches are open to both factions. Each
+  landing has a sand beach cut into the shore and a wooden pier toward the
+  mainland (Round 30; shape in `boats.md` §7.1).
 - **A river lies in a trough (Round 22, D54).** Its cross-section is a
   smooth trough blended into the terrain, like a lake drawn along a line: the
   ground is pulled down toward a bed below the reach's level, most on the
@@ -577,7 +579,7 @@ replaced; git history before this rewrite records that model.
 - **Coast shape (Round 22, D27):** the coast takes its shape from the
   terrain field alone: it mostly ramps gently to the water, with occasional
   steep coasts. There are no geometric coast profiles, runs or fixed beach
-  slopes.
+  slopes, except the four island landing beaches (`boats.md` §7.1).
 - **Shore profile (Round 22, D35):** the height runs continuously through the
   waterline. Where the terrain is gentle, a beach slopes down to the water
   surface, the first water is one node deep and the floor deepens across a
@@ -588,7 +590,8 @@ replaced; git history before this rewrite records that model.
   terrain, near the water. Low, gentle ground within roughly 40 nodes of the
   water is sand above three sandstone filler nodes. Steep
   ground at the water and the edges of cliffs are gravel or stone. Mountain
-  land, including both dragon islands, never gets dry sand; where mountain
+  land, including both dragon islands, never gets dry sand (except the four
+  island landing beaches, `boats.md` §7.1); where mountain
   land borders other land the switch is dithered by noise, not a line. The
   height, slope and reach limits are jittered by noise, so material edges
   follow the terrain and never run straight. This rule is the only source of
