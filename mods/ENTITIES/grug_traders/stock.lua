@@ -429,8 +429,8 @@ profession_shelf("smith", {
 	{"grug_materials:shovel_bronze", 32, "tools"},
 })
 
--- The mason: the ground a district is paved and walled with. Nothing here has
--- a buy-back price at all, so the trade is one-way by construction.
+-- The mason: the ground a district is paved and walled with. All of it is made
+-- from free stone and clay, so traders pay nothing for it (prices.lua).
 profession_shelf("mason", {
 	{"default:cobble", 2},
 	{"default:gravel", 1},
@@ -488,8 +488,9 @@ profession_shelf("embalmer", {
 --
 -- The audit. A shelf entry is dropped and reported when its item is not
 -- registered, is an enchant input (grug_professions/data/enchants.json stat
--- loot or family input) or is a material above T1 (its own tier, prices.lua's
--- grug_traders.item_tier). The rule is cheap to break by a later shelf edit
+-- loot or family input) or is a material above T1 (prices.lua's
+-- grug_traders.shelf_tier: a food's own tier, else the higher of its own and
+-- its ingredient tier). The rule is cheap to break by a later shelf edit
 -- and cheap to check here. A clean roster reports itself, so a check nobody
 -- sees the result of does not become a check nobody notices breaking.
 --
@@ -526,7 +527,7 @@ core.register_on_mods_loaded(function()
 	end
 	local failed = {}
 	for _, finding in ipairs(grug_traders.price_rules.shelf_findings(entries,
-			enchant_inputs(), grug_traders.item_tier)) do
+			enchant_inputs(), grug_traders.shelf_tier)) do
 		failed[finding.kind .. "\0" .. finding.item] = finding.reason
 	end
 	local offers, dropped = 0, {}

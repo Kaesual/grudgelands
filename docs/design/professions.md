@@ -196,7 +196,9 @@ ingredient above T1** (user ruling 1 of 2026-10-02,
 from T2 up and every enchant input comes from loot, mining or gathering:
 the hunt is the game. T1 basics stay buyable because T1 is the tutorial
 band. A load audit in `grug_traders` drops and reports any shelf entry that
-breaks the rule. Flavour shelves (the mason's blocks, candles, food to eat)
+breaks the rule; it judges a food by its own raw tier (`items_crafting.md`
+§3.7, so the baker's T1 melon passes) and anything else by the higher of its
+own tier and its profession ingredient tier. Flavour shelves (the mason's blocks, candles, food to eat)
 stay. (Also anchored in economy.md §2.)
 
 The gear floor (revised 2026-08-07 twice over):

@@ -10,7 +10,9 @@
 --      dual furnace, a leather grade capped below its loot formula), sold
 --      goods capped by their recipe (100 arrows from one bar), a group input
 --      by its cheapest known member, an unknown input makes its recipe
---      unknown, a vendor supply counts 0, a pack/unpack cycle is cut;
+--      unknown, a vendor supply and a free world material count 0, a
+--      pack/unpack cycle is cut; unjudged_sold() names a paying sold good
+--      whose recipes cannot be judged;
 --   4. loop_findings(): an overpriced loot output is reported, break-even is
 --      allowed (ruling 5's ≤), unknown inputs are not judged;
 --   5. shelf_findings(): enchant inputs and materials above T1 fail;
@@ -102,6 +104,8 @@ local RECIPES = {
 		inputs = {"t:bronze_bar", "group:stick", "group:stick"}}},
 	["t:dagger"] = {{method = "normal", count = 1, inputs = {"t:bronze_bar", "group:stick"}}},
 	["t:shield"] = {{method = "normal", count = 1, inputs = {"t:bronze_bar", "group:wood"}}},
+	["t:wood_pick"] = {{method = "normal", count = 1, inputs = {"group:wood", "group:wood", "t:planks"}}},
+	["t:charm"] = {{method = "normal", count = 1, inputs = {"t:bronze_bar", "t:mystery"}}},
 	-- a pack/unpack cycle between two processed goods
 	["t:gem_block"] = {{method = "normal", count = 1, inputs = {"t:cut_gem", "t:cut_gem",
 		"t:cut_gem", "t:cut_gem", "t:cut_gem", "t:cut_gem", "t:cut_gem", "t:cut_gem", "t:cut_gem"}}},
@@ -128,7 +132,9 @@ local data = {
 		["t:light_leather"] = true, ["t:heavy_leather"] = true,
 		["t:gem_block"] = true, ["t:cut_gem"] = true, ["t:no_recipe"] = true},
 	sold = {["t:thread"] = 1, ["t:arrow"] = 3, ["t:dagger"] = 400,
-		["t:shield"] = 1250, ["t:potion"] = 8, ["t:hide"] = 8},
+		["t:shield"] = 1250, ["t:potion"] = 8, ["t:hide"] = 8,
+		["t:wood_pick"] = 25, ["t:charm"] = 400},
+	free = {["t:planks"] = true},
 	discounted = discounted,
 	recipes_for = function(item) return RECIPES[item] or {} end,
 	group_members = function(groups) return GROUPS[groups[1]] or {} end,
@@ -149,13 +155,21 @@ eq(v["t:hide"], expected("generic", 1), "a looted good on a shelf pays its formu
 eq(v["t:arrow"], 0, "100 arrows from one bar and two sticks: not sellable")
 eq(v["t:dagger"], 2 * raw1 + expected("trash", 1),
 	"a sold weapon is capped by its recipe; the group counts its cheapest member")
-eq(v["t:shield"], rules.buyback(1250, discounted(1250)),
-	"a recipe with an unknown group input (wood) does not cap")
+eq(v["t:shield"], 2 * raw1, "free wood counts 0: the shield pays its bar")
+eq(v["t:planks"], 0, "a free world material is known and worth 0")
+eq(v["t:wood_pick"], 0, "a sold good made only of free wood pays nothing back")
+eq(v["t:charm"], rules.buyback(400, discounted(400)),
+	"a recipe with an unknown input does not cap")
 eq(v["t:potion"], 1, "sold without recipe: 5 % buy-back")
 eq(v["t:cut_gem"], expected("gem", 4), "cut gem = its formula (cycle cut, rough route)")
 eq(v["t:gem_block"], 9 * expected("gem", 4), "a storage block = nine of its unit")
 eq(v["t:no_recipe"], nil, "a processed good without a usable recipe stays unknown")
-eq(v["t:planks"], nil, "an unclassified world material stays unknown")
+eq(v["t:mystery"], nil, "an unclassified, unfree item stays unknown")
+local unjudged = rules.unjudged_sold({"t:charm", "t:wood_pick", "t:potion", "t:shield"},
+	data.recipes_for, function(item) return v[item] or 0 end,
+	function(item) return v[item] ~= nil end, data.group_members)
+eq(table.concat(unjudged, " "), "t:charm",
+	"warned: a paying sold good whose only recipe has an unknown input")
 
 ------------------------------------------------------------------------------
 -- 4. loop_findings().

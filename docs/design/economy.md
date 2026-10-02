@@ -87,6 +87,12 @@ precedence over preserving the exact mathematical ratio.
   settings, wood grades, reagents) pay the summed payout of their cheapest
   recipe's inputs; a vendor supply counts 0 in that sum. A leather grade that
   is also loot pays the lower of both.
+- **Free world materials** (wood and logs, leaves, saplings, stone, cobble,
+  sand, sandstone, gravel, clay, glass, snow, ice, flowers and dyes) are worth
+  0 and count 0 in a recipe, so a vendor good made only from them (a wooden
+  pick, a stone brick, a glass vial) pays nothing back. The load audit warns
+  when a sold good keeps a buy-back only because none of its recipes can be
+  judged.
 - One price module (`grug_traders/prices.lua`) owns every payout; items have
   no per-definition price field. Anything it does not price is not sellable.
 - A craft, cook, pack/unpack or service loop may not print money: an output

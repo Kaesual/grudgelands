@@ -170,4 +170,16 @@ core.register_on_mods_loaded(function()
 		core.log("error", "[grug_traders] CRAFT LOOP: " .. message ..
 			" — ruling 5 of economy-vendor-plan.md")
 	end
+	-- A sold good keeps its 5% buy-back only because no recipe that makes it
+	-- could be judged: one of its inputs has no value. If that input is a
+	-- free world material, it belongs in prices.lua's free set.
+	for _, item in ipairs(grug_traders.price_rules.unjudged_sold(
+			grug_traders.sold_items(), grug_traders.recipes_for,
+			grug_traders.sell_price, grug_traders.price_known,
+			grug_traders.group_members)) do
+		core.log("warning", "[grug_traders] '" .. item .. "' is sold and pays " ..
+			grug_traders.sell_price(item) .. "c back, but no recipe that makes it " ..
+			"can be judged (an input has no value) — a free input belongs in " ..
+			"prices.lua's free set")
+	end
 end)

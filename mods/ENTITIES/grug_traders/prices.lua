@@ -7,6 +7,9 @@
 --                            reagents; ruling 5)
 --   goods a vendor sells     5 % of the price, rounded up (§3.4), never more
 --                            than their cheapest recipe's inputs
+--   free world materials     0, and they count 0 in a recipe (wood, stone,
+--                            sand, glass, flowers and their dyes ...), so
+--                            nothing made only from them pays
 --   everything else          0: not sellable
 --
 -- The rules themselves are pure (price_rules.lua); this file only reads the
@@ -44,7 +47,23 @@ local TIERS = {["grug_materials:emberglass_shard"] = 4}
 -- group; bars come from grug_materials.PROCESSED_MATERIALS.
 local PROCESSED_GROUPS = {"grug_leather_grade", "grug_tailor_bolt",
 	"grug_tailor_bundle", "grug_wood_grade", "grug_jewellery_setting",
-	"grug_reagent"}
+	"grug_reagent", "grug_metal_rod"}
+
+-- Free world materials: anyone digs or chops them without limit, so traders
+-- pay nothing for them and a recipe counts them 0. Without this a vendor good
+-- made only from them (a wooden pick, a stone brick, a glass vial) would keep
+-- its 5 % buy-back and turn digging into money.
+local FREE_GROUPS = {"wood", "tree", "leaves", "sapling", "sand", "stone",
+	"soil", "flower", "dye", "grug_natural", "grug_stratum"}
+local FREE = {
+	["default:cobble"] = true, ["default:mossycobble"] = true,
+	["default:desert_cobble"] = true, ["default:sandstone"] = true,
+	["default:desert_sandstone"] = true, ["default:silver_sandstone"] = true,
+	["default:gravel"] = true, ["default:clay"] = true,
+	["default:clay_lump"] = true, ["default:glass"] = true,
+	["default:snow"] = true, ["default:snowblock"] = true,
+	["default:ice"] = true, ["default:flint"] = true,
+}
 
 -- Groups whose rating is the item's tier.
 local TIER_GROUPS = {"grug_leather_grade", "grug_tailor_bolt", "grug_wood_grade",
@@ -228,6 +247,7 @@ grug_traders.group_members = group_members
 --
 
 local payouts -- item -> copper (0 = known, not sellable); nil before load
+local sold = {} -- item -> lowest vendor price, filled with the payouts
 
 -- Lowest price any vendor asks for each item: the core stock, the profession
 -- shelves and the six gear catalogs.
@@ -257,7 +277,7 @@ function grug_traders.resolve_prices()
 		for _, row in ipairs(gathering.p9g_sources()) do gathered[row.raw_item] = true end
 		for _, row in ipairs(gathering.cultural_sources()) do gathered[row.raw_item] = true end
 	end
-	local classified, processed = {}, {}
+	local classified, processed, free = {}, {}, {}
 	for itemname in pairs(core.registered_items) do
 		local class = class_of(itemname, gathered)
 		if class then
@@ -267,14 +287,20 @@ function grug_traders.resolve_prices()
 		for _, name in ipairs(PROCESSED_GROUPS) do
 			if group(itemname, name) then processed[itemname] = true end
 		end
+		if FREE[itemname] then free[itemname] = true end
+		for _, name in ipairs(FREE_GROUPS) do
+			if group(itemname, name) then free[itemname] = true end
+		end
 	end
 	for item in pairs(bars) do
 		if core.registered_items[item] then processed[item] = true end
 	end
+	sold = sold_prices()
 	payouts = rules.resolve({
 		classified = classified,
 		processed = processed,
-		sold = sold_prices(),
+		sold = sold,
+		free = free,
 		discounted = grug_traders.discounted_price,
 		recipes_for = recipes_for,
 		group_members = group_members,
@@ -290,6 +316,28 @@ end
 -- Whether the item has a value at all (a sum may count it, 0 included).
 function grug_traders.price_known(itemname)
 	return payouts ~= nil and payouts[itemname] ~= nil
+end
+
+-- Every item a vendor sells, sorted.
+function grug_traders.sold_items()
+	local list = {}
+	for item in pairs(sold) do list[#list + 1] = item end
+	table.sort(list)
+	return list
+end
+
+-- The tier the shelf rule judges: a food by its own (raw) tier, which is why
+-- the baker may sell a T1 melon that cooking uses at T4 (items_crafting.md
+-- §3.7: raw and recipe tier differ on purpose); anything else by the higher of
+-- its own tier and the ingredient tier a profession declared, so a T4
+-- ingredient never passes as T1.
+function grug_traders.shelf_tier(itemname)
+	local tier = grug_traders.item_tier(itemname)
+	if group(itemname, "grug_food") then return tier end
+	local jobs = rawget(_G, "grug_jobs")
+	local ingredient = jobs and jobs.ingredient_tier and valid_tier(jobs.ingredient_tier(itemname))
+	if ingredient and (not tier or ingredient > tier) then return ingredient end
+	return tier
 end
 
 -- Every item with a payout above 0, sorted.

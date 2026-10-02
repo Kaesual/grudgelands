@@ -53,11 +53,14 @@ end
 --   classified[item] = {class = <CLASS_VALUE key>, tier = 1..6}  loot, gathered
 --   processed[item]  = true        payout = the cheapest recipe's inputs
 --   sold[item]       = copper      the lowest price any vendor asks
+--   free[item]       = true        a free world material (wood, stone, sand,
+--                                  glass ...): known, worth 0
 --   discounted(price)              the same-race purchase price
 --   recipes_for(item)              list of {count = n, inputs = {names}}
 --   group_members(groups)          item names in every one of the groups
 -- Returns item -> copper for every item whose value is known; 0 means "known
--- and not sellable" (a vendor supply such as thread counts 0 in a sum).
+-- and not sellable" (a vendor supply such as thread, or a free world material
+-- such as planks, counts 0 in a sum).
 --
 -- Rules, in this order:
 --   * a classified item pays the formula; a processed one never more than its
@@ -128,6 +131,8 @@ function M.resolve(data)
 			base = M.payout(class.class, class.tier)
 		elseif data.sold[item] then
 			base = M.buyback(data.sold[item], data.discounted(data.sold[item]))
+		elseif data.free[item] then
+			base = 0
 		end
 		local result = base
 		if data.processed[item] or (data.sold[item] and not class) then
@@ -152,6 +157,7 @@ function M.resolve(data)
 	for item in pairs(data.classified) do names[#names + 1] = item end
 	for item in pairs(data.processed) do names[#names + 1] = item end
 	for item in pairs(data.sold) do names[#names + 1] = item end
+	for item in pairs(data.free) do names[#names + 1] = item end
 	table.sort(names) -- one fixed walk order
 	for _, item in ipairs(names) do
 		value(item)
@@ -159,14 +165,23 @@ function M.resolve(data)
 	return values
 end
 
--- The anti-loop rule (ruling 5): an output may pay at most what its consumed
--- inputs pay. Returns one message per recipe that pays more, sorted. Same
--- input rules as resolve(): unknown inputs make the recipe unknown, a group
--- counts its cheapest known member. `price(item)` is the final payout (0 or
--- more), `known(item)` whether an item has a value at all.
-function M.loop_findings(items, recipes_for, price, known, group_members)
-	local findings = {}
-	local function input_value(name)
+-- The summed input value of one recipe, or nil when an input is unknown.
+local function recipe_sum(recipe, input_value)
+	local sum = 0
+	for _, input in ipairs(recipe.inputs) do
+		local v = input_value(input)
+		if not v then
+			return nil
+		end
+		sum = sum + v
+	end
+	return sum
+end
+
+-- Input value for the audits: a known item's payout, a group's cheapest
+-- known member, else nil.
+local function audit_input_value(price, known, group_members)
+	return function(name)
 		local groups = groups_of(name)
 		if not groups then
 			return known(name) and price(name) or nil
@@ -179,19 +194,41 @@ function M.loop_findings(items, recipes_for, price, known, group_members)
 		end
 		return best
 	end
+end
+
+-- Sold goods that pay a buy-back although no recipe that makes them can be
+-- judged: an unpriced input may be a free world material that should count 0,
+-- and then the buy-back would be money from nothing. Returns item names.
+function M.unjudged_sold(items, recipes_for, price, known, group_members)
+	local input_value = audit_input_value(price, known, group_members)
+	local found = {}
+	for _, item in ipairs(items) do
+		local recipes = recipes_for(item)
+		if price(item) > 0 and #recipes > 0 then
+			local judged = false
+			for _, recipe in ipairs(recipes) do
+				if recipe_sum(recipe, input_value) then judged = true break end
+			end
+			if not judged then found[#found + 1] = item end
+		end
+	end
+	table.sort(found)
+	return found
+end
+
+-- The anti-loop rule (ruling 5): an output may pay at most what its consumed
+-- inputs pay. Returns one message per recipe that pays more, sorted. Same
+-- input rules as resolve(): unknown inputs make the recipe unknown, a group
+-- counts its cheapest known member. `price(item)` is the final payout (0 or
+-- more), `known(item)` whether an item has a value at all.
+function M.loop_findings(items, recipes_for, price, known, group_members)
+	local findings = {}
+	local input_value = audit_input_value(price, known, group_members)
 	for _, item in ipairs(items) do
 		local out = price(item)
 		if out > 0 then
 			for _, recipe in ipairs(recipes_for(item)) do
-				local sum = 0
-				for _, input in ipairs(recipe.inputs) do
-					local v = input_value(input)
-					if not v then
-						sum = nil
-						break
-					end
-					sum = sum + v
-				end
+				local sum = recipe_sum(recipe, input_value)
 				local count = math.max(1, recipe.count)
 				if sum and out * count > sum then
 					findings[#findings + 1] = "'" .. item .. "' x" .. count ..
