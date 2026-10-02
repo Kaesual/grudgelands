@@ -4,8 +4,13 @@
     "from": {"anchor": "clash_1"},
     "to": {"border": "front_skyglass_canopy"},
     "belts": [
-      {"id": "front", "share": 100, "levels": [42, 46], "kinds": {
+      {"id": "front", "share": 60, "levels": [42, 46], "kinds": {
         "open": {"id": "ghoul_field", "name": "Ghoul Field",
+          "day": [{"role": "front_ghoul", "weight": 1}],
+          "night": [{"role": "front_ghoul", "weight": 1}], "density": "normal"}
+      }},
+      {"id": "deep", "share": 40, "levels": [47, 50], "kinds": {
+        "open": {"id": "ghoul_depths", "name": "Ghoul Depths",
           "day": [{"role": "front_ghoul", "weight": 1}],
           "night": [{"role": "front_ghoul", "weight": 1}], "density": "normal"}
       }}

@@ -112,7 +112,10 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   (missing `kinds.open`, `"open"` in the open kind), `E-recipe-roster`
   (roster shape, minor role above 25 %, missing day/night),
   `E-recipe-levels` (belt levels, a role that never meets its belt, belt
-  outside the zone band with `--atlas`), `E-recipe-ref` (unknown belt, camp
+  outside the zone band with `--atlas`), `E-recipe-cover` (a kind's roster
+  leaves part of its belt uncovered at a clock, a camp's roster has a gap or
+  stops below its belt's top, the last belt ends below the zone band's top
+  with `--atlas`: every zone runs to its round level), `E-recipe-ref` (unknown belt, camp
   or kind, wrong `pick`, `to` naming the zone itself), `E-id`,
   `E-duplicate` (ids, a leader placed twice or in two zones), `E-enum`
   (density), `E-unknown-role`, `E-not-a-mob`, `E-leader-flag` (leader role

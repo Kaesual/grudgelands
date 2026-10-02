@@ -1330,6 +1330,16 @@ def _mutations():
     def outside_band(d):
         belt(d, "l9_10")["levels"] = [9, 12]
 
+    def cover_gap(d):
+        belt(d, "l3_5")["kinds"]["open"]["day"] = [{"role": "small_boar", "weight": 1}]
+
+    def camp_below_top(d):
+        d["recipe"]["camps"][0]["belt"] = "l3_5"
+        d["recipe"]["camps"][0]["roster"] = [{"role": "small_boar", "weight": 1}]
+
+    def last_belt_below_band(d):
+        belt(d, "l9_10")["levels"] = [9, 9]
+
     def bad_belt_levels(d):
         belt(d, "l9_10")["levels"] = [10, 9]
 
@@ -1504,6 +1514,9 @@ def _mutations():
         ("role twice in a roster", S, twice_role, "E-recipe-roster"),
         ("role levels never meet the belt", S, no_level_overlap, "E-recipe-levels"),
         ("belt levels leave the zone band (atlas)", S, outside_band, "E-recipe-levels"),
+        ("a kind's roster leaves part of its belt uncovered", S, cover_gap, "E-recipe-cover"),
+        ("a camp's roster stops below its belt's top", S, camp_below_top, "E-recipe-cover"),
+        ("the last belt ends below the zone band's top (atlas)", S, last_belt_below_band, "E-recipe-cover"),
         ("belt levels not a range", S, bad_belt_levels, "E-recipe-levels"),
         ("unknown roster role", S, unknown_role, "E-unknown-role"),
         ("unknown leader role", S, unknown_leader_role, "E-unknown-role"),
@@ -1647,10 +1660,10 @@ def _scenarios():
         return setup
 
     def goldmead_recipe(leaders):
-        """A one-belt Goldmead (band 11-20) recipe."""
+        """A one-belt Goldmead (band 11-20) recipe; its only belt runs to L20."""
         return {"zone": "elandor_goldmead_vale", "recipe": {
             "from": {"anchor": "village_1"}, "to": {"border": "elandor_highcourt"},
-            "belts": [{"id": "l11_12", "share": 100, "levels": [11, 12], "kinds": {
+            "belts": [{"id": "l11_20", "share": 100, "levels": [11, 20], "kinds": {
                 "open": {"id": "vale", "name": "Goldmead Vale", "day": [{"role": "boar", "weight": 1}],
                          "night": [{"role": "bandit", "weight": 1}], "density": "normal"}}}],
             "leaders": leaders}}

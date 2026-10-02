@@ -198,6 +198,38 @@ local function unit_levels(ctx, unit, rosters, levels, where)
 	unit.levels = {lo, hi}
 end
 
+-- Coverage (the user, 2026-10-02): every zone runs to its round level (a
+-- start zone to 10, the next zone to 20, ...), so the next zone starts at
+-- the next round level. A kind's roster covers its whole belt at each clock:
+-- the union of its roles' ranges (each already cut to the belt) has no gap
+-- and runs from the belt's bottom to its top. A camp may start above its
+-- belt's bottom (bandits L9-10 in an L8-10 belt) but has no gap and reaches
+-- the top.
+local function check_cover(unit, roster, levels, from_bottom, where)
+	local ranges = {}
+	for _, row in ipairs(roster.list) do
+		ranges[#ranges + 1] = unit.levels_by_role[row.role]
+	end
+	table.sort(ranges, function(a, b) return a[1] < b[1] end)
+	local lo = from_bottom and levels[1] or ranges[1][1]
+	local reached = lo - 1
+	for _, range in ipairs(ranges) do
+		if range[1] > reached + 1 then break end
+		if range[2] > reached then reached = range[2] end
+	end
+	if reached < levels[2] or (from_bottom and ranges[1][1] > levels[1]) then
+		local parts = {}
+		for _, range in ipairs(ranges) do
+			parts[#parts + 1] = range[1] == range[2] and ("L" .. range[1]) or
+				("L%d-%d"):format(range[1], range[2])
+		end
+		fail(where, ("roles cover %s of the belt's L%d-%d: %s [cover]"):format(
+			table.concat(parts, ", "), levels[1], levels[2], from_bottom and
+			"every kind covers its whole belt at each clock" or
+			"a camp has no gap and reaches its belt's top"))
+	end
+end
+
 function M.parse_recipe(zone_id, recipe, ctx)
 	local where = tostring(zone_id)
 	if type(recipe) ~= "table" then
@@ -310,6 +342,9 @@ function M.parse_recipe(zone_id, recipe, ctx)
 				end
 				unit_levels(ctx, kind, {kind.rosters.day, kind.rosters.night},
 					belt.levels, kw)
+				for _, clock in ipairs({"day", "night"}) do
+					check_cover(kind, kind.rosters[clock], belt.levels, true, kw .. "." .. clock)
+				end
 				belt.kinds[t] = kind
 				out.kinds[#out.kinds + 1] = kind
 				out.kind_by_id[kind.id] = kind
@@ -319,6 +354,12 @@ function M.parse_recipe(zone_id, recipe, ctx)
 	end
 	if math.abs(share_sum - 100) > 1e-6 then
 		fail(where, "belt shares must add up to 100 (they add up to " .. share_sum .. ")")
+	end
+	-- The last belt (the exit) ends at the top of the zone's band.
+	local top = out.belts[#out.belts].levels[2]
+	if top ~= band[2] then
+		fail(where .. " belt " .. out.belts[#out.belts].id, ("the last belt ends at L%d, " ..
+			"the zone's band at L%d: every zone runs to its round level [cover]"):format(top, band[2]))
 	end
 	-- camps
 	if recipe.camps ~= nil and type(recipe.camps) ~= "table" then
@@ -357,6 +398,7 @@ function M.parse_recipe(zone_id, recipe, ctx)
 			min_player_distance = row.min_player_distance, apart = row.apart,
 			is_camp = true}
 		unit_levels(ctx, camp, {roster}, out.belts[b].levels, cw)
+		check_cover(camp, roster, out.belts[b].levels, false, cw)
 		out.camps[#out.camps + 1] = camp
 		out.camp_by_id[camp.id] = camp
 	end

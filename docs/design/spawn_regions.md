@@ -69,7 +69,14 @@ table order.
 6. **Population.** A belt maps each type to a **kind**: a name, a day and a
    night roster and a density class. A type without its own entry uses the
    belt's `open` kind (the explicit parent rule). A role's levels in a region
-   are the belt's levels ∩ the role's catalogue levels.
+   are the belt's levels ∩ the role's catalogue levels. **Coverage:** every
+   zone runs to its round level (a start zone 1–10, the next zone 11–20, …),
+   so the next zone starts at the next round level. A kind's roster covers
+   its whole belt at each clock (its roles' ranges leave no gap and reach
+   from the belt's bottom to its top), a camp's roster has no gap and reaches
+   its belt's top (it may start higher: bandits L9–10 in an L8–10 belt), and
+   the last belt ends at the top of the zone's band. The game refuses a
+   recipe that breaks this at load; `validate.py` reports `E-recipe-cover`.
 7. **Camps.** Candidates are cells of the camp's belt whose 3 × 3 block is
    land of the zone, unprotected, outside the drift band, at least 48 nodes
    from roads, mean slope ≤ 0.35, and at least `apart` cells from the other
@@ -122,7 +129,9 @@ the mapgen.
   `density` `sparse` / `normal` / `dense` (0.5 / 0.75 / 1 of the zone's
   density budget, never above it).
 - A roster: one main role and at most one minor role of at most 25 % of the
-  weight. Every role must meet its belt's levels (load error otherwise).
+  weight. Every role must meet its belt's levels, and each roster covers
+  its belt (coverage, step 6; load errors otherwise). The last belt ends at
+  the zone band's top.
 - `camps`: `belt`, `roster`, `slots`, `respawn` [min, max] seconds,
   `min_player_distance`, `apart` (cells between camps).
 - `leaders`: a catalogue role marked `"leader": true`, `at` `{"camp": id}`

@@ -372,6 +372,13 @@ regions for any seed. The build and the full format:
   `normal` or `dense`. A roster has one main role and at most one minor role
   of at most 25 % of the weight; a role's levels in a region are the belt's
   levels ∩ its catalogue `levels` (empty is a load error).
+- **Coverage** (the user, 2026-10-02). Why: every zone covers its whole band,
+  so the next zone starts at the next round level (a start zone runs 1–10,
+  the next zone 11–20, …). So each kind's roster covers its whole belt at
+  each clock (no gap, the belt's bottom to its top), a camp's roster has no
+  gap and reaches its belt's top, and the last belt ends at the top of the
+  zone's band. A recipe that breaks this does not load (`E-recipe-cover` in
+  `validate.py`).
 - **Camps** (bandits, poachers, mirefolk; Ruling 37) are placed by rule in
   their `belt` (flat, unprotected, outside the drift band, 48+ nodes from
   roads, forest edge or highland preferred, `apart` cells from other

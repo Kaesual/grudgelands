@@ -358,6 +358,41 @@ refused(function(r) r.camps[1].belt = "outer" end, "not a belt", "camp belt refe
 refused(function(r) r.camps[1].id = "meadow" end, "unique among kinds and camps", "camp id clash")
 refused(function(r) r.belts[1].radius = 3 end, "unknown field radius", "unknown key")
 refused(function(r) r.to = {border = DAWN} end, "other zones", "border with itself")
+-- Coverage: every kind covers its whole belt at each clock, a camp has no gap
+-- and reaches its belt's top, the last belt ends at the zone band's top.
+refused(function(r) r.belts[2].levels = {3, 6} end, "kinds.open.day: roles cover L3-4 of the belt's L3-6",
+	"a roster that stops below the belt's top")
+refused(function(r)
+	r.belts[3].levels = {5, 10}
+	r.belts[3].kinds.open.day = {{role = "small_fox", weight = 3}, {role = "confused_bandit", weight = 1}}
+end, "roles cover L5-7, L9-10 of the belt's L5-10", "a gap inside the belt")
+refused(function(r)
+	r.belts[3].levels = {5, 10}
+	r.belts[3].kinds.open.day = roster("aggressive_boar")
+end, "kinds.open.night: roles cover L7-10 of the belt's L5-10", "a roster that starts above the belt's bottom")
+refused(function(r)
+	r.belts[3].levels = {5, 10}
+	r.belts[3].kinds = {open = {id = "border", name = "Border", day = roster("aggressive_boar"),
+		night = roster("aggressive_boar"), density = "normal"}}
+	r.camps[1].roster = roster("small_fox")
+end, "a camp has no gap and reaches its belt's top", "a camp below its belt's top")
+refused(function(r) r.belts[3].levels = {8, 9} end, "the last belt ends at L9, the zone's band at L10",
+	"the last belt ends below the band's top")
+check(pcall(CORE.parse_recipe, DAWN, base_recipe(), CTX), "a camp may start above its belt's bottom (L9-10 in L8-10)")
+do
+	-- The shipped Dawnmere recipe covers every belt at both clocks.
+	local shipped = json.parse(read(MOBS .. "/data/zones/" .. DAWN .. ".spawns.json"))
+	local ok, err = pcall(CORE.parse_recipe, DAWN, shipped.recipe, CTX)
+	check(ok, "the shipped Dawnmere recipe passes the cover rule: " .. tostring(err))
+	local tide = ok and err.kind_by_id.tideflats
+	check(tide and tide.levels[1] == 5 and tide.levels[2] == 7 and
+		tide.levels_by_role.quiet_shore_crab[2] == 6 and tide.levels_by_role.giant_crab[1] == 7,
+		"Tideflats by day: Small Crab 5-6 and Monstrous Crab 7")
+	for _, id in ipairs({"borderlands", "wreck_coast", "darkwood", "fen"}) do
+		local kind = ok and err.kind_by_id[id]
+		check(kind and kind.levels[1] == 8 and kind.levels[2] == 10, id .. " covers L8-10")
+	end
+end
 refused(function(r) r.from = nil end, "from", "from is required")
 check(not pcall(CORE.build, DAWN, Q, CORE.parse_recipe(DAWN,
 	(function() local r = base_recipe(); r.from = {anchor = "capital"}; return r end)(), CTX)),

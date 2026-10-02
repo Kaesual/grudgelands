@@ -375,10 +375,34 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
     "camp", one roster for both clocks and its camp numbers; a leader is
     {"role", "at", "respawn", "level"}. errors: RecipeError strings."""
     errors = []
+    band_known = band is not None
     band = band or [1, LEVEL_CAP]
 
     def err(code, path, msg):
         errors.append(RecipeError(code, path, msg))
+
+    def cover(unit, value, levels, from_bottom, path):
+        """Every zone runs to its round level (the user, 2026-10-02): a kind's
+        roster covers its whole belt at each clock (no gap, bottom to top); a
+        camp may start above its belt's bottom but has no gap and reaches the
+        top. Rosters with a role that never meets the belt are reported
+        already."""
+        if value is None or levels is None:
+            return
+        rows = value.get("list") or []
+        ranges = sorted(unit["levels_by_role"][r["role"]] for r in rows if r["role"] in unit["levels_by_role"])
+        if not ranges or len(ranges) < len(rows):
+            return
+        reached = (levels[0] if from_bottom else ranges[0][0]) - 1
+        for lo, hi in ranges:
+            if lo > reached + 1:
+                break
+            reached = max(reached, hi)
+        if reached < levels[1]:
+            parts = ", ".join("L%d" % lo if lo == hi else "L%d-%d" % (lo, hi) for lo, hi in ranges)
+            err("E-recipe-cover", path, "roles cover %s of the belt's L%d-%d: %s" % (
+                parts, levels[0], levels[1], "every kind covers its whole belt at each clock" if from_bottom
+                else "a camp has no gap and reaches its belt's top"))
 
     def known(row, allowed, path):
         bad = sorted(str(k) for k in row if k not in allowed)
@@ -551,11 +575,19 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
                 else:
                     kind["rosters"][clock] = roster(value, "%s.%s" % (kpath, clock))
             unit_levels(kind, [kind["rosters"]["day"], kind["rosters"]["night"]], belt["levels"], kpath)
+            for clock in ("day", "night"):
+                cover(kind, kind["rosters"][clock], belt["levels"], True, "%s.%s" % (kpath, clock))
             belt["kinds"][t] = kind
             out["kinds"].append(kind)
             ids[kind["id"]] = kind
     if belts and abs(share_sum - 100) > 1e-6:
         err("E-recipe-shares", "belts", "belt shares must add up to 100 (they add up to %s)" % share_sum)
+    # The last belt (the exit) ends at the top of the zone's band, where the
+    # band is known (the validator passes it with an atlas).
+    last = out["belts"][-1] if out["belts"] else None
+    if band_known and last and last["levels"] and last["levels"][1] != band[1]:
+        err("E-recipe-cover", "belts[%s].levels" % last["id"], "the last belt ends at L%d, the zone's band at "
+            "L%d: every zone runs to its round level" % (last["levels"][1], band[1]))
     # camps
     camps = recipe.get("camps")
     if camps is not None and not isinstance(camps, list):
@@ -596,6 +628,7 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
                 "respawn": respawn, "min_player_distance": row.get("min_player_distance"),
                 "apart": row.get("apart")}
         unit_levels(camp, [value], belt["levels"] if belt else None, cpath)
+        cover(camp, value, belt["levels"] if belt else None, False, cpath + ".roster")
         out["camps"].append(camp)
         ids[camp["id"]] = camp
     # leaders
