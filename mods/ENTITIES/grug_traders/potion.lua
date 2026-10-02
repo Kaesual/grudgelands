@@ -68,11 +68,8 @@ function grug_traders.start_potion_cooldown(player, seconds)
 end
 
 --
--- The item.
---
--- _grug_sell_price = 2 is the same 25% buy-back rate grug_gear uses
--- (floor(8 * 0.25) = 2), so buying at 8c and selling back at 2c can never be
--- an income stream.
+-- The item. Its buy-back is the vendor rule of prices.lua: 5% of its 8c,
+-- rounded up.
 --
 
 core.register_craftitem("grug_traders:potion_healing_weak", {
@@ -86,7 +83,6 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 	-- Group dispatch (AGENTS.md): WP10's potions join this group instead of
 	-- being name-listed anywhere.
 	groups = {grug_potion = 1, grug_potion_instant = 1},
-	_grug_sell_price = 2,
 
 	on_use = function(itemstack, user, pointed_thing)
 		if not user or not user:is_player() then

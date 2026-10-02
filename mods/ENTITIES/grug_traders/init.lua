@@ -2,8 +2,10 @@
 -- §8.1/§8.2, world.md §7, professions.md §4).
 --
 -- WHAT LIVES WHERE
---   init.lua    price resolution ("traders buy EVERY mob drop") + the startup
---               audit that proves that guarantee
+--   init.lua    the startup audits ("traders buy EVERY mob drop", no
+--               buy-back loop, no craft loop)
+--   prices.lua  the one price module: every vendor payout (price_rules.lua
+--               holds its pure rules)
 --   potion.lua  the weak healing potion and the shared instant-potion cooldown
 --   stock.lua   the level-independent core stock, the six bracket catalogs and
 --               the hourly rotation
@@ -16,82 +18,8 @@
 
 grug_traders = {}
 
---
--- Price resolution
---
--- economy.md §3: "traders buy EVERY mob drop". The buy-back price of an item
--- normally lives in its own definition (`_grug_sell_price`, set by grug_mobs
--- and grug_gear), but several drops are FOREIGN items whose definitions we do
--- not own (vendored `default:` / `mobs:`) — overriding a foreign item just to
--- add one field would be a patch in someone else's mod. So this mod keeps an
--- override table in front of the def lookup.
---
--- Resolution order: override table -> item def `_grug_sell_price` -> 0.
--- 0 means "not sellable" and is what every caller checks.
---
-
-local price_override = {}
-
--- Override the vendor buy-back price of an item, in COPPER. Use this for
--- items whose definition we must not touch; our own items carry
--- `_grug_sell_price` in their def instead. copper <= 0 clears the override.
-function grug_traders.set_price(itemname, copper)
-	if type(itemname) ~= "string" or itemname == "" then
-		return
-	end
-	copper = tonumber(copper)
-	if not copper or copper ~= copper or copper <= 0 then
-		price_override[itemname] = nil
-		return
-	end
-	price_override[itemname] = math.floor(copper)
-end
-
--- Vendor buy-back price of an item in COPPER; 0 = the vendor does not buy it.
-function grug_traders.sell_price(itemname)
-	if type(itemname) ~= "string" or itemname == "" then
-		return 0
-	end
-	local override = price_override[itemname]
-	if override then
-		return override
-	end
-	local def = core.registered_items[itemname]
-	local price = def and def._grug_sell_price
-	price = tonumber(price)
-	if not price or price ~= price or price <= 0 then
-		return 0
-	end
-	return math.floor(price)
-end
-
---
--- Foreign mob drops (items_crafting.md §8.1: "Herbs/materials sold to
--- vendors: 1-6c each" — the floor band; the real market is player trade).
--- Collected by walking every `drops` table in mods/ENTITIES/grug_mobs; the
--- audit at the bottom of this file re-proves the list at every start.
---
--- EVERY price below stays inside §8.1's 1-6c band; the ordering inside it
--- mirrors the grug_mobs material scale (items.lua: 1-3 vendor trash):
---   mobs:meat_raw       2c  food, the single most common drop in the roster;
---                           the same price as our own grug_mobs:raw_fish
---   mobs:leather        2c  the vanilla hide, priced like our own
---                           grug_mobs:light_leather (2c) it sits next to in
---                           the wolf/stag/panther drop tables
---   default:iron_lump   3c  ore lump, top of the band
--- Canonical Iron Bar is owned by grug_materials and carries its 3c price on
--- the item definition. It is not worth more than the Iron Lump consumed by
--- WP26's cooking recipe (`grug_smelting`), so smelting cannot print money --
--- and the craft audit below re-proves exactly that at every start.
--- Rough Diamond is owned by grug_materials and therefore carries its 3c
--- `_grug_sell_price` on the canonical item definition instead of this foreign
--- override table.
---
-grug_traders.set_price("mobs:meat_raw", 2)
-grug_traders.set_price("mobs:leather", 2)
-grug_traders.set_price("default:iron_lump", 3)
-
 local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/prices.lua")
 dofile(modpath .. "/potion.lua")
 dofile(modpath .. "/stock.lua")
 dofile(modpath .. "/vendors.lua")
@@ -150,6 +78,9 @@ function grug_traders.audit_sell_buy_prices()
 end
 
 core.register_on_mods_loaded(function()
+	-- Every payout first: the audits below judge the resolved prices.
+	grug_traders.resolve_prices()
+
 	--
 	-- 1. "Traders buy EVERY mob drop" (economy.md §3).
 	--
@@ -207,123 +138,36 @@ core.register_on_mods_loaded(function()
 		core.log("warning", "[grug_traders] no vendor price for dropped item '" ..
 			itemname .. "' (dropped by " ..
 			table.concat(unpriced[itemname], ", ") ..
-			") — add a _grug_sell_price to its def or a grug_traders.set_price " ..
-			"override; traders must buy every mob drop (economy.md §3)")
+			") — give it a loot class in grug_traders/prices.lua; traders must " ..
+			"buy every mob drop (economy.md §3)")
 	end
 
 	--
 	-- 2. No money printer. Every item a vendor SELLS must cost strictly more
 	-- than the vendor pays to buy it back, INCLUDING the 10% same-race
 	-- discount (world.md §7) — otherwise buy-then-sell is an income stream.
-	-- grug_gear's 25% buy-back already guarantees it for the whole bracket
-	-- catalog; this loop is what turns "already guarantees" into a fact that
-	-- fails loudly if a price is ever edited.
+	-- The 5% buy-back guarantees it for what has no loot class; a looted or
+	-- gathered good on a shelf pays its formula, so its shelf price has to
+	-- stay above that.
 	--
 	grug_traders.audit_sell_buy_prices()
-	--
-	-- 3. No CRAFT loop either. items_crafting.md §3.8: "vendor value of a
-	-- crafted item < summed vendor value of its ingredients — vendors are a
-	-- floor, never a factory profit". Check 2 above only covers buy-then-sell
-	-- at one vendor; this one covers buy/loot-then-CRAFT-then-sell, which is
-	-- the same money printer with one extra step (the real case: pricing a
-	-- steel ingot above the iron lump it is smelted from).
-	--
-	-- For every item that has a vendor price we walk every registered recipe
-	-- producing it. A recipe is only judged when EVERY input resolves to a
-	-- price — an unpriced input is not a loop we can judge, it is an unknown.
-	--
-	-- Limits, on purpose:
-	--   * only input-CONSUMING methods are judged. "fuel" and "toolrepair"
-	--     produce no output item (they are indexed under the empty output
-	--     name and never show up here), and neither burns an item into
-	--     sellable goods.
-	--   * `core.get_all_craft_recipes` does not report craft REPLACEMENTS
-	--     (the bucket/vessel that comes back out), so a recipe with
-	--     replacements over-counts its inputs — that direction can only
-	--     produce a false SILENCE about a too-cheap output, never a false
-	--     alarm about a money loop.
-	--
-	local CONSUMING_METHODS = {normal = true, cooking = true}
 
-	-- "example:item 9" -> "example:item", 9. Recipe INPUTS are plain
-	-- item names, but outputs carry a count, and the same parse is correct
-	-- for both.
-	local function split_item(str)
-		local name, count = str:match("^(%S+)%s+(%d+)$")
-		if name then
-			return name, tonumber(count)
-		end
-		return str, 1
-	end
-
-	local function craft_check(itemname)
-		local recipes = core.get_all_craft_recipes(itemname)
-		if not recipes then
-			return
-		end
-		for _, recipe in ipairs(recipes) do
-			if type(recipe) == "table" and
-					CONSUMING_METHODS[recipe.method or "normal"] then
-				local out_name, out_count = split_item(recipe.output or itemname)
-				local out_price = grug_traders.sell_price(out_name) * out_count
-				-- pairs, not ipairs: empty grid slots are nil HOLES in
-				-- `items` (lua_api.md "Empty ingredients ... are represented
-				-- as nil"), and ipairs would stop at the first one and
-				-- undercount a shaped recipe into a false alarm.
-				local input_total, priced = 0, true
-				local used = {} -- names only, for the message (never concat
-				                -- `items` itself: the holes would error)
-				for _, entry in pairs(recipe.items or {}) do
-					if type(entry) == "string" and entry ~= "" then
-						local in_name, in_count = split_item(entry)
-						local in_price = grug_traders.sell_price(in_name)
-						if in_price <= 0 then
-							-- Also the "group:wood" case: a group never has a
-							-- price of its own.
-							priced = false
-							break
-						end
-						input_total = input_total + in_price * in_count
-						used[#used + 1] = entry
-					end
-				end
-				-- #used > 0: a recipe shape we could not read a single input
-				-- from is an unknown, not a free lunch.
-				if priced and #used > 0 and out_price > input_total then
-					core.log("error", "[grug_traders] CRAFT LOOP: '" .. out_name ..
-						"' x" .. out_count .. " is worth " .. out_price ..
-						"c at the vendor but its " .. (recipe.method or "normal") ..
-						" recipe consumes only " .. input_total ..
-						"c worth of priced inputs (" ..
-						table.concat(used, ", ") ..
-						") — items_crafting.md §3.8 anti-loop rule")
-				end
-			end
-		end
-	end
-
-	-- Every item with a vendor price: the def field covers our own items, the
-	-- override table the foreign ones (and both are deduped).
-	local seen_priced, priced_order = {}, {}
-	local function note_priced(itemname)
-		if not seen_priced[itemname] and grug_traders.sell_price(itemname) > 0 then
-			seen_priced[itemname] = true
-			priced_order[#priced_order + 1] = itemname
-		end
-	end
-	for itemname in pairs(core.registered_items) do
-		note_priced(itemname)
-	end
-	for itemname in pairs(price_override) do
-		note_priced(itemname)
-	end
-	table.sort(priced_order) -- deterministic log order
-	for _, itemname in ipairs(priced_order) do
-		craft_check(itemname)
+	--
+	-- 3. No CRAFT loop either (ruling 5): an output pays at most what its
+	-- consumed inputs pay. Check 2 covers buy-then-sell at one vendor; this
+	-- one covers buy/loot-then-CRAFT-then-sell over every engine recipe, the
+	-- dual furnace and the profession stations. Processed goods and vendor
+	-- goods are capped by their cheapest recipe when they are priced, so
+	-- this mostly guards loot and gathered goods that a recipe can also make.
+	-- A recipe is judged only when every input is known (a group by its
+	-- cheapest known member): an unknown input is not a free lunch.
+	--
+	local findings = grug_traders.price_rules.loop_findings(
+		grug_traders.priced_items(), grug_traders.recipes_for,
+		grug_traders.sell_price, grug_traders.price_known,
+		grug_traders.group_members)
+	for _, message in ipairs(findings) do
+		core.log("error", "[grug_traders] CRAFT LOOP: " .. message ..
+			" — ruling 5 of economy-vendor-plan.md")
 	end
 end)
-
--- WP26 extends audit 3 to the dual furnace. `dualfurn` recipes are not engine
--- recipes, so the walk above cannot see them; `audit_alloys.lua` runs the same
--- §3.8 judgement over `grug_smelting.RECIPES` when that mod is present.
-dofile(modpath .. "/audit_alloys.lua")

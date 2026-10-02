@@ -8,17 +8,18 @@ local ORE_VISUALS = {
 	abyssal_crystal = true,
 }
 
+-- Vendor payouts are grug_traders' price module (class and harvest tier).
 local ITEM_VISUALS = {
-	quartz = {"default_diamond.png", "#eaf6ff:120", 2},
-	silver = {"default_iron_lump.png", "#e8edf2:200", 4},
-	citrine = {"default_diamond.png", "#d9a21b:190", 3},
-	garnet = {"default_diamond.png", "#9e1526:210", 3},
-	jade = {"default_diamond.png", "#3d9b65:190", 3},
-	emberglass = {"default_mese_crystal.png", "#ff7a2e:45", 5},
-	diamond = {"default_diamond.png", "#ffffff:20", 3},
-	sapphire = {"default_diamond.png", "#235ac7:190", 3},
-	ruby = {"default_diamond.png", "#c51d35:195", 3},
-	abyssal_crystal = {"default_diamond.png", "#3a1f6e:210", 6},
+	quartz = {"default_diamond.png", "#eaf6ff:120"},
+	silver = {"default_iron_lump.png", "#e8edf2:200"},
+	citrine = {"default_diamond.png", "#d9a21b:190"},
+	garnet = {"default_diamond.png", "#9e1526:210"},
+	jade = {"default_diamond.png", "#3d9b65:190"},
+	emberglass = {"default_mese_crystal.png", "#ff7a2e:45"},
+	diamond = {"default_diamond.png", "#ffffff:20"},
+	sapphire = {"default_diamond.png", "#235ac7:190"},
+	ruby = {"default_diamond.png", "#c51d35:195"},
+	abyssal_crystal = {"default_diamond.png", "#3a1f6e:210"},
 }
 
 local function item_texture(key)
@@ -40,7 +41,6 @@ local function register_owned_resource(resource)
 		sounds = default.node_sound_stone_defaults(),
 	})
 
-	local visual = ITEM_VISUALS[resource.key]
 	local raw_description = resource.name
 	if resource.grade then
 		raw_description = "Rough " .. resource.name
@@ -50,7 +50,6 @@ local function register_owned_resource(resource)
 	core.register_craftitem(resource.raw_item, {
 		description = raw_description,
 		inventory_image = item_texture(resource.key),
-		_grug_sell_price = visual[3],
 	})
 
 	if resource.cut_item then
@@ -98,19 +97,10 @@ local PROCESSED_VISUALS = {
 	gold = {"default_gold_ingot.png", "default_gold_block.png"},
 }
 
--- Vendor prices (copper, economy.md §3) of the tier bars mobs drop (Round 28
--- band tables), next to Iron's 3c from the registry. They live here, not in
--- PROCESSED_MATERIALS: that table is part of WP40's frozen WP43 projection.
--- Each stays at or below the priced inputs of its alloy (grug_traders' alloy
--- audit: Steel <= Iron 3 + Coal, Embersteel <= Silversteel 5 + Emberglass 5,
--- Abyssal Steel <= Embersteel 6 + Abyssal Crystal 6) and below every vendor
--- shelf price of the same bar, and high enough that no plain metal armor
--- piece sells for more than its bars (the craft audit: Silversteel, Embersteel
--- and Abyssal Steel boots, Abyssal Steel helmet and chest set the floors).
-local BAR_SELL_PRICES = {
-	bronze = 2, steel = 3, silversteel = 5, embersteel = 6, abyssal_steel = 9,
-}
-
+-- A bar pays what its smelting inputs pay (grug_traders' price module), so
+-- no price lives here. The Iron row's `sell_price` in PROCESSED_MATERIALS is
+-- read by nobody; it stays until that table's frozen WP40 projection is
+-- re-pinned (lane M-res).
 for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 	local visual = PROCESSED_VISUALS[material.key]
 	if material.kind == "bar" and not core.registered_items[material.item] then
@@ -120,7 +110,6 @@ for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 		core.register_craftitem(material.item, {
 			description = material.name .. " Bar",
 			inventory_image = visual[1],
-			_grug_sell_price = material.sell_price or BAR_SELL_PRICES[material.key],
 		})
 	end
 	if not core.registered_nodes[material.block_node] then
@@ -141,7 +130,6 @@ end
 core.register_craftitem("grug_materials:emberglass_shard", {
 	description = "Emberglass Shard",
 	inventory_image = "default_mese_crystal_fragment.png^[colorize:#ff7a2e:45",
-	_grug_sell_price = 1,
 })
 
 local cultural_images = {

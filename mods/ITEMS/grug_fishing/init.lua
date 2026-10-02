@@ -131,13 +131,12 @@ mobs.add_eatable("grug_fishing:cooked_fish", 8)
 --
 -- The recipes
 --
--- The rod is three sticks and two lengths of Spider Silk -- the game's only
--- string-class material (`grug_mobs/items.lua`, "Spider Silk", Tailor T3) --
+-- The rod is three sticks and two lengths of Raw Silk -- the game's only
+-- string-class material (`grug_mobs/items.lua`, `grug_mobs:spider_silk`) --
 -- in VoxeLibre's own diagonal shape, mirrored so either hand's worth of
--- muscle memory works. Neither the rod nor the cooked fish carries a
--- `_grug_sell_price`: the cooked fish mirrors `mobs:meat`, which is unpriced
--- too, and the traders' anti-loop audit only walks recipes whose OUTPUT has a
--- price, so nothing here can print money (`grug_traders/init.lua` audit 3).
+-- muscle memory works. Traders buy neither the rod nor the cooked fish (no
+-- loot class in grug_traders/prices.lua); the raw band fish are gathered
+-- goods and sell by their tier.
 --
 local STRING_ITEM = "grug_mobs:spider_silk"
 

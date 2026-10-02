@@ -17,12 +17,14 @@ function grug_traders.discounted_price(price)
 end
 
 --
--- Core stock (§3.7 "the level-independent core": small bag, weak healing
--- potion, wooden/stone tools, bronze pick, torches, job supplies). Prices are
--- §8.2 VERBATIM; "Wood & stone tools / bronze pick | 5-15c / 40c" is the
--- spread spelled out below.
+-- Core stock (economy-vendor-plan.md §2.3; items_crafting.md §3.7): the small
+-- bag, the weak healing potion, torches, wood and stone tools, the bronze
+-- pick and player arrows -- a start town has only its race vendor, and a
+-- Scout must be able to restock there. The job supplies (thread, parchment,
+-- vial) are added by the mods that own them through
+-- register_all_vendor_stock below, so they reach every shelf.
 --
--- Every vendor offers this list, in every territory and at every level —
+-- Every vendor offers this list, in every territory and at every level --
 -- that is what "level-independent" means. The bracket catalogs of §3.8 sit on
 -- top of it, on their own tabs.
 --
@@ -52,6 +54,7 @@ end
 grug_traders.register_stock({item = "grug_inventory:bag_small", price = 80, category = "goods"})
 grug_traders.register_stock({item = "grug_traders:potion_healing_weak", price = 8, category = "goods"})
 grug_traders.register_stock({item = "default:torch", price = 1, category = "goods"})
+grug_traders.register_stock({item = "grug_gear:arrow", price = 3, category = "goods"})
 
 grug_traders.register_stock({item = "grug_materials:pick_wood", price = 5, category = "tools"})
 grug_traders.register_stock({item = "grug_materials:shovel_wood", price = 5, category = "tools"})
@@ -59,33 +62,7 @@ grug_traders.register_stock({item = "grug_materials:axe_wood", price = 5, catego
 grug_traders.register_stock({item = "grug_materials:pick_stone", price = 10, category = "tools"})
 grug_traders.register_stock({item = "grug_materials:shovel_stone", price = 10, category = "tools"})
 grug_traders.register_stock({item = "grug_materials:axe_stone", price = 10, category = "tools"})
--- The caster's half of the same below-ladder starter pair (WP13 round 2): a
--- Priest or Mage who loses the staff its class grant gave it must be able to
--- buy the same thing back, exactly as a Warrior can buy the stone sword above.
--- Same price, because it is the same rung.
 grug_traders.register_stock({item = "grug_materials:pick_bronze", price = 40, category = "tools"})
-
--- WP10 (jobs/professions) adds the job supplies of §3.7/§8.2 from its own mod,
--- with no change in here — the same call, once per item:
---
---   grug_traders.register_stock({item = "grug_jobs:thread",     price = 1, category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:flux",       price = 2, category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:vial",       price = 3, category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:parchment",  price = 5, category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:whetstone",  price = 4, category = "goods"})
---
--- WP10 also owns the profession tomes of §8.2 — the Apprentice tome at 25c
--- (any profession) and the replacement tomes T2/T3/T4 at 1s / 3s / 10s
--- (= 100c / 300c / 1000c, economy.md §1: prices are ALWAYS copper here):
---
---   grug_traders.register_stock({item = "grug_jobs:tome_apprentice", price = 25,   category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:tome_t2",         price = 100,  category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:tome_t3",         price = 300,  category = "goods"})
---   grug_traders.register_stock({item = "grug_jobs:tome_t4",         price = 1000, category = "goods"})
---
--- None of those items exist yet, so NOTHING above this comment registers them:
--- an unknown item name would render as an "unknown item" button in the trade
--- formspec and would be buyable.
 
 --
 -- Bracket catalogs & the hourly rotation (§3.8)
@@ -362,25 +339,24 @@ end
 -- side, the buy-back prices, the formspec -- is the same code, and the two
 -- original families are untouched.
 --
--- WHAT IS ON THEM is bounded by section 8.4: items the game ALREADY registers.
--- No profession invents an item, because an item nobody registered renders as
--- an "unknown item" button in the trade formspec and is buyable (the warning
--- above this block, from WP7). The audit at the bottom of this file is what
--- enforces that at load rather than in a player's hand: a shelf entry whose
--- item is not registered is DROPPED from the shelf and reported as an error.
+-- WHAT IS ON THEM (economy-vendor-plan.md §2): a shelf of the trade's
+-- supplies, food to eat, flavour goods and a few T1 basics -- never an enchant
+-- input and never a material above T1, because those come from hunting,
+-- mining and gathering. The audit at the bottom of this file enforces that at
+-- load, together with the older rule that a shelf names only registered
+-- items (an unregistered one renders as a buyable "unknown item" button): a
+-- failing entry is DROPPED from its shelf and reported as an error.
 --
 -- The SMITH and ARMOURER keep the full bracket tabs. Bowyer and Tanner expose
--- filtered views of those same tabs for bows and leather armor respectively;
--- tabs, so their shelves are the metal and the padding while the gear ladder
--- itself comes from `grug_gear`'s own catalog (items_crafting.md section
--- 3.0.3: the vendor bracket catalog and the base craft ladder are the same
--- items, so a profession shelf that listed them again would be a second copy
--- of the ladder). The other eight sell no equipment and carry no bracket tab.
+-- filtered views of those same tabs for bows and leather armor respectively,
+-- so the gear ladder itself comes from `grug_gear`'s own catalog
+-- (items_crafting.md section 3.0.3: the vendor bracket catalog and the base
+-- craft ladder are the same items). The other eight sell no equipment and
+-- carry no bracket tab.
 --
--- Prices are in COPPER (economy.md section 1) and sit above the
--- `_grug_sell_price` the same items carry as loot, so buying from a profession
--- vendor and selling it back is a loss, exactly as it is at the two original
--- families.
+-- Prices are in COPPER (economy.md section 1) and sit above what the vendor
+-- pays for the same item as loot (prices.lua), so buying from a profession
+-- vendor and selling it back is a loss; init.lua's audit 2 proves it.
 --
 grug_traders.profession_stock = {}
 
@@ -416,71 +392,42 @@ function grug_traders.register_all_vendor_stock(def)
 	end
 end
 
--- The butcher: meat and the hides that come off the same animal
--- (biomes_mobs.md section 6's base-material map, which is where every one of
--- these items comes from).
+-- The butcher: meat and the plain hides that come off the same animal.
 profession_shelf("butcher", {
 	{"mobs:meat_raw", 4},
 	{"mobs:meat", 9},
 	{"mobs:leather", 8},
 	{"grug_mobs:light_leather", 6},
-	{"grug_mobs:heavy_leather", 16},
-	{"grug_mobs:boar_tusk", 5},
 })
 
--- The fishmonger: the catch and what comes out of the water with it.
+-- The fishmonger: the ordinary catch; band fish are caught, not bought.
 profession_shelf("fishmonger", {
 	{"grug_mobs:raw_fish", 5},
-	{"grug_mobs:scaled_hide", 16},
-	{"grug_mobs:croc_tooth", 13},
-	{"grug_gathering:stormkelp", 6},
 })
 
--- The baker: what the fields and the forest floor give (WP33's gathering
--- catalog). No bread: there is no bread item, and section 8.4 builds a shelf
--- from items the game already registers.
+-- The baker: the T1 field crops and the bread made from wild grain.
 profession_shelf("baker", {
 	{"grug_gathering:corn", 3},
 	{"grug_gathering:potato", 3},
 	{"grug_gathering:melon", 4},
-	{"grug_gathering:mushroom", 3},
+	{"grug_cooking:bread", 6},
 })
 
--- The tailor: the cloth line of biomes_mobs.md section 6, plus the two wools
--- an ordinary settlement would actually have on a bolt.
+-- The tailor: the T1 cloth scrap and the two wools of a settlement's bolts.
 profession_shelf("tailor", {
 	{"grug_mobs:linen_scrap", 3},
-	{"grug_mobs:linen_cloth", 8},
-	{"grug_mobs:heavy_cloth", 13},
-	{"grug_mobs:spider_silk", 13},
 	{"wool:white", 6},
 	{"wool:brown", 6},
 })
 
--- The smith: bars and the below-ladder tools. The LADDER is the bracket tabs
+-- The smith: the T1 bar and the bronze tools. The LADDER is the bracket tabs
 -- this one vendor keeps (see the note above), not a list here.
 profession_shelf("smith", {
 	{"grug_materials:bronze_bar", 7},
-	{"grug_materials:iron_bar", 14},
-	{"grug_materials:steel_bar", 26},
 	{"grug_materials:pick_bronze", 40, "tools"},
 	{"grug_materials:axe_bronze", 36, "tools"},
 	{"grug_materials:shovel_bronze", 32, "tools"},
 })
-
---
--- WAVE 2 (2026-09-15): seven more shelves for contract section 8.4's second
--- row of kinds -- mason, brewer, bowyer, herbalist, armourer, tanner and
--- embalmer.
---
--- The Round 11 gear package registers tier bows, player arrows and the six
--- leather armor grades. Bows/leather stay in the authoritative bracket
--- catalog above; these General shelves contain only supplies and raw goods.
---
--- Prices sit above each item's `_grug_sell_price` buy-back the same way the
--- five original shelves do, and since this lane the audit in init.lua proves
--- it for every profession shelf instead of only for the core stock.
---
 
 -- The mason: the ground a district is paved and walled with. Nothing here has
 -- a buy-back price at all, so the trade is one-way by construction.
@@ -493,103 +440,119 @@ profession_shelf("mason", {
 	{"default:stone_block", 6},
 })
 
--- The brewer: the one potion the game has, and what a brewhouse puts in a vat.
--- The potion keeps the core stock's own 8 c -- it is the same item on another
--- counter, not a second price for it.
+-- The brewer: the one vendor potion and an apple. The potion keeps the core
+-- stock's own 8c -- it is the same item on another counter.
 profession_shelf("brewer", {
 	{"grug_traders:potion_healing_weak", 8},
-	{"grug_gathering:wild_cocoa", 4},
-	{"grug_gathering:marshbloom", 3},
-	{"grug_gathering:rock_salt", 3},
-	{"default:apple", 2},
+	{"default:apple", 3},
 })
 
 -- The bowyer: player ammunition and the stick-and-feather goods behind it.
 -- `grug_mobs:arrow` is the obsolete loot bundle, not usable ammunition.
 profession_shelf("bowyer", {
 	{"grug_gear:arrow", 3},
-	{"default:stick", 2},
+	{"default:stick", 3},
 	{"grug_mobs:feather", 3},
-	{"grug_mobs:sharp_feather", 9},
 })
 
--- The herbalist: WP33's healing herbs plus the two mob reagents that belong on
--- an apothecary's counter rather than a butcher's.
+-- The herbalist: the potion. Herbs are gathered by Alchemists only
+-- (professions.md §1), so no counter sells them to everyone; vial and
+-- parchment arrive with the job supplies.
 profession_shelf("herbalist", {
-	{"grug_gathering:gravemoss", 3},
-	{"grug_gathering:dragonweed", 5},
-	{"grug_gathering:crimson_lotus", 8},
-	{"grug_gathering:sunleaf", 3},
-	{"grug_mobs:venom_gland", 9},
-	{"grug_mobs:slime_gel", 7},
+	{"grug_traders:potion_healing_weak", 8},
 })
 
--- The armourer: the plate, the padding and the backing. Its distinguishing
--- offer is the BRACKET TABS (vendors.lua's GEAR_KINDS), so the general shelf
--- is deliberately materials and not a hand-copied ladder.
+-- The armourer: the T1 bar. Its distinguishing offer is the BRACKET TABS
+-- (vendors.lua's GEAR_KINDS), so the general shelf is not a hand-copied ladder.
 profession_shelf("armourer", {
 	{"grug_materials:bronze_bar", 7},
-	{"grug_materials:steel_bar", 26},
-	{"grug_mobs:heavy_leather", 16},
-	{"grug_mobs:heavy_cloth", 13},
-	{"grug_mobs:shiny_scale", 9},
 })
 
--- The tanner: hides and pelts on General; its bracket tabs filter the shared
+-- The tanner: the plain hides on General; its bracket tabs filter the shared
 -- gear catalog to the four pieces of the matching leather grade.
 profession_shelf("tanner", {
 	{"mobs:leather", 8},
 	{"grug_mobs:light_leather", 6},
-	{"grug_mobs:heavy_leather", 16},
-	{"grug_mobs:sleek_pelt", 18},
-	{"grug_mobs:ape_hair", 10},
 })
 
--- The embalmer: the undead capital's own trade. `grug_materials:gravesalt` is
--- the cultural material of that region and is sold nowhere else.
+-- The embalmer: the undead capital's own trade. Gravesalt, that region's
+-- cultural material, is gathered, not sold.
 profession_shelf("embalmer", {
 	{"grug_mobs:bone", 3},
-	{"grug_materials:gravesalt", 6},
 	{"grug_decor:xdecor_candle", 4},
 	{"grug_mobs:linen_scrap", 3},
 	{"grug_mobs:zombie_flesh", 5},
 })
 
 --
--- The audit. An unregistered item is dropped from its shelf and reported; a
--- clean roster reports itself, so a check nobody sees the result of does not
--- become a check nobody notices breaking (the pattern this mod's other audits
--- established).
+-- The audit. A shelf entry is dropped and reported when its item is not
+-- registered, is an enchant input (grug_professions/data/enchants.json stat
+-- loot or family input) or is a material above T1 (its own tier, prices.lua's
+-- grug_traders.item_tier). The rule is cheap to break by a later shelf edit
+-- and cheap to check here. A clean roster reports itself, so a check nobody
+-- sees the result of does not become a check nobody notices breaking.
 --
+
+-- Enchant inputs from the enchant table; grug_professions loads after this
+-- mod (it depends on it), so it is read once every mod has loaded.
+local function enchant_inputs()
+	local set = {}
+	local professions = rawget(_G, "grug_professions")
+	if professions and professions.ENCHANT_DATA then
+		for _, ref in ipairs(professions.enchant_data.referenced_items(
+				professions.ENCHANT_DATA)) do
+			set[ref.item] = true
+		end
+	end
+	return set
+end
+
 core.register_on_mods_loaded(function()
-	local kinds, offers, dropped = 0, 0, {}
-	local names = {}
-	for kind in pairs(grug_traders.profession_stock) do
+	local shelves = {core = grug_traders.stock}
+	local names = {"core"}
+	for kind, shelf in pairs(grug_traders.profession_stock) do
+		shelves[kind] = shelf
 		names[#names + 1] = kind
 	end
 	-- Sorted: `pairs` order over the shelf table is not reproducible and a log
 	-- line that reorders itself is a log line nobody can diff.
 	table.sort(names)
+	local entries = {}
 	for _, kind in ipairs(names) do
-		local shelf = grug_traders.profession_stock[kind]
+		for _, entry in ipairs(shelves[kind]) do
+			entries[#entries + 1] = {kind = kind, item = entry.item}
+		end
+	end
+	local failed = {}
+	for _, finding in ipairs(grug_traders.price_rules.shelf_findings(entries,
+			enchant_inputs(), grug_traders.item_tier)) do
+		failed[finding.kind .. "\0" .. finding.item] = finding.reason
+	end
+	local offers, dropped = 0, {}
+	for _, kind in ipairs(names) do
 		local kept = {}
-		for index = 1, #shelf do
-			local entry = shelf[index]
-			if core.registered_items[entry.item] then
-				kept[#kept + 1] = entry
+		for _, entry in ipairs(shelves[kind]) do
+			local reason = failed[kind .. "\0" .. entry.item]
+			if not core.registered_items[entry.item] then
+				reason = "not registered"
+			end
+			if reason then
+				dropped[#dropped + 1] = kind .. "=" .. entry.item .. " (" .. reason .. ")"
 			else
-				dropped[#dropped + 1] = kind .. "=" .. entry.item
+				kept[#kept + 1] = entry
 			end
 		end
-		grug_traders.profession_stock[kind] = kept
-		kinds = kinds + 1
+		-- Refill in place: vendors.lua and trade.lua hold these tables.
+		for index = #shelves[kind], 1, -1 do shelves[kind][index] = nil end
+		for index, entry in ipairs(kept) do shelves[kind][index] = entry end
 		offers = offers + #kept
 	end
 	if #dropped == 0 then
-		core.log("action", "[grug_traders] " .. kinds ..
-			" profession shelves, " .. offers .. " offers, all registered")
+		core.log("action", "[grug_traders] core stock and " .. (#names - 1) ..
+			" profession shelves, " .. offers .. " offers, all registered and " ..
+			"none an enchant input or above T1")
 		return
 	end
-	core.log("error", "[grug_traders] profession shelves name items nobody " ..
-		"registered; those offers are dropped: " .. table.concat(dropped, " "))
+	core.log("error", "[grug_traders] shelf entries break the vendor rule " ..
+		"(economy-vendor-plan.md §2.4) and are dropped: " .. table.concat(dropped, " "))
 end)
