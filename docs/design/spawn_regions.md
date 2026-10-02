@@ -22,9 +22,11 @@ Decided with the user on 2026-10-02 (Round 28 Lane S1); the runtime rules
 
 ## How a region map is built
 
-The game builds a zone's map on first need (a spawn attempt, a level or
-direction query) and keeps it for the session; Dawnmere Fields takes about
-0.4 s and holds 0.4–0.7 MB. Same seed and recipe, same map: no random numbers, no dependence on
+The game builds every recipe zone's map once at server start, before
+players can join (the user, 2026-10-02: a build blocks the server, so none
+happens while people play), and keeps it for the session; a build takes
+0.1–0.6 s per zone (about 9 s for all 38) and the maps add about 50 MiB to
+the Lua heap. Same seed and recipe, same map: no random numbers, no dependence on
 table order.
 
 1. **Cells.** The zone on a grid of 32 × 32-node cells aligned to world

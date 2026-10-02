@@ -483,8 +483,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     eligible participant.
   - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
     `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
-    `palette` (the old ABM path, kept for a zone without recipe). It builds a
-    zone's region map on first need through the pure
+    `palette` (the old ABM path, kept for a zone without recipe). It builds
+    every recipe zone's region map at server start (mods loaded) through the
+    lazy `SR.map` and the pure
     `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
     the review images are what spawns. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
