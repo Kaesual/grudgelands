@@ -26,7 +26,7 @@
       "level": 22,
       "requires": [],
       "title": "The Stars Have No Need to Howl",
-      "text": "I have watched the heavens for years without hearing a star demand an answer; the Briarpack Wolves beneath my window are less considerate. Kill five in the {name:eaves} {zone_area:eaves}, where they roam by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
+      "text": "I have watched the heavens for years without hearing a star demand an answer; the Briarpack Wolves beneath my window are less considerate. Kill five in the {name:eaves}, which lie {zone_area:eaves}; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
       "objectives": [
         {
           "type": "kill",
@@ -52,7 +52,7 @@
       "level": 23,
       "requires": [],
       "title": "The Wrong Kind of Binding",
-      "text": "Someone has strung snares between my sighting posts, all stamped with a warden's mark that no honest warden granted. Defeat four Unlicensed Poachers at night in the {name:eaves} {zone_area:eaves}. I use those posts to study where things belong; I can state with some certainty that poachers do not.",
+      "text": "Someone has strung snares between my sighting posts, all stamped with a warden's mark that no honest warden granted. Defeat four Unlicensed Poachers at night in the {name:eaves}, which lie {zone_area:eaves}. I use those posts to study where things belong; I can state with some certainty that poachers do not.",
       "objectives": [
         {
           "type": "kill",
@@ -80,7 +80,7 @@
         "moonfall_stars_01"
       ],
       "title": "A Bear in the Calculation",
-      "text": "My apprentices can account for the motion of the heavens, but their field notes become rather brief whenever a bear arrives. Kill five Bramble Bears by day in the {name:deepwood} {zone_area:deepwood}, so we can resume our measurements. We have already established that the bears object; no further evidence is needed on that point.",
+      "text": "My apprentices can account for the motion of the heavens, but their field notes become rather brief whenever a bear arrives. Kill five Bramble Bears by day in the {name:deepwood}, which lies {zone_area:deepwood}, so we can resume our measurements. We have already established that the bears object; no further evidence is needed on that point.",
       "objectives": [
         {
           "type": "kill",
@@ -108,7 +108,7 @@
         "moonfall_stars_02"
       ],
       "title": "One Light, Properly Accounted For",
-      "text": "The Wandering Wisps in the {name:wisp_fen} {zone_area:wisp_fen} keep intruding on my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote for calibrating the great lens. It will be satisfying to put a little of that troublesome light to work.",
+      "text": "The Wandering Wisps of the {name:wisp_fen}, which lies {zone_area:wisp_fen}, keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
       "objectives": [
         {
           "type": "item",
@@ -181,6 +181,31 @@
       "climax": true
     },
     {
+      "id": "moonfall_snares_04",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "moonfall_snares_03"
+      ],
+      "title": "Beyond the Last Snare",
+      "text": "With Bracken gone, the marks in this wood mean nothing again, and my instruments can finally hear themselves think. His trade ran on into the Glassroot Wilds; take what you found to Faeris Rootbinder at Glassroot Gate. The wilds are contested ground, so finish your training before you leave the shelter of the trees.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Heartland to contested handoff at 30.",
+      "duration_min": 10
+    },
+    {
       "id": "moonfall_stars_opt_01",
       "line": "stars",
       "giver": "r20_anchor_035_host",
@@ -220,7 +245,7 @@
         "moonfall_snares_02"
       ],
       "title": "Optional: Teeth Along the Trail",
-      "text": "The marks continue through the {name:elderwood} {zone_area:elderwood}, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
+      "text": "The marks continue into the {name:elderwood}, which lies {zone_area:elderwood}, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
       "objectives": [
         {
           "type": "kill",
@@ -249,7 +274,7 @@
         "moonfall_snares_02"
       ],
       "title": "Optional: Thread Across the Stars",
-      "text": "Briar-Web Spiders stretch their webs through the {name:elderwood} {zone_area:elderwood} at night, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
+      "text": "At night, Briar-Web Spiders stretch their webs through the {name:elderwood}, which lies {zone_area:elderwood}, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
       "objectives": [
         {
           "type": "kill",
@@ -278,7 +303,7 @@
         "moonfall_stars_03"
       ],
       "title": "Bounty: Keep the View Clear",
-      "text": "Each clear night should add a little to our knowledge, not another layer of web to our faces. Kill six Briar-Web Spiders after dark in the {name:deepwood} {zone_area:deepwood} and return for the Observatory's payment. The bounty is repeatable; the spiders appear no more inclined to finish their work than I am.",
+      "text": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Briar-Web Spiders after dark in the {name:deepwood} and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
       "objectives": [
         {
           "type": "kill",

@@ -57,7 +57,7 @@
         "silverleaf_departure"
       ],
       "title": "Hunger Beneath the Boughs",
-      "text": "A fox at the door is a question the forest cannot answer. Poachers have emptied the hunting grounds, and Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs} {zone_area:lower_boughs}. I can ask you to quiet the hunger here, but we must still find who caused it.",
+      "text": "A fox at the door is a question the forest cannot answer. Poachers have emptied the hunting grounds, and Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs}, which lie {zone_area:lower_boughs}. I can ask you to quiet the hunger here, but we must still find who caused it.",
       "objectives": [
         {
           "type": "kill",
@@ -85,7 +85,7 @@
         "silverleaf_departure"
       ],
       "title": "Marks Worth Renewing",
-      "text": "Our oldest trees still bear their tending marks, though mine have begun to look like sneezes. Bring me two Brush Fox Tails from Bracken Foxes in the {name:lower_boughs} {zone_area:lower_boughs} by day, so I can replace my brushes. If Ilyra sends you hunting there, attend to both tasks together; no tree grows faster because we walk past it twice.",
+      "text": "Our oldest trees still bear their tending marks, though mine have begun to look like sneezes. By day, Bracken Foxes roam the {name:lower_boughs}, which lie {zone_area:lower_boughs}; bring me two Brush Fox Tails from them so I can replace my brushes. If Ilyra sends you hunting there, attend to both tasks together; no tree grows faster because we walk past it twice.",
       "objectives": [
         {
           "type": "item",
@@ -114,7 +114,7 @@
         "starbough_boughs_01"
       ],
       "title": "Winter Has Enough Mouths",
-      "text": "The seed we set aside must last until the thaw, and Granary Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs} {zone_area:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
+      "text": "The seed we set aside must last until the thaw, and Granary Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
       "objectives": [
         {
           "type": "kill",
@@ -142,7 +142,7 @@
         "starbough_boughs_02"
       ],
       "title": "One Knot, Many Hands",
-      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Snaring Poachers at night in the {name:lower_boughs} {zone_area:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
+      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Snaring Poachers at night in the {name:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
       "objectives": [
         {
           "type": "kill",
@@ -225,7 +225,7 @@
         "starbough_boughs_04"
       ],
       "title": "When the Underbrush Answers",
-      "text": "My scouts can pass without stirring a leaf; that helps little when the underbrush bites back. Kill seven Thicket Vixens by day in the {name:greenwood} {zone_area:greenwood}. They attack on sight, so choose your ground before they choose you.",
+      "text": "My scouts can pass without stirring a leaf; that helps little when the underbrush bites back. Kill seven Thicket Vixens by day in the {name:greenwood}, which lies {zone_area:greenwood}. They attack on sight, so choose your ground before they choose you.",
       "objectives": [
         {
           "type": "kill",
@@ -253,7 +253,7 @@
         "starbough_boughs_04"
       ],
       "title": "Unhelpful Allies",
-      "text": "Burrow Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood} {zone_area:greenwood}. Watch for Cairn Zombies on the same ground; I would like this patrol to return breathing.",
+      "text": "Burrow Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood}, which lies {zone_area:greenwood}. Watch for Cairn Zombies on the same ground; I would like this patrol to return breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -392,7 +392,7 @@
         "starbough_testimony_01"
       ],
       "title": "Bristles Before Vetch",
-      "text": "Vetch sells the snares, and he has chosen ground that discourages questions. Cull eight Ridgeback Tuskers by day in the {name:high_boughs} {zone_area:high_boughs}, where he works. You will have fewer tusks to contend with when you go looking for him.",
+      "text": "Vetch sells the snares, and he works the {name:high_boughs}, which lie {zone_area:high_boughs}, on ground that discourages questions. Cull eight Ridgeback Tuskers there by day. You will have fewer tusks to contend with when you go looking for him.",
       "objectives": [
         {
           "type": "kill",
@@ -474,7 +474,7 @@
         "starbough_stores_03"
       ],
       "title": "Bounty: Teeth at the Roots",
-      "text": "I repair the root braces; the Burrow Gnawers return to inspect my work with their teeth. Kill eight at night in the {name:high_boughs} {zone_area:high_boughs} and report back for payment. This is a standing bounty, since neither the trees nor I can afford to retire.",
+      "text": "I repair the root braces; the Burrow Gnawers return to inspect my work with their teeth. Kill eight at night in the {name:high_boughs}, which lie {zone_area:high_boughs}, and report back for payment. This is a standing bounty, since neither the trees nor I can afford to retire.",
       "objectives": [
         {
           "type": "kill",
@@ -505,7 +505,7 @@
         "starbough_watch_04"
       ],
       "title": "Bounty: Room for a Patrol",
-      "text": "A path stays open only as long as someone tends it. Kill six Thicket Vixens by day in the {name:greenwood} {zone_area:greenwood} and return to me for payment; you may take this bounty again when more threaten the patrols.",
+      "text": "A path stays open only as long as someone tends it. Kill six Thicket Vixens by day in the {name:greenwood} and return to me for payment; you may take this bounty again when more threaten the patrols.",
       "objectives": [
         {
           "type": "kill",
@@ -533,7 +533,7 @@
       "min_level": 16,
       "level": 16,
       "requires": [
-        "starbough_departure"
+        "starbough_testimony_01"
       ],
       "title": "Bounty: Unwelcome Successors",
       "text": "Another bandit always seems eager to inherit a patch of stolen ground. Defeat six Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night, and return to me for Starbough's payment. You may take the bounty again; I have plenty of patience for making their trade unprofitable.",

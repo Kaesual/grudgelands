@@ -182,6 +182,31 @@
       "climax": true
     },
     {
+      "id": "lorindor_berries_04",
+      "line": "berries",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "lorindor_berries_03"
+      ],
+      "title": "Accounts on the Border",
+      "text": "With Iss gone, Lorindor's accounts balance for the first time in a season, and it is time you kept accounts somewhere harder. Toren Waterbarrel at Cinderline Watch in Ashenward March feeds a garrison on the contested border and could use someone who counts as carefully as you fight. Follow the road out of Lorindor into the march, and finish your training first; the Accord's seal grows thin there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Heartland to contested handoff at 30.",
+      "duration_min": 10
+    },
+    {
       "id": "lorindor_wardenry_01",
       "line": "wardenry",
       "giver": "r20_anchor_034_host",
@@ -190,7 +215,7 @@
       "level": 25,
       "requires": [],
       "title": "Do Not Follow That Light",
-      "text": "A traveller sees a light between the trunks and thinks someone has left a lantern for them. Extinguish five Wandering Wisps after dark in the {name:elderwood} {zone_area:elderwood}, before that kindness turns into another lost traveller. They appear only at night; keep the path in sight while you work.",
+      "text": "A traveller sees a light between the trunks and thinks someone has left a lantern for them. Extinguish five Wandering Wisps after dark in the {name:elderwood}, which lies {zone_area:elderwood}, before that kindness turns into another lost traveller. They appear only at night; keep the path in sight while you work.",
       "objectives": [
         {
           "type": "kill",
@@ -296,7 +321,7 @@
         "lorindor_wardenry_01"
       ],
       "title": "Optional: A Light Between Every Root",
-      "text": "Among the {name:paleroots} {zone_area:paleroots}, Wandering Wisps make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
+      "text": "Among the {name:paleroots}, which lie {zone_area:paleroots}, Wandering Wisps make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
       "objectives": [
         {
           "type": "kill",
@@ -325,7 +350,7 @@
         "lorindor_cutting_01"
       ],
       "title": "Optional: What the Bark Cannot Bear",
-      "text": "The Moss-Antler Stags are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the {name:paleroots} {zone_area:paleroots}. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
+      "text": "The Moss-Antler Stags are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the {name:paleroots}, which lie {zone_area:paleroots}. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
       "objectives": [
         {
           "type": "kill",
@@ -351,7 +376,7 @@
       "min_level": 22,
       "level": 22,
       "requires": [
-        "lorindor_berries_03"
+        "lorindor_berries_02"
       ],
       "title": "Bounty: Keep a Song in the Branches",
       "text": "The Unlicensed Poachers return to the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods} whenever they think we have stopped listening. Defeat six after dark and return to me for Berrycourt's payment. This bounty remains available for further hunts; I intend to hear birds here next harvest too.",
@@ -385,7 +410,7 @@
         "lorindor_wardenry_01"
       ],
       "title": "Bounty: The Wardens' Night Watch",
-      "text": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the {name:elderwood} {zone_area:elderwood} and return for the Wardenry's payment. Further watches carry the same bounty.",
+      "text": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the {name:elderwood} and return for the Wardenry's payment. Further watches carry the same bounty.",
       "objectives": [
         {
           "type": "kill",

@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "A Century Down the Snout",
-      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. Look at the cut stems while you are there, too. A snout leaves a mess, but those cuts are clean.",
+      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
       "objectives": [
         {
           "type": "kill",
@@ -249,7 +249,7 @@
         "silverleaf_hunt_02"
       ],
       "title": "Let the Grass Remember Footsteps",
-      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Braindead Zombies to rest on the {name:strand} {zone_area:strand} at night. Go before sunrise, when the light takes them, and leave the shore its quiet.",
+      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Braindead Zombies to rest at night on the {name:strand}, which lies {zone_area:strand}. Go before sunrise, when the light takes them, and leave the shore its quiet.",
       "objectives": [
         {
           "type": "kill",
@@ -278,7 +278,7 @@
         "silverleaf_pantry_01"
       ],
       "title": "A Shore Supper",
-      "text": "Even an ancient recipe needs someone willing to get their boots wet. Bring me two Crab Legs from the Small Crabs on the {name:strand} {zone_area:strand} by day. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
+      "text": "Even an ancient recipe needs someone willing to get their boots wet. By day, bring me two Crab Legs from the Small Crabs on the {name:strand}, which lies {zone_area:strand}. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
       "objectives": [
         {
           "type": "item",
@@ -340,7 +340,7 @@
         "silverleaf_hunt_03"
       ],
       "title": "Eight Shadows in the Seedbeds",
-      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Young Foxes by day in the {name:foxglades} {zone_area:foxglades}. Mind the Aggressive Boars nearby: a red name means the creature may start the fight itself.",
+      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Young Foxes by day in the {name:foxglades}, which lie {zone_area:foxglades}. Mind the Aggressive Boars nearby: a red name means the creature may start the fight itself.",
       "objectives": [
         {
           "type": "kill",
@@ -406,7 +406,7 @@
         "silverleaf_hunt_04"
       ],
       "title": "Dust Is Not a Seasoning",
-      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Young Foxes in the {name:foxglades} {zone_area:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
+      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Young Foxes in the {name:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
       "objectives": [
         {
           "type": "item",
