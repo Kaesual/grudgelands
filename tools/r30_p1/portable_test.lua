@@ -25,6 +25,12 @@
 --      (not for an unchanged state or a non-objective item; yes for an
 --      objective item, which also posts the feed line); players are spread
 --      over five 0.1 s slots and each is polled once per 0.5 s;
+--   I  markers without a quest change (Round 30 lane P1b): picking up the
+--      last objective item shows the ready marker after the next HUD slot
+--      and dropping it takes it back, inside the memo's second; a level-up
+--      unlocks at once; a quiet HUD poll or a non-objective item keeps the
+--      memo (no deserialization, no inventory scan beyond the poll's own);
+--      both tell the minimap to ask its static markers again;
 --   P  Map tab: an unchanged signature sends nothing and builds no form
 --      (no marker collection); a walking viewer gets at most one send per
 --      2 s; arrows move on a 0.02-unit grid and a move inside one grid cell
@@ -32,7 +38,8 @@
 --      2 s poll; zoom and selection clicks answer at once; one style[] per
 --      look names every marker of that look;
 --   W  minimap: the window information and the location line are read every
---      0.5 s, not every step.
+--      0.5 s, not every step; held objective items and a level-up re-ask
+--      its static markers on the next step.
 -- Prints "R30 P1 PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -272,8 +279,16 @@ grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
 	UI = {width = 10.4, height = 11.1}}
 grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
 grug_classes = {get_race = function() return "human" end}
+local level_changes = {}
 grug_xp = {get_level = function() return level end, add_xp = function() end,
-	quest_reward = function() return 10 end}
+	quest_reward = function() return 10 end,
+	register_on_level_change = function(fn) level_changes[#level_changes + 1] = fn end}
+-- grug_xp's level-up: the level rises, then the callbacks run.
+local function level_up(player, new_level)
+	local old = level
+	level = new_level
+	for _, fn in ipairs(level_changes) do fn(player, old, new_level) end
+end
 grug_money = {MAX = 1e9, get = function() return 0 end, add = function() end,
 	format = function(c) return c .. "c" end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
@@ -621,6 +636,56 @@ do
 end
 
 -- ---------------------------------------------------------------------------
+-- I: markers follow held items and the level without a quest change
+-- ---------------------------------------------------------------------------
+do
+	-- ann: logs active with 2 of 3 logs; the bounty is available again.
+	local scans, real_inventory = 0, ann.get_inventory
+	function ann:get_inventory()
+		local inv = real_inventory(self)
+		local get_list = inv.get_list
+		inv.get_list = function(...) scans = scans + 1; return get_list(...) end
+		return inv
+	end
+	us = us + 1100000
+	hud_steps(0.5)
+	local states, version = Q.marker_states(ann)
+	eq(states.hunter, "available", "I two of three logs: the hunter offers the bounty")
+	eq(states.envoy, "locked", "I level 1: the envoy's veteran quest is locked")
+	-- quiet HUD polls and a non-objective item keep the memo
+	local decoded, polled = deserializations, scans
+	hud_steps(2.0)
+	eq(scans - polled, 4, "I a quiet HUD poll scans the inventory once (its own key)")
+	ann:give("default:dirt 3")
+	hud_steps(0.5)
+	polled = scans
+	local again, same = Q.marker_states(ann)
+	check(again == states and same == version and scans == polled,
+		"I quiet polls and a non-objective item keep the memo (no marker scan)")
+	eq(deserializations - decoded, 0, "I quiet polls and markers decode nothing")
+	-- the last log: ready after the next HUD slot, inside the memo's second
+	ann:give("default:tree 1")
+	eq(Q.marker_states(ann).hunter, "available", "I before the HUD slot the memo holds")
+	hud_steps(0.5)
+	local ready, risen = Q.marker_states(ann)
+	eq(ready.hunter, "ready", "I the last objective item shows ready after the next HUD slot")
+	check(risen > version, "I ...and the marker version rose")
+	eq(deserializations - decoded, 0, "I the item change decodes nothing")
+	-- dropped again: back to available on the next slot
+	for i, stack in ipairs(ann.lists.main) do
+		if stack:get_name() == "default:tree" then ann.lists.main[i] = ItemStack("") end
+	end
+	hud_steps(0.5)
+	eq(Q.marker_states(ann).hunter, "available", "I a dropped objective item takes the ready back")
+	-- a level-up unlocks at once
+	level_up(ann, 5)
+	eq(Q.marker_states(ann).envoy, "available", "I a level-up unlocks the envoy's quest at once")
+	level_up(ann, 1)
+	eq(Q.marker_states(ann).envoy, "locked", "I ...and a level-down locks it again")
+	ann.get_inventory = real_inventory
+end
+
+-- ---------------------------------------------------------------------------
 -- P: the Map tab
 -- ---------------------------------------------------------------------------
 local party = {}
@@ -920,6 +985,29 @@ do
 		("W window read every 0.5 s: %d reads for 2 players over %d steps"):format(window_reads, steps))
 	check(location_reads <= 2 * 4 and location_reads >= 2 * 3,
 		("W location line read every 0.5 s: %d reads"):format(location_reads))
+	-- the static markers: asked again on the next step after held objective
+	-- items or the level changed (lane P1b), not in between
+	local asked, real = {}, atlas.collect_markers
+	atlas.collect_markers = function(player, only)
+		if only then asked[player:get_player_name()] = (asked[player:get_player_name()] or 0) + 1 end
+		return real(player, only)
+	end
+	minimap_step(0.09)
+	asked = {}
+	minimap_step(0.09)
+	eq(asked.walker, nil, "W a quiet step asks no static markers")
+	walker:give("grug_food:raw_meat 1")
+	hud_steps(0.5)
+	asked = {}
+	minimap_step(0.09)
+	eq(asked.walker, 1, "W an objective item re-asks the static markers on the next step")
+	eq(asked.mate, nil, "W ...for that player only")
+	asked = {}
+	level_up(walker, 2)
+	minimap_step(0.09)
+	eq(asked.walker, 1, "W a level-up re-asks the static markers on the next step")
+	level = 1
+	atlas.collect_markers = real
 end
 
 if #failures == 0 then
