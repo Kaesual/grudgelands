@@ -25,8 +25,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Apes in the Canopy",
-      "text": "Treetop Jungle Apes rule the {name:canopy} by day, {zone_area:canopy}, and they throw more than fruit at our scouts. Kill four. The storm spirits say it is fine; they also laughed.",
+      "title": "An Unhelpful Chorus",
+      "text": "The Treetop Jungle Apes in the {name:canopy}, {zone_area:canopy}, greet every scout with a chorus loud enough to guide an Accord patrol. Hunt them by day and kill four. I asked the spirits for silence; they sent more rain, which was thoughtful but unhelpful.",
       "objectives": [
         {
           "type": "kill",
@@ -53,8 +53,8 @@
       "requires": [
         "thunderroot_storm_01"
       ],
-      "title": "Bottles in the Bog",
-      "text": "When the sun goes down, Reed-Hex Bog Witches gather in the {name:bogs}, {zone_area:bogs}, and bottle thunder that belongs to us. Kill four and bring me two Hex Bottle Shards, so I can hear what they caught.",
+      "title": "Thunder Needs No Cork",
+      "text": "The Reed-Hex Bog Witches gather after dark in the {name:bogs}, {zone_area:bogs}, bottling thunder as though the sky were theirs to pickle. Kill four and bring me two Hex Bottle Shards; let us see whose storm they thought they could keep.",
       "objectives": [
         {
           "type": "kill",
@@ -90,8 +90,8 @@
       "requires": [
         "thunderroot_storm_02"
       ],
-      "title": "Ashes on the Wind",
-      "text": "The undead hold Ashveil Watch on Blackwind Rise, and Vaska Ashlistener asks for anyone who can still bleed. Go to her. The Throng is one war, even when it is fought on many hills.",
+      "title": "Rain for the Ashes",
+      "text": "Our drums carry through rain, but our allies at Ashveil Watch have only the ash wind for company. Find Vaska Ashlistener there on Blackwind Rise and offer your help. Roots hold together beneath the soil; so must the Throng, even where our branches cannot touch.",
       "objectives": [
         {
           "type": "talk",
@@ -114,8 +114,8 @@
       "requires": [
         "thunderroot_storm_02"
       ],
-      "title": "Webs in the Deepwood",
-      "text": "Canopy-Web Jungle Spiders string the {name:deepwood} at night, {zone_area:deepwood}. Kill four. My runners keep walking into the webs, and I keep running out of runners.",
+      "title": "Messages Wrapped in Silk",
+      "text": "A message wrapped in silk sounds grand until you learn the messenger is still inside. Kill four Canopy-Web Jungle Spiders after dark in the {name:deepwood}, {zone_area:deepwood}. Our words must reach the other outposts before the spiders finish reading them.",
       "objectives": [
         {
           "type": "kill",
@@ -142,8 +142,8 @@
       "requires": [
         "thunderroot_storm_04"
       ],
-      "title": "Bounty: Deepwood Apes",
-      "text": "The apes of the {name:deepwood} never stop, {zone_area:deepwood}. Kill six Treetop Jungle Apes by day and come back for your pay; come back again twenty minutes later, the apes will.",
+      "title": "Bounty: The Chorus Returns",
+      "text": "The Treetop Jungle Apes have claimed the day's chorus in the {name:deepwood}, {zone_area:deepwood}; even the birds sound offended. Kill six there by day and return for your reward. Wait twenty minutes after collecting before taking this bounty again; that gives me time to remember what a bird sounds like.",
       "objectives": [
         {
           "type": "kill",
@@ -172,8 +172,8 @@
       "min_level": 34,
       "level": 36,
       "requires": [],
-      "title": "Serpents in the Witchmire",
-      "text": "Coiled Serpents bask in the {name:witchmire} by day, {zone_area:witchmire}, and our foragers stop coming back with herbs. Kill four. Leave the herbs; they are probably poisonous now.",
+      "title": "Listen for the Hiss",
+      "text": "The marsh speaks to those who listen, but lately our foragers hear nothing except hissing. Kill four Coiled Serpents basking by day in the {name:witchmire}, {zone_area:witchmire}. The spirits may teach patience; I would rather our foragers came home to learn it.",
       "objectives": [
         {
           "type": "kill",
@@ -200,8 +200,8 @@
       "requires": [
         "thunderroot_rainchar_01"
       ],
-      "title": "Archers of {name:rainchar_camp}",
-      "text": "Bandits took the {name:rainchar_camp} {dir_from_giver:rainchar_camp}, and their archers sell Throng supplies to whoever pays. Kill four Entrenched Bandit Archers there. The spirits want the camp back, and so do I.",
+      "title": "A Debt at {name:rainchar_camp}",
+      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there. I can listen to an empty belly without asking the spirits what it means.",
       "objectives": [
         {
           "type": "kill",
@@ -228,8 +228,8 @@
       "requires": [
         "thunderroot_rainchar_02"
       ],
-      "title": "Zek's Bottles",
-      "text": "Bottle-Keeper Zek hides in the {name:stormglades} {dir_from_giver:bottle_keeper_zek} and guards the storms the witches stole. Kill Zek and four of the Treetop Jungle Apes that roam there by day. Break every bottle; let the thunder go home.",
+      "title": "Zek Keeps the Wrong Company",
+      "text": "Bottle-Keeper Zek guards the witches' stolen storms in the {name:stormglades}, {dir_from_giver:bottle_keeper_zek}, with thunder in bottles and apes in the grass. Go by day and kill Zek along with four Treetop Jungle Apes in those glades. I want to hear the sky speak with its whole voice again.",
       "objectives": [
         {
           "type": "kill",
@@ -264,8 +264,8 @@
       "requires": [
         "thunderroot_rainchar_03"
       ],
-      "title": "Group: The Storm-Bottle",
-      "text": "The Bog Witch Storm-Bottle stands in the {name:heartwood} {dir_from_giver:storm_bottle_witch} with the biggest storm of all. Take friends; one troll alone ends up in a bottle too. Break her and the sky is ours again.",
+      "title": "Group: A Storm Too Many",
+      "text": "The Bog Witch Storm-Bottle waits in the {name:heartwood}, {dir_from_giver:storm_bottle_witch}, clutching enough stolen thunder to make even the spirits keep their distance. Bring a group and kill her; no one should face that storm alone. Courage is easier to find with friends standing in the rain beside you.",
       "objectives": [
         {
           "type": "kill",
@@ -293,8 +293,8 @@
       "requires": [
         "thunderroot_rainchar_03"
       ],
-      "title": "To the Front",
-      "text": "You have outgrown my jungle. Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa sends fighters on to the front; go to her. The storm goes with you.",
+      "title": "Carry the Thunder",
+      "text": "You came through this jungle listening for danger; now the jungle knows your footsteps. Go to Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa, where she gathers fighters for the front. Carry our thunder with you, and leave room beside your own footprints for those who follow.",
       "objectives": [
         {
           "type": "talk",

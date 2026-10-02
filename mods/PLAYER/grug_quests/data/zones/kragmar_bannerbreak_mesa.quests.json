@@ -38,8 +38,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Teeth on the Mesa",
-      "text": "Warpack Hyenas run the {name:badlands} by day, {zone_area:badlands}, and they laugh at my ramp crews. Kill four. I want to hear the mesa go quiet.",
+      "title": "The Last Laugh",
+      "text": "My crews haul siege timbers all day. The Warpack Hyenas laugh at them from the {name:badlands}, {zone_area:badlands}. Get out there in daylight and kill four. Anything with that much breath to spare can pull a rope or stop making noise.",
       "objectives": [
         {
           "type": "kill",
@@ -66,8 +66,8 @@
       "requires": [
         "bannerbreak_ramp_01"
       ],
-      "title": "Report to Tornstandard Hold",
-      "text": "Yarra Standardmender holds Tornstandard Hold, nearer the Accord's lines, and she needs fighters more than I need another pair of hands on the ropes. Go to her and say Drek sent you.",
+      "title": "A Blade for Yarra",
+      "text": "Yarra Standardmender keeps Tornstandard Hold standing with patched banners and fighters too stubborn to fall. Report to her and say Drek sent you. I can spare a blade here; she needs every one she can get against the Accord.",
       "objectives": [
         {
           "type": "talk",
@@ -90,8 +90,8 @@
       "requires": [
         "bannerbreak_ramp_01"
       ],
-      "title": "Rattle's Supply Camp",
-      "text": "Goblins have built the {name:supply_camp} {dir_from_giver:supply_camp} and stuffed it with goods from our wagons. Kill four Siege Goblins or Slingers, then Provisioner Rattle, who keeps their books. Burn the books too, if you like.",
+      "title": "Rattle's Bad Arithmetic",
+      "text": "Provisioner Rattle counts our stolen wagonloads as profit at the {name:supply_camp} {dir_from_giver:supply_camp}. Kill four Siege Goblins or Siege Goblin Slingers in any combination, and kill Rattle as well. Let him work out what a dead quartermaster earns.",
       "objectives": [
         {
           "type": "kill",
@@ -127,8 +127,8 @@
       "requires": [
         "bannerbreak_ramp_03"
       ],
-      "title": "Bounty: Warplains Hyenas",
-      "text": "At night the Warpack Hyenas own the {name:warplains}, {zone_area:warplains}. Kill six and I pay, every twenty minutes if you like. The hyenas never run out, and neither do my wagons.",
+      "title": "Bounty: Teeth After Dark",
+      "text": "Night wagons need an escort through the {name:warplains}, {zone_area:warplains}, and the Warpack Hyenas have volunteered to eat it. Kill six there after dark and bring yourself back for payment. You can take the bounty again twenty minutes after collecting; keeping wagon crews alive is money well spent.",
       "objectives": [
         {
           "type": "kill",
@@ -157,8 +157,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Stingers Under the Banners",
-      "text": "At night War-Stinger Scorpions crawl over the {name:badlands}, {zone_area:badlands}, and into our bedrolls. Kill four and bring me two Venom Sacs; the shamans want them for Accord arrows.",
+      "title": "Inspect Your Bedroll",
+      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, {zone_area:badlands}: kill four and bring me two Venom Sacs. My fighters have earned a night's sleep without armour.",
       "objectives": [
         {
           "type": "kill",
@@ -194,8 +194,8 @@
       "requires": [
         "bannerbreak_standard_01"
       ],
-      "title": "Thunderstep Watch",
-      "text": "The Throng fights on more than one hill, and the trolls of Thunderstep Watch hold the jungle. Rumela Stormstep could use you there. Go; Tornstandard will still be standing when you come back.",
+      "title": "Where the Rain Fights Back",
+      "text": "Rumela Stormstep holds Thunderstep Watch in Thunderroot Wilds, where even the rain sounds ready for a fight. Go and speak with her; the trolls need blades in the jungle as much as we do on the mesa. We keep each other's banners flying.",
       "objectives": [
         {
           "type": "talk",
@@ -218,8 +218,8 @@
       "requires": [
         "bannerbreak_standard_01"
       ],
-      "title": "Stripes in the Warplains",
-      "text": "Tallgrass Tigers hunt the {name:warplains} by day, {zone_area:warplains}, and lately they hunt our scouts. Kill four. A scout is harder to replace than a tiger.",
+      "title": "A Scout Is Worth More",
+      "text": "My scouts watch for Accord patrols; the Tallgrass Tigers have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
       "objectives": [
         {
           "type": "kill",
@@ -246,8 +246,8 @@
       "requires": [
         "bannerbreak_standard_03"
       ],
-      "title": "The Mummies of Redcut",
-      "text": "Trench Mummies walk the {name:redcut_flats} at night, {zone_area:redcut_flats}, still in the armour of a war nobody won. Kill four and let them rest. They have earned it, and so have we.",
+      "title": "A Soldier's Due",
+      "text": "The Trench Mummies still march through the {name:redcut_flats} after dark, {zone_area:redcut_flats}, wearing armour from a war that used them up. Kill four and end their watch. Whatever banner they followed, no soldier owes it an eternity.",
       "objectives": [
         {
           "type": "kill",
@@ -274,8 +274,8 @@
       "requires": [
         "bannerbreak_standard_04"
       ],
-      "title": "Group: The Banner-Eater",
-      "text": "The Goblin Banner-Eater guards the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} and eats our captured standards, cloth and pole. This is no fight for one orc; bring a group. Kill it and our banners stay in the sky.",
+      "title": "Group: No Banner for Supper",
+      "text": "I stitch the names of our fallen into our standards, and the Goblin Banner-Eater at the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} eats them, poles and all. Gather a group and kill it; pride alone will not win that fight. Those names belong above our heads.",
       "objectives": [
         {
           "type": "kill",
@@ -303,8 +303,8 @@
       "requires": [
         "bannerbreak_standard_04"
       ],
-      "title": "Bounty: {name:sunderstrap_camp}",
-      "text": "Entrenched Bandit Archers hold the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} and shoot at every supply runner. Kill six. I pay again twenty minutes later, because they always come back.",
+      "title": "Bounty: Arrows from {name:sunderstrap_camp}",
+      "text": "The Entrenched Bandit Archers at the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} keep putting arrows through supplies my fighters bled to bring here. Kill six and collect your bounty. Twenty minutes after payment you can take it again; I will keep paying as long as they keep drawing bows.",
       "objectives": [
         {
           "type": "kill",

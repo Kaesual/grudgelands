@@ -38,8 +38,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Bears Under the Bone Trees",
-      "text": "Bonewood Plaguehide Bears roam the {name:bonewood} by day, {zone_area:bonewood}, and they have decided our runners are a snack. Kill four. I would do it myself, but I am mostly ash and opinions.",
+      "title": "Bad News Travels on Legs",
+      "text": "Bonewood Plaguehide Bears have taken to opening our dispatches, usually with the runner still attached. Hunt them by day in the {name:bonewood}, {zone_area:bonewood}, and kill four. I prefer bad news delivered with all its limbs.",
       "objectives": [
         {
           "type": "kill",
@@ -66,8 +66,8 @@
       "requires": [
         "blackwind_ashes_01"
       ],
-      "title": "The Trees That Walk at Night",
-      "text": "After dark the Lichen Gravewood Treants pull up their roots and wander the {name:bonewood}, {zone_area:bonewood}. Fell four and bring me two Bitter Resin; Ashveil burns it in the lamps, and the smell keeps the living at a polite distance.",
+      "title": "Trees Without Leave",
+      "text": "Roots ought to stay buried, a rule the Lichen Gravewood Treants ignore after dark in the {name:bonewood}, {zone_area:bonewood}. Fell four and bring me two portions of Bitter Resin for Ashveil's lamps. Yes, I hear the irony; I am choosing to ignore it.",
       "objectives": [
         {
           "type": "kill",
@@ -103,8 +103,8 @@
       "requires": [
         "blackwind_ashes_02"
       ],
-      "title": "Word for Red Ramp Post",
-      "text": "The Throng does not hold this war from one hill. Drek Rampbinder keeps Red Ramp Post on Bannerbreak Mesa and always wants another blade. Tell him Ashveil still stands; he will pretend he was not worried.",
+      "title": "Still Standing, Still Dead",
+      "text": "Drek Rampbinder grows anxious when Ashveil falls silent, though he calls it concern for the supply lines. Report to him at Red Ramp Post on Bannerbreak Mesa and tell him our watch still holds. He may thump you on the shoulder; brace yourself, that is orcish relief.",
       "objectives": [
         {
           "type": "talk",
@@ -127,8 +127,8 @@
       "requires": [
         "blackwind_ashes_02"
       ],
-      "title": "Down to Hollowarch",
-      "text": "Orrel Hollowstep keeps Hollowarch Station, closer to the Accord than I would like, and his work is heavier than mine. Go to him when you are ready. He hates waiting, which is odd for someone already dead.",
+      "title": "Orrel Is Still Waiting",
+      "text": "Orrel Hollowstep keeps Hollowarch Station supplied while the Accord tests how much pressure its defenders can bear. Go to him; he needs someone who can finish a job before the next crisis arrives. Eternity has done nothing for his patience.",
       "objectives": [
         {
           "type": "talk",
@@ -151,8 +151,8 @@
       "requires": [
         "blackwind_ashes_04"
       ],
-      "title": "Bounty: Bonewood Bears",
-      "text": "The bears keep coming back to the {name:bonewood}, {zone_area:bonewood}. Kill six by day and Ashveil pays again twenty minutes later; the bears never learn, and neither does the purse.",
+      "title": "Bounty: A Recurring Appetite",
+      "text": "The Bonewood Plaguehide Bears in the {name:bonewood}, {zone_area:bonewood}, remain unmoved by our casualty reports. Kill six during daylight and collect your pay. Twenty minutes after payment, I can offer the bounty again; apparently we are budgeting for an endless appetite.",
       "objectives": [
         {
           "type": "kill",
@@ -181,8 +181,8 @@
       "min_level": 33,
       "level": 35,
       "requires": [],
-      "title": "Weevils in the Webwood",
-      "text": "Marrow Weevils swarm the {name:webwood} by day, {zone_area:webwood}, and chew through every crate we leave on the trail. Kill four. Hollowarch runs on crates, not on good wishes.",
+      "title": "Crates Before Glory",
+      "text": "Everyone wants a glorious last stand until they discover the supply crates have been eaten. Kill four Marrow Weevils by day in the {name:webwood}, {zone_area:webwood}, before they chew through another shipment. I have already had one last stand, and I intend to provision this one properly.",
       "objectives": [
         {
           "type": "kill",
@@ -209,8 +209,8 @@
       "requires": [
         "blackwind_arch_01"
       ],
-      "title": "The Grave-Broker's Hideout",
-      "text": "Bandits have dug in at the {name:bandit_hideout} {dir_from_giver:bandit_hideout}, and the Grave-Broker Mute sells our dead's linen to anyone with coin. Kill four Entrenched Bandits or their archers, then end the Mute. He has never said a word; make sure he never needs to.",
+      "title": "An End to the Brokerage",
+      "text": "Grave-Broker Mute sells linen stolen from our dead at the {name:bandit_hideout} {dir_from_giver:bandit_hideout}. Kill four of his Entrenched Bandits or Entrenched Bandit Archers in any combination, and kill Mute as well. Some of us are still wearing what he considers stock.",
       "objectives": [
         {
           "type": "kill",
@@ -246,8 +246,8 @@
       "requires": [
         "blackwind_arch_02"
       ],
-      "title": "Archers of {name:pallcloth_den}",
-      "text": "The {name:pallcloth_den} lies {dir_from_giver:pallcloth_den}, full of Entrenched Bandit Archers who shoot at anything under a Throng banner. Kill four. Good aim, poor judgement.",
+      "title": "An Answer for {name:pallcloth_den}",
+      "text": "The Entrenched Bandit Archers at the {name:pallcloth_den} {dir_from_giver:pallcloth_den} take every Throng banner as an invitation to shoot. Kill four before another carrier has to crawl home beneath one; my people have enough trouble keeping their limbs attached.",
       "objectives": [
         {
           "type": "kill",
@@ -274,8 +274,8 @@
       "requires": [
         "blackwind_arch_03"
       ],
-      "title": "Group: The Hollowbell Treant",
-      "text": "Deep in the {name:hollowwood} stands the Gravewood Treant Hollowbell, {dir_from_giver:hollowbell_treant}; on still nights you can hear it toll from here. It is far too strong for one fighter, so gather a group first. Bring it down and Hollowarch will sleep.",
+      "title": "Group: Silence for Hollowbell",
+      "text": "The Gravewood Treant Hollowbell tolls in the {name:hollowwood}, {dir_from_giver:hollowbell_treant}, as though the whole station were overdue for burial. Gather a group and kill it; even the dead should know better than to face that thing alone. I would like to hear the wind through the arches again.",
       "objectives": [
         {
           "type": "kill",
@@ -303,8 +303,8 @@
       "requires": [
         "blackwind_arch_03"
       ],
-      "title": "Bounty: Hollowwood Spiders",
-      "text": "Grave-Web Bonelurker Spiders spin across the {name:hollowwood} at night, {zone_area:hollowwood}. Kill six and I pay; come back twenty minutes later and I pay again, because they will be back too.",
+      "title": "Bounty: Threads Across the Supply Line",
+      "text": "Night brings Grave-Web Bonelurker Spiders to the {name:hollowwood}, {zone_area:hollowwood}, and by morning our supply routes look ready for embalming. Kill six and return for payment. The bounty opens again twenty minutes after you collect; I shall keep a line in the accounts for unwanted shrouds.",
       "objectives": [
         {
           "type": "kill",
