@@ -6,7 +6,8 @@
 -- load-time validation against the real registries) it checks:
 --   1. the registry built from the zone files equals the one the deleted Lua
 --      content generators built (all 240 ids, objectives, rewards, gates,
---      texts; Ruling 29 the only difference) and the 78 quest NPCs;
+--      texts; only Ruling 29 and Lane S1's Dawnmere sub-types differ) and
+--      the 78 quest NPCs;
 --   2. a sample new-format zone file through the real loader: a new giver
 --      at Highcourt's free quest socket, a quest with a kill, an item group
 --      and a quest-only drop, a repeatable, a travel quest;
@@ -60,10 +61,35 @@ local function registry_equivalence(Q)
 	end
 	eq(total, 240, "oracle quests")
 	eq(registered, 240, "registered quests (zone files)")
-	eq(#differing, 1, "quests differing from the generators")
-	eq(differing[1], "r14_human_05_the_missing_flock", "the one difference is Ruling 29")
+	-- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
+	-- its three kill quests (a zone with a spawn recipe spawns only those).
+	table.sort(differing)
+	eq(table.concat(differing, " "), "r14_human_01_boars_beyond_the_fence " ..
+		"r14_human_04_shapes_by_lanternlight r14_human_05_the_missing_flock",
+		"exactly the three Dawnmere kill quests differ (Ruling 29, Lane S1)")
+	for id, mobs in pairs({
+		r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
+		r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",
+			"grug_mobs:sluggish_zombie"},
+	}) do
+		local got, was = now.quests[id], oracle.quests[id]
+		if check(got and was, id .. " registered and in the oracle") then
+			eq(json.encode(got.objectives[1].mobs), json.encode(mobs), id .. ": base role plus sub-types")
+			eq(json.encode(was.objectives[1].mobs), json.encode({mobs[1]}), id .. ": the oracle had the base role")
+			was.objectives[1].mobs = got.objectives[1].mobs
+			eq(json.encode(got), json.encode(was), id .. ": nothing else changed")
+		end
+	end
 	local flock = now.quests.r14_human_05_the_missing_flock
-	eq(flock and flock.objectives[1].mobs[1], "grug_mobs:fox", "Ruling 29: foxes, not the wild turkey")
+	local before = oracle.quests.r14_human_05_the_missing_flock
+	if check(flock and before, "the turkey hunt registered and in the oracle") then
+		eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:fox","grug_mobs:small_fox"]',
+			"Ruling 29: foxes replace the wild turkey (Lane S1: and the Small Fox)")
+		eq(before.objectives[1].mobs[1], "grug_mobs:wild_turkey", "the oracle had the critter target")
+		before.objectives[1].mobs = flock.objectives[1].mobs
+		before.description = before.description:gsub("^Wild turkeys", "Foxes")
+		eq(json.encode(flock), json.encode(before), "nothing else of the turkey hunt changed")
+	end
 	check(json.encode(now.npcs) == json.encode(oracle.npcs), "quest NPCs unchanged")
 	local files = 0
 	for _ in pairs(Q.quest_files) do files = files + 1 end

@@ -38,6 +38,16 @@ function Q.objective_action(objective)
 	return verb .. Q.objective_subject(objective)
 end
 
+-- The level range of an objective's targets (Lane Q0, computed once at load
+-- by validate.objective_levels): " (level 1–4)", " (level 10)"; "" without
+-- one (plain gathering and crafting items, unknown targets).
+function Q.objective_levels_text(objective)
+	local levels = objective.levels
+	if not levels then return "" end
+	if levels[1] == levels[2] then return (" (level %d)"):format(levels[1]) end
+	return (" (level %d–%d)"):format(levels[1], levels[2])
+end
+
 -- A repeatable's cooldown in words: "30 min", "2 h", "1 h 30 min".
 function Q.cooldown_text(seconds)
 	local minutes = math.ceil(seconds / 60)

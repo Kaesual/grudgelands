@@ -1,0 +1,31 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_goldmead_vale"},
+    "belts": [
+      {"id": "home", "share": 40, "levels": [1, 4], "kinds": {
+        "open": {"id": "home_fields", "name": "Home Fields",
+          "day": [{"role": "small_boar", "weight": 1}],
+          "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+      }},
+      {"id": "middle", "share": 30, "levels": [5, 8], "kinds": {
+        "open": {"id": "woods", "name": "Woods",
+          "day": [{"role": "young_boar", "weight": 3}, {"role": "aggressive_fox", "weight": 1}],
+          "night": [{"role": "young_boar", "weight": 1}], "density": "normal"}
+      }},
+      {"id": "border", "share": 30, "levels": [9, 10], "kinds": {
+        "open": {"id": "borderlands", "name": "Borderlands",
+          "day": [{"role": "border_ghoul", "weight": 1}],
+          "night": [{"role": "border_ghoul", "weight": 1}], "density": "normal"}
+      }}
+    ],
+    "camps": [
+      {"id": "bandit_camp", "name": "Bandit Camp", "belt": "border",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [{"role": "confused_bandit_chief", "at": {"camp": "bandit_camp"}, "respawn": 300}],
+    "critters": ["wild_turkey"]
+  }
+}

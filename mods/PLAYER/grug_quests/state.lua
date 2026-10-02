@@ -125,7 +125,7 @@ local function progress(player, def, active, snapshot)
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
 			mobs = objective.mobs, npc = objective.npc, count = count,
-			required = objective.count, description = objective.description}
+			required = objective.count, description = objective.description, levels = objective.levels}
 		if count < objective.count then ready = false end
 	end
 	return rows, ready, allocation

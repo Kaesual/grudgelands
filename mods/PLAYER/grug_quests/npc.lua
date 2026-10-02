@@ -37,10 +37,11 @@ function Q.open_npc(player, entity, selected, notice)
 	if def.repeatable then
 		detail = detail .. ("Repeatable (every %s)\n"):format(Q.cooldown_text(def.repeatable.cooldown))
 	end
-	-- One line per objective (ruling 41).
+	-- One line per objective (ruling 41), with its targets' level range
+	-- (Lane Q0): "Defeat Small Boar × 8 (level 1–4)".
 	for _, objective in ipairs(def.objectives) do
 		detail = detail .. (objective.description or Q.objective_action(objective)) ..
-			" × " .. objective.count .. "\n"
+			" × " .. objective.count .. Q.objective_levels_text(objective) .. "\n"
 	end
 	detail = detail .. "\nRewards: " .. Q.reward_xp(def) .. " XP, " .. grug_money.format(def.rewards.copper)
 	for _, item in ipairs(def.rewards.items) do
