@@ -1022,7 +1022,7 @@
   {
     "id": "grug_mobs:spider_silk",
     "name": "Raw Silk",
-    "tier": 4,
+    "tier": 1,
     "family": "spider",
     "kind": "generic",
     "description": "Strong raw silk. Spiders spin it; outlaws carry it off in bales.",
@@ -1030,7 +1030,7 @@
       "existing recipes",
       "quest"
     ],
-    "notes": "Existing item and icon reused; shown as Raw Silk because T5/T6 outlaws drop it too."
+    "notes": "Existing item and icon reused; shown as Raw Silk because T5/T6 outlaws drop it too. Tier 1: its lowest source is the band-1 spiderling and it strings the universal fishing rod; the Tailor still uses it as a T4 ingredient."
   },
   {
     "id": "grug_mobs:glass_spider_silk",

@@ -641,12 +641,13 @@ check(w.items["grug_mobs:rat_fur_patch"].inventory_image:find("%^%[multiply:") ~
 check(tail._grug_icon_brief == "A pale pink rat tail curled into an S on a dark plate.",
 	"icon brief kept for C4")
 check(tail.groups.grug_material == 1, "signature item is a mob material")
-check(tail._grug_sell_price == 1 and grug_mobs.loot_item_tiers["grug_mobs:rat_tail"] == 1,
-	"signature tier 1: 1c vendor price and ingredient tier 1")
+-- Vendor payouts are grug_traders' price module (Round 29), not a def field.
+check(tail._grug_sell_price == nil and grug_mobs.loot_item_tiers["grug_mobs:rat_tail"] == 1,
+	"signature tier 1: ingredient tier 1, no price field")
 check(w.items["grug_mobs:crop_ledger"] ~= nil, "quest item registered")
 check(w.items["grug_mobs:crop_ledger"]._grug_sell_price == nil
 	and grug_mobs.loot_item_tiers["grug_mobs:crop_ledger"] == nil,
-	"quest item: no vendor price, no ingredient tier")
+	"quest item: no price field, no ingredient tier")
 check(w.items["grug_mobs:boar_tusk"] == nil
 	and grug_mobs.loot_item_tiers["grug_mobs:boar_tusk"] == nil, "existing id not re-registered")
 local band_items = grug_mobs.band_drop_items()
