@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "Crop Thieves",
-      "text": "Small Boars help themselves to our crops in the {name:home_fields} {dir_of:dawnmere:home_fields}, and only during the day. Bring down eight of them. Their yellow names mean they fight back only when struck, which is more courtesy than they show my turnips.",
+      "text": "Small Boars are eating next winter's bread in the {name:home_fields} {dir_of:dawnmere:home_fields}. Hunt eight by day; their yellow names mean they fight back only when struck. A fellow called Crumb has been helping himself to our grain too, but let us begin with the thieves who cannot read.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "dawnmere_hunt_01"
       ],
       "title": "The Night Shift",
-      "text": "When the sun goes down, Large Rats take over the {name:meadows} {zone_area:meadows}. Kill eight of them there after dark. Mind the gaps between them: a squealing rat brings its relatives, and they are never in short supply.",
+      "text": "The day's work ends, and the gnawing begins: Large Rats come out in the {name:meadows} {zone_area:meadows} after sunset. Kill eight there at night. Leave space between your fights; one squeal can summon a family reunion you do not want to attend.",
       "objectives": [
         {
           "type": "kill",
@@ -90,8 +90,8 @@
       "requires": [
         "dawnmere_hunt_02"
       ],
-      "title": "The Hedge Has Foxes",
-      "text": "Young Foxes have moved into the {name:pastures} {zone_area:pastures} and our hens have stopped laying out of sheer nerves. Hunt eight of them by day. Watch for the Aggressive Boars rooting among them: red names start the fight themselves.",
+      "title": "Foxes Before Breakfast",
+      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures} {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
       "objectives": [
         {
           "type": "kill",
@@ -120,7 +120,7 @@
         "dawnmere_hunt_03"
       ],
       "title": "Five Claws Too Many",
-      "text": "Monstrous Crabs have claimed the {name:wreck_coast} {dir_from_giver:wreck_coast}, and the fishermen refuse to argue with them. Kill five there by day. After dark the drowned dead walk that shore instead, so plan your trip by the sun.",
+      "text": "The fishermen came back from the {name:wreck_coast} {dir_from_giver:wreck_coast} with empty nets and some very firm opinions about Monstrous Crabs. Kill five there by day so our folk can try their luck again. Go while the sun is up; the drowned dead walk that shore after dark, and I would rather you came home for supper.",
       "objectives": [
         {
           "type": "kill",
@@ -149,7 +149,7 @@
         "dawnmere_hunt_04"
       ],
       "title": "Requisition for One Crumb",
-      "text": "A man calling himself Chief Crumb has been requisitioning our grain from the {name:bandit_camp} {dir_from_giver:bandit_camp}. Defeat seven of his Confused Bandits, then Crumb himself. They keep their post day and night, so pull the chief apart from his collectors if you can.",
+      "text": "{name:confused_bandit_chief} calls our missing grain a requisition, though he cannot say who requisitioned it. Find the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat seven Confused Bandits, then Crumb himself. They keep their posts day and night; draw the chief away from his collectors if you can. We planted that harvest, and our people ought to eat it.",
       "objectives": [
         {
           "type": "kill",
@@ -186,7 +186,7 @@
         "dawnmere_hunt_05"
       ],
       "title": "The Next Sack of Grain",
-      "text": "Crumb's ledger names a much larger requisition in Goldmead Vale, our own home valley. Take the account to Marta Millward in Goldmead Village; follow the road out of Dawnmere into the vale. Finish whatever you still want to do here first.",
+      "text": "Crumb's accounts point to more missing grain in Goldmead Vale; this reaches beyond our fields. Follow the road into the vale and tell Marta Millward in Goldmead Village what happened here. Finish your preparations before you go, and remember that a full pack beats a brave speech on a long road.",
       "objectives": [
         {
           "type": "talk",
@@ -209,7 +209,7 @@
       "level": 1,
       "requires": [],
       "title": "Two Hands, Two Tools",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe and bring both to me. I will check them and hand you back a working pair. A sword is a fine thing, but it chops firewood very badly.",
+      "text": "Make a Wooden Axe and a Wooden Pickaxe from wood, then bring both to me here in Dawnmere. I will check your work and give you a working pair in return. A sword looks splendid over a hearth, but somebody still has to chop the firewood.",
       "objectives": [
         {
           "type": "item",
@@ -249,7 +249,7 @@
         "dawnmere_tools_01"
       ],
       "title": "A Stone Edge",
-      "text": "Use your wooden pick on the rock outside town and make a Stone Axe and a Stone Pickaxe. Bring both for inspection whenever it suits you; you get the pair back for the ore work ahead.",
+      "text": "Those wooden tools have earned their keep; let us put a better edge on your next day's work. Use your wooden pick on suitable rock outside Dawnmere, then make a Stone Axe and a Stone Pickaxe and bring both to me. I will check them and give you a working pair for the ore work ahead.",
       "objectives": [
         {
           "type": "item",
@@ -288,8 +288,8 @@
       "requires": [
         "dawnmere_tools_02"
       ],
-      "title": "Two Metals, Not One",
-      "text": "Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. They go into the town repairs, and you get a Dual Furnace for your own batches. Set it up outside town, where nobody trips over it.",
+      "title": "Metal for the Mending",
+      "text": "Every loose hinge in Dawnmere seems to find its way onto my list. Smelt three Copper Bars and three Tin Bars from the local ore, then bring them to me for the town repairs. I will give you a Dual Furnace for your own work; set it outside protected ground, where it will not become my next complaint.",
       "objectives": [
         {
           "type": "item",
@@ -325,7 +325,7 @@
         "dawnmere_tools_03"
       ],
       "title": "An Edge for the Road",
-      "text": "Bring me three Bronze Bars, made from fresh copper and tin in your own furnace. The first bars went into the repairs, so do not count them twice. Take this Bronze Pickaxe as your share; the rock beyond Dawnmere is harder than ours.",
+      "text": "You have helped mend the town; now we ought to see you properly equipped for the road. Make three Bronze Bars from fresh copper and tin in your Dual Furnace and bring them to me. The earlier bars went into our repairs, so you will need another batch. A Bronze Pickaxe will be your share of the work.",
       "objectives": [
         {
           "type": "item",
@@ -356,8 +356,8 @@
       "requires": [
         "dawnmere_hunt_02"
       ],
-      "title": "Something Between Sack and Rat",
-      "text": "Bring me two Rat Fur Patches from the Large Rats in the {name:meadows}; they come out after dark. I need to patch the grain sacks before the rats empty them. Yes, with rat fur. There is a lesson in that somewhere.",
+      "title": "The Rats Can Mend It",
+      "text": "The Large Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} {zone_area:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
       "objectives": [
         {
           "type": "item",
@@ -388,7 +388,7 @@
         "dawnmere_hunt_04"
       ],
       "title": "A Brush and a Better Supper",
-      "text": "Bring two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} and one Fox Tail from the Young Foxes in the {name:pastures}. The legs improve supper, and the tail makes a fine brush for the flour shelf. Keep the Crab Eyes for yourself; I only cook what has legs.",
+      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Young Foxes in the {name:pastures} {zone_area:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
       "objectives": [
         {
           "type": "item",
@@ -426,7 +426,7 @@
       "level": 1,
       "requires": [],
       "title": "Five Logs, Any Tree",
-      "text": "Bring me five logs from any tree outside town, by day or night. The oven needs fuelwood, not an argument about which tree is in fashion. Trees inside Dawnmere stay where they are.",
+      "text": "Bring me five logs from any tree outside Dawnmere, whenever your hands are free. The oven needs fuelwood, not a debate about which tree is fashionable. Leave the trees inside town alone; I will not have my supper blamed for a missing village green.",
       "objectives": [
         {
           "type": "item",
@@ -452,7 +452,7 @@
         "dawnmere_kitchen_01"
       ],
       "title": "A Proper Fire",
-      "text": "Bring five Coal Lumps from the rock outside Dawnmere. Coal goes in the oven's fuel slot and raw food in the cooking slot, which you would be amazed how many people get backwards.",
+      "text": "An oven full of good intentions still serves a cold dinner. Bring me five Coal Lumps from the rock outside Dawnmere when your hunts leave you time. At the public oven, coal goes in the fuel slot and raw food in the cooking slot; get those right and we can call you useful in two trades.",
       "objectives": [
         {
           "type": "item",
@@ -479,7 +479,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "The Smokehouse Share",
-      "text": "Bring ten Raw Meat from your hunts to my kitchen. Boars and foxes give it by day, rats after dark, so save what you already carry. Take some of it back cooked; heroes run on supper.",
+      "text": "Bring ten cuts of Raw Meat from your hunts to my kitchen here in Dawnmere; anything you saved already counts. Boars and foxes provide it by day, rats after dark, and I have mouths to feed at every hour. I will cook a share for you to take along. Heroes run on supper, whatever the songs say.",
       "objectives": [
         {
           "type": "item",

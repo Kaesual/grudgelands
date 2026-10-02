@@ -59,7 +59,7 @@
         "dawnmere_departure"
       ],
       "title": "A Harvest Worth Stealing",
-      "text": "Bracken Foxes have taken over the {name:orchards} {zone_area:orchards}, and the pickers will not go in while they are there. Clear eight of them by day. Crumb's ledger says he sent our grain to a Requisitioner Hobb; we will find out who that is once the orchard is ours again.",
+      "text": "Crumb's accounts name Requisitioner Hobb, but his collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards} {zone_area:orchards}, where the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
       "objectives": [
         {
           "type": "kill",
@@ -88,7 +88,7 @@
         "goldmead_harvest_01"
       ],
       "title": "The Granary Has Teeth",
-      "text": "After dark the same {name:orchards} fill with Granary Rats, and they do not stop at the fallen fruit. Kill eight of them at night. Work the edges; several rats close together answer one squeak.",
+      "text": "I can account for every sack that leaves Goldmead, except the ones leaving a mouthful at a time. Kill eight Granary Rats after dark in the {name:orchards} {zone_area:orchards}. Work the edges and keep your distance between fights; a squealing rat is an invitation to all its neighbours.",
       "objectives": [
         {
           "type": "kill",
@@ -117,7 +117,7 @@
         "goldmead_harvest_02"
       ],
       "title": "Tusks in the Wheat",
-      "text": "Ridgeback Tuskers trample the {name:wheatfields} {zone_area:wheatfields} faster than we can harvest them. Bring down eight by day. They are red-named and short-tempered, so do not let two of them corner you in the stalks.",
+      "text": "Ridgeback Tuskers are flattening the {name:wheatfields} {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
       "objectives": [
         {
           "type": "kill",
@@ -146,7 +146,7 @@
         "goldmead_harvest_02"
       ],
       "title": "Jon Has the Other Half",
-      "text": "Visit Jon Vale at Goldmead Outpost along the road. The fields are ours again, but Hobb's collectors work out of the bandit camp, and Jon watches it every day.",
+      "text": "You have seen what threatens our harvest; Jon Vale has been watching the people who take it. Follow the road to Goldmead Outpost and speak with him about Hobb's collectors. He counts wagons more patiently than anyone I know, though I doubt he would welcome that on his gravestone.",
       "objectives": [
         {
           "type": "talk",
@@ -171,7 +171,7 @@
         "goldmead_harvest_01"
       ],
       "title": "Iron Before Promises",
-      "text": "Bring me six Iron Bars and four Coal Lumps from the valley's ore. Check the rock's tool needs before you dig, and smelt the iron in a furnace. Hobb has given us enough paper promises; the granary doors need actual metal.",
+      "text": "Hobb has sent enough paper promises to patch every roof in Goldmead; our granary doors need something sturdier. Bring me six Iron Bars and four Coal Lumps from the valley's ore. Check what pick the rock needs before digging, then smelt the iron in a furnace. The grain we still have deserves a sound door.",
       "objectives": [
         {
           "type": "item",
@@ -202,7 +202,7 @@
         "goldmead_supplies_01"
       ],
       "title": "Counted and Sealed",
-      "text": "Bring me four more Iron Bars and six planks of any wood. The first iron went into the granary; these bands and braces are for the grain shipment. I count and seal everything myself, before another collector mistakes it for his wages.",
+      "text": "The granary has its iron; now we must see the shipment safely packed. Bring me four more Iron Bars and six planks of any wood here in Goldmead Village. I will count and seal the load myself, and the next collector who calls it his wages can explain that to my face.",
       "objectives": [
         {
           "type": "item",
@@ -234,7 +234,7 @@
         "dawnmere_departure"
       ],
       "title": "Feed the Counters",
-      "text": "Bring eight Raw Meat to me here in Goldmead Village. Our grain counters deserve a meal they cannot accidentally count as grain. Whatever you saved from the road will do nicely.",
+      "text": "Our grain counters have worked through dinner again, which improves neither their sums nor their company. Bring me eight cuts of Raw Meat here in Goldmead Village; whatever you saved from the road will do. They deserve a meal they cannot accidentally enter as grain.",
       "objectives": [
         {
           "type": "item",
@@ -261,7 +261,7 @@
         "goldmead_watch_01"
       ],
       "title": "Cloth Around the Truth",
-      "text": "Bring me two Linen Cloth; the Roadside Bandits at the {name:bandit_camp} carry plenty of it. It will wrap the honest shipment. Keep the scraps for yourself; I only want cloth that was stolen from us in the first place.",
+      "text": "The Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp} are carrying our packing cloth as though they bought it. Bring me two lengths of Linen Cloth from them; cloth you saved from an earlier fight will do. Their camp is occupied day and night, so fit the errand around your other work. I would like one shipment to reach its buyer with both its wrapping and its contents intact.",
       "objectives": [
         {
           "type": "item",
@@ -292,7 +292,7 @@
         "goldmead_harvest_03"
       ],
       "title": "Bounty: Burrow Gnawers",
-      "text": "Burrow Gnawers chew through the {name:hedgerows} {zone_area:hedgerows} every night, and they always come back. Kill eight there after dark and I will pay again each time. The next bounty opens twenty minutes after you hand this one in.",
+      "text": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows} {zone_area:hedgerows} and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -324,7 +324,7 @@
         "goldmead_harvest_04"
       ],
       "title": "Collectors Without a Collection",
-      "text": "Hobb's Roadside Bandits hold the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day and night. Defeat eight of them. Their Bandit Lookouts shoot from the edge, so close in on one before the others notice.",
+      "text": "Hobb's Roadside Bandits hold the {name:bandit_camp} {dir_from_giver:bandit_camp} day and night, demanding payment from people who have already paid. Defeat eight of them. Watch for their Bandit Lookouts and approach from the edge; a collector with a bow is much less persuasive once you are beside him.",
       "objectives": [
         {
           "type": "kill",
@@ -352,8 +352,8 @@
       "requires": [
         "goldmead_watch_01"
       ],
-      "title": "Vixens on the Road",
-      "text": "Thicket Vixens jump travellers along the {name:thickets} {dir_of:goldmead_outpost:thickets}. Hunt six of them by day. They are red-named and quick, and they do not care whose cart it was.",
+      "title": "Teeth Along the Cart Track",
+      "text": "A cart that gets past Hobb's men still has to pass the Thicket Vixens in the {name:thickets} {dir_of:goldmead_outpost:thickets}. Hunt six by day. Their red names mean they attack on sight, so keep a clear way out of the brush. I want the drivers home with their boots still occupied.",
       "objectives": [
         {
           "type": "kill",
@@ -382,7 +382,7 @@
         "goldmead_watch_02"
       ],
       "title": "A Witness, Not Cargo",
-      "text": "Speak with Pella Thatch in the {name:bandit_camp}. Hobb's people hold her as cargo, but she has seen his ledgers. Clear a path and ask what she knows; she will find her own way home.",
+      "text": "Pella Thatch is being held in the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Hobb's men have entered her in their accounts as cargo. Clear your approach and speak with her about what she has seen. She knows Hobb's ledgers and remembers every stolen sack. Best not to mention the cargo entry unless you have time to hear her opinion of it.",
       "objectives": [
         {
           "type": "talk",
@@ -407,7 +407,7 @@
         "goldmead_watch_03"
       ],
       "title": "Bounty: Roadside Bandits",
-      "text": "The {name:bandit_camp} {dir_from_giver:bandit_camp} never runs out of Roadside Bandits. Defeat eight more and I will pay the same again. The next bounty opens twenty minutes after you hand this one in.",
+      "text": "Another batch of Roadside Bandits is collecting at the {name:bandit_camp} {dir_from_giver:bandit_camp}; apparently robbery offers steady employment. Defeat eight and report back for payment, by day or night. You can take this bounty again twenty minutes after turning it in.",
       "objectives": [
         {
           "type": "kill",
@@ -439,7 +439,7 @@
         "goldmead_watch_03"
       ],
       "title": "Nobody Requisitions Pella",
-      "text": "Hobb keeps his Bandit Lookouts at the {name:requisition_camp} {dir_from_giver:requisition_camp}, day and night. Defeat eight of them so he has nobody left to shoot for him. I would do it myself, but they took my good boots.",
+      "text": "Hobb listed me between grain and packing cloth, then had the nerve to ask whether I could write. His Bandit Lookouts guard the {name:requisition_camp} {dir_from_giver:requisition_camp} day and night; defeat eight of them. Approach from the edge and break their line of fire when you need to. I would lend a hand, but they requisitioned my good boots too.",
       "objectives": [
         {
           "type": "kill",
@@ -468,7 +468,7 @@
         "goldmead_testimony_01"
       ],
       "title": "Hobb's Last Requisition",
-      "text": "{name:requisitioner_hobb} sits in the {name:requisition_camp} {dir_from_giver:requisitioner_hobb}, writing down other people's grain as his own. Defeat him. His ledger will prove the millers were robbed, and I would like to watch him lose an argument for once.",
+      "text": "{name:requisitioner_hobb} keeps his books in the {name:requisition_camp} {dir_from_giver:requisitioner_hobb}, and every line makes our grain his property. Defeat him, by day or night, and come back to me. I know what those books say; what I need now is someone to stop him enforcing them. Nobody requisitions Pella Thatch.",
       "objectives": [
         {
           "type": "kill",
@@ -496,8 +496,8 @@
       "requires": [
         "goldmead_testimony_02"
       ],
-      "title": "Highcourt Must Read This",
-      "text": "Take Hobb's ledger to Mariel Waybook in Highcourt. Every one of his requisitions carries a capital toll mark, and that is a fine place for a lie to end. The capital's stables can sell you a mount once you are allowed one.",
+      "title": "Highcourt Must Hear This",
+      "text": "Every false requisition Hobb wrote carried a capital toll mark, and I can tell you exactly whose grain he stole. Go to Highcourt and give Mariel Waybook our account. If anyone asks what you are carrying, say testimony. I have had quite enough of being counted as freight.",
       "objectives": [
         {
           "type": "talk",

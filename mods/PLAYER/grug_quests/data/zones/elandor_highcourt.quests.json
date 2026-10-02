@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "The Dead Cannot Owe Toll",
-      "text": "Debtbound Zombies wander the {name:commons} {zone_area:commons} every night, still clutching the toll slips somebody sold them. Put five of them to rest after dark. Whoever wrote those slips is our real problem, and the dead keep excellent records.",
+      "text": "There are Debtbound Zombies wandering the {name:commons} {zone_area:commons} at night, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why. Highcourt can surely spare the dead another demand for payment.",
       "objectives": [
         {
           "type": "kill",
@@ -61,8 +61,8 @@
       "requires": [
         "highcourt_accounts_01"
       ],
-      "title": "Archers in the Deer Park",
-      "text": "The slips lead to Toll Bandit Archers who shoot at anyone crossing the {name:deer_park} {dir_of:highcourt:deer_park} after dark. Defeat five of them there at night. The crown keeps no archers in its deer park, whatever their badges claim.",
+      "title": "An Arrow Is Not a Receipt",
+      "text": "The complaints lead to Toll Bandit Archers in the {name:deer_park} {dir_of:highcourt:deer_park}, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
         "highcourt_accounts_02"
       ],
       "title": "The Last Unauthorised Stamp",
-      "text": "{name:tollmaster_penn} runs the {name:toll_camp} {dir_from_giver:toll_camp} as if it were a royal office. Defeat five of his Toll Bandit Archers and then Penn himself. With his stamp gone, nobody collects tolls in the crown's name but the crown.",
+      "text": "{name:tollmaster_penn} conducts his business at the {name:toll_camp} {dir_from_giver:toll_camp}, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Bandit Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
       "objectives": [
         {
           "type": "kill",
@@ -126,7 +126,7 @@
       "level": 22,
       "requires": [],
       "title": "A Peg for the Bread Board",
-      "text": "Bring me one Gnarled Boar Tusk from a Furrow Boar on the {name:commons}; they graze there by day and only fight back when struck. I need a new peg for my bread board, and I refuse to borrow one from the king's kitchen.",
+      "text": "My bread board rocks, and the royal kitchen has offered to lend me a peg with more conditions than a peace treaty. Bring me one Gnarled Boar Tusk from a Furrow Boar on the {name:commons} {zone_area:commons} by day. Their yellow names mean they only fight back when struck. I would rather settle the matter with the boar.",
       "objectives": [
         {
           "type": "item",
@@ -155,8 +155,8 @@
       "requires": [
         "highcourt_provisions_01"
       ],
-      "title": "Vixens in the Royal Orchards",
-      "text": "Redfang Vixens raid the {name:orchards} {zone_area:orchards} by day and bite the pickers. Hunt five of them. Unlike the Orchard Foxes, these start the fight, so mind their red names.",
+      "title": "Pies Have Consequences",
+      "text": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Redfang Vixens by day in the {name:orchards} {zone_area:orchards}. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
       "objectives": [
         {
           "type": "kill",
@@ -186,7 +186,7 @@
         "highcourt_provisions_02"
       ],
       "title": "Bounty: Razorbacks",
-      "text": "Razorbacks root up the {name:outer_fields} {zone_area:outer_fields} faster than anyone can replant them. Bring down six by day and I will pay again each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "text": "The gardeners are replanting the {name:outer_fields} {zone_area:outer_fields} again, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
       "objectives": [
         {
           "type": "kill",
@@ -218,7 +218,7 @@
         "highcourt_accounts_01"
       ],
       "title": "The Empty River Baskets",
-      "text": "Find Merren Oakstamp at Whitebridge Market Close in Whitebridge Shire. The river baskets I paid for never reached my kitchen, and Merren knows who sold them twice. Follow the road, or ask the stables about a mount to save your feet.",
+      "text": "I paid for river baskets and received a very confident promise, which has proved difficult to put bread in. Find Merren Oakstamp at Whitebridge Market Close in Whitebridge Shire and ask what became of my order. Follow the road, or visit the stables about a mount if your feet have already lodged a complaint.",
       "objectives": [
         {
           "type": "talk",
@@ -243,7 +243,7 @@
         "highcourt_accounts_03"
       ],
       "title": "Bread for the March",
-      "text": "Take word to Toren Waterbarrel at Cinderline Watch in Ashenward March. The watch eats my bread and fights for the whole Accord; it could use someone who has cleared Penn's camp. Reach level 30 before you go, because the march does not forgive.",
+      "text": "The watch at Cinderline eats my bread and stands between the Accord's homes and the fighting. Go to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel; tell him the person who dealt with Penn is ready to help. Get yourself to level 30 before making the journey into contested country. Eat before you leave, too; courage is no breakfast.",
       "objectives": [
         {
           "type": "talk",
