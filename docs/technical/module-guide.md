@@ -528,7 +528,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     Consumers never copy a band boundary, harvest tier, rock name or
     race-region assignment.
   - Registry consumers use `RESOURCES`, `RESOURCE_BY_KEY`,
-    `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`, `GEM_GRADES`,
+    `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`,
     `CULTURAL_MATERIALS`, `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
     with the `resource`, `resource_for_node`, `resource_node` and `processed`
     accessors. `CURRENT_SCATTER_RESOURCES` is only the pre-WP40 placement
@@ -536,7 +536,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     replace or duplicate this taxonomy.
   - The natural-node contract is explicit. Picks carry
     `grug_pick_tier = 1..6`; generated ground carries `grug_natural = 1`;
-    resources additionally carry `grug_resource = 1..5`. Mapgen owners must
+    resources additionally carry `grug_resource = 1..6` (gems carry
+    `gem = true` in `RESOURCES`; Diamond is the only T6 resource). Mapgen owners must
     add every new generated ground node to `NATURAL_GROUND_NODES` and apply
     `natural_groups(groups)` when registering their own nodes. Never infer
     natural ground from `is_ground_content`: the engine defaults that field

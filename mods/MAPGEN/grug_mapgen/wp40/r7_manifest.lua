@@ -59,6 +59,9 @@ return function(canonical, raw_sha256, settlement_order)
 	-- with the three inserted sorted rows while every cell name and the MTS
 	-- geometry stay fixed. Were `0c1c1efa25f1d173...`, `e7f1204a434fb773...`,
 	-- `d1fe4ac1c7cbe552...`, `77e5b5b14c98f172...` and `b420d6c4a7e31adc...`.
+	-- Round 29 M-res (gem tiers): one gem per tier rock, no G1/G2 grades, no
+	-- race-region gem columns, one gem density; only the WP43 projection
+	-- moves. Was `f1bba63f699c3fd0...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",

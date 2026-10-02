@@ -35,7 +35,7 @@ local master = {
 	},
 	drops = {
 		{name = "grug_materials:emberglass_shard", chance = 2, min = 1, max = 2},
-		{name = "grug_materials:rough_diamond", chance = 8, min = 1, max = 1},
+		{name = "grug_materials:rough_sapphire", chance = 8, min = 1, max = 1},
 	},
 	water_damage = 1, lava_damage = 1, light_damage = 0,
 }

@@ -1241,8 +1241,9 @@ code, not by this document.
   every race region, zone and faction: T1 Citrine (`default:stone`,
   y ≥ −100), T2 Jade, T3 Garnet, T4 Sapphire, T5 Ruby, T6 Diamond (below
   −1000). Its harvest tier equals its tier. One rough density for all six:
-  one gem per 512 eligible host nodes in its band; the deep multipliers
-  apply to Diamond like every T6 resource.
+  one gem per 512 eligible host nodes in its band, in veins of at most two
+  nodes (the former G1 veins held three); the deep multipliers apply to
+  Diamond like every T6 resource.
 - **Round 21 density calibration (accepted 2026-09-24):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
