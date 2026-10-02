@@ -527,7 +527,7 @@ contents only; class values, tier factors and the formula are unchanged.
 Bands 1–3 and 6 are unchanged (4.3 / 9.0 / 16.7 / 239.3c). Changed rows of
 `grug_mobs/data/drops.json` (and its design copy):
 
-- **Band 4, four tier-matched T4 generics added:** spiders Venom Sac 1/3
+- **Band 4, four tier-matched T4 drops added:** spiders Venom Sac 1/3
   (beside the Venom Gland), crabs Shiny Scale 1/3 (beside the Scaled Hide),
   stone golems and marrow weevils Emberglass Shard 1/2. Venom Sac and Shiny
   Scale feed the T4 alchemy recipes, which had no band-4 source of Shiny

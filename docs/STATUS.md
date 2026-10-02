@@ -20,7 +20,7 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
     payout (loot and gathered goods by class and tier, processed goods by
     their inputs, 5 % buy-back on vendor goods), shelves by the vendor
     rule, the Common gear axis 25c … 25s, repair at crafting stations in an
-    active claim; riding 1s10c / 7s / 1g63s / 7g33s, boats 1s10c / 7s,
+    active claim; riding 1s10c / 7s / 1g37s / 7g33s, boats 1s10c / 7s,
     respec 15c … 12s from a per-band income estimate
     ([economy.md](design/economy.md)).
   - **Travel (B, W, A; WP17 delivered):** boats as water mounts from the
