@@ -26,7 +26,6 @@ for tier = 1, #tiers do
 	else
 		material_inputs = {{C .. tiers[tier - 1].key .. "_wood", "group:wood"}}
 	end
-	core.clear_craft({output = wood})
 	core.register_craft({output = wood, recipe = material_inputs})
 
 end
