@@ -135,7 +135,7 @@ local layout = grug_core.hud_layout
 
 local QUESTS = {}
 rawset(_G, "grug_quests", {registered_npcs = {},
-	marker_state = function(_, id) return QUESTS[id] end,
+	marker_states = function() return QUESTS, 1 end,
 	register_on_change = function(fn) quest_changes[#quest_changes + 1] = fn end})
 local PARTY = {}
 local party_views, party_changes = 0, {}
@@ -472,6 +472,8 @@ dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 for _, fn in ipairs(loaded) do fn() end
 check(media[#media] == "grug_map_minimap_mask.png", "R mask announced as media")
 
+-- A window change shows within WINDOW seconds (minimap.lua, Round 30 #12).
+local WINDOW = 0.5
 local function step(dt)
 	now = now + dt
 	for _, fn in ipairs(steps) do fn(dt) end
@@ -631,7 +633,7 @@ end
 -- At HUD scaling 2 in a small window the rim arrow is clamped to the ring.
 do
 	windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 2, real_gui_scaling = 1}
-	step(0.09)
+	step(WINDOW)
 	local small = frame_of(me)
 	local arrow = by_text(me, "^grug_map_rim_cyan_%d%d%.png$")[1]
 	-- the chevron spans 21 of the texture's 32 px from tip to back
@@ -640,7 +642,7 @@ do
 	check(drawn <= 0.9 * ring and drawn >= 0.8 * ring,
 		("R rim arrow %.1f px fills 80-90 %% of the %.1f px ring"):format(drawn, ring))
 	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
-	step(0.09)
+	step(WINDOW)
 end
 -- every marker and party arrow shown lies inside the hole; one walked out
 -- of it is hidden
@@ -677,7 +679,7 @@ end
 do
 	local f1 = frame_of(me)
 	windows.me = {size = {x = 1920, y = 1100}, real_hud_scaling = 1, real_gui_scaling = 1}
-	step(0.09)
+	step(WINDOW)
 	local f2 = frame_of(me)
 	local ax, ay = screen(compass, me)
 	local mx, my = screen(map, me)
@@ -689,12 +691,12 @@ do
 		near(ay, math.floor(f2.center_y + 0.5), 1e-6) and near(ax, math.floor(f2.center_x + 0.5), 1e-6) and
 		near(mx, ex, 1e-6) and near(my, ey, 1e-6), "R height-only resize resends the positions")
 	windows.me = {size = {x = 1920, y = 1080}, real_hud_scaling = 1, real_gui_scaling = 1}
-	step(0.09)
+	step(WINDOW)
 end
 
 -- Window resize: the box follows (25 % of the new height).
 windows.me = {size = {x = 1280, y = 720}, real_hud_scaling = 1, real_gui_scaling = 1}
-step(0.25)
+step(WINDOW)
 do
 	local small = frame_of(me)
 	local bezel = by_text(me, "^grug_map_minimap_bezel%.png$")[1]
@@ -788,10 +790,10 @@ do
 	-- Staggered SLOW refresh: two players ask the quest provider in
 	-- different steps.
 	local asked = {}
-	local original = grug_quests.marker_state
-	grug_quests.marker_state = function(player, id)
+	local original = grug_quests.marker_states
+	grug_quests.marker_states = function(player)
 		asked[player:get_player_name()] = true
-		return original(player, id)
+		return original(player)
 	end
 	local other = new_player("other", {x = 0, y = 20, z = -1500}, 0)
 	windows.other = windows.me
@@ -804,7 +806,7 @@ do
 		if asked.me or asked.other then steps_seen = steps_seen + 1 end
 		if asked.me and asked.other then together = together + 1 end
 	end
-	grug_quests.marker_state = original
+	grug_quests.marker_states = original
 	check(together == 0 and steps_seen >= 4, ("S SLOW refresh staggered (%d steps with a " ..
 		"refresh, %d with both)"):format(steps_seen, together))
 	players.other = nil

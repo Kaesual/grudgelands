@@ -175,7 +175,7 @@ local function play(Q)
 		for _, quest in ipairs(Q.journal(player).quests) do if quest.id == "probe_travel" then travel = quest end end
 		check(travel and travel.ready, "travel credited on accept")
 		eq(travel and Q.hud_line(travel, 400), "Travel to Mariel Waybook", "travel HUD line")
-		eq(Q.marker_state(player, "r20_human_capital_envoy"), "ready", "destination shows the turn-in at once")
+		eq(Q.marker_states(player).r20_human_capital_envoy, "ready", "destination shows the turn-in at once")
 	end)
 	grug_xp.get_level, grug_xp.add_xp, grug_money.add, grug_money.get, grug_factions.get_faction,
 		grug_classes.get_race, core.get_player_by_name, grug_core.feed_item = unpack(saved)

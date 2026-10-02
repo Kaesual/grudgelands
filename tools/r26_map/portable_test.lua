@@ -37,6 +37,7 @@ rawset(_G, "core", {
 	register_on_leaveplayer = function() end,
 	register_on_dieplayer = function() end,
 	get_player_by_name = function() return player end,
+	get_us_time = function() return 0 end,
 	formspec_escape = function(text)
 		return (text:gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
 			:gsub(";", "\\;"):gsub(",", "\\,"))
@@ -61,7 +62,7 @@ rawset(_G, "grug_core", {
 })
 rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
-rawset(_G, "grug_quests", {registered_npcs = {}, marker_state = function() return nil end})
+rawset(_G, "grug_quests", {registered_npcs = {}, marker_states = function() return {}, 1 end})
 rawset(_G, "grug_parties", {view = function() return nil end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function() return {} end,
 	known_waypoints = function() return {} end})

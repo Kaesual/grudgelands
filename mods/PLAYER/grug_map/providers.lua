@@ -85,10 +85,11 @@ end
 
 atlas.register_marker_provider("service", function() return services end)
 
+-- One grug_quests.marker_states call for all givers (Round 30, perf review #1).
 atlas.register_marker_provider("quest", function(player)
-	local result = {}
+	local result, states = {}, grug_quests.marker_states(player)
 	for _, giver in ipairs(givers) do
-		local state = grug_quests.marker_state(player, giver.id)
+		local state = states[giver.id]
 		if state then
 			result[#result + 1] = {id = giver.id, label = giver.title,
 				position = giver.position, kind = "quest", status = state}

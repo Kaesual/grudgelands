@@ -428,7 +428,7 @@ data["grug_home:ready_at"] = tostring(clock + 77)
 rawset(_G, "grug_map", {atlas=dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")})
 rawset(_G, "grug_parties", {view=function() return nil end})
 rawset(_G, "grug_jobs", {PROFESSIONS={}})
-rawset(_G, "grug_quests", {registered_npcs={}})
+rawset(_G, "grug_quests", {registered_npcs={}, marker_states=function() return {}, 1 end})
 -- providers.lua reads its own mod's files (location_view.lua) through its
 -- mod name.
 core.get_current_modname = function() return "grug_map" end

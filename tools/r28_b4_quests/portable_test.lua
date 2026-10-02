@@ -93,6 +93,7 @@ local serial = {}
 local players = {}
 core = {
 	registered_items = {}, registered_aliases = {}, registered_entities = {},
+	get_us_time = function() return 0 end,
 	get_modpath = function(name) return mod_paths[name] end,
 	get_current_modname = function() return current_mod end,
 	get_dir_list = function(path)
@@ -426,8 +427,8 @@ check(Q.accept(ann, "fx_travel"), "accept The Road to Highcourt")
 row = journal_row(ann, "fx_travel")
 check(row.ready and row.travel, "travel quest ready on accept (ruling 39)")
 eq(Q.hud_line(row, 400), "Travel to Mariel Waybook", "HUD: Travel to <NPC>")
-eq(Q.marker_state(ann, "r20_human_capital_envoy"), "ready", "destination marker at once")
-eq(Q.marker_state(ann, "r14_human_elder") ~= "ready", true, "giver shows no turn-in")
+eq(Q.marker_states(ann).r20_human_capital_envoy, "ready", "destination marker at once")
+eq(Q.marker_states(ann).r14_human_elder ~= "ready", true, "giver shows no turn-in")
 log = pages["grug_quests:quests"].get(nil, ann, {grug_quest_selected = "fx_travel"})
 has(log, "Travel to Mariel Waybook.", "quest log: travel")
 has(dialogue(ann, "r20_human_capital_envoy", "fx_travel"), "turnin;Complete", "turn-in at the destination")

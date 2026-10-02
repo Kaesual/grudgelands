@@ -32,6 +32,11 @@ local META = "grug_map:minimap_hidden"
 -- every SLOW seconds (a quest may unlock with a level), each player in its
 -- own phase; the ones near the window are picked on each new cell.
 local SLOW = 5.0
+-- The window size and the location line are read again every WINDOW
+-- seconds, not every step (Round 30, perf review #12): a resize relayouts
+-- and a new location shows within that time (the client itself reports a
+-- resize 0.2 s after it ends; the location is sampled about once a second).
+local WINDOW = 0.5
 local MARKER_SLOTS, PARTY_SLOTS = 24, 9
 -- Drawn sizes in HUD pixels (scaled with HUD scaling like every HUD image).
 local ICON, PARTY_ARROW, PLAYER_ARROW = 16, 20, 24
@@ -168,6 +173,12 @@ local function remove(player, state)
 	state.hud = nil
 end
 
+-- Texture names by heading frame and rim direction, built once.
+local PARTY_TEXTURE, RIM_TEXTURE = {}, {}
+for index = 0, 15 do PARTY_TEXTURE[index] = ("grug_map_heading_cyan_%02d.png"):format(index) end
+for index = 0, V.RIM_FRAMES - 1 do RIM_TEXTURE[index] = ("grug_map_rim_cyan_%02d.png"):format(index) end
+local BACKGROUND -- the sea disc under the map, set by M.install
+
 local function create(player, state)
 	local hud = {background = image(player, Z.background, true),
 		map = image(player, Z.map, true), bezel = image(player, Z.bezel, true),
@@ -187,7 +198,7 @@ local function create(player, state)
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
 	state.hud, state.cell_x, state.cell_y, state.static = hud, nil, nil, nil
-	state.near, state.box = nil, nil
+	state.near, state.box, state.window = nil, nil, nil
 end
 
 -- The markers that do not move by themselves (ruling 8): quest givers with
@@ -210,25 +221,16 @@ end
 
 -- The other members' names, asked from grug_parties only when the party
 -- changes (or on the SLOW refresh); positions are read every step.
-local function party_members(player, state)
-	local name = player:get_player_name()
+local function party_names(player, state)
 	if not state.party then
+		local name = player:get_player_name()
 		state.party = {}
 		local group = grug_parties.view(player)
 		for _, member in ipairs(group and group.members or {}) do
 			if member.name ~= name then state.party[#state.party + 1] = member.name end
 		end
 	end
-	local result = {}
-	for _, member in ipairs(state.party) do
-		local other = core.get_player_by_name(member)
-		if other then
-			local pos = other:get_pos()
-			result[#result + 1] = {x = pos.x, z = pos.z,
-				frame = atlas.heading_frame(other:get_look_horizontal())}
-		end
-	end
-	return result
+	return state.party
 end
 
 -- Every element resends its position on the next show: after a window
@@ -237,13 +239,18 @@ local function forget_positions(hud)
 	for _, element in ipairs(hud.all) do element.x, element.y = nil, nil end
 end
 
-local function update(player, state, slow)
-	if state.enabled == nil then state.enabled = M.enabled(player) end
-	if not state.enabled then
-		remove(player, state)
-		return 0
-	end
-	if not state.hud then create(player, state) end
+-- Draw order when more markers than slots are in the circle: the most
+-- important first, then their usual order.
+local function by_priority(a, b)
+	local pa, pb = PRIORITY[a.marker.kind] or 9, PRIORITY[b.marker.kind] or 9
+	if pa ~= pb then return pa < pb end
+	return a.order < b.order
+end
+local function by_order(a, b) return a.order < b.order end
+
+-- What depends only on the window: the frame, the sea disc, the bezel and
+-- the arrow's place and size. The location line is read here too.
+local function update_window(player, state)
 	local hud, changes = state.hud, 0
 	local box = layout.minimap_box(core.get_player_window_information(player:get_player_name()))
 	local last = state.box
@@ -252,6 +259,45 @@ local function update(player, state, slow)
 			last.width ~= box.width or last.height ~= box.height then
 		state.box, state.frame = box, V.frame(view, box)
 		forget_positions(hud)
+		local frame = state.frame
+		local sea = math.floor(frame.hole + 2)
+		changes = changes + show(player, frame, hud.background, BACKGROUND,
+			frame.center_x - sea, frame.center_y - sea, exact(2 * sea, view.pixels, frame))
+		changes = changes + show(player, frame, hud.bezel, BEZEL,
+			frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2,
+			exact(frame.diameter, BEZEL_PX, frame))
+		-- The arrow sits at the centre; the compass element's size is in raw
+		-- pixels.
+		local x, y = frame.arrow_x, frame.arrow_y
+		local arrow = math.floor(PLAYER_ARROW * frame.hud + 0.5)
+		local element = hud.player
+		if element.x ~= x or element.y ~= y then
+			player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
+			element.x, element.y, changes = x, y, changes + sent(8)
+		end
+		if element.size ~= arrow then
+			player:hud_change(element.id, "size", {x = arrow, y = arrow})
+			element.size, changes = arrow, changes + sent(8)
+		end
+	end
+	local frame = state.frame
+	local location = grug_map.location
+	return changes + show_text(player, frame, hud.location,
+		location and location.text_of(player) or "", frame.center_x,
+		frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
+end
+
+-- `window` asks for the window and location check (every WINDOW seconds).
+local function update(player, state, slow, window)
+	if state.enabled == nil then state.enabled = M.enabled(player) end
+	if not state.enabled then
+		remove(player, state)
+		return 0
+	end
+	if not state.hud then create(player, state) end
+	local hud, changes = state.hud, 0
+	if window or slow or not state.box then
+		changes = changes + update_window(player, state)
 	end
 	local frame = state.frame
 	local pos = player:get_pos()
@@ -285,61 +331,54 @@ local function update(player, state, slow)
 	local mx, my = V.map_corner(view, frame, state.cell_x, state.cell_y, px, py)
 	changes = changes + show(player, frame, hud.map, state.texture, mx, my,
 		exact(frame.drawn, view.pixels, frame))
-	local sea = math.floor(frame.hole + 2)
-	changes = changes + show(player, frame, hud.background,
-		M.mask .. "^[multiply:" .. SEA, frame.center_x - sea, frame.center_y - sea,
-		exact(2 * sea, view.pixels, frame))
-	changes = changes + show(player, frame, hud.bezel, BEZEL,
-		frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2,
-		exact(frame.diameter, BEZEL_PX, frame))
-	local location = grug_map.location
-	changes = changes + show_text(player, frame, hud.location,
-		location and location.text_of(player) or "", frame.center_x,
-		frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
 
+	-- The markers inside the hole, in rows reused from step to step
+	-- (`state.rows`), so a step builds no tables.
 	local hud_px = frame.hud
 	local limit = frame.hole - ICON / 2 * hud_px
-	local visible = {}
+	local rows, visible, count = state.rows, state.visible, 0
 	for index, marker in ipairs(state.near) do
 		local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
 			marker.x, marker.z)
 		if distance <= limit then
-			visible[#visible + 1] = {marker = marker, x = x, y = y, order = index}
+			count = count + 1
+			local row = rows[count]
+			if not row then row = {}; rows[count] = row end
+			row.marker, row.x, row.y, row.order = marker, x, y, index
+			visible[count] = row
 		end
 	end
-	if #visible > MARKER_SLOTS then
+	for i = #visible, count + 1, -1 do visible[i] = nil end
+	if count > MARKER_SLOTS then
 		-- More markers than slots: keep the most important ones (quest givers
 		-- first; party members have slots of their own), then draw the kept
 		-- ones in their usual order.
-		table.sort(visible, function(a, b)
-			local pa, pb = PRIORITY[a.marker.kind] or 9, PRIORITY[b.marker.kind] or 9
-			if pa ~= pb then return pa < pb end
-			return a.order < b.order
-		end)
-		for i = #visible, MARKER_SLOTS + 1, -1 do visible[i] = nil end
-		table.sort(visible, function(a, b) return a.order < b.order end)
+		table.sort(visible, by_priority)
+		for i = count, MARKER_SLOTS + 1, -1 do visible[i] = nil end
+		table.sort(visible, by_order)
+		count = MARKER_SLOTS
 	end
-	for i, row in ipairs(visible) do
+	for i = 1, count do
+		local row = visible[i]
 		local texture = row.marker.texture
 		changes = changes + show(player, frame, hud.markers[i], texture, row.x, row.y,
 			ICON / texture_size(texture))
 	end
-	for i = #visible + 1, MARKER_SLOTS do
+	for i = count + 1, MARKER_SLOTS do
 		changes = changes + show(player, frame, hud.markers[i], "")
 	end
 
-	local party = party_members(player, state)
-	local inside = frame.hole - PARTY_ARROW / 2 * hud_px
-	for i = 1, PARTY_SLOTS do
-		local member = party[i]
-		if not member then
-			changes = changes + show(player, frame, hud.party[i], "")
-		else
+	local inside, slot = frame.hole - PARTY_ARROW / 2 * hud_px, 0
+	for _, member in ipairs(party_names(player, state)) do
+		local other = slot < PARTY_SLOTS and core.get_player_by_name(member)
+		if other then
+			slot = slot + 1
+			local at = other:get_pos()
 			local x, y, distance = V.place(view, frame, state.ox, state.oy, mx, my,
-				member.x, member.z)
+				at.x, at.z)
 			if distance <= inside then
-				changes = changes + show(player, frame, hud.party[i],
-					("grug_map_heading_cyan_%02d.png"):format(member.frame), x, y,
+				changes = changes + show(player, frame, hud.party[slot],
+					PARTY_TEXTURE[atlas.heading_frame(other:get_look_horizontal())], x, y,
 					PARTY_ARROW / 32)
 			else
 				-- On the bezel, above it and its N plate (a party member due
@@ -347,24 +386,13 @@ local function update(player, state, slow)
 				local rx, ry, index = V.rim(frame, x - frame.center_x, y - frame.center_y)
 				local ring = frame.diameter / 2 - frame.hole
 				local size = RIM_FILL * ring / RIM_EXTENT
-				changes = changes + show(player, frame, hud.party[i],
-					("grug_map_rim_cyan_%02d.png"):format(index), rx, ry, size / (32 * hud_px))
+				changes = changes + show(player, frame, hud.party[slot],
+					RIM_TEXTURE[index], rx, ry, size / (32 * hud_px))
 			end
 		end
 	end
-
-	-- The arrow sits at the centre; the compass element's size is in raw
-	-- pixels.
-	local x, y = frame.arrow_x, frame.arrow_y
-	local arrow = math.floor(PLAYER_ARROW * hud_px + 0.5)
-	local element = hud.player
-	if element.x ~= x or element.y ~= y then
-		player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
-		element.x, element.y, changes = x, y, changes + sent(8)
-	end
-	if element.size ~= arrow then
-		player:hud_change(element.id, "size", {x = arrow, y = arrow})
-		element.size, changes = arrow, changes + sent(8)
+	for i = slot + 1, PARTY_SLOTS do
+		changes = changes + show(player, frame, hud.party[i], "")
 	end
 	return changes
 end
@@ -406,6 +434,7 @@ function M.install(installed)
 		return
 	end
 	base, view, M.mask = installed, candidate, grug_map.base.MASK
+	BACKGROUND = M.mask .. "^[multiply:" .. SEA
 end
 
 -- False when the world map base or the minimap's mask is missing.
@@ -432,7 +461,8 @@ local joined = 0
 core.register_on_joinplayer(function(player)
 	native_off(player)
 	joined = joined + 1
-	players[player:get_player_name()] = {slow = (joined * JOIN_PHASE) % SLOW}
+	players[player:get_player_name()] = {slow = (joined * JOIN_PHASE) % SLOW,
+		rows = {}, visible = {}}
 end)
 core.register_on_leaveplayer(function(player)
 	players[player:get_player_name()] = nil
@@ -454,8 +484,11 @@ core.register_globalstep(function(dtime)
 			state.slow = (state.slow or 0) + dtime
 			local is_slow = state.slow >= SLOW
 			if is_slow then state.slow = state.slow % SLOW end
+			state.window = (state.window or 0) + dtime
+			local window = state.window >= WINDOW
+			if window then state.window = 0 end
 			local started = core.get_us_time()
-			local changes = update(player, state, is_slow)
+			local changes = update(player, state, is_slow, window)
 			M.stats.updates = M.stats.updates + 1
 			M.stats.us = M.stats.us + (core.get_us_time() - started)
 			M.stats.changes = M.stats.changes + changes

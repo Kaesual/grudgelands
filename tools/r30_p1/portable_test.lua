@@ -1,0 +1,828 @@
+-- Round 30 Lane P1 portable test (LuaJIT): quest state cache and map UI
+-- (round30-plan.md, perf review #1, #3, #5, #10, #12).
+--
+--   luajit tools/r30_p1/portable_test.lua [repo]
+--
+-- Loads the REAL grug_quests registry, state, labels, npc and hud files, the
+-- REAL grug_core hud_layout and item_names, and the REAL grug_map atlas,
+-- base, minimap_view, minimap, providers and page on a fake engine.
+-- Checks:
+--   C  the decoded-state cache: every read path shares one decoded table per
+--      raw meta string (no deserialization while it is unchanged); accept,
+--      kill credit, a quest drop, turn-in, a repeatable's cooldown, abandon,
+--      tracking and the HUD switch each refresh it; leave clears it and a
+--      rejoin decodes once. After EVERY operation no cached table has
+--      changed (deep comparison with a copy taken when it entered the
+--      cache) and every cache entry equals a fresh decode of its raw string;
+--   M  Q.marker_states: one table for all NPCs, equal to the most urgent
+--      row of Q.npc_quests for each; memoized for a second (same table,
+--      same version, no holdings scan), refreshed at once by a state change
+--      or a quest change callback, after a second by an inventory change;
+--      the version rises only when a marker differs;
+--   T  NPC tag callback: a parent that is no quest NPC allocates nothing
+--      and asks nothing; a quest NPC asks marker_states once per observer;
+--   H  tracker HUD: the journal is built only when Q.journal_key changes
+--      (not for an unchanged state or a non-objective item; yes for an
+--      objective item, which also posts the feed line); players are spread
+--      over five 0.1 s slots and each is polled once per 0.5 s;
+--   P  Map tab: an unchanged signature sends nothing and builds no form
+--      (no marker collection); a walking viewer gets at most one send per
+--      2 s; arrows move on a 0.02-unit grid and a move inside one grid cell
+--      changes neither signature nor form; a quest change shows on the next
+--      2 s poll; zoom and selection clicks answer at once; one style[] per
+--      look names every marker of that look;
+--   W  minimap: the window information and the location line are read every
+--      0.5 s, not every step.
+-- Prints "R30 P1 PORTABLE PASS checks=<n>" or the failures.
+local repo = arg[1] or "."
+local checks, failures = 0, {}
+local function check(ok, label)
+	checks = checks + 1
+	if not ok then failures[#failures + 1] = label end
+end
+local function eq(actual, expected, label)
+	check(actual == expected, label .. " (got " .. tostring(actual) .. ", expected " ..
+		tostring(expected) .. ")")
+end
+
+local function deep_copy(value, seen)
+	if type(value) ~= "table" then return value end
+	seen = seen or {}
+	if seen[value] then return seen[value] end
+	local out = {}
+	seen[value] = out
+	for k, v in pairs(value) do out[deep_copy(k, seen)] = deep_copy(v, seen) end
+	return out
+end
+local function deep_equal(a, b)
+	if type(a) ~= "table" or type(b) ~= "table" then return a == b end
+	for k, v in pairs(a) do if not deep_equal(v, b[k]) then return false end end
+	for k in pairs(b) do if a[k] == nil then return false end end
+	return true
+end
+table.copy = function(value) return deep_copy(value) end
+function table.indexof(list, value)
+	for i, v in ipairs(list) do if v == value then return i end end
+	return -1
+end
+
+-- A round-trippable serializer with sorted keys (core.serialize's role).
+local function serialize(value)
+	local kind = type(value)
+	if kind == "table" then
+		local keys, parts = {}, {}
+		for k in pairs(value) do keys[#keys + 1] = k end
+		table.sort(keys, function(a, b)
+			if type(a) ~= type(b) then return type(a) < type(b) end
+			return a < b
+		end)
+		for _, k in ipairs(keys) do parts[#parts + 1] = "[" .. serialize(k) .. "]=" .. serialize(value[k]) end
+		return "{" .. table.concat(parts, ",") .. "}"
+	elseif kind == "string" then
+		return ("%q"):format(value)
+	end
+	return tostring(value)
+end
+local deserializations = 0
+local function deserialize(text)
+	deserializations = deserializations + 1
+	if text == "" then return nil end
+	return assert(loadstring("return " .. text))()
+end
+
+-- ---------------------------------------------------------------------------
+-- Fake engine
+-- ---------------------------------------------------------------------------
+local Stack = {}
+Stack.__index = Stack
+function ItemStack(value)
+	if getmetatable(value) == Stack then return setmetatable({name = value.name, count = value.count}, Stack) end
+	local name, count = "", 0
+	if type(value) == "string" and value ~= "" then
+		local n, c = value:match("^(%S+)%s*(%d*)$")
+		name, count = n, tonumber(c) or 1
+	end
+	return setmetatable({name = name, count = count}, Stack)
+end
+function Stack:get_name() return self.count > 0 and self.name or "" end
+function Stack:get_count() return self.count end
+function Stack:is_empty() return self.count == 0 end
+function Stack:equals(other) return self:get_name() == other:get_name() and self.count == other.count end
+function Stack:take_item(n)
+	n = math.min(n or 1, self.count)
+	self.count = self.count - n
+	local name = self.name
+	if self.count == 0 then self.name = "" end
+	return ItemStack(name .. " " .. n)
+end
+function Stack:add_item(item)
+	item = ItemStack(item)
+	if item:is_empty() then return item end
+	if self:is_empty() then self.name, self.count = item.name, item.count; return ItemStack("") end
+	if self.name ~= item.name then return item end
+	local moved = math.min(99 - self.count, item.count)
+	self.count, item.count = self.count + moved, item.count - moved
+	if item.count == 0 then item.name = "" end
+	return item
+end
+
+local registered = {}
+local us = 1000000
+local players, windows = {}, {}
+local window_reads = 0
+local item_groups = {["default:tree"] = {log = 1}, ["default:pine_tree"] = {log = 1}}
+core = {
+	registered_items = {["grug_food:raw_meat"] = {description = "Raw Meat"},
+		["default:tree"] = {description = "Tree"}, ["default:pine_tree"] = {description = "Pine Tree"},
+		["default:dirt"] = {description = "Dirt"}, ["grug_mobs:tusk"] = {description = "Boar Tusk"}},
+	registered_entities = {["grug_mobs:boar"] = {description = "Boar"}},
+	get_translated_string = function(_, text) return text end,
+	get_us_time = function() return us end,
+	get_item_group = function(name, group) return (item_groups[name] or {})[group] or 0 end,
+	serialize = serialize,
+	deserialize = deserialize,
+	log = function() end,
+	get_player_by_name = function(name) return players[name] end,
+	get_connected_players = function()
+		local list = {}
+		for _, p in pairs(players) do list[#list + 1] = p end
+		table.sort(list, function(a, b) return a.name < b.name end)
+		return list
+	end,
+	get_player_window_information = function(name)
+		window_reads = window_reads + 1
+		return windows[name]
+	end,
+	formspec_escape = function(text)
+		return (text:gsub("\\", "\\\\"):gsub("%]", "\\]"):gsub("%[", "\\[")
+			:gsub(";", "\\;"):gsub(",", "\\,"))
+	end,
+	get_current_modname = function() return "grug_map" end,
+	get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
+	get_modnames = function() return {"grug_map"} end,
+	get_worldpath = function() return "/nonexistent-world" end,
+	settings = {get = function() return nil end},
+	encode_png = function(_, _, data) return data end,
+	safe_file_write = function() return true end,
+	dynamic_add_media = function() return true end,
+	add_item = function() end,
+	chat_send_player = function() end,
+	show_formspec = function() end,
+	close_formspec = function() end,
+}
+setmetatable(core, {__index = function(_, key)
+	if type(key) == "string" and key:match("^register_") then
+		return function(fn)
+			registered[key] = registered[key] or {}
+			registered[key][#registered[key] + 1] = fn
+		end
+	end
+end})
+local function each(kind, ...)
+	for _, fn in ipairs(registered[kind] or {}) do fn(...) end
+end
+vector = {distance = function(a, b)
+	local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
+	return math.sqrt(dx * dx + dy * dy + dz * dz)
+end, new = function(x, y, z)
+	if type(x) == "table" then return {x = x.x, y = x.y, z = x.z} end
+	return {x = x, y = y, z = z}
+end}
+
+local hud_changes = 0
+local function new_player(name, pos)
+	local p = {name = name, pos = pos, yaw = 0, meta = {}, huds = {}, next_hud = 0,
+		lists = {main = {}}, sends = 0}
+	for i = 1, 16 do p.lists.main[i] = ItemStack("") end
+	function p:get_player_name() return self.name end
+	function p:get_pos() return {x = self.pos.x, y = self.pos.y, z = self.pos.z} end
+	function p:get_look_horizontal() return self.yaw end
+	function p:get_hp() return 20 end
+	function p:is_player() return true end
+	function p:get_meta()
+		local m = self.meta
+		return {get_string = function(_, k) return m[k] or "" end,
+			set_string = function(_, k, v) m[k] = v ~= "" and v or nil end}
+	end
+	function p:get_inventory()
+		local lists = self.lists
+		return {
+			get_list = function(_, list)
+				local out = {}
+				for i, s in ipairs(lists[list] or {}) do out[i] = ItemStack(s) end
+				return out
+			end,
+			get_stack = function(_, list, i) return ItemStack(lists[list][i]) end,
+			set_stack = function(_, list, i, s) lists[list][i] = ItemStack(s); return true end,
+			add_item = function(_, list, s)
+				local rest = ItemStack(s)
+				for _, slot in ipairs(lists[list]) do
+					if rest:is_empty() then break end
+					rest = slot:add_item(rest)
+				end
+				return rest
+			end,
+		}
+	end
+	function p:give(item) return self:get_inventory():add_item("main", item) end
+	function p:hud_add(def) self.next_hud = self.next_hud + 1; self.huds[self.next_hud] = deep_copy(def); return self.next_hud end
+	function p:hud_change(id, stat, value) hud_changes = hud_changes + 1; self.huds[id][stat] = value end
+	function p:hud_remove(id) self.huds[id] = nil end
+	function p:hud_set_flags() end
+	function p:set_minimap_modes() end
+	function p:set_inventory_formspec(fs) self.form = fs; self.sends = self.sends + 1 end
+	return p
+end
+local function join(p)
+	players[p.name] = p
+	windows[p.name] = windows[p.name] or {size = {x = 1920, y = 1080}, real_hud_scaling = 1,
+		real_gui_scaling = 1}
+	each("register_on_joinplayer", p)
+end
+local function leave(p)
+	each("register_on_leaveplayer", p, false)
+	players[p.name] = nil
+end
+
+-- ---------------------------------------------------------------------------
+-- The game around the quest files
+-- ---------------------------------------------------------------------------
+local level, faction = 1, "accord"
+local fed = {}
+local visibility
+local sockets = {
+	{id = "a", role = "quest", pos = {x = 100, y = 10, z = -200}},
+	{id = "b", role = "quest", pos = {x = 140, y = 10, z = -230}},
+	{id = "c", role = "quest", pos = {x = 60, y = 10, z = -260}},
+	{id = "d", role = "quest", pos = {x = 20, y = 10, z = -180}},
+}
+grug_core = {
+	register_tag_visibility = function(fn) visibility = fn end,
+	feed_item = function() end,
+	feed = function(_, kind, text, key) fed[#fed + 1] = {kind = kind, text = text, key = key}; return true end,
+	settlement_socket_settlements = function()
+		return {{key = "s", race_id = "human", anchor = {x = 90, z = -220}}}
+	end,
+	settlement_sockets_at = function(key) return key == "s" and sockets or {} end,
+	zone_authority_installed = function() return false end,
+}
+dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
+dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
+grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
+	UI = {width = 10.4, height = 11.1}}
+grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
+grug_classes = {get_race = function() return "human" end}
+grug_xp = {get_level = function() return level end, add_xp = function() end,
+	quest_reward = function() return 10 end}
+grug_money = {MAX = 1e9, get = function() return 0 end, add = function() end,
+	format = function(c) return c .. "c" end}
+grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
+	dragon_map_markers = function() return {} end}
+grug_zones = {id_at = function() return "z" end, at = function() return nil end}
+grug_quests = {}
+for _, file in ipairs({"registry", "state", "labels", "npc", "hud"}) do
+	dofile(repo .. "/mods/PLAYER/grug_quests/" .. file .. ".lua")
+end
+local Q = grug_quests
+
+Q.register_npc("elder", {settlement = "s", socket = "a", title = "Elder Maren"})
+Q.register_npc("hunter", {settlement = "s", socket = "b", title = "Hunter Brosk"})
+Q.register_npc("envoy", {settlement = "s", socket = "c", title = "Envoy Lysa"})
+Q.register_npc("smith", {settlement = "s", socket = "d", title = "Smith Orrin"})
+local function quest(id, def)
+	def.title, def.description = def.title or id, def.description or "Text of " .. id
+	def.rewards = def.rewards or {copper = 5}
+	Q.register_quest(id, def)
+end
+quest("intro", {npc = "elder", objectives = {{type = "item", item = "grug_food:raw_meat", count = 2}}})
+quest("next", {npc = "elder", turnin_npc = "hunter", prerequisites = {"intro"},
+	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 2}}})
+quest("logs", {npc = "hunter", objectives = {{type = "item", group = "log", count = 3}}})
+quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
+	objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+quest("tusk", {npc = "envoy", objectives = {{type = "item", item = "grug_mobs:tusk", count = 1}},
+	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, chance = 1}}})
+quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+quest("other_side", {npc = "envoy", faction = "horde", objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
+local clock = 1000
+Q.clock = function() return clock end
+
+-- ---------------------------------------------------------------------------
+-- C: the cache never changes under its readers
+-- ---------------------------------------------------------------------------
+local cache = Q._state_cache
+check(type(cache) == "table", "C the cache is visible to fixtures")
+local watched = {}
+local function watch()
+	for _, entry in pairs(cache) do
+		if not watched[entry.state] then watched[entry.state] = deep_copy(entry.state) end
+	end
+end
+-- Whether every watched table is unchanged and every entry equals a fresh
+-- decode of its raw string.
+local function audit()
+	local intact, consistent = true, true
+	for table_, copy in pairs(watched) do
+		if not deep_equal(table_, copy) then intact = false end
+	end
+	for _, entry in pairs(cache) do
+		local decoded = entry.raw ~= "" and assert(loadstring("return " .. entry.raw))() or
+			{active = {}, completed = {}, tracked = {}, hud = true}
+		decoded.cooldowns = decoded.cooldowns or {}
+		if not deep_equal(entry.state, decoded) then consistent = false end
+	end
+	return intact, consistent
+end
+local function verify(label)
+	local intact, consistent = audit()
+	check(intact, "C no cached table changed: " .. label)
+	check(consistent, "C the cache equals its raw strings: " .. label)
+	watch()
+end
+local function op(label, fn, ...)
+	watch()
+	local a, b, c = fn(...)
+	verify(label)
+	return a, b, c
+end
+
+local ann = new_player("ann", {x = 100, y = 10, z = -205})
+join(ann)
+verify("join")
+
+local priority = {ready = 1, available = 2, active = 3, locked = 4}
+local function best_row(player, npc)
+	local best
+	for _, row in ipairs(Q.npc_quests(player, npc)) do
+		if not best or priority[row.status] < priority[best] then best = row.status end
+	end
+	return best
+end
+-- marker_states equals the most urgent npc_quests row for every NPC.
+local function markers_agree(label)
+	us = us + 1100000 -- past the memo
+	local states = op("marker_states " .. label, Q.marker_states, ann)
+	local agree = true
+	for _, npc in ipairs({"elder", "hunter", "envoy", "smith"}) do
+		if states[npc] ~= best_row(ann, npc) then agree = false end
+	end
+	check(agree, "M marker_states equals the npc_quests rows: " .. label)
+	return states
+end
+
+local states = markers_agree("fresh")
+eq(states.elder, "available", "M fresh: elder offers the intro")
+eq(states.hunter, "available", "M fresh: hunter offers logs and the bounty")
+eq(states.envoy, "available", "M fresh: envoy offers the tusk quest")
+eq(states.smith, nil, "M an NPC without quests has no marker")
+
+-- Unchanged raw string: no deserialization on any read path.
+do
+	op("prime", Q.journal, ann)
+	local before = deserializations
+	for _ = 1, 20 do
+		op("npc_quests", Q.npc_quests, ann, "elder")
+		op("status", Q.status, ann, "intro")
+		op("journal", Q.journal, ann)
+		op("journal_key", Q.journal_key, ann)
+		us = us + 1100000
+		op("marker_states", Q.marker_states, ann)
+	end
+	eq(deserializations - before, 0, "C no deserialization while the state is unchanged")
+end
+
+-- accept, progress, turn-in, kill credit, drops, cooldown, abandon, tracking.
+check(op("accept intro", Q.accept, ann, "intro"), "C accept intro")
+eq(Q.status(ann, "intro"), "active", "C status follows the accept at once")
+eq(Q.marker_states(ann).elder, "active", "M accept shows at once (state changed)")
+states = markers_agree("after accept")
+ann:give("grug_food:raw_meat 2")
+eq(Q.marker_states(ann).elder, "active", "M an inventory change waits for the memo")
+us = us + 1100000
+eq(Q.marker_states(ann).elder, "ready", "M ...and shows after a second")
+check(op("turn in intro", Q.turn_in, ann, "intro"), "C turn in intro")
+eq(Q.status(ann, "intro"), "completed", "C completed after the turn-in")
+states = markers_agree("after turn-in")
+eq(states.elder, "available", "M the follow-up quest unlocks at the elder")
+check(op("accept next", Q.accept, ann, "next"), "C accept next")
+local boar = {name = "grug_mobs:boar", object = {}}
+op("kill credit", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
+local function row_of(id)
+	for _, row in ipairs(Q.journal(ann).quests) do if row.id == id then return row end end
+end
+eq(row_of("next").objectives[1].count, 1, "C a kill credit shows in the journal")
+op("kill credit 2", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
+eq(Q.marker_states(ann).hunter, "ready", "M the second kill readies the turn-in at once")
+do
+	local raw = ann.meta["grug_quests:state"]
+	op("kill credit at the cap", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
+	eq(ann.meta["grug_quests:state"], raw, "C a kill that changes no counter saves nothing")
+	local wolf = {name = "grug_mobs:wolf", object = {}}
+	op("kill credit no match", Q.credit_kill, ann, wolf, {x = 0, y = 0, z = 0})
+	eq(ann.meta["grug_quests:state"], raw, "C a kill matching nothing saves nothing")
+end
+check(op("turn in next", Q.turn_in, ann, "next"), "C turn in next")
+markers_agree("after next")
+check(op("accept tusk", Q.accept, ann, "tusk"), "C accept tusk")
+do
+	us = us + 1100000
+	local _, version = Q.marker_states(ann)
+	local again, same = Q.marker_states(ann)
+	eq(same, version, "M within the memo the version holds")
+	check(again == Q.marker_states(ann), "M within the memo the same table comes back")
+	op("quest drop", Q.roll_quest_drops, boar, {"ann"}, {x = 0, y = 0, z = 0})
+	eq(Q.marker_states(ann).envoy, "ready", "M a quest drop (changed callback) shows at once")
+	local _, after = Q.marker_states(ann)
+	check(after > version, "M the version rose with the change")
+	us = us + 1100000
+	local _, later = Q.marker_states(ann)
+	eq(later, after, "M a recompute without a change keeps the version")
+end
+check(op("turn in tusk", Q.turn_in, ann, "tusk"), "C turn in tusk")
+check(op("accept bounty", Q.accept, ann, "bounty"), "C accept bounty")
+op("bounty kill", Q.credit_kill, ann, boar, {x = 0, y = 0, z = 0})
+check(op("turn in bounty", Q.turn_in, ann, "bounty"), "C turn in bounty")
+states = markers_agree("bounty cooling down")
+local cooling = false
+for _, row in ipairs(Q.npc_quests(ann, "hunter")) do
+	if row.id == "bounty" then cooling = row.status == "locked" and row.reason:find("Repeatable again") ~= nil end
+end
+check(cooling, "C the bounty cools down after its turn-in")
+clock = clock + 61
+markers_agree("bounty ready again")
+check(op("accept logs", Q.accept, ann, "logs"), "C accept logs")
+check(op("untrack logs", Q.set_tracked, ann, "logs", false), "C untrack")
+eq(#Q.journal(ann).tracked, 0, "C untracked in the journal")
+check(op("track logs", Q.set_tracked, ann, "logs", true), "C track")
+op("hud off", Q.set_hud_enabled, ann, false)
+eq(Q.journal(ann).hud_enabled, false, "C the HUD switch shows")
+op("hud on", Q.set_hud_enabled, ann, true)
+do
+	local journal = Q.journal(ann)
+	journal.tracked[1] = "tampered"
+	journal.quests[1].objectives[1].count = 99
+	verify("a caller writing into its journal")
+	eq(Q.journal(ann).tracked[1], "logs", "C a journal is the caller's own copy")
+end
+check(op("abandon logs", Q.abandon, ann, "logs"), "C abandon")
+eq(Q.status(ann, "logs"), "available", "C available again after abandoning")
+markers_agree("after abandon")
+level = 5
+markers_agree("level 5")
+eq(Q.marker_states(ann).envoy, "available", "M a level-up unlocks after the memo")
+level = 1
+
+-- The audit itself notices a write into a cached table.
+do
+	local state = cache.ann.state
+	state.active.tampered = {}
+	local intact, consistent = audit()
+	check(not intact and not consistent, "C the audit catches a write into a cached table")
+	state.active.tampered = nil
+end
+
+-- leave and join
+do
+	leave(ann)
+	eq(cache.ann, nil, "C leave clears the cache")
+	local before = deserializations
+	join(ann)
+	for _ = 1, 5 do Q.journal(ann); Q.npc_quests(ann, "hunter") end
+	eq(deserializations - before, 1, "C a rejoin decodes once")
+	verify("rejoin")
+	eq(Q.status(ann, "intro"), "completed", "C the state survives leave and join")
+end
+
+-- ---------------------------------------------------------------------------
+-- T: the NPC tag callback
+-- ---------------------------------------------------------------------------
+do
+	check(type(visibility) == "function", "T tag visibility callback registered")
+	local asked = 0
+	local real = Q.marker_states
+	Q.marker_states = function(player)
+		asked = asked + 1
+		return real(player)
+	end
+	local mob = {object = {is_valid = function() return true end}}
+	local parent = {get_luaentity = function() return mob end, get_pos = function() return {x = 0, y = 0, z = 0} end}
+	local observers = {ann = true}
+	visibility(parent, observers, false) -- warm
+	-- Interpreted, so trace recording does not count as an allocation.
+	if jit then jit.off() end
+	collectgarbage("collect")
+	collectgarbage("stop")
+	local before = collectgarbage("count")
+	for _ = 1, 2000 do visibility(parent, observers, false) end
+	local grown = collectgarbage("count") - before
+	collectgarbage("restart")
+	if jit then jit.on() end
+	check(grown == 0, ("T a mob parent allocates nothing (%.2f KB for 2000 calls)"):format(grown))
+	-- control: the same measurement sees one small table per call
+	if jit then jit.off() end
+	collectgarbage("collect")
+	collectgarbage("stop")
+	before = collectgarbage("count")
+	local sink
+	for _ = 1, 2000 do sink = {} end
+	local control = collectgarbage("count") - before
+	collectgarbage("restart")
+	if jit then jit.on() end
+	check(sink and control > 10, ("T the allocation measurement works (%.1f KB control)"):format(control))
+	eq(asked, 0, "T a mob parent asks no marker state")
+	local children = {}
+	core.add_entity = function()
+		local child = {observers = nil, valid = true}
+		function child:is_valid() return self.valid end
+		function child:set_attach() end
+		function child:set_properties(p) self.props = p end
+		function child:set_observers(o) self.observers = o end
+		function child:remove() self.valid = false end
+		children[#children + 1] = child
+		return child
+	end
+	local npc = {_grug_start = "s", _grug_socket = "b", object = mob.object}
+	local npc_parent = {get_luaentity = function() return npc end, get_pos = function() return {x = 0, y = 0, z = 0} end}
+	local bob = new_player("bob", {x = 0, y = 10, z = 0})
+	join(bob)
+	visibility(npc_parent, {ann = true, bob = true}, false)
+	eq(asked, 2, "T a quest NPC asks marker_states once per observer")
+	local shown = {}
+	for _, child in ipairs(children) do
+		for name in pairs(child.observers or {}) do shown[name] = (shown[name] or 0) + 1 end
+	end
+	check(shown.ann == 1 and shown.bob == 1, "T each observer sees exactly one marker")
+	visibility(npc_parent, {}, true)
+	local removed = true
+	for _, child in ipairs(children) do removed = removed and not child.valid end
+	check(removed, "T removing the parent removes its markers")
+	Q.marker_states = real
+	leave(bob)
+end
+
+-- ---------------------------------------------------------------------------
+-- H: tracker HUD
+-- ---------------------------------------------------------------------------
+local journals = 0
+do
+	local real = Q.journal
+	Q.journal = function(...)
+		journals = journals + 1
+		return real(...)
+	end
+end
+local hud_step = registered.register_globalstep[1]
+local function hud_steps(seconds)
+	for _ = 1, math.floor(seconds / 0.1 + 0.5) do hud_step(0.1) end
+end
+do
+	Q.accept(ann, "logs")
+	hud_steps(0.5)
+	journals = 0
+	hud_steps(2.0)
+	eq(journals, 0, "H an unchanged state and inventory build no journal")
+	ann:give("default:dirt 5")
+	hud_steps(0.5)
+	eq(journals, 0, "H a non-objective item builds no journal")
+	local raw, held = Q.journal_key(ann)
+	ann:give("default:tree 1")
+	local raw2, held2 = Q.journal_key(ann)
+	check(raw == raw2 and held ~= held2, "H an objective item changes the key's item part")
+	fed = {}
+	hud_steps(0.5)
+	eq(journals, 1, "H an objective item builds the journal once")
+	check(fed[1] and fed[1].text:find("1/3", 1, true), "H ...and posts the progress line")
+	ann:give("default:pine_tree 1")
+	hud_steps(0.5)
+	eq(journals, 2, "H a second group member counts too")
+	-- several players: five slots, each polled once per 0.5 s
+	local polled, real_key = {}, Q.journal_key
+	Q.journal_key = function(player)
+		polled[player:get_player_name()] = (polled[player:get_player_name()] or 0) + 1
+		return real_key(player)
+	end
+	local crowd = {}
+	for i = 1, 10 do crowd[i] = new_player(("p%02d"):format(i), {x = i, y = 10, z = 0}); join(crowd[i]) end
+	polled = {}
+	local most = 0
+	for _ = 1, 5 do
+		local before = 0
+		for _, n in pairs(polled) do before = before + n end
+		hud_step(0.1)
+		local after = 0
+		for _, n in pairs(polled) do after = after + n end
+		most = math.max(most, after - before)
+	end
+	local once = true
+	for _, p in pairs(players) do once = once and polled[p.name] == 1 end
+	check(once, "H every player is polled once per 0.5 s")
+	check(most <= 3, "H at most a fifth of the players (rounded up) per step (" .. most .. ")")
+	Q.journal_key = real_key
+	for _, p in ipairs(crowd) do leave(p) end
+end
+
+-- ---------------------------------------------------------------------------
+-- P: the Map tab
+-- ---------------------------------------------------------------------------
+local party = {}
+grug_parties = {view = function(player)
+	if #party == 0 then return nil end
+	local members = {{name = player:get_player_name()}}
+	for _, name in ipairs(party) do members[#members + 1] = {name = name} end
+	return {members = members}
+end, register_on_change = function() end}
+local home_left = 0
+grug_home = {get = function() return {id = "inn", label = "Inn"} end,
+	locations = function() return {{id = "inn", label = "Inn", pos = {x = 80, y = 10, z = -210}}} end,
+	remaining = function() return home_left end, is_pending = function() return false end,
+	known_waypoints = function() return {} end}
+grug_jobs = {PROFESSIONS = {}}
+local inventory_sets = 0
+local page
+sfinv = {contexts = {}, register_page = function(_, def) page = def end,
+	make_formspec = function(_, _, content) return content end,
+	set_page = function() end, inventory_suspended = function() return false end}
+function sfinv.set_player_inventory_formspec(player, context)
+	inventory_sets = inventory_sets + 1
+	player:set_inventory_formspec(page.get(page, player, context))
+end
+grug_map = {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
+local atlas = grug_map.atlas
+grug_map.base = dofile(repo .. "/mods/PLAYER/grug_map/base.lua")
+local installed = {quality = "normal", width = 1080, height = 960,
+	tiles = grug_map.base.tiles(1080, 960)}
+installed.texture = grug_map.base.combined_texture(1080, 960, installed.tiles)
+atlas.set_base_texture(installed.texture)
+local location_reads = 0
+grug_map.location = {text_of = function()
+	location_reads = location_reads + 1
+	return "Dawnmere Fields"
+end}
+local steps_before = #registered.register_globalstep
+dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
+grug_map.minimap.install(installed)
+local minimap_step = registered.register_globalstep[steps_before + 1]
+dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
+dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
+local page_step = registered.register_globalstep[#registered.register_globalstep]
+each("register_on_mods_loaded")
+local collected = 0
+do
+	local real = atlas.collect_markers
+	atlas.collect_markers = function(...)
+		collected = collected + 1
+		return real(...)
+	end
+end
+local function page_steps(seconds)
+	for _ = 1, math.floor(seconds / 0.5 + 0.5) do us = us + 500000; page_step(0.5) end
+end
+
+local walker = new_player("walker", {x = 100, y = 10, z = -220})
+join(walker)
+local mate = new_player("mate", {x = 120, y = 10, z = -240})
+join(mate)
+party = {"mate"}
+local context = {page = "grug_map:atlas"}
+sfinv.contexts.walker = context
+page.on_enter(page, walker, context)
+sfinv.set_player_inventory_formspec(walker, context)
+local first = walker.form
+check(first and first:find("grug_map_marker_", 1, true), "P the form carries markers")
+
+-- one style[] per look
+do
+	local looks, named, fields = 0, {}, {}
+	for names in first:gmatch("style%[([^;%]]+);") do
+		looks = looks + 1
+		for field in names:gmatch("[^,]+") do named[field] = (named[field] or 0) + 1 end
+	end
+	for field in first:gmatch("button%[[^;]+;[^;]+;(grug_map_marker_%x+)") do fields[field] = true end
+	for field in first:gmatch("image_button%[[^;]+;[^;]+;[^;]+;(grug_map_marker_%x+);") do fields[field] = true end
+	local once = true
+	for field, n in pairs(named) do once = once and n == 1 and fields[field] end
+	check(looks >= 2 and looks <= 5, "P one style[] per look (" .. looks .. ")")
+	check(once, "P every styled field is one marker, styled once")
+	local quest_buttons, styled_quests = 0, 0
+	for _, giver in ipairs({"elder", "hunter", "envoy"}) do
+		local field = atlas.field_id("quest:" .. giver)
+		if first:find(field, 1, true) then
+			quest_buttons = quest_buttons + 1
+			if named[field] then styled_quests = styled_quests + 1 end
+		end
+	end
+	check(quest_buttons == 3 and styled_quests == 3, "P quest markers are styled through the shared style[]")
+	check(first:find("style%[[^%]]*" .. atlas.field_id("player:walker")) and
+		first:find("style%[[^%]]*" .. atlas.field_id("party:mate")), "P both arrows share the border style")
+end
+
+-- standing still: no sends, no form, no marker collection
+do
+	walker.sends, collected = 0, 0
+	page_steps(10)
+	eq(walker.sends, 0, "P a still viewer gets no sends")
+	eq(collected, 0, "P the poll builds no form while nothing changed")
+end
+
+-- moves inside one arrow grid cell change nothing
+do
+	walker.sends = 0
+	local form = walker.form
+	walker.pos.x = walker.pos.x + 0.5
+	page_steps(4)
+	eq(walker.sends, 0, "P a move inside one grid cell sends nothing")
+	sfinv.set_player_inventory_formspec(walker, context)
+	eq(walker.form, form, "P ...and the form is the same")
+	walker.pos.x = walker.pos.x - 0.5
+end
+
+-- walking at zoom 4: at most one send per 2 s
+do
+	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_in = "+"})
+	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_in = "+"})
+	eq(context.grug_map_zoom, 4, "P zoomed to 4x")
+	walker.sends = 0
+	local sends_at, last = {}, walker.sends
+	for i = 1, 40 do
+		walker.pos.x = walker.pos.x + 2 -- 4 nodes per second
+		us = us + 500000
+		page_step(0.5)
+		if walker.sends ~= last then sends_at[#sends_at + 1] = i * 0.5; last = walker.sends end
+	end
+	local spaced = true
+	for i = 2, #sends_at do spaced = spaced and sends_at[i] - sends_at[i - 1] >= 2 - 1e-9 end
+	check(#sends_at >= 8 and #sends_at <= 10 and spaced,
+		("P a walking viewer: %d sends in 20 s, at least 2 s apart"):format(#sends_at))
+end
+
+-- a click answers at once, and the poll then waits again
+do
+	local sets = inventory_sets
+	page.on_player_receive_fields(page, walker, context, {grug_map_zoom_out = "-"})
+	eq(inventory_sets, sets + 1, "P a zoom click rebuilds at once")
+	local field = atlas.field_id("quest:hunter")
+	page.on_player_receive_fields(page, walker, context, {[field] = "!"})
+	eq(inventory_sets, sets + 2, "P a marker click rebuilds at once")
+	eq(context.grug_map_selected, "quest:hunter", "P the marker is selected")
+	check(walker.form:find("Selected: Hunter Brosk", 1, true), "P the selection shows")
+	walker.sends = 0
+	page_steps(1.5)
+	eq(walker.sends, 0, "P no poll send within 2 s of a click")
+end
+
+-- a quest change shows on the next 2 s poll
+do
+	page_steps(4)
+	walker.sends = 0
+	local field = atlas.field_id("quest:elder")
+	local before = walker.form:match("(button%[[^%]]-;" .. field .. ";[^%]]*%])")
+	check(Q.accept(walker, "intro"), "P accept the intro")
+	page_steps(2)
+	eq(walker.sends, 1, "P the quest change is sent on the next poll")
+	local after = walker.form:match("(button%[[^%]]-;" .. field .. ";[^%]]*%])")
+	check(before and after and before:find(";!%]$") and after:find(";%?%]$"),
+		"P the elder's marker turns from ! to ? (" .. tostring(before) .. " -> " .. tostring(after) .. ")")
+end
+
+-- the home countdown and the party arrow are part of the signature
+do
+	page_steps(4)
+	walker.sends = 0
+	home_left = 90
+	page_steps(2)
+	eq(walker.sends, 1, "P the home countdown is sent")
+	check(walker.form:find("Return home: Inn (1:30)", 1, true), "P ...with its value")
+	home_left = 0
+	page_steps(4)
+	walker.sends = 0
+	mate.yaw = math.pi
+	page_steps(2)
+	eq(walker.sends, 1, "P a party member turning is sent")
+end
+
+-- ---------------------------------------------------------------------------
+-- W: minimap window reads
+-- ---------------------------------------------------------------------------
+do
+	minimap_step(0.09)
+	window_reads, location_reads = 0, 0
+	local steps = 0
+	for _ = 1, 22 do
+		walker.pos.z = walker.pos.z + 0.4
+		minimap_step(0.09)
+		steps = steps + 1
+	end
+	-- two minimap players (walker, mate; ann joined before the minimap was
+	-- loaded) over 22 steps of 0.09 s: 3 or 4 reads each instead of 22
+	check(window_reads <= 2 * 4 and window_reads >= 2 * 3,
+		("W window read every 0.5 s: %d reads for 2 players over %d steps"):format(window_reads, steps))
+	check(location_reads <= 2 * 4 and location_reads >= 2 * 3,
+		("W location line read every 0.5 s: %d reads"):format(location_reads))
+end
+
+if #failures == 0 then
+	print(("R30 P1 PORTABLE PASS checks=%d"):format(checks))
+else
+	for _, label in ipairs(failures) do print("FAIL " .. label) end
+	error(("R30 P1 PORTABLE FAIL %d/%d"):format(#failures, checks))
+end

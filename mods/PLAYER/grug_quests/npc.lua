@@ -2,8 +2,8 @@ local Q = grug_quests
 local sessions, markers = {}, {}
 local FORM = "grug_quests:dialogue"
 local function npc_id(entity)
-	if not entity or not entity.object or not entity.object:is_valid() then return nil end
-	if not entity._grug_start or not entity._grug_socket then return nil end
+	if not entity or not entity._grug_start or not entity._grug_socket then return nil end
+	if not entity.object or not entity.object:is_valid() then return nil end
 	return Q.npc_by_socket[entity._grug_start .. "/" .. entity._grug_socket]
 end
 local function in_reach(player, entity)
@@ -11,14 +11,6 @@ local function in_reach(player, entity)
 	local pos = entity.object:get_pos()
 	local pp = player:get_pos()
 	return pos and pp and vector.distance(pos, pp) <= 6
-end
-local priority = {ready = 1, available = 2, active = 3, locked = 4}
-function Q.marker_state(player, id)
-	local best
-	for _, row in ipairs(Q.npc_quests(player, id)) do
-		if not best or priority[row.status] < priority[best] then best = row.status end
-	end
-	return best
 end
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
@@ -101,9 +93,14 @@ core.register_entity("grug_quests:marker", {
 	on_activate = function(self) self.object:set_observers({}) end,
 })
 local function clear_markers(parent)
-	for _, child in pairs(markers[parent] or {}) do if child:is_valid() then child:remove() end end
+	local children = markers[parent]
+	if not children then return end
+	for _, child in pairs(children) do if child:is_valid() then child:remove() end end
 	markers[parent] = nil
 end
+-- Called for every tag carrier's parent each second, mobs included: a parent
+-- that is no quest NPC costs one lookup and allocates nothing (Round 30,
+-- perf review #10).
 grug_core.register_tag_visibility(function(parent, observers, removed)
 	if removed then clear_markers(parent); return end
 	local id = npc_id(parent:get_luaentity())
@@ -111,7 +108,7 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 	local partitions = {}
 	for name in pairs(observers) do
 		local player = core.get_player_by_name(name)
-		local state = player and Q.marker_state(player, id)
+		local state = player and Q.marker_states(player)[id]
 		if state then partitions[state] = partitions[state] or {}; partitions[state][name] = true end
 	end
 	local children = markers[parent] or {}

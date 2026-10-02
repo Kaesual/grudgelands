@@ -59,6 +59,13 @@ grug_map.page_layout = {map_w = MAP_W, region_labels = REGION_LABELS}
 -- Dark text over a light halo of four offset copies reads on land and sea.
 local LABEL_TEXT, LABEL_HALO, HALO = "#2a1c10", "#f3e8c8", 0.025
 local HALO_OFFSETS = {{-HALO, -HALO}, {HALO, -HALO}, {-HALO, HALO}, {HALO, HALO}}
+-- Round 30 ruling (perf review #3): while the tab is open, its arrows and
+-- markers are brought up to date at most every REBUILD seconds, and only
+-- when the signature below changed. Clicks still answer at once.
+local REBUILD_US = 2000000
+-- Player and party arrows are drawn on a grid of ARROW_STEP formspec units
+-- (about a screen pixel), so a move changes the form only when it shows.
+local ARROW_STEP = 0.02
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
@@ -94,6 +101,49 @@ local function current_zone(player)
 	if text ~= "" then return text end
 	local zone = grug_zones.at(player:get_pos())
 	return zone and (zone.display_name or humanize(zone.id)) or "Open sea"
+end
+
+-- An arrow's place on the map image as whole ARROW_STEPs, or nil off the map.
+local function arrow_cell(view, position, zoom)
+	local sx, sy = atlas.world_to_screen(view, position, 0, 0, MAP_W * zoom, MAP_H * zoom)
+	if not sx then return nil end
+	return math.floor(sx / ARROW_STEP + 0.5), math.floor(sy / ARROW_STEP + 0.5)
+end
+
+local function home_status(player)
+	local remaining = grug_home.remaining(player)
+	return grug_home.is_pending(player) and "Preparing arrival" or
+		(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
+end
+
+-- Everything the form shows that can change while the tab is open, read
+-- without building the form (Round 30, perf review #3): the zoom, the
+-- selection, the location label, the minimap switch, each arrow's grid
+-- place and heading frame, the quest markers' version
+-- (grug_quests.marker_states), the home and its status and the discovered
+-- waystones. Every other marker and label is fixed for the server's run;
+-- scroll values are transport state (see page_content).
+local function signature(player, context)
+	local zoom, view, name = context.grug_map_zoom or 1, atlas.view(), player:get_player_name()
+	local parts = {zoom, context.grug_map_selected or "", current_zone(player),
+		tostring(grug_map.minimap.available() and grug_map.minimap.enabled(player))}
+	local function arrow(other)
+		local x, y = arrow_cell(view, other:get_pos(), zoom)
+		parts[#parts + 1] = ("%s@%s,%s/%d"):format(other:get_player_name(), tostring(x),
+			tostring(y), atlas.heading_frame(other:get_look_horizontal()))
+	end
+	arrow(player)
+	local group = grug_parties.view(player)
+	for _, member in ipairs(group and group.members or {}) do
+		local other = member.name ~= name and core.get_player_by_name(member.name)
+		if other then arrow(other) end
+	end
+	local _, version = grug_quests.marker_states(player)
+	parts[#parts + 1] = version
+	local home = grug_home.get(player)
+	parts[#parts + 1] = home and home.id .. " " .. home_status(player) or ""
+	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
+	return table.concat(parts, "|")
 end
 
 local function page_content(player, context)
@@ -140,27 +190,41 @@ local function page_content(player, context)
 	context.grug_map_marker_fields = {}
 	local markers = atlas.collect_markers(player)
 	context.grug_map_detail = nil
+	-- One style[] per look, naming every marker that has it, before the
+	-- markers (a style must precede its elements).
+	local styles, looks, elements = {}, {}, {}
+	local function style(look, field)
+		if not styles[look] then styles[look] = {}; looks[#looks + 1] = look end
+		local names = styles[look]
+		names[#names + 1] = field
+	end
 	for index = 1, #markers do
 		local marker = markers[index]
-		local sx, sy = atlas.world_to_screen(view, marker.position,
-			0, 0, MAP_W * zoom, MAP_H * zoom)
+		local arrow = marker.kind == "player" or marker.kind == "party"
+		local sx, sy
+		if arrow then
+			sx, sy = arrow_cell(view, marker.position, zoom)
+			if sx then sx, sy = sx * ARROW_STEP, sy * ARROW_STEP end
+		else
+			sx, sy = atlas.world_to_screen(view, marker.position, 0, 0, MAP_W * zoom, MAP_H * zoom)
+		end
 		if sx then
 			if marker.id == context.grug_map_selected then
 				context.grug_map_detail = marker.detail
 			end
 			local field = atlas.field_id(marker.id)
 			context.grug_map_marker_fields[field] = marker
-			if marker.kind == "player" or marker.kind == "party" then
+			if arrow then
 				local tint = marker.kind == "player" and "gold" or "cyan"
 				local texture = ("grug_map_heading_%s_%02d.png"):format(tint,
 					atlas.heading_frame(marker.heading))
-				fs[#fs + 1] = ("style[%s;border=false]"):format(field)
-				fs[#fs + 1] = ("image_button[%.3f,%.3f;0.42,0.42;%s;%s;;false;false]"):
+				style("border=false", field)
+				elements[#elements + 1] = ("image_button[%.3f,%.3f;0.42,0.42;%s;%s;;false;false]"):
 					format(sx - 0.21, sy - 0.21, texture, field)
 				-- Names stay in the hover/detail text to keep tightly grouped players
 				-- legible even at continental scale.
 			elseif marker.texture then
-				fs[#fs + 1] = ("image_button[%.3f,%.3f;0.34,0.34;%s;%s;;false;false]"):
+				elements[#elements + 1] = ("image_button[%.3f,%.3f;0.34,0.34;%s;%s;;false;false]"):
 					format(sx - 0.17, sy - 0.17, esc(marker.texture), field)
 			else
 				local quest = marker.kind == "quest"
@@ -169,13 +233,17 @@ local function page_content(player, context)
 					and "?" or "!") or (marker.kind == "hostile" and "!" or "+")
 				local color = quest and ((marker.status == "ready" or marker.status == "available")
 					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
-				fs[#fs + 1] = ("style[%s;bgcolor=#2b2118cc;textcolor=%s]"):format(field, color)
-				fs[#fs + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
+				style("bgcolor=#2b2118cc;textcolor=" .. color, field)
+				elements[#elements + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
 					format(sx - 0.16, sy - 0.16, field, symbol)
 			end
-			fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.detail))
+			elements[#elements + 1] = ("tooltip[%s;%s]"):format(field, esc(marker.detail))
 		end
 	end
+	for _, look in ipairs(looks) do
+		fs[#fs + 1] = ("style[%s;%s]"):format(table.concat(styles[look], ","), look)
+	end
+	for _, element in ipairs(elements) do fs[#fs + 1] = element end
 	fs[#fs + 1] = "scroll_container_end[]scroll_container_end[]"
 	if not context.grug_map_detail then context.grug_map_selected = nil end
 	if context.grug_map_detail then
@@ -184,15 +252,12 @@ local function page_content(player, context)
 	end
 	local home = grug_home.get(player)
 	if home then
-		local remaining = grug_home.remaining(player)
-		local state = grug_home.is_pending(player) and "Preparing arrival" or
-			(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
 		fs[#fs + 1] = ("button[%.3f,%.3f;%.3f,0.65;grug_map_home;Return home: %s (%s)]"):
-			format(MAP_X, MAP_Y + MAP_H + 0.59, MAP_W, esc(home.label), esc(state))
+			format(MAP_X, MAP_Y + MAP_H + 0.59, MAP_W, esc(home.label), esc(home_status(player)))
 	end
-	-- Scrollbar starting values are transport state, not render semantics.
-	-- Only signatures actually sent to the client may advance session.signature.
-	local signature = table.concat(fs)
+	-- Scrollbar starting values are transport state, not render semantics:
+	-- they stay out of the signature. Only signatures actually sent to the
+	-- client may advance session.signature.
 	table.insert(fs, 1, "set_focus[" .. (context.grug_map_focus or SCROLL_X) .. ";true]")
 	fs[#fs + 1] = ("scrollbaroptions[min=0;max=%d;smallstep=40;largestep=900;thumbsize=%d;arrows=hide]"):
 		format(atlas.scroll_limit(zoom), math.max(1, math.floor((atlas.scroll_limit(zoom) + 1) / zoom)))
@@ -200,14 +265,16 @@ local function page_content(player, context)
 		format(MAP_X, MAP_Y + MAP_H + 0.05, MAP_W, SCROLL_X, context.grug_map_scroll_x or 0)
 	fs[#fs + 1] = ("scrollbar[%.3f,%.3f;0.28,%.3f;vertical;%s;%d]"):
 		format(MAP_X + MAP_W + 0.05, MAP_Y, MAP_H, SCROLL_Y, context.grug_map_scroll_y or 0)
-	return table.concat(fs), signature
+	return table.concat(fs)
 end
 
+-- The form and its signature (taken after the content, which may drop a
+-- selection whose marker is gone).
 local function make_form(player, context)
-	local content, signature = page_content(player, context)
+	local content = page_content(player, context)
 	return sfinv.make_formspec(player, context, content, false,
 		("formspec_version[4]size[%s,%s]real_coordinates[false]"):
-			format(UI.width, UI.height)), signature
+			format(UI.width, UI.height)), signature(player, context)
 end
 
 sfinv.register_page(PAGE, {
@@ -223,9 +290,9 @@ sfinv.register_page(PAGE, {
 		active[player:get_player_name()] = nil
 	end,
 	get = function(self, player, context)
-		local form, signature = make_form(player, context)
+		local form, sig = make_form(player, context)
 		local session = active[player:get_player_name()]
-		if session then session.signature = signature end
+		if session then session.signature, session.checked = sig, core.get_us_time() end
 		return form
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
@@ -285,10 +352,13 @@ sfinv.register_page(PAGE, {
 -- Only an explicit tab-entry session is polled. Updating the cached inventory
 -- form does not open a menu; the client updates it in place if it is visible
 -- (lua_api.md, set_inventory_formspec). Stable button names survive rebuilds.
+-- The signature is read at most every REBUILD_US after the last read or
+-- build, and the form is built only when it changed.
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime
 	if elapsed < 0.5 then return end
 	elapsed = elapsed % 0.5
+	local now = core.get_us_time()
 	for name, session in pairs(active) do
 		local player = core.get_player_by_name(name)
 		local context = sfinv.contexts[name]
@@ -301,11 +371,12 @@ core.register_globalstep(function(dtime)
 			-- Avoid replacing native widgets during an actively moving scrollbar.
 			-- Pending marker changes are rendered once scrolling has settled.
 			session.scroll_quiet = math.max(0, session.scroll_quiet - 0.5)
-		else
-			local form, signature = make_form(player, context)
-			if session.signature ~= signature then
+		elseif now - (session.checked or 0) >= REBUILD_US then
+			session.checked = now
+			if signature(player, context) ~= session.signature then
+				local form, sig = make_form(player, context)
 				player:set_inventory_formspec(form)
-				session.signature = signature
+				session.signature = sig
 			end
 		end
 	end
