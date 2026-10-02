@@ -225,9 +225,8 @@ Quest content is data, one file per zone, read at load by
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.
 - **Zone files depend on each other.** `requires` crosses
-  zones: today each race's home-zone file requires three quests and its
-  capital file one quest of the start zone, and a front file needs its
-  host's `front` line. Removing a required quest or a host's `front` line
+  zones: a race's home-zone file requires quests of its start zone, and a
+  front file needs its host's `front` line. Removing a required quest or a host's `front` line
   stops the load, so replace dependent zone files in one change (or keep the
   required ids).
 
