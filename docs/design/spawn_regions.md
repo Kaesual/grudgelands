@@ -259,9 +259,10 @@ seed (`grug_mobs.spawn_regions.describe(zone, target, mode, ref)`):
 
 Eight directions (north, northeast, east, … northwest; +z is north). The
 result carries `dir`, `distance` (nodes), `phrase_key` (`dir_of`, `near`,
-`dir_from_here`, `nearby`, `zone_dir`, `zone_heart`) and `phrase`, for
-placeholders such as `{dir_from_giver:<kind>}`, `{dir_of:<place>:<kind>}`
-and `{zone_area:<kind>}`. A kind with patches all round its giver (on
+`dir_from_here`, `nearby`, `zone_dir`, `zone_heart`) and `phrase`, which
+fills the quest text placeholders `{dir_from_giver:<target>}`,
+`{dir_of:<place>:<target>}` and `{zone_area:<target>}` (syntax and rules:
+[quests.md](quests.md#for-content-lanes)). A kind with patches all round its giver (on
 Dawnmere the meadows, pastures and borderlands) is pointed at by its largest
 patch only; the per-seed stats under `docs/planning/round28/regions/` list
 how many patches lie in another direction.

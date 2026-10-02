@@ -3,7 +3,9 @@
 Decided 2026-09-21; extended by Round 20 user Go, 2026-09-24, and by the
 Round 28 questing redesign, 2026-10-01 (rulings 29, 39–45;
 [plan](../planning/round28-questing-leveling-plan.md),
-[design frame](../planning/round28-design-frame.md) §4.7).
+[design frame](../planning/round28-design-frame.md) §4.7); text placeholders
+and quest copper by Round 29 Lane Q1, 2026-10-02
+([quests plan](../planning/round29-quests-plan.md) §3–4).
 
 
 ### Confirmed by the user
@@ -200,8 +202,8 @@ Quest content is data, one file per zone, read at load by
   hubs (at most two givers per hub, at most two lines per giver), their givers
   and lines, and its quests (format: design frame §4.7: `giver`, `turnin`,
   `min_level`, reward `level`, `requires` across zones, `objectives`,
-  `quest_drops`, `repeatable`, `rewards` with `weight`, `copper` and
-  `items`).
+  `quest_drops`, `repeatable`, `rewards` with `weight`, optional `copper`
+  and `items`).
 - `<zone_id>.front.quests.json`: front quests given by that zone's givers on
   the line `front`, which the zone's own file declares for that giver; the
   zone's own quests never use `front`.
@@ -219,9 +221,72 @@ Quest content is data, one file per zone, read at load by
   design files, plus the atlas checks.
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.
-- **For content lanes: zone files depend on each other.** `requires` crosses
+- **Zone files depend on each other.** `requires` crosses
   zones: today each race's home-zone file requires three quests and its
   capital file one quest of the start zone, and a front file needs its
   host's `front` line. Removing a required quest or a host's `front` line
   stops the load, so replace dependent zone files in one change (or keep the
   required ids).
+
+## For content lanes
+
+Round 29 Lane Q1. Quest texts follow the user's text rule (2026-10-02):
+English, two to four sentences, the giver's race voice, light humour
+welcome; items by name only, **never an item's tooltip text**; directions
+and places that depend on the seed only as **placeholders**, never a fixed
+compass word.
+
+**Placeholders** in `title` and `text`, filled per world from the spawn
+regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
+
+| Placeholder | Reads | Use for |
+|---|---|---|
+| `{dir_from_giver:T}` | "southeast from here", "nearby" | compact targets: camps, leaders, shore strips |
+| `{dir_of:P:T}` | "southeast of Highcourt", "near Highcourt" | any target, from a named place |
+| `{zone_area:T}` | "in the southeast of Dawnmere Fields", "in the heart of Dawnmere Fields" | open kinds spread over many patches |
+| `{name:T}` | "Dawnmere Meadows", "Crumb" | the display name of a kind, camp or leader |
+
+- `T` is a kind or camp of a spawn recipe or a leader role. A bare id means
+  the quest file's zone; another zone's kind or camp is written
+  `zone_id/id` (`{zone_area:elandor_whitebridge_shire/wolf_woods}`); a
+  leader role is found in any zone.
+- `P` is a settlement key or anchor id: `highcourt`, `goldmead_village`,
+  `anchor_015`.
+- A kind is pointed at by its largest patch, so two placeholders of one
+  quest never disagree. "From here" is measured from the giver; on an open
+  kind it is a warning (`W-placeholder-spread`): use `{zone_area:...}` or
+  `{dir_of:...}` there.
+- A title takes only `{name:...}`: titles appear in lists and in other
+  quests' requirements and are filled once at load. Texts are filled on
+  their first display and cached; a fill that starts a sentence starts with
+  a capital ("{dir_from_giver:bandit_camp} the smoke rises." reads
+  "Northeast from here the smoke rises.").
+- Examples: "Boars raid the crops {zone_area:home_fields}.";
+  "Crumb's gang holds the {name:bandit_camp} {dir_from_giver:bandit_camp}.";
+  "The wolves den {dir_of:highcourt:elandor_whitebridge_shire/wolf_woods}."
+- A target without a direction on a world (it formed no region there; the
+  region check `quest_targets.py` prevents it) reads "in <zone>" or
+  "around <place>" and is logged.
+
+**No fixed compass word** in a title or text: north, south, east, west, the
+four diagonals, and their -ern, -erly, -ward and -wards forms, in any case
+and hyphenation ("north-east" counts). Only whole words count: names such
+as "Northfold" or "Westbrook" are fine. Write a placeholder or neutral
+wording ("past the mill", "along the shore").
+
+**Copper:** `rewards.copper` is optional. Without it the quest pays
+`round_half_up(0.08 × P(T) × weight)` copper, at least 1c for a weight above
+0 (none for weight 0), with P = 25 / 65 / 160 / 400 / 1,000 / 2,500 for the
+reward level's tier band T (1–10 … 51–60; the WP44 cutover column,
+[economy plan](../planning/economy-vendor-plan.md) §4): a T1 3-KE hunt pays
+6c, a T6 one 6s. Write `copper` only for a deliberate exception (an island
+salvage bounty of weight 0).
+
+**Checks:** the game refuses at load every malformed placeholder, unknown
+target or place, direction in a title and compass word, naming file and
+quest. Offline: `python3 tools/r28_design/validate.py --game --legacy
+--atlas docs/planning/round28/zones/` (the same rules with the codes of its
+README) and `python3 tools/r28_design/ledger.py --game --track <race>
+[--sister <zone>]` for the route budget (31–40 the faction's three contested
+zones, 41–50 The Broken Causeway and The Shattered Line, 51–60 Gravesalt
+Escarpment and The Skyglass Canopy, each with the faction's front quests).

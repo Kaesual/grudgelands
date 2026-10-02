@@ -677,7 +677,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
   log, tracker and feed (item names only, never tooltip text) and carries
   each objective's target level range, computed once at load by
-  `validate.lua` (Lane Q0). The catalog requires only V1 overworld content; the Nether is
+  `validate.lua` (Lane Q0), and fills the quest text placeholders (Round 29
+  Q1): titles (`{name:...}` only) at load, texts on first display through
+  `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
+  `registry.lua` computes the copper of a quest without `rewards.copper`
+  (`quest_copper`). The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
