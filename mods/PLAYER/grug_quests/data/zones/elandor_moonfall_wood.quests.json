@@ -55,7 +55,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:wolf",
             "grug_mobs:briarpack_wolf"
           ],
           "zone": "elandor_moonfall_wood",
@@ -85,7 +84,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher",
             "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_moonfall_wood",

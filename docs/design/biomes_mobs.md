@@ -1193,7 +1193,7 @@ gate, protected surface).
   there is one (a cell is typed by its majority biome, so the spot's own
   column may be another's), and any leader set on blight dirt is sunproof:
   Mortuary-Clerk Hush survives the day (Round 28 S2b). Every leader sub-type is
-  1.15× the base model's size (whatever the catalogue's `size`) with twice
+  1.15× the base model's size (whatever the catalogue's `size`) with 1.5×
   the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
   leader spawns when a player is within 48 nodes of its spot (inside the
   player's active blocks: `active_block_range` − 1 mapblocks, so the unsaved

@@ -161,7 +161,10 @@ instead of 2.
   are never kill targets (Ruling 29), nor rares (Ruling 38). The split older
   quests keep entity names (`mobs`) and an optional named-zone filter
   (`zone`, matched at the death position), and some of them ask for enemy
-  faction guards in the contested zones.
+  faction guards in the contested zones. Where one of an older kill
+  objective's targets is spawned by its kill zone's recipe, it names no
+  target that recipe never spawns (Round 29), so the objective line shows
+  only names met there.
 - **Item**: one item, or any member of an item group (`group:tree`: "any
   log"), and a count. Objectives of one quest draw from the holdings in
   order, so two objectives never count the same item twice. An item that

@@ -69,7 +69,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:ashen_treant",
             "grug_mobs:rootbound_treant"
           ],
           "zone": "elandor_ashenward_march",
@@ -150,7 +149,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:skeleton_raider",
             "grug_mobs:march_skeleton_raider"
           ],
           "zone": "elandor_ashenward_march",
