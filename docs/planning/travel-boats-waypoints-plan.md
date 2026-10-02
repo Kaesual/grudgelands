@@ -93,8 +93,8 @@ markers, the mapgen items of §4, the documentation of §6.
 
 **Out:** docks, harbours, piers, landing structures on the islands (narrowed
 by the user for Round 30: each of the four island landings gets a wooden
-pier and a sand beach, `boats.md` §7.1; a path up the island is not built,
-user 2026-10-02, it goes to the backlog), passengers, boat inventories, boat
+pier and a sand beach, `boats.md` §7.1; the islands get no mapgen paths or
+roads by design, user 2026-10-02), passengers, boat inventories, boat
 combat, currents, zone-hub waypoints, Nether crossings (V2), any change to
 flight rules, island content (Round 28 writes island quests and bounties).
 

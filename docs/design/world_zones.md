@@ -247,7 +247,9 @@ in this file as of commit `082982da`.
   connection. Both factions receive equivalent authored boat access.
 - Every dragon island is a contested level-60 mountain region with strong
   level-60 mountain creatures. Its silhouette culminates in a dragon mountain
-  or summit lair (no hoard chest, WP audit E11).
+  or summit lair (no hoard chest, WP audit E11). The islands are untamed:
+  no mapgen paths or roads lead up from the boat landings (user
+  2026-10-02, `boats.md` §7.1).
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
