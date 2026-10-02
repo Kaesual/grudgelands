@@ -1781,10 +1781,10 @@ def _scenarios():
 
     def poi_camp(**fields):
         row = {"id": "vale_bandits", "name": "Goldmead Bandits", "site": {"poi": "bandit"},
-               "roster": [{"role": "bandit", "weight": 1}], "slots": 5, "respawn": [30, 60],
-               "min_player_distance": 16}
+               "belt": "l11_20", "roster": [{"role": "bandit", "weight": 1}], "slots": 5,
+               "respawn": [30, 60], "min_player_distance": 16}
         row.update(fields)
-        return row
+        return {k: v for k, v in row.items() if v is not None}
 
     def no_from_to(recipe):
         del recipe["from"]
@@ -1881,10 +1881,12 @@ def _scenarios():
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, False, "E-duplicate"),
         ("a palette-only spawns file (shipped form)", palette_only, False, None),
-        ("camp on the zone's bandit POI, belt of the POI", goldmead_camps([poi_camp()]), False, None),
+        ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), False, None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(
             site={"poi": "bandit", "name": "Goldmead Bandit Camp"})]), False, None),
-        ("camp on a POI with a stated belt", goldmead_camps([poi_camp(belt="l11_20")]), False, None),
+        ("camp on a POI without a belt", goldmead_camps([poi_camp(belt=None)]), False, "E-recipe-ref"),
+        ("camp on a POI whose roster never meets its stated belt", goldmead_camps([poi_camp(
+            roster=[{"role": "confused_bandit", "weight": 1}])]), False, "E-recipe-levels"),
         ("camp on a POI name the zone lacks", goldmead_camps([poi_camp(
             site={"poi": "bandit", "name": "Nowhere Camp"})]), False, "E-recipe-poi"),
         ("camp on the zone's guard post", goldmead_camps([poi_camp(site={"poi": "guard post"})]), False,
@@ -1892,11 +1894,8 @@ def _scenarios():
         ("apart on a camp on a POI", goldmead_camps([poi_camp(apart=8)]), False, "E-recipe-key"),
         ("two camps on one POI", goldmead_camps([poi_camp(), poi_camp(id="more_bandits")]), False,
          "E-recipe-poi"),
-        ("generated camp without a belt", goldmead_camps([poi_camp(site="generate", apart=8)]), False,
-         "E-recipe-ref"),
-        ("leader at a camp on a POI without a belt", goldmead_camps([poi_camp()], [
-            {"role": "confused_bandit_chief", "at": {"camp": "vale_bandits"}, "respawn": 300}]), False,
-         "E-leader-camp-belt"),
+        ("generated camp without a belt", goldmead_camps([poi_camp(site="generate", apart=8, belt=None)]),
+         False, "E-recipe-ref"),
         ("one-belt recipe without from and to", goldmead_camps([], change=no_from_to), False, None),
         ("to without from", goldmead_camps([], change=no_from), False, "E-recipe"),
         ("elite leader below level 31", zone_cat(elite_chief), False, "E-leader-tier"),

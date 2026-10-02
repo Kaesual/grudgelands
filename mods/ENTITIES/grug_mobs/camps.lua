@@ -881,7 +881,8 @@ grug_mobs.register_camp_type("guard_throng", {
 --   * members roam FREE under the normal wander leash (`_grug_home` = their
 --     own spawn point, radius 32): no `_grug_camp_pos`, no camp leash, no
 --     roam cap. They carry the camp's tag, and the head count is by that tag;
---   * a spot lies within CAMP_RADIUS (40) of the camp centre and keeps
+--   * a spot lies within CAMP_RADIUS (40) of the camp centre (24 for a
+--     camp on a POI), outside the drift band for aggressive roles, and keeps
 --     `min_player_distance` (16) from every player instead of the ambient 24,
 --     so two players standing in the camp do not block it;
 --   * levels and species come from the camp (belt range x role range,
@@ -927,11 +928,15 @@ local function count_region_members(camp, center)
 	return n
 end
 
--- One member onto a free spot of the camp. True when a mob arrived.
+-- One member onto a free spot of the camp. True when a mob arrived. A camp
+-- on a POI keeps its members near the POI's tents (POI_MEMBER_RADIUS, 24:
+-- a POI may stand close to a road or an outpost); a generated camp uses the
+-- whole camp radius. Like an ambient spawn, an aggressive member never
+-- stands in the drift band of a road, bridge or settlement.
 local function spawn_region_member(unit, zone_id, players, center_y, clock)
 	local SR = grug_mobs.spawn_regions
 	local camp = unit.camp
-	local r = camp_radius()
+	local r = unit.site and SR.core.POI_MEMBER_RADIUS or camp_radius()
 	for _ = 1, SPOT_TRIES do
 		local angle = math.random() * 2 * math.pi
 		local dist = math.sqrt(math.random()) * r
@@ -942,10 +947,12 @@ local function spawn_region_member(unit, zone_id, players, center_y, clock)
 			if g and g.y >= 0 then
 				local stand = {x = g.x, y = g.y + 1, z = g.z}
 				local role = SR.pick_role(camp.roster)
-				-- The unit carries the camp's tag and its levels in the belt
-				-- it stands in (a camp on a POI takes the POI's belt).
+				local name = "grug_mobs:" .. role
+				-- The unit carries the camp's tag and the levels of its
+				-- stated belt.
 				if SR.players_clear(stand, camp.min_player_distance, players) and
-						not SR.spawn_refused("grug_mobs:" .. role, stand) and
+						not SR.spawn_refused(name, stand) and
+						not (grug_mobs.disposition(name) == "aggressive" and SR.in_drift(stand)) and
 						SR.spawn_mob(unit, role, g, clock) then
 					return true
 				end

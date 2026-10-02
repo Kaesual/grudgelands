@@ -241,8 +241,7 @@ def panel_lines(zone, design, givers, problems):
             area = areas[camp["id"]]
             site = camp.get("site")
             where = " · on %s" % site["name"] if isinstance(site, dict) and site.get("name") else ""
-            belt = camp["belt"] or "of the POI (per seed)"
-            add("camp %s (%s)%s · belt %s · %s · %s slots: %s" % (camp["id"], camp["name"], where, belt,
+            add("camp %s (%s)%s · belt %s · %s · %s slots: %s" % (camp["id"], camp["name"], where, camp["belt"],
                                                                  short_levels(area["levels"]), camp["slots"],
                                                                  C.species_text(area)))
         for role, leader in sorted(design.leaders(zone).items()):

@@ -236,7 +236,8 @@ local function render_zone(zone)
 			slots = camp.slots, respawn = camp.respawn, levels = unit.levels,
 			roster = roster_rows(unit, camp.roster), score = unit.score,
 			road = unit.cell.road, phrases = phrases(camp.id),
-			poi = unit.site and unit.site.name, belt = unit.belt.id}
+			poi = unit.site and unit.site.name, belt = unit.belt.id,
+			poi_belt = unit.poi_belt and unit.poi_belt.id}
 	end
 	for _, l in ipairs(map.leaders) do
 		doc.leaders[#doc.leaders + 1] = {role = l.role, name = display(l.role), x = l.x,
@@ -326,8 +327,9 @@ local function render_zone(zone)
 	f:write(table.concat(out))
 	f:close()
 	io.stderr:write(("%s seed %s: world %.1f s, regions %.2f s (%.0f KiB), raster %.1f s, " ..
-		"%d cells, %d regions, %d problems\n"):format(zone, seed, world_seconds, build_seconds,
-		build_kib, raster_seconds, #map.order, #map.regions, #map.problems))
+		"%d cells, %d regions, %d problems, %d warnings\n"):format(zone, seed, world_seconds,
+		build_seconds, build_kib, raster_seconds, #map.order, #map.regions, #map.problems,
+		#map.warnings))
 end
 
 local failed = 0
