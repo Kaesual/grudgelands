@@ -1,15 +1,16 @@
 {
   "zone": "elandor_glassroot_wilds",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Glassroot Wilds is the last elven forest before the front: the gate wardens tend the old roots while wolves run the fringe, apes and panthers hold the tangle, and the canopy has a king who answers to nobody.",
   "hubs": [
     {
-      "id": "r20_anchor_036",
+      "id": "glassroot_gate",
       "anchor": "r20_anchor_036",
       "givers": [
         {
           "npc": "r20_anchor_036_host",
           "lines": [
-            "legacy"
+            "fringe",
+            "canopy"
           ]
         }
       ]
@@ -17,83 +18,286 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_036_01",
-      "line": "legacy",
+      "id": "glassroot_fringe_01",
+      "line": "fringe",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Room for the Living",
+      "text": "Briarpack Wolves hunt the {name:fringe}, which lies {zone_area:fringe}, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briarpack_wolf"
+          ],
+          "count": 5,
+          "area": "elandor_glassroot_wilds/fringe"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Pack hunters: pull from the edge.",
+      "duration_min": 10
+    },
+    {
+      "id": "glassroot_fringe_02",
+      "line": "fringe",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_036_host",
       "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "Stone Under the Passage",
-      "text": "Rain has loosened the footing beneath Glassroot Gate's cliff passage. Bring ten cobble blocks for the low support so carriers can keep using the route while it is repaired. Existing or traded supplies are welcome.",
+      "level": 32,
+      "requires": [
+        "glassroot_fringe_01"
+      ],
+      "title": "A Warning Without Words",
+      "text": "Bring me three Warpack Fangs from the Briarpack Wolves of the {name:fringe} for our wardens' sleeves. The pack has learned what those trophies mean, and sometimes that is enough to keep a wolf among the trees. A warning understood saves us both a hunt.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:cobble",
-          "count": 10
+          "item": "grug_mobs:warpack_fang",
+          "count": 3,
+          "roles": [
+            "briarpack_wolf"
+          ],
+          "area": "elandor_glassroot_wilds/fringe"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 2,
         "items": []
-      }
+      },
+      "lesson": "Family drop request; the first hunt's kills count toward it.",
+      "duration_min": 8
     },
     {
-      "id": "r20_anchor_036_02",
-      "line": "legacy",
+      "id": "glassroot_road_ashenward",
+      "line": "fringe",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 31,
+      "level": 33,
+      "requires": [
+        "glassroot_fringe_01"
+      ],
+      "title": "Regards, and a Leaking Barrel",
+      "text": "Speak with Toren Waterbarrel at Cinderline Watch in Ashenward March; his water carts keep much of the front alive. Carry our thanks, ask how you can help, and let him direct you onward to Stormvault Heights. Mention that his last barrel watered more roots than soldiers; I suspect the trees are his greatest admirers.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Contested circuit: the three zones carry the band together.",
+      "duration_min": 10
+    },
+    {
+      "id": "glassroot_canopy_01",
+      "line": "canopy",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_036_host",
-      "min_level": 31,
-      "level": 31,
+      "min_level": 34,
+      "level": 35,
       "requires": [],
-      "faction": "accord",
-      "title": "Rootsnare's Stolen Cloth",
-      "text": "Rootsnare Camp's bandits have taken supplies intended for the passage. Defeat four bandits at the occupied camp in Glassroot Wilds, rather than hunting unrelated forest creatures.",
+      "title": "An Unwelcome Rain of Branches",
+      "text": "By day, the Treetop Jungle Apes in the {name:tangle}, which lies {zone_area:tangle}, greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:entrenched_bandit"
+          "roles": [
+            "territorial_ape"
           ],
-          "zone": "elandor_glassroot_wilds",
-          "count": 4
+          "count": 5,
+          "area": "elandor_glassroot_wilds/tangle"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Territorial brawlers by day in the middle belt.",
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_036_03",
-      "line": "legacy",
+      "id": "glassroot_canopy_02",
+      "line": "canopy",
       "giver": "r20_anchor_036_host",
       "turnin": "r20_anchor_036_host",
-      "min_level": 40,
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "glassroot_canopy_01"
+      ],
+      "title": "When the Branches Fall Silent",
+      "text": "The {name:tangle} grows quiet when the apes sleep, which is precisely when our least experienced wardens relax. Kill five Shade Panthers there at night before another patrol mistakes silence for safety. Watch the gaps between the roots; the forest has more than one way of keeping a secret.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stalking_panther"
+          ],
+          "count": 5,
+          "area": "elandor_glassroot_wilds/tangle"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Night stalkers in the same wood.",
+      "duration_min": 10
+    },
+    {
+      "id": "glassroot_canopy_03",
+      "line": "canopy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "glassroot_canopy_02"
+      ],
+      "title": "Years Felled for Arrows",
+      "text": "I remember planting glassroots that the Entrenched Bandit Archers at {name:rootsnare} {dir_from_giver:rootsnare} now fell for arrow shafts. Defeat five of those archers and stop them cutting deeper into the grove. An afternoon with an axe has undone years of tending; I find I have very little patience left for their excuses.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 5,
+          "area": "elandor_glassroot_wilds/rootsnare"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Ranged camp at the top of the zone.",
+      "duration_min": 12
+    },
+    {
+      "id": "glassroot_canopy_04",
+      "line": "canopy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "glassroot_canopy_03"
+      ],
+      "title": "No Picnic for {name:basket_biter}",
+      "text": "We have lost enough provisions near the {name:serpent_pools} to feed a patrol, and the carriers now refuse to go near the water. Kill {name:basket_biter}, the serpent lurking {dir_from_giver:basket_biter} in those pools. I would prefer our supplies to reach the front without first passing through a snake.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "basket_biter"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Normal named leader at the top of the zone.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "glassroot_canopy_05",
+      "line": "canopy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "glassroot_canopy_04"
+      ],
+      "title": "Group: No More Broken Bows",
+      "text": "{name:canopy_knuckle} holds the {name:canopy} {dir_from_giver:canopy_knuckle}; three wardens have returned with their bows snapped across its knee. Gather a group and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "canopy_knuckle"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "duration_min": 15,
+      "climax": true,
+      "group": true
+    },
+    {
+      "id": "glassroot_road_front",
+      "line": "canopy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 38,
       "level": 40,
       "requires": [
-        "r20_anchor_036_02"
+        "glassroot_canopy_04"
       ],
-      "faction": "accord",
-      "title": "The Other Rootwatch",
-      "text": "The recovered report points across Thunderroot Wilds to the Throng's frontier watch. At level 40, defeat three Throng guards at those military outposts or their patrols. This does not include villagers, players or Kezamba's capital guard.",
+      "title": "What We Keep Behind Us",
+      "text": "You have made room for life here, and that is worth remembering when the front seems to hold nothing else. Speak with Nella Hedgeward at Last Hedge Redoubt in Ashenward March when you are ready to serve beyond these woods. She sends our wardens and soldiers onward; I will keep a place for you beneath the boughs.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_throng"
-          ],
-          "zone": "kragmar_thunderroot_wilds",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 1,
         "items": []
+      },
+      "lesson": "Band end: handoff to a front host.",
+      "duration_min": 10
+    },
+    {
+      "id": "glassroot_bounty_spiders",
+      "line": "canopy",
+      "giver": "r20_anchor_036_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "glassroot_canopy_03"
+      ],
+      "title": "Bounty: Leave a Path Unspun",
+      "text": "Each night the Canopy-Web Jungle Spiders stitch shut the {name:canopy}, which lies {zone_area:canopy}, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "canopy_web_spider"
+          ],
+          "count": 8,
+          "area": "elandor_glassroot_wilds/canopy"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 10,
+      "repeatable": {
+        "cooldown": 1500
       }
     }
   ]

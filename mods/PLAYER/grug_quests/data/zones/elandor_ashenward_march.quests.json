@@ -1,28 +1,28 @@
 {
   "zone": "elandor_ashenward_march",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Ashenward March is the Accord's supply road to the front: a crooked quartermaster sells the rations, the ash woods walk at night, and a poacher marshal sells the March's game back to the army it was meant to feed.",
   "hubs": [
     {
-      "id": "r20_anchor_031",
+      "id": "cinderline_watch",
       "anchor": "r20_anchor_031",
       "givers": [
         {
           "npc": "r20_anchor_031_host",
           "lines": [
-            "legacy",
+            "rations",
             "front"
           ]
         }
       ]
     },
     {
-      "id": "r20_anchor_032",
+      "id": "last_hedge_redoubt",
       "anchor": "r20_anchor_032",
       "givers": [
         {
           "npc": "r20_anchor_032_host",
           "lines": [
-            "legacy",
+            "hedge",
             "front"
           ]
         }
@@ -31,163 +31,380 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_031_01",
-      "line": "legacy",
+      "id": "ashenward_rations_01",
+      "line": "rations",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 31,
+      "min_level": 30,
       "level": 31,
       "requires": [],
-      "faction": "accord",
-      "title": "A Wall Against Embers",
-      "text": "Embers blow straight through the low gap in Cinderline's wind wall. Bring ten cobble blocks for that gap so the watch's covered barrels stay sheltered. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:cobble",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_031_02",
-      "line": "legacy",
-      "giver": "r20_anchor_031_host",
-      "turnin": "r20_anchor_031_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Ashen Wood Stirs",
-      "text": "Ashen treants move through Ashenward March's forest litter at night. Defeat three before the watch sends another barrel crew into those scorched stands.",
+      "title": "Three Crates Out, Two Crates In",
+      "text": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Entrenched Bandits at the {name:ration_camp} {dir_from_giver:ration_camp}, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:rootbound_treant"
+          "roles": [
+            "entrenched_bandit"
           ],
-          "zone": "elandor_ashenward_march",
-          "count": 3
+          "count": 5,
+          "area": "elandor_ashenward_march/ration_camp"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "A bandit camp in the first belt.",
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_031_03",
-      "line": "legacy",
+      "id": "ashenward_rations_02",
+      "line": "rations",
       "giver": "r20_anchor_031_host",
       "turnin": "r20_anchor_031_host",
-      "min_level": 33,
+      "min_level": 31,
+      "level": 32,
+      "requires": [
+        "ashenward_rations_01"
+      ],
+      "title": "The Trees Can Pay for That",
+      "text": "At night, Rootbound Ashen Treants roam the {name:cinderwood}, which lies {zone_area:cinderwood}, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rootbound_treant"
+          ],
+          "count": 5,
+          "area": "elandor_ashenward_march/cinderwood"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:bitter_resin",
+          "count": 2,
+          "roles": [
+            "rootbound_treant"
+          ],
+          "area": "elandor_ashenward_march/cinderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Kill and drop request from the same outing.",
+      "duration_min": 12
+    },
+    {
+      "id": "ashenward_rations_03",
+      "line": "rations",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 32,
       "level": 33,
       "requires": [
-        "r20_anchor_031_02"
+        "ashenward_rations_02"
       ],
-      "faction": "accord",
-      "title": "Coalbrand's Watchers",
-      "text": "The barrel route is usable again, and its stolen cargo has been traced to Coalbrand Camp in Ashenward March. Defeat four bandit archers guarding that camp's supplies.",
+      "title": "The Account of {name:quartermaster_scrip}",
+      "text": "Our own supply seal is on those stolen crates: {name:quartermaster_scrip} has been selling the line's supper out from under it. Find the quartermaster at the {name:ration_camp} {dir_from_giver:quartermaster_scrip} and defeat them. There are soldiers scraping empty bowls while that ledger balances beautifully.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:bandit_archer"
+          "roles": [
+            "quartermaster_scrip"
           ],
-          "zone": "elandor_ashenward_march",
-          "count": 4
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 1300,
-        "copper": 85,
+        "weight": 4,
         "items": []
-      }
+      },
+      "lesson": "Normal named leader; the climax resolves the first quest's theft.",
+      "duration_min": 10,
+      "climax": true
     },
     {
-      "id": "r20_anchor_032_01",
-      "line": "legacy",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "Posts for the Last Hedge",
-      "text": "The last hedge has gaps wide enough for loaded wagons to drift off the dispatch lane. Bring eight oak planks for the marker posts at Last Hedge Redoubt. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_032_02",
-      "line": "legacy",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "Dead on the Dispatch Road",
-      "text": "Skeleton raiders take the dispatch road through Ashenward March after nightfall. Defeat four while the watch restores the road's markers.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:march_skeleton_raider"
-          ],
-          "zone": "elandor_ashenward_march",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_032_03",
-      "line": "legacy",
-      "giver": "r20_anchor_032_host",
-      "turnin": "r20_anchor_032_host",
-      "min_level": 40,
-      "level": 40,
+      "id": "ashenward_road_stormvault",
+      "line": "rations",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 32,
+      "level": 33,
       "requires": [
-        "r20_anchor_032_02"
+        "ashenward_rations_03"
       ],
-      "faction": "accord",
-      "title": "Standards Across the Mesa",
-      "text": "The dispatches identify a Throng garrison across Bannerbreak Mesa. At level 40, defeat three Throng guards at those frontier military posts or their patrols. Leave civilians, players and Gor Drazhak's city watch outside this mission.",
+      "title": "Bread for the Mountain Watch",
+      "text": "Take word to Borin Splitbolt at Splitbolt Station in Stormvault Heights: the March road is clear and his supplies can move again. Ask what needs doing while you're there; Borin won't send a useful pair of hands home idle. Between his passes and Faeris's woods in Glassroot Wilds, there's work enough for both journeys.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_throng"
-          ],
-          "zone": "kragmar_bannerbreak_mesa",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 1,
         "items": []
+      },
+      "lesson": "Contested circuit: the three zones carry the band together.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_road_glassroot",
+      "line": "rations",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 32,
+      "level": 33,
+      "requires": [
+        "ashenward_rations_03"
+      ],
+      "title": "An Answer for Faeris",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds keeps sending water, even when all I send back is an apology. Tell her the barrels are coming again, and ask where she needs help. I've work to send you to in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Contested circuit: the three zones carry the band together.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_road_last_hedge",
+      "line": "rations",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 34,
+      "level": 34,
+      "requires": [
+        "ashenward_rations_03"
+      ],
+      "title": "One More Pair of Hands",
+      "text": "Nella Hedgeward at Last Hedge Redoubt keeps the last post before the front standing by sheer refusal to leave it. Report to her when you're ready for the harder fighting. Her last request was for timber, food and people who could think on their feet; I can at least send her you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_032_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff to the zone's second outpost and its harder ground.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_bounty_raiders",
+      "line": "rations",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 32,
+      "level": 32,
+      "requires": [
+        "ashenward_rations_01"
+      ],
+      "title": "Bounty: No Rations for the Dead",
+      "text": "Every night, March Skeleton Raiders haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "march_skeleton_raider"
+          ],
+          "count": 6,
+          "area": "elandor_ashenward_march/ashfields"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 8,
+      "repeatable": {
+        "cooldown": 1200
+      }
+    },
+    {
+      "id": "ashenward_hedge_01",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 34,
+      "level": 35,
+      "requires": [],
+      "title": "Honey Is Not Worth a Driver",
+      "text": "The Bramble Bears in the {name:hedgewood}, which lies {zone_area:hedgewood}, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 4,
+          "area": "elandor_ashenward_march/hedgewood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Heavy hitters by day in the middle belt.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_hedge_webs",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "ashenward_hedge_01"
+      ],
+      "title": "Webs Across the Wagon Road",
+      "text": "With the bears thinned, Briar-Web Spiders take the {name:hedgewood} at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 4,
+          "area": "elandor_ashenward_march/hedgewood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Same wood, night roster: the middle belt holds the hedge line between 34 and 37.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_hedge_02",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "ashenward_hedge_webs"
+      ],
+      "title": "A Uniform Is Not a Target",
+      "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Approach carefully; courage has its uses, but it doesn't stop an arrow.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 5,
+          "area": "elandor_ashenward_march/coalbrand_yard"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Ranged camp at the top of the zone.",
+      "duration_min": 12
+    },
+    {
+      "id": "ashenward_hedge_03",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "ashenward_hedge_02"
+      ],
+      "title": "The Price of an Empty Pot",
+      "text": "Wartrail Poachers at the {name:poacher_camp} {dir_from_giver:poacher_camp} take the March's game, then charge our cooks whatever desperation will bear. Defeat five of them and break their hold on the hunting grounds. Their marshal signs every sale, as though neat handwriting could make this honest.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wartrail_poacher"
+          ],
+          "count": 5,
+          "area": "elandor_ashenward_march/poacher_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Second camp of the top belt; seeds the group climax.",
+      "duration_min": 12
+    },
+    {
+      "id": "ashenward_hedge_04",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "ashenward_hedge_03"
+      ],
+      "title": "Group: The Last Receipt",
+      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a group and kill the marshal; a fighter that dangerous is no job for one exhausted hero. I want all of you back to share the meal when this is done.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "red_receipt_marshal"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "duration_min": 15,
+      "climax": true,
+      "group": true
+    },
+    {
+      "id": "ashenward_bounty_shamblers",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "ashenward_hedge_02"
+      ],
+      "title": "Bounty: Let the Watch Come Home",
+      "text": "After dark, Trench Shamblers cross the {name:warfields}, which lie {zone_area:warfields}, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "unrelenting_zombie"
+          ],
+          "count": 8,
+          "area": "elandor_ashenward_march/warfields"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 10,
+      "repeatable": {
+        "cooldown": 1500
       }
     }
   ]
