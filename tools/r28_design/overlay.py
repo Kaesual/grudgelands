@@ -221,8 +221,8 @@ def panel_lines(zone, design, givers, problems):
             add("no recipe", (90, 90, 90))
     else:
         frm, dst = parsed["from"] or {}, parsed["to"] or {}
-        entry = ", ".join(frm.get("anchor") or []) or (
-            "the border with %s" % ", ".join(frm["border"]) if frm.get("border") else "?")
+        entry = " and ".join(([", ".join(frm["anchor"])] if frm.get("anchor") else []) + (
+            ["the border with %s" % ", ".join(frm["border"])] if frm.get("border") else [])) or "?"
         if dst.get("core"):
             add("from %s to the zone's core" % entry)
         elif dst.get("border"):

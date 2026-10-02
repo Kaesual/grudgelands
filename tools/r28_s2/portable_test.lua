@@ -192,8 +192,8 @@ check(r.from.anchors[1] == "start" and r.to == nil, "a one-belt recipe without t
 parse_fails({from = {anchor = "start"}, belts = two_belts()}, "only a one-belt recipe may omit it",
 	"two belts without to")
 parse_fails({to = {core = true}, belts = two_belts()}, "from: needs", "to without from")
-parse_fails({from = {anchor = "start", border = C}, to = {core = true}, belts = two_belts()},
-	"from: needs", "from with an anchor and a border")
+parse_fails({from = {}, to = {core = true}, belts = two_belts()},
+	"from: needs", "from with neither an anchor nor a border")
 parse_fails({from = {border = A}, to = {core = true}, belts = two_belts()},
 	"other zones' ids", "from border is the zone itself")
 parse_fails({from = {border = C}, to = {border = C}, belts = two_belts()},

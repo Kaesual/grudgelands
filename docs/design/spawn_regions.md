@@ -39,7 +39,7 @@ table order.
    28 ruling 2), and on protected ground; its distance to the nearest road.
 2. **Progress.** Graph distances over the land cells (eight neighbours, so a
    bay is no shortcut) from the recipe's sources (`d_from`: the cells of its
-   `from` anchors, or its land cells bordering the `from` zones) and to the
+   `from` anchors and its land cells bordering the `from` zones) and to the
    land cells bordering its `to` zones (`d_to`); progress = d_from ÷ (d_from
    + d_to): 0 at the entry, 1 at the exit. With `to` core, progress is the
    rank of d_from alone (d_from ÷ the largest d_from), so the cells farthest
@@ -160,10 +160,12 @@ mapgen.
 ```
 
 - `from`: `{"anchor": <slot or anchor id>}` (or a list: every anchor is a
-  source) or `{"border": <zone id or list>}`: the zone's land cells bordering
+  source), `{"border": <zone id or list>}`: the zone's land cells bordering
   those zones are the sources, so levels in a home zone rise from where the
-  player enters (Round 28 S2). `to`: `{"border": <zone id or list>}`, the
-  exit, or `{"core": true}`: the cells farthest from every source are the
+  player enters (Round 28 S2), or both, `{"anchor": …, "border": …}`: the
+  anchors' cells and the border cells are all sources (a capital zone: the
+  city and the border with its race's home zone, Round 28 W1). `to`:
+  `{"border": <zone id or list>}`, the exit, or `{"core": true}`: the cells farthest from every source are the
   top belt (front zones entered from both factions' sides, harder toward the
   middle). An entry border cannot also be the exit. A recipe with exactly
   one belt may omit `to` (islands: L60 throughout) and then also `from`.
@@ -257,3 +259,13 @@ prefix, first word only unless that word has three letters or fewer:
 once and renders every listed zone on it; up to eight processes (and
 renders) run at once. Three zones on two seeds take about 25 s. Dawnmere:
 `docs/planning/round28/regions/dawnmere/`.
+
+`tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT]` draws the whole
+mainland per seed (default 42, 7, 2026; ROOT
+`docs/planning/round28/world`): every land cell coloured by its region's
+level, each zone border coloured by the level fit across it (the gap between
+the two regions' level ranges: green ≤ 1, yellow 2–5, red > 5, magenta where
+the two zones' bands lie more than 5 apart), for the shipped recipes
+(`current_seed_<s>`) and for the copies `tools/r28_world/border_rule.py`
+writes by the border rule (`proposed_seed_<s>`), plus a stats file per image
+and `border_rule.md` (every zone's `from` / `to`, today and by the rule).

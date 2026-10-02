@@ -82,12 +82,14 @@ def levels_text(lv):
 
 
 def entry_text(doc):
-    """Where the levels start: the `from` place, or the border it enters by."""
+    """Where the levels start: the `from` place, the border it enters by, or
+    both (a capital)."""
+    parts = []
     if doc.get("from"):
-        return doc["from"]["name"]
+        parts.append(doc["from"]["name"])
     if doc.get("from_border"):
-        return "the %s border" % ", ".join(doc["from_border"])
-    return "?"
+        parts.append("the %s border" % ", ".join(doc["from_border"]))
+    return " and ".join(parts) or "?"
 
 
 def route_text(doc):
