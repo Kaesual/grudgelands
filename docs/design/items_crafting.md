@@ -19,8 +19,8 @@ item, tier, depth or economy rules.
 **Material-system integration 2026-08-12.** Six universal metals now form a
 non-circular pick/depth spine. Since Round 24 (2026-09-29) the pick tier is
 checked against the tier of the rock or resource, not against y (§3.0.4). Emberglass and Abyssal Steel replace the old
-Emberstone/Mese and Grudgesteel targets. Six regional G1/G2 gems, cultural
-finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
+Emberstone/Mese and Grudgesteel targets. Six depth-tiered gems (Round 29),
+cultural finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
 the rebased 25c→25s Common-price axis are authoritative below. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
 design. Historical decisions in §10 remain design history only.
@@ -64,9 +64,9 @@ ladders are independent; §2.1 spells out how they meet.
   with top-tier rolls.
 - **Class/profession synergy intended** (Warrior+Weaponsmith or Armorsmith,
   Priest/Mage+Tailor, …).
-- Regional materials and contested routes make high-tier equipment and
-  optional target-race counters trade goods; universal picks never require a
-  regional gem, cultural material or trophy.
+- Gems are depth-tiered and the same everywhere (§3.0.1, Round 29); cultural
+  materials stay regional and make optional target-race counters trade goods.
+  Universal picks never require a gem, cultural material or trophy.
 - Cultural finishing is crafter-culture-bound but finished items remain
   tradeable and wearable by anyone; target-race PvP specials are a separate
   channel (§4).
@@ -171,6 +171,11 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 - The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
+  A Basics recipe's tier (its "Undiscovered" count and sort order) is its
+  output's material tier: the item's own tier, else its gear bracket, else
+  its registered ingredient tier, else its item-level band; an output with
+  none of these takes the highest tier among its inputs (a pick, block or
+  rod takes its bar's tier), else T1 (Round 29).
 - **Basics visibility (user decision 2026-09-20):** an explicit starter set is
   visible immediately: bootstrap wood/stick/torch/chest/furnace/wooden-hoe
   routes, every universal T1 weapon/tool/shield and metal/cloth/leather armor,
@@ -283,7 +288,7 @@ universal pick.
 - Gold is a universal luxury, jewelry and building material, never a tool
   metal. There is no Gold weapon, armor or pick. Physical Gold and ledger money
   are separate systems (`economy.md` §1).
-- Diamond is a regional G2 gem, never a tool material. The Mese and Diamond
+- Diamond is the T6 gem, never a tool material. The Mese and Diamond
   tool tiers remain retired.
 - **Emberglass** is a real `grug_materials` item/node family. Fresh-server
   development uses its canonical names directly, with no old Mese or
@@ -295,7 +300,7 @@ universal pick.
   enters an Abyssal Steel bar or pick.
 - Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
   upstream itemstrings. Reinterpreted fantastic materials, processed outputs
-  and all regional gems use the Grudgelands namespace. `grug_materials` owns
+  and all gems use the Grudgelands namespace. `grug_materials` owns
   the taxonomy even where a mundane itemstring remains upstream.
 
 Every natural resource has a minimum **harvest tier**: the pick tier of the
@@ -306,12 +311,12 @@ one tier below the gear they make.
 
 | Minimum pick tier | Natural resources |
 |---|---|
-| T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Iron, Quartz |
-| T2 | Gold; Citrine, Garnet and Jade (G1) |
-| T3 | Silver |
-| T4 | Emberglass; Diamond, Sapphire and Ruby (G2) |
-| T5 | Abyssal Crystal |
-| T6 | no universal progression resource; T6 rock (below −1000) needs the T6 pick |
+| T1 — any pick, incl. the Wood/Stone starters | Coal, Copper, Tin, Iron, Quartz; Citrine |
+| T2 | Gold; Jade |
+| T3 | Silver; Garnet |
+| T4 | Emberglass; Sapphire |
+| T5 | Abyssal Crystal; Ruby |
+| T6 | Diamond; T6 rock (below −1000) needs the T6 pick |
 
 **Iron needs only a T1 pick** (Round 24, 2026-09-29). The former 2026-08-13
 metal-pick rule for Iron relied on the retired under-tier shatter path and was
@@ -319,55 +324,57 @@ never shipped; with engine-native tier gating every T1 pick, the Wood and
 Stone starters included, digs every T1 resource. The ladder stays
 non-circular: starter pick → Copper + Tin → dual furnace → Bronze pick.
 
-Quartz is the universal T1 jewelry mineral. Regional gems use **Rough
-<Gem> → Cut <Gem>**; `G1` and `G2` are internal grade labels, not
-player-facing substitutes for species names. Emberglass and Abyssal Crystal
-are universal fantastic progression resources and are never called regional
-gems.
+Quartz is the universal T1 jewelry mineral at every depth. Gems use **Rough
+<Gem> → Cut <Gem>**. Emberglass and Abyssal Crystal are universal fantastic
+progression resources and are never called gems.
+
+**Gems are depth-tiered, not regional** (Round 29, economy plan §6). Each of
+the six species has one tier and occurs **only in the tier rock of that
+tier**, identically in every race region, zone and faction; its harvest tier
+equals its tier, so it needs the pick of its layer:
+
+| Tier | Tier rock | Gem |
+|---|---|---|
+| T1 | `default:stone`, y ≥ −100 | Citrine |
+| T2 | `t2_stone`, −101…−300 | Jade |
+| T3 | `t3_stone`, −301…−500 | Garnet |
+| T4 | `t4_stone`, −501…−700 | Sapphire |
+| T5 | `t5_stone`, −701…−1000 | Ruby |
+| T6 | `t6_stone`, below −1000 | Diamond |
+
+*Why:* one depth ladder for ores and gems; no contested route is needed for a
+gem, and no enchant waits on another region's gem.
 
 Each surface/depth column has exactly one cultural race region. It chooses the
-eligible regional gem species and cultural source independently of political
-territory or PvP state:
+cultural source independently of political territory or PvP state:
 
-| Faction | Race region | G1 | G2 | Cultural material | Signature wood |
-|---|---|---|---|---|---|
-| Accord | Human | Citrine | Diamond | Sunwax | Oak |
-| Accord | Dwarf | Garnet | Sapphire | Runeslate | Mountain Pine |
-| Accord | Elf | Jade | Sapphire | Moonresin | Silverwood |
-| Throng | Orc | Garnet | Diamond | Red Ochre | Spikethorn Acacia |
-| Throng | Troll | Jade | Ruby | Spirit Resin | Kapok |
-| Throng | Undead | Citrine | Ruby | Gravesalt | Gravewood |
-
-Thus both factions have all three G1 species and Diamond; Ruby is Accord's
-foreign G2 and Sapphire is Throng's. The authored supply routes are native
-faction regions, enemy contested level-31+ regions, cross-border deep T5/T6
-columns and trade. A practical T4
-contested route to the missing G2 must exist before the level-60 islands.
+| Faction | Race region | Cultural material | Signature wood |
+|---|---|---|---|
+| Accord | Human | Sunwax | Oak |
+| Accord | Dwarf | Runeslate | Mountain Pine |
+| Accord | Elf | Moonresin | Silverwood |
+| Throng | Orc | Red Ochre | Spikethorn Acacia |
+| Throng | Troll | Spirit Resin | Kapok |
+| Throng | Undead | Gravesalt | Gravewood |
 
 **Density shape and calibration targets:**
 
-- G1 starts sparse in the upper progression, rises through T4, retains exactly
-  its T4 ordinary density in T5 and ordinary T6, and rises again only through
-  the shared deep-T6 multiplier.
-- G2 starts in T4, doubles in T5 and reaches four times the T4 rate in ordinary
-  T6 y = −1001…−1499. Accepted Round 21 calibrations are one per 2,048/1,024/512
-  eligible host nodes respectively. All require a T4
-  pick. Full table: [world_zones.md §11](world_zones.md#11-resource-loot-and-poi-budgets).
+- Every gem: about **one per 512 eligible host nodes in its own band**, none
+  elsewhere. Full table: [world_zones.md §11](world_zones.md#11-resource-loot-and-poi-budgets).
 - Continental Abyssal Crystal exists for both factions throughout T5 and T6.
   Accepted Round 21 calibrations are **one crystal per 512 eligible host nodes in
   T5 and per 256 in T6**; the y = −701…−1000 entry
   band alone must yield enough for an
   Abyssal Steel pick without T6 access.
-- At y = −1500…−1999, ordinary continental ores, G1, G2 and Abyssal
+- At y = −1500…−1999, ordinary continental ores, Diamond and Abyssal
   Crystal receive **+25%** bounded placement budget; at y ≤ −2000 they
   receive **+50%**, capped. Trophies, king loot, claims and
   unique quest sources never receive this multiplier. It is mapgen placement,
   not runtime ore respawn.
 - Map generation measures actual exposed yield and route time before freezing
   ore-registration literals. The acceptance audit compares both factions'
-  native volume, T4/T5/T6 foreign routes, dragon refill/yield including the
-  Goldsmith bonus, a full gear set's demand, two-handed equivalence and vendor/
-  drop substitution pressure.
+  native volume, dragon refill/yield including the Goldsmith bonus, a full
+  gear set's demand and two-handed equivalence.
 
 Crafted material blocks are storage/building nodes, never natural resources.
 **The pack/unpack recipes shipped 2026-09-16** (WP26): all twelve processed
@@ -422,7 +429,7 @@ the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
 Steel has two material inputs. Mined Coal occupies the second material slot;
 burning Coal or Charcoal as fuel never substitutes for it. The dual furnace
 therefore keeps two material slots plus fuel. No universal bar consumes a
-regional gem, cultural material or trophy.
+gem, cultural material or trophy.
 
 The dual furnace itself is crafted from one normal furnace plus the first
 alloy's two metals — **2 Copper Bars and 1 Tin Bar** in LotT's T-arrangement
@@ -604,8 +611,7 @@ every 0.25 s):
 
 - protected node, with the protection reason: "Town – protected" (a
   capital's protected city or a start town), "Landmark – protected" (a
-  protected functional column: outpost, bandit camp, apex socket until its
-  removal from mapgen), "Road –
+  protected functional column: outpost or bandit camp), "Road –
   protected" (a road corridor), "Village – protected" and similar for the
   other POI boxes (`world.md` §2 R1b), "Home of <owner> – protected" (an
   active Claim Stone claim, `housing.md` §6), "Accord home territory –
@@ -661,9 +667,9 @@ shovels need a character level by material tier; the tier is the tool's own
 **Gathering XP** (Round 24 ruling 28, 2026-09-29). Every natural ore or gem
 node a player digs and every fish caught gives XP (formula and table in
 [progression.md](progression.md) "Gathering XP"): 0.10 kill equivalents per ore
-node, 0.20 per gem node (the six regional G1/G2 species), 0.33 per fish, of
+node, 0.20 per gem node (the six depth-tiered species), 0.33 per fish, of
 `M(min(reference level, player level + 5))` (Round 28 ruling 32) with reference level 10 × harvest
-tier (T1 10 … T5 50) or 10 × the water's zone band. The harvest callback of the
+tier (T1 10 … T6 60) or 10 × the water's zone band. The harvest callback of the
 node_dig wrapper settles it, so only a successful player dig of a natural
 resource node pays; explosions and mobs never dig through it, and ore nodes
 drop their raw item, so no player can place one. There is no gray rule and no
@@ -685,59 +691,13 @@ Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
 soil conversion, water buckets and wild renewal are authoritative in
 [farming.md](farming.md); this document owns only their Basics recipes.
 
-#### 3.0.5 The two boat recipes (decided 2026-08-13)
+#### 3.0.5 Boats have no recipe
 
-Water travel is specified in [boats.md](boats.md); this section owns only the
-two recipes. Both are ordinary 3×3 grid recipes and need no workbench.
-
-**Base boat** — a universal base recipe under §3.0.3: every character can
-craft it from level 1, with no profession, trainer, vendor or quest. Five
-`group:wood` in the hull shape (the arrangement of
-`reference_projects/Lord-of-the-Test/mods/boats/init.lua:201-208`, whose row
-boat is our reference implementation):
-
-| | | |
-|---|---|---|
-| — | — | — |
-| `group:wood` | — | `group:wood` |
-| `group:wood` | `group:wood` | `group:wood` |
-
-**Improved boat** — craftable only by a character carrying the Improved Boat
-unlock (`boats.md` §1), which the shipwright teaches from level 30. It
-consumes one base boat plus T4 materials, so the level-30 unlock still costs
-a level-31–40 material run:
-
-| | | |
-|---|---|---|
-| — | Silkweave Bolt | — |
-| Silversteel Bar | Silkweave Bolt | Silversteel Bar |
-| thread | base boat | thread |
-
-The two bolts are the sail and the two bars the fittings; `thread` is the
-ordinary level-independent vendor job supply of §3.7, not a new item and not
-a Tailor product. Bolts and bars are material stages, and every stage is a
-base recipe on its own grid (§3's "ore → bar → component → item; hide → cured
-leather; cloth → bolt", with the bolt grades in §3.5), so the improved boat
-binds no profession anywhere in its chain.
-
-The shipwright's teaching transaction consumes exactly this ingredient list
-once and returns one finished improved boat (`boats.md` §2). **Vendors never
-stock a boat**, but like every other unsold item both boats still receive an
-authoritative reference price and the ordinary ceiling-rounded 5% buy-back of
-`economy.md` §2 — "not stocked" is not "worth nothing". §3.8's anti-loop rule
-binds both recipes: a boat's payout must stay **strictly below** the summed
-payout of the wood, bars, bolts and thread consumed to make it.
-
-The shipped audit only partly enforces that, so the pricing WP owes two
-explicit tests instead of trusting it. The improved boat's inputs are all
-concrete items and are walked normally, but the base boat's are `group:wood`,
-and the third `grug_traders` audit **skips any recipe with an unpriced input**
-— a group never carries a price of its own
-(`mods/ENTITIES/grug_traders/init.lua:257-261`). Its comparison is also
-`out_price > input_total` (`:269`), so an exactly break-even output passes.
-The base boat must therefore be priced below the five cheapest `group:wood`
-members by construction, and both boats verified by test rather than by the
-audit's silence.
+Boats are water mounts ([boats.md](boats.md), travel plan rulings 1 and 3,
+user 2026-10-02): the Shipwright sells the base boat at level 15 and the
+improved boat at level 30 as owner-bound skill items, exactly like the riding
+tiers. There is no boat recipe, no boat material and no boat reference price;
+the bound items are never sold, bought back, traded or stored externally.
 
 ### 3.1 Armor rating curve (base values shipped in WP7; mitigation revised 2026-09-20)
 
@@ -1031,10 +991,11 @@ New profession, 2026-08-07 (professions.md §2). **Gem Hunter is merged
 into it** and disappears as a separate profession. The useful gathering hook
 survives; the private-island Gem Detector does not.
 
-**Material chain:** physical **Gold**, universal Quartz, and the six regional
-gems Citrine/Garnet/Jade/Diamond/Sapphire/Ruby. Natural regional nodes drop
-Rough Gems. The Goldsmith alone refines Rough → Cut; every storage block and
-equipment recipe consumes Cut Gems where a gem is required.
+**Material chain:** physical **Gold**, universal Quartz, and the six
+depth-tiered gems (§3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
+T5 Ruby, T6 Diamond. Natural gem nodes drop Rough Gems. The Goldsmith alone
+refines Rough → Cut, at the gem's tier; every storage block and equipment
+recipe consumes Cut Gems where a gem is required.
 
 **Owns exclusively:**
 
@@ -1061,19 +1022,19 @@ Use **Setting** consistently for the tiered jewelry component:
 | Tier | Setting | Gem use per core trinket |
 |---|---|---|
 | T1 | Tin Setting | 1 Cut Quartz |
-| T2 | Iron Setting | one authored Cut G1 variant |
-| T3 | Copper-inlaid Steel Setting | one authored Cut G1 variant |
-| T4 | Gold Setting | 1 Cut Sapphire for Manawell/Mercy Seal/Last Light; 1 Cut Ruby for Battlebeat/Reclaimer's Mark/Apothecary Loop |
-| T5 | Gold-filigreed Embersteel Setting | 1 Cut Sapphire + 1 Cut Ruby |
-| T6 | Gold-filigreed Abyssal Steel Setting | 1 Cut Diamond + 1 Cut Sapphire + 1 Cut Ruby |
+| T2 | Iron Setting | 1 Cut Jade |
+| T3 | Copper-inlaid Steel Setting | 1 Cut Garnet |
+| T4 | Gold Setting | 1 Cut Sapphire |
+| T5 | Gold-filigreed Embersteel Setting | 1 Cut Ruby + 1 Cut Sapphire |
+| T6 | Gold-filigreed Abyssal Steel Setting | 1 Cut Diamond + 1 Cut Ruby + 1 Cut Sapphire |
 
 Copper-inlaid Steel and the two filigree Settings are Goldsmith components,
-not universal bars or tool materials. At T2/T3, Citrine supplies Manawell and
-Mercy Seal, Garnet supplies Battlebeat and Reclaimer's Mark, and Jade supplies
-Last Light and Apothecary Loop. The complete tier list is visible in the
-matching book group: all six T4 recipes become craftable with profession T4,
-so foreign-gem acquisition rather than recipe rarity remains the material
-gate. No recipe scroll, reputation grind or enemy unlock is involved.
+not universal bars or tool materials. From T2 every core trinket takes the
+gem of its recipe tier (T5 and T6 add the gems one and two tiers below); the
+six identities differ only by their Setting count. The complete tier list is
+visible in the matching book group: all six T4 recipes become craftable with
+profession T4, so mining depth rather than recipe rarity remains the
+material gate. No recipe scroll, reputation grind or enemy unlock is involved.
 Each core trinket recipe consumes only its tier-appropriate Setting and the
 listed Cut gem(s): there is no special-specific herb, catalyst, mob drop,
 trophy or cross-profession component.
@@ -1236,12 +1197,12 @@ changes:
 | ilvl | 3 | 10 | 20 | 30 | 40 | 50 |
 | 1H weapon dmg (§3.2 curve) | 5 | 8 | 11 | 15 | 18 | 22 |
 
-  **No regional-G2 base cost.** Ordinary crafted combat weapons, armor
+  **No gem base cost.** Ordinary crafted combat weapons, armor
   pieces and offhands at every tier use only their universal material
-  recipe (bars, cloth, leather, wood). The former T4–T6 Cut G2 surcharge on
+  recipe (bars, cloth, leather, wood). The former T4–T6 Cut-gem surcharge on
   base equipment is retired (Round 10 ruling 7: "There is no additional high-tier
-  regional-gem surcharge on base equipment"). G2 demand comes from trinkets
-  (§3.6b/§6.2), gem settings and Woodcarver components. Dropped/vendor gear
+  regional-gem surcharge on base equipment"). Gem demand comes from trinkets
+  (§3.6b/§6.2) and enchant inputs (§6b). Dropped/vendor gear
   stays a usable floor.
 
   Rationale for having the vendor ladder at all: on a small server the
@@ -1344,10 +1305,10 @@ culture.
   need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
   palette; Spirit Resin uses warm amber or toxic green.
 - Foreign cultural materials are used almost exclusively for optional
-  level-40+ PvP counters. They never enter universal bars/tools, ordinary G2
-  base costs, ordinary recovery consumables, solo-leveling requirements or
-  profession-level advancement. Regional G2 demand and optional cultural-counter
-  demand are independent economies.
+  level-40+ PvP counters. They never enter universal bars/tools, ordinary
+  recovery consumables, solo-leveling requirements or profession-level
+  advancement. Gem demand and optional cultural-counter demand are
+  independent economies.
 - Signature woods remain universal `group:wood` inputs. Their distinct value
   is cultural builds, furniture and optional recipes, never mandatory tool
   progression.
@@ -1412,7 +1373,7 @@ Direct inputs by item family and material tier:
 
 The number is units of the selected culture's material. Weapon and offhand
 also consume one unit of that culture's signature wood for a grip/core/focus;
-armor consumes no wood. The operation adds no G1/G2 gem, universal bar or
+armor consumes no wood. The operation adds no gem, universal bar or
 trophy because the base item has already paid its ordinary recipe.
 
 The fixed effect matrix is:
@@ -1552,7 +1513,7 @@ author Grudgelands' six cultural motifs plus fantastic-material language. Every
 reused asset records file provenance, author, exact license, pinned source
 commit and modifications in the owning `LICENSE-media.md`.
 
-Each of the six regional gems has exactly four visual roles: natural ore node,
+Each of the six gems has exactly four visual roles: natural ore node,
 Rough Gem, Cut Gem and polished non-luminous storage block — **24 roles total**
 before equipment overlays. Each cultural material has an inventory identity
 and at least one source-node/gather presentation. Signature woods receive a
@@ -1595,10 +1556,10 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, source windows per §5.1 | no PvP objective |
 | Peaceful home zones 11–20 | equivalent T2 access | T2, source windows per §5.1 | first named rares; no contested zone |
 | Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
-| Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches are contested |
+| Contested approaches 31–40 | equivalent T4 access | T4, improved windows on qualifying elites | all six race approaches are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
 | High front 51–60 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
-| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); race-region columns select the cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**

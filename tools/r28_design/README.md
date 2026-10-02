@@ -83,7 +83,25 @@ code over the analytic world, several seeds).
 python3 tools/r28_design/validate.py                         # whole design dir
 python3 tools/r28_design/validate.py --atlas docs/planning/round28/zones/
 python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
+python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/ --zone <your zones>   # a content lane's shipped files
+python3 tools/r28_design/validate.py --game --legacy --atlas docs/planning/round28/zones/   # the whole shipped set incl. legacy quests
 ```
+
+- `--game` reads the zone files from the game
+  (`mods/ENTITIES/grug_mobs/data/zones` and
+  `mods/PLAYER/grug_quests/data/zones`) instead of the design's `zones/`;
+  the catalogue stays the design's. A content lane checks its own zones
+  **without** `--legacy` (that option lets a quest through with a fixed `xp`
+  or without `weight`); `--legacy` is only for the whole shipped set while
+  legacy quests ship.
+- Quest texts (Round 29 Q1, [quests.md](../../docs/design/quests.md#for-content-lanes)):
+  `E-placeholder` (a brace outside a well-formed placeholder, an unknown
+  placeholder, a wrong argument count, a direction placeholder in a title),
+  `E-placeholder-target` (not a kind or camp of the zone's recipe or a
+  leader), `E-placeholder-place` (not a settlement key or anchor id; with
+  `--atlas`), `W-placeholder-spread` (`{dir_from_giver:...}` on an open kind),
+  `E-compass` (a fixed compass word in a title or text). The game checks the
+  same at load (`grug_quests/validate.lua`).
 
 - Checks every catalogue and zone file against the frame's formats
   (required fields, id formats, enums, level ranges) and the
@@ -208,13 +226,29 @@ python3 tools/r28_design/ledger.py \
   --atlas docs/planning/round28/zones/ --human --out docs/planning/round28/design/ledger/human.md
 ```
 
+- `--track RACE [--sister ZONE]` (Round 29 Q1): the race's whole route as
+  frame §2.1 and the [quests plan](../../docs/planning/round29-quests-plan.md)
+  §3.1 define it: start zone, home zone, own capital and heartland zone(s)
+  plus the optional sister zone (another race's 20–30 zone of the faction),
+  the faction's three contested zones (own race's first), then The Broken
+  Causeway and The Shattered Line with the faction's front quests of reward
+  level 41–50 (line `front` of its contested zones and capitals), then
+  Gravesalt Escarpment and The Skyglass Canopy with those of 51–60. Every
+  band is reported, also one without quests yet, and 20 → 30 adds the share
+  of its questing XP from the own capital and heartland (target about
+  60–70 %, the rest from the sister zone). `--track human` implies
+  `--human`. Zones and bands come from `r28common.zone_records()`: the
+  mapgen's zone rows with today's gameplay bands of
+  `grug_core/zone_bands.lua` (one line there switches when the bands move
+  into the mapgen data).
+- `--game` reads the shipped zone files, as in `validate.py`.
 - `--route`: the zones in play order. Quests of the line `front` (front
   files) are skipped unless `--lines` names `front`, so race and contested
   ledgers are not distorted by front quests. Every quest counts in the band of its **reward level** (so front
   quests in contested or capital files count in the front bands). The zone
-  table labels each zone with its atlas band (`--atlas`), else its quests'
-  median band, or `zone:lo-hi`. For alternative zones (two 21–30 zones) run
-  one ledger per alternative.
+  table labels each zone with its gameplay band (`zone_records()`), else its
+  atlas band (`--atlas`), else its quests' median band, or `zone:lo-hi`. For
+  alternative zones (two sister zones) run one ledger per alternative.
 - `--lines front` (comma list) counts only those quest lines, e.g.
   `--route <the 31-40 and capital zones> --lines front --start-level 40
   --repeat 3` for `ledger/front.md`.

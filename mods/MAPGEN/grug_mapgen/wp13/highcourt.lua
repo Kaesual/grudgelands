@@ -338,11 +338,10 @@ local function loader(directory)
 		{id = "watch_south_west", x = -40, z = -16, face = 0, order = 6},
 	}
 
-	-- The waypoint plaza reserved for WP17: a flat, open, kerbed square east
-	-- of the approach, with its lamps outside the open area and nothing at
-	-- all inside it. The travel pad WP17 will put here needs room and sky,
-	-- and a plaza with furniture in the middle is a plaza that has to be
-	-- re-authored the day the pad arrives.
+	-- The waypoint plaza (WP17): a flat, open, kerbed square east of the
+	-- approach, with its lamps outside the open area and nothing inside it
+	-- but the waystone at the pad's centre. Travel needs room and sky: a
+	-- player arrives beside the stone.
 	local PLAZA = {x1 = 12, z1 = -32, x2 = 32, z2 = -12}
 
 	-- The city around the core -- its outline, streets, walls or planted
@@ -449,16 +448,15 @@ local function loader(directory)
 			end
 		end
 
-		-- 3. The waypoint plaza: paving, a kerb, and nothing inside it.
+		-- 3. The waypoint plaza: paving, a kerb, and only the waystone in it.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, human, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, human, PLAZA.x1 + 4, PLAZA.z1 + 4,
 			PLAZA.x2 - 4, PLAZA.z2 - 4)
 		-- The pad itself, drawn INTO the ground course: a white stone cross
 		-- and the diamond round it. An empty square of paving reads as
-		-- nothing at all, and the one thing this plaza may not have is
-		-- anything standing on it, so its whole decoration is the floor --
-		-- which also marks the spot WP17's travel pad is being kept for.
+		-- nothing at all, and the plaza may have nothing standing on it but
+		-- the waystone, so the rest of its decoration is the floor.
 		local pad_x = math.floor((PLAZA.x1 + PLAZA.x2) / 2)
 		local pad_z = math.floor((PLAZA.z1 + PLAZA.z2) / 2)
 		local WHITE_STONE = white.maybe("signature") or KERB
@@ -472,6 +470,10 @@ local function loader(directory)
 				buf:put(pad_x + corner[1], 0, pad_z + corner[2], WHITE_STONE)
 			end
 		end
+
+		-- The waystone (Round 29, WP17) stands at the pad's centre, in the
+		-- travel waypoint socket's cell; grug_home owns what it does.
+		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
@@ -984,9 +986,8 @@ local function loader(directory)
 				-- The reserved square is the plaza INSIDE its kerb: the
 				-- four lamp standards stand on the kerb ring itself, so a
 				-- box drawn on the kerb is a box with four lamps in it and
-				-- "nothing inside" would have to be qualified. The landmark
-				-- is what WP17 may fill, and the KAT holds every column of
-				-- it empty, edge included.
+				-- "nothing inside" would have to be qualified. The waystone
+				-- at its centre is the one thing standing in it.
 				waypoint_plaza = {min = {x = PLAZA.x1 + 1, y = 0,
 						z = PLAZA.z1 + 1},
 					max = {x = PLAZA.x2 - 1, y = 4, z = PLAZA.z2 - 1}},

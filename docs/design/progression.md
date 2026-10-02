@@ -216,15 +216,15 @@ player catches gives
 | Source | Ratio (KE) | Reference level |
 |---|---:|---|
 | ore node (every natural resource node that is not a gem) | 0.10 | 10 × harvest tier: T1 10 … T5 50 |
-| gem node (the six regional G1/G2 gems) | 0.20 | 10 × harvest tier: G1 (T2) 20, G2 (T4) 40 |
+| gem node (the six depth-tiered gems) | 0.20 | 10 × harvest tier: Citrine (T1) 10 … Diamond (T6) 60 |
 | fish (not junk from the catch table) | 0.33 | 10 × the water's zone band: 10 … 60 |
 
 The ratios are the Round 24 factors (1.5 / 3 / 5 against a 15L kill)
 carried over to the new unit.
 
 - There is no gray rule: T1 ore always pays (8 XP at level 5 and above).
-- Examples: coal at level 1 gives 6 (0.1 × M(6) = 5.5 rounded up); a G2 gem
-  at level 30 gives 40; a band-1 fish at level 1 gives 18; a band-6 fish at
+- Examples: coal at level 1 gives 6 (0.1 × M(6) = 5.5 rounded up); a
+  Sapphire (T4) at level 30 gives 40; a band-1 fish at level 1 gives 18; a band-6 fish at
   level 60 gives 107.
 - The ratios and the formula live in one place, `grug_xp.GATHER_XP_RATIO`
   and `grug_xp.gather_xp` (`mods/PLAYER/grug_xp/init.lua`); XP is added

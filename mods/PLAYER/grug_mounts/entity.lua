@@ -2,6 +2,13 @@ local ENTITY_NAME = "grug_mounts:mount"
 local VISUAL_NAME = "grug_mounts:mount_visual"
 local STATUS_ID = "mount"
 local WARNING_INTERVAL = 1
+-- Boats (docs/design/boats.md): the water-contact check runs once per second
+-- (ruling 8); a summon looks this far up for the surface; a boat answers
+-- input at this many times its speed per second (full speed in 2/3 s).
+local WATER_CHECK_INTERVAL = 1
+local SURFACE_SCAN = 16
+local BOAT_RESPONSE = 1.5
+local LANDING_RADIUS = 2
 local WARNING_DISTANCES = {1, 2, 4, 8, 16, 32, 48}
 local WARNING_DIRECTIONS = {}
 local DRAGON_ISLANDS = {
@@ -49,6 +56,83 @@ local function free_dismount_pos(pos)
 		end
 	end
 	return pos
+end
+
+local function is_water(pos)
+	local node = core.get_node_or_nil(position_node(pos))
+	return node ~= nil and core.get_item_group(node.name, "water") > 0
+end
+
+local function node_definition(pos)
+	local node = core.get_node_or_nil(pos)
+	return node and node.name ~= "ignore" and core.registered_nodes[node.name]
+end
+
+local function open_cell(pos)
+	local definition = node_definition(pos)
+	return definition and not definition.walkable and
+		(definition.liquidtype or "none") == "none" and
+		(definition.damage_per_second or 0) <= 0
+end
+
+-- The surface above a player whose feet are in water (ruling 5): the top of
+-- the water column, with open space above it. nil and the refusal otherwise.
+function grug_mounts.boat_surface(pos)
+	if not is_water(pos) then
+		return nil, "A boat can only be summoned while you stand or swim in water."
+	end
+	local top = position_node(pos)
+	for _ = 1, SURFACE_SCAN do
+		local above = {x = top.x, y = top.y + 1, z = top.z}
+		if not is_water(above) then
+			local definition = node_definition(above)
+			if not definition or definition.walkable then
+				return nil, "There is no open water surface here."
+			end
+			-- Centred on the water node: the hull box stays inside its column.
+			return {x = top.x, y = top.y + 0.5, z = top.z}
+		end
+		top = above
+	end
+	return nil, "Swim up to the surface to summon a boat."
+end
+
+local function sign(value)
+	return value > 0 and 1 or (value < 0 and -1 or 0)
+end
+
+-- Disembarking: the nearest free land cell within LANDING_RADIUS of the boat
+-- (feet on a solid, dry floor, two free cells), else the boat's own position
+-- in the water. A cell two nodes out also needs the cell between it and the
+-- boat open at its height, so a landing never crosses a one-node wall.
+function grug_mounts.boat_landing(pos)
+	local base = position_node(pos)
+	local best, best_distance
+	for dx = -LANDING_RADIUS, LANDING_RADIUS do
+		for dz = -LANDING_RADIUS, LANDING_RADIUS do
+			local distance = dx * dx + dz * dz
+			if distance > 0 and (not best or distance < best_distance) then
+				for dy = 0, 1 do
+					local cell = {x = base.x + dx, y = base.y + dy, z = base.z + dz}
+					local floor = node_definition({x = cell.x, y = cell.y - 1, z = cell.z})
+					local way = true
+					if math.max(math.abs(dx), math.abs(dz)) > 1 then
+						local between = {x = cell.x - sign(dx), y = cell.y, z = cell.z - sign(dz)}
+						way = open_cell(between) and
+							open_cell({x = between.x, y = between.y + 1, z = between.z})
+					end
+					if way and floor and floor.walkable and (floor.liquidtype or "none") == "none" and
+							open_cell(cell) and
+							open_cell({x = cell.x, y = cell.y + 1, z = cell.z}) then
+						best = {x = cell.x, y = cell.y - 0.5, z = cell.z}
+						best_distance = distance
+						break
+					end
+				end
+			end
+		end
+	end
+	return best or pos
 end
 
 local function remove_warning(player, record)
@@ -108,6 +192,8 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	-- before mounting, so cancelling it launched the rider (Round 28 ruling 16).
 	if hard then
 		if pos then player:set_pos(pos) end
+	elseif pos and record.mode == "water" then
+		player:set_pos(grug_mounts.boat_landing(pos))
 	elseif pos then
 		player:set_pos(free_dismount_pos(pos))
 	end
@@ -194,7 +280,7 @@ local function update_warning(player, record, kind)
 end
 
 local function set_animation(self, name)
-	if self._grug_animation == name then return end
+	if self._grug_animation == name or not self._grug_model.animation then return end
 	local clip = self._grug_model.animation[name]
 	local record = active[self._grug_owner]
 	local visual = record and record.visual
@@ -291,6 +377,43 @@ local function flight_step(self, control, yaw)
 	set_animation(self, input_scale == 0 and vertical == 0 and "stand" or "move")
 end
 
+-- A boat glides toward the requested velocity (accelerating and braking alike)
+-- and floats with its origin on the surface of the water node it sits in. Off
+-- the water it falls; the once-per-second contact check then removes it.
+local function water_step(self, control, yaw, dtime)
+	local tier = grug_mounts.TIERS[self._grug_tier]
+	local velocity = self.object:get_velocity() or {x = 0, y = 0, z = 0}
+	local input_x, input_z, input_scale = horizontal_input(control, yaw)
+	local dx = input_x * tier.speed * input_scale - velocity.x
+	local dz = input_z * tier.speed * input_scale - velocity.z
+	local change = math.sqrt(dx * dx + dz * dz)
+	local limit = tier.speed * BOAT_RESPONSE * dtime
+	if change > limit then
+		dx, dz = dx * limit / change, dz * limit / change
+	end
+	local pos = self.object:get_pos()
+	local hull = {x = pos.x, y = pos.y - 0.5, z = pos.z}
+	local y_velocity, y_acceleration = 0, 0
+	if is_water(hull) then
+		if is_water({x = pos.x, y = pos.y + 0.5, z = pos.z}) then
+			y_velocity = 2
+		else
+			local surface = math.floor(pos.y) + 0.5
+			y_velocity = math.max(-2, math.min(2, (surface - pos.y) * 4))
+		end
+	else
+		y_velocity, y_acceleration = velocity.y, -9.81
+	end
+	self.object:set_yaw(0)
+	self.object:set_velocity({x = velocity.x + dx, y = y_velocity, z = velocity.z + dz})
+	self.object:set_acceleration({x = 0, y = y_acceleration, z = 0})
+end
+
+-- Ruling 8: a boat whose own node and the node below hold no water is gone.
+function grug_mounts.boat_touches_water(pos)
+	return is_water(pos) or is_water({x = pos.x, y = pos.y - 1, z = pos.z})
+end
+
 local entity_definition = {
 	initial_properties = {
 		physical = true,
@@ -364,11 +487,21 @@ local entity_definition = {
 				record.warning_elapsed = 0
 				update_warning(player, record, grug_mounts.warning_state(player, pos))
 			end
+		elseif tier.mode == "water" then
+			record.water_elapsed = (record.water_elapsed or 0) + dtime
+			if record.water_elapsed >= WATER_CHECK_INTERVAL then
+				record.water_elapsed = 0
+				if not grug_mounts.boat_touches_water(pos) then
+					grug_mounts.dismount(player, "Your boat left the water.", true)
+					return
+				end
+			end
 		end
 		local control = player:get_player_control()
 		local yaw = player:get_look_horizontal() or self.object:get_yaw() or 0
 		orient_rider(self, player, yaw)
 		if tier.mode == "flight" then flight_step(self, control, yaw)
+		elseif tier.mode == "water" then water_step(self, control, yaw, dtime)
 		else land_step(self, control, yaw, dtime) end
 	end,
 
@@ -425,8 +558,8 @@ local visual_definition = {
 		self.object:set_properties({mesh = model.mesh, textures = model.textures,
 			visual_size = {x = model.visual_size.x / rider_size.x,
 				y = model.visual_size.y / rider_size.y}})
-		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y, z = 0},
-			{x = 0, y = 0, z = 0}, false)
+		self.object:set_attach(player, "", {x = 0, y = -seat / rider_size.y,
+			z = (model.attach_z or 0) / rider_size.x}, {x = 0, y = 0, z = 0}, false)
 	end,
 	get_staticdata = function() return "" end,
 }
@@ -458,7 +591,7 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	entity.driver = player
 	entity._grug_rider = player
 	active[name] = {object = object, tier = tier_id, flying = tier.mode == "flight",
-		model = model}
+		mode = tier.mode, model = model}
 	attach(player, object, model, skip_animation)
 	local visual = core.add_entity(pos, VISUAL_NAME,
 		core.serialize({owner = name, tier = tier_id}))
@@ -471,45 +604,73 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	local bonus = math.floor((tier.speed / 4 - 1) * 100 + 0.5)
 	grug_core.set_status(player, STATUS_ID, {
 		label = tier.name,
-		detail = ("+%d%% speed%s"):format(bonus,
-			tier.mode == "flight" and ", flying" or ""),
+		detail = tier.mode == "water" and ("%g nodes/s on water"):format(tier.speed) or
+			("+%d%% speed%s"):format(bonus, tier.mode == "flight" and ", flying" or ""),
 		kind = "buff", untimed = true,
-		variant = tier.mode == "flight" and "flight" or "land",
+		variant = tier.mode,
 	})
 	return true
 end
 
-function grug_mounts.mount(player, tier_id)
-	if grug_core.in_combat(player) then return false, "You cannot mount while in combat." end
+-- Where tier_id may be summoned for this player right now, or nil and why.
+local function summon_position(player, tier_id)
+	if grug_core.in_combat(player) then return nil, "You cannot mount while in combat." end
 	local tier = grug_mounts.TIERS[tier_id]
 	local pos = player:get_pos()
-	if not tier or not pos then return false, "The mount cannot be summoned." end
+	if not tier or not pos or player:get_hp() <= 0 then
+		return nil, "The mount cannot be summoned."
+	end
+	if tier.mode == "water" then
+		-- On a boat the player's position is the boat's, on the water surface:
+		-- the water node is the half node below it.
+		local record = active[player:get_player_name()]
+		if record and record.mode == "water" then pos.y = pos.y - 0.5 end
+		return grug_mounts.boat_surface(pos)
+	end
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
-		if not legal then return false, "Flying mounts are forbidden here." end
+		if not legal then return nil, "Flying mounts are forbidden here." end
 		local surface = grug_zones.terrain_height_at(pos.x, pos.z)
 		if type(surface) ~= "number" or pos.y < surface then
-			return false, "Flying mounts cannot take off underground."
+			return nil, "Flying mounts cannot take off underground."
 		end
 		if pos.y > grug_mounts.FLIGHT_CEILING then
-			return false, "The flight ceiling is y = " .. grug_mounts.FLIGHT_CEILING .. "."
+			return nil, "The flight ceiling is y = " .. grug_mounts.FLIGHT_CEILING .. "."
 		end
 	end
+	return pos
+end
+
+function grug_mounts.mount(player, tier_id)
+	local pos, message = summon_position(player, tier_id)
+	if not pos then return false, message end
 	return grug_mounts.spawn_entity(player, tier_id, pos)
 end
 
+-- The active tier's item dismounts. Another tier's item replaces the active
+-- mount or boat when that tier may be summoned here; otherwise the current
+-- one stays and the refusal is shown.
 function grug_mounts.toggle(player, tier_id)
-	if active[player:get_player_name()] then
+	local name = player:get_player_name()
+	local record = active[name]
+	if record and record.tier == tier_id then
 		return grug_mounts.dismount(player, "manual", false)
 	end
-	local ok, message = grug_mounts.mount(player, tier_id)
-	if not ok and message then core.chat_send_player(player:get_player_name(), message) end
+	local pos, message = summon_position(player, tier_id)
+	local ok = false
+	if pos then
+		if record then grug_mounts.dismount(player, nil, true) end
+		ok, message = grug_mounts.spawn_entity(player, tier_id, pos)
+	end
+	if not ok and message then core.chat_send_player(name, message) end
 	return ok, message
 end
 
+-- Any damage dismounts; a boat's rider stays in the water where the boat was.
 core.register_on_player_hpchange(function(player, hp_change)
-	if hp_change < 0 and active[player:get_player_name()] then
-		grug_mounts.dismount(player, nil, false)
+	local record = hp_change < 0 and active[player:get_player_name()]
+	if record then
+		grug_mounts.dismount(player, nil, record.mode == "water")
 	end
 end, false)
 

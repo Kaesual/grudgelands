@@ -29,6 +29,9 @@ local player = {
 	get_look_horizontal = function() return 0 end,
 }
 rawset(_G, "core", {
+	-- providers.lua reads its own mod's location_view.lua through these.
+	get_current_modname = function() return "grug_map" end,
+	get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
 	register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end,
 	register_globalstep = function() end,
 	register_on_leaveplayer = function() end,
@@ -60,7 +63,8 @@ rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_quests", {registered_npcs = {}, marker_state = function() return nil end})
 rawset(_G, "grug_parties", {view = function() return nil end})
-rawset(_G, "grug_home", {get = function() return nil end, locations = function() return {} end})
+rawset(_G, "grug_home", {get = function() return nil end, locations = function() return {} end,
+	known_waypoints = function() return {} end})
 rawset(_G, "grug_zones", {at = function() return nil end})
 rawset(_G, "grug_inventory", {UI = {width = 10.4, height = 11.1}})
 local page

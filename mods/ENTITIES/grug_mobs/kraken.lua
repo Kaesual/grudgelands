@@ -8,6 +8,22 @@ local function in_deep_ocean(pos)
 	return grug_zones.water_class_at(pos.x, pos.z) == "deep_ocean"
 end
 
+-- Ruling 7 (travel plan, 2026-10-02): 10 nodes/s inside deep-ocean columns,
+-- faster than the improved boat's 8, and 5 everywhere else.
+local DEEP_RUN_VELOCITY = 10
+local RUN_VELOCITY = 5
+
+-- The root/slow engine (init.lua tick_speed_effects) owns the speed fields
+-- while an effect runs and restores them from `_grug_speed_base`; the switch
+-- then writes the base so the two never fight.
+local function set_run_velocity(self, speed)
+	if self._grug_speed_base then
+		self._grug_speed_base.run = speed
+	else
+		self.run_velocity = speed
+	end
+end
+
 grug_mobs.register_mob("grug_mobs:kraken", {
 	description = "Kraken Guard",
 	clock = "any",
@@ -58,8 +74,9 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	fall_damage = 0,
 	fear_height = 0,
 	walk_velocity = 3,
-	run_velocity = 5, -- must outswim a player
-	view_range = 20,
+	-- Switched between RUN_VELOCITY and DEEP_RUN_VELOCITY in do_custom.
+	run_velocity = RUN_VELOCITY,
+	view_range = 40,
 
 	visual = "mesh",
 	mesh = "grug_mobs_kraken.b3d",
@@ -128,7 +145,9 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 		end
 		t.grug_leash_timer = 0
 		local pos = self.object:get_pos()
-		if pos and not in_deep_ocean(pos) then
+		local deep = pos and in_deep_ocean(pos)
+		set_run_velocity(self, deep and DEEP_RUN_VELOCITY or RUN_VELOCITY)
+		if pos and not deep then
 			if self.attack then
 				self:stop_attack()
 			end

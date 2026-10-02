@@ -102,22 +102,23 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			"default:sand", "-"},
 		grug_swamp = {"grug_nodes:mud", "grug_nodes:mud", 2, "grug_nodes:mud", "-"},
 	}
+	-- Gems (economy plan §6): each only in the tier rock of its own tier.
 	local RESOURCE_EXPECTED = {
-		abyssal_crystal = {"universal", 5, 2, {false, false, false, false, 512, 256}},
-		citrine = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
-		coal = {"universal", 1, 8, {64, 128, 128, 128, 128, 128}},
-		copper = {"universal", 1, 8, {96, 192, 384, 384, 384, 384}},
-		diamond = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
-		emberglass = {"universal", 4, 4, {false, false, false, 256, 128, 256}},
-		garnet = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
-		gold = {"universal", 2, 4, {false, 512, 256, 128, 256, 256}},
-		iron = {"universal", 1, 8, {128, 96, 192, 384, 384, 384}},
-		jade = {"regional_g1", 2, 3, {false, 2048, 1024, 512, 512, 512}},
-		quartz = {"universal", 1, 8, {128, 256, 512, 512, 512, 512}},
-		ruby = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
-		sapphire = {"regional_g2", 4, 2, {false, false, false, 2048, 1024, 512}},
-		silver = {"universal", 3, 4, {false, false, 256, 128, 256, 512}},
-		tin = {"universal", 1, 8, {96, 192, 384, 384, 384, 384}},
+		abyssal_crystal = {5, 2, {false, false, false, false, 512, 256}},
+		citrine = {1, 2, {512, false, false, false, false, false}},
+		coal = {1, 8, {64, 128, 128, 128, 128, 128}},
+		copper = {1, 8, {96, 192, 384, 384, 384, 384}},
+		diamond = {6, 2, {false, false, false, false, false, 512}},
+		emberglass = {4, 4, {false, false, false, 256, 128, 256}},
+		garnet = {3, 2, {false, false, 512, false, false, false}},
+		gold = {2, 4, {false, 512, 256, 128, 256, 256}},
+		iron = {1, 8, {128, 96, 192, 384, 384, 384}},
+		jade = {2, 2, {false, 512, false, false, false, false}},
+		quartz = {1, 8, {128, 256, 512, 512, 512, 512}},
+		ruby = {5, 2, {false, false, false, false, 512, false}},
+		sapphire = {4, 2, {false, false, false, 512, false, false}},
+		silver = {3, 4, {false, false, 256, 128, 256, 512}},
+		tin = {1, 8, {96, 192, 384, 384, 384, 384}},
 	}
 	local CULTURAL_EXPECTED = {
 		dwarf = {"runeslate", "elandor_stormvault_heights",
@@ -289,16 +290,16 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	end
 	for index = 1, #manifest_values.resources do
 		local row = manifest_values.resources[index]
-		exact_fields(row, {key = true, scope = true, first_tier = true,
+		exact_fields(row, {key = true, first_tier = true,
 			denominators = true, max_nodes_per_vein = true,
 			deep_1500_1999_numerator = true, deep_1500_1999_denominator = true,
 			deep_2000_floor_numerator = true, deep_2000_floor_denominator = true},
 			"resource row", "fail_resource_manifest")
 		local expected = RESOURCE_EXPECTED[text(row.key, "resource key", "fail_resource_manifest")]
-		if not expected or resource_by_key[row.key] or row.scope ~= expected[1] or
-				row.first_tier ~= expected[2] or row.max_nodes_per_vein ~= expected[3] or
+		if not expected or resource_by_key[row.key] or
+				row.first_tier ~= expected[1] or row.max_nodes_per_vein ~= expected[2] or
 				dense(row.denominators, "resource denominators", "fail_resource_manifest") ~= 6 or
-				not equal_array(row.denominators, expected[4]) or
+				not equal_array(row.denominators, expected[3]) or
 				row.deep_1500_1999_numerator ~= 5 or
 				row.deep_1500_1999_denominator ~= 4 or
 				row.deep_2000_floor_numerator ~= 3 or
@@ -410,13 +411,10 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 	end
 	local density = wp43_projection.density
-	if type(density) ~= "table" or type(density.g2) ~= "table" or
+	if type(density) ~= "table" or type(density.gem) ~= "table" or
 			type(density.abyssal_crystal) ~= "table" or
-			type(density.g2.host_nodes_per_ore) ~= "table" or
+			density.gem.host_nodes_per_ore ~= 512 or
 			dense(density.deep_bands, "WP43 deep bands", "fail_resource_manifest") ~= 2 or
-			density.g2.host_nodes_per_ore[4] ~= 2048 or
-			density.g2.host_nodes_per_ore[5] ~= 1024 or
-			density.g2.host_nodes_per_ore[6] ~= 512 or
 			type(density.abyssal_crystal.host_nodes_per_ore) ~= "table" or
 			density.abyssal_crystal.host_nodes_per_ore[5] ~= 512 or
 			density.abyssal_crystal.host_nodes_per_ore[6] ~= 256 or
@@ -425,6 +423,21 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			density.deep_bands[2].multiplier_numerator ~= 3 or
 			density.deep_bands[2].multiplier_denominator ~= 2 then
 		fail("fail_resource_manifest", "WP43 density projection differs")
+	end
+	-- A gem occurs only in the tier rock of its harvest tier, at the one gem
+	-- density (economy plan §6.1).
+	for key, projected in pairs(projected_resources) do
+		if projected.gem then
+			local row = resource_by_key[key]
+			for tier = 1, 6 do
+				local expected = tier == projected.harvest_tier and
+					density.gem.host_nodes_per_ore or false
+				if row.first_tier ~= projected.harvest_tier or
+						row.denominators[tier] ~= expected then
+					fail("fail_resource_manifest", "gem band differs at " .. key)
+				end
+			end
+		end
 	end
 
 	exact_fields(content_contract, {schema = true, r5 = true, ignore_cid = true,

@@ -19,7 +19,8 @@
 --   quest         the quest shell (start_villagers.lua)
 --   vendor        resolved by grug_traders, which owns vendors
 --   king          one race king plus the four royal hall guards
---   waypoint      nothing (WP17's travel pad)
+--   waypoint      nothing; the `travel_waypoint` socket is the cell of the
+--                 pad's waystone, which grug_home/waypoints.lua reads
 --
 -- IT SERVES EVERY REGISTERED SETTLEMENT, not only the six starts. A capital
 -- registers under its own key when its core lands, and three things about a
@@ -1184,6 +1185,9 @@ local function install(entity, row, slot)
 		entity._grug_walker = false
 	elseif slot.role == "riding_trainer" then
 		entity._grug_npc_name = "Riding Trainer"
+		entity._grug_walker = false
+	elseif slot.role == "shipwright" then
+		entity._grug_npc_name = "Shipwright"
 		entity._grug_walker = false
 	elseif slot.role == "housing_manager" then
 		entity._grug_npc_name = "Housing Steward"

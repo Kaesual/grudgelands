@@ -483,8 +483,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     eligible participant.
   - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
     `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
-    `palette` (the old ABM path, kept for a zone without recipe). It builds a
-    zone's region map on first need through the pure
+    `palette` (the old ABM path, kept for a zone without recipe). It builds
+    every recipe zone's region map at server start (mods loaded) through the
+    lazy `SR.map` and the pure
     `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
     the review images are what spawns. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
@@ -527,7 +528,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     Consumers never copy a band boundary, harvest tier, rock name or
     race-region assignment.
   - Registry consumers use `RESOURCES`, `RESOURCE_BY_KEY`,
-    `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`, `GEM_GRADES`,
+    `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`,
     `CULTURAL_MATERIALS`, `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
     with the `resource`, `resource_for_node`, `resource_node` and `processed`
     accessors. `CURRENT_SCATTER_RESOURCES` is only the pre-WP40 placement
@@ -535,7 +536,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     replace or duplicate this taxonomy.
   - The natural-node contract is explicit. Picks carry
     `grug_pick_tier = 1..6`; generated ground carries `grug_natural = 1`;
-    resources additionally carry `grug_resource = 1..5`. Mapgen owners must
+    resources additionally carry `grug_resource = 1..6` (gems carry
+    `gem = true` in `RESOURCES`; Diamond is the only T6 resource). Mapgen owners must
     add every new generated ground node to `NATURAL_GROUND_NODES` and apply
     `natural_groups(groups)` when registering their own nodes. Never infer
     natural ground from `is_ground_content`: the engine defaults that field
@@ -676,7 +678,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
   log, tracker and feed (item names only, never tooltip text) and carries
   each objective's target level range, computed once at load by
-  `validate.lua` (Lane Q0). The catalog requires only V1 overworld content; the Nether is
+  `validate.lua` (Lane Q0), and fills the quest text placeholders (Round 29
+  Q1): titles (`{name:...}` only) at load, texts on first display through
+  `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
+  `registry.lua` computes the copper of a quest without `rewards.copper`
+  (`quest_copper`). The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
@@ -896,7 +902,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   25); bounded functional anchors keep their hard protection; the remaining camp shells, tents, fences and battlefield
   dressing are mutable.
   Material design owns the complete `race_region` mapping of
-  G1, G2, cultural material and signature wood; map code stores only the
+  cultural material and signature wood (gems are depth-tiered, not
+  regional); map code stores only the
   region identity and placement data needed to consume that mapping. Each
   endpoint apex camp has no renewable sockets (renewable ores are removed,
   2026-09-29); its small functional anchor and building-core box are

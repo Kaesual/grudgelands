@@ -86,6 +86,16 @@ function grug_quests.register_quest(id, def)
 		index[id] = true
 	end
 end
+-- Quest copper when a quest names none (Round 29 Q1, economy-vendor-plan.md
+-- section 4, the WP44 cutover column): round_half_up(0.08 x P(T) x weight),
+-- at least 1c for a weight above 0, T the reward level's tier band (1-10 ->
+-- 1, ..., 51-60 -> 6). Integer arithmetic, so a .5 rounds up exactly.
+grug_quests.COPPER_PRICE = {25, 65, 160, 400, 1000, 2500}
+function grug_quests.quest_copper(level, weight)
+	if weight <= 0 then return 0 end
+	local tier = math.max(1, math.min(6, math.floor((level - 1) / 10) + 1))
+	return math.max(1, math.floor((8 * grug_quests.COPPER_PRICE[tier] * weight + 50) / 100))
+end
 -- The quest's reward XP before the race bonus (grug_xp.add_xp applies it).
 function grug_quests.reward_xp(def)
 	if def.rewards.weight then return grug_xp.quest_reward(def.level, def.rewards.weight) end

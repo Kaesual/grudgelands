@@ -46,10 +46,16 @@ import r28common as C  # noqa: E402
 
 
 class Route:
-    def __init__(self, spec, atlas=None):
+    """The zones in play order: a --route spec ("zone_a,zone_b:lo-hi"), or
+    `entries` [(zone, lines, levels, label)] of r28common.track_route (lines
+    None = every line but `front`; levels = a host's front quests of one
+    band only)."""
+
+    def __init__(self, spec="", atlas=None, entries=None):
         self.atlas = atlas
         self.zones = []
         self.bands = {}
+        self.entries = list(entries or [])
         for part in [p.strip() for p in spec.split(",") if p.strip()]:
             if ":" in part:
                 zone, band = part.split(":", 1)
@@ -57,7 +63,8 @@ class Route:
                 self.bands[zone] = (int(lo), int(hi))
             else:
                 zone = part
-            self.zones.append(zone)
+            self.entries.append((zone, None, None, None))
+        self.zones = [entry[0] for entry in self.entries]
 
 
 class Ledger:
@@ -82,6 +89,8 @@ class Ledger:
         self.done = set()
         self.lines = set(lines) if lines else None
         self.per_band = defaultdict(lambda: defaultdict(float))
+        # (route entry label, band) -> acc: the 20-30 split own zones/sister.
+        self.zone_band_acc = defaultdict(lambda: defaultdict(float))
 
     # -- helpers --------------------------------------------------------
     @property
@@ -227,20 +236,26 @@ class Ledger:
         band = C.band_of_level(q.get("level", 1) if isinstance(q.get("level"), int) else 1)
         return (band[0], band[1])
 
-    def run_zone(self, zone, band):
+    def run_zone(self, zone, band, lines=None, levels=None, label=None):
+        """One route entry: the zone's quests (`lines` overrides --lines;
+        `levels` keeps only quests whose reward level lies in that band)."""
         acc = defaultdict(float)
-        row = {"zone": zone, "band": band, "entry": self.level, "quests": 0}
+        row = {"zone": zone + (" (%s)" % label if label else ""), "band": band, "entry": self.level,
+               "quests": 0, "label": label}
         if zone not in self.design.quests and zone not in self.design.front:
             self.warn("%s: no quests file in the design" % zone)
             row.update(exit=self.level, acc=acc)
             self.zone_rows.append(row)
             return acc
-        quests = self.design.zone_quests(zone, self.lines)
-        if not self.lines or "front" not in self.lines:
+        lines = set(lines) if lines else self.lines
+        quests = self.design.zone_quests(zone, lines)
+        if not lines or "front" not in lines:
             # Front quests (front files, line `front`) belong to the front
             # ledger; a race or contested route counts them only when
             # --lines names `front`.
             quests = [q for q in quests if q.get("line") != "front"]
+        if levels:
+            quests = [q for q in quests if levels[0] <= (q.get("level") or 1) <= levels[1]]
         one_time = [q for q in quests if not q.get("repeatable")]
         repeatables = [q for q in quests if q.get("repeatable")]
         plan = self.ordered(zone, one_time)
@@ -259,6 +274,7 @@ class Ledger:
             for key, value in qacc.items():
                 acc[key] += value
                 self.per_band[self.quest_band(zone, q)][key] += value
+                self.zone_band_acc[(label, self.quest_band(zone, q))][key] += value
             self.done.add(q.get("id"))
             row["quests"] += 1
         row.update(exit=self.level, acc=acc)
@@ -376,9 +392,26 @@ class Ledger:
         acc["drop_kills"] += gained
 
 
+ZONE_RECORDS = None
+
+
+def gameplay_band(zone):
+    """The zone's gameplay level band (r28common.zone_records: the mapgen's
+    zone rows with today's grug_core/zone_bands.lua), or None."""
+    global ZONE_RECORDS
+    if ZONE_RECORDS is None:
+        ZONE_RECORDS = C.zone_records()
+    info = ZONE_RECORDS.get(zone)
+    return info["levels"] if info else None
+
+
 def zone_band(route, design, zone):
     if zone in route.bands:
         return route.bands[zone]
+    levels = gameplay_band(zone)
+    if levels:
+        band = C.band_of_level(levels[0])
+        return (band[0], band[1])
     info = route.atlas.zones.get(zone) if route.atlas else None
     if info and info.get("levels"):
         band = C.band_of_level(info["levels"][0])
@@ -395,8 +428,13 @@ def run(design, existing, route, participants, args):
                     repeat=args.repeat, skip_optional=args.skip_optional,
                     include_group=args.solo_group, start_level=args.start_level,
                     lines=getattr(args, "lines_set", None))
-    for zone in route.zones:
-        ledger.run_zone(zone, zone_band(route, design, zone))
+    if any(entry[3] for entry in route.entries):
+        # A track route reports every band, also one without quests yet.
+        for band in C.BANDS:
+            ledger.per_band[(band[0], band[1])]
+    for zone, lines, levels, label in route.entries:
+        band = tuple(C.band_of_level(levels[0])[:2]) if levels else zone_band(route, design, zone)
+        ledger.run_zone(zone, band, lines, levels, label)
     return ledger, ledger.per_band
 
 
@@ -411,11 +449,32 @@ def target_for(band):
     return C.band_of_level(band[0])[2:4]
 
 
+def sister_split(ledger):
+    """20 -> 30 on a track route: the share of the band's questing XP from
+    the own capital and heartland (target about 60-70 %, the rest from one
+    sister zone; round29-quests-plan section 3.1). None off a track."""
+    labels = {label for label, _ in ledger.zone_band_acc}
+    if "capital" not in labels:
+        return None
+
+    def questing(label):
+        acc = ledger.zone_band_acc.get((label, (20, 30))) or {}
+        return sum(acc.get(k, 0) for k in ("rewards", "kills", "drop_kills", "gathering"))
+    own = questing("capital") + questing("heartland")
+    sister = questing("sister")
+    if own + sister <= 0:
+        return None
+    return ("20 → 30 questing XP: own capital and heartland %s, sister zone %s (target about 60–70 %% own)."
+            % (pct(own / (own + sister)), pct(sister / (own + sister)) if "sister" in labels else "none on this run"))
+
+
 def report(design, existing, route, args):
     out = []
     flags_total = 0
     parties = {"solo": [1], "duo": [2], "both": [1, 2]}[args.party]
-    out.append("# Leveling ledger: %s" % " → ".join(route.zones))
+    track = getattr(args, "track", None)
+    out.append("# Leveling ledger: %s" % ("%s track (frame section 2.1)" % track if track
+                                          else " → ".join(route.zones)))
     out.append("")
     out.append("Generated by `tools/r28_design/ledger.py` (design `%s`). Real XP, not KE. "
                "Start level %d%s; repeatables counted %d×; tolerance ±%d points%s. Quests count in the band "
@@ -455,6 +514,10 @@ def report(design, existing, route, args):
                 acc["drop_kills"], acc["gathering"], questing, pct(share), pct(target), pct(rshare),
                 pct(rtarget), max(0, need - questing), ", ".join(flags) or "ok"))
         out.append("")
+        split = sister_split(ledger)
+        if split:
+            out.append(split)
+            out.append("")
         out.append("| Zone | Band | Quests | Level in | Level out | Rewards | Quest kills | Drop kills | "
                    "Gathering | Free play before quests | Minutes (duration_min) |")
         out.append("|---|---|---|---|---|---|---|---|---|---|---|")
@@ -487,6 +550,12 @@ def report(design, existing, route, args):
 def parse(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--route", help="comma-separated zone ids in play order; zone:lo-hi pins its band")
+    ap.add_argument("--track", help="a race's whole route 1-60 (start, home, capital and heartland, "
+                    "the faction's three contested zones, the 41-50 and 51-60 zones with the faction's "
+                    "front quests); human implies --human")
+    ap.add_argument("--sister", help="with --track: the sister zone of the faction's 20-30 zones")
+    ap.add_argument("--game", action="store_true",
+                    help="read the zone files from the game (grug_mobs and grug_quests data/zones)")
     ap.add_argument("--design", default=str(C.DEFAULT_DESIGN))
     ap.add_argument("--existing", default=str(C.DEFAULT_EXISTING))
     ap.add_argument("--atlas", help="zone atlas directory: zone bands from the atlas level ranges")
@@ -509,10 +578,18 @@ def main(argv):
     args.lines_set = [x.strip() for x in args.lines.split(",") if x.strip()] if args.lines else None
     if args.self_test:
         return self_test()
-    if not args.route:
-        print("ledger.py: --route is required (see --help)", file=sys.stderr)
+    if bool(args.route) == bool(args.track):
+        print("ledger.py: give --route or --track (see --help)", file=sys.stderr)
         return 2
-    design = C.Design(args.design)
+    entries = None
+    if args.track:
+        try:
+            entries = C.track_route(args.track, args.sister)
+        except ValueError as err:
+            print("ledger.py: %s" % err, file=sys.stderr)
+            return 2
+        args.human = args.human or args.track == "human"
+    design = C.Design(args.design, C.GAME_ZONE_DIRS if args.game else None)
     for err in design.errors:
         print("error: " + err, file=sys.stderr)
     if design.errors:
@@ -529,10 +606,12 @@ def main(argv):
         except C.LoadError as err:
             print("error: %s" % err, file=sys.stderr)
             return 2
-        for zone in Route(args.route).zones:
+    route = Route(args.route or "", atlas, entries)
+    if atlas:
+        for zone in route.zones:
             if zone not in atlas.zones:
                 print("warning: %s is not an atlas zone" % zone, file=sys.stderr)
-    text, flags = report(design, existing, Route(args.route, atlas), args)
+    text, flags = report(design, existing, route, args)
     print(text)
     if args.out:
         Path(args.out).write_text(text + "\n", encoding="utf-8")
@@ -646,6 +725,34 @@ def self_test():
     human.human = True
     hsolo, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 1, human)
     check(hsolo.zone_rows[0]["acc"]["rewards"] > sacc["rewards"], "human option raises rewards")
+    # Track routes (round29-quests-plan section 3.1) on the gameplay bands.
+    check(gameplay_band("front_broken_causeway") == (41, 50) and gameplay_band("front_skyglass_canopy") == (51, 60),
+          "gameplay bands: the Causeway 41-50, Skyglass 51-60 (zone_bands.lua over the mapgen rows)")
+    entries = C.track_route("human", "elandor_lorindor")
+    own = [(zone, label) for zone, lines, _, label in entries if lines is None]
+    check(own == [("elandor_dawnmere_fields", "start"), ("elandor_goldmead_vale", "home"),
+                  ("elandor_highcourt", "capital"), ("elandor_whitebridge_shire", "heartland"),
+                  ("elandor_lorindor", "sister"), ("elandor_ashenward_march", "contested"),
+                  ("elandor_stormvault_heights", "contested"), ("elandor_glassroot_wilds", "contested"),
+                  ("front_broken_causeway", "front"), ("front_shattered_line", "front"),
+                  ("front_gravesalt_escarpment", "front"), ("front_skyglass_canopy", "front")],
+          "human track: own zones, sister, the three contested zones, 41-50 and 51-60 (%s)" % own)
+    hosts = sorted({zone for zone, lines, levels, _ in entries if lines == ("front",) and levels == (41, 50)})
+    check(hosts == ["elandor_ashenward_march", "elandor_dur_brannoc", "elandor_glassroot_wilds",
+                    "elandor_highcourt", "elandor_lethariel", "elandor_stormvault_heights"],
+          "front quests from the faction's contested zones and capitals (%s)" % hosts)
+    elf = [zone for zone, lines, _, label in C.track_route("troll") if label == "heartland"]
+    check(elf == ["kragmar_whispering_reedlands", "kragmar_totemwater_reach"], "both troll heartland zones")
+    for bad in ("kragmar_ossuary_reach", "elandor_whitebridge_shire", "elandor_goldmead_vale"):
+        try:
+            C.track_route("human", bad)
+            check(False, "sister %s refused" % bad)
+        except ValueError:
+            check(True, "sister refused")
+    tracked, _ = run(design, existing, Route(entries=entries), 1, args)
+    check(set(tracked.per_band) == {(b[0], b[1]) for b in C.BANDS}, "a track reports every band")
+    check(tracked.zone_rows[0]["quests"] == 11 and tracked.zone_rows[0]["zone"] == "elandor_dawnmere_fields (start)",
+          "the track runs the design's start zone")
     if failures:
         for f in failures:
             print("FAIL " + f)

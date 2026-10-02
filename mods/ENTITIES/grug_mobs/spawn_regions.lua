@@ -14,7 +14,8 @@
 -- A recipe holds no coordinate: the world differs per seed. On the first
 -- need (a spawn attempt, a level or direction query) the zone's REGION MAP is
 -- built from the analytic world (spawn_regions_core.lua, the same file the
--- offline renderer tools/r28_regions runs) and cached for the session.
+-- offline renderer tools/r28_regions runs) and cached for the session; every
+-- recipe zone's map is built once at server start (mods loaded).
 --
 -- Spawning at a point uses the region there: the roster of the current clock,
 -- a level in the region's range for the role (belt range x role range), the
@@ -467,6 +468,9 @@ local function place(ref)
 	local a = grug_zones.anchor(row.zone_id, row.slot)
 	return a and {x = a.x, z = a.z, name = row.label} or nil
 end
+-- {x, z, name} of a named place (a settlement key or anchor id), or nil:
+-- the "of" reference, also for checking quest placeholders at load.
+SR.place = place
 
 function SR.describe(zone_id, target, mode, ref)
 	local map = SR.map(zone_id)
@@ -1066,4 +1070,15 @@ core.register_on_mods_loaded(function()
 			end
 		end
 	end
+	-- Every recipe zone's region map is built here, once, before players
+	-- can join (the user, 2026-10-02): a build blocks the server for about
+	-- 0.3 s, so neither a player entering a zone nor a quest text's direction
+	-- ever builds one at runtime. SR.map stays the one builder (and caches).
+	local t0, heap0, built = core.get_us_time(), collectgarbage("count"), 0
+	for _, zone_id in ipairs(SR.zone_ids()) do
+		if zones[zone_id].recipe and SR.map(zone_id) then built = built + 1 end
+	end
+	core.log("action", ("[grug_mobs] spawn regions: %d region maps built at start in %.1f s, " ..
+		"Lua heap %.0f -> %.0f MiB"):format(built, (core.get_us_time() - t0) / 1000000,
+		heap0 / 1024, collectgarbage("count") / 1024))
 end)

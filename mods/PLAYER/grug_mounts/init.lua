@@ -1,4 +1,4 @@
--- Universal riding: persistent ownership, disposable runtime entities.
+-- Universal riding and boats: persistent ownership, disposable runtime entities.
 
 grug_mounts = {}
 
@@ -8,3 +8,4 @@ dofile(modpath .. "/state.lua")
 dofile(modpath .. "/entity.lua")
 dofile(modpath .. "/items.lua")
 dofile(modpath .. "/trainer.lua")
+dofile(modpath .. "/shipwright.lua")

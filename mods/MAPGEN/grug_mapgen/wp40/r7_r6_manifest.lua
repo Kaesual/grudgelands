@@ -65,21 +65,21 @@ grug_swamp|grug_nodes:mud|grug_nodes:mud|2|grug_nodes:mud|grug_nodes:mud|-
 ]]
 
 local RESOURCE_ROWS = [[
-abyssal_crystal|universal|5|-;-;-;-;512;256|2
-citrine|regional_g1|2|-;2048;1024;512;512;512|3
-coal|universal|1|64;128;128;128;128;128|8
-copper|universal|1|96;192;384;384;384;384|8
-diamond|regional_g2|4|-;-;-;2048;1024;512|2
-emberglass|universal|4|-;-;-;256;128;256|4
-garnet|regional_g1|2|-;2048;1024;512;512;512|3
-gold|universal|2|-;512;256;128;256;256|4
-iron|universal|1|128;96;192;384;384;384|8
-jade|regional_g1|2|-;2048;1024;512;512;512|3
-quartz|universal|1|128;256;512;512;512;512|8
-ruby|regional_g2|4|-;-;-;2048;1024;512|2
-sapphire|regional_g2|4|-;-;-;2048;1024;512|2
-silver|universal|3|-;-;256;128;256;512|4
-tin|universal|1|96;192;384;384;384;384|8
+abyssal_crystal|5|-;-;-;-;512;256|2
+citrine|1|512;-;-;-;-;-|2
+coal|1|64;128;128;128;128;128|8
+copper|1|96;192;384;384;384;384|8
+diamond|6|-;-;-;-;-;512|2
+emberglass|4|-;-;-;256;128;256|4
+garnet|3|-;-;512;-;-;-|2
+gold|2|-;512;256;128;256;256|4
+iron|1|128;96;192;384;384;384|8
+jade|2|-;512;-;-;-;-|2
+quartz|1|128;256;512;512;512;512|8
+ruby|5|-;-;-;-;512;-|2
+sapphire|4|-;-;-;512;-;-|2
+silver|3|-;-;256;128;256;512|4
+tin|1|96;192;384;384;384;384|8
 ]]
 
 local CULTURAL_ROWS = [[
@@ -175,7 +175,7 @@ return function()
 	end)
 	local resources = {}
 	lines(RESOURCE_ROWS, function(row)
-		local denominators = array(row[4])
+		local denominators = array(row[3])
 		for index = 1, #denominators do
 			if denominators[index] == "-" then
 				denominators[index] = false
@@ -183,9 +183,9 @@ return function()
 				denominators[index] = assert(tonumber(denominators[index]))
 			end
 		end
-		resources[#resources + 1] = {key = row[1], scope = row[2],
-			first_tier = assert(tonumber(row[3])), denominators = denominators,
-			max_nodes_per_vein = assert(tonumber(row[5])),
+		resources[#resources + 1] = {key = row[1],
+			first_tier = assert(tonumber(row[2])), denominators = denominators,
+			max_nodes_per_vein = assert(tonumber(row[4])),
 			deep_1500_1999_numerator = 5, deep_1500_1999_denominator = 4,
 			deep_2000_floor_numerator = 3, deep_2000_floor_denominator = 2}
 	end)

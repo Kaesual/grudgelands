@@ -572,7 +572,7 @@ and the Mage take damage sooner"):
   temperament says so (bear, panther, mirefolk, stag, spider, jungle ape), 10
   low to the ground or at the village belt (boar and its tints, bog ooze, ram,
   serpent). The critters see 8; the Crocodile's 6 and the Crag Eagle's 16 keep
-  their own documented reasons, and the aquatic Kraken's 20 is outside the
+  their own documented reasons, and the aquatic Kraken's 40 is outside the
   comparison.
 - **16 is the CEILING for a land mob, not a direction of travel.** Bound
   actors (camps, guards, rares) give up a chase at 45 m and leash at 40
@@ -752,39 +752,31 @@ one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
 
-Three fields carry the boat contract of `boats.md`. All three target values
-were **decided by the design owner on 2026-08-13**; two of them replace what
-the mob ships with and the third confirms it unchanged. The anchors quoted
-below are the rationale for each choice, not the authority for it:
+Three fields carry the boat contract of `boats.md`; the travel plan's ruling
+7 (user, 2026-10-02) sets the first two:
 
-- **`run_velocity` 5** (shipped: 5). The 2026-09-17 speed ruling supersedes
-  the earlier boat-derived 8.8 target: the code value stands. It remains above
-  the ordinary 4.6 melee floor, while the guard's deep-ocean pressure relies
-  on its view range, fixed level and model-specific reach rather than outrunning
-  the improved 8 nodes/s boat (`boats.md` §5).
-- **`view_range` 40** (shipped: 20) — the same 40 m that is already the
-  threat-validity and leash radius of `combat_stats.md` §4, so the guard
-  notices a boat before the boat is past it. Large, deliberately not unfair.
+- **`run_velocity` 10 inside a deep-ocean column, 5 everywhere else.** The
+  existing once-per-second `do_custom` tick switches it at the guard's own
+  position. Ten is above the improved boat's 8 nodes/s (`boats.md` §5), and
+  one hit ejects a boat's rider, so a guard that sees a boat in deep ocean
+  ends the trip. While a root or slow runs, the switch writes the saved base
+  speed, so the effect engine stays the one owner of the live field.
+- **`view_range` 40**, the same 40 m that is the threat-validity and leash
+  radius of `combat_stats.md` §4, so the guard notices a boat before the boat
+  is past it.
 - **`reach` 4 is unchanged.** It remains above the ordinary roster's 3 because
   the model is ×6 and mobs_redo measures centre to centre
   (`mods/ENTITIES/mobs/api.lua:298-305`); the reason a fleeing target used to
   be nearly unhittable was the attack cadence, not the reach, and that is
   fixed once for every mob in `combat_stats.md` §4.
 
-The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
-evade everywhere else, never spawning in a dragon channel — are owned by
-`world.md` §2b. They **replace** the mob's shipped blanket exceptions —
-`_grug_no_leash = true` and `_grug_soft_deaggro = false`
-(`mods/ENTITIES/grug_mobs/kraken.lua:25-26`) plus its own water-class leash
-(`do_custom`, `:115-134`, which drops the target and holds position as soon as
-the guard leaves deep ocean) — with the position-dependent state: the same
-suspensions inside a deep-ocean column, the ordinary §4 leash and evade
-outside it. The shipped comment at `:21-24` states the reason those
-exceptions are global today, and that reason survives exactly where it is
-true, on the open sea. Its `_grug_spawn_check` already is `in_deep_ocean`
-(`grug_zones.water_class_at(...) == "deep_ocean"`, `kraken.lua:7-9`, `:20`),
-so deep-ocean-only spawning needs no separate mechanism. `view_range` is
-still 20 (`:62`; target 40). Citations checked 2026-09-29.
+The guard's pursuit rules are owned by `world.md` §2b: the generic leash and
+soft de-aggro stay off (`_grug_no_leash = true`, `_grug_soft_deaggro =
+false`), and its own water-class leash in `do_custom` drops the target and
+holds position as soon as the guard is outside deep ocean, so shelf water and
+the dragon channels are never pursued into. Its `_grug_spawn_check` is
+`in_deep_ocean` (`grug_zones.water_class_at(...) == "deep_ocean"`), so
+deep-ocean-only spawning needs no separate mechanism.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term
@@ -1193,7 +1185,7 @@ gate, protected surface).
   there is one (a cell is typed by its majority biome, so the spot's own
   column may be another's), and any leader set on blight dirt is sunproof:
   Mortuary-Clerk Hush survives the day (Round 28 S2b). Every leader sub-type is
-  1.15× the base model's size (whatever the catalogue's `size`) with twice
+  1.15× the base model's size (whatever the catalogue's `size`) with 1.5×
   the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
   leader spawns when a player is within 48 nodes of its spot (inside the
   player's active blocks: `active_block_range` − 1 mapblocks, so the unsaved
@@ -1234,38 +1226,37 @@ license-clean, keep attribution.
 ## 6. Base-material map (both continents feed all base recipes)
 
 The universal metal/pick spine is available on both faction sides and never
-requires a regional gem or cultural material: Bronze (Copper + Tin), Iron,
+requires a gem or cultural material: Bronze (Copper + Tin), Iron,
 Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
 (Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
 Quartz is the universal T1 jewelry mineral. Emberglass and Abyssal Crystal are
-universal fantastic progression resources rather than regional gems.
+universal fantastic progression resources rather than gems.
 
-Regional geology follows the owning `race_region` column at every depth:
+Gems are depth-tiered and the same in every region (Round 29,
+`items_crafting.md` §3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
+T5 Ruby, T6 Diamond, each only in its own tier rock, about one per 512 host
+nodes there. Cultural material and signature wood follow the owning
+`race_region` column:
 
-| Faction | Race region | G1 | G2 | Cultural material | Signature wood |
-|---|---|---|---|---|---|
-| Accord | Human | Citrine | Diamond | Sunwax | Oak |
-| Accord | Dwarf | Garnet | Sapphire | Runeslate | Mountain Pine |
-| Accord | Elf | Jade | Sapphire | Moonresin | Silverwood |
-| Throng | Orc | Garnet | Diamond | Red Ochre | Spikethorn Acacia |
-| Throng | Troll | Jade | Ruby | Spirit Resin | Kapok |
-| Throng | Undead | Citrine | Ruby | Gravesalt | Gravewood |
+| Faction | Race region | Cultural material | Signature wood |
+|---|---|---|---|
+| Accord | Human | Sunwax | Oak |
+| Accord | Dwarf | Runeslate | Mountain Pine |
+| Accord | Elf | Moonresin | Silverwood |
+| Throng | Orc | Red Ochre | Spikethorn Acacia |
+| Throng | Troll | Spirit Resin | Kapok |
+| Throng | Undead | Gravesalt | Gravewood |
 
-- G1 begins sparsely in the upper progression, rises through T4 and retains
-  its T4 density in T5 and ordinary T6. G2 is sparse in T4, doubles in T5 and
-  reaches four times its T4 density in ordinary T6; first-pass targets are
-  approximately one eligible ore per species per 12,000/6,000/3,000 host
-  nodes. Every G2 node requires a T4 pick to harvest.
 - Every culture has an ordinary home-region surface source sufficient for
   architecture, decoration, quests and trade. A concentrated T4 source also
   exists in its contested level-31+ zones or projected deep column. Foreign
   cultural material is optional PvP-counter input, never base progression.
 - At y = −701 and below, territory is contested but the surface race region
-  continues to select G1/G2 and cultural deposits. Players can mine through
+  continues to select cultural deposits. Players can mine through
   opposing deep columns without gaining ownership of the surface above.
 - Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The
   initial density target is approximately one crystal per 2,048 eligible host
-  nodes through T5/T6. Ordinary ores, G1/G2 and Abyssal Crystal receive +25%
+  nodes through T5/T6. Ordinary ores, Diamond and Abyssal Crystal receive +25%
   density at y = −1500..−1999 and +50% at y ≤ −2000, capped and implemented as
   placement rather than respawn.
 - The Wyrmglass Crown and Stormscale Summit apex camps have no renewable gem
@@ -1295,7 +1286,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
-| G1/G2 regional gems | depth + race-region axis | Citrine/Garnet/Jade + Diamond/Sapphire; foreign Ruby through contested/deep/island/trade routes | Citrine/Garnet/Jade + Diamond/Ruby; foreign Sapphire through contested/deep/island/trade routes |
+| Gems | depth axis (one per tier rock) | all six, each in its own tier rock | same |
 | Cultural materials | surface + contested concentration | Sunwax, Runeslate, Moonresin | Red Ochre, Spirit Resin, Gravesalt |
 
 Every row has at least one source per continent. Race woods are

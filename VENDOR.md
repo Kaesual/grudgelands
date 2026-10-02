@@ -272,6 +272,18 @@ only through `grug_mobs`, so in practice that is every Grudgelands mob.
 
 At this integration point `mobs/api.lua` has **82 markers**.
 
+## Round 29 — no spawn puff (2026-10-02)
+
+One new marker in `mobs:add_mob()` (spawn playtest finding P1): upstream
+plays a 15-particle `mobs_tnt_smoke.png` puff at every mob it places. Since
+the Round 28 spawn regions every surface mob, camp member, leader and rare
+is placed through `grug_mobs.add_mob` → `mobs:add_mob`, so the puff kept
+popping up around a walking player. The `effect()` call is removed; the
+upstream `if not ent then return end` stays. Every other mobs_redo effect
+(death smoke without a death animation, environmental damage, fall damage,
+breeding hearts, booms) is unchanged. At this point `mobs/api.lua` has
+**84 markers**.
+
 ## Server-side node formspecs (2026-09-28)
 
 A formspec stored in node metadata (key `formspec`) is opened by the client

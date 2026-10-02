@@ -64,7 +64,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:fox",
             "grug_mobs:young_fox"
           ],
           "zone": "elandor_copperfell_foothills",
@@ -95,9 +94,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:goblin_raider",
-            "grug_mobs:goblin_slinger",
-            "grug_mobs:goblin_hound",
             "grug_mobs:ore_thieving_goblin"
           ],
           "zone": "elandor_copperfell_foothills",

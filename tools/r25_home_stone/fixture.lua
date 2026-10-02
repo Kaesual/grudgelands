@@ -114,7 +114,9 @@ dofile(repo .. "/mods/CORE/grug_core/settlement_sockets.lua")
 local defs = dofile(repo .. "/mods/PLAYER/grug_home/locations.lua")
 for i, row in ipairs(defs) do
  grug_core.register_settlement_sockets(row.id, row.race, {x=i * 100, y=100, z=0},
-  {{id=row.socket, role="idle", x=0, y=1, z=0, dir={x=0, z=1}}})
+  {{id=row.socket, role="idle", x=0, y=1, z=0, dir={x=0, z=1}},
+   -- Round 29: every home location carries its waystone (grug_home waypoints).
+   {id="travel_waypoint", role="waypoint", x=40, y=1, z=0, dir={x=0, z=1}}})
 end
 rawset(_G, "grug_mobs", {register_start_socket_role=function(role, fn)
  assert(role == "innkeeper" and fn({}, {race_id="elf"}) == "grug_mobs:villager_elf")
@@ -427,7 +429,11 @@ rawset(_G, "grug_map", {atlas=dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
 rawset(_G, "grug_parties", {view=function() return nil end})
 rawset(_G, "grug_jobs", {PROFESSIONS={}})
 rawset(_G, "grug_quests", {registered_npcs={}})
+-- providers.lua reads its own mod's files (location_view.lua) through its
+-- mod name.
+core.get_current_modname = function() return "grug_map" end
 dofile(repo .. "/mods/PLAYER/grug_map/providers.lua")
+core.get_current_modname = function() return "grug_home" end
 do
  local count, homes, at_stone = 0, 0, false
  for _, marker in ipairs(grug_map.atlas.collect_markers(player)) do

@@ -34,7 +34,7 @@
       "level": 2,
       "requires": [],
       "title": "Crop Thieves",
-      "text": "During the day, Small Boars steal our crops south of Dawnmere. Drive them off.",
+      "text": "During the day, Small Boars steal our crops in the home fields. Drive them off.",
       "objectives": [
         {"type": "kill", "roles": ["small_boar"], "count": 3, "area": "elandor_dawnmere_fields/home_fields_day"}
       ],
@@ -121,7 +121,7 @@
       "level": 10,
       "requires": ["fx_hunt_02"],
       "title": "The Road to Highcourt",
-      "text": "Take the road north to Highcourt. Mariel waits at the chapel.",
+      "text": "Take the road to Highcourt. Mariel waits at the chapel.",
       "objectives": [{"type": "talk", "npc": "r20_human_capital_envoy"}],
       "rewards": {"weight": 1, "copper": 10}
     },

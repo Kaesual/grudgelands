@@ -112,8 +112,7 @@ local function run()
 	local resources = {}
 	for _, resource in ipairs(grug_materials.RESOURCES or {}) do
 		resources[resource.raw_item] = {key = resource.key, tier = resource.harvest_tier,
-			kind = resource.grade and "gem" or "ore", grade = resource.grade,
-			scope = resource.scope, node = resource.natural_node}
+			kind = resource.gem and "gem" or "ore", node = resource.natural_node}
 	end
 	local alloys = {}
 	for _, recipe in ipairs(grug_smelting.RECIPES or {}) do
