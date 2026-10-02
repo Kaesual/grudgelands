@@ -78,37 +78,44 @@ Nearest hubs (straight / by road): Copperfell Outpost 541 / 638; Copperfell Vill
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_dwarf_01_tusks_at_the_timberline | Tusks at the Timberline | Brunna Flintbraid (Hearthpine) | 1 | kill 3 boar | 20 | - |
+| r14_dwarf_01_tusks_at_the_timberline | Tusks at the Timberline | Brunna Flintbraid (Hearthpine) | 1 | kill 3 boar or small_boar | 20 | - |
 | r14_dwarf_02_meat_for_the_smokehouse | Meat for the Smokehouse | Hilda Hearthspoon (Hearthpine) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_dwarf_10_an_axe_worth_carrying | An Axe Worth Carrying | Brunna Flintbraid (Hearthpine) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_dwarf_start_cook | Warmth for the Timber Shift | Hilda Hearthspoon (Hearthpine) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_dwarf_11_stone_before_steel | Stone Before Steel | Brunna Flintbraid (Hearthpine) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_dwarf_10_an_axe_worth_carrying |
 | r14_dwarf_03_rats_in_the_woodpiles | Boards for the Winter Stacks | Brunna Flintbraid (Hearthpine) | 3 | bring 6 default:pine_wood | 100 | r14_dwarf_01_tusks_at_the_timberline |
-| r14_dwarf_04_lanterns_after_sundown | Lanterns After Sundown | Brunna Flintbraid (Hearthpine) | 4 | kill 3 zombie | 140 | r14_dwarf_01_tusks_at_the_timberline |
-| r14_dwarf_05_the_high_path | The High Path | Brunna Flintbraid (Hearthpine) | 5 | kill 5 ibex | 180 | r14_dwarf_03_rats_in_the_woodpiles |
+| r14_dwarf_04_lanterns_after_sundown | Lanterns After Sundown | Brunna Flintbraid (Hearthpine) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_dwarf_01_tusks_at_the_timberline |
+| r14_dwarf_05_the_high_path | The High Path | Brunna Flintbraid (Hearthpine) | 5 | kill 5 ibex or young_ibex | 180 | r14_dwarf_03_rats_in_the_woodpiles |
 | r14_dwarf_06_loose_stone_on_copper_road | The Road to Orrik Pineledger | Brunna Flintbraid (Hearthpine) | 10 | talk to Orrik Pineledger (copperfell_village) | 285 | r14_dwarf_05_the_high_path |
 | r20_dwarf_capital_intro | The Road to Dur Brannoc | Brunna Flintbraid (Hearthpine) | 10 | talk to Dorrin Gateledger (dur_brannoc) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 29.6% of land, L4-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| giant_rat | Giant Rat | aggressive | - | 80.5% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| ibex | Ibex | neutral | 40.1% of land, L4-10 | - | dirt_with_coniferous_litter, gravel, snowblock |
-| rabbit | Rabbit | critter | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| aggressive_boar | Aggressive Boar | aggressive | 31.9% of land, L5-10 | - |  |
+| braindead_zombie | Braindead Zombie | aggressive | - | 7.6% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.8% of land, L9-10 | 1.8% of land, L9-10 |  |
+| drowned_zombie | Monstrous Drowned Zombie | aggressive | - | 5.6% of land, L8-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 4.2% of land, L7-10 | - |  |
+| large_rat | Large Rat | aggressive | - | 32.5% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 22.9% of land, L8-10 |  |
+| quiet_shore_crab | Small Crab | neutral | 7.8% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 21.9% of land, L5-7 |  |
 | shore_crab | Shore Crab | neutral | 39712 nodes², L3-10 | 39712 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| zombie | Zombie | aggressive | - | 86.0% of land, L3-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| sluggish_zombie | Sluggish Zombie | aggressive | - | 7.6% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 34.5% of land, L1-4 | - |  |
+| small_fox | Young Fox | neutral | 27.3% of land, L5-7 | - |  |
+| young_ibex | Young Ibex | neutral | 21.9% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
 | 3 | primary | anchor_001 (Hearthpine, elandor_hearthpine_vale) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 825 / 198 | -1800,-2486 → -1793,-2302 |
-| 31 | trail | anchor_025 (Copperfell Outpost, elandor_copperfell_foothills) | joins road 3 | 368 / 4 | -1797,-2304 → -1795,-2305 |
+| 32 | trail | anchor_025 (Copperfell Outpost, elandor_copperfell_foothills) | joins road 3 | 368 / 4 | -1797,-2304 → -1795,-2305 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

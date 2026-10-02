@@ -238,9 +238,7 @@ python3 tools/r28_design/ledger.py \
   of its questing XP from the own capital and heartland (target about
   60–70 %, the rest from the sister zone). `--track human` implies
   `--human`. Zones and bands come from `r28common.zone_records()`: the
-  mapgen's zone rows with today's gameplay bands of
-  `grug_core/zone_bands.lua` (one line there switches when the bands move
-  into the mapgen data).
+  mapgen's zone rows (since Round 29 they carry every band).
 - `--game` reads the shipped zone files, as in `validate.py`.
 - `--route`: the zones in play order. Quests of the line `front` (front
   files) are skipped unless `--lines` names `front`, so race and contested

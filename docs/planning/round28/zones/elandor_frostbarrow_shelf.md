@@ -94,34 +94,33 @@ Nearest hubs (straight / by road): Tarnwatch Fold 280 / 662; Dur Brannoc 651 / 1
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
 | r20_anchor_014_01 | The Cairn Mortar | Edda Tarnmantle (Tarnwatch Fold) | 21 | bring 10 default:cobble | 820 | - |
-| r20_anchor_014_02 | Hooves Above the Sleds | Edda Tarnmantle (Tarnwatch Fold) | 21 | kill 4 ibex [in elandor_frostbarrow_shelf] | 820 | - |
+| r20_anchor_014_02 | Hooves Above the Sleds | Edda Tarnmantle (Tarnwatch Fold) | 21 | kill 4 ibex or surefoot_ibex [in elandor_frostbarrow_shelf] | 820 | - |
 | r20_anchor_026_01 | Fuel Under Cover | Hedra Rimebell (Rimebell Watch) | 21 | bring 6 default:coal_lump | 820 | - |
 | r20_anchor_026_02 | The Sled Track Pack | Hedra Rimebell (Rimebell Watch) | 21 | kill 3 snow_leopard [in elandor_frostbarrow_shelf] | 820 | - |
 | r20_anchor_061_01 | A Handle for the Cutting | Kelda Screesort (Tarncut Mine) | 21 | bring 1 grug_materials:pick_stone | 820 | - |
 | r20_anchor_061_02 | Rams on the Haul Lane | Kelda Screesort (Tarncut Mine) | 21 | kill 4 mountain_ram [in elandor_frostbarrow_shelf] | 820 | - |
-| r20_anchor_014_03 | The Bell After Dark | Edda Tarnmantle (Tarnwatch Fold) | 23 | kill 4 goblin_raider [in elandor_frostbarrow_shelf] | 900 | r20_anchor_014_02 |
-| r20_anchor_026_03 | Notches on the Signal Pole | Hedra Rimebell (Rimebell Watch) | 23 | kill 4 goblin_slinger [in elandor_frostbarrow_shelf] | 900 | r20_anchor_026_02 |
+| r20_anchor_014_03 | The Bell After Dark | Edda Tarnmantle (Tarnwatch Fold) | 23 | kill 4 goblin_raider or ore_thieving_goblin [in elandor_frostbarrow_shelf] | 900 | r20_anchor_014_02 |
+| r20_anchor_026_03 | Notches on the Signal Pole | Hedra Rimebell (Rimebell Watch) | 23 | kill 4 goblin_slinger or rubble_goblin_slinger [in elandor_frostbarrow_shelf] | 900 | r20_anchor_026_02 |
 | r20_anchor_061_03 | The Cold Shift | Kelda Screesort (Tarncut Mine) | 23 | kill 3 snow_leopard [in elandor_frostbarrow_shelf] | 900 | r20_anchor_061_02 |
 | r20_dwarf_journey_02 | Word for Kelda Screesort | Edda Tarnmantle (Tarnwatch Fold) | 24 | talk to Kelda Screesort (r20_anchor_061) | 705 | - |
 | r20_dwarf_journey_03 | Word for Borin Splitbolt | Kelda Screesort (Tarncut Mine) | 31 | talk to Borin Splitbolt (r20_anchor_027) | 915 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| crag_eagle | Crag Eagle | aggressive | 28.0% of land, L21-30 | - | gravel, snowblock |
-| goblin_hound | Goblin Raider Hound | aggressive | - | 79.9% of land, L21-30 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| goblin_raider | Goblin Raider | aggressive | - | 79.9% of land, L21-30 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| goblin_slinger | Goblin Slinger | aggressive | - | 79.9% of land, L21-30 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| ibex | Ibex | neutral | 79.9% of land, L21-30 | - | dirt_with_coniferous_litter, gravel, snowblock |
-| mountain_ram | Mountain Ram | neutral | 28.0% of land, L21-30 | - | gravel, snowblock |
+| armored_crab | Barnacle Pincher | aggressive | 10.0% of land, L25-30 | - |  |
+| bank_crab | Bank Crab | neutral | 8.1% of land, L21-24 | - |  |
+| hill_ram | Hill Ram | neutral | 88.1% of land, L21-30 | - |  |
+| ore_guard_hound | Ore-Guard Hound | aggressive | - | 23.2% of land, L24-27 |  |
+| ore_thieving_goblin | Ore-Thieving Goblin | aggressive | - | 5.4% of land, L21-23 |  |
+| prowling_snow_leopard | Crag Snow Leopard | aggressive | - | 100.0% of land, L21-30 |  |
+| ridge_crag_eagle | Ridge Crag Eagle | aggressive | 65.2% of land, L21-30 | - |  |
+| rubble_goblin_slinger | Rubble Goblin Slinger | aggressive | - | 19.4% of land, L21-23 |  |
 | shore_crab | Shore Crab | neutral | 6848 nodes², L21-30 | 6848 nodes², L21-30 | sand (dry, within 6 nodes of water) |
-| snow_leopard | Snow Leopard | aggressive | - | 28.0% of land, L21-30 | gravel, snowblock |
-| stone_golem | Stone Golem | aggressive | 28.0% of land, L21-30 | 28.0% of land, L21-30 | gravel, snowblock, stone |
-
-In the palette but no host ground in this zone: Hyena, Vulture.
+| surefoot_ibex | Surefoot Ibex | neutral | 22.9% of land, L21-23 | - |  |
 
 **Camps and guard posts:**
 
@@ -132,8 +131,8 @@ In the palette but no host ground in this zone: Hyena, Vulture.
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
 | 9 | secondary | anchor_014 (Tarnwatch Fold, elandor_frostbarrow_shelf) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 477 / 382 | -2389,-1585 → -2151,-1700 |
-| 32 | trail | anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf) | joins road 9 | 628 / 196 | -2290,-1244 → -2115,-1311 |
-| 61 | trail | anchor_061 (Tarncut Mine, elandor_frostbarrow_shelf) | joins road 9 | 548 / 542 | -2417,-1309 → -2378,-1661 |
+| 33 | trail | anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf) | joins road 9 | 628 / 196 | -2290,-1244 → -2115,-1311 |
+| 62 | trail | anchor_061 (Tarncut Mine, elandor_frostbarrow_shelf) | joins road 9 | 548 / 542 | -2417,-1309 → -2378,-1661 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

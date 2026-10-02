@@ -8,14 +8,14 @@
   "race_region": "orc",
   "extent": {
     "centroid": {
-      "x": 722,
-      "z": 23
+      "x": 687,
+      "z": 0
     },
-    "land_area_nodes2": 678368,
+    "land_area_nodes2": 1004416,
     "max_x": 1448,
-    "max_z": 368,
+    "max_z": 452,
     "min_x": -8,
-    "min_z": -340
+    "min_z": -432
   },
   "hub": {
     "x": 750,
@@ -27,50 +27,50 @@
   },
   "borders": [
     {
-      "length_nodes": 1304,
+      "length_nodes": 1192,
       "midpoint": {
-        "x": 492,
-        "z": -199
+        "x": 490,
+        "z": -371
       },
       "zone": "elandor_ashenward_march"
     },
     {
-      "length_nodes": 540,
+      "length_nodes": 600,
       "midpoint": {
-        "x": 1190,
-        "z": -285
+        "x": 1181,
+        "z": -374
       },
       "zone": "elandor_glassroot_wilds"
     },
     {
-      "length_nodes": 524,
+      "length_nodes": 1008,
       "midpoint": {
-        "x": 0,
-        "z": 126
+        "x": 10,
+        "z": 39
       },
       "zone": "front_broken_causeway"
     },
     {
-      "length_nodes": 632,
+      "length_nodes": 760,
       "midpoint": {
-        "x": 1402,
-        "z": 27
+        "x": 1403,
+        "z": -15
       },
       "zone": "front_skyglass_canopy"
     },
     {
-      "length_nodes": 1436,
+      "length_nodes": 1276,
       "midpoint": {
-        "x": 502,
-        "z": 281
+        "x": 533,
+        "z": 371
       },
       "zone": "kragmar_bannerbreak_mesa"
     },
     {
-      "length_nodes": 536,
+      "length_nodes": 376,
       "midpoint": {
-        "x": 1255,
-        "z": 250
+        "x": 1194,
+        "z": 355
       },
       "zone": "kragmar_thunderroot_wilds"
     }
@@ -152,11 +152,11 @@
   "biomes_measured": [
     {
       "id": "grug_badlands",
-      "share_pct": 73.8
+      "share_pct": 73.5
     },
     {
       "id": "grug_swamp",
-      "share_pct": 13.7
+      "share_pct": 14.5
     },
     {
       "id": "grug_savanna",
@@ -164,18 +164,18 @@
     },
     {
       "id": "grug_deep_forest",
-      "share_pct": 1.2
+      "share_pct": 0.6
     },
     {
-      "id": "grug_deep_jungle",
-      "share_pct": 0.3
+      "id": "grug_meadows",
+      "share_pct": 0.4
     },
     {
       "id": "grug_jungle_fringe",
       "share_pct": 0.3
     },
     {
-      "id": "grug_meadows",
+      "id": "grug_deep_jungle",
       "share_pct": 0.2
     }
   ],

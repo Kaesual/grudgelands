@@ -10,9 +10,9 @@
 -- unordered input pair.
 --
 -- `grug_smelting.RECIPES` is the public, iterable read surface the task card
--- makes binding, because `grug_traders`' anti-loop audit cannot see these
--- recipes through the engine at all: its walk judges only `normal` and
--- `cooking` engine recipes (`CONSUMING_METHODS`, `grug_traders/init.lua`).
+-- makes binding, because `grug_traders`' price module and anti-loop audit
+-- cannot see these recipes through the engine at all (`grug_traders/
+-- prices.lua` reads them next to the engine's `normal` and `cooking` ones).
 -- Nothing here calls into the engine, so this file also loads under a stub
 -- `core` as real shipped code (the WP26 smelting KAT, retired in Round 22,
 -- did so).

@@ -9,12 +9,12 @@
   "race_region": "elf",
   "extent": {
     "centroid": {
-      "x": 1662,
-      "z": -683
+      "x": 1631,
+      "z": -735
     },
-    "land_area_nodes2": 1254320,
+    "land_area_nodes2": 1112400,
     "max_x": 2616,
-    "max_z": -192,
+    "max_z": -312,
     "min_x": 756,
     "min_z": -1192
   },
@@ -28,10 +28,10 @@
   },
   "borders": [
     {
-      "length_nodes": 832,
+      "length_nodes": 908,
       "midpoint": {
-        "x": 841,
-        "z": -761
+        "x": 839,
+        "z": -758
       },
       "zone": "elandor_ashenward_march"
     },
@@ -52,26 +52,26 @@
       "zone": "elandor_lorindor"
     },
     {
-      "length_nodes": 820,
+      "length_nodes": 816,
       "midpoint": {
-        "x": 2209,
+        "x": 2210,
         "z": -989
       },
       "zone": "elandor_moonfall_wood"
     },
     {
-      "length_nodes": 536,
+      "length_nodes": 604,
       "midpoint": {
-        "x": 1189,
-        "z": -279
+        "x": 1178,
+        "z": -370
       },
       "zone": "front_shattered_line"
     },
     {
-      "length_nodes": 1284,
+      "length_nodes": 1288,
       "midpoint": {
-        "x": 2056,
-        "z": -231
+        "x": 1939,
+        "z": -334
       },
       "zone": "front_skyglass_canopy"
     }
@@ -84,7 +84,7 @@
       "settlement_key": "r20_anchor_036",
       "slot": "outpost_1",
       "x": 1932,
-      "z": -566
+      "z": -686
     },
     {
       "id": "anchor_054",
@@ -93,7 +93,7 @@
       "settlement_key": "r20_anchor_054",
       "slot": "bandit_1",
       "x": 1776,
-      "z": -406
+      "z": -526
     }
   ],
   "settlements": [
@@ -136,19 +136,19 @@
   "biomes_measured": [
     {
       "id": "grug_deep_forest",
-      "share_pct": 48.0
+      "share_pct": 43.1
     },
     {
       "id": "grug_jungle_fringe",
-      "share_pct": 35.4
+      "share_pct": 38.2
     },
     {
       "id": "grug_swamp",
-      "share_pct": 8.6
+      "share_pct": 9.7
     },
     {
       "id": "grug_elf_forest",
-      "share_pct": 7.7
+      "share_pct": 8.5
     },
     {
       "id": "grug_badlands",
@@ -156,7 +156,11 @@
     },
     {
       "id": "grug_meadows",
-      "share_pct": 0.1
+      "share_pct": 0.2
+    },
+    {
+      "id": "grug_savanna",
+      "share_pct": 0.0
     }
   ],
   "spawns": [

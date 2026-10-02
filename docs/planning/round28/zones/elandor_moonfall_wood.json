@@ -110,44 +110,24 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:bone_weevil",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:briarpack_wolf",
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:territorial_bear"
   ],
-  "density_budget_day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
-  ],
-  "density_budget_night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:giant_spider",
-   "grug_mobs:pale_spider",
-   "grug_mobs:poacher",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:wisp",
-   "grug_mobs:wolf"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:giant_spider",
-   "grug_mobs:pale_spider",
-   "grug_mobs:poacher",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:wisp",
-   "grug_mobs:wolf"
+   "grug_mobs:briar_web_spider",
+   "grug_mobs:briarpack_wolf",
+   "grug_mobs:unlicensed_poacher",
+   "grug_mobs:wandering_wisp"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 11792,
+  "bank_sand_area_nodes2": 11680,
   "bay_water_area_nodes2": 0,
   "beaches": [
    {
@@ -259,8 +239,8 @@
     ]
    }
   ],
-  "inland_water_area_nodes2": 21520,
-  "sea_beach_sand_area_nodes2": 19728,
+  "inland_water_area_nodes2": 21504,
+  "sea_beach_sand_area_nodes2": 19744,
   "sea_coast_length_nodes": 2016
  },
  "drift_band_share_pct": 1.6,
@@ -269,7 +249,7 @@
    "x": 2392,
    "z": -1608
   },
-  "land_area_nodes2": 551568,
+  "land_area_nodes2": 551584,
   "max_x": 2720,
   "max_z": -936,
   "min_x": 1924,
@@ -313,14 +293,6 @@
   "elandor_starbough_vale"
  ],
  "numeric_id": 15,
- "palette_without_host_ground": [
-  "Blightfang Wolf",
-  "Bone Weevil",
-  "Bonelurker Spider",
-  "Gaunt Stag",
-  "Plaguehide Bear",
-  "Skeleton Archer"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -335,7 +307,7 @@
    }
   ]
  },
- "protected_share_pct": 0.3,
+ "protected_share_pct": 0.4,
  "pvp_rule": "peaceful",
  "quests": [
   {
@@ -371,13 +343,14 @@
    "id": "r20_anchor_035_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 wolf [in elandor_moonfall_wood]"
+    "kill 4 wolf or briarpack_wolf [in elandor_moonfall_wood]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:wolf"
+      "grug_mobs:wolf",
+      "grug_mobs:briarpack_wolf"
      ],
      "type": "kill",
      "zone": "elandor_moonfall_wood"
@@ -398,13 +371,14 @@
    "id": "r20_anchor_035_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 poacher [in elandor_moonfall_wood]"
+    "kill 4 poacher or unlicensed_poacher [in elandor_moonfall_wood]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:unlicensed_poacher"
      ],
      "type": "kill",
      "zone": "elandor_moonfall_wood"
@@ -441,14 +415,14 @@
     -1334
    ],
    "from": "anchor_035 (Moonfall Observatory, elandor_moonfall_wood)",
-   "id": 39,
+   "id": 40,
    "kind": "trail",
    "last_in_zone": [
     2131,
     -1276
    ],
    "length_in_zone": 308,
-   "length_total": 667,
+   "length_total": 668,
    "polyline_simplified": [
     [
      2366,
@@ -459,15 +433,15 @@
      -1383
     ],
     [
-     2256,
-     -1394
+     2258,
+     -1395
     ],
     [
      2161,
      -1288
     ],
     [
-     1833,
+     1834,
      -1100
     ]
    ],
@@ -488,42 +462,42 @@
     "hubs": [
      {
       "name": "Lethariel",
-      "road": 1180,
+      "road": 1182,
       "straight": 602,
       "to": "lethariel",
       "zone": "elandor_lethariel"
      },
      {
       "name": "Glassroot Gate",
-      "road": 1442,
-      "straight": 880,
+      "road": 1311,
+      "straight": 779,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Starbough Village",
-      "road": 1848,
+      "road": 1850,
       "straight": 842,
       "to": "starbough_village",
       "zone": "elandor_starbough_vale"
      },
      {
       "name": "Starbough Bandit Camp",
-      "road": 1925,
+      "road": 1926,
       "straight": 1049,
       "to": "starbough_bandit_camp",
       "zone": "elandor_starbough_vale"
      },
      {
       "name": "Paleroot Cutting",
-      "road": 2035,
+      "road": 2037,
       "straight": 1352,
       "to": "r20_anchor_063",
       "zone": "elandor_lorindor"
      },
      {
       "name": "Lorindor Berrycourt",
-      "road": 2128,
+      "road": 2129,
       "straight": 1518,
       "to": "r20_anchor_018",
       "zone": "elandor_lorindor"
@@ -598,65 +572,82 @@
   {
    "day": {
     "levels": [
-     21,
+     25,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.6
+    "share_pct": 4.7
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:bear",
-   "name": "Bear",
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     24,
+     24
+    ],
+    "share_pct": 2.0
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:giant_spider",
-   "name": "Giant Spider",
+   "hosts": [],
+   "mob": "grug_mobs:briar_web_spider",
+   "name": "Briar-Web Spider",
    "night": {
     "levels": [
-     21,
+     24,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.6
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:poacher",
-   "name": "Poacher",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 92.6
+    "share_pct": 64.5
    }
   },
   {
    "day": {
-    "area_nodes2": 19728,
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 30.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:briarpack_wolf",
+   "name": "Briarpack Wolf",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 30.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "share_pct": 95.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
+  },
+  {
+   "day": {
+    "area_nodes2": 19744,
     "levels": [
      21,
      29
@@ -669,7 +660,7 @@
    "mob": "grug_mobs:shore_crab",
    "name": "Shore Crab",
    "night": {
-    "area_nodes2": 19728,
+    "area_nodes2": 19744,
     "levels": [
      21,
      29
@@ -680,67 +671,43 @@
   {
    "day": {
     "levels": [
-     21,
+     24,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 37.5
+    "share_pct": 65.4
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter"
-   ],
-   "mob": "grug_mobs:stag",
-   "name": "Stag",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:territorial_bear",
+   "name": "Bramble Bear",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:wisp",
-   "name": "Wisp",
+   "hosts": [],
+   "mob": "grug_mobs:unlicensed_poacher",
+   "name": "Unlicensed Poacher",
    "night": {
     "levels": [
      21,
-     30
+     23
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 30.0
    }
   },
   {
-   "day": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 37.5
-   },
+   "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter"
-   ],
-   "mob": "grug_mobs:wolf",
-   "name": "Wolf",
+   "hosts": [],
+   "mob": "grug_mobs:wandering_wisp",
+   "name": "Wandering Wisp",
    "night": {
     "levels": [
-     21,
-     30
+     24,
+     27
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 37.5
+    "share_pct": 40.8
    }
   }
  ],

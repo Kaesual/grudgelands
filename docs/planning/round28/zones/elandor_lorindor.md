@@ -94,27 +94,30 @@ Nearest hubs (straight / by road): Lethariel 812 / 1033; Lorindor Berrycourt 335
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
 | r20_anchor_018_01 | Stones Around the Roots | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | bring 8 default:cobble | 820 | - |
-| r20_anchor_018_02 | No Snares in Berrycourt | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | kill 4 poacher [in elandor_lorindor] | 820 | - |
+| r20_anchor_018_02 | No Snares in Berrycourt | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
 | r20_anchor_034_01 | The Trough's New Kerb | Orya Petalward (Petalbank Wardenry) | 21 | bring 8 default:cobble | 820 | - |
-| r20_anchor_034_02 | Wardens Without Arrows | Orya Petalward (Petalbank Wardenry) | 21 | kill 4 poacher [in elandor_lorindor] | 820 | - |
+| r20_anchor_034_02 | Wardens Without Arrows | Orya Petalward (Petalbank Wardenry) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
 | r20_anchor_063_01 | A Gentle Edge | Saevin Rootscribe (Paleroot Cutting) | 21 | bring 1 grug_materials:pick_stone | 820 | - |
-| r20_anchor_063_02 | The Survey Stakes Vanish | Saevin Rootscribe (Paleroot Cutting) | 21 | kill 4 poacher [in elandor_lorindor] | 820 | - |
+| r20_anchor_063_02 | The Survey Stakes Vanish | Saevin Rootscribe (Paleroot Cutting) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
 | r20_anchor_018_03 | The Uninvited Lanterns | Ilwen Petalmeasure (Lorindor Berrycourt) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_018_02 |
 | r20_anchor_034_03 | Lanterns We Did Not Hang | Orya Petalward (Petalbank Wardenry) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_034_02 |
 | r20_anchor_063_03 | Light on the Cutting Marks | Saevin Rootscribe (Paleroot Cutting) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_063_02 |
 | r20_elf_journey_02 | Word for Saevin Rootscribe | Ilwen Petalmeasure (Lorindor Berrycourt) | 24 | talk to Saevin Rootscribe (r20_anchor_063) | 705 | - |
 | r20_elf_journey_03 | Word for Faeris Rootbinder | Saevin Rootscribe (Paleroot Cutting) | 31 | talk to Faeris Rootbinder (r20_anchor_036) | 915 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| poacher | Poacher | aggressive | - | 83.3% of land, L21-30 | dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
+| armored_crab | Barnacle Pincher | aggressive | 1.6% of land, L25-27 | - |  |
+| bank_crab | Bank Crab | neutral | 3.4% of land, L21-24 | - |  |
+| moss_antler_stag | Moss-Antler Stag | neutral | 93.4% of land, L21-30 | - |  |
 | shore_crab | Shore Crab | neutral | 10112 nodes², L21 | 10112 nodes², L21 | sand (dry, within 6 nodes of water) |
-| stag | Stag | neutral | 23.0% of land, L21-30 | - | dirt_with_grass, dirt_with_forest_litter |
-| wisp | Wisp | aggressive | - | 99.3% of land, L21-30 | dirt_with_rainforest_litter, dirt_with_bone_litter, dirt_with_canopy_litter, dirt_with_forest_litter, dirt_with_silver_litter, mud |
+| toll_mirefolk | Toll Mirefolk | aggressive | 3.2% of land, L21-30 | 3.2% of land, L21-30 |  |
+| unlicensed_poacher | Unlicensed Poacher | aggressive | - | 29.3% of land, L21-23 |  |
+| wandering_wisp | Wandering Wisp | aggressive | - | 96.8% of land, L21-30 |  |
 
 **Camps and guard posts:**
 
@@ -127,9 +130,9 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 2 | primary | anchor_008 (Highcourt, elandor_highcourt) | anchor_009 (Lethariel, elandor_lethariel) | 1355 / 936 | 435,-1395 → 1309,-1481 |
 | 11 | secondary | anchor_018 (Lorindor Berrycourt, elandor_lorindor) | joins road 2 | 93 / 96 | 879,-1540 → 848,-1455 |
-| 38 | trail | anchor_034 (Petalbank Wardenry, elandor_lorindor) | joins road 2 | 488 / 66 | 632,-1215 → 614,-1159 |
-| 63 | trail | anchor_063 (Paleroot Cutting, elandor_lorindor) | joins road 2 | 467 / 462 | 1030,-1244 → 1284,-1493 |
-| 68 | trail | anchor_068 (Whitepetal Fenhold, elandor_lorindor) | joins road 2 | 302 / 298 | 1106,-1708 → 1184,-1488 |
+| 39 | trail | anchor_034 (Petalbank Wardenry, elandor_lorindor) | joins road 2 | 488 / 66 | 632,-1215 → 614,-1159 |
+| 64 | trail | anchor_063 (Paleroot Cutting, elandor_lorindor) | joins road 2 | 467 / 462 | 1030,-1244 → 1284,-1493 |
+| 69 | trail | anchor_068 (Whitepetal Fenhold, elandor_lorindor) | joins road 2 | 302 / 298 | 1106,-1708 → 1184,-1488 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

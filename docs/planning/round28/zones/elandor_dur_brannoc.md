@@ -25,7 +25,7 @@ Race track (dwarf): step 3 of the track Hearthpine Vale → Copperfell Foothills
 
 ## Levels
 
-Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.
+Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.
 
 Share of land per level: L20 13.2%, L21 11.1%, L22 12.2%, L23 8.7%, L24 8.4%, L25 8.4%, L26 7.5%, L27 7.4%, L28 7.6%, L29 6.8%, L30 8.5%
 
@@ -84,7 +84,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 19, housing_manage
 Public stations: forge_smithy/forge_smithy_station (forge), forge_guild_house/forge_guild_house_station (tailor_bench), forge_ore_yard/forge_ore_yard_station (jewellers_bench), forge_store/forge_store_station (tanning_rack), deep_carvers/deep_carvers_station (carving_bench), terrace_brewhouse/terrace_brewhouse_station (brewing_stand), terrace_bakehouse/terrace_bakehouse_station (furnace).
 
 Distances: zone edge N 440 (elandor_stormvault_heights), S 328 (elandor_copperfell_foothills), E 560 (elandor_whitebridge_shire), W 332 (elandor_frostbarrow_shelf); nearest other-zone land 313 W; sea 673 W; sea-beach sand 677 W; nearest road 50.
-Nearest hubs (straight / by road): Copperfell Village 540 / 857; Tarnwatch Fold 609 / 877; Rimebell Watch 559 / 1085; Copperfell Bandit Camp 612 / 1216; Bridgechalk Dig 766 / 1326.
+Nearest hubs (straight / by road): Copperfell Village 540 / 857; Tarnwatch Fold 609 / 877; Rimebell Watch 559 / 1085; Copperfell Bandit Camp 612 / 1216; Bridgechalk Dig 766 / 1331.
 
 ### Current quests (4, given in this zone)
 
@@ -95,25 +95,34 @@ Nearest hubs (straight / by road): Copperfell Village 540 / 857; Tarnwatch Fold 
 | r20_dwarf_capital_stores | Lamp Coal for the Gate Shift | Dorrin Gateledger (Dur Brannoc) | 20 | bring 8 default:coal_lump | 780 | - |
 | r20_dwarf_journey_01 | Word for Edda Tarnmantle | Dorrin Gateledger (Dur Brannoc) | 21 | talk to Edda Tarnmantle (r20_anchor_014) | 615 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
-Empty palette: no ambient surface mobs.
+| Mob | Name | Disposition | Day | Night | Host nodes |
+|---|---|---|---|---|---|
+| debtbound_zombie | Debtbound Zombie | aggressive | - | 53.7% of land, L20-25 |  |
+| hill_ram | Hill Ram | neutral | 79.6% of land, L21-30 | - |  |
+| ore_thieving_goblin | Ore-Thieving Goblin | aggressive | 1.4% of land, L28-30 | 1.4% of land, L28-30 |  |
+| rubble_goblin_slinger | Rubble Goblin Slinger | aggressive | 1.4% of land, L28-30 | 1.4% of land, L28-30 |  |
+| stubborn_zombie | Tithe Revenant | aggressive | - | 52.2% of land, L26-30 |  |
+| surefoot_ibex | Surefoot Ibex | neutral | 83.1% of land, L20-30 | - |  |
+| toll_bandit | Toll Bandit | aggressive | - | 27.3% of land, L20-25 |  |
+| toll_bandit_archer | Toll Bandit Archer | aggressive | - | 16.3% of land, L26-27 |  |
 
 ## Roads and trails touching the zone
 
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
-| 1 | primary | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | anchor_008 (Highcourt, elandor_highcourt) | 1434 / 334 | -1536,-1633 → -1235,-1525 |
+| 1 | primary | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | anchor_008 (Highcourt, elandor_highcourt) | 1402 / 334 | -1536,-1633 → -1235,-1525 |
 | 3 | primary | anchor_001 (Hearthpine, elandor_hearthpine_vale) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 825 / 88 | -1702,-1825 → -1648,-1760 |
 | 9 | secondary | anchor_014 (Tarnwatch Fold, elandor_frostbarrow_shelf) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 477 / 88 | -2149,-1700 → -2064,-1697 |
 | 12 | secondary | anchor_027 (Splitbolt Station, elandor_stormvault_heights) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 1736 / 200 | -1370,-1214 → -1536,-1280 |
-| 32 | trail | anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf) | joins road 9 | 628 / 424 | -2114,-1311 → -2128,-1696 |
-| 109 | primary | end:1 | gate_east | 149 / 150 | -1536,-1633 → -1631,-1573 |
-| 110 | secondary | end:12 | gate_south | 290 / 288 | -1536,-1280 → -1745,-1380 |
-| 111 | secondary | end:9 | gate_west | 172 / 172 | -2064,-1697 → -1994,-1555 |
-| 112 | primary | end:3 | gate_north | 144 / 144 | -1648,-1760 → -1739,-1676 |
+| 33 | trail | anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf) | joins road 9 | 628 / 424 | -2114,-1311 → -2128,-1696 |
+| 111 | primary | end:1 | gate_east | 149 / 150 | -1536,-1633 → -1631,-1573 |
+| 112 | secondary | end:12 | gate_south | 290 / 288 | -1536,-1280 → -1745,-1380 |
+| 113 | secondary | end:9 | gate_west | 172 / 172 | -2064,-1697 → -1994,-1555 |
+| 114 | primary | end:3 | gate_north | 144 / 144 | -1648,-1760 → -1739,-1676 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

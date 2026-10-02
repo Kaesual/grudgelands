@@ -9,34 +9,34 @@
    "protected_box": {
     "kind": "poi",
     "max_x": 1907,
-    "max_z": 557,
+    "max_z": 677,
     "min_x": 1892,
-    "min_z": 542
+    "min_z": 662
    },
    "settlement_key": "r20_anchor_048",
    "slot": "outpost_1",
    "x": 1900,
-   "y": 156,
-   "z": 550
+   "y": 163,
+   "z": 670
   },
   {
    "id": "anchor_060",
    "kind": "bandit_frontier",
    "kind_text": "bandit hideout",
-   "level_at": 38,
+   "level_at": 37,
    "name": "Rainchar Camp",
    "protected_box": {
     "kind": "camp",
     "max_x": 1783,
-    "max_z": 461,
+    "max_z": 581,
     "min_x": 1768,
-    "min_z": 446
+    "min_z": 566
    },
    "settlement_key": "r20_anchor_060",
    "slot": "bandit_1",
    "x": 1776,
-   "y": 161,
-   "z": 454
+   "y": 247,
+   "z": 574
   }
  ],
  "biomes_authored": [
@@ -56,63 +56,55 @@
  "biomes_measured": [
   {
    "id": "grug_deep_jungle",
-   "share_pct": 64.9
+   "share_pct": 61.7
   },
   {
    "id": "grug_swamp",
-   "share_pct": 21.2
+   "share_pct": 24.0
   },
   {
    "id": "grug_badlands_east",
-   "share_pct": 12.6
+   "share_pct": 12.7
+  },
+  {
+   "id": "grug_jungle_fringe",
+   "share_pct": 0.7
   },
   {
    "id": "grug_jungle_edge",
-   "share_pct": 0.5
+   "share_pct": 0.6
   },
   {
    "id": "grug_badlands",
    "share_pct": 0.3
   },
   {
-   "id": "grug_jungle_fringe",
-   "share_pct": 0.2
-  },
-  {
-   "id": "grug_elf_forest",
-   "share_pct": 0.1
-  },
-  {
    "id": "grug_savanna",
-   "share_pct": 0.1
-  },
-  {
-   "id": "grug_deep_forest",
    "share_pct": 0.1
   }
  ],
  "borders": [
   {
-   "length_nodes": 544,
+   "length_nodes": 376,
    "midpoint": {
-    "x": 1253,
-    "z": 246
+    "x": 1189,
+    "z": 351
    },
    "zone": "front_shattered_line"
   },
   {
-   "length_nodes": 1004,
+   "length_nodes": 1320,
    "midpoint": {
-    "x": 2164,
-    "z": 306
+    "x": 2058,
+    "z": 417
    },
    "zone": "front_skyglass_canopy"
   },
   {
-   "length_nodes": 840,
+   "length_nodes": 732,
    "midpoint": {
-    "x": 983,
-    "z": 607
+    "x": 972,
+    "z": 646
    },
    "zone": "kragmar_bannerbreak_mesa"
   },
@@ -159,7 +151,7 @@
    ],
    "type": "guard post",
    "x": 1900,
-   "z": 550
+   "z": 670
   },
   {
    "anchor": "anchor_060",
@@ -167,7 +159,7 @@
     3,
     5
    ],
-   "level_at_anchor": 38,
+   "level_at_anchor": 37,
    "mobs": [
     "grug_mobs:bandit",
     "grug_mobs:bandit_archer"
@@ -175,39 +167,38 @@
    "name": "Rainchar Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": 1776,
-   "z": 454
+   "z": 574
   }
  ],
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:jungle_ape",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:serpent"
+   "grug_mobs:breakwater_crab",
+   "grug_mobs:coiled_serpent",
+   "grug_mobs:entrenched_bandit_archer",
+   "grug_mobs:territorial_ape"
   ],
-  "density_budget_day": [
-   "grug_mobs:jungle_ape",
-   "grug_mobs:serpent"
-  ],
-  "density_budget_night": [
-   "grug_mobs:bog_witch",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:bog_witch",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther"
+   "grug_mobs:canopy_web_spider",
+   "grug_mobs:coiled_serpent",
+   "grug_mobs:entrenched_bandit",
+   "grug_mobs:entrenched_bandit_archer",
+   "grug_mobs:marching_zombie",
+   "grug_mobs:reed_hex_witch",
+   "grug_mobs:stalking_panther",
+   "grug_mobs:unrelenting_zombie"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 11712,
+  "bank_sand_area_nodes2": 5568,
   "bay_water_area_nodes2": 0,
   "beaches": [
    {
@@ -225,11 +216,11 @@
     "id": "B1",
     "levels": [
      31,
-     33
+     34
     ]
    },
    {
-    "area_nodes2": 1696,
+    "area_nodes2": 1648,
     "box": {
      "max_x": 2664,
      "max_z": 652,
@@ -237,31 +228,31 @@
      "min_z": 568
     },
     "centroid": {
-     "x": 2646,
+     "x": 2647,
      "z": 608
     },
     "id": "B2",
     "levels": [
-     35,
-     36
+     36,
+     38
     ]
    }
   ],
-  "inland_water_area_nodes2": 81600,
-  "sea_beach_sand_area_nodes2": 5440,
-  "sea_coast_length_nodes": 1112
+  "inland_water_area_nodes2": 56704,
+  "sea_beach_sand_area_nodes2": 5392,
+  "sea_coast_length_nodes": 884
  },
- "drift_band_share_pct": 2.8,
+ "drift_band_share_pct": 3.2,
  "extent": {
   "centroid": {
-   "x": 1776,
-   "z": 680
+   "x": 1754,
+   "z": 726
   },
-  "land_area_nodes2": 1141168,
+  "land_area_nodes2": 996656,
   "max_x": 2676,
   "max_z": 1096,
   "min_x": 908,
-  "min_z": 224
+  "min_z": 332
  },
  "faction": "contested",
  "front": {
@@ -275,16 +266,16 @@
  "id": "kragmar_thunderroot_wilds",
  "level_field": {
   "histogram_pct": {
-   "31": 11.3,
-   "32": 11.7,
-   "33": 12.2,
-   "34": 11.2,
-   "35": 11.4,
-   "36": 10.2,
-   "37": 8.3,
-   "38": 8.8,
-   "39": 7.4,
-   "40": 7.6
+   "31": 10.9,
+   "32": 11.3,
+   "33": 11.3,
+   "34": 11.7,
+   "35": 10.7,
+   "36": 10.4,
+   "37": 7.5,
+   "38": 7.6,
+   "39": 8.3,
+   "40": 10.3
   },
   "max": 40,
   "min": 31
@@ -303,7 +294,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 32,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -311,23 +301,23 @@
     "anchor": "anchor_048",
     "kind": "poi",
     "max_x": 1907,
-    "max_z": 557,
+    "max_z": 677,
     "min_x": 1892,
-    "min_z": 542,
+    "min_z": 662,
     "name": "Thunderstep Watch"
    },
    {
     "anchor": "anchor_060",
     "kind": "camp",
     "max_x": 1783,
-    "max_z": 461,
+    "max_z": 581,
     "min_x": 1768,
-    "min_z": 446,
+    "min_z": 566,
     "name": "Rainchar Camp"
    }
   ]
  },
- "protected_share_pct": 0.6,
+ "protected_share_pct": 0.7,
  "pvp_rule": "contested",
  "quests": [
   {
@@ -363,13 +353,14 @@
    "id": "r20_anchor_048_02",
    "min_level": 31,
    "objectives": [
-    "kill 4 bandit [in kragmar_thunderroot_wilds]"
+    "kill 4 bandit or entrenched_bandit [in kragmar_thunderroot_wilds]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:bandit"
+      "grug_mobs:bandit",
+      "grug_mobs:entrenched_bandit"
      ],
      "type": "kill",
      "zone": "kragmar_thunderroot_wilds"
@@ -415,22 +406,22 @@
  "race_track": "troll",
  "rares": [],
  "relief": {
-  "cliff_share_pct": 5.3,
+  "cliff_share_pct": 5.1,
   "height_above_sea": {
-   "max": 397,
-   "median": 136,
+   "max": 386,
+   "median": 131,
    "min": 0,
-   "p10": 65,
+   "p10": 63,
    "p90": 213
   },
-  "steep_share_pct": 28.0
+  "steep_share_pct": 26.9
  },
  "relief_profile": "highland",
  "roads": [
   {
    "first_in_zone": [
-    1909,
-    561
+    1906,
+    682
    ],
    "from": "anchor_048 (Thunderstep Watch, kragmar_thunderroot_wilds)",
    "id": 28,
@@ -439,16 +430,16 @@
     1954,
     1050
    ],
-   "length_in_zone": 506,
-   "length_total": 733,
+   "length_in_zone": 388,
+   "length_total": 613,
    "polyline_simplified": [
     [
-     1909,
-     561
+     1906,
+     682
     ],
     [
-     1964,
-     691
+     1968,
+     809
     ],
     [
      1955,
@@ -463,50 +454,58 @@
   },
   {
    "first_in_zone": [
-    1786,
-    450
+    1782,
+    563
    ],
    "from": "anchor_060 (Rainchar Camp, kragmar_thunderroot_wilds)",
-   "id": 60,
+   "id": 61,
    "kind": "trail",
    "last_in_zone": [
-    1929,
-    610
+    1966,
+    832
    ],
-   "length_in_zone": 562,
-   "length_total": 569,
+   "length_in_zone": 688,
+   "length_total": 891,
    "polyline_simplified": [
     [
-     1786,
-     450
+     1782,
+     563
     ],
     [
-     1824,
-     428
+     1924,
+     400
     ],
     [
-     1856,
-     375
+     1985,
+     354
     ],
     [
-     1930,
-     383
+     2021,
+     362
     ],
     [
-     2017,
-     357
+     2011,
+     458
     ],
     [
-     2028,
-     386
+     1937,
+     546
     ],
     [
-     1997,
-     501
+     1968,
+     625
     ],
     [
-     1929,
-     610
+     1966,
+     719
+    ],
+    [
+     2000,
+     787
+    ],
+    [
+     1966,
+     832
     ]
    ],
    "to": "joins road 28"
@@ -518,91 +517,91 @@
   {
    "anchor": {
     "x": 1900,
-    "y": 156,
-    "z": 550
+    "y": 163,
+    "z": 670
    },
    "anchor_id": "anchor_048",
    "distances": {
     "hubs": [
      {
-      "name": "Glassroot Gate",
-      "road": null,
-      "straight": 1116,
-      "to": "r20_anchor_036",
-      "zone": "elandor_glassroot_wilds"
-     },
-     {
-      "name": "Last Hedge Redoubt",
-      "road": null,
-      "straight": 1887,
-      "to": "r20_anchor_032",
-      "zone": "elandor_ashenward_march"
-     },
-     {
-      "name": "Cinderline Watch",
-      "road": null,
-      "straight": 2650,
-      "to": "r20_anchor_031",
-      "zone": "elandor_ashenward_march"
-     },
-     {
       "name": "Red Ramp Post",
-      "road": 4052,
-      "straight": 2297,
+      "road": 3936,
+      "straight": 2283,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Tornstandard Hold",
-      "road": 4723,
+      "road": 4369,
       "straight": 1626,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
-      "name": "Archshadow Post",
-      "road": null,
-      "straight": 3544,
-      "to": "r20_anchor_028",
-      "zone": "elandor_stormvault_heights"
+      "name": "Hollowarch Station",
+      "road": 5327,
+      "straight": 3370,
+      "to": "r20_anchor_040",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Last Hedge Redoubt",
+      "road": 5601,
+      "straight": 2024,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": 6312,
+      "straight": 3921,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Cinderline Watch",
+      "road": 7038,
+      "straight": 2715,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
      }
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 231,
-     "x": 1948,
-     "z": 324
+     "distance": 260,
+     "x": 1932,
+     "z": 412
     },
     "nearest_road": {
-     "distance": 14
+     "distance": 13
     },
     "nearest_sea": {
      "bearing": "E",
-     "distance": 686,
-     "x": 2536,
-     "z": 292
+     "distance": 704,
+     "x": 2576,
+     "z": 868
     },
     "nearest_sea_beach_sand": {
      "bearing": "E",
-     "distance": 712,
-     "x": 2612,
-     "z": 576
+     "distance": 680,
+     "x": 2552,
+     "z": 864
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 708,
+      "distance": 768,
       "hits": "coastal_shelf"
      },
      "north_+z": {
-      "distance": 496,
+      "distance": 376,
       "hits": "kragmar_kezamba"
      },
      "south_-z": {
-      "distance": 236,
+      "distance": 268,
       "hits": "front_skyglass_canopy"
      },
      "west_-x": {
-      "distance": 908,
+      "distance": 940,
       "hits": "kragmar_bannerbreak_mesa"
      }
     }
@@ -622,8 +621,8 @@
      "role_text": "quest giver",
      "socket": "quest_host",
      "x": 1902,
-     "y": 157,
-     "z": 550
+     "y": 164,
+     "z": 670
     }
    ],
    "race": "troll",
@@ -634,8 +633,8 @@
   {
    "anchor": {
     "x": 1776,
-    "y": 161,
-    "z": 454
+    "y": 247,
+    "z": 574
    },
    "anchor_id": "anchor_060",
    "distances": {
@@ -650,7 +649,7 @@
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 1032,
+      "straight": 1270,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
@@ -664,61 +663,61 @@
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 1731,
+      "straight": 1867,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Red Ramp Post",
       "road": null,
-      "straight": 2191,
+      "straight": 2171,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Cinderline Watch",
       "road": null,
-      "straight": 2494,
+      "straight": 2559,
       "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
      }
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 156,
-     "x": 1832,
-     "z": 308
+     "distance": 158,
+     "x": 1764,
+     "z": 416
     },
     "nearest_road": {
-     "distance": 11
+     "distance": 13
     },
     "nearest_sea": {
      "bearing": "E",
-     "distance": 777,
-     "x": 2528,
-     "z": 260
+     "distance": 811,
+     "x": 2536,
+     "z": 292
     },
     "nearest_sea_beach_sand": {
      "bearing": "E",
      "distance": 828,
-     "x": 2600,
-     "z": 376
+     "x": 2556,
+     "z": 852
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 840,
+      "distance": 848,
       "hits": "coastal_shelf"
      },
      "north_+z": {
-      "distance": 560,
+      "distance": 440,
       "hits": "kragmar_kezamba"
      },
      "south_-z": {
-      "distance": 156,
-      "hits": "inland_water"
+      "distance": 164,
+      "hits": "front_skyglass_canopy"
      },
      "west_-x": {
-      "distance": 744,
+      "distance": 800,
       "hits": "kragmar_bannerbreak_mesa"
      }
     }
@@ -732,106 +731,121 @@
  ],
  "spawns": [
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_witch",
-   "name": "Bog Witch",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 87.0
-   }
-  },
-  {
    "day": {
     "levels": [
-     31,
-     40
+     34,
+     37
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 65.5
+    "share_pct": 0.3
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:jungle_ape",
-   "name": "Jungle Ape",
+   "hosts": [],
+   "mob": "grug_mobs:breakwater_crab",
+   "name": "Breakwater Crab",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:jungle_spider",
-   "name": "Jungle Spider",
+   "hosts": [],
+   "mob": "grug_mobs:canopy_web_spider",
+   "name": "Canopy-Web Jungle Spider",
    "night": {
     "levels": [
      31,
      40
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 65.6
+    "share_pct": 62.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "share_pct": 95.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:coiled_serpent",
+   "name": "Coiled Serpent",
+   "night": {
+    "levels": [
+     31,
+     33
+    ],
+    "share_pct": 15.5
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:panther",
-   "name": "Panther",
+   "hosts": [],
+   "mob": "grug_mobs:entrenched_bandit",
+   "name": "Entrenched Bandit",
    "night": {
     "levels": [
      31,
-     40
+     33
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 65.5
+    "share_pct": 4.9
    }
   },
   {
    "day": {
     "levels": [
-     31,
+     38,
      40
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 87.0
+    "share_pct": 1.2
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:serpent",
-   "name": "Serpent",
-   "night": null
+   "hosts": [],
+   "mob": "grug_mobs:entrenched_bandit_archer",
+   "name": "Entrenched Bandit Archer",
+   "night": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 1.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:marching_zombie",
+   "name": "Marching Zombie",
+   "night": {
+    "levels": [
+     31,
+     35
+    ],
+    "share_pct": 6.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_hex_witch",
+   "name": "Reed-Hex Bog Witch",
+   "night": {
+    "levels": [
+     31,
+     37
+    ],
+    "share_pct": 24.9
+   }
   },
   {
    "day": {
-    "area_nodes2": 5440,
+    "area_nodes2": 5392,
     "levels": [
      31,
-     39
+     38
     ]
    },
    "disposition": "neutral",
@@ -841,13 +855,55 @@
    "mob": "grug_mobs:shore_crab",
    "name": "Shore Crab",
    "night": {
-    "area_nodes2": 5440,
+    "area_nodes2": 5392,
     "levels": [
      31,
-     39
+     38
     ]
    },
    "note": "measured on sea-beach sand from the grid (host node check)"
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stalking_panther",
+   "name": "Shade Panther",
+   "night": {
+    "levels": [
+     31,
+     40
+    ],
+    "share_pct": 66.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     40
+    ],
+    "share_pct": 68.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:territorial_ape",
+   "name": "Treetop Jungle Ape",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:unrelenting_zombie",
+   "name": "Trench Shambler",
+   "night": {
+    "levels": [
+     36,
+     40
+    ],
+    "share_pct": 3.9
+   }
   }
  ],
  "territory_rule": "contested_land",

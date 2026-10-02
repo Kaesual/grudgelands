@@ -77,37 +77,45 @@ Nearest hubs (straight / by road): Redtusk Outpost 507 / 617; Redtusk Village 55
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_orc_01_tusks_at_the_water_skins | Tusks at the Water Skins | Gara Stonevoice (Sunscar) | 1 | kill 3 boar | 20 | - |
+| r14_orc_01_tusks_at_the_water_skins | Tusks at the Water Skins | Gara Stonevoice (Sunscar) | 1 | kill 3 boar or small_boar | 20 | - |
 | r14_orc_02_meat_for_the_long_fire | Meat for the Long Fire | Ugra Brothstone (Sunscar) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_orc_10_edge_of_the_first_camp | Edge of the First Camp | Gara Stonevoice (Sunscar) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_orc_start_cook | Keep the Long Fire Fed | Ugra Brothstone (Sunscar) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_orc_11_stone_has_no_pride | Stone Has No Pride | Gara Stonevoice (Sunscar) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_orc_10_edge_of_the_first_camp |
 | r14_orc_03_rats_under_the_hide_racks | Posts Beneath the Hide Racks | Gara Stonevoice (Sunscar) | 3 | bring 6 default:acacia_wood | 100 | r14_orc_01_tusks_at_the_water_skins |
-| r14_orc_04_the_thirsting_dead | The Thirsting Dead | Gara Stonevoice (Sunscar) | 5 | kill 3 sun_dried_husk | 180 | r14_orc_01_tusks_at_the_water_skins |
-| r14_orc_05_shells_by_the_bedrolls | Shells by the Bedrolls | Gara Stonevoice (Sunscar) | 5 | kill 5 scorpion | 180 | r14_orc_03_rats_under_the_hide_racks |
+| r14_orc_04_the_thirsting_dead | The Thirsting Dead | Gara Stonevoice (Sunscar) | 5 | kill 3 sun_dried_husk or befuddled_husk or sluggish_husk | 180 | r14_orc_01_tusks_at_the_water_skins |
+| r14_orc_05_shells_by_the_bedrolls | Shells by the Bedrolls | Gara Stonevoice (Sunscar) | 5 | kill 5 scorpion or irritable_scorpion | 180 | r14_orc_03_rats_under_the_hide_racks |
 | r14_orc_06_husks_on_redtusk_road | The Road to Borak Redgrass | Gara Stonevoice (Sunscar) | 10 | talk to Borak Redgrass (redtusk_village) | 285 | r14_orc_05_shells_by_the_bedrolls |
 | r20_orc_capital_intro | The Road to Gor Drazhak | Gara Stonevoice (Sunscar) | 10 | talk to Thorga Roadspeaker (gor_drazhak) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| giant_rat | Giant Rat | aggressive | - | 84.0% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| hare | Hare | critter | 87.6% of land, L1-10 | - | dirt_with_rainforest_litter, dry_dirt_with_dry_grass, sand, blight_dirt, mud |
-| plains_runner | Plains Runner | neutral | 87.6% of land, L1-10 | - | dry_dirt_with_dry_grass |
-| scorpion | Scorpion | aggressive | 33.5% of land, L4-10 | 33.5% of land, L4-10 | dry_dirt_with_dry_grass, mesa_clay |
+| aggressive_boar | Aggressive Boar | aggressive | 26.6% of land, L8-10 | - |  |
+| befuddled_husk | Braindead Sun-Dried Husk | aggressive | 28.3% of land, L3-4 | 32.2% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.3% of land, L9-10 | 1.3% of land, L9-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 6.4% of land, L7-10 | - |  |
+| giant_scorpion | Monstrous Scorpion | aggressive | 26.6% of land, L8-9 | 26.6% of land, L8-9 |  |
+| irritable_scorpion | Aggressive Scorpion | aggressive | 25.7% of land, L5-7 | 1.9% of land, L5-7 |  |
+| large_rat | Large Rat | aggressive | - | 34.0% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 28.6% of land, L8-10 |  |
+| quiet_shore_crab | Small Crab | neutral | 8.2% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 23.7% of land, L5-7 |  |
+| salt_caked_husk | Monstrous Salt-Caked Husk | aggressive | - | 2.1% of land, L8-9 |  |
 | shore_crab | Shore Crab | neutral | 58208 nodes², L3-10 | 58208 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| sun_dried_husk | Sun-Dried Husk | aggressive | - | 33.5% of land, L4-10 | dry_dirt_with_dry_grass, mesa_clay |
+| sluggish_husk | Sluggish Sun-Dried Husk | aggressive | 1.9% of land, L5-7 | 30.0% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 36.2% of land, L1-4 | - |  |
+| young_plains_runner | Young Plains Runner | neutral | 23.7% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
 | 18 | primary | anchor_005 (Sunscar, kragmar_sunscar_flats) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 799 / 258 | 0,2486 → -112,2263 |
-| 43 | trail | anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna) | joins road 18 | 486 / 294 | 197,2254 → -22,2437 |
+| 44 | trail | anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna) | joins road 18 | 486 / 294 | 197,2254 → -22,2437 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

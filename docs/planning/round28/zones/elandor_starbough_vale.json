@@ -150,8 +150,8 @@
    "name": "Starbough Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": 1632,
@@ -161,24 +161,25 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:rabid_fox",
+   "grug_mobs:reefclaw_crab",
+   "grug_mobs:tidepool_crab",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:young_boar",
+   "grug_mobs:young_fox"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox"
-  ],
-  "density_budget_night": [
-   "grug_mobs:poacher",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:poacher",
-   "grug_mobs:zombie"
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:moaning_zombie",
+   "grug_mobs:muttering_zombie",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:snaring_poacher",
+   "grug_mobs:vigilant_bandit_archer"
   ]
  },
  "civic_no_hostiles": false,
@@ -331,7 +332,6 @@
   "elandor_silverleaf_glades"
  ],
  "numeric_id": 12,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -376,13 +376,14 @@
    "id": "r14_elf_07_quiet_the_lower_boughs",
    "min_level": 10,
    "objectives": [
-    "kill 6 poacher [in elandor_starbough_vale]"
+    "kill 6 poacher or snaring_poacher [in elandor_starbough_vale]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:snaring_poacher"
      ],
      "type": "kill",
      "zone": "elandor_starbough_vale"
@@ -410,7 +411,6 @@
    "objectives_raw": [
     {
      "count": 2,
-     "description": "Bring ordinary leather",
      "item": "mobs:leather",
      "type": "item"
     }
@@ -458,13 +458,14 @@
    "id": "r14_elf_08_watch_the_green_road",
    "min_level": 11,
    "objectives": [
-    "kill 6 fox [in elandor_starbough_vale]"
+    "kill 6 fox or young_fox [in elandor_starbough_vale]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:fox"
+      "grug_mobs:fox",
+      "grug_mobs:young_fox"
      ],
      "type": "kill",
      "zone": "elandor_starbough_vale"
@@ -487,13 +488,14 @@
    "id": "r15_elf_local_03",
    "min_level": 11,
    "objectives": [
-    "kill 4 poacher [in elandor_starbough_vale]"
+    "kill 4 poacher or snaring_poacher [in elandor_starbough_vale]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:snaring_poacher"
      ],
      "type": "kill",
      "zone": "elandor_starbough_vale"
@@ -603,7 +605,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -715,7 +716,7 @@
     -2110
    ],
    "from": "anchor_033 (Starbough Outpost, elandor_starbough_vale)",
-   "id": 37,
+   "id": 38,
    "kind": "trail",
    "last_in_zone": [
     1818,
@@ -745,7 +746,7 @@
     -2051
    ],
    "from": "anchor_053 (Starbough Bandit Camp, elandor_starbough_vale)",
-   "id": 53,
+   "id": 54,
    "kind": "trail",
    "last_in_zone": [
     1839,
@@ -1143,92 +1144,119 @@
   {
    "day": {
     "levels": [
-     11,
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 77.5
+    "share_pct": 29.5
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:fox",
-   "name": "Fox",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:poacher",
-   "name": "Poacher",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
    "night": {
     "levels": [
      11,
+     13
+    ],
+    "share_pct": 27.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
+   "night": {
+    "levels": [
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 61.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:moaning_zombie",
+   "name": "Cairn Zombie",
+   "night": {
+    "levels": [
+     11,
+     15
+    ],
+    "share_pct": 40.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_zombie",
+   "name": "Pauper Shambler",
+   "night": {
+    "levels": [
+     16,
+     20
+    ],
+    "share_pct": 30.8
    }
   },
   {
    "day": {
     "levels": [
-     11,
+     14,
+     15
+    ],
+    "share_pct": 2.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     14,
+     15
+    ],
+    "share_pct": 2.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 66.0
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:rabbit",
-   "name": "Rabbit",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_fox",
+   "name": "Thicket Vixen",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     15,
+     17
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reefclaw_crab",
+   "name": "Reefclaw Snapper",
    "night": null
   },
   {
@@ -1257,31 +1285,78 @@
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:snaring_poacher",
+   "name": "Snaring Poacher",
    "night": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 27.4
    }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     14
+    ],
+    "share_pct": 3.9
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:tidepool_crab",
+   "name": "Tidepool Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     16,
+     17
+    ],
+    "share_pct": 2.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     16,
+     17
+    ],
+    "share_pct": 2.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     14
+    ],
+    "share_pct": 63.9
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_boar",
+   "name": "Rooting Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 27.4
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_fox",
+   "name": "Bracken Fox",
+   "night": null
   }
  ],
  "territory_rule": "accord_home",

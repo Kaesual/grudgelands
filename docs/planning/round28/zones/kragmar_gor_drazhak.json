@@ -82,27 +82,40 @@
  "camps": [],
  "capital_street_count": 19,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:debtbound_husk",
+   "grug_mobs:dustpack_hyena",
+   "grug_mobs:stubborn_husk",
+   "grug_mobs:toll_bandit_archer",
+   "grug_mobs:watchful_zebra"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_husk",
+   "grug_mobs:dust_stinger",
+   "grug_mobs:dustpack_hyena",
+   "grug_mobs:stubborn_husk",
+   "grug_mobs:toll_bandit",
+   "grug_mobs:toll_bandit_archer"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
-  "bank_sand_area_nodes2": 4656,
+  "bank_sand_area_nodes2": 4592,
   "bay_water_area_nodes2": 0,
   "beaches": [],
-  "inland_water_area_nodes2": 8992,
+  "inland_water_area_nodes2": 9008,
   "sea_beach_sand_area_nodes2": 0,
   "sea_coast_length_nodes": 0
  },
- "drift_band_share_pct": 10.8,
+ "drift_band_share_pct": 10.9,
  "extent": {
   "centroid": {
    "x": 30,
    "z": 1461
   },
-  "land_area_nodes2": 702976,
+  "land_area_nodes2": 702960,
   "max_x": 540,
   "max_z": 1872,
   "min_x": -500,
@@ -137,7 +150,7 @@
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/kragmar_gor_drazhak.png",
  "name": "Gor Drazhak",
  "neighbors": [
@@ -147,7 +160,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 24,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
    "area_nodes2": 129128,
@@ -189,7 +201,7 @@
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": []
  },
- "protected_share_pct": 19.7,
+ "protected_share_pct": 19.9,
  "pvp_rule": "peaceful",
  "quests": [
   {
@@ -470,7 +482,7 @@
     1232
    ],
    "length_in_zone": 124,
-   "length_total": 390,
+   "length_total": 391,
    "polyline_simplified": [
     [
      -367,
@@ -493,11 +505,125 @@
   },
   {
    "first_in_zone": [
+    -36,
+    1078
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 29,
+   "kind": "primary",
+   "last_in_zone": [
+    -47,
+    1232
+   ],
+   "length_in_zone": 160,
+   "length_total": 2860,
+   "polyline_simplified": [
+    [
+     -64,
+     -1232
+    ],
+    [
+     -42,
+     -1093
+    ],
+    [
+     40,
+     -1032
+    ],
+    [
+     37,
+     -990
+    ],
+    [
+     59,
+     -962
+    ],
+    [
+     47,
+     -813
+    ],
+    [
+     -28,
+     -653
+    ],
+    [
+     58,
+     -464
+    ],
+    [
+     -59,
+     -368
+    ],
+    [
+     0,
+     -143
+    ],
+    [
+     -16,
+     -92
+    ],
+    [
+     -4,
+     36
+    ],
+    [
+     -60,
+     97
+    ],
+    [
+     36,
+     169
+    ],
+    [
+     81,
+     324
+    ],
+    [
+     37,
+     424
+    ],
+    [
+     59,
+     474
+    ],
+    [
+     -13,
+     617
+    ],
+    [
+     -17,
+     687
+    ],
+    [
+     -50,
+     757
+    ],
+    [
+     -47,
+     817
+    ],
+    [
+     32,
+     967
+    ],
+    [
+     -45,
+     1100
+    ],
+    [
+     -47,
+     1232
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
     509,
     1344
    ],
    "from": "anchor_046 (Reedvoice Station, kragmar_whispering_reedlands)",
-   "id": 47,
+   "id": 48,
    "kind": "trail",
    "last_in_zone": [
     445,
@@ -539,7 +665,7 @@
     1842
    ],
    "from": "anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna)",
-   "id": 57,
+   "id": 58,
    "kind": "trail",
    "last_in_zone": [
     353,
@@ -565,73 +691,11 @@
   },
   {
    "first_in_zone": [
-    -103,
-    1086
-   ],
-   "from": "anchor_058 (Sunderstrap Camp, kragmar_bannerbreak_mesa)",
-   "id": 58,
-   "kind": "trail",
-   "last_in_zone": [
-    -290,
-    1121
-   ],
-   "length_in_zone": 186,
-   "length_total": 1283,
-   "polyline_simplified": [
-    [
-     42,
-     420
-    ],
-    [
-     118,
-     464
-    ],
-    [
-     215,
-     432
-    ],
-    [
-     292,
-     453
-    ],
-    [
-     303,
-     520
-    ],
-    [
-     284,
-     569
-    ],
-    [
-     254,
-     623
-    ],
-    [
-     163,
-     703
-    ],
-    [
-     6,
-     1019
-    ],
-    [
-     -136,
-     1100
-    ],
-    [
-     -290,
-     1121
-    ]
-   ],
-   "to": "joins road 27"
-  },
-  {
-   "first_in_zone": [
     272,
     1634
    ],
    "from": "end:16",
-   "id": 132,
+   "id": 134,
    "kind": "primary",
    "last_in_zone": [
     182,
@@ -657,7 +721,7 @@
     1760
    ],
    "from": "end:18",
-   "id": 133,
+   "id": 135,
    "kind": "primary",
    "last_in_zone": [
     -69,
@@ -687,7 +751,7 @@
     1582
    ],
    "from": "end:15",
-   "id": 134,
+   "id": 136,
    "kind": "primary",
    "last_in_zone": [
     -147,
@@ -713,26 +777,22 @@
   },
   {
    "first_in_zone": [
-    -256,
+    -47,
     1232
    ],
-   "from": "end:27",
-   "id": 135,
-   "kind": "secondary",
+   "from": "end:29",
+   "id": 137,
+   "kind": "primary",
    "last_in_zone": [
     12,
     1302
    ],
-   "length_in_zone": 296,
-   "length_total": 297,
+   "length_in_zone": 102,
+   "length_total": 100,
    "polyline_simplified": [
     [
-     -256,
+     -47,
      1232
-    ],
-    [
-     -85,
-     1244
     ],
     [
      12,
@@ -740,6 +800,32 @@
     ]
    ],
    "to": "gate_north"
+  },
+  {
+   "first_in_zone": [
+    -256,
+    1232
+   ],
+   "from": "end:27",
+   "id": 138,
+   "kind": "secondary",
+   "last_in_zone": [
+    -36,
+    1260
+   ],
+   "length_in_zone": 234,
+   "length_total": 232,
+   "polyline_simplified": [
+    [
+     -256,
+     1232
+    ],
+    [
+     -36,
+     1260
+    ]
+   ],
+   "to": "joins road 137"
   }
  ],
  "role": "capital zone",
@@ -777,7 +863,7 @@
      },
      {
       "name": "Red Ramp Post",
-      "road": 1021,
+      "road": 1025,
       "straight": 729,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
@@ -1202,7 +1288,130 @@
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 4.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_husk",
+   "name": "Debtbound Sun-Dried Husk",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 39.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:dust_stinger",
+   "name": "Dust-Stinger Scorpion",
+   "night": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 89.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 84.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:dustpack_hyena",
+   "name": "Dustpack Hyena",
+   "night": {
+    "levels": [
+     20,
+     27
+    ],
+    "share_pct": 4.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 30.3
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_husk",
+   "name": "Tithe Mummy",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 30.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     23
+    ],
+    "share_pct": 25.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.3
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit_archer",
+   "name": "Toll Bandit Archer",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.3
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     27
+    ],
+    "share_pct": 65.9
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_zebra",
+   "name": "Waterhole Zebra",
+   "night": null
+  }
+ ],
  "territory_rule": "throng_home",
  "track_order": 3
 }

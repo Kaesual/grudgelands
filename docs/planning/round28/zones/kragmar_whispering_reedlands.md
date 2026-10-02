@@ -19,7 +19,7 @@ Race track (troll): step 4 of the track Kapok Cradle → Raincall Basin → Keza
 | Slope | 0.2% steep (>1 node/node), 0.0% cliff (>2) |
 | Biomes (measured) | jungle_edge 46.9%, swamp 26.5%, deep_jungle 25.5%, savanna 0.8%, badlands 0.2%, badlands_east 0.1% |
 | Neighbours (land border) | kragmar_bannerbreak_mesa (664 nodes, mid 699,1070), kragmar_gor_drazhak (760 nodes, mid 514,1505), kragmar_kezamba (1036 nodes, mid 1326,1472), kragmar_raincall_basin (520 nodes, mid 1190,2036), kragmar_redtusk_savanna (428 nodes, mid 624,1955), kragmar_thunderroot_wilds (736 nodes, mid 1143,1027) |
-| Sea coast | 824 nodes of coastline; sea-beach sand 21648 nodes²; lake/river-bank sand 27600 nodes² |
+| Sea coast | 824 nodes of coastline; sea-beach sand 21648 nodes²; lake/river-bank sand 27664 nodes² |
 | Water inside | bay 59664 nodes², rivers/lakes 32800 nodes² |
 | Protected / drift band | 1.9% of land protected (towns, villages, camps/POIs, road corridors); 6.6% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
@@ -93,31 +93,31 @@ Nearest hubs (straight / by road): Whisperreed Landing 335 / 787; Raincall Bandi
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
 | r20_anchor_024_01 | A Landing That Holds | Taleko Drycord (Whisperreed Landing) | 21 | bring 8 default:junglewood | 820 | - |
-| r20_anchor_024_02 | Tapirs on the Dry Path | Taleko Drycord (Whisperreed Landing) | 21 | kill 4 tapir [in kragmar_whispering_reedlands] | 820 | - |
+| r20_anchor_024_02 | Tapirs on the Dry Path | Taleko Drycord (Whisperreed Landing) | 21 | kill 4 tapir or reed_tapir [in kragmar_whispering_reedlands] | 820 | - |
 | r20_anchor_046_01 | A Dry Signal Shelf | Enashi Reedvoice (Reedvoice Station) | 21 | bring 8 default:junglewood | 820 | - |
 | r20_anchor_046_02 | Cats by the Reed Pipes | Enashi Reedvoice (Reedvoice Station) | 21 | kill 4 jungle_lynx [in kragmar_whispering_reedlands] | 820 | - |
 | r20_anchor_066_01 | Timbers Kept Above Water | Zali Runoff (Reedstone Cut) | 21 | bring 8 default:junglewood | 820 | - |
 | r20_anchor_066_02 | The Quarry Pool Moves | Zali Runoff (Reedstone Cut) | 21 | kill 4 bog_ooze [in kragmar_whispering_reedlands] | 820 | - |
-| r20_anchor_024_03 | Cold Lights in the Reeds | Taleko Drycord (Whisperreed Landing) | 23 | kill 3 wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_024_02 |
-| r20_anchor_046_03 | The False Answering Lights | Enashi Reedvoice (Reedvoice Station) | 23 | kill 3 wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_046_02 |
+| r20_anchor_024_03 | Cold Lights in the Reeds | Taleko Drycord (Whisperreed Landing) | 23 | kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_024_02 |
+| r20_anchor_046_03 | The False Answering Lights | Enashi Reedvoice (Reedvoice Station) | 23 | kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_046_02 |
 | r20_anchor_066_03 | Jaws Along the Haul Path | Zali Runoff (Reedstone Cut) | 23 | kill 3 crocodile [in kragmar_whispering_reedlands] | 900 | r20_anchor_066_02 |
 | r20_troll_journey_02 | Word for Zali Runoff | Taleko Drycord (Whisperreed Landing) | 24 | talk to Zali Runoff (r20_anchor_066) | 705 | - |
 | r20_troll_journey_03 | Word for Rumela Stormstep | Zali Runoff (Reedstone Cut) | 31 | talk to Rumela Stormstep (r20_anchor_048) | 915 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| bog_fowl | Bog Fowl | critter | 27.0% of land, L21-30 | - | mud |
-| bog_ooze | Bog Ooze | aggressive | 27.0% of land, L21-30 | 27.0% of land, L21-30 | mud |
-| crocodile | Crocodile | aggressive | 27.0% of land, L21-30 | 27.0% of land, L21-30 | mud |
-| jungle_lynx | Jungle Lynx | aggressive | 71.8% of land, L21-30 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| parrot | Parrot | critter | 46.0% of land, L21-30 | - | dirt_with_rainforest_litter |
+| bank_crab | Bank Crab | neutral | 1.7% of land, L21-23 | - |  |
+| reed_crocodile | Reed Crocodile | aggressive | 13.1% of land, L24-30 | 75.5% of land, L21-30 |  |
+| reed_jungle_lynx | Reed Jungle Lynx | aggressive | 60.6% of land, L21-30 | - |  |
+| reed_tapir | Reed Tapir | neutral | 21.4% of land, L21-23 | - |  |
 | shore_crab | Shore Crab | neutral | 21648 nodes², L21-22 | 21648 nodes², L21-22 | sand (dry, within 6 nodes of water) |
-| tapir | Tapir | neutral | 71.8% of land, L21-30 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| wisp | Wisp | aggressive | - | 98.8% of land, L21-30 | dirt_with_rainforest_litter, dirt_with_bone_litter, dirt_with_canopy_litter, dirt_with_forest_litter, dirt_with_silver_litter, mud |
+| sullen_bog_ooze | Bubbling Bog Ooze | aggressive | 21.8% of land, L21-30 | 61.0% of land, L21-30 |  |
+| toll_mirefolk | Toll Mirefolk | aggressive | 2.7% of land, L21-30 | 2.7% of land, L21-30 |  |
+| wandering_wisp | Wandering Wisp | aggressive | - | 28.3% of land, L21-23 |  |
 
 **Camps and guard posts:**
 
@@ -130,9 +130,9 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 16 | primary | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | anchor_012 (Kezamba, kragmar_kezamba) | 1364 / 826 | 523,1671 → 1292,1771 |
 | 25 | secondary | anchor_024 (Whisperreed Landing, kragmar_whispering_reedlands) | joins road 16 | 108 / 110 | 878,1619 → 927,1714 |
-| 47 | trail | anchor_046 (Reedvoice Station, kragmar_whispering_reedlands) | joins road 16 | 522 / 206 | 671,1231 → 510,1342 |
-| 66 | trail | anchor_066 (Reedstone Cut, kragmar_whispering_reedlands) | joins road 16 | 446 / 440 | 1038,1317 → 1116,1702 |
-| 70 | trail | anchor_070 (Hushwater Nests, kragmar_whispering_reedlands) | joins road 16 | 87 / 90 | 1086,1756 → 1037,1688 |
+| 48 | trail | anchor_046 (Reedvoice Station, kragmar_whispering_reedlands) | joins road 16 | 522 / 206 | 671,1231 → 510,1342 |
+| 67 | trail | anchor_066 (Reedstone Cut, kragmar_whispering_reedlands) | joins road 16 | 446 / 440 | 1038,1317 → 1116,1702 |
+| 71 | trail | anchor_070 (Hushwater Nests, kragmar_whispering_reedlands) | joins road 16 | 87 / 90 | 1086,1756 → 1037,1688 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

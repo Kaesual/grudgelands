@@ -96,36 +96,43 @@ Nearest hubs (straight / by road): Copperfell Village 301 / 493; Hearthpine 537 
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_dwarf_07_a_ledger_in_the_scrub | A Ledger in the Scrub | Orrik Pineledger (Copperfell Village) | 10 | kill 6 fox [in elandor_copperfell_foothills] | 380 | r14_dwarf_06_loose_stone_on_copper_road |
+| r14_dwarf_07_a_ledger_in_the_scrub | A Ledger in the Scrub | Orrik Pineledger (Copperfell Village) | 10 | kill 6 fox or young_fox [in elandor_copperfell_foothills] | 380 | r14_dwarf_06_loose_stone_on_copper_road |
 | r15_dwarf_local_01 | Stone for the Workyard | Dagna Copperset (Copperfell Village) | 10 | bring 8 default:cobble | 285 | r14_dwarf_06_loose_stone_on_copper_road |
 | r15_dwarf_local_02 | Fangs in the Tool Baskets | Dagna Copperset (Copperfell Village) | 10 | bring 2 grug_mobs:fang | 380 | r14_dwarf_06_loose_stone_on_copper_road |
-| r14_dwarf_08_hold_the_marker_stones | Hold the Marker Stones | Mara Deepwatch (Copperfell Outpost) | 11 | kill 6 goblin_raider or goblin_slinger or goblin_hound [in elandor_copperfell_foothills] | 525 | r14_dwarf_07_a_ledger_in_the_scrub |
+| r14_dwarf_08_hold_the_marker_stones | Hold the Marker Stones | Mara Deepwatch (Copperfell Outpost) | 11 | kill 6 goblin_raider or goblin_slinger or goblin_hound or ore_thieving_goblin [in elandor_copperfell_foothills] | 525 | r14_dwarf_07_a_ledger_in_the_scrub |
 | r15_dwarf_local_03 | Scraps from the Signal Path | Mara Deepwatch (Copperfell Outpost) | 11 | bring 2 grug_mobs:linen_scrap | 315 | r14_dwarf_07_a_ledger_in_the_scrub |
 | r15_dwarf_local_04 | Sure Feet, Loose Stones | Mara Deepwatch (Copperfell Outpost) | 11 | kill 5 ibex [in elandor_copperfell_foothills] | 420 | r14_dwarf_07_a_ledger_in_the_scrub |
 | r14_dwarf_09_ash_under_the_nails | Ash Under the Nails | Mara Deepwatch (Copperfell Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_copperfell_foothills] | 805 | r14_dwarf_08_hold_the_marker_stones |
 | r15_dwarf_local_05 | The Ore Carriers' Purses | Tovin Ashthumb (Copperfell Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_dwarf_08_hold_the_marker_stones |
 | r15_dwarf_local_06 | Cloth Around the Stolen Tools | Tovin Ashthumb (Copperfell Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_dwarf_08_hold_the_marker_stones |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 90.7% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| goblin_hound | Goblin Raider Hound | aggressive | - | 99.7% of land, L11-20 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| goblin_raider | Goblin Raider | aggressive | - | 99.7% of land, L11-20 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| goblin_slinger | Goblin Slinger | aggressive | - | 99.7% of land, L11-20 | dirt_with_coniferous_litter, dry_dirt_with_dry_grass, gravel, snowblock, mesa_clay |
-| ibex | Ibex | neutral | 99.7% of land, L11-20 | - | dirt_with_coniferous_litter, gravel, snowblock |
-| rabbit | Rabbit | critter | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| bristling_boar | Ridgeback Tusker | aggressive | 57.9% of land, L15-20 | - |  |
+| granary_rat | Granary Rat | aggressive | - | 64.5% of land, L11-14 |  |
+| mangy_rat | Burrow Gnawer | aggressive | - | 57.9% of land, L15-20 |  |
+| moaning_zombie | Cairn Zombie | aggressive | - | 3.3% of land, L11-15 |  |
+| muttering_zombie | Pauper Shambler | aggressive | - | 8.3% of land, L16-20 |  |
+| ore_guard_hound | Ore-Guard Hound | aggressive | 1.7% of land, L18-20 | 1.7% of land, L18-20 |  |
+| ore_thieving_goblin | Ore-Thieving Goblin | aggressive | - | 28.8% of land, L11-13 |  |
+| quarrelsome_bandit | Roadside Bandit | aggressive | 2.2% of land, L14-15 | 2.2% of land, L14-15 |  |
+| rabid_fox | Thicket Vixen | aggressive | 6.7% of land, L15-20 | - |  |
+| rubble_goblin_slinger | Rubble Goblin Slinger | aggressive | 1.7% of land, L18-20 | 1.7% of land, L18-20 |  |
 | shore_crab | Shore Crab | neutral | 5616 nodes², L11-18 | 5616 nodes², L11-18 | sand (dry, within 6 nodes of water) |
-| zombie | Zombie | aggressive | - | 100.0% of land, L11-20 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| surefoot_ibex | Surefoot Ibex | neutral | 37.3% of land, L14-20 | - |  |
+| tidepool_crab | Tidepool Crab | neutral | 1.1% of land, L11-13 | - |  |
+| vigilant_bandit_archer | Bandit Lookout | aggressive | 2.2% of land, L16-17 | 2.2% of land, L16-17 |  |
+| young_boar | Rooting Boar | neutral | 31.1% of land, L11-14 | - |  |
+| young_fox | Bracken Fox | neutral | 28.8% of land, L11-13 | - |  |
 
 **Camps and guard posts:**
 
 - anchor_025 Copperfell Outpost at -2100, -2100: guard post, guard_accord × 2-3, respawn 180-360 s, level there L16.
-- anchor_049 Copperfell Bandit Camp at -1568, -2066: bandit, bandit/bandit_archer × 3-5, respawn 120-300 s, level there L17.
+- anchor_049 Copperfell Bandit Camp at -1568, -2066: bandit, bandit/bandit_archer × 3-5, respawn 30-60 s, level there L17.
 
 ## Roads and trails touching the zone
 
@@ -133,8 +140,8 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 3 | primary | anchor_001 (Hearthpine, elandor_hearthpine_vale) | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | 825 / 526 | -1792,-2300 → -1703,-1827 |
 | 8 | secondary | anchor_013 (Copperfell Village, elandor_copperfell_foothills) | joins road 3 | 53 / 56 | -1853,-2026 → -1806,-2002 |
-| 31 | trail | anchor_025 (Copperfell Outpost, elandor_copperfell_foothills) | joins road 3 | 368 / 360 | -2093,-2110 → -1798,-2304 |
-| 49 | trail | anchor_049 (Copperfell Bandit Camp, elandor_copperfell_foothills) | joins road 3 | 240 / 240 | -1576,-2080 → -1783,-2163 |
+| 32 | trail | anchor_025 (Copperfell Outpost, elandor_copperfell_foothills) | joins road 3 | 368 / 360 | -2093,-2110 → -1798,-2304 |
+| 50 | trail | anchor_049 (Copperfell Bandit Camp, elandor_copperfell_foothills) | joins road 3 | 240 / 240 | -1576,-2080 → -1783,-2163 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

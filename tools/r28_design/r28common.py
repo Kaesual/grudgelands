@@ -840,32 +840,18 @@ def species_text(area):
     return "; ".join(parts)
 
 
-# --- zones and their gameplay level bands -----------------------------------
+# --- zones and their level bands -------------------------------------------
 
 SIMPLE_MAP = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "source" / "simple_map.lua"
-ZONE_BANDS = REPO / "mods" / "CORE" / "grug_core" / "zone_bands.lua"
 # zone(n,"id","Name","race",faction|false,"territory","pvp",lo,hi,...  ,true) = capital
 ZONE_ROW = re.compile(r'^\s*zone\((\d+),"(\w+)","([^"]*)","(\w+)",(false|"\w+"),"\w+","\w+",(\d+),(\d+),')
-
-
-def zone_band_overrides(path=ZONE_BANDS):
-    """{zone_id: (lo, hi)} of grug_core/zone_bands.lua (the gameplay bands
-    that differ from the mapgen's)."""
-    text = Path(path).read_text(encoding="utf-8")
-    block = re.search(r"M\.bands\s*=\s*\{(.*?)\n\}", text, re.S)
-    return {zone: (int(lo), int(hi)) for zone, lo, hi in
-            re.findall(r"(\w+)\s*=\s*\{\s*(\d+)\s*,\s*(\d+)\s*\}", block.group(1) if block else "")}
 
 
 def zone_records(source=SIMPLE_MAP):
     """{zone_id: {"id", "number", "name", "race", "faction" ("accord",
     "throng" or None for contested, front and island zones), "levels" (lo,
-    hi), "capital"}} of every zone: the mapgen's zone rows with the gameplay
-    level bands, as grug_zones serves them in the game."""
-    # The gameplay bands: today grug_core/zone_bands.lua over the mapgen rows.
-    # When the mapgen rows carry them (Round 29 lane M-geo deletes that file),
-    # this one line becomes `overrides = {}` (and zone_band_overrides goes).
-    overrides = zone_band_overrides()
+    hi), "capital"}} of every zone: the mapgen's zone rows, whose bands
+    grug_zones serves in the game."""
     out = {}
     for line in Path(source).read_text(encoding="utf-8").splitlines():
         m = ZONE_ROW.match(line)
@@ -873,7 +859,7 @@ def zone_records(source=SIMPLE_MAP):
             number, zid, name, race, faction, lo, hi = m.groups()
             out[zid] = {"id": zid, "number": int(number), "name": name, "race": race,
                         "faction": None if faction == "false" else faction.strip('"'),
-                        "levels": overrides.get(zid, (int(lo), int(hi))),
+                        "levels": (int(lo), int(hi)),
                         "capital": line.rstrip().endswith(",true),")}
     if not out:
         raise LoadError("%s: no zone rows found" % source)

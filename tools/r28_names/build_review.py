@@ -212,7 +212,9 @@ def validate(d):
     return errors
 
 
-# --- icons and prices ---------------------------------------------------------
+# --- icons ----------------------------------------------------------------------
+# Vendor prices are not shown: since Round 29 they come from the game's price
+# module (grug_traders/prices.lua; tools/r29_e1/band_payout.sh prints them).
 
 class Icons:
     def __init__(self):
@@ -226,41 +228,34 @@ class Icons:
 
     def _registration(self, item_id):
         mod, name = item_id.split(":", 1)
-        image, price = None, None
         reg = re.compile(r'register_craftitem\(\s*":?' + re.escape(item_id) + r'"\s*,\s*\{(.*?)\n\}\)', re.S)
-        mat = re.compile(r'material\(\s*"' + re.escape(name) + r'"\s*,\s*"[^"]*"\s*,\s*(\d+)')
+        mat = re.compile(r'material\(\s*"' + re.escape(name) + r'"\s*,')
         for path, text in self.lua.items():
             m = reg.search(text)
             if m:
                 im = re.search(r'inventory_image\s*=\s*"([^"^]+)', m.group(1))
-                pr = re.search(r'_grug_sell_price\s*=\s*(\d+)', m.group(1))
-                image = im.group(1) if im else image
-                price = int(pr.group(1)) if pr else price
-                break
-            if mod == "grug_mobs" and path.endswith("grug_mobs/items.lua"):
-                m = mat.search(text)
-                if m:
-                    return "grug_mobs_item_%s.png" % name, int(m.group(1))
-        return image, price
+                return im.group(1) if im else None
+            if mod == "grug_mobs" and path.endswith("grug_mobs/items.lua") and mat.search(text):
+                return "grug_mobs_item_%s.png" % name
+        return None
 
     def lookup(self, d, item_id):
-        """(data URI or None, price in copper or None)."""
+        """(data URI or None, None); the second slot is kept for callers."""
         if item_id in self.cache:
             return self.cache[item_id]
         row = d.items.get(item_id)
         existing = row is not None and "Existing" in (row.get("notes") or "")
         if row is not None and not existing:
             image = item_id.replace(":", "_") + ".png"
-            price = row["tier"] if row["kind"] == "signature" else None
         else:
-            image, price = self._registration(item_id)
+            image = self._registration(item_id)
             if image is None:
                 guess = item_id.replace(":", "_") + ".png"
                 image = guess if guess in self.files else None
         uri = None
         if image and image in self.files:
             uri = "data:image/png;base64," + base64.b64encode(Path(self.files[image]).read_bytes()).decode()
-        self.cache[item_id] = (uri, price)
+        self.cache[item_id] = (uri, None)
         return self.cache[item_id]
 
 
@@ -378,15 +373,15 @@ def band_section(d, icons, bi):
         h.append('</tbody></table></div>')
     if items:
         h.append('<h3>New items</h3><div class="scroll"><table class="items"><thead><tr><th></th><th>Name</th>'
-                 '<th>Kind</th><th>Family</th><th>Price</th><th>Dropped by</th></tr></thead><tbody>')
+                 '<th>Kind</th><th>Family</th><th>Dropped by</th></tr></thead><tbody>')
         for i in items:
             p = d.item_names[i["id"]]
-            uri, price = icons.lookup(d, i["id"])
+            uri = icons.lookup(d, i["id"])[0]
             h.append('<tr data-changed="%d"><td>%s</td><td class="name">%s<div class="desc">%s</div></td><td>%s</td>'
-                     '<td>%s</td><td class="num">%s</td><td class="zones">%s</td></tr>' % (
+                     '<td>%s</td><td class="zones">%s</td></tr>' % (
                          1 if p["current"] != p["proposed"] else 0, icon_html(uri, p["proposed"]),
                          name_html(p["current"], p["proposed"], p.get("reason")), esc(i.get("description", "")),
-                         esc(i["kind"]), esc(i.get("family", "")), "%d c" % price if price else "&mdash;",
+                         esc(i["kind"]), esc(i.get("family", "")),
                          ", ".join(esc(n) for n in droppers(d, i["id"])) or "&mdash;"))
         h.append('</tbody></table></div>')
     h.append(stat_section(d, icons, bi))

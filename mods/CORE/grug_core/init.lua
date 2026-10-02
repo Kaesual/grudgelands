@@ -54,9 +54,6 @@ dofile(modpath .. "/atmosphere.lua")
 -- After atmosphere.lua (it extends that preset table) and before
 -- zone_authority.lua, which only installs a seam grug_mapgen fills in later.
 dofile(modpath .. "/atmosphere_zones.lua")
--- Gameplay level bands that differ from the mapgen's (pure data); the zone
--- records grug_zones serves carry them (zone_authority.lua).
-grug_core.zone_bands = dofile(modpath .. "/zone_bands.lua")
 dofile(modpath .. "/zone_authority.lua")
 -- The mounted flight ceiling (y). grug_mounts clamps flying mounts to it and
 -- full-world preparation sizes every tile's column from it, so it lives in the

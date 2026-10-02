@@ -8,8 +8,8 @@
 -- runtime. The ordinary kit is diggable; capital service props are intrinsically
 -- immutable and have no item/drop route (capital.lua).
 --
--- `_grug_sell_price` is deliberately unset (0 = not sellable); decorative
--- crafting is owned by a later work package.
+-- Traders do not buy decor (no loot class in grug_traders/prices.lua);
+-- decorative crafting is owned by a later work package.
 
 grug_decor = {}
 

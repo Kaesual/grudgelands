@@ -78,32 +78,39 @@ Nearest hubs (straight / by road): Raincall Village 512 / 707; Raincall Outpost 
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_troll_01_boars_in_the_yam_beds | Boars in the Yam Beds | Zalima Rainhum (Kapok) | 1 | kill 3 jungle_boar | 20 | - |
+| r14_troll_01_boars_in_the_yam_beds | Boars in the Yam Beds | Zalima Rainhum (Kapok) | 1 | kill 3 jungle_boar or small_boar | 20 | - |
 | r14_troll_02_fill_the_evening_pot | Fill the Evening Pot | Zemi Sweetroot (Kapok) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_troll_10_a_dry_handled_axe | A Dry-Handled Axe | Zalima Rainhum (Kapok) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_troll_start_cook | The Pot Before the Rain | Zemi Sweetroot (Kapok) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_troll_11_stone_beneath_the_moss | Stone Beneath the Moss | Zalima Rainhum (Kapok) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_troll_10_a_dry_handled_axe |
 | r14_troll_03_teeth_in_the_basket_weave | A Dry Frame for the Baskets | Zalima Rainhum (Kapok) | 3 | bring 6 default:junglewood | 100 | r14_troll_01_boars_in_the_yam_beds |
-| r14_troll_04_dead_in_the_rootways | Dead in the Rootways | Zalima Rainhum (Kapok) | 4 | kill 3 zombie | 140 | r14_troll_01_boars_in_the_yam_beds |
-| r14_troll_05_vipers_under_broad_leaves | Vipers Under Broad Leaves | Zalima Rainhum (Kapok) | 5 | kill 5 viper | 180 | r14_troll_03_teeth_in_the_basket_weave |
+| r14_troll_04_dead_in_the_rootways | Dead in the Rootways | Zalima Rainhum (Kapok) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_troll_01_boars_in_the_yam_beds |
+| r14_troll_05_vipers_under_broad_leaves | Vipers Under Broad Leaves | Zalima Rainhum (Kapok) | 5 | kill 5 viper or reed_viper | 180 | r14_troll_03_teeth_in_the_basket_weave |
 | r14_troll_06_claws_on_raincall_road | The Road to Daro Kapok | Zalima Rainhum (Kapok) | 10 | talk to Daro Kapok (raincall_village) | 285 | r14_troll_05_vipers_under_broad_leaves |
 | r20_troll_capital_intro | The Road to Kezamba | Zalima Rainhum (Kapok) | 10 | talk to Nalo Pathdrum (kezamba) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| giant_rat | Giant Rat | aggressive | - | 81.4% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| hare | Hare | critter | 99.9% of land, L1-10 | - | dirt_with_rainforest_litter, dry_dirt_with_dry_grass, sand, blight_dirt, mud |
-| jungle_boar | Jungle Boar | neutral | 100.0% of land, L1-10 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter, mud |
-| jungle_lynx | Jungle Lynx | aggressive | 36.6% of land, L4-10 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| parrot | Parrot | critter | 85.4% of land, L1-10 | - | dirt_with_rainforest_litter |
+| aggressive_boar | Aggressive Boar | aggressive | 29.3% of land, L5-10 | - |  |
+| braindead_zombie | Braindead Zombie | aggressive | - | 32.8% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.5% of land, L9-10 | 1.5% of land, L9-10 |  |
+| drowned_zombie | Monstrous Drowned Zombie | aggressive | - | 2.0% of land, L8-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 4.5% of land, L7-10 | - |  |
+| giant_viper | Monstrous Viper | aggressive | 26.5% of land, L8-9 | 26.5% of land, L8-9 |  |
+| large_rat | Large Rat | aggressive | - | 31.2% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 26.5% of land, L8-10 |  |
+| prowling_jungle_lynx | Aggressive Jungle Lynx | aggressive | 24.0% of land, L5-7 | - |  |
+| quiet_shore_crab | Small Crab | neutral | 6.2% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 24.0% of land, L5-7 |  |
+| reed_viper | Aggressive Viper | aggressive | 2.8% of land, L5-7 | 26.8% of land, L5-7 |  |
 | shore_crab | Shore Crab | neutral | 44144 nodes², L3-10 | 44144 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| tapir | Tapir | neutral | 36.6% of land, L4-10 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| viper | Viper | aggressive | 36.5% of land, L4-10 | 36.5% of land, L4-10 | dirt_with_rainforest_litter |
-| zombie | Zombie | aggressive | - | 88.0% of land, L3-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| sluggish_zombie | Sluggish Zombie | aggressive | - | 5.4% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 37.0% of land, L1-4 | - |  |
+| young_tapir | Young Tapir | neutral | 24.0% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 

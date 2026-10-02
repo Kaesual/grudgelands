@@ -4,7 +4,7 @@
    "id": "anchor_084",
    "kind": "clash",
    "kind_text": "clash site",
-   "level_at": 55,
+   "level_at": 56,
    "name": "Skyroot Crossing",
    "protected_box": {
     "kind": "poi",
@@ -23,7 +23,7 @@
    "id": "anchor_085",
    "kind": "clash",
    "kind_text": "clash site",
-   "level_at": 57,
+   "level_at": 58,
    "name": "Cloudwatch Fall",
    "protected_box": {
     "kind": "poi",
@@ -35,14 +35,14 @@
    "settlement_key": "r20_anchor_085",
    "slot": "clash_2",
    "x": 2176,
-   "y": 207,
+   "y": 212,
    "z": 104
   },
   {
    "id": "anchor_094",
    "kind": "rare_route",
    "kind_text": "rare route",
-   "level_at": 58,
+   "level_at": 59,
    "name": "Silkfang's Loom",
    "protected_box": {
     "kind": "poi",
@@ -54,7 +54,7 @@
    "settlement_key": "r20_anchor_094",
    "slot": "rare_silkfang",
    "x": 2026,
-   "y": 126,
+   "y": 127,
    "z": 94
   }
  ],
@@ -75,31 +75,27 @@
  "biomes_measured": [
   {
    "id": "grug_jungle_fringe",
-   "share_pct": 71.3
+   "share_pct": 77.2
   },
   {
    "id": "grug_elf_forest",
-   "share_pct": 18.6
+   "share_pct": 14.0
   },
   {
    "id": "grug_deep_forest",
-   "share_pct": 8.9
+   "share_pct": 7.6
   },
   {
    "id": "grug_deep_jungle",
-   "share_pct": 0.5
+   "share_pct": 0.7
   },
   {
    "id": "grug_badlands",
    "share_pct": 0.4
   },
   {
-   "id": "grug_swamp",
-   "share_pct": 0.2
-  },
-  {
    "id": "grug_badlands_east",
-   "share_pct": 0.1
+   "share_pct": 0.2
   },
   {
    "id": "grug_savanna",
@@ -108,26 +104,26 @@
  ],
  "borders": [
   {
-   "length_nodes": 1292,
+   "length_nodes": 1268,
    "midpoint": {
-    "x": 2053,
-    "z": -236
+    "x": 1940,
+    "z": -338
    },
    "zone": "elandor_glassroot_wilds"
   },
   {
-   "length_nodes": 636,
+   "length_nodes": 760,
    "midpoint": {
-    "x": 1397,
-    "z": 24
+    "x": 1398,
+    "z": -13
    },
    "zone": "front_shattered_line"
   },
   {
-   "length_nodes": 1016,
+   "length_nodes": 1324,
    "midpoint": {
-    "x": 2165,
-    "z": 311
+    "x": 2056,
+    "z": 422
    },
    "zone": "kragmar_thunderroot_wilds"
   }
@@ -136,45 +132,37 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_ape",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:serpent"
+   "grug_mobs:glass_fang_serpent",
+   "grug_mobs:glass_knuckle_ape",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_husk",
+   "grug_mobs:saltbound_husk",
+   "grug_mobs:saltroad_deserter",
+   "grug_mobs:watchful_carrion_crow"
   ],
-  "density_budget_day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_ape",
-   "grug_mobs:serpent"
-  ],
-  "density_budget_night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:jungle_spider",
-   "grug_mobs:panther",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:zombie"
+   "grug_mobs:glass_shadow_panther",
+   "grug_mobs:glass_web_spider",
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_husk",
+   "grug_mobs:last_watch_skeleton_raider",
+   "grug_mobs:last_watch_zombie",
+   "grug_mobs:saltbound_zombie"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 2608,
+  "bank_sand_area_nodes2": 5600,
   "bay_water_area_nodes2": 0,
   "beaches": [
    {
-    "area_nodes2": 1952,
+    "area_nodes2": 1936,
     "box": {
      "max_x": 2536,
      "max_z": -68,
-     "min_x": 2492,
+     "min_x": 2496,
      "min_z": -180
     },
     "centroid": {
@@ -183,12 +171,12 @@
     },
     "id": "B1",
     "levels": [
-     52,
-     56
+     54,
+     57
     ]
    },
    {
-    "area_nodes2": 1536,
+    "area_nodes2": 1504,
     "box": {
      "max_x": 2576,
      "max_z": 172,
@@ -201,26 +189,44 @@
     },
     "id": "B2",
     "levels": [
-     55,
-     59
+     56,
+     60
+    ]
+   },
+   {
+    "area_nodes2": 256,
+    "box": {
+     "max_x": 2544,
+     "max_z": -308,
+     "min_x": 2528,
+     "min_z": -332
+    },
+    "centroid": {
+     "x": 2537,
+     "z": -322
+    },
+    "id": "B3",
+    "levels": [
+     51,
+     51
     ]
    }
   ],
-  "inland_water_area_nodes2": 60384,
-  "sea_beach_sand_area_nodes2": 3568,
-  "sea_coast_length_nodes": 984
+  "inland_water_area_nodes2": 72496,
+  "sea_beach_sand_area_nodes2": 3840,
+  "sea_coast_length_nodes": 1444
  },
- "drift_band_share_pct": 0.0,
+ "drift_band_share_pct": 0.7,
  "extent": {
   "centroid": {
-   "x": 2015,
-   "z": 31
+   "x": 2024,
+   "z": 35
   },
-  "land_area_nodes2": 563648,
-  "max_x": 2600,
-  "max_z": 340,
+  "land_area_nodes2": 794704,
+  "max_x": 2616,
+  "max_z": 472,
   "min_x": 1368,
-  "min_z": -264
+  "min_z": -372
  },
  "faction": "contested",
  "front": {
@@ -234,17 +240,18 @@
  "id": "front_skyglass_canopy",
  "level_field": {
   "histogram_pct": {
-   "51": 12.4,
-   "52": 8.7,
-   "53": 9.1,
-   "54": 10.9,
-   "55": 10.1,
-   "56": 11.2,
-   "57": 13.2,
-   "58": 11.8,
-   "59": 12.7
+   "51": 15.8,
+   "52": 10.8,
+   "53": 9.3,
+   "54": 9.8,
+   "55": 8.5,
+   "56": 10.0,
+   "57": 9.1,
+   "58": 8.2,
+   "59": 9.5,
+   "60": 9.0
   },
-  "max": 59,
+  "max": 60,
   "min": 51
  },
  "level_max": 60,
@@ -258,7 +265,6 @@
   "kragmar_thunderroot_wilds"
  ],
  "numeric_id": 37,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -291,7 +297,7 @@
    }
   ]
  },
- "protected_share_pct": 0.2,
+ "protected_share_pct": 0.3,
  "pvp_rule": "contested",
  "quests": [],
  "race_region": "elf",
@@ -299,7 +305,7 @@
   {
    "biome_hint": "the jungle fringe",
    "id": "silkfang",
-   "level_at": 58,
+   "level_at": 59,
    "mob": "grug_mobs:jungle_spider",
    "name": "Silkfang",
    "respawn_s": [
@@ -314,30 +320,89 @@
     ],
     [
      2042,
-     126,
+     127,
      134
     ],
     [
      2082,
-     199,
+     202,
      78
     ]
    ]
   }
  ],
  "relief": {
-  "cliff_share_pct": 12.0,
+  "cliff_share_pct": 12.6,
   "height_above_sea": {
-   "max": 287,
-   "median": 160,
+   "max": 288,
+   "median": 164,
    "min": 0,
-   "p10": 85,
-   "p90": 215
+   "p10": 86,
+   "p90": 221
   },
-  "steep_share_pct": 44.1
+  "steep_share_pct": 44.6
  },
  "relief_profile": "highland",
- "roads": [],
+ "roads": [
+  {
+   "first_in_zone": [
+    1915,
+    410
+   ],
+   "from": "anchor_060 (Rainchar Camp, kragmar_thunderroot_wilds)",
+   "id": 61,
+   "kind": "trail",
+   "last_in_zone": [
+    2017,
+    417
+   ],
+   "length_in_zone": 190,
+   "length_total": 891,
+   "polyline_simplified": [
+    [
+     1782,
+     563
+    ],
+    [
+     1924,
+     400
+    ],
+    [
+     1985,
+     354
+    ],
+    [
+     2021,
+     362
+    ],
+    [
+     2011,
+     458
+    ],
+    [
+     1937,
+     546
+    ],
+    [
+     1968,
+     625
+    ],
+    [
+     1966,
+     719
+    ],
+    [
+     2000,
+     787
+    ],
+    [
+     1966,
+     832
+    ]
+   ],
+   "to": "joins road 28"
+  }
+ ],
  "role": "front zone",
  "seed": "42",
  "settlements": [
@@ -353,28 +418,28 @@
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 481,
+      "straight": 598,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 650,
+      "straight": 769,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 1572,
+      "straight": 1604,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 1657,
+      "straight": 1702,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
@@ -395,9 +460,9 @@
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 158,
-     "x": 1856,
-     "z": -252
+     "distance": 248,
+     "x": 1896,
+     "z": -336
     },
     "nearest_road": null,
     "nearest_sea": {
@@ -408,9 +473,9 @@
     },
     "nearest_sea_beach_sand": {
      "bearing": "E",
-     "distance": 660,
-     "x": 2492,
-     "z": -88
+     "distance": 664,
+     "x": 2496,
+     "z": -96
     },
     "to_zone_edge": {
      "east_+x": {
@@ -418,11 +483,11 @@
       "hits": "dragon_channel"
      },
      "north_+z": {
-      "distance": 408,
+      "distance": 504,
       "hits": "kragmar_thunderroot_wilds"
      },
      "south_-z": {
-      "distance": 168,
+      "distance": 256,
       "hits": "elandor_glassroot_wilds"
      },
      "west_-x": {
@@ -440,7 +505,7 @@
   {
    "anchor": {
     "x": 2176,
-    "y": 207,
+    "y": 212,
     "z": 104
    },
    "anchor_id": "anchor_085",
@@ -449,28 +514,28 @@
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 524,
+      "straight": 630,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 713,
+      "straight": 827,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 1936,
+      "straight": 1962,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 1956,
+      "straight": 1993,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
@@ -491,9 +556,9 @@
     ],
     "nearest_other_zone_land": {
      "bearing": "N",
-     "distance": 213,
-     "x": 2220,
-     "z": 312
+     "distance": 324,
+     "x": 2224,
+     "z": 424
     },
     "nearest_road": null,
     "nearest_sea": {
@@ -514,11 +579,11 @@
       "hits": "dragon_channel"
      },
      "north_+z": {
-      "distance": 228,
+      "distance": 328,
       "hits": "kragmar_thunderroot_wilds"
      },
      "south_-z": {
-      "distance": 300,
+      "distance": 432,
       "hits": "elandor_glassroot_wilds"
      },
      "west_-x": {
@@ -536,7 +601,7 @@
   {
    "anchor": {
     "x": 2026,
-    "y": 126,
+    "y": 127,
     "z": 94
    },
    "anchor_id": "anchor_094",
@@ -545,28 +610,28 @@
      {
       "name": "Thunderstep Watch",
       "road": null,
-      "straight": 473,
+      "straight": 590,
       "to": "r20_anchor_048",
       "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Glassroot Gate",
       "road": null,
-      "straight": 667,
+      "straight": 786,
       "to": "r20_anchor_036",
       "zone": "elandor_glassroot_wilds"
      },
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 1791,
+      "straight": 1820,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 1810,
+      "straight": 1849,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
@@ -587,9 +652,9 @@
     ],
     "nearest_other_zone_land": {
      "bearing": "N",
-     "distance": 234,
-     "x": 2024,
-     "z": 328
+     "distance": 323,
+     "x": 2004,
+     "z": 416
     },
     "nearest_road": null,
     "nearest_sea": {
@@ -610,11 +675,11 @@
       "hits": "dragon_channel"
      },
      "north_+z": {
-      "distance": 232,
+      "distance": 328,
       "hits": "kragmar_thunderroot_wilds"
      },
      "south_-z": {
-      "distance": 340,
+      "distance": 436,
       "hits": "elandor_glassroot_wilds"
      },
      "west_-x": {
@@ -634,101 +699,133 @@
   {
    "day": {
     "levels": [
-     51,
-     59
+     54,
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 40.7
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:carrion_crow",
-   "name": "Carrion Crow",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:glass_fang_serpent",
+   "name": "Glass-Fang Serpent",
+   "night": null
   },
   {
    "day": {
     "levels": [
      51,
-     59
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.9
+    "share_pct": 58.1
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:jungle_ape",
-   "name": "Jungle Ape",
+   "hosts": [],
+   "mob": "grug_mobs:glass_knuckle_ape",
+   "name": "Glass-Knuckle Jungle Ape",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:jungle_spider",
-   "name": "Jungle Spider",
+   "hosts": [],
+   "mob": "grug_mobs:glass_shadow_panther",
+   "name": "Glass-Shadow Panther",
    "night": {
     "levels": [
      51,
-     59
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.2
+    "share_pct": 58.1
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:panther",
-   "name": "Panther",
+   "hosts": [],
+   "mob": "grug_mobs:glass_web_spider",
+   "name": "Glass-Web Jungle Spider",
    "night": {
     "levels": [
-     51,
-     59
+     54,
+     57
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.9
+    "share_pct": 37.1
    }
   },
   {
    "day": {
-    "area_nodes2": 3568,
     "levels": [
-     52,
-     59
+     58,
+     60
+    ],
+    "share_pct": 1.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_pay_archer",
+   "name": "Last-Pay Archer",
+   "night": {
+    "levels": [
+     58,
+     60
+    ],
+    "share_pct": 1.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     58,
+     60
+    ],
+    "share_pct": 30.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_husk",
+   "name": "Last-Watch Mummy",
+   "night": {
+    "levels": [
+     58,
+     60
+    ],
+    "share_pct": 1.1
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_skeleton_raider",
+   "name": "Last-Watch Skeleton Raider",
+   "night": {
+    "levels": [
+     54,
+     60
+    ],
+    "share_pct": 40.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_zombie",
+   "name": "Last Watchman",
+   "night": {
+    "levels": [
+     58,
+     60
+    ],
+    "share_pct": 28.9
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 3840,
+    "levels": [
+     51,
+     60
     ]
    },
    "disposition": "neutral",
@@ -738,112 +835,69 @@
    "mob": "grug_mobs:reef_lurker",
    "name": "Reef Lurker",
    "night": {
-    "area_nodes2": 3568,
+    "area_nodes2": 3840,
     "levels": [
-     52,
-     59
+     51,
+     60
     ]
    },
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
+   "day": {
+    "levels": [
+     54,
+     55
+    ],
+    "share_pct": 37.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:saltbound_husk",
+   "name": "Saltbound Sun-Dried Husk",
+   "night": null
+  },
+  {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:rift_spawn",
-   "name": "Rift Spawn",
+   "hosts": [],
+   "mob": "grug_mobs:saltbound_zombie",
+   "name": "Saltbound Zombie",
    "night": {
     "levels": [
      51,
-     59
+     55
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.9
+    "share_pct": 32.9
    }
   },
   {
    "day": {
     "levels": [
      51,
-     59
+     53
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 72.1
+    "share_pct": 30.3
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:serpent",
-   "name": "Serpent",
+   "hosts": [],
+   "mob": "grug_mobs:saltroad_deserter",
+   "name": "Saltroad Deserter",
    "night": null
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:skeleton_raider",
-   "name": "Skeleton Raider",
-   "night": {
+   "day": {
     "levels": [
-     51,
-     59
+     54,
+     57
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
+    "share_pct": 2.6
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_carrion_crow",
+   "name": "Battlefield Crow",
+   "night": null
   }
  ],
  "territory_rule": "contested_land"

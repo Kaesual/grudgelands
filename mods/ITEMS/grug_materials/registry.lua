@@ -228,7 +228,7 @@ grug_materials.PROCESSED_MATERIALS = {
 		block_node = "grug_materials:bronze_block"},
 	{key = "iron", name = "Iron", kind = "bar", tier = 2,
 		item = "grug_materials:iron_bar", bar_item = "grug_materials:iron_bar",
-		block_node = "grug_materials:iron_block", sell_price = 3},
+		block_node = "grug_materials:iron_block"},
 	{key = "steel", name = "Steel", kind = "bar", tier = 3,
 		item = "grug_materials:steel_bar", bar_item = "grug_materials:steel_bar",
 		block_node = "grug_materials:steel_block"},

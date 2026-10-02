@@ -216,15 +216,11 @@ local ZONE_X = {} -- zone id -> x stripe origin
 for i, id in ipairs(zone_files) do ZONE_X[id] = i * 1000 end
 local BIOMES = {"grug_blight", "grug_beach", "grug_meadows", "grug_pine_hills"}
 
--- Each zone's level band as grug_zones serves it (the mapgen source with the
--- gameplay bands of zone_bands.lua), so the shipped recipes parse.
+-- Each zone's level band as grug_zones serves it (the mapgen source), so the
+-- shipped recipes parse.
 local ZONE_BANDS = {}
-do
-	local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
-	for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
-		ZONE_BANDS[row.id] = zone_bands.apply({level_min = row.level_min,
-			level_max = row.level_max}, row.id)
-	end
+for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
+	ZONE_BANDS[row.id] = {level_min = row.level_min, level_max = row.level_max}
 end
 
 local function stripe_world()

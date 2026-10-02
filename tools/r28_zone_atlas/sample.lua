@@ -28,7 +28,6 @@ local t0 = os.clock()
 local W = dofile(here .. "/world.lua")(repo, seed)
 local build_seconds = os.clock() - t0
 local S, H = W.session, W.height
-local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
 
 local MIN_X, MIN_Z, MAX_X, MAX_Z = -3600, -3200, 3600, 3200
 local cols = math.floor((MAX_X - MIN_X) / step)
@@ -132,8 +131,7 @@ if band == 0 then
 		zones = {}, anchors = {}, roads = {}, rivers = {}, capitals = {}, lakes = {},
 		start_town = {pad_low = 64, pad_high = 63, band = 12}}
 	for _, zone in ipairs(W.source.zones) do
-		-- The gameplay band, as grug_zones serves it (zone_bands.lua).
-		local z = zone_bands.apply(S.get(zone.id))
+		local z = S.get(zone.id)
 		local biomes = {}
 		for i, b in ipairs(z.biomes) do biomes[i] = {id = b.id, share = b.share} end
 		meta.zones[#meta.zones + 1] = {numeric_id = z.numeric_id, id = z.id,

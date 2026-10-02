@@ -134,7 +134,8 @@ local function subtype_checks()
 		end
 	end
 	log(("sub-types: %d of %d registered, %d leaders"):format(registered, #SUBS, leaders))
-	check(registered == 188 and leaders == 49, "188 sub-types, 49 leaders")
+	-- 195 since Round 28 W1 (The Broken Causeway's own sub-types).
+	check(registered == 195 and leaders == 49, "195 sub-types, 49 leaders")
 	for id, tint in pairs(TINTS) do
 		if tint.texture then
 			check(texture_exists(tint.texture), "tint " .. id .. " texture " .. tint.texture .. " exists")
@@ -161,12 +162,13 @@ local function item_checks()
 					row.id .. " inventory image " .. tostring(def.inventory_image) .. " is its own icon")
 				if row.kind == "signature" then
 					check(def.groups.grug_material == 1, row.id .. " is a mob material")
-					check(def._grug_sell_price == row.tier and grug_traders.sell_price(row.id) == row.tier,
-						row.id .. " sells for " .. row.tier .. "c")
+					local payout = grug_traders.price_rules.payout("signature", row.tier)
+					check(grug_traders.sell_price(row.id) == payout,
+						row.id .. " sells for " .. payout .. "c")
 					check(grug_jobs.ingredient_tier(row.id) == row.tier,
 						row.id .. " ingredient tier " .. row.tier)
 				else
-					check(def._grug_sell_price == nil, row.id .. " quest item has no price")
+					check(grug_traders.sell_price(row.id) == 0, row.id .. " quest item has no price")
 				end
 			else
 				existing = existing + 1
@@ -178,7 +180,8 @@ local function item_checks()
 	end
 	log(("items: %d signature, %d generic, %d quest; %d new, %d existing"):format(
 		kinds.signature or 0, kinds.generic or 0, kinds.quest or 0, new, existing))
-	check(#ITEMS == 119 and new == 89, "119 items, 89 new")
+	-- 118 since Round 29 E1: Stick is no longer loot.
+	check(#ITEMS == 118 and new == 89, "118 items, 89 new")
 	local rows, missing = 0, 0
 	for family, entry in pairs(DROPS) do
 		local lists = {entry.leader_bonus or {}}

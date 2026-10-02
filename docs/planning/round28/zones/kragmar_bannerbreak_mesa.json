@@ -16,27 +16,27 @@
    "settlement_key": "r20_anchor_043",
    "slot": "outpost_1",
    "x": -374,
-   "y": 78,
+   "y": 77,
    "z": 874
   },
   {
    "id": "anchor_044",
    "kind": "outpost",
    "kind_text": "outpost",
-   "level_at": 38,
+   "level_at": 37,
    "name": "Tornstandard Hold",
    "protected_box": {
     "kind": "poi",
     "max_x": 283,
-    "max_z": 481,
+    "max_z": 601,
     "min_x": 268,
-    "min_z": 466
+    "min_z": 586
    },
    "settlement_key": "r20_anchor_044",
    "slot": "outpost_2",
    "x": 276,
-   "y": 110,
-   "z": 474
+   "y": 129,
+   "z": 594
   },
   {
    "id": "anchor_058",
@@ -46,16 +46,16 @@
    "name": "Sunderstrap Camp",
    "protected_box": {
     "kind": "camp",
-    "max_x": 39,
-    "max_z": 421,
-    "min_x": 24,
-    "min_z": 406
+    "max_x": 103,
+    "max_z": 541,
+    "min_x": 88,
+    "min_z": 526
    },
    "settlement_key": "r20_anchor_058",
    "slot": "bandit_1",
-   "x": 32,
-   "y": 90,
-   "z": 414
+   "x": 96,
+   "y": 118,
+   "z": 534
   },
   {
    "id": "anchor_073",
@@ -66,15 +66,15 @@
    "protected_box": {
     "kind": "poi",
     "max_x": -211,
-    "max_z": 311,
+    "max_z": 431,
     "min_x": -226,
-    "min_z": 296
+    "min_z": 416
    },
    "settlement_key": "r20_anchor_073",
    "slot": "clash_1",
    "x": -218,
-   "y": 45,
-   "z": 304
+   "y": 69,
+   "z": 424
   },
   {
    "id": "anchor_074",
@@ -85,34 +85,34 @@
    "protected_box": {
     "kind": "poi",
     "max_x": 289,
-    "max_z": 311,
+    "max_z": 431,
     "min_x": 274,
-    "min_z": 296
+    "min_z": 416
    },
    "settlement_key": "r20_anchor_074",
    "slot": "clash_2",
    "x": 282,
-   "y": 135,
-   "z": 304
+   "y": 133,
+   "z": 424
   },
   {
    "id": "anchor_096",
    "kind": "rare_route",
    "kind_text": "rare route",
-   "level_at": 35,
+   "level_at": 34,
    "name": "Dustwing's Perch",
    "protected_box": {
     "kind": "poi",
     "max_x": 161,
-    "max_z": 679,
+    "max_z": 799,
     "min_x": 150,
-    "min_z": 668
+    "min_z": 788
    },
    "settlement_key": "r20_anchor_096",
    "slot": "rare_dustwing",
    "x": 156,
-   "y": 128,
-   "z": 674
+   "y": 118,
+   "z": 794
   }
  ],
  "biomes_authored": [
@@ -132,23 +132,23 @@
  "biomes_measured": [
   {
    "id": "grug_badlands",
-   "share_pct": 66.7
+   "share_pct": 68.3
   },
   {
    "id": "grug_savanna",
-   "share_pct": 23.4
+   "share_pct": 23.1
   },
   {
    "id": "grug_swamp",
-   "share_pct": 9.3
+   "share_pct": 7.9
   },
   {
    "id": "grug_meadows",
-   "share_pct": 0.2
+   "share_pct": 0.3
   },
   {
    "id": "grug_bone_forest",
-   "share_pct": 0.2
+   "share_pct": 0.1
   },
   {
    "id": "grug_deep_jungle",
@@ -156,7 +156,7 @@
   },
   {
    "id": "grug_deep_forest",
-   "share_pct": 0.0
+   "share_pct": 0.1
   },
   {
    "id": "grug_jungle_edge",
@@ -165,26 +165,26 @@
  ],
  "borders": [
   {
-   "length_nodes": 1472,
+   "length_nodes": 1360,
    "midpoint": {
-    "x": -474,
-    "z": 287
+    "x": -446,
+    "z": 410
    },
    "zone": "front_broken_causeway"
   },
   {
-   "length_nodes": 1432,
+   "length_nodes": 1276,
    "midpoint": {
-    "x": 503,
-    "z": 276
+    "x": 536,
+    "z": 366
    },
    "zone": "front_shattered_line"
   },
   {
-   "length_nodes": 576,
+   "length_nodes": 488,
    "midpoint": {
-    "x": -919,
-    "z": 693
+    "x": -921,
+    "z": 727
    },
    "zone": "kragmar_blackwind_rise"
   },
@@ -205,10 +205,10 @@
    "zone": "kragmar_speargrass_reach"
   },
   {
-   "length_nodes": 844,
+   "length_nodes": 732,
    "midpoint": {
-    "x": 988,
-    "z": 606
+    "x": 977,
+    "z": 647
    },
    "zone": "kragmar_thunderroot_wilds"
   },
@@ -247,7 +247,7 @@
     2,
     3
    ],
-   "level_at_anchor": 38,
+   "level_at_anchor": 37,
    "mobs": [
     "grug_mobs:guard_throng"
    ],
@@ -258,7 +258,7 @@
    ],
    "type": "guard post",
    "x": 276,
-   "z": 474
+   "z": 594
   },
   {
    "anchor": "anchor_058",
@@ -274,80 +274,64 @@
    "name": "Sunderstrap Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
-   "x": 32,
-   "z": 414
+   "x": 96,
+   "z": 534
   }
  ],
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
+   "grug_mobs:dustwing_vulture",
+   "grug_mobs:entrenched_bandit_archer",
+   "grug_mobs:marching_husk",
+   "grug_mobs:reed_stalking_tiger",
+   "grug_mobs:siege_goblin",
+   "grug_mobs:siege_goblin_hound",
+   "grug_mobs:siege_goblin_slinger",
+   "grug_mobs:unrelenting_husk",
+   "grug_mobs:warpack_hyena",
+   "grug_mobs:watchful_carrion_crow"
   ],
-  "density_budget_day": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
-  ],
-  "density_budget_night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:scorpion",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:stone_golem",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:carrion_crow",
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:scorpion",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:stone_golem",
-   "grug_mobs:zombie"
+   "grug_mobs:entrenched_bandit",
+   "grug_mobs:entrenched_bandit_archer",
+   "grug_mobs:march_skeleton_raider",
+   "grug_mobs:marching_husk",
+   "grug_mobs:siege_goblin",
+   "grug_mobs:siege_goblin_hound",
+   "grug_mobs:siege_goblin_slinger",
+   "grug_mobs:unrelenting_husk",
+   "grug_mobs:war_stinger",
+   "grug_mobs:warpack_hyena",
+   "grug_mobs:watchful_carrion_crow"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 9968,
+  "bank_sand_area_nodes2": 6336,
   "bay_water_area_nodes2": 0,
   "beaches": [],
-  "inland_water_area_nodes2": 17776,
+  "inland_water_area_nodes2": 6080,
   "sea_beach_sand_area_nodes2": 0,
   "sea_coast_length_nodes": 0
  },
- "drift_band_share_pct": 5.8,
+ "drift_band_share_pct": 5.3,
  "extent": {
   "centroid": {
-   "x": 52,
-   "z": 670
+   "x": 61,
+   "z": 727
   },
-  "land_area_nodes2": 1482112,
-  "max_x": 1060,
+  "land_area_nodes2": 1280288,
+  "max_x": 1052,
   "max_z": 1184,
   "min_x": -940,
-  "min_z": 208
+  "min_z": 332
  },
  "faction": "contested",
  "front": {
@@ -361,16 +345,16 @@
  "id": "kragmar_bannerbreak_mesa",
  "level_field": {
   "histogram_pct": {
-   "31": 10.0,
-   "32": 10.6,
-   "33": 10.4,
-   "34": 11.3,
-   "35": 11.6,
-   "36": 11.2,
+   "31": 8.3,
+   "32": 10.0,
+   "33": 11.2,
+   "34": 12.0,
+   "35": 11.0,
+   "36": 11.6,
    "37": 8.8,
-   "38": 8.8,
-   "39": 8.4,
-   "40": 8.9
+   "38": 8.9,
+   "39": 8.5,
+   "40": 9.6
   },
   "max": 40,
   "min": 31
@@ -390,10 +374,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 26,
- "palette_without_host_ground": [
-  "Crag Eagle",
-  "Mountain Ram"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -410,50 +390,50 @@
     "anchor": "anchor_044",
     "kind": "poi",
     "max_x": 283,
-    "max_z": 481,
+    "max_z": 601,
     "min_x": 268,
-    "min_z": 466,
+    "min_z": 586,
     "name": "Tornstandard Hold"
    },
    {
     "anchor": "anchor_058",
     "kind": "camp",
-    "max_x": 39,
-    "max_z": 421,
-    "min_x": 24,
-    "min_z": 406,
+    "max_x": 103,
+    "max_z": 541,
+    "min_x": 88,
+    "min_z": 526,
     "name": "Sunderstrap Camp"
    },
    {
     "anchor": "anchor_073",
     "kind": "poi",
     "max_x": -211,
-    "max_z": 311,
+    "max_z": 431,
     "min_x": -226,
-    "min_z": 296,
+    "min_z": 416,
     "name": "Redcut Breach"
    },
    {
     "anchor": "anchor_074",
     "kind": "poi",
     "max_x": 289,
-    "max_z": 311,
+    "max_z": 431,
     "min_x": 274,
-    "min_z": 296,
+    "min_z": 416,
     "name": "Bannerfall Pocket"
    },
    {
     "anchor": "anchor_096",
     "kind": "poi",
     "max_x": 161,
-    "max_z": 679,
+    "max_z": 799,
     "min_x": 150,
-    "min_z": 668,
+    "min_z": 788,
     "name": "Dustwing's Perch"
    }
   ]
  },
- "protected_share_pct": 1.2,
+ "protected_share_pct": 1.3,
  "pvp_rule": "contested",
  "quests": [
   {
@@ -489,13 +469,14 @@
    "id": "r20_anchor_043_02",
    "min_level": 31,
    "objectives": [
-    "kill 4 scorpion [in kragmar_bannerbreak_mesa]"
+    "kill 4 scorpion or war_stinger [in kragmar_bannerbreak_mesa]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:scorpion"
+      "grug_mobs:scorpion",
+      "grug_mobs:war_stinger"
      ],
      "type": "kill",
      "zone": "kragmar_bannerbreak_mesa"
@@ -540,13 +521,14 @@
    "id": "r20_anchor_044_02",
    "min_level": 31,
    "objectives": [
-    "kill 4 skeleton_raider [in kragmar_bannerbreak_mesa]"
+    "kill 4 skeleton_raider or march_skeleton_raider [in kragmar_bannerbreak_mesa]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:skeleton_raider"
+      "grug_mobs:skeleton_raider",
+      "grug_mobs:march_skeleton_raider"
      ],
      "type": "kill",
      "zone": "kragmar_bannerbreak_mesa"
@@ -633,32 +615,32 @@
    "route": [
     [
      108,
-     133,
-     650
+     124,
+     770
     ],
     [
      172,
-     119,
-     714
+     116,
+     834
     ],
     [
      212,
-     140,
-     658
+     120,
+     778
     ]
    ]
   }
  ],
  "relief": {
-  "cliff_share_pct": 1.2,
+  "cliff_share_pct": 0.7,
   "height_above_sea": {
-   "max": 350,
-   "median": 100,
-   "min": 28,
-   "p10": 72,
-   "p90": 137
+   "max": 280,
+   "median": 97,
+   "min": 44,
+   "p10": 70,
+   "p90": 131
   },
-  "steep_share_pct": 11.8
+  "steep_share_pct": 9.1
  },
  "relief_profile": "plateau",
  "roads": [
@@ -675,7 +657,7 @@
     1116
    ],
    "length_in_zone": 262,
-   "length_total": 390,
+   "length_total": 391,
    "polyline_simplified": [
     [
      -367,
@@ -698,66 +680,184 @@
   },
   {
    "first_in_zone": [
-    -906,
-    485
+    54,
+    454
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 29,
+   "kind": "primary",
+   "last_in_zone": [
+    -35,
+    1076
+   ],
+   "length_in_zone": 692,
+   "length_total": 2860,
+   "polyline_simplified": [
+    [
+     -64,
+     -1232
+    ],
+    [
+     -42,
+     -1093
+    ],
+    [
+     40,
+     -1032
+    ],
+    [
+     37,
+     -990
+    ],
+    [
+     59,
+     -962
+    ],
+    [
+     47,
+     -813
+    ],
+    [
+     -28,
+     -653
+    ],
+    [
+     58,
+     -464
+    ],
+    [
+     -59,
+     -368
+    ],
+    [
+     0,
+     -143
+    ],
+    [
+     -16,
+     -92
+    ],
+    [
+     -4,
+     36
+    ],
+    [
+     -60,
+     97
+    ],
+    [
+     36,
+     169
+    ],
+    [
+     81,
+     324
+    ],
+    [
+     37,
+     424
+    ],
+    [
+     59,
+     474
+    ],
+    [
+     -13,
+     617
+    ],
+    [
+     -17,
+     687
+    ],
+    [
+     -50,
+     757
+    ],
+    [
+     -47,
+     817
+    ],
+    [
+     32,
+     967
+    ],
+    [
+     -45,
+     1100
+    ],
+    [
+     -47,
+     1232
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
+    -813,
+    500
    ],
    "from": "anchor_040 (Hollowarch Station, kragmar_blackwind_rise)",
-   "id": 42,
+   "id": 43,
    "kind": "trail",
    "last_in_zone": [
     -336,
     928
    ],
-   "length_in_zone": 824,
-   "length_total": 1438,
+   "length_in_zone": 722,
+   "length_total": 1445,
    "polyline_simplified": [
     [
      -1458,
-     428
+     562
     ],
     [
-     -1349,
-     416
+     -1398,
+     590
     ],
     [
-     -1162,
-     467
+     -1280,
+     530
     ],
     [
-     -1053,
+     -1218,
      528
     ],
     [
-     -920,
-     485
+     -1153,
+     497
     ],
     [
-     -840,
-     485
+     -1046,
+     529
     ],
     [
-     -741,
-     573
+     -926,
+     481
     ],
     [
-     -680,
+     -837,
+     486
+    ],
+    [
+     -744,
+     572
+    ],
+    [
+     -679,
      560
     ],
     [
-     -562,
-     583
+     -574,
+     578
     ],
     [
-     -501,
-     620
+     -510,
+     611
     ],
     [
-     -367,
-     819
-    ],
-    [
-     -337,
-     880
+     -376,
+     815
     ],
     [
      -336,
@@ -768,111 +868,153 @@
   },
   {
    "first_in_zone": [
-    270,
-    485
+    266,
+    598
    ],
    "from": "anchor_044 (Tornstandard Hold, kragmar_bannerbreak_mesa)",
-   "id": 45,
+   "id": 46,
    "kind": "trail",
    "last_in_zone": [
-    -294,
-    995
+    9,
+    572
    ],
-   "length_in_zone": 794,
-   "length_total": 806,
+   "length_in_zone": 296,
+   "length_total": 300,
    "polyline_simplified": [
     [
-     270,
-     485
+     266,
+     598
     ],
     [
-     236,
-     522
+     125,
+     652
     ],
     [
-     104,
-     580
-    ],
-    [
-     -42,
-     731
-    ],
-    [
-     -206,
-     841
-    ],
-    [
-     -260,
-     905
-    ],
-    [
-     -294,
-     995
+     9,
+     572
     ]
    ],
-   "to": "joins road 27"
+   "to": "joins road 29"
   },
   {
    "first_in_zone": [
-    42,
-    420
+    -571,
+    363
    ],
-   "from": "anchor_058 (Sunderstrap Camp, kragmar_bannerbreak_mesa)",
-   "id": 58,
+   "from": "anchor_056 (Pallcloth Den, kragmar_blackwind_rise)",
+   "id": 57,
    "kind": "trail",
    "last_in_zone": [
-    -259,
-    1106
+    -135,
+    363
    ],
-   "length_in_zone": 1076,
-   "length_total": 1283,
+   "length_in_zone": 306,
+   "length_total": 2074,
    "polyline_simplified": [
     [
-     42,
-     420
+     -1789,
+     544
     ],
     [
-     118,
-     464
+     -1654,
+     482
     ],
     [
-     215,
-     432
+     -1643,
+     399
     ],
     [
-     292,
-     453
+     -1617,
+     372
     ],
     [
-     303,
-     520
+     -1495,
+     401
     ],
     [
-     284,
-     569
+     -1468,
+     426
     ],
     [
-     254,
-     623
+     -1322,
+     427
     ],
     [
-     163,
-     703
+     -1194,
+     366
     ],
     [
-     6,
-     1019
+     -1089,
+     399
     ],
     [
-     -136,
-     1100
+     -930,
+     323
     ],
     [
-     -290,
-     1121
+     -605,
+     351
+    ],
+    [
+     -519,
+     384
+    ],
+    [
+     -310,
+     368
+    ],
+    [
+     -233,
+     400
+    ],
+    [
+     -99,
+     352
+    ],
+    [
+     39,
+     419
     ]
    ],
-   "to": "joins road 27"
+   "to": "joins road 29"
+  },
+  {
+   "first_in_zone": [
+    100,
+    524
+   ],
+   "from": "anchor_058 (Sunderstrap Camp, kragmar_bannerbreak_mesa)",
+   "id": 59,
+   "kind": "trail",
+   "last_in_zone": [
+    91,
+    455
+   ],
+   "length_in_zone": 76,
+   "length_total": 207,
+   "polyline_simplified": [
+    [
+     100,
+     524
+    ],
+    [
+     108,
+     493
+    ],
+    [
+     80,
+     425
+    ],
+    [
+     96,
+     360
+    ],
+    [
+     80,
+     336
+    ]
+   ],
+   "to": "joins road 29"
   }
  ],
  "role": "contested 31-40",
@@ -881,53 +1023,53 @@
   {
    "anchor": {
     "x": -374,
-    "y": 78,
+    "y": 77,
     "z": 874
    },
    "anchor_id": "anchor_043",
    "distances": {
     "hubs": [
      {
-      "name": "Tornstandard Hold",
-      "road": 965,
-      "straight": 763,
-      "to": "r20_anchor_044",
-      "zone": "kragmar_bannerbreak_mesa"
-     },
-     {
       "name": "Hollowarch Station",
-      "road": 1512,
-      "straight": 1179,
+      "road": 1520,
+      "straight": 1140,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
+      "name": "Tornstandard Hold",
+      "road": 1704,
+      "straight": 708,
+      "to": "r20_anchor_044",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
+     {
       "name": "Last Hedge Redoubt",
-      "road": null,
-      "straight": 1486,
+      "road": 2935,
+      "straight": 1594,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
+      "name": "Thunderstep Watch",
+      "road": 3936,
+      "straight": 2283,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": 4043,
+      "straight": 1644,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
       "name": "Cinderline Watch",
-      "road": null,
+      "road": 4372,
       "straight": 1724,
       "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
-     },
-     {
-      "name": "Archshadow Post",
-      "road": null,
-      "straight": 1738,
-      "to": "r20_anchor_028",
-      "zone": "elandor_stormvault_heights"
-     },
-     {
-      "name": "Splitbolt Station",
-      "road": null,
-      "straight": 2404,
-      "to": "r20_anchor_027",
-      "zone": "elandor_stormvault_heights"
      }
     ],
     "nearest_other_zone_land": {
@@ -961,7 +1103,7 @@
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 584,
+      "distance": 480,
       "hits": "front_broken_causeway"
      },
      "west_-x": {
@@ -985,7 +1127,7 @@
      "role_text": "quest giver",
      "socket": "quest_host",
      "x": -372,
-     "y": 79,
+     "y": 78,
      "z": 874
     }
    ],
@@ -996,9 +1138,9 @@
   },
   {
    "anchor": {
-    "x": 32,
-    "y": 90,
-    "z": 414
+    "x": 96,
+    "y": 118,
+    "z": 534
    },
    "anchor_id": "anchor_058",
    "distances": {
@@ -1006,82 +1148,82 @@
      {
       "name": "Tornstandard Hold",
       "road": null,
-      "straight": 251,
+      "straight": 190,
       "to": "r20_anchor_044",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Red Ramp Post",
       "road": null,
-      "straight": 614,
+      "straight": 580,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 905,
+      "straight": 1123,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Cinderline Watch",
       "road": null,
-      "straight": 1320,
+      "straight": 1454,
       "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
      },
      {
       "name": "Hollowarch Station",
       "road": null,
-      "straight": 1500,
+      "straight": 1564,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
-      "name": "Archshadow Post",
+      "name": "Thunderstep Watch",
       "road": null,
-      "straight": 1759,
-      "to": "r20_anchor_028",
-      "zone": "elandor_stormvault_heights"
+      "straight": 1809,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
      }
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 62,
-     "x": 32,
-     "z": 352
+     "distance": 82,
+     "x": 96,
+     "z": 452
     },
     "nearest_road": {
-     "distance": 12
+     "distance": 11
     },
     "nearest_sea": {
      "bearing": "NE",
-     "distance": 1739,
+     "distance": 1603,
      "x": 788,
      "z": 1980
     },
     "nearest_sea_beach_sand": {
      "bearing": "NE",
-     "distance": 1699,
+     "distance": 1564,
      "x": 780,
      "z": 1940
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 1020,
+      "distance": 912,
       "hits": "kragmar_thunderroot_wilds"
      },
      "north_+z": {
-      "distance": 656,
+      "distance": 528,
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 60,
+      "distance": 84,
       "hits": "front_shattered_line"
      },
      "west_-x": {
-      "distance": 896,
+      "distance": 1008,
       "hits": "front_broken_causeway"
      }
     }
@@ -1095,91 +1237,91 @@
   {
    "anchor": {
     "x": 276,
-    "y": 110,
-    "z": 474
+    "y": 129,
+    "z": 594
    },
    "anchor_id": "anchor_044",
    "distances": {
     "hubs": [
      {
       "name": "Red Ramp Post",
-      "road": 965,
-      "straight": 763,
+      "road": 1704,
+      "straight": 708,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
-      "road": null,
-      "straight": 924,
+      "road": 1851,
+      "straight": 1164,
       "to": "r20_anchor_032",
       "zone": "elandor_ashenward_march"
      },
      {
-      "name": "Cinderline Watch",
-      "road": null,
-      "straight": 1465,
-      "to": "r20_anchor_031",
-      "zone": "elandor_ashenward_march"
-     },
-     {
       "name": "Hollowarch Station",
-      "road": 2348,
+      "road": 3094,
       "straight": 1744,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
-      "name": "Glassroot Gate",
-      "road": null,
-      "straight": 1955,
-      "to": "r20_anchor_036",
-      "zone": "elandor_glassroot_wilds"
+      "name": "Cinderline Watch",
+      "road": 3287,
+      "straight": 1574,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
      },
      {
-      "name": "Archshadow Post",
-      "road": null,
-      "straight": 2002,
-      "to": "r20_anchor_028",
-      "zone": "elandor_stormvault_heights"
+      "name": "Thunderstep Watch",
+      "road": 4369,
+      "straight": 1626,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
+      "name": "Ashveil Watch",
+      "road": 4476,
+      "straight": 2307,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
      }
     ],
     "nearest_other_zone_land": {
      "bearing": "SW",
-     "distance": 188,
+     "distance": 216,
      "x": 124,
-     "z": 364
+     "z": 440
     },
     "nearest_road": {
-     "distance": 13
+     "distance": 11
     },
     "nearest_sea": {
      "bearing": "N",
-     "distance": 1591,
+     "distance": 1478,
      "x": 788,
      "z": 1980
     },
     "nearest_sea_beach_sand": {
-     "bearing": "NE",
-     "distance": 1550,
-     "x": 920,
-     "z": 1884
+     "bearing": "N",
+     "distance": 1437,
+     "x": 780,
+     "z": 1940
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 760,
+      "distance": 692,
       "hits": "kragmar_thunderroot_wilds"
      },
      "north_+z": {
-      "distance": 636,
+      "distance": 516,
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 240,
+      "distance": 224,
       "hits": "front_shattered_line"
      },
      "west_-x": {
-      "distance": 1184,
+      "distance": 1204,
       "hits": "kragmar_blackwind_rise"
      }
     }
@@ -1199,8 +1341,8 @@
      "role_text": "quest giver",
      "socket": "quest_host",
      "x": 278,
-     "y": 111,
-     "z": 474
+     "y": 130,
+     "z": 594
     }
    ],
    "race": "orc",
@@ -1211,12 +1353,19 @@
   {
    "anchor": {
     "x": -218,
-    "y": 45,
-    "z": 304
+    "y": 69,
+    "z": 424
    },
    "anchor_id": "anchor_073",
    "distances": {
     "hubs": [
+     {
+      "name": "Red Ramp Post",
+      "road": null,
+      "straight": 476,
+      "to": "r20_anchor_043",
+      "zone": "kragmar_bannerbreak_mesa"
+     },
      {
       "name": "Tornstandard Hold",
       "road": null,
@@ -1225,24 +1374,10 @@
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
-      "name": "Red Ramp Post",
-      "road": null,
-      "straight": 591,
-      "to": "r20_anchor_043",
-      "zone": "kragmar_bannerbreak_mesa"
-     },
-     {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 915,
+      "straight": 1121,
       "to": "r20_anchor_032",
-      "zone": "elandor_ashenward_march"
-     },
-     {
-      "name": "Cinderline Watch",
-      "road": null,
-      "straight": 1162,
-      "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
      },
      {
@@ -1253,47 +1388,56 @@
       "zone": "kragmar_blackwind_rise"
      },
      {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 1281,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 1487,
+      "straight": 1622,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
      }
     ],
     "nearest_other_zone_land": {
-     "bearing": "SW",
-     "distance": 72,
-     "x": -252,
-     "z": 240
+     "bearing": "S",
+     "distance": 56,
+     "x": -220,
+     "z": 368
     },
-    "nearest_road": null,
+    "nearest_road": {
+     "distance": 24
+    },
     "nearest_sea": {
      "bearing": "NW",
-     "distance": 1771,
+     "distance": 1667,
      "x": -1092,
      "z": 1844
     },
     "nearest_sea_beach_sand": {
      "bearing": "NW",
-     "distance": 1735,
+     "distance": 1631,
      "x": -1068,
      "z": 1816
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 128,
+      "distance": 168,
       "hits": "front_broken_causeway"
      },
      "north_+z": {
-      "distance": 788,
+      "distance": 668,
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 80,
+      "distance": 60,
       "hits": "front_broken_causeway"
      },
      "west_-x": {
-      "distance": 540,
+      "distance": 460,
       "hits": "front_broken_causeway"
      }
     }
@@ -1307,8 +1451,8 @@
   {
    "anchor": {
     "x": 282,
-    "y": 135,
-    "z": 304
+    "y": 133,
+    "z": 424
    },
    "anchor_id": "anchor_074",
    "distances": {
@@ -1321,23 +1465,23 @@
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
-      "name": "Last Hedge Redoubt",
-      "road": null,
-      "straight": 754,
-      "to": "r20_anchor_032",
-      "zone": "elandor_ashenward_march"
-     },
-     {
       "name": "Red Ramp Post",
       "road": null,
-      "straight": 869,
+      "straight": 796,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
+      "name": "Last Hedge Redoubt",
+      "road": null,
+      "straight": 994,
+      "to": "r20_anchor_032",
+      "zone": "elandor_ashenward_march"
+     },
+     {
       "name": "Cinderline Watch",
       "road": null,
-      "straight": 1316,
+      "straight": 1422,
       "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
      },
@@ -1358,38 +1502,38 @@
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 66,
-     "x": 264,
-     "z": 240
+     "distance": 52,
+     "x": 276,
+     "z": 372
     },
     "nearest_road": null,
     "nearest_sea": {
      "bearing": "N",
-     "distance": 1749,
-     "x": 900,
-     "z": 1940
+     "distance": 1636,
+     "x": 788,
+     "z": 1980
     },
     "nearest_sea_beach_sand": {
-     "bearing": "N",
-     "distance": 1704,
+     "bearing": "NE",
+     "distance": 1593,
      "x": 920,
      "z": 1884
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 164,
-      "hits": "front_shattered_line"
+      "distance": 772,
+      "hits": "kragmar_thunderroot_wilds"
      },
      "north_+z": {
-      "distance": 812,
+      "distance": 692,
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 68,
+      "distance": 56,
       "hits": "front_shattered_line"
      },
      "west_-x": {
-      "distance": 128,
+      "distance": 144,
       "hits": "front_shattered_line"
      }
     }
@@ -1403,8 +1547,8 @@
   {
    "anchor": {
     "x": 156,
-    "y": 128,
-    "z": 674
+    "y": 118,
+    "z": 794
    },
    "anchor_id": "anchor_096",
    "distances": {
@@ -1419,22 +1563,15 @@
      {
       "name": "Red Ramp Post",
       "road": null,
-      "straight": 566,
+      "straight": 536,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
      },
      {
       "name": "Last Hedge Redoubt",
       "road": null,
-      "straight": 1133,
+      "straight": 1372,
       "to": "r20_anchor_032",
-      "zone": "elandor_ashenward_march"
-     },
-     {
-      "name": "Cinderline Watch",
-      "road": null,
-      "straight": 1606,
-      "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
      },
      {
@@ -1445,6 +1582,13 @@
       "zone": "kragmar_blackwind_rise"
      },
      {
+      "name": "Cinderline Watch",
+      "road": null,
+      "straight": 1720,
+      "to": "r20_anchor_031",
+      "zone": "elandor_ashenward_march"
+     },
+     {
       "name": "Thunderstep Watch",
       "road": null,
       "straight": 1748,
@@ -1453,41 +1597,39 @@
      }
     ],
     "nearest_other_zone_land": {
-     "bearing": "S",
-     "distance": 308,
-     "x": 120,
-     "z": 368
+     "bearing": "N",
+     "distance": 274,
+     "x": 156,
+     "z": 1068
     },
-    "nearest_road": {
-     "distance": 24
-    },
+    "nearest_road": null,
     "nearest_sea": {
      "bearing": "NE",
-     "distance": 1451,
+     "distance": 1344,
      "x": 788,
      "z": 1980
     },
     "nearest_sea_beach_sand": {
      "bearing": "NE",
-     "distance": 1411,
-     "x": 780,
-     "z": 1940
+     "distance": 1304,
+     "x": 764,
+     "z": 1948
     },
     "to_zone_edge": {
      "east_+x": {
-      "distance": 808,
+      "distance": 780,
       "hits": "kragmar_thunderroot_wilds"
      },
      "north_+z": {
-      "distance": 396,
+      "distance": 276,
       "hits": "kragmar_gor_drazhak"
      },
      "south_-z": {
-      "distance": 368,
+      "distance": 384,
       "hits": "front_shattered_line"
      },
      "west_-x": {
-      "distance": 1064,
+      "distance": 1080,
       "hits": "kragmar_blackwind_rise"
      }
     }
@@ -1506,241 +1648,228 @@
      31,
      40
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:carrion_crow",
-   "name": "Carrion Crow",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_hound",
-   "name": "Goblin Raider Hound",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_raider",
-   "name": "Goblin Raider",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_slinger",
-   "name": "Goblin Slinger",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
+    "share_pct": 16.2
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:hyena",
-   "name": "Hyena",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 67.1
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:stone",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:mesa_golem",
-   "name": "Mesa Golem",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 67.1
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:scorpion",
-   "name": "Scorpion",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.1
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:skeleton_raider",
-   "name": "Skeleton Raider",
-   "night": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     31,
-     40
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 67.1
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:vulture",
-   "name": "Vulture",
+   "hosts": [],
+   "mob": "grug_mobs:dustwing_vulture",
+   "name": "Mesa Vulture",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:entrenched_bandit",
+   "name": "Entrenched Bandit",
    "night": {
+    "levels": [
+     31,
+     33
+    ],
+    "share_pct": 26.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 1.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:entrenched_bandit_archer",
+   "name": "Entrenched Bandit Archer",
+   "night": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 1.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:march_skeleton_raider",
+   "name": "March Skeleton Raider",
+   "night": {
+    "levels": [
+     31,
+     33
+    ],
+    "share_pct": 3.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     31,
+     33
+    ],
+    "share_pct": 30.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:marching_husk",
+   "name": "Marching Sun-Dried Husk",
+   "night": {
+    "levels": [
+     34,
+     35
+    ],
+    "share_pct": 37.2
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     34,
+     40
+    ],
+    "share_pct": 42.8
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_stalking_tiger",
+   "name": "Tallgrass Tiger",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     34,
+     40
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:siege_goblin",
+   "name": "Siege Goblin",
+   "night": {
+    "levels": [
+     34,
+     40
+    ],
+    "share_pct": 1.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 0.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:siege_goblin_hound",
+   "name": "Siege Goblin Hound",
+   "night": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 0.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     34,
+     37
+    ],
+    "share_pct": 0.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:siege_goblin_slinger",
+   "name": "Siege Goblin Slinger",
+   "night": {
+    "levels": [
+     34,
+     37
+    ],
+    "share_pct": 0.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     38,
+     40
+    ],
+    "share_pct": 18.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:unrelenting_husk",
+   "name": "Trench Mummy",
+   "night": {
+    "levels": [
+     36,
+     40
+    ],
+    "share_pct": 35.6
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:war_stinger",
+   "name": "War-Stinger Scorpion",
+   "night": {
+    "levels": [
+     31,
+     33
+    ],
+    "share_pct": 30.0
+   }
+  },
+  {
+   "day": {
     "levels": [
      31,
      40
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.9
+    "share_pct": 75.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:warpack_hyena",
+   "name": "Warpack Hyena",
+   "night": {
+    "levels": [
+     34,
+     40
+    ],
+    "share_pct": 48.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     34,
+     40
+    ],
+    "share_pct": 6.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_carrion_crow",
+   "name": "Battlefield Crow",
+   "night": {
+    "levels": [
+     34,
+     37
+    ],
+    "share_pct": 2.4
    }
   }
  ],

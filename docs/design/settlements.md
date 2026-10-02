@@ -518,9 +518,12 @@ want lived-in settlements without paying for it in server load"):
 - **Profession vendors.** A district reads as lived in when the butcher's house
   has a butcher in it, so a `vendor` socket may name one of twelve professions —
   butcher, smith, fishmonger, baker, tailor, mason, brewer, bowyer, herbalist,
-  armourer, tanner and embalmer. Each has a shelf of its own trade and serves
-  everybody (no faction and no race restriction, and therefore no kinship
-  discount); only the smith and the armourer also sell the equipment ladder.
+  armourer, tanner and embalmer. Each has a shelf of its trade's supplies and
+  T1 basics (the vendor supply rule of [professions.md](professions.md) §4;
+  shelves in the [economy plan](../planning/economy-vendor-plan.md) §2.3) and
+  serves everybody (no faction and no race restriction, and therefore no
+  kinship discount); only the smith and the armourer also sell the equipment
+  ladder, the bowyer and the tanner its bows and leather armour.
   The six starts keep their single race vendor.
 - **A peaceful NPC's nametag is culled like a guard's** (per-viewer mechanism
   adopted 2026-09-18). Villagers, elders and vendors use the same independent

@@ -1321,7 +1321,10 @@ function M.build(zone_id, q, recipe)
 		if camp.site == "generate" then generated[#generated + 1] = camp end
 	end
 	for _, camp in ipairs(generated) do
-		local best, best_score
+		-- `steep`: the flattest block that meets every rule but the slope,
+		-- taken only when no block meets them all (a belt on steep ground)
+		-- and only up to HIGH_SLOPE (steeper ground is no camp site).
+		local best, best_score, best_slope, steep, steep_slope
 		for _, c in ipairs(order) do
 			if belts[c.belt] == camp.belt and not c.camp then
 				local ok, slope_sum, road = true, 0, huge
@@ -1338,7 +1341,7 @@ function M.build(zone_id, q, recipe)
 						end
 					end
 				end
-				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 <= M.CAMP_SLOPE then
+				if ok and road >= M.CAMP_ROAD_MIN then
 					for _, other in ipairs(camps) do
 						if math.max(math.abs(other.cell.i - c.i), math.abs(other.cell.j - c.j)) <
 								camp.apart then
@@ -1357,7 +1360,11 @@ function M.build(zone_id, q, recipe)
 						end
 					end
 				end
-				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 <= M.CAMP_SLOPE then
+				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 > M.CAMP_SLOPE then
+					if not steep_slope or slope_sum < steep_slope then
+						steep, steep_slope = c, slope_sum
+					end
+				elseif ok and road >= M.CAMP_ROAD_MIN then
 					-- Forest edge: forest within two cells, but not forest all
 					-- round.
 					local forest, total = 0, 0
@@ -1375,14 +1382,17 @@ function M.build(zone_id, q, recipe)
 						0.5 * (1 - math.min(1, slope_sum / 9)) +
 						0.25 * math.min(road, cap) / cap
 					if not best_score or score > best_score + 1e-9 then
-						best, best_score = c, score
+						best, best_score, best_slope = c, score, slope_sum / 9
 					end
 				end
 			end
 		end
+		if not best and steep and steep_slope / 9 <= M.HIGH_SLOPE then
+			best, best_score, best_slope = steep, 0, steep_slope / 9
+		end
 		if best then
 			local unit = new_camp(camp, best, best.x, best.z)
-			unit.score = best_score
+			unit.score, unit.slope = best_score, best_slope
 			for a = -1, 1 do
 				for b = -1, 1 do
 					local n = cells[key(best.i + a, best.j + b)]

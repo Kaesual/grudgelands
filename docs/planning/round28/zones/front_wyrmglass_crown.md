@@ -46,23 +46,21 @@ Share of land per level: L60 100.0%
 
 No quest is given in this zone today.
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| carrion_crow | Carrion Crow | neutral | 85.0% of land, L60 | 85.0% of land, L60 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, snowblock … |
-| crag_eagle | Crag Eagle | aggressive | 85.0% of land, L60 | - | gravel, snowblock |
-| frost_stray | Frost Stray | aggressive | - | 85.0% of land, L60 | gravel, snowblock |
+| crown_crag_eagle | Crown Crag Eagle | aggressive | 81.4% of land, L60 | - |  |
+| crown_frost_stray | Crown Frost Stray | aggressive | - | 30.5% of land, L60 |  |
 | gull | Gull | critter | 35456 nodes² | - | sand |
-| mountain_ram | Mountain Ram | neutral | 85.0% of land, L60 | - | gravel, snowblock |
-| rift_spawn | Rift Spawn | aggressive | - | 85.0% of land, L60 | dirt_with_rainforest_litter, gravel, snowblock, dirt_with_bone_litter, dirt_with_canopy_litter |
-| snow_leopard | Snow Leopard | aggressive | - | 85.0% of land, L60 | gravel, snowblock |
-| stone_golem | Stone Golem | aggressive | 85.0% of land, L60 | 85.0% of land, L60 | gravel, snowblock, stone |
-| zombie | Zombie | aggressive | - | 100.0% of land, L60 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-
-In the palette but no host ground in this zone: Hyena, Vulture.
+| last_pay_archer | Last-Pay Archer | aggressive | 69.5% of land, L60 | 69.5% of land, L60 |  |
+| last_watch_husk | Last-Watch Mummy | aggressive | 18.6% of land, L60 | - |  |
+| last_watch_zombie | Last Watchman | aggressive | - | 18.6% of land, L60 |  |
+| rime_pelt_leopard | Rime-Pelt Snow Leopard | aggressive | - | 81.4% of land, L60 |  |
+| rimehorn_ram | Rimehorn Ram | neutral | 11.8% of land, L60 | - |  |
+| watchful_carrion_crow | Battlefield Crow | neutral | 18.6% of land, L60 | - |  |
 
 ## Roads and trails touching the zone
 

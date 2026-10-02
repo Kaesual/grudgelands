@@ -16,14 +16,14 @@
    "settlement_key": "r20_anchor_076",
    "slot": "clash_1",
    "x": -2200,
-   "y": 107,
+   "y": 106,
    "z": -80
   },
   {
    "id": "anchor_077",
    "kind": "clash",
    "kind_text": "clash site",
-   "level_at": 55,
+   "level_at": 58,
    "name": "Tombroad Ambush",
    "protected_box": {
     "kind": "poi",
@@ -60,59 +60,59 @@
  "biomes_measured": [
   {
    "id": "grug_bone_forest",
-   "share_pct": 52.9
-  },
-  {
-   "id": "grug_swamp",
-   "share_pct": 18.3
-  },
-  {
-   "id": "grug_blight",
-   "share_pct": 16.9
+   "share_pct": 52.4
   },
   {
    "id": "grug_beach",
-   "share_pct": 10.5
+   "share_pct": 19.1
   },
   {
-   "id": "grug_meadows",
-   "share_pct": 0.7
+   "id": "grug_blight",
+   "share_pct": 15.0
+  },
+  {
+   "id": "grug_swamp",
+   "share_pct": 12.0
   },
   {
    "id": "grug_crags",
-   "share_pct": 0.6
+   "share_pct": 0.5
   },
   {
-   "id": "grug_deep_forest",
-   "share_pct": 0.1
+   "id": "grug_meadows",
+   "share_pct": 0.4
   },
   {
    "id": "grug_crags_snowy",
-   "share_pct": 0.1
+   "share_pct": 0.3
+  },
+  {
+   "id": "grug_deep_forest",
+   "share_pct": 0.2
   }
  ],
  "borders": [
   {
-   "length_nodes": 636,
+   "length_nodes": 1140,
    "midpoint": {
-    "x": -2055,
-    "z": -294
+    "x": -1992,
+    "z": -388
    },
    "zone": "elandor_stormvault_heights"
   },
   {
-   "length_nodes": 764,
+   "length_nodes": 1140,
    "midpoint": {
-    "x": -1385,
-    "z": -3
+    "x": -1380,
+    "z": 17
    },
    "zone": "front_broken_causeway"
   },
   {
-   "length_nodes": 1636,
+   "length_nodes": 1328,
    "midpoint": {
-    "x": -1879,
-    "z": 177
+    "x": -1841,
+    "z": 342
    },
    "zone": "kragmar_blackwind_rise"
   }
@@ -121,55 +121,35 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:bone_weevil",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_husk",
+   "grug_mobs:salt_antler_stag",
+   "grug_mobs:salt_boring_weevil",
+   "grug_mobs:salt_hide_bear",
+   "grug_mobs:saltbound_husk",
+   "grug_mobs:saltpack_wolf",
+   "grug_mobs:saltroad_deserter",
+   "grug_mobs:watchful_carrion_crow"
   ],
-  "density_budget_day": [
-   "grug_mobs:bear",
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:gaunt_stag",
-   "grug_mobs:plaguehide_bear",
-   "grug_mobs:stag",
-   "grug_mobs:wolf"
-  ],
-  "density_budget_night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:bog_witch",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:giant_spider",
-   "grug_mobs:pale_spider",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:wolf",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:blightfang_wolf",
-   "grug_mobs:bog_witch",
-   "grug_mobs:carrion_crow",
-   "grug_mobs:giant_spider",
-   "grug_mobs:pale_spider",
-   "grug_mobs:rift_spawn",
-   "grug_mobs:skeleton_archer",
-   "grug_mobs:skeleton_raider",
-   "grug_mobs:wolf",
-   "grug_mobs:zombie"
+   "grug_mobs:last_pay_archer",
+   "grug_mobs:last_watch_skeleton_raider",
+   "grug_mobs:last_watch_zombie",
+   "grug_mobs:salt_hex_witch",
+   "grug_mobs:salt_web_spider",
+   "grug_mobs:saltbound_zombie",
+   "grug_mobs:saltroad_deserter"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 1312,
+  "bank_sand_area_nodes2": 1616,
   "bay_water_area_nodes2": 0,
   "beaches": [
    {
-    "area_nodes2": 1248,
+    "area_nodes2": 1264,
     "box": {
      "max_x": -2396,
      "max_z": -168,
@@ -182,7 +162,7 @@
     },
     "id": "B1",
     "levels": [
-     53,
+     54,
      55
     ]
    },
@@ -200,12 +180,30 @@
     },
     "id": "B2",
     "levels": [
-     52,
-     55
+     56,
+     59
     ]
    },
    {
-    "area_nodes2": 192,
+    "area_nodes2": 768,
+    "box": {
+     "max_x": -2440,
+     "max_z": 352,
+     "min_x": -2492,
+     "min_z": 304
+    },
+    "centroid": {
+     "x": -2467,
+     "z": 335
+    },
+    "id": "B3",
+    "levels": [
+     51,
+     52
+    ]
+   },
+   {
+    "area_nodes2": 224,
     "box": {
      "max_x": -2392,
      "max_z": -224,
@@ -213,31 +211,31 @@
      "min_z": -248
     },
     "centroid": {
-     "x": -2406,
-     "z": -239
+     "x": -2405,
+     "z": -238
     },
-    "id": "B3",
+    "id": "B4",
     "levels": [
-     52,
-     53
+     53,
+     54
     ]
    }
   ],
-  "inland_water_area_nodes2": 97856,
-  "sea_beach_sand_area_nodes2": 2368,
-  "sea_coast_length_nodes": 852
+  "inland_water_area_nodes2": 121136,
+  "sea_beach_sand_area_nodes2": 3248,
+  "sea_coast_length_nodes": 1216
  },
- "drift_band_share_pct": 0.0,
+ "drift_band_share_pct": 1.0,
  "extent": {
   "centroid": {
-   "x": -1985,
-   "z": -24
+   "x": -1944,
+   "z": 3
   },
-  "land_area_nodes2": 404320,
-  "max_x": -1300,
-  "max_z": 288,
+  "land_area_nodes2": 656416,
+  "max_x": -1236,
+  "max_z": 440,
   "min_x": -2528,
-  "min_z": -308
+  "min_z": -416
  },
  "faction": "contested",
  "front": {
@@ -251,17 +249,18 @@
  "id": "front_gravesalt_escarpment",
  "level_field": {
   "histogram_pct": {
-   "51": 9.9,
-   "52": 8.0,
-   "53": 7.6,
-   "54": 10.1,
-   "55": 11.3,
-   "56": 10.3,
-   "57": 13.5,
-   "58": 15.0,
-   "59": 14.2
+   "51": 13.0,
+   "52": 7.6,
+   "53": 7.9,
+   "54": 9.1,
+   "55": 12.1,
+   "56": 12.1,
+   "57": 8.8,
+   "58": 10.0,
+   "59": 10.0,
+   "60": 9.4
   },
-  "max": 59,
+  "max": 60,
   "min": 51
  },
  "level_max": 60,
@@ -275,7 +274,6 @@
   "kragmar_blackwind_rise"
  ],
  "numeric_id": 34,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -299,31 +297,114 @@
    }
   ]
  },
- "protected_share_pct": 0.2,
+ "protected_share_pct": 0.3,
  "pvp_rule": "contested",
  "quests": [],
  "race_region": "undead",
  "rares": [],
  "relief": {
-  "cliff_share_pct": 27.8,
+  "cliff_share_pct": 24.6,
   "height_above_sea": {
    "max": 372,
-   "median": 177,
+   "median": 170,
    "min": 0,
-   "p10": 76,
-   "p90": 272
+   "p10": 73,
+   "p90": 263
   },
-  "steep_share_pct": 67.6
+  "steep_share_pct": 62.8
  },
  "relief_profile": "highland",
- "roads": [],
+ "roads": [
+  {
+   "first_in_zone": [
+    -1581,
+    373
+   ],
+   "from": "anchor_056 (Pallcloth Den, kragmar_blackwind_rise)",
+   "id": 57,
+   "kind": "trail",
+   "last_in_zone": [
+    -1255,
+    391
+   ],
+   "length_in_zone": 238,
+   "length_total": 2074,
+   "polyline_simplified": [
+    [
+     -1789,
+     544
+    ],
+    [
+     -1654,
+     482
+    ],
+    [
+     -1643,
+     399
+    ],
+    [
+     -1617,
+     372
+    ],
+    [
+     -1495,
+     401
+    ],
+    [
+     -1468,
+     426
+    ],
+    [
+     -1322,
+     427
+    ],
+    [
+     -1194,
+     366
+    ],
+    [
+     -1089,
+     399
+    ],
+    [
+     -930,
+     323
+    ],
+    [
+     -605,
+     351
+    ],
+    [
+     -519,
+     384
+    ],
+    [
+     -310,
+     368
+    ],
+    [
+     -233,
+     400
+    ],
+    [
+     -99,
+     352
+    ],
+    [
+     39,
+     419
+    ]
+   ],
+   "to": "joins road 29"
+  }
+ ],
  "role": "front zone",
  "seed": "42",
  "settlements": [
   {
    "anchor": {
     "x": -2200,
-    "y": 107,
+    "y": 106,
     "z": -80
    },
    "anchor_id": "anchor_076",
@@ -339,22 +420,22 @@
      {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 792,
+      "straight": 854,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
-     },
-     {
-      "name": "Hollowarch Station",
-      "road": null,
-      "straight": 894,
-      "to": "r20_anchor_040",
-      "zone": "kragmar_blackwind_rise"
      },
      {
       "name": "Ashveil Watch",
       "road": null,
       "straight": 932,
       "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
+     },
+     {
+      "name": "Hollowarch Station",
+      "road": null,
+      "straight": 968,
+      "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
@@ -373,10 +454,10 @@
      }
     ],
     "nearest_other_zone_land": {
-     "bearing": "NE",
-     "distance": 202,
-     "x": -2108,
-     "z": 100
+     "bearing": "S",
+     "distance": 303,
+     "x": -2280,
+     "z": -372
     },
     "nearest_road": null,
     "nearest_sea": {
@@ -397,11 +478,11 @@
       "hits": "front_broken_causeway"
      },
      "north_+z": {
-      "distance": 224,
+      "distance": 356,
       "hits": "kragmar_blackwind_rise"
      },
      "south_-z": {
-      "distance": 224,
+      "distance": 308,
       "hits": "elandor_stormvault_heights"
      },
      "west_-x": {
@@ -428,14 +509,14 @@
      {
       "name": "Hollowarch Station",
       "road": null,
-      "straight": 476,
+      "straight": 575,
       "to": "r20_anchor_040",
       "zone": "kragmar_blackwind_rise"
      },
      {
       "name": "Archshadow Post",
       "road": null,
-      "straight": 580,
+      "straight": 688,
       "to": "r20_anchor_028",
       "zone": "elandor_stormvault_heights"
      },
@@ -469,10 +550,10 @@
      }
     ],
     "nearest_other_zone_land": {
-     "bearing": "N",
-     "distance": 72,
-     "x": -1792,
-     "z": 132
+     "bearing": "NW",
+     "distance": 262,
+     "x": -1928,
+     "z": 272
     },
     "nearest_road": null,
     "nearest_sea": {
@@ -493,12 +574,12 @@
       "hits": "front_broken_causeway"
      },
      "north_+z": {
-      "distance": 76,
-      "hits": "kragmar_blackwind_rise"
+      "distance": 276,
+      "hits": "inland_water"
      },
      "south_-z": {
-      "distance": 372,
-      "hits": "inland_water"
+      "distance": 456,
+      "hits": "elandor_stormvault_heights"
      },
      "west_-x": {
       "distance": 724,
@@ -516,162 +597,7 @@
  "spawns": [
   {
    "day": {
-    "levels": [
-     51,
-     58
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 1.3
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:bear",
-   "name": "Bear",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 52.7
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:blightfang_wolf",
-   "name": "Blightfang Wolf",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 52.7
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_witch",
-   "name": "Bog Witch",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.4
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.0
-   },
-   "disposition": "critter",
-   "hosts": [
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:bone_weevil",
-   "name": "Bone Weevil",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 91.5
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:carrion_crow",
-   "name": "Carrion Crow",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 91.5
-   }
-  },
-  {
-   "day": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 52.7
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:gaunt_stag",
-   "name": "Gaunt Stag",
-   "night": null
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:giant_spider",
-   "name": "Giant Spider",
-   "night": {
-    "levels": [
-     51,
-     58
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 1.3
-   }
-  },
-  {
-   "day": {
-    "area_nodes2": 42432
+    "area_nodes2": 125584
    },
    "disposition": "critter",
    "hosts": [
@@ -683,49 +609,73 @@
    "note": "logical beach biome only"
   },
   {
-   "day": null,
+   "day": {
+    "levels": [
+     56,
+     60
+    ],
+    "share_pct": 17.3
+   },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:pale_spider",
-   "name": "Bonelurker Spider",
+   "hosts": [],
+   "mob": "grug_mobs:last_pay_archer",
+   "name": "Last-Pay Archer",
    "night": {
     "levels": [
-     51,
-     59
+     56,
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.0
+    "share_pct": 17.3
    }
   },
   {
    "day": {
     "levels": [
-     51,
-     59
+     56,
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 71.0
+    "share_pct": 25.8
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter"
-   ],
-   "mob": "grug_mobs:plaguehide_bear",
-   "name": "Plaguehide Bear",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_husk",
+   "name": "Last-Watch Mummy",
    "night": null
   },
   {
-   "day": {
-    "area_nodes2": 2368,
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_skeleton_raider",
+   "name": "Last-Watch Skeleton Raider",
+   "night": {
     "levels": [
-     52,
-     55
+     51,
+     60
+    ],
+    "share_pct": 71.6
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:last_watch_zombie",
+   "name": "Last Watchman",
+   "night": {
+    "levels": [
+     56,
+     60
+    ],
+    "share_pct": 20.9
+   }
+  },
+  {
+   "day": {
+    "area_nodes2": 3248,
+    "levels": [
+     51,
+     59
     ]
    },
    "disposition": "neutral",
@@ -735,107 +685,54 @@
    "mob": "grug_mobs:reef_lurker",
    "name": "Reef Lurker",
    "night": {
-    "area_nodes2": 2368,
+    "area_nodes2": 3248,
     "levels": [
-     52,
-     55
+     51,
+     59
     ]
    },
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:rift_spawn",
-   "name": "Rift Spawn",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 53.3
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:skeleton_raider",
-   "name": "Skeleton Raider",
-   "night": {
-    "levels": [
-     51,
-     59
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
-  },
-  {
    "day": {
     "levels": [
      51,
-     58
+     57
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 1.3
+    "share_pct": 15.1
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter"
-   ],
-   "mob": "grug_mobs:stag",
-   "name": "Stag",
+   "hosts": [],
+   "mob": "grug_mobs:salt_antler_stag",
+   "name": "Salt-Antler Gaunt Stag",
    "night": null
   },
   {
    "day": {
     "levels": [
      51,
-     58
+     59
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 1.3
+    "share_pct": 11.6
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter"
-   ],
-   "mob": "grug_mobs:wolf",
-   "name": "Wolf",
+   "hosts": [],
+   "mob": "grug_mobs:salt_boring_weevil",
+   "name": "Salt-Boring Weevil",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:salt_hex_witch",
+   "name": "Salt-Hex Bog Witch",
    "night": {
     "levels": [
-     51,
-     58
+     54,
+     60
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 1.3
+    "share_pct": 11.2
    }
   },
   {
@@ -844,35 +741,103 @@
      51,
      59
     ],
-    "policy_share_pct": 18.3,
-    "share_pct": 18.3
+    "share_pct": 45.9
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:salt_hide_bear",
+   "name": "Salt-Hide Plaguehide Bear",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:salt_web_spider",
+   "name": "Salt-Web Bonelurker Spider",
    "night": {
     "levels": [
      51,
      59
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 47.3
+    "share_pct": 50.8
    }
+  },
+  {
+   "day": {
+    "levels": [
+     51,
+     55
+    ],
+    "share_pct": 3.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:saltbound_husk",
+   "name": "Saltbound Sun-Dried Husk",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:saltbound_zombie",
+   "name": "Saltbound Zombie",
+   "night": {
+    "levels": [
+     51,
+     55
+    ],
+    "share_pct": 7.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     51,
+     59
+    ],
+    "share_pct": 50.8
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:saltpack_wolf",
+   "name": "Saltpack Blightfang Wolf",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     51,
+     55
+    ],
+    "share_pct": 20.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:saltroad_deserter",
+   "name": "Saltroad Deserter",
+   "night": {
+    "levels": [
+     51,
+     55
+    ],
+    "share_pct": 20.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     58,
+     60
+    ],
+    "share_pct": 9.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_carrion_crow",
+   "name": "Battlefield Crow",
+   "night": null
   }
  ],
  "territory_rule": "contested_land"

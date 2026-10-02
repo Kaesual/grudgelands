@@ -21,11 +21,11 @@ Race track (human): step 3 of the track Dawnmere Fields → Goldmead Vale → Hi
 | Neighbours (land border) | elandor_ashenward_march (1336 nodes, mid -25,-1145), elandor_goldmead_vale (1452 nodes, mid -24,-1817), elandor_lorindor (484 nodes, mid 461,-1465), elandor_whitebridge_shire (740 nodes, mid -502,-1554) |
 | Sea coast | 0 nodes of coastline; sea-beach sand 0 nodes²; lake/river-bank sand 8448 nodes² |
 | Water inside | bay 0 nodes², rivers/lakes 11248 nodes² |
-| Protected / drift band | 21.0% of land protected (towns, villages, camps/POIs, road corridors); 8.8% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
+| Protected / drift band | 21.6% of land protected (towns, villages, camps/POIs, road corridors); 10.4% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 ## Levels
 
-Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.
+Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.
 
 Share of land per level: L20 10.1%, L21 11.2%, L22 11.9%, L23 8.9%, L24 9.0%, L25 8.8%, L26 8.5%, L27 8.7%, L28 8.4%, L29 7.0%, L30 7.4%
 
@@ -82,7 +82,7 @@ Residents/guards: gear_display 3, guard_patrol 56, guard_post 19, housing_manage
 Public stations: market_workshop/market_workshop_station (forge), market_counting_house/market_counting_house_station (tailor_bench), market_store/market_store_station (tanning_rack), martial_wain_shed/martial_wain_shed_station (carving_bench), lore_archive/lore_archive_station (jewellers_bench), lore_herb_garden/lore_herb_garden_station (brewing_stand), homes_bakehouse/homes_bakehouse_station (furnace).
 
 Distances: zone edge N 440 (elandor_ashenward_march), S 352 (elandor_goldmead_vale), E 480 (elandor_lorindor), W 488 (elandor_whitebridge_shire); nearest other-zone land 337 S; sea 764 SE; sea-beach sand 713 SE; nearest road 50.
-Nearest hubs (straight / by road): Goldmead Bandit Camp 577 / 828; Goldmead Outpost 555 / 866; Goldmead Village 534 / 880; Oakspan Tollhouse 661 / 948; Cinderline Watch 738 / 1192.
+Nearest hubs (straight / by road): Goldmead Bandit Camp 577 / 828; Goldmead Outpost 555 / 866; Goldmead Village 534 / 880; Oakspan Tollhouse 661 / 990; Cinderline Watch 738 / 1039.
 
 ### Current quests (4, given in this zone)
 
@@ -93,26 +93,39 @@ Nearest hubs (straight / by road): Goldmead Bandit Camp 577 / 828; Goldmead Outp
 | r20_human_capital_stores | Stone for the River Watch | Mariel Waybook (Highcourt) | 20 | bring 12 default:cobble | 780 | - |
 | r20_human_journey_01 | Word for Merren Oakstamp | Mariel Waybook (Highcourt) | 21 | talk to Merren Oakstamp (r20_anchor_016) | 615 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
-Empty palette: no ambient surface mobs.
+| Mob | Name | Disposition | Day | Night | Host nodes |
+|---|---|---|---|---|---|
+| debtbound_zombie | Debtbound Zombie | aggressive | - | 61.2% of land, L20-25 |  |
+| furrow_boar | Furrow Boar | neutral | 30.4% of land, L21-24 | - |  |
+| monstrous_boar | Razorback | aggressive | 39.1% of land, L25-30 | - |  |
+| moss_antler_stag | Moss-Antler Stag | neutral | 40.4% of land, L20-30 | - |  |
+| orchard_fox | Orchard Fox | neutral | 30.7% of land, L21-24 | - |  |
+| redfang_fox | Redfang Vixen | aggressive | 56.4% of land, L25-30 | - |  |
+| stubborn_zombie | Tithe Revenant | aggressive | - | 58.2% of land, L26-30 |  |
+| toll_bandit | Toll Bandit | aggressive | - | 11.7% of land, L20-25 |  |
+| toll_bandit_archer | Toll Bandit Archer | aggressive | 1.4% of land, L28-30 | 11.9% of land, L26-30 |  |
 
 ## Roads and trails touching the zone
 
 | Id | Kind | From | To | Length (total / in zone) | Enters / leaves zone |
 |---|---|---|---|---|---|
-| 1 | primary | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | anchor_008 (Highcourt, elandor_highcourt) | 1434 / 162 | -428,-1234 → -272,-1247 |
+| 1 | primary | anchor_007 (Dur Brannoc, elandor_dur_brannoc) | anchor_008 (Highcourt, elandor_highcourt) | 1402 / 170 | -484,-1254 → -272,-1247 |
 | 2 | primary | anchor_008 (Highcourt, elandor_highcourt) | anchor_009 (Lethariel, elandor_lethariel) | 1355 / 170 | 273,-1358 → 433,-1394 |
 | 4 | primary | anchor_002 (Dawnmere, elandor_dawnmere_fields) | anchor_008 (Highcourt, elandor_highcourt) | 796 / 76 | 132,-1833 → 128,-1760 |
 | 7 | secondary | anchor_015 (Goldmead Village, elandor_goldmead_vale) | anchor_008 (Highcourt, elandor_highcourt) | 277 / 140 | -158,-1884 → -207,-1759 |
-| 38 | trail | anchor_034 (Petalbank Wardenry, elandor_lorindor) | joins road 2 | 488 / 136 | 408,-1271 → 352,-1392 |
-| 67 | trail | anchor_067 (Siltbasket Camp, elandor_whitebridge_shire) | joins road 7 | 500 / 40 | -546,-1807 → -513,-1826 |
-| 86 | primary | end:2 | gate_east | 158 / 160 | 273,-1358 → 193,-1467 |
-| 87 | primary | end:1 | gate_south | 252 / 250 | -272,-1247 → -69,-1364 |
-| 88 | primary | end:4 | gate_north | 179 / 180 | 128,-1760 → -21,-1698 |
-| 89 | secondary | end:7 | gate_north | 260 / 260 | -207,-1759 → -21,-1698 |
+| 13 | secondary | anchor_031 (Cinderline Watch, elandor_ashenward_march) | joins road 1 | 413 / 64 | -369,-1182 → -336,-1232 |
+| 29 | primary | anchor_008 (Highcourt, elandor_highcourt) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 2860 / 190 | -64,-1232 → -12,-1062 |
+| 39 | trail | anchor_034 (Petalbank Wardenry, elandor_lorindor) | joins road 2 | 488 / 136 | 408,-1271 → 352,-1392 |
+| 68 | trail | anchor_067 (Siltbasket Camp, elandor_whitebridge_shire) | joins road 7 | 500 / 40 | -546,-1807 → -513,-1826 |
+| 87 | primary | end:2 | gate_east | 158 / 160 | 273,-1358 → 193,-1467 |
+| 88 | primary | end:29 | gate_south | 137 / 138 | -64,-1232 → -69,-1364 |
+| 89 | primary | end:1 | joins road 88 | 243 / 242 | -272,-1247 → -62,-1341 |
+| 90 | primary | end:4 | gate_north | 179 / 180 | 128,-1760 → -21,-1698 |
+| 91 | secondary | end:7 | gate_north | 260 / 260 | -207,-1759 → -21,-1698 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

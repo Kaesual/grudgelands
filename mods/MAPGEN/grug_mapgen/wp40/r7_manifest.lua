@@ -62,6 +62,8 @@ return function(canonical, raw_sha256, settlement_order)
 	-- Round 29 M-res (gem tiers): one gem per tier rock, no G1/G2 grades, no
 	-- race-region gem columns, one gem density; only the WP43 projection
 	-- moves. Was `f1bba63f699c3fd0...`.
+	-- Round 29 E1: dead iron-bar sell_price removed from PROCESSED_MATERIALS;
+	-- only the WP43 projection moves. Was `a47e73fe75fa8de8...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -489,7 +491,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.decoded_templates ~=
 				"172726bfb439774d50dded5d98c807712599b8a23a79669ce8e7ec63dabf17cb" or
 			frozen.wp43_projection ~=
-				"a47e73fe75fa8de8f5496713d677f0e91007aa1415f4c2af5fd31951accc62bf" or
+				"f1d238b3248a84ed129ff6d241c2d9eb940fdf15a679144253b47a7013b2bc22" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=

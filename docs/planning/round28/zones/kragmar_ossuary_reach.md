@@ -66,7 +66,7 @@ Residents/guards: quest 1.
 | quest_host | quest giver | Sovel Namekeeper | -2378, 51, 1600 | r20_anchor_020_01, r20_anchor_020_02, r20_anchor_020_03, r20_undead_journey_02 |
 
 Distances: zone edge N 528 (kragmar_mournfen), S 560 (kragmar_blackwind_rise), E 176 (kragmar_nhal_veyr), W 84 (coastal_shelf); nearest other-zone land 172 E; sea 84 W; sea-beach sand 72 W; nearest road 19.
-Nearest hubs (straight / by road): Memoryvein Dig 338 / 539; Nhal Veyr 589 / 677; Mournfen Village 638 / 1194; Mournfen Outpost 573 / 1411; Boneledger Post 383 / 1462.
+Nearest hubs (straight / by road): Memoryvein Dig 338 / 539; Nhal Veyr 589 / 687; Mournfen Village 638 / 1179; Mournfen Outpost 573 / 1396; Boneledger Post 383 / 1406.
 
 ### Boneledger Post (`r20_anchor_038`, anchor_038) at -2268, 56, 1234
 
@@ -77,7 +77,7 @@ Residents/guards: quest 1.
 | quest_host | quest giver | Mereth Rubbinghand | -2266, 57, 1234 | r20_anchor_038_01, r20_anchor_038_02, r20_anchor_038_03 |
 
 Distances: zone edge N 836 (kragmar_mournfen), S 176 (kragmar_blackwind_rise), E 184 (kragmar_nhal_veyr), W 212 (coastal_shelf); nearest other-zone land 166 NE; sea 198 W; sea-beach sand 180 W; nearest road 14.
-Nearest hubs (straight / by road): Ashveil Watch 472 / 738; Nhal Veyr 538 / 1012; Ossuary Ledgerstead 383 / 1462; Mournfen Village 868 / 1540; Mournfen Bandit Camp 1055 / 1679.
+Nearest hubs (straight / by road): Ashveil Watch 472 / 738; Nhal Veyr 538 / 940; Ossuary Ledgerstead 383 / 1406; Mournfen Village 868 / 1437; Mournfen Bandit Camp 1055 / 1653.
 
 ### Memoryvein Dig (`r20_anchor_064`, anchor_064) at -2418, 31, 1264
 
@@ -88,40 +88,40 @@ Residents/guards: quest 1.
 | quest_host | quest giver | Neris Fossilhand | -2416, 32, 1264 | r20_anchor_064_01, r20_anchor_064_02, r20_anchor_064_03, r20_undead_journey_03 |
 
 Distances: zone edge N 876 (kragmar_stillgrave_hollow), S 176 (coastal_shelf), E 320 (kragmar_nhal_veyr), W 68 (coastal_shelf); nearest other-zone land 212 S; sea 60 W; sea-beach sand 34 W; nearest road 17.
-Nearest hubs (straight / by road): Ossuary Ledgerstead 338 / 539; Nhal Veyr 662 / 1027; Mournfen Village 916 / 1544; Mournfen Outpost 894 / 1761; Boneledger Post 153 / 1812.
+Nearest hubs (straight / by road): Ossuary Ledgerstead 338 / 539; Nhal Veyr 662 / 1036; Mournfen Village 916 / 1529; Mournfen Outpost 894 / 1746; Boneledger Post 153 / 1756.
 
 ### Current quests (11, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
 | r20_anchor_020_01 | Shelves for the Remembered | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_020_02 | Teeth Beside the Archive | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | kill 4 blightfang_wolf [in kragmar_ossuary_reach] | 820 | - |
+| r20_anchor_020_02 | Teeth Beside the Archive | Sovel Namekeeper (Ossuary Ledgerstead) | 21 | kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach] | 820 | - |
 | r20_anchor_038_01 | A Shelf for Stone Names | Mereth Rubbinghand (Boneledger Post) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_038_02 | The Hungry Gravewood | Mereth Rubbinghand (Boneledger Post) | 21 | kill 3 gravewood_treant [in kragmar_ossuary_reach] | 820 | - |
+| r20_anchor_038_02 | The Hungry Gravewood | Mereth Rubbinghand (Boneledger Post) | 21 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 820 | - |
 | r20_anchor_064_01 | The Record Shed Frame | Neris Fossilhand (Memoryvein Dig) | 21 | bring 8 grug_trees:gravewood_wood | 820 | - |
-| r20_anchor_064_02 | The Cutters' Uneasy Night | Neris Fossilhand (Memoryvein Dig) | 21 | kill 3 gravewood_treant [in kragmar_ossuary_reach] | 820 | - |
-| r20_anchor_020_03 | The Trees That Refuse Rest | Sovel Namekeeper (Ossuary Ledgerstead) | 23 | kill 3 gravewood_treant [in kragmar_ossuary_reach] | 900 | r20_anchor_020_02 |
-| r20_anchor_038_03 | A Pack on the Ledger Road | Mereth Rubbinghand (Boneledger Post) | 23 | kill 4 blightfang_wolf [in kragmar_ossuary_reach] | 900 | r20_anchor_038_02 |
+| r20_anchor_064_02 | The Cutters' Uneasy Night | Neris Fossilhand (Memoryvein Dig) | 21 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 820 | - |
+| r20_anchor_020_03 | The Trees That Refuse Rest | Sovel Namekeeper (Ossuary Ledgerstead) | 23 | kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach] | 900 | r20_anchor_020_02 |
+| r20_anchor_038_03 | A Pack on the Ledger Road | Mereth Rubbinghand (Boneledger Post) | 23 | kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach] | 900 | r20_anchor_038_02 |
 | r20_anchor_064_03 | A Tool for Unnamed Stone | Neris Fossilhand (Memoryvein Dig) | 23 | bring 1 grug_materials:pick_stone | 900 | r20_anchor_064_02 |
 | r20_undead_journey_02 | Word for Neris Fossilhand | Sovel Namekeeper (Ossuary Ledgerstead) | 24 | talk to Neris Fossilhand (r20_anchor_064) | 705 | - |
 | r20_undead_journey_03 | Word for Vaska Ashlistener | Neris Fossilhand (Memoryvein Dig) | 31 | talk to Vaska Ashlistener (r20_anchor_039) | 915 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| blightfang_wolf | Blightfang Wolf | aggressive | 60.7% of land, L21-30 | 60.7% of land, L21-30 | dirt_with_bone_litter |
-| bone_weevil | Bone Weevil | critter | 92.7% of land, L21-30 | - | blight_dirt, dirt_with_bone_litter |
-| gaunt_stag | Gaunt Stag | neutral | 60.7% of land, L21-30 | - | dirt_with_bone_litter |
-| gravewood_treant | Gravewood Treant | aggressive | - | 60.7% of land, L21-30 | dirt_with_bone_litter |
-| pale_spider | Bonelurker Spider | aggressive | - | 92.7% of land, L21-30 | dry_dirt_with_dry_grass, blight_dirt, dirt_with_bone_litter |
-| plaguehide_bear | Plaguehide Bear | aggressive | 92.7% of land, L21-30 | - | dry_dirt_with_dry_grass, blight_dirt, dirt_with_bone_litter |
+| armored_crab | Barnacle Pincher | aggressive | 7.7% of land, L25-30 | - |  |
+| bank_crab | Bank Crab | neutral | 4.0% of land, L24 | - |  |
+| barrow_skeleton_archer | Barrow Skeleton Archer | aggressive | - | 57.1% of land, L21-30 |  |
+| briarpack_wolf | Briarpack Wolf | aggressive | 29.9% of land, L21-23 | 9.3% of land, L21-23 |  |
+| grave_web_spider | Grave-Web Bonelurker Spider | aggressive | - | 62.3% of land, L21-30 |  |
+| marrow_weevil | Marrow Weevil | aggressive | 64.5% of land, L21-30 | - |  |
+| moss_antler_stag | Moss-Antler Stag | neutral | 25.3% of land, L21-27 | - |  |
+| mourning_treant | Lichen Gravewood Treant | aggressive | - | 15.1% of land, L21-23 |  |
 | shore_crab | Shore Crab | neutral | 16560 nodes², L21-30 | 16560 nodes², L21-30 | sand (dry, within 6 nodes of water) |
-| skeleton_archer | Skeleton Archer | aggressive | - | 92.7% of land, L21-30 | blight_dirt, dirt_with_bone_litter |
-
-In the palette but no host ground in this zone: Bear, Giant Spider, Stag, Wolf.
+| territorial_bear | Bramble Bear | aggressive | 57.1% of land, L24-30 | - |  |
 
 **Camps and guard posts:**
 
@@ -133,8 +133,8 @@ In the palette but no host ground in this zone: Bear, Giant Spider, Stag, Wolf.
 |---|---|---|---|---|---|
 | 23 | secondary | anchor_020 (Ossuary Ledgerstead, kragmar_ossuary_reach) | anchor_010 (Nhal Veyr, kragmar_nhal_veyr) | 324 / 176 | -2369,1616 → -2212,1646 |
 | 26 | secondary | anchor_039 (Ashveil Watch, kragmar_blackwind_rise) | anchor_010 (Nhal Veyr, kragmar_nhal_veyr) | 584 / 8 | -2045,1102 → -2038,1109 |
-| 41 | trail | anchor_038 (Boneledger Post, kragmar_ossuary_reach) | joins road 26 | 276 / 232 | -2258,1224 → -2046,1153 |
-| 64 | trail | anchor_064 (Memoryvein Dig, kragmar_ossuary_reach) | joins road 23 | 430 / 424 | -2405,1275 → -2307,1639 |
+| 42 | trail | anchor_038 (Boneledger Post, kragmar_ossuary_reach) | joins road 26 | 276 / 232 | -2258,1224 → -2046,1153 |
+| 65 | trail | anchor_064 (Memoryvein Dig, kragmar_ossuary_reach) | joins road 23 | 430 / 424 | -2405,1275 → -2307,1639 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 
