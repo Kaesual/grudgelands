@@ -1026,7 +1026,8 @@ for index = 1, #identities do
 					grug_home.open_innkeeper(clicker, self)
 					return
 				end
-				if self._grug_socket_role == "riding_trainer" then
+				if self._grug_socket_role == "riding_trainer" or
+						self._grug_socket_role == "shipwright" then
 					grug_mounts.open_trainer(clicker, self)
 					return
 				end

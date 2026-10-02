@@ -5,7 +5,8 @@ grug_mounts.WARNING_WIDTH = 48
 grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 
 -- WP44 replaces these coordinator placeholders with the measured 15 min,
--- 45 min, 2 h and 5 h income values.
+-- 45 min, 2 h and 5 h income values. The two boats (tiers 5 and 6) have no
+-- price until economy lane E4 sets one; the Shipwright shows "Price pending".
 grug_mounts.COORDINATOR_PLACEHOLDER_PRICES = {200, 1500, 24000, 100000}
 grug_mounts.PRICES = grug_mounts.COORDINATOR_PLACEHOLDER_PRICES
 
@@ -22,7 +23,17 @@ grug_mounts.TIERS = {
 	[4] = {id = 4, key = "master", name = "Master Riding",
 		level = 60, mode = "flight", speed = 12,
 		item = "grug_mounts:master_mount"},
+	-- Boats are water mounts (docs/design/boats.md): the same owner-bound item,
+	-- Skills recovery and ephemeral entity, sold by the Shipwright.
+	[5] = {id = 5, key = "boat", name = "Boat",
+		level = 15, mode = "water", speed = 4,
+		item = "grug_mounts:boat"},
+	[6] = {id = 6, key = "improved_boat", name = "Improved Boat",
+		level = 30, mode = "water", speed = 8,
+		item = "grug_mounts:improved_boat"},
 }
+grug_mounts.RIDING_TIERS = {1, 2, 3, 4}
+grug_mounts.BOAT_TIERS = {5, 6}
 
 local function repeated(texture, count)
 	local result = {}
@@ -135,6 +146,28 @@ grug_mounts.MODELS = {
 		attach_y = 6.4, eye_y = 3,
 		animation = {stand = {1, 40, 70}, move = {1, 40, 100}},
 	},
+	-- Rigid hulls (Lord of the Test, LICENSE-media.md): no animation table.
+	-- Mesh units are tenths of a node with the bow on +z, the rider's facing.
+	-- The controller's origin is the water surface; its box reaches from just
+	-- under the waterline to above a bank one node high, so the hull stops at
+	-- the shore, and stays narrower than one node so a boat fits any channel.
+	boat = {
+		id = "boat", description = "Rowboat",
+		mesh = "grug_mounts_rowboat.b3d", textures = {"default_wood.png"},
+		icon = "grug_mounts_icon_boat.png",
+		visual_size = {x = 1, y = 1},
+		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
+		-- The rower sits behind the middle bench: the hull is shifted forward.
+		attach_y = 1, attach_z = 5, eye_y = 0,
+	},
+	improved_boat = {
+		id = "improved_boat", description = "Sailboat",
+		mesh = "grug_mounts_sailboat.b3d", textures = {"grug_mounts_sailboat.png"},
+		icon = "grug_mounts_icon_improved_boat.png",
+		visual_size = {x = 1, y = 1},
+		collisionbox = {-0.45, -0.3, -0.45, 0.45, 0.7, 0.45},
+		attach_y = 1, attach_z = 0, eye_y = 0,
+	},
 	master_throng = {
 		id = "master_throng", description = "Giant Blood Bat",
 		mesh = "grug_mobs_cave_bat.b3d",
@@ -176,6 +209,7 @@ function grug_mounts.model_for(player, tier_id)
 		local prefix = tier_id == 3 and "expert_" or "master_"
 		return grug_mounts.MODELS[prefix .. tostring(faction)]
 	end
+	if tier.mode == "water" then return grug_mounts.MODELS[tier.key] end
 	return nil
 end
 
