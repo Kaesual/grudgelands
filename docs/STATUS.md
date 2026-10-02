@@ -2,6 +2,49 @@
 
 Updated 2026-10-02. This is the delivery pointer, not another game specification.
 
+- **Round 29 "Economy and travel" delivered locally** (2026-10-02,
+  [plan, completion and playtest checklist](planning/round29-plan.md#completion-2026-10-02)).
+  Every lane is merged on local main (last commit `2b40d5b5`, E4), each
+  independently reviewed by Opus; not pushed. The quest lanes were merged
+  together after the user approved a sample per track.
+  - **Quests (Q1–Q9, T):** 491 quests in 42 zone files replace the 240
+    legacy quests: one track per race from the start zone to its heartland
+    (Human 54, Dwarf 58, Elf 71, Undead 53, Orc 48, Troll 63), the contested
+    31–40 zones (35 / 30) and the 41–60 front with repeatable and island
+    bounties (40 / 39). Seed-dependent directions are placeholders filled
+    from the spawn regions; fixed compass words fail the load; copper comes
+    from the quest's weight; the front budget counts two repeats per bounty.
+    Every target forms on six seeds
+    ([quests.md](design/quests.md)).
+  - **Economy (E1, E4; WP44 delivered):** one price module for every
+    payout (loot and gathered goods by class and tier, processed goods by
+    their inputs, 5 % buy-back on vendor goods), shelves by the vendor
+    rule, the Common gear axis 25c … 25s, repair at crafting stations in an
+    active claim; riding 1s10c / 7s / 1g63s / 7g33s, boats 1s10c / 7s,
+    respec 15c … 12s from a per-band income estimate
+    ([economy.md](design/economy.md)).
+  - **Travel (B, W, A; WP17 delivered):** boats as water mounts from the
+    Shipwright in every capital (L15 and L30), waystones in all six capitals
+    and starts with instant free travel between discovered stones, the
+    Kraken Guard at 10 nodes/s in deep ocean
+    ([boats.md](design/boats.md), [world.md](design/world.md) §6).
+  - **Mapgen bundle (M-res, M-geo):** gems by depth (T1 Citrine … T6
+    Diamond), `apex_sockets` removed, mapgen band data (Causeway 41–50,
+    Gravesalt and Skyglass 51–60), the Battlegrounds about 50 % larger with
+    a middle road from Highcourt to Gor Drazhak. A fresh world is required.
+  - **Spawn playtest fixes (P):** no spawn puff, leader HP 1.5×, the Basics
+    book's tiers (T6 shows 36 recipes).
+  - **Performance review** (read-only):
+    [perf-review-2026-10.md](research/perf-review-2026-10.md); its lanes
+    P1–P4 and the user's rulings are Round 30 in the
+    [BACKLOG](../BACKLOG.md#round-30--performance).
+  - **Final engine check PASS** (seeds 42 and 20261002): middle road,
+    Battlegrounds borders, bands, moved sites, channel, waystones and
+    Shipwrights, gems by band, clean load. Finding: the dragon-island boat
+    landings are mostly a one-node shore strip below high cliffs
+    ([BACKLOG](../BACKLOG.md#round-29-carry-overs)).
+  - Next: synchronize, fresh world, the user's GUI test.
+
 - **Round 28 complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
   Every lane is merged on main (last lane W1 `f35998d5`), synchronized to
@@ -33,23 +76,23 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
     else.
   - **Spawn regions:** every one of the 38 zones spawns its surface mobs
     from a rule recipe built on the seed's own terrain (32-node cells, belts,
-    terrain kinds, camps and leaders by rule; leaders 1.15× and 2× HP), with
+    terrain kinds, camps and leaders by rule; leaders 1.15× size and 2× HP,
+    1.5× HP since Round 29), with
     the border rule across zones ([spawn_regions.md](design/spawn_regions.md)).
     The Broken Causeway plays 41–50, Gravesalt Escarpment and The Skyglass
     Canopy 51–60 (gameplay band; the mapgen is unchanged).
   - **Players see:** each objective's target level range in the quest log
     and offer; the zone or town name under the minimap, zone markers on the
     Map tab and a short entry banner ([world_map.md](design/world_map.md)).
-  - **Interim:** the 240 legacy quests stay until new quest files replace
-    them (their XP is oversized against the new curve; 22 accepted
-    `W-recipe-target` warnings); the Causeway's plants and ores still follow
-    31–40. The quest content per race track, the front and island quests
-    move to Round 29
+  - **Interim (resolved in Round 29):** the 240 legacy quests stayed until
+    new quest files replaced them; the Causeway's plants and ores followed
+    31–40 until the mapgen band data. The quest content per race track, the
+    front and island quests moved to Round 29
     ([quests plan](planning/round29-quests-plan.md#1-why-this-is-its-own-step))
     with the [economy](planning/economy-vendor-plan.md),
     [boats and waypoints](planning/travel-boats-waypoints-plan.md) and a
     mapgen bundle.
-  - Next: fresh world and spawn playtest, then Round 29 planning.
+  - The spawn playtest (2026-10-02) fed Round 29 (findings P1–P4).
 
 - **Round 27 delivered and pushed** (2026-09-30, WP50,
   [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
@@ -176,9 +219,10 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** main carries Round 28, which includes Rounds 20–27
+- **Latest game:** local main carries Round 29, which includes Rounds 20–28
   and the 2026-09-28 playtest fixes. Round 24 is the latest accepted state;
-  the 2026-09-30 playtest with friends fed Round 28. Fresh-world development
+  the 2026-09-30 playtest with friends fed Round 28, the 2026-10-02 spawn
+  playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
@@ -192,7 +236,10 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 28 checklist](planning/round28-questing-leveling-plan.md#playtest-checklist)
+  The [Round 29 checklist](planning/round29-plan.md#playtest-checklist)
+  covers quests, economy, gems, prices, the Battlegrounds, boats and
+  waystones, the
+  [Round 28 checklist](planning/round28-questing-leveling-plan.md#playtest-checklist)
   covers the spawn regions, fixes, slots, feed and zone names, the
   [Round 27 checklist](planning/round27-minimap-plan.md#playtest-checklist)
   covers the minimap and map quality, the
@@ -202,7 +249,7 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
 - **Remote observation:** Round 28 is pushed complete (2026-10-02),
-  including all of Round 27 and its glide fixes.
+  including all of Round 27 and its glide fixes. Round 29 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

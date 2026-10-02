@@ -834,7 +834,7 @@ fixed compass words, and the cutover copper column.
 
 ### Open items
 
-In [BACKLOG](../../BACKLOG.md#round-28-carry-overs-and-round-29): the outpost
+In [BACKLOG](../../BACKLOG.md#round-28-carry-overs): the outpost
 seed (item 46), elite ideas never shipped, the loot text pass, six sub-types
 no recipe uses, steep zones without generated camp cells, clustered camps in
 Mournfen and Bannerbreak, the Q0 and M1 review notes. Branches: `r28-c2`

@@ -9,25 +9,33 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**40 delivered**, **3 canceled** (WP16, WP37, WP49), **11 open or partial**.
+**42 delivered**, **3 canceled** (WP16, WP37, WP49), **9 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
-WP28 followed in Round 26 and WP50 in Round 27. The audit's letters and
-numbers (for example E5) are cited below.
+WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29. The
+audit's letters and numbers (for example E5) are cited below.
 
 - **Latest delivery:
-  [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
-  complete and pushed** (2026-10-02): the 2026-09-30 playtest fixes (Track A), the questing and leveling
-  framework (Track B: sub-types and loot by band, the kill-equivalent XP
-  curve, per-zone quest data, self-contained professions), the catalogue
-  with 89 icons and the naming rule, rule-based spawn regions for all 38
-  zones with the border rule, The Broken Causeway 41–50 and
-  Gravesalt/Skyglass 51–60, quest-log level ranges and zone names. No WP
-  closes; it advances WP5, WP6, WP8 and WP10. The quest content moves
-  to Round 29 ([carry-overs](#round-28-carry-overs-and-round-29)). Next:
-  fresh world and spawn playtest, then Round 29 planning.
+  [Round 29 "Economy and travel"](docs/planning/round29-plan.md#completion-2026-10-02)
+  complete locally** (2026-10-02, not pushed): 491 quests on the Round 28
+  framework replace the 240 legacy quests (one track per race, the
+  contested 31–40 zones, the 41–60 front with repeatable and island
+  bounties; WP9 advances); WP44 delivered (one price module, 5% buy-back,
+  income-derived mount, boat and respec prices, claim-station repair D7);
+  WP17 delivered (boats as water mounts, the Shipwright, waystones at every
+  start and capital, the Kraken retune); a mapgen bundle (gems by depth,
+  `apex_sockets` removed, mapgen band data, the Battlegrounds 50 % wider
+  with a middle road); the spawn playtest fixes; a read-only
+  [performance review](docs/research/perf-review-2026-10.md). Next: fresh
+  world and GUI test, then [Round 30](#round-30--performance)
+  ([carry-overs](#round-29-carry-overs)).
+- [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
+  (2026-10-02, pushed): the 2026-09-30 playtest fixes, the questing and
+  leveling framework, the catalogue with 89 icons and the naming rule,
+  rule-based spawn regions for all 38 zones with the border rule,
+  quest-log level ranges and zone names. It advanced WP5, WP6, WP8 and WP10.
 - [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
   (2026-09-30; pushed): WP50 delivered — our own
   round minimap with quest, service, home and party markers in place of the
@@ -54,9 +62,8 @@ numbers (for example E5) are cited below.
   `/unstuck` (B3).
 - Open work without its own WP: friendly-guard healing stays deferred as a
   coherent support-combat feature (rule owner `combat_stats.md`); the T6 lava
-  lakes of `world.md` §4c stay planned (E3) with no scheduled owner; repair at
-  crafting stations inside a claim at the trader price (D7, Round 25
-  carry-overs below; proposed for Round 29 with the economy cutover).
+  lakes of `world.md` §4c stay planned (E3) with no scheduled owner. Repair at
+  crafting stations inside a claim (D7) shipped in Round 29.
 
 “Delivered” records the package's bounded development delivery. It does not mean
 all later refinements, release gates or user GUI checks have passed. Historical
@@ -71,22 +78,22 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP2 | First territory mapgen (superseded by WP40) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP3 | Character creation and original classes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP4 | Original ability framework | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Cultural/PvP finishes, masterwork (item-level-70 upgrade, D3) and the loot/demand audit open (the audit is proposed with Round 29's price calibration). Named rares drop no trophies (D4). | WP1 ✅, WP3 ✅, WP43 ✅ |
-| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)). Current rules: topic design. | — |
-| WP7 | Ledger currency and traders | Delivered (legacy price curve, 25% buy-back); WP44 replaces both. | — |
-| WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 20: 240 quests up to level 40 (legacy, kept until replaced). New quest files per race track, the front and the islands on the Round 28 framework are proposed for Round 29. **V1:** story levels 41–60 and the finale remain open. | WP6 ✅, WP8 ✅, WP40 ✅; WP41 for PvP-tag quests |
+| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Round 29's per-band payout calibration completes the loot/demand audit. Cultural/PvP finishes and masterwork (item-level-70 upgrade, D3) open. Named rares drop no trophies (D4). | WP1 ✅, WP3 ✅, WP43 ✅ |
+| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×. Current rules: topic design. | — |
+| WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
+| WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Broader story remains WP9. | — |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties. **V1:** the main storyline 41–60 and the finale remain open. | WP6 ✅, WP8 ✅, WP40 ✅; WP41 for PvP-tag quests |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; Round 28 makes every profession self-contained (no metal fittings; enchant inputs = own material + tier loot + a mined or gathered item). Cultural finishing and helper NPC services remain (cultural masters later, D11). | WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
-| WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2). | WP3 ✅, WP4 ✅, WP-Speed ✅ |
+| WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waypoints remain WP17. | — |
+| WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waystone markers came with WP17 (Round 29). | — |
 | WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72). Remaining: a separate POI walk (E2). | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands](docs/planning/work-package-scopes.md#wp14) | Delivered; closed 2026-09-29. Carried light canceled (C5). | WP3 ✅ |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
-| WP17 | [Boats and waypoint travel](docs/planning/work-package-scopes.md#wp17) | **V1.** Boats, waypoints at starts and capitals, Kraken retune; the boat route to the dragon islands comes from WP23. No `/unstuck` (B3). Innkeeper return and the Claim Stone travel home already delivered. Proposed for Round 29; the islands forbid flight, so boats are their designed access. | WP40 ✅, WP13 (shipwright) |
+| WP17 | [Boats and waypoint travel](docs/planning/work-package-scopes.md#wp17) | **V1.** Delivered in Round 29 ([travel plan completion](docs/planning/travel-boats-waypoints-plan.md#completion-2026-10-02)): boats as water mounts from the Shipwright in every capital (the only access to the dragon islands), waystones at every start and capital, the Kraken retune. No `/unstuck` (B3). GUI test pending. | WP40 ✅, WP13 ✅ |
 | WP18 | First continent map (superseded by WP40) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP19 | Original kit and race-passive tuning | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP20 | Same-faction parties | Delivered R14–19: persistent parties, management and optional HUD. | — |
@@ -100,7 +107,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP28 | [Remove superseded recipe/tool registrations](docs/planning/work-package-scopes.md#wp28) | Delivered in Round 26 Lane R: mobs_redo utility items removed (D5), silver-sandstone recipes removed (D6), all tier tools under `grug_materials:` with 12 aliases (D9), two surface critters at 0.75 density, `chance` 2200 → 2933 (C6). | — |
 | WP29 | [Gear/tool catalog](docs/planning/work-package-scopes.md#wp29) | Delivered; closed 2026-09-29. Tool-namespace unification moved to WP28. | WP26 ✅, WP43 ✅ |
 | WP30 | [Trader catalog](docs/planning/work-package-scopes.md#wp30) | Catalog delivered; closed 2026-09-29, prices merged into WP44 (C2). | — |
-| WP31 | [Mounts](docs/planning/work-package-scopes.md#wp31) | Delivered (C3); prices merged into WP44. | WP40 ✅ |
+| WP31 | [Mounts](docs/planning/work-package-scopes.md#wp31) | Delivered (C3); prices merged into WP44 and set in Round 29; boats are the water mode since Round 29. | WP40 ✅ |
 | WP32 | [Farming](docs/planning/work-package-scopes.md#wp32) | Delivered 2026-09-29 (C4), GUI acceptance pending; Claim Stone integration shipped with WP24. | WP24 ✅, WP33 ✅ |
 | WP33 | Gathering/source catalog | Delivered; Round 23 replaces exact-baseline renewal with habitat-driven renewal ([receipt](docs/research/round23-habitat-renewal.md)). Current rules: topic design. | — |
 | WP34 | [Deep spawn pulse](docs/planning/work-package-scopes.md#wp34) | Only the depth pulse remains; kept, for later (E5). Renewable camp resources removed. the Land Guard and the Rift Spawn's deep row join the pulse (E4); placement and servant roster open. | WP6 ✅, WP40 ✅ |
@@ -113,7 +120,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP41 | [Geographic PvP transaction](docs/planning/work-package-scopes.md#wp41) | **V1.** Open; geography seam delivered; WP5 hooks are consumption-only. Brief partly stale (death XP, Home Stone channel). | WP39 ✅, WP40 ✅ |
 | WP42 | [Bounded war-front encounters](docs/planning/work-package-scopes.md#wp42) | **After V1** (scripted battles; PvP POIs may come in V1). Anchors and art delivered; may precede WP41 (B6). | WP13 ✅, WP40 ✅ |
 | WP43 | Canonical material/depth registry | Delivered; Round 24 replaces pick depth bounds and shatter with tier rock and engine-native gating (rulings 1–8). Current rules: topic design. | — |
-| WP44 | [Economy rebase, lighter pass](docs/planning/work-package-scopes.md#wp44) | Open: price tables, 5% buy-back, audit fixes, quest copper rescale, respec and mount prices from a simple income estimate (D1, D2). Proposed for Round 29 as economy lanes E1–E5 (traders, prices and the cutover; gem tiers; quest copper; income estimate with mount and respec prices; documentation). Round 28 loot prices (tier = copper) are placeholders until then. | WP7 ✅, WP43 ✅ |
+| WP44 | [Economy rebase, lighter pass](docs/planning/work-package-scopes.md#wp44) | Delivered in Round 29 ([lane status](docs/planning/economy-vendor-plan.md#lane-status-round-29-2026-10-02)): one price module for every payout, 5% buy-back on vendor goods, the vendor rule and shelves, the audit fixes, quest copper from weight, repair at claim stations (D7), mount, boat and respec prices from a simple income estimate (D1, D2); gems by depth. GUI test pending. | WP7 ✅, WP43 ✅ |
 | WP45 | Character-creation stasis and safe arrival | Delivered; Round 24 makes creation pausable (ruling 32). Current rules: topic design. | — |
 | WP46 | Indirect terrain-damage guard | Partial: actor-neutral guard and protected water flow delivered; the fire/explosion remainder is deferred until a fire or explosion source exists (expected with V2's Nether) (E6). | WP40 ✅, WP24 ✅ |
 | WP47 | Skills catalog and recoverable representations | Delivered R12–13; current rules in inventory_equipment.md. | — |
@@ -277,14 +284,11 @@ none blocks the playtest.
   rare and suppress its spawn (consequence of ruling 24). Accepted by the user
   (E12); no work.
 - Housing follow-up: crafting stations inside an active claim repair at the
-  trader price, as a convenience (D7, `durability_repair.md`). Not scheduled;
-  the price source switches with WP44.
+  trader price, as a convenience (D7, `durability_repair.md`). **Done in
+  Round 29 Lane E1.**
 - The per-run early-out in `world_protection` (Lane E) relies on dyadic road
   profiles (multiples of 1/16). Revisit if road profiles change.
-- Remove `apex_sockets` from mapgen (E5): main still generates 24
-  hard-protected socket columns (`wp40/source/simple_map.lua:357-372`, `:471`,
-  `:489-495`; `r6_settlement.lua:1205-1231`) although the design has none.
-  Proposed for Round 29's mapgen bundle.
+- Remove `apex_sockets` from mapgen (E5). **Done in Round 29 Lane M-res.**
 
 ### Round 26 carry-overs
 
@@ -316,49 +320,17 @@ none blocks the playtest.
   inside a pewter bezel, merged as `9c8ece8c`;
   [follow-up](docs/planning/round27-minimap-plan.md#follow-up-gliding-minimap-2026-09-30)).
 
-### Round 28 carry-overs and Round 29
+### Round 28 carry-overs
 
-**Noted 2026-10-02** ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02));
-none blocks the spawn playtest. Round 29 "Economy and travel" is not yet a
-round plan; its inputs, approved by the user on 2026-10-02, are the
-[quests plan](docs/planning/round29-quests-plan.md) (why the quests moved:
-[§1](docs/planning/round29-quests-plan.md#1-why-this-is-its-own-step)), the
+**Noted 2026-10-02** ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
+The Round 29 content proposed here (quest files per race track, the
+contested zones and the front; economy lanes E1–E5; WP17; the mapgen bundle
+with gem depth tiers, `apex_sockets` removal, the wider Battlegrounds, the
+middle road and mapgen band data) is **delivered in Round 29**
+([completion](docs/planning/round29-plan.md#completion-2026-10-02)); its
+inputs were the [quests plan](docs/planning/round29-quests-plan.md), the
 [economy plan](docs/planning/economy-vendor-plan.md) and the
 [boats and waypoints plan](docs/planning/travel-boats-waypoints-plan.md).
-
-**Round 29 content (proposed):**
-
-- **Quest files on the Round 28 framework:** one change per race track
-  (start, home zone, capital, 21–30; `quests.md` "For content lanes"), the
-  six 31–40 contested zones, and the front lane (quests from 31–40 outposts
-  and capitals into the 41–60 zones, repeatable bounties, island quests that
-  never assume flight). They replace the 240 legacy quests, whose XP is
-  oversized against the new curve (`progression.md` "Legacy values"), and
-  their 22 accepted `W-recipe-target` warnings. First a small quest-core
-  step: direction placeholders in quest texts filled from
-  `spawn_regions.describe` ([spawn_regions.md](docs/design/spawn_regions.md#directions)),
-  a load check that rejects fixed compass words, and the cutover copper
-  column ([economy plan §4](docs/planning/economy-vendor-plan.md#4-quest-copper)). Then the leveling ledger and kill reachability
-  per track (Round 28 plan "Coordination"). The unmerged branch `r28-c2`
-  (44 Human-route quests, texts and leaders) is content input only; its
-  spawn areas are rejected.
-- **Economy lanes E1–E5** (WP44 row), with claim-station repair (D7), the
-  loot text pass below and the WP5 loot/demand audit.
-- **WP17** boats and waypoints
-  ([travel plan](docs/planning/travel-boats-waypoints-plan.md)).
-- **Mapgen bundle** (one fresh world): gem depth tiers and the
-  `apex_sockets` removal (Round 25 carry-overs), both from the
-  [economy plan §10](docs/planning/economy-vendor-plan.md#10-proposal-for-round-29-economy-and-travel);
-  from the [travel plan](docs/planning/travel-boats-waypoints-plan.md#4-mapgen-needs-for-the-round-29-mapgen-bundle)
-  and the [quests plan](docs/planning/round29-quests-plan.md#5-order-and-dependencies-in-round-29):
-  the Battlegrounds 50 %
-  larger in z, the area taken equally from both factions' contested 31–40
-  zones (total map size unchanged; POIs in the donor strips move toward
-  their home side); one road across the Battlegrounds at the map's x-middle
-  joining both continents; mapgen band data for The Broken Causeway (41–50)
-  and Gravesalt/Skyglass (51–60), so plants and resources follow the
-  gameplay bands of `grug_core/zone_bands.lua` (today the Causeway's still
-  follow 31–40).
 
 **Future package — outpost seed** (Round 28 plan item 46, user G8): a
 player-placed seed in contested land spawns workers who build a small fort;
@@ -369,11 +341,9 @@ playtest of the front quests and bounties.
 
 - Elite ideas never shipped (dropped from the catalogue ideas): Rat King,
   Old/Giant Boar, Silver Fox, Rotting Brute, an elite Giant Scorpion.
-- Loot text pass: items of one kind carry identical descriptions across
-  tiers; T5/T6 outlaws drop "Spider Silk" by design (recovered cloth;
-  [catalogue README](docs/planning/round28/design/catalog/README.md#existing-recipe-materials),
-  [catalog/economy.md](docs/planning/round28/design/catalog/economy.md)), a
-  naming oddity. Proposed with Round 29 E1.
+- Loot text pass (identical descriptions across tiers, "Spider Silk" from
+  T5/T6 outlaws): **done in Round 29 Lane E1** (tier-distinct lines, shown as
+  Raw Silk).
 - Six of the 195 sub-types appear in no recipe (measured 2026-10-02): the
   optional cap-1 elites `causeway_construct`, `siege_war_construct`,
   `seam_mesa_golem`, `seam_stone_golem` and `crown_stone_golem` (a recipe
@@ -381,15 +351,17 @@ playtest of the front quests and bounties.
 
 **Spawn regions:**
 
-- Steep zones get no generated camp cells.
+- Steep zones get no generated camp cells. Partly addressed in Round 29
+  (M-geo): a camp with no block meeting every rule takes its flattest block
+  up to slope 0.5.
 - Camps sit in tight clusters in Mournfen and Bannerbreak.
 
 **Quest system (Lane Q0 review notes, low severity):**
 
 - The zone-band fallback of a target's level range ignores a definition's
-  own min/max levels (legacy start quests show zombies as 1–7).
-- For zone-filtered kills the displayed zone and the zone used for the level
-  fit can differ.
+  own min/max levels, and for zone-filtered kills the displayed zone and the
+  zone used for the level fit can differ. Only legacy objectives reached
+  these paths; they go with the legacy fields (Round 29 carry-overs).
 - The game (Lua) and `tools/r28_design` (Python) disagree at edges on item
   sources.
 - Wording: "level" in the quest log, "levels" on the Map tab (M1).
@@ -399,6 +371,89 @@ playtest of the front quests and bounties.
 - The zone marker icon on the Map tab is a placeholder for art.
 - On very small windows the entry banner and the flight warning may lack
   clearance.
+
+### Round 29 carry-overs
+
+**Noted 2026-10-02** ([completion](docs/planning/round29-plan.md#completion-2026-10-02));
+none blocks the fresh-world playtest.
+
+- **Band-5 loot median smoothing** (user, 2026-10-02: prices kept for now).
+  E1's band-5 median per kill lands above its target and band 4's below,
+  so band 5's income rises ×3.6 over band 4 instead of ×2.5 and Expert
+  Riding is steep (1g63s against 1g38s on the target axis; Master 7g33s
+  against 8g76s). Smoothing the band medians would move the E4 prices
+  (`tools/r29_e4/income.py --check`). A few band-3 loot outliers have no T3
+  replacement.
+- **Quests the new format cannot express:** kill objectives name only
+  spawn-recipe roles and leaders, so enemy-faction guard quests and PvP
+  quests (which also need WP41's tag) have no form. A design step first.
+- **Legacy quest fields in code:** no shipped quest uses `mobs`, `zone`,
+  fixed `xp`, `faction`/`race` gates or the line `legacy`, but
+  `grug_quests` (`registry.lua`, `validate.lua` incl. `LEGACY_GUARDS`) and
+  `tools/r28_design/validate.py` (`--legacy`, its README) still accept
+  them. Remove in fresh-server mode.
+- **Possible bugs** (perf review side observations, not reproduced):
+  Dawnmere once held 53 NPC objects after 13 logged placements (duplication?);
+  mobs_redo `general_attack` raises the mob's eye height per candidate
+  (`sp = s` aliases the position, then `sp.y = sp.y + 1` in the loop).
+- **Dragon-island landings** (final engine check 2026-10-02): the boat
+  landings are mostly a one-node shore strip at y 1 with cliffs 40–130
+  nodes high about 5 nodes inland (seed 42 both landings, seed 20261002 the
+  south landing; the other was a real beach). The islands are boat-only, so
+  stepping ashore may be hard or impossible. Mapgen: guarantee a walkable
+  beach or ramp at each landing; check in the user's GUI playtest first.
+- **Pallcloth Den** (Blackwind Rise): its trail now joins the middle road,
+  so it runs along the front; check in the playtest.
+- **Thin front areas:** Gravesalt `tomb_fen` forms only 1–2 regions on some
+  seeds (2.6 % of the land on seed 1234) and Shattered Line `siegecrest`
+  3.8 % on seed 314159; their quest targets form on all six checked seeds.
+  Blackwind Rise's bandit hideout uses the camp slope fallback on seeds 42,
+  2 and 99 (0.42–0.47; accepted). Mournfen's camp belt warns on seed 99999
+  in the region renderer.
+- **Stale fixtures:** `tools/r24_density_xp/fixture.lua` and
+  `tools/r25_spawn_guard/fixture.lua` fail on main: `r24_density_xp/
+  roster.lua` reads the removed `grug_mobs/wp40/r7_settlement.lua`.
+- Smaller notes: the POI "West Trench Mouth" trips the compass-word rule
+  (quests must not name it); T1 trinkets keep Cut Quartz (accepted); the
+  bronze tool stock against the gear axis and base-mob fallback drops (E1
+  review notes).
+
+### Round 30 — performance
+
+**Next round** (user, 2026-10-02), from the read-only
+[performance review](docs/research/perf-review-2026-10.md) (§5 lane
+split; numbers are comparisons, never targets). Rulings of 2026-10-02:
+
+- **#4 yes:** mobs give up a static target they cannot reach instead of
+  repeating a full no-path A* forever.
+- **Region-map file cache yes** (#2, design in §3 of the report): boot
+  9.5 s of region-map builds → about 2 ms of loading.
+- **#3 Map tab:** the arrow and the rebuild at most every 2 s, a rebuild
+  only when the marker signature changes, one shared marker style.
+- **#11 spawn ABMs:** retire the surface spawn ABMs where the region
+  spawner is authoritative; merge the rest (underground, ocean, rift) into a
+  few ABMs.
+- The other findings as the report recommends.
+
+Lanes:
+
+- **P1 Quest state and map UI:** #1 (quest state deserialized per giver),
+  #5 (tracker HUD in one step), #3 (Map tab), #12 (minimap glide), the NPC
+  tag callback part of #10.
+- **P2 Mob pathing and allocation:** #4, #13 (stuck patrol A*), #6
+  (`get_properties()` per step), #17 (privilege checks), #18 (`mobs_can_hear
+  = false`), and #11 (spawn ABMs).
+- **P3 Region-map cache and boot memory:** #2, #9, #20, #21; investigate
+  #22 (grug_mapgen load on a cache hit).
+- **P4 Per-player ticks and misc:** #7 (crafting recipe scan), #8
+  (crosshair rays), #10 (tag-carrier slotting), #14, #15, #16, #19.
+
+Order: P1 and P3 in parallel, then P2 and P4; each lane re-runs its probe
+as a before/after comparison.
+
+Carry-over for Round 30 beside the performance lanes (mapgen, after the GUI
+playtest confirms it): a walkable beach or ramp at each dragon-island boat
+landing ([Round 29 carry-overs](#round-29-carry-overs)).
 
 ### Round 26 capital wall follow-ups
 

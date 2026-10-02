@@ -198,9 +198,17 @@ on main after every merge (the `tools/r2*_*/portable_test.lua` fixtures,
 through one integration branch after the user approved a quest sample
 per track (quests plan Q3):
 quest targets ok 1033, 0 missing; every fixture and the headless boot
-passed. Not pushed. Next: the final fresh-world engine check (§5, the
-x = 0 strip), synchronization, then the user's GUI test on a fresh world
-(checklist below).
+passed. Not pushed.
+
+**Final engine check (§5), PASS** on seeds 42 and 20261002: the middle road
+is continuous and reaches the capital gates; the Battlegrounds borders lie
+at |z| ≈ 320–452; levels stay in their bands; the moved camps and clash
+sites are protected; the channel is intact; 12 waystones and 6 shipwright
+sockets with their Shipwright NPCs; gems only in their band; a clean load
+with the 38 region maps built at start in 9.5–10 s. One finding: the
+dragon-island boat landings are mostly a one-node shore strip below high
+cliffs (open item below). Next: synchronization, then the user's GUI test
+on a fresh world (checklist below).
 
 ### Shipped, by lane
 
@@ -317,8 +325,9 @@ x = 0 strip), synchronization, then the user's GUI test on a fresh world
 In [BACKLOG](../../BACKLOG.md#round-29-carry-overs): Round 30 performance
 (lanes P1–P4), band-5 loot median smoothing, PvP and enemy-guard quests
 the new quest format cannot express, possible bugs (Dawnmere NPC
-duplication seen once, `general_attack` eye height), the Pallcloth Den trail
-along the front, thin front areas (`tomb_fen`, `siegecrest`), the legacy
+duplication seen once, `general_attack` eye height), the dragon-island
+landings (a walkable beach or ramp at each), the Pallcloth Den trail along
+the front, thin front areas (`tomb_fen`, `siegecrest`), the legacy
 quest fields the game still reads, and two stale fixtures.
 
 ### Playtest checklist
@@ -358,5 +367,8 @@ On a fresh world (all of Round 29 needs one):
    Boat at 30, the channel row to an island beach, the Kraken in deep ocean;
    the own start's waystone known, discovering a capital waystone, instant
    travel, combat and enemy-faction refusals.
-10. **Spawn fixes:** no smoke puff when mobs appear; leaders have a quarter
+10. **Island landings:** land a boat at both landings of each dragon island
+    and try to step ashore; the engine check found mostly a one-node shore
+    strip below cliffs 40–130 nodes high, so note where you cannot get up.
+11. **Spawn fixes:** no smoke puff when mobs appear; leaders have a quarter
     less HP than before (1.5× instead of 2×); the Basics book lists T6 recipes.
