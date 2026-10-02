@@ -64,7 +64,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:bog_ooze"
+            "grug_mobs:bog_ooze",
+            "grug_mobs:sullen_bog_ooze"
           ],
           "zone": "kragmar_mournfen",
           "count": 6
@@ -94,7 +95,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:crocodile"
+            "grug_mobs:crocodile",
+            "grug_mobs:reed_crocodile"
           ],
           "zone": "kragmar_mournfen",
           "count": 6
@@ -125,7 +127,8 @@
           "type": "kill",
           "mobs": [
             "grug_mobs:bandit",
-            "grug_mobs:bandit_archer"
+            "grug_mobs:bandit_archer",
+            "grug_mobs:quarrelsome_bandit"
           ],
           "zone": "kragmar_mournfen",
           "count": 4
@@ -182,7 +185,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:plague_boar"
+            "grug_mobs:plague_boar",
+            "grug_mobs:young_boar"
           ],
           "zone": "kragmar_mournfen",
           "count": 5
@@ -239,7 +243,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:bog_ooze"
+            "grug_mobs:bog_ooze",
+            "grug_mobs:sullen_bog_ooze"
           ],
           "zone": "kragmar_mournfen",
           "count": 5

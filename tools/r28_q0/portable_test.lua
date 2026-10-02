@@ -118,7 +118,8 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 -- zone_bands.lua, as grug_zones serves them).
 local BANDS = {}
 local zone_bands = dofile("mods/CORE/grug_core/zone_bands.lua")
-for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
+local MAP_SOURCE = dofile("mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
+for _, row in ipairs(MAP_SOURCE.zones) do
 	BANDS[row.id] = zone_bands.apply({level_min = row.level_min, level_max = row.level_max}, row.id)
 end
 
@@ -136,6 +137,7 @@ local function install_world(mobs_root)
 		if data and data.recipe then
 			recipes[zone] = regions_core.parse_recipe(zone, data.recipe, {
 				band = {BANDS[zone].level_min, BANDS[zone].level_max},
+				pois = function(id) return regions_core.zone_pois(MAP_SOURCE, id) end,
 				role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
 				leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,
 			})

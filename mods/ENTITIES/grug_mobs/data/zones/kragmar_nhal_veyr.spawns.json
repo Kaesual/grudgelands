@@ -1,6 +1,60 @@
 {
   "zone": "kragmar_nhal_veyr",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "kragmar_blackwind_rise"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "blightfields", "name": "Nhal Veyr Blightfields",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "debtbound_husk", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "bank": {"id": "sumpbanks", "name": "Nhal Veyr Sumpbanks",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "bonewood", "name": "Nhal Veyr Bonewood",
+            "day": [{"role": "furrow_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "gravefields", "name": "Nhal Veyr Gravefields",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "mournbanks", "name": "Nhal Veyr Mournbanks",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "pallwood", "name": "Nhal Veyr Pallwood",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "tombfields", "name": "Nhal Veyr Tombfields",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "stubborn_husk", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "deadwater", "name": "Nhal Veyr Deadwater",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "gravewood", "name": "Nhal Veyr Gravewood",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "monstrous_boar", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "highland": {"id": "barrows", "name": "Nhal Veyr Barrows",
+            "day": [{"role": "stubborn_husk", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+    ],
+    "leaders": [
+      {"role": "mortuary_clerk_hush", "at": {"kind": "tombfields", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

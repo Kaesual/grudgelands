@@ -69,7 +69,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:scorpion"
+            "grug_mobs:scorpion",
+            "grug_mobs:war_stinger"
           ],
           "zone": "kragmar_bannerbreak_mesa",
           "count": 4
@@ -149,7 +150,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:skeleton_raider"
+            "grug_mobs:skeleton_raider",
+            "grug_mobs:march_skeleton_raider"
           ],
           "zone": "kragmar_bannerbreak_mesa",
           "count": 4

@@ -64,7 +64,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:hyena"
+            "grug_mobs:hyena",
+            "grug_mobs:dustpack_hyena"
           ],
           "zone": "kragmar_redtusk_savanna",
           "count": 6
@@ -94,7 +95,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:scorpion"
+            "grug_mobs:scorpion",
+            "grug_mobs:dust_stinger"
           ],
           "zone": "kragmar_redtusk_savanna",
           "count": 6
@@ -125,7 +127,8 @@
           "type": "kill",
           "mobs": [
             "grug_mobs:bandit",
-            "grug_mobs:bandit_archer"
+            "grug_mobs:bandit_archer",
+            "grug_mobs:quarrelsome_bandit"
           ],
           "zone": "kragmar_redtusk_savanna",
           "count": 4
@@ -209,7 +212,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:hyena"
+            "grug_mobs:hyena",
+            "grug_mobs:dustpack_hyena"
           ],
           "zone": "kragmar_redtusk_savanna",
           "count": 4

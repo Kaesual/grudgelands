@@ -419,6 +419,8 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 	local areas = world.zone_areas(kill_zone)
 	if #areas == 0 then return end
 	for _, name in ipairs(V.target_names(objective)) do
+		-- Guards stand at their guard posts, never in a recipe's regions.
+		if V.LEGACY_GUARDS[name] then return end
 		local role = name:match("^grug_mobs:(.+)$") or name
 		local leader = world.leader(role)
 		if leader and leader.zone == kill_zone then return end

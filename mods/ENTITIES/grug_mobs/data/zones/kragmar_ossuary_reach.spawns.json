@@ -1,6 +1,75 @@
 {
   "zone": "kragmar_ossuary_reach",
-  "palette": {
-    "families": ["forest", "gravewood_treant"]
+  "recipe": {
+    "from": {"border": ["kragmar_nhal_veyr", "kragmar_mournfen"]},
+    "to": {"border": "kragmar_blackwind_rise"},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "ashfields", "name": "Ossuary Ashfields",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shellbeach", "name": "Ossuary Shellbeach",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "sumps", "name": "Ossuary Sumps",
+            "day": "open",
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "bonewood", "name": "Ossuary Bonewood",
+            "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "cairn_ridge", "name": "Ossuary Cairn Ridge",
+            "day": [{"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "barrowlands", "name": "Ossuary Barrowlands",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "territorial_bear", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "shore": {"id": "saltbones", "name": "Ossuary Saltbones",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "bonemire", "name": "Ossuary Bonemire",
+            "day": "open",
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "webwood", "name": "Ossuary Webwood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "highland": {"id": "barrow_ridge", "name": "Ossuary Barrow Ridge",
+            "day": [{"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "gravefields", "name": "Ossuary Gravefields",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreckbones", "name": "Ossuary Wreckbones",
+            "day": [{"role": "armored_crab", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "blackmire", "name": "Ossuary Blackmire",
+            "day": "open",
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "deepwood", "name": "Ossuary Deepwood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crypt_heights", "name": "Ossuary Crypt Heights",
+            "day": [{"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "barrow_skeleton_archer", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+    ],
+    "leaders": [
+      {"role": "marrow_archivist", "at": {"kind": "deepwood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["bone_weevil"]
   }
 }

@@ -302,11 +302,40 @@ for id in pairs(now.quests) do if not oracle.quests[id] then extra = extra + 1 e
 eq(count, 240, "oracle holds 240 quests")
 eq(extra, 0, "no quest beyond the oracle")
 -- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
--- its three kill quests (a zone with a spawn recipe spawns only those).
+-- its three kill quests (a zone with a spawn recipe spawns only those). The
+-- S2 recipe lanes do the same for their zones' legacy kill quests (S2 rule
+-- 11): a quest whose only change is sub-types appended to its kill
+-- objectives' mob lists is such an addition.
+local DAWNMERE = {r14_human_01_boars_beyond_the_fence = true,
+	r14_human_04_shapes_by_lanternlight = true, r14_human_05_the_missing_flock = true}
+local function subtypes_appended(got, expected)
+	if not got then return false end
+	local was = deep_copy(expected)
+	for i, objective in ipairs(was.objectives) do
+		local now_mobs = got.objectives[i] and got.objectives[i].mobs
+		if objective.type == "kill" and objective.mobs and now_mobs then
+			for k, name in ipairs(objective.mobs) do
+				if now_mobs[k] ~= name then return false end
+			end
+			for k = #objective.mobs + 1, #now_mobs do
+				if not now_mobs[k]:match("^grug_mobs:") then return false end
+			end
+			objective.mobs = now_mobs
+		end
+	end
+	return json.encode(got) == json.encode(was)
+end
 table.sort(differing)
-eq(table.concat(differing, " "), "r14_human_01_boars_beyond_the_fence " ..
-	"r14_human_04_shapes_by_lanternlight r14_human_05_the_missing_flock",
-	"exactly the three Dawnmere kill quests differ (Ruling 29, Lane S1)")
+local unexplained, recipe_subtypes = {}, 0
+for _, id in ipairs(differing) do
+	if DAWNMERE[id] then DAWNMERE[id] = "seen"
+	elseif subtypes_appended(now.quests[id], oracle.quests[id]) then recipe_subtypes = recipe_subtypes + 1
+	else unexplained[#unexplained + 1] = id end
+end
+eq(table.concat(unexplained, " "), "", "beyond the three Dawnmere kill quests (Ruling 29, Lane S1) " ..
+	"only appended kill sub-types differ (S2 rule 11)")
+for id, seen in pairs(DAWNMERE) do eq(seen, "seen", id .. " differs from the oracle") end
+print(("  %d further legacy kill quests take their zone recipe's sub-types"):format(recipe_subtypes))
 for id, mobs in pairs({
 	r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
 	r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",
@@ -694,6 +723,12 @@ do
 	quest_of(files, "fx_hunt_01").level = 9
 	_, warnings = V.world(files, loader_world)
 	eq(about(warnings, "fx_hunt_01"), 0, "the zone's leader counts as spawned")
+	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
+	-- regions, so the recipe check skips them.
+	files = deep_copy(base_files)
+	quest_of(files, "fx_legacy").objectives[1].mobs = {"grug_mobs:guard_throng"}
+	_, warnings = V.world(files, loader_world)
+	eq(about(warnings, "fx_legacy"), 0, "a legacy guard target: no recipe-target warning")
 end
 local cases = {
 	{"critter as a kill target", "E-critter-target", "fx_hunt_01", function(f)

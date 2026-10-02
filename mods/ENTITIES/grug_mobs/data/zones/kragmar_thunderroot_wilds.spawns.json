@@ -1,7 +1,73 @@
 {
   "zone": "kragmar_thunderroot_wilds",
-  "palette": {
-    "families": ["bog_witch", "jungle"],
-    "lookalikes": {"cat": "grug_mobs:panther", "spider": "grug_mobs:jungle_spider"}
+  "recipe": {
+    "from": {"border": ["kragmar_kezamba", "kragmar_totemwater_reach", "kragmar_whispering_reedlands"]},
+    "to": {"border": ["front_shattered_line", "front_skyglass_canopy"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "clearings", "name": "Thunderroot Clearings",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "marching_zombie", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "bogs", "name": "Thunderroot Bogs",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "canopy", "name": "Thunderroot Canopy",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "stalking_panther", "weight": 3}, {"role": "canopy_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crags", "name": "Thunderroot Crags",
+            "day": [{"role": "territorial_ape", "weight": 1}],
+            "night": [{"role": "stalking_panther", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "glades", "name": "Thunderroot Glades",
+            "day": [{"role": "coiled_serpent", "weight": 3}, {"role": "territorial_ape", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shallows", "name": "Thunderroot Shallows",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "witchmire", "name": "Thunderroot Witchmire",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "reed_hex_witch", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "deepwood", "name": "Thunderroot Deepwood",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
+          "highland": {"id": "ridges", "name": "Thunderroot Ridges",
+            "day": [{"role": "territorial_ape", "weight": 1}],
+            "night": [{"role": "stalking_panther", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "stormglades", "name": "Thunderroot Stormglades",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "hexfen", "name": "Thunderroot Hexfen",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "reed_hex_witch", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "heartwood", "name": "Thunderroot Heartwood",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
+          "highland": {"id": "peaks", "name": "Thunderroot Peaks",
+            "day": [{"role": "territorial_ape", "weight": 1}],
+            "night": [{"role": "stalking_panther", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "rainchar_camp", "name": "Rainchar Camp", "belt": "l38_40", "site": {"poi": "bandit"},
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16}
+    ],
+    "leaders": [
+      {"role": "storm_bottle_witch", "at": {"kind": "heartwood", "pick": "farthest_from_roads"}, "respawn": 300},
+      {"role": "bottle_keeper_zek", "at": {"kind": "stormglades", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

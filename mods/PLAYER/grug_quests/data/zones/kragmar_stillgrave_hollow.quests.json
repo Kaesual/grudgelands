@@ -38,7 +38,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:plague_boar"
+            "grug_mobs:plague_boar",
+            "grug_mobs:small_boar"
           ],
           "count": 3
         }
@@ -119,7 +120,9 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:zombie"
+            "grug_mobs:zombie",
+            "grug_mobs:braindead_zombie",
+            "grug_mobs:sluggish_zombie"
           ],
           "count": 3
         }

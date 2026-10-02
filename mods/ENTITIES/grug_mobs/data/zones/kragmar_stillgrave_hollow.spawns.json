@@ -1,7 +1,65 @@
 {
   "zone": "kragmar_stillgrave_hollow",
-  "palette": {
-    "families": ["giant_rat", "settled"],
-    "boar": "grug_mobs:plague_boar"
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "kragmar_mournfen"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "dead_furrows", "name": "Stillgrave Dead Furrows",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "ashfields", "name": "Stillgrave Ashfields",
+            "day": [{"role": "small_boar", "weight": 3}, {"role": "braindead_zombie", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "bone_strand", "name": "Stillgrave Bone Strand",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
+          "highland": {"id": "barrow_hills", "name": "Stillgrave Barrow Hills",
+            "day": [{"role": "braindead_zombie", "weight": 3}, {"role": "small_boar", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "blightmoor", "name": "Stillgrave Blightmoor",
+            "day": [{"role": "young_gaunt_stag", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "saltbones", "name": "Stillgrave Saltbones",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+          "highland": {"id": "cairn_ridge", "name": "Stillgrave Cairn Ridge",
+            "day": [{"role": "sluggish_zombie", "weight": 3}, {"role": "young_gaunt_stag", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "deadlands", "name": "Stillgrave Deadlands",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "drowned_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_shore", "name": "Stillgrave Wreck Shore",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "robbers_camp", "name": "Stillgrave Robbers' Camp", "belt": "l8_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "grave_robber_chief", "at": {"camp": "robbers_camp"}, "respawn": 300}
+    ],
+    "critters": ["hare"]
   }
 }
