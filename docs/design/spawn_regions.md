@@ -107,7 +107,9 @@ table order.
    No candidate is logged as a problem; the camp and its leader are then
    missing.
 8. **Leaders** stand at a camp centre, or on the cell farthest from roads in
-   the largest region of a kind; their level is the top of their region.
+   the largest region of a kind; their level is the top of their region. In
+   the game a zombie-family leader steps to the nearest blight-dirt column
+   within 16 nodes of that spot, where it is sunproof (biomes_mobs.md §4.2).
 
 Unchanged by regions: underground and water spawns, rares, vendors, guards,
 the mapgen.

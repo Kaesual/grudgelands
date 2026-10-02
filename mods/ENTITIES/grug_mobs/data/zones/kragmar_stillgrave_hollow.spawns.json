@@ -16,13 +16,13 @@
         "id": "l3_4", "share": 30, "levels": [3, 4],
         "kinds": {
           "open": {"id": "ashfields", "name": "Stillgrave Ashfields",
-            "day": [{"role": "small_boar", "weight": 3}, {"role": "befuddled_husk", "weight": 1}],
+            "day": [{"role": "small_boar", "weight": 3}, {"role": "braindead_zombie", "weight": 1}],
             "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
           "shore": {"id": "bone_strand", "name": "Stillgrave Bone Strand",
             "day": [{"role": "quiet_shore_crab", "weight": 1}],
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
           "highland": {"id": "barrow_hills", "name": "Stillgrave Barrow Hills",
-            "day": [{"role": "befuddled_husk", "weight": 3}, {"role": "small_boar", "weight": 1}],
+            "day": [{"role": "braindead_zombie", "weight": 3}, {"role": "small_boar", "weight": 1}],
             "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"}
         }
       },
@@ -36,7 +36,7 @@
             "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
           "highland": {"id": "cairn_ridge", "name": "Stillgrave Cairn Ridge",
-            "day": [{"role": "sluggish_husk", "weight": 3}, {"role": "young_gaunt_stag", "weight": 1}],
+            "day": [{"role": "sluggish_zombie", "weight": 3}, {"role": "young_gaunt_stag", "weight": 1}],
             "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"}
         }
       },

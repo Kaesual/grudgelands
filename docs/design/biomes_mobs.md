@@ -1133,7 +1133,12 @@ gate, protected surface).
   natural light at noon must be at least 10 (no cave floor and no roofed
   room even under a lamp, while ground under a leaf canopy counts), a day
   pick needs light ≥ 10, and at night a hostile pick needs light ≤ 5, so
-  torch-lit ground stays safe. No per-mob row gate, domain or spawn check
+  torch-lit ground stays safe. **Blight ground** (Round 28 S2b): a
+  zombie-family role set on `grug_nodes:blight_dirt` is sunproof
+  (`light_damage = 0`, the legacy blight row's rule; one helper,
+  `grug_mobs.blight_sunproof`), and by day a role that burns in daylight
+  spawns only there, so a day roster may hold blight-ground zombies
+  (Stillgrave). No per-mob row gate, domain or spawn check
   applies to a region spawn (the recipe is the authority). Every region mob
   carries `_grug_area = "<zone_id>/<kind id>"` and `_grug_spawn_clock`
   (both persisted) and a level rolled uniformly in its role's range (the
@@ -1178,7 +1183,11 @@ gate, protected surface).
 - **Leaders (ruling 38)** at their rule-placed spot (a camp centre, or the
   cell farthest from roads of the largest region of a kind; snapped to the
   nearest standable column within 4 nodes), with the level at the top of
-  their region; `_grug_leader = true`, no area tag. Every leader sub-type is
+  their region; `_grug_leader = true`, no area tag. A zombie-family leader
+  stands on the nearest blight-dirt column within 16 nodes of its spot when
+  there is one (a cell is typed by its majority biome, so the spot's own
+  column may be another's), and any leader set on blight dirt is sunproof:
+  Mortuary-Clerk Hush survives the day (Round 28 S2b). Every leader sub-type is
   1.15× the base model's size (whatever the catalogue's `size`) with twice
   the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
   leader spawns when a player is within 48 nodes of its spot (inside the

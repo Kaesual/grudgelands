@@ -615,12 +615,45 @@ function SR.pick_role(roster, roll)
 	return list[#list].role, list[#list].weight
 end
 
+-- The blight identity (biomes_mobs.md §3.1, zombie.lua's blight row): on
+-- blight dirt a zombie does not burn in daylight. mobs_redo reads
+-- `self.light_damage` per entity on every environment tick, and a plain
+-- number field persists in staticdata, so clearing it on the one mob keeps
+-- every other zombie's daylight burn. The legacy blight ABM uses the same
+-- helper.
+SR.BLIGHT_GROUND = "grug_nodes:blight_dirt"
+function grug_mobs.blight_sunproof(ent)
+	ent.light_damage = 0
+end
+
+-- A zombie-family role, or any leader, set on blight dirt is sunproof (a
+-- leader's fixed spot on blight survives the day, as the catalogue asks of
+-- Mortuary-Clerk Hush). Returns true when it applied.
+function SR.sunproof_on_blight(ent, role, node, leader)
+	if node ~= SR.BLIGHT_GROUND then
+		return false
+	end
+	local family = grug_mobs.family_of and grug_mobs.family_of(role) or role
+	if not leader and family ~= "zombie" then
+		return false
+	end
+	grug_mobs.blight_sunproof(ent)
+	return true
+end
+
 -- Puts one mob of `unit` (a kind or a camp) on ground point `g`: the role's
 -- entity, the unit's tag, the spawn clock and a level in the role's range.
 -- Returns the entity or nil.
 function SR.spawn_mob(unit, role, g, clock)
 	local name = MOD_PREFIX .. role
-	if not core.registered_entities[name] then
+	local def = core.registered_entities[name]
+	if not def then
+		return nil
+	end
+	-- By day a mob that burns in daylight spawns only where it is sunproof
+	-- (a zombie on blight dirt; the catalogue: a day source needs that host).
+	if clock == "day" and (def.light_damage or 0) > 0 and not (g.node == SR.BLIGHT_GROUND and
+			(grug_mobs.family_of and grug_mobs.family_of(role) or role) == "zombie") then
 		return nil
 	end
 	local spot = mobs:can_spawn({x = g.x, y = g.y + 1, z = g.z}, name)
@@ -634,6 +667,7 @@ function SR.spawn_mob(unit, role, g, clock)
 	-- Plain fields, persisted with the mob.
 	ent._grug_area = unit.tag
 	ent._grug_spawn_clock = clock
+	SR.sunproof_on_blight(ent, role, g.node, false)
 	local range = unit.levels_by_role[role]
 	grug_mobs.relevel(ent, math.random(range[1], range[2]))
 	return ent
@@ -845,8 +879,43 @@ end
 -- (a rule-placed spot may land on a tree trunk or a boulder).
 local SPOT_RINGS = {{0, 0}, {2, 0}, {-2, 0}, {0, 2}, {0, -2}, {2, 2}, {-2, 2}, {2, -2},
 	{-2, -2}, {4, 0}, {-4, 0}, {0, 4}, {0, -4}}
-local function leader_ground(spot)
+-- Offsets on a 4-node grid within PREFER_REACH of a spot, nearest first.
+local PREFER_REACH = 16
+local prefer_offsets
+local function near_offsets()
+	if not prefer_offsets then
+		prefer_offsets = {}
+		for dx = -PREFER_REACH, PREFER_REACH, 4 do
+			for dz = -PREFER_REACH, PREFER_REACH, 4 do
+				if dx * dx + dz * dz <= PREFER_REACH * PREFER_REACH then
+					prefer_offsets[#prefer_offsets + 1] = {dx, dz, dx * dx + dz * dz}
+				end
+			end
+		end
+		table.sort(prefer_offsets, function(a, b)
+			if a[3] ~= b[3] then return a[3] < b[3] end
+			if a[1] ~= b[1] then return a[1] < b[1] end
+			return a[2] < b[2]
+		end)
+	end
+	return prefer_offsets
+end
+
+-- `prefer`: a ground node the leader should stand on when one is within
+-- PREFER_REACH of its spot (a zombie leader on blight dirt survives the day;
+-- the spot is a cell centre and a cell is typed by its majority biome, so
+-- its own column may be another biome's).
+local function leader_ground(spot, prefer)
 	spot.terrain_y = spot.terrain_y or grug_zones.terrain_height_at(spot.x, spot.z)
+	if prefer then
+		for _, o in ipairs(near_offsets()) do
+			local pos = column_ground(spot.x + o[1], spot.z + o[2], spot.terrain_y)
+			local below = pos and core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
+			if below and below.name == prefer then
+				return pos
+			end
+		end
+	end
 	for i = 1, #SPOT_RINGS do
 		local pos = column_ground(spot.x + SPOT_RINGS[i][1], spot.z + SPOT_RINGS[i][2],
 			spot.terrain_y)
@@ -880,12 +949,15 @@ function SR.leader_tick(now, players)
 			if not leader_alive(role) and
 					now >= storage:get_int("leader_next:" .. role) and
 					player_near_xz(spot.x, spot.z, SR.LEADER_RANGE, players) then
-				local pos = leader_ground(spot)
+				local family = grug_mobs.family_of and grug_mobs.family_of(role) or role
+				local pos = leader_ground(spot, family == "zombie" and SR.BLIGHT_GROUND or nil)
 				if pos and SR.players_clear(pos, SR.LEADER_CLEAR, players) and
 						not grug_mobs.claim_refuses_spawn(name, pos) then
 					local ent = grug_mobs.add_mob(pos, {name = name, ignore_count = true})
 					if ent then
 						ent._grug_leader = true
+						local below = core.get_node_or_nil({x = pos.x, y = pos.y - 1, z = pos.z})
+						SR.sunproof_on_blight(ent, role, below and below.name, true)
 						grug_mobs.relevel(ent, spot.level)
 						ent.object:set_properties({static_save = false})
 						live_leaders[role] = ent.object
