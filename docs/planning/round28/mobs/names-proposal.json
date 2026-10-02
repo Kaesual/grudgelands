@@ -1,6 +1,6 @@
 {
  "meta": {
-  "status": "Round 28 Lane N1 phase 1 proposal, 2026-10-02. Not applied to game data; role and item ids never change.",
+  "status": "Round 28 Lane N1 proposal, approved by the user on 2026-10-02 and applied to the catalogue data (tools/r28_names/apply.py). `current` is the name before the pass, `proposed` the name now shipped; role and item ids never change.",
   "rules": [
    "Signal words (size, age, strength, temperament, wits) appear only on start-zone roles (levels 1-10 in the six start zones) and on T1 items.",
    "In the start zones the signal words form one ladder, the same in all six starts: see `ladder` (column by disposition/kind, rung by the role's first level).",

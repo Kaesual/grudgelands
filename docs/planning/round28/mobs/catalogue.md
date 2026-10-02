@@ -513,7 +513,7 @@ Model: grug_mobs_boar.b3d (2 slots: body + blank saddle).
 - Tiers: default tier normal; named rares on this entity: Grimtusk (elandor_goldmead_vale), Ashmaw (kragmar_redtusk_savanna).
 - Drops: raw meat 1/1 x1-2, light leather 1/2, boar tusk 1/3.
 - Kill quests today: r14_dwarf_01_tusks_at_the_timberline x3 L1 (r14_dwarf_elder); r14_elf_01_roots_laid_bare x3 L1 (r14_elf_elder); r14_human_01_boars_beyond_the_fence x3 L1 (r14_human_elder); r14_orc_01_tusks_at_the_water_skins x3 L1 (r14_orc_elder).
-- Design notes: The starter target: never starts a fight, only fights back; the charge makes the last metres sudden. **Sub-types:** Small/Young Boar (neutral, size 0.8-0.85, L1-3); Aggressive or Rabid Boar (aggressive, L5-7); Old/Giant Boar (size 1.2-1.3) as an elite area leader. Grimtusk is the existing rare on this entity. **Constraints:** Neutral disposition forces group_attack off: hitting one boar never pulls its neighbours. One boar registration per zone (spawn_policy BOAR_VARIANT_BY_ZONE). Small, low box (0.86) with a padded rotated selection box.
+- Design notes: The starter target: never starts a fight, only fights back; the charge makes the last metres sudden. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): Small Boar (neutral, L1-3) and Aggressive Boar (L5-7) in the starts; Rooting Boar and Ridgeback Tusker (L11-20); Furrow Boar and Razorback (L21-30); plague and jungle forms by zone. Grimtusk is the existing rare on this entity. **Constraints:** Neutral disposition forces group_attack off: hitting one boar never pulls its neighbours. One boar registration per zone (spawn_policy BOAR_VARIANT_BY_ZONE). Small, low box (0.86) with a padded rotated selection box.
 - Look: Base texture grug_mobs_boar.png^[multiply:#9a7a5a; sister tints plague (grug_mobs_boar_plague.png) and jungle (grug_mobs_boar_jungle.png) exist as own registrations.
 
 **`grug_mobs:jungle_boar`** — Jungle Boar (neutral; mods/ENTITIES/grug_mobs/boar_variants.lua:114)  
@@ -559,7 +559,7 @@ Model: grug_mobs_zombie.b3d (2 slots: armour overlay + skin).
 - Tiers: default tier normal.
 - Drops: zombie flesh 1/1, linen scrap 1/2, iron bar 1/10.
 - Kill quests today: r14_dwarf_04_lanterns_after_sundown x3 L4 (r14_dwarf_elder); r14_elf_04_footfalls_without_breath x3 L4 (r14_elf_elder); r14_human_04_shapes_by_lanternlight x3 L4 (r14_human_elder); r14_troll_04_dead_in_the_rootways x3 L4 (r14_troll_elder); r14_undead_04_the_uncalled_dead x3 L4 (r14_undead_elder).
-- Design notes: Slow-feeling classic night brawler (run 4.6 like every melee hostile); the only family that burns in the sun, so daylight is a mechanic players can learn. **Sub-types:** Braindead / Sluggish / Moaning Zombie (aggressive, low levels, Sluggish could get a lower run speed), Drowned Zombie for beaches, Rotting Brute (size 1.2) as elite leader. **Constraints:** Night-only on the surface outside blight dirt; burns on the surface at day, so day kill quests need caves or blight ground. Natural min level 3. Underground row from y -40 down with the depth level. Undead players are not attacked at night (quest texts for undead should note it).
+- Design notes: Slow-feeling classic night brawler (run 4.6 like every melee hostile); the only family that burns in the sun, so daylight is a mechanic players can learn. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): Braindead, Sluggish and Monstrous Drowned Zombie in the starts (the Drowned one walks the beaches); Cairn Zombie and Pauper Shambler (L11-20); Debtbound Zombie and Tithe Revenant (L20-30); Marching Zombie and Trench Shambler (L31-40); Saltbound Zombie and Last Watchman (L51-60). Names describe character, not a speed change. **Constraints:** Night-only on the surface outside blight dirt; burns on the surface at day, so day kill quests need caves or blight ground. Natural min level 3. Underground row from y -40 down with the depth level. Undead players are not attacked at night (quest texts for undead should note it).
 - Look: Skin grug_mobs_zombie.png in slot 2; the Sun-Dried Husk is the same mesh with ^[multiply:#c99b55.
 
 ### Rabbit / Hare (critter)
@@ -903,7 +903,7 @@ Model: grug_mobs_scorpion.b3d, grug_mobs_viper.b3d.
 - Tiers: default tier normal.
 - Drops: scaled hide 1/2, venom sac 1/3.
 - Kill quests today: r14_orc_05_shells_by_the_bedrolls x5 L5 (r14_orc_elder); r14_orc_08_scour_the_dry_wash x6 L11 (r14_orc_scout, zone kragmar_redtusk_savanna); r20_anchor_022_03 x4 L23 (r20_anchor_022_host, zone kragmar_speargrass_reach); r20_anchor_043_02 x4 L31 (r20_anchor_043_host, zone kragmar_bannerbreak_mesa); r20_anchor_065_03 x4 L23 (r20_anchor_065_host, zone kragmar_speargrass_reach).
-- Design notes: Orc-zone poison melee; night elsewhere, day and night in Sunscar. **Sub-types:** Small Scorpion (low), Scorpion, Giant Scorpion (elite, 1.3). **Constraints:** Clock: night by palette, 'any' in Sunscar Flats (zone key). start_band(4) in start zones.
+- Design notes: Orc-zone poison melee; night elsewhere, day and night in Sunscar. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): Aggressive Scorpion (L5-7) and Monstrous Scorpion (L7-9) in Sunscar; Dust-Stinger Scorpion (L11-30); War-Stinger Scorpion (L31-50). **Constraints:** Clock: night by palette, 'any' in Sunscar Flats (zone key). start_band(4) in start zones.
 - Look: grug_mobs_scorpion.png.
 
 **`grug_mobs:viper`** — Viper (aggressive; mods/ENTITIES/grug_mobs/start_zone_families.lua:275)  
@@ -1091,7 +1091,7 @@ Model: grug_mobs_fox.b3d.
 - Tiers: default tier normal.
 - Drops: raw meat 1/1, leather 1/2, fang 1/3.
 - Kill quests today: r14_dwarf_07_a_ledger_in_the_scrub x6 L10 (r14_dwarf_steward, zone elandor_copperfell_foothills); r14_elf_05_keepers_of_the_saplings x5 L5 (r14_elf_elder); r14_elf_08_watch_the_green_road x6 L11 (r14_elf_scout, zone elandor_starbough_vale); r14_human_07_orchard_watch x6 L10 (r14_human_steward, zone elandor_goldmead_vale); r15_human_local_04 x5 L11 (r14_human_scout, zone elandor_goldmead_vale).
-- Design notes: Small aggressive day hunter that bites and darts away - annoying to melee. **Sub-types:** Small Fox (the C2 input asks for a neutral one; today the family is aggressive), Red Fox, Silver Fox (elite). Display names are free. **Constraints:** Day clock. start_band(4) in the start zones. visual_size 10 on a 0.5 box: HP bar drawn at 1/10 size today (Ruling 10).
+- Design notes: Small aggressive day hunter that bites and darts away - annoying to melee. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): a neutral Young Fox (L5-7) in the Accord starts (today the family is aggressive); Bracken Fox (neutral) and Thicket Vixen (L11-20); Orchard Fox (neutral) and Redfang Vixen (L21-30). Display names are free. **Constraints:** Day clock. start_band(4) in the start zones. visual_size 10 on a 0.5 box: HP bar drawn at 1/10 size today (Ruling 10).
 - Look: grug_mobs_fox.png.
 
 ### Ibex
@@ -1161,7 +1161,7 @@ Model: grug_mobs_giant_rat.b3d.
 - Behaviour: swarm: when one rat engages, every same-name rat within 12 m that is not fighting joins (camp_swarm verb); group_attack.
 - Tiers: default tier normal.
 - Drops: raw meat 1/1.
-- Design notes: Night swarm animal of start towns; one pull brings the nest. **Sub-types:** Large Rat / Monstrous Rat / Rabid Rat (the C2 input), Rat King (elite). Raw meat is the only drop today. **Constraints:** Night clock; also underground y -40 to -300. Swarm and group alert are entity-name keyed.
+- Design notes: Night swarm animal of start towns; one pull brings the nest. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): Large Rat (L1-3), Aggressive Rat (L5-7) and Monstrous Rat (L7-9) in the starts; Granary Rat and Burrow Gnawer (L11-20); Grave, Kapok and Dust forms by zone. Raw meat is the only drop today. **Constraints:** Night clock; also underground y -40 to -300. Swarm and group alert are entity-name keyed.
 - Look: grug_mobs_giant_rat.png.
 
 ### Goblin (raider, slinger, miners)
@@ -1441,7 +1441,7 @@ Model: grug_mobs_shore_crab.b3d.
 - Behaviour: passive prey (fights back), no jump, fear height 2.
 - Tiers: default tier normal.
 - Drops: raw meat 1/1 x1-2, scaled hide 1/2.
-- Design notes: Neutral beach animal on every coast below level 45. **Sub-types:** Small Crab (neutral, L1-3), Shore Crab (neutral), Giant Crab (aggressive, 1.3) - the C2 input. **Constraints:** Ignores zone palettes: any default:sand at y 0-20 with water within 6 nodes (at or below sea level 1), level field < 45. Any clock. Not density-budgeted; its own row is very frequent (chance 300, cap 3 -> 4).
+- Design notes: Neutral beach animal on every coast below level 45. **Sub-types:** Shipped sub-types (Round 28 catalogue, names per frame §5): Small Crab (neutral, L3-5) and Monstrous Crab (L7-9) in the starts; Tidepool Crab and Reefclaw Snapper (L11-20); Bank Crab and Barnacle Pincher (L21-30); Breakwater Crab (L31-40). **Constraints:** Ignores zone palettes: any default:sand at y 0-20 with water within 6 nodes (at or below sea level 1), level field < 45. Any clock. Not density-budgeted; its own row is very frequent (chance 300, cap 3 -> 4).
 - Look: grug_mobs_shore_crab.png.
 
 ### Bog Fowl (critter)

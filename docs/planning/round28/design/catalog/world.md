@@ -16,14 +16,15 @@ the precise placement, quest counts and small local level slices.
 
 ## Names, appearances and encounters
 
-- **Small / Young** always means a neutral animal in the lower part of its
-  local progression. **Aggressive / Rabid / Giant / Monstrous** always means
-  hostile and above its introductory counterpart. Large Rat is the explicit
+- Names follow the [frame's naming rule](../../../round28-design-frame.md#5-naming)
+  (user, 2026-10-02): signal words (Small, Young, Large, Aggressive,
+  Monstrous, Braindead, Sluggish, Confused) appear only in the six start
+  zones, as one ladder; everywhere else each sub-type has its own name and
+  the yellow/red name tag shows disposition. Large Rat is the explicit
   L1–3 hostile night lesson; size alone is not a promise of neutrality.
-- **Wary / Watchful** always means neutral. Aggressive roles use Prowling
-  Jungle Lynx and Vigilant Bandit Archer instead. Rabid Rat is size 1.15,
-  larger than Large Rat at 1.05; Monstrous Rat is 1.25.
-- Names such as Sluggish, Moaning and Confused describe character, not an
+  Aggressive Rat is size 1.15, larger than Large Rat at 1.05; Monstrous Rat
+  is 1.25.
+- Names such as Sluggish, Braindead and Confused describe character, not an
   undocumented speed, accuracy or intelligence modifier. Archers really
   shoot; scorpions and vipers really poison; web spiders really slow.
 - Boars retain Plague/Jungle identities through zone names and the existing
@@ -34,7 +35,7 @@ the precise placement, quest counts and small local level slices.
   when applying a baked skin; do not replace armour or held-item slots.
 - Sun-Dried Husks use the **husk base**, never a recoloured zombie. They do
   not burn in sunlight. Zombies retain sunlight damage, the blight-ground
-  exception and the Undead night truce. Drowned Zombies are walking shore
+  exception and the Undead night truce. Monstrous Drowned Zombies are walking shore
   enemies, not swimmers. Their quests must not promise daylight survivors
   away from blight ground.
 - Night field populations include rats, zombies, outlaws, goblins,
@@ -109,12 +110,12 @@ permitted route. No universal stat ingredient relies on the other faction, anoth
 
 | Package | Zones | Ordinary role coverage |
 |---|---|---|
-| Start | Each of the six starts, T1 | Small/Aggressive Boar; Large/Rabid Rat, optionally Monstrous Rat; Shore/Giant Crab; Braindead/Sluggish/Drowned Zombie **or** the three start husks; Confused Bandit |
-| Home | Each of the six home zones, T2 | Young/Bristling Boar; Granary/Mangy Rat; Tidepool/Reefclaw Crab; Moaning/Muttering Zombie **or** Muttering/Parched Husk; Quarrelsome Bandit/Vigilant Bandit Archer |
-| Capital | Each capital outskirts, level 20–30 | Toll Bandit/Toll Bandit Archer; Debtbound/Stubborn Zombie, or Debtbound/Stubborn Husk in daytime caches |
-| Contested | Each of the six faction contested zones and Causeway, T4 | Entrenched Bandit/Archer; Marching/Unrelenting Zombie, or matching husks in daytime caches |
-| Siege | Shattered Line, T5 | Siege Deserter/Archer; Siege-Worn/Unburied Sun-Dried Husk |
-| Last watch | Gravesalt and Skyglass, T6 | Saltroad Deserter/Last-Pay Archer; Saltbound/Last-Watch Zombie on blight ground, or the matching sunproof husks |
+| Start | Each of the six starts, T1 | Small/Aggressive Boar; Large/Aggressive Rat, optionally Monstrous Rat; Small/Monstrous Crab; Braindead Zombie, Sluggish Zombie, Monstrous Drowned Zombie **or** the three start husks; Confused Bandit |
+| Home | Each of the six home zones, T2 | Rooting Boar/Ridgeback Tusker; Granary Rat/Burrow Gnawer; Tidepool Crab/Reefclaw Snapper; Cairn Zombie/Pauper Shambler **or** Cairn Sun-Dried Husk/Pauper Mummy; Roadside Bandit/Bandit Lookout |
+| Capital | Each capital outskirts, level 20–30 | Toll Bandit/Toll Bandit Archer; Debtbound Zombie/Tithe Revenant, or Debtbound Sun-Dried Husk/Tithe Mummy in daytime caches |
+| Contested | Each of the six faction contested zones and Causeway, T4 | Entrenched Bandit/Archer; Marching Zombie/Trench Shambler, or Marching Sun-Dried Husk/Trench Mummy in daytime caches |
+| Siege | Shattered Line, T5 | Siege Deserter/Archer; Siege-Worn Sun-Dried Husk/Unburied Mummy |
+| Last watch | Gravesalt and Skyglass, T6 | Saltroad Deserter/Last-Pay Archer; Saltbound Zombie/Last Watchman on blight ground, or Saltbound Sun-Dried Husk/Last-Watch Mummy |
 
 The rat areas in the home zones, the capital outskirts populations, and
 the later outlaw/undead supply pairs are deliberate authored additions to
@@ -141,12 +142,12 @@ fill every spawn area with all of it.
 
 | Track | Start additions | Home additions | Capital additions | Heartlands | Contested additions |
 |---|---|---|---|---|---|
-| Dwarf | Hearthpine: Small Fox, Young Ibex | Copperfell: fox, ibex, goblin melee/slinger/hound | Dur Brannoc: ibex, ram, goblins | Frostbarrow: ibex, ram, eagle, leopard, goblins, optional stone golem; crabs at shore | Stormvault: ibex, ram, eagle, leopard, goblins, Frost Stray, optional stone golem; shore crabs |
-| Human | Dawnmere: Small Fox; turkey/rabbit critters | Goldmead: fox, poacher | Highcourt: boar, fox, stag | Whitebridge: boar, stag, wolf, bear, spider, wisp, mirefolk; shore crabs | Ashenward: stag, wolf, bear, spider, wisp, poacher, skeleton, treant, crow |
-| Elf | Silverleaf: Small Fox, optional Furtive Poacher; song-bird critter | Starbough: fox, poacher | Lethariel: fox, stag, poacher | Lorindor: stag, poacher, wisp, mirefolk; Moonfall: stag, wolf, bear, spider, poacher, wisp; shore crabs in both | Glassroot: stag, wolf, bear, ape, serpent, panther, jungle spider, wisp, poacher; shore crabs |
+| Dwarf | Hearthpine: Young Fox, Young Ibex | Copperfell: fox, ibex, goblin melee/slinger/hound | Dur Brannoc: ibex, ram, goblins | Frostbarrow: ibex, ram, eagle, leopard, goblins, optional stone golem; crabs at shore | Stormvault: ibex, ram, eagle, leopard, goblins, Frost Stray, optional stone golem; shore crabs |
+| Human | Dawnmere: Young Fox; turkey/rabbit critters | Goldmead: fox, poacher | Highcourt: boar, fox, stag | Whitebridge: boar, stag, wolf, bear, spider, wisp, mirefolk; shore crabs | Ashenward: stag, wolf, bear, spider, wisp, poacher, skeleton, treant, crow |
+| Elf | Silverleaf: Young Fox, optional Confused Poacher; song-bird critter | Starbough: fox, poacher | Lethariel: fox, stag, poacher | Lorindor: stag, poacher, wisp, mirefolk; Moonfall: stag, wolf, bear, spider, poacher, wisp; shore crabs in both | Glassroot: stag, wolf, bear, ape, serpent, panther, jungle spider, wisp, poacher; shore crabs |
 | Undead | Stillgrave: plague boars, neutral L5–7 Young Gaunt Stag; blight-ground zombie lesson, hare critter | Mournfen: plague boars, crocodile, ooze, wisp, mirefolk; bog-fowl critter | Nhal Veyr: plague boar, gaunt stag | Ossuary: gaunt stag, blightfang wolf, plaguehide bear, bonelurker spider, skeleton archer, treant, bone weevil; shore crabs | Blackwind: the Ossuary forest families plus March Skeleton Raider; shore crabs |
 | Orc | Sunscar: Young Plains Runner, scorpions; husks replace zombies | Redtusk: zebra, hyena, scorpion; husks | Gor Drazhak: zebra, hyena, scorpion; husks | Speargrass: zebra, hyena, tiger, vulture, goblins, scorpion, optional mesa golem; shore crabs | Bannerbreak: hyena, tiger, vulture, crow, goblins, scorpion, skeleton, optional mesa golem; husks |
-| Troll | Kapok: Young Tapir, Prowling Jungle Lynx, vipers; parrot critter | Raincall: tapir, lynx, viper | Kezamba: jungle boar, tapir, lynx, viper | Whispering: tapir, lynx, crocodile, ooze, wisp, mirefolk; Totemwater: tapir, lynx, crocodile, ooze, wisp; shore crabs in both | Thunderroot: ape, serpent, panther, jungle spider, witch; shore crabs |
+| Troll | Kapok: Young Tapir, Aggressive Jungle Lynx, vipers; parrot critter | Raincall: tapir, lynx, viper | Kezamba: jungle boar, tapir, lynx, viper | Whispering: tapir, lynx, crocodile, ooze, wisp, mirefolk; Totemwater: tapir, lynx, crocodile, ooze, wisp; shore crabs in both | Thunderroot: ape, serpent, panther, jungle spider, witch; shore crabs |
 
 Heartlands can retain local populations instead of duplicating the capital
 pair: each race already has both universal sources in its own capital.
