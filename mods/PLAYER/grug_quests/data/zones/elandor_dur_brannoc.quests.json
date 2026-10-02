@@ -76,6 +76,36 @@
       "duration_min": 10
     },
     {
+      "id": "durbrannoc_provisions_optional",
+      "line": "provisions",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_dwarf_capital_cook",
+      "min_level": 24,
+      "level": 26,
+      "requires": [
+        "durbrannoc_provisions_01"
+      ],
+      "title": "Optional: A Ram for the Roast",
+      "text": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Hill Rams in the {name:uplands} {zone_area:uplands} by day. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "hill_ram"
+          ],
+          "count": 6,
+          "area": "elandor_dur_brannoc/uplands"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Optional day hunt of the middle belt.",
+      "duration_min": 9,
+      "optional": true
+    },
+    {
       "id": "durbrannoc_dispatch_01",
       "line": "dispatch",
       "giver": "r20_dwarf_capital_cook",
@@ -204,6 +234,36 @@
       },
       "lesson": "Night outlaws in the forest belt; archers first.",
       "duration_min": 11
+    },
+    {
+      "id": "durbrannoc_gate_optional",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 27,
+      "level": 29,
+      "requires": [
+        "durbrannoc_gate_02"
+      ],
+      "title": "Optional: Tithes for the Dead",
+      "text": "The Tithe Revenants on the {name:heights} {zone_area:heights} still collect a tithe that was abolished before my grandmother's beard went grey. Put six of them down at night if you have the time; it isn't the road's most urgent business, but I'd like the ledger to stop arguing with the dead.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 6,
+          "area": "elandor_dur_brannoc/heights"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Optional night hunt of the top belt.",
+      "duration_min": 10,
+      "optional": true
     },
     {
       "id": "durbrannoc_gate_03",

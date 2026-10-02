@@ -69,6 +69,36 @@
       "duration_min": 10
     },
     {
+      "id": "frostbarrow_sleds_optional",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [
+        "frostbarrow_sleds_01"
+      ],
+      "title": "Optional: Pinched Runners",
+      "text": "Bank Crabs have taken a liking to the sled landing on the {name:shingle} {dir_from_giver:shingle}, and to the runners of anything parked there. Clear six of them by day if you can spare the time. They only pinch back, but they mean it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "bank_crab"
+          ],
+          "count": 6,
+          "area": "elandor_frostbarrow_shelf/shingle"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Optional daytime shore strip beside the night hunt.",
+      "duration_min": 9,
+      "optional": true
+    },
+    {
       "id": "frostbarrow_sleds_02",
       "line": "sleds",
       "giver": "r20_anchor_014_host",
@@ -264,6 +294,36 @@
       },
       "lesson": "Aggressive shore hunters by day.",
       "duration_min": 10
+    },
+    {
+      "id": "frostbarrow_watch_optional",
+      "line": "watch",
+      "giver": "r20_anchor_026_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 27,
+      "level": 29,
+      "requires": [
+        "frostbarrow_watch_01"
+      ],
+      "title": "Optional: Eyes in the Rimewood",
+      "text": "From the watch I count fresh tracks in the {name:rimewood} {zone_area:rimewood} every night, and every one of them belongs to a Crag Snow Leopard. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "prowling_snow_leopard"
+          ],
+          "count": 6,
+          "area": "elandor_frostbarrow_shelf/rimewood"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Optional night hunt of the top belt.",
+      "duration_min": 10,
+      "optional": true
     },
     {
       "id": "frostbarrow_bounty_pinchers",
