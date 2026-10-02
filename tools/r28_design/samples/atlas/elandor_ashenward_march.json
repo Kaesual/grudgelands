@@ -9,13 +9,13 @@
   "race_region": "human",
   "extent": {
     "centroid": {
-      "x": 7,
-      "z": -671
+      "x": 48,
+      "z": -771
     },
-    "land_area_nodes2": 1533984,
-    "max_x": 988,
-    "max_z": -92,
-    "min_x": -892,
+    "land_area_nodes2": 1216672,
+    "max_x": 948,
+    "max_z": -320,
+    "min_x": -888,
     "min_z": -1276
   },
   "hub": {
@@ -28,10 +28,10 @@
   },
   "borders": [
     {
-      "length_nodes": 832,
+      "length_nodes": 908,
       "midpoint": {
-        "x": 846,
-        "z": -763
+        "x": 844,
+        "z": -759
       },
       "zone": "elandor_glassroot_wilds"
     },
@@ -52,34 +52,34 @@
       "zone": "elandor_lorindor"
     },
     {
-      "length_nodes": 508,
+      "length_nodes": 320,
       "midpoint": {
-        "x": -880,
-        "z": -739
+        "x": -882,
+        "z": -815
       },
       "zone": "elandor_stormvault_heights"
     },
     {
-      "length_nodes": 672,
+      "length_nodes": 644,
       "midpoint": {
-        "x": -687,
-        "z": -1109
+        "x": -688,
+        "z": -1108
       },
       "zone": "elandor_whitebridge_shire"
     },
     {
-      "length_nodes": 1412,
+      "length_nodes": 1276,
       "midpoint": {
-        "x": -482,
-        "z": -269
+        "x": -436,
+        "z": -472
       },
       "zone": "front_broken_causeway"
     },
     {
-      "length_nodes": 1304,
+      "length_nodes": 1196,
       "midpoint": {
-        "x": 496,
-        "z": -195
+        "x": 494,
+        "z": -366
       },
       "zone": "front_shattered_line"
     }
@@ -101,7 +101,7 @@
       "settlement_key": "r20_anchor_032",
       "slot": "outpost_2",
       "x": 300,
-      "z": -450
+      "z": -570
     },
     {
       "id": "anchor_052",
@@ -109,8 +109,8 @@
       "name": "Coalbrand Yard",
       "settlement_key": "r20_anchor_052",
       "slot": "bandit_1",
-      "x": -24,
-      "z": -406
+      "x": -96,
+      "z": -526
     },
     {
       "id": "anchor_071",
@@ -119,7 +119,7 @@
       "settlement_key": "r20_anchor_071",
       "slot": "clash_1",
       "x": -274,
-      "z": -296
+      "z": -416
     },
     {
       "id": "anchor_072",
@@ -128,7 +128,7 @@
       "settlement_key": "r20_anchor_072",
       "slot": "clash_2",
       "x": 250,
-      "z": -320
+      "z": -440
     },
     {
       "id": "anchor_092",
@@ -137,7 +137,7 @@
       "settlement_key": "r20_anchor_092",
       "slot": "rare_old_whitefang",
       "x": -180,
-      "z": -650
+      "z": -770
     }
   ],
   "settlements": [
@@ -203,23 +203,31 @@
   "biomes_measured": [
     {
       "id": "grug_deep_forest",
-      "share_pct": 53.2
+      "share_pct": 54.1
     },
     {
       "id": "grug_meadows",
-      "share_pct": 32.2
+      "share_pct": 31.4
     },
     {
       "id": "grug_swamp",
-      "share_pct": 13.9
+      "share_pct": 13.5
     },
     {
       "id": "grug_badlands",
-      "share_pct": 0.3
+      "share_pct": 0.4
     },
     {
       "id": "grug_jungle_fringe",
       "share_pct": 0.2
+    },
+    {
+      "id": "grug_elf_forest",
+      "share_pct": 0.1
+    },
+    {
+      "id": "grug_savanna",
+      "share_pct": 0.1
     },
     {
       "id": "grug_crags_snowy",
@@ -228,14 +236,6 @@
     {
       "id": "grug_crags",
       "share_pct": 0.1
-    },
-    {
-      "id": "grug_elf_forest",
-      "share_pct": 0.1
-    },
-    {
-      "id": "grug_savanna",
-      "share_pct": 0.0
     }
   ],
   "spawns": [
