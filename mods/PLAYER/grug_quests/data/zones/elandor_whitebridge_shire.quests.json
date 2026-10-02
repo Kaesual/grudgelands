@@ -1,6 +1,6 @@
 {
   "zone": "elandor_whitebridge_shire",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Whitebridge sells the same river basket twice while poachers, wolves and wetland collectors each claim a toll.",
   "hubs": [
     {
       "id": "r20_anchor_016",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_016_host",
           "lines": [
-            "legacy"
+            "baskets",
+            "journeys"
           ]
         }
       ]
@@ -21,7 +22,8 @@
         {
           "npc": "r20_anchor_030_host",
           "lines": [
-            "legacy"
+            "river",
+            "bounty"
           ]
         }
       ]
@@ -33,7 +35,7 @@
         {
           "npc": "r20_anchor_062_host",
           "lines": [
-            "legacy"
+            "materials"
           ]
         }
       ]
@@ -41,289 +43,306 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_016_01",
-      "line": "legacy",
+      "id": "whitebridge_baskets_01",
+      "line": "baskets",
       "giver": "r20_anchor_016_host",
       "turnin": "r20_anchor_016_host",
       "min_level": 21,
-      "level": 21,
+      "level": 22,
       "requires": [],
-      "faction": "accord",
-      "title": "The Press Frame",
-      "text": "Whitebridge's little market press has lost the brace that keeps its frame square. Bring eight ordinary oak planks for the covered workbench; the nearby boatworkers have already claimed the sound timber in their own stock. Existing or traded supplies are welcome.",
+      "title": "Sold Twice, Delivered Never",
+      "text": "Unlicensed Poachers buy stolen river baskets in the {name:oakwood} {dir_of:r20_anchor_016:oakwood} after nightfall. Defeat five of them there. Basket-Poacher Thorn signs both halves of every sale, and I would like his customers to start declining.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:wood",
-          "count": 8
+          "type": "kill",
+          "roles": [
+            "unlicensed_poacher"
+          ],
+          "count": 5,
+          "area": "elandor_whitebridge_shire/oakwood"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "A night outlaw roster in a forest kind.",
+      "duration_min": 9
     },
     {
-      "id": "r20_anchor_016_02",
-      "line": "legacy",
+      "id": "whitebridge_baskets_02",
+      "line": "baskets",
       "giver": "r20_anchor_016_host",
       "turnin": "r20_anchor_016_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Poacher's Market",
-      "text": "Poachers set snares along Whitebridge Shire's grass and forest margins at night, then bring their catch past the market close. Remove four of them so the morning wagons can use that approach.",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "whitebridge_baskets_01"
+      ],
+      "title": "The Pack at the Back Door",
+      "text": "Briarpack Wolves hunt the {name:meadows} {zone_area:meadows} at night, right where our carts go round Thorn's buyers. Defeat five of them after dark. Wolves call the pack when hurt, so work the edge of it instead of its middle.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
+          "roles": [
+            "briarpack_wolf"
           ],
-          "zone": "elandor_whitebridge_shire",
-          "count": 4
+          "count": 5,
+          "area": "elandor_whitebridge_shire/meadows"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Pack calls: pull from the edge.",
+      "duration_min": 9
     },
     {
-      "id": "r20_anchor_016_03",
-      "line": "legacy",
+      "id": "whitebridge_baskets_03",
+      "line": "baskets",
       "giver": "r20_anchor_016_host",
       "turnin": "r20_anchor_016_host",
       "min_level": 23,
-      "level": 23,
+      "level": 24,
       "requires": [
-        "r20_anchor_016_02"
+        "whitebridge_baskets_02"
       ],
-      "faction": "accord",
-      "title": "A Light Beyond the Bridge",
-      "text": "Now the snares are quiet, the watch can distinguish the lights that belong to no traveller. Hunt three wisps after dark among Whitebridge Shire's damp ground and woodland litter; the bridge itself is not their spawning ground.",
+      "title": "Thorn's Double Sale",
+      "text": "{name:basket_poacher_thorn} keeps his duplicate labels at his own spot {dir_from_giver:basket_poacher_thorn}, day and night. Defeat him. Then I can tell Ansel which baskets his kitchen actually paid for, and Thorn can explain the rest to nobody.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:wandering_wisp"
+          "roles": [
+            "basket_poacher_thorn"
           ],
-          "zone": "elandor_whitebridge_shire",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 900,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_030_01",
-      "line": "legacy",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "An Axle for the Empty Cart",
-      "text": "The cart beside Oakspan Tollhouse cannot move until its axle supports are replaced. Bring eight oak planks for the covered cart bay while the road patrol clears the approach. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_030_02",
-      "line": "legacy",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Tollhouse Snares",
-      "text": "Poachers hide their snares in Whitebridge Shire's grass and forest margins at night. Defeat four so the tollhouse crew can recover the road markers in daylight.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
-          ],
-          "zone": "elandor_whitebridge_shire",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_030_03",
-      "line": "legacy",
-      "giver": "r20_anchor_030_host",
-      "turnin": "r20_anchor_030_host",
-      "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_030_02"
-      ],
-      "faction": "accord",
-      "title": "Night Lights at Oakspan",
-      "text": "After the snare line is removed, strange lights still cross the darker wet ground near Oakspan. Disperse three wisps in Whitebridge Shire after nightfall.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:wandering_wisp"
-          ],
-          "zone": "elandor_whitebridge_shire",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 900,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_062_01",
-      "line": "legacy",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_062_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "Braces for the Pale Face",
-      "text": "Bridgechalk's pale cutting face needs timber braces above the working edge. Bring ten oak planks to the quarry shelter; this shallow worksite is not a newly opened underground mine. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:wood",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_062_02",
-      "line": "legacy",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_062_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Surveyor's Snare",
-      "text": "Poachers set snares in Whitebridge Shire's grassy and wooded margins at night, catching the quarry surveyors' route. Defeat four before the crew returns to its markers.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
-          ],
-          "zone": "elandor_whitebridge_shire",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_062_03",
-      "line": "legacy",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_062_host",
-      "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_062_02"
-      ],
-      "faction": "accord",
-      "title": "A Quarry Hand's Pick",
-      "text": "With the survey route clear, the quarry can put another hand on the stone. Bring an ordinary stone pick to the work shelter; a traded or previously used pick counts. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
           "count": 1
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 4,
         "items": []
-      }
+      },
+      "lesson": "Named normal leader on his own: a fixed, memorable fight.",
+      "duration_min": 8,
+      "climax": true
     },
     {
-      "id": "r20_human_journey_02",
-      "line": "legacy",
+      "id": "whitebridge_journey_lorindor",
+      "line": "journeys",
       "giver": "r20_anchor_016_host",
-      "turnin": "r20_anchor_062_host",
+      "turnin": "r20_anchor_018_host",
       "min_level": 24,
       "level": 24,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Word for Halen Chalkthumb",
-      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Bridgechalk Dig in Whitebridge Shire and speak with Halen Chalkthumb. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Halen Chalkthumb there. No parcel, fighting errand or return trip is required.",
+      "requires": [
+        "whitebridge_baskets_03"
+      ],
+      "title": "The Other End of the River Trade",
+      "text": "Thorn's labels name buyers among the Elves too. Find Ilwen Petalmeasure at Lorindor Berrycourt in Lorindor; she will want to know who has been spending her coin, and she has work for someone who asks good questions. One of three roads I can offer you.",
       "objectives": [
         {
           "type": "talk",
-          "npc": "r20_anchor_062_host"
+          "npc": "r20_anchor_018_host"
         }
       ],
       "rewards": {
-        "xp": 705,
-        "copper": 50,
+        "weight": 1,
         "items": []
-      }
+      },
+      "lesson": "Sister-zone offer: Lorindor.",
+      "duration_min": 10
     },
     {
-      "id": "r20_human_journey_03",
-      "line": "legacy",
-      "giver": "r20_anchor_062_host",
-      "turnin": "r20_anchor_031_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Word for Toren Waterbarrel",
-      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Toren Waterbarrel there. No parcel, fighting errand or return trip is required.",
+      "id": "whitebridge_journey_dur_brannoc",
+      "line": "journeys",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 24,
+      "level": 24,
+      "requires": [
+        "whitebridge_baskets_03"
+      ],
+      "title": "A Ledger for the Dwarves",
+      "text": "Some of Thorn's baskets went to Dur Brannoc, sold as Dwarven freight. Take his labels to Dorrin Gateledger in Dur Brannoc; the Dwarves take a forged ledger very personally. One of three roads I can offer you.",
       "objectives": [
         {
           "type": "talk",
-          "npc": "r20_anchor_031_host"
+          "npc": "r20_dwarf_capital_envoy"
         }
       ],
       "rewards": {
-        "xp": 915,
-        "copper": 50,
+        "weight": 1,
         "items": []
-      }
+      },
+      "lesson": "Sister-zone offer: Dur Brannoc.",
+      "duration_min": 10
+    },
+    {
+      "id": "whitebridge_journey_frostbarrow",
+      "line": "journeys",
+      "giver": "r20_anchor_016_host",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 24,
+      "level": 24,
+      "requires": [
+        "whitebridge_baskets_03"
+      ],
+      "title": "Cold Storage",
+      "text": "The last of Thorn's labels points to Tarnwatch Fold in Frostbarrow Shelf. Find Edda Tarnmantle there and tell her whose baskets she has been buying. Pack something warm. One of three roads I can offer you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_014_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer: Frostbarrow Shelf.",
+      "duration_min": 12
+    },
+    {
+      "id": "whitebridge_materials_01",
+      "line": "materials",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 23,
+      "level": 24,
+      "requires": [],
+      "title": "A Measure That Stays Put",
+      "text": "Bring me six planks of any wood and six Steel Bars at Bridgechalk Dig. You have worked bronze and iron; now alloy iron with coal for steel that holds my surveying brace through the weather. Gather and smelt whenever it suits you.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "wood",
+          "count": 6
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:steel_bar",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Steel: iron and coal alloy.",
+      "duration_min": 14
+    },
+    {
+      "id": "whitebridge_materials_02",
+      "line": "materials",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "whitebridge_materials_01"
+      ],
+      "title": "A Survey for the Heights",
+      "text": "Carry my survey to Borin Splitbolt at Splitbolt Station in Stormvault Heights. The Accord holds that ground only as long as its maps stay honest. Reach level 30 before you go; the heights are contested and do not care how good your boots are.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Heartland to contested handoff.",
+      "duration_min": 12
+    },
+    {
+      "id": "whitebridge_river_01",
+      "line": "river",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [],
+      "title": "The Basket Toll",
+      "text": "Toll Mirefolk charge for every river basket at the {name:ferry_camp} {dir_from_giver:ferry_camp}, day and night. Defeat five of them. They rush to help each other inside their camp, so keep your fights at its edge.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_mirefolk"
+          ],
+          "count": 5,
+          "area": "elandor_whitebridge_shire/ferry_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "A swarm camp: fight at the edge.",
+      "duration_min": 10
+    },
+    {
+      "id": "whitebridge_river_02",
+      "line": "river",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "whitebridge_river_01"
+      ],
+      "title": "Murk's Final Fare",
+      "text": "{name:ferryman_murk} runs the {name:ferry_camp} {dir_from_giver:ferryman_murk} and calls his tolls honest fares. Defeat him. The river will still have thieves, but none who can sign for them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "ferryman_murk"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Named normal leader at the camp centre.",
+      "duration_min": 8,
+      "climax": true
+    },
+    {
+      "id": "whitebridge_bounty_spiders",
+      "line": "bounty",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "whitebridge_river_01"
+      ],
+      "title": "Bounty: Briar-Web Spiders",
+      "text": "Briar-Web Spiders string the {name:thornwood} {zone_area:thornwood} shut every night. Kill six there after dark and I will pay again each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 6,
+          "area": "elandor_whitebridge_shire/thornwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Repeatable night bounty.",
+      "duration_min": 8
     }
   ]
 }

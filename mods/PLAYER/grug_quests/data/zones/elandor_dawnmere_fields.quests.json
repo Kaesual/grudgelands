@@ -1,6 +1,6 @@
 {
   "zone": "elandor_dawnmere_fields",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Dawnmere feeds the road to Highcourt, but boars, rats and a remarkably confused requisition gang are eating the harvest first.",
   "hubs": [
     {
       "id": "dawnmere",
@@ -9,13 +9,15 @@
         {
           "npc": "r14_human_elder",
           "lines": [
-            "legacy"
+            "hunt",
+            "tools"
           ]
         },
         {
           "npc": "r20_human_start_cook",
           "lines": [
-            "legacy"
+            "pantry",
+            "kitchen"
           ]
         }
       ]
@@ -23,157 +25,168 @@
   ],
   "quests": [
     {
-      "id": "r14_human_01_boars_beyond_the_fence",
-      "line": "legacy",
+      "id": "dawnmere_hunt_01",
+      "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
       "min_level": 1,
-      "level": 1,
+      "level": 2,
       "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Boars Beyond the Fence",
-      "text": "Boars root through the outer seed rows by day. Drive off three beyond Dawnmere's fence, and take spare raw meat to Bess Honeycrust beside the village oven.",
+      "title": "Crop Thieves",
+      "text": "Small Boars help themselves to our crops in the {name:home_fields} {dir_of:dawnmere:home_fields}, and only during the day. Bring down eight of them. Their yellow names mean they fight back only when struck, which is more courtesy than they show my turnips.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:small_boar"
+          "roles": [
+            "small_boar"
           ],
-          "count": 3
+          "count": 8,
+          "area": "elandor_dawnmere_fields/home_fields"
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Yellow names are neutral: they only fight back. Save the meat.",
+      "duration_min": 8
     },
     {
-      "id": "r14_human_02_the_smokehouse_share",
-      "line": "legacy",
-      "giver": "r20_human_start_cook",
-      "turnin": "r20_human_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Smokehouse Share",
-      "text": "The shared oven feeds everyone returning from dawnmere's outer paths. Bring four raw meat portions to Bess Honeycrust beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_human_03_granary_teeth",
-      "line": "legacy",
+      "id": "dawnmere_hunt_02",
+      "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 3,
+      "min_level": 2,
       "level": 3,
       "requires": [
-        "r14_human_01_boars_beyond_the_fence"
+        "dawnmere_hunt_01"
       ],
-      "faction": "accord",
-      "race": "human",
-      "title": "Braces for the Granary",
-      "text": "The granary's damaged braces leave the baskets open to pests. Bring six oak planks to repair the store frame. Boards already in your pack or obtained by trade count too.",
+      "title": "The Night Shift",
+      "text": "When the sun goes down, Large Rats take over the {name:meadows} {zone_area:meadows}. Kill eight of them there after dark. Mind the gaps between them: a squealing rat brings its relatives, and they are never in short supply.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:wood",
-          "count": 6
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 8,
+          "area": "elandor_dawnmere_fields/meadows"
         }
       ],
       "rewards": {
-        "xp": 100,
-        "copper": 20,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Night rosters differ from day rosters; rats call nearby rats.",
+      "duration_min": 8
     },
     {
-      "id": "r14_human_04_shapes_by_lanternlight",
-      "line": "legacy",
+      "id": "dawnmere_hunt_03",
+      "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
       "min_level": 4,
-      "level": 4,
+      "level": 6,
       "requires": [
-        "r14_human_01_boars_beyond_the_fence"
+        "dawnmere_hunt_02"
       ],
-      "faction": "accord",
-      "race": "human",
-      "title": "Shapes by Lanternlight",
-      "text": "Zombies approach Dawnmere's lantern road after nightfall. Defeat three beyond the houses in the level-3-and-up fields. The daytime repair work and optional tool lessons remain alternatives while the road is quiet.",
+      "title": "The Hedge Has Foxes",
+      "text": "Young Foxes have moved into the {name:pastures} {zone_area:pastures} and our hens have stopped laying out of sheer nerves. Hunt eight of them by day. Watch for the Aggressive Boars rooting among them: red names start the fight themselves.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:braindead_zombie",
-            "grug_mobs:sluggish_zombie"
+          "roles": [
+            "small_fox"
           ],
-          "count": 3
+          "count": 8,
+          "area": "elandor_dawnmere_fields/pastures"
         }
       ],
       "rewards": {
-        "xp": 140,
-        "copper": 25,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Yellow foxes next to a red minor role: pick your pulls.",
+      "duration_min": 9
     },
     {
-      "id": "r14_human_05_the_missing_flock",
-      "line": "legacy",
+      "id": "dawnmere_hunt_04",
+      "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 5,
-      "level": 5,
+      "min_level": 6,
+      "level": 8,
       "requires": [
-        "r14_human_03_granary_teeth"
+        "dawnmere_hunt_03"
       ],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Missing Flock",
-      "text": "Foxes draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
+      "title": "Five Claws Too Many",
+      "text": "Monstrous Crabs have claimed the {name:wreck_coast} {dir_from_giver:wreck_coast}, and the fishermen refuse to argue with them. Kill five there by day. After dark the drowned dead walk that shore instead, so plan your trip by the sun.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:small_fox"
+          "roles": [
+            "giant_crab"
           ],
-          "count": 5
+          "count": 5,
+          "area": "elandor_dawnmere_fields/wreck_coast"
         }
       ],
       "rewards": {
-        "xp": 180,
-        "copper": 30,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "lesson": "Scarce shore target, five only; the shore changes owner at night.",
+      "duration_min": 12
     },
     {
-      "id": "r14_human_06_flock_on_mill_road",
-      "line": "legacy",
+      "id": "dawnmere_hunt_05",
+      "line": "hunt",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 8,
+      "level": 9,
+      "requires": [
+        "dawnmere_hunt_04"
+      ],
+      "title": "Requisition for One Crumb",
+      "text": "A man calling himself Chief Crumb has been requisitioning our grain from the {name:bandit_camp} {dir_from_giver:bandit_camp}. Defeat seven of his Confused Bandits, then Crumb himself. They keep their post day and night, so pull the chief apart from his collectors if you can.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "confused_bandit"
+          ],
+          "count": 7,
+          "area": "elandor_dawnmere_fields/bandit_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "confused_bandit_chief"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "A camp pack plus a named normal leader; pull them apart.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "dawnmere_departure",
+      "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_steward",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 9,
+      "level": 9,
       "requires": [
-        "r14_human_05_the_missing_flock"
+        "dawnmere_hunt_05"
       ],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Road to Marta Millward",
-      "text": "At level 10, travel to Goldmead Village and speak with Marta Millward. Goldmead Vale is level 11–20 country; follow the road instead of trying to clear every creature. Complete this handoff with Marta there.",
+      "title": "The Next Sack of Grain",
+      "text": "Crumb's ledger names a much larger requisition in Goldmead Vale, our own home valley. Take the account to Marta Millward in Goldmead Village; follow the road out of Dawnmere into the vale. Finish whatever you still want to do here first.",
       "objectives": [
         {
           "type": "talk",
@@ -181,51 +194,68 @@
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 0.5,
         "items": []
-      }
+      },
+      "lesson": "Start zone to home zone handoff.",
+      "duration_min": 7
     },
     {
-      "id": "r14_human_10_a_woodsman_s_edge",
-      "line": "legacy",
+      "id": "dawnmere_tools_01",
+      "line": "tools",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "A Woodsman's Edge",
-      "text": "Bring a wood axe and Elian will explain safe trees, shared timber and the first repair.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "title": "Two Hands, Two Tools",
+      "text": "Make a Wooden Axe and a Wooden Pickaxe and bring both to me. I will check them and hand you back a working pair. A sword is a fine thing, but it chops firewood very badly.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_materials:axe_wood",
           "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:pick_wood",
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 15,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 1,
+        "items": [
+          {
+            "item": "grug_materials:axe_wood",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_wood",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Grid tools; handed-in tools are replaced by the reward.",
+      "duration_min": 5
     },
     {
-      "id": "r14_human_11_a_pick_for_the_road",
-      "line": "legacy",
+      "id": "dawnmere_tools_02",
+      "line": "tools",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
       "min_level": 2,
-      "level": 2,
+      "level": 3,
       "requires": [
-        "r14_human_10_a_woodsman_s_edge"
+        "dawnmere_tools_01"
       ],
-      "faction": "accord",
-      "race": "human",
-      "title": "A Pick for the Road",
-      "text": "Bring a stone pick for a short lesson before the road leaves the soft fields.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "title": "A Stone Edge",
+      "text": "Use your wooden pick on the rock outside town and make a Stone Axe and a Stone Pickaxe. Bring both for inspection whenever it suits you; you get the pair back for the ore work ahead.",
       "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_stone",
+          "count": 1
+        },
         {
           "type": "item",
           "item": "grug_materials:pick_stone",
@@ -233,59 +263,242 @@
         }
       ],
       "rewards": {
-        "xp": 45,
-        "copper": 15,
-        "items": []
-      }
+        "weight": 1.5,
+        "items": [
+          {
+            "item": "grug_materials:axe_stone",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_stone",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Tool progression; check the rock's pick tier.",
+      "duration_min": 7
     },
     {
-      "id": "r20_human_start_cook",
-      "line": "legacy",
+      "id": "dawnmere_tools_03",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "dawnmere_tools_02"
+      ],
+      "title": "Two Metals, Not One",
+      "text": "Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. They go into the town repairs, and you get a Dual Furnace for your own batches. Set it up outside town, where nobody trips over it.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:copper_bar",
+          "count": 3
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:tin_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Ore to bar; bars handed in are consumed.",
+      "duration_min": 10
+    },
+    {
+      "id": "dawnmere_tools_04",
+      "line": "tools",
+      "giver": "r14_human_elder",
+      "turnin": "r14_human_elder",
+      "min_level": 7,
+      "level": 8,
+      "requires": [
+        "dawnmere_tools_03"
+      ],
+      "title": "An Edge for the Road",
+      "text": "Bring me three Bronze Bars, made from fresh copper and tin in your own furnace. The first bars went into the repairs, so do not count them twice. Take this Bronze Pickaxe as your share; the rock beyond Dawnmere is harder than ours.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Alloys; the Bronze Pickaxe opens the next rock tier.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "dawnmere_pantry_01",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "dawnmere_hunt_02"
+      ],
+      "title": "Something Between Sack and Rat",
+      "text": "Bring me two Rat Fur Patches from the Large Rats in the {name:meadows}; they come out after dark. I need to patch the grain sacks before the rats empty them. Yes, with rat fur. There is a lesson in that somewhere.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:rat_fur_patch",
+          "count": 2,
+          "roles": [
+            "large_rat"
+          ],
+          "area": "elandor_dawnmere_fields/meadows"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Ordinary loot has uses; collect while hunting.",
+      "duration_min": 3
+    },
+    {
+      "id": "dawnmere_pantry_02",
+      "line": "pantry",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 7,
+      "level": 8,
+      "requires": [
+        "dawnmere_pantry_01",
+        "dawnmere_hunt_04"
+      ],
+      "title": "A Brush and a Better Supper",
+      "text": "Bring two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} and one Fox Tail from the Young Foxes in the {name:pastures}. The legs improve supper, and the tail makes a fine brush for the flour shelf. Keep the Crab Eyes for yourself; I only cook what has legs.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 2,
+          "roles": [
+            "giant_crab"
+          ],
+          "area": "elandor_dawnmere_fields/wreck_coast"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:fox_tail",
+          "count": 1,
+          "roles": [
+            "small_fox"
+          ],
+          "area": "elandor_dawnmere_fields/pastures"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Keep what your enchants need, hand in what they do not.",
+      "duration_min": 7,
+      "climax": true
+    },
+    {
+      "id": "dawnmere_kitchen_01",
+      "line": "kitchen",
       "giver": "r20_human_start_cook",
       "turnin": "r20_human_start_cook",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Second Oven",
-      "text": "Bess Honeycrust has a second oven ready for Dawnmere's returning field hands. Bring three coal lumps for its fuel store. Traded supplies count; mining natural coal yourself only requires a pickaxe; wood and stone picks work too.",
+      "title": "Five Logs, Any Tree",
+      "text": "Bring me five logs from any tree outside town, by day or night. The oven needs fuelwood, not an argument about which tree is in fashion. Trees inside Dawnmere stay where they are.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Any log counts; town plants are protected.",
+      "duration_min": 4
+    },
+    {
+      "id": "dawnmere_kitchen_02",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "dawnmere_kitchen_01"
+      ],
+      "title": "A Proper Fire",
+      "text": "Bring five Coal Lumps from the rock outside Dawnmere. Coal goes in the oven's fuel slot and raw food in the cooking slot, which you would be amazed how many people get backwards.",
       "objectives": [
         {
           "type": "item",
           "item": "default:coal_lump",
-          "count": 3
+          "count": 5
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "lesson": "Gather while you wait for night; the public oven is in town.",
+      "duration_min": 7
     },
     {
-      "id": "r20_human_capital_intro",
-      "line": "legacy",
-      "giver": "r14_human_elder",
-      "turnin": "r20_human_capital_envoy",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Road to Highcourt",
-      "text": "Highcourt has public workspaces, profession trainers and repair services beyond Dawnmere's small yard. At level 10, follow the road to Mariel Waybook at the chapel. The surrounding country is level 20–30, so travel by the road instead of testing its wildlife. Speak with Mariel and complete the introduction there.",
+      "id": "dawnmere_kitchen_03",
+      "line": "kitchen",
+      "giver": "r20_human_start_cook",
+      "turnin": "r20_human_start_cook",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "dawnmere_kitchen_02",
+        "dawnmere_hunt_02"
+      ],
+      "title": "The Smokehouse Share",
+      "text": "Bring ten Raw Meat from your hunts to my kitchen. Boars and foxes give it by day, rats after dark, so save what you already carry. Take some of it back cooked; heroes run on supper.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_human_capital_envoy"
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 10
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
+        "weight": 2,
+        "items": [
+          {
+            "item": "mobs:meat",
+            "count": 3
+          }
+        ]
+      },
+      "lesson": "Earlier hunt loot is useful; raw food cooks in the oven.",
+      "duration_min": 4,
+      "climax": true
     }
   ]
 }
