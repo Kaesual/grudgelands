@@ -1,8 +1,68 @@
 {
   "zone": "kragmar_sunscar_flats",
-  "palette": {
-    "families": ["giant_rat", "plains_runner", "scorpion", "settled", "sun_dried_husk"],
-    "boar": "grug_mobs:boar",
-    "lookalikes": {"zombie": "grug_mobs:sun_dried_husk"}
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "kragmar_redtusk_savanna"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "wellfields", "name": "Sunscar Wellfields",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "dustfields", "name": "Sunscar Dustfields",
+            "day": [{"role": "small_boar", "weight": 3}, {"role": "befuddled_husk", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 3}, {"role": "befuddled_husk", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Sunscar Strand",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "befuddled_husk", "weight": 1}], "density": "dense"},
+          "highland": {"id": "bluffs", "name": "Sunscar Bluffs",
+            "day": [{"role": "befuddled_husk", "weight": 3}, {"role": "small_boar", "weight": 1}],
+            "night": [{"role": "befuddled_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "runner_plains", "name": "Sunscar Runner Plains",
+            "day": [{"role": "young_plains_runner", "weight": 3}, {"role": "irritable_scorpion", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_husk", "weight": 1}], "density": "normal"},
+          "shore": {"id": "saltflats", "name": "Sunscar Saltflats",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_husk", "weight": 1}], "density": "dense"},
+          "highland": {"id": "stingrocks", "name": "Sunscar Stingrocks",
+            "day": [{"role": "irritable_scorpion", "weight": 3}, {"role": "sluggish_husk", "weight": 1}],
+            "night": [{"role": "irritable_scorpion", "weight": 3}, {"role": "sluggish_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "scorchlands", "name": "Sunscar Scorchlands",
+            "day": [{"role": "aggressive_boar", "weight": 3}, {"role": "giant_scorpion", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "giant_scorpion", "weight": 1}], "density": "normal"},
+          "shore": {"id": "bone_beach", "name": "Sunscar Bone Beach",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "salt_caked_husk", "weight": 3}, {"role": "giant_crab", "weight": 1}], "density": "dense"},
+          "highland": {"id": "scorpion_rocks", "name": "Sunscar Scorpion Rocks",
+            "day": [{"role": "giant_scorpion", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "giant_scorpion", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "thieves_camp", "name": "Sunscar Thieves' Camp", "belt": "l8_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "water_thief_chief", "at": {"camp": "thieves_camp"}, "respawn": 300}
+    ],
+    "critters": ["hare"]
   }
 }

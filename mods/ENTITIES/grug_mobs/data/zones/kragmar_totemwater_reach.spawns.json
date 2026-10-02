@@ -1,6 +1,63 @@
 {
   "zone": "kragmar_totemwater_reach",
-  "palette": {
-    "families": ["jungle_edge", "swamp", "tapir", "wisp"]
+  "recipe": {
+    "from": {"border": ["kragmar_kezamba", "kragmar_raincall_basin"]},
+    "to": {"border": "kragmar_thunderroot_wilds"},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "jungle", "name": "Totemwater Jungle",
+            "day": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}],
+            "night": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Totemwater Strand",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
+          "bank": {"id": "mudbanks", "name": "Totemwater Mudbanks",
+            "day": [{"role": "reed_crocodile", "weight": 1}],
+            "night": [{"role": "reed_crocodile", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "bogs", "name": "Totemwater Bogs",
+            "day": [{"role": "sullen_bog_ooze", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "totemwood", "name": "Totemwater Totemwood",
+            "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "reed_tapir", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shallows", "name": "Totemwater Shallows",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}], "density": "dense"},
+          "bank": {"id": "reedbanks", "name": "Totemwater Reedbanks",
+            "day": [{"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "wispfen", "name": "Totemwater Wispfen",
+            "day": [{"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "deepwood", "name": "Totemwater Deepwood",
+            "day": [{"role": "reed_jungle_lynx", "weight": 1}],
+            "night": [{"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+          "shore": {"id": "breakers", "name": "Totemwater Breakers",
+            "day": [{"role": "armored_crab", "weight": 1}],
+            "night": [{"role": "armored_crab", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "blackwater", "name": "Totemwater Blackwater",
+            "day": [{"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+    ],
+    "leaders": [
+      {"role": "reed_maw_crocodile", "at": {"kind": "blackwater", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["bog_fowl", "parrot"]
   }
 }

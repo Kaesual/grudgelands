@@ -1,6 +1,91 @@
 {
   "zone": "kragmar_blackwind_rise",
-  "palette": {
-    "families": ["forest", "gravewood_treant"]
+  "recipe": {
+    "from": {"border": ["kragmar_nhal_veyr", "kragmar_ossuary_reach", "kragmar_speargrass_reach"]},
+    "to": {"border": ["front_broken_causeway", "front_gravesalt_escarpment"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "ashmoor", "name": "Blackwind Ashmoor",
+            "day": [{"role": "watchful_stag", "weight": 3}, {"role": "marching_husk", "weight": 1}],
+            "night": [{"role": "marching_zombie", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Blackwind Strand",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": [{"role": "marching_zombie", "weight": 1}], "density": "dense"},
+          "bank": {"id": "sumpbanks", "name": "Blackwind Sumpbanks",
+            "day": [{"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "marching_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "mire", "name": "Blackwind Mire",
+            "day": "open",
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "bonewood", "name": "Blackwind Bonewood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "marrow_weevil", "weight": 1}],
+            "night": [{"role": "mourning_treant", "weight": 3}, {"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "barrow_ridge", "name": "Blackwind Barrow Ridge",
+            "day": [{"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "gravemoor", "name": "Blackwind Gravemoor",
+            "day": [{"role": "watchful_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "saltbones", "name": "Blackwind Saltbones",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "dense"},
+          "bank": {"id": "deadwater", "name": "Blackwind Deadwater",
+            "day": [{"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "pallmire", "name": "Blackwind Pallmire",
+            "day": "open",
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "webwood", "name": "Blackwind Webwood",
+            "day": [{"role": "marrow_weevil", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "grave_web_spider", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crags", "name": "Blackwind Crags",
+            "day": [{"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "deadmarch", "name": "Blackwind Deadmarch",
+            "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_shore", "name": "Blackwind Wreck Shore",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 1}], "density": "dense"},
+          "bank": {"id": "gravewater", "name": "Blackwind Gravewater",
+            "day": [{"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "hollowmire", "name": "Blackwind Hollowmire",
+            "day": "open",
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "hollowwood", "name": "Blackwind Hollowwood",
+            "day": [{"role": "marrow_weevil", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "grave_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "summits", "name": "Blackwind Summits",
+            "day": [{"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "pallcloth_den", "name": "Pallcloth Den", "belt": "l38_40", "site": {"poi": "bandit"},
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "bandit_hideout", "name": "Blackwind Bandit Hideout", "belt": "l34_37",
+       "roster": [{"role": "entrenched_bandit", "weight": 3}, {"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "grave_broker_mute", "at": {"camp": "bandit_hideout"}, "respawn": 300},
+      {"role": "hollowbell_treant", "at": {"kind": "hollowwood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["bone_weevil", "gull"]
   }
 }

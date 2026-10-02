@@ -1,7 +1,68 @@
 {
   "zone": "kragmar_kapok_cradle",
-  "palette": {
-    "families": ["giant_rat", "jungle_edge", "settled", "tapir", "viper"],
-    "boar": "grug_mobs:jungle_boar"
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "kragmar_raincall_basin"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "yam_beds", "name": "Kapok Yam Beds",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "rootways", "name": "Kapok Rootways",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shallows", "name": "Kapok Shallows",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "mudwallow", "name": "Kapok Mudwallow",
+            "day": "open",
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "broadleaf_wood", "name": "Kapok Broadleaf Wood",
+            "day": [{"role": "young_tapir", "weight": 3}, {"role": "prowling_jungle_lynx", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "reed_viper", "weight": 1}], "density": "normal"},
+          "shore": {"id": "tidepools", "name": "Kapok Tidepools",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "vipermire", "name": "Kapok Vipermire",
+            "day": [{"role": "reed_viper", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 3}, {"role": "reed_viper", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "thornwood", "name": "Kapok Thornwood",
+            "day": [{"role": "aggressive_boar", "weight": 3}, {"role": "giant_viper", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "giant_viper", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_shore", "name": "Kapok Wreck Shore",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+          "swamp": {"id": "blackmire", "name": "Kapok Blackmire",
+            "day": [{"role": "giant_viper", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "thieves_camp", "name": "Kapok Thieves' Camp", "belt": "l8_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "offering_thief_chief", "at": {"camp": "thieves_camp"}, "respawn": 300}
+    ],
+    "critters": ["hare", "parrot"]
   }
 }

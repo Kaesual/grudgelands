@@ -1,7 +1,67 @@
 {
   "zone": "kragmar_bannerbreak_mesa",
-  "palette": {
-    "families": ["goblin_raid", "mountain", "scorpion", "war"],
-    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
+  "recipe": {
+    "from": {"border": ["kragmar_gor_drazhak", "kragmar_speargrass_reach", "kragmar_whispering_reedlands"]},
+    "to": {"border": ["front_broken_causeway", "front_shattered_line"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "badlands", "name": "Bannerbreak Badlands",
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "marching_husk", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "sinkmire", "name": "Bannerbreak Sinkmire",
+            "day": [{"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "tablelands", "name": "Bannerbreak Tablelands",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "marching_husk", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "warplains", "name": "Bannerbreak Warplains",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "warpack_hyena", "weight": 1}],
+            "night": [{"role": "warpack_hyena", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "crowmire", "name": "Bannerbreak Crowmire",
+            "day": [{"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "watchful_carrion_crow", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "high_mesa", "name": "Bannerbreak High Mesa",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
+            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "marching_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "redcut_flats", "name": "Bannerbreak Redcut Flats",
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
+            "night": [{"role": "unrelenting_husk", "weight": 3}, {"role": "warpack_hyena", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "carrion_fen", "name": "Bannerbreak Carrion Fen",
+            "day": [{"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "vulture_crags", "name": "Bannerbreak Vulture Crags",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
+            "night": [{"role": "unrelenting_husk", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "sunderstrap_camp", "name": "Sunderstrap Camp", "belt": "l38_40", "site": {"poi": "bandit"},
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "supply_camp", "name": "Bannerbreak Supply Camp", "belt": "l34_37",
+       "roster": [{"role": "siege_goblin", "weight": 3}, {"role": "siege_goblin_slinger", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8},
+      {"id": "goblin_warcamp", "name": "Bannerbreak Goblin Warcamp", "belt": "l38_40",
+       "roster": [{"role": "siege_goblin", "weight": 3}, {"role": "siege_goblin_hound", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "provisioner_rattle", "at": {"camp": "supply_camp"}, "respawn": 300},
+      {"role": "banner_eater", "at": {"camp": "goblin_warcamp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

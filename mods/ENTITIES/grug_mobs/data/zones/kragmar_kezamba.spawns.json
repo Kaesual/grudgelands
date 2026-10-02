@@ -1,6 +1,51 @@
 {
   "zone": "kragmar_kezamba",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "kragmar_thunderroot_wilds"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "canopy", "name": "Kezamba Canopy",
+            "day": [{"role": "reed_tapir", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "bank": {"id": "riverbanks", "name": "Kezamba Riverbanks",
+            "day": [{"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "vinewood", "name": "Kezamba Vinewood",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "reed_fang_viper", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "mudbanks", "name": "Kezamba Mudbanks",
+            "day": [{"role": "reed_tapir", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "wildwood", "name": "Kezamba Wildwood",
+            "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "monstrous_boar", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "reed_fang_viper", "weight": 1}], "density": "normal"},
+          "bank": {"id": "floodbanks", "name": "Kezamba Floodbanks",
+            "day": [{"role": "reed_jungle_lynx", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "tollcamp", "name": "Kezamba Tollcamp", "belt": "l28_30",
+       "roster": [{"role": "toll_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "offering_broker_takka", "at": {"camp": "tollcamp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

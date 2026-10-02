@@ -1,6 +1,57 @@
 {
   "zone": "kragmar_gor_drazhak",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "kragmar_bannerbreak_mesa"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "steppe", "name": "Gor Drazhak Steppe",
+            "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "bank": {"id": "waterholes", "name": "Gor Drazhak Waterholes",
+            "day": [{"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "redrock", "name": "Gor Drazhak Redrock",
+            "day": [{"role": "debtbound_husk", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
+            "night": [{"role": "debtbound_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "badlands", "name": "Gor Drazhak Badlands",
+            "day": [{"role": "dustpack_hyena", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal"},
+          "bank": {"id": "wallows", "name": "Gor Drazhak Wallows",
+            "day": [{"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "mesas", "name": "Gor Drazhak Mesas",
+            "day": [{"role": "stubborn_husk", "weight": 3}, {"role": "debtbound_husk", "weight": 1}],
+            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "debtbound_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "marches", "name": "Gor Drazhak Marches",
+            "day": [{"role": "dustpack_hyena", "weight": 3}, {"role": "stubborn_husk", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "stubborn_husk", "weight": 1}], "density": "normal"},
+          "highland": {"id": "scarps", "name": "Gor Drazhak Scarps",
+            "day": [{"role": "stubborn_husk", "weight": 1}],
+            "night": [{"role": "stubborn_husk", "weight": 3}, {"role": "dust_stinger", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "tollcamp", "name": "Gor Drazhak Tollcamp", "belt": "l28_30",
+       "roster": [{"role": "toll_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "ration_broker_garr", "at": {"camp": "tollcamp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }
