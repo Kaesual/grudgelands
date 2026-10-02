@@ -96,6 +96,9 @@ def main():
     ap.add_argument("--zone", required=True)
     ap.add_argument("--seed", required=True)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--kind-borders", action="store_true",
+                    help="thin lines only between different kinds (regions of one kind that "
+                         "touch read as one patch, labelled once)")
     args = ap.parse_args()
     dump = Path(args.dump)
     doc = json.load(open(dump / ("%s_%s.json" % (args.zone, args.seed))))
@@ -143,14 +146,22 @@ def main():
         rgb[m] = col
     rgb[land] *= shade[land][:, None]
     rgb = np.clip(rgb, 0, 255)
-    # Borders: region edges thin dark, belt edges thick black.
+    # Borders: region edges thin dark (with --kind-borders only where the kind
+    # changes), belt edges thick black.
+    kind_index = {kid: n + 1 for n, kid in enumerate(sorted({r["kind"] for r in regions.values()}))}
+    edge_src = reg
+    if args.kind_borders:
+        lut = np.zeros(max(regions) + 1, dtype=np.int32)
+        for rid, r in regions.items():
+            lut[rid] = kind_index[r["kind"]]
+        edge_src = lut[reg]
     edge_r = np.zeros_like(own)
     edge_b = np.zeros_like(own)
     for axis in (0, 1):
-        a = np.roll(reg, 1, axis=axis)
+        a = np.roll(edge_src, 1, axis=axis)
         bb = np.roll(belt, 1, axis=axis)
-        both = (reg > 0) | (a > 0)
-        edge_r |= (a != reg) & both
+        both = (edge_src > 0) | (a > 0)
+        edge_r |= (a != edge_src) & both
         edge_b |= (bb != belt) & (belt > 0) & (bb > 0)
     rgb[edge_r] = (70, 70, 70)
     eb = edge_b | np.roll(edge_b, 1, 0) | np.roll(edge_b, 1, 1)
@@ -181,9 +192,30 @@ def main():
         pts = [px(p[0], p[1]) for p in road["points"]]
         if len(pts) > 1:
             d.line(pts, fill=(120, 80, 40), width=3 if road["kind"] == "road" else 2)
-    # Region labels: level range at the centroid.
+    # Region labels: level range at the centroid; with --kind-borders one
+    # label per patch of touching regions of one kind (at its largest region).
+    labelled = {r["id"] for r in doc["regions"]}
+    if args.kind_borders:
+        parent = {rid: rid for rid in regions}
+
+        def find(rid):
+            while parent[rid] != rid:
+                parent[rid] = parent[parent[rid]]
+                rid = parent[rid]
+            return rid
+        at = {(i, j): rid for i, j, rid, _b, _t in doc["cells"]}
+        for (i, j), rid in at.items():
+            for nb in (at.get((i + 1, j)), at.get((i, j + 1))):
+                if nb and nb != rid and regions[nb]["kind"] == regions[rid]["kind"]:
+                    parent[find(nb)] = find(rid)
+        best = {}
+        for rid, r in regions.items():
+            root = find(rid)
+            if root not in best or r["size"] > regions[best[root]]["size"]:
+                best[root] = rid
+        labelled = set(best.values())
     for r in doc["regions"]:
-        if r["kind"] in camp_ids:
+        if r["kind"] in camp_ids or r["id"] not in labelled:
             continue
         k = kinds[r["kind"]]
         x, y = px(r["x"], r["z"])
@@ -213,9 +245,10 @@ def main():
     d.text((LEFT, 10), title, font=f_big, fill=(0, 0, 0))
     st = doc["stats"]
     sub = ("%d land cells (32 x 32 nodes), %d regions, from %s to the %s border; "
-           "thin lines: regions, thick: belts; labels: level range") % (
+           "thin lines: %s, thick: belts; labels: level range") % (
         st["cells"], st["regions"], doc["from"]["name"] if doc.get("from") else "?",
-        ", ".join(doc.get("to", [])) or "next zone")
+        ", ".join(doc.get("to", [])) or "next zone",
+        "between kinds" if args.kind_borders else "regions")
     d.text((LEFT, 38), sub, font=f_med, fill=(60, 60, 60))
     # Scale bar (100 nodes).
     sx, sy = LEFT + 10, TOP + H - 16

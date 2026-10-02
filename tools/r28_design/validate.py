@@ -996,6 +996,28 @@ class Validator:
             if self.target_role_ok(role, file, path, legacy_guard=legacy_guard):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
+        self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
+
+    def check_recipe_targets(self, zone, obj, roles, file, path, all_areas):
+        """A kill objective without an area in a zone with a spawn recipe,
+        none of whose targets the recipe spawns (a kind, a camp or a leader of
+        the zone): only the recipe's roles appear on that zone's surface. A
+        warning (the targets may live in another zone on purpose); the game's
+        quest loader logs the same (grug_quests/validate.lua)."""
+        if "area" in obj or not roles:
+            return
+        kill_zone = obj.get("zone") if isinstance(obj.get("zone"), str) else zone
+        areas = all_areas.get(kill_zone) or {}
+        if not areas:
+            return
+        spawned = set()
+        for unit in areas.values():
+            spawned |= set(unit.get("roles") or ())
+        spawned |= set(self.d.leaders(kill_zone))
+        bare = {r.split(":", 1)[1] if r.startswith("grug_mobs:") else r for r in roles if isinstance(r, str)}
+        if not bare & spawned:
+            self.W("W-recipe-target", file, path, "no kill target (%s) is spawned by %s's spawn recipe"
+                   % (", ".join(sorted(bare)), kill_zone))
 
     # -- driver ----------------------------------------------------------
     def run(self):
@@ -1229,6 +1251,9 @@ def _mutations():
     def critter_target(d):
         quest(d, "sample_hunt_01")["objectives"][0] = {"type": "kill", "roles": ["wild_turkey"], "count": 5}
 
+    def base_role_only(d):
+        quest(d, "sample_hunt_01")["objectives"][0] = {"type": "kill", "roles": ["fox"], "count": 3}
+
     def wrong_area_role(d):
         quest(d, "sample_hunt_02")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_beach"
 
@@ -1454,6 +1479,7 @@ def _mutations():
         ("three givers in a hub", Q, add_giver, "E-givers"),
         ("three lines for a giver", Q, three_lines, "E-lines"),
         ("critter kill target", Q, critter_target, "E-critter-target"),
+        ("kill target the recipe zone never spawns", Q, base_role_only, "W-recipe-target"),
         ("target not in area", Q, wrong_area_role, "E-role-not-in-area"),
         ("target levels do not fit quest level", Q, level_fit, "E-level-fit"),
         ("bare area id not in own zone", Q, bare_cross, "E-unknown-area"),

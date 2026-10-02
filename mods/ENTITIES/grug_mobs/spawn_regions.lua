@@ -267,7 +267,9 @@ function SR.map(zone_id)
 		return nil
 	end
 	local t0 = core.get_us_time()
-	local ok, built = pcall(CORE.build, zone_id, queries(), rec.recipe)
+	local ok, built = pcall(function()
+		return CORE.build(zone_id, queries(), rec.recipe)
+	end)
 	local ms = (core.get_us_time() - t0) / 1000
 	if not ok then
 		maps[zone_id] = false
@@ -765,7 +767,12 @@ end
 
 local storage = grug_mobs.storage
 local live_leaders = {} -- role -> ObjectRef (runtime only)
-SR.LEADER_RANGE = 96 -- horizontal player distance that wakes a spot
+-- The horizontal player distance that wakes a spot stays inside the active
+-- blocks round the player (active_block_range mapblocks, less one): an
+-- unsaved object added to an inactive block is dropped at once and would be
+-- added again every few seconds. 48 nodes at the default range of 4.
+SR.LEADER_RANGE = math.max(32,
+	((tonumber(core.settings:get("active_block_range")) or 4) - 1) * 16)
 SR.LEADER_CLEAR = 24 -- never appears closer than this to a player
 local LEADER_REACH = 40
 

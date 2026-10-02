@@ -215,7 +215,10 @@ end
 
 -- The world checks, once every mod has loaded.
 function Q.validate_quest_data(files)
-	local found = V.world(files or Q.quest_files, world_view())
+	local found, warnings = V.world(files or Q.quest_files, world_view())
+	for _, message in ipairs(warnings) do
+		core.log("warning", "[grug_quests] " .. message)
+	end
 	if #found > 0 then fail(found) end
 end
 

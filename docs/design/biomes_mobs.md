@@ -15,10 +15,11 @@ content requirements remain explicitly separate from delivered behavior.
   win there.
 - Mob level comes from `grug_core.mob_level_at(pos)`: named-zone surface
   level plus the independent depth axis (`combat_stats.md` §3). Biome labels
-  never hand-set a mob's level. **Exception (Round 28 ruling 34):** in a
-  zone whose data defines spawn areas, a surface mob from an area takes a
-  fixed level from its area's range and a named leader its fixed level
-  (§4.2).
+  never hand-set a mob's level. **Exception (Round 28 ruling 34, Lane S1):**
+  in a zone with a spawn recipe, a surface mob takes a level in its role's
+  range of its spawn region and a named leader the top of its region (§4.2);
+  `grug_core.mob_level_at` returns the region's level there (the level
+  overlay, [spawn_regions.md](spawn_regions.md)).
 - Current spawn eligibility consumes `grug_zones.*` through the named-zone
   policy. Retired radial buckets have no compatibility path. Section 1 links
   the historical map evidence and the current geography/coverage authorities.
@@ -846,8 +847,8 @@ rolls ride on WP5's item/enchantment tables.
 ## 4. Spawn parameter table
 
 Mechanism: mobs_redo `mobs:spawn` plus the named-zone spawn policy. In a
-zone whose data defines spawn areas the surface rows other than the listed
-critters are refused and the areas of §4.2 spawn instead.
+zone with a spawn recipe the surface rows other than the recipe's critters
+are refused and the spawn regions of §4.2 spawn instead.
 Host nodes, authored zone palettes, regional identity and local level must all
 admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 600` (the flight
 ceiling) on all surface entries, since the natural terrain reaches past
@@ -956,7 +957,7 @@ is historical, not the runtime table; the shipped row values are in
 | **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
 | Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1100 | 1 | any | level 45–60 (§3.1) |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
-| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 30–60 s (Round 28 ruling 37), dormant catch-up; in a zone with spawn areas a camp area (§4.2) replaces the fire | — | — | 3–5 per camp | — | camp pos |
+| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 30–60 s (Round 28 ruling 37), dormant catch-up; in a zone with a spawn recipe a recipe camp (§4.2) replaces the fire | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
 **The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
@@ -1178,8 +1179,10 @@ gate, protected surface).
   their region; `_grug_leader = true`, no area tag. Every leader sub-type is
   1.15× the base model's size (whatever the catalogue's `size`) with twice
   the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
-  leader spawns when a player is within 96 nodes of its spot, none within
-  24, and its timer has run out; it is never saved with the map. A kill
+  leader spawns when a player is within 48 nodes of its spot (inside the
+  player's active blocks: `active_block_range` − 1 mapblocks, so the unsaved
+  leader is never dropped and re-added), none within 24, and its timer has
+  run out; it is never saved with the map. A kill
   starts its `respawn` (300 s, game time, mod storage); a leader that
   vanished with its unloaded block returns on the next visit.
 - **Seams** for other systems (`grug_mobs.spawn_regions`):
@@ -1442,7 +1445,7 @@ sub-types burn like the Zombie).
   `tools/r28_names/build_review.py --check` enforces it on the data.
 - **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
   step (the floor is also the fallback where the level field has no value);
-  spawn areas narrow it further.
+  a spawn region's belt narrows it further (§4.2).
 - **Zone name and tint:** `display_by_zone` and `tint_by_zone` are read from
   the zone of the spawn position on the first activation; the zone is
   persisted with the mob. A tint id from `tints.json` is either a baked

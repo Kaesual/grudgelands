@@ -14,8 +14,8 @@
       }},
       {"id": "far", "share": 50, "levels": [9, 10], "kinds": {
         "open": {"id": "border_fields", "name": "Border Fields",
-          "day": [{"role": "small_boar", "weight": 1}],
-          "night": [{"role": "small_boar", "weight": 1}], "density": "normal"}
+          "day": [{"role": "front_ghoul", "weight": 1}],
+          "night": [{"role": "front_ghoul", "weight": 1}], "density": "normal"}
       }}
     ],
     "camps": [

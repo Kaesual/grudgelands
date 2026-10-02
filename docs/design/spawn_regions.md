@@ -57,8 +57,12 @@ table order.
 5. **Regions.** Connected cells (eight neighbours) of one kind, the kind
    each belt gives each type (step 6). Fragments under 8 cells (3 for shore
    kinds: a narrow beach stays a region) join the neighbour region they
-   share most edges with, same belt first and never two belts from another
-   neighbour; regions over 40 cells split into ⌈size ÷ 25⌉ compact parts
+   share most edges with: same belt first, then a neighbour whose belt keeps
+   the fragment within one belt of all its other neighbours (preferred, not
+   forced). The step-down pass of step 3 is what keeps neighbours within one
+   belt; the renderer's stats report the largest belt difference between
+   adjacent regions as the check (1 on every Dawnmere seed). Regions over 40
+   cells split into ⌈size ÷ 25⌉ compact parts
    (farthest-point seeds grown together, three Lloyd rounds). On Dawnmere
    regions are 3–40 cells, median 12–19 (about 100–200 m across); a lone
    islet cell with no land neighbour stays a region of its own.
