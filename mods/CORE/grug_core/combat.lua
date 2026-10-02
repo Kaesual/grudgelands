@@ -55,6 +55,10 @@ function grug_core.refuse_mounted_attack(player)
 	return true
 end
 
+core.register_on_leaveplayer(function(player)
+	mounted_refusal_notice[player:get_player_name()] = nil
+end)
+
 -- Shared minimum-level decision for every item-backed gate. Gear, food and
 -- future potions/elixirs all publish `_grug_ilvl`; callers own only their
 -- context-specific refusal text.
