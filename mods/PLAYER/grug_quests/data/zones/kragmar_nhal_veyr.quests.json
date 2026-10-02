@@ -1,22 +1,23 @@
 {
   "zone": "kragmar_nhal_veyr",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Nhal Veyr keeps the register of every Throng dead; outside its walls the Debtbound rise to collect debts nobody owes, and a mortuary clerk keeps a ledger of its own.",
   "hubs": [
     {
       "id": "nhal_veyr",
       "anchor": "nhal_veyr",
       "givers": [
         {
-          "npc": "r20_undead_capital_cook",
+          "npc": "r20_undead_capital_envoy",
           "lines": [
-            "legacy"
+            "vigil",
+            "front"
           ]
         },
         {
-          "npc": "r20_undead_capital_envoy",
+          "npc": "r20_undead_capital_cook",
           "lines": [
-            "legacy",
-            "front"
+            "provisions",
+            "dispatch"
           ]
         }
       ]
@@ -24,93 +25,73 @@
   ],
   "quests": [
     {
-      "id": "r20_undead_capital_cook",
-      "line": "legacy",
+      "id": "nhal_veyr_vigil_01",
+      "line": "vigil",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 19,
+      "level": 21,
+      "requires": [],
+      "title": "Debts Nobody Owes",
+      "text": "At night Debtbound Zombies walk the {name:blightfields} {zone_area:blightfields} and knock on doors to collect what they think they are owed. Lay eight of them to rest. Every one of them carries a clerk's stamp; somebody has been registering the dead without telling me.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "debtbound_zombie"
+          ],
+          "count": 8,
+          "area": "kragmar_nhal_veyr/blightfields"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "The capital's own problem, seeded for the line's climax.",
+      "duration_min": 10
+    },
+    {
+      "id": "nhal_veyr_provisions_01",
+      "line": "provisions",
       "giver": "r20_undead_capital_cook",
       "turnin": "r20_undead_capital_cook",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 20,
+      "level": 22,
       "requires": [],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Bowls for the Vigil",
-      "text": "Velis Mourningbowl has set bowls for Nhal Veyr's vigil keepers. Bring five raw meat portions to the cook in the mourners' hall so the preserved stores can last another shift. This does not require the Cooking profession.",
+      "title": "Optional: Bowls for the Vigil",
+      "text": "The Moss-Antler Gaunt Stags graze the {name:blightfields} by day. Bring me eight Raw Meat; the mourners keep vigil for nights on end, and an empty bowl makes for a short vigil.",
       "objectives": [
         {
           "type": "item",
           "item": "mobs:meat_raw",
-          "count": 5
+          "count": 8,
+          "roles": [
+            "moss_antler_stag"
+          ],
+          "area": "kragmar_nhal_veyr/blightfields"
         }
       ],
       "rewards": {
-        "xp": 380,
-        "copper": 45,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "optional": true,
+      "lesson": "A daytime request beside a night hunt.",
+      "duration_min": 6
     },
     {
-      "id": "r20_undead_capital_services",
-      "line": "legacy",
-      "giver": "r20_undead_capital_envoy",
-      "turnin": "r20_undead_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r20_undead_capital_intro"
-      ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "The Vigil Table",
-      "text": "Ossa asks you to meet Velis Mourningbowl at the homes mourners' hall. Speak with the cook at the oven and complete this introduction there. The Cooking trainer remains a separate, optional service.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_undead_capital_cook"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_undead_capital_stores",
-      "line": "legacy",
-      "giver": "r20_undead_capital_envoy",
-      "turnin": "r20_undead_capital_envoy",
-      "min_level": 20,
-      "level": 20,
-      "requires": [],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Coal for the Vigil Lamps",
-      "text": "The vigil lamps must outlast each watch, even when the covered courtyard is wet. Bring eight coal lumps to Ossa for the lamp reserve. Ordinary carried or traded fuel is sufficient.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 780,
-        "copper": 60,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_undead_journey_01",
-      "line": "legacy",
-      "giver": "r20_undead_capital_envoy",
+      "id": "nhal_veyr_dispatch_01",
+      "line": "dispatch",
+      "giver": "r20_undead_capital_cook",
       "turnin": "r20_anchor_020_host",
-      "min_level": 21,
+      "min_level": 20,
       "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Word for Sovel Namekeeper",
-      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Sovel Namekeeper there. No parcel, fighting errand or return trip is required.",
+      "requires": [
+        "nhal_veyr_vigil_01"
+      ],
+      "title": "Shelves in the Ledgerstead",
+      "text": "Sovel Namekeeper at Ossuary Ledgerstead asked for a strong pair of hands; the Gravewood is waking around the archive. Go and see Sovel, and take my regards; Sovel never eats.",
       "objectives": [
         {
           "type": "talk",
@@ -118,10 +99,240 @@
         }
       ],
       "rewards": {
-        "xp": 615,
-        "copper": 50,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "lesson": "Travel handoff to the race's heartland.",
+      "duration_min": 8
+    },
+    {
+      "id": "nhal_veyr_vigil_02",
+      "line": "vigil",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 23,
+      "level": 25,
+      "requires": [
+        "nhal_veyr_vigil_01"
+      ],
+      "title": "Revenants Collecting Tithes",
+      "text": "Tithe Revenants stalk the {name:gravefields} {zone_area:gravefields} after dark, demanding a tithe for the dead from the living and from the dead alike. Destroy eight. The stamps they carry all bear one clerk's mark: Hush.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 8,
+          "area": "kragmar_nhal_veyr/gravefields"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "A night hunt; the Debtbound Zombies there are the minor role.",
+      "duration_min": 12
+    },
+    {
+      "id": "nhal_veyr_provisions_02",
+      "line": "provisions",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_undead_capital_cook",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "nhal_veyr_provisions_01"
+      ],
+      "title": "Optional: Pickled, Not Preserved",
+      "text": "The Tithe Revenants of the {name:gravefields} carry Pickled Flesh. Bring me four. I do not cook it, before you ask; I compare it with my own brine, because someone in this city is pickling the dead without a licence.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:pickled_flesh",
+          "count": 4,
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "area": "kragmar_nhal_veyr/gravefields"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "optional": true,
+      "lesson": "A drop request that shares the revenant outing.",
+      "duration_min": 6
+    },
+    {
+      "id": "nhal_veyr_dispatch_orc_wellhold",
+      "line": "dispatch",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_anchor_022_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "nhal_veyr_vigil_02"
+      ],
+      "title": "Sister Errand: Speargrass Wellhold",
+      "text": "Our allies need hands as much as we do. Brakka Jarward at Speargrass Wellhold in Speargrass Reach has work for someone who does not tire easily. Go if the grass calls to you; one errand of the three is plenty.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_022_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer (one of three): the orc heartland.",
+      "duration_min": 10
+    },
+    {
+      "id": "nhal_veyr_dispatch_orc_capital",
+      "line": "dispatch",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "nhal_veyr_vigil_02"
+      ],
+      "title": "Sister Errand: Gor Drazhak",
+      "text": "Thorga Roadspeaker in Gor Drazhak keeps the orcs' roads and complains that nobody walks them. Walk them, then. One errand of the three is plenty.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_orc_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer (one of three): the orc capital.",
+      "duration_min": 12
+    },
+    {
+      "id": "nhal_veyr_dispatch_troll",
+      "line": "dispatch",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "nhal_veyr_vigil_02"
+      ],
+      "title": "Sister Errand: Whisperreed Landing",
+      "text": "Taleko Drycord at Whisperreed Landing in the Whispering Reedlands wants help with the trolls' wet country. Bring a dry pair of boots and go. One errand of the three is plenty.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_024_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer (one of three): a troll heartland.",
+      "duration_min": 15
+    },
+    {
+      "id": "nhal_veyr_vigil_03",
+      "line": "vigil",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 26,
+      "level": 28,
+      "requires": [
+        "nhal_veyr_vigil_02"
+      ],
+      "title": "The Clerk Who Kept Count",
+      "text": "{name:mortuary_clerk_hush} keeps a ledger in the {name:tombfields}, {dir_from_giver:mortuary_clerk_hush}, and stamps every dead name into debt. Close the ledger for good: end Hush and destroy four of the Tithe Revenants that rise round the tombs at night.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mortuary_clerk_hush"
+          ],
+          "count": 1
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 4,
+          "area": "kragmar_nhal_veyr/tombfields"
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "climax": true,
+      "lesson": "The capital line's climax: a named normal leader.",
+      "duration_min": 15
+    },
+    {
+      "id": "nhal_veyr_vigil_04",
+      "line": "vigil",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "nhal_veyr_vigil_03"
+      ],
+      "title": "To Ashveil Watch",
+      "text": "The register is closed and the city is in your debt, which is the only debt I accept. The Throng holds Blackwind Rise against the Accord; go to Ashveil Watch and report to Vaska Ashlistener.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_039_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Travel handoff to the faction's contested zones.",
+      "duration_min": 10
+    },
+    {
+      "id": "nhal_veyr_provisions_bounty",
+      "line": "provisions",
+      "giver": "r20_undead_capital_cook",
+      "turnin": "r20_undead_capital_cook",
+      "min_level": 26,
+      "level": 26,
+      "requires": [
+        "nhal_veyr_provisions_02"
+      ],
+      "title": "Repeatable: Razorback for the Kitchen",
+      "text": "Plague Razorbacks root through the {name:gravefields} {zone_area:gravefields} by day. Kill six and bring the news; my kitchen takes another order thirty minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "monstrous_boar"
+          ],
+          "count": 6,
+          "area": "kragmar_nhal_veyr/gravefields"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1800
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunting contract.",
+      "duration_min": 8
     }
   ]
 }

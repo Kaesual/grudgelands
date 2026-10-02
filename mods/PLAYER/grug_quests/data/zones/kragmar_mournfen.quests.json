@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_mournfen",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Mournfen's barrows hold the oldest remembered dead of the Throng; the fen keeps rising, bandits loot the barrows and the mirefolk count stolen bones as wages.",
   "hubs": [
     {
       "id": "mournfen_village",
@@ -9,13 +9,15 @@
         {
           "npc": "r14_undead_steward",
           "lines": [
-            "legacy"
+            "fen",
+            "bounties"
           ]
         },
         {
           "npc": "r15_undead_local",
           "lines": [
-            "legacy"
+            "stores",
+            "wax"
           ]
         }
       ]
@@ -27,7 +29,8 @@
         {
           "npc": "r14_undead_scout",
           "lines": [
-            "legacy"
+            "watch",
+            "bounties"
           ]
         }
       ]
@@ -39,7 +42,7 @@
         {
           "npc": "r14_undead_captive",
           "lines": [
-            "legacy"
+            "testimony"
           ]
         }
       ]
@@ -47,262 +50,439 @@
   ],
   "quests": [
     {
-      "id": "r14_undead_07_mud_that_moves",
-      "line": "legacy",
+      "id": "mournfen_fen_01",
+      "line": "fen",
       "giver": "r14_undead_steward",
       "turnin": "r14_undead_steward",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 9,
+      "level": 11,
       "requires": [
-        "r14_undead_06_tusks_along_the_fen_road"
+        "stillgrave_departure"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Mud That Moves",
-      "text": "Bog ooze is choking the village sluice. Break it apart before the water backs into the paths.",
+      "title": "Boars in the Burial Rows",
+      "text": "Rooting Plague Boars dig through the {name:blightfields} {zone_area:blightfields} by day and turn up what the fen had politely covered. Put down eight of them. Something else is digging too, and it leaves tally marks; we will come to that.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:sullen_bog_ooze"
+          "roles": [
+            "young_boar"
           ],
-          "zone": "kragmar_mournfen",
-          "count": 6
+          "count": 8,
+          "area": "kragmar_mournfen/blightfields"
         }
       ],
       "rewards": {
-        "xp": 380,
-        "copper": 50,
+        "weight": 4,
         "items": []
-      }
+      },
+      "lesson": "New band, familiar neutral boars; the fen's local problem is seeded.",
+      "duration_min": 10
     },
     {
-      "id": "r14_undead_08_clear_the_sluice",
-      "line": "legacy",
+      "id": "mournfen_stores_01",
+      "line": "stores",
+      "giver": "r15_undead_local",
+      "turnin": "r15_undead_local",
+      "min_level": 10,
+      "level": 11,
+      "requires": [],
+      "title": "Tallow for the Vigil",
+      "text": "Bring me eight Raw Meat. I render it down for the vigil candles; the mourners in Mournfen would rather sit in the dark than admit the candles smell of boar, but they sit by them all the same.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 8
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Ordinary loot can be saved before the request is accepted.",
+      "duration_min": 4
+    },
+    {
+      "id": "mournfen_fen_02",
+      "line": "fen",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_scout",
+      "min_level": 11,
+      "level": 12,
+      "requires": [
+        "mournfen_fen_01"
+      ],
+      "title": "Word for the Outpost",
+      "text": "Take what you have seen to Sera Vane at Mournfen Outpost. She watches the reed beds, and she has been finding the same tally marks I have.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_undead_scout"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Travel to the zone's second hub.",
+      "duration_min": 5
+    },
+    {
+      "id": "mournfen_watch_01",
+      "line": "watch",
       "giver": "r14_undead_scout",
       "turnin": "r14_undead_scout",
       "min_level": 11,
-      "level": 11,
+      "level": 13,
       "requires": [
-        "r14_undead_07_mud_that_moves"
+        "mournfen_fen_02"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Clear the Sluice",
-      "text": "Crocodiles have claimed the outpost channel. Clear the bank for Sera's patrol.",
+      "title": "Wages Paid in Bones",
+      "text": "The Reed Mirefolk of {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, pay each other in barrow bones and scratch every payment on a reed. The one who keeps the big tally is called Silt. Thin out eight of them; mind the Reed Crocodiles that lie about the enclosure.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_crocodile"
+          "roles": [
+            "reed_mirefolk"
           ],
-          "zone": "kragmar_mournfen",
-          "count": 6
+          "count": 8,
+          "area": "kragmar_mournfen/blackreed_enclosure"
         }
       ],
       "rewards": {
-        "xp": 525,
-        "copper": 60,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "lesson": "A mirefolk camp with a crocodile minor role; the line's climax is seeded.",
+      "duration_min": 12
     },
     {
-      "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
-      "line": "legacy",
+      "id": "mournfen_watch_02",
+      "line": "watch",
       "giver": "r14_undead_scout",
-      "turnin": "r14_undead_captive",
-      "min_level": 12,
-      "level": 12,
+      "turnin": "r14_undead_scout",
+      "min_level": 13,
+      "level": 15,
       "requires": [
-        "r14_undead_08_clear_the_sluice"
+        "mournfen_watch_01"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Fire That the Fen Cannot Drown",
-      "text": "The bandits carried cloth hot without flame, marked by a hooked sun. Defeat them and let Hollis explain what the fen could not cool. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "title": "Lights in the Wispfen",
+      "text": "After dark Wandering Wisps drift over the {name:wispfen} {zone_area:wispfen} and lead the mourners into the water. Put out seven of them. By day the same ground belongs to the Plague Tuskers, which are a different kind of problem.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:quarrelsome_bandit"
+          "roles": [
+            "wandering_wisp"
           ],
-          "zone": "kragmar_mournfen",
+          "count": 7,
+          "area": "kragmar_mournfen/wispfen"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "A night-only target over swamp ground.",
+      "duration_min": 10
+    },
+    {
+      "id": "mournfen_fen_03",
+      "line": "fen",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_steward",
+      "min_level": 14,
+      "level": 16,
+      "requires": [
+        "mournfen_fen_02"
+      ],
+      "title": "Tusks in the Barrowfields",
+      "text": "Plague Tuskers have taken the {name:barrowfields} {zone_area:barrowfields} by day and they charge anyone who comes to tend the barrows. Kill seven. Cairn Sun-Dried Husks shuffle among them; you will meet those whether you want to or not.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "bristling_boar"
+          ],
+          "count": 7,
+          "area": "kragmar_mournfen/barrowfields"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "Aggressive boars with a slow undead minor role.",
+      "duration_min": 12
+    },
+    {
+      "id": "mournfen_stores_02",
+      "line": "stores",
+      "giver": "r15_undead_local",
+      "turnin": "r15_undead_local",
+      "min_level": 14,
+      "level": 15,
+      "requires": [
+        "mournfen_stores_01"
+      ],
+      "title": "Iron for the Lantern Hooks",
+      "text": "Mine and smelt six Iron Bars and bring four Coal Lumps besides. The lantern hooks along the barrow paths rusted through, and a lantern lying in the mud guides nobody.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:iron_bar",
+          "count": 6
+        },
+        {
+          "type": "item",
+          "item": "default:coal_lump",
           "count": 4
         }
       ],
       "rewards": {
-        "xp": 805,
-        "copper": 80,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Mining and smelting stay independent of professions.",
+      "duration_min": 15
     },
     {
-      "id": "r15_undead_local_01",
-      "line": "legacy",
+      "id": "mournfen_wax_01",
+      "line": "wax",
       "giver": "r15_undead_local",
       "turnin": "r15_undead_local",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 15,
+      "level": 16,
       "requires": [
-        "r14_undead_06_tusks_along_the_fen_road"
+        "mournfen_watch_02"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Gel for the Wax Store",
-      "text": "The wax keeper uses local slime gel to seal jars against the fen damp. Bring enough for the raised store shelves.",
+      "title": "Motes for the Long Candles",
+      "text": "The Wandering Wisps in the {name:wispfen} leave Wisp Motes behind. Bring me three; a pinch in the wax and a vigil candle burns all night without anyone getting up to trim it.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:slime_gel",
-          "count": 3
+          "item": "grug_mobs:wisp_mote",
+          "count": 3,
+          "roles": [
+            "wandering_wisp"
+          ],
+          "area": "kragmar_mournfen/wispfen"
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "A night drop request that shares the wisp outing.",
+      "duration_min": 8
     },
     {
-      "id": "r15_undead_local_02",
-      "line": "legacy",
-      "giver": "r15_undead_local",
-      "turnin": "r15_undead_local",
-      "min_level": 10,
-      "level": 10,
+      "id": "mournfen_fen_04",
+      "line": "fen",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_steward",
+      "min_level": 16,
+      "level": 18,
       "requires": [
-        "r14_undead_06_tusks_along_the_fen_road"
+        "mournfen_fen_03"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Furrows by the Memorial",
-      "text": "Plague boars root against the stones of the tended memorial. Drive them back into the dead furrows.",
+      "title": "The Unclaimed at the Cairns",
+      "text": "Pauper Shamblers climb out of the {name:cairns} {dir_of:mournfen_village:cairns} at night. Nobody claimed them in life and nobody claims them now, which is exactly why they will not lie still. Lay six of them down; I will write their numbers in the book, since we have no names.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:young_boar"
+          "roles": [
+            "muttering_zombie"
           ],
-          "zone": "kragmar_mournfen",
-          "count": 5
+          "count": 6,
+          "area": "kragmar_mournfen/cairns"
         }
       ],
       "rewards": {
-        "xp": 380,
-        "copper": 45,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "lesson": "A night hunt on high ground near the top of the band.",
+      "duration_min": 12
     },
     {
-      "id": "r15_undead_local_03",
-      "line": "legacy",
+      "id": "mournfen_watch_03",
+      "line": "watch",
       "giver": "r14_undead_scout",
       "turnin": "r14_undead_scout",
-      "min_level": 11,
-      "level": 11,
+      "min_level": 17,
+      "level": 18,
       "requires": [
-        "r14_undead_07_mud_that_moves"
+        "mournfen_watch_02"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Teeth from the Watch Channel",
-      "text": "Bring two ordinary crocodile teeth from Mournfen's muddy banks while helping Sera clear the sluice. They will mark the safest side of the watch channel without another counted crocodile hunt.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:croc_tooth",
-          "count": 2
-        }
-      ],
-      "rewards": {
-        "xp": 315,
-        "copper": 50,
-        "items": []
-      }
-    },
-    {
-      "id": "r15_undead_local_04",
-      "line": "legacy",
-      "giver": "r14_undead_scout",
-      "turnin": "r14_undead_scout",
-      "min_level": 11,
-      "level": 11,
-      "requires": [
-        "r14_undead_07_mud_that_moves"
-      ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "The Sheltered Niche",
-      "text": "Bog ooze pools beneath the observation niche and eats at its supports. Break up the nearest masses.",
+      "title": "Lookouts over the Barrows",
+      "text": "The bandits who sell barrow goods to the mirefolk hold the {name:bandit_camp} {dir_from_giver:bandit_camp}. Their Bandit Lookouts shoot first; get in close and drop six of them. They have a prisoner up there, Hollis Grey, and I would like him back talking.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:sullen_bog_ooze"
+          "roles": [
+            "vigilant_bandit_archer"
           ],
-          "zone": "kragmar_mournfen",
-          "count": 5
+          "count": 6,
+          "area": "kragmar_mournfen/bandit_camp"
         }
       ],
       "rewards": {
-        "xp": 420,
-        "copper": 55,
+        "weight": 4,
         "items": []
-      }
+      },
+      "lesson": "Ranged humanoids: close the distance or use cover.",
+      "duration_min": 12
     },
     {
-      "id": "r15_undead_local_05",
-      "line": "legacy",
-      "giver": "r14_undead_captive",
+      "id": "mournfen_watch_04",
+      "line": "watch",
+      "giver": "r14_undead_scout",
       "turnin": "r14_undead_captive",
-      "min_level": 12,
-      "level": 12,
+      "min_level": 18,
+      "level": 18,
       "requires": [
-        "r14_undead_08_clear_the_sluice"
+        "mournfen_watch_03"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Names on the Purse Tags",
-      "text": "Two stolen purses may still carry the names scratched into their bone tags. Bring them to the captive so the missing carriers can be entered in the camp account. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "title": "A Prisoner Who Kept Count",
+      "text": "The lookouts are thinned. Go into the {name:bandit_camp} and speak with Hollis Grey; he spent weeks watching where the bandits carried their sacks.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_mobs:stolen_purse",
-          "count": 2
+          "type": "talk",
+          "npc": "r14_undead_captive"
         }
       ],
       "rewards": {
-        "xp": 460,
-        "copper": 65,
+        "weight": 1,
         "items": []
-      }
+      },
+      "lesson": "Travel to a captive inside a hostile camp.",
+      "duration_min": 5
     },
     {
-      "id": "r15_undead_local_06",
-      "line": "legacy",
+      "id": "mournfen_testimony_01",
+      "line": "testimony",
       "giver": "r14_undead_captive",
       "turnin": "r14_undead_captive",
-      "min_level": 12,
-      "level": 12,
+      "min_level": 18,
+      "level": 19,
       "requires": [
-        "r14_undead_08_clear_the_sluice"
+        "mournfen_watch_04"
       ],
-      "faction": "throng",
-      "race": "undead",
-      "title": "Dry Cloth from a Wet Ruin",
-      "text": "The inner-band raiders carry linen that stayed dry inside the ruined enclosure. Bring enough for Hollis to wrap the heat-marked scrap.",
+      "title": "Silt's Final Tally",
+      "text": "Every sack went to the {name:mire_nests} {dir_from_giver:mire_nests}, where {name:reed_counter_silt} counts the bones and pays the bandits in pearls. Kill five Reed Mirefolk there and end Silt's count; without the tally the whole trade falls apart.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_mobs:linen_cloth",
-          "count": 5
+          "type": "kill",
+          "roles": [
+            "reed_mirefolk"
+          ],
+          "count": 5,
+          "area": "kragmar_mournfen/mire_nests"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "reed_counter_silt"
+          ],
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 575,
-        "copper": 75,
+        "weight": 6,
         "items": []
-      }
+      },
+      "climax": true,
+      "lesson": "The line's climax: a named normal leader at its camp.",
+      "duration_min": 15
+    },
+    {
+      "id": "mournfen_departure",
+      "line": "testimony",
+      "giver": "r14_undead_captive",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 19,
+      "level": 19,
+      "requires": [
+        "mournfen_testimony_01"
+      ],
+      "title": "Nhal Veyr Must Hear It",
+      "text": "I am getting out of this camp, and you are going to Nhal Veyr. Tell Ossa Quietregister in the Vigil Hall what Silt was buying; the capital keeps the register of the dead, and the register has gaps now.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_undead_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Travel handoff to the capital.",
+      "duration_min": 8
+    },
+    {
+      "id": "mournfen_bounty_fen",
+      "line": "bounties",
+      "giver": "r14_undead_steward",
+      "turnin": "r14_undead_steward",
+      "min_level": 16,
+      "level": 16,
+      "requires": [
+        "mournfen_fen_03"
+      ],
+      "title": "Repeatable: Gnawers in the Barrowfields",
+      "text": "Grave Gnawers burrow into the {name:barrowfields} {zone_area:barrowfields} every night. Kill six and come back; I post this again twenty minutes after you hand it in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mangy_rat"
+          ],
+          "count": 6,
+          "area": "kragmar_mournfen/barrowfields"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunting contract.",
+      "duration_min": 8
+    },
+    {
+      "id": "mournfen_bounty_watch",
+      "line": "bounties",
+      "giver": "r14_undead_scout",
+      "turnin": "r14_undead_scout",
+      "min_level": 19,
+      "level": 19,
+      "requires": [
+        "mournfen_watch_04"
+      ],
+      "title": "Repeatable: Deepfen Lights",
+      "text": "Wandering Wisps gather over the {name:deepfen} {zone_area:deepfen} after dark. Put out six and report; the watch posts this again twenty-five minutes after you hand it in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wandering_wisp"
+          ],
+          "count": 6,
+          "area": "kragmar_mournfen/deepfen"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunting contract at the top of the band.",
+      "duration_min": 8
     }
   ]
 }
