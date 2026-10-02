@@ -543,7 +543,7 @@ none blocks the fresh-world playtest. Numbers are comparisons, never targets.
   ([economy plan](docs/planning/economy-vendor-plan.md#band-smoothing-round-30-2026-10-02)).
 - **Map tab:** an empty strip remains where the Return home button was.
 - **Mob give-up (P2 notes, for the GUI test):** a player who keeps
-  re-aggroing a mob from a pillar or a closed house gets it fully healed at
+  re-aggroing a mob from a closed house or other hidden spot gets it fully healed at
   each give-up (about every 7 s); P2's one-seed count run showed +55 % spawn
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).

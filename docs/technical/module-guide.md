@@ -734,9 +734,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (`quest_copper`). Since Round 30 `state.lua` caches each player's decoded
   state keyed by the raw meta string: readers share that table and must
   never write into it, mutating paths take a copy (`editable`) and `save`
-  re-caches. Marker consumers (minimap, Map tab, NPC tags) ask
-  `Q.marker_states(player)` once for every giver (memoized for a second) and
-  listen to `Q.register_on_markers_changed`; `Q.markers_changed` fires on a
+  re-caches. Marker consumers ask `Q.marker_states(player)` once for every
+  giver (memoized for a second, the memo reset by `Q.markers_changed`): the
+  minimap, the only consumer that registers
+  `Q.register_on_markers_changed`; the Map tab, which compares the
+  `marker_states` version in its signature; the NPC tags, read on the 1 Hz
+  carrier pass. `Q.markers_changed` fires on a
   quest change, a held objective-item change (the tracker's `Q.journal_key`
   poll, `hud.lua`, five 0.1 s slots) and a level change (fixture
   `tools/r30_p1`). Unknown quest fields stop the load (`E-unknown-key`,

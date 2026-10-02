@@ -520,8 +520,9 @@ current state). It is **derived, never authoritative**:
   through the three merged spawn ABMs (`grug_mobs/spawn_abms.lua`), and a
   surface row no zone keeps registers nothing.
 - **Quest state** is cached decoded per player: never write into a table
-  `load` returns; marker consumers use `grug_quests.marker_states` and
-  `register_on_markers_changed`.
+  `load` returns; marker consumers read `grug_quests.marker_states` (the
+  Map tab compares its version, the NPC tags read it on the 1 Hz carrier
+  pass); only the minimap registers `register_on_markers_changed`.
 - Round 30 fixtures and probes live in `tools/r30_<lane>/` (`p1` quest state,
   tracker, Map tab, minimap and Character page; `p2` pathing, give-up,
   collision boxes, merged spawn ABMs; `p3` region-map cache incl. input

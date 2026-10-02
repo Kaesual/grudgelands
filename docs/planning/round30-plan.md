@@ -254,7 +254,7 @@ Numbers are each lane's own probe before and after, same seed and area
   target, as approved. In the review round: **dragons and whelps never give
   up** and only wait (a reset would restart the boss attempt with a full
   heal); **kings only drop the target** (no heal, no royal reset;
-  coordinator); a **visible player** (open pillar, across a fence) is never
+  coordinator); a **visible player** (across a fence or water) is never
   searched for and never given up; a target in a **walkable node** (slab,
   lower stair, snow) is searched for from the node above, and a search with
   walkable ends never counts.
@@ -284,11 +284,16 @@ mapgen data files and the engine version, the zone-grid encode assert, held
 objective counts uncapped, a turn-in reward error that skips `changed()`,
 band 6 at 0.80 of its target (Master Riding), the band-3 outliers, the
 empty strip on the Map tab where the button was, the dragon arena design
-iteration. Not reproduced and left to the GUI test: a pillar player who
-keeps re-aggroing a mob gives it a full heal at each give-up (about every
-7 s); P2's one-seed count run showed +55 % spawn attempts in a shallow
+iteration. Not reproduced and left to the GUI test: a player who keeps
+re-aggroing a mob from a closed house or other hidden spot gives it a full
+heal at each give-up (about every 7 s); P2's one-seed count run showed +55 % spawn attempts in a shallow
 cave, judged run noise (the merged dispatcher keeps every row's rate by
 construction).
+
+**King give-up behaviour (open question to the user):** kings now only drop
+an unreachable target (no heal, no encounter reset); the coordinator
+proposed heal-only without the encounter reset, to stop step-wise ranged
+kills from a hidden spot.
 
 ### Playtest checklist
 
@@ -301,13 +306,19 @@ On a fresh world (Round 30 changes the island landings and the caches):
    kill that completes an objective, after picking up the last objective
    item (within about 1.5 s) and after a level-up, the givers' symbols on
    the NPCs, the minimap and the Map tab change.
-3. **Return home** on the Character page (Stats tab): destination and an
+3. **Return home** on the Character page (Stats tab), with a home set at
+   an innkeeper: destination and an
    m:ss countdown that ticks each second, "Preparing arrival" during the
    return, "Ready" afterwards; also in a 1280 × 720 window.
-4. **Giving up:** a mob gives up a player hiding in a closed house or behind
-   a tall pillar after about 7 s and walks home; a player on a slab, a stair
-   or snow, and one standing visible on an open pillar, is chased as usual;
-   the island dragons never give up.
+4. **Giving up:**
+   - Hide from a chasing mob in a closed house or a walled-in hole: after
+     about 7 s the mob stops, walks home and is healed.
+   - Stand where the mob can see you but cannot reach you (across a fence or
+     water): it keeps you as its target and does not walk home.
+   - Stand on a slab, a stair or snow: the mob reaches you and attacks.
+   - Re-aggro a mob from a hidden spot: it gives up again and heals each
+     time (P2 note).
+   - The island dragons never give up.
 5. **Spawns:** surface, cave, ocean (Kraken, Reed Angelfish) and rift mobs
    still appear as before; no clumps of one species on one spot.
 6. **Crafting:** a shift-click craft of a full stack works and does not
