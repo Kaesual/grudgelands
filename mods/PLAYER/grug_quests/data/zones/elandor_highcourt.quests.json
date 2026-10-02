@@ -1,22 +1,23 @@
 {
   "zone": "elandor_highcourt",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Highcourt is safe inside its walls; outside them, private collectors dress their charges as royal tolls.",
   "hubs": [
     {
       "id": "highcourt",
       "anchor": "highcourt",
       "givers": [
         {
-          "npc": "r20_human_capital_cook",
+          "npc": "r20_human_capital_envoy",
           "lines": [
-            "legacy"
+            "accounts",
+            "front"
           ]
         },
         {
-          "npc": "r20_human_capital_envoy",
+          "npc": "r20_human_capital_cook",
           "lines": [
-            "legacy",
-            "front"
+            "provisions",
+            "dispatch"
           ]
         }
       ]
@@ -24,93 +25,260 @@
   ],
   "quests": [
     {
-      "id": "r20_human_capital_cook",
-      "line": "legacy",
-      "giver": "r20_human_capital_cook",
-      "turnin": "r20_human_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Bread for the Late Arrivals",
-      "text": "Ansel Ovenward is setting a supper beside Highcourt's bakehouse for travellers who arrive after the bread is baked. Bring five raw meat portions for the pot. No Cooking profession is required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 45,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_human_capital_services",
-      "line": "legacy",
-      "giver": "r20_human_capital_envoy",
-      "turnin": "r20_human_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r20_human_capital_intro"
-      ],
-      "faction": "accord",
-      "race": "human",
-      "title": "The Ovenward Welcome",
-      "text": "Mariel sends new arrivals to Ansel Ovenward in the homes bakehouse. Speak with the cook beside the oven and complete this introduction there; the separate Cooking trainer is optional.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_human_capital_cook"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_human_capital_stores",
-      "line": "legacy",
+      "id": "highcourt_accounts_01",
+      "line": "accounts",
       "giver": "r20_human_capital_envoy",
       "turnin": "r20_human_capital_envoy",
-      "min_level": 20,
-      "level": 20,
+      "min_level": 19,
+      "level": 21,
       "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Stone for the River Watch",
-      "text": "The river watch needs low stone blocks to reset its supply-yard edge. Bring twelve cobble blocks to Mariel at Highcourt. This asks for ordinary material, not proof that you mined it.",
+      "title": "The Dead Cannot Owe Toll",
+      "text": "There are Debtbound Zombies wandering the {name:commons}, {zone_area:commons}, at night, still burdened with somebody's unpaid tolls. Put five to rest after dark. Penn's name keeps appearing in the complaints, and I intend to learn why. Highcourt can surely spare the dead another demand for payment.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:cobble",
-          "count": 12
+          "type": "kill",
+          "roles": [
+            "debtbound_zombie"
+          ],
+          "count": 5,
+          "area": "elandor_highcourt/commons"
         }
       ],
       "rewards": {
-        "xp": 780,
-        "copper": 60,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Night work near the capital; zombies burn at dawn.",
+      "duration_min": 8
     },
     {
-      "id": "r20_human_journey_01",
-      "line": "legacy",
+      "id": "highcourt_accounts_02",
+      "line": "accounts",
       "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "highcourt_accounts_01"
+      ],
+      "title": "An Arrow Is Not a Receipt",
+      "text": "The complaints lead to Toll Bandit Archers in the {name:deer_park} {dir_of:highcourt:deer_park}, collecting after dark from anyone unfortunate enough to pass. Defeat five there at night. Their badges claim royal authority; the crown's instructions do not include shooting customers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer"
+          ],
+          "count": 5,
+          "area": "elandor_highcourt/deer_park"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Ranged night roster in a forest; daytime there is quiet.",
+      "duration_min": 9
+    },
+    {
+      "id": "highcourt_accounts_tithes",
+      "line": "accounts",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 24,
+      "level": 26,
+      "requires": [
+        "highcourt_accounts_02"
+      ],
+      "title": "Optional: Tithes After Dark",
+      "text": "The petitions now include Tithe Revenants in the {name:orchards}, which lie {zone_area:orchards}. They rise at night to demand payments nobody remembers owing. Lay five of them to rest after dark. I would prefer the dead stop collecting before the living start believing them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 5,
+          "area": "elandor_highcourt/orchards"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Optional: a night hunt beside the day orchard work.",
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "highcourt_accounts_03",
+      "line": "accounts",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 27,
+      "level": 29,
+      "requires": [
+        "highcourt_accounts_02"
+      ],
+      "title": "The Last Unauthorised Stamp",
+      "text": "{name:tollmaster_penn} conducts his business at the {name:toll_camp} {dir_from_giver:toll_camp}, with enough borrowed ceremony to embarrass a coronation. Defeat five Toll Bandit Archers there and then Penn himself; his camp operates day and night. Keep clear of the other archers while you close on each one. I want him to discover that stamping a demand does not make it lawful.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer"
+          ],
+          "count": 5,
+          "area": "elandor_highcourt/toll_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "tollmaster_penn"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Archer camp plus its named normal leader.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "highcourt_provisions_01",
+      "line": "provisions",
+      "giver": "r20_human_capital_cook",
+      "turnin": "r20_human_capital_cook",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "A Peg for the Bread Board",
+      "text": "My bread board rocks, and the royal kitchen has offered to lend me a peg with more conditions than a peace treaty. Bring me one Gnarled Boar Tusk from a Furrow Boar by day on the {name:commons}, which lies {zone_area:commons}. Their yellow names mean they only fight back when struck. I would rather settle the matter with the boar.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:gnarled_boar_tusk",
+          "count": 1,
+          "roles": [
+            "furrow_boar"
+          ],
+          "area": "elandor_highcourt/commons"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "A daytime errand that leaves your enchant stock alone.",
+      "duration_min": 8
+    },
+    {
+      "id": "highcourt_provisions_venison",
+      "line": "provisions",
+      "giver": "r20_human_capital_cook",
+      "turnin": "r20_human_capital_cook",
+      "min_level": 21,
+      "level": 22,
+      "requires": [
+        "highcourt_provisions_01"
+      ],
+      "title": "Optional: Venison for the Long Table",
+      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "moss_antler_stag"
+          ],
+          "count": 6,
+          "area": "elandor_highcourt/commons"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Optional: neutral daytime game, the minor role on the capital commons.",
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "highcourt_provisions_02",
+      "line": "provisions",
+      "giver": "r20_human_capital_cook",
+      "turnin": "r20_human_capital_cook",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "highcourt_provisions_01"
+      ],
+      "title": "Pies Have Consequences",
+      "text": "The palace expects fruit pies, while the pickers expect to keep their fingers; I find the second request entirely reasonable. Hunt five Redfang Vixens by day in the {name:orchards}, which lie {zone_area:orchards}. Mind their red names: they start fights, unlike the Orchard Foxes sharing that ground.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "redfang_fox"
+          ],
+          "count": 5,
+          "area": "elandor_highcourt/orchards"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Aggressive and neutral foxes share one orchard.",
+      "duration_min": 9,
+      "climax": true
+    },
+    {
+      "id": "highcourt_bounty_razorbacks",
+      "line": "provisions",
+      "giver": "r20_human_capital_cook",
+      "turnin": "r20_human_capital_cook",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "highcourt_provisions_02"
+      ],
+      "title": "Bounty: Razorbacks",
+      "text": "The gardeners are replanting the {name:outer_fields}, {zone_area:outer_fields}, yet again, and the Razorbacks appear to regard this as attentive service. Bring down six by day and return for your bounty. I can pay for another hunt twenty-five minutes after you turn this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "monstrous_boar"
+          ],
+          "count": 6,
+          "area": "elandor_highcourt/outer_fields"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Repeatable bounty in the late outskirts.",
+      "duration_min": 8
+    },
+    {
+      "id": "highcourt_dispatch_01",
+      "line": "dispatch",
+      "giver": "r20_human_capital_cook",
       "turnin": "r20_anchor_016_host",
       "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "race": "human",
-      "title": "Word for Merren Oakstamp",
-      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Whitebridge Market Close in Whitebridge Shire and speak with Merren Oakstamp. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Merren Oakstamp there. No parcel, fighting errand or return trip is required.",
+      "level": 22,
+      "requires": [
+        "highcourt_accounts_01"
+      ],
+      "title": "The Empty River Baskets",
+      "text": "I paid for river baskets and received a very confident promise, which has proved difficult to put bread in. Find Merren Oakstamp at Whitebridge Market Close in Whitebridge Shire and ask what became of my order. Follow the road, or visit the stables about a mount if your feet have already lodged a complaint.",
       "objectives": [
         {
           "type": "talk",
@@ -118,10 +286,36 @@
         }
       ],
       "rewards": {
-        "xp": 615,
-        "copper": 50,
+        "weight": 1,
         "items": []
-      }
+      },
+      "lesson": "Capital to heartland handoff.",
+      "duration_min": 8
+    },
+    {
+      "id": "highcourt_dispatch_02",
+      "line": "dispatch",
+      "giver": "r20_human_capital_cook",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "highcourt_accounts_03"
+      ],
+      "title": "Bread for the March",
+      "text": "The watch at Cinderline eats my bread and stands between the Accord's homes and the fighting. Go to Cinderline Watch in Ashenward March and speak with Toren Waterbarrel; tell him the person who dealt with Penn is ready to help. Get yourself to level 30 before making the journey into contested country. Eat before you leave, too; courage is no breakfast.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Capital to contested handoff.",
+      "duration_min": 10
     }
   ]
 }
