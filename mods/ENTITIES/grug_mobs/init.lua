@@ -866,7 +866,10 @@ function grug_mobs.register_mob(name, def)
 				if s.temp and s.temp.grug_evading then
 					return true
 				end
-				return (night_truce and truce_active(s, player))
+				-- A player this mob gave up as unreachable, still on the
+				-- same node (aggro.lua give_up_target).
+				return grug_mobs.gave_up_on(s, player)
+					or (night_truce and truce_active(s, player))
 					or faction_veto(player)
 			end
 		end

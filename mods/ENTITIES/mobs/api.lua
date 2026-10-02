@@ -319,6 +319,7 @@ function mob_class:do_attack(player, force)
 			self.temp.grug_obstacle_blocked = nil
 			self.temp.grug_obstacle_sidestep = nil
 			self.temp.grug_obstacle_backoff = nil
+			grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 		end
 	end
 
@@ -1849,11 +1850,29 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	end
 
 	self.temp = self.temp or {}
+
+	-- GRUG PATCH (Round 30 P2, perf review 2026-10 #4): the negative path
+	-- cache and the give-up rule (grug_obstacle.no_path_gate). A mob whose
+	-- last searches found no path waits before it repeats the same search,
+	-- and after three failures against a target that did not move it gives
+	-- the target up (grug_mobs: drop it and go home through the leash reset).
+	local grug_now = core.get_us_time() / 1000000
+	local grug_gate = grug_obstacle.no_path_gate(self.temp, grug_now,
+			self.attack, s, target_pos)
+	if grug_gate == "wait" then return "backoff" end
+	if grug_gate == "give_up" then
+		if grug_mobs and grug_mobs.give_up_target then
+			grug_mobs.give_up_target(self)
+		else
+			self:stop_attack()
+		end
+		return "give_up"
+	end
+
 	if not grug_obstacle.claim_path_budget(self.temp) then return "budget" end
 	grug_obstacle.path_attempted(self.temp)
 	self.path.stuck_timer = 0
-
-	local prop = self.object:get_properties()
+	local grug_mob_pos = {x = s.x, y = s.y, z = s.z} -- before the ground fix
 
 	-- round position to avoid getting stuck in walls
 	local sx, sz = floor(s.x + 0.5), floor(s.z + 0.5)
@@ -1878,10 +1897,19 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 		y = floor(target_pos.y + 0.5),
 		z = floor(target_pos.z + 0.5)}
 
-	self.path.way = core.find_path(s, p1, pathfinding_searchdistance,
+	-- GRUG PATCH (Round 30 P2, perf review #4): the close-obstacle pass (a
+	-- target within reach behind a trunk or wall) searches a small box; the
+	-- search's time counts against the per-step A* budget.
+	local grug_searchdistance = grug_force_path
+			and min(grug_obstacle.close_searchdistance, pathfinding_searchdistance)
+			or pathfinding_searchdistance
+	local grug_t0 = core.get_us_time()
+	self.path.way = core.find_path(s, p1, grug_searchdistance,
 			jumpheight, dropheight, pathfinding_algorithm)
+	grug_obstacle.note_path_cost(core.get_us_time() - grug_t0)
 
-	local height = prop.collisionbox[5] - prop.collisionbox[2]
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local height = cbox[5] - cbox[2]
 
 	-- since we have a path, double check clearance height for 2x node high mobs
 	if self.path.way and #self.path.way > 0 then
@@ -1900,6 +1928,9 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 		grug_obstacle.note_path_result(self.temp,
 				self.path.way and #self.path.way > 0)
 	end
+	-- GRUG PATCH (Round 30 P2): remember the result for the negative cache.
+	grug_obstacle.note_search_result(self.temp, grug_now, self.attack,
+			grug_mob_pos, target_pos, self.path.way and #self.path.way > 0)
 
 	--[[ do we still have a path after check
 	if self.path.way and #self.path.way > 0 then
@@ -2287,6 +2318,7 @@ function mob_class:stop_attack()
 		self.temp.grug_obstacle_blocked = nil
 		self.temp.grug_obstacle_sidestep = nil
 		self.temp.grug_obstacle_backoff = nil
+		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 	end
 	self:set_velocity(0)
 	self.state = "stand"

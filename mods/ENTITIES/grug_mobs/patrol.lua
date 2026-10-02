@@ -219,11 +219,30 @@ end
 -- Returns false when there is no path at all, which is what makes stage 2 the
 -- next thing that happens.
 --
+-- Round 30 P2 (perf review 2026-10 #13): the search shares mobs_redo's per-step
+-- A* time budget (mobs/grug_obstacle.lua) and its negative path cache. A stuck
+-- guard used to repeat a full no-path search every second for as long as a
+-- player stood within 48 nodes; now it searches only while the step has
+-- budget to spare, and after a failed search waits 1, 2, 4, 8 s (capped)
+-- before it asks for the same two nodes again. A refused or waiting nudge is
+-- "no path" for this tick: the caller walks straight, as before.
+--
+local obstacle = mobs.grug_obstacle
+
 function grug_mobs.path_nudge(self, x, z, pos)
 	local from = {x = math.floor(pos.x + 0.5), y = math.floor(pos.y + 0.5),
 		z = math.floor(pos.z + 0.5)}
 	local to = {x = math.floor(x + 0.5), y = from.y, z = math.floor(z + 0.5)}
+	self.temp = self.temp or {}
+	local now = core.get_us_time() / 1000000
+	if obstacle.no_path_gate(self.temp, now, "nudge", from, to, true) ~= "search"
+			or not obstacle.spare_path_budget() then
+		return false
+	end
+	local t0 = core.get_us_time()
 	local path = core.find_path(from, to, PATH_SEARCH, 1, 2, "A*_noprefetch")
+	obstacle.note_path_cost(core.get_us_time() - t0)
+	obstacle.note_search_result(self.temp, now, "nudge", from, to, path ~= nil)
 	if not path then
 		return false
 	end

@@ -4,11 +4,29 @@
 local obstacle = {
 	path_delay = 1.0,
 	sidestep_time = 0.5,
-	path_budget_per_step = 2,
 	path_backoff = 0.25,
+	-- Round 30 P2 (perf review 2026-10 #4): A* time per server step, in
+	-- microseconds, instead of a fixed number of searches. A no-path search
+	-- costs 2-3 ms at searchdistance 24, a found path 14-211 us.
+	path_budget_us = 3000,
+	-- Negative path cache: after a no-path result the mob waits before it
+	-- searches the same pair of nodes again (seconds, per consecutive
+	-- failure, the last one repeated, capped).
+	no_path_waits = {1, 2, 4, 8},
+	no_path_wait_cap = 10,
+	-- Give up a target after this many failed searches in a row while the
+	-- target's node stays the same (the user's ruling, round30-plan.md §2).
+	give_up_after = 3,
+	-- searchdistance of the close-obstacle A* pass (a target within reach
+	-- behind a trunk or wall); the chase pass keeps the server setting.
+	close_searchdistance = 8,
 }
 
-local path_budget = obstacle.path_budget_per_step
+-- Microseconds spent on A* in the current server step, and the running
+-- estimate of one search (used to grant queued requests at step start).
+local path_spent_us = 0
+local path_granted_us = 0
+local path_cost_estimate_us = 1000
 local path_queue = {}
 local path_queue_head = 1
 local path_entries = setmetatable({}, {__mode = "k"})
@@ -108,9 +126,13 @@ function obstacle.begin_server_step()
 		end
 	end
 
-	path_budget = obstacle.path_budget_per_step
+	-- Queued requests are granted against the estimated cost of a search;
+	-- what they really spend is added as they run (note_path_cost).
+	path_spent_us = 0
+	path_granted_us = 0
 	discard_invalid_queue_head()
-	while path_budget > 0 and path_queue_head <= #path_queue do
+	while path_granted_us < obstacle.path_budget_us
+	and path_queue_head <= #path_queue do
 		local entry = path_queue[path_queue_head]
 		path_queue[path_queue_head] = false
 		path_queue_head = path_queue_head + 1
@@ -119,10 +141,20 @@ function obstacle.begin_server_step()
 		and obstacle.path_request_current(temp, entry.generation) then
 			entry.temp = nil
 			entry.status = "granted"
-			path_budget = path_budget - 1
+			entry.grant_us = path_cost_estimate_us
+			path_granted_us = path_granted_us + entry.grant_us
 		end
 		discard_invalid_queue_head()
 	end
+end
+
+-- The measured duration of one A* search (microseconds) against this step's
+-- budget, and into the running estimate the queue grants with.
+function obstacle.note_path_cost(us)
+	us = us > 0 and us or 0
+	path_spent_us = path_spent_us + us
+	path_cost_estimate_us = path_cost_estimate_us * 0.75 + us * 0.25
+	if path_cost_estimate_us < 50 then path_cost_estimate_us = 50 end
 end
 
 function obstacle.tick_backoff(temp, dtime)
@@ -159,14 +191,16 @@ function obstacle.claim_path_budget(temp)
 			return false, entry.generation
 		end
 		local generation = entry.generation
+		-- The grant's reservation turns into the search's real cost.
+		path_granted_us = path_granted_us - (entry.grant_us or 0)
 		obstacle.cancel_path_request(temp)
 		return true, generation
 	end
 
 	discard_invalid_queue_head()
 	entry = new_path_request(temp)
-	if path_queue_head > #path_queue and path_budget > 0 then
-		path_budget = path_budget - 1
+	if path_queue_head > #path_queue
+	and path_spent_us + path_granted_us < obstacle.path_budget_us then
 		local generation = entry.generation
 		obstacle.cancel_path_request(temp)
 		return true, generation
@@ -176,8 +210,96 @@ function obstacle.claim_path_budget(temp)
 	return false, entry.generation
 end
 
+-- A caller that searches at most once a second (the patrol nudge) cannot
+-- claim a queued grant in the step it is given, so it neither queues nor
+-- waits: it searches only while the step has budget left and nobody queues.
+function obstacle.spare_path_budget()
+	discard_invalid_queue_head()
+	return path_queue_head > #path_queue
+		and path_spent_us + path_granted_us < obstacle.path_budget_us
+end
+
 function obstacle.path_attempted(temp)
 	temp.grug_obstacle_blocked = nil
+end
+
+--
+-- Negative path cache and give-up (Round 30 P2, perf review 2026-10 #4).
+--
+-- A no-path search explores the whole search box, so repeating it for an
+-- unreachable target (a closed house, a pillar, a boat) cost 2-3 ms every
+-- couple of seconds, forever. `temp.grug_no_path` remembers the last failed
+-- search: the target object, the mob's and the target's node and how many
+-- searches in a row failed while the target's node stayed the same.
+--   * The next search for the same two nodes waits 1, 2, 4, 8 s after the
+--     1st, 2nd, 3rd, 4th failure (capped); a changed node of either side lifts
+--     the wait, since that is a different search.
+--   * A target that changes node starts the count again.
+--   * Once `give_up_after` searches failed, the next search that would run
+--     gives the target up instead (the caller drops it and goes home). A
+--     caller without a target to give up (the patrol nudge) passes
+--     `no_give_up`; its waits keep growing to the cap instead.
+-- Nodes are rounded positions; `now` is in seconds.
+--
+
+local function node_of(pos)
+	return math.floor(pos.x + 0.5), math.floor(pos.y + 0.5),
+		math.floor(pos.z + 0.5)
+end
+
+-- "search", "wait" (back-off running) or "give_up".
+function obstacle.no_path_gate(temp, now, target, mob_pos, target_pos,
+		no_give_up)
+	local state = temp.grug_no_path
+	if not state then return "search" end
+	local tx, ty, tz = node_of(target_pos)
+	if state.target ~= target or state.tx ~= tx or state.ty ~= ty
+	or state.tz ~= tz then
+		temp.grug_no_path = nil
+		return "search"
+	end
+	if not no_give_up and state.fails >= obstacle.give_up_after then
+		local mx, my, mz = node_of(mob_pos)
+		if now < state.until_time and state.mx == mx and state.my == my
+		and state.mz == mz then
+			return "wait"
+		end
+		temp.grug_no_path = nil
+		return "give_up"
+	end
+	local mx, my, mz = node_of(mob_pos)
+	if now < state.until_time and state.mx == mx and state.my == my
+	and state.mz == mz then
+		return "wait"
+	end
+	return "search"
+end
+
+-- Record a search result. `mob_pos`/`target_pos` are the search's ends.
+function obstacle.note_search_result(temp, now, target, mob_pos, target_pos,
+		has_path)
+	if has_path then
+		temp.grug_no_path = nil
+		return
+	end
+	local tx, ty, tz = node_of(target_pos)
+	local mx, my, mz = node_of(mob_pos)
+	local state = temp.grug_no_path
+	local fails = 1
+	if state and state.target == target and state.tx == tx
+	and state.ty == ty and state.tz == tz then
+		fails = state.fails + 1
+	end
+	local waits = obstacle.no_path_waits
+	local wait = waits[math.min(fails, #waits)]
+	if wait > obstacle.no_path_wait_cap then wait = obstacle.no_path_wait_cap end
+	temp.grug_no_path = {target = target, fails = fails,
+		until_time = now + wait, mx = mx, my = my, mz = mz,
+		tx = tx, ty = ty, tz = tz}
+end
+
+function obstacle.forget_no_path(temp)
+	temp.grug_no_path = nil
 end
 
 function obstacle.note_path_result(temp, has_path)

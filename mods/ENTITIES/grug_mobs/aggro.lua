@@ -455,6 +455,60 @@ local function leash_check(self)
 end
 
 --
+-- Giving up an unreachable target (Round 30 P2, the user's ruling on perf
+-- review 2026-10 #4, round30-plan.md §2). mobs_redo's smart_mobs calls this
+-- when three A* searches in a row found no path to a target whose node did not
+-- change (mobs/grug_obstacle.lua no_path_gate): a player in a closed house, on
+-- a pillar or in a boat. The mob drops the target and goes home through the
+-- ordinary leash reset above (heal, forget threat and tags, run home when it
+-- stands beyond its radius); guards, rares and dragons included, since their
+-- own rules end such a chase only after the 15 s contact timeout or never.
+-- The bespoke no-leash actors (Kraken, royal guards) keep their encounter
+-- rules and only drop the target.
+--
+-- A player given up on is ignored by target acquisition until they stand on
+-- another node (grug_mobs.gave_up_on, the _grug_ignore_player veto in
+-- init.lua), so the mob does not walk straight back to the same unreachable
+-- spot. Being hit or a group alert still starts a new chase as usual.
+--
+local function node_of(pos)
+	return math.floor(pos.x + 0.5), math.floor(pos.y + 0.5),
+		math.floor(pos.z + 0.5)
+end
+
+function grug_mobs.give_up_target(self)
+	local target = self.attack
+	local pos = target and target:get_pos()
+	self.temp = self.temp or {}
+	if pos and core.is_player(target) then
+		local x, y, z = node_of(pos)
+		self.temp.grug_gave_up = {name = target:get_player_name(),
+			x = x, y = y, z = z}
+	end
+	if self._grug_no_leash then
+		self:stop_attack()
+		return
+	end
+	grug_mobs.leash_reset(self)
+end
+
+function grug_mobs.gave_up_on(self, player)
+	local gave = self.temp and self.temp.grug_gave_up
+	if not gave or player:get_player_name() ~= gave.name then
+		return false
+	end
+	local pos = player:get_pos()
+	if pos then
+		local x, y, z = node_of(pos)
+		if x == gave.x and y == gave.y and z == gave.z then
+			return true
+		end
+	end
+	self.temp.grug_gave_up = nil
+	return false
+end
+
+--
 -- Roam cap: the SOFT half of place binding (world.md §4a)
 --
 -- "Place-bound NPCs are bound to their anchor: after losing aggro they return
