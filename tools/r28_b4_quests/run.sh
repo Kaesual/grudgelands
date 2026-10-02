@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Round 28 Lane B4 engine probe: the registry built from the per-zone quest
-# files equals the deleted Lua content generators' registry, and a sample
-# new-format quest runs end to end with a player stand-in. The boot itself is
-# the smoke test of the load-time validation against the real registries.
+# Round 28 Lane B4 engine probe: a sample new-format quest file loads and runs
+# end to end with a player stand-in. The boot itself is the smoke test of the
+# load-time validation of the shipped quest files against the real
+# registries.
 #
 # The portable proof is portable_test.lua next to this file (LuaJIT).
 #
@@ -14,11 +14,7 @@ repo="$(cd "$here/../.." && pwd -P)"
 out="${1:?usage: run.sh OUT_DIR [TIMEOUT_SECONDS]}"
 timeout_s="${2:-180}"
 mkdir -p "$out"
-# The staged probe carries the oracle and the shared canonical form.
-probe="$out/grug_probe_r28_quests"
-rm -rf "$probe"
-cp -a "$here/grug_probe_r28_quests" "$probe"
-cp "$here/canonical.lua" "$here/json.lua" "$here/legacy_registry.json" "$probe/"
+probe="$here/grug_probe_r28_quests"
 set +e
 PROBE="$probe" KEEP=1 "$repo/tools/luanti_headless.sh" "$timeout_s" >"$out/headless.txt" 2>&1
 boot=$?

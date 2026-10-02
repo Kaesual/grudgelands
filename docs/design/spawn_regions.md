@@ -301,12 +301,21 @@ once and renders every listed zone on it; up to eight processes (and
 renders) run at once. Three zones on two seeds take about 25 s. Dawnmere:
 `docs/planning/round28/regions/dawnmere/`.
 
-Kill quests per seed: `tools/r28_regions/quest_targets.py` (run by
-`run.sh` at its end) reads every quest file, the recipes and the region
-stats of each seed and lists every kill objective without an area whose
-targets are in its zone's recipe but form no region on some seed (the quest
-has no targets there; the run fails), apart from the accepted ones whose
-targets the recipe never spawns (the game's `W-recipe-target` warning).
+Quest targets per seed: `tools/r28_regions/quest_targets.py` (run by
+`run.sh` at its end; `--quests DIR` checks another copy of the quest files)
+reads every quest file, the recipes and the region stats of each seed and
+checks every target on every seed: a kill objective, an item objective's
+source `roles` and a quest drop (with an area: every role stands in that
+kind or camp, also of another zone, and it forms a region; without one: a
+kill of any listed role counts, so one of them is a placed leader or stands
+in a kind or camp of the file's zone that forms one), and every
+placeholder target of the title and text (else the text has no direction
+there). A target missing on some seed fails the run (MISSING). It notes
+the clock a target is met at when only one, and lists under CLOCK a quest
+whose text names only the other clock ("after dark" for a day role). The
+split older quests' kill objectives (`mobs`) keep their own path until the
+last of them is replaced, where a target the recipe never spawns is
+accepted (the game's `W-recipe-target` warning).
 
 `tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT] [--variants "A [B]"]
 [--before REF]` draws the whole mainland per seed (default 42, 7, 2026; ROOT

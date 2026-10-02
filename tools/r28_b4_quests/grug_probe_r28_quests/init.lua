@@ -1,27 +1,20 @@
 -- Disposable engine probe (Round 28 Lane B4). Never shipped:
--- tools/r28_b4_quests/run.sh stages it (with canonical.lua, json.lua and
--- legacy_registry.json) through tools/luanti_headless.sh.
+-- tools/r28_b4_quests/run.sh stages it through tools/luanti_headless.sh.
 --
 -- After every mod loaded (the boot itself proves the zone files pass the
 -- load-time validation against the real registries) it checks:
---   1. the registry built from the zone files equals the one the deleted Lua
---      content generators built (all 240 ids, objectives, rewards, gates,
---      texts; only Ruling 29 and Lane S1's Dawnmere sub-types differ) and
---      the 78 quest NPCs;
---   2. a sample new-format zone file through the real loader: a new giver
+--   1. a sample new-format zone file through the real loader: a new giver
 --      at Highcourt's free quest socket, a quest with a kill, an item group
 --      and a quest-only drop, a repeatable, a travel quest;
---   3. the sample played end to end by a player stand-in (a headless server
+--   2. the sample played end to end by a player stand-in (a headless server
 --      has no client): accept, kill credit, quest drop into the inventory,
 --      turn-in with the weight reward, the repeatable's cooldown, travel
 --      credit on accept;
---   4. the load-time world checks against a probe spawn area installed into
---      B1's real registry (level fit, role in area).
+--   3. the load-time world checks against the shipped Dawnmere recipe (level
+--      fit, role in area).
+-- It logs what the shipped zone files register (quests, objectives, rewards).
 
 local P = "[r28_quests_probe] "
-local dir = core.get_modpath(core.get_current_modname())
-local json = dofile(dir .. "/json.lua")
-local canonical = dofile(dir .. "/canonical.lua")
 local failures, checks = 0, 0
 local function log(msg) core.log("action", P .. msg) end
 local function check(ok, msg)
@@ -36,20 +29,9 @@ local function eq(got, want, msg)
 	return check(got == want, msg .. " (got " .. tostring(got) .. ", expected " .. tostring(want) .. ")")
 end
 
-local function registry_equivalence(Q)
-	local handle = assert(io.open(dir .. "/legacy_registry.json", "r"))
-	local oracle = assert(json.decode(handle:read("*a")))
-	handle:close()
-	local now = canonical.registry(Q.registered_quests, Q.registered_npcs)
-	local total, same, differing, objectives, kills, items, talks = 0, 0, {}, 0, 0, 0, 0
-	local xp, copper = 0, 0
-	for id, expected in pairs(oracle.quests) do
-		total = total + 1
-		local got = now.quests[id]
-		if got and json.encode(got) == json.encode(expected) then same = same + 1
-		else differing[#differing + 1] = id end
-	end
-	local registered = 0
+-- What the shipped zone files register (a log line, no check).
+local function summary(Q)
+	local registered, objectives, kills, items, talks, xp, copper = 0, 0, 0, 0, 0, 0, 0
 	for _, def in pairs(Q.registered_quests) do
 		registered = registered + 1
 		for _, objective in ipairs(def.objectives) do
@@ -57,88 +39,12 @@ local function registry_equivalence(Q)
 			if objective.type == "kill" then kills = kills + 1
 			elseif objective.type == "item" then items = items + 1 else talks = talks + 1 end
 		end
-		xp, copper = xp + (def.rewards.xp or 0), copper + def.rewards.copper
+		xp, copper = xp + grug_quests.reward_xp(def), copper + def.rewards.copper
 	end
-	eq(total, 240, "oracle quests")
-	eq(registered, 240, "registered quests (zone files)")
-	-- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
-	-- its three kill quests (a zone with a spawn recipe spawns only those).
-	-- The S2 recipe lanes do the same for their zones' legacy kill quests (S2
-	-- rule 11): a quest whose only change is sub-types appended to its kill
-	-- objectives' mob lists is such an addition.
-	local dawnmere = {r14_human_01_boars_beyond_the_fence = true,
-		r14_human_04_shapes_by_lanternlight = true, r14_human_05_the_missing_flock = true}
-	local function subtypes_appended(got, expected)
-		if not got then return false end
-		local was = json.decode(json.encode(expected))
-		for i, objective in ipairs(was.objectives) do
-			local now_mobs = got.objectives[i] and got.objectives[i].mobs
-			if objective.type == "kill" and objective.mobs and now_mobs then
-				for k, name in ipairs(objective.mobs) do
-					if now_mobs[k] ~= name then return false end
-				end
-				for k = #objective.mobs + 1, #now_mobs do
-					if not now_mobs[k]:match("^grug_mobs:") then return false end
-				end
-				objective.mobs = now_mobs
-			end
-		end
-		return json.encode(got) == json.encode(was)
-	end
-	-- Round 29 Q1: no fixed compass word in a quest text; two legacy texts
-	-- changed only that word (beside it at most appended sub-types).
-	local compass_edits = {r15_human_local_04 = "A Clear Lookout",
-		r20_anchor_014_01 = "beside Tarnwatch's bent lane"}
-	local function compass_edit(id, got, expected)
-		if not got or not compass_edits[id] then return false end
-		local was = json.decode(json.encode(expected))
-		was.title, was.description = got.title, got.description
-		return subtypes_appended(got, was) and
-			(got.title .. got.description):find(compass_edits[id], 1, true) ~= nil
-	end
-	table.sort(differing)
-	local unexplained, recipe_subtypes = {}, 0
-	for _, id in ipairs(differing) do
-		if dawnmere[id] then dawnmere[id] = "seen"
-		elseif compass_edit(id, now.quests[id], oracle.quests[id]) then compass_edits[id] = "seen"
-		elseif subtypes_appended(now.quests[id], oracle.quests[id]) then recipe_subtypes = recipe_subtypes + 1
-		else unexplained[#unexplained + 1] = id end
-	end
-	eq(table.concat(unexplained, " "), "", "beyond the three Dawnmere kill quests (Ruling 29, " ..
-		"Lane S1) only appended kill sub-types differ (S2 rule 11)")
-	for id, seen in pairs(dawnmere) do eq(seen, "seen", id .. " differs from the oracle") end
-	for id, seen in pairs(compass_edits) do eq(seen, "seen", id .. ": only the compass word changed") end
-	log(("%d further legacy kill quests take their zone recipe's sub-types"):format(recipe_subtypes))
-	for id, mobs in pairs({
-		r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
-		r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",
-			"grug_mobs:sluggish_zombie"},
-	}) do
-		local got, was = now.quests[id], oracle.quests[id]
-		if check(got and was, id .. " registered and in the oracle") then
-			eq(json.encode(got.objectives[1].mobs), json.encode(mobs), id .. ": base role plus sub-types")
-			eq(json.encode(was.objectives[1].mobs), json.encode({mobs[1]}), id .. ": the oracle had the base role")
-			was.objectives[1].mobs = got.objectives[1].mobs
-			eq(json.encode(got), json.encode(was), id .. ": nothing else changed")
-		end
-	end
-	local flock = now.quests.r14_human_05_the_missing_flock
-	local before = oracle.quests.r14_human_05_the_missing_flock
-	if check(flock and before, "the turkey hunt registered and in the oracle") then
-		eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:fox","grug_mobs:small_fox"]',
-			"Ruling 29: foxes replace the wild turkey (Lane S1: and the Small Fox)")
-		eq(before.objectives[1].mobs[1], "grug_mobs:wild_turkey", "the oracle had the critter target")
-		before.objectives[1].mobs = flock.objectives[1].mobs
-		before.description = before.description:gsub("^Wild turkeys", "Foxes")
-		eq(json.encode(flock), json.encode(before), "nothing else of the turkey hunt changed")
-	end
-	check(json.encode(now.npcs) == json.encode(oracle.npcs), "quest NPCs unchanged")
 	local files = 0
 	for _ in pairs(Q.quest_files) do files = files + 1 end
-	log(("registry: %d quests from %d zone files, %d identical to the generators, differing: %s")
-		:format(registered, files, same, table.concat(differing, ", ")))
-	log(("objectives: %d (kill %d, item %d, talk %d); rewards: %d XP, %d copper in total")
-		:format(objectives, kills, items, talks, xp, copper))
+	log(("registry: %d quests from %d zone files; objectives: %d (kill %d, item %d, talk %d); " ..
+		"rewards: %d XP, %d copper in total"):format(registered, files, objectives, kills, items, talks, xp, copper))
 end
 
 -- A sample zone file in the Round 28 format (frame 4.7).
@@ -309,8 +215,8 @@ local function run()
 	end
 	table.sort(new)
 	log("new givers from the zone files: " .. (#new > 0 and table.concat(new, "; ") or "none"))
-	local ok, err = pcall(registry_equivalence, Q)
-	check(ok, "registry equivalence: " .. tostring(err))
+	local ok, err = pcall(summary, Q)
+	check(ok, "registry summary: " .. tostring(err))
 	sample(Q)
 	play(Q)
 	log(("RESULT %s (%d checks, %d failures)"):format(failures == 0 and "PASS" or "FAIL", checks, failures))

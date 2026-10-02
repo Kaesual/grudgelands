@@ -1115,10 +1115,13 @@ class Validator:
 
     def check_recipe_targets(self, zone, obj, roles, file, path, all_areas):
         """A kill objective without an area in a zone with a spawn recipe,
-        none of whose targets the recipe spawns (a kind, a camp or a leader of
-        the zone): only the recipe's roles appear on that zone's surface. A
-        warning (the targets may live in another zone on purpose); the game's
-        quest loader logs the same (grug_quests/validate.lua)."""
+        none of whose targets the recipe spawns (a kind or a camp of the
+        zone) and none of which is a leader (of any zone: a leader stands at
+        its own spot, so a front file may name another zone's leader; with a
+        `zone` filter only the filter zone's leaders): only
+        the recipe's roles appear on that zone's surface. A warning (the
+        targets may live in another zone on purpose); the game's quest loader
+        logs the same (grug_quests/validate.lua)."""
         if "area" in obj or not roles:
             return
         kill_zone = obj.get("zone") if isinstance(obj.get("zone"), str) else zone
@@ -1128,8 +1131,13 @@ class Validator:
         spawned = set()
         for unit in areas.values():
             spawned |= set(unit.get("roles") or ())
-        spawned |= set(self.d.leaders(kill_zone))
         bare = {r.split(":", 1)[1] if r.startswith("grug_mobs:") else r for r in roles if isinstance(r, str)}
+        # A zone-filtered (legacy) objective counts only kills in that zone.
+        filtered = isinstance(obj.get("zone"), str)
+        for r in bare:
+            found = self.d.find_leader(r)
+            if found and (not filtered or found[0] == kill_zone):
+                spawned.add(r)
         # Guards stand at their guard posts, never in a recipe's regions.
         if bare & set(LEGACY_GUARD_TARGETS):
             return
@@ -1913,6 +1921,27 @@ def _scenarios():
                                         "respawn": 300}]
         _save(spawns_file, spawns)
 
+    def kill_leader_elsewhere(target):
+        """Dawnmere's hunt kills the chief, now Goldmead's leader, without an
+        area (a front file's case): a leader of any zone counts as spawned."""
+        leader_elsewhere(target)
+        data = _load(target / Q_FILE)
+        for q in data["quests"]:
+            if q["id"] == "sample_hunt_04":
+                q["objectives"].append({"type": "kill", "roles": ["confused_bandit_chief"], "count": 1})
+        _save(target / Q_FILE, data)
+
+    def kill_leader_elsewhere_filtered(target):
+        """The same kill as a legacy objective with Dawnmere's zone filter:
+        only kills in Dawnmere count, so Goldmead's chief is not met there."""
+        leader_elsewhere(target)
+        data = _load(target / Q_FILE)
+        for q in data["quests"]:
+            if q["id"] == "sample_hunt_04":
+                q["objectives"].append({"type": "kill", "mobs": ["grug_mobs:confused_bandit_chief"],
+                                        "zone": "elandor_dawnmere_fields", "count": 1})
+        _save(target / Q_FILE, data)
+
     def goldmead_camps(camps, leaders=None, change=None):
         """Goldmead's one-belt recipe with camps (its atlas: one bandit camp
         POI, one guard post)."""
@@ -2025,6 +2054,8 @@ def _scenarios():
         ("zone-added leader placed in another zone", lambda t: leader_elsewhere(t, False), False,
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, False, "E-duplicate"),
+        ("kill of another zone's leader without an area", kill_leader_elsewhere, False, "!W-recipe-target"),
+        ("zone-filtered kill of another zone's leader", kill_leader_elsewhere_filtered, True, "W-recipe-target"),
         ("a palette-only spawns file (shipped form)", palette_only, False, None),
         ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), False, None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(

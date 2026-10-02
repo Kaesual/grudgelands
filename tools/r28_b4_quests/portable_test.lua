@@ -1,23 +1,23 @@
 -- Round 28 Lane B4 portable test (quest system; rulings 29, 39-42, the per-zone
 -- quest files). Loads the REAL grug_quests files under a minimal `core` stub
 -- and checks:
---   1. migration: the shipped zone files (mods/PLAYER/grug_quests/data/zones)
---      load through the real loader into a registry whose canonical form
---      equals the one the deleted Lua content generators produced
---      (legacy_registry.json, all 240 quests and 78 NPCs), except Ruling 29;
---   2. the fixture files (fixture/grug_quests): dependency-order loading,
+--   1. the fixture files (fixture/grug_quests): dependency-order loading,
 --      roles to entities, areas, groups, quest drops, repeatables, a front
 --      file and a new giver at a free quest socket;
---   3. play through a player stand-in: every objective kind, area credit by
+--   2. play through a player stand-in: every objective kind, area credit by
 --      the mob's tag, leader kills, the compact HUD line, travel credit on
 --      accept ("Travel to"), quest drops per eligible participant, repeatable
 --      cooldown and labels, weight and legacy rewards;
---   4. load-time validation: one designer mistake per case, each refused with
+--   3. load-time validation: one designer mistake per case, each refused with
 --      a message naming the file and the quest.
+--
+-- The shipped quest files are checked by tools/r28_q0/portable_test.lua
+-- section 5 (the real loader over the shipped recipes, catalogue, item
+-- registry and settlement places), tools/r28_regions/quest_targets.py (every
+-- target on every seed) and the engine probe's boot (run.sh).
 --
 -- Usage (repo root): luajit tools/r28_b4_quests/portable_test.lua
 local json = dofile("tools/r28_b4_quests/json.lua")
-local canonical = dofile("tools/r28_b4_quests/canonical.lua")
 local FIXTURE = "tools/r28_b4_quests/fixture"
 
 local failures, checks = 0, 0
@@ -283,136 +283,10 @@ local function load_quests(root, mobs_root)
 end
 
 ------------------------------------------------------------------------------
--- 1. Migration: shipped zone files == the deleted generators' registry.
+-- 1. The fixture files.
 ------------------------------------------------------------------------------
-local Q = load_quests("mods/PLAYER/grug_quests", FIXTURE .. "/grug_mobs")
-local oracle_file = assert(io.open("tools/r28_b4_quests/legacy_registry.json"))
-local oracle = json.decode(oracle_file:read("*a"))
-oracle_file:close()
-local now = canonical.registry(Q.registered_quests, Q.registered_npcs)
-local count, same, differing = 0, 0, {}
-for id, expected in pairs(oracle.quests) do
-	count = count + 1
-	local got = now.quests[id]
-	if got and json.encode(got) == json.encode(expected) then same = same + 1
-	else differing[#differing + 1] = id end
-end
-local extra = 0
-for id in pairs(now.quests) do if not oracle.quests[id] then extra = extra + 1 end end
-eq(count, 240, "oracle holds 240 quests")
-eq(extra, 0, "no quest beyond the oracle")
--- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
--- its three kill quests (a zone with a spawn recipe spawns only those). The
--- S2 recipe lanes do the same for their zones' legacy kill quests (S2 rule
--- 11): a quest whose only change is sub-types appended to its kill
--- objectives' mob lists is such an addition. Round 29 P3 then dropped the
--- targets the kill zone's recipe never spawns wherever one that does
--- remains: the oracle's names may be missing, in their order, before the
--- appended sub-types.
-local DAWNMERE = {r14_human_01_boars_beyond_the_fence = true,
-	r14_human_04_shapes_by_lanternlight = true, r14_human_05_the_missing_flock = true}
-local function subtypes_appended(got, expected)
-	if not got then return false end
-	local was = deep_copy(expected)
-	for i, objective in ipairs(was.objectives) do
-		local now_mobs = got.objectives[i] and got.objectives[i].mobs
-		if objective.type == "kill" and objective.mobs and now_mobs then
-			if #now_mobs == 0 then return false end
-			local k = 1
-			for _, name in ipairs(objective.mobs) do
-				if now_mobs[k] == name then k = k + 1 end
-			end
-			for j = k, #now_mobs do
-				if not now_mobs[j]:match("^grug_mobs:") then return false end
-			end
-			objective.mobs = now_mobs
-		end
-	end
-	return json.encode(got) == json.encode(was)
-end
--- Round 29 Q1: no fixed compass word in a quest text; two legacy texts
--- changed only that word (title or description; beside it at most the
--- appended sub-types above).
-local COMPASS_EDITS = {r15_human_local_04 = "A Clear Lookout",
-	r20_anchor_014_01 = "beside Tarnwatch's bent lane"}
-local function compass_edit(id, got, expected)
-	if not got or not COMPASS_EDITS[id] then return false end
-	local was = deep_copy(expected)
-	was.title, was.description = got.title, got.description
-	return subtypes_appended(got, was) and
-		(got.title .. got.description):find(COMPASS_EDITS[id], 1, true) ~= nil
-end
-table.sort(differing)
-local unexplained, recipe_subtypes = {}, 0
-for _, id in ipairs(differing) do
-	if DAWNMERE[id] then DAWNMERE[id] = "seen"
-	elseif compass_edit(id, now.quests[id], oracle.quests[id]) then COMPASS_EDITS[id] = "seen"
-	elseif subtypes_appended(now.quests[id], oracle.quests[id]) then recipe_subtypes = recipe_subtypes + 1
-	else unexplained[#unexplained + 1] = id end
-end
-eq(table.concat(unexplained, " "), "", "beyond the three Dawnmere kill quests (Ruling 29, Lane S1) " ..
-	"only appended kill sub-types and dropped unspawned targets differ (S2 rule 11, R29 P3)")
-for id, seen in pairs(DAWNMERE) do eq(seen, "seen", id .. " differs from the oracle") end
-for id, seen in pairs(COMPASS_EDITS) do eq(seen, "seen", id .. ": only the compass word changed") end
-print(("  %d further legacy kill quests take their zone recipe's sub-types"):format(recipe_subtypes))
-for id, mobs in pairs({
-	r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
-	r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",
-		"grug_mobs:sluggish_zombie"},
-}) do
-	local got, was = now.quests[id], deep_copy(oracle.quests[id])
-	-- Round 29 P3: Dawnmere's recipe never spawns the base role.
-	eq(json.encode(got.objectives[1].mobs), json.encode({unpack(mobs, 2)}), id .. ": the sub-types only")
-	eq(json.encode(was.objectives[1].mobs), json.encode({mobs[1]}), id .. ": the oracle had the base role")
-	was.objectives[1].mobs = got.objectives[1].mobs
-	eq(json.encode(got), json.encode(was), id .. ": nothing else changed")
-end
-local flock = now.quests.r14_human_05_the_missing_flock
-local before = deep_copy(oracle.quests.r14_human_05_the_missing_flock)
-eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:small_fox"]',
-	"Ruling 29: foxes replace the wild turkey (Lane S1: the Small Fox; R29 P3: only it)")
-eq(before.objectives[1].mobs[1], "grug_mobs:wild_turkey", "the oracle had the critter target")
-before.objectives[1].mobs = flock.objectives[1].mobs
-before.description = before.description:gsub("^Wild turkeys", "Foxes")
-eq(json.encode(flock), json.encode(before), "nothing else of the turkey hunt changed")
-eq(json.encode(now.npcs), json.encode(oracle.npcs), "the 78 quest NPCs are unchanged")
-local critter_targets = 0
-for _, def in pairs(Q.registered_quests) do
-	for _, objective in ipairs(def.objectives) do
-		for _, name in ipairs(objective.mobs or {}) do
-			if name == "grug_mobs:wild_turkey" then critter_targets = critter_targets + 1 end
-		end
-	end
-end
-eq(critter_targets, 0, "no kill objective targets a critter")
--- The world checks over the migrated data: every legacy target is known.
-for _, def in pairs(Q.registered_quests) do
-	for _, objective in ipairs(def.objectives) do
-		for _, name in ipairs(objective.mobs or {}) do
-			if not core.registered_entities[name] then
-				core.registered_entities[name] = {}
-				DISPOSITION[name:match(":(.+)$")] = DISPOSITION[name:match(":(.+)$")] or "aggressive"
-			end
-		end
-		if objective.item and not core.registered_items[objective.item] then
-			core.registered_items[objective.item] = {description = objective.item}
-		end
-	end
-end
-DISPOSITION.guard_throng, DISPOSITION.guard_accord = false, false
+local Q = load_quests(FIXTURE .. "/grug_quests", FIXTURE .. "/grug_mobs")
 local ok, err = pcall(Q.validate_quest_data)
-check(ok, "migrated data passes the load-time world checks: " .. tostring(err))
-ok, err = pcall(Q.validate_registry)
-check(ok, "migrated data passes the registry checks: " .. tostring(err))
-local files = 0
-for _ in pairs(Q.quest_files) do files = files + 1 end
-eq(files, 32, "one quest file per zone with quest givers today")
-
-------------------------------------------------------------------------------
--- 2. The fixture files.
-------------------------------------------------------------------------------
-Q = load_quests(FIXTURE .. "/grug_quests", FIXTURE .. "/grug_mobs")
-ok, err = pcall(Q.validate_quest_data)
 check(ok, "fixture passes the world checks: " .. tostring(err))
 ok, err = pcall(Q.validate_registry)
 check(ok, "fixture passes the registry checks: " .. tostring(err))
@@ -433,7 +307,7 @@ eq(Q.npc_by_socket["highcourt/lore_shrine/lore_shrine_quest"], "fx_lore_keeper",
 eq(#drop_hooks, 1, "quest drops registered on the participant drop hook")
 
 ------------------------------------------------------------------------------
--- 3. Play.
+-- 2. Play.
 ------------------------------------------------------------------------------
 local function make_player(name, level)
 	local meta, lists = {}, {main = {}}
@@ -676,7 +550,7 @@ level_of.ann = 20
 has(dialogue(ann, "fx_lore_keeper", "fx_lore_01"), "Stones for the Shrine", "new giver offers its quest")
 
 ------------------------------------------------------------------------------
--- 4. Load-time validation.
+-- 3. Load-time validation.
 ------------------------------------------------------------------------------
 local V = Q.validate
 local function read(name)
@@ -743,6 +617,23 @@ do
 	quest_of(files, "fx_hunt_01").level = 9
 	_, warnings = V.world(files, loader_world)
 	eq(about(warnings, "fx_hunt_01"), 0, "the zone's leader counts as spawned")
+	-- A leader of another zone (a front file names the front's leaders from
+	-- its host zone): it stands at its own spot, so it counts as spawned too.
+	local elsewhere = setmetatable({leader = function(role)
+		local row = loader_world.leader(role)
+		return row and {zone = "front_shattered_line", level = row.level, respawn = row.respawn}
+	end}, {__index = loader_world})
+	_, warnings = V.world(files, elsewhere)
+	eq(about(warnings, "fx_hunt_01"), 0, "another zone's leader counts as spawned")
+	-- A legacy zone filter counts only kills in its zone: another zone's
+	-- leader is not met there.
+	local filtered = deep_copy(files)
+	quest_of(filtered, "fx_legacy").objectives[1] = {type = "kill", count = 1,
+		mobs = {"grug_mobs:confused_bandit_chief"}, zone = "elandor_dawnmere_fields"}
+	_, warnings = V.world(filtered, elsewhere)
+	eq(about(warnings, "fx_legacy"), 1, "a zone filter: another zone's leader still warns")
+	_, warnings = V.world(filtered, loader_world)
+	eq(about(warnings, "fx_legacy"), 0, "a zone filter: the filter zone's own leader counts")
 	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
 	-- regions, so the recipe check skips them.
 	files = deep_copy(base_files)
