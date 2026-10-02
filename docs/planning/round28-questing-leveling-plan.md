@@ -723,3 +723,148 @@ catalogue data.
   respawn).
 - Afterwards: fresh world, playtest. The completion section and the playtest
   checklist are added at the end of the round.
+
+## Completion (2026-10-02)
+
+The user ended Round 28 on 2026-10-02. Every lane below is merged on main
+(last lane W1 `f35998d5`, the frame note on island flight `3f1405e5`); each
+was independently reviewed by Opus and passed the gates the coordinator ran
+on main after every merge (all `tools/r28_*/portable_test.lua`,
+`tools/r28_design/validate.py`, `tools/check_fresh_server.py`, a headless
+boot). Round 28 is complete and pushed (2026-10-02).
+
+**How the round changed course.** Ruling 34's anchor-relative areas
+(Lane B1) shipped as a framework, but the user rejected the C2 sample's
+hand-placed circles and rectangles: maps differ per seed, and the fallback
+still covered most land. The coordinator designed the replacement with the
+user: rule-based spawn regions built from each zone's terrain (Lane S1,
+[spawn_regions.md](../design/spawn_regions.md)), reviewed as images on
+several seeds; they replace the areas. GPT-6 Astra kept the catalogue and the art and may write
+quest texts; it no longer designs spawn distributions.
+
+### Shipped, by lane
+
+- **A1** (`b140c76e`): road protection half width + 1; idle aggressive mobs
+  walk away from roads, bridges, villages and towns (rulings 1, 2, 4).
+- **A2** (`d24259ec`): mob environmental damage in percent of max HP, knockback
+  as a 0.25 m × swing-interval displacement, hits never stall the attack
+  clock, simple separation (rulings 5–8).
+- **A3** (`eaecdcb6`): elites at scale 1.4, kings at size 1.6, world-sized
+  HP bars, rotated selection boxes, gate guards turn and walk together
+  (rulings 9–11).
+- **A4** (`71ac0d12`, `c4681c82`): Charge checks its landing room, failure
+  messages on a fresh press, the LMB mode lock (rulings 12–15).
+- **A5** (`d6cdf9c0`): one respawn teleport without launch, death messages
+  name the shooter, stations drop their contents when dug (rulings 16–18).
+- **A6** (`722d90d5`): the message feed (`grug_core.feed`), riding trainer
+  states, "Damage reduction", quest tab spacing, the Professions tab, "N
+  locked" recipe books (rulings 19–24).
+- **A7** (`d7257e20`): per-class offhand, Scout ranged and melee slots, the
+  Scout-only quiver (500 arrows, stacks of 100) (rulings 25–26).
+- **C0** (`b00b5d2b`, `4addee02`, `d1c15097`, `7b824394`, `be8776ba`): the
+  [design frame](round28-design-frame.md), zone atlas, mob catalogue and
+  design tools (`tools/r28_design`).
+- **B1** (`79cd2878`): per-zone spawn data, protected-surface refusal, area
+  camps and leaders, 30–60 s camp respawn (rulings 3, 34, 37, 38).
+- **B2** (`23585cec`): data-driven sub-types, loot by band, family alerts,
+  the participant drop hook (rulings 35, 36).
+- **B3** (`510944fe`): kill XP `25 + 5L`, the curve `M(L) × (8 + 0.29(L − 1))`,
+  quest and gathering XP in kill equivalents (rulings 30–33).
+- **B4** (`55cab977`): quests as per-zone JSON (240 migrated), item-group,
+  multi-objective, area and quest-drop objectives, repeatables, travel
+  credit on accept, new givers, load-time validation (rulings 29, 39–42).
+- **B5** (`2efa3b79`): self-contained professions, data-driven enchant inputs,
+  six duplicate cooking routes removed (rulings 27, 28).
+- **C1 and E1** (`d6a60168`, `7a11bb07`): Astra's catalogue shipped as game
+  data with loot prices (tier = copper, a placeholder) and ingredient tiers.
+- **C4 / E1b** (`9dd85b6e`): 89 loot icons by Astra, style approved by the
+  user; originals archived outside git.
+- **N1** (`3ec3516b`): the naming rule of frame §5 applied (51 roles, 18 zone
+  variants, 3 items) with a review page.
+- **S1** (`c8afa5c7`): rule-based spawn regions (32-node cells, belts by area
+  share, terrain kinds, camps and leaders by rule, direction phrases), the
+  Dawnmere recipe approved on six seeds, the region renderer
+  (`tools/r28_regions`); every zone runs to its round level; leaders 1.15×
+  and 2× HP.
+- **M1** (`c7c56a5d`): zone or town name under the minimap, zone markers with
+  name and level band on the Map tab, "King of <city>", a debounced 1.5 s
+  entry banner ([world_map.md](../design/world_map.md#zone-and-town-names)).
+- **Q0** (`cb2b7703`): each objective's target level range in the quest log
+  and offer dialogue.
+- **S2-core** (`1a68c018`): entry borders, core exits, one-belt recipes,
+  camps on existing camp POIs, the batch renderer.
+- **S2c, S2b, S2a** (`789a8130`, `39a2bb11`, `38e1da4b`): recipes for the
+  front zones and dragon islands, the 16 Kragmar and the 15 Elandor zones;
+  Gravesalt Escarpment and The Skyglass Canopy play 51–60; blight-ground
+  zombies and leaders are sunproof; legacy kill quests take the recipes'
+  sub-types.
+- **W1** (`f35998d5`): the world view (`tools/r28_world`) and the border rule
+  applied to every zone including the fronts; The Broken Causeway plays
+  41–50 with its own sub-types; the seed-aware quest-target check (73
+  objectives fine, 22 accepted `W-recipe-target`, none missing). The mapgen
+  output is unchanged against `9dd85b6e`.
+- **D**: this section, STATUS, README, BACKLOG, ROADMAP, AGENTS, the module
+  guide and the design index.
+
+Result: 195 sub-types (49 named leaders, 18 elites), 119 loot items, every
+T1–T6 enchant stat item dropped by at least one recipe role, and all 38
+zones on spawn recipes.
+
+### Moved to Round 29
+
+Section C's quest content (C2/C3 and E2/E3: new quest files per race track,
+the contested zones, the front lane with island quests and bounties) moves
+to Round 29, "Economy and travel", as the
+[quests plan](round29-quests-plan.md) (user, 2026-10-02), beside the
+[economy plan](economy-vendor-plan.md) and the
+[boats and waypoints plan](travel-boats-waypoints-plan.md). Why
+([quests plan §1](round29-quests-plan.md#1-why-this-is-its-own-step)):
+
+- **Parallel work.** The quest lanes are nearly pure data in
+  `grug_quests/data` and run in parallel with the economy, travel and mapgen
+  lanes without touching their files.
+- **Spawn playtest first.** A short playtest of the new spawn distribution
+  with the legacy quests comes first, so density, region size or camp
+  problems surface before some 300 new quests sit on top.
+
+Until then the 240 legacy quests stay, with their oversized XP and 22
+accepted `W-recipe-target` warnings. A small quest-core step opens the
+quest work: direction placeholders filled per seed, a load check against
+fixed compass words, and the cutover copper column.
+
+### Open items
+
+In [BACKLOG](../../BACKLOG.md#round-28-carry-overs-and-round-29): the outpost
+seed (item 46), elite ideas never shipped, the loot text pass, six sub-types
+no recipe uses, steep zones without generated camp cells, clustered camps in
+Mournfen and Bannerbreak, the Q0 and M1 review notes. Branches: `r28-c2`
+(Astra's Human route) stays unmerged as content input; `r28-c4` and
+`r28-e1b-icons` must never be merged (icon originals in their history).
+
+### Playtest checklist
+
+On a fresh world:
+
+1. **Start zone:** Small Boars by day and Large Rats at night near the start
+   town; levels rise toward the next zone; crabs on the beaches by day,
+   zombies at night; a bandit camp with its chief near the exit. Every zone
+   should feel populated, with no empty land.
+2. **Names:** the zone or town name under the minimap; a short banner when
+   you enter a zone or town; zone markers on the Map tab with name and level
+   band; "King of <city>" on a king's marker.
+3. **Quests:** the quest log and offer show each target's level range; kill
+   quests count the named sub-types. Legacy quests still give too much XP.
+4. **Mobs:** idle hostile mobs keep away from roads and towns but chase you
+   across them; melee hits push a normal mob back a little; zombies burn in
+   the sun in about 20 seconds, not minutes; elites, kings and leaders have
+   their new sizes; HP bars look the same size on every mob.
+5. **Combat input:** Charge into a tight spot fails with "Not enough room at
+   target."; "Not enough mana" shows; holding LMB on a mob never digs, on a
+   block never swings.
+6. **Death and stations:** a lethal fall respawns once at your innkeeper
+   without a second death; a death by arrow names the shooter; a dug furnace
+   drops its contents.
+7. **UI:** the feed above your bars (XP, loot, quest progress), the riding
+   trainer's four tiers, the Professions tab, "N locked" in recipe books.
+8. **Classes:** Warrior shield, caster offhand, Scout bow in Ranged and a
+   sword in Melee, the quiver slot (stacks of 100).

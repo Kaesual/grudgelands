@@ -30,6 +30,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. Round 18: no death XP loss; cumulative XP caps at level 60,
   and real upward level changes fill living HP/mana with one gold burst.
+  Round 28 ([progression.md](../design/progression.md)): `grug_xp.mob_xp(L)`
+  is the kill-equivalent unit `M(L) = 25 + 5L`, `level_xp(L)` the XP from L
+  to L + 1, `xp_for_level(L)` the cumulative start of L, and
+  `quest_reward(level, weight)` turns a quest weight into XP; kill XP
+  (`mob_xp × tier`) lives in `grug_mobs/levels.lua`. Positive grants feed
+  `grug_core.feed_xp` unless the caller passes `quiet`.
 - **Professions**: `grug_jobs` owns the exact seven primaries — Weaponsmith,
   Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith — plus Cooking,
   two primary slots, player-meta progression and the UI-only recipe books.
@@ -68,7 +74,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   fixed-tier enchantments (including trinkets), equipment separation and wear.
   Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the seven primaries
-  and Cooking. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
+  and Cooking. The Character page's Professions tab (Round 28 ruling 23) is
+  built by `grug_jobs/character_tab.lua`; `grug_inventory` owns the tab row
+  and asks for the body, because `grug_jobs` depends on `grug_inventory`. Capital-only Riding uses `grug_mounts.open_trainer(player, entity)`
   with an authenticated Riding socket, never the generic profession hook.
 - **Crop registration**: `grug_nodes` registers complete `grug_farming:soil` and
   `soil_wet` definitions before synchronous mapgen compilation, and exports
@@ -464,6 +472,37 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     combat packet calls the Core input/acquisition seam and returns before all
     mobs_redo combat side effects; only the exact-target, claim-once token of a
     server-owned full punch may continue.
+- **Mob sub-types, loot and spawn regions (Round 28):** all in `grug_mobs`,
+  data under `data/` (JSON; a missing file means "no data", a broken one
+  fails the load).
+  - `subtypes.lua` registers each sub-type `grug_mobs:<role>` as a copy of
+    its already registered base (loaded after every mob file), from
+    `data/subtypes.json` and `tints.json`; loot items from `items.json`;
+    drops by level band from `drops.json`. Quest-only drops go through
+    `grug_mobs.register_participant_drop_hook` (`aggro.lua`), rolled per
+    eligible participant.
+  - `spawn_regions.lua` (`grug_mobs.spawn_regions`) reads
+    `data/zones/<zone>.spawns.json`: a `recipe` (every shipped zone) or a
+    `palette` (the old ABM path, kept for a zone without recipe). It builds a
+    zone's region map on first need through the pure
+    `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
+    the review images are what spawns. API: `region_at`, `level_at`,
+    `describe` (direction phrases for quest texts), `area_roles`,
+    `leader_pos`; every spawned mob carries `_grug_area` for area kill
+    credit. Rules: [spawn_regions.md](../design/spawn_regions.md),
+    [biomes_mobs.md](../design/biomes_mobs.md) §4.2.
+  - `env_damage.lua` (percent environmental damage, read by the
+    `grug_env_damage` GRUG PATCH), `roam_avoid.lua` (idle aggressive mobs
+    walk away from roads and towns), `separation.lua` (separation and melee
+    knockback as position displacement).
+  - Gameplay level bands that differ from the mapgen's are in
+    `grug_core/zone_bands.lua`, served by `grug_zones.get`/`at`; the mapgen
+    keeps its own bands.
+  - Tools after a recipe change: `tools/r28_regions/run.sh` (images and
+    stats per seed, then `quest_targets.py`), `tools/r28_world/run.sh`
+    (world view, border fit; `border_rule.py`), the catalogue checks
+    `tools/r28_design/validate.py` and `tools/r28_names/build_review.py
+    --check`.
 - **Enchantments**: chosen named prefix/suffix recipes use fixed bonuses by
   enchantment tier, including jewelry; there is no refinement step or random
   crafted bonus. Family eligibility and replacement rules belong to the gear
@@ -472,6 +511,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   override item definitions. Build texture modifier strings in one helper:
   malformed modifiers produce client-side image errors that may not appear in
   server logs. Equipment changes must notify the shared equipment seam.
+  Since Round 28 the inputs are data: `grug_professions/data/enchants.json`
+  (own material + stat loot + a mined or gathered family input per tier),
+  checked by the pure `enchant_data.lua`; universal reagents come from
+  `data/reagents.json` through `reagents.lua`
+  (`grug_professions/data/README.md`).
 - **Materials & tier-rock gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
   - **Contract (WP43, Round 24):** Bronze, Iron, Steel, Silversteel,
@@ -630,7 +674,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   zone's spawn recipe, `grug_mobs/spawn_regions.lua`,
   [spawn_regions.md](../design/spawn_regions.md)); quest-only drops use
   `grug_mobs.register_participant_drop_hook`; weight rewards
-  `grug_xp.quest_reward`. The catalog requires only V1 overworld content; the Nether is
+  `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
+  log, tracker and feed (item names only, never tooltip text) and carries
+  each objective's target level range, computed once at load by
+  `validate.lua` (Lane Q0). The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
@@ -700,6 +747,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (`atlas.collect_markers(player, only)`). Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
   `tools/r27_minimap/bench_glide.lua`.
+  Zone and town names (Round 28 M1): `location.lua` samples each player's
+  location every second, writes the line under the minimap and the entry
+  banner and places one zone marker per zone at startup; the pure
+  `location_view.lua` holds the rules (fixture `tools/r28_m1`).
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
@@ -859,6 +910,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   coordinate mode deliberately. Map retains the shared legacy outer window and
   uses real coordinates only inside its content. 3D preview: `model[]` element.
   Skill tree = formspec with an `image_button` grid.
+  Gains (XP, loot, quest progress, catches) go to the message feed above the
+  bars, never to chat: `grug_core.feed(player, kind, text, key)`,
+  `feed_xp`, `feed_item` (`grug_core/feed.lua`, Round 28 ruling 20).
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.

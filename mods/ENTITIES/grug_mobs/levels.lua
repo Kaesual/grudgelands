@@ -217,7 +217,7 @@ grug_mobs.nearest_player_d2 = nearest_player_d2
 -- the current HP percentage (tier promotion of a wounded mob); otherwise
 -- the mob ends up at full HP.
 -- The derived stats of a live mob: its level and tier, and a definition's
--- HP factor on top (named leaders, subtypes.lua grug_mobs.LEADER_HP).
+-- HP factor on top (named leaders, subtypes.lua grug_mobs.LEADER.hp).
 local function derived_stats(self)
 	local hp, damage, xp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
 	local cfg = level_cfg[self.name]

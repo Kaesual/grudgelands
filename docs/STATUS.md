@@ -1,10 +1,59 @@
 # Project status
 
-Updated 2026-09-30. This is the delivery pointer, not another game specification.
+Updated 2026-10-02. This is the delivery pointer, not another game specification.
 
-- **Round 27 delivered locally** (2026-09-30, WP50,
+- **Round 28 complete and pushed** (2026-10-02,
+  [plan, completion and playtest checklist](planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
+  Every lane is merged on main (last lane W1 `f35998d5`), synchronized to
+  Luanti and pushed. Each lane was independently reviewed by Opus.
+  - **Track A (playtest fixes):** road protection half width + 1 and idle
+    aggressive mobs walk away from roads and towns; mob environmental damage
+    in percent of max HP, melee knockback as a small displacement, hits never
+    stall a mob's attack clock, simple separation; elites at scale 1.4,
+    kings at size 1.6, world-sized HP bars, rotated selection boxes; Charge
+    checks its landing
+    room, failure messages are back, the LMB lock decides combat or gather at
+    key-down; one respawn teleport without launch, death messages name the
+    shooter, stations drop their contents when dug; the message feed above
+    the bars, riding trainer states, "Damage reduction", the Professions tab
+    and "N locked" recipe books; per-class offhand (shield, caster offhand,
+    Scout melee), Scout ranged and melee slots and the Scout-only quiver.
+  - **Track B (framework):** data-driven mob sub-types and loot by level band
+    with a participant drop hook; kill XP `M(L) = 25 + 5L` and the curve
+    `M(L) × (8 + 0.29(L − 1))` (4,200 XP to L10, 194,220 to L60), quest and
+    gathering XP in kill equivalents; quests as per-zone JSON with item-group,
+    multi-objective, area and quest-drop objectives, repeatables, travel
+    credit on accept and load-time validation; self-contained professions
+    (no metal fittings, data-driven enchant inputs, six duplicate cooking
+    routes removed) ([progression.md](design/progression.md),
+    [quests.md](design/quests.md), [biomes_mobs.md](design/biomes_mobs.md)).
+  - **Catalogue:** 195 sub-types (49 named leaders, 18 elites), 119 loot
+    items with 89 new icons, drops and enchant inputs per band; signal words
+    (Small, Large, Braindead …) only in start zones, a unique name everywhere
+    else.
+  - **Spawn regions:** every one of the 38 zones spawns its surface mobs
+    from a rule recipe built on the seed's own terrain (32-node cells, belts,
+    terrain kinds, camps and leaders by rule; leaders 1.15× and 2× HP), with
+    the border rule across zones ([spawn_regions.md](design/spawn_regions.md)).
+    The Broken Causeway plays 41–50, Gravesalt Escarpment and The Skyglass
+    Canopy 51–60 (gameplay band; the mapgen is unchanged).
+  - **Players see:** each objective's target level range in the quest log
+    and offer; the zone or town name under the minimap, zone markers on the
+    Map tab and a short entry banner ([world_map.md](design/world_map.md)).
+  - **Interim:** the 240 legacy quests stay until new quest files replace
+    them (their XP is oversized against the new curve; 22 accepted
+    `W-recipe-target` warnings); the Causeway's plants and ores still follow
+    31–40. The quest content per race track, the front and island quests
+    move to Round 29
+    ([quests plan](planning/round29-quests-plan.md#1-why-this-is-its-own-step))
+    with the [economy](planning/economy-vendor-plan.md),
+    [boats and waypoints](planning/travel-boats-waypoints-plan.md) and a
+    mapgen bundle.
+  - Next: fresh world and spawn playtest, then Round 29 planning.
+
+- **Round 27 delivered and pushed** (2026-09-30, WP50,
   [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
-  Lanes M (`cda93c90`) and D merged on main; pushed up to `96bcab41`.
+  Lanes M (`cda93c90`) and D merged on main; fully pushed (in `9dd85b6e`).
   The Round 26 playtest fix for capital walls (no gaps at gatehouses, fewer
   walls in rivers) is merged as `1ff541e4`; follow-ups in the BACKLOG.
   - **M:** our own round, north-up minimap in the native minimap's box
@@ -127,9 +176,9 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 27, which includes Rounds 20–26
-  and the 2026-09-28 playtest fixes. Round 24 is the latest pushed and
-  accepted state; the Round 25 playtest is under way (first rulings recorded). Fresh-world development
+- **Latest game:** main carries Round 28, which includes Rounds 20–27
+  and the 2026-09-28 playtest fixes. Round 24 is the latest accepted state;
+  the 2026-09-30 playtest with friends fed Round 28. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
@@ -143,16 +192,17 @@ Updated 2026-09-30. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 27 checklist](planning/round27-minimap-plan.md#playtest-checklist)
+  The [Round 28 checklist](planning/round28-questing-leveling-plan.md#playtest-checklist)
+  covers the spawn regions, fixes, slots, feed and zone names, the
+  [Round 27 checklist](planning/round27-minimap-plan.md#playtest-checklist)
   covers the minimap and map quality, the
   [Round 26 checklist](planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
   the capitals and Claim Stone activation, the
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** local `origin/main` is `96bcab41` (observed
-  2026-09-30: Rounds 25–27 and the first glide variant). The glide fixes
-  (`9c8ece8c`) are local only.
+- **Remote observation:** Round 28 is pushed complete (2026-10-02),
+  including all of Round 27 and its glide fixes.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

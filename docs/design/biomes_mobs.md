@@ -1121,8 +1121,8 @@ gate, protected surface).
   and every other surface row are refused there.
   Unchanged everywhere: underground rows and their depth level, water rows
   and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
-  guard posts, and the mapgen content. Today only Dawnmere Fields has a
-  recipe.
+  guard posts, and the mapgen content. Since Round 28 (S2, W1) every one of
+  the 38 zones has a recipe.
 - **Ambient spawner.** Once a second per player (the players spread over
   the second in four slices), one random column in the ring 24–64 nodes
   around the player (24 = `mob_nospawn_range`) in a zone with a recipe: the
