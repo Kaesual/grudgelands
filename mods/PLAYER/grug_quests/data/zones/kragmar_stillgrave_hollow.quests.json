@@ -33,7 +33,7 @@
       "level": 2,
       "requires": [],
       "title": "Please Leave the Residents Buried",
-      "text": "Small Plague Boars spend their days rooting through the {name:dead_furrows} {dir_of:stillgrave:dead_furrows}, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Keep the meat for the cook. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
+      "text": "Small Plague Boars spend their days rooting through the {name:dead_furrows} {dir_of:stillgrave:dead_furrows}, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
       "objectives": [
         {
           "type": "kill",
@@ -346,7 +346,7 @@
         "stillgrave_hunt_03"
       ],
       "title": "The Moor Changes Tenants",
-      "text": "Watch the {name:blightmoor} {zone_area:blightmoor} at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight and call others into the fight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
+      "text": "Watch the {name:blightmoor}, which lies {zone_area:blightmoor}, at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight and call others into the fight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
       "objectives": [
         {
           "type": "kill",
@@ -508,7 +508,7 @@
         "stillgrave_hunt_05"
       ],
       "title": "Repeatable: A Census With Teeth",
-      "text": "The Monstrous Grave Rats in the {name:deadlands} {zone_area:deadlands} have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
+      "text": "The Monstrous Grave Rats in the {name:deadlands}, which lies {zone_area:deadlands}, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
       "objectives": [
         {
           "type": "kill",

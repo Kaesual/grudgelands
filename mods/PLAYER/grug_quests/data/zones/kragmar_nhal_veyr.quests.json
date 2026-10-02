@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "Payment Due After Death",
-      "text": "Debtbound Zombies walk the {name:blightfields} {zone_area:blightfields} at night, knocking to collect debts that appear nowhere in my register. Lay eight to rest before they wear their knuckles down to the last joint. Each carries a clerk's stamp, so this is an unauthorised collection conducted with an infuriating air of legitimacy.",
+      "text": "Debtbound Zombies walk the {name:blightfields}, which lies {zone_area:blightfields}, at night, knocking to collect debts that appear nowhere in my register. Lay eight to rest before they wear their knuckles down to the last joint. Each carries a clerk's stamp, so this is an unauthorised collection conducted with an infuriating air of legitimacy.",
       "objectives": [
         {
           "type": "kill",
@@ -116,7 +116,7 @@
         "nhal_veyr_vigil_01"
       ],
       "title": "The Cost of Staying Dead",
-      "text": "Tithe Revenants stalk the {name:gravefields} {zone_area:gravefields} after dark, charging the dead for being dead and the living for taking their time. Destroy eight. Their stamps bear the same clerk's mark: Hush. I have spent centuries keeping these names, and I will not have them turned into a list of debtors.",
+      "text": "Tithe Revenants stalk the {name:gravefields}, which lies {zone_area:gravefields}, after dark, charging the dead for being dead and the living for taking their time. Destroy eight. Their stamps bear the same clerk's mark: Hush. I have spent centuries keeping these names, and I will not have them turned into a list of debtors.",
       "objectives": [
         {
           "type": "kill",
@@ -313,7 +313,7 @@
         "nhal_veyr_provisions_02"
       ],
       "title": "Repeatable: The Kitchen Keeps Going",
-      "text": "Plague Razorbacks root through the {name:gravefields} {zone_area:gravefields} by day, and the kitchen has another hunt to pay for. Kill six and report back; this order calls for news of the hunt, so keep whatever meat you gather. I can offer it again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
+      "text": "Plague Razorbacks root through the {name:gravefields}, which lies {zone_area:gravefields}, by day, and the kitchen has another hunt to pay for. Kill six and report back; this order calls for news of the hunt, so keep whatever meat you gather. I can offer it again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
       "objectives": [
         {
           "type": "kill",

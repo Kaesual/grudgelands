@@ -60,7 +60,7 @@
         "stillgrave_departure"
       ],
       "title": "The Fen Gives Them Back",
-      "text": "Every morning the Rooting Plague Boars dig up another burial in the {name:blightfields} {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
+      "text": "Every morning the Rooting Plague Boars dig up another burial in the {name:blightfields}, which lies {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
       "objectives": [
         {
           "type": "kill",
@@ -138,7 +138,7 @@
         "mournfen_fen_02"
       ],
       "title": "Somebody's Grandfather as Wages",
-      "text": "I watched the Reed Mirefolk in {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, settle a day's wages with bones from our barrows. Kill eight of them to disrupt the trade, and watch for Reed Crocodiles around the enclosure. They scratch each payment on a reed for someone called Silt; apparently robbing the dead requires excellent records.",
+      "text": "I watched the Reed Mirefolk in {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, settle a day's wages with bones from our barrows. Kill eight of them to disrupt the trade, and watch for Reed Crocodiles around the enclosure. They scratch each payment on a reed for {name:reed_counter_silt}; apparently robbing the dead requires excellent records.",
       "objectives": [
         {
           "type": "kill",
@@ -167,7 +167,7 @@
         "mournfen_watch_01"
       ],
       "title": "A Light Can Lie",
-      "text": "Mourners see the Wandering Wisps over the {name:wispfen} {zone_area:wispfen} after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
+      "text": "Mourners see the Wandering Wisps over the {name:wispfen}, which lies {zone_area:wispfen}, after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
       "objectives": [
         {
           "type": "kill",
@@ -196,7 +196,7 @@
         "mournfen_fen_02"
       ],
       "title": "Visiting Hours Are Cancelled",
-      "text": "The Plague Tuskers in the {name:barrowfields} {zone_area:barrowfields} now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Cairn Sun-Dried Husks among the barrows; I have enough names awaiting entry without yours.",
+      "text": "The Plague Tuskers in the {name:barrowfields}, which lies {zone_area:barrowfields}, now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Cairn Sun-Dried Husks among the barrows; I have enough names awaiting entry without yours.",
       "objectives": [
         {
           "type": "kill",
@@ -362,14 +362,14 @@
       "id": "mournfen_testimony_01",
       "line": "testimony",
       "giver": "r14_undead_captive",
-      "turnin": "r14_undead_captive",
+      "turnin": "r14_undead_scout",
       "min_level": 18,
       "level": 19,
       "requires": [
         "mournfen_watch_04"
       ],
       "title": "Strike Out the Counter",
-      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Reed Mirefolk at the nests and Silt as well. I would dearly like my last memory of this place to be of their accounts failing to add up.",
+      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Reed Mirefolk at the nests and the Reed-Counter as well, then take word to Sera Vane at the outpost. I would dearly like my last memory of this place to be of their accounts failing to add up.",
       "objectives": [
         {
           "type": "kill",
@@ -397,8 +397,8 @@
     },
     {
       "id": "mournfen_departure",
-      "line": "testimony",
-      "giver": "r14_undead_captive",
+      "line": "watch",
+      "giver": "r14_undead_scout",
       "turnin": "r20_undead_capital_envoy",
       "min_level": 19,
       "level": 19,
@@ -406,7 +406,7 @@
         "mournfen_testimony_01"
       ],
       "title": "Names Missing From the Register",
-      "text": "Please go to Nhal Veyr and tell Ossa Quietregister in the Vigil Hall what Silt was buying. The capital's register has gaps where our dead should be, and someone must account for them. I shall begin my own recovery by looking at something that is not the inside of a cage.",
+      "text": "Hollis is out of that cage, and the Reed-Counter's tally is closed for good. Go to Nhal Veyr and tell Ossa Quietregister in the Vigil Hall what the mirefolk were buying; the capital's register has gaps where our dead should be, and someone must account for them.",
       "objectives": [
         {
           "type": "talk",
@@ -431,7 +431,7 @@
         "mournfen_fen_03"
       ],
       "title": "Repeatable: The Graves Need Minding",
-      "text": "Each night the Grave Gnawers burrow into the {name:barrowfields} {zone_area:barrowfields}, undoing another day's careful burial work. Kill six and return to me. You may take this task again twenty minutes after handing it in; eternal rest has proved surprisingly demanding to maintain.",
+      "text": "Each night the Grave Gnawers burrow into the {name:barrowfields}, undoing another day's careful burial work. Kill six and return to me. You may take this task again twenty minutes after handing it in; eternal rest has proved surprisingly demanding to maintain.",
       "objectives": [
         {
           "type": "kill",
@@ -463,7 +463,7 @@
         "mournfen_watch_04"
       ],
       "title": "Repeatable: Six Fewer False Lights",
-      "text": "Wandering Wisps are gathering over the {name:deepfen} {zone_area:deepfen} after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
+      "text": "Wandering Wisps are gathering over the {name:deepfen}, which lies {zone_area:deepfen}, after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
       "objectives": [
         {
           "type": "kill",

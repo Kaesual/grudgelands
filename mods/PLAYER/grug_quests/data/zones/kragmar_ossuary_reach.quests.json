@@ -132,7 +132,7 @@
       "level": 25,
       "requires": [],
       "title": "Under the New Names",
-      "text": "There are older letters beneath the fresh names on the stones of the {name:barrow_ridge} {dir_of:r20_anchor_038:barrow_ridge}. Destroy eight Barrow Skeleton Archers there at night so I can get close enough to make rubbings. They guard the altered stones; the hand that recut them belongs to someone else. I can work around weather, but arrows make a dreadful mess of the paper.",
+      "text": "The stones of the {name:barrow_ridge}, which lies {dir_of:r20_anchor_038:barrow_ridge}, carry fresh names cut over older letters. Barrow Skeleton Archers guard them at night; destroy eight so I can get close enough to make rubbings. I can work around weather, but arrows make a dreadful mess of the paper.",
       "objectives": [
         {
           "type": "kill",
@@ -213,7 +213,7 @@
       "level": 26,
       "requires": [],
       "title": "Optional: Disturbing the Workings",
-      "text": "Bonewood Plaguehide Bears dig into the old shafts in the {name:webwood} {zone_area:webwood} by day, helping themselves to the marrow. Kill eight before they bring more of the workings down. I have watched the Marrow Archivist gather what they leave behind; the bears do the digging and it takes the credit, which is a familiar arrangement.",
+      "text": "Bonewood Plaguehide Bears dig into the old shafts in the {name:webwood}, which lies {zone_area:webwood}, by day, helping themselves to the marrow. Kill eight before they bring more of the workings down. I have watched the Marrow Archivist gather what they leave behind; the bears do the digging and it takes the credit, which is a familiar arrangement.",
       "objectives": [
         {
           "type": "kill",
@@ -293,6 +293,31 @@
       "duration_min": 15
     },
     {
+      "id": "ossuary_dig_04",
+      "line": "dig",
+      "giver": "r20_anchor_064_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "ossuary_dig_03"
+      ],
+      "title": "Ashveil Keeps Its Own Records",
+      "text": "The Reach can file its own dead again; the living are needed elsewhere. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener, who holds that ground for the Throng against the Accord. Tell Vaska the Archivist is closed, and that I would like the stones there left as they were carved.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_039_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Travel handoff from the heartland to the faction's contested zones.",
+      "duration_min": 10
+    },
+    {
       "id": "ossuary_names_bounty",
       "line": "bounties",
       "giver": "r20_anchor_020_host",
@@ -303,7 +328,7 @@
         "ossuary_names_01"
       ],
       "title": "Repeatable: Teeth in the Catalogue",
-      "text": "Briarpack Blightfang Wolves hunt the {name:ashfields} {zone_area:ashfields} after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
+      "text": "Briarpack Blightfang Wolves hunt the {name:ashfields}, which lies {zone_area:ashfields}, after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
       "objectives": [
         {
           "type": "kill",
