@@ -1,0 +1,200 @@
+{
+  "zone": "kragmar_kezamba",
+  "quests": [
+    {
+      "id": "kz_front_01",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 50,
+      "level": 52,
+      "requires": [],
+      "title": "The Fruit Has Other Owners",
+      "text": "The canopy spirits asked me to settle a quarrel over fruit; the Glass-Knuckle Jungle Apes settled their part by throwing it at my messengers. Kill five by day in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}. A fistful of fruit is a poor argument, however loudly you make it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_knuckle_ape"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "kz_front_02",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 51,
+      "level": 53,
+      "requires": [],
+      "title": "Teach the Drum to Scratch",
+      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass-Shadow Panthers at night in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Glass Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "count": 4,
+          "area": "front_skyglass_canopy/cloudwood"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_cat_claw",
+          "count": 2,
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "area": "front_skyglass_canopy/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "kz_front_03",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 53,
+      "level": 55,
+      "requires": [
+        "kz_front_01"
+      ],
+      "title": "The Canopy Names Its Price",
+      "text": "I asked the canopy spirits what the shrine owed them, and they answered with a hiss. Kill five Glass-Fang Serpents by day in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}, and bring me two Glass Venom. Next time I bargain with a tree, remind me to settle the price before asking for favours.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/rootways"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_venom",
+          "count": 2,
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "kz_front_04",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "kz_front_02",
+        "kz_front_03"
+      ],
+      "title": "Promises with Bowstrings",
+      "text": "Paymaster Chirr has promised his Last-Pay Archers enough coin to buy the canopy, though he has yet to ask the trees. Find the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}, kill four Last-Pay Archers there, and kill Chirr. The spirits have heard enough of his bargaining.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_pay_archer"
+          ],
+          "count": 4,
+          "area": "front_skyglass_canopy/paymaster_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "paymaster_chirr"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6.5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "kz_front_05",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 58,
+      "level": 60,
+      "requires": [
+        "kz_front_04"
+      ],
+      "title": "Group: More Than One Voice",
+      "text": "Even the canopy spirits lower their voices around Serpent Glass-Throat in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. Gather a group and slay it; one brave soul is a meal, and I would rather sing your victory than your funeral.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_throat_serpent"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "kz_front_bounty",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 57,
+      "level": 58,
+      "requires": [
+        "kz_front_04"
+      ],
+      "title": "Bounty: Paws Between Drumbeats",
+      "text": "The spirits say the Glass-Shadow Panthers know how to step between our drumbeats, and I believe them. Kill five at night in the {name:front_skyglass_canopy/high_canopy}, which lies {zone_area:front_skyglass_canopy/high_canopy}, and return for the shrine's reward. This bounty opens again twenty minutes after turn-in; I will try a different rhythm while you rest.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/high_canopy"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    }
+  ]
+}

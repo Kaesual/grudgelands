@@ -1,0 +1,426 @@
+{
+  "zone": "kragmar_bannerbreak_mesa",
+  "quests": [
+    {
+      "id": "bb_front_ramp_01",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Make the Mud Keep Them",
+      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}. The Accord can count footprints; give the Throng something worth counting.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_mire_husk"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/floodmeadows"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_02",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "bb_front_ramp_01"
+      ],
+      "title": "No Marching After Death",
+      "text": "Hear that sloshing after sundown? Fordwater Zombies are climbing through the {name:front_broken_causeway/reedmire}, which lies {zone_area:front_broken_causeway/reedmire}, and every patrol has to fight for dry footing. Kill five there at night; I want boots coming home with soldiers still in them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_ford_zombie"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/reedmire"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_03",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 43,
+      "level": 45,
+      "requires": [
+        "bb_front_ramp_01"
+      ],
+      "title": "Teeth in the Dark",
+      "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves at night in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_fenrunner_wolf"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/wraithwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_04",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 46,
+      "level": 48,
+      "requires": [
+        "bb_front_ramp_02",
+        "bb_front_ramp_03"
+      ],
+      "title": "Payment in Full",
+      "text": "Toll-Taker Senn wants coin for every Throng boot that crosses his road. Find him at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, kill four Aqueduct Bowmen there, and kill Senn. He can bill me for the trouble.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_aqueduct_bowman"
+          ],
+          "count": 4,
+          "area": "front_broken_causeway/toll_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "toll_taker_senn"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "bb_front_ramp_05",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 47,
+      "level": 48,
+      "requires": [
+        "bb_front_ramp_04"
+      ],
+      "title": "A Name Worth Sending",
+      "text": "You have put enough dents in the Causeway for me to send your name ahead. Speak with Orrel Hollowstep at Hollowarch Station in Blackwind Rise and tell him Drek Rampbinder sent you. He'll find work for hands like yours, even if he complains about the fingerprints.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_040_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "bb_front_ramp_bounty",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "bb_front_ramp_04"
+      ],
+      "title": "Bounty: Bad Career Choices",
+      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; apparently word travels slower than greed.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_brigand"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/wraithwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_01",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Nobody Laughs at Supper",
+      "text": "Warpack Hyenas have found our supply trail, and now the laughing starts before supper. Kill five by day in the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I can mend a torn ration sack; I cannot sew the meat back into it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/approaches"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_02",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Mind the Boots",
+      "text": "I patch enough holes in our soldiers without War-Stinger Scorpions punching fresh ones through their boots. Kill five after dark on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and give the next patrol a fighting chance to march home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/bluffs"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_03",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 42,
+      "level": 44,
+      "requires": [
+        "bb_front_torn_01"
+      ],
+      "title": "A Standard with Claws",
+      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Tallgrass Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring me two Siege Cat Claws. Let's give the Accord something new to stare at.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 4,
+          "area": "front_shattered_line/bluffs"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:siege_cat_claw",
+          "count": 2,
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "area": "front_shattered_line/bluffs"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_04",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 45,
+      "level": 47,
+      "requires": [
+        "bb_front_torn_02"
+      ],
+      "title": "Stings for Our Side",
+      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl at night over the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Try to keep the stings out of our side of the war.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/ramparts"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:scorch_venom",
+          "count": 2,
+          "roles": [
+            "war_stinger"
+          ],
+          "area": "front_shattered_line/ramparts"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_05",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 46,
+      "level": 48,
+      "requires": [
+        "bb_front_torn_03",
+        "bb_front_torn_04"
+      ],
+      "title": "Let That Banner Fall",
+      "text": "Standard-Bearer Ninepins waves that rag of his over the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, and the dead still salute. Destroy four Siege Skeleton Raiders there at night and kill Ninepins. I have spent my life keeping standards upright; I'll enjoy hearing about this one falling.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_skeleton_raider"
+          ],
+          "count": 4,
+          "area": "front_shattered_line/breach"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "standard_bearer_ninepins"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "bb_front_torn_06",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 48,
+      "level": 50,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Group: Break the War Machine",
+      "text": "War Construct Engine Nine is still grinding through the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, as if the war were a nail that needs more hammering. Gather a group and destroy it; one fighter will only add to the dents. I want all of you back to boast about this.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_engine_nine"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "bb_front_torn_07",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Send a Fighter, Save a Banner",
+      "text": "I could send Kezamba a banner listing what you have done, but I am running short of cloth. Go speak with Nalo Pathdrum in Kezamba; he sends fighters into The Skyglass Canopy. Tell him Yarra Standardmender vouches for you, and mind that you keep earning it.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_troll_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_bounty",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 48,
+      "level": 49,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Bounty: Stripes at the Front",
+      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them a nuisance to everybody. Kill five by day on the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/siegecrest"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    }
+  ]
+}

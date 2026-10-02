@@ -1,0 +1,93 @@
+{
+  "zone": "kragmar_nhal_veyr",
+  "quests": [
+    {
+      "id": "nv_front_01",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 53,
+      "level": 55,
+      "requires": [],
+      "title": "Dressed for the Long Rest",
+      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Glass-Web Jungle Spiders at night in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_spider_silk",
+          "count": 2,
+          "roles": [
+            "glass_web_spider"
+          ],
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "nv_front_02",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 57,
+      "level": 58,
+      "requires": [
+        "nv_front_01"
+      ],
+      "title": "Closing the Watch Register",
+      "text": "The register has a space for the end of every watch; I have left these entries open for far too long. Lay five Last Watchmen to rest after dark on the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}, and I can finally record their release.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_zombie"
+          ],
+          "count": 5,
+          "area": "front_gravesalt_escarpment/whitewall"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "nv_front_island",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "nv_front_02"
+      ],
+      "title": "Bounty: An Island's Unfinished Dead",
+      "text": "The Crown Frost Strays on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the {name:front_wyrmglass_crown/scree}, which lies {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "crown_frost_stray"
+          ],
+          "count": 8,
+          "area": "front_wyrmglass_crown/scree"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 3600
+      },
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "duration_min": 30,
+      "optional": true
+    }
+  ]
+}
