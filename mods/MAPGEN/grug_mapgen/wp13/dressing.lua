@@ -191,6 +191,47 @@ local function loader(directory)
 		end
 	end
 
+	-- The waystone (Round 29, WP17): the travel node at the centre of every
+	-- waypoint pad, six capitals and six starts. `grug_mapgen/world_nodes.lua`
+	-- registers it before the settlement content is resolved; grug_home owns
+	-- what a right-click does. It stands IN the waypoint socket's cell.
+	M.WAYSTONE = "grug_mapgen:waystone"
+
+	function M.waystone(buf, x, z)
+		buf:put(x, 1, z, M.WAYSTONE)
+	end
+
+	-- A start's waypoint pad: the capitals' pad (a signature-stone cross and
+	-- the diamond round it, drawn into the ground course) at reach 3, the
+	-- diamond's inside paved with the lane material, the waystone at the
+	-- centre. Every cell must be open ground with headroom: a pad written
+	-- over a prop or a wall is an authoring error, so it raises.
+	function M.waypoint_pad(buf, palette, cx, cz, label)
+		local REACH = 3
+		local stone, path = palette.node("signature"), palette.node("path")
+		for dz = -REACH, REACH do
+			for dx = -REACH, REACH do
+				local d = math.abs(dx) + math.abs(dz)
+				if d <= REACH then
+					local x, z = cx + dx, cz + dz
+					local ground = buf:at(x, 0, z)
+					local open = ground ~= nil and ground.name ~= "air"
+					for y = 1, 3 do
+						local cell = buf:at(x, y, z)
+						if cell ~= nil and cell.name ~= "air" then open = false end
+					end
+					if not open then
+						error("wp13 " .. label .. ": waypoint pad cell " .. x .. "," ..
+							z .. " is not open ground", 0)
+					end
+					buf:put(x, 0, z, (dx == 0 or dz == 0 or d == REACH) and
+						stone or path)
+				end
+			end
+		end
+		M.waystone(buf, cx, cz)
+	end
+
 	-- A notice post: a log standard with a sawn board.
 	function M.signpost(buf, palette, x, z)
 		buf:put(x, 1, z, palette.node("post"))

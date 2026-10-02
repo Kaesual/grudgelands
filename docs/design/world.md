@@ -693,20 +693,38 @@ separate travel feature, part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
 WP17).
 
-**Waypoint network** (Diablo/PoE model, decided 2026-08-06):
+**Waypoint network** (Diablo/PoE model, decided 2026-08-06; built in Round 29,
+[travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
 - Waypoints: every race starting settlement and every capital, and no others
-  (no zone-hub waypoints; user decision 2026-09-29). A capital's waypoint pad
-  may stand anywhere in the city (WP audit A5).
-- **Unlocked by visiting, per character** (player meta); the world map shows
-  discovered waypoints when waypoint integration is delivered. The initial
-  cartographic atlas has no fog of war (`world_map.md`). Showing terrain or a waypoint on the
-  map never unlocks waypoint travel; only visiting the waypoint does.
-- Teleporting works **only while standing at a waypoint**
-  (waypoint → waypoint), instant and free — travel time is the cost;
-  mounts stay relevant.
-- **No waypoints in enemy territory** (not unlockable or usable there) and
-  none in ordinary ocean or on the dragon islands.
+  (no zone-hub waypoints; user decision 2026-09-29). Each is a **waystone**
+  node (`grug_mapgen:waystone`) the mapgen places at the centre of the
+  settlement's waypoint pad, in the cell of its `travel_waypoint` socket
+  ([settlements.md](settlements.md#waypoint-pads)). A faction's network is its
+  three starts and three capitals, six waystones.
+- **Unlocked by visiting, per character** (player meta
+  `grug_home:waypoints`): standing within 8 nodes horizontally (and 8 up or
+  down) of an own-faction waystone, checked once a second, or right-clicking
+  it, discovers it with one flash and chat line "Waypoint discovered: <name>".
+  The character's own start counts as discovered from creation.
+- **Right-click** opens the list of the six own-faction waypoints: "You are
+  here", **Travel** (discovered) or a greyed "Not yet visited".
+- **Travel** works **only while standing at a waystone** (within the same
+  reach), waystone to waystone: instant, free, no cooldown, alive and out of
+  combat. It runs through the innkeeper return's own path (`grug_home.travel`
+  in `grug_home/travel.lua`: dismount, emerge, re-validation on the next
+  server step, safe arrival) and arrives beside the destination stone (the
+  socket's arrival side first, then the next free side). A failed preparation
+  leaves the player in place with a message. It never touches the 30-minute
+  home cooldown. Travel time is the cost; mounts stay relevant.
+- **No waypoints in enemy territory**: an enemy faction's waystone is inert
+  (no unlock, no use, one line on right-click). None stand in ordinary ocean
+  or on the dragon islands.
+- The world map and the minimap show discovered waypoints as the marker kind
+  `waypoint` ([world_map.md](world_map.md)); undiscovered ones are not shown.
+  The initial cartographic atlas has no fog of war. Showing terrain or a
+  waypoint on the map never unlocks waypoint travel; only visiting the
+  waystone does. There is no `/unstuck`.
 - Phase 2 extension: **Nether crossings** link authored, level-equivalent
   named-zone portal pairs into enemy territory
   (`TODO-design-nether.md` until specced).

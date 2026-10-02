@@ -71,13 +71,17 @@ function M.decorate(city, plot, buf, palette, sockets, area)
     end
    end
   end
+  -- Residents line up along the west fence; the east spot beside the
+  -- Riding Trainer is the shipwright's (Round 29, WP17), whose role handler
+  -- grug_mounts registers.
   local resident=0
   for _,s in ipairs(sockets) do
    if s.role=="idle" and s.spawn~=false then
-    resident=resident+1;s.x=resident==1 and -8 or 8;s.y=1;s.z=-6
+    resident=resident+1;s.x=-8;s.y=1;s.z=-6+2*(resident-1)
    end
   end
   socket("riding","riding_trainer",0,1,-6)
+  socket("shipwright","shipwright",8,1,-6)
   return
  end
  -- Free-standing exterior product frames sit beside the central approach.

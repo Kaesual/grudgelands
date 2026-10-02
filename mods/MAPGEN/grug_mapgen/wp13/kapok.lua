@@ -143,6 +143,10 @@ local function loader(directory)
 	local RACKS = {{-37, 20, 7, "z"}, {-37, 30, 6, "z"},
 		{-17, 20, 7, "z"}, {-17, 30, 6, "z"}}
 
+	-- The waypoint pad (Round 29, WP17): on the open litter west of the boardwalk road,
+	-- between the two cross lanes.
+	local WAYPOINT = {x = -12, z = 5}
+
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
 	-- Anchor-relative like every other landmark, in a fixed authored order;
@@ -198,6 +202,10 @@ local function loader(directory)
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,
 			z = 17, dir = {x = 0, z = 1}},
+		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
+		-- stands here, grug_home reads it.
+		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
+			z = WAYPOINT.z, dir = {x = 0, z = 1}},
 		--
 		-- SPARE IDLE SPOTS (playtest round 2, 2026-09-15). `spawn = false` is
 		-- what makes them wander TARGETS and never homes: the roster places one
@@ -504,6 +512,9 @@ local function loader(directory)
 					dressing.path_light(buf, palette, spot[1], spot[2])
 				end)
 		end
+
+		-- 11b. The waypoint pad, before the jungle so nothing grows on it.
+		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "kapok")
 
 		-- 12. The jungle: the emergent giants first, so the scatter has to
 		-- make room for them and not the other way round.

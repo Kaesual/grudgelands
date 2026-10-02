@@ -79,6 +79,44 @@ local function start_fallback(player)
  return true
 end
 
+-- THE ONE TRAVEL PATH: home return, respawn and the waystones
+-- (waypoints.lua) all end here. `trip.pos` is the destination; its area is
+-- emerged and then, deferred out of the emerge callbacks onto the normal
+-- server step, `trip.check(player)` decides whether the trip still stands
+-- (it tells the player itself when not) and `trip.arrive(player, failed)`
+-- validates the arrival and moves the player through `teleport`. A stalled
+-- emerge ends in `trip.timeout(player)` after 30 s instead of locking travel
+-- forever. Each call owns its own pending token; a newer trip, a death, a
+-- join or a leave (grug_home.cancel) makes every later callback a no-op.
+local function prepare(name, trip)
+ local session = sessions[name]
+ local phase = {}
+ pending[name] = phase
+ local failed, finished = false, false
+ local function finish()
+  if finished then return end
+  finished = true
+  core.after(0, function()
+   if pending[name] ~= phase or sessions[name] ~= session then return end
+   pending[name] = nil
+   local p = core.get_player_by_name(name)
+   if p and trip.check(p) then trip.arrive(p, failed) end
+  end)
+ end
+ core.emerge_area(vector.offset(trip.pos,-16,-8,-16), vector.offset(trip.pos,16,8,16),
+  function(_, action, remaining)
+   if action == core.EMERGE_CANCELLED or action == core.EMERGE_ERRORED then failed = true end
+   if remaining == 0 then finish() end
+  end)
+ core.after(30, function()
+  if pending[name] == phase then
+   pending[name] = nil
+   local p = core.get_player_by_name(name)
+   if p then trip.timeout(p) end
+  end
+ end)
+end
+
 -- Travel goes to grug_home.get (a placed Claim Stone or the innkeeper home);
 -- respawn always goes to the innkeeper home: the bound one, else the
 -- starting-town innkeeper (grug_home.innkeeper).
@@ -94,12 +132,12 @@ local function request(player, respawn)
   if grug_home.remaining(player) > 0 then notify(player, "Return home is cooling down."); return false end
  end
  sessions[name] = sessions[name] or {}
- local identity = {session=sessions[name], id=row.id,
-  faction=grug_factions.get_faction(player), race=grug_core.get_player_race(name)}
+ local identity = {id=row.id, faction=grug_factions.get_faction(player),
+  race=grug_core.get_player_race(name)}
  if respawn then
   -- The one respawn teleport: straight to the home's registry arrival, held
   -- there (no movement, no gravity) until the area is emerged and validated.
-  -- The finish step below releases the hold on every path.
+  -- The check below releases the hold on every path.
   grug_core.hold_movement(player, RESPAWN_HOLD)
   teleport(player, row.arrival)
  end
@@ -127,50 +165,31 @@ local function request(player, respawn)
    notify(p, "Home arrival is unavailable.")
   end
  end
- -- Prepares one destination and calls arrive(player, current home, failed)
- -- on the normal server step. Each phase owns its own pending token.
- local function prepare(target, arrive)
-  local phase = {identity=identity}
-  pending[name] = phase
-  local failed, finished = false, false
-  local function finish()
-   if finished then return end
-   finished = true
-   -- Defer out of emerge callbacks: all state and node queries are performed
-   -- together on the normal server step immediately before the teleport.
-   core.after(0, function()
-    if pending[name] ~= phase or sessions[name] ~= identity.session then return end
-    pending[name] = nil
-    local p = core.get_player_by_name(name)
-    if p and respawn then grug_core.release_movement(p, RESPAWN_HOLD) end
-    if not p or p:get_hp() <= 0 then return end
-    local current = resolve(p)
-    if not current or current.id ~= identity.id or
-      grug_factions.get_faction(p) ~= identity.faction or
-      grug_core.get_player_race(name) ~= identity.race then return end
-    if not respawn and (grug_core.in_combat(p) or grug_home.remaining(p) > 0) then
-     notify(p, "Return home canceled."); return
-    end
-    arrive(p, current, failed)
-   end)
+ -- The trip stands while the player lives and the home, faction and race
+ -- are the ones it was asked for; a return also needs the player out of
+ -- combat and the cooldown not restarted.
+ local function check(p)
+  if respawn then grug_core.release_movement(p, RESPAWN_HOLD) end
+  if p:get_hp() <= 0 then return false end
+  local current = resolve(p)
+  if not current or current.id ~= identity.id or
+    grug_factions.get_faction(p) ~= identity.faction or
+    grug_core.get_player_race(name) ~= identity.race then return false end
+  if not respawn and (grug_core.in_combat(p) or grug_home.remaining(p) > 0) then
+   notify(p, "Return home canceled."); return false
   end
-  core.emerge_area(vector.offset(target.pos,-16,-8,-16), vector.offset(target.pos,16,8,16),
-   function(_, action, remaining)
-    if action == core.EMERGE_CANCELLED or action == core.EMERGE_ERRORED then failed = true end
-    if remaining == 0 then finish() end
-   end)
-  -- A stalled emerge must not lock the button forever; later callbacks cannot
-  -- complete after this token has been released.
-  core.after(30, function()
-   if pending[name] == phase then
-    pending[name] = nil
-    local p = core.get_player_by_name(name)
-    if p and respawn then return unavailable(p) end
-    if p then notify(p, "Home arrival timed out. Please try again.") end
-   end
-  end)
+  return true
  end
- prepare(row, function(p, current, failed)
+ local function timeout(p)
+  if respawn then return unavailable(p) end
+  notify(p, "Home arrival timed out. Please try again.")
+ end
+ -- Prepares one destination and calls arrive(player, current home, failed).
+ local function go(target, arrive)
+  prepare(name, {pos=target.pos, check=check, timeout=timeout,
+   arrive=function(p, failed) arrive(p, resolve(p), failed) end})
+ end
+ go(row, function(p, current, failed)
   if failed then return unavailable(p) end
   if not current.claim then
    local arrival = safe_arrival(current)
@@ -185,7 +204,7 @@ local function request(player, respawn)
   if not inn then return unavailable(p) end
   notify(p, "Your Claim Stone's arrival is blocked. Returning to the " ..
    inn.label .. " Innkeeper instead.")
-  prepare(inn, function(q, _, inn_failed)
+  go(inn, function(q, _, inn_failed)
    local fallback = grug_home.innkeeper(q)
    fallback = not inn_failed and fallback and safe_arrival(fallback)
    if not fallback then return unavailable(q) end
@@ -193,6 +212,32 @@ local function request(player, respawn)
   end)
  end)
  return true
+end
+
+-- The waystones' entry into the same path (waypoints.lua). `trip.pos` is
+-- the destination stone, `trip.check(player)` runs on the server step after
+-- the emerge, `trip.arrival(player)` returns a validated arrival position or
+-- nil, and `trip.unavailable` is the message for a failed preparation: the
+-- player then stays where they are. Nothing is charged and the home cooldown
+-- is not touched. Returns false while another trip is being prepared.
+function grug_home.travel(player, trip)
+ local name = name_of(player)
+ if pending[name] then return false end
+ sessions[name] = sessions[name] or {}
+ prepare(name, {pos=trip.pos, check=trip.check,
+  arrive=function(p, failed)
+   local arrival = not failed and trip.arrival(p)
+   if not arrival then return notify(p, trip.unavailable) end
+   teleport(p, arrival)
+  end,
+  timeout=function(p) notify(p, trip.unavailable) end})
+ return true
+end
+
+-- The arrival rule of every registry destination, for a position standing
+-- on the top of the ground node below it (see safe_arrival).
+function grug_home.safe_arrival(position)
+ return safe_arrival({arrival=position})
 end
 function grug_home.return_home(player) return request(player, false) end
 function grug_home.respawn(player)

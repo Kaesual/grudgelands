@@ -76,11 +76,11 @@ local function loader(directory)
 	-- size. `base`, `arcade` and `dais` are `capitals.king_hall`'s own.
 	local HALL = {w = 31, d = 27, rise = 7, base = 2, arcade = 5, dais = 9}
 
-	-- The travel plaza reserved for WP17: kerbed, lit from its own kerb and
-	-- empty of everything above its paving. x1 is 11 and not 8, for the reason
-	-- Dur Brannoc records: the east colonnade's eaves oversail its own
-	-- footprint to x = 9, and a plaza that starts there has ten slabs hanging
-	-- over the square WP17's pad is being kept clear for.
+	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
+	-- everything above its paving but the waystone. x1 is 11 and not 8, for
+	-- the reason Dur Brannoc records: the east colonnade's eaves oversail its
+	-- own footprint to x = 9, and a plaza that starts there has ten slabs
+	-- hanging over the square the pad is kept clear for.
 	local PLAZA = {x1 = 11, z1 = -32, x2 = 27, z2 = -12}
 
 	-- THE MUSTER COURT: the whole north-east quarter, one floor of beaten red
@@ -403,9 +403,9 @@ local function loader(directory)
 			end
 		end
 
-		-- 3. The travel plaza: paving, two kerb rings and nothing inside it.
-		-- The pad WP17 will put here needs room and sky, so the whole of its
-		-- decoration is drawn INTO the ground course.
+		-- 3. The travel plaza: paving, two kerb rings and only the waystone
+		-- inside it. Travel needs room and sky, so the rest of its decoration
+		-- is drawn INTO the ground course.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, orc, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, orc, PLAZA.x1 + 4, PLAZA.z1 + 4,
@@ -422,6 +422,10 @@ local function loader(directory)
 				buf:put(pad_x + corner[1], 0, pad_z + corner[2], SIGNATURE)
 			end
 		end
+
+		-- The waystone (Round 29, WP17) stands at the pad's centre, in the
+		-- travel waypoint socket's cell; grug_home owns what it does.
+		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 4. The plots.
 		for _, plot in ipairs(PLOTS) do
