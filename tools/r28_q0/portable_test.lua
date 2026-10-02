@@ -11,7 +11,9 @@
 --   3. rendering reads the cache: with every world seam broken after load
 --      the texts do not change;
 --   4. load-time validation of an item's source roles;
---   5. the shipped quest files with the shipped recipes and catalogue: how
+--   5. the shipped quest files with the shipped recipes and catalogue, the
+--      real item, group and mob registrations and the settlement places:
+--      they pass the load-time world checks and the registry checks; how
 --      many objectives get a range, and how many HUD tracker lines would
 --      exceed the tracker width with the range added (the HUD decision).
 --
@@ -123,6 +125,20 @@ for _, row in ipairs(MAP_SOURCE.zones) do
 	BANDS[row.id] = zone_bands.apply({level_min = row.level_min, level_max = row.level_max}, row.id)
 end
 
+-- Named places of {dir_of:<place>:...}: the settlement roster's keys and
+-- anchor ids at their authored spots (as spawn_regions.place).
+local places
+local function place(ref)
+	if not places then
+		places = {}
+		for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
+			places[row.key] = {x = row.x, z = row.z, name = row.label}
+			places[row.anchor_id] = places[row.key]
+		end
+	end
+	return places[ref]
+end
+
 -- grug_mobs and grug_zones over `mobs_root`'s recipes and catalogue, parsed
 -- by the real spawn_regions_core.lua with the catalogue's levels and leaders
 -- (as spawn_regions.lua's recipe context).
@@ -162,6 +178,7 @@ local function install_world(mobs_root)
 		return out
 	end
 	function seams.leader(role) return leaders[role] end
+	seams.place = place
 	grug_mobs = {
 		register_on_eligible_kill = function() end,
 		register_participant_drop_hook = function() end,
@@ -177,8 +194,8 @@ local function install_world(mobs_root)
 	return catalogue
 end
 
--- Every mob and item the quest files name exists (the registries are not
--- what this lane tests).
+-- The fixture: every mob and item its quest files name exists (the
+-- registries are not what sections 1-4 test).
 local function register_named(quest_root)
 	for _, name in ipairs(core.get_dir_list(quest_root .. "/data/zones")) do
 		for _, quest in ipairs(read_json(quest_root .. "/data/zones/" .. name).quests or {}) do
@@ -201,12 +218,39 @@ local function register_named(quest_root)
 	end
 end
 
+-- The real registrations, for the shipped files: every item (with its
+-- groups), alias and mob entity of the engine dump
+-- docs/planning/round28/items/existing.json (tools/r28_design/dump_items.sh,
+-- refreshed after mod changes), plus what grug_mobs registers from its
+-- data: the sub-types and the loot items of items.json. Dispositions as
+-- registered: an entity without one is no mob target.
+local function register_real(_, mobs_root)
+	local existing = read_json("docs/planning/round28/items/existing.json")
+	core.registered_items, core.registered_aliases, core.registered_entities = {}, {}, {}
+	for name, row in pairs(existing.items) do
+		core.registered_items[name] = {description = row.description, groups = row.groups}
+	end
+	for name, target in pairs(existing.aliases) do core.registered_aliases[name] = target end
+	for name, row in pairs(existing.entities) do
+		core.registered_entities[name] = {description = row.description, _grug_disposition = row.disposition}
+	end
+	for _, row in ipairs(read_json(mobs_root .. "/data/items.json")) do
+		core.registered_items[row.id] = {description = row.name}
+	end
+	for _, row in ipairs(read_json(mobs_root .. "/data/subtypes.json")) do
+		core.registered_entities["grug_mobs:" .. row.role] = {description = row.display,
+			_grug_disposition = row.disposition}
+	end
+	grug_mobs.disposition = function() return nil end
+end
+
 -- Load grug_quests from `quest_root` (its data/zones are the quest files)
 -- over `mobs_root`'s spawn data, then the on_mods_loaded checks.
-local function load_quests(quest_root, mobs_root)
+local function load_quests(quest_root, mobs_root, register)
 	grug_quests = {}
 	install_world(mobs_root)
-	register_named(quest_root)
+	register = register or register_named
+	register(quest_root, mobs_root)
 	mod_paths.grug_quests = quest_root
 	local base = "mods/PLAYER/grug_quests/"
 	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader", "ui", "hud"}) do
@@ -380,8 +424,25 @@ end
 ------------------------------------------------------------------------------
 -- 5. The shipped quest files over the shipped recipes and catalogue.
 ------------------------------------------------------------------------------
-core.registered_entities = {}
-Q = load_quests("mods/PLAYER/grug_quests", "mods/ENTITIES/grug_mobs")
+Q = load_quests("mods/PLAYER/grug_quests", "mods/ENTITIES/grug_mobs", register_real)
+-- The registry checks' socket index: every quest NPC at its own quest socket
+-- (that the socket exists is the engine boot's and validate.py --atlas's
+-- check; two NPCs on one socket still fail here).
+do
+	local sockets = {}
+	for _, npc in pairs(Q.registered_npcs) do
+		sockets[npc.settlement] = sockets[npc.settlement] or {}
+		table.insert(sockets[npc.settlement], {id = npc.socket, role = "quest"})
+	end
+	grug_core.settlement_socket_settlements = function()
+		local out = {}
+		for key in pairs(sockets) do out[#out + 1] = {key = key} end
+		return out
+	end
+	grug_core.settlement_sockets_at = function(key) return sockets[key] end
+end
+local registry_ok, registry_err = pcall(Q.validate_registry)
+check(registry_ok, "shipped: the registry checks pass: " .. tostring(registry_err))
 local function visible(text)
 	local n = 0
 	for i = 1, #text do
