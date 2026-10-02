@@ -145,9 +145,8 @@ local INDEPENDENT_AUTHORITY = {
 -- catalogue: Rift Spawn keeps its current spawning; the zones are the
 -- atlas's). Unlike the independent authorities above, the row still meets
 -- the start footprint, its night clock and the protected surface (ruling 3);
--- its host ground decides there. A recipe zone has no palette, so the row
--- shares no zone density budget there (zone_density_cast is empty): it keeps
--- only its own ABM chance and object cap, accepted (Round 28 S2c review).
+-- its host ground decides there. It keeps exactly its own ABM chance and
+-- object cap (Round 28 S2c review): prepare_spawn_row leaves both alone.
 local RECIPE_ZONE_ROWS = {
 	["grug_mobs:rift_spawn"] = {front_gravesalt_escarpment = true,
 		front_skyglass_canopy = true, front_stormscale_summit = true,
@@ -455,16 +454,6 @@ function grug_mobs.spawn_clock_allows(name, pos, timeofday)
 	return clock == (daylight and "day" or "night")
 end
 
--- Round 24 ruling 27: ordinary natural surface species that own a named-zone
--- palette row share one per-area budget per zone and clock (density.lua).
--- Mobs with an independent authority (Kraken, Reed Angelfish), level-split
--- shore rows and every other ambient species without a palette keep the
--- Round 16 per-species rule below.
-function grug_mobs.density_budgeted(name)
-	return ambient_density_spawns[name] == true and MOB_PALETTES[name] ~= nil
-		and not INDEPENDENT_AUTHORITY[name]
-end
-
 -- Family clocks own the mobs_redo row convention. Underground rows remain
 -- light-driven and keep their explicit max_light without a day_toggle.
 function grug_mobs.prepare_spawn_row(def)
@@ -478,19 +467,9 @@ function grug_mobs.prepare_spawn_row(def)
 		row.day_toggle = nil
 		return row
 	end
-	local budgeted = grug_mobs.density_budgeted(row.name)
-	if budgeted then
-		-- The budget (density.lua) owns the area cap. The row's own
-		-- per-species cap is lifted to the largest budget so mobs_redo's
-		-- count never binds first; the registered cap is the species weight.
-		-- Attempt frequency rises by the same first-pass factor.
-		grug_mobs.note_density_row(row)
-		if row.chance then
-			row.chance = math.max(1, math.floor(
-				row.chance / grug_mobs.DENSITY_ATTEMPT_SCALE + 0.5))
-		end
-		row.active_object_count = grug_mobs.density_row_cap()
-	elseif ambient_density_spawns[row.name] then
+	-- A recipe zone's kept row states its final chance and cap (above).
+	local exact = RECIPE_ZONE_ROWS[row.name] ~= nil
+	if ambient_density_spawns[row.name] and not exact then
 		-- `chance` is one success per N ABM hits, so division raises attempt
 		-- frequency. Nearest-integer caps keep small species budgets close to
 		-- the same 1.3x target without inventing fractional entities.
@@ -519,7 +498,7 @@ function grug_mobs.prepare_spawn_row(def)
 	elseif clock == "night" then
 		row.max_light = 5
 		row.day_toggle = false
-		if row.active_object_count and not budgeted then
+		if row.active_object_count and not exact then
 			row.active_object_count = math.ceil(row.active_object_count * 5 / 4)
 		end
 	end
@@ -722,8 +701,8 @@ end
 -- stands or the node it stands on: the road corridor reaches +-5 around the
 -- road surface and the other shapes are full columns, so both answer alike.
 -- The start footprint is the plain-number test above; the capital query is
--- asked only in the six capital zones. The density budget asks the policy
--- for several species at one point in a row, so the last answer is kept.
+-- asked only in the six capital zones. The last answer is kept, so asking
+-- again at the same point is free.
 --
 local capital_zones = {} -- zone id -> bool, from the zone authority
 local last_x, last_y, last_z, last_protected
@@ -827,42 +806,28 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	return allowed
 end
 
--- Round 24 ruling 27: the budgeted species a zone can host at a clock, with
--- the zone-level half of spawn_policy_allows (regional variant, palette,
--- night fallback) and the palette's static clock. Level gates, row checks
--- and host nodes stay point properties; density.lua resolves those at the
--- spawn position. Sorted, so every consumer sees the same order.
-function grug_mobs.zone_density_cast(zone_id, clock)
-	local zone_palette = ZONE_MOB_PALETTES[zone_id]
-	local cast = {}
-	if not zone_palette then
-		return cast
+--
+-- Which ABM spawn rows still run (Round 30 P2, the user's ruling on perf
+-- review 2026-10 #11, round30-plan.md §1). The spawn regions own the surface
+-- of every zone with a recipe, where spawn_policy_allows refuses every row
+-- but the recipe's critters and RECIPE_ZONE_ROWS. A surface row of any other
+-- mob could therefore only spawn in a zone without a recipe (a palette zone)
+-- or outside every zone, and the dry ground outside every zone is none: the
+-- only zone-less land columns are dragon-channel floors at height 0, under
+-- the sea at water level 1 (checked on seeds 12345 and 42). Such a row is
+-- retired: mobs_redo still records it (mobs.spawning_mobs, the chance
+-- override), but no ABM is registered for it. Underground rows (y <= -40)
+-- and the independent authorities (Kraken, Reed Angelfish) stay, merged by
+-- spawn_abms.lua. `max_y` is the row's top.
+function grug_mobs.spawn_row_kept(name, max_y)
+	if max_y <= -40 or INDEPENDENT_AUTHORITY[name] or RECIPE_ZONE_ROWS[name] then
+		return true
 	end
-	for mob_name in pairs(MOB_PALETTES) do
-		if grug_mobs.density_budgeted(mob_name) and
-				zone_allows(mob_name, zone_id) then
-			local role_clock
-			if zone_palette.exact_mobs and zone_palette.exact_mobs[mob_name] then
-				role_clock = clock_for_palette(mob_name, nil)
-			else
-				-- The zone id selects a "zone:<id>" clock key (ruling 31).
-				role_clock = clock_for_palette(mob_name,
-					clock_palette_at(mob_name, nil, zone_palette, zone_id))
-			end
-			if role_clock == clock or role_clock == "any" then
-				cast[#cast + 1] = mob_name
-			end
+	local SR = grug_mobs.spawn_regions
+	for _, zone_id in ipairs(SR.zone_ids()) do
+		if not SR.zone_has_recipe(zone_id) or SR.zone_critter(zone_id, name) then
+			return true
 		end
 	end
-	table.sort(cast)
-	return cast
-end
-
-function grug_mobs.density_zone_ids()
-	local ids = {}
-	for zone_id in pairs(ZONE_MOB_PALETTES) do
-		ids[#ids + 1] = zone_id
-	end
-	table.sort(ids)
-	return ids
+	return false
 end

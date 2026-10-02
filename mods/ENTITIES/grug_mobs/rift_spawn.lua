@@ -106,9 +106,14 @@ mobs:spawn({name = "grug_mobs:rift_spawn",
 	nodes = {"default:stone", "group:grug_stratum"}, max_light = 5,
 	interval = 30, chance = 5000, active_object_count = 2,
 	min_height = -31000, max_height = -1000})
+-- The surface row of the four front and island zones (spawn_policy.lua
+-- RECIPE_ZONE_ROWS) states its final numbers: until Round 30 the Round 24
+-- palette budget turned the registered chance 6000 and cap 1 into chance
+-- 4000 (x1.5 attempts) and at most 3 Rift Spawns in the counting radius (its
+-- per-species night cap); that budget is gone and the row keeps the result.
 mobs:spawn({name = "grug_mobs:rift_spawn",
 	nodes = {"default:gravel", "default:snowblock",
 		"grug_nodes:dirt_with_bone_litter", "default:dirt_with_rainforest_litter",
 		"grug_nodes:dirt_with_canopy_litter"},
-	interval = 30, chance = 6000, active_object_count = 1,
+	interval = 30, chance = 4000, active_object_count = 3,
 	min_height = 0, max_height = 600})

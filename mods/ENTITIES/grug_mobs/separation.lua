@@ -36,6 +36,12 @@ local function round(v)
 end
 
 -- Horizontal radius of a collision box.
+-- A mob's or player's collision box without a get_properties() table per
+-- call (mobs/grug_obstacle.lua, Round 30 P2).
+local function object_cbox(object)
+	return mobs.grug_obstacle.object_cbox(object)
+end
+
 local function box_radius(cbox)
 	return max(-cbox[1], cbox[4], -cbox[3], cbox[6])
 end
@@ -149,8 +155,7 @@ function grug_mobs.displace_mob(self, dx, dz)
 		return false
 	end
 	local dest = {x = pos.x + dx, y = pos.y, z = pos.z + dz}
-	local props = object:get_properties()
-	if not grug_mobs.box_fits_at(dest, props.collisionbox, engine_def_at) then
+	if not grug_mobs.box_fits_at(dest, object_cbox(object), engine_def_at) then
 		return false
 	end
 	object:move_to(dest, true)
@@ -262,11 +267,12 @@ function grug_mobs.separation_step(self, dtime, pos, target_pos)
 	end
 	state.grug_separation_timer = 0
 
-	local cbox = self.object:get_properties().collisionbox
+	-- Boxes from the mobs' runtime field and the per-step player cache, not
+	-- a get_properties() table per call (Round 30 P2, perf review 2026-10 #6).
+	local cbox = object_cbox(self.object)
 	local radius = box_radius(cbox)
-	local target_props = target:get_properties()
-	local target_radius = target_props and target_props.collisionbox
-		and box_radius(target_props.collisionbox) or 0.3
+	local target_box = object_cbox(target)
+	local target_radius = target_box and box_radius(target_box) or 0.3
 	local hold = radius + target_radius
 	state.grug_separation_hold = hold
 
@@ -284,7 +290,7 @@ function grug_mobs.separation_step(self, dtime, pos, target_pos)
 		local ent = object ~= self.object and object:get_luaentity()
 		if ent and ent._cmi_is_mob and ent.state == "attack" then
 			local other_pos = object:get_pos()
-			local other_cbox = other_pos and object:get_properties().collisionbox
+			local other_cbox = other_pos and object_cbox(object)
 			if other_cbox and bodies_overlap_vertically(pos, cbox, other_pos,
 					other_cbox) then
 				local ox, oz = pos.x - other_pos.x, pos.z - other_pos.z

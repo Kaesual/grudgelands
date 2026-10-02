@@ -825,15 +825,45 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   endpoints. Dogshoot melee and flying/swimming dogfight require both that
   common ray and their previous collision-box eye-height strike ray before
   calling the custom hook or punching.
-  Across the server at most **2** A* searches start per server step. Mobs that
-  miss that budget wait in FIFO order; each request has one generation-token
+  Across the server A* gets about **3 ms per server step** (Round 30, perf
+  review 2026-10 #4; each search is timed). A request starts while the step
+  has time left and nobody waits; otherwise it waits in FIFO order and the
+  next step grants waiters by the running cost estimate of one search, so a
+  step starts one or two no-path searches (2–3 ms each) or many cheap ones
+  (a found path costs 14–211 µs). Each request has one generation-token
   entry. Cancellation invalidates only that generation, releases its strong
   entity-state reference immediately and puts any later request from the same
-  mob at the tail. Death and unload cancel pending entries. At the standard
-  **0.09 s** step, even **100** simultaneous live waiters each receive a start
-  in at most **4.5 s**, before the **18 s** attack patience expires. The
-  **0.25 s** per-mob backoff applies after an exhausted path, not to budget
-  waiting. The contact run retains its existing `at_cliff` guard
+  mob at the tail. Death and unload cancel pending entries. The **0.25 s**
+  per-mob backoff applies after an exhausted path, not to budget waiting.
+  The close-cover search looks within **8 nodes** of the mob and the target
+  (searchdistance 8 instead of the chase's 24, about a tenth of the search
+  box).
+- **Unreachable targets are given up** (Round 30, the user's ruling on perf
+  review 2026-10 #4). A mob searches for a path only while it has no line of
+  sight to its target; a player it can see (on an open pillar, across a
+  fence) is not searched for and never given up. After an A* search finds no
+  path, the mob does not repeat the search for the same two nodes for
+  **1 s**, then **2 s**, then **4 s** (a mob or target that changes node
+  lifts the wait). After **3 failed searches in a row** against a target
+  whose node has not changed — a player hidden in a closed house, in a
+  walled-in hole, in a boat behind cover — the mob gives the target up at its
+  next search instead: it drops the target and goes home through the
+  ordinary reset (Evade below: threat, target and tags cleared, healed, a run
+  home when it stands beyond its radius). A target that moves to another node
+  restarts the count; about 7 s of trying covers a player stepping round a
+  corner. Afterwards target acquisition ignores that player while they stay
+  on the same node; once they move, or hit the mob, or a group alert calls
+  it, the mob fights as usual. A target standing in a walkable node (a bottom
+  slab, a lower stair step, snow dust) is searched for from the node above
+  it, since the engine refuses a walkable destination; a search whose ends
+  are still walkable is not run and never counts. Guards and rares follow the
+  rule; the kings, like the bespoke no-leash actors (Kraken, royal guards),
+  only drop the target (no heal, no royal encounter reset); the dragons and
+  their whelps never give up and only wait, since a reset would restart the
+  boss attempt with a full heal. The patrol path nudge shares the budget and
+  the waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
+  (`mobs/grug_obstacle.lua`, `mobs/api.lua` `smart_mobs`,
+  `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard
   (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
   `mobs/api.lua:157-218,887-975,2176-2864,2491-2819,2927-3538`).
   *Rationale, because the defect was invisible on paper*: the following

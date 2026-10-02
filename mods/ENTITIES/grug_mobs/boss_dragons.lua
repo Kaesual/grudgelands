@@ -837,7 +837,7 @@ end
 function grug_mobs.register_dragon_bosses(callbacks)
 	hostile_player = function(player)
 		return player and core.is_player(player) and player:get_hp() > 0 and
-			not core.check_player_privs(player:get_player_name(), "peaceful_player") and
+			not mobs.has_priv(player:get_player_name(), "peaceful_player") and
 			callbacks.player_enemy_of(player, nil)
 	end
 	local ice = {

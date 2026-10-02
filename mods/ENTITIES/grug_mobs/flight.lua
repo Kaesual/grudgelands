@@ -23,8 +23,8 @@ local function steering_owned(self)
 end
 
 local function probe_clearance(self, pos)
-	local props = self.object:get_properties()
-	local box = props and props.collisionbox
+	-- The runtime box field, not a get_properties() table (Round 30 P2).
+	local box = mobs.grug_obstacle.mob_cbox(self)
 	local bottom = pos.y + ((box and box[2]) or 0)
 	local start_y = math.floor(bottom - 0.001)
 	for offset = 0, PROBE_DEPTH - 1 do

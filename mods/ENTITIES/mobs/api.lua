@@ -44,8 +44,42 @@ local table_copy, table_remove = table.copy, table.remove
 -- creative check
 
 local creative_cache = core.settings:get_bool("creative_mode")
+
+-- GRUG PATCH (Round 30 P2, perf review 2026-10 #17): privilege answers are
+-- cached per player and privilege. check_player_privs cost 35 us on average
+-- under combat load, once per target candidate and per hit. Every privilege
+-- change runs the grant/revoke callbacks (builtin auth.lua set_privileges,
+-- also behind core.set_player_privs), which drop that player's answers; so
+-- does leaving. The callbacks return true: run_priv_callbacks stops at the
+-- first one that returns nothing.
+local grug_priv_cache = {}
+
+function mobs.has_priv(name, priv)
+	local privs = grug_priv_cache[name]
+	if not privs then
+		privs = {}
+		grug_priv_cache[name] = privs
+	end
+	local answer = privs[priv]
+	if answer == nil then
+		answer = core.check_player_privs(name, priv) == true
+		privs[priv] = answer
+	end
+	return answer
+end
+
+local function grug_forget_privs(name)
+	grug_priv_cache[name] = nil
+	return true
+end
+core.register_on_priv_grant(grug_forget_privs)
+core.register_on_priv_revoke(grug_forget_privs)
+core.register_on_leaveplayer(function(player)
+	grug_priv_cache[player:get_player_name()] = nil
+end)
+
 function mobs.is_creative(name)
-	return creative_cache or core.check_player_privs(name, {creative = true})
+	return creative_cache or mobs.has_priv(name, "creative")
 end
 
 -- load settings
@@ -285,6 +319,7 @@ function mob_class:do_attack(player, force)
 			self.temp.grug_obstacle_blocked = nil
 			self.temp.grug_obstacle_sidestep = nil
 			self.temp.grug_obstacle_backoff = nil
+			grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 		end
 	end
 
@@ -317,14 +352,21 @@ local function is_player(player)
 	end
 end
 
+-- GRUG PATCH (Round 30 P2, perf review 2026-10 #6): the mob's live collision
+-- box from `_grug_cbox` instead of a get_properties() table per call (see
+-- grug_obstacle.lua). Written below wherever a collisionbox is set.
+local mob_cbox = grug_obstacle.mob_cbox
+-- The shared helper is published for grug_mobs (patrol nudge, separation).
+mobs.grug_obstacle = grug_obstacle
+
 -- collision function
 
 function mob_class:collision()
 
 	local pos = self.object:get_pos() ; if not pos then return 0, 0 end
 	local x, z = 0, 0
-	local prop = self.object:get_properties()
-	local width = -prop.collisionbox[1] + prop.collisionbox[4] + 0.5
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local width = -cbox[1] + cbox[4] + 0.5
 	local width_sq = width * width
 	local players = core.get_objects_inside_radius(pos, width)
 
@@ -379,6 +421,7 @@ function mobs:scale_mob(self, w, h, perma)
 
 	self.object:set_properties(
 			{visual_size = vis_size, collisionbox = colbox, selectionbox = selbox})
+	self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2): see mob_cbox
 end
 
 -- check for string inside table or string
@@ -1047,11 +1090,11 @@ function mob_class:is_at_cliff()
 	local fear_height = ambient and 1.5 or self.fear_height
 
 	local yaw = self.object:get_yaw() ; if not yaw then return end
-	local prop = self.object:get_properties()
-	local dir_x = -sin(yaw) * (prop.collisionbox[4] + 0.5)
-	local dir_z = cos(yaw) * (prop.collisionbox[4] + 0.5)
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local dir_x = -sin(yaw) * (cbox[4] + 0.5)
+	local dir_z = cos(yaw) * (cbox[4] + 0.5)
 	local pos = self.object:get_pos()
-	local ypos = pos.y + prop.collisionbox[2] -- just above floor
+	local ypos = pos.y + cbox[2] -- just above floor
 
 	local top = {x = pos.x + dir_x, y = ypos, z = pos.z + dir_z}
 	local bottom = {x = top.x, y = ypos - fear_height, z = top.z}
@@ -1063,7 +1106,7 @@ end
 
 function mob_class:is_inside(itemtable)
 
-	local cb = self.object:get_properties().collisionbox
+	local cb = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 	local pos = self.object:get_pos()
 
 	return #core.find_nodes_in_area(
@@ -1118,8 +1161,7 @@ function mob_class:do_env_damage()
 		self.object:set_velocity({x = 0, y = 0, z = 0}) ; return true
 	end
 
-	local prop = self.object:get_properties()
-	local py = {x = pos.x, y = pos.y + prop.collisionbox[5], z = pos.z}
+	local py = {x = pos.x, y = pos.y + mob_cbox(self)[5], z = pos.z} -- GRUG PATCH (Round 30 P2)
 	local nodef = core.registered_nodes[self.standing_in]
 
 	-- water damage
@@ -1374,14 +1416,14 @@ function mob_class:breed()
 				mesh = self.base_mesh, visual_size = self.base_size,
 				collisionbox = self.base_colbox, selectionbox = self.base_selbox
 			})
+			self._grug_cbox = self.base_colbox -- GRUG PATCH (Round 30 P2)
 
 			-- run custom function when grown
 			if self.on_grown then self.on_grown(self)
 			else
 				local pos = self.object:get_pos() ; if not pos then return end
-				local prop = self.object:get_properties()
 
-				pos.y = pos.y - prop.collisionbox[2] + 0.1
+				pos.y = pos.y - mob_cbox(self)[2] + 0.1 -- GRUG PATCH (Round 30 P2)
 
 				self.object:set_pos(pos)
 
@@ -1411,7 +1453,7 @@ function mob_class:breed()
 
 	-- find similar animal who is horny and mate if nearby
 	local pos = self.object:get_pos()
-	local prop = self.object:get_properties().collisionbox
+	local prop = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 
 	effect({x = pos.x, y = pos.y + prop[5], z = pos.z}, 8,
 			"mobs_heart_particle.png", 3, 4, 1, 0.1, 1, true)
@@ -1751,6 +1793,13 @@ local function path_height_blocked(self)
 	end
 end
 
+-- GRUG PATCH (Round 30 P2): is the node at `pos` walkable for the engine's
+-- pathfinder? An unknown node counts as walkable, as it does there.
+local function grug_walkable_at(pos)
+	local def = core.registered_nodes[get_node(pos).name]
+	return not def or def.walkable == true
+end
+
 -- path finding and smart mob routine by rnd, line_of_sight and other edits by Elkien3
 
 function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
@@ -1808,11 +1857,36 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	end
 
 	self.temp = self.temp or {}
+
+	-- GRUG PATCH (Round 30 P2, perf review 2026-10 #4): the negative path
+	-- cache and the give-up rule (grug_obstacle.no_path_gate). A mob whose
+	-- last searches found no path waits before it repeats the same search,
+	-- and after three failures against a target that did not move it gives
+	-- the target up (grug_mobs: drop it and go home through the leash reset).
+	local grug_now = core.get_us_time() / 1000000
+	-- Flying actors (the dragons and their whelps) never give a target up:
+	-- their own flight logic handles a blocked ray, and the dragons' reset
+	-- would restart the boss attempt with a full heal. They only wait.
+	local grug_gate = grug_obstacle.no_path_gate(self.temp, grug_now,
+			self.attack, s, target_pos, self.keep_flying == true)
+	if grug_gate == "wait" then
+		-- No queued request may take a grant this mob will not claim.
+		grug_obstacle.cancel_path_request(self.temp)
+		return "backoff"
+	end
+	if grug_gate == "give_up" then
+		if grug_mobs and grug_mobs.give_up_target then
+			grug_mobs.give_up_target(self)
+		else
+			self:stop_attack()
+		end
+		return "give_up"
+	end
+
 	if not grug_obstacle.claim_path_budget(self.temp) then return "budget" end
 	grug_obstacle.path_attempted(self.temp)
 	self.path.stuck_timer = 0
-
-	local prop = self.object:get_properties()
+	local grug_mob_pos = {x = s.x, y = s.y, z = s.z} -- before the ground fix
 
 	-- round position to avoid getting stuck in walls
 	local sx, sz = floor(s.x + 0.5), floor(s.z + 0.5)
@@ -1837,10 +1911,30 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 		y = floor(target_pos.y + 0.5),
 		z = floor(target_pos.z + 0.5)}
 
-	self.path.way = core.find_path(s, p1, pathfinding_searchdistance,
-			jumpheight, dropheight, pathfinding_algorithm)
+	-- GRUG PATCH (Round 30 P2, perf review #4): the close-obstacle pass (a
+	-- target within reach behind a trunk or wall) searches a small box; the
+	-- search's time counts against the per-step A* budget.
+	local grug_searchdistance = grug_force_path
+			and min(grug_obstacle.close_searchdistance, pathfinding_searchdistance)
+			or pathfinding_searchdistance
+	-- GRUG PATCH (Round 30 P2): a target standing in a walkable node (slab,
+	-- stair, snow dust) is aimed at from the node above; a search whose ends
+	-- the engine would refuse is not run and not counted
+	-- (grug_obstacle.fit_path_ends).
+	local grug_ends_valid = grug_obstacle.fit_path_ends(
+			{x = floor(s.x + 0.5), y = floor(s.y + 0.5), z = floor(s.z + 0.5)},
+			p1, grug_walkable_at)
+	if grug_ends_valid then
+		local grug_t0 = core.get_us_time()
+		self.path.way = core.find_path(s, p1, grug_searchdistance,
+				jumpheight, dropheight, pathfinding_algorithm)
+		grug_obstacle.note_path_cost(core.get_us_time() - grug_t0)
+	else
+		self.path.way = nil
+	end
 
-	local height = prop.collisionbox[5] - prop.collisionbox[2]
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local height = cbox[5] - cbox[2]
 
 	-- since we have a path, double check clearance height for 2x node high mobs
 	if self.path.way and #self.path.way > 0 then
@@ -1858,6 +1952,11 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	if grug_force_path then
 		grug_obstacle.note_path_result(self.temp,
 				self.path.way and #self.path.way > 0)
+	end
+	-- GRUG PATCH (Round 30 P2): remember the result for the negative cache.
+	if grug_ends_valid then
+		grug_obstacle.note_search_result(self.temp, grug_now, self.attack,
+				grug_mob_pos, target_pos, self.path.way and #self.path.way > 0)
 	end
 
 	--[[ do we still have a path after check
@@ -1921,7 +2020,8 @@ local function is_peaceful_player(player)
 
 	local player_name = player:get_player_name() or ""
 
-	return core.check_player_privs(player_name, "peaceful_player")
+	-- GRUG PATCH (Round 30 P2): cached answer, see mobs.has_priv.
+	return mobs.has_priv(player_name, "peaceful_player")
 end
 
 -- general attack function
@@ -1998,17 +2098,21 @@ function mob_class:general_attack()
 		end
 	end
 
-	local p, sp, dist, min_player
+	local p, dist, min_player
 	local min_dist = self.view_range + 1
+	-- GRUG PATCH (Round 30 P2): the mob's eye is a copy. Upstream aliased
+	-- `sp = s` and raised `sp.y` inside the loop, so the eye (and every later
+	-- distance) climbed one node per candidate.
+	local sp = {x = s.x, y = s.y + 1, z = s.z}
 
 	for _,player in pairs(objs) do
 
-		p = player:get_pos() ; sp = s
+		p = player:get_pos()
 
 		dist = get_distance(p, s)
 
 		-- aim higher to make looking up hills more realistic
-		p.y = p.y + 1 ; sp.y = sp.y + 1
+		p.y = p.y + 1
 
 		-- choose closest entity to attack
 		if dist ~= 0 and dist < min_dist and self:line_of_sight(sp, p) then
@@ -2241,6 +2345,7 @@ function mob_class:stop_attack()
 		self.temp.grug_obstacle_blocked = nil
 		self.temp.grug_obstacle_sidestep = nil
 		self.temp.grug_obstacle_backoff = nil
+		grug_obstacle.forget_no_path(self.temp) -- GRUG PATCH (Round 30 P2)
 	end
 	self:set_velocity(0)
 	self.state = "stand"
@@ -2477,7 +2582,10 @@ function mob_class:do_states(dtime)
 			and not self.fly and self.attack_type == "dogfight"
 		if grug_obstacle.close_path_due(obstacle_state, dtime,
 				grug_blocked_close, can_close_path, self.path.following) then
-			self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
+			-- GRUG PATCH (Round 30 P2): a given-up target ends the attack
+			-- state like the give-up distance above does.
+			if self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
+					== "give_up" then return end
 		end
 
 		local ds_var = 0
@@ -2720,7 +2828,9 @@ function mob_class:do_states(dtime)
 				-- simply costs nothing now.
 				if self.pathfinding and pathfinding_enable
 				and self.attack_type ~= "dogshoot" then
-					self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
+					-- GRUG PATCH (Round 30 P2): see the close-obstacle call.
+					if self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
+							== "give_up" then return end
 				end
 
 				-- distance padding to stop mob spinning
@@ -2826,14 +2936,14 @@ function mob_class:do_states(dtime)
 			local sidestep = obstacle_state.grug_obstacle_sidestep
 			if grug_blocked_close and sidestep and sidestep > 0 then
 				local function sidestep_safe(velocity)
-					local prop = self.object:get_properties()
+					local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 					local length = square(velocity.x * velocity.x
 							+ velocity.z * velocity.z)
 					if length == 0 then return false end
-					local edge = prop.collisionbox[4] + 0.5
+					local edge = cbox[4] + 0.5
 					local x = s.x + velocity.x / length * edge
 					local z = s.z + velocity.z / length * edge
-					local y = s.y + prop.collisionbox[2]
+					local y = s.y + cbox[2]
 					local depth = self.fear_height ~= 0 and self.fear_height
 							or pathfinding_max_drop
 					return has_safe_support(self,
@@ -2922,9 +3032,9 @@ function mob_class:do_states(dtime)
 				self:mob_sound(self.sounds.shoot_attack) -- attack sound
 
 				local p = self.object:get_pos()
-				local prop = self.object:get_properties()
+				local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 
-				p.y = p.y + (prop.collisionbox[2] + prop.collisionbox[5]) / 2
+				p.y = p.y + (cbox[2] + cbox[5]) / 2
 
 				if core.registered_entities[self.arrow] then
 
@@ -2981,8 +3091,7 @@ function mob_class:falling(pos)
 		if d > 6 then -- stay consistent with player fall damage
 
 			local damage = d - 6
-			local prop = self.object:get_properties()
-			local y_level = prop.collisionbox[2]
+			local y_level = mob_cbox(self)[2] -- GRUG PATCH (Round 30 P2)
 			local pos = self.object:get_pos()
 
 			-- get current block below mob to check for fall damage modifier
@@ -3368,7 +3477,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		wear = 0
 	end
 
-	local grug_creative = mobs.is_creative(hitter:get_player_name())
+	-- GRUG PATCH (Round 30 P2, perf review #17): only a player can be in
+	-- creative; a mob or other object hitter skips the privilege lookup.
+	local grug_creative = is_player(hitter)
+			and mobs.is_creative(hitter:get_player_name())
 	if grug_creative then
 		wear = use_tr and 1 or 0
 	end
@@ -3706,8 +3818,12 @@ local function clean_staticdata(self)
 
 		t = type(stat)
 
+		-- GRUG PATCH (Round 30 P2): `_grug_cbox` is runtime state, rebuilt
+		-- by every activation (mob_cbox), never saved.
 		if  t ~= "function" and t ~= "nil" and t ~= "userdata" and _ ~= "temp"
-		and _ ~= "object" and _ ~= "_cmi_components" then tmp[_] = self[_] end
+		and _ ~= "object" and _ ~= "_cmi_components" and _ ~= "_grug_cbox" then
+			tmp[_] = self[_]
+		end
 	end
 
 	return tmp
@@ -3854,6 +3970,7 @@ function mob_class:mob_activate(staticdata, def, dtime)
 
 	self.object:set_properties({visual_size = vis_size,
 			collisionbox = colbox, selectionbox = selbox})
+	self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2): see mob_cbox
 
 	-- is there a specific texture if gotten
 	if self.gotten and def.gotten_texture then textures = def.gotten_texture end
@@ -3959,8 +4076,8 @@ function mob_class:get_nodes()
 
 	local pos = self.object:get_pos()
 	local yaw = self.object:get_yaw()
-	local prop = self.object:get_properties()
-	local y_level = prop.collisionbox[2]
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local y_level = cbox[2]
 
 	self.standing_in = node_ok(
 			{x = pos.x, y = pos.y + y_level + 0.25, z = pos.z}, "air").name
@@ -3969,8 +4086,8 @@ function mob_class:get_nodes()
 			{x = pos.x, y = pos.y + y_level - 0.25, z = pos.z}, "air").name
 
 	-- find front position
-	local dir_x = -sin(yaw) * (prop.collisionbox[4] + 0.5)
-	local dir_z = cos(yaw) * (prop.collisionbox[4] + 0.5)
+	local dir_x = -sin(yaw) * (cbox[4] + 0.5)
+	local dir_z = cos(yaw) * (cbox[4] + 0.5)
 
 	-- nodes in front of mob and front/above
 	self.looking_at = node_ok(
@@ -4655,7 +4772,11 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			end
 		})
 	else
-		core.register_abm({ -- abm spawns at every interval/chance
+		-- GRUG PATCH (Round 30 P2, perf review 2026-10 #11): the row's ABM goes
+		-- through mobs.register_spawn_abm, which grug_mobs replaces to retire
+		-- or merge the rows (grug_mobs/spawn_abms.lua); the default below
+		-- registers it as before.
+		mobs.register_spawn_abm({ -- abm spawns at every interval/chance
 			label = name .. " spawning",
 			nodenames = nodes,
 			neighbors = neighbors,
@@ -4667,8 +4788,13 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			action = function(pos, node, active_object_count, active_object_count_wider)
 				spawn_action(pos, node, active_object_count, active_object_count_wider)
 			end
-		})
+		}, name)
 	end
+end
+
+-- GRUG PATCH (Round 30 P2): see the call above. `name` is the row's mob.
+function mobs.register_spawn_abm(spec, name)
+	core.register_abm(spec)
 end
 
 -- MarkBu's newer spawn function (USE this one please modders)
@@ -4839,7 +4965,8 @@ function mobs:boom(self, pos, node_damage_radius, entity_radius, texture)
 
 	texture = texture or "mobs_tnt_smoke.png"
 
-	if mobs_griefing and not minetest.is_protected(pos, "") then
+	-- GRUG PATCH (Round 30 P2): core.* namespace (luanti-lua.md sweep 5).
+	if mobs_griefing and not core.is_protected(pos, "") then
 
 		if core.get_modpath("mcl_explosions") then
 

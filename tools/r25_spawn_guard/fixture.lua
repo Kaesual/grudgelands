@@ -11,8 +11,9 @@
 --    claim, no claim, the ±50 edge, the corner, the y floor, no housing mod;
 --    exactly one claim_at call per hostile attempt and none otherwise.
 -- 3. The three real call sites, cut verbatim out of their files and run on
---    stubs: init.lua mobs:spawn_abm_check (policy first, then the claim, then
---    the density budget; the stand position is the matched node + 1),
+--    stubs: init.lua mobs:spawn_abm_check (policy first, then the claim; the
+--    palette density budget that followed went in Round 30 lane P2; the
+--    stand position is the matched node + 1),
 --    camps.lua spawn_one (a refused slot is "not served", guards pass) and
 --    rares.lua try_spawn (a refused rare is not placed and not marked alive).
 -- 4. The spawn policy is claim-agnostic: spawn_policy_allows and
@@ -183,15 +184,9 @@ local function extract(file, header, replacement, env)
 end
 
 -- 3a. init.lua mobs:spawn_abm_check (true = block).
-local allowed_calls, density_calls = {}, 0
-local policy_ok, density_ok = true, true
-local abm_gm = setmetatable({
-	density_allows = function(_, _, _, eligible)
-		density_calls = density_calls + 1
-		check(eligible ~= nil, "density receives the eligibility function")
-		return density_ok
-	end,
-}, {__index = gm})
+local allowed_calls = {}
+local policy_ok = true
+local abm_gm = setmetatable({}, {__index = gm})
 local abm_check = extract("mods/ENTITIES/grug_mobs/init.lua",
 	"function mobs:spawn_abm_check(pos, node, name)", "return function(self, pos, node, name)", {
 		grug_mobs = abm_gm,
@@ -202,25 +197,24 @@ local abm_check = extract("mods/ENTITIES/grug_mobs/init.lua",
 	})
 local node = {name = "default:dirt_with_grass"}
 local function abm(name, ground)
-	allowed_calls, density_calls = {}, 0
+	allowed_calls = {}
 	local calls0 = claim_at_calls
 	local pos = {x = ground.x, y = ground.y, z = ground.z}
 	local blocked = abm_check(nil, pos, node, name) == true
 	check(pos.y == ground.y and pos.x == ground.x, "abm check leaves the ABM position alone")
-	return blocked, claim_at_calls - calls0, density_calls
+	return blocked, claim_at_calls - calls0
 end
 local ground = {x = ACTIVE.x, y = ACTIVE.y - 1, z = ACTIVE.z}
-local blocked, lookups, budget = abm(HOSTILE, ground)
-check(blocked and lookups == 1 and budget == 0,
-	"abm: hostile in active claim blocked, one lookup, budget not consulted")
+local blocked, lookups = abm(HOSTILE, ground)
+check(blocked and lookups == 1, "abm: hostile in active claim blocked, one lookup")
 check(allowed_calls[1] and allowed_calls[1].y == ground.y, "abm: policy sees the ABM node")
-blocked, lookups, budget = abm(PASSIVE, ground)
-check(not blocked and lookups == 0 and budget == 1, "abm: passive in active claim spawns")
-blocked, lookups, budget = abm(HOSTILE, {x = EXPIRED.x, y = EXPIRED.y - 1, z = EXPIRED.z})
-check(not blocked and lookups == 1 and budget == 1, "abm: hostile in expired claim spawns")
-blocked, lookups, budget = abm(HOSTILE, {x = FREE.x, y = FREE.y - 1, z = FREE.z})
-check(not blocked and lookups == 1 and budget == 1, "abm: hostile outside claims spawns")
-blocked, lookups, budget = abm(HOSTILE, {x = ACTIVE.x + 51, y = 20, z = ACTIVE.z})
+blocked, lookups = abm(PASSIVE, ground)
+check(not blocked and lookups == 0, "abm: passive in active claim spawns")
+blocked, lookups = abm(HOSTILE, {x = EXPIRED.x, y = EXPIRED.y - 1, z = EXPIRED.z})
+check(not blocked and lookups == 1, "abm: hostile in expired claim spawns")
+blocked, lookups = abm(HOSTILE, {x = FREE.x, y = FREE.y - 1, z = FREE.z})
+check(not blocked and lookups == 1, "abm: hostile outside claims spawns")
+blocked, lookups = abm(HOSTILE, {x = ACTIVE.x + 51, y = 20, z = ACTIVE.z})
 check(not blocked and lookups == 1, "abm: hostile one column past the edge spawns")
 blocked = abm(HOSTILE, {x = ACTIVE.x - 50, y = 20, z = ACTIVE.z + 50})
 check(blocked, "abm: hostile on the edge corner blocked")
@@ -229,12 +223,9 @@ check(abm(HOSTILE, {x = ACTIVE.x, y = MIN_Y - 1, z = ACTIVE.z}), "abm: stand y =
 check(not abm(HOSTILE, {x = ACTIVE.x, y = MIN_Y - 2, z = ACTIVE.z}),
 	"abm: stand y = MIN_Y - 1 spawns")
 policy_ok = false
-blocked, lookups, budget = abm(HOSTILE, ground)
-check(blocked and lookups == 0 and budget == 0, "abm: policy refusal first, no lookup")
-policy_ok, density_ok = true, false
-blocked, lookups = abm(HOSTILE, {x = FREE.x, y = FREE.y - 1, z = FREE.z})
-check(blocked and lookups == 1, "abm: the budget still refuses outside claims")
-density_ok = true
+blocked, lookups = abm(HOSTILE, ground)
+check(blocked and lookups == 0, "abm: policy refusal first, no lookup")
+policy_ok = true
 
 -- 3b. camps.lua spawn_one (false = slot not served, due time untouched).
 local added, spot_next = {}, nil

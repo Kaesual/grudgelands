@@ -65,6 +65,9 @@ _G.core = {
 	end,
 }
 _G.grug_mobs = {}
+-- The real box helpers (Round 30 P2): separation reads collision boxes
+-- through mobs/grug_obstacle.lua.
+_G.mobs = {grug_obstacle = dofile(repo .. "/mods/ENTITIES/mobs/grug_obstacle.lua")}
 
 local function load(path)
 	local chunk = assert(loadfile(repo .. "/" .. path))
@@ -95,6 +98,7 @@ local function new_object(pos, cbox, ent)
 	function o:get_properties() return {collisionbox = self.cbox, hp_max = 20} end
 	function o:get_yaw() return self.yaw end
 	function o:get_luaentity() return self.ent end
+	function o:is_player() return self.ent == nil end
 	function o:move_to(p, continuous)
 		self.pos = {x = p.x, y = p.y, z = p.z}
 		self.moves = self.moves + 1

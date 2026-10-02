@@ -138,7 +138,10 @@ random numbers, no dependence on table order.
 Unchanged by regions: underground and water spawns, the Rift Spawn's
 surface row (on its host ground at night, in the four zones whose palette
 had it: Gravesalt, Skyglass and both islands), rares, vendors, guards, the
-mapgen.
+mapgen. Every other surface ABM row is retired since Round 30, because the
+regions own the surface of every zone, and the rows that stay (those above
+and the recipes' critters) run through three merged spawn ABMs
+([biomes_mobs.md §4](biomes_mobs.md#4-spawn-parameter-table)).
 
 ## Cache and memory
 

@@ -12,9 +12,10 @@
 --    palette as test-only data) give the
 --    same answer for every zone, every policy mob, several heights, biomes,
 --    levels and both clocks: spawn_policy_allows, spawn_clock_for,
---    zone_density_cast, zone_clock_cast, zone_spawn_palette_allows and
---    density_zone_ids. Protected surfaces are kept out of this comparison
---    (ruling 3 is a deliberate change, part 2).
+--    zone_clock_cast and zone_spawn_palette_allows. Protected surfaces are
+--    kept out of this comparison (ruling 3 is a deliberate change, part 2).
+--    (The Round 24 palette density budget, zone_density_cast and
+--    density_zone_ids, went in Round 30 with the retired surface rows.)
 -- 2. Ruling 3 on ABM rows: road, bridge, village, start footprint and capital
 --    city refuse ordinary natural rows; camps and POIs do not; critters and
 --    NPC rows are never refused.
@@ -304,19 +305,9 @@ for _, zone in ipairs(zone_files) do
 end
 check(#palette_zones == 1 and palette_zones[1] == PALETTE_ZONE,
 	"the test-only palette zone is the one zone without a recipe")
-do
-	local old_ids = {}
-	for _, zone in ipairs(OLD.density_zone_ids()) do
-		if not SR.zone_has_recipe(zone) then old_ids[#old_ids + 1] = zone end
-	end
-	check(same_list(old_ids, NEW.density_zone_ids()), "density_zone_ids")
-end
-
 local compared = 0
 for _, zone in ipairs(palette_zones) do
 	for _, clock in ipairs({"day", "night"}) do
-		check(same_list(OLD.zone_density_cast(zone, clock), NEW.zone_density_cast(zone, clock)),
-			"zone_density_cast " .. zone .. " " .. clock)
 		local a, b = OLD.zone_clock_cast(zone, clock), NEW.zone_clock_cast(zone, clock)
 		check((a == nil and b == nil) or (a and b and same_list(a, b)),
 			"zone_clock_cast " .. zone .. " " .. clock)
