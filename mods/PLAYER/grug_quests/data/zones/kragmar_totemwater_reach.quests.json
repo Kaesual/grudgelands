@@ -179,6 +179,33 @@
       "duration_min": 10
     },
     {
+      "id": "totemwater_tides_optional_wisps",
+      "line": "tides",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 21,
+      "level": 23,
+      "requires": [],
+      "title": "Optional: Lights Over the Fish Traps",
+      "text": "After dark the Wandering Wisps drift through the {name:jungle} {zone_area:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wandering_wisp"
+          ],
+          "count": 6,
+          "area": "kragmar_totemwater_reach/jungle"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "optional": true,
+      "duration_min": 10
+    },
+    {
       "id": "totemwater_tides_02",
       "line": "tides",
       "giver": "r20_anchor_047_host",

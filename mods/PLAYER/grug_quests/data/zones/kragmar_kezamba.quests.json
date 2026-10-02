@@ -272,6 +272,35 @@
       "duration_min": 8
     },
     {
+      "id": "kezamba_smokehouse_optional_revenants",
+      "line": "smokehouse",
+      "giver": "r20_troll_capital_cook",
+      "turnin": "r20_troll_capital_cook",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "kezamba_smokehouse_02"
+      ],
+      "title": "Optional: The Debt That Walks",
+      "text": "The Tithe Revenants wander the {name:wildwood} {zone_area:wildwood} at night, still trying to pay what they owed when they died. They have started knocking at the smokehouse shutters as if I kept the ledger. Kill six of them, and let the poor things rest with the account closed.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 6,
+          "area": "kragmar_kezamba/wildwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "optional": true,
+      "duration_min": 11
+    },
+    {
       "id": "kezamba_dispatch_whispering",
       "line": "dispatch",
       "giver": "r20_troll_capital_cook",
