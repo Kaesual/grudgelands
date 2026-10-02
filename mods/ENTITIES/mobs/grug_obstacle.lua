@@ -23,6 +23,36 @@ function obstacle.copy_pos(pos)
 	return copy_pos(pos)
 end
 
+--
+-- Collision boxes without get_properties() (Round 30 P2, perf review 2026-10
+-- #6): every get_properties() call builds the whole property table (about
+-- 2.8 KB of garbage). A mobs_redo mob carries its live box in `_grug_cbox`
+-- (api.lua writes it wherever it sets the collisionbox); a player's box is
+-- read once per server step.
+--
+local player_boxes = {}
+local player_boxes_used = false
+
+function obstacle.mob_cbox(self)
+	return self._grug_cbox or self.object:get_properties().collisionbox
+end
+
+function obstacle.object_cbox(object)
+	local ent = object:get_luaentity()
+	local box = ent and ent._grug_cbox
+	if box then return box end
+	if object:is_player() then
+		box = player_boxes[object]
+		if not box then
+			box = object:get_properties().collisionbox
+			player_boxes[object] = box
+			player_boxes_used = true
+		end
+		return box
+	end
+	return object:get_properties().collisionbox
+end
+
 function obstacle.path_request_current(temp, generation)
 	local entry = path_entries[temp]
 	return entry ~= nil and entry.active == true
@@ -66,6 +96,10 @@ local function new_path_request(temp)
 end
 
 function obstacle.begin_server_step()
+	if player_boxes_used then
+		for object in pairs(player_boxes) do player_boxes[object] = nil end
+		player_boxes_used = false
+	end
 	-- A grant belongs to one server step. If its mob stopped requesting before
 	-- claiming it, invalidate the grant without retaining the mob's temp table.
 	for temp, entry in pairs(path_entries) do
@@ -182,9 +216,9 @@ function obstacle.target_visible(self, mob_pos, target_pos, ground_melee)
 		return self:line_of_sight(mob_eye, target_eye) == true
 	end
 
-	local cbox = self.object:get_properties().collisionbox
+	local cbox = obstacle.mob_cbox(self)
 	mob_eye.y = mob_eye.y + cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
-	cbox = self.attack:get_properties().collisionbox
+	cbox = obstacle.object_cbox(self.attack)
 	target_eye.y = target_eye.y + cbox[2] + ((cbox[5] - cbox[2]) * 0.9)
 	return self:line_of_sight(target_eye, mob_eye) == true
 end

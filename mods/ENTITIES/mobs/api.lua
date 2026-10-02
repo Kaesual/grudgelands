@@ -351,14 +351,21 @@ local function is_player(player)
 	end
 end
 
+-- GRUG PATCH (Round 30 P2, perf review 2026-10 #6): the mob's live collision
+-- box from `_grug_cbox` instead of a get_properties() table per call (see
+-- grug_obstacle.lua). Written below wherever a collisionbox is set.
+local mob_cbox = grug_obstacle.mob_cbox
+-- The shared helper is published for grug_mobs (patrol nudge, separation).
+mobs.grug_obstacle = grug_obstacle
+
 -- collision function
 
 function mob_class:collision()
 
 	local pos = self.object:get_pos() ; if not pos then return 0, 0 end
 	local x, z = 0, 0
-	local prop = self.object:get_properties()
-	local width = -prop.collisionbox[1] + prop.collisionbox[4] + 0.5
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local width = -cbox[1] + cbox[4] + 0.5
 	local width_sq = width * width
 	local players = core.get_objects_inside_radius(pos, width)
 
@@ -413,6 +420,7 @@ function mobs:scale_mob(self, w, h, perma)
 
 	self.object:set_properties(
 			{visual_size = vis_size, collisionbox = colbox, selectionbox = selbox})
+	self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2): see mob_cbox
 end
 
 -- check for string inside table or string
@@ -1081,11 +1089,11 @@ function mob_class:is_at_cliff()
 	local fear_height = ambient and 1.5 or self.fear_height
 
 	local yaw = self.object:get_yaw() ; if not yaw then return end
-	local prop = self.object:get_properties()
-	local dir_x = -sin(yaw) * (prop.collisionbox[4] + 0.5)
-	local dir_z = cos(yaw) * (prop.collisionbox[4] + 0.5)
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local dir_x = -sin(yaw) * (cbox[4] + 0.5)
+	local dir_z = cos(yaw) * (cbox[4] + 0.5)
 	local pos = self.object:get_pos()
-	local ypos = pos.y + prop.collisionbox[2] -- just above floor
+	local ypos = pos.y + cbox[2] -- just above floor
 
 	local top = {x = pos.x + dir_x, y = ypos, z = pos.z + dir_z}
 	local bottom = {x = top.x, y = ypos - fear_height, z = top.z}
@@ -1097,7 +1105,7 @@ end
 
 function mob_class:is_inside(itemtable)
 
-	local cb = self.object:get_properties().collisionbox
+	local cb = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 	local pos = self.object:get_pos()
 
 	return #core.find_nodes_in_area(
@@ -1152,8 +1160,7 @@ function mob_class:do_env_damage()
 		self.object:set_velocity({x = 0, y = 0, z = 0}) ; return true
 	end
 
-	local prop = self.object:get_properties()
-	local py = {x = pos.x, y = pos.y + prop.collisionbox[5], z = pos.z}
+	local py = {x = pos.x, y = pos.y + mob_cbox(self)[5], z = pos.z} -- GRUG PATCH (Round 30 P2)
 	local nodef = core.registered_nodes[self.standing_in]
 
 	-- water damage
@@ -1408,14 +1415,14 @@ function mob_class:breed()
 				mesh = self.base_mesh, visual_size = self.base_size,
 				collisionbox = self.base_colbox, selectionbox = self.base_selbox
 			})
+			self._grug_cbox = self.base_colbox -- GRUG PATCH (Round 30 P2)
 
 			-- run custom function when grown
 			if self.on_grown then self.on_grown(self)
 			else
 				local pos = self.object:get_pos() ; if not pos then return end
-				local prop = self.object:get_properties()
 
-				pos.y = pos.y - prop.collisionbox[2] + 0.1
+				pos.y = pos.y - mob_cbox(self)[2] + 0.1 -- GRUG PATCH (Round 30 P2)
 
 				self.object:set_pos(pos)
 
@@ -1445,7 +1452,7 @@ function mob_class:breed()
 
 	-- find similar animal who is horny and mate if nearby
 	local pos = self.object:get_pos()
-	local prop = self.object:get_properties().collisionbox
+	local prop = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 
 	effect({x = pos.x, y = pos.y + prop[5], z = pos.z}, 8,
 			"mobs_heart_particle.png", 3, 4, 1, 0.1, 1, true)
@@ -2865,14 +2872,14 @@ function mob_class:do_states(dtime)
 			local sidestep = obstacle_state.grug_obstacle_sidestep
 			if grug_blocked_close and sidestep and sidestep > 0 then
 				local function sidestep_safe(velocity)
-					local prop = self.object:get_properties()
+					local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 					local length = square(velocity.x * velocity.x
 							+ velocity.z * velocity.z)
 					if length == 0 then return false end
-					local edge = prop.collisionbox[4] + 0.5
+					local edge = cbox[4] + 0.5
 					local x = s.x + velocity.x / length * edge
 					local z = s.z + velocity.z / length * edge
-					local y = s.y + prop.collisionbox[2]
+					local y = s.y + cbox[2]
 					local depth = self.fear_height ~= 0 and self.fear_height
 							or pathfinding_max_drop
 					return has_safe_support(self,
@@ -2961,9 +2968,9 @@ function mob_class:do_states(dtime)
 				self:mob_sound(self.sounds.shoot_attack) -- attack sound
 
 				local p = self.object:get_pos()
-				local prop = self.object:get_properties()
+				local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 
-				p.y = p.y + (prop.collisionbox[2] + prop.collisionbox[5]) / 2
+				p.y = p.y + (cbox[2] + cbox[5]) / 2
 
 				if core.registered_entities[self.arrow] then
 
@@ -3020,8 +3027,7 @@ function mob_class:falling(pos)
 		if d > 6 then -- stay consistent with player fall damage
 
 			local damage = d - 6
-			local prop = self.object:get_properties()
-			local y_level = prop.collisionbox[2]
+			local y_level = mob_cbox(self)[2] -- GRUG PATCH (Round 30 P2)
 			local pos = self.object:get_pos()
 
 			-- get current block below mob to check for fall damage modifier
@@ -3748,8 +3754,12 @@ local function clean_staticdata(self)
 
 		t = type(stat)
 
+		-- GRUG PATCH (Round 30 P2): `_grug_cbox` is runtime state, rebuilt
+		-- by every activation (mob_cbox), never saved.
 		if  t ~= "function" and t ~= "nil" and t ~= "userdata" and _ ~= "temp"
-		and _ ~= "object" and _ ~= "_cmi_components" then tmp[_] = self[_] end
+		and _ ~= "object" and _ ~= "_cmi_components" and _ ~= "_grug_cbox" then
+			tmp[_] = self[_]
+		end
 	end
 
 	return tmp
@@ -3896,6 +3906,7 @@ function mob_class:mob_activate(staticdata, def, dtime)
 
 	self.object:set_properties({visual_size = vis_size,
 			collisionbox = colbox, selectionbox = selbox})
+	self._grug_cbox = colbox -- GRUG PATCH (Round 30 P2): see mob_cbox
 
 	-- is there a specific texture if gotten
 	if self.gotten and def.gotten_texture then textures = def.gotten_texture end
@@ -4001,8 +4012,8 @@ function mob_class:get_nodes()
 
 	local pos = self.object:get_pos()
 	local yaw = self.object:get_yaw()
-	local prop = self.object:get_properties()
-	local y_level = prop.collisionbox[2]
+	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
+	local y_level = cbox[2]
 
 	self.standing_in = node_ok(
 			{x = pos.x, y = pos.y + y_level + 0.25, z = pos.z}, "air").name
@@ -4011,8 +4022,8 @@ function mob_class:get_nodes()
 			{x = pos.x, y = pos.y + y_level - 0.25, z = pos.z}, "air").name
 
 	-- find front position
-	local dir_x = -sin(yaw) * (prop.collisionbox[4] + 0.5)
-	local dir_z = cos(yaw) * (prop.collisionbox[4] + 0.5)
+	local dir_x = -sin(yaw) * (cbox[4] + 0.5)
+	local dir_z = cos(yaw) * (cbox[4] + 0.5)
 
 	-- nodes in front of mob and front/above
 	self.looking_at = node_ok(

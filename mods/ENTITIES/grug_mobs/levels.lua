@@ -482,10 +482,18 @@ function grug_mobs.ensure_init(self)
 		self._grug_level = resolve_level(self, cfg, self._grug_tier)
 		apply_tier_visuals(self)
 		apply_stats(self, false)
-	elseif self.object then
+	elseif self.object and not (self.temp and self.temp.grug_max_asserted) then
 		-- Already levelled, i.e. this is a reactivation: put the derived maximum
 		-- back (see reassert_max -- mob_activate never restores the field).
+		-- Once per activation (Round 30 P2, perf review 2026-10 #6): mob_activate
+		-- starts every activation with a fresh `temp`, and after this call
+		-- hp_max, hp_min and damage cannot drift from derived_stats. Those are
+		-- a pure function of the level, the tier and the definition's static
+		-- hp_scale; the level and tier change only through set_tier and
+		-- relevel, which both re-derive all three through apply_stats, and
+		-- nothing else writes the three fields.
 		reassert_max(self)
+		if self.temp then self.temp.grug_max_asserted = true end
 	end
 	if self.update_tag ~= update_tag then
 		-- Function fields and the static-save=false carrier never survive an
