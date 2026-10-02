@@ -23,9 +23,11 @@
 --      lake water (bank), inside the 16-node road/town/village drift band
 --      and on protected ground, and its distance to the nearest road.
 --   2. Progress: graph distances over the land cells (8 neighbours) from the
---      recipe's `from` and to its `to`; progress = d_from / (d_from + d_to).
---      Cells cut off over land take the progress of the nearest reachable
---      cell.
+--      recipe's `from` (anchors, or the land border with the zones the
+--      player enters from) and to its `to`; progress = d_from / (d_from +
+--      d_to), or with `to` core the rank of d_from alone (the cells farthest
+--      from every source are the top belt). Cells cut off over land take the
+--      progress of the nearest reachable cell.
 --   3. Belts: land cells sorted by progress, cut by area share; a belt's
 --      optional `max_from` pushes cells farther than that to the next belt.
 --   4. Types: shore > bank > swamp > forest > highland > open.
@@ -34,7 +36,8 @@
 --      (same belt preferred), large ones split into compact parts.
 --   6. Population: a kind's day and night rosters, levels belt-range x role
 --      range, a density class.
---   7. Camps: scored by rule, a 3x3-cell region each.
+--   7. Camps: on a camp POI of the world model (the cells the camp radius
+--      reaches), or scored by rule (a 3x3-cell region each).
 --   8. Leaders: at a camp centre or deep inside the largest region of a kind.
 -- Deterministic: no random numbers, no dependence on `pairs` order.
 --
@@ -65,6 +68,12 @@ M.LLOYD_ROUNDS = 3
 M.CAMP_ROAD_MIN = 48
 M.CAMP_SLOPE = 0.35
 M.CAMP_RADIUS = 40    -- slot spots are drawn within this of the centre
+-- Camp POIs of the world model (the zone atlas's `camps`): the anchor
+-- template -> the POI type a recipe camp's site names. Guard posts are
+-- listed so a recipe naming one gets a clear error; they are no mob camp.
+M.POI_TYPES = {bandit_home = "bandit", bandit_frontier = "bandit",
+	mirefolk = "mirefolk", outpost = "guard post"}
+M.CAMP_POIS = {bandit = true, mirefolk = true}
 -- Density classes: the share of the zone's density budget a region may use
 -- (never above the budget itself).
 M.DENSITY = {sparse = 0.5, normal = 0.75, dense = 1}
@@ -129,7 +138,7 @@ local BELT_KEYS = {id = true, share = true, levels = true, max_from = true,
 	kinds = true, notes = true}
 local KIND_KEYS = {id = true, name = true, day = true, night = true,
 	density = true, notes = true}
-local CAMP_KEYS = {id = true, name = true, belt = true, roster = true,
+local CAMP_KEYS = {id = true, name = true, belt = true, site = true, roster = true,
 	slots = true, respawn = true, min_player_distance = true, apart = true,
 	notes = true}
 local LEADER_KEYS = {role = true, at = true, respawn = true, notes = true}
@@ -239,28 +248,74 @@ function M.parse_recipe(zone_id, recipe, ctx)
 	local band = ctx.band or {1, 60}
 	local out = {zone = zone_id, belts = {}, kinds = {}, kind_by_id = {},
 		camps = {}, camp_by_id = {}, leaders = {}, critters = {}}
-	-- from / to
-	local from = recipe.from
-	if type(from) ~= "table" or type(from.anchor) ~= "string" or from.anchor == "" then
-		fail(where .. " from", "needs {\"anchor\": <slot or anchor id>}")
-	end
-	known_keys(from, {anchor = true}, where .. " from")
-	out.from = {anchor = from.anchor}
-	local to = recipe.to
-	if type(to) ~= "table" then
-		fail(where .. " to", "needs {\"border\": <zone id or list of zone ids>}")
-	end
-	known_keys(to, {border = true}, where .. " to")
-	local borders = type(to.border) == "string" and {to.border} or to.border
-	if type(borders) ~= "table" or #borders == 0 then
-		fail(where .. " to", "needs {\"border\": <zone id or list of zone ids>}")
-	end
-	out.to = {border = {}}
-	for i = 1, #borders do
-		if type(borders[i]) ~= "string" or borders[i] == "" or borders[i] == zone_id then
-			fail(where .. " to", "border entries are other zones' ids")
+	-- from / to (Round 28 S2): `from` names anchors of the zone or the zones
+	-- whose land border is the entry; `to` the exit border or the zone's
+	-- core. A one-belt recipe has no progression and may omit `to` (and then
+	-- `from`).
+	local one_belt = type(recipe.belts) == "table" and #recipe.belts == 1
+	local function zone_ids(value, w)
+		local list = type(value) == "string" and {value} or value
+		if type(list) ~= "table" or #list == 0 then
+			fail(w, "needs a zone id or a list of zone ids")
 		end
-		out.to.border[i] = borders[i]
+		local ids = {}
+		for i = 1, #list do
+			if type(list[i]) ~= "string" or list[i] == "" or list[i] == zone_id then
+				fail(w, "border entries are other zones' ids")
+			end
+			ids[i] = list[i]
+		end
+		return ids
+	end
+	local from, to = recipe.from, recipe.to
+	if to == nil and not one_belt then
+		fail(where .. " to", "needs {\"border\": <zone id or list>} or {\"core\": true} " ..
+			"(only a one-belt recipe may omit it)")
+	end
+	if from == nil and to ~= nil then
+		fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>} or " ..
+			"{\"border\": <zone id or list>}")
+	end
+	if from ~= nil then
+		if type(from) ~= "table" or (from.anchor == nil) == (from.border == nil) then
+			fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>} or " ..
+				"{\"border\": <zone id or list>}")
+		end
+		known_keys(from, {anchor = true, border = true}, where .. " from")
+		if from.anchor ~= nil then
+			local list = type(from.anchor) == "string" and {from.anchor} or from.anchor
+			if type(list) ~= "table" or #list == 0 then
+				fail(where .. " from", "anchor is a slot or anchor id, or a list of them")
+			end
+			out.from = {anchors = {}}
+			for i = 1, #list do
+				if type(list[i]) ~= "string" or list[i] == "" then
+					fail(where .. " from", "anchor is a slot or anchor id, or a list of them")
+				end
+				out.from.anchors[i] = list[i]
+			end
+		else
+			out.from = {border = zone_ids(from.border, where .. " from")}
+		end
+	end
+	if to ~= nil then
+		if type(to) ~= "table" or (to.border == nil) == (to.core == nil) then
+			fail(where .. " to", "needs {\"border\": <zone id or list>} or {\"core\": true}")
+		end
+		known_keys(to, {border = true, core = true}, where .. " to")
+		if to.core ~= nil then
+			if to.core ~= true then fail(where .. " to", "core must be true") end
+			out.to = {core = true}
+		else
+			out.to = {border = zone_ids(to.border, where .. " to")}
+			for _, id in ipairs(out.to.border) do
+				for _, other in ipairs(out.from.border or {}) do
+					if other == id then
+						fail(where .. " to", id .. " is both the entry and the exit border")
+					end
+				end
+			end
+		end
 	end
 	-- belts
 	if type(recipe.belts) ~= "table" or #recipe.belts == 0 then
@@ -365,6 +420,50 @@ function M.parse_recipe(zone_id, recipe, ctx)
 	if recipe.camps ~= nil and type(recipe.camps) ~= "table" then
 		fail(where, "camps must be a list")
 	end
+	-- `site`: "generate" (default) or {"poi": <type>, "name": <POI name>}.
+	-- ctx.pois(zone) lists the zone's camp POIs (M.zone_pois); a type the
+	-- zone does not have is an error, so is a type it has twice unnamed.
+	local poi_used = {}
+	local function parse_site(site, cw)
+		if site == nil or site == "generate" then
+			return "generate"
+		end
+		if type(site) ~= "table" or type(site.poi) ~= "string" then
+			fail(cw, "site is \"generate\" or {\"poi\": <type>, \"name\": <POI name>}")
+		end
+		known_keys(site, {poi = true, name = true}, cw .. " site")
+		if not M.CAMP_POIS[site.poi] then
+			fail(cw, "site.poi " .. site.poi .. " is not a mob camp POI (bandit or mirefolk; " ..
+				"guard posts keep their guards)")
+		end
+		if site.name ~= nil and (type(site.name) ~= "string" or site.name == "") then
+			fail(cw, "site.name must be the POI's name")
+		end
+		local found, names = {}, {}
+		for _, poi in ipairs(ctx.pois and ctx.pois(zone_id) or {}) do
+			if poi.poi == site.poi then
+				names[#names + 1] = poi.name
+				if site.name == nil or poi.name == site.name then
+					found[#found + 1] = poi
+				end
+			end
+		end
+		if #found == 0 then
+			fail(cw, ("the zone has no %s POI%s"):format(site.poi, site.name and
+				(" named " .. site.name .. " (its " .. site.poi .. " POIs: " ..
+				(#names > 0 and table.concat(names, ", ") or "none") .. ")") or ""))
+		end
+		if #found > 1 then
+			fail(cw, ("the zone has %d %s POIs (%s): site.name picks one"):format(
+				#found, site.poi, table.concat(names, ", ")))
+		end
+		local poi = found[1]
+		if poi_used[poi.id] then
+			fail(cw, "POI " .. poi.name .. " already holds camp " .. poi_used[poi.id])
+		end
+		poi_used[poi.id] = cw
+		return {poi = site.poi, name = poi.name, anchor = poi.id}
+	end
 	for c = 1, #(recipe.camps or {}) do
 		local row = recipe.camps[c]
 		local cw = where .. " camps[" .. c .. "]"
@@ -377,8 +476,14 @@ function M.parse_recipe(zone_id, recipe, ctx)
 		if type(row.name) ~= "string" or row.name == "" then
 			fail(cw, "camp needs a display name")
 		end
+		-- The site: generated by rule (the default), or a camp POI of the
+		-- world model (Round 28 S2), whose belt is the one it lies in unless
+		-- the camp states one.
+		local site = parse_site(row.site, cw)
 		local b = belt_ids[row.belt]
-		if not b then fail(cw, "belt " .. tostring(row.belt) .. " is not a belt of the recipe") end
+		if not b and (row.belt ~= nil or site == "generate") then
+			fail(cw, "belt " .. tostring(row.belt) .. " is not a belt of the recipe")
+		end
 		if not is_int(row.slots, 1) then fail(cw, "slots must be an integer >= 1") end
 		if not (type(row.respawn) == "table" and #row.respawn == 2 and
 				is_int(row.respawn[1], 1) and is_int(row.respawn[2], row.respawn[1])) then
@@ -387,18 +492,29 @@ function M.parse_recipe(zone_id, recipe, ctx)
 		if not is_num(row.min_player_distance) or row.min_player_distance < 0 then
 			fail(cw, "min_player_distance must be a distance in nodes")
 		end
-		if not is_int(row.apart, 1) then
+		if site ~= "generate" then
+			if row.apart ~= nil then
+				fail(cw, "apart places a generated site; a camp on a POI stands where the POI is")
+			end
+		elseif not is_int(row.apart, 1) then
 			fail(cw, "apart (cells between two camps) must be an integer >= 1")
 		end
 		local roster = parse_roster(row.roster, cw .. ".roster")
-		local camp = {id = row.id, name = row.name, belt = out.belts[b],
-			tag = zone_id .. "/" .. row.id, roster = roster,
+		local camp = {id = row.id, name = row.name, belt = b and out.belts[b] or nil,
+			site = site, tag = zone_id .. "/" .. row.id, roster = roster,
 			rosters = {day = roster, night = roster}, density = "dense",
 			slots = row.slots, respawn = {row.respawn[1], row.respawn[2]},
 			min_player_distance = row.min_player_distance, apart = row.apart,
 			is_camp = true}
-		unit_levels(ctx, camp, {roster}, out.belts[b].levels, cw)
-		check_cover(camp, roster, out.belts[b].levels, false, cw)
+		if camp.belt then
+			unit_levels(ctx, camp, {roster}, camp.belt.levels, cw)
+			check_cover(camp, roster, camp.belt.levels, false, cw)
+		else
+			-- The belt is the POI's on each seed: the roles' levels within the
+			-- zone's band here; the build cuts them to the belt and checks the
+			-- cover there (M.camp_levels).
+			unit_levels(ctx, camp, {roster}, band, cw)
+		end
 		out.camps[#out.camps + 1] = camp
 		out.camp_by_id[camp.id] = camp
 	end
@@ -430,6 +546,12 @@ function M.parse_recipe(zone_id, recipe, ctx)
 			if at.kind ~= nil or at.pick ~= nil then fail(lw, "at names a camp or a kind, not both") end
 			local camp = out.camp_by_id[at.camp]
 			if not camp then fail(lw, "camp " .. tostring(at.camp) .. " is not a camp of the recipe") end
+			if not camp.belt then
+				-- A leader's level is fixed (ruling 38); a POI's belt may
+				-- differ per seed.
+				fail(lw, "camp " .. camp.id .. " states no belt: a leader's camp states its " ..
+					"belt, so the leader's level is the same on every seed")
+			end
 			leader.camp, belt = camp, camp.belt
 		else
 			local kind = out.kind_by_id[at.kind]
@@ -462,6 +584,54 @@ end
 -- entry (the explicit parent rule).
 function M.kind_for(belt, cell_type)
 	return belt.kinds[cell_type] or belt.kinds.open
+end
+
+-- The zone's camp POIs, {id, slot, poi, name} in anchor order: the anchors
+-- of the world model's source (simple_map: seed-independent identities; the
+-- position is fitted per seed) whose template M.POI_TYPES names. `labels`:
+-- anchor id -> the POI's name (the settlement roster's label); the anchor id
+-- without one.
+function M.zone_pois(source, zone_id, labels)
+	local numeric
+	for _, row in ipairs(source.zones) do
+		if row.id == zone_id then numeric = row.numeric_id end
+	end
+	local out = {}
+	for _, row in ipairs(source.anchors) do
+		local poi = row.zone_numeric_id == numeric and M.POI_TYPES[row.template_id]
+		if poi then
+			out[#out + 1] = {id = row.id, slot = row.slot_id, poi = poi,
+				name = labels and labels[row.id] or row.id}
+		end
+	end
+	return out
+end
+
+-- A camp in `belt`: {levels_by_role, levels} with each role's levels cut to
+-- the belt, and the camp cover rule (no gap, reaches the belt's top). For a
+-- camp on a POI without its own belt, on the belt the POI lies in; errors
+-- name the camp.
+function M.camp_levels(zone_id, camp, belt)
+	if camp.belt then
+		return {levels_by_role = camp.levels_by_role, levels = camp.levels}
+	end
+	local cw = zone_id .. " camp " .. camp.id .. " (on " .. camp.site.name ..
+		", belt " .. belt.id .. ")"
+	local unit = {levels_by_role = {}}
+	local lo, hi
+	for _, row in ipairs(camp.roster.list) do
+		local own = camp.levels_by_role[row.role]
+		local a, b = math.max(own[1], belt.levels[1]), math.min(own[2], belt.levels[2])
+		if a > b then
+			fail(cw, ("%s (levels %d-%d) never meets the belt's levels %d-%d"):format(
+				row.role, own[1], own[2], belt.levels[1], belt.levels[2]))
+		end
+		unit.levels_by_role[row.role] = {a, b}
+		lo, hi = lo and math.min(lo, a) or a, hi and math.max(hi, b) or b
+	end
+	unit.levels = {lo, hi}
+	check_cover(unit, camp.roster, belt.levels, false, cw)
+	return unit
 end
 
 --
@@ -676,12 +846,16 @@ function M.build(zone_id, q, recipe)
 		anchor_by_ref[a.slot] = a
 		anchor_by_ref[a.id] = a
 	end
-	local from_anchor = anchor_by_ref[recipe.from.anchor]
-	if not from_anchor then
-		error("[grug_mobs] spawn regions " .. zone_id .. ": from anchor " ..
-			recipe.from.anchor .. " is not an anchor of the zone", 0)
+	local from_anchors = {}
+	for _, ref in ipairs(recipe.from and recipe.from.anchors or {}) do
+		local a = anchor_by_ref[ref]
+		if not a then
+			error("[grug_mobs] spawn regions " .. zone_id .. ": from anchor " ..
+				ref .. " is not an anchor of the zone", 0)
+		end
+		from_anchors[#from_anchors + 1] = a
+		starts[#starts + 1] = {a.x, a.z}
 	end
-	starts[#starts + 1] = {from_anchor.x, from_anchor.z}
 	for _, s in ipairs(starts) do
 		enqueue(floor(s[1] / CELL), floor(s[2] / CELL))
 	end
@@ -909,40 +1083,85 @@ function M.build(zone_id, q, recipe)
 		end
 		return best
 	end
-	local from_cell = cells[key(floor(from_anchor.x / CELL), floor(from_anchor.z / CELL))] or
-		nearest_cell(from_anchor.x, from_anchor.z)
-	map.from_cell = from_cell
-	local border = {}
-	for _, id in ipairs(recipe.to.border) do border[id] = true end
-	local targets = {}
-	for _, c in ipairs(order) do
-		c.d_from, c.d_to = huge, huge
-		for n = 1, 8 do
-			local nb = all_cells[key(c.i + N8[n][1], c.j + N8[n][2])]
-			if nb and border[nb.owner] and nb.land >= LAND_MIN then
-				targets[#targets + 1] = c
-				break
+	-- The zone's land cells bordering any of `ids` (a land cell of theirs
+	-- among the eight around).
+	local function border_cells(ids)
+		local set, out = {}, {}
+		for _, id in ipairs(ids) do set[id] = true end
+		for _, c in ipairs(order) do
+			for n = 1, 8 do
+				local nb = all_cells[key(c.i + N8[n][1], c.j + N8[n][2])]
+				if nb and set[nb.owner] and nb.land >= LAND_MIN then
+					out[#out + 1] = c
+					break
+				end
 			end
 		end
+		return out
 	end
-	map.to_cells = targets
-	dijkstra(cells, {from_cell}, "d_from")
-	local reach_targets = {}
-	for _, c in ipairs(targets) do
-		if c.d_from < huge then reach_targets[#reach_targets + 1] = c end
-	end
-	if #reach_targets == 0 then
-		error("[grug_mobs] spawn regions " .. zone_id .. ": no land border with " ..
-			table.concat(recipe.to.border, ", ") .. " reachable over land from " ..
-			recipe.from.anchor, 0)
-	end
-	dijkstra(cells, reach_targets, "d_to")
-	local reachable = {}
 	for _, c in ipairs(order) do
-		if c.d_from < huge and c.d_to < huge then
-			local s = c.d_from + c.d_to
-			c.progress = s > 0 and c.d_from / s or 0
-			reachable[#reachable + 1] = c
+		c.d_from, c.d_to = huge, huge
+	end
+	-- Sources (d_from = 0): the cells of the `from` anchors, or the land
+	-- cells bordering the `from` zones (where the player enters).
+	local sources, from_text = {}, "the zone"
+	if recipe.from and recipe.from.border then
+		sources = border_cells(recipe.from.border)
+		from_text = "the border with " .. table.concat(recipe.from.border, ", ")
+		if #sources == 0 then
+			error("[grug_mobs] spawn regions " .. zone_id .. ": no land border with " ..
+				table.concat(recipe.from.border, ", ") .. " (from)", 0)
+		end
+	elseif recipe.from then
+		from_text = table.concat(recipe.from.anchors, ", ")
+		for _, a in ipairs(from_anchors) do
+			sources[#sources + 1] = cells[key(floor(a.x / CELL), floor(a.z / CELL))] or
+				nearest_cell(a.x, a.z)
+		end
+	end
+	map.from_cell = sources[1]
+	map.from_cells = sources
+	if #sources > 0 then
+		dijkstra(cells, sources, "d_from")
+	else
+		-- No `from` (a one-belt recipe): progress plays no part.
+		for _, c in ipairs(order) do c.d_from = 0 end
+	end
+	local reachable = {}
+	local to = recipe.to
+	if to and to.border then
+		-- Progress = d_from / (d_from + d_to): 0 at the entry, 1 at the exit.
+		local targets = border_cells(to.border)
+		map.to_cells = targets
+		local reach_targets = {}
+		for _, c in ipairs(targets) do
+			if c.d_from < huge then reach_targets[#reach_targets + 1] = c end
+		end
+		if #reach_targets == 0 then
+			error("[grug_mobs] spawn regions " .. zone_id .. ": no land border with " ..
+				table.concat(to.border, ", ") .. " reachable over land from " ..
+				from_text, 0)
+		end
+		dijkstra(cells, reach_targets, "d_to")
+		for _, c in ipairs(order) do
+			if c.d_from < huge and c.d_to < huge then
+				local s = c.d_from + c.d_to
+				c.progress = s > 0 and c.d_from / s or 0
+				reachable[#reachable + 1] = c
+			end
+		end
+	else
+		-- `to` core: the rank of d_from alone, so the cells farthest from all
+		-- sources form the top belt. No `to` (one belt): 0 everywhere.
+		local top = 0
+		for _, c in ipairs(order) do
+			if c.d_from < huge and c.d_from > top then top = c.d_from end
+		end
+		for _, c in ipairs(order) do
+			if c.d_from < huge then
+				c.progress = (to and top > 0) and c.d_from / top or 0
+				reachable[#reachable + 1] = c
+			end
 		end
 	end
 	local islets = 0
@@ -1031,7 +1250,52 @@ function M.build(zone_id, q, recipe)
 	-- 7. Camps (before regions: a camp's cells are its own region).
 	local camps = {}
 	map.camps = camps
+	-- A camp unit: the parsed camp, its centre and cell, its belt and its
+	-- levels in that belt (what the camp spawns at). It spawns in the camp's
+	-- stead (spawn_regions.lua spawn_mob: tag, rosters, levels_by_role).
+	local function new_camp(camp, cell, x, z, belt, levels)
+		local unit = {id = camp.id, camp = camp, cell = cell, x = x, z = z,
+			tag = camp.tag, rosters = camp.rosters, is_camp = true, belt = belt,
+			levels_by_role = levels.levels_by_role, levels = levels.levels}
+		camps[#camps + 1] = unit
+		return unit
+	end
+	-- Camps on POIs first (Round 28 S2): the centre is the POI's fitted
+	-- anchor, the cells are the zone's land cells the camp radius reaches,
+	-- the belt the one the POI's cell lies in unless the camp states one.
 	for _, camp in ipairs(recipe.camps) do
+		if camp.site ~= "generate" then
+			local a = anchor_by_ref[camp.site.anchor]
+			local cell = a and (cells[key(floor(a.x / CELL), floor(a.z / CELL))] or
+				nearest_cell(a.x, a.z))
+			if not cell then
+				problems[#problems + 1] = "no position for " .. camp.id .. " on " .. camp.site.name
+			else
+				local belt = camp.belt or belts[cell.belt]
+				local ok, levels = pcall(M.camp_levels, zone_id, camp, belt)
+				if not ok then
+					problems[#problems + 1] = (tostring(levels):gsub("^%[grug_mobs%] spawn recipe ", ""))
+				else
+					local unit = new_camp(camp, cell, a.x, a.z, belt, levels)
+					unit.site = camp.site
+					for _, c in ipairs(order) do
+						if not c.camp and box_dist(a.x, a.z, c.i * CELL, c.j * CELL,
+								c.i * CELL + CELL, c.j * CELL + CELL) < M.CAMP_RADIUS then
+							c.camp = unit
+						end
+					end
+					-- A POI just off the zone's land keeps its nearest cell.
+					if not cell.camp then cell.camp = unit end
+				end
+			end
+		end
+	end
+	-- Generated sites, by rule score.
+	local generated = {}
+	for _, camp in ipairs(recipe.camps) do
+		if camp.site == "generate" then generated[#generated + 1] = camp end
+	end
+	for _, camp in ipairs(generated) do
 		local best, best_score
 		for _, c in ipairs(order) do
 			if belts[c.belt] == camp.belt and not c.camp then
@@ -1081,9 +1345,9 @@ function M.build(zone_id, q, recipe)
 			end
 		end
 		if best then
-			local unit = {id = camp.id, camp = camp, cell = best,
-				x = best.x, z = best.z, score = best_score}
-			camps[#camps + 1] = unit
+			local unit = new_camp(camp, best, best.x, best.z, camp.belt,
+				M.camp_levels(zone_id, camp, camp.belt))
+			unit.score = best_score
 			for a = -1, 1 do
 				for b = -1, 1 do
 					cells[key(best.i + a, best.j + b)].camp = unit
@@ -1293,13 +1557,13 @@ function M.build(zone_id, q, recipe)
 	regions = split
 	-- Camp regions.
 	for _, unit in ipairs(camps) do
-		local r = {kind = unit.camp, belt = unit.camp.belt.index, cells = {}, camp = unit}
+		local r = {kind = unit.camp, belt = unit.belt.index, cells = {}, camp = unit}
 		for _, c in ipairs(order) do
 			if c.camp == unit then
 				r.cells[#r.cells + 1] = c
 				c.region = r
 				c.kind = unit.camp
-				c.belt = unit.camp.belt.index
+				c.belt = unit.belt.index
 			end
 		end
 		unit.region = r
@@ -1315,7 +1579,7 @@ function M.build(zone_id, q, recipe)
 		r.x, r.z = sx / #r.cells, sz / #r.cells
 		r.size = #r.cells
 		local levels = belts[r.belt].levels
-		r.levels = r.kind.levels
+		r.levels = r.camp and r.camp.levels or r.kind.levels
 		r.level = floor((levels[1] + levels[2]) / 2 + 0.5)
 		local list = by_kind[r.kind.id]
 		if not list then
@@ -1553,7 +1817,7 @@ function M.stats(map)
 	out.max_belt_jump = jump
 	for _, unit in ipairs(map.camps) do
 		out.camps[#out.camps + 1] = {id = unit.id, x = unit.x, z = unit.z,
-			score = unit.score, road = unit.cell.road}
+			score = unit.score, road = unit.cell.road, poi = unit.site and unit.site.name}
 	end
 	for _, l in ipairs(map.leaders) do
 		out.leaders[#out.leaders + 1] = {role = l.role, x = l.x, z = l.z, level = l.level}
