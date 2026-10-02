@@ -294,6 +294,31 @@
       "climax": true
     },
     {
+      "id": "frostbarrow_departure",
+      "line": "cutting",
+      "giver": "r20_anchor_061_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "frostbarrow_cutting_04"
+      ],
+      "title": "A Miner for Splitbolt",
+      "text": "With Nib's sums settled, Tarncut can dig again without flinching at every echo. Borin Splitbolt holds Splitbolt Station in Stormvault Heights, where the Accord needs dwarves who keep their heads under falling stone. Go and report to him; tell him Kelda says you came back up every time.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Heartland to contested zone handoff at 30.",
+      "duration_min": 10
+    },
+    {
       "id": "frostbarrow_watch_01",
       "line": "watch",
       "giver": "r20_anchor_026_host",
