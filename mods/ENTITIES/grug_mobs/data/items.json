@@ -77,7 +77,7 @@
   },
   {
     "id": "grug_mobs:stubborn_molar",
-    "name": "Stubborn Molar",
+    "name": "Hard-Set Molar",
     "tier": 3,
     "family": "zombie",
     "kind": "signature",
@@ -840,7 +840,7 @@
   },
   {
     "id": "grug_mobs:restless_wisp_mote",
-    "name": "Restless Wisp Mote",
+    "name": "Flickering Wisp Mote",
     "tier": 4,
     "family": "wisp",
     "kind": "signature",
@@ -852,7 +852,7 @@
   },
   {
     "id": "grug_mobs:mourning_resin",
-    "name": "Mourning Resin",
+    "name": "Gravewood Resin",
     "tier": 3,
     "family": "treant",
     "kind": "signature",

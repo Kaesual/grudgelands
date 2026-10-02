@@ -247,9 +247,9 @@ validation is not certification of a future zone extension.
 No subtype may turn a critter base into neutral/aggressive combat. Marrow
 and Salt-Boring Weevils use attacking `stone_mite` with the existing
 `bone_weevil` texture in Ossuary/Blackwind/Gravesalt. The original critter
-remains unchanged. **Wary/Watchful mean neutral**; hostile names now use
-Prowling Jungle Lynx and Vigilant Bandit Archer. Rabid Rat (1.15) exceeds
-Large Rat (1.05). Stillgrave's Young Gaunt Stag is a neutral L5–7 day grazer.
+remains unchanged. Names follow the frame's naming rule (§5, user
+2026-10-02): signal words only on start-zone roles, one ladder there, own
+names elsewhere. Aggressive Rat (1.15) exceeds Large Rat (1.05). Stillgrave's Young Gaunt Stag is a neutral L5–7 day grazer.
 All bear/ape roles retain authored tiers; none depends on random promotion.
 
 ## Supply and consumption
@@ -312,8 +312,8 @@ the dropped band. The economy's own-material table still applies.
 | Sleek/nightscale leather | T5/T6 felines give Sleek Pelt at 1-in-2. Shattered Line has tigers; Skyglass has panthers. Nightscale also needs Scaled Hide from venomous enemies or the existing universal leather chain. |
 | Current alchemy and ornaments | Venom Gland remains on spiders; Crocodile Tooth on crocodiles; Shiny Scale on mirefolk. They are additional existing generic feedstock, not renamed tier signatures. Underground sources remain unchanged. |
 | T2 Basic wand/staff | `zombie_flesh` (Rotting Flesh) stays generic at 1-in-2 on the zombie family T1–T6, including sunproof husks. T1 HP instead uses Tattered Flesh; both roll independently. |
-| T3 alchemy; T4 Basic wand/staff | `bear_claw` stays generic at 1-in-3 on bears T3/T4/T6. Normal Territorial Bears in Ashenward/Glassroot and Blackwind give mainland T4 access. |
-| Slime Gel recipes and Mournfen collection | `slime_gel` stays generic at 1-in-3 on ooze T2/T3. Mournfen's Sullen Bog Ooze supplies it from L11; Whispering/Totemwater remain alternatives in T3. |
+| T3 alchemy; T4 Basic wand/staff | `bear_claw` stays generic at 1-in-3 on bears T3/T4/T6. Normal Bramble Bears (Bonewood Plaguehide Bears in Blackwind) in Ashenward/Glassroot and Blackwind give mainland T4 access. |
+| Slime Gel recipes and Mournfen collection | `slime_gel` stays generic at 1-in-3 on ooze T2/T3. Mournfen's Bubbling Bog Ooze supplies it from L11; Whispering/Totemwater remain alternatives in T3. |
 | T4 alchemy; T6 Basic wand/staff | `venom_sac` stays generic at 1-in-3 on venomous families T4/T5/T6. Skyglass's normal Glass-Fang Serpent supplies it at T6; no island or elite dependency. |
 | T6 ornaments/alchemy and mainland stock | `stone_core` stays generic at 1-in-3 on stone families T3–T6: Frostbarrow/Speargrass, Stormvault/Bannerbreak/Causeway, Shattered Line and Wyrmglass. Mainland stone encounters are optional elites; stock can be gathered earlier. The unchanged normal underground `stone_mite` also retains Stone Core at 1-in-8; its role does not match `stone`, so no family override removes that alternative. Never use a core request as mandatory solo leveling. |
 | T5 Basic wand/staff; T6 alchemy | Sharp Feather remains on T3–T6 scavengers at 1-in-2. A T6 recipe's ingredient metadata must not remove its earlier T5 equipment source. |

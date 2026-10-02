@@ -496,7 +496,7 @@ reachability (E lanes measure it in the game).
   density weights and quest matching stay per role (quests list several
   roles when they mean a whole family).
 - Neutral disposition switches the group alert off: neutral sub-types are
-  single pulls. The Fox is aggressive today, so a neutral "Small Fox" is its
+  single pulls. The Fox is aggressive today, so a neutral "Young Fox" is its
   own role.
 - Only the Zombie burns in the sun (not the Sun-Dried Husk, not skeletons;
   zombies spawned on blight dirt never burn). Rift Spawn bursts give no
@@ -506,15 +506,49 @@ reachability (E lanes measure it in the game).
 
 ## 5. Naming
 
-- Sub-types read as size or temper first, family second: Small Boar,
-  Aggressive Boar, Large Rat, Rabid Rat, Giant Crab. Undead and humanoids
-  may carry humour: Braindead Zombie, Moaning Zombie, Sluggish Zombie,
-  Drowned Zombie, Confused Bandit.
-- "Small / Young" means neutral and low; "Aggressive / Rabid / Giant /
-  Monstrous" means hostile and higher. Consistent world-wide.
+User rule, 2026-10-02 (Round 28 Lane N1); it replaces the earlier
+"size or temper first" rule. The applied names and the reason for each
+change are in [names-proposal.json](round28/mobs/names-proposal.json);
+`tools/r28_names/build_review.py` checks the rules below and renders the
+review page [catalogue-review.html](round28/mobs/catalogue-review.html).
+
+- **Signal words only in start zones.** Words that announce size, age,
+  strength, temperament or wits (Small, Young, Large, Aggressive,
+  Monstrous, Braindead, Sluggish, Confused …) appear only on roles of the
+  six start zones (levels 1–10). There they form one ladder, the same in
+  all six starts; the rung is the role's first level:
+
+  | Column | L1–3 | L3–5 | L5–7 | L7–9 | L9–10 |
+  |---|---|---|---|---|---|
+  | Neutral animals (yellow) | Small | Small | Young | — | — |
+  | Hostile animals (red) | Large | — | Aggressive | Monstrous | — |
+  | Zombies and husks | — | Braindead | Sluggish | Monstrous | — |
+  | Bandits, poachers, chiefs | — | — | — | Confused | Confused |
+
+  Examples: Small Boar, Large Rat, Aggressive Rat, Small Crab, Monstrous
+  Crab, Braindead Zombie, Monstrous Drowned Zombie, Young Fox, Confused
+  Bandit. Retired words: Giant, Rabid, Irritable, Prowling, Furtive,
+  Befuddled, Muddled, Misguided, Quiet. Item names carry a signal word only
+  at tier 1.
+- **Everywhere else every sub-type has its own name.** No display name
+  (default or `display_by_zone` variant) is used by two roles, by a base
+  mob or by a rare; at most three words; it describes the creature in its
+  place (ecology, look, local flavour), in English, fitting the zone's
+  culture. Roles of one family that share a zone differ in more than their
+  first word (Tidepool Crab and Reefclaw Snapper, Debtbound Zombie and
+  Tithe Revenant); across zones a place word plus the family noun may
+  repeat (Bank Crab, Breakwater Crab). A role in several zones may keep one
+  name. Disposition is shown by the yellow or red name tag, not by the
+  name.
+- **Kill quests always name the exact sub-type and place**, so every name
+  must be unmistakable on its own.
+- **Named leaders keep "Title Name".** The six start chiefs carry the ladder
+  word: Confused Bandit Chief Crumb, Confused Ore Chief Bracket. Leaders
+  elsewhere follow the no-signal-word rule; the three-word limit does not
+  apply to them.
 - Race-specific families (Plague Boar, Jungle Boar, Sun-Dried Husk,
   Scorpion, Viper …) keep their identity through `display_by_zone` and
-  tints.
+  tints. Role and item ids never change with a display name.
 
 ## 6. Process
 
