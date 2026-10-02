@@ -35,9 +35,11 @@ local MOBS = repo .. "/mods/ENTITIES/grug_mobs"
 local DATA = MOBS .. "/data/zones"
 
 -- The world's 38 zone ids, from the mapgen's own source; a data file per id.
-local WORLD_ZONES = {}
+-- Their level bands too: a recipe's belts lie inside its zone's band.
+local WORLD_ZONES, BANDS = {}, {}
 for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
 	WORLD_ZONES[#WORLD_ZONES + 1] = row.id
+	BANDS[row.id] = {row.level_min, row.level_max}
 end
 table.sort(WORLD_ZONES)
 local function list_dir()
@@ -229,8 +231,11 @@ local function stripe_world()
 		end,
 		hard_protection_kind_at = function(pos) return world.protected.town and world.protected.town(pos) or nil end,
 		anchor = function(zone, slot) return world.anchors and world.anchors[zone .. "/" .. slot] or nil end,
-		get = function(zone) return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
-			level_min = 1, level_max = 10} end,
+		get = function(zone)
+			local band = BANDS[zone] or {1, 10}
+			return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
+				level_min = band[1], level_max = band[2]}
+		end,
 		pvp_rule_at = function() return "peaceful" end,
 		race_region_at = function() return "human" end,
 	}
@@ -276,11 +281,13 @@ end
 -- A zone with a spawn recipe (Lane S1) has no palette: it is compared on its
 -- own in part 3. Every other zone answers exactly as before.
 local SR = NEW.spawn_regions
-local palette_zones = {}
+local palette_zones, recipe_zones = {}, 0
 for _, zone in ipairs(zone_files) do
-	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
+	if SR.zone_has_recipe(zone) then recipe_zones = recipe_zones + 1
+	else palette_zones[#palette_zones + 1] = zone end
 end
-check(#palette_zones == 37, "37 zones keep their palette (" .. #palette_zones .. ")")
+check(recipe_zones >= 1 and #palette_zones + recipe_zones == #zone_files,
+	"every zone without a recipe keeps its palette (" .. #palette_zones .. ")")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -331,10 +338,11 @@ print(("fallback identity: %d spawn_policy_allows decisions identical over %d zo
 -- 2. Ruling 3 on ABM rows
 -- ---------------------------------------------------------------------------
 do
-	local x0 = ZONE_X.elandor_goldmead_vale
+	local x0 = ZONE_X.kragmar_redtusk_savanna
 	new_world.time, old_world.time = 0.5, 0.5
 	local boar, rabbit, guard = "grug_mobs:boar", "grug_mobs:rabbit", "grug_mobs:guard_accord"
-	-- A day boar on open ground is allowed in Goldmead (palette settled).
+	-- A day boar on open ground is allowed in a palette zone (Redtusk: palette
+	-- settled, the plain boar; Goldmead has a recipe since Round 28 S2a).
 	local probe = {x = x0 + 5, y = 10, z = 102}
 	defs[boar].clock = "day"
 	check(NEW.spawn_policy_allows(boar, probe) == OLD.spawn_policy_allows(boar, probe), "probe agrees")
@@ -397,7 +405,6 @@ do
 		local text = io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a")
 		local data = json.parse(text)
 		if SR.zone_has_recipe(zone) then
-			check(zone == "elandor_dawnmere_fields", "only Dawnmere has a recipe")
 			check(data.palette == nil and type(data.recipe) == "table", zone .. " recipe, no palette")
 		else
 			check(type(data.palette) == "table" and type(data.palette.families) == "table",
@@ -427,15 +434,15 @@ do
 	local function refused(zone, data)
 		return not pcall(SR.install_zone, zone, data)
 	end
-	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale"}),
+	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna"}),
 		"a zone without a recipe needs its palette")
-	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", palette = {families = {}},
+	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna", palette = {families = {}},
 		areas = {}}), "the hand-area format is gone")
-	check(refused("elandor_goldmead_vale", {zone = "elandor_highcourt", palette = {families = {}}}),
+	check(refused("kragmar_redtusk_savanna", {zone = "elandor_highcourt", palette = {families = {}}}),
 		"zone mismatch")
-	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", recipe = {belts = {}}}),
+	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna", recipe = {belts = {}}}),
 		"a broken recipe")
-	check(NEW.spawn_regions.fallback_palettes().elandor_goldmead_vale ~= nil,
+	check(NEW.spawn_regions.fallback_palettes().kragmar_redtusk_savanna ~= nil,
 		"a refused install keeps the zone's palette")
 	local palettes = upvalue(OLD.zone_density_cast, "ZONE_MOB_PALETTES")
 	check(#sorted_keys(palettes) == 38, "baseline had 38 palettes")

@@ -301,12 +301,45 @@ local extra = 0
 for id in pairs(now.quests) do if not oracle.quests[id] then extra = extra + 1 end end
 eq(count, 240, "oracle holds 240 quests")
 eq(extra, 0, "no quest beyond the oracle")
--- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
--- its three kill quests (a zone with a spawn recipe spawns only those).
+-- Ruling 29 changed the turkey hunt; Lanes S1 and S2 added the recipes'
+-- sub-types to kill quests of recipe zones (such a zone spawns only those):
+-- every other differing quest only appends catalogue sub-types to a kill
+-- objective's mobs, after its unchanged base roles.
 table.sort(differing)
-eq(table.concat(differing, " "), "r14_human_01_boars_beyond_the_fence " ..
-	"r14_human_04_shapes_by_lanternlight r14_human_05_the_missing_flock",
-	"exactly the three Dawnmere kill quests differ (Ruling 29, Lane S1)")
+local subtype = {}
+do
+	local handle = assert(io.open("mods/ENTITIES/grug_mobs/data/subtypes.json"))
+	for _, row in ipairs(json.decode(handle:read("*a"))) do subtype["grug_mobs:" .. row.role] = true end
+	handle:close()
+end
+local function appends_subtypes(got, was)
+	was = deep_copy(was)
+	for index, objective in ipairs(was.objectives) do
+		local mobs = got.objectives[index] and got.objectives[index].mobs
+		if objective.type == "kill" and objective.mobs and mobs then
+			for i, name in ipairs(mobs) do
+				if i <= #objective.mobs then
+					if name ~= objective.mobs[i] then return false end
+				elseif not subtype[name] then
+					return false
+				end
+			end
+			objective.mobs = mobs
+		end
+	end
+	return json.encode(got) == json.encode(was)
+end
+local listed = " " .. table.concat(differing, " ") .. " "
+for _, id in ipairs({"r14_human_01_boars_beyond_the_fence", "r14_human_04_shapes_by_lanternlight",
+		"r14_human_05_the_missing_flock"}) do
+	eq(listed:find(" " .. id .. " ", 1, true) ~= nil, true, id .. " differs (Ruling 29, Lane S1)")
+end
+for _, id in ipairs(differing) do
+	if id ~= "r14_human_05_the_missing_flock" then
+		eq(appends_subtypes(now.quests[id], oracle.quests[id]), true,
+			id .. ": only sub-types appended to its kill objectives (Lanes S1, S2)")
+	end
+end
 for id, mobs in pairs({
 	r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
 	r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",

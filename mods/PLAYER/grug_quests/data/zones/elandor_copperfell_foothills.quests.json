@@ -129,8 +129,7 @@
           "type": "kill",
           "mobs": [
             "grug_mobs:bandit",
-            "grug_mobs:bandit_archer",
-            "grug_mobs:quarrelsome_bandit"
+            "grug_mobs:bandit_archer"
           ],
           "zone": "elandor_copperfell_foothills",
           "count": 4
