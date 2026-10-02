@@ -128,7 +128,7 @@ superseded.
 |---|---:|---:|---:|
 | Apprentice — slow land mount | 15 | about 15 minutes | 1s10c |
 | Journeyman — fast land mount | 30 | about 45 minutes | 7s |
-| Expert — slow flying mount | 45 | about 2 hours | 1g63s |
+| Expert — slow flying mount | 45 | about 2 hours | 1g37s |
 | Master — fast flying mount | 60 | about 5 hours | 7g33s |
 
 The measurement is after routine repairs and consumables and excludes rare

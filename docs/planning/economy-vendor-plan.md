@@ -439,12 +439,14 @@ plan; nothing here is scheduled yet.
 - **E5** done in the lanes (design docs of §7) and in Round 29 lane D
   (status files, WP44 delivered).
 - The user kept the E4 prices (2026-10-02): no band-5 loot smoothing now.
+- **Round 30 lane E** smoothed the band-4 and band-5 medians and recomputed
+  the E4 prices ([band smoothing](#band-smoothing-round-30-2026-10-02)).
 
 ## E4 completion (2026-10-02)
 
 Round 29 lane E4 replaced the two placeholder tables with prices from a
 simple income estimate (§5). `python3 tools/r29_e4/income.py` prints the
-whole record below; `--check` fails when the shipped tables
+whole record below (updated with the Round 30 band smoothing); `--check` fails when the shipped tables
 (`grug_mounts.PRICES` in `grug_mounts/catalog.lua`,
 `grug_classes.RESPEC_PRICES` in `grug_classes/talents_ui.lua`) differ from
 it. The placeholder names and the trainer's "Price pending" state are gone.
@@ -460,9 +462,10 @@ it. The placeholder names and the trainer's "Price pending" state are gone.
 - **Kills:** the band's kill equivalents (`progression.md`) times the share
   of the band's XP that quests do not pay as rewards or gathering, i.e. quest
   kills, drop kills and free play, all at band level.
-- **Loot per kill:** E1's band medians from `tools/r29_e1/band_payout.sh`
-  (re-run in this lane, unchanged): 4.3 / 9.0 / 16.7 / 39.0 / 147.6 /
-  239.3c. Leader bonus rows and rare jackpots are left out.
+- **Loot per kill:** the band medians from `tools/r29_e1/band_payout.sh`,
+  since Round 30 4.3 / 9.0 / 16.7 / 43.6 / 119.5 / 239.3c (E1 measured
+  39.0c in band 4 and 147.6c in band 5). Leader bonus rows and rare
+  jackpots are left out.
 - **Time:** `progression.md` §1, level 60 in about 10–20 played hours; the
   midpoint **15 h** split over the bands by their kill equivalents. That is
   about 38–47 kills per hour including quest walking and talking.
@@ -481,13 +484,13 @@ it. The placeholder names and the trainer's "Price pending" state are gone.
 | 1 → 10 | 77 | 47 / 48 | 66 / 64 | 206c | 4c | 41c | 226c | 1s77c |
 | 10 → 20 | 111 | 73 / 68 | 229 / 250 | 633c | 11c | 59c | 803c | 4s35c |
 | 20 → 30 | 138 | 86 / 91 | 751 / 705 | 1,476c | 24c | 73c | 2,107c | 9s18c |
-| 30 → 40 | 165 | 104 / 108 | 2,228 / 2,224 | 4,126c | 58c | 88c | 6,207c | 22s61c |
-| 40 → 50 | 192 | 147 / 149 | 4,592 / 4,408 | 21,867c | 168c | 102c | 26,096c | 81s70c |
+| 30 → 40 | 165 | 104 / 108 | 2,228 / 2,224 | 4,613c | 58c | 88c | 6,693c | 24s39c |
+| 40 → 50 | 192 | 147 / 149 | 4,592 / 4,408 | 17,704c | 168c | 102c | 21,933c | 68s66c |
 | 50 → 60 | 219 | 166 / 177 | 14,360 / 11,380 | 41,056c | 365c | 117c | 53,444c | 1g46s68c |
 
-Loot is 65–85 % of gross income in every band. Band 5 rises ×3.6 over band 4
-(the ×2.5 axis expects ×2.5) because E1's band-5 median lands above its
-target and band 4's below. Ruling 6 for comparison: band 1 nets about two
+Loot is 65–85 % of gross income in every band. Band 5 rises ×2.8 over band 4
+(×3.6 before the Round 30 smoothing; the ×2.5 axis expects ×2.5). Ruling 6
+for comparison: band 1 nets about two
 T1 Common vendor sets (105c each), band 6 about five and a half.
 
 ### Prices
@@ -500,12 +503,57 @@ A price uses the income of the bracket of the level it unlocks at
 |---|---:|---|---:|---:|
 | Apprentice Riding | 15 | 15 min | 109c | 1s10c |
 | Journeyman Riding | 30 | 45 min | 689c | 7s |
-| Expert Riding | 45 | 2 h | 16,339c | 1g63s |
+| Expert Riding | 45 | 2 h | 13,733c | 1g37s |
 | Master Riding | 60 | 5 h | 73,342c | 7g33s |
 | Boat | 15 | as Apprentice | 109c | 1s10c |
 | Improved Boat | 30 | as Journeyman | 689c | 7s |
 | Respec 1–10 / 11–20 / 21–30 | — | 5 min | 15 / 36 / 77c | 15c / 35c / 75c |
-| Respec 31–40 / 41–50 / 51–60 | — | 5 min | 188 / 681 / 1,222c | 1s90c / 7s / 12s |
+| Respec 31–40 / 41–50 / 51–60 | — | 5 min | 203 / 572 / 1,222c | 2s / 6s / 12s |
 
 The Boat and the Improved Boat cost exactly as much as their references
 (travel plan ruling 3). The first respec stays free.
+
+## Band smoothing (Round 30, 2026-10-02)
+
+Round 30 lane E moved the band-4 and band-5 median kill payouts toward the
+target axis (`tools/r29_e1/band_payout.sh`, real price module) by loot table
+contents only; class values, tier factors and the formula are unchanged.
+
+| Band | Target | Median before | Median after |
+|---|---:|---:|---:|
+| 4 | 48c | 39.0c | 43.6c |
+| 5 | 120c | 147.6c | 119.5c |
+
+Bands 1–3 and 6 are unchanged (4.3 / 9.0 / 16.7 / 239.3c). Changed rows of
+`grug_mobs/data/drops.json` (and its design copy):
+
+- **Band 4, four tier-matched T4 generics added:** spiders Venom Sac 1/3
+  (beside the Venom Gland), crabs Shiny Scale 1/3 (beside the Scaled Hide),
+  stone golems and marrow weevils Emberglass Shard 1/2. Venom Sac and Shiny
+  Scale feed the T4 alchemy recipes, which had no band-4 source of Shiny
+  Scale before.
+- **Band 5:** the stone family no longer drops Stone Core (1/3). No T5
+  recipe uses it; T6 recipes get it in band 6 as before. Scavengers keep
+  Sharp Feather at 1/2 in band 5 because the T5 embersteel staff and wand
+  need it.
+
+*Why these rows:* ten band-4 families pay only their signature 1/3 plus
+trash (37–39c), so the median moves only when several of them gain a drop;
+a T4 generic of their own tier is the smallest such change. Band 5 sat
+above its target because of a T6 generic that no band-5 recipe needs.
+
+Band-3 outliers: Crocodile Tooth (crocodiles, bands 2–3, 1/3) and Shiny
+Scale (mirefolk, bands 2–3, 1/4) are T4 items in lower bands. No fitting
+T3 item exists, so they stay; both are T4 alchemy inputs and Crocodile Tooth
+is also the goldsmith's T4 ornament reagent.
+
+Prices after the smoothing (`income.py --check` passes):
+
+| Price | Before | After |
+|---|---:|---:|
+| Apprentice Riding / Boat | 1s10c | 1s10c |
+| Journeyman Riding / Improved Boat | 7s | 7s |
+| Expert Riding | 1g63s | 1g37s |
+| Master Riding | 7g33s | 7g33s |
+| Respec 1–10 / 11–20 / 21–30 | 15c / 35c / 75c | 15c / 35c / 75c |
+| Respec 31–40 / 41–50 / 51–60 | 1s90c / 7s / 12s | 2s / 6s / 12s |

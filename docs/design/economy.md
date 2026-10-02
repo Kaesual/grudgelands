@@ -122,11 +122,12 @@ precedence over preserving the exact mathematical ratio.
   ledger amount from that tier rate rather than from a stale global copper
   ratio; WP44 obtains the rate from a simple income estimate (D1),
   `tools/r29_e4/income.py`, recorded with its assumptions in the
-  [economy plan](../planning/economy-vendor-plan.md#e4-completion-2026-10-02):
+  [economy plan](../planning/economy-vendor-plan.md#e4-completion-2026-10-02)
+  (loot per kill after the Round 30 band-4/5 smoothing):
 
   | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
   |---|---:|---:|---:|---:|---:|---:|
-  | Net solo income per hour | 1s77c | 4s35c | 9s18c | 22s61c | 81s70c | 1g46s68c |
+  | Net solo income per hour | 1s77c | 4s35c | 9s18c | 24s39c | 68s66c | 1g46s68c |
 
 ## 4. Sinks
 
@@ -146,7 +147,7 @@ precedence over preserving the exact mathematical ratio.
   `progression.md` §2). The price is **five minutes of measured reliable net
   solo income** at the character's own bracket, rounded by §4.1's rule
   (ruling 22), and **the first respec of a character is free**: **15c, 35c,
-  75c, 1s90c, 7s and 12s** for the brackets 1–10 to 51–60
+  75c, 2s, 6s and 12s** for the brackets 1–10 to 51–60
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
 - **Profession-replacement services:** allied passive helper NPCs perform
@@ -191,7 +192,7 @@ Apprentice Riding and the Improved Boat as much as Journeyman Riding
 |---|---:|---|---:|
 | Apprentice Riding | 15 | 15 min | 1s10c |
 | Journeyman Riding | 30 | 45 min | 7s |
-| Expert Riding | 45 | 2 h | 1g63s |
+| Expert Riding | 45 | 2 h | 1g37s |
 | Master Riding | 60 | 5 h | 7g33s |
 | Boat | 15 | as Apprentice | 1s10c |
 | Improved Boat | 30 | as Journeyman | 7s |
