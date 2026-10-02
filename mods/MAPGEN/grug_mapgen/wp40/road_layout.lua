@@ -1995,6 +1995,12 @@ local function new_module(P)
 
 		local T1 = os.clock()
 		local order = opts.order
+		-- a step that finds no route: counted, and named for the load log
+		local function failed(label)
+			stats.failed = (stats.failed or 0) + 1
+			stats.failed_steps = stats.failed_steps or {}
+			stats.failed_steps[#stats.failed_steps + 1] = label
+		end
 		for _, step in ipairs(order) do
 			if step.op == "pair" then
 				if step.axis_x then
@@ -2006,11 +2012,11 @@ local function new_module(P)
 				end
 				local r = route_pair(step.kind, node_by_id[step.a], node_by_id[step.b])
 				GUIDE = nil
-				if not r then stats.failed = (stats.failed or 0) + 1 end
+				if not r then failed(step.a .. " - " .. step.b) end
 			elseif step.op == "join" then
 				local r = route_join(step.kind, node_by_id[step.a], step.budget,
 					step.targets or {primary = true, secondary = true, capital = true})
-				if not r then stats.failed = (stats.failed or 0) + 1 end
+				if not r then failed(step.a .. " (join)") end
 			end
 		end
 		stats.t_route_roads = os.clock() - T1
