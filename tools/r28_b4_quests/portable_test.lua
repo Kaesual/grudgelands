@@ -723,6 +723,12 @@ do
 	quest_of(files, "fx_hunt_01").level = 9
 	_, warnings = V.world(files, loader_world)
 	eq(about(warnings, "fx_hunt_01"), 0, "the zone's leader counts as spawned")
+	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
+	-- regions, so the recipe check skips them.
+	files = deep_copy(base_files)
+	quest_of(files, "fx_legacy").objectives[1].mobs = {"grug_mobs:guard_throng"}
+	_, warnings = V.world(files, loader_world)
+	eq(about(warnings, "fx_legacy"), 0, "a legacy guard target: no recipe-target warning")
 end
 local cases = {
 	{"critter as a kill target", "E-critter-target", "fx_hunt_01", function(f)
