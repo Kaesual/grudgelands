@@ -209,35 +209,57 @@ function grug_mounts.dismount(player, reason, hard, skip_animation)
 	return dismount(player, reason, hard, skip_animation, false)
 end
 
-function grug_mounts.flight_state(player, pos)
-	local water = grug_zones.water_class_at(pos.x, pos.z)
+-- Zone id -> {island, territory}: the two fields of a zone record the flight
+-- rule reads. Zone records never change, and grug_zones.at returns a deep
+-- copy of the record on every call, so the rule reads the column's zone id
+-- and keeps the rest here.
+local zone_rules = {}
+local function zone_rule(id)
+	local rule = zone_rules[id]
+	if not rule then
+		local zone = grug_zones.get(id)
+		rule = {island = DRAGON_ISLANDS[id] == true,
+			territory = zone and zone.territory_rule}
+		zone_rules[id] = rule
+	end
+	return rule
+end
+
+-- The flight rule of one column for one faction.
+local function column_flight_state(faction, x, z)
+	local water = grug_zones.water_class_at(x, z)
 	if water ~= "land" and water ~= "planned_water" then
 		return false, "ocean"
 	end
-	local faction = grug_factions.get_faction(player)
 	if faction ~= "accord" and faction ~= "throng" then
 		return false, "enemy"
 	end
 	-- Zone ownership is horizontal.  Altitude is handled independently by the
 	-- underground takeoff and y=600 ceiling rules below.
-	local zone = grug_zones.at(pos)
-	if zone and DRAGON_ISLANDS[zone.id] then
+	local id = grug_zones.id_at(x, z)
+	local rule = id and zone_rule(id)
+	if rule and rule.island then
 		return false, "island"
 	end
-	local territory = zone and zone.territory_rule
+	local territory = rule and rule.territory
 	if territory == "contested_land" or territory == faction .. "_home" then
 		return true, nil
 	end
 	return false, "enemy"
 end
 
+function grug_mounts.flight_state(player, pos)
+	return column_flight_state(grug_factions.get_faction(player), pos.x, pos.z)
+end
+
+-- 16 directions x 7 distances; the rider's faction is read once per sweep
+-- (Round 30, perf review #14).
 function grug_mounts.warning_state(player, pos)
-	local sample = {x = pos.x, y = pos.y, z = pos.z}
+	local faction = grug_factions.get_faction(player)
 	for _, distance in ipairs(WARNING_DISTANCES) do
 		for _, direction in ipairs(WARNING_DIRECTIONS) do
-			sample.x = pos.x + direction.x * distance
-			sample.z = pos.z + direction.z * distance
-			local legal, kind = grug_mounts.flight_state(player, sample)
+			local legal, kind = column_flight_state(faction,
+				pos.x + direction.x * distance, pos.z + direction.z * distance)
 			if not legal then return kind end
 		end
 	end

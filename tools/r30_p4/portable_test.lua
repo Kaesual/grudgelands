@@ -5,6 +5,11 @@
 --      once); drying still pauses and rewetting resumes a crop; the crop
 --      geometry LBM writes nothing when the plant already stands and still
 --      repairs a missing helper.
+--   M  grug_mounts/entity.lua: flight_state and the flight-boundary sweep
+--      (warning_state) give exactly the answers of the former per-sample
+--      code (faction read per sample, grug_zones.at per sample) on a field
+--      with ocean, home, contested, enemy and dragon-island columns, while
+--      the sweep reads the faction once and copies no zone record.
 -- Usage (repo root): luajit tools/r30_p4/portable_test.lua [REPO]
 local repo = arg[1] or "."
 
@@ -230,6 +235,123 @@ do
 
 	_G.core, _G.default, _G.grug_materials, _G.grug_core = nil, nil, nil, nil
 	_G.grug_mapgen, _G.grug_nodes, _G.grug_cooking, _G.grug_farming = nil, nil, nil, nil
+end
+
+------------------------------------------------------------------------------
+-- M: grug_mounts flight-boundary sweep (#14).
+------------------------------------------------------------------------------
+do
+	local function round(v)
+		-- grug_zones rounds half away from zero (zones.lua normalize_coordinate).
+		if v >= 0 then
+			local b = math.floor(v)
+			return v - b >= 0.5 and b + 1 or b
+		end
+		local b = math.ceil(v)
+		return b - v >= 0.5 and b - 1 or b
+	end
+	local RECORDS = {
+		home_a = {id = "home_a", territory_rule = "accord_home"},
+		home_t = {id = "home_t", territory_rule = "throng_home"},
+		front = {id = "front", territory_rule = "contested_land"},
+		front_wyrmglass_crown = {id = "front_wyrmglass_crown", territory_rule = "contested_land"},
+	}
+	local function owner(x, z)
+		x, z = round(x), round(z)
+		if z >= 60 and x < -10 then return "front_wyrmglass_crown" end
+		if z >= 25 then return "front" end
+		if x < 0 then return "home_a" end
+		return "home_t"
+	end
+	local function water(x, z)
+		x, z = round(x), round(z)
+		if x > 70 then return "deep_ocean" end
+		if x > 64 then return "planned_water" end
+		if (x - 30) * (x - 30) + (z + 40) * (z + 40) < 50 then return "shallow_ocean" end
+		return "land"
+	end
+	local function copy(t) local r = {} for k, v in pairs(t) do r[k] = v end return r end
+	local counts = {at = 0, faction = 0}
+	_G.grug_zones = {
+		water_class_at = water,
+		id_at = function(x, z) return owner(x, z) end,
+		get = function(id) return RECORDS[id] and copy(RECORDS[id]) end,
+		at = function(pos) counts.at = counts.at + 1; return copy(RECORDS[owner(pos.x, pos.z)]) end,
+	}
+	_G.grug_factions = {
+		get_faction = function(player) counts.faction = counts.faction + 1; return player.faction end,
+		register_on_faction_chosen = noop,
+	}
+	_G.grug_classes = {register_on_race_chosen = noop}
+	_G.core = {register_entity = noop, register_on_player_hpchange = noop,
+		register_on_dieplayer = noop, register_on_leaveplayer = noop,
+		register_on_shutdown = noop}
+	_G.grug_mounts = {}
+	dofile(repo .. "/mods/PLAYER/grug_mounts/entity.lua")
+
+	-- The former code (base 451f393b), verbatim apart from the names.
+	local DRAGON = {front_wyrmglass_crown = true, front_stormscale_summit = true}
+	local DIST = {1, 2, 4, 8, 16, 32, 48}
+	local DIRS = {}
+	for index = 0, 15 do
+		local angle = index * math.pi / 8
+		DIRS[#DIRS + 1] = {x = math.cos(angle), z = math.sin(angle)}
+	end
+	local function old_flight_state(player, pos)
+		local w = grug_zones.water_class_at(pos.x, pos.z)
+		if w ~= "land" and w ~= "planned_water" then return false, "ocean" end
+		local faction = grug_factions.get_faction(player)
+		if faction ~= "accord" and faction ~= "throng" then return false, "enemy" end
+		local zone = grug_zones.at(pos)
+		if zone and DRAGON[zone.id] then return false, "island" end
+		local territory = zone and zone.territory_rule
+		if territory == "contested_land" or territory == faction .. "_home" then
+			return true, nil
+		end
+		return false, "enemy"
+	end
+	local function old_warning_state(player, pos)
+		local sample = {x = pos.x, y = pos.y, z = pos.z}
+		for _, distance in ipairs(DIST) do
+			for _, direction in ipairs(DIRS) do
+				sample.x = pos.x + direction.x * distance
+				sample.z = pos.z + direction.z * distance
+				local legal, kind = old_flight_state(player, sample)
+				if not legal then return kind end
+			end
+		end
+		return nil
+	end
+
+	local players = {{faction = "accord"}, {faction = "throng"}, {faction = nil}}
+	local same_state, same_warning, total, kinds = 0, 0, 0, {}
+	for _, player in ipairs(players) do
+		for x = -130, 130, 7.3 do
+			for z = -130, 130, 6.7 do
+				local pos = {x = x, y = 80, z = z}
+				total = total + 1
+				local a1, a2 = grug_mounts.flight_state(player, pos)
+				local b1, b2 = old_flight_state(player, pos)
+				if a1 == b1 and a2 == b2 then same_state = same_state + 1 end
+				local w1 = grug_mounts.warning_state(player, pos)
+				local w2 = old_warning_state(player, pos)
+				if w1 == w2 then same_warning = same_warning + 1 end
+				kinds[tostring(w1)] = true
+			end
+		end
+	end
+	eq(same_state, total, "M: flight_state equals the former code")
+	eq(same_warning, total, "M: warning_state equals the former code")
+	check(kinds["nil"] and kinds.ocean and kinds.enemy and kinds.island,
+		"M: the field exercises no warning, ocean, enemy and island")
+	counts.at, counts.faction = 0, 0
+	eq(grug_mounts.warning_state(players[1], {x = -60, y = 80, z = -60}), nil,
+		"M: deep in home territory no warning")
+	eq(counts.faction, 1, "M: one faction read per sweep (112 samples)")
+	eq(counts.at, 0, "M: no zone record copied per sample")
+
+	_G.grug_zones, _G.grug_factions, _G.grug_classes, _G.core, _G.grug_mounts =
+		nil, nil, nil, nil, nil
 end
 
 print(("%d checks, %d failures"):format(checks, failures))
