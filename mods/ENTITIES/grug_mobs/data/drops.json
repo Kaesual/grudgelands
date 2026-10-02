@@ -1859,12 +1859,6 @@
           "chance": 3,
           "min": 1,
           "max": 1
-        },
-        {
-          "item": "grug_mobs:sharp_feather",
-          "chance": 2,
-          "min": 1,
-          "max": 1
         }
       ],
       "4": [
@@ -1883,12 +1877,6 @@
         {
           "item": "grug_mobs:storm_feather",
           "chance": 3,
-          "min": 1,
-          "max": 1
-        },
-        {
-          "item": "grug_mobs:sharp_feather",
-          "chance": 2,
           "min": 1,
           "max": 1
         }
@@ -1963,12 +1951,6 @@
           "chance": 25,
           "min": 1,
           "max": 1
-        },
-        {
-          "item": "grug_mobs:stone_core",
-          "chance": 3,
-          "min": 1,
-          "max": 1
         }
       ],
       "4": [
@@ -1981,12 +1963,6 @@
         {
           "item": "grug_materials:silversteel_bar",
           "chance": 25,
-          "min": 1,
-          "max": 1
-        },
-        {
-          "item": "grug_mobs:stone_core",
-          "chance": 3,
           "min": 1,
           "max": 1
         }
