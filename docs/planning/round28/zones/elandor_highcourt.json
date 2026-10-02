@@ -78,10 +78,22 @@
  "camps": [],
  "capital_street_count": 15,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:furrow_boar",
+   "grug_mobs:monstrous_boar",
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:orchard_fox",
+   "grug_mobs:redfang_fox",
+   "grug_mobs:toll_bandit_archer"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_zombie",
+   "grug_mobs:stubborn_zombie",
+   "grug_mobs:toll_bandit",
+   "grug_mobs:toll_bandit_archer"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
@@ -92,7 +104,7 @@
   "sea_beach_sand_area_nodes2": 0,
   "sea_coast_length_nodes": 0
  },
- "drift_band_share_pct": 8.8,
+ "drift_band_share_pct": 10.4,
  "extent": {
   "centroid": {
    "x": -33,
@@ -133,7 +145,7 @@
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/elandor_highcourt.png",
  "name": "Highcourt",
  "neighbors": [
@@ -143,7 +155,6 @@
   "elandor_whitebridge_shire"
  ],
  "numeric_id": 8,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
    "area_nodes2": 127528,
@@ -185,7 +196,7 @@
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": []
  },
- "protected_share_pct": 21.0,
+ "protected_share_pct": 21.6,
  "pvp_rule": "peaceful",
  "quests": [
   {
@@ -305,8 +316,8 @@
  "roads": [
   {
    "first_in_zone": [
-    -428,
-    -1234
+    -484,
+    -1254
    ],
    "from": "anchor_007 (Dur Brannoc, elandor_dur_brannoc)",
    "id": 1,
@@ -315,8 +326,8 @@
     -272,
     -1247
    ],
-   "length_in_zone": 162,
-   "length_total": 1434,
+   "length_in_zone": 170,
+   "length_total": 1402,
    "polyline_simplified": [
     [
      -1536,
@@ -335,24 +346,32 @@
      -1498
     ],
     [
-     -1107,
-     -1426
+     -1136,
+     -1441
     ],
     [
-     -946,
-     -1414
+     -1035,
+     -1393
     ],
     [
-     -865,
-     -1340
+     -961,
+     -1391
     ],
     [
-     -705,
-     -1240
+     -871,
+     -1357
     ],
     [
-     -545,
-     -1217
+     -778,
+     -1356
+    ],
+    [
+     -591,
+     -1303
+    ],
+    [
+     -432,
+     -1234
     ],
     [
      -272,
@@ -513,11 +532,159 @@
   },
   {
    "first_in_zone": [
+    -369,
+    -1182
+   ],
+   "from": "anchor_031 (Cinderline Watch, elandor_ashenward_march)",
+   "id": 13,
+   "kind": "secondary",
+   "last_in_zone": [
+    -336,
+    -1232
+   ],
+   "length_in_zone": 64,
+   "length_total": 413,
+   "polyline_simplified": [
+    [
+     -350,
+     -861
+    ],
+    [
+     -418,
+     -1017
+    ],
+    [
+     -399,
+     -1108
+    ],
+    [
+     -336,
+     -1232
+    ]
+   ],
+   "to": "joins road 1"
+  },
+  {
+   "first_in_zone": [
+    -64,
+    -1232
+   ],
+   "from": "anchor_008 (Highcourt, elandor_highcourt)",
+   "id": 29,
+   "kind": "primary",
+   "last_in_zone": [
+    -12,
+    -1062
+   ],
+   "length_in_zone": 190,
+   "length_total": 2860,
+   "polyline_simplified": [
+    [
+     -64,
+     -1232
+    ],
+    [
+     -42,
+     -1093
+    ],
+    [
+     40,
+     -1032
+    ],
+    [
+     37,
+     -990
+    ],
+    [
+     59,
+     -962
+    ],
+    [
+     47,
+     -813
+    ],
+    [
+     -28,
+     -653
+    ],
+    [
+     58,
+     -464
+    ],
+    [
+     -59,
+     -368
+    ],
+    [
+     0,
+     -143
+    ],
+    [
+     -16,
+     -92
+    ],
+    [
+     -4,
+     36
+    ],
+    [
+     -60,
+     97
+    ],
+    [
+     36,
+     169
+    ],
+    [
+     81,
+     324
+    ],
+    [
+     37,
+     424
+    ],
+    [
+     59,
+     474
+    ],
+    [
+     -13,
+     617
+    ],
+    [
+     -17,
+     687
+    ],
+    [
+     -50,
+     757
+    ],
+    [
+     -47,
+     817
+    ],
+    [
+     32,
+     967
+    ],
+    [
+     -45,
+     1100
+    ],
+    [
+     -47,
+     1232
+    ]
+   ],
+   "to": "anchor_011 (Gor Drazhak, kragmar_gor_drazhak)"
+  },
+  {
+   "first_in_zone": [
     408,
     -1271
    ],
    "from": "anchor_034 (Petalbank Wardenry, elandor_lorindor)",
-   "id": 38,
+   "id": 39,
    "kind": "trail",
    "last_in_zone": [
     352,
@@ -555,7 +722,7 @@
     -1807
    ],
    "from": "anchor_067 (Siltbasket Camp, elandor_whitebridge_shire)",
-   "id": 67,
+   "id": 68,
    "kind": "trail",
    "last_in_zone": [
     -513,
@@ -589,7 +756,7 @@
     -1358
    ],
    "from": "end:2",
-   "id": 86,
+   "id": 87,
    "kind": "primary",
    "last_in_zone": [
     193,
@@ -619,26 +786,22 @@
   },
   {
    "first_in_zone": [
-    -272,
-    -1247
+    -64,
+    -1232
    ],
-   "from": "end:1",
-   "id": 87,
+   "from": "end:29",
+   "id": 88,
    "kind": "primary",
    "last_in_zone": [
     -69,
     -1364
    ],
-   "length_in_zone": 250,
-   "length_total": 252,
+   "length_in_zone": 138,
+   "length_total": 137,
    "polyline_simplified": [
     [
-     -272,
-     -1247
-    ],
-    [
-     -123,
-     -1299
+     -64,
+     -1232
     ],
     [
      -69,
@@ -649,11 +812,41 @@
   },
   {
    "first_in_zone": [
+    -272,
+    -1247
+   ],
+   "from": "end:1",
+   "id": 89,
+   "kind": "primary",
+   "last_in_zone": [
+    -62,
+    -1341
+   ],
+   "length_in_zone": 242,
+   "length_total": 243,
+   "polyline_simplified": [
+    [
+     -272,
+     -1247
+    ],
+    [
+     -186,
+     -1260
+    ],
+    [
+     -62,
+     -1341
+    ]
+   ],
+   "to": "joins road 88"
+  },
+  {
+   "first_in_zone": [
     128,
     -1760
    ],
    "from": "end:4",
-   "id": 88,
+   "id": 90,
    "kind": "primary",
    "last_in_zone": [
     -21,
@@ -687,7 +880,7 @@
     -1759
    ],
    "from": "end:7",
-   "id": 89,
+   "id": 91,
    "kind": "secondary",
    "last_in_zone": [
     -21,
@@ -755,14 +948,14 @@
      },
      {
       "name": "Oakspan Tollhouse",
-      "road": 948,
+      "road": 990,
       "straight": 661,
       "to": "r20_anchor_030",
       "zone": "elandor_whitebridge_shire"
      },
      {
       "name": "Cinderline Watch",
-      "road": 1192,
+      "road": 1039,
       "straight": 738,
       "to": "r20_anchor_031",
       "zone": "elandor_ashenward_march"
@@ -1180,7 +1373,140 @@
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_zombie",
+   "name": "Debtbound Zombie",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 61.2
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 30.4
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:furrow_boar",
+   "name": "Furrow Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     25,
+     30
+    ],
+    "share_pct": 39.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_boar",
+   "name": "Razorback",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 40.4
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 30.7
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:orchard_fox",
+   "name": "Orchard Fox",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     25,
+     30
+    ],
+    "share_pct": 56.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:redfang_fox",
+   "name": "Redfang Vixen",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_zombie",
+   "name": "Tithe Revenant",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 58.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 11.7
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit_archer",
+   "name": "Toll Bandit Archer",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 11.9
+   }
+  }
+ ],
  "territory_rule": "accord_home",
  "track_order": 3
 }

@@ -55,25 +55,23 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit",
-   "grug_mobs:wild_turkey"
+   "grug_mobs:aggressive_boar",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:giant_crab",
+   "grug_mobs:quiet_shore_crab",
+   "grug_mobs:small_boar",
+   "grug_mobs:small_fox"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox"
-  ],
-  "density_budget_night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:giant_rat",
-   "grug_mobs:zombie"
+   "grug_mobs:braindead_zombie",
+   "grug_mobs:confused_bandit",
+   "grug_mobs:drowned_zombie",
+   "grug_mobs:large_rat",
+   "grug_mobs:monstrous_rat",
+   "grug_mobs:rabid_rat",
+   "grug_mobs:sluggish_zombie"
   ]
  },
  "civic_no_hostiles": false,
@@ -349,7 +347,6 @@
   "elandor_goldmead_vale"
  ],
  "numeric_id": 6,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [],
@@ -382,16 +379,16 @@
    "id": "r14_human_01_boars_beyond_the_fence",
    "min_level": 1,
    "objectives": [
-    "kill 3 boar"
+    "kill 3 boar or small_boar"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:boar"
+      "grug_mobs:boar",
+      "grug_mobs:small_boar"
      ],
-     "type": "kill",
-     "zone": false
+     "type": "kill"
     }
    ],
    "prerequisites": [],
@@ -438,7 +435,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a wood axe",
      "item": "grug_materials:axe_wood",
      "type": "item"
     }
@@ -487,7 +483,6 @@
    "objectives_raw": [
     {
      "count": 1,
-     "description": "Bring a stone pick",
      "item": "grug_materials:pick_stone",
      "type": "item"
     }
@@ -535,13 +530,15 @@
    "id": "r14_human_04_shapes_by_lanternlight",
    "min_level": 4,
    "objectives": [
-    "kill 3 zombie"
+    "kill 3 zombie or braindead_zombie or sluggish_zombie"
    ],
    "objectives_raw": [
     {
      "count": 3,
      "mobs": [
-      "grug_mobs:zombie"
+      "grug_mobs:zombie",
+      "grug_mobs:braindead_zombie",
+      "grug_mobs:sluggish_zombie"
      ],
      "type": "kill"
     }
@@ -556,23 +553,23 @@
   },
   {
    "copper": 30,
-   "description": "Wild turkeys draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
+   "description": "Foxes draw off Dawnmere's village flock by day. Thin them near the outer fields while the store frame is repaired.",
    "giver": "r14_human_elder",
    "giver_name": "Elian Reed",
    "giver_settlement": "Dawnmere",
    "id": "r14_human_05_the_missing_flock",
    "min_level": 5,
    "objectives": [
-    "kill 5 wild_turkey"
+    "kill 5 fox or small_fox"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:wild_turkey"
+      "grug_mobs:fox",
+      "grug_mobs:small_fox"
      ],
-     "type": "kill",
-     "zone": false
+     "type": "kill"
     }
    ],
    "prerequisites": [
@@ -746,18 +743,18 @@
       "zone": "elandor_goldmead_vale"
      },
      {
-      "name": "Oakspan Tollhouse",
-      "road": 2134,
-      "straight": 1425,
-      "to": "r20_anchor_030",
-      "zone": "elandor_whitebridge_shire"
-     },
-     {
       "name": "Petalbank Wardenry",
       "road": 2173,
       "straight": 1465,
       "to": "r20_anchor_034",
       "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 2175,
+      "straight": 1425,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
      }
     ],
     "nearest_other_zone_land": {
@@ -893,96 +890,134 @@
   {
    "day": {
     "levels": [
-     1,
+     5,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     4,
-     10
-    ],
-    "policy_share_pct": 27.1,
-    "share_pct": 24.2
+    "share_pct": 51.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:fox",
-   "name": "Fox",
+   "hosts": [],
+   "mob": "grug_mobs:aggressive_boar",
+   "name": "Aggressive Boar",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:giant_rat",
-   "name": "Giant Rat",
+   "hosts": [],
+   "mob": "grug_mobs:braindead_zombie",
+   "name": "Braindead Zombie",
    "night": {
     "levels": [
-     1,
-     10
+     3,
+     4
     ],
-    "policy_share_pct": 96.7,
-    "share_pct": 83.7
+    "share_pct": 7.7
    }
   },
   {
    "day": {
     "levels": [
-     1,
+     9,
      10
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 1.1
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:rabbit",
-   "name": "Rabbit",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:confused_bandit",
+   "name": "Confused Bandit",
+   "night": {
+    "levels": [
+     9,
+     10
+    ],
+    "share_pct": 1.1
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:drowned_zombie",
+   "name": "Monstrous Drowned Zombie",
+   "night": {
+    "levels": [
+     8,
+     10
+    ],
+    "share_pct": 4.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     7,
+     10
+    ],
+    "share_pct": 6.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:giant_crab",
+   "name": "Monstrous Crab",
    "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:large_rat",
+   "name": "Large Rat",
+   "night": {
+    "levels": [
+     1,
+     4
+    ],
+    "share_pct": 33.1
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_rat",
+   "name": "Monstrous Rat",
+   "night": {
+    "levels": [
+     8,
+     10
+    ],
+    "share_pct": 23.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     3,
+     6
+    ],
+    "share_pct": 7.2
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:quiet_shore_crab",
+   "name": "Small Crab",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_rat",
+   "name": "Aggressive Rat",
+   "night": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 22.8
+   }
   },
   {
    "day": {
@@ -1008,50 +1043,46 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:sluggish_zombie",
+   "name": "Sluggish Zombie",
+   "night": {
+    "levels": [
+     5,
+     7
+    ],
+    "share_pct": 6.7
+   }
+  },
+  {
    "day": {
     "levels": [
      1,
-     10
+     4
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 87.0
+    "share_pct": 38.0
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_grass"
-   ],
-   "mob": "grug_mobs:wild_turkey",
-   "name": "Wild Turkey",
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:small_boar",
+   "name": "Small Boar",
    "night": null
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
-   "night": {
+   "day": {
     "levels": [
-     3,
-     10
+     5,
+     7
     ],
-    "policy_share_pct": 91.5,
-    "share_pct": 91.5
-   }
+    "share_pct": 25.2
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:small_fox",
+   "name": "Young Fox",
+   "night": null
   }
  ],
  "start_rings": {

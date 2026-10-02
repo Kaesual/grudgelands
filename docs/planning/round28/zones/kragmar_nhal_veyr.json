@@ -26,11 +26,11 @@
  "biomes_measured": [
   {
    "id": "grug_blight",
-   "share_pct": 75.2
+   "share_pct": 75.1
   },
   {
    "id": "grug_bone_forest",
-   "share_pct": 24.1
+   "share_pct": 24.2
   },
   {
    "id": "grug_savanna",
@@ -55,10 +55,10 @@
    "zone": "kragmar_blackwind_rise"
   },
   {
-   "length_nodes": 872,
+   "length_nodes": 900,
    "midpoint": {
-    "x": -1742,
-    "z": 1918
+    "x": -1747,
+    "z": 1919
    },
    "zone": "kragmar_mournfen"
   },
@@ -82,27 +82,37 @@
  "camps": [],
  "capital_street_count": 17,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:debtbound_husk",
+   "grug_mobs:furrow_boar",
+   "grug_mobs:monstrous_boar",
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:stubborn_husk"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_zombie",
+   "grug_mobs:stubborn_zombie",
+   "grug_mobs:toll_bandit"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
-  "bank_sand_area_nodes2": 5280,
+  "bank_sand_area_nodes2": 3376,
   "bay_water_area_nodes2": 0,
   "beaches": [],
-  "inland_water_area_nodes2": 8368,
+  "inland_water_area_nodes2": 4928,
   "sea_beach_sand_area_nodes2": 0,
   "sea_coast_length_nodes": 0
  },
- "drift_band_share_pct": 12.2,
+ "drift_band_share_pct": 9.7,
  "extent": {
   "centroid": {
    "x": -1759,
    "z": 1500
   },
-  "land_area_nodes2": 657088,
+  "land_area_nodes2": 660528,
   "max_x": -1324,
   "max_z": 1956,
   "min_x": -2208,
@@ -120,24 +130,24 @@
  "id": "kragmar_nhal_veyr",
  "level_field": {
   "histogram_pct": {
-   "20": 10.2,
-   "21": 11.0,
+   "20": 10.1,
+   "21": 11.1,
    "22": 11.5,
-   "23": 9.2,
-   "24": 8.6,
-   "25": 9.1,
+   "23": 9.3,
+   "24": 8.7,
+   "25": 9.2,
    "26": 9.0,
    "27": 8.2,
-   "28": 8.2,
-   "29": 7.7,
-   "30": 7.3
+   "28": 8.1,
+   "29": 7.6,
+   "30": 7.2
   },
   "max": 30,
   "min": 20
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/kragmar_nhal_veyr.png",
  "name": "Nhal Veyr",
  "neighbors": [
@@ -147,49 +157,48 @@
   "kragmar_speargrass_reach"
  ],
  "numeric_id": 19,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
-   "area_nodes2": 126840,
+   "area_nodes2": 127084,
    "box": {
-    "max_x": -1642,
-    "max_z": 1728,
-    "min_x": -1998,
-    "min_z": 1274
+    "max_x": -1564,
+    "max_z": 1682,
+    "min_x": -2034,
+    "min_z": 1342
    },
    "gates": [
     {
      "name": "east",
-     "x": -1671,
-     "y": 42,
-     "z": 1562
+     "x": -1599,
+     "y": 45,
+     "z": 1558
     },
     {
      "name": "south",
-     "x": -1864,
-     "y": 44,
-     "z": 1708
+     "x": -1876,
+     "y": 46,
+     "z": 1662
     },
     {
      "name": "west",
-     "x": -1962,
-     "y": 52,
+     "x": -1997,
+     "y": 48,
      "z": 1557
     },
     {
      "name": "north",
-     "x": -1858,
-     "y": 44,
-     "z": 1308
+     "x": -1866,
+     "y": 48,
+     "z": 1366
     }
    ],
    "outline_kind": "stone",
-   "zone_land_outside_city_pct": 80.7
+   "zone_land_outside_city_pct": 80.8
   },
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": []
  },
- "protected_share_pct": 21.1,
+ "protected_share_pct": 21.0,
  "pvp_rule": "peaceful",
  "quests": [
   {
@@ -303,7 +312,7 @@
    "p10": 41,
    "p90": 113
   },
-  "steep_share_pct": 9.6
+  "steep_share_pct": 9.4
  },
  "relief_profile": "plateau",
  "roads": [
@@ -497,7 +506,7 @@
     1649
    ],
    "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
-   "id": 30,
+   "id": 31,
    "kind": "secondary",
    "last_in_zone": [
     -1346,
@@ -547,7 +556,7 @@
     1152
    ],
    "from": "anchor_038 (Boneledger Post, kragmar_ossuary_reach)",
-   "id": 41,
+   "id": 42,
    "kind": "trail",
    "last_in_zone": [
     -2010,
@@ -581,7 +590,7 @@
     1906
    ],
    "from": "anchor_055 (Mournfen Bandit Camp, kragmar_mournfen)",
-   "id": 55,
+   "id": 56,
    "kind": "trail",
    "last_in_zone": [
     -1454,
@@ -607,128 +616,30 @@
   },
   {
    "first_in_zone": [
-    -1488,
-    1086
-   ],
-   "from": "anchor_056 (Pallcloth Den, kragmar_blackwind_rise)",
-   "id": 56,
-   "kind": "trail",
-   "last_in_zone": [
-    -1422,
-    1590
-   ],
-   "length_in_zone": 590,
-   "length_total": 1756,
-   "polyline_simplified": [
-    [
-     -1805,
-     441
-    ],
-    [
-     -1872,
-     486
-    ],
-    [
-     -1846,
-     538
-    ],
-    [
-     -1805,
-     556
-    ],
-    [
-     -1714,
-     514
-    ],
-    [
-     -1637,
-     513
-    ],
-    [
-     -1648,
-     554
-    ],
-    [
-     -1614,
-     566
-    ],
-    [
-     -1601,
-     593
-    ],
-    [
-     -1616,
-     650
-    ],
-    [
-     -1601,
-     701
-    ],
-    [
-     -1516,
-     762
-    ],
-    [
-     -1456,
-     757
-    ],
-    [
-     -1471,
-     864
-    ],
-    [
-     -1431,
-     976
-    ],
-    [
-     -1568,
-     1193
-    ],
-    [
-     -1503,
-     1280
-    ],
-    [
-     -1517,
-     1404
-    ],
-    [
-     -1422,
-     1590
-    ]
-   ],
-   "to": "joins road 30"
-  },
-  {
-   "first_in_zone": [
     -1535,
     1649
    ],
-   "from": "end:30",
-   "id": 192,
+   "from": "end:31",
+   "id": 195,
    "kind": "secondary",
    "last_in_zone": [
-    -1663,
-    1562
+    -1591,
+    1558
    ],
-   "length_in_zone": 176,
-   "length_total": 177,
+   "length_in_zone": 124,
+   "length_total": 123,
    "polyline_simplified": [
     [
      -1535,
      1649
     ],
     [
-     -1558,
-     1646
+     -1555,
+     1644
     ],
     [
-     -1623,
-     1561
-    ],
-    [
-     -1663,
-     1562
+     -1591,
+     1558
     ]
    ],
    "to": "gate_east"
@@ -739,25 +650,25 @@
     1762
    ],
    "from": "end:15",
-   "id": 193,
+   "id": 196,
    "kind": "primary",
    "last_in_zone": [
-    -1551,
-    1650
+    -1552,
+    1647
    ],
-   "length_in_zone": 120,
-   "length_total": 118,
+   "length_in_zone": 124,
+   "length_total": 124,
    "polyline_simplified": [
     [
      -1537,
      1762
     ],
     [
-     -1551,
-     1650
+     -1552,
+     1647
     ]
    ],
-   "to": "joins road 192"
+   "to": "joins road 195"
   },
   {
    "first_in_zone": [
@@ -765,22 +676,22 @@
     1760
    ],
    "from": "end:17",
-   "id": 194,
+   "id": 197,
    "kind": "primary",
    "last_in_zone": [
-    -1864,
-    1716
+    -1876,
+    1670
    ],
-   "length_in_zone": 96,
-   "length_total": 95,
+   "length_in_zone": 114,
+   "length_total": 114,
    "polyline_simplified": [
     [
      -1936,
      1760
     ],
     [
-     -1864,
-     1716
+     -1876,
+     1670
     ]
    ],
    "to": "gate_south"
@@ -791,25 +702,21 @@
     1650
    ],
    "from": "end:23",
-   "id": 195,
+   "id": 198,
    "kind": "secondary",
    "last_in_zone": [
-    -1970,
+    -2005,
     1557
    ],
-   "length_in_zone": 142,
-   "length_total": 143,
+   "length_in_zone": 122,
+   "length_total": 121,
    "polyline_simplified": [
     [
      -2064,
      1650
     ],
     [
-     -2011,
-     1616
-    ],
-    [
-     -1970,
+     -2005,
      1557
     ]
    ],
@@ -821,30 +728,26 @@
     1233
    ],
    "from": "end:26",
-   "id": 196,
+   "id": 199,
    "kind": "secondary",
    "last_in_zone": [
-    -1858,
-    1300
+    -1866,
+    1358
    ],
-   "length_in_zone": 216,
-   "length_total": 215,
+   "length_in_zone": 224,
+   "length_total": 226,
    "polyline_simplified": [
     [
      -2031,
      1233
     ],
     [
-     -2033,
-     1250
+     -2028,
+     1254
     ],
     [
-     -1963,
-     1288
-    ],
-    [
-     -1858,
-     1300
+     -1866,
+     1358
     ]
    ],
    "to": "gate_north"
@@ -864,45 +767,45 @@
     "hubs": [
      {
       "name": "Ossuary Ledgerstead",
-      "road": 677,
+      "road": 687,
       "straight": 589,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Village",
-      "road": 754,
+      "road": 717,
       "straight": 530,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 971,
+      "road": 935,
       "straight": 671,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 1012,
+      "road": 940,
       "straight": 538,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Memoryvein Dig",
-      "road": 1027,
+      "road": 1036,
       "straight": 662,
       "to": "r20_anchor_064",
       "zone": "kragmar_ossuary_reach"
      },
      {
-      "name": "Mournfen Bandit Camp",
-      "road": 1095,
-      "straight": 585,
-      "to": "mournfen_bandit_camp",
-      "zone": "kragmar_mournfen"
+      "name": "Ashveil Watch",
+      "road": 1101,
+      "straight": 701,
+      "to": "r20_anchor_039",
+      "zone": "kragmar_blackwind_rise"
      }
     ],
     "nearest_other_zone_land": {
@@ -1003,251 +906,251 @@
      "role_text": "public station",
      "socket": "market_bone_store/market_bone_store_station",
      "tag": "jewellers_bench",
-     "x": -1871,
-     "y": 47,
-     "z": 1450
+     "x": -1725,
+     "y": 45,
+     "z": 1455
     },
     {
      "profession": "goldsmith",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_bone_store/market_bone_store_goldsmith",
-     "x": -1873,
-     "y": 47,
-     "z": 1452
+     "x": -1723,
+     "y": 45,
+     "z": 1453
     },
     {
      "role": "gear_display",
      "role_text": "gear display",
      "socket": "market_bone_store/market_bone_store_jewel",
      "tag": "jewel",
-     "x": -1870,
-     "y": 48,
-     "z": 1447
+     "x": -1726,
+     "y": 46,
+     "z": 1458
     },
     {
      "role": "mount_display",
      "role_text": "mount display",
      "socket": "market_cart_yard/market_cart_yard_mount_1",
      "tag": "1",
-     "x": -1893,
-     "y": 48,
-     "z": 1496
+     "x": -1693,
+     "y": 43,
+     "z": 1454
     },
     {
      "role": "mount_display",
      "role_text": "mount display",
      "socket": "market_cart_yard/market_cart_yard_mount_2",
      "tag": "2",
-     "x": -1893,
-     "y": 48,
-     "z": 1486
+     "x": -1693,
+     "y": 43,
+     "z": 1444
     },
     {
      "role": "mount_display",
      "role_text": "mount display",
      "socket": "market_cart_yard/market_cart_yard_mount_3",
      "tag": "3",
-     "x": -1887,
-     "y": 48,
-     "z": 1496
+     "x": -1687,
+     "y": 43,
+     "z": 1454
     },
     {
      "role": "mount_display",
      "role_text": "mount display",
      "socket": "market_cart_yard/market_cart_yard_mount_4",
      "tag": "4",
-     "x": -1887,
-     "y": 48,
-     "z": 1486
+     "x": -1687,
+     "y": 43,
+     "z": 1444
     },
     {
      "role": "riding_trainer",
      "role_text": "riding trainer",
      "socket": "market_cart_yard/market_cart_yard_riding",
-     "x": -1896,
-     "y": 48,
-     "z": 1491
+     "x": -1696,
+     "y": 43,
+     "z": 1449
     },
     {
      "role": "vendor",
      "role_text": "vendor",
      "socket": "market_bonesmith/market_bonesmith_vendor_smith",
      "vendor_kind": "smith",
-     "x": -1908,
-     "y": 50,
-     "z": 1494
+     "x": -1705,
+     "y": 45,
+     "z": 1482
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "market_bonesmith/market_bonesmith_station",
      "tag": "forge",
-     "x": -1919,
-     "y": 50,
-     "z": 1489
+     "x": -1716,
+     "y": 45,
+     "z": 1477
     },
     {
      "profession": "weaponsmith",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_bonesmith/market_bonesmith_weaponsmith",
-     "x": -1917,
-     "y": 50,
-     "z": 1487
+     "x": -1714,
+     "y": 45,
+     "z": 1475
     },
     {
      "profession": "armorsmith",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_bonesmith/market_bonesmith_armorsmith",
-     "x": -1917,
-     "y": 50,
-     "z": 1491
+     "x": -1714,
+     "y": 45,
+     "z": 1479
     },
     {
      "role": "gear_display",
      "role_text": "gear display",
      "socket": "market_bonesmith/market_bonesmith_weapon",
      "tag": "weapon",
-     "x": -1921,
-     "y": 51,
-     "z": 1486
+     "x": -1718,
+     "y": 46,
+     "z": 1474
     },
     {
      "role": "gear_display",
      "role_text": "gear display",
      "socket": "market_bonesmith/market_bonesmith_armor",
      "tag": "armor",
-     "x": -1921,
-     "y": 51,
-     "z": 1492
+     "x": -1718,
+     "y": 46,
+     "z": 1480
     },
     {
      "role": "housing_manager",
      "role_text": "housing steward",
      "socket": "market_shroud_house/market_shroud_house_gate_idle",
      "tag": "door",
-     "x": -1832,
-     "y": 47,
-     "z": 1411
+     "x": -1677,
+     "y": 44,
+     "z": 1517
     },
     {
      "role": "vendor",
      "role_text": "vendor",
      "socket": "market_shroud_house/market_shroud_house_vendor_tailor",
      "vendor_kind": "tailor",
-     "x": -1827,
-     "y": 47,
-     "z": 1409
+     "x": -1682,
+     "y": 44,
+     "z": 1519
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "market_shroud_house/market_shroud_house_station",
      "tag": "tailor_bench",
-     "x": -1832,
-     "y": 47,
-     "z": 1421
+     "x": -1677,
+     "y": 44,
+     "z": 1507
     },
     {
      "profession": "tailor",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_shroud_house/market_shroud_house_tailor",
-     "x": -1834,
-     "y": 47,
-     "z": 1419
+     "x": -1675,
+     "y": 44,
+     "z": 1509
     },
     {
      "role": "vendor",
      "role_text": "vendor",
      "socket": "market_physic/market_physic_vendor_herbalist",
      "vendor_kind": "herbalist",
-     "x": -1854,
-     "y": 48,
-     "z": 1399
+     "x": -1742,
+     "y": 44,
+     "z": 1404
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "market_physic/market_physic_station",
      "tag": "brewing_stand",
-     "x": -1849,
-     "y": 48,
-     "z": 1387
+     "x": -1737,
+     "y": 44,
+     "z": 1392
     },
     {
      "profession": "alchemist",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_physic/market_physic_alchemist",
-     "x": -1847,
-     "y": 48,
-     "z": 1389
+     "x": -1735,
+     "y": 44,
+     "z": 1394
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "market_charnel/market_charnel_station",
      "tag": "tanning_rack",
-     "x": -1902,
-     "y": 49,
-     "z": 1434
+     "x": -1806,
+     "y": 47,
+     "z": 1410
     },
     {
      "profession": "leatherworker",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "market_charnel/market_charnel_leatherworker",
-     "x": -1900,
-     "y": 49,
-     "z": 1432
+     "x": -1804,
+     "y": 47,
+     "z": 1412
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "vigil_candle_works/vigil_candle_works_station",
      "tag": "carving_bench",
-     "x": -1808,
-     "y": 48,
-     "z": 1622
+     "x": -1692,
+     "y": 47,
+     "z": 1558
     },
     {
      "profession": "woodcarver",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "vigil_candle_works/vigil_candle_works_woodcarver",
-     "x": -1810,
-     "y": 48,
-     "z": 1620
+     "x": -1694,
+     "y": 47,
+     "z": 1560
     },
     {
      "role": "innkeeper",
      "role_text": "innkeeper (respawn bind)",
      "socket": "homes_lane_house/homes_lane_house_gate_idle",
      "tag": "door",
-     "x": -1814,
+     "x": -1838,
      "y": 47,
-     "z": 1386
+     "z": 1585
     },
     {
      "role": "public_station",
      "role_text": "public station",
      "socket": "homes_mourners_hall/homes_mourners_hall_station",
      "tag": "furnace",
-     "x": -1782,
+     "x": -1867,
      "y": 47,
-     "z": 1414
+     "z": 1554
     },
     {
      "profession": "cooking",
      "role": "trainer",
      "role_text": "profession trainer",
      "socket": "homes_mourners_hall/homes_mourners_hall_cooking",
-     "x": -1784,
+     "x": -1869,
      "y": 47,
-     "z": 1412
+     "z": 1556
     },
     {
      "npc_id": "r20_undead_capital_cook",
@@ -1258,18 +1161,18 @@
      "role": "quest",
      "role_text": "quest giver",
      "socket": "homes_mourners_hall/homes_mourners_hall_quest_cook",
-     "x": -1780,
+     "x": -1869,
      "y": 47,
-     "z": 1412
+     "z": 1552
     },
     {
      "role": "vendor",
      "role_text": "vendor",
      "socket": "vigil_embalmer/vigil_embalmer_vendor_embalmer",
      "vendor_kind": "embalmer",
-     "x": -1791,
-     "y": 47,
-     "z": 1599
+     "x": -1752,
+     "y": 49,
+     "z": 1603
     }
    ],
    "race": "undead",
@@ -1278,7 +1181,7 @@
     "guard_patrol": 50,
     "guard_post": 21,
     "housing_manager": 1,
-    "idle": 140,
+    "idle": 137,
     "innkeeper": 1,
     "king": 1,
     "mount_display": 4,
@@ -1288,11 +1191,124 @@
     "trainer": 8,
     "vendor": 6,
     "waypoint": 1,
-    "work": 50
+    "work": 45
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": {
+    "levels": [
+     20,
+     23
+    ],
+    "share_pct": 25.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_husk",
+   "name": "Debtbound Sun-Dried Husk",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_zombie",
+   "name": "Debtbound Zombie",
+   "night": {
+    "levels": [
+     20,
+     25
+    ],
+    "share_pct": 69.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 12.9
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:furrow_boar",
+   "name": "Furrow Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     25,
+     30
+    ],
+    "share_pct": 49.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_boar",
+   "name": "Razorback",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 78.7
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 21.3
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_husk",
+   "name": "Tithe Mummy",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_zombie",
+   "name": "Tithe Revenant",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 69.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     23
+    ],
+    "share_pct": 25.0
+   }
+  }
+ ],
  "territory_rule": "throng_home",
  "track_order": 3
 }

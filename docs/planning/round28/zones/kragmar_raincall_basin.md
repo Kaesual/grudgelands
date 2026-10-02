@@ -91,35 +91,39 @@ Nearest hubs (straight / by road): Kezamba 560 / 1008; Whisperreed Landing 870 /
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_troll_07_the_coiled_footpath | The Coiled Footpath | Daro Kapok (Raincall Village) | 10 | kill 6 viper [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
+| r14_troll_07_the_coiled_footpath | The Coiled Footpath | Daro Kapok (Raincall Village) | 10 | kill 6 viper or reed_fang_viper [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
 | r15_troll_local_01 | Meat for the Preparation Roof | Amari Palmweave (Raincall Village) | 10 | bring 4 mobs:meat_raw | 285 | r14_troll_06_claws_on_raincall_road |
-| r15_troll_local_02 | Hooves Between the Stilt Posts | Amari Palmweave (Raincall Village) | 10 | kill 5 tapir [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
+| r15_troll_local_02 | Hooves Between the Stilt Posts | Amari Palmweave (Raincall Village) | 10 | kill 5 tapir or reed_tapir [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
 | r14_troll_08_cats_at_the_reed_line | Cats at the Reed Line | Neshi Reedstep (Raincall Outpost) | 11 | kill 6 jungle_lynx [in kragmar_raincall_basin] | 525 | r14_troll_07_the_coiled_footpath |
-| r15_troll_local_03 | A Dry Niche for Supplies | Neshi Reedstep (Raincall Outpost) | 11 | kill 4 viper [in kragmar_raincall_basin] | 315 | r14_troll_07_the_coiled_footpath |
+| r15_troll_local_03 | A Dry Niche for Supplies | Neshi Reedstep (Raincall Outpost) | 11 | kill 4 viper or reed_fang_viper [in kragmar_raincall_basin] | 315 | r14_troll_07_the_coiled_footpath |
 | r15_troll_local_04 | Leather for the Reed-Line Packs | Neshi Reedstep (Raincall Outpost) | 11 | bring 2 mobs:leather | 420 | r14_troll_07_the_coiled_footpath |
-| r14_troll_09_smoke_beneath_the_rain | Smoke Beneath the Rain | Neshi Reedstep (Raincall Outpost) | 12 | kill 4 bandit or bandit_archer [in kragmar_raincall_basin] | 805 | r14_troll_08_cats_at_the_reed_line |
+| r14_troll_09_smoke_beneath_the_rain | Smoke Beneath the Rain | Neshi Reedstep (Raincall Outpost) | 12 | kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_raincall_basin] | 805 | r14_troll_08_cats_at_the_reed_line |
 | r15_troll_local_05 | Pay from the Ferry Road | Veko Bluefeather (Raincall Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_troll_08_cats_at_the_reed_line |
 | r15_troll_local_06 | Dry Bindings in the Rain | Veko Bluefeather (Raincall Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_troll_08_cats_at_the_reed_line |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| hare | Hare | critter | 77.7% of land, L11-20 | - | dirt_with_rainforest_litter, dry_dirt_with_dry_grass, sand, blight_dirt, mud |
-| jungle_boar | Jungle Boar | neutral | 100.0% of land, L11-20 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter, mud |
-| jungle_lynx | Jungle Lynx | aggressive | 82.3% of land, L11-20 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| parrot | Parrot | critter | 60.0% of land, L11-20 | - | dirt_with_rainforest_litter |
+| bristling_boar | Ridgeback Tusker | aggressive | 67.6% of land, L15-20 | - |  |
+| granary_rat | Granary Rat | aggressive | - | 29.9% of land, L14 |  |
+| mangy_rat | Burrow Gnawer | aggressive | - | 48.7% of land, L15-20 |  |
+| moaning_zombie | Cairn Zombie | aggressive | - | 18.7% of land, L11-15 |  |
+| muttering_zombie | Pauper Shambler | aggressive | - | 37.7% of land, L16-20 |  |
+| quarrelsome_bandit | Roadside Bandit | aggressive | - | 19.6% of land, L11-13 |  |
+| reed_fang_viper | Reed-Fang Viper | aggressive | - | 19.6% of land, L11-13 |  |
+| reed_jungle_lynx | Reed Jungle Lynx | aggressive | 53.6% of land, L14-20 | - |  |
+| reed_tapir | Reed Tapir | neutral | 29.9% of land, L11-13 | - |  |
 | shore_crab | Shore Crab | neutral | 4464 nodes², L11-14 | 4464 nodes², L11-14 | sand (dry, within 6 nodes of water) |
-| tapir | Tapir | neutral | 82.3% of land, L11-20 | - | dirt_with_rainforest_litter, dirt_with_canopy_litter |
-| viper | Viper | aggressive | - | 60.0% of land, L11-20 | dirt_with_rainforest_litter |
-| zombie | Zombie | aggressive | - | 100.0% of land, L11-20 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| vigilant_bandit_archer | Bandit Lookout | aggressive | 2.4% of land, L18-20 | 2.4% of land, L18-20 |  |
+| young_boar | Rooting Boar | neutral | 33.4% of land, L11-14 | - |  |
 
 **Camps and guard posts:**
 
 - anchor_045 Raincall Outpost at 2132, 2084: guard post, guard_throng × 2-3, respawn 180-360 s, level there L15.
-- anchor_059 Raincall Bandit Camp at 1632, 2034: bandit, bandit/bandit_archer × 3-5, respawn 120-300 s, level there L16.
+- anchor_059 Raincall Bandit Camp at 1632, 2034: bandit, bandit/bandit_archer × 3-5, respawn 30-60 s, level there L16.
 
 ## Roads and trails touching the zone
 
@@ -127,9 +131,9 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 19 | primary | anchor_006 (Kapok, kragmar_kapok_cradle) | joins road 16 | 984 / 486 | 1513,2333 → 1406,1886 |
 | 22 | secondary | anchor_023 (Raincall Village, kragmar_raincall_basin) | joins road 19 | 389 / 364 | 1873,2060 → 1638,2324 |
-| 29 | secondary | anchor_012 (Kezamba, kragmar_kezamba) | anchor_023 (Raincall Village, kragmar_raincall_basin) | 352 / 216 | 1764,1863 → 1860,2039 |
-| 46 | trail | anchor_045 (Raincall Outpost, kragmar_raincall_basin) | joins road 22 | 321 / 318 | 2121,2082 → 1822,2108 |
-| 59 | trail | anchor_059 (Raincall Bandit Camp, kragmar_raincall_basin) | joins road 19 | 212 / 214 | 1617,2026 → 1434,1938 |
+| 30 | secondary | anchor_012 (Kezamba, kragmar_kezamba) | anchor_023 (Raincall Village, kragmar_raincall_basin) | 352 / 216 | 1764,1863 → 1860,2039 |
+| 47 | trail | anchor_045 (Raincall Outpost, kragmar_raincall_basin) | joins road 22 | 321 / 318 | 2121,2082 → 1822,2108 |
+| 60 | trail | anchor_059 (Raincall Bandit Camp, kragmar_raincall_basin) | joins road 19 | 212 / 214 | 1617,2026 → 1434,1938 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

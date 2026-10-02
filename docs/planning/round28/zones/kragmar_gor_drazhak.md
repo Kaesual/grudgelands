@@ -13,19 +13,19 @@ Race track (orc): step 3 of the track Sunscar Flats → Redtusk Savanna → Gor 
 | Fact | Value |
 |---|---|
 | Land extent | x -500..540, z 1064..1872 (centroid 30, 1461) |
-| Land area | 702976 nodes² (≈ 0.70 km²) |
+| Land area | 702960 nodes² (≈ 0.70 km²) |
 | Hub point (authored) | 0, 1500 |
 | Height above sea | min 28, p10 53, median 66, p90 100, max 153 |
 | Slope | 3.6% steep (>1 node/node), 0.1% cliff (>2) |
 | Biomes (measured) | savanna 59.5%, badlands 39.9%, deep_jungle 0.3%, jungle_edge 0.3%, swamp 0.0% |
 | Neighbours (land border) | kragmar_bannerbreak_mesa (1216 nodes, mid 10,1102), kragmar_redtusk_savanna (1240 nodes, mid 8,1819), kragmar_speargrass_reach (684 nodes, mid -478,1404), kragmar_whispering_reedlands (760 nodes, mid 518,1504) |
-| Sea coast | 0 nodes of coastline; sea-beach sand 0 nodes²; lake/river-bank sand 4656 nodes² |
-| Water inside | bay 0 nodes², rivers/lakes 8992 nodes² |
-| Protected / drift band | 19.7% of land protected (towns, villages, camps/POIs, road corridors); 10.8% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
+| Sea coast | 0 nodes of coastline; sea-beach sand 0 nodes²; lake/river-bank sand 4592 nodes² |
+| Water inside | bay 0 nodes², rivers/lakes 9008 nodes² |
+| Protected / drift band | 19.9% of land protected (towns, villages, camps/POIs, road corridors); 10.9% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 ## Levels
 
-Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.
+Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.
 
 Share of land per level: L20 10.9%, L21 10.6%, L22 11.0%, L23 8.4%, L24 8.4%, L25 8.3%, L26 8.3%, L27 8.2%, L28 8.4%, L29 8.4%, L30 9.0%
 
@@ -82,7 +82,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manage
 Public stations: bazaar_tannery/bazaar_tannery_station (tanning_rack), bazaar_carver/bazaar_carver_station (carving_bench), bone_herb_house/bone_herb_house_station (brewing_stand), warren_cook_court/warren_cook_court_station (furnace), warren_weaver/warren_weaver_station (tailor_bench), bazaar_armourer/bazaar_armourer_station (jewellers_bench), bazaar_smithy/bazaar_smithy_station (forge).
 
 Distances: zone edge N 352 (kragmar_redtusk_savanna), S 428 (kragmar_bannerbreak_mesa), E 520 (kragmar_whispering_reedlands), W 480 (kragmar_speargrass_reach); nearest other-zone land 343 N; sea 820 NE; sea-beach sand 779 NE; nearest road 50.
-Nearest hubs (straight / by road): Redtusk Village 512 / 675; Cutgrass Watch 696 / 982; Redtusk Bandit Camp 577 / 992; Red Ramp Post 729 / 1021; Reedvoice Station 732 / 1267.
+Nearest hubs (straight / by road): Redtusk Village 512 / 675; Cutgrass Watch 696 / 982; Redtusk Bandit Camp 577 / 992; Red Ramp Post 729 / 1025; Reedvoice Station 732 / 1267.
 
 ### Current quests (4, given in this zone)
 
@@ -93,11 +93,19 @@ Nearest hubs (straight / by road): Redtusk Village 512 / 675; Cutgrass Watch 696
 | r20_orc_capital_stores | Stone for the Muster Yard | Thorga Roadspeaker (Gor Drazhak) | 20 | bring 12 default:cobble | 780 | - |
 | r20_orc_journey_01 | Word for Brakka Jarward | Thorga Roadspeaker (Gor Drazhak) | 21 | talk to Brakka Jarward (r20_anchor_022) | 615 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
-Empty palette: no ambient surface mobs.
+| Mob | Name | Disposition | Day | Night | Host nodes |
+|---|---|---|---|---|---|
+| debtbound_husk | Debtbound Sun-Dried Husk | aggressive | 4.0% of land, L20-25 | 39.7% of land, L20-25 |  |
+| dust_stinger | Dust-Stinger Scorpion | aggressive | - | 89.8% of land, L20-30 |  |
+| dustpack_hyena | Dustpack Hyena | aggressive | 84.6% of land, L20-30 | 4.9% of land, L20-27 |  |
+| stubborn_husk | Tithe Mummy | aggressive | 30.3% of land, L26-30 | 30.3% of land, L26-30 |  |
+| toll_bandit | Toll Bandit | aggressive | - | 25.4% of land, L20-23 |  |
+| toll_bandit_archer | Toll Bandit Archer | aggressive | 1.3% of land, L28-30 | 1.3% of land, L28-30 |  |
+| watchful_zebra | Waterhole Zebra | neutral | 65.9% of land, L20-27 | - |  |
 
 ## Roads and trails touching the zone
 
@@ -106,14 +114,15 @@ Empty palette: no ambient surface mobs.
 | 15 | primary | anchor_010 (Nhal Veyr, kragmar_nhal_veyr) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 1440 / 224 | -481,1536 → -272,1582 |
 | 16 | primary | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | anchor_012 (Kezamba, kragmar_kezamba) | 1364 / 266 | 272,1634 → 521,1670 |
 | 18 | primary | anchor_005 (Sunscar, kragmar_sunscar_flats) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 799 / 80 | -101,1834 → -112,1760 |
-| 27 | secondary | anchor_043 (Red Ramp Post, kragmar_bannerbreak_mesa) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 390 / 124 | -290,1118 → -256,1232 |
-| 47 | trail | anchor_046 (Reedvoice Station, kragmar_whispering_reedlands) | joins road 16 | 522 / 312 | 509,1344 → 445,1639 |
-| 57 | trail | anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna) | joins road 16 | 349 / 216 | 327,1842 → 353,1634 |
-| 58 | trail | anchor_058 (Sunderstrap Camp, kragmar_bannerbreak_mesa) | joins road 27 | 1283 / 186 | -103,1086 → -290,1121 |
-| 132 | primary | end:16 | gate_east | 106 / 108 | 272,1634 → 182,1586 |
-| 133 | primary | end:18 | gate_south | 97 / 100 | -112,1760 → -69,1694 |
-| 134 | primary | end:15 | gate_west | 184 / 184 | -272,1582 → -147,1503 |
-| 135 | secondary | end:27 | gate_north | 297 / 296 | -256,1232 → 12,1302 |
+| 27 | secondary | anchor_043 (Red Ramp Post, kragmar_bannerbreak_mesa) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 391 / 124 | -290,1118 → -256,1232 |
+| 29 | primary | anchor_008 (Highcourt, elandor_highcourt) | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | 2860 / 160 | -36,1078 → -47,1232 |
+| 48 | trail | anchor_046 (Reedvoice Station, kragmar_whispering_reedlands) | joins road 16 | 522 / 312 | 509,1344 → 445,1639 |
+| 58 | trail | anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna) | joins road 16 | 349 / 216 | 327,1842 → 353,1634 |
+| 134 | primary | end:16 | gate_east | 106 / 108 | 272,1634 → 182,1586 |
+| 135 | primary | end:18 | gate_south | 97 / 100 | -112,1760 → -69,1694 |
+| 136 | primary | end:15 | gate_west | 184 / 184 | -272,1582 → -147,1503 |
+| 137 | primary | end:29 | gate_north | 100 / 102 | -47,1232 → 12,1302 |
+| 138 | secondary | end:27 | joins road 137 | 232 / 234 | -256,1232 → -36,1260 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

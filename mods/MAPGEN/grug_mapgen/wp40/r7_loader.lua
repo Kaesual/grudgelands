@@ -340,6 +340,11 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 				"the road may meet its village or POI with a step: " ..
 				table.concat(dropped, ", "))
 		end
+		if st.failed then
+			diagnose("warning", ("[grug_mapgen] roads: %d network step(s) found no " ..
+				"route, the road is missing: %s"):format(st.failed,
+				table.concat(st.failed_steps or {}, ", ")))
+		end
 		road_spots = runtime.road_module().showcase(road_layout)
 	end
 	for _, spot in ipairs(road_spots) do

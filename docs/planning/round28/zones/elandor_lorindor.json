@@ -196,18 +196,17 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:stag"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:moss_antler_stag",
+   "grug_mobs:toll_mirefolk"
   ],
-  "density_budget_day": [
-   "grug_mobs:stag"
-  ],
-  "density_budget_night": [
-   "grug_mobs:poacher",
-   "grug_mobs:wisp"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:poacher",
-   "grug_mobs:wisp"
+   "grug_mobs:toll_mirefolk",
+   "grug_mobs:unlicensed_poacher",
+   "grug_mobs:wandering_wisp"
   ]
  },
  "civic_no_hostiles": false,
@@ -326,7 +325,6 @@
   "elandor_starbough_vale"
  ],
  "numeric_id": 14,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -404,13 +402,14 @@
    "id": "r20_anchor_018_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 poacher [in elandor_lorindor]"
+    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:unlicensed_poacher"
      ],
      "type": "kill",
      "zone": "elandor_lorindor"
@@ -455,13 +454,14 @@
    "id": "r20_anchor_034_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 poacher [in elandor_lorindor]"
+    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:unlicensed_poacher"
      ],
      "type": "kill",
      "zone": "elandor_lorindor"
@@ -506,13 +506,14 @@
    "id": "r20_anchor_063_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 poacher [in elandor_lorindor]"
+    "kill 4 poacher or unlicensed_poacher [in elandor_lorindor]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:unlicensed_poacher"
      ],
      "type": "kill",
      "zone": "elandor_lorindor"
@@ -770,7 +771,7 @@
     -1215
    ],
    "from": "anchor_034 (Petalbank Wardenry, elandor_lorindor)",
-   "id": 38,
+   "id": 39,
    "kind": "trail",
    "last_in_zone": [
     614,
@@ -808,7 +809,7 @@
     -1244
    ],
    "from": "anchor_063 (Paleroot Cutting, elandor_lorindor)",
-   "id": 63,
+   "id": 64,
    "kind": "trail",
    "last_in_zone": [
     1284,
@@ -858,7 +859,7 @@
     -1708
    ],
    "from": "anchor_068 (Whitepetal Fenhold, elandor_lorindor)",
-   "id": 68,
+   "id": 69,
    "kind": "trail",
    "last_in_zone": [
     1184,
@@ -1053,7 +1054,7 @@
      },
      {
       "name": "Oakspan Tollhouse",
-      "road": 1736,
+      "road": 1778,
       "straight": 1245,
       "to": "r20_anchor_030",
       "zone": "elandor_whitebridge_shire"
@@ -1168,11 +1169,11 @@
       "zone": "elandor_lorindor"
      },
      {
-      "name": "Moonfall Observatory",
-      "road": 2035,
-      "straight": 1352,
-      "to": "r20_anchor_035",
-      "zone": "elandor_moonfall_wood"
+      "name": "Glassroot Gate",
+      "road": 1988,
+      "straight": 1070,
+      "to": "r20_anchor_036",
+      "zone": "elandor_glassroot_wilds"
      }
     ],
     "nearest_other_zone_land": {
@@ -1341,23 +1342,46 @@
  ],
  "spawns": [
   {
-   "day": null,
+   "day": {
+    "levels": [
+     25,
+     27
+    ],
+    "share_pct": 1.6
+   },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:poacher",
-   "name": "Poacher",
-   "night": {
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 3.4
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
+   "night": null
+  },
+  {
+   "day": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 83.3
-   }
+    "share_pct": 93.4
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:moss_antler_stag",
+   "name": "Moss-Antler Stag",
+   "night": null
   },
   {
    "day": {
@@ -1388,38 +1412,46 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 23.0
+    "share_pct": 3.2
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter"
-   ],
-   "mob": "grug_mobs:stag",
-   "name": "Stag",
-   "night": null
-  },
-  {
-   "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:wisp",
-   "name": "Wisp",
+   "hosts": [],
+   "mob": "grug_mobs:toll_mirefolk",
+   "name": "Toll Mirefolk",
    "night": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.3
+    "share_pct": 3.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:unlicensed_poacher",
+   "name": "Unlicensed Poacher",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 29.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:wandering_wisp",
+   "name": "Wandering Wisp",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "share_pct": 96.8
    }
   }
  ],

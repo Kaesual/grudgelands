@@ -94,33 +94,41 @@ Nearest hubs (straight / by road): Starbough Village 272 / 467; Starbough Outpos
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_elf_07_quiet_the_lower_boughs | Quiet the Lower Boughs | Ilyra Mossveil (Starbough Village) | 10 | kill 6 poacher [in elandor_starbough_vale] | 380 | r14_elf_06_axes_without_leave |
+| r14_elf_07_quiet_the_lower_boughs | Quiet the Lower Boughs | Ilyra Mossveil (Starbough Village) | 10 | kill 6 poacher or snaring_poacher [in elandor_starbough_vale] | 380 | r14_elf_06_axes_without_leave |
 | r15_elf_local_01 | Leather for the Covered Walk | Lethri Reedshade (Starbough Village) | 10 | bring 2 mobs:leather | 285 | r14_elf_06_axes_without_leave |
 | r15_elf_local_02 | Linen at the Sapling Cuts | Lethri Reedshade (Starbough Village) | 10 | bring 3 grug_mobs:linen_cloth | 380 | r14_elf_06_axes_without_leave |
-| r14_elf_08_watch_the_green_road | Watch the Green Road | Theren Farstep (Starbough Outpost) | 11 | kill 6 fox [in elandor_starbough_vale] | 525 | r14_elf_07_quiet_the_lower_boughs |
-| r15_elf_local_03 | No Shadow on the Sightline | Theren Farstep (Starbough Outpost) | 11 | kill 4 poacher [in elandor_starbough_vale] | 315 | r14_elf_07_quiet_the_lower_boughs |
+| r14_elf_08_watch_the_green_road | Watch the Green Road | Theren Farstep (Starbough Outpost) | 11 | kill 6 fox or young_fox [in elandor_starbough_vale] | 525 | r14_elf_07_quiet_the_lower_boughs |
+| r15_elf_local_03 | No Shadow on the Sightline | Theren Farstep (Starbough Outpost) | 11 | kill 4 poacher or snaring_poacher [in elandor_starbough_vale] | 315 | r14_elf_07_quiet_the_lower_boughs |
 | r15_elf_local_04 | Fangs Beside the Trail Signs | Theren Farstep (Starbough Outpost) | 11 | bring 2 grug_mobs:fang | 420 | r14_elf_07_quiet_the_lower_boughs |
 | r14_elf_09_cinders_in_green_cloth | Cinders in Green Cloth | Theren Farstep (Starbough Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_starbough_vale] | 805 | r14_elf_08_watch_the_green_road |
 | r15_elf_local_05 | Knots from the Bough Road | Nima Fern (Starbough Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_elf_08_watch_the_green_road |
 | r15_elf_local_06 | Bindings from the Worksite | Nima Fern (Starbough Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_elf_08_watch_the_green_road |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 77.5% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| poacher | Poacher | aggressive | - | 100.0% of land, L11-20 | dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| rabbit | Rabbit | critter | 100.0% of land, L11-20 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| bristling_boar | Ridgeback Tusker | aggressive | 29.5% of land, L18-20 | - |  |
+| granary_rat | Granary Rat | aggressive | - | 27.4% of land, L11-13 |  |
+| mangy_rat | Burrow Gnawer | aggressive | - | 61.2% of land, L15-20 |  |
+| moaning_zombie | Cairn Zombie | aggressive | - | 40.4% of land, L11-15 |  |
+| muttering_zombie | Pauper Shambler | aggressive | - | 30.8% of land, L16-20 |  |
+| quarrelsome_bandit | Roadside Bandit | aggressive | 2.7% of land, L14-15 | 2.7% of land, L14-15 |  |
+| rabid_fox | Thicket Vixen | aggressive | 66.0% of land, L15-20 | - |  |
+| reefclaw_crab | Reefclaw Snapper | aggressive | 1.4% of land, L15-17 | - |  |
 | shore_crab | Shore Crab | neutral | 9232 nodes², L11-18 | 9232 nodes², L11-18 | sand (dry, within 6 nodes of water) |
-| zombie | Zombie | aggressive | - | 100.0% of land, L11-20 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| snaring_poacher | Snaring Poacher | aggressive | - | 27.4% of land, L11-13 |  |
+| tidepool_crab | Tidepool Crab | neutral | 3.9% of land, L11-14 | - |  |
+| vigilant_bandit_archer | Bandit Lookout | aggressive | 2.7% of land, L16-17 | 2.7% of land, L16-17 |  |
+| young_boar | Rooting Boar | neutral | 63.9% of land, L11-14 | - |  |
+| young_fox | Bracken Fox | neutral | 27.4% of land, L11-13 | - |  |
 
 **Camps and guard posts:**
 
 - anchor_033 Starbough Outpost at 2100, -2100: guard post, guard_accord × 2-3, respawn 180-360 s, level there L14.
-- anchor_053 Starbough Bandit Camp at 1632, -2066: bandit, bandit/bandit_archer × 3-5, respawn 120-300 s, level there L15.
+- anchor_053 Starbough Bandit Camp at 1632, -2066: bandit, bandit/bandit_archer × 3-5, respawn 30-60 s, level there L15.
 
 ## Roads and trails touching the zone
 
@@ -128,8 +136,8 @@ Where each species may spawn on dry land today: the engine spawn policy sampled 
 |---|---|---|---|---|---|
 | 5 | primary | anchor_003 (Silverleaf, elandor_silverleaf_glades) | anchor_009 (Lethariel, elandor_lethariel) | 810 / 420 | 1751,-2313 → 1848,-1934 |
 | 6 | secondary | anchor_017 (Starbough Village, elandor_starbough_vale) | joins road 5 | 89 / 90 | 1885,-2005 → 1801,-2028 |
-| 37 | trail | anchor_033 (Starbough Outpost, elandor_starbough_vale) | joins road 5 | 317 / 316 | 2090,-2110 → 1818,-2157 |
-| 53 | trail | anchor_053 (Starbough Bandit Camp, elandor_starbough_vale) | joins road 5 | 255 / 254 | 1641,-2051 → 1839,-1951 |
+| 38 | trail | anchor_033 (Starbough Outpost, elandor_starbough_vale) | joins road 5 | 317 / 316 | 2090,-2110 → 1818,-2157 |
+| 54 | trail | anchor_053 (Starbough Bandit Camp, elandor_starbough_vale) | joins road 5 | 255 / 254 | 1641,-2051 → 1839,-1951 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

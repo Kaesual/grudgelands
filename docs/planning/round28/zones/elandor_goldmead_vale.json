@@ -177,8 +177,8 @@
    "name": "Goldmead Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": 320,
@@ -188,25 +188,23 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit",
-   "grug_mobs:wild_turkey"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:rabid_fox",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:young_boar",
+   "grug_mobs:young_fox"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox"
-  ],
-  "density_budget_night": [
-   "grug_mobs:poacher",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:poacher",
-   "grug_mobs:zombie"
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:moaning_zombie",
+   "grug_mobs:muttering_zombie",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:snaring_poacher",
+   "grug_mobs:vigilant_bandit_archer"
   ]
  },
  "civic_no_hostiles": false,
@@ -323,7 +321,6 @@
   "elandor_whitebridge_shire"
  ],
  "numeric_id": 7,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -377,13 +374,14 @@
    "id": "r14_human_07_orchard_watch",
    "min_level": 10,
    "objectives": [
-    "kill 6 fox [in elandor_goldmead_vale]"
+    "kill 6 fox or young_fox [in elandor_goldmead_vale]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:fox"
+      "grug_mobs:fox",
+      "grug_mobs:young_fox"
      ],
      "type": "kill",
      "zone": "elandor_goldmead_vale"
@@ -411,7 +409,6 @@
    "objectives_raw": [
     {
      "count": 4,
-     "description": "Bring raw meat",
      "item": "mobs:meat_raw",
      "type": "item"
     }
@@ -459,13 +456,14 @@
    "id": "r14_human_08_empty_snares",
    "min_level": 11,
    "objectives": [
-    "kill 6 poacher [in elandor_goldmead_vale]"
+    "kill 6 poacher or snaring_poacher [in elandor_goldmead_vale]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:poacher"
+      "grug_mobs:poacher",
+      "grug_mobs:snaring_poacher"
      ],
      "type": "kill",
      "zone": "elandor_goldmead_vale"
@@ -514,13 +512,14 @@
    "id": "r15_human_local_04",
    "min_level": 11,
    "objectives": [
-    "kill 5 fox [in elandor_goldmead_vale]"
+    "kill 5 fox or young_fox [in elandor_goldmead_vale]"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:fox"
+      "grug_mobs:fox",
+      "grug_mobs:young_fox"
      ],
      "type": "kill",
      "zone": "elandor_goldmead_vale"
@@ -604,7 +603,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -757,7 +755,7 @@
     -2030
    ],
    "from": "anchor_029 (Goldmead Outpost, elandor_goldmead_vale)",
-   "id": 34,
+   "id": 35,
    "kind": "trail",
    "last_in_zone": [
     88,
@@ -783,7 +781,7 @@
     -1969
    ],
    "from": "anchor_051 (Goldmead Bandit Camp, elandor_goldmead_vale)",
-   "id": 51,
+   "id": 52,
    "kind": "trail",
    "last_in_zone": [
     131,
@@ -809,7 +807,7 @@
     -1827
    ],
    "from": "anchor_067 (Siltbasket Camp, elandor_whitebridge_shire)",
-   "id": 67,
+   "id": 68,
    "kind": "trail",
    "last_in_zone": [
     -160,
@@ -879,18 +877,18 @@
       "zone": "elandor_dawnmere_fields"
      },
      {
-      "name": "Oakspan Tollhouse",
-      "road": 1648,
-      "straight": 904,
-      "to": "r20_anchor_030",
-      "zone": "elandor_whitebridge_shire"
-     },
-     {
       "name": "Petalbank Wardenry",
       "road": 1687,
       "straight": 1089,
       "to": "r20_anchor_034",
       "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1690,
+      "straight": 904,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
      }
     ],
     "nearest_other_zone_land": {
@@ -1008,18 +1006,18 @@
       "zone": "elandor_goldmead_vale"
      },
      {
-      "name": "Oakspan Tollhouse",
-      "road": 1634,
-      "straight": 1099,
-      "to": "r20_anchor_030",
-      "zone": "elandor_whitebridge_shire"
-     },
-     {
       "name": "Petalbank Wardenry",
       "road": 1673,
       "straight": 918,
       "to": "r20_anchor_034",
       "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1676,
+      "straight": 1099,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
      }
     ],
     "nearest_other_zone_land": {
@@ -1125,18 +1123,18 @@
       "zone": "elandor_goldmead_vale"
      },
      {
-      "name": "Oakspan Tollhouse",
-      "road": 1595,
-      "straight": 1179,
-      "to": "r20_anchor_030",
-      "zone": "elandor_whitebridge_shire"
-     },
-     {
       "name": "Petalbank Wardenry",
       "road": 1635,
       "straight": 814,
       "to": "r20_anchor_034",
       "zone": "elandor_lorindor"
+     },
+     {
+      "name": "Oakspan Tollhouse",
+      "road": 1637,
+      "straight": 1179,
+      "to": "r20_anchor_030",
+      "zone": "elandor_whitebridge_shire"
      }
     ],
     "nearest_other_zone_land": {
@@ -1305,92 +1303,105 @@
   {
    "day": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 68.8
+    "share_pct": 49.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:fox",
-   "name": "Fox",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:poacher",
-   "name": "Poacher",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
    "night": {
     "levels": [
      11,
+     14
+    ],
+    "share_pct": 41.0
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
+   "night": {
+    "levels": [
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 91.5
+    "share_pct": 42.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:moaning_zombie",
+   "name": "Cairn Zombie",
+   "night": {
+    "levels": [
+     11,
+     15
+    ],
+    "share_pct": 26.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_zombie",
+   "name": "Pauper Shambler",
+   "night": {
+    "levels": [
+     16,
+     20
+    ],
+    "share_pct": 23.5
    }
   },
   {
    "day": {
     "levels": [
-     11,
+     14,
+     15
+    ],
+    "share_pct": 2.1
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     14,
+     15
+    ],
+    "share_pct": 2.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 16.9
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:rabbit",
-   "name": "Rabbit",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_fox",
+   "name": "Thicket Vixen",
    "night": null
   },
   {
@@ -1417,50 +1428,66 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 68.5
-   },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_grass"
-   ],
-   "mob": "grug_mobs:wild_turkey",
-   "name": "Wild Turkey",
-   "night": null
-  },
-  {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
+   "hosts": [],
+   "mob": "grug_mobs:snaring_poacher",
+   "name": "Snaring Poacher",
    "night": {
     "levels": [
      11,
+     13
+    ],
+    "share_pct": 19.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     16,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 3.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     16,
+     20
+    ],
+    "share_pct": 3.7
    }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     14
+    ],
+    "share_pct": 67.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_boar",
+   "name": "Rooting Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 30.1
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_fox",
+   "name": "Bracken Fox",
+   "night": null
   }
  ],
  "territory_rule": "accord_home",

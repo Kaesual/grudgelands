@@ -396,8 +396,8 @@ ZONE_RECORDS = None
 
 
 def gameplay_band(zone):
-    """The zone's gameplay level band (r28common.zone_records: the mapgen's
-    zone rows with today's grug_core/zone_bands.lua), or None."""
+    """The zone's level band (r28common.zone_records: the mapgen's zone
+    rows), or None."""
     global ZONE_RECORDS
     if ZONE_RECORDS is None:
         ZONE_RECORDS = C.zone_records()
@@ -727,7 +727,7 @@ def self_test():
     check(hsolo.zone_rows[0]["acc"]["rewards"] > sacc["rewards"], "human option raises rewards")
     # Track routes (round29-quests-plan section 3.1) on the gameplay bands.
     check(gameplay_band("front_broken_causeway") == (41, 50) and gameplay_band("front_skyglass_canopy") == (51, 60),
-          "gameplay bands: the Causeway 41-50, Skyglass 51-60 (zone_bands.lua over the mapgen rows)")
+          "bands: the Causeway 41-50, Skyglass 51-60 (the mapgen rows)")
     entries = C.track_route("human", "elandor_lorindor")
     own = [(zone, label) for zone, lines, _, label in entries if lines is None]
     check(own == [("elandor_dawnmere_fields", "start"), ("elandor_goldmead_vale", "home"),

@@ -176,42 +176,22 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:speargrass_tiger",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture",
-   "grug_mobs:zebra"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:dustpack_hyena",
+   "grug_mobs:dustwing_vulture",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:reed_stalking_tiger",
+   "grug_mobs:rubble_goblin_slinger",
+   "grug_mobs:watchful_zebra"
   ],
-  "density_budget_day": [
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:speargrass_tiger",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture",
-   "grug_mobs:zebra"
-  ],
-  "density_budget_night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:scorpion",
-   "grug_mobs:stone_golem"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:scorpion",
-   "grug_mobs:stone_golem"
+   "grug_mobs:dust_stinger",
+   "grug_mobs:dustpack_hyena",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:rubble_goblin_slinger"
   ]
  },
  "civic_no_hostiles": false,
@@ -313,10 +293,6 @@
   "kragmar_sunscar_flats"
  ],
  "numeric_id": 25,
- "palette_without_host_ground": [
-  "Crag Eagle",
-  "Mountain Ram"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -514,13 +490,14 @@
    "id": "r20_anchor_022_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 scorpion [in kragmar_speargrass_reach]"
+    "kill 4 scorpion or dust_stinger [in kragmar_speargrass_reach]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:scorpion"
+      "grug_mobs:scorpion",
+      "grug_mobs:dust_stinger"
      ],
      "type": "kill",
      "zone": "kragmar_speargrass_reach"
@@ -572,13 +549,14 @@
    "id": "r20_anchor_065_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 scorpion [in kragmar_speargrass_reach]"
+    "kill 4 scorpion or dust_stinger [in kragmar_speargrass_reach]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:scorpion"
+      "grug_mobs:scorpion",
+      "grug_mobs:dust_stinger"
      ],
      "type": "kill",
      "zone": "kragmar_speargrass_reach"
@@ -755,7 +733,7 @@
     1563
    ],
    "from": "anchor_010 (Nhal Veyr, kragmar_nhal_veyr)",
-   "id": 30,
+   "id": 31,
    "kind": "secondary",
    "last_in_zone": [
     -883,
@@ -805,7 +783,7 @@
     1256
    ],
    "from": "anchor_042 (Cutgrass Watch, kragmar_speargrass_reach)",
-   "id": 44,
+   "id": 45,
    "kind": "trail",
    "last_in_zone": [
     -563,
@@ -843,7 +821,7 @@
     1292
    ],
    "from": "anchor_065 (Redpick Yard, kragmar_speargrass_reach)",
-   "id": 65,
+   "id": 66,
    "kind": "trail",
    "last_in_zone": [
     -1156,
@@ -877,7 +855,7 @@
      1638
     ]
    ],
-   "to": "joins road 30"
+   "to": "joins road 31"
   }
  ],
  "role": "home zone 21-30",
@@ -901,35 +879,35 @@
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1342,
+      "road": 1350,
       "straight": 879,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Nhal Veyr",
-      "road": 1421,
+      "road": 1462,
       "straight": 934,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Mournfen Village",
-      "road": 1705,
+      "road": 1741,
       "straight": 1128,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1861,
+      "road": 1924,
       "straight": 1512,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 1922,
+      "road": 1958,
       "straight": 1344,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
@@ -1039,7 +1017,7 @@
      },
      {
       "name": "Red Ramp Post",
-      "road": 1826,
+      "road": 1830,
       "straight": 466,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
@@ -1134,35 +1112,35 @@
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1452,
+      "road": 1460,
       "straight": 946,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Nhal Veyr",
-      "road": 1531,
+      "road": 1572,
       "straight": 782,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Mournfen Village",
-      "road": 1815,
+      "road": 1851,
       "straight": 1127,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1971,
+      "road": 2034,
       "straight": 1368,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 2032,
+      "road": 2068,
       "straight": 1332,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
@@ -1236,66 +1214,45 @@
  ],
  "spawns": [
   {
-   "day": null,
+   "day": {
+    "levels": [
+     25,
+     27
+    ],
+    "share_pct": 0.5
+   },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_hound",
-   "name": "Goblin Raider Hound",
-   "night": {
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
+   "night": null
+  },
+  {
+   "day": {
     "levels": [
      21,
-     30
+     24
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
-   }
+    "share_pct": 2.9
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
+   "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_raider",
-   "name": "Goblin Raider",
+   "hosts": [],
+   "mob": "grug_mobs:dust_stinger",
+   "name": "Dust-Stinger Scorpion",
    "night": {
     "levels": [
      21,
-     30
+     23
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_slinger",
-   "name": "Goblin Slinger",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
+    "share_pct": 30.0
    }
   },
   {
@@ -1304,23 +1261,18 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
+    "share_pct": 27.0
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:hyena",
-   "name": "Hyena",
+   "hosts": [],
+   "mob": "grug_mobs:dustpack_hyena",
+   "name": "Dustpack Hyena",
    "night": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
+    "share_pct": 84.4
    }
   },
   {
@@ -1329,41 +1281,66 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 39.8
+    "share_pct": 40.2
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:stone",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:mesa_golem",
-   "name": "Mesa Golem",
-   "night": {
+   "hosts": [],
+   "mob": "grug_mobs:dustwing_vulture",
+   "name": "Mesa Vulture",
+   "night": null
+  },
+  {
+   "day": {
     "levels": [
-     21,
+     28,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 39.8
+    "share_pct": 1.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_thieving_goblin",
+   "name": "Ore-Thieving Goblin",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.2
    }
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:scorpion",
-   "name": "Scorpion",
-   "night": {
+   "day": {
     "levels": [
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
+    "share_pct": 81.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_stalking_tiger",
+   "name": "Tallgrass Tiger",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rubble_goblin_slinger",
+   "name": "Rubble Goblin Slinger",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.2
    }
   },
   {
@@ -1395,50 +1372,12 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 98.8
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:speargrass_tiger",
-   "name": "Speargrass Tiger",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 39.8
-   },
-   "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:vulture",
-   "name": "Vulture",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 59.0
+    "share_pct": 40.9
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass"
-   ],
-   "mob": "grug_mobs:zebra",
-   "name": "Zebra",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_zebra",
+   "name": "Waterhole Zebra",
    "night": null
   }
  ],

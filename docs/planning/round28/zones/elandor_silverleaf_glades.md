@@ -80,31 +80,37 @@ Nearest hubs (straight / by road): Starbough Village 539 / 696; Starbough Outpos
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_elf_01_roots_laid_bare | Roots Laid Bare | Saelin Dewbough (Silverleaf) | 1 | kill 3 boar | 20 | - |
+| r14_elf_01_roots_laid_bare | Roots Laid Bare | Saelin Dewbough (Silverleaf) | 1 | kill 3 boar or small_boar | 20 | - |
 | r14_elf_02_the_grove_s_portion | The Grove's Portion | Liora Dewpot (Silverleaf) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_elf_10_the_careful_axe | The Careful Axe | Saelin Dewbough (Silverleaf) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_elf_start_cook | A Shared Grove Supper | Liora Dewpot (Silverleaf) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_elf_11_stone_s_patient_lesson | Stone's Patient Lesson | Saelin Dewbough (Silverleaf) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_elf_10_the_careful_axe |
 | r14_elf_03_beneath_the_seed_baskets | A Frame for the Seed Baskets | Saelin Dewbough (Silverleaf) | 3 | bring 6 default:wood | 100 | r14_elf_01_roots_laid_bare |
-| r14_elf_04_footfalls_without_breath | Footfalls Without Breath | Saelin Dewbough (Silverleaf) | 4 | kill 3 zombie | 140 | r14_elf_01_roots_laid_bare |
-| r14_elf_05_keepers_of_the_saplings | Keepers of the Saplings | Saelin Dewbough (Silverleaf) | 5 | kill 5 fox | 180 | r14_elf_03_beneath_the_seed_baskets |
+| r14_elf_04_footfalls_without_breath | Footfalls Without Breath | Saelin Dewbough (Silverleaf) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_elf_01_roots_laid_bare |
+| r14_elf_05_keepers_of_the_saplings | Keepers of the Saplings | Saelin Dewbough (Silverleaf) | 5 | kill 5 fox or small_fox | 180 | r14_elf_03_beneath_the_seed_baskets |
 | r14_elf_06_axes_without_leave | The Road to Ilyra Mossveil | Saelin Dewbough (Silverleaf) | 10 | talk to Ilyra Mossveil (starbough_village) | 285 | r14_elf_05_keepers_of_the_saplings |
 | r20_elf_capital_intro | The Road to Lethariel | Saelin Dewbough (Silverleaf) | 10 | talk to Eriath Boughwarden (lethariel) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 35.2% of land, L4-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| giant_rat | Giant Rat | aggressive | - | 95.6% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| poacher | Poacher | aggressive | - | 16.2% of land, L7-10 | dirt_with_grass, dirt_with_forest_litter, dirt_with_silver_litter |
-| rabbit | Rabbit | critter | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| aggressive_boar | Aggressive Boar | aggressive | 54.4% of land, L5-10 | - |  |
+| braindead_zombie | Braindead Zombie | aggressive | - | 32.5% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.4% of land, L9-10 | 1.4% of land, L9-10 |  |
+| drowned_zombie | Monstrous Drowned Zombie | aggressive | - | 28.6% of land, L8-10 |  |
+| furtive_poacher | Confused Poacher | aggressive | 1.4% of land, L8-10 | 1.4% of land, L8-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 4.2% of land, L7-10 | - |  |
+| large_rat | Large Rat | aggressive | - | 36.6% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 26.6% of land, L8-10 |  |
+| quiet_shore_crab | Small Crab | neutral | 5.6% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 27.8% of land, L5-7 |  |
 | shore_crab | Shore Crab | neutral | 42224 nodes², L3-10 | 42224 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| song_bird | Song Bird | critter | 99.7% of land, L1-10 | - | dirt_with_silver_litter |
-| zombie | Zombie | aggressive | - | 89.2% of land, L3-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| sluggish_zombie | Sluggish Zombie | aggressive | - | 30.0% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 36.6% of land, L1-4 | - |  |
+| small_fox | Young Fox | neutral | 27.8% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 

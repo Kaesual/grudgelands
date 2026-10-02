@@ -1,23 +1,19 @@
--- Round 28 Lane S2c portable test (LuaJIT): the gameplay level bands of
--- grug_core/zone_bands.lua and the six front and island spawn recipes.
+-- Round 28 Lane S2c portable test (LuaJIT): the level bands of the front
+-- zones and the six front and island spawn recipes.
 --
 --   luajit tools/r28_s2c/portable_test.lua [REPO] [SEED]
 --
--- A. zone_bands.apply sets Gravesalt Escarpment and The Skyglass Canopy to
---    51-60 and The Broken Causeway to 41-50 (Round 28 W1) on a record copy,
---    leaves every other zone alone and passes nil. The mapgen source keeps
---    its bands 51-59 and 31-40 (the world must not change).
+-- A. The mapgen source carries the bands (Round 29 M-geo; Round 28 kept them
+--    in a gameplay override): Gravesalt Escarpment and The Skyglass Canopy
+--    51-60, The Broken Causeway 41-50.
 -- B. grug_zones for real: the R7 authority (zone_authority.lua) installed on
 --    the analytic world of SEED (default 42, tools/r25_road_poi/world.lua as
---    bench.lua does). get and at serve the gameplay band for the three
---    zones and the mapgen band for every other zone; the session's own
---    records keep the mapgen band, and the analytic level field
---    (surface_mob_level_at, which places plants, resources and P9G content)
---    stays inside it there and reaches its top.
+--    bench.lua does). get and at serve the mapgen band of every zone, and the
+--    analytic level field (surface_mob_level_at, which places plants,
+--    resources and P9G content) of the three zones stays inside it and
+--    reaches its top.
 -- C. The shipped recipes of the six zones parse with the game's own
---    spawn_regions_core.lua against the catalogue and the gameplay band; the
---    Gravesalt, Skyglass and Causeway recipes are refused under the mapgen
---    band.
+--    spawn_regions_core.lua against the catalogue and the served band.
 -- D. Leaders on every seed (synthetic world): a kind without a region falls
 --    back to the belt's open kind, then to the belt's largest region; two
 --    leaders of one kind stand LEADER_SPACING apart; the level stays.
@@ -33,46 +29,32 @@ local function check(ok, label)
 	if not ok then error("FAIL " .. label, 2) end
 end
 
--- zone -> {mapgen band, gameplay band}
+-- zone -> band (the three bands Round 28 played through an override)
 local RAISED = {
-	front_gravesalt_escarpment = {{51, 59}, {51, 60}},
-	front_skyglass_canopy = {{51, 59}, {51, 60}},
-	front_broken_causeway = {{31, 40}, {41, 50}},
+	front_gravesalt_escarpment = {51, 60},
+	front_skyglass_canopy = {51, 60},
+	front_broken_causeway = {41, 50},
 }
 local ZONES = {"front_broken_causeway", "front_shattered_line",
 	"front_gravesalt_escarpment", "front_skyglass_canopy",
 	"front_stormscale_summit", "front_wyrmglass_crown"}
 
-local bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
 local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 
 -- ---------------------------------------------------------------------------
--- A. zone_bands.apply
+-- A. The mapgen source
 -- ---------------------------------------------------------------------------
 do
 	local n = 0
-	for _ in pairs(bands.bands) do n = n + 1 end
-	check(n == 3, "A: exactly three gameplay bands")
 	for _, row in ipairs(source.zones) do
-		local copy = {id = row.id, level_min = row.level_min, level_max = row.level_max}
-		check(bands.apply(copy) == copy, "A: apply returns the record " .. row.id)
-		local raised = RAISED[row.id]
-		if raised then
-			check(row.level_min == raised[1][1] and row.level_max == raised[1][2],
-				"A: the mapgen source keeps its band for " .. row.id)
-			check(copy.level_min == raised[2][1] and copy.level_max == raised[2][2],
-				"A: the gameplay band for " .. row.id)
-		else
-			check(copy.level_min == row.level_min and copy.level_max == row.level_max,
-				"A: unchanged " .. row.id)
+		local band = RAISED[row.id]
+		if band then
+			n = n + 1
+			check(row.level_min == band[1] and row.level_max == band[2],
+				"A: the mapgen source carries the band of " .. row.id)
 		end
-		local keyed = bands.apply({level_min = row.level_min, level_max = row.level_max}, row.id)
-		check(keyed.level_max == (raised and raised[2][2] or row.level_max),
-			"A: apply by zone id " .. row.id)
 	end
-	check(bands.apply(nil) == nil, "A: nil stays nil")
-	check(bands.apply({id = "front_gravesalt_escarpment"}, "elandor_dawnmere_fields").level_max == nil,
-		"A: an explicit zone id wins over record.id")
+	check(n == 3, "A: three raised zones in the source")
 end
 
 -- ---------------------------------------------------------------------------
@@ -87,7 +69,7 @@ do
 	_G.core = {sha256 = sha_hex, is_protected = function() return false end,
 		check_player_privs = function() return false end, log = function() end}
 	_G.grug_zones = nil
-	_G.grug_core = {get_player_faction = function() return "accord" end, zone_bands = bands}
+	_G.grug_core = {get_player_faction = function() return "accord" end}
 	assert(loadfile(repo .. "/mods/CORE/grug_core/zone_authority.lua"))()
 	grug_core.install_zone_authority(S, dofile(repo ..
 		"/mods/MAPGEN/grug_mapgen/wp40/r7_consumer_payload.lua")(W.source, sha_hex), W.protection)
@@ -95,32 +77,28 @@ do
 
 	for _, row in ipairs(source.zones) do
 		local record = grug_zones.get(row.id)
-		local own = S.get(row.id)
-		check(own.level_min == row.level_min and own.level_max == row.level_max,
-			"B: the session keeps the mapgen band for " .. row.id)
-		local raised = RAISED[row.id]
-		check(record.level_min == (raised and raised[2][1] or row.level_min), "B: level_min " .. row.id)
-		check(record.level_max == (raised and raised[2][2] or row.level_max), "B: level_max " .. row.id)
+		check(record.level_min == row.level_min, "B: level_min " .. row.id)
+		check(record.level_max == row.level_max, "B: level_max " .. row.id)
 		check(grug_zones.get(row.id) ~= record, "B: get hands out a fresh copy " .. row.id)
 		-- at(): the hub of each zone (owned by the zone on every seed where the
 		-- hub is land; skip a hub that is not).
 		local at = grug_zones.at({x = row.hub.x, y = 10, z = row.hub.z})
 		if at and at.id == row.id then
-			check(at.level_max == record.level_max, "B: at serves the gameplay band " .. row.id)
+			check(at.level_max == record.level_max, "B: at serves the band " .. row.id)
 		end
 	end
 	check(grug_zones.get("no_such_zone") == nil, "B: an unknown zone is nil")
 	local copy = grug_zones.get("front_gravesalt_escarpment")
 	copy.level_max = 99
 	check(grug_zones.get("front_gravesalt_escarpment").level_max == 60, "B: copies are independent")
-	check(S.get("front_gravesalt_escarpment").level_max == 59, "B: the session record is untouched")
+	check(S.get("front_gravesalt_escarpment").level_max == 60, "B: the session record is untouched")
 
-	-- The analytic level field of the three zones stays the mapgen's band.
+	-- The analytic level field of the three zones fills their band.
 	for zone, raised in pairs(RAISED) do
 		local lo, hi, n = 99, 0, 0
 		local hub = S.get(zone).hub
 		for x = hub.x - 700, hub.x + 700, 24 do
-			for z = -360, 360, 24 do
+			for z = -520, 520, 24 do
 				if grug_zones.id_at(x, z) == zone and grug_zones.water_class_at(x, z) == "land" then
 					local level = grug_zones.surface_mob_level_at(x, z)
 					lo, hi, n = math.min(lo, level), math.max(hi, level), n + 1
@@ -128,8 +106,8 @@ do
 			end
 		end
 		check(n > 200, "B: enough land samples in " .. zone)
-		check(lo >= raised[1][1] and hi == raised[1][2],
-			("B: the analytic field of %s stays L%d-%d"):format(zone, lo, hi))
+		check(lo >= raised[1] and hi == raised[2],
+			("B: the analytic field of %s runs L%d-%d"):format(zone, lo, hi))
 	end
 end
 
@@ -171,10 +149,6 @@ do
 		for _, leader in ipairs(recipe.leaders) do
 			check(leader.level == catalogue[leader.role].levels[2],
 				"C: leader " .. leader.role .. " at its catalogue level")
-		end
-		if RAISED[zone] then
-			local refused = pcall(CORE.parse_recipe, zone, data.recipe, ctx(RAISED[zone][1]))
-			check(not refused, "C: " .. zone .. " is refused under its mapgen band")
 		end
 	end
 end
@@ -298,7 +272,7 @@ do
 		local data = json.parse(f:read("*a"))
 		f:close()
 		if data.recipe then
-			local record = bands.apply(S7.get(row.id))
+			local record = S7.get(row.id)
 			local recipe = CORE.parse_recipe(row.id, data.recipe, {band = {record.level_min, record.level_max},
 				role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
 				leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,

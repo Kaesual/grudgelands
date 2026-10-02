@@ -173,8 +173,8 @@
    "name": "Redtusk Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": 320,
@@ -184,34 +184,29 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:hare",
-   "grug_mobs:hyena",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit",
-   "grug_mobs:zebra"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:dustpack_hyena",
+   "grug_mobs:parched_husk",
+   "grug_mobs:reefclaw_crab",
+   "grug_mobs:tidepool_crab",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:watchful_zebra"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:hyena",
-   "grug_mobs:zebra"
-  ],
-  "density_budget_night": [
-   "grug_mobs:hyena",
-   "grug_mobs:scorpion",
-   "grug_mobs:sun_dried_husk"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:hyena",
-   "grug_mobs:scorpion",
-   "grug_mobs:sun_dried_husk",
-   "grug_mobs:zombie"
+   "grug_mobs:dust_stinger",
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:muttering_husk",
+   "grug_mobs:parched_husk",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:vigilant_bandit_archer"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 3968,
+  "bank_sand_area_nodes2": 3952,
   "bay_water_area_nodes2": 57344,
   "beaches": [
    {
@@ -341,7 +336,7 @@
     ]
    }
   ],
-  "inland_water_area_nodes2": 6912,
+  "inland_water_area_nodes2": 6896,
   "sea_beach_sand_area_nodes2": 11280,
   "sea_coast_length_nodes": 1132
  },
@@ -351,7 +346,7 @@
    "x": -88,
    "z": 2060
   },
-  "land_area_nodes2": 612128,
+  "land_area_nodes2": 612144,
   "max_x": 724,
   "max_z": 2424,
   "min_x": -772,
@@ -395,7 +390,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 23,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -449,13 +443,14 @@
    "id": "r14_orc_07_teeth_around_the_herd",
    "min_level": 10,
    "objectives": [
-    "kill 6 hyena [in kragmar_redtusk_savanna]"
+    "kill 6 hyena or dustpack_hyena [in kragmar_redtusk_savanna]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:hyena"
+      "grug_mobs:hyena",
+      "grug_mobs:dustpack_hyena"
      ],
      "type": "kill",
      "zone": "kragmar_redtusk_savanna"
@@ -483,7 +478,6 @@
    "objectives_raw": [
     {
      "count": 2,
-     "description": "Bring ordinary leather",
      "item": "mobs:leather",
      "type": "item"
     }
@@ -531,13 +525,14 @@
    "id": "r14_orc_08_scour_the_dry_wash",
    "min_level": 11,
    "objectives": [
-    "kill 6 scorpion [in kragmar_redtusk_savanna]"
+    "kill 6 scorpion or dust_stinger [in kragmar_redtusk_savanna]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:scorpion"
+      "grug_mobs:scorpion",
+      "grug_mobs:dust_stinger"
      ],
      "type": "kill",
      "zone": "kragmar_redtusk_savanna"
@@ -560,13 +555,14 @@
    "id": "r15_orc_local_03",
    "min_level": 11,
    "objectives": [
-    "kill 4 hyena [in kragmar_redtusk_savanna]"
+    "kill 4 hyena or dustpack_hyena [in kragmar_redtusk_savanna]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:hyena"
+      "grug_mobs:hyena",
+      "grug_mobs:dustpack_hyena"
      ],
      "type": "kill",
      "zone": "kragmar_redtusk_savanna"
@@ -615,14 +611,15 @@
    "id": "r14_orc_09_no_forge_made_this_brand",
    "min_level": 12,
    "objectives": [
-    "kill 4 bandit or bandit_archer [in kragmar_redtusk_savanna]"
+    "kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_redtusk_savanna]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
       "grug_mobs:bandit",
-      "grug_mobs:bandit_archer"
+      "grug_mobs:bandit_archer",
+      "grug_mobs:quarrelsome_bandit"
      ],
      "type": "kill",
      "zone": "kragmar_redtusk_savanna"
@@ -676,7 +673,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -813,7 +809,7 @@
     2084
    ],
    "from": "anchor_041 (Redtusk Outpost, kragmar_redtusk_savanna)",
-   "id": 43,
+   "id": 44,
    "kind": "trail",
    "last_in_zone": [
     198,
@@ -851,7 +847,7 @@
     1965
    ],
    "from": "anchor_057 (Redtusk Bandit Camp, kragmar_redtusk_savanna)",
-   "id": 57,
+   "id": 58,
    "kind": "trail",
    "last_in_zone": [
     327,
@@ -1164,7 +1160,7 @@
      },
      {
       "name": "Red Ramp Post",
-      "road": 1656,
+      "road": 1660,
       "straight": 1306,
       "to": "r20_anchor_043",
       "zone": "kragmar_bannerbreak_mesa"
@@ -1343,95 +1339,134 @@
   {
    "day": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 61.1
-   },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:sand",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:hare",
-   "name": "Hare",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 55.4
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:hyena",
-   "name": "Hyena",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:dust_stinger",
+   "name": "Dust-Stinger Scorpion",
    "night": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 28.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 28.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:dustpack_hyena",
+   "name": "Dustpack Hyena",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
+   "night": {
+    "levels": [
+     14,
+     14
+    ],
+    "share_pct": 38.2
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:scorpion",
-   "name": "Scorpion",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
+   "night": {
+    "levels": [
+     15,
+     20
+    ],
+    "share_pct": 57.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_husk",
+   "name": "Cairn Sun-Dried Husk",
    "night": {
     "levels": [
      11,
+     15
+    ],
+    "share_pct": 2.1
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 10.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:parched_husk",
+   "name": "Pauper Mummy",
+   "night": {
+    "levels": [
+     16,
+     20
+    ],
+    "share_pct": 29.9
    }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 28.5
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     15,
+     17
+    ],
+    "share_pct": 0.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reefclaw_crab",
+   "name": "Reefclaw Snapper",
+   "night": null
   },
   {
    "day": {
@@ -1457,21 +1492,37 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:sun_dried_husk",
-   "name": "Sun-Dried Husk",
-   "night": {
+   "day": {
     "levels": [
      11,
+     14
+    ],
+    "share_pct": 2.1
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:tidepool_crab",
+   "name": "Tidepool Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 2.0
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 2.0
    }
   },
   {
@@ -1480,15 +1531,12 @@
      11,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.8
+    "share_pct": 85.7
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:dry_dirt_with_dry_grass"
-   ],
-   "mob": "grug_mobs:zebra",
-   "name": "Zebra",
+   "hosts": [],
+   "mob": "grug_mobs:watchful_zebra",
+   "name": "Waterhole Zebra",
    "night": null
   }
  ],

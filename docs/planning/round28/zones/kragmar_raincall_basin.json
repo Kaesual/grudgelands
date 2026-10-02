@@ -154,8 +154,8 @@
    "name": "Raincall Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": 1632,
@@ -165,27 +165,22 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:parrot",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit",
-   "grug_mobs:tapir"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:reed_jungle_lynx",
+   "grug_mobs:reed_tapir",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:young_boar"
   ],
-  "density_budget_day": [
-   "grug_mobs:jungle_boar",
-   "grug_mobs:jungle_lynx",
-   "grug_mobs:tapir"
-  ],
-  "density_budget_night": [
-   "grug_mobs:viper",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:viper",
-   "grug_mobs:zombie"
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:moaning_zombie",
+   "grug_mobs:muttering_zombie",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:reed_fang_viper",
+   "grug_mobs:vigilant_bandit_archer"
   ]
  },
  "civic_no_hostiles": false,
@@ -284,7 +279,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 28,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -329,13 +323,14 @@
    "id": "r14_troll_07_the_coiled_footpath",
    "min_level": 10,
    "objectives": [
-    "kill 6 viper [in kragmar_raincall_basin]"
+    "kill 6 viper or reed_fang_viper [in kragmar_raincall_basin]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:viper"
+      "grug_mobs:viper",
+      "grug_mobs:reed_fang_viper"
      ],
      "type": "kill",
      "zone": "kragmar_raincall_basin"
@@ -363,7 +358,6 @@
    "objectives_raw": [
     {
      "count": 4,
-     "description": "Bring raw meat",
      "item": "mobs:meat_raw",
      "type": "item"
     }
@@ -385,13 +379,14 @@
    "id": "r15_troll_local_02",
    "min_level": 10,
    "objectives": [
-    "kill 5 tapir [in kragmar_raincall_basin]"
+    "kill 5 tapir or reed_tapir [in kragmar_raincall_basin]"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:tapir"
+      "grug_mobs:tapir",
+      "grug_mobs:reed_tapir"
      ],
      "type": "kill",
      "zone": "kragmar_raincall_basin"
@@ -443,13 +438,14 @@
    "id": "r15_troll_local_03",
    "min_level": 11,
    "objectives": [
-    "kill 4 viper [in kragmar_raincall_basin]"
+    "kill 4 viper or reed_fang_viper [in kragmar_raincall_basin]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:viper"
+      "grug_mobs:viper",
+      "grug_mobs:reed_fang_viper"
      ],
      "type": "kill",
      "zone": "kragmar_raincall_basin"
@@ -498,14 +494,15 @@
    "id": "r14_troll_09_smoke_beneath_the_rain",
    "min_level": 12,
    "objectives": [
-    "kill 4 bandit or bandit_archer [in kragmar_raincall_basin]"
+    "kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_raincall_basin]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
       "grug_mobs:bandit",
-      "grug_mobs:bandit_archer"
+      "grug_mobs:bandit_archer",
+      "grug_mobs:quarrelsome_bandit"
      ],
      "type": "kill",
      "zone": "kragmar_raincall_basin"
@@ -559,7 +556,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -687,7 +683,7 @@
     1863
    ],
    "from": "anchor_012 (Kezamba, kragmar_kezamba)",
-   "id": 29,
+   "id": 30,
    "kind": "secondary",
    "last_in_zone": [
     1860,
@@ -725,7 +721,7 @@
     2082
    ],
    "from": "anchor_045 (Raincall Outpost, kragmar_raincall_basin)",
-   "id": 46,
+   "id": 47,
    "kind": "trail",
    "last_in_zone": [
     1822,
@@ -759,7 +755,7 @@
     2026
    ],
    "from": "anchor_059 (Raincall Bandit Camp, kragmar_raincall_basin)",
-   "id": 59,
+   "id": 60,
    "kind": "trail",
    "last_in_zone": [
     1434,
@@ -1153,76 +1149,127 @@
   {
    "day": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 77.7
-   },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:sand",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:hare",
-   "name": "Hare",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:jungle_boar",
-   "name": "Jungle Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 82.3
+    "share_pct": 67.6
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:jungle_lynx",
-   "name": "Jungle Lynx",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
+   "night": {
+    "levels": [
+     14,
+     14
+    ],
+    "share_pct": 29.9
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
+   "night": {
+    "levels": [
+     15,
+     20
+    ],
+    "share_pct": 48.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:moaning_zombie",
+   "name": "Cairn Zombie",
+   "night": {
+    "levels": [
+     11,
+     15
+    ],
+    "share_pct": 18.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_zombie",
+   "name": "Pauper Shambler",
+   "night": {
+    "levels": [
+     16,
+     20
+    ],
+    "share_pct": 37.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 19.6
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_fang_viper",
+   "name": "Reed-Fang Viper",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 19.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     14,
+     20
+    ],
+    "share_pct": 53.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_jungle_lynx",
+   "name": "Reed Jungle Lynx",
    "night": null
   },
   {
    "day": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.0
+    "share_pct": 29.9
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter"
-   ],
-   "mob": "grug_mobs:parrot",
-   "name": "Parrot",
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:reed_tapir",
+   "name": "Reed Tapir",
    "night": null
   },
   {
@@ -1251,66 +1298,36 @@
   {
    "day": {
     "levels": [
-     11,
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 82.3
+    "share_pct": 2.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 2.4
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     14
+    ],
+    "share_pct": 33.4
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_canopy_litter"
-   ],
-   "mob": "grug_mobs:tapir",
-   "name": "Tapir",
+   "hosts": [],
+   "mob": "grug_mobs:young_boar",
+   "name": "Rooting Boar",
    "night": null
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter"
-   ],
-   "mob": "grug_mobs:viper",
-   "name": "Viper",
-   "night": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 60.0
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
-   "night": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   }
   }
  ],
  "territory_rule": "throng_home",

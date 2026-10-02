@@ -9,12 +9,9 @@
 --   * the quest NPCs (settlement/socket bindings) and every registered quest;
 --   * the mob registry (description, tier, disposition fields) and every
 --     spawn ABM row (host nodes, height window);
---   * per named zone the day and night mob casts (spawn_policy.lua) and, on a
---     24-node grid of dry land, where each cast species may spawn by day and by
---     night (grug_mobs.spawn_allowed, or the policy alone for the few species
---     whose own check reads map nodes) with the level range it spawns at,
---     also per logical biome (the builder matches biome top nodes against
---     the spawn rows' host nodes);
+--   * per named zone the day and night mob casts of its spawn recipe and, on
+--     its region map for this seed, the land cells (32 x 32 nodes) where each
+--     species spawns by day and by night with the level range it spawns at;
 --   * the rares and camp types;
 --   * the settlement core boxes of the world protection (scanned with
 --     grug_core.world_feature_at around each settlement anchor).
@@ -28,15 +25,6 @@ local function pos3(p) return {x = round(p.x), y = round(p.y), z = round(p.z)} e
 
 -- Roles whose sockets are only counted (residents, guards).
 local COUNT_ONLY = {idle = true, work = true, guard_patrol = true, guard_post = true}
--- Species whose own _grug_spawn_check reads map nodes: only the policy is
--- evaluated for them (no world is loaded).
-local NODE_CHECK = {
-	["grug_mobs:skeleton_archer"] = true, ["grug_mobs:shore_crab"] = true,
-	["grug_mobs:reef_lurker"] = true, ["grug_mobs:reed_angelfish"] = true,
-	["grug_mobs:kraken"] = true,
-}
-local SHORE = {"grug_mobs:shore_crab", "grug_mobs:reef_lurker", "grug_mobs:gull"}
-local STEP = 24
 
 local function copy_plain(t)
 	local out = {}
@@ -129,92 +117,62 @@ local function run()
 	end
 	table.sort(out.spawn_rows, function(a, b) return a.name < b.name end)
 
-	-- 4. Casts per zone and the spawn sampling.
-	local zone_ids = grug_mobs.density_zone_ids()
-	local per_zone = {}
-	for _, zone_id in ipairs(zone_ids) do
-		local day = grug_mobs.zone_clock_cast(zone_id, "day") or {}
-		local night = grug_mobs.zone_clock_cast(zone_id, "night") or {}
-		local candidates, seen = {}, {}
-		for _, list in ipairs({day, night, SHORE}) do
-			for _, name in ipairs(list) do
-				if not seen[name] then seen[name] = true; candidates[#candidates + 1] = name end
-			end
-		end
-		per_zone[zone_id] = {candidates = candidates, land = 0, levels = {},
-			species = {}}
-		out.zones[#out.zones + 1] = {id = zone_id, day_cast = day, night_cast = night,
-			density_day = grug_mobs.zone_density_cast(zone_id, "day"),
-			density_night = grug_mobs.zone_density_cast(zone_id, "night")}
-	end
-	local function allowed(name, pos)
-		if NODE_CHECK[name] then return grug_mobs.spawn_policy_allows(name, pos) end
-		return grug_mobs.spawn_allowed(name, pos)
-	end
-	local points = {}
-	for z = -3200, 3200, STEP do
-		for x = -3600, 3600, STEP do
-			if grug_zones.water_class_at(x, z) == "land" then
-				local zone_id = grug_zones.id_at(x, z)
-				local zone = zone_id and per_zone[zone_id]
-				if zone then
-					local y = grug_zones.terrain_height_at(x, z)
-					points[#points + 1] = {x = x, y = y, z = z, zone = zone,
-						biome = grug_zones.biome_at(x, z) or "none"}
-					zone.land = zone.land + 1
-				end
-			end
-		end
-	end
-	for clock_index, clock in ipairs({"day", "night"}) do
-		core.set_timeofday(clock == "day" and 0.5 or 0.0)
-		for _, p in ipairs(points) do
-			local zone = p.zone
-			local pos = {x = p.x, y = p.y, z = p.z}
-			local level = grug_zones.mob_level_at({x = p.x, y = p.y + 1, z = p.z})
-			if clock_index == 1 and level then
-				zone.levels[level] = (zone.levels[level] or 0) + 1
-			end
-			for _, name in ipairs(zone.candidates) do
-				if allowed(name, pos) then
-					local s = zone.species[name]
-					if not s then
-						s = {day = {count = 0}, night = {count = 0}}
-						zone.species[name] = s
-					end
-					local c = s[clock]
-					c.count = c.count + 1
-					c.biomes = c.biomes or {}
-					local b = c.biomes[p.biome]
-					if not b then b = {count = 0}; c.biomes[p.biome] = b end
-					b.count = b.count + 1
-					if level then
-						if not c.min or level < c.min then c.min = level end
-						if not c.max or level > c.max then c.max = level end
-						if not b.min or level < b.min then b.min = level end
-						if not b.max or level > b.max then b.max = level end
+	-- 4. Casts per zone from the spawn recipes (Round 28 S2: every named
+	-- zone has one, the former ABM palettes are gone): the zone's region map
+	-- for this seed (grug_mobs.spawn_regions), per mob and clock the land
+	-- cells whose region (a kind or a camp) spawns it then and the role's
+	-- level range there; the zone's level histogram by region level.
+	local SR = grug_mobs.spawn_regions
+	local regions_total = 0
+	for _, zone_id in ipairs(SR.zone_ids()) do
+		local map = SR.map(zone_id)
+		if map then
+			local cells, species, levels = 0, {}, {}
+			local cast = {day = {}, night = {}}
+			for _, r in ipairs(map.regions) do
+				local unit = r.camp or r.kind
+				local n = #r.cells
+				cells = cells + n
+				levels[r.level] = (levels[r.level] or 0) + n
+				for _, clock in ipairs({"day", "night"}) do
+					for _, row in ipairs(unit.rosters[clock].list) do
+						local name = "grug_mobs:" .. row.role
+						local range = unit.levels_by_role[row.role]
+						local s = species[name]
+						if not s then
+							s = {day = {count = 0}, night = {count = 0}}
+							species[name] = s
+						end
+						local c = s[clock]
+						c.count = c.count + n
+						if not c.min or range[1] < c.min then c.min = range[1] end
+						if not c.max or range[2] > c.max then c.max = range[2] end
+						cast[clock][name] = true
 					end
 				end
 			end
+			regions_total = regions_total + #map.regions
+			local row = {id = zone_id, recipe = true, land_points = cells,
+				day_cast = {}, night_cast = {}, density_day = {}, density_night = {},
+				level_histogram = {}, spawns = {}}
+			for _, clock in ipairs({"day", "night"}) do
+				for name in pairs(cast[clock]) do
+					table.insert(row[clock .. "_cast"], name)
+				end
+				table.sort(row[clock .. "_cast"])
+			end
+			for level, n in pairs(levels) do
+				row.level_histogram[#row.level_histogram + 1] = {level, n}
+			end
+			table.sort(row.level_histogram, function(a, b) return a[1] < b[1] end)
+			for name, s in pairs(species) do
+				row.spawns[#row.spawns + 1] = {name = name, day = s.day, night = s.night}
+			end
+			table.sort(row.spawns, function(a, b) return a.name < b.name end)
+			out.zones[#out.zones + 1] = row
 		end
 	end
-	core.set_timeofday(0.5)
-	for _, row in ipairs(out.zones) do
-		local zone = per_zone[row.id]
-		row.land_points = zone.land
-		row.level_histogram = {}
-		for level, count in pairs(zone.levels) do
-			row.level_histogram[#row.level_histogram + 1] = {level, count}
-		end
-		table.sort(row.level_histogram, function(a, b) return a[1] < b[1] end)
-		row.spawns = {}
-		for name, s in pairs(zone.species) do
-			row.spawns[#row.spawns + 1] = {name = name, day = s.day, night = s.night,
-				node_check_skipped = NODE_CHECK[name] or nil}
-		end
-		table.sort(row.spawns, function(a, b) return a.name < b.name end)
-	end
-	log(("spawn sampling: %d land points"):format(#points))
+	log(("spawn regions: %d zones, %d regions"):format(#out.zones, regions_total))
 
 	-- 5. Rares and camp types.
 	for id, spec in pairs(grug_mobs.registered_rares or {}) do

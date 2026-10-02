@@ -13,19 +13,19 @@ Race track (troll): step 3 of the track Kapok Cradle → Raincall Basin → Keza
 | Fact | Value |
 |---|---|
 | Land extent | x 1268..2144, z 1004..1896 (centroid 1698, 1459) |
-| Land area | 617008 nodes² (≈ 0.62 km²) |
+| Land area | 617024 nodes² (≈ 0.62 km²) |
 | Hub point (authored) | 1800, 1500 |
 | Height above sea | min 25, p10 34, median 46, p90 75, max 121 |
 | Slope | 0.9% steep (>1 node/node), 0.0% cliff (>2) |
 | Biomes (measured) | jungle_edge 83.6%, deep_jungle 9.9%, swamp 6.3%, badlands_east 0.2% |
 | Neighbours (land border) | kragmar_raincall_basin (1004 nodes, mid 1729,1861), kragmar_thunderroot_wilds (864 nodes, mid 1736,1032), kragmar_totemwater_reach (848 nodes, mid 2118,1412), kragmar_whispering_reedlands (1028 nodes, mid 1321,1472) |
-| Sea coast | 0 nodes of coastline; sea-beach sand 0 nodes²; lake/river-bank sand 11680 nodes² |
-| Water inside | bay 0 nodes², rivers/lakes 34736 nodes² |
+| Sea coast | 0 nodes of coastline; sea-beach sand 0 nodes²; lake/river-bank sand 11712 nodes² |
+| Water inside | bay 0 nodes², rivers/lakes 34720 nodes² |
 | Protected / drift band | 20.2% of land protected (towns, villages, camps/POIs, road corridors); 9.8% within 16 nodes of a road, town or village (aggressive idle mobs drift away, Ruling 2) |
 
 ## Levels
 
-Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.
+Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.
 
 Share of land per level: L20 12.8%, L21 12.0%, L22 10.1%, L23 6.7%, L24 7.7%, L25 8.6%, L26 8.5%, L27 8.0%, L28 8.3%, L29 7.8%, L30 9.4%
 
@@ -81,7 +81,7 @@ Residents/guards: gear_display 3, guard_patrol 60, guard_post 13, housing_manage
 Public stations: vine_herbalist/vine_herbalist_station (brewing_stand), canopy_armoury/canopy_armoury_station (forge), totem_scriptorium/totem_scriptorium_station (jewellers_bench), shore_tailor/shore_tailor_station (tailor_bench), shore_store/shore_store_station (tanning_rack), shore_smokehouse/shore_smokehouse_station (furnace), shore_carvers/shore_carvers_station (carving_bench).
 
 Distances: zone edge N 364 (kragmar_raincall_basin), S 492 (kragmar_thunderroot_wilds), E 296 (kragmar_totemwater_reach), W 528 (kragmar_whispering_reedlands); nearest other-zone land 296 E; sea 782 E; sea-beach sand 739 E; nearest road 50.
-Nearest hubs (straight / by road): Raincall Bandit Camp 560 / 1008; Totemwater Post 618 / 1158; Thunderstep Watch 955 / 1209; Whisperreed Landing 930 / 1244; Reedstone Cut 798 / 1384.
+Nearest hubs (straight / by road): Raincall Bandit Camp 560 / 1008; Thunderstep Watch 836 / 1089; Totemwater Post 618 / 1158; Whisperreed Landing 930 / 1244; Reedstone Cut 798 / 1384.
 
 ### Current quests (4, given in this zone)
 
@@ -92,11 +92,21 @@ Nearest hubs (straight / by road): Raincall Bandit Camp 560 / 1008; Totemwater P
 | r20_troll_capital_stores | Boards for the Rain Stores | Nalo Pathdrum (Kezamba) | 20 | bring 10 default:junglewood | 780 | - |
 | r20_troll_journey_01 | Word for Taleko Drycord | Nalo Pathdrum (Kezamba) | 21 | talk to Taleko Drycord (r20_anchor_024) | 615 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
-Empty palette: no ambient surface mobs.
+| Mob | Name | Disposition | Day | Night | Host nodes |
+|---|---|---|---|---|---|
+| debtbound_zombie | Debtbound Zombie | aggressive | - | 39.9% of land, L24-25 |  |
+| furrow_boar | Furrow Boar | neutral | 66.0% of land, L21-24 | - |  |
+| monstrous_boar | Razorback | aggressive | 64.5% of land, L25-30 | - |  |
+| reed_fang_viper | Reed-Fang Viper | aggressive | - | 94.6% of land, L20-30 |  |
+| reed_jungle_lynx | Reed Jungle Lynx | aggressive | 28.6% of land, L28-30 | - |  |
+| reed_tapir | Reed Tapir | neutral | 34.0% of land, L20-27 | - |  |
+| stubborn_zombie | Tithe Revenant | aggressive | - | 32.5% of land, L26-30 |  |
+| toll_bandit | Toll Bandit | aggressive | - | 30.0% of land, L20-23 |  |
+| toll_bandit_archer | Toll Bandit Archer | aggressive | 1.5% of land, L28-30 | 1.5% of land, L28-30 |  |
 
 ## Roads and trails touching the zone
 
@@ -104,12 +114,12 @@ Empty palette: no ambient surface mobs.
 |---|---|---|---|---|---|
 | 16 | primary | anchor_011 (Gor Drazhak, kragmar_gor_drazhak) | anchor_012 (Kezamba, kragmar_kezamba) | 1364 / 250 | 1294,1771 → 1536,1758 |
 | 19 | primary | anchor_006 (Kapok, kragmar_kapok_cradle) | joins road 16 | 984 / 128 | 1405,1885 → 1422,1774 |
-| 28 | secondary | anchor_048 (Thunderstep Watch, kragmar_thunderroot_wilds) | anchor_012 (Kezamba, kragmar_kezamba) | 733 / 218 | 1954,1052 → 1840,1232 |
-| 29 | secondary | anchor_012 (Kezamba, kragmar_kezamba) | anchor_023 (Raincall Village, kragmar_raincall_basin) | 352 / 132 | 1712,1760 → 1765,1861 |
-| 48 | trail | anchor_047 (Totemwater Post, kragmar_totemwater_reach) | joins road 28 | 561 / 268 | 2141,1248 → 1913,1133 |
-| 172 | secondary | end:29 | gate_south | 159 / 160 | 1712,1760 → 1755,1639 |
-| 173 | primary | end:16 | gate_west | 220 / 222 | 1536,1758 → 1566,1561 |
-| 174 | secondary | end:28 | gate_north | 104 / 106 | 1840,1232 → 1823,1330 |
+| 28 | secondary | anchor_048 (Thunderstep Watch, kragmar_thunderroot_wilds) | anchor_012 (Kezamba, kragmar_kezamba) | 613 / 218 | 1954,1052 → 1840,1232 |
+| 30 | secondary | anchor_012 (Kezamba, kragmar_kezamba) | anchor_023 (Raincall Village, kragmar_raincall_basin) | 352 / 132 | 1712,1760 → 1765,1861 |
+| 49 | trail | anchor_047 (Totemwater Post, kragmar_totemwater_reach) | joins road 28 | 561 / 268 | 2141,1248 → 1913,1133 |
+| 175 | secondary | end:30 | gate_south | 159 / 160 | 1712,1760 → 1755,1639 |
+| 176 | primary | end:16 | gate_west | 220 / 222 | 1536,1758 → 1566,1561 |
+| 177 | secondary | end:28 | gate_north | 104 / 106 | 1840,1232 → 1823,1330 |
 
 Simplified polylines are in the JSON (`roads[].polyline_simplified`, 12-node tolerance).
 

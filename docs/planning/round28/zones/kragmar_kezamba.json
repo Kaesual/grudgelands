@@ -82,17 +82,29 @@
  "camps": [],
  "capital_street_count": 19,
  "casts": {
-  "day": [],
+  "day": [
+   "grug_mobs:furrow_boar",
+   "grug_mobs:monstrous_boar",
+   "grug_mobs:reed_jungle_lynx",
+   "grug_mobs:reed_tapir",
+   "grug_mobs:toll_bandit_archer"
+  ],
   "density_budget_day": [],
   "density_budget_night": [],
-  "night": []
+  "night": [
+   "grug_mobs:debtbound_zombie",
+   "grug_mobs:reed_fang_viper",
+   "grug_mobs:stubborn_zombie",
+   "grug_mobs:toll_bandit",
+   "grug_mobs:toll_bandit_archer"
+  ]
  },
  "civic_no_hostiles": true,
  "coast": {
-  "bank_sand_area_nodes2": 11680,
+  "bank_sand_area_nodes2": 11712,
   "bay_water_area_nodes2": 0,
   "beaches": [],
-  "inland_water_area_nodes2": 34736,
+  "inland_water_area_nodes2": 34720,
   "sea_beach_sand_area_nodes2": 0,
   "sea_coast_length_nodes": 0
  },
@@ -102,7 +114,7 @@
    "x": 1698,
    "z": 1459
   },
-  "land_area_nodes2": 617008,
+  "land_area_nodes2": 617024,
   "max_x": 2144,
   "max_z": 1896,
   "min_x": 1268,
@@ -137,7 +149,7 @@
  },
  "level_max": 30,
  "level_min": 20,
- "level_rule": "Zone field (simple_map.lua zone_level_at); capital palettes are empty today, so no ambient mobs spawn anywhere in the zone.",
+ "level_rule": "Zone field (simple_map.lua zone_level_at); its spawn regions decide where mobs stand.",
  "map": "maps/kragmar_kezamba.png",
  "name": "Kezamba",
  "neighbors": [
@@ -147,7 +159,6 @@
   "kragmar_whispering_reedlands"
  ],
  "numeric_id": 29,
- "palette_without_host_ground": [],
  "protected": {
   "capital_city": {
    "area_nodes2": 146100,
@@ -424,15 +435,15 @@
     1232
    ],
    "length_in_zone": 218,
-   "length_total": 733,
+   "length_total": 613,
    "polyline_simplified": [
     [
-     1909,
-     561
+     1906,
+     682
     ],
     [
-     1964,
-     691
+     1968,
+     809
     ],
     [
      1955,
@@ -451,7 +462,7 @@
     1760
    ],
    "from": "anchor_012 (Kezamba, kragmar_kezamba)",
-   "id": 29,
+   "id": 30,
    "kind": "secondary",
    "last_in_zone": [
     1765,
@@ -489,7 +500,7 @@
     1248
    ],
    "from": "anchor_047 (Totemwater Post, kragmar_totemwater_reach)",
-   "id": 48,
+   "id": 49,
    "kind": "trail",
    "last_in_zone": [
     1913,
@@ -522,8 +533,8 @@
     1712,
     1760
    ],
-   "from": "end:29",
-   "id": 172,
+   "from": "end:30",
+   "id": 175,
    "kind": "secondary",
    "last_in_zone": [
     1755,
@@ -553,7 +564,7 @@
     1758
    ],
    "from": "end:16",
-   "id": 173,
+   "id": 176,
    "kind": "primary",
    "last_in_zone": [
     1566,
@@ -583,7 +594,7 @@
     1232
    ],
    "from": "end:28",
-   "id": 174,
+   "id": 177,
    "kind": "secondary",
    "last_in_zone": [
     1823,
@@ -624,18 +635,18 @@
       "zone": "kragmar_raincall_basin"
      },
      {
+      "name": "Thunderstep Watch",
+      "road": 1089,
+      "straight": 836,
+      "to": "r20_anchor_048",
+      "zone": "kragmar_thunderroot_wilds"
+     },
+     {
       "name": "Totemwater Post",
       "road": 1158,
       "straight": 618,
       "to": "r20_anchor_047",
       "zone": "kragmar_totemwater_reach"
-     },
-     {
-      "name": "Thunderstep Watch",
-      "road": 1209,
-      "straight": 955,
-      "to": "r20_anchor_048",
-      "zone": "kragmar_thunderroot_wilds"
      },
      {
       "name": "Whisperreed Landing",
@@ -1055,7 +1066,140 @@
    }
   }
  ],
- "spawns": [],
+ "spawns": [
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:debtbound_zombie",
+   "name": "Debtbound Zombie",
+   "night": {
+    "levels": [
+     24,
+     25
+    ],
+    "share_pct": 39.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     24
+    ],
+    "share_pct": 66.0
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:furrow_boar",
+   "name": "Furrow Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     25,
+     30
+    ],
+    "share_pct": 64.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:monstrous_boar",
+   "name": "Razorback",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_fang_viper",
+   "name": "Reed-Fang Viper",
+   "night": {
+    "levels": [
+     20,
+     30
+    ],
+    "share_pct": 94.6
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 28.6
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:reed_jungle_lynx",
+   "name": "Reed Jungle Lynx",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     20,
+     27
+    ],
+    "share_pct": 34.0
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:reed_tapir",
+   "name": "Reed Tapir",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:stubborn_zombie",
+   "name": "Tithe Revenant",
+   "night": {
+    "levels": [
+     26,
+     30
+    ],
+    "share_pct": 32.5
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit",
+   "name": "Toll Bandit",
+   "night": {
+    "levels": [
+     20,
+     23
+    ],
+    "share_pct": 30.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.5
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:toll_bandit_archer",
+   "name": "Toll Bandit Archer",
+   "night": {
+    "levels": [
+     28,
+     30
+    ],
+    "share_pct": 1.5
+   }
+  }
+ ],
  "territory_rule": "throng_home",
  "track_order": 3
 }

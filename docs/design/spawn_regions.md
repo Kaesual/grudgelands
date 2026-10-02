@@ -112,8 +112,13 @@ table order.
    is the camp's own region; members stand within 40 nodes of its centre.
    An aggressive camp member, like an ambient spawn, never stands in the
    drift band.
-   No candidate is logged as a problem; the camp is then missing (its leader
-   still stands, step 8).
+   Last resort (Round 29): when no block meets every rule because the belt
+   lies on steep ground, the flattest block that meets all the others takes
+   the camp (score 0), but only up to a mean slope of 0.5 (the highland
+   threshold); camps belong on gentle ground, so a recipe whose camp needs
+   this on many seeds is fixed in its data. Without such a block the
+   problem is logged and the camp is missing (its leader still stands,
+   step 8).
 8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
    its camp's centre. A kind leader stands on the best cell (farthest from
    roads, then deepest inside its region) of the largest region of its kind;
@@ -277,10 +282,10 @@ region's level (the middle of its belt): `grug_core.mob_level_at` and
 the fishing band and the bandit loot level match the mob map. The analytic
 level field (`grug_zones.*_level_at`) stays the mapgen's own and is never
 overlaid; below y = 0 the depth term applies unchanged. A zone's band is the
-gameplay band of its zone record: Gravesalt Escarpment and The Skyglass Canopy
-play 51–60 (`grug_core/zone_bands.lua`) while their analytic field keeps the
-mapgen's 51–59. ABM spawn gates that read the analytic field only run in
-zones without a recipe.
+band of its zone record, the mapgen's own (since Round 29 also for Gravesalt
+Escarpment and The Skyglass Canopy, 51–60, and The Broken Causeway, 41–50).
+ABM spawn gates that read the analytic field only run in zones without a
+recipe.
 
 ## Review images
 

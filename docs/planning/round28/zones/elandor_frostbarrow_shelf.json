@@ -136,40 +136,19 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:ibex",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
+   "grug_mobs:armored_crab",
+   "grug_mobs:bank_crab",
+   "grug_mobs:hill_ram",
+   "grug_mobs:ridge_crag_eagle",
+   "grug_mobs:surefoot_ibex"
   ],
-  "density_budget_day": [
-   "grug_mobs:crag_eagle",
-   "grug_mobs:hyena",
-   "grug_mobs:ibex",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:mountain_ram",
-   "grug_mobs:stone_golem",
-   "grug_mobs:vulture"
-  ],
-  "density_budget_night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:snow_leopard",
-   "grug_mobs:stone_golem"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:hyena",
-   "grug_mobs:mesa_golem",
-   "grug_mobs:snow_leopard",
-   "grug_mobs:stone_golem"
+   "grug_mobs:ore_guard_hound",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:prowling_snow_leopard",
+   "grug_mobs:rubble_goblin_slinger"
   ]
  },
  "civic_no_hostiles": false,
@@ -321,10 +300,6 @@
   "elandor_stormvault_heights"
  ],
  "numeric_id": 4,
- "palette_without_host_ground": [
-  "Hyena",
-  "Vulture"
- ],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -393,13 +368,14 @@
    "id": "r20_anchor_014_02",
    "min_level": 21,
    "objectives": [
-    "kill 4 ibex [in elandor_frostbarrow_shelf]"
+    "kill 4 ibex or surefoot_ibex [in elandor_frostbarrow_shelf]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:ibex"
+      "grug_mobs:ibex",
+      "grug_mobs:surefoot_ibex"
      ],
      "type": "kill",
      "zone": "elandor_frostbarrow_shelf"
@@ -522,13 +498,14 @@
    "id": "r20_anchor_014_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 goblin_raider [in elandor_frostbarrow_shelf]"
+    "kill 4 goblin_raider or ore_thieving_goblin [in elandor_frostbarrow_shelf]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:goblin_raider"
+      "grug_mobs:goblin_raider",
+      "grug_mobs:ore_thieving_goblin"
      ],
      "type": "kill",
      "zone": "elandor_frostbarrow_shelf"
@@ -551,13 +528,14 @@
    "id": "r20_anchor_026_03",
    "min_level": 23,
    "objectives": [
-    "kill 4 goblin_slinger [in elandor_frostbarrow_shelf]"
+    "kill 4 goblin_slinger or rubble_goblin_slinger [in elandor_frostbarrow_shelf]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
-      "grug_mobs:goblin_slinger"
+      "grug_mobs:goblin_slinger",
+      "grug_mobs:rubble_goblin_slinger"
      ],
      "type": "kill",
      "zone": "elandor_frostbarrow_shelf"
@@ -717,7 +695,7 @@
     -1244
    ],
    "from": "anchor_026 (Rimebell Watch, elandor_frostbarrow_shelf)",
-   "id": 32,
+   "id": 33,
    "kind": "trail",
    "last_in_zone": [
     -2115,
@@ -755,7 +733,7 @@
     -1309
    ],
    "from": "anchor_061 (Tarncut Mine, elandor_frostbarrow_shelf)",
-   "id": 61,
+   "id": 62,
    "kind": "trail",
    "last_in_zone": [
     -2378,
@@ -845,7 +823,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 2023,
+      "road": 2028,
       "straight": 1368,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -962,7 +940,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 2230,
+      "road": 2235,
       "straight": 1226,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1078,7 +1056,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 2482,
+      "road": 2486,
       "straight": 1345,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1154,101 +1132,29 @@
   {
    "day": {
     "levels": [
-     21,
+     25,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 10.0
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:crag_eagle",
-   "name": "Crag Eagle",
+   "hosts": [],
+   "mob": "grug_mobs:armored_crab",
+   "name": "Barnacle Pincher",
    "night": null
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_hound",
-   "name": "Goblin Raider Hound",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 79.9
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_raider",
-   "name": "Goblin Raider",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 79.9
-   }
-  },
-  {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_slinger",
-   "name": "Goblin Slinger",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 79.9
-   }
   },
   {
    "day": {
     "levels": [
      21,
-     30
+     24
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 79.9
+    "share_pct": 8.1
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:ibex",
-   "name": "Ibex",
+   "hosts": [],
+   "mob": "grug_mobs:bank_crab",
+   "name": "Bank Crab",
    "night": null
   },
   {
@@ -1257,17 +1163,83 @@
      21,
      30
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 88.1
    },
    "disposition": "neutral",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:mountain_ram",
-   "name": "Mountain Ram",
+   "hosts": [],
+   "mob": "grug_mobs:hill_ram",
+   "name": "Hill Ram",
    "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_guard_hound",
+   "name": "Ore-Guard Hound",
+   "night": {
+    "levels": [
+     24,
+     27
+    ],
+    "share_pct": 23.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_thieving_goblin",
+   "name": "Ore-Thieving Goblin",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 5.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:prowling_snow_leopard",
+   "name": "Crag Snow Leopard",
+   "night": {
+    "levels": [
+     21,
+     30
+    ],
+    "share_pct": 100.0
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     21,
+     30
+    ],
+    "share_pct": 65.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ridge_crag_eagle",
+   "name": "Ridge Crag Eagle",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rubble_goblin_slinger",
+   "name": "Rubble Goblin Slinger",
+   "night": {
+    "levels": [
+     21,
+     23
+    ],
+    "share_pct": 19.4
+   }
   },
   {
    "day": {
@@ -1293,48 +1265,18 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:snow_leopard",
-   "name": "Snow Leopard",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
-   }
-  },
-  {
    "day": {
     "levels": [
      21,
-     30
+     23
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 22.9
    },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:gravel",
-    "default:snowblock",
-    "default:stone"
-   ],
-   "mob": "grug_mobs:stone_golem",
-   "name": "Stone Golem",
-   "night": {
-    "levels": [
-     21,
-     30
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
-   }
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:surefoot_ibex",
+   "name": "Surefoot Ibex",
+   "night": null
   }
  ],
  "territory_rule": "accord_home",

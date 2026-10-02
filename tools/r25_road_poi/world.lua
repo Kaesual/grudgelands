@@ -10,7 +10,8 @@
 -- camp blueprint (`r7_settlement.prepare`, as `r7_runtime.lua` does), and
 -- the world protection exactly as `r7_loader.lua` builds it. Returns
 --   session (the overlay-wrapped zones session), planner_source, source,
---   roads (the road module), road_text, layout (deserialized), sampler
+--   roads (the road module), road_text, layout (deserialized), built (the
+--   layout as routed, with its stats and road ends), sampler
 --   (the road sampler on that text), rows (settlement rows for the boxes),
 --   protection (world_protection.new result), wp (the module), index128,
 --   sha (raw SHA-256), seconds = {world, blueprints, protection}.
@@ -111,6 +112,7 @@ return function(repo, seed)
 	return {session = session, raw_session = raw_session,
 		planner_source = planner_source, source = source, roster = roster,
 		roads = roads.module, road_text = road_text, layout = layout,
+		built = roads.cache.layout,
 		sampler = roads.module.sampler(layout), rows = rows,
 		protection = protection, wp = wp, index128 = index128, sha = sha,
 		common = common, settlement = settlement,

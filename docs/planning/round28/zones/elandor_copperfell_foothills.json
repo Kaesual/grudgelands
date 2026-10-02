@@ -154,8 +154,8 @@
    "name": "Copperfell Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": -1568,
@@ -165,30 +165,29 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox",
-   "grug_mobs:hare",
-   "grug_mobs:ibex",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:ore_guard_hound",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:rabid_fox",
+   "grug_mobs:rubble_goblin_slinger",
+   "grug_mobs:surefoot_ibex",
+   "grug_mobs:tidepool_crab",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:young_boar",
+   "grug_mobs:young_fox"
   ],
-  "density_budget_day": [
-   "grug_mobs:boar",
-   "grug_mobs:fox",
-   "grug_mobs:ibex"
-  ],
-  "density_budget_night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:goblin_hound",
-   "grug_mobs:goblin_raider",
-   "grug_mobs:goblin_slinger",
-   "grug_mobs:zombie"
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:moaning_zombie",
+   "grug_mobs:muttering_zombie",
+   "grug_mobs:ore_guard_hound",
+   "grug_mobs:ore_thieving_goblin",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:rubble_goblin_slinger",
+   "grug_mobs:vigilant_bandit_archer"
   ]
  },
  "civic_no_hostiles": false,
@@ -377,7 +376,6 @@
   "elandor_whitebridge_shire"
  ],
  "numeric_id": 2,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -422,13 +420,14 @@
    "id": "r14_dwarf_07_a_ledger_in_the_scrub",
    "min_level": 10,
    "objectives": [
-    "kill 6 fox [in elandor_copperfell_foothills]"
+    "kill 6 fox or young_fox [in elandor_copperfell_foothills]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:fox"
+      "grug_mobs:fox",
+      "grug_mobs:young_fox"
      ],
      "type": "kill",
      "zone": "elandor_copperfell_foothills"
@@ -456,7 +455,6 @@
    "objectives_raw": [
     {
      "count": 8,
-     "description": "Bring cobble",
      "item": "default:cobble",
      "type": "item"
     }
@@ -504,7 +502,7 @@
    "id": "r14_dwarf_08_hold_the_marker_stones",
    "min_level": 11,
    "objectives": [
-    "kill 6 goblin_raider or goblin_slinger or goblin_hound [in elandor_copperfell_foothills]"
+    "kill 6 goblin_raider or goblin_slinger or goblin_hound or ore_thieving_goblin [in elandor_copperfell_foothills]"
    ],
    "objectives_raw": [
     {
@@ -512,7 +510,8 @@
      "mobs": [
       "grug_mobs:goblin_raider",
       "grug_mobs:goblin_slinger",
-      "grug_mobs:goblin_hound"
+      "grug_mobs:goblin_hound",
+      "grug_mobs:ore_thieving_goblin"
      ],
      "type": "kill",
      "zone": "elandor_copperfell_foothills"
@@ -651,7 +650,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -759,7 +757,7 @@
     -2110
    ],
    "from": "anchor_025 (Copperfell Outpost, elandor_copperfell_foothills)",
-   "id": 31,
+   "id": 32,
    "kind": "trail",
    "last_in_zone": [
     -1798,
@@ -793,7 +791,7 @@
     -2080
    ],
    "from": "anchor_049 (Copperfell Bandit Camp, elandor_copperfell_foothills)",
-   "id": 49,
+   "id": 50,
    "kind": "trail",
    "last_in_zone": [
     -1783,
@@ -871,7 +869,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 1651,
+      "road": 1655,
       "straight": 1113,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1000,7 +998,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 2291,
+      "road": 2296,
       "straight": 1329,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1117,7 +1115,7 @@
      },
      {
       "name": "Bridgechalk Dig",
-      "road": 2009,
+      "road": 2014,
       "straight": 949,
       "to": "r20_anchor_062",
       "zone": "elandor_whitebridge_shire"
@@ -1191,156 +1189,160 @@
   {
    "day": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:boar",
-   "name": "Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.7
+    "share_pct": 57.9
    },
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "grug_nodes:dirt_with_silver_litter"
-   ],
-   "mob": "grug_mobs:fox",
-   "name": "Fox",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
    "night": null
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_hound",
-   "name": "Goblin Raider Hound",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
    "night": {
     "levels": [
      11,
-     20
+     14
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 64.5
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_raider",
-   "name": "Goblin Raider",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
    "night": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 57.9
    }
   },
   {
    "day": null,
    "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:snowblock",
-    "grug_nodes:mesa_clay"
-   ],
-   "mob": "grug_mobs:goblin_slinger",
-   "name": "Goblin Slinger",
+   "hosts": [],
+   "mob": "grug_mobs:moaning_zombie",
+   "name": "Cairn Zombie",
    "night": {
     "levels": [
      11,
+     15
+    ],
+    "share_pct": 3.3
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_zombie",
+   "name": "Pauper Shambler",
+   "night": {
+    "levels": [
+     16,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 8.3
    }
   },
   {
    "day": {
     "levels": [
-     11,
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.7
+    "share_pct": 1.7
    },
-   "disposition": "neutral",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:gravel",
-    "default:snowblock"
-   ],
-   "mob": "grug_mobs:ibex",
-   "name": "Ibex",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_guard_hound",
+   "name": "Ore-Guard Hound",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 1.7
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:ore_thieving_goblin",
+   "name": "Ore-Thieving Goblin",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 28.8
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     14,
+     15
+    ],
+    "share_pct": 2.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     14,
+     15
+    ],
+    "share_pct": 2.2
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     15,
+     20
+    ],
+    "share_pct": 6.7
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rabid_fox",
+   "name": "Thicket Vixen",
    "night": null
   },
   {
    "day": {
     "levels": [
-     11,
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 1.7
    },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:rabbit",
-   "name": "Rabbit",
-   "night": null
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:rubble_goblin_slinger",
+   "name": "Rubble Goblin Slinger",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 1.7
+   }
   },
   {
    "day": {
@@ -1366,33 +1368,80 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
-   "night": {
+   "day": {
     "levels": [
-     11,
+     14,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 100.0
+    "share_pct": 37.3
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:surefoot_ibex",
+   "name": "Surefoot Ibex",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 1.1
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:tidepool_crab",
+   "name": "Tidepool Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     16,
+     17
+    ],
+    "share_pct": 2.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     16,
+     17
+    ],
+    "share_pct": 2.2
    }
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     14
+    ],
+    "share_pct": 31.1
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_boar",
+   "name": "Rooting Boar",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 28.8
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_fox",
+   "name": "Bracken Fox",
+   "night": null
   }
  ],
  "territory_rule": "accord_home",

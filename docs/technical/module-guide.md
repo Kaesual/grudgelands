@@ -496,9 +496,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     `grug_env_damage` GRUG PATCH), `roam_avoid.lua` (idle aggressive mobs
     walk away from roads and towns), `separation.lua` (separation and melee
     knockback as position displacement).
-  - Gameplay level bands that differ from the mapgen's are in
-    `grug_core/zone_bands.lua`, served by `grug_zones.get`/`at`; the mapgen
-    keeps its own bands.
+  - Zone level bands live only in the mapgen source
+    (`wp40/source/simple_map.lua`), served by `grug_zones.get`/`at`.
   - Tools after a recipe change: `tools/r28_regions/run.sh` (images and
     stats per seed, then `quest_targets.py`), `tools/r28_world/run.sh`
     (world view, border fit; `border_rule.py`), the catalogue checks

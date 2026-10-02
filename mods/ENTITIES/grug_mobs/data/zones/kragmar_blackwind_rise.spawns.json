@@ -74,7 +74,7 @@
        "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
       {"id": "bandit_hideout", "name": "Blackwind Bandit Hideout", "belt": "l34_37",
        "roster": [{"role": "entrenched_bandit", "weight": 3}, {"role": "entrenched_bandit_archer", "weight": 1}],
-       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 6}
     ],
     "leaders": [
       {"role": "grave_broker_mute", "at": {"camp": "bandit_hideout"}, "respawn": 300},

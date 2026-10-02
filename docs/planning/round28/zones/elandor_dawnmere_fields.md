@@ -74,36 +74,42 @@ Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_stat
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 236 (elandor_goldmead_vale), S 552 (coastal_shelf), E 476 (bay_water), W 696 (coastal_shelf); nearest other-zone land 229 N; sea 362 E; sea-beach sand 345 E; nearest road 64.
-Nearest hubs (straight / by road): Goldmead Outpost 553 / 686; Goldmead Bandit Camp 654 / 1022; Highcourt 1050 / 1366; Goldmead Village 543 / 1576; Oakspan Tollhouse 1425 / 2134.
+Nearest hubs (straight / by road): Goldmead Outpost 553 / 686; Goldmead Bandit Camp 654 / 1022; Highcourt 1050 / 1366; Goldmead Village 543 / 1576; Petalbank Wardenry 1465 / 2173.
 
 ### Current quests (10, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_human_01_boars_beyond_the_fence | Boars Beyond the Fence | Elian Reed (Dawnmere) | 1 | kill 3 boar | 20 | - |
+| r14_human_01_boars_beyond_the_fence | Boars Beyond the Fence | Elian Reed (Dawnmere) | 1 | kill 3 boar or small_boar | 20 | - |
 | r14_human_02_the_smokehouse_share | The Smokehouse Share | Bess Honeycrust (Dawnmere) | 1 | bring 4 mobs:meat_raw | 20 | - |
 | r14_human_10_a_woodsman_s_edge | A Woodsman's Edge | Elian Reed (Dawnmere) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
 | r20_human_start_cook | The Second Oven | Bess Honeycrust (Dawnmere) | 1 | bring 3 default:coal_lump | 20 | - |
 | r14_human_11_a_pick_for_the_road | A Pick for the Road | Elian Reed (Dawnmere) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_human_10_a_woodsman_s_edge |
 | r14_human_03_granary_teeth | Braces for the Granary | Elian Reed (Dawnmere) | 3 | bring 6 default:wood | 100 | r14_human_01_boars_beyond_the_fence |
-| r14_human_04_shapes_by_lanternlight | Shapes by Lanternlight | Elian Reed (Dawnmere) | 4 | kill 3 zombie | 140 | r14_human_01_boars_beyond_the_fence |
-| r14_human_05_the_missing_flock | The Missing Flock | Elian Reed (Dawnmere) | 5 | kill 5 wild_turkey | 180 | r14_human_03_granary_teeth |
+| r14_human_04_shapes_by_lanternlight | Shapes by Lanternlight | Elian Reed (Dawnmere) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_human_01_boars_beyond_the_fence |
+| r14_human_05_the_missing_flock | The Missing Flock | Elian Reed (Dawnmere) | 5 | kill 5 fox or small_fox | 180 | r14_human_03_granary_teeth |
 | r14_human_06_flock_on_mill_road | The Road to Marta Millward | Elian Reed (Dawnmere) | 10 | talk to Marta Millward (goldmead_village) | 285 | r14_human_05_the_missing_flock |
 | r20_human_capital_intro | The Road to Highcourt | Elian Reed (Dawnmere) | 10 | talk to Mariel Waybook (highcourt) | 285 | - |
 
-## Current mob palette (before Round 28)
+## Mobs by spawn region
 
-Where each species may spawn on dry land today: the engine spawn policy sampled every 24 nodes, kept only on biomes whose top node is one of the species' host nodes (crabs: measured on sea-beach sand). Share = of the zone's dry land (not a density); levels = the level field there.
+Where each species spawns on this seed: the zone's spawn regions (its recipe, built in the engine). Share = of the zone's land cells whose region spawns it at that clock (not a density); levels = the role's range there (crabs: measured on sea-beach sand; gulls: the beach biome).
 
 | Mob | Name | Disposition | Day | Night | Host nodes |
 |---|---|---|---|---|---|
-| boar | Boar | neutral | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
-| fox | Fox | aggressive | 24.2% of land, L4-10 | - | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_silver_litter |
-| giant_rat | Giant Rat | aggressive | - | 83.7% of land, L1-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, blight_dirt, dirt_with_silver_litter |
-| rabbit | Rabbit | critter | 100.0% of land, L1-10 | - | dirt_with_coniferous_litter, dirt_with_grass, gravel, sand, snowblock, dirt_with_forest_litter … |
+| aggressive_boar | Aggressive Boar | aggressive | 51.4% of land, L5-10 | - |  |
+| braindead_zombie | Braindead Zombie | aggressive | - | 7.7% of land, L3-4 |  |
+| confused_bandit | Confused Bandit | aggressive | 1.1% of land, L9-10 | 1.1% of land, L9-10 |  |
+| drowned_zombie | Monstrous Drowned Zombie | aggressive | - | 4.6% of land, L8-10 |  |
+| giant_crab | Monstrous Crab | aggressive | 6.6% of land, L7-10 | - |  |
+| large_rat | Large Rat | aggressive | - | 33.1% of land, L1-4 |  |
+| monstrous_rat | Monstrous Rat | aggressive | - | 23.9% of land, L8-10 |  |
+| quiet_shore_crab | Small Crab | neutral | 7.2% of land, L3-6 | - |  |
+| rabid_rat | Aggressive Rat | aggressive | - | 22.8% of land, L5-7 |  |
 | shore_crab | Shore Crab | neutral | 61024 nodes², L3-10 | 61024 nodes², L3-10 | sand (dry, within 6 nodes of water) |
-| wild_turkey | Wild Turkey | critter | 87.0% of land, L1-10 | - | dirt_with_grass |
-| zombie | Zombie | aggressive | - | 91.5% of land, L3-10 | dirt_with_coniferous_litter, dirt_with_grass, dirt_with_rainforest_litter, dry_dirt_with_dry_grass, gravel, sand … |
+| sluggish_zombie | Sluggish Zombie | aggressive | - | 6.7% of land, L5-7 |  |
+| small_boar | Small Boar | neutral | 38.0% of land, L1-4 | - |  |
+| small_fox | Young Fox | neutral | 25.2% of land, L5-7 | - |  |
 
 ## Roads and trails touching the zone
 

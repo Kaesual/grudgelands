@@ -94,15 +94,15 @@
  "biomes_measured": [
   {
    "id": "grug_blight",
-   "share_pct": 61.6
+   "share_pct": 61.9
   },
   {
    "id": "grug_swamp",
-   "share_pct": 29.0
+   "share_pct": 28.8
   },
   {
    "id": "grug_bone_forest",
-   "share_pct": 8.7
+   "share_pct": 8.6
   },
   {
    "id": "grug_badlands",
@@ -115,10 +115,10 @@
  ],
  "borders": [
   {
-   "length_nodes": 880,
+   "length_nodes": 904,
    "midpoint": {
-    "x": -1745,
-    "z": 1913
+    "x": -1749,
+    "z": 1914
    },
    "zone": "kragmar_nhal_veyr"
   },
@@ -181,8 +181,8 @@
    "name": "Mournfen Bandit Camp",
    "radius": 12,
    "respawn_s": [
-    120,
-    300
+    30,
+    60
    ],
    "type": "bandit",
    "x": -1600,
@@ -201,45 +201,42 @@
  "capital_street_count": 0,
  "casts": {
   "day": [
-   "grug_mobs:boar",
-   "grug_mobs:bog_fowl",
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:hare",
-   "grug_mobs:jungle_boar",
-   "grug_mobs:plague_boar",
-   "grug_mobs:rabbit"
+   "grug_mobs:bristling_boar",
+   "grug_mobs:muttering_husk",
+   "grug_mobs:parched_husk",
+   "grug_mobs:reed_crocodile",
+   "grug_mobs:reed_mirefolk",
+   "grug_mobs:sullen_bog_ooze",
+   "grug_mobs:tidepool_crab",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:young_boar"
   ],
-  "density_budget_day": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:plague_boar"
-  ],
-  "density_budget_night": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:wisp",
-   "grug_mobs:zombie"
-  ],
+  "density_budget_day": [],
+  "density_budget_night": [],
   "night": [
-   "grug_mobs:bog_ooze",
-   "grug_mobs:crocodile",
-   "grug_mobs:wisp",
-   "grug_mobs:zombie"
+   "grug_mobs:granary_rat",
+   "grug_mobs:mangy_rat",
+   "grug_mobs:moaning_zombie",
+   "grug_mobs:muttering_zombie",
+   "grug_mobs:quarrelsome_bandit",
+   "grug_mobs:reed_crocodile",
+   "grug_mobs:reed_mirefolk",
+   "grug_mobs:vigilant_bandit_archer",
+   "grug_mobs:wandering_wisp"
   ]
  },
  "civic_no_hostiles": false,
  "coast": {
-  "bank_sand_area_nodes2": 10976,
+  "bank_sand_area_nodes2": 10224,
   "bay_water_area_nodes2": 50032,
   "beaches": [
    {
-    "area_nodes2": 7376,
+    "area_nodes2": 7344,
     "box": {
      "max_x": -1364,
      "max_z": 2392,
-     "min_x": -1524,
-     "min_z": 2252
+     "min_x": -1532,
+     "min_z": 2256
     },
     "centroid": {
      "x": -1448,
@@ -248,24 +245,24 @@
     "id": "B1",
     "levels": [
      11,
-     13
+     12
     ]
    },
    {
-    "area_nodes2": 7024,
+    "area_nodes2": 7136,
     "box": {
      "max_x": -1324,
-     "max_z": 2200,
+     "max_z": 2204,
      "min_x": -1496,
      "min_z": 2064
     },
     "centroid": {
-     "x": -1417,
-     "z": 2136
+     "x": -1418,
+     "z": 2137
     },
     "id": "B2",
     "levels": [
-     14,
+     13,
      16
     ]
    },
@@ -288,15 +285,15 @@
     ]
    },
    {
-    "area_nodes2": 160,
+    "area_nodes2": 192,
     "box": {
      "max_x": -1500,
-     "max_z": 2228,
+     "max_z": 2224,
      "min_x": -1532,
-     "min_z": 2208
+     "min_z": 2216
     },
     "centroid": {
-     "x": -1516,
+     "x": -1514,
      "z": 2221
     },
     "id": "B4",
@@ -306,17 +303,17 @@
     ]
    }
   ],
-  "inland_water_area_nodes2": 22448,
-  "sea_beach_sand_area_nodes2": 14928,
+  "inland_water_area_nodes2": 20384,
+  "sea_beach_sand_area_nodes2": 15040,
   "sea_coast_length_nodes": 508
  },
  "drift_band_share_pct": 9.3,
  "extent": {
   "centroid": {
-   "x": -1821,
+   "x": -1820,
    "z": 2127
   },
-  "land_area_nodes2": 311024,
+  "land_area_nodes2": 313088,
   "max_x": -1324,
   "max_z": 2396,
   "min_x": -2380,
@@ -334,15 +331,15 @@
  "id": "kragmar_mournfen",
  "level_field": {
   "histogram_pct": {
-   "11": 8.3,
-   "12": 9.8,
+   "11": 8.2,
+   "12": 9.9,
    "13": 11.0,
-   "14": 11.9,
-   "15": 15.9,
-   "16": 13.3,
-   "17": 9.2,
-   "18": 8.9,
-   "19": 6.7,
+   "14": 11.7,
+   "15": 16.0,
+   "16": 13.4,
+   "17": 9.1,
+   "18": 9.0,
+   "19": 6.8,
    "20": 4.9
   },
   "max": 20,
@@ -360,7 +357,6 @@
   "kragmar_stillgrave_hollow"
  ],
  "numeric_id": 18,
- "palette_without_host_ground": [],
  "protected": {
   "roads": "road corridor = half width + 1 node beside the edge after Ruling 1 (today +3), +-5 vertical",
   "settlement_boxes": [
@@ -414,13 +410,14 @@
    "id": "r14_undead_07_mud_that_moves",
    "min_level": 10,
    "objectives": [
-    "kill 6 bog_ooze [in kragmar_mournfen]"
+    "kill 6 bog_ooze or sullen_bog_ooze [in kragmar_mournfen]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:bog_ooze"
+      "grug_mobs:bog_ooze",
+      "grug_mobs:sullen_bog_ooze"
      ],
      "type": "kill",
      "zone": "kragmar_mournfen"
@@ -448,7 +445,6 @@
    "objectives_raw": [
     {
      "count": 3,
-     "description": "Bring slime gel",
      "item": "grug_mobs:slime_gel",
      "type": "item"
     }
@@ -470,13 +466,14 @@
    "id": "r15_undead_local_02",
    "min_level": 10,
    "objectives": [
-    "kill 5 plague_boar [in kragmar_mournfen]"
+    "kill 5 plague_boar or young_boar [in kragmar_mournfen]"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:plague_boar"
+      "grug_mobs:plague_boar",
+      "grug_mobs:young_boar"
      ],
      "type": "kill",
      "zone": "kragmar_mournfen"
@@ -499,13 +496,14 @@
    "id": "r14_undead_08_clear_the_sluice",
    "min_level": 11,
    "objectives": [
-    "kill 6 crocodile [in kragmar_mournfen]"
+    "kill 6 crocodile or reed_crocodile [in kragmar_mournfen]"
    ],
    "objectives_raw": [
     {
      "count": 6,
      "mobs": [
-      "grug_mobs:crocodile"
+      "grug_mobs:crocodile",
+      "grug_mobs:reed_crocodile"
      ],
      "type": "kill",
      "zone": "kragmar_mournfen"
@@ -554,13 +552,14 @@
    "id": "r15_undead_local_04",
    "min_level": 11,
    "objectives": [
-    "kill 5 bog_ooze [in kragmar_mournfen]"
+    "kill 5 bog_ooze or sullen_bog_ooze [in kragmar_mournfen]"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "mobs": [
-      "grug_mobs:bog_ooze"
+      "grug_mobs:bog_ooze",
+      "grug_mobs:sullen_bog_ooze"
      ],
      "type": "kill",
      "zone": "kragmar_mournfen"
@@ -583,14 +582,15 @@
    "id": "r14_undead_09_fire_that_the_fen_cannot_drown",
    "min_level": 12,
    "objectives": [
-    "kill 4 bandit or bandit_archer [in kragmar_mournfen]"
+    "kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_mournfen]"
    ],
    "objectives_raw": [
     {
      "count": 4,
      "mobs": [
       "grug_mobs:bandit",
-      "grug_mobs:bandit_archer"
+      "grug_mobs:bandit_archer",
+      "grug_mobs:quarrelsome_bandit"
      ],
      "type": "kill",
      "zone": "kragmar_mournfen"
@@ -644,7 +644,6 @@
    "objectives_raw": [
     {
      "count": 5,
-     "description": "Bring linen cloth",
      "item": "grug_mobs:linen_cloth",
      "type": "item"
     }
@@ -670,7 +669,7 @@
    "p10": 9,
    "p90": 50
   },
-  "steep_share_pct": 1.7
+  "steep_share_pct": 1.8
  },
  "relief_profile": "wetland_delta",
  "roads": [
@@ -810,7 +809,7 @@
     2095
    ],
    "from": "anchor_037 (Mournfen Outpost, kragmar_mournfen)",
-   "id": 40,
+   "id": 41,
    "kind": "trail",
    "last_in_zone": [
     -1905,
@@ -844,7 +843,7 @@
     2036
    ],
    "from": "anchor_055 (Mournfen Bandit Camp, kragmar_mournfen)",
-   "id": 55,
+   "id": 56,
    "kind": "trail",
    "last_in_zone": [
     -1553,
@@ -874,7 +873,7 @@
     2264
    ],
    "from": "anchor_069 (Blackreed Enclosure, kragmar_mournfen)",
-   "id": 69,
+   "id": 70,
    "kind": "trail",
    "last_in_zone": [
     -1851,
@@ -923,28 +922,28 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 754,
+      "road": 717,
       "straight": 530,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1194,
+      "road": 1179,
       "straight": 638,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1379,
+      "road": 1422,
       "straight": 301,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 1540,
+      "road": 1437,
       "straight": 868,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
@@ -952,8 +951,8 @@
     ],
     "nearest_other_zone_land": {
      "bearing": "S",
-     "distance": 70,
-     "x": -1916,
+     "distance": 68,
+     "x": -1900,
      "z": 1952
     },
     "nearest_road": {
@@ -967,9 +966,9 @@
     },
     "nearest_sea_beach_sand": {
      "bearing": "NE",
-     "distance": 423,
+     "distance": 419,
      "x": -1532,
-     "z": 2228
+     "z": 2220
     },
     "to_zone_edge": {
      "east_+x": {
@@ -982,7 +981,7 @@
      },
      "south_-z": {
       "distance": 68,
-      "hits": "inland_water"
+      "hits": "kragmar_nhal_veyr"
      },
      "west_-x": {
       "distance": 308,
@@ -1052,28 +1051,28 @@
      },
      {
       "name": "Nhal Veyr",
-      "road": 971,
+      "road": 935,
       "straight": 671,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1411,
+      "road": 1396,
       "straight": 573,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Bandit Camp",
-      "road": 1597,
+      "road": 1639,
       "straight": 502,
       "to": "mournfen_bandit_camp",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Boneledger Post",
-      "road": 1757,
+      "road": 1654,
       "straight": 882,
       "to": "r20_anchor_038",
       "zone": "kragmar_ossuary_reach"
@@ -1155,42 +1154,42 @@
     "hubs": [
      {
       "name": "Nhal Veyr",
-      "road": 1095,
+      "road": 1142,
       "straight": 585,
       "to": "nhal_veyr",
       "zone": "kragmar_nhal_veyr"
      },
      {
       "name": "Speargrass Wellhold",
-      "road": 1342,
+      "road": 1350,
       "straight": 879,
       "to": "r20_anchor_022",
       "zone": "kragmar_speargrass_reach"
      },
      {
       "name": "Mournfen Village",
-      "road": 1379,
+      "road": 1422,
       "straight": 301,
       "to": "mournfen_village",
       "zone": "kragmar_mournfen"
      },
      {
       "name": "Redpick Yard",
-      "road": 1452,
+      "road": 1460,
       "straight": 946,
       "to": "r20_anchor_065",
       "zone": "kragmar_speargrass_reach"
      },
      {
       "name": "Ossuary Ledgerstead",
-      "road": 1535,
+      "road": 1604,
       "straight": 900,
       "to": "r20_anchor_020",
       "zone": "kragmar_ossuary_reach"
      },
      {
       "name": "Mournfen Outpost",
-      "road": 1597,
+      "road": 1639,
       "straight": 502,
       "to": "mournfen_outpost",
       "zone": "kragmar_mournfen"
@@ -1362,42 +1361,133 @@
   {
    "day": {
     "levels": [
-     11,
+     15,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 62.5
    },
-   "disposition": "critter",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_fowl",
-   "name": "Bog Fowl",
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:bristling_boar",
+   "name": "Ridgeback Tusker",
    "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:granary_rat",
+   "name": "Granary Rat",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 23.4
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:mangy_rat",
+   "name": "Burrow Gnawer",
+   "night": {
+    "levels": [
+     15,
+     20
+    ],
+    "share_pct": 27.2
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:moaning_zombie",
+   "name": "Cairn Zombie",
+   "night": {
+    "levels": [
+     11,
+     15
+    ],
+    "share_pct": 27.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     14,
+     15
+    ],
+    "share_pct": 36.2
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_husk",
+   "name": "Cairn Sun-Dried Husk",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:muttering_zombie",
+   "name": "Pauper Shambler",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 17.9
+   }
+  },
+  {
+   "day": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 26.3
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:parched_husk",
+   "name": "Pauper Mummy",
+   "night": null
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:quarrelsome_bandit",
+   "name": "Roadside Bandit",
+   "night": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 23.4
+   }
   },
   {
    "day": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 4.2
    },
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:bog_ooze",
-   "name": "Bog Ooze",
+   "hosts": [],
+   "mob": "grug_mobs:reed_crocodile",
+   "name": "Reed Crocodile",
    "night": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 4.2
    }
   },
   {
@@ -1406,67 +1496,23 @@
      11,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 7.1
    },
    "disposition": "aggressive",
-   "hosts": [
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:crocodile",
-   "name": "Crocodile",
+   "hosts": [],
+   "mob": "grug_mobs:reed_mirefolk",
+   "name": "Reed Mirefolk",
    "night": {
     "levels": [
      11,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 28.0
+    "share_pct": 7.1
    }
   },
   {
    "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 90.9
-   },
-   "disposition": "critter",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:sand",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:hare",
-   "name": "Hare",
-   "night": null
-  },
-  {
-   "day": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 99.3
-   },
-   "disposition": "neutral",
-   "hosts": [
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:plague_boar",
-   "name": "Plague Boar",
-   "night": null
-  },
-  {
-   "day": {
-    "area_nodes2": 14928,
+    "area_nodes2": 15040,
     "levels": [
      11,
      17
@@ -1479,7 +1525,7 @@
    "mob": "grug_mobs:shore_crab",
    "name": "Shore Crab",
    "night": {
-    "area_nodes2": 14928,
+    "area_nodes2": 15040,
     "levels": [
      11,
      17
@@ -1488,62 +1534,80 @@
    "note": "measured on sea-beach sand from the grid (host node check)"
   },
   {
-   "day": null,
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_rainforest_litter",
-    "grug_nodes:dirt_with_bone_litter",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:wisp",
-   "name": "Wisp",
-   "night": {
+   "day": {
     "levels": [
      11,
+     13
+    ],
+    "share_pct": 23.4
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:sullen_bog_ooze",
+   "name": "Bubbling Bog Ooze",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     11,
+     13
+    ],
+    "share_pct": 3.2
+   },
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:tidepool_crab",
+   "name": "Tidepool Crab",
+   "night": null
+  },
+  {
+   "day": {
+    "levels": [
+     18,
      20
     ],
-    "policy_share_pct": 100.0,
-    "share_pct": 36.5
+    "share_pct": 3.8
+   },
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:vigilant_bandit_archer",
+   "name": "Bandit Lookout",
+   "night": {
+    "levels": [
+     18,
+     20
+    ],
+    "share_pct": 3.8
+   }
+  },
+  {
+   "day": null,
+   "disposition": "aggressive",
+   "hosts": [],
+   "mob": "grug_mobs:wandering_wisp",
+   "name": "Wandering Wisp",
+   "night": {
+    "levels": [
+     14,
+     20
+    ],
+    "share_pct": 30.4
    }
   },
   {
    "day": {
     "levels": [
      11,
-     20
+     13
     ],
-    "policy_share_pct": 62.7,
-    "share_pct": 62.7
+    "share_pct": 23.4
    },
-   "disposition": "aggressive",
-   "hosts": [
-    "default:dirt_with_coniferous_litter",
-    "default:dirt_with_grass",
-    "default:dirt_with_rainforest_litter",
-    "default:dry_dirt_with_dry_grass",
-    "default:gravel",
-    "default:sand",
-    "default:snowblock",
-    "grug_nodes:blight_dirt",
-    "grug_nodes:dirt_with_canopy_litter",
-    "grug_nodes:dirt_with_forest_litter",
-    "grug_nodes:dirt_with_silver_litter",
-    "grug_nodes:mesa_clay",
-    "grug_nodes:mud"
-   ],
-   "mob": "grug_mobs:zombie",
-   "name": "Zombie",
-   "night": {
-    "levels": [
-     11,
-     20
-    ],
-    "policy_share_pct": 100.0,
-    "share_pct": 91.5
-   }
+   "disposition": "neutral",
+   "hosts": [],
+   "mob": "grug_mobs:young_boar",
+   "name": "Rooting Boar",
+   "night": null
   }
  ],
  "territory_rule": "throng_home",
