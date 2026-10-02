@@ -104,7 +104,7 @@ grug_core = {register_tag_visibility = function() end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function(key) return deep_copy(SOCKETS[key] or {}) end}
 dofile("mods/CORE/grug_core/item_names.lua")
-grug_xp = {get_level = function() return 60 end,
+grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
 	quest_reward = function(level, weight) return weight * 10 * level end}
 grug_money = {format = function(copper) return copper .. " copper" end}
 grug_factions = {get_faction = function() return "accord" end}

@@ -28,9 +28,11 @@ grug_map.minimap = M
 -- by default.
 local META = "grug_map:minimap_hidden"
 -- The map, markers and party members move every server step. The static
--- markers are asked from their providers on a quest change, on joining and
--- every SLOW seconds (a quest may unlock with a level), each player in its
--- own phase; the ones near the window are picked on each new cell.
+-- markers are asked from their providers when the quest markers change
+-- (grug_quests.markers_changed: a quest change, held objective items, a
+-- level), on joining and every SLOW seconds (a repeatable's cooldown ends),
+-- each player in its own phase; the ones near the window are picked on each
+-- new cell.
 local SLOW = 5.0
 -- The window size and the location line are read again every WINDOW
 -- seconds, not every step (Round 30, perf review #12): a resize relayouts
@@ -471,7 +473,7 @@ grug_parties.register_on_change(function(name)
 	local state = players[name]
 	if state then state.party = nil end
 end)
-grug_quests.register_on_change(function(player)
+grug_quests.register_on_markers_changed(function(player)
 	local state = player and players[player:get_player_name()]
 	if state then state.static = nil end
 end)

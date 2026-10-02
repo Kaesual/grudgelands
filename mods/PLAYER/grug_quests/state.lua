@@ -41,14 +41,24 @@ end
 -- For fixtures: the cache, to prove that no reader writes into it.
 Q._state_cache = cache
 -- player name -> {raw, at, states, version}: Q.marker_states' memo.
-local marker_memo = {}
-local function changed(player)
-	-- Holdings may have changed without the state (a quest drop): the next
-	-- marker_states call recomputes.
+local marker_memo, marker_callbacks = {}, {}
+-- The markers may differ: the next marker_states call recomputes, and the
+-- consumers that keep their own copy (the minimap) are told. Called on every
+-- quest change, and without one when the held objective items change (the
+-- tracker HUD's journal_key, hud.lua) or the level does (below).
+function Q.markers_changed(player)
 	local memo = marker_memo[player:get_player_name()]
 	if memo then memo.at = nil end
+	for _, callback in ipairs(marker_callbacks) do callback(player) end
+end
+function Q.register_on_markers_changed(callback) marker_callbacks[#marker_callbacks + 1] = callback end
+local function changed(player)
+	-- Holdings may have changed with the state (a quest drop).
+	Q.markers_changed(player)
 	for _, callback in ipairs(callbacks) do callback(player) end
 end
+-- A level unlocks quests (min_level) without a quest change.
+grug_xp.register_on_level_change(function(player) Q.markers_changed(player) end)
 core.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	cache[name], marker_memo[name] = nil, nil
@@ -208,7 +218,8 @@ end
 -- NPC id -> the most urgent status of its rows in Q.npc_quests (ready, then
 -- available, active, locked); NPCs without rows are absent. One state load
 -- and one holdings snapshot for all NPCs, memoized per player for a second
--- and until the state or a quest change (`changed`) says otherwise. Also
+-- and until the state changes or Q.markers_changed says otherwise (only a
+-- repeatable's cooldown ending waits for the second). Also
 -- returns a version that rises whenever the markers differ from the
 -- previous result, for cheap change tests (the Map tab). Read-only: the
 -- table is shared until the next change.

@@ -123,6 +123,10 @@ local function refresh(player)
 	local window = core.get_player_window_information(name)
 	local width = grug_core.hud_layout.side_text_width(window)
 	local fresh = raw ~= row.raw or held ~= row.held
+	-- Held objective items changed under an unchanged state (picked up,
+	-- dropped, used): an NPC's marker may turn ready or back. A state change
+	-- has told the markers already.
+	if raw == row.raw and held ~= row.held then grug_quests.markers_changed(player) end
 	if not fresh and width == row.width then return end
 	if fresh then
 		row.journal, row.raw, row.held = grug_quests.journal(player, counts), raw, held

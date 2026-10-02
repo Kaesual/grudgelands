@@ -103,12 +103,13 @@ for i, socket in ipairs(sockets) do
 	if socket.role == "quest" then npcs["q" .. i] = {settlement = "town", socket = socket.id, title = "Q"} end
 end
 -- marker_state for trees before Round 30, marker_states (one table for all
--- givers) since Round 30 lane P1.
+-- givers) since Round 30 lane P1; the minimap listens to
+-- register_on_markers_changed since lane P1b.
 local marker_states = {}
 for id in pairs(npcs) do marker_states[id] = "available" end
 rawset(_G, "grug_quests", {registered_npcs = npcs, marker_state = function() return "available" end,
 	marker_states = function() return marker_states, 1 end,
-	register_on_change = function() end})
+	register_on_change = function() end, register_on_markers_changed = function() end})
 rawset(_G, "grug_parties", {view = function()
 	return {members = {{name = "me"}, {name = "p1"}, {name = "p2"}}}
 end, register_on_change = function() end})
