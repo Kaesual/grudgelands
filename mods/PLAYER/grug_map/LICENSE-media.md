@@ -39,7 +39,10 @@ CC0-1.0. No third-party source images. A plain placeholder.
 
 # Waypoint marker (Round 29)
 
-`textures/grug_map_waypoint.png`: original 16×16 RGBA pixel art (a grey
-standing stone with a blue rune on a dark outline) drawn from a character grid
-by `tools/r29_w/render_textures.py` for Grudgelands, CC0-1.0. No third-party
-source images. A first version; the art lane may redraw it under the same name.
+`textures/grug_map_waypoint.png`: original 16×16 RGBA pixel art by
+**GPT-6 Astra (Grudgelands)**, **CC0-1.0**. A grey standing stone and low
+plinth, with a hollow blue rune, dark outline and pale stone edge for light
+and dark terrain. Generated with OpenAI's built-in `image_gen.imagegen`,
+then exported with nearest-neighbour sampling, a reduced palette without
+dithering and binary alpha. No third-party source images; the project
+dedicates any rights it holds in this original to CC0-1.0.

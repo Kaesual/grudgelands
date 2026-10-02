@@ -51,7 +51,7 @@ says 29; only the explicitly requested IDs are included.
 | `textures/grug_status_alchemy_cave.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_mount_land.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_mount_flight.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_mount_water.png` | Round 29 first version (the art lane redraws it under this name): `sailboat_inventory.png` by deasanta from Lord of the Test `f164140154945f0b356521ae721a86e9c7a0e0cf`, `mods/boats/textures/` (licence per `mods/boats/license.txt`), scaled 2x nearest-neighbour onto the `#151f2d` plate | WTFPL |
+| `textures/grug_status_mount_water.png` | GPT-6 Astra (Grudgelands), own work, Round 29; generated with OpenAI's built-in `image_gen.imagegen`, no third-party source images. Wooden rowboat, oar and blue waves; nearest-neighbour 64×64 RGBA export with the flat `#151f2d` plate normalized and the frame area left clear; no baked frame | CC0-1.0 |
 | `textures/grug_status_shield.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_move_immune.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_talent_unbroken.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
