@@ -147,7 +147,7 @@
         "sunscar_hunt_04"
       ],
       "title": "The Last Drop Is Ours",
-      "text": "We share water with a thirsty stranger; these thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six Confused Water Thieves and Confused Water Thief Chief Lastdrop. Let Sunscar fill its cups without looking over its shoulder.",
+      "text": "We share water with a thirsty stranger; these thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six of the thieves and {name:water_thief_chief} himself. Let Sunscar fill its cups without looking over its shoulder.",
       "objectives": [
         {
           "type": "kill",
@@ -410,7 +410,7 @@
         "sunscar_hunt_03"
       ],
       "title": "Keep Dinner Off the Dirt",
-      "text": "Bring me three Fine Sinew from the Young Plains Runners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and I am too old to wrestle rats for dinner.",
+      "text": "Bring me three Fine Sinew from the Young Plains Runners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and those runners are too quick for an old cook with a ladle.",
       "objectives": [
         {
           "type": "item",

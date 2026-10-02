@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "Still Using Those Shoulders",
-      "text": "Kill eight Mesa Vultures by day along the {name:ridges}, {zone_area:ridges}; our grass cutters are coming home with pecked shoulders and a whole new respect for hats. Tell those birds Brakka's people are still using their flesh, if you think they will listen.",
+      "text": "Kill eight Mesa Vultures by day along the {name:ridges}, {zone_area:ridges}; our grass cutters are coming home with pecked shoulders and a whole new respect for hats. Tell those birds my cutters are still using their shoulders, if you think they will listen.",
       "objectives": [
         {
           "type": "kill",

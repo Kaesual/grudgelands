@@ -176,11 +176,11 @@
       "line": "provisions",
       "giver": "r20_orc_capital_cook",
       "turnin": "r20_orc_capital_cook",
-      "min_level": 20,
-      "level": 22,
+      "min_level": 22,
+      "level": 24,
       "requires": [],
       "title": "The Ladle Commands",
-      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Waterhole Zebras on the {name:steppe}. We have ration bundles to tie and a hungry muster to fill them for.",
+      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Waterhole Zebras that graze the {name:badlands} by day. We have ration bundles to tie and a hungry muster to fill them for.",
       "objectives": [
         {
           "type": "item",
@@ -194,7 +194,7 @@
           "roles": [
             "watchful_zebra"
           ],
-          "area": "kragmar_gor_drazhak/steppe"
+          "area": "kragmar_gor_drazhak/badlands"
         }
       ],
       "rewards": {
