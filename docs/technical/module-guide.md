@@ -897,7 +897,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   25); bounded functional anchors keep their hard protection; the remaining camp shells, tents, fences and battlefield
   dressing are mutable.
   Material design owns the complete `race_region` mapping of
-  G1, G2, cultural material and signature wood; map code stores only the
+  cultural material and signature wood (gems are depth-tiered, not
+  regional); map code stores only the
   region identity and placement data needed to consume that mapping. Each
   endpoint apex camp has no renewable sockets (renewable ores are removed,
   2026-09-29); its small functional anchor and building-core box are

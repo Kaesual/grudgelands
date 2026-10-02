@@ -32,11 +32,8 @@ two recipes in `items_crafting.md` §3.0.5 and the Kraken Guard in
   level-30 speed to a whole starting zone.
 
 *Rationale*: the two dragon islands are reachable only by boat
-(`world_zones.md` §6), and both apex camps are one of the three decided
-routes to the opposing faction's exclusive G2 gem (`world_zones.md` §11). A
-purchase price, profession or high level gate in front of a boat would put a
-paywall in front of a content pillar and in front of a resource-parity
-guarantee. The gate that remains is geography: the mainland ends of both
+(`world_zones.md` §6). A purchase price, profession or high level gate in
+front of a boat would put a paywall in front of a content pillar. The gate that remains is geography: the mainland ends of both
 channels lie in level-51–60 contested zones.
 
 ## 2. The shipwright
@@ -173,4 +170,5 @@ are owned by `world.md` §2b. What matters for a boat:
 - Because the shelf follows the entire mainland perimeter, a low-level
   character may legally coast all the way to a channel mouth and visit an
   island. That is accepted: the islands are contested level-60 zones, their
-  apex gems need a T4 pick, and sightseeing is not progression.
+  gems need the pick of their tier rock like everywhere, and sightseeing is
+  not progression.

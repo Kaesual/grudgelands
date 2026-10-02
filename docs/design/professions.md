@@ -78,7 +78,7 @@ Two free main professions per player, unchanged. The roster is organised
 | **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and leather bags |
 | **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
 | **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff, wand and bow enchantments; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
-| **Goldsmith** | Gold + Quartz + the six regional G1/G2 gems | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
+| **Goldsmith** | Gold + Quartz + the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
 | **Alchemist** | healing herbs + spices | Potions, elixirs, apothecary gear — **gathers its own herbs** |
 
 ### 2.1 The coverage is complete and overlap-free
@@ -142,7 +142,8 @@ not a hidden benefit of learning the item's owning profession; see
 - **Gem Hunter merges into the Goldsmith.** Its useful gathering identity
   survives as bonus yield from a successfully harvested natural gem node (`items_crafting.md` §3.6b): **10% base chance at Apprentice, 20%
   from Journeyman onward**, rolled once after a valid harvest and granting one
-  additional raw gem item of the harvested species. The old Gem Detector was
+  additional raw gem item of the harvested species (Quartz is a mineral, not
+  a gem, and gets no roll). The old Gem Detector was
   tied to deleted private-island treasure clusters and is retired rather than
   given a continental radar role.
 
