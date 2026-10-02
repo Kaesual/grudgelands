@@ -1185,6 +1185,9 @@ local function install(entity, row, slot)
 	elseif slot.role == "riding_trainer" then
 		entity._grug_npc_name = "Riding Trainer"
 		entity._grug_walker = false
+	elseif slot.role == "shipwright" then
+		entity._grug_npc_name = "Shipwright"
+		entity._grug_walker = false
 	elseif slot.role == "housing_manager" then
 		entity._grug_npc_name = "Housing Steward"
 		entity._grug_walker = false

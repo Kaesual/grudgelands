@@ -76,6 +76,7 @@ icons.STATUS = {
 	mount = def("buff", "Mount", "", art("mount_land"), {
 		land = art("mount_land"),
 		flight = art("mount_flight"),
+		water = art("mount_water"),
 	}),
 	move_immune = def("buff", "Unstoppable", "Cannot be rooted or slowed",
 		art("move_immune")),

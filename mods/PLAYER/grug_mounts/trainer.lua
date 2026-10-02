@@ -1,7 +1,16 @@
--- Capital-only Riding service. Each open dialog is bound to the live authored
--- trainer and a unique session; a stale form cannot purchase at another NPC.
+-- Capital-only Riding service, shared with the Shipwright (shipwright.lua).
+-- Each open dialog is bound to the live authored NPC and a unique session; a
+-- stale form cannot purchase at another NPC.
 local sessions = {}
 local serial = 0
+-- Socket role -> the dialogue's header and the tiers it sells, in order. A
+-- tier's "previous" is the one listed before it.
+local SERVICES = {
+	riding_trainer = {title = "Riding Trainer",
+		subtitle = "Universal skill — no profession slot",
+		tiers = grug_mounts.RIDING_TIERS},
+}
+grug_mounts.SERVICES = SERVICES
 local CAPITAL_FACTION = {
 	highcourt = "accord", dur_brannoc = "accord", lethariel = "accord",
 	nhal_veyr = "throng", gor_drazhak = "throng", kezamba = "throng",
@@ -14,7 +23,7 @@ end
 local function permitted(player, entity)
 	if not player or not player.is_player or not player:is_player() or
 			player:get_hp() <= 0 or not entity or
-			entity._grug_socket_role ~= "riding_trainer" or not entity.object then
+			not SERVICES[entity._grug_socket_role] or not entity.object then
 		return false
 	end
 	local faction = CAPITAL_FACTION[entity._grug_start]
@@ -24,7 +33,7 @@ local function permitted(player, entity)
 	local dx, dy, dz = pos.x - npc.x, pos.y - npc.y, pos.z - npc.z
 	if dx * dx + dy * dy + dz * dz > 64 then return false end
 	for _, socket in ipairs(grug_core.settlement_sockets_at(entity._grug_start)) do
-		if socket.id == entity._grug_socket and socket.role == "riding_trainer" then
+		if socket.id == entity._grug_socket and socket.role == entity._grug_socket_role then
 			local sx, sy, sz = npc.x - socket.pos.x, npc.y - socket.pos.y,
 				npc.z - socket.pos.z
 			return sx * sx + sy * sy + sz * sz <= 4
@@ -41,11 +50,13 @@ local OWNED = "#7ae08a"
 local NOTICE = {[true] = "#7ae08a", [false] = "#ff6b6b"}
 
 -- One row per tier: {id, name, level, state, price, previous}. Pure, so the
--- portable fixture renders it without an engine.
-function grug_mounts.trainer_formspec(rows, notice)
+-- portable fixture renders it without an engine. `service` is a SERVICES
+-- entry (default: the Riding Trainer).
+function grug_mounts.trainer_formspec(rows, notice, service)
+	service = service or SERVICES.riding_trainer
 	local fs = {"formspec_version[3]size[10,6]",
-		"label[0.4,0.4;Riding Trainer]",
-		"label[0.4,0.85;Universal skill — no profession slot]"}
+		"label[0.4,0.4;" .. esc(service.title) .. "]",
+		"label[0.4,0.85;" .. esc(service.subtitle) .. "]"}
 	for index, row in ipairs(rows) do
 		local y = 1.5 + (index - 1) * 0.85
 		local name = ("%s (L%d)"):format(row.name, row.level)
@@ -77,31 +88,33 @@ function grug_mounts.trainer_formspec(rows, notice)
 	return table.concat(fs)
 end
 
-local function formspec(player, notice)
+local function formspec(player, service, notice)
 	local rows = {}
-	for tier_id = 1, 4 do
+	for index, tier_id in ipairs(service.tiers) do
 		local tier = grug_mounts.TIERS[tier_id]
 		local state, price = grug_mounts.tier_state(player, tier_id)
-		local previous = grug_mounts.TIERS[tier_id - 1]
-		rows[tier_id] = {id = tier_id, name = tier.name, level = tier.level,
+		local previous = grug_mounts.TIERS[service.tiers[index - 1] or 0]
+		rows[index] = {id = tier_id, name = tier.name, level = tier.level,
 			state = state, price = price and grug_money.format(price),
 			previous = previous and previous.name}
 	end
-	return grug_mounts.trainer_formspec(rows, notice)
+	return grug_mounts.trainer_formspec(rows, notice, service)
 end
 
+-- Opens the dialogue of the service the NPC's socket role names.
 function grug_mounts.open_trainer(player, entity)
 	if not permitted(player, entity) then return false end
 	local name = player:get_player_name()
+	local service = SERVICES[entity._grug_socket_role]
 	serial = serial + 1
-	local formname = "grug_mounts:riding:" .. serial
-	sessions[name] = {entity = entity, formname = formname}
-	core.show_formspec(name, formname, formspec(player))
+	local formname = "grug_mounts:service:" .. serial
+	sessions[name] = {entity = entity, formname = formname, service = service}
+	core.show_formspec(name, formname, formspec(player, service))
 	return true
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)
-	if formname:sub(1, 19) ~= "grug_mounts:riding:" then return false end
+	if formname:sub(1, 20) ~= "grug_mounts:service:" then return false end
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if not session or formname ~= session.formname then return true end
@@ -110,7 +123,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		return true
 	end
 	local selected
-	for tier_id = 1, 4 do
+	for _, tier_id in ipairs(session.service.tiers) do
 		if fields["buy_" .. tier_id] then
 			if selected then return true end
 			selected = tier_id
@@ -122,7 +135,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		local ok, message = grug_mounts.purchase(player, selected)
 		grug_core.flash(player, message, ok and grug_core.FLASH_COLOR.notice or
 			grug_core.FLASH_COLOR.error)
-		core.show_formspec(name, formname, formspec(player,
+		core.show_formspec(name, formname, formspec(player, session.service,
 			{ok = ok == true, text = message}))
 	end
 	return true

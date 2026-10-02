@@ -1,8 +1,10 @@
 # Media licences — `grug_mounts`
 
-No sounds are shipped by this mod. Every mesh below contains `ANIM`, `BONE`
-and `KEYS` chunks; the mount animation ranges were checked against the keyed
-frame ranges and are listed in the final table.
+No sounds are shipped by this mod. Every mount mesh below contains `ANIM`,
+`BONE` and `KEYS` chunks; the mount animation ranges were checked against the
+keyed frame ranges and are listed in the final table. The two boat hulls are
+rigid (`NODE`/`MESH`/`BRUS`/`VRTS`/`TRIS` only): a hull does not move its parts,
+so it needs no animation (travel plan, lane B).
 
 ## Imported media
 
@@ -12,6 +14,11 @@ frame ranges and are listed in the final table.
 | `grug_mounts_horse_white.png` | XSSheep | VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, `textures/mobs_mc_horse_white.png` | CC BY-SA 4.0 (`mods/ENTITIES/mobs_mc/LICENSE-media.md`, Pixel Perfection mob textures) | Renamed only; runtime colour modifier supplies faction/tier colour |
 | `grug_mounts_horse_brown.png` | XSSheep | VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, `textures/mobs_mc_horse_brown.png` | CC BY-SA 4.0 (`mods/ENTITIES/mobs_mc/LICENSE-media.md`, Pixel Perfection mob textures) | Renamed only; runtime colour modifier supplies faction colour |
 | `grug_mounts_tiger.b3d` | Liil/Wilhelmine | animalworld `ac835da96681774679ace90656812aab67e25b5c`, `models/Tiger.b3d` | MIT (`LICENSE`: explicit textures/models/animation clause) | Renamed only; byte-identical |
+| `grug_mounts_rowboat.b3d` | deasanta | Lord of the Test `f164140154945f0b356521ae721a86e9c7a0e0cf` (https://github.com/minetest-LOTR/Lord-of-the-Test), `mods/boats/models/rowboat.b3d` | WTFPL (`mods/boats/license.txt`, "Authors of media files"; the repository's top-level `LICENSE.txt` LGPL 2.1 covers its code) | Renamed only; byte-identical. Base boat hull; rendered with `default_wood.png` as upstream |
+| `grug_mounts_sailboat.b3d` | deasanta | same commit, `mods/boats/models/sailboat.b3d` | WTFPL (same file) | Renamed only; byte-identical. Improved boat hull |
+| `grug_mounts_sailboat.png` | deasanta | same commit, `mods/boats/textures/sailboat.png` | WTFPL (same file) | Renamed only; byte-identical |
+| `grug_mounts_icon_boat.png` | deasanta | same commit, `mods/boats/textures/rowboat_inventory.png` | WTFPL (same file) | Renamed only; first version, the art lane redraws it under this name |
+| `grug_mounts_icon_improved_boat.png` | deasanta | same commit, `mods/boats/textures/sailboat_inventory.png` | WTFPL (same file) | Renamed only; first version, the art lane redraws it under this name |
 | `grug_mounts_tiger.png` | Liil/Wilhelmine | animalworld `ac835da96681774679ace90656812aab67e25b5c`, `textures/texturetiger.png` | MIT (`LICENSE`: explicit textures/models/animation clause) | Renamed only; runtime warm-gold modifier |
 
 ## Reused shipped media
@@ -29,6 +36,7 @@ auditable.
 | `grug_mobs_wolf.b3d`, `grug_mobs_wolf_blightfang.png` | VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, `mobs_mc_wolf.b3d`, derived `mobs_mc_wolf.png` | model GPL-3.0-or-later by 22i; texture CC BY-SA 4.0 by XSSheep | Undead T2; existing Grudgelands blight retint plus runtime violet modifier |
 | `grug_mobs_eagle.b3d`, `grug_mobs_eagle.png` | animalworld `ac835da96681774679ace90656812aab67e25b5c`, `models/Stellerseagle.b3d`, `textures/texturestellerseagle.png` | MIT, Liil/Wilhelmine | Accord T3/T4; scaled, with steel-blue then noble ivory runtime colour |
 | `grug_mobs_cave_bat.b3d`, `grug_mobs_cave_bat.png` | VoxeLibre `c2dbc520ff4e1637072d33b06c3a2404e0f08df7`, `mobs_mc_bat.b3d`, `mobs_mc_bat.png` | model GPL-3.0-or-later by 22i; texture CC BY-SA 4.0 by XSSheep | Throng T3/T4; scaled, with violet then noble blood-red runtime colour |
+| `default_wood.png` (owned by the vendored `mods/BASE/default`) | minetest_game `b5243f3`, `mods/default/textures/default_wood.png` | CC BY-SA 3.0, BlockMen (`mods/BASE/default/README.txt`) | Base boat hull texture, unchanged, as the Lord of the Test rowboat uses it |
 
 ## Mount animation audit
 
@@ -45,7 +53,7 @@ auditable.
 
 ## R10 inventory renders
 
-The twelve `grug_mounts_icon_*.png` files are offline Eevee renders of the
+The twelve mount `grug_mounts_icon_*.png` files (not the two boat icons) are offline Eevee renders of the
 shipped model/texture/tint combinations listed above. They inherit each row's
 model and texture licenses. `tools/r10_art/render_mount_icons.sh` converts the
 B3D mechanically for Blender, preserves the horse blank/body/blank buffers and

@@ -575,8 +575,8 @@ footprints. It neither adds duplicate bosses/guards/resources nor expands
 terrain reservations. The frontier bandit camp's building core is 16 nodes
 (user decision 2026-09-29, WP audit E1: the art and code stay, the former
 24-node design value is corrected). Whitebridge and Whispering
-Reedlands retain shipwright workplaces/display hulls; boat teaching is future
-WP17 work.
+Reedlands keep their display hulls as plain scenery; the Shipwright who sells
+boats stands at every capital stable ([boats.md](boats.md) §2).
 
 Thirty peaceful regional sites (villages, outposts and mines) each provide one
 quest host. Hostile new camps do not gain friendly residents. Each starting

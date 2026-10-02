@@ -31,13 +31,14 @@ local function delete_drop()
 	return ItemStack("")
 end
 
-for tier_id = 1, 4 do
+for tier_id = 1, #grug_mounts.TIERS do
 	local tier = grug_mounts.TIERS[tier_id]
 	core.register_craftitem(tier.item, {
 		description = tier.name,
 		inventory_image = ({"grug_mounts_icon_t1_accord.png",
 			"grug_mounts_icon_human.png", "grug_mounts_icon_expert_accord.png",
-			"grug_mounts_icon_master_accord.png"})[tier_id],
+			"grug_mounts_icon_master_accord.png", "grug_mounts_icon_boat.png",
+			"grug_mounts_icon_improved_boat.png"})[tier_id],
 		stack_max = 1,
 		groups = {grug_mount = tier_id, grug_bound_skill = 1, not_in_creative_inventory = 1},
 		_grug_mount_tier = tier_id,

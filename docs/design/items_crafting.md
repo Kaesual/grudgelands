@@ -690,59 +690,13 @@ Pick profiles retain their authored monotonic ladder. Hoe identities, uses,
 soil conversion, water buckets and wild renewal are authoritative in
 [farming.md](farming.md); this document owns only their Basics recipes.
 
-#### 3.0.5 The two boat recipes (decided 2026-08-13)
+#### 3.0.5 Boats have no recipe
 
-Water travel is specified in [boats.md](boats.md); this section owns only the
-two recipes. Both are ordinary 3×3 grid recipes and need no workbench.
-
-**Base boat** — a universal base recipe under §3.0.3: every character can
-craft it from level 1, with no profession, trainer, vendor or quest. Five
-`group:wood` in the hull shape (the arrangement of
-`reference_projects/Lord-of-the-Test/mods/boats/init.lua:201-208`, whose row
-boat is our reference implementation):
-
-| | | |
-|---|---|---|
-| — | — | — |
-| `group:wood` | — | `group:wood` |
-| `group:wood` | `group:wood` | `group:wood` |
-
-**Improved boat** — craftable only by a character carrying the Improved Boat
-unlock (`boats.md` §1), which the shipwright teaches from level 30. It
-consumes one base boat plus T4 materials, so the level-30 unlock still costs
-a level-31–40 material run:
-
-| | | |
-|---|---|---|
-| — | Silkweave Bolt | — |
-| Silversteel Bar | Silkweave Bolt | Silversteel Bar |
-| thread | base boat | thread |
-
-The two bolts are the sail and the two bars the fittings; `thread` is the
-ordinary level-independent vendor job supply of §3.7, not a new item and not
-a Tailor product. Bolts and bars are material stages, and every stage is a
-base recipe on its own grid (§3's "ore → bar → component → item; hide → cured
-leather; cloth → bolt", with the bolt grades in §3.5), so the improved boat
-binds no profession anywhere in its chain.
-
-The shipwright's teaching transaction consumes exactly this ingredient list
-once and returns one finished improved boat (`boats.md` §2). **Vendors never
-stock a boat**, but like every other unsold item both boats still receive an
-authoritative reference price and the ordinary ceiling-rounded 5% buy-back of
-`economy.md` §2 — "not stocked" is not "worth nothing". §3.8's anti-loop rule
-binds both recipes: a boat's payout must stay **strictly below** the summed
-payout of the wood, bars, bolts and thread consumed to make it.
-
-The shipped audit only partly enforces that, so the pricing WP owes two
-explicit tests instead of trusting it. The improved boat's inputs are all
-concrete items and are walked normally, but the base boat's are `group:wood`,
-and the third `grug_traders` audit **skips any recipe with an unpriced input**
-— a group never carries a price of its own
-(`mods/ENTITIES/grug_traders/init.lua:257-261`). Its comparison is also
-`out_price > input_total` (`:269`), so an exactly break-even output passes.
-The base boat must therefore be priced below the five cheapest `group:wood`
-members by construction, and both boats verified by test rather than by the
-audit's silence.
+Boats are water mounts ([boats.md](boats.md), travel plan rulings 1 and 3,
+user 2026-10-02): the Shipwright sells the base boat at level 15 and the
+improved boat at level 30 as owner-bound skill items, exactly like the riding
+tiers. There is no boat recipe, no boat material and no boat reference price;
+the bound items are never sold, bought back, traded or stored externally.
 
 ### 3.1 Armor rating curve (base values shipped in WP7; mitigation revised 2026-09-20)
 
