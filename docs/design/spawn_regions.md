@@ -312,10 +312,9 @@ in a kind or camp of the file's zone that forms one), and every
 placeholder target of the title and text (else the text has no direction
 there). A target missing on some seed fails the run (MISSING). It notes
 the clock a target is met at when only one, and lists under CLOCK a quest
-whose text names only the other clock ("after dark" for a day role). The
-split older quests' kill objectives (`mobs`) keep their own path until the
-last of them is replaced, where a target the recipe never spawns is
-accepted (the game's `W-recipe-target` warning).
+whose text names only the other clock ("after dark" for a day role). An
+objective that names entities (`mobs`, the format of the quests Round 29
+replaced) is MISSING.
 
 `tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT] [--variants "A [B]"]
 [--before REF]` draws the whole mainland per seed (default 42, 7, 2026; ROOT

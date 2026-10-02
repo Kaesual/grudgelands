@@ -96,10 +96,11 @@ Both factions receive equivalent solo access and budgets, with their own
 voices and return journeys. At 41–60 the target is about **70% questing,
 35% rewards including a finite, stated number of repeat completions**.
 Use the ledger with the selected host route, `--lines front`, the band
-entry level and `--repeat N`; publish N. Never count all available hosts'
-bounties in every player's baseline. At 60, flying mounts permit the
-island trip; island rewards are coin/material incentives and contribute
-nothing to the leveling budget.
+entry level and `--repeat N`; publish N (Round 29 published N = 2,
+`quests.md`). Never count all available hosts' bounties in every player's
+baseline. At 60 the islands are reached by boat only (flight is forbidden
+over the ocean, the channels and the islands; WP17); island rewards are
+coin/material incentives and contribute nothing to the leveling budget.
 
 ## Labels and scheduling
 

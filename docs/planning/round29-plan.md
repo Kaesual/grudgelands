@@ -1,6 +1,6 @@
 # Round 29 — Economy and travel: round plan
 
-Coordinator: Claude (Opus 5.5), 2026-10-02. Status: **approved by the user 2026-10-02** (wave 1 go, decisions of §6).
+Coordinator: Claude (Opus 5.5), 2026-10-02. Status: **approved by the user 2026-10-02** (wave 1 go, decisions of §6); **complete 2026-10-02** ([completion](#completion-2026-10-02)), not pushed.
 
 This plan schedules four approved inputs; it does not repeat their rules:
 
@@ -187,3 +187,176 @@ fine. Findings:
 
 Lane **P** runs in wave 1; it touches `grug_mobs` and legacy quest data,
 which no other wave-1 lane edits.
+
+## Completion (2026-10-02)
+
+Every lane below is merged on local main (last commit `2b40d5b5`, E4);
+each was independently reviewed by Opus, and the coordinator ran the gates
+on main after every merge (the `tools/r2*_*/portable_test.lua` fixtures,
+`tools/r28_design/validate.py`, `tools/check_fresh_server.py`,
+`quest_targets.py`, a headless boot). The quest lanes were merged together
+through one integration branch after the user approved a quest sample
+per track (quests plan Q3):
+quest targets ok 1033, 0 missing; every fixture and the headless boot
+passed. Not pushed. Next: the final fresh-world engine check (§5, the
+x = 0 strip), synchronization, then the user's GUI test on a fresh world
+(checklist below).
+
+### Shipped, by lane
+
+- **P** (`b13cfa12`), the spawn playtest fixes (§7): P1 no smoke puff when
+  mobs_redo places a mob (one GRUG PATCH); P2 leader HP 1.5× (size stays
+  1.15×); P3 legacy kill objectives dropped 73 targets their zone's recipe
+  never spawns (since replaced by the new quest files); P4 was a bug — the
+  Basics book took gear one tier low and bars and tools as T1; its T6 page
+  grows from 2 to 36 recipes.
+- **B** (`f6652818`): boats as water mounts in `grug_mounts` (Boat L15,
+  4 nodes/s; Improved Boat L30, 8 nodes/s; owner-bound skill items, summon
+  only with the feet in water, gone once off the water, damage ejects), the
+  Shipwright beside every capital's Riding Trainer, *Lord of the Test* hulls
+  (WTFPL); the Kraken Guard swims 10 nodes/s in deep ocean and 5 elsewhere,
+  view range 40 ([boats.md](../design/boats.md)).
+- **W** (`e3e10df5`): the waystone node `grug_mapgen:waystone`, placed by
+  the mapgen in all six capitals and on a new pad in all six starts;
+  discovery by proximity or right-click, instant free travel between the own
+  faction's discovered stones through one shared travel path with home
+  return and respawn (`grug_home/travel.lua`); the waypoint marker on the
+  Map tab and minimap; the shipwright socket in the shared stable
+  ([world.md](../design/world.md) §6).
+- **M-res** (`56753932`): gems by depth, T1 Citrine, T2 Jade, T3 Garnet,
+  T4 Sapphire, T5 Ruby, T6 Diamond, each only in its own tier rock at about
+  one per 512 host nodes; no G1/G2 grades; `apex_sockets` removed; the
+  frozen WP43 projection re-pinned once. Mob gem drops follow the tiers
+  (Land Guard Diamond, Dungeon Master Sapphire, golems Citrine).
+- **Q1** (`07ddf3cb`): quest text placeholders `{dir_from_giver:T}`,
+  `{dir_of:P:T}`, `{zone_area:T}`, `{name:T}` (titles only `{name}`); fixed
+  compass words fail the load; copper from weight; ledger track routes;
+  every zone's region map built at server start (+8.8–9.6 s boot, +53 MiB
+  Lua heap) ([quests.md](../design/quests.md) "For content lanes").
+- **M-geo** (`33ac05f9`): mapgen band data (Causeway 41–50,
+  Gravesalt/Skyglass 51–60) and `grug_core/zone_bands.lua` deleted;
+  `front_bias` +15000, Battlegrounds +49.9 % in area over 15 seeds; 20
+  anchors moved home-ward; Coalbrand Yard and Sunderstrap Camp at x = ∓96;
+  the middle road Highcourt ↔ Gor Drazhak across z = 0; a steep camp belt
+  falls back to its flattest block up to slope 0.5; the zone atlas probe
+  reads the spawn recipes ([world_zones.md](../design/world_zones.md)).
+- **E1** (`a429db63`): one price module (`grug_traders/prices.lua`, rules
+  in `price_rules.lua`) for every payout: loot and gathered goods by class
+  × tier (band medians 4.3 / 9.0 / 16.7 / 39.0 / 147.6 / 239.3c per kill),
+  processed goods by their inputs, free world materials worth 0, 5 %
+  buy-back on vendor goods; the Common gear axis 25c … 25s; shelves by the
+  vendor rule; repair at crafting stations in an active claim (D7); the loot
+  text pass (Raw Silk); the fishing rod a T1 craft from 3 sticks + 2 thread;
+  sticks unsellable ([economy.md](../design/economy.md)). WP44 and WP5's
+  price parts are delivered.
+- **T** (`8f063274`): quest tooling for the new format —
+  `quest_targets.py` checks roles, areas, leaders and placeholder targets on
+  every seed; the Q0 portable test runs the shipped files over the real
+  registrations; the B4 legacy oracle retired; region stats re-rendered on
+  the new geometry; a cross-zone leader counts as spawned.
+- **A** (`7e696133`): six textures by GPT-6 Astra (CC0): two boat icons,
+  the boat status glyph, the waystone (side and top) and the waypoint marker.
+- **Q2–Q7** (`9ae075dc` … `49be16c7`): new quest files per race track,
+  Opus structure and an Astra text pass: Human 54, Dwarf 58, Elf 71,
+  Undead 53, Orc 48, Troll 63 quests.
+- **Q8a / Q8t** (`3a436992`, `87db976c`): the contested 31–40 zones, 35
+  Accord and 30 Throng quests (79–85 % of the band).
+- **Q9a / Q9t** (`0ffd0804`, `384d86bd`): front quests 41–60 from the
+  31–40 outposts and capitals, repeatable bounties and island bounties
+  (boat access), 40 Accord and 39 Throng quests.
+- **Integration** (`c8c6f505`): the legacy-only P3 check retired; 491
+  quests in 42 files replace the 240 legacy quests (55 repeatable, 56
+  optional, 15 group).
+- **E4** (`8b3324fc`, `d20f91d9`): prices from a per-band income estimate
+  (`tools/r29_e4/income.py`): riding 1s10c / 7s / 1g63s / 7g33s, Boat 1s10c,
+  Improved Boat 7s, respec 15c / 35c / 75c / 1s90c / 7s / 12s; no "Price
+  pending" state ([economy plan, E4 completion](economy-vendor-plan.md#e4-completion-2026-10-02)).
+- **Performance review** (`0791e6be`, read-only):
+  [perf-review-2026-10.md](../research/perf-review-2026-10.md), 22
+  findings and a region-map file-cache design; it becomes Round 30.
+- **D**: this section, the status files, the design-doc leftovers, the
+  zone atlas regenerated with the new quests, the `quest_targets.py`
+  legacy path removed.
+
+### Rulings made during the round
+
+- **Wave 1 (coordinator and user, 2026-10-02):** a bought boat is
+  ownership only, its item comes from the Skills page like riding; using
+  another tier's item replaces the active mount or boat. The fishing rod is
+  T1 (3 sticks + 2 thread); sticks are not bought back and no longer drop.
+  Quest titles take names only; every zone's region map is built at start
+  instead of at first use (0.1–0.6 s blocked the server). Blackwind Rise's
+  belt stays as it is (camp fallback on three seeds).
+- **Spawn playtest P1–P4:** as in §7.
+- **Sister access:** an entry quest of a 20–30 zone requires nothing from
+  another zone, so any race can pick it as its sister zone.
+- **Uniform sizing:** every 20–30 zone offers at least about 30 % of the
+  band on its own (frame 35–50 %); the race's own main route keeps about
+  60–70 %, the rest as "Optional:" quests. The Troll track keeps its
+  heartland sizes (the second heartland stands in for the sister).
+- **Uniform location text:** never "{name:X} {zone_area:X}" (the place
+  twice); a clause or the name only.
+- **Heartland exits:** every heartland hands on (no dead end after its
+  last quest).
+- **Six-seed robustness:** every area and placeholder target forms on seeds
+  42, 7, 2026, 1234, 99999 and 314159.
+- **Front bounty baseline N = 2:** the 41–60 budget counts two repeats per
+  bounty (Throng 72 / 68 %, Accord 70–73 / 67–70 %;
+  [quests.md](../design/quests.md)).
+- **Prices kept:** no band-5 loot smoothing now (Expert Riding 1g63s against
+  1g38s on the target axis, Master 7g33s against 8g76s).
+- **Performance (for Round 30):** mobs give up unreachable static targets
+  (#4); the region-map file cache, yes; the Map tab redraws the arrow and
+  rebuilds at most every 2 s, only on a signature change, with a shared
+  marker style (#3); the surface spawn ABMs are retired where the region
+  spawner is authoritative and the rest (underground, ocean, rift) merge
+  into a few ABMs (#11); the other findings as recommended.
+
+### Open items
+
+In [BACKLOG](../../BACKLOG.md#round-29-carry-overs): Round 30 performance
+(lanes P1–P4), band-5 loot median smoothing, PvP and enemy-guard quests
+the new quest format cannot express, possible bugs (Dawnmere NPC
+duplication seen once, `general_attack` eye height), the Pallcloth Den trail
+along the front, thin front areas (`tomb_fen`, `siegecrest`), the legacy
+quest fields the game still reads, and two stale fixtures.
+
+### Playtest checklist
+
+On a fresh world (all of Round 29 needs one):
+
+1. **Quests, start zone:** the first quests send you to named regions with
+   a direction ("southeast from here", "in the east of Dawnmere Fields");
+   no text has an unfilled `{…}` and no fixed compass word; copper rewards
+   look small but fair; the flow start → home zone → capital → heartland
+   hands on without a dead end.
+2. **Quests, heartland and sister:** "Optional:" quests appear beside the
+   main line; another race's 20–30 zone offers quests without requirements
+   from its own track.
+3. **Contested 31–40:** each of the faction's three zones has quests at its
+   outposts and capital; the front line opens toward 41.
+4. **Front bounty:** take a repeatable bounty at 41+, turn it in, see
+   "Repeatable again in N min.", take it again after the cooldown.
+5. **Economy (economy plan §8):** buy and sell at a start vendor and a
+   profession shop; removed goods are gone; sell a stack of T1 and of T4
+   loot and compare with the gear prices; enchant at T2 and T4 with a
+   depth-mined gem; repair one item at a trainer and at a crafting station
+   inside your active claim.
+6. **Gems by depth:** mine each gem in its band (Citrine in stone above
+   −100 … Diamond below −1000) with the right pick; the wrong pick cannot
+   dig it.
+7. **Prices:** Apprentice Riding 1s10c, Journeyman 7s, Expert 1g63s,
+   Master 7g33s; Boat 1s10c, Improved Boat 7s; the second respec costs the
+   bracket's price (the first is free).
+8. **Battlegrounds:** wider in north–south than before; the middle road runs
+   from Highcourt to Gor Drazhak straight across z = 0; Coalbrand Yard and
+   Sunderstrap Camp stand clear of it.
+9. **Boats and waypoints (travel plan §7, items 1–17):** see the
+   [travel plan's GUI list](travel-boats-waypoints-plan.md#7-gui-test-list-fresh-world-after-the-mapgen-bundle):
+   the Shipwright beside the Riding Trainer, buying and summoning the Boat in
+   water only, waterfall and dug-out water, ejection by damage, the Improved
+   Boat at 30, the channel row to an island beach, the Kraken in deep ocean;
+   the own start's waystone known, discovering a capital waystone, instant
+   travel, combat and enemy-faction refusals.
+10. **Spawn fixes:** no smoke puff when mobs appear; leaders have a quarter
+    less HP than before (1.5× instead of 2×); the Basics book lists T6 recipes.

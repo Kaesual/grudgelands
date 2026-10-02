@@ -109,6 +109,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   damage, death, leave, shutdown and external-detach exits and clears the
   runtime-only untimed `mount` status. Mounted players cannot attack. Land
   controllers use nominal one-node step height; T1 is 6.4 nodes/s (+60%).
+  Since Round 29 boats are the third mode, **water** (`grug_mounts.TIERS`
+  5 and 6, `BOAT_TIERS`): the same owner-bound item, ownership meta and
+  dismount path, a surface controller, a once-per-second water-contact
+  check, landing within 2 nodes; using another tier's item replaces the
+  active mount or boat. The Riding Trainer dialogue is one service format
+  (`grug_mounts.SERVICES`); `shipwright.lua` serves the `shipwright` socket
+  role of the capital stable. Prices: `grug_mounts.PRICES` (E4,
+  `tools/r29_e4/income.py --check`). Fixture `tools/r29_b`.
 - **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
   historical evidence and is not a current-source gate. Its audit script was
   retired in Round 22 and WP49, the planned replacement, is canceled
@@ -726,6 +734,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     role id `housing_manager`) and the character-page status.
   - Home-stone travel (Lane D) lives in `grug_home`, which reads the claim
     through the contract above.
+- **Travel (Round 29, WP17):** `grug_home/travel.lua` owns one travel path
+  (dismount, emerge, deferred re-validation, safe arrival) used by home
+  return, respawn and waystone travel (`grug_home.travel(player, trip)`).
+  `waypoints.lua` builds the registry from the mapgen's `travel_waypoint`
+  sockets (six capitals, six start pads), discovers a stone by proximity
+  (once a second) or right-click, keeps the per-character list in player
+  meta (`grug_home.known_waypoints`) and opens the travel form
+  (`grug_home.use_waystone`); the refusals are pure rules in
+  `waypoints_core.lua`. The node `grug_mapgen:waystone` is registered in
+  `grug_mapgen/world_nodes.lua` before the settlement content resolves.
+  Fixture `tools/r29_w/portable_test.lua`, engine probe `tools/r29_w/probe.sh`.
+  Rules: [world.md](../design/world.md) §6,
+  [home_travel.md](../design/home_travel.md).
 
   Fuel arithmetic is fixed in housing.md §4 (26 160 s per lump; displayed
   stack `ceil`, pick-up return `floor`). Road and POI protection (Lane E)
@@ -746,8 +767,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   placement, rim arrows) draw the gliding minimap in
   `grug_core.hud_layout.minimap_box`. Keep the texture and position change
   in the same step and the scale a whole multiple of 1/grid, or cell swaps
-  jump. The minimap asks only the quest, service and home marker providers
-  (`atlas.collect_markers(player, only)`). Fixture:
+  jump. The minimap asks only the quest, service, home and (since Round 29)
+  waypoint marker providers (`atlas.collect_markers(player, only)`); the
+  `waypoint` provider shows the player's discovered waystones on both maps.
+  Fixture:
   `tools/r27_minimap/portable_test.lua`; traffic comparison:
   `tools/r27_minimap/bench_glide.lua`.
   Zone and town names (Round 28 M1): `location.lua` samples each player's

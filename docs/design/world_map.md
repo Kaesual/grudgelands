@@ -60,8 +60,8 @@ is necessary. Map markers confer no remote interaction or travel.
 Round 29 (WP17): every **discovered** waystone of the player's own network
 (three starts, three capitals; [world.md](world.md) §6) is a marker of kind
 `waypoint` at the stone, labelled "<settlement> Waystone", with the icon
-`grug_map_waypoint.png` (a grey standing stone with a blue rune, first
-version). Undiscovered and enemy waystones are not shown. The provider is
+`grug_map_waypoint.png` (a grey standing stone with a blue rune, by GPT-6
+Astra). Undiscovered and enemy waystones are not shown. The provider is
 `waypoint` in `grug_map/providers.lua`, fed by `grug_home.known_waypoints`; a
 marker never unlocks or starts travel.
 
