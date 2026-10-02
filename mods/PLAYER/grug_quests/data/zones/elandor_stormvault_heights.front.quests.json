@@ -1,0 +1,453 @@
+{
+  "zone": "elandor_stormvault_heights",
+  "quests": [
+    {
+      "id": "archshadow_front_01",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 45,
+      "level": 47,
+      "requires": [],
+      "title": "Bad Workmanship, Worse Company",
+      "text": "I'd welcome a proper look at the old masonry, if Causeway Brigands and Aqueduct Bowmen would let our surveyors near it. Go by day to the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and defeat five of the brigands and bowmen lurking there. A dwarf should be able to criticise a crumbling arch in peace.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_brigand",
+            "causeway_aqueduct_bowman"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/wraithwood"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "The hard half of the Causeway: archers among the brigands.",
+      "duration_min": 12
+    },
+    {
+      "id": "archshadow_front_02",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 47,
+      "level": 49,
+      "requires": [
+        "archshadow_front_01"
+      ],
+      "title": "A Runesmith's Awkward Questions",
+      "text": "Our runesmiths reckon they can trace whoever put the Tollroad Skeletons back on their feet. Bring me three Siege Bones from those skeletons in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}, after dark. I've given the smiths a bench of their own; their questions were spoiling everyone's supper.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:siege_bone",
+          "count": 3,
+          "roles": [
+            "causeway_toll_skeleton"
+          ],
+          "area": "front_broken_causeway/toll_fields"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "The top belt of the Causeway at night.",
+      "duration_min": 14
+    },
+    {
+      "id": "archshadow_front_03",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 48,
+      "level": 49,
+      "requires": [
+        "archshadow_front_02"
+      ],
+      "title": "Collection Ends Here",
+      "text": "The runesmiths have a name: {name:toll_taker_senn}, working out of the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}. Seems he raised the dead to collect his tolls, which explains the service. Defeat him and five of his Aqueduct Bowmen; the next coin spent on that road ought to repair it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_aqueduct_bowman"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/toll_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "toll_taker_senn"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Causeway climax: a bowman camp and its named normal leader.",
+      "duration_min": 16,
+      "climax": true
+    },
+    {
+      "id": "archshadow_front_04",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "archshadow_front_03"
+      ],
+      "title": "Group: No More Toll",
+      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. The elite war construct is still enforcing its toll. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_toll_construct"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Optional group elite; the route reaches 50 without it.",
+      "duration_min": 12,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "archshadow_front_bounty",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 48,
+      "level": 49,
+      "requires": [
+        "archshadow_front_03"
+      ],
+      "title": "Bounty: An Arrow Too Many",
+      "text": "Senn's Aqueduct Bowmen are still at work in the {name:front_broken_causeway/gallows_wood}, which lies {zone_area:front_broken_causeway/gallows_wood}, despite the change in management. Defeat five there by day for a bounty. I can pay for another five twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_aqueduct_bowman"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/gallows_wood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Repeatable hunting bounty, upper Causeway: close in on archers.",
+      "duration_min": 10
+    },
+    {
+      "id": "archshadow_front_05",
+      "line": "front",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "archshadow_front_03"
+      ],
+      "title": "Fit for Borin's Crew",
+      "text": "You've done work here that will hold, and Borin Splitbolt needs that sort of hand for Gravesalt Escarpment. Speak with him at Splitbolt Station in Stormvault Heights and pass on my report. He'll grumble that I should have sent you sooner; that's his welcome speech.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff from the Causeway to Gravesalt.",
+      "duration_min": 6
+    },
+    {
+      "id": "splitbolt_front_01",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 50,
+      "level": 52,
+      "requires": [],
+      "title": "No Shoring, No Sense",
+      "text": "Salt-Boring Weevils are tunnelling through the {name:front_gravesalt_escarpment/saltflats}, which lie {zone_area:front_gravesalt_escarpment/saltflats}, without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_boring_weevil"
+          ],
+          "count": 6,
+          "area": "front_gravesalt_escarpment/saltflats"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "Gravesalt entry by day.",
+      "duration_min": 12
+    },
+    {
+      "id": "splitbolt_front_02",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 50,
+      "level": 52,
+      "requires": [],
+      "title": "Rope with Opinions",
+      "text": "A line strung between trees ought to help a traveller find the path. In the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, it helps Salt-Web Bonelurker Spiders find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_web_spider"
+          ],
+          "count": 6,
+          "area": "front_gravesalt_escarpment/bonewood"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "Gravesalt entry by night, in the same outing.",
+      "duration_min": 12
+    },
+    {
+      "id": "splitbolt_front_03",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 53,
+      "level": 55,
+      "requires": [
+        "splitbolt_front_01",
+        "splitbolt_front_02"
+      ],
+      "title": "Something for the Mortar Crew",
+      "text": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Salt-Boring Weevils on the {name:front_gravesalt_escarpment/blight_terraces}, which lie {zone_area:front_gravesalt_escarpment/blight_terraces}, by day. I'll keep them busy arguing over the mixing trough until you're back.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:salt_chitin",
+          "count": 3,
+          "roles": [
+            "salt_boring_weevil"
+          ],
+          "area": "front_gravesalt_escarpment/blight_terraces"
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "items": []
+      },
+      "lesson": "The middle belt of Gravesalt by day.",
+      "duration_min": 14
+    },
+    {
+      "id": "splitbolt_front_04",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 54,
+      "level": 56,
+      "requires": [
+        "splitbolt_front_03"
+      ],
+      "title": "Leave the Graves Out of It",
+      "text": "Salt-Hex Bog Witches gather after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_hex_witch"
+          ],
+          "count": 6,
+          "area": "front_gravesalt_escarpment/tomb_fen"
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Casters in a sparse swamp: close in fast.",
+      "duration_min": 14
+    },
+    {
+      "id": "splitbolt_front_05",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 55,
+      "level": 56,
+      "requires": [
+        "splitbolt_front_04"
+      ],
+      "title": "An Overdue Dismissal",
+      "text": "Last-Pay Archers still loose arrows from the {name:front_gravesalt_escarpment/saltroad_cliffs}, which lie {zone_area:front_gravesalt_escarpment/saltroad_cliffs}, every night. Defeat five there after dark so our road crews can work. Their paymaster got his money's worth; everyone else has been paying for it ever since.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_pay_archer"
+          ],
+          "count": 5,
+          "area": "front_gravesalt_escarpment/saltroad_cliffs"
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "items": []
+      },
+      "lesson": "Archers on high ground at night.",
+      "duration_min": 14
+    },
+    {
+      "id": "splitbolt_front_07",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 56,
+      "level": 58,
+      "requires": [
+        "splitbolt_front_05"
+      ],
+      "title": "The Whitewall Dead",
+      "text": "Past the cliffs the salt has built the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}, and Last-Watch Mummies walk it by day as if they still had a post to keep. Put six of them down. A dwarf respects a long shift, but not one this long.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_husk"
+          ],
+          "count": 6,
+          "area": "front_gravesalt_escarpment/whitewall"
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "The top belt of Gravesalt by day.",
+      "duration_min": 14
+    },
+    {
+      "id": "splitbolt_front_08",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "splitbolt_front_07"
+      ],
+      "title": "The Last Watch Ends",
+      "text": "{name:watch_captain_huskell} still commands the {name:front_gravesalt_escarpment/ossuary_wood} {dir_from_giver:watch_captain_huskell}, and his Last-Watch Skeleton Raiders march his rounds every night. Defeat five of the raiders after dark, then the captain himself. Somebody has to relieve that watch, and it may as well be you.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_skeleton_raider"
+          ],
+          "count": 5,
+          "area": "front_gravesalt_escarpment/ossuary_wood"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "watch_captain_huskell"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 7,
+        "items": []
+      },
+      "lesson": "Gravesalt climax: its named normal leader at the heart of the escarpment.",
+      "duration_min": 16,
+      "climax": true
+    },
+    {
+      "id": "splitbolt_front_bounty",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 54,
+      "level": 55,
+      "requires": [
+        "splitbolt_front_05"
+      ],
+      "title": "Bounty: Keep the Night Shift Moving",
+      "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood}, which lies {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Salt-Web Bonelurker Spiders there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "salt_web_spider"
+          ],
+          "count": 5,
+          "area": "front_gravesalt_escarpment/tombwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Repeatable hunting bounty, Gravesalt middle belt.",
+      "duration_min": 10
+    },
+    {
+      "id": "splitbolt_front_06",
+      "line": "front",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 57,
+      "level": 58,
+      "requires": [
+        "splitbolt_front_08"
+      ],
+      "title": "Someone Who Came Back",
+      "text": "Eriath Boughwarden in Lethariel asked for someone who'd walked Gravesalt Escarpment and come back with their wits. Speak with him there and give him my account; his people are watching The Skyglass Canopy. I've put in a good word for you, though he'll take three graceful sentences to say whether he agrees.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_elf_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff from Gravesalt to Skyglass.",
+      "duration_min": 15
+    }
+  ]
+}

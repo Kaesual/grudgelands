@@ -1,0 +1,189 @@
+{
+  "zone": "elandor_lethariel",
+  "quests": [
+    {
+      "id": "lethariel_front_01",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 55,
+      "level": 56,
+      "requires": [],
+      "title": "The Healers Are Waiting",
+      "text": "Our healers have patients waiting and no Glass Venom left; I would spare them having to choose who waits longest. Bring me three portions from Glass-Fang Serpents in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}, by day. Walk with care among those roots; I would rather not hand the healers another patient.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_venom",
+          "count": 3,
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "items": []
+      },
+      "lesson": "Skyglass entry by day.",
+      "duration_min": 14
+    },
+    {
+      "id": "lethariel_front_02",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 55,
+      "level": 56,
+      "requires": [],
+      "title": "Threads Across the Living Path",
+      "text": "Glass-Web Jungle Spiders draw their threads across the {name:front_skyglass_canopy/rootways} each night, until even familiar paths become snares. Kill six of them after dark. A forest must leave room for more than one kind of hunger.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_web_spider"
+          ],
+          "count": 6,
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 5.5,
+        "items": []
+      },
+      "lesson": "The same kind at night; one outing serves both.",
+      "duration_min": 14
+    },
+    {
+      "id": "lethariel_front_03",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "lethariel_front_01",
+        "lethariel_front_02"
+      ],
+      "title": "A Disagreement in the Branches",
+      "text": "I sent a scout to listen to the {name:front_skyglass_canopy/high_canopy}, which lies {zone_area:front_skyglass_canopy/high_canopy}; the Glass-Knuckle Jungle Apes answered with a branch. Defeat six of them there by day so our watchers can return. Listening to the forest requires a little quiet, and preferably an unbroken head.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_knuckle_ape"
+          ],
+          "count": 6,
+          "area": "front_skyglass_canopy/high_canopy"
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "The top belt of Skyglass by day.",
+      "duration_min": 14
+    },
+    {
+      "id": "lethariel_front_04",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 58,
+      "level": 59,
+      "requires": [
+        "lethariel_front_03"
+      ],
+      "title": "The Price of Another War",
+      "text": "{name:paymaster_chirr} pays his Last-Pay Archers with coin stripped from the dead of both banners at the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}. Defeat five of those archers and the paymaster himself. We have watched this forest grow through enough wars; he will not purchase another beneath its branches.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_pay_archer"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/paymaster_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "paymaster_chirr"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 7,
+        "items": []
+      },
+      "lesson": "Front climax: the last named normal leader before 60.",
+      "duration_min": 18,
+      "climax": true
+    },
+    {
+      "id": "lethariel_front_05",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 59,
+      "level": 59,
+      "requires": [
+        "lethariel_front_04"
+      ],
+      "title": "Group: Beneath the Waiting Coils",
+      "text": "The branches bend beneath {name:glass_throat_serpent} in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. Gather a group and slay that elite serpent before it takes another of our watchers. There is wisdom in a solitary walk, but this is a task for companions who will watch one another's backs.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_throat_serpent"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Optional group elite; the route reaches 60 without it.",
+      "duration_min": 12,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "lethariel_front_bounty",
+      "line": "front",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 58,
+      "level": 59,
+      "requires": [
+        "lethariel_front_04"
+      ],
+      "title": "Bounty: Eyes Beyond the Lanterns",
+      "text": "When the lanterns are lit, Glass-Shadow Panthers begin their hunt in the {name:front_skyglass_canopy/high_canopy}. Bring down five there after dark, and I will pay a bounty so our watchers can make their rounds. You may accept the bounty again twenty-five minutes after each turn-in. The forest has time to spare; those walking home tonight do not.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/high_canopy"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Repeatable hunting bounty, upper Skyglass by night.",
+      "duration_min": 10
+    }
+  ]
+}
