@@ -75,7 +75,7 @@ PLACEHOLDER_ID = re.compile(r"^[a-z][a-z0-9_]*$")
 PLACEHOLDER_TARGET = re.compile(r"^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)?$")
 COMPASS = {base + suffix for base in ("north", "south", "east", "west", "northeast", "northwest",
                                       "southeast", "southwest")
-           for suffix in ("", "ern", "erly", "ward", "wards")}
+           for suffix in ("", "ern", "erly", "ward", "wards", "bound", "most", "ernmost", "erner", "erners")}
 
 
 def scan_placeholders(text):
@@ -1688,6 +1688,8 @@ def _mutations():
         ("compass word in a text", Q, text_set("sample_hunt_01", "text", "Boars come from the south-east. Stop them."),
          "E-compass"),
         ("compass word in a title", Q, text_set("sample_hunt_01", "title", "Eastern Fields"), "E-compass"),
+        ("compass word -bound", Q, text_set("sample_hunt_01", "text", "Take the northbound road. Hurry."),
+         "E-compass"),
         ("three givers in a hub", Q, add_giver, "E-givers"),
         ("three lines for a giver", Q, three_lines, "E-lines"),
         ("critter kill target", Q, critter_target, "E-critter-target"),
@@ -2086,7 +2088,10 @@ def self_test():
     got = compass_words("Head north, then South-East, the southeastern ford, Westward; {zone_area:west}.")
     if got != ["north", "South", "East", "southeastern", "Westward"]:
         failures.append("compass words: %s" % got)
-    got = compass_words("Northfold, Westbrook, Eastmarch, Southwatch, beast, Easter, the westerner")
+    got = compass_words("the northbound road, the southernmost farm, Easterners, a westerner, Northmost")
+    if got != ["northbound", "southernmost", "Easterners", "westerner", "Northmost"]:
+        failures.append("compass words -bound, -most, -erner(s): %s" % got)
+    got = compass_words("Northfold, Westbrook, Eastmarch, Southwatch, beast, Easter, Westerling")
     if got:
         failures.append("names that only contain a compass word pass: %s" % got)
     found, errors = scan_placeholders("{dir_of:highcourt:elandor_lorindor/woods} and {name:chief}, {x}")

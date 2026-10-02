@@ -87,13 +87,16 @@ P.KINDS = {dir_from_giver = 1, dir_of = 2, zone_area = 1, name = 1}
 P.DIRECTIONS = {dir_from_giver = true, dir_of = true, zone_area = true}
 
 -- Fixed compass words are never written into a quest text: every
--- direction word, its -ern, -erly, -ward and -wards forms, in any case and
--- hyphenation ("north-east" reads as the words "north" and "east"). Only
+-- direction word, its -ern, -erly, -ward, -wards, -bound, -most, -ernmost,
+-- -erner and -erners forms, in any case and hyphenation ("north-east" reads as the words "north" and "east"). Only
 -- whole words count, so names such as "Northfold" or "Westbrook" stay.
 P.COMPASS = {}
 for _, base in ipairs({"north", "south", "east", "west", "northeast", "northwest",
 		"southeast", "southwest"}) do
-	for _, suffix in ipairs({"", "ern", "erly", "ward", "wards"}) do P.COMPASS[base .. suffix] = true end
+	for _, suffix in ipairs({"", "ern", "erly", "ward", "wards", "bound", "most", "ernmost", "erner",
+			"erners"}) do
+		P.COMPASS[base .. suffix] = true
+	end
 end
 
 -- The fixed compass words of a title or text, placeholders left out.
@@ -219,11 +222,13 @@ local function zone_name(zone)
 	return record and record.display_name or zone
 end
 
--- One placeholder of quest `def`'s text, filled for this world. A target
--- whose phrase cannot be built (no region of that kind on this seed, a map
--- that failed to build) falls back to the zone or the place, without a
--- direction, and is logged once.
-local function placeholder_value(def, p)
+-- One placeholder of quest `def`'s text, filled for this world. "From
+-- here" is true only in the giver's own dialogue (`at_giver`); the quest log
+-- and another NPC's dialogue read it from the giver's settlement ("northeast
+-- of Dawnmere"). A target whose phrase cannot be built (no region of that
+-- kind on this seed, a map that failed to build) falls back to the zone or
+-- the place, without a direction, and is logged once.
+local function placeholder_value(def, p, at_giver)
 	local target, reason = Q.placeholder_target(def.zone, p.args[#p.args])
 	if not target then
 		core.log("warning", ("[grug_quests] %s: %s: %s"):format(def.id, p.raw, reason))
@@ -232,7 +237,10 @@ local function placeholder_value(def, p)
 	if p.kind == "name" then return target.name end
 	local regions = grug_mobs.spawn_regions
 	local result
-	if p.kind == "dir_from_giver" then
+	if p.kind == "dir_from_giver" and not at_giver then
+		local npc = Q.registered_npcs[def.npc]
+		result, reason = regions.describe(target.zone, target.id, "of", npc and npc.settlement)
+	elseif p.kind == "dir_from_giver" then
 		local pos = giver_position(def.npc)
 		result, reason = pos and regions.describe(target.zone, target.id, "from", pos)
 		reason = reason or "the giver has no position"
@@ -251,15 +259,19 @@ local function placeholder_value(def, p)
 	return "in " .. zone_name(target.zone)
 end
 
--- The quest's text (with its requirements) as players read it in the
--- dialogue and the quest log; the title is filled at load (Q.fill_names).
+-- The quest's text (with its requirements) as players read it: in the
+-- giver's dialogue (`at_giver`), else in the quest log or at another NPC.
+-- Each form is filled once and cached; the title is filled at load
+-- (Q.fill_names).
 local texts = {}
-function Q.quest_text(def)
-	local text = texts[def.id]
+function Q.quest_text(def, at_giver)
+	local key = at_giver and def.id .. "@giver" or def.id
+	local text = texts[key]
 	if not text then
 		text = def.description:find("{", 1, true) and
-			P.fill(def.description, function(p) return placeholder_value(def, p) end) or def.description
-		texts[def.id] = text
+			P.fill(def.description, function(p) return placeholder_value(def, p, at_giver) end) or
+			def.description
+		texts[key] = text
 	end
 	return text
 end

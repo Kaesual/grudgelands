@@ -6,8 +6,9 @@
 --   2. the fixture file: titles filled at load ({name:...} also in another
 --      quest's requirements), texts filled on first display through the real
 --      spawn_regions_core.describe over a small region map (giver, named
---      place, zone), each phrase once per quest (cached), copper computed
---      when omitted;
+--      place, zone), each phrase once per quest and form (cached); "from
+--      here" only in the giver's dialogue, elsewhere from the giver's
+--      settlement; copper computed when omitted;
 --   3. a target without a phrase on this world falls back to the zone or the
 --      place, without a direction;
 --   4. load-time validation: one mistake per case, refused with its code;
@@ -223,7 +224,9 @@ end
 local function compass(text) return table.concat(P.compass_words(text), ",") end
 eq(compass("Head north, then South-East, the southeastern ford, Westward and north's fence; NORTHWEST."),
 	"north,South,East,southeastern,Westward,north,NORTHWEST", "compass words in any case and hyphenation")
-eq(compass("Northfold, Westbrook, Eastmarch, Southwatch, beast, Easter, the westerner"), "",
+eq(compass("the northbound road, the southernmost farm, Easterners, a westerner, Northmost"),
+	"northbound,southernmost,Easterners,westerner,Northmost", "the -bound, -most and -erner(s) forms")
+eq(compass("Northfold, Westbrook, Eastmarch, Southwatch, beast, Easter, Westerling"), "",
 	"names and words that only contain a compass word pass")
 eq(compass("Wolves roam {dir_from_giver:woods}; {zone_area:woods} too."), "", "placeholders are not checked as words")
 local filled = P.fill("{zone_area:x} lies there. Then {zone_area:x}! {zone_area:x}? \"{zone_area:x}\" and\n{zone_area:x}",
@@ -261,10 +264,10 @@ local function phrase(target, mode, ref)
 	return CORE.describe(map, target, mode, mode == "of" and PLACES[ref] or ref, "Dawnmere Fields").phrase
 end
 local elder = SOCKETS.dawnmere[1].pos
-local camp_text = Q.quest_text(camp)
+local camp_text = Q.quest_text(camp, true)
 eq(phrase("bandit_camp", "from", elder), "northeast from here", "the camp lies northeast of the elder")
 has(camp_text, "Bandits hold a camp northeast from here. Drive them out.", "{dir_from_giver:camp}")
-local chief_text = Q.quest_text(chief)
+local chief_text = Q.quest_text(chief, true)
 local from_chief = phrase("confused_bandit_chief", "from", elder)
 has(chief_text, from_chief:sub(1, 1):upper() .. from_chief:sub(2) .. " stands Chief Crumb.",
 	"{dir_from_giver:leader} at the start of the text, capitalised")
@@ -274,7 +277,7 @@ eq(phrase("borderlands", "of", "highcourt"), "south of Highcourt", "the borderla
 eq(phrase("woods", "zone"), "in the northwest of Dawnmere Fields", "the woods in the zone's northwest")
 has(chief_text, "\n\nRequirements: Minimum level: 9; Complete: Raid on the Bandit Camp.",
 	"the requirements follow the filled text")
-local lost_text = Q.quest_text(Q.registered_quests.q1_lost)
+local lost_text = Q.quest_text(Q.registered_quests.q1_lost, true)
 has(lost_text, "Boars raid in the heart of Dawnmere Fields. Look near Dawnmere as well.",
 	"a kind's largest patch: the heart of the zone, near the start")
 eq(phrase("home_fields", "of", "dawnmere"), "near Dawnmere", "near a place within 80 nodes")
@@ -282,8 +285,20 @@ eq(Q.quest_text(Q.registered_quests.q1_stones), Q.registered_quests.q1_stones.de
 	"a text without placeholders is the description")
 local calls = describe_calls
 eq(calls, 6, "one describe per direction placeholder")
-Q.quest_text(camp); Q.quest_text(chief); Q.quest_text(Q.registered_quests.q1_lost)
+Q.quest_text(camp, true); Q.quest_text(chief, true); Q.quest_text(Q.registered_quests.q1_lost, true)
 eq(describe_calls, calls, "a second display reads the cache")
+-- Away from the giver (quest log, another NPC) "from here" would be false:
+-- it reads from the giver's settlement.
+eq(phrase("bandit_camp", "of", "dawnmere"), "northeast of Dawnmere", "the camp lies northeast of Dawnmere")
+has(Q.quest_text(camp), "Bandits hold a camp northeast of Dawnmere. Drive them out.",
+	"{dir_from_giver:camp} away from the giver")
+local of_chief = phrase("confused_bandit_chief", "of", "dawnmere")
+has(Q.quest_text(chief), of_chief:sub(1, 1):upper() .. of_chief:sub(2) .. " stands Chief Crumb.",
+	"{dir_from_giver:leader} away from the giver, capitalised")
+check(not Q.quest_text(chief):find("from here", 1, true), "no \"from here\" away from the giver")
+calls = describe_calls
+Q.quest_text(camp); Q.quest_text(chief)
+eq(describe_calls, calls, "the form away from the giver is cached too")
 
 -- The dialogue and the quest log show the filled text and title.
 local meta, main = {}, {}
@@ -309,7 +324,7 @@ has(shown[1], "Rewards: 360 XP, 8 copper", "offer dialogue: the computed copper"
 check(Q.accept(player, "q1_camp"), "accept q1_camp")
 local log = pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = "q1_camp"})
 has(log, "Raid on the Bandit Camp", "quest log: the filled title")
-has(log, "Bandits hold a camp northeast from here.", "quest log: the filled text")
+has(log, "Bandits hold a camp northeast of Dawnmere.", "quest log: the filled text, from the giver's settlement")
 check(not log:find("{", 1, true), "quest log: no placeholder left")
 
 ------------------------------------------------------------------------------
@@ -320,6 +335,8 @@ describe_broken, logged = true, {}
 eq(Q.quest_text(Q.registered_quests.q1_camp):match("^[^\n]*"), "Bandits hold a camp in Dawnmere Fields. Drive them out.",
 	"from here without a phrase: the zone")
 has(Q.quest_text(Q.registered_quests.q1_chief), ", the borderlands around Highcourt.", "of a place without a phrase: around it")
+eq(Q.quest_text(Q.registered_quests.q1_camp, true):match("^[^\n]*"), "Bandits hold a camp in Dawnmere Fields. Drive them out.",
+	"from here at the giver without a phrase: the zone")
 check(#logged > 0 and logged[1]:find("has no direction on this world", 1, true) ~= nil, "the fallback is logged")
 describe_broken = false
 
@@ -376,6 +393,7 @@ for _, case in ipairs({
 	{"E-placeholder]", "unmatched brace", function(d) quest(d, "q1_camp").text = "Go {name:bandit_camp. Now." end},
 	{"E-compass", "compass word in a text", function(d) quest(d, "q1_camp").text = "Bandits camp to the north-east. Go." end},
 	{"E-compass", "compass word in a title", function(d) quest(d, "q1_camp").title = "The Southern Camp" end},
+	{"E-compass", "a -bound compass word", function(d) quest(d, "q1_camp").text = "Take the northbound road. Go." end},
 }) do
 	local found = findings(case[3])
 	has(found, "[" .. case[1]:gsub("%]$", "") .. "]", case[2] .. " is refused")

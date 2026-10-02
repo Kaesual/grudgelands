@@ -248,12 +248,15 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
 
 - `T` is a kind or camp of a spawn recipe or a leader role. A bare id means
   the quest file's zone; another zone's kind or camp is written
-  `zone_id/id` (`{zone_area:elandor_whitebridge_shire/wolf_woods}`); a
+  `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
   leader role is found in any zone.
 - `P` is a settlement key or anchor id: `highcourt`, `goldmead_village`,
   `anchor_015`.
 - A kind is pointed at by its largest patch, so two placeholders of one
-  quest never disagree. "From here" is measured from the giver; on an open
+  quest never disagree. "From here" is measured from the giver and reads so
+  only in the giver's own dialogue; the quest log and another NPC's
+  dialogue (a different turn-in) read it from the giver's settlement
+  instead ("northeast of Dawnmere"). On an open
   kind it is a warning (`W-placeholder-spread`): use `{zone_area:...}` or
   `{dir_of:...}` there.
 - A title takes only `{name:...}`: titles appear in lists and in other
@@ -263,14 +266,15 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
   "Northeast from here the smoke rises.").
 - Examples: "Boars raid the crops {zone_area:home_fields}.";
   "Crumb's gang holds the {name:bandit_camp} {dir_from_giver:bandit_camp}.";
-  "The wolves den {dir_of:highcourt:elandor_whitebridge_shire/wolf_woods}."
+  "The wolves den {dir_of:highcourt:elandor_whitebridge_shire/oakwood}."
 - A target without a direction on a world (it formed no region there; the
   region check `quest_targets.py` prevents it) reads "in <zone>" or
   "around <place>" and is logged.
 
 **No fixed compass word** in a title or text: north, south, east, west, the
-four diagonals, and their -ern, -erly, -ward and -wards forms, in any case
-and hyphenation ("north-east" counts). Only whole words count: names such
+four diagonals, and their -ern, -erly, -ward, -wards, -bound, -most,
+-ernmost, -erner and -erners forms ("northbound", "southernmost",
+"Easterners"), in any case and hyphenation ("north-east" counts). Only whole words count: names such
 as "Northfold" or "Westbrook" are fine. Write a placeholder or neutral
 wording ("past the mill", "along the shore").
 
@@ -284,9 +288,11 @@ salvage bounty of weight 0).
 
 **Checks:** the game refuses at load every malformed placeholder, unknown
 target or place, direction in a title and compass word, naming file and
-quest. Offline: `python3 tools/r28_design/validate.py --game --legacy
---atlas docs/planning/round28/zones/` (the same rules with the codes of its
-README) and `python3 tools/r28_design/ledger.py --game --track <race>
+quest. Offline: `python3 tools/r28_design/validate.py --game --atlas
+docs/planning/round28/zones/ --zone <your zones>` (the same rules with the
+codes of its README; **without** `--legacy`, which would let a new quest
+through with a fixed `xp` or without `weight` — that option is only for
+checking the whole legacy set) and `python3 tools/r28_design/ledger.py --game --track <race>
 [--sister <zone>]` for the route budget (31–40 the faction's three contested
 zones, 41–50 The Broken Causeway and The Shattered Line, 51–60 Gravesalt
 Escarpment and The Skyglass Canopy, each with the faction's front quests).

@@ -83,14 +83,17 @@ code over the analytic world, several seeds).
 python3 tools/r28_design/validate.py                         # whole design dir
 python3 tools/r28_design/validate.py --atlas docs/planning/round28/zones/
 python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
-python3 tools/r28_design/validate.py --game --legacy --atlas docs/planning/round28/zones/   # the shipped files
+python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/ --zone <your zones>   # a content lane's shipped files
+python3 tools/r28_design/validate.py --game --legacy --atlas docs/planning/round28/zones/   # the whole shipped set incl. legacy quests
 ```
 
 - `--game` reads the zone files from the game
   (`mods/ENTITIES/grug_mobs/data/zones` and
   `mods/PLAYER/grug_quests/data/zones`) instead of the design's `zones/`;
-  the catalogue stays the design's. `--legacy` is needed while legacy quests
-  ship.
+  the catalogue stays the design's. A content lane checks its own zones
+  **without** `--legacy` (that option lets a quest through with a fixed `xp`
+  or without `weight`); `--legacy` is only for the whole shipped set while
+  legacy quests ship.
 - Quest texts (Round 29 Q1, [quests.md](../../docs/design/quests.md#for-content-lanes)):
   `E-placeholder` (a brace outside a well-formed placeholder, an unknown
   placeholder, a wrong argument count, a direction placeholder in a title),
