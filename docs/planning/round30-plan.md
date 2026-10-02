@@ -290,10 +290,11 @@ heal at each give-up (about every 7 s); P2's one-seed count run showed +55 % spa
 cave, judged run noise (the merged dispatcher keeps every row's rate by
 construction).
 
-**King give-up behaviour (open question to the user):** kings now only drop
-an unreachable target (no heal, no encounter reset); the coordinator
-proposed heal-only without the encounter reset, to stop step-wise ranged
-kills from a hidden spot.
+**King give-up behaviour (user, 2026-10-03):** kings keep only dropping an
+unreachable target (no heal, no encounter reset). A heal without the reset
+was considered against step-wise ranged kills from a hidden spot and
+declined for now: a heal after a false give-up would annoy players more.
+Kings still heal and reset the encounter through the leash as before.
 
 ### Playtest checklist
 
