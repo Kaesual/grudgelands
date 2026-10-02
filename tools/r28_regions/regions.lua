@@ -70,6 +70,19 @@ local build_seconds = os.clock() - t1
 collectgarbage()
 collectgarbage()
 local build_kib = collectgarbage("count") - kib0
+-- The map's own size: two more maps, the older one measured by freeing it
+-- (nothing else runs between the two counts, so the planner's cache cannot
+-- move; the newer one keeps whatever the last call left on the stack).
+local spare = {core.build(zone, q, recipe)}
+spare[2] = core.build(zone, q, recipe)
+collectgarbage()
+collectgarbage()
+local kib_with = collectgarbage("count")
+spare[1] = nil
+collectgarbage()
+collectgarbage()
+local map_kib = kib_with - collectgarbage("count")
+spare = nil
 
 -- Places: the settlement roster's names at their fitted anchors.
 _G.core = _G.core or {}
@@ -158,7 +171,8 @@ local doc = {seed = seed, zone = zone, zone_name = record.display_name,
 	band = {record.level_min, record.level_max}, cell = core.CELL,
 	frame = {x0 = x0, z0 = z0, x1 = x1, z1 = z1, step = RASTER, cols = cols, rows = rows},
 	seconds = {world = world_seconds, regions = build_seconds, raster = raster_seconds},
-	build_kib = build_kib, heights = map.heights, smoothed_cells = map.smoothed_cells,
+	build_kib = build_kib, map_kib = map_kib, heights = map.heights,
+	smoothed_cells = map.smoothed_cells,
 	from = from_place and {x = from_place.x, z = from_place.z, name = from_place.name},
 	to = recipe.to.border, giver = elder, places = places, cells = {}, regions = {}, kinds = {}, belts = {},
 	camps = {}, leaders = {}, roads = {}, phrases = {}, patches = {},

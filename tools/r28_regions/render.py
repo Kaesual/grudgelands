@@ -294,11 +294,12 @@ def write_stats(doc, path):
                  "(`mods/ENTITIES/grug_mobs/data/zones/%s.spawns.json`); image `seed_%s.png`." % (
                      doc["zone"], doc["seed"]))
     lines.append("")
-    lines.append("Build: world %.1f s, region map %.2f s, map retained about %.0f KiB (CPU, LuaJIT, "
-                 "offline; includes the planner's warmed column cache). %d land cells, %d regions, "
-                 "%d islet cells, %d cells smoothed (belt step-down)." % (
-                     doc["seconds"]["world"], doc["seconds"]["regions"], doc["build_kib"],
-                     st["cells"], st["regions"], st["islet_cells"], doc["smoothed_cells"]))
+    lines.append("Build: world %.1f s, region map %.2f s (CPU, LuaJIT, offline); the map holds about "
+                 "%.0f KiB, the first build %.0f KiB with the planner's column cache it warms. "
+                 "%d land cells, %d regions, %d islet cells, %d cells smoothed (belt step-down)." % (
+                     doc["seconds"]["world"], doc["seconds"]["regions"], doc.get("map_kib", 0),
+                     doc["build_kib"], st["cells"], st["regions"], st["islet_cells"],
+                     doc["smoothed_cells"]))
     lines.append("")
     lines.append("## Belts")
     lines.append("")

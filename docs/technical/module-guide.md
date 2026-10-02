@@ -626,7 +626,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (structure at load, roles/areas/levels/items once every mod loaded; every
   finding names file and quest); quest NPCs bound to sockets are in
   `npcs.lua`, new givers at free quest sockets come from the files. Area kill
-  credit reads the mob's `_grug_area` tag; quest-only drops use
+  credit reads the mob's `_grug_area` tag (`<zone>/<kind or camp>` of the
+  zone's spawn recipe, `grug_mobs/spawn_regions.lua`,
+  [spawn_regions.md](../design/spawn_regions.md)); quest-only drops use
   `grug_mobs.register_participant_drop_hook`; weight rewards
   `grug_xp.quest_reward`. The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
