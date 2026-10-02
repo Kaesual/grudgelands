@@ -32,8 +32,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "Debts Beyond the Grave",
-      "text": "At night Debtbound Zombies walk the {name:pastures} {zone_area:pastures}, knocking on doors to collect debts the clerks wrote off long ago. Put eight of them to rest.",
+      "title": "Payment Was Final",
+      "text": "Our ancestors deserve respect, but a settled account deserves to stay settled. Put eight Debtbound Zombies to rest in the {name:pastures} {zone_area:pastures} at night. They keep knocking to collect debts we wrote off generations ago, and I refuse to wake the entire records hall to prove it.",
       "objectives": [
         {
           "type": "kill",
@@ -59,8 +59,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "Fish for the Pie Crust",
-      "text": "The bakehouse pies want fish this week, and the rivers and tarns outside the gates are full of Mire Carp. Bring me four; a rod and some patience will do.",
+      "title": "A Pie Needs a Middle",
+      "text": "The crusts are ready, but a pie full of air won't see a smith through a shift. Bring me four Mire Carp from the rivers or tarns outside Dur Brannoc's gates; take your time with the rod while I take mine with the pastry.",
       "objectives": [
         {
           "type": "item",
@@ -85,8 +85,8 @@
       "requires": [
         "durbrannoc_gate_01"
       ],
-      "title": "Bread for Tarnwatch Fold",
-      "text": "Edda Tarnmantle at Tarnwatch Fold on the Frostbarrow Shelf ordered bread and a strong pair of arms. The bread is on the cart; you are the arms.",
+      "title": "The Other Half of Edda's Order",
+      "text": "Edda Tarnmantle asked me for bread and someone who can swing more than a butter knife. The loaves are already on the cart. Go speak to her at Tarnwatch Fold on the Frostbarrow Shelf about the other half of her order. Button your coat before you leave, or I'll hear about it from Edda.",
       "objectives": [
         {
           "type": "talk",
@@ -110,8 +110,8 @@
       "requires": [
         "durbrannoc_dispatch_01"
       ],
-      "title": "Letter for Merren Oakstamp",
-      "text": "Our friends need help too, and good bread travels. Take this letter to Merren Oakstamp at Whitebridge Market Close; they will have work for a dwarf who wants to see more of the Accord.",
+      "title": "A Neighbour's Table",
+      "text": "An Accord worth its salt ought to mean more than sharing a colour on a banner. If you'd like work among our human neighbours, speak with Merren Oakstamp at Whitebridge Market Close. Tell Merren that Varda sent someone dependable, and try to make me look a sound judge of character.",
       "objectives": [
         {
           "type": "talk",
@@ -135,8 +135,8 @@
       "requires": [
         "durbrannoc_dispatch_01"
       ],
-      "title": "Letter for Mariel Waybook",
-      "text": "Our friends need help too, and good bread travels. Take this letter to Mariel Waybook at Highcourt; they will have work for a dwarf who wants to see more of the Accord.",
+      "title": "Varda's Recommendation",
+      "text": "Highcourt has plenty of fine words; Mariel Waybook could use another pair of working hands. Go speak with her there if you fancy helping our human allies. Tell her I trust you with a job, which is only one step below trusting you with my oven.",
       "objectives": [
         {
           "type": "talk",
@@ -160,8 +160,8 @@
       "requires": [
         "durbrannoc_dispatch_01"
       ],
-      "title": "Letter for Ilwen Petalmeasure",
-      "text": "Our friends need help too, and good bread travels. Take this letter to Ilwen Petalmeasure at Lorindor Berrycourt; they will have work for a dwarf who wants to see more of the Accord.",
+      "title": "Room at Another Hearth",
+      "text": "A dwarf can lend a hand beneath branches as well as beams. If you'd like to help our elven neighbours, find Ilwen Petalmeasure at Lorindor Berrycourt and ask what needs doing; good neighbours make room at the hearth before the weather turns.",
       "objectives": [
         {
           "type": "talk",
@@ -185,8 +185,8 @@
       "requires": [
         "durbrannoc_gate_01"
       ],
-      "title": "Tolls Nobody Granted",
-      "text": "Toll Bandits stop travellers in the {name:tollwood} {zone_area:tollwood} at night and collect a toll the king never signed. Defeat eight Toll Bandit Archers or Toll Bandits there.",
+      "title": "His Majesty Signed Nothing",
+      "text": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Bandit Archers and Toll Bandits, in the {name:tollwood} {zone_area:tollwood} at night. Deal with the archers before they put their objections in writing on your coat.",
       "objectives": [
         {
           "type": "kill",
@@ -215,8 +215,8 @@
       "requires": [
         "durbrannoc_gate_02"
       ],
-      "title": "The Ore-Factor's Books",
-      "text": "The tolls and the stolen ore all end at the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk pays in Clasped Purses. Recover two purses from his goblins and close Brakk's account for good.",
+      "title": "Close Brakk's Account",
+      "text": "Every crooked entry leads to the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Ore-Thieving Goblins or Rubble Goblin Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
       "objectives": [
         {
           "type": "kill",
@@ -254,8 +254,8 @@
       "requires": [
         "durbrannoc_provisions_01"
       ],
-      "title": "Bounty: Ram for the Ovens",
-      "text": "Repeatable bounty: the ovens are always hungry. Kill six Hill Rams on the {name:heights} by day and I pay for every batch; come back after twenty minutes for the next.",
+      "title": "Bounty: Supper for a City",
+      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Hill Rams on the {name:heights} by day, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
       "objectives": [
         {
           "type": "kill",
@@ -286,8 +286,8 @@
       "requires": [
         "durbrannoc_gate_03"
       ],
-      "title": "Orders for Borin Splitbolt",
-      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Borin Splitbolt at Splitbolt Station; the contested lands are your work now.",
+      "title": "Stone Enough to Stand On",
+      "text": "A mountain hold stands because every stone bears its share, and the Accord needs yours on contested ground. Report to Borin Splitbolt at Splitbolt Station in Stormvault Heights; you've kept our roads open, and he'll find a use for that steadiness.",
       "objectives": [
         {
           "type": "talk",
@@ -311,8 +311,8 @@
       "requires": [
         "durbrannoc_gate_03"
       ],
-      "title": "Orders for Toren Waterbarrel",
-      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Toren Waterbarrel at Cinderline Watch; the contested lands are your work now.",
+      "title": "Beyond Our Own Gate",
+      "text": "Dur Brannoc's walls are sound, but the Accord cannot shelter behind them all at once. Report to Toren Waterbarrel at Cinderline Watch in Ashenward March; he needs capable hands on that contested ground. We keep our word to our allies by turning up when the work gets hard.",
       "objectives": [
         {
           "type": "talk",
@@ -336,8 +336,8 @@
       "requires": [
         "durbrannoc_gate_03"
       ],
-      "title": "Orders for Faeris Rootbinder",
-      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Faeris Rootbinder at Glassroot Gate; the contested lands are your work now.",
+      "title": "The Weight of Our Word",
+      "text": "I can stamp a pledge of support all day, but Faeris Rootbinder needs someone to walk through the gate. Report to Faeris at Glassroot Gate in the contested Glassroot Wilds and let our elven allies see what a promise from Dur Brannoc weighs.",
       "objectives": [
         {
           "type": "talk",

@@ -49,8 +49,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "The Sled Track Pack",
-      "text": "Crag Snow Leopards hunt the sled track through the {name:pinewood} {zone_area:pinewood} at night, and they do not need a pack to be trouble. Kill eight of them there.",
+      "title": "No Bell on Those Cats",
+      "text": "I can hear a loaded sled through a gale, but a Crag Snow Leopard gives no warning before it pounces. Kill eight Crag Snow Leopards along the sled track in the {name:pinewood} {zone_area:pinewood} at night. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
       "objectives": [
         {
           "type": "kill",
@@ -78,8 +78,8 @@
       "requires": [
         "frostbarrow_sleds_01"
       ],
-      "title": "Word for Kelda Screesort",
-      "text": "Kelda Screesort at Tarncut Mine is short of hands and long on trouble. Follow the mine trail and tell her Tarnwatch sent you.",
+      "title": "An Extra Pair for Kelda",
+      "text": "Kelda Screesort says Tarncut Mine is managing, which means she's doing three dwarves' work and resenting the other two. Go speak with her there and say Edda sent you. She'll grumble, but she'll find a use for willing hands.",
       "objectives": [
         {
           "type": "talk",
@@ -103,8 +103,8 @@
       "requires": [
         "frostbarrow_sleds_01"
       ],
-      "title": "Bounty: Cats on the Track",
-      "text": "Repeatable bounty: more tracks in the snow. Kill six Crag Snow Leopards in the {name:pinewood} at night; the next bounty opens twenty minutes after you hand this one in.",
+      "title": "Bounty: Pawprints Beside the Runners",
+      "text": "Fresh pawprints beside the sled marks, close enough to make my beard bristle. Kill six Crag Snow Leopards in the {name:pinewood} at night and report back for your bounty. You can repeat it twenty minutes after handing it in.",
       "objectives": [
         {
           "type": "kill",
@@ -133,8 +133,8 @@
       "min_level": 23,
       "level": 25,
       "requires": [],
-      "title": "Rams on the Haul Lane",
-      "text": "Hill Rams butt the ore sleds off the haul lane through the {name:snowpines} {zone_area:snowpines}. Kill six of them by day and the sleds stay on the lane.",
+      "title": "Horns Have Right of Way",
+      "text": "I spent half the morning hauling a sled back onto the track while a Hill Ram watched me chew my beard. Cull six Hill Rams along the haul lane in the {name:snowpines} {zone_area:snowpines} by day. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
       "objectives": [
         {
           "type": "kill",
@@ -162,8 +162,8 @@
       "requires": [
         "frostbarrow_cutting_01"
       ],
-      "title": "Steel for the Deep Seam",
-      "text": "The deep seam needs Steel Bars for the shaft brackets: bring me four. In return you get a Steel Pickaxe, because nothing softer goes where the garnet sits.",
+      "title": "What Holds the Roof",
+      "text": "Every dwarf looks at the ore; a good miner looks at what's holding the roof above it. Bring me four Steel Bars for the deep shaft's brackets. I'll give you a Steel Pickaxe for the rock down there, and we'll both have done something useful before lunch.",
       "objectives": [
         {
           "type": "item",
@@ -193,8 +193,8 @@
       "requires": [
         "frostbarrow_cutting_02"
       ],
-      "title": "Red Stone in the Dark",
-      "text": "Rough Garnet sits deep in the rock, well below the copper and the jade. Bring me two pieces and I will believe you are a miner. Take light, take food, and take the stairs back up.",
+      "title": "Bring Yourself Back Too",
+      "text": "Use your Steel Pickaxe to look for Rough Garnet deep beneath these mines, below the copper and jade, and bring me two pieces. Pack food and see that you have light. Keep a route back to the surface. I count a mining trip successful when the miner comes back with the stone.",
       "objectives": [
         {
           "type": "item",
@@ -219,8 +219,8 @@
       "requires": [
         "frostbarrow_cutting_03"
       ],
-      "title": "Nib Counts the Powder",
-      "text": "Goblin Powder-Counter Nib stole our blasting powder and sits in the {name:rimewood} {dir_from_giver:powder_counter_nib}, counting it barrel by barrel. Find him and stop the count before he reaches boom.",
+      "title": "An Explosive Miscalculation",
+      "text": "Goblin Powder-Counter Nib stole our blasting powder and is counting the barrels in the {name:rimewood} {dir_from_giver:powder_counter_nib}. Kill him before he finishes his sums; I'll sleep better knowing he's stopped thinking of uses for it.",
       "objectives": [
         {
           "type": "kill",
@@ -246,8 +246,8 @@
       "min_level": 24,
       "level": 26,
       "requires": [],
-      "title": "Pinchers on the Ice",
-      "text": "Barnacle Pinchers have taken the {name:icy_shore} {dir_from_giver:icy_shore}, and they attack anyone who lands a boat. Clear six of them by day.",
+      "title": "The Landing Bites Back",
+      "text": "A landing should let you get out of a boat, not persuade you to climb back in. Kill six Barnacle Pinchers on the {name:icy_shore} {dir_from_giver:icy_shore} by day. They'll attack without waiting for an invitation, so get your footing before you get their attention.",
       "objectives": [
         {
           "type": "kill",
@@ -275,8 +275,8 @@
       "requires": [
         "frostbarrow_watch_01"
       ],
-      "title": "Bounty: The Rime Shore",
-      "text": "Repeatable bounty: the pinchers come back with every tide. Clear six Barnacle Pinchers on the {name:rime_shore} by day; the next bounty opens thirty minutes after this one.",
+      "title": "Bounty: Claws with the Tide",
+      "text": "The tide has brought us another welcome committee with claws. Kill six Barnacle Pinchers on the {name:rime_shore} by day and return for your bounty. This job is repeatable thirty minutes after you hand it in; the sea has never respected a finished shift.",
       "objectives": [
         {
           "type": "kill",

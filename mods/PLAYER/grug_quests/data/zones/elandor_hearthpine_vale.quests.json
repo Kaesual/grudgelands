@@ -32,8 +32,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Tusks in the Timber",
-      "text": "Small Boars are rooting through the cut timber {zone_area:timberline} by day. Bring down eight of them; a yellow name means the beast only fights once you start it. Someone has been stealing our ore as well, but first the pigs.",
+      "title": "A Pig's Breakfast",
+      "text": "Small Boars are rooting through our pit props {zone_area:timberline}, and I refuse to lose a miner to a pig's breakfast. Kill eight by day; a yellow name means they leave you be until you strike. Save any meat for Hilda, then we'll see about the ore thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -59,8 +59,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "A Dwarf Without a Pick",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe and show them to me here in Hearthpine. I keep the pair for the timber crew and hand you a fresh one; nobody in this hall goes out with bare hands.",
+      "title": "Hands Before Heroics",
+      "text": "Before you go making a name for yourself, make something with a handle. Craft a Wooden Axe and a Wooden Pickaxe, then bring both to me here in Hearthpine. I'll keep those for the timber crew and give you a fresh pair. We look after our own tools and our own folk.",
       "objectives": [
         {
           "type": "item",
@@ -97,8 +97,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Wood for the Smokehouse",
-      "text": "The smokehouse eats logs faster than the timber crew eats sausages. Bring me five logs from any tree outside the town, whatever the hour.",
+      "title": "Feed the Fire First",
+      "text": "Every mouth in Hearthpine wants supper, including the smokehouse. Bring me five logs from trees outside town, at any hour; logs, mind, not planks. Leave the town trees standing, or you'll answer to Brunna before you answer to me.",
       "objectives": [
         {
           "type": "item",
@@ -123,8 +123,8 @@
       "requires": [
         "hearthpine_hunt_01"
       ],
-      "title": "Rats on the Night Shift",
-      "text": "After dark Large Rats take over the same timber {zone_area:timberline}. Kill eight there; a red name attacks on sight, and one rat squeals for its cousins, so keep your back to a stump.",
+      "title": "The Unpaid Night Crew",
+      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Large Rats {zone_area:timberline} after dark. A red name means they'll attack on sight, and a rat's squeal brings nearby rats running; pick your fights before they pick you.",
       "objectives": [
         {
           "type": "kill",
@@ -152,8 +152,8 @@
       "requires": [
         "hearthpine_tools_01"
       ],
-      "title": "Stone Before Steel",
-      "text": "Use the wooden pick on plain rock outside the walls and make a Stone Axe and a Stone Pickaxe. Bring both for inspection; I return a pair for the ore work ahead.",
+      "title": "An Edge Worth Keeping",
+      "text": "Good, you've learned which end to hold. Take your Wooden Pickaxe to plain rock outside the walls, then craft a Stone Axe and a Stone Pickaxe and bring both for inspection. I'll swap them for a fresh pair; the next rock won't yield to wood and encouragement.",
       "objectives": [
         {
           "type": "item",
@@ -192,8 +192,8 @@
       "requires": [
         "hearthpine_kitchen_01"
       ],
-      "title": "Coal for the Oven",
-      "text": "Bring me five Coal Lumps from the rock outside town, whenever the hunt leaves you a moment. Coal goes in the fuel slot, raw food in the cooking slot, and dwarves go to the table.",
+      "title": "Supper Needs a Spark",
+      "text": "A cold oven is just a cupboard with ambitions. Mine five Coal Lumps from the rock outside town and bring them to me when you have a break from hunting. Try the public oven while you're here: coal in the fuel slot, raw food in the cooking slot, and patience until supper.",
       "objectives": [
         {
           "type": "item",
@@ -218,8 +218,8 @@
       "requires": [
         "hearthpine_hunt_02"
       ],
-      "title": "Patches for the Flour Sacks",
-      "text": "The rats chewed my flour sacks, so the rats can mend them. Bring two Rat Fur Patches from the Large Rats in the {name:timberline} after nightfall.",
+      "title": "You Chew It, You Patch It",
+      "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Large Rats in the {name:timberline} after nightfall.",
       "objectives": [
         {
           "type": "item",
@@ -248,8 +248,8 @@
       "requires": [
         "hearthpine_hunt_02"
       ],
-      "title": "Lanterns After Sundown",
-      "text": "When the sun is down, Braindead Zombies crawl up off the {name:shingle} {dir_from_giver:shingle}. Put eight of them back down. They burn at dawn, so this is night work; do the daytime jobs while you wait.",
+      "title": "The Dead Can Clock Out",
+      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Kill eight Braindead Zombies on the {name:shingle} {dir_from_giver:shingle} after nightfall. They burn in sunlight, so get your daytime work done while you wait. The dead can have your next shift.",
       "objectives": [
         {
           "type": "kill",
@@ -277,8 +277,8 @@
       "requires": [
         "hearthpine_hunt_02"
       ],
-      "title": "The High Path",
-      "text": "Young Ibex kick loose slate onto the path through the {name:high_pines} {zone_area:high_pines}. Thin out eight of them by day, before the slate thins out a dwarf.",
+      "title": "A Hard Hat Has Limits",
+      "text": "Young Ibex are kicking slate onto the path through the {name:high_pines} {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
       "objectives": [
         {
           "type": "kill",
@@ -307,8 +307,8 @@
         "hearthpine_kitchen_02",
         "hearthpine_hunt_02"
       ],
-      "title": "The Winter Smoke",
-      "text": "Bring me ten Raw Meat for the winter racks: boar by day, rat by night, ibex if you can catch one. Keep what you already carry; it all smokes the same. Take some cooked meat back for the road.",
+      "title": "Winter Doesn't Bring Lunch",
+      "text": "When the snow shuts us in, I mean to hear snoring, not stomachs. Bring me ten pieces of Raw Meat for the winter racks; what you've saved counts, or hunt boar and ibex by day and rats by night here in Hearthpine Vale. I'll send you off with three portions of Meat, because the cook gets the last word on leaving hungry.",
       "objectives": [
         {
           "type": "item",
@@ -339,8 +339,8 @@
       "requires": [
         "hearthpine_tools_02"
       ],
-      "title": "Two Metals, One Furnace",
-      "text": "Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. The shaft props need fittings, and you will get a portable dual furnace for your trouble. Set it outside protected ground.",
+      "title": "Fittings Before Fortune",
+      "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. I'll give you a Dual Furnace for your own work. Place it outside protected ground.",
       "objectives": [
         {
           "type": "item",
@@ -375,8 +375,8 @@
       "requires": [
         "hearthpine_pantry_01"
       ],
-      "title": "Crab for the Feast Table",
-      "text": "Bring me three Crab Legs from the crabs of the {name:rockpools} {dir_from_giver:rockpools}. The small ones mind their own business; the monstrous ones do not, so mind yours.",
+      "title": "The Feast Fights Back",
+      "text": "For once I'd like a feast that nobody can mistake for yesterday's stew. Bring me three Crab Legs from Small Crabs or Monstrous Crabs at the {name:rockpools} {dir_from_giver:rockpools} by day. Small Crabs leave you alone until provoked; Monstrous Crabs start the argument themselves, so keep all your fingers for the cutlery.",
       "objectives": [
         {
           "type": "item",
@@ -407,8 +407,8 @@
       "requires": [
         "hearthpine_tools_03"
       ],
-      "title": "Bronze for the Road",
-      "text": "Make three fresh Bronze Bars in your dual furnace and bring them here. The earlier bars went into the props, so do not count them twice. Take this bronze pick; it bites rock the stone one only scratches.",
+      "title": "Your Next Bite of Mountain",
+      "text": "Those Copper Bars and Tin Bars are holding up mine shafts now, so you'll need fresh supplies for this. Use your Dual Furnace to make three Bronze Bars and bring them to me here. You've earned a Bronze Pickaxe and a crack at tougher rock; remember who taught you when you strike something worth bragging about.",
       "objectives": [
         {
           "type": "item",
@@ -439,8 +439,8 @@
       "requires": [
         "hearthpine_hunt_04"
       ],
-      "title": "Bracket's Ledger of Theft",
-      "text": "The ore thieves sit in the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, day and night. Defeat seven Confused Ore Thieves, then deal with their chief, Bracket, who keeps the stolen ore in a ledger nobody else can read. Pull him away from his crew if you can.",
+      "title": "Bracket Doesn't Add Up",
+      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Confused Ore Thieves and Confused Ore Chief Bracket himself. Draw the chief away from his crew if you can; you've done enough honest work to know the value of coming home.",
       "objectives": [
         {
           "type": "kill",
@@ -476,8 +476,8 @@
       "requires": [
         "hearthpine_hunt_05"
       ],
-      "title": "Word for Orrik Pineledger",
-      "text": "Bracket's crew carted the ore off toward Copperfell. Take word to Orrik Pineledger in Copperfell Village along the main road; the foothills are your work now. Finish what you like here first.",
+      "title": "Follow the Missing Ore",
+      "text": "You put an end to Bracket's stealing, but his carts already took our ore to Copperfell. Follow the main road to Copperfell Village and tell Orrik Pineledger what happened. Finish any business here first; Hearthpine sends you off with pride, not a boot to the backside.",
       "objectives": [
         {
           "type": "talk",

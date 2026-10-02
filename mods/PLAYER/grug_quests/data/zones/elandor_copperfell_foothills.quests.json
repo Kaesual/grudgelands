@@ -58,8 +58,8 @@
       "requires": [
         "hearthpine_departure"
       ],
-      "title": "Stakes in the Lower Pines",
-      "text": "Rooting Boars dig up our survey stakes in the {name:lower_pines} {zone_area:lower_pines}. Kill eight of them by day and the stakes stay where the surveyor put them.",
+      "title": "The Surveyor Has Tusks",
+      "text": "I paid a surveyor to mark our claims, and the Rooting Boars have submitted their own revisions. Kill eight of them in the {name:lower_pines} {zone_area:lower_pines} by day. We cannot run a mine on measurements taken by snout.",
       "objectives": [
         {
           "type": "kill",
@@ -87,8 +87,8 @@
       "requires": [
         "hearthpine_departure"
       ],
-      "title": "Iron for the Workyard",
-      "text": "The workyard needs four Iron Bars and four Coal Lumps for new rail clamps. Bring them and I will hand you an Iron Pickaxe; the deeper rock wants better than bronze.",
+      "title": "Keep the Rails Together",
+      "text": "Hear that clatter from the workyard? That's what a rail sounds like when its clamps have had enough. Bring me four Iron Bars and four Coal Lumps for replacements, and I'll give you an Iron Pickaxe for the harder rock below.",
       "objectives": [
         {
           "type": "item",
@@ -123,8 +123,8 @@
       "requires": [
         "copperfell_survey_01"
       ],
-      "title": "Gnawed Ledgers",
-      "text": "Granary Rats get into the survey hut at night and eat the ledgers, which is worse than eating the grain. Kill eight of them in the {name:lower_pines} after dark.",
+      "title": "An Appetite for Figures",
+      "text": "A Granary Rat ate six months of accounts last night and left the cover, which I consider criticism. Kill eight Granary Rats in the {name:lower_pines} after dark. Those books record what the miners are owed, and teeth are no excuse for missing wages.",
       "objectives": [
         {
           "type": "kill",
@@ -152,8 +152,8 @@
       "requires": [
         "copperfell_workyard_01"
       ],
-      "title": "Tusk Handles",
-      "text": "Ridged Boar Tusks make the best tool handles in the foothills; they do not split in the cold. Bring me three from the Rooting Boars of the {name:lower_pines}.",
+      "title": "A Handle on the Problem",
+      "text": "Half the workyard is sharing one sound handle, and the other half is waiting to borrow it. Bring me three Ridged Boar Tusks from Rooting Boars in the {name:lower_pines} by day; any you saved will do. I'll see to the fitting, you see to the tusks.",
       "objectives": [
         {
           "type": "item",
@@ -182,8 +182,8 @@
       "requires": [
         "copperfell_survey_02"
       ],
-      "title": "Report to the Outpost",
-      "text": "Mara Deepwatch at Copperfell Outpost wants every pair of hands that can hold an axe. Walk the trail to her and tell her Orrik sent you.",
+      "title": "Orrik Sends Useful Hands",
+      "text": "Speak to Mara Deepwatch at Copperfell Outpost and tell her Orrik sent you; her latest request for help uses the word 'urgent' hard enough to tear the paper. I'd send a clerk, but she was quite specific about the axe.",
       "objectives": [
         {
           "type": "talk",
@@ -207,8 +207,8 @@
       "requires": [
         "copperfell_survey_02"
       ],
-      "title": "Bounty: Ledger Rats",
-      "text": "Repeatable bounty: the rats are back in the survey hut. Kill six Granary Rats in the {name:lower_pines} at night and I pay the usual; come back after twenty minutes for the next one.",
+      "title": "Bounty: Accounts Receivable, Barely",
+      "text": "Another page chewed, another bounty posted; at least this expense is easy to explain. Kill six Granary Rats in the {name:lower_pines} at night, then return for payment. This bounty is repeatable twenty minutes after you hand it in.",
       "objectives": [
         {
           "type": "kill",
@@ -239,8 +239,8 @@
       "requires": [
         "copperfell_survey_03"
       ],
-      "title": "Burrows Under the Slopes",
-      "text": "Burrow Gnawers tunnel under the {name:pine_slopes} at night and our carts fall into their holes. Kill eight of them there {zone_area:pine_slopes}.",
+      "title": "The Road Has Gone Hollow",
+      "text": "A cart wheel went through the ground, and I've no wish to see a carter follow it. Hunt eight Burrow Gnawers after dark on the {name:pine_slopes} {zone_area:pine_slopes}. They tunnel while we sleep; tonight we interrupt the shift.",
       "objectives": [
         {
           "type": "kill",
@@ -268,8 +268,8 @@
       "requires": [
         "copperfell_survey_03"
       ],
-      "title": "Sure Feet, Loose Stones",
-      "text": "Surefoot Ibex graze the {name:pine_slopes} by day and send stones down onto the trail. Cull eight of them; the carters will thank you, the ibex will not.",
+      "title": "Surefoot, Someone Else's Problem",
+      "text": "Surefoot Ibex never seem to fall, but everything they stand on does. Cull eight on the {name:pine_slopes} by day before another load of slate comes down on the carters.",
       "objectives": [
         {
           "type": "kill",
@@ -297,8 +297,8 @@
       "requires": [
         "copperfell_watch_02"
       ],
-      "title": "The Roadside Toll",
-      "text": "Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp} stop the ore carts and call it a toll. Defeat eight Roadside Bandits or Bandit Lookouts there; the lookouts shoot, so close in behind cover.",
+      "title": "A Toll Paid in Bruises",
+      "text": "The last carter to refuse their 'road toll' came back without his cart. Go to the {name:bandit_camp} {dir_from_giver:bandit_camp} and defeat eight outlaws in all, counting Roadside Bandits and Bandit Lookouts. Use cover to close on the lookouts; an arrow doesn't care how stout your argument is.",
       "objectives": [
         {
           "type": "kill",
@@ -327,8 +327,8 @@
       "requires": [
         "copperfell_watch_03"
       ],
-      "title": "The Prisoner in the Camp",
-      "text": "One of our carters, Tovin Ashthumb, is still tied up at the bandit camp. With the guards thinned out you can reach him; go and hear what he saw.",
+      "title": "One Carter Still Missing",
+      "text": "Tovin Ashthumb hasn't come home, and I won't write his name under lost cargo. He's still a captive at the bandit camp you just raided; go speak with him while their watch is thin. He may know where the ore went, but first let him know we remembered him.",
       "objectives": [
         {
           "type": "talk",
@@ -352,8 +352,8 @@
       "requires": [
         "copperfell_workyard_02"
       ],
-      "title": "Green Stone From Below",
-      "text": "Rough Jade lies deep under the foothills, in the rock below the copper. Bring me two pieces for the guild seal; take the Iron Pickaxe, a lamp and more patience than sense.",
+      "title": "The Guild's Good Name",
+      "text": "Every load we approve bears the guild seal, and I won't carve our name into rubbish. Bring me two pieces of Rough Jade from deep beneath the foothills, below the copper. Take your Iron Pickaxe, mind your light, and leave yourself a way back. I'd rather wait for the seal than replace the miner.",
       "objectives": [
         {
           "type": "item",
@@ -379,8 +379,8 @@
       "requires": [
         "copperfell_watch_04"
       ],
-      "title": "Bounty: Gnawer Holes",
-      "text": "Repeatable bounty: new holes again. Kill six Burrow Gnawers on the {name:pine_slopes} at night and collect the bounty; the next one opens twenty minutes after you hand it in.",
+      "title": "Bounty: Another Wheel Down",
+      "text": "I've patched the track, and something underneath is already undoing my work. Kill six Burrow Gnawers on the {name:pine_slopes} at night and report back for payment. This bounty is repeatable twenty minutes after you hand it in; I'll have the next shovel of gravel ready.",
       "objectives": [
         {
           "type": "kill",
@@ -411,8 +411,8 @@
       "requires": [
         "copperfell_watch_04"
       ],
-      "title": "The Unlicensed Dig",
-      "text": "The bandits sold our ore to goblins who opened a dig of their own, the {name:goblin_dig} {dir_from_giver:goblin_dig}. Defeat eight of their Rubble Goblin Slingers or Ore-Guard Hounds. Slingers throw rocks from range, hounds do not bother.",
+      "title": "I Know Where They Sold It",
+      "text": "They tied my hands, not my ears; I heard the bandits selling our ore to the goblins at the {name:goblin_dig} {dir_from_giver:goblin_dig}. Defeat eight of the dig's guards in all, counting Rubble Goblin Slingers and Ore-Guard Hounds. The slingers throw rocks and the hounds rush in, so don't let one distract you from the other.",
       "objectives": [
         {
           "type": "kill",
@@ -441,8 +441,8 @@
       "requires": [
         "copperfell_dig_01"
       ],
-      "title": "Foreman Nog's Wages",
-      "text": "Goblin Foreman Nog pays his diggers out of Stolen Purses, and every purse is a carter's. Bring three back from his slingers and put Nog down at the {name:goblin_dig}.",
+      "title": "Our Wages, Nog's Problem",
+      "text": "Goblin Foreman Nog pays his crew out of Stolen Purses, which makes every carter here an unwilling investor. Bring back three Stolen Purses from Rubble Goblin Slingers at the {name:goblin_dig} and kill Nog himself there. Draw him away from his crew if you can. I'd like our wages back without owing you a funeral.",
       "objectives": [
         {
           "type": "kill",
@@ -479,8 +479,8 @@
       "requires": [
         "copperfell_dig_02"
       ],
-      "title": "The Purses Go to the Capital",
-      "text": "Nog's purses carried the stamp of a counting house in Dur Brannoc, so the capital should hear of it. Tell Dorrin Gateledger there what you found; the main road climbs straight to the gates.",
+      "title": "A Familiar Stamp",
+      "text": "I know the counting-house stamp on Nog's purses, and someone in Dur Brannoc has been putting a respectable seal on rotten business. Follow the main road to the capital and tell Dorrin Gateledger what we found.",
       "objectives": [
         {
           "type": "talk",
@@ -504,8 +504,8 @@
       "requires": [
         "copperfell_dig_02"
       ],
-      "title": "Bounty: Back at the Dig",
-      "text": "Repeatable bounty: the goblins never learn. Defeat six Rubble Goblin Slingers at the {name:goblin_dig} and I will see you paid; the next bounty opens thirty minutes after this one.",
+      "title": "Bounty: Rocks in Lieu of Rent",
+      "text": "More Rubble Goblin Slingers have moved into the {name:goblin_dig}, and they're still throwing our mountain at us. Defeat six there and come back for your pay. This bounty is repeatable thirty minutes after you hand it in; I'll keep the account open.",
       "objectives": [
         {
           "type": "kill",
