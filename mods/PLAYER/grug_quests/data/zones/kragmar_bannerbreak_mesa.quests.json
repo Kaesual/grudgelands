@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_bannerbreak_mesa",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Bannerbreak Mesa is where the orcs carry the Throng's banners to the front; hyenas, goblins and old dead fight over everything those banners leave behind.",
   "hubs": [
     {
       "id": "r20_anchor_043",
@@ -9,7 +9,7 @@
         {
           "npc": "r20_anchor_043_host",
           "lines": [
-            "legacy",
+            "ramp",
             "front"
           ]
         }
@@ -22,7 +22,7 @@
         {
           "npc": "r20_anchor_044_host",
           "lines": [
-            "legacy",
+            "standard",
             "front"
           ]
         }
@@ -31,164 +31,299 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_043_01",
-      "line": "legacy",
+      "id": "bannerbreak_ramp_01",
+      "line": "ramp",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
-      "min_level": 31,
+      "min_level": 30,
       "level": 31,
       "requires": [],
-      "faction": "throng",
-      "title": "Planks for the Ascent",
-      "text": "The mesa ramp's side supports need replacing before another heavy load climbs it. Bring ten acacia planks to Red Ramp Post's sheltered work area. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:acacia_wood",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_043_02",
-      "line": "legacy",
-      "giver": "r20_anchor_043_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "Shells Among the Planks",
-      "text": "Scorpions emerge on Bannerbreak Mesa's clay and dry grass after dark, hiding among stored planks. Defeat four while the ramp crew keeps its loads under cover.",
+      "title": "Teeth on the Mesa",
+      "text": "Warpack Hyenas run the {name:badlands} by day, {zone_area:badlands}, and they laugh at my ramp crews. Kill four. I want to hear the mesa go quiet.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:war_stinger"
+          "roles": [
+            "warpack_hyena"
           ],
-          "zone": "kragmar_bannerbreak_mesa",
-          "count": 4
+          "count": 4,
+          "area": "kragmar_bannerbreak_mesa/badlands"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_043_03",
-      "line": "legacy",
+      "id": "bannerbreak_ramp_02",
+      "line": "ramp",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 31,
+      "level": 32,
+      "requires": [
+        "bannerbreak_ramp_01"
+      ],
+      "title": "Report to Tornstandard Hold",
+      "text": "Yarra Standardmender holds Tornstandard Hold, nearer the Accord's lines, and she needs fighters more than I need another pair of hands on the ropes. Go to her and say Drek sent you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_044_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "bannerbreak_ramp_03",
+      "line": "ramp",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
-      "min_level": 33,
+      "min_level": 34,
+      "level": 36,
+      "requires": [
+        "bannerbreak_ramp_01"
+      ],
+      "title": "Rattle's Supply Camp",
+      "text": "Goblins have built the {name:supply_camp} {dir_from_giver:supply_camp} and stuffed it with goods from our wagons. Kill four Siege Goblins or Slingers, then Provisioner Rattle, who keeps their books. Burn the books too, if you like.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_goblin",
+            "siege_goblin_slinger"
+          ],
+          "count": 4,
+          "area": "kragmar_bannerbreak_mesa/supply_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "provisioner_rattle"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "bannerbreak_ramp_bounty",
+      "line": "ramp",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "bannerbreak_ramp_03"
+      ],
+      "title": "Bounty: Warplains Hyenas",
+      "text": "At night the Warpack Hyenas own the {name:warplains}, {zone_area:warplains}. Kill six and I pay, every twenty minutes if you like. The hyenas never run out, and neither do my wagons.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "count": 6,
+          "area": "kragmar_bannerbreak_mesa/warplains"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "bannerbreak_standard_01",
+      "line": "standard",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Stingers Under the Banners",
+      "text": "At night War-Stinger Scorpions crawl over the {name:badlands}, {zone_area:badlands}, and into our bedrolls. Kill four and bring me two Venom Sacs; the shamans want them for Accord arrows.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 4,
+          "area": "kragmar_bannerbreak_mesa/badlands"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:venom_sac",
+          "count": 2,
+          "roles": [
+            "war_stinger"
+          ],
+          "area": "kragmar_bannerbreak_mesa/badlands"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bannerbreak_standard_02",
+      "line": "standard",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 32,
       "level": 33,
       "requires": [
-        "r20_anchor_043_02"
+        "bannerbreak_standard_01"
       ],
-      "faction": "throng",
-      "title": "Sunderstrap's Sentinels",
-      "text": "Once the plank yard is safe, Drek can send you toward Sunderstrap Camp. Defeat four bandit archers guarding its stolen loads in Bannerbreak Mesa.",
+      "title": "Thunderstep Watch",
+      "text": "The Throng fights on more than one hill, and the trolls of Thunderstep Watch hold the jungle. Rumela Stormstep could use you there. Go; Tornstandard will still be standing when you come back.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:bandit_archer"
-          ],
-          "zone": "kragmar_bannerbreak_mesa",
-          "count": 4
+          "type": "talk",
+          "npc": "r20_anchor_048_host"
         }
       ],
       "rewards": {
-        "xp": 1300,
-        "copper": 85,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_044_01",
-      "line": "legacy",
+      "id": "bannerbreak_standard_03",
+      "line": "standard",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "A Standard Needs a Footing",
-      "text": "Tornstandard's banner footing is splitting where the supply lane bends. Bring eight cobble blocks for the low base, leaving the working military banner in place. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:cobble",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_044_02",
-      "line": "legacy",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "The Empty Mesa Patrol",
-      "text": "Skeleton raiders cross Bannerbreak Mesa's clay and dry ground at night. Defeat four so dispatch runners can reach the hold before dawn.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:march_skeleton_raider"
-          ],
-          "zone": "kragmar_bannerbreak_mesa",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_044_03",
-      "line": "legacy",
-      "giver": "r20_anchor_044_host",
-      "turnin": "r20_anchor_044_host",
-      "min_level": 40,
-      "level": 40,
+      "min_level": 33,
+      "level": 35,
       "requires": [
-        "r20_anchor_044_02"
+        "bannerbreak_standard_01"
       ],
-      "faction": "throng",
-      "title": "The Last Hedge Abroad",
-      "text": "The next report concerns the Accord's Last Hedge frontier in Ashenward March. At level 40, defeat three Accord guards at the military outposts or their patrols in that zone. Civilians, players and Highcourt's city watch are not targets.",
+      "title": "Stripes in the Warplains",
+      "text": "Tallgrass Tigers hunt the {name:warplains} by day, {zone_area:warplains}, and lately they hunt our scouts. Kill four. A scout is harder to replace than a tiger.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_accord"
+          "roles": [
+            "reed_stalking_tiger"
           ],
-          "zone": "elandor_ashenward_march",
-          "count": 3
+          "count": 4,
+          "area": "kragmar_bannerbreak_mesa/warplains"
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bannerbreak_standard_04",
+      "line": "standard",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 37,
+      "level": 38,
+      "requires": [
+        "bannerbreak_standard_03"
+      ],
+      "title": "The Mummies of Redcut",
+      "text": "Trench Mummies walk the {name:redcut_flats} at night, {zone_area:redcut_flats}, still in the armour of a war nobody won. Kill four and let them rest. They have earned it, and so have we.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "unrelenting_husk"
+          ],
+          "count": 4,
+          "area": "kragmar_bannerbreak_mesa/redcut_flats"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bannerbreak_standard_group",
+      "line": "standard",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "bannerbreak_standard_04"
+      ],
+      "title": "Group: The Banner-Eater",
+      "text": "The Goblin Banner-Eater guards the {name:goblin_warcamp} {dir_from_giver:goblin_warcamp} and eats our captured standards, cloth and pole. This is no fight for one orc; bring a group. Kill it and our banners stay in the sky.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "banner_eater"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "bannerbreak_standard_bounty",
+      "line": "standard",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "bannerbreak_standard_04"
+      ],
+      "title": "Bounty: {name:sunderstrap_camp}",
+      "text": "Entrenched Bandit Archers hold the {name:sunderstrap_camp} {dir_from_giver:sunderstrap_camp} and shoot at every supply runner. Kill six. I pay again twenty minutes later, because they always come back.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 6,
+          "area": "kragmar_bannerbreak_mesa/sunderstrap_camp"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
     }
   ]
 }

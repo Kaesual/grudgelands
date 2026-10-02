@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_blackwind_rise",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Blackwind Rise is the undead's grave country on the Throng's flank: the bone forest walks at night, and bandits sell the dead's linen to anyone who pays.",
   "hubs": [
     {
       "id": "r20_anchor_039",
@@ -9,7 +9,7 @@
         {
           "npc": "r20_anchor_039_host",
           "lines": [
-            "legacy",
+            "ashes",
             "front"
           ]
         }
@@ -22,7 +22,7 @@
         {
           "npc": "r20_anchor_040_host",
           "lines": [
-            "legacy",
+            "arch",
             "front"
           ]
         }
@@ -31,164 +31,299 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_039_01",
-      "line": "legacy",
+      "id": "blackwind_ashes_01",
+      "line": "ashes",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 31,
+      "min_level": 30,
       "level": 31,
       "requires": [],
-      "faction": "throng",
-      "title": "Keep the Lamps Burning",
-      "text": "Ashveil reads its wind markers by lamplight, but the covered fuel box is nearly empty. Bring six coal lumps for the lamps before the next night watch. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_039_02",
-      "line": "legacy",
-      "giver": "r20_anchor_039_host",
-      "turnin": "r20_anchor_039_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "Ash Among Living Branches",
-      "text": "Gravewood treants move among Blackwind Rise's bone-littered trees after dark. Defeat three so the watchers can read the branches' movement without confusing it with the wind.",
+      "title": "Bears Under the Bone Trees",
+      "text": "Bonewood Plaguehide Bears roam the {name:bonewood} by day, {zone_area:bonewood}, and they have decided our runners are a snack. Kill four. I would do it myself, but I am mostly ash and opinions.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:mourning_treant"
+          "roles": [
+            "territorial_bear"
           ],
-          "zone": "kragmar_blackwind_rise",
-          "count": 3
+          "count": 4,
+          "area": "kragmar_blackwind_rise/bonewood"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_039_03",
-      "line": "legacy",
+      "id": "blackwind_ashes_02",
+      "line": "ashes",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 33,
+      "min_level": 31,
+      "level": 32,
+      "requires": [
+        "blackwind_ashes_01"
+      ],
+      "title": "The Trees That Walk at Night",
+      "text": "After dark the Lichen Gravewood Treants pull up their roots and wander the {name:bonewood}, {zone_area:bonewood}. Fell four and bring me two Bitter Resin; Ashveil burns it in the lamps, and the smell keeps the living at a polite distance.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mourning_treant"
+          ],
+          "count": 4,
+          "area": "kragmar_blackwind_rise/bonewood"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:bitter_resin",
+          "count": 2,
+          "roles": [
+            "mourning_treant"
+          ],
+          "area": "kragmar_blackwind_rise/bonewood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "blackwind_ashes_03",
+      "line": "ashes",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 32,
       "level": 33,
       "requires": [
-        "r20_anchor_039_02"
+        "blackwind_ashes_02"
       ],
-      "faction": "throng",
-      "title": "The Pallcloth Thieves",
-      "text": "Vaska's cleared sightline reveals who is carrying the stolen cloth: Pallcloth Camp's archers. Defeat four bandit archers in that Blackwind Rise camp and return to the watch.",
+      "title": "Word for Red Ramp Post",
+      "text": "The Throng does not hold this war from one hill. Drek Rampbinder keeps Red Ramp Post on Bannerbreak Mesa and always wants another blade. Tell him Ashveil still stands; he will pretend he was not worried.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:bandit_archer"
-          ],
-          "zone": "kragmar_blackwind_rise",
-          "count": 4
+          "type": "talk",
+          "npc": "r20_anchor_043_host"
         }
       ],
       "rewards": {
-        "xp": 1300,
-        "copper": 85,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_040_01",
-      "line": "legacy",
-      "giver": "r20_anchor_040_host",
+      "id": "blackwind_ashes_04",
+      "line": "ashes",
+      "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_040_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "The Dispatch Shelf",
-      "text": "Hollowarch's dispatch shelf has sagged under damp message stones. Bring eight local gravewood planks to the roofed station; the old arches themselves must remain untouched. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_trees:gravewood_wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_040_02",
-      "line": "legacy",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "Claws Beneath the Arch",
-      "text": "Plaguehide bears move through Blackwind Rise's bone-forest floor beside the arch approaches. Defeat three before the next carrier attempts the crossing.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:territorial_bear"
-          ],
-          "zone": "kragmar_blackwind_rise",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_040_03",
-      "line": "legacy",
-      "giver": "r20_anchor_040_host",
-      "turnin": "r20_anchor_040_host",
-      "min_level": 40,
-      "level": 40,
+      "min_level": 33,
+      "level": 34,
       "requires": [
-        "r20_anchor_040_02"
+        "blackwind_ashes_02"
       ],
-      "faction": "throng",
-      "title": "The Watch Under the Storm",
-      "text": "The dispatches name the Accord watch in Stormvault Heights. At level 40, defeat three Accord guards at the frontier outposts or their patrols there. Do not attack civilians, players or Dur Brannoc's city watch for this report.",
+      "title": "Down to Hollowarch",
+      "text": "Orrel Hollowstep keeps Hollowarch Station, closer to the Accord than I would like, and his work is heavier than mine. Go to him when you are ready. He hates waiting, which is odd for someone already dead.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_accord"
-          ],
-          "zone": "elandor_stormvault_heights",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_040_host"
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "blackwind_ashes_bounty",
+      "line": "ashes",
+      "giver": "r20_anchor_039_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 32,
+      "level": 33,
+      "requires": [
+        "blackwind_ashes_04"
+      ],
+      "title": "Bounty: Bonewood Bears",
+      "text": "The bears keep coming back to the {name:bonewood}, {zone_area:bonewood}. Kill six by day and Ashveil pays again twenty minutes later; the bears never learn, and neither does the purse.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 6,
+          "area": "kragmar_blackwind_rise/bonewood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "blackwind_arch_01",
+      "line": "arch",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 33,
+      "level": 35,
+      "requires": [],
+      "title": "Weevils in the Webwood",
+      "text": "Marrow Weevils swarm the {name:webwood} by day, {zone_area:webwood}, and chew through every crate we leave on the trail. Kill four. Hollowarch runs on crates, not on good wishes.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "marrow_weevil"
+          ],
+          "count": 4,
+          "area": "kragmar_blackwind_rise/webwood"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "blackwind_arch_02",
+      "line": "arch",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "blackwind_arch_01"
+      ],
+      "title": "The Grave-Broker's Hideout",
+      "text": "Bandits have dug in at the {name:bandit_hideout} {dir_from_giver:bandit_hideout}, and the Grave-Broker Mute sells our dead's linen to anyone with coin. Kill four Entrenched Bandits or their archers, then end the Mute. He has never said a word; make sure he never needs to.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit",
+            "entrenched_bandit_archer"
+          ],
+          "count": 4,
+          "area": "kragmar_blackwind_rise/bandit_hideout"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "grave_broker_mute"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "blackwind_arch_03",
+      "line": "arch",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 37,
+      "level": 38,
+      "requires": [
+        "blackwind_arch_02"
+      ],
+      "title": "Archers of {name:pallcloth_den}",
+      "text": "The {name:pallcloth_den} lies {dir_from_giver:pallcloth_den}, full of Entrenched Bandit Archers who shoot at anything under a Throng banner. Kill four. Good aim, poor judgement.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 4,
+          "area": "kragmar_blackwind_rise/pallcloth_den"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "blackwind_arch_group",
+      "line": "arch",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "blackwind_arch_03"
+      ],
+      "title": "Group: The Hollowbell Treant",
+      "text": "Deep in the {name:hollowwood} stands the Gravewood Treant Hollowbell, {dir_from_giver:hollowbell_treant}; on still nights you can hear it toll from here. It is far too strong for one fighter, so gather a group first. Bring it down and Hollowarch will sleep.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "hollowbell_treant"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "blackwind_arch_bounty",
+      "line": "arch",
+      "giver": "r20_anchor_040_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "blackwind_arch_03"
+      ],
+      "title": "Bounty: Hollowwood Spiders",
+      "text": "Grave-Web Bonelurker Spiders spin across the {name:hollowwood} at night, {zone_area:hollowwood}. Kill six and I pay; come back twenty minutes later and I pay again, because they will be back too.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "grave_web_spider"
+          ],
+          "count": 6,
+          "area": "kragmar_blackwind_rise/hollowwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
     }
   ]
 }

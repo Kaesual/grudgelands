@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_thunderroot_wilds",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Thunderroot Wilds is the trolls' storm jungle at the Throng's far flank; bog witches bottle its thunder and bandits sell what the storm leaves.",
   "hubs": [
     {
       "id": "r20_anchor_048",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_048_host",
           "lines": [
-            "legacy"
+            "storm",
+            "rainchar"
           ]
         }
       ]
@@ -17,84 +18,294 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_048_01",
-      "line": "legacy",
+      "id": "thunderroot_storm_01",
+      "line": "storm",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 30,
+      "level": 31,
+      "requires": [],
+      "title": "Apes in the Canopy",
+      "text": "Treetop Jungle Apes rule the {name:canopy} by day, {zone_area:canopy}, and they throw more than fruit at our scouts. Kill four. The storm spirits say it is fine; they also laughed.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_ape"
+          ],
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/canopy"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "thunderroot_storm_02",
+      "line": "storm",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
       "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "A Gutter Before the Rain",
-      "text": "Thunderstep's roof runoff cuts across the forest ascent. Bring eight cobble blocks for a shallow gutter beside the shelter, keeping the walking line free. Existing or traded supplies are welcome.",
+      "level": 32,
+      "requires": [
+        "thunderroot_storm_01"
+      ],
+      "title": "Bottles in the Bog",
+      "text": "When the sun goes down, Reed-Hex Bog Witches gather in the {name:bogs}, {zone_area:bogs}, and bottle thunder that belongs to us. Kill four and bring me two Hex Bottle Shards, so I can hear what they caught.",
       "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_hex_witch"
+          ],
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/bogs"
+        },
         {
           "type": "item",
-          "item": "default:cobble",
-          "count": 8
+          "item": "grug_mobs:hex_bottle_shard",
+          "count": 2,
+          "roles": [
+            "reed_hex_witch"
+          ],
+          "area": "kragmar_thunderroot_wilds/bogs"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_048_02",
-      "line": "legacy",
+      "id": "thunderroot_storm_03",
+      "line": "storm",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 32,
+      "level": 33,
+      "requires": [
+        "thunderroot_storm_02"
+      ],
+      "title": "Ashes on the Wind",
+      "text": "The undead hold Ashveil Watch on Blackwind Rise, and Vaska Ashlistener asks for anyone who can still bleed. Go to her. The Throng is one war, even when it is fought on many hills.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_039_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 15
+    },
+    {
+      "id": "thunderroot_storm_04",
+      "line": "storm",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "title": "Rainchar's Burning Cargo",
-      "text": "Rainchar Camp's bandits hold supplies intended for the ascent. Defeat four bandits at that occupied camp in Thunderroot Wilds and report to Rumela.",
+      "min_level": 34,
+      "level": 35,
+      "requires": [
+        "thunderroot_storm_02"
+      ],
+      "title": "Webs in the Deepwood",
+      "text": "Canopy-Web Jungle Spiders string the {name:deepwood} at night, {zone_area:deepwood}. Kill four. My runners keep walking into the webs, and I keep running out of runners.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:entrenched_bandit"
+          "roles": [
+            "canopy_web_spider"
           ],
-          "zone": "kragmar_thunderroot_wilds",
-          "count": 4
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/deepwood"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_048_03",
-      "line": "legacy",
+      "id": "thunderroot_storm_bounty",
+      "line": "storm",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 40,
+      "min_level": 34,
+      "level": 36,
+      "requires": [
+        "thunderroot_storm_04"
+      ],
+      "title": "Bounty: Deepwood Apes",
+      "text": "The apes of the {name:deepwood} never stop, {zone_area:deepwood}. Kill six Treetop Jungle Apes by day and come back for your pay; come back again twenty minutes later, the apes will.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_ape"
+          ],
+          "count": 6,
+          "area": "kragmar_thunderroot_wilds/deepwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "thunderroot_rainchar_01",
+      "line": "rainchar",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 34,
+      "level": 36,
+      "requires": [],
+      "title": "Serpents in the Witchmire",
+      "text": "Coiled Serpents bask in the {name:witchmire} by day, {zone_area:witchmire}, and our foragers stop coming back with herbs. Kill four. Leave the herbs; they are probably poisonous now.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "coiled_serpent"
+          ],
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/witchmire"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "thunderroot_rainchar_02",
+      "line": "rainchar",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 37,
+      "level": 38,
+      "requires": [
+        "thunderroot_rainchar_01"
+      ],
+      "title": "Archers of {name:rainchar_camp}",
+      "text": "Bandits took the {name:rainchar_camp} {dir_from_giver:rainchar_camp}, and their archers sell Throng supplies to whoever pays. Kill four Entrenched Bandit Archers there. The spirits want the camp back, and so do I.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/rainchar_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "thunderroot_rainchar_03",
+      "line": "rainchar",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "thunderroot_rainchar_02"
+      ],
+      "title": "Zek's Bottles",
+      "text": "Bottle-Keeper Zek hides in the {name:stormglades} {dir_from_giver:bottle_keeper_zek} and guards the storms the witches stole. Kill Zek and four of the Treetop Jungle Apes that roam there by day. Break every bottle; let the thunder go home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_ape"
+          ],
+          "count": 4,
+          "area": "kragmar_thunderroot_wilds/stormglades"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "bottle_keeper_zek"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "thunderroot_rainchar_group",
+      "line": "rainchar",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "thunderroot_rainchar_03"
+      ],
+      "title": "Group: The Storm-Bottle",
+      "text": "The Bog Witch Storm-Bottle stands in the {name:heartwood} {dir_from_giver:storm_bottle_witch} with the biggest storm of all. Take friends; one troll alone ends up in a bottle too. Break her and the sky is ours again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "storm_bottle_witch"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "thunderroot_rainchar_04",
+      "line": "rainchar",
+      "giver": "r20_anchor_048_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 39,
       "level": 40,
       "requires": [
-        "r20_anchor_048_02"
+        "thunderroot_rainchar_03"
       ],
-      "faction": "throng",
-      "title": "Across the Glass Passage",
-      "text": "The report points across Glassroot Wilds to the Accord's frontier watch. At level 40, defeat three Accord guards at its military outposts or their patrols. This mission concerns armed guards, never villagers, players or Lethariel's capital watch.",
+      "title": "To the Front",
+      "text": "You have outgrown my jungle. Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa sends fighters on to the front; go to her. The storm goes with you.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_accord"
-          ],
-          "zone": "elandor_glassroot_wilds",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_044_host"
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 15
     }
   ]
 }
