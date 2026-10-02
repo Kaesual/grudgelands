@@ -62,7 +62,7 @@
         "dawnmere_hunt_01"
       ],
       "title": "The Night Shift",
-      "text": "The day's work ends, and the gnawing begins: Large Rats come out in the {name:meadows} {zone_area:meadows} after sunset. Kill eight there at night. Leave space between your fights; one squeal can summon a family reunion you do not want to attend.",
+      "text": "The day's work ends, and the gnawing begins: Large Rats come out after sunset in the {name:meadows}, which lie {zone_area:meadows}. Kill eight there at night. Leave space between your fights; one squeal can summon a family reunion you do not want to attend.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "Foxes Before Breakfast",
-      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures} {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
+      "text": "Our hens have taken to sleeping with one eye open, thanks to the Young Foxes in the {name:pastures}, {zone_area:pastures}. Hunt eight by day. Watch for Aggressive Boars among them: a red name means the creature will start the fight without waiting for you.",
       "objectives": [
         {
           "type": "kill",
@@ -357,7 +357,7 @@
         "dawnmere_hunt_02"
       ],
       "title": "The Rats Can Mend It",
-      "text": "The Large Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} {zone_area:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
+      "text": "The Large Rats have chewed my grain sacks, and I intend to make them contribute to the repairs. Bring me two Rat Fur Patches from them in the {name:meadows} after dark; any you saved from your hunt will do. Yes, we are patching rat holes with rat fur. I call that good housekeeping.",
       "objectives": [
         {
           "type": "item",
@@ -388,7 +388,7 @@
         "dawnmere_hunt_04"
       ],
       "title": "A Brush and a Better Supper",
-      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Young Foxes in the {name:pastures} {zone_area:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
+      "text": "I have a flour shelf to dust and a supper to rescue. Bring me two Crab Legs from the Monstrous Crabs on the {name:wreck_coast} {dir_from_giver:wreck_coast}, and one Fox Tail from the Young Foxes in the {name:pastures}; hunt both by day. Legs for the pot, tail for the shelf, and keep the Crab Eyes for yourself. I have enough people watching me cook.",
       "objectives": [
         {
           "type": "item",

@@ -59,7 +59,7 @@
         "dawnmere_departure"
       ],
       "title": "A Harvest Worth Stealing",
-      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to. Hobb's collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards} {zone_area:orchards}, where the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
+      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to. Hobb's collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards}, which lie {zone_area:orchards}; the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
       "objectives": [
         {
           "type": "kill",
@@ -88,7 +88,7 @@
         "goldmead_harvest_01"
       ],
       "title": "The Granary Has Teeth",
-      "text": "I can account for every sack that leaves Goldmead, except the ones leaving a mouthful at a time. Kill eight Granary Rats after dark in the {name:orchards} {zone_area:orchards}. Work the edges and keep your distance between fights; a squealing rat is an invitation to all its neighbours.",
+      "text": "I can account for every sack that leaves Goldmead, except the ones leaving a mouthful at a time. Kill eight Granary Rats after dark in the same {name:orchards}. Work the edges and keep your distance between fights; a squealing rat is an invitation to all its neighbours.",
       "objectives": [
         {
           "type": "kill",
@@ -117,7 +117,7 @@
         "goldmead_harvest_02"
       ],
       "title": "Tusks in the Wheat",
-      "text": "Ridgeback Tuskers are flattening the {name:wheatfields} {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
+      "text": "Ridgeback Tuskers are flattening the {name:wheatfields}, {zone_area:wheatfields}, and the farmers have already lost enough this season. Bring down eight by day. Their red names mean they will charge without provocation, so give yourself room and face them one at a time.",
       "objectives": [
         {
           "type": "kill",
@@ -292,7 +292,7 @@
         "goldmead_harvest_03"
       ],
       "title": "Bounty: Burrow Gnawers",
-      "text": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows} {zone_area:hedgerows} and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
+      "text": "I mend the sacks; the Burrow Gnawers put in fresh ventilation. Kill eight after dark in the {name:hedgerows}, which run {zone_area:hedgerows}, and come back for your bounty. This is repeatable work: I can offer it again twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",

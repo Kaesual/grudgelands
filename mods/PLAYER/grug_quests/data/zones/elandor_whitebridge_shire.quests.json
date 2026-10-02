@@ -80,7 +80,7 @@
         "whitebridge_baskets_01"
       ],
       "title": "The Pack at the Back Door",
-      "text": "I sent the carts around Thorn's buyers, only to hear that Briarpack Wolves hunt the {name:meadows} {zone_area:meadows} at night. Defeat five there after dark so our drivers have a fighting chance. Hurt one and the pack comes running; work from the edge, with room to retreat.",
+      "text": "I sent the carts around Thorn's buyers, only to hear that Briarpack Wolves hunt the {name:meadows}, {zone_area:meadows}, at night. Defeat five there after dark so our drivers have a fighting chance. Hurt one and the pack comes running; work from the edge, with room to retreat.",
       "objectives": [
         {
           "type": "kill",
@@ -379,7 +379,7 @@
         "whitebridge_river_01"
       ],
       "title": "Bounty: Briar-Web Spiders",
-      "text": "The Briar-Web Spiders have strung the {name:thornwood} {zone_area:thornwood} with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
+      "text": "The Briar-Web Spiders have strung the {name:thornwood}, which lies {zone_area:thornwood}, with enough web to wrap a wagon. Kill six there after dark and report back for your bounty. I can offer the job again twenty-five minutes after you turn it in; bring yourself back, and leave the spiders where they fall.",
       "objectives": [
         {
           "type": "kill",
