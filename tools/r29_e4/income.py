@@ -28,11 +28,11 @@ Inputs:
   * potions     POTIONS_PER_HOUR Weak Healing Potions at 8c (the only
                 vendor potion, every tier).
 
-Prices (economy.md section 4.1 rounding, section 4.2 and 4.3 targets): the
-four riding tiers at 15 min / 45 min / 2 h / 5 h of the income at their
-level's bracket (ceil(level / 10), as respec), the Boat like Apprentice and
-the Improved Boat like Journeyman Riding (travel plan ruling 3), respec at
-5 min per bracket.
+Prices (economy.md section 4.1 rounding, the section 4 respec sink and the
+section 4.2 targets): the four riding tiers at 15 min / 45 min / 2 h / 5 h
+of the income at their level's bracket (ceil(level / 10), as respec), the
+Boat like Apprentice and the Improved Boat like Journeyman Riding (travel
+plan ruling 3), respec at 5 min per bracket.
 
 Usage:
   income.py            print the estimate and the prices (Markdown)

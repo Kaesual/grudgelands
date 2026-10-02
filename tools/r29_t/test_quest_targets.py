@@ -7,9 +7,8 @@ quest file, and checks the report: area kinds and camps, a kind that forms
 no region on one seed, an unknown area, a role not in its area, a leader
 given an area, leaders of the file's zone and of another zone, item sources
 and quest drops, roles without an area (any listed role counts), placeholder
-targets, the clock note and CLOCK, the legacy path and the tool with it
-removed as its comment says, and the exit status (1 MISSING, 2 stale stats,
-0 clean).
+targets, the clock note and CLOCK, objectives in the retired `mobs`
+format, and the exit status (1 MISSING, 2 stale stats, 0 clean).
 
 Usage (repo root): python3 tools/r29_t/test_quest_targets.py
 """
@@ -94,7 +93,7 @@ QUESTS = [
     quest("q_any_role", [kill(["small_boar", "large_rat"])]),
     quest("q_any_role_mixed", [kill(["small_boar", "wolf"])]),
     quest("q_mobs_area", [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "area": "meadows", "count": 1}]),
-    quest("q_legacy", [{"type": "kill", "mobs": ["grug_mobs:deer"], "count": 1}], line="legacy"),
+    quest("q_mobs", [{"type": "kill", "mobs": ["grug_mobs:deer"], "count": 1}]),
 ]
 
 
@@ -158,36 +157,19 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_name_unknown text {name:castle}", "castle is no kind or camp"), "an unknown placeholder target"),
         (("q_not_in_area obj 1", "zombie does not spawn in elandor_alpha_fields/meadows"), "a role not in the area"),
         (("q_leader_area obj 1", "chief is a leader at a fixed spot, not in an area"), "a leader given an area"),
-        (("q_mobs_area obj 1", "names entities (`mobs`)"), "a `mobs` objective the legacy path does not take"),
+        (("q_mobs_area obj 1", "names entities (`mobs`)"), "a `mobs` objective with an area"),
+        (("q_mobs obj 1", "names entities (`mobs`)"), "a `mobs` kill objective without an area"),
     ]:
         check(line_with(missing, *parts) is not None, label + ": MISSING")
-    check("Accepted" not in (line_with(out, "chief") or ""), "a leader is never accepted")
-    clock = out.split("CLOCK (", 1)[1].split("\nAccepted", 1)[0] if "CLOCK (" in out else ""
+    clock = out.split("CLOCK (", 1)[1].split("\nok:", 1)[0] if "CLOCK (" in out else ""
     check(line_with(clock, "q_clock", "names the night", "day only") is not None, "CLOCK: a night text on day boars")
     check(line_with(clock, "q_kind") is None and line_with(clock, "q_bare_area") is None, "CLOCK: matching texts pass")
-    check(line_with(out, "legacy kill objectives: ok 0, accepted", "1, MISSING 0") is not None, "legacy counts")
-    check(line_with(out, "q_legacy obj 1 (deer in elandor_alpha_fields)") is not None, "legacy target accepted")
     check(line_with(out, "q_any_role obj 1", "only)") is None, "a day and a night role: no clock note")
     check(line_with(missing, "q_not_in_area", "large_rat does not spawn") is None, "a role in the area is no problem")
-
-    # The legacy path removed as its comment says: the block and every line
-    # tagged `# LEGACY`. The result runs, and a `mobs` objective is MISSING.
-    source = TOOL.read_text()
-    head, rest = source.split("# LEGACY: Round 28", 1)
-    source = head + rest.split("# END LEGACY\n", 1)[1]
-    source = "\n".join(l for l in source.splitlines() if not l.endswith("# LEGACY")) + "\n"
-    check("LEGACY" not in source.split('"""', 2)[2], "nothing of the legacy path is left")
-    stripped = Path(tmp) / "quest_targets_without_legacy.py"
-    stripped.write_text(source)
-    args = write_world(Path(tmp) / "legacy", [QUESTS[0], QUESTS[-1]])
-    done = subprocess.run([sys.executable, str(stripped)] + args, capture_output=True, text=True)
-    check(done.returncode == 1 and line_with(done.stdout, "q_legacy obj 1", "names entities (`mobs`)") is not None,
-          "without the legacy path a `mobs` objective is MISSING: " + done.stdout + done.stderr)
 
     good = [q for q in QUESTS if q["id"] in ("q_kind", "q_bare_area", "q_leader", "q_sources", "q_noarea")]
     code, out = run(write_world(Path(tmp) / "good", good), verbose=False)
     check(code == 0, "every target forms: exit status 0 (got %d)" % code)
-    check("no legacy kill objective left: delete the LEGACY block" in out, "the report says when the legacy path is unused")
     check(line_with(out, "targets: ok 8, MISSING on some seed 0, CLOCK 0") is not None,
           "counts of a clean run: " + out.splitlines()[1])
 
