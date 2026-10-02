@@ -77,8 +77,8 @@ end
 -- "goldmead_village", "anchor_015"). A fill that starts a sentence starts
 -- with a capital letter. Titles take only {name:T}: they are listed in the
 -- dialogue, the quest log and other quests' requirements, and are filled
--- once at load; texts are filled on first display (a direction may build a
--- zone's region map) and cached, never per frame.
+-- once at load; texts are filled on first display (the region maps are built
+-- at server start) and cached, never per frame.
 --
 local P = {}
 Q.placeholders = P
