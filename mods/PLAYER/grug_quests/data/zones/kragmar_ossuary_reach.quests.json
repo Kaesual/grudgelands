@@ -49,8 +49,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "Teeth Beside the Archive",
-      "text": "Briarpack Blightfang Wolves prowl the {name:bonewood} {dir_of:r20_anchor_020:bonewood} by day and carry off whatever bones they can reach. Kill eight. Some of what they carry has labels on it already, and the labels are not mine.",
+      "title": "Misfiled in a Wolf",
+      "text": "Briarpack Blightfang Wolves prowl the {name:bonewood} {dir_of:r20_anchor_020:bonewood} by day, carrying off bones that ought to be on my shelves. Kill eight before more of our ancestors disappear into their dens. I have seen unfamiliar labels dangling from their mouths; apparently I now have a rival archivist as well as a wolf problem.",
       "objectives": [
         {
           "type": "kill",
@@ -78,8 +78,8 @@
       "requires": [
         "ossuary_names_01"
       ],
-      "title": "Rubbings from Boneledger Post",
-      "text": "Mereth Rubbinghand at Boneledger Post takes rubbings of every barrow stone in the Reach. Go and help; if the stones and my shelves disagree, I want to know which one is lying.",
+      "title": "Paper Remembers",
+      "text": "Mereth Rubbinghand at Boneledger Post copies the names on our barrow stones before weather can take another letter. Go and speak with Mereth; those rubbings may tell us why the names on my shelves no longer agree with the graves. Stone was supposed to be the durable option, but I have learned to keep a second copy.",
       "objectives": [
         {
           "type": "talk",
@@ -103,8 +103,8 @@
       "requires": [
         "ossuary_names_01"
       ],
-      "title": "Optional: The Trees That Refuse Rest",
-      "text": "At night the Lichen Gravewood Treants of the {name:bonewood} pull up their roots and walk through the burial rows. Fell eight. The Grave-Web Bonelurker Spiders between them are not my concern, but they will be yours.",
+      "title": "Optional: The Trees Have Taken to Walking",
+      "text": "The Lichen Gravewood Treants in the {name:bonewood} spend their nights walking through the burial rows, dragging roots across generations of careful work. Fell eight after dark, and watch for the Grave-Web Bonelurker Spiders among them. I planted trees to shade the dead; I never expected to have to explain that they should stay beside the graves.",
       "objectives": [
         {
           "type": "kill",
@@ -131,8 +131,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "Archers on the Barrow Ridge",
-      "text": "Barrow Skeleton Archers stand guard on the {name:barrow_ridge} {dir_of:r20_anchor_038:barrow_ridge} at night and shoot at anyone with paper. Destroy eight so I can take my rubbings in peace. Someone has cut new names over the old ones on those stones; the archers only guard the work, they did not do it.",
+      "title": "Under the New Names",
+      "text": "There are older letters beneath the fresh names on the stones of the {name:barrow_ridge} {dir_of:r20_anchor_038:barrow_ridge}. Destroy eight Barrow Skeleton Archers there at night so I can get close enough to make rubbings. They guard the altered stones; the hand that recut them belongs to someone else. I can work around weather, but arrows make a dreadful mess of the paper.",
       "objectives": [
         {
           "type": "kill",
@@ -158,8 +158,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "Optional: Bones With Writing on Them",
-      "text": "The archers on the {name:barrow_ridge} carry Etched Bone. Bring me three; somebody has carved new names over the old ones, and I need to see whose hand it is.",
+      "title": "Optional: A Hand I Might Recognise",
+      "text": "Bring me three Etched Bone from the Barrow Skeleton Archers on the {name:barrow_ridge} after dark. I need to compare the lettering with my rubbings to learn who has been changing the names. A thief may borrow someone else's name, but usually keeps their own bad handwriting.",
       "objectives": [
         {
           "type": "item",
@@ -189,8 +189,8 @@
       "requires": [
         "ossuary_rubbings_01"
       ],
-      "title": "The Hand Belongs to the Dig",
-      "text": "The new names on the barrow stones were cut with a miner's chisel. Go to Memoryvein Dig and ask Neris Fossilhand whose; Neris knows every tool in the Reach by its scratch.",
+      "title": "A Chisel Leaves Its Signature",
+      "text": "Those new letters were cut with a miner's chisel, and the scratches may tell us more than the words. Go to Memoryvein Dig and speak with Neris Fossilhand, who knows the tools used in the Reach. I trust Neris to recognise the workmanship, even if the owner would prefer to remain uncredited.",
       "objectives": [
         {
           "type": "talk",
@@ -212,8 +212,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "Optional: Bears in the Webwood",
-      "text": "Bonewood Plaguehide Bears den in the {name:webwood} {zone_area:webwood} by day and dig up the old shafts for the marrow. Kill eight. What they leave, the Marrow Archivist collects; I have watched it from the spoil heaps.",
+      "title": "Optional: Disturbing the Workings",
+      "text": "Bonewood Plaguehide Bears dig into the old shafts in the {name:webwood} {zone_area:webwood} by day, helping themselves to the marrow. Kill eight before they bring more of the workings down. I have watched the Marrow Archivist gather what they leave behind; the bears do the digging and it takes the credit, which is a familiar arrangement.",
       "objectives": [
         {
           "type": "kill",
@@ -240,8 +240,8 @@
       "min_level": 25,
       "level": 26,
       "requires": [],
-      "title": "Optional: Steel for the Shoring",
-      "text": "Smelt six Steel Bars and bring them to the dig. The old shafts are full of names, and I would like to keep them up rather than under.",
+      "title": "Optional: Hold Up the Past",
+      "text": "Smelt six Steel Bars and bring them here to Memoryvein Dig for the shaft supports. There are still names down there we have not read, and the timbers have begun making persuasive arguments for leaving. I have been buried once already; next time, I would prefer to make an appointment.",
       "objectives": [
         {
           "type": "item",
@@ -265,8 +265,8 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "Refiling the Archivist",
-      "text": "The {name:marrow_archivist} stands in the {name:deepwood} {dir_from_giver:marrow_archivist} and re-labels every bone it finds under its own name. Destroy four of the Grave-Web Bonelurker Spiders that spin round it at night and end the Archivist; the Reach files its own dead.",
+      "title": "Filed Under Theft",
+      "text": "You will find the {name:marrow_archivist} in the {name:deepwood} {dir_from_giver:marrow_archivist}, giving every bone it collects the same name: its own. Kill it, and destroy four Grave-Web Bonelurker Spiders in that wood at night. Those people had names long before it found a use for them. I intend to see those names stay theirs.",
       "objectives": [
         {
           "type": "kill",
@@ -302,8 +302,8 @@
       "requires": [
         "ossuary_names_01"
       ],
-      "title": "Repeatable: Wolves in the Ashfields",
-      "text": "Briarpack Blightfang Wolves hunt the {name:ashfields} {zone_area:ashfields} after dark. Kill six and come back; I post this again twenty minutes after you hand it in.",
+      "title": "Repeatable: Teeth in the Catalogue",
+      "text": "Briarpack Blightfang Wolves hunt the {name:ashfields} {zone_area:ashfields} after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
       "objectives": [
         {
           "type": "kill",

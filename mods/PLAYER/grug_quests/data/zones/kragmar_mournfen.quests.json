@@ -59,8 +59,8 @@
       "requires": [
         "stillgrave_departure"
       ],
-      "title": "Boars in the Burial Rows",
-      "text": "Rooting Plague Boars dig through the {name:blightfields} {zone_area:blightfields} by day and turn up what the fen had politely covered. Put down eight of them. Something else is digging too, and it leaves tally marks; we will come to that.",
+      "title": "The Fen Gives Them Back",
+      "text": "Every morning the Rooting Plague Boars dig up another burial in the {name:blightfields} {zone_area:blightfields}, and I find myself burying old acquaintances again. Kill eight during the day. Some of the disturbed graves have tally marks beside them; even in Mournfen, I do not suspect the boars of bookkeeping.",
       "objectives": [
         {
           "type": "kill",
@@ -86,8 +86,8 @@
       "min_level": 10,
       "level": 11,
       "requires": [],
-      "title": "Tallow for the Vigil",
-      "text": "Bring me eight Raw Meat. I render it down for the vigil candles; the mourners in Mournfen would rather sit in the dark than admit the candles smell of boar, but they sit by them all the same.",
+      "title": "By the Light of Supper",
+      "text": "Eight Raw Meat, please; I need to render tallow for the vigil candles. Some mourners complain that remembering the departed should not smell quite so much like supper. They still cup their hands around the flame when the draught comes.",
       "objectives": [
         {
           "type": "item",
@@ -112,8 +112,8 @@
       "requires": [
         "mournfen_fen_01"
       ],
-      "title": "Word for the Outpost",
-      "text": "Take what you have seen to Sera Vane at Mournfen Outpost. She watches the reed beds, and she has been finding the same tally marks I have.",
+      "title": "The Marks in the Reeds",
+      "text": "Sera Vane has found the same tally marks among the reeds she watches from Mournfen Outpost. Go there and tell her what you saw in the burial rows. I would like to be mistaken about this, but I have had a very long time to recognise a theft.",
       "objectives": [
         {
           "type": "talk",
@@ -137,8 +137,8 @@
       "requires": [
         "mournfen_fen_02"
       ],
-      "title": "Wages Paid in Bones",
-      "text": "The Reed Mirefolk of {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, pay each other in barrow bones and scratch every payment on a reed. The one who keeps the big tally is called Silt. Thin out eight of them; mind the Reed Crocodiles that lie about the enclosure.",
+      "title": "Somebody's Grandfather as Wages",
+      "text": "I watched the Reed Mirefolk in {name:blackreed_enclosure}, {dir_from_giver:blackreed_enclosure}, settle a day's wages with bones from our barrows. Kill eight of them to disrupt the trade, and watch for Reed Crocodiles around the enclosure. They scratch each payment on a reed for someone called Silt; apparently robbing the dead requires excellent records.",
       "objectives": [
         {
           "type": "kill",
@@ -166,8 +166,8 @@
       "requires": [
         "mournfen_watch_01"
       ],
-      "title": "Lights in the Wispfen",
-      "text": "After dark Wandering Wisps drift over the {name:wispfen} {zone_area:wispfen} and lead the mourners into the water. Put out seven of them. By day the same ground belongs to the Plague Tuskers, which are a different kind of problem.",
+      "title": "A Light Can Lie",
+      "text": "Mourners see the Wandering Wisps over the {name:wispfen} {zone_area:wispfen} after dark and think someone has come to guide them home. Put out seven before more people follow them into the water. Go by night; by day you will find Plague Tuskers, whose intentions are at least easy to read.",
       "objectives": [
         {
           "type": "kill",
@@ -195,8 +195,8 @@
       "requires": [
         "mournfen_fen_02"
       ],
-      "title": "Tusks in the Barrowfields",
-      "text": "Plague Tuskers have taken the {name:barrowfields} {zone_area:barrowfields} by day and they charge anyone who comes to tend the barrows. Kill seven. Cairn Sun-Dried Husks shuffle among them; you will meet those whether you want to or not.",
+      "title": "Visiting Hours Are Cancelled",
+      "text": "The Plague Tuskers in the {name:barrowfields} {zone_area:barrowfields} now greet daytime mourners with a charge. Kill seven so we can tend the graves without adding hurriedly to them. Watch for Cairn Sun-Dried Husks among the barrows; I have enough names awaiting entry without yours.",
       "objectives": [
         {
           "type": "kill",
@@ -224,8 +224,8 @@
       "requires": [
         "mournfen_stores_01"
       ],
-      "title": "Iron for the Lantern Hooks",
-      "text": "Mine and smelt six Iron Bars and bring four Coal Lumps besides. The lantern hooks along the barrow paths rusted through, and a lantern lying in the mud guides nobody.",
+      "title": "Lanterns Belong Above the Mud",
+      "text": "One by one, the lantern hooks along the barrow paths have rusted through. Mine and smelt six Iron Bars for replacements, and bring me four Coal Lumps for the work. I would like the next funeral procession to arrive with the same number of people it set out with.",
       "objectives": [
         {
           "type": "item",
@@ -255,8 +255,8 @@
       "requires": [
         "mournfen_watch_02"
       ],
-      "title": "Motes for the Long Candles",
-      "text": "The Wandering Wisps in the {name:wispfen} leave Wisp Motes behind. Bring me three; a pinch in the wax and a vigil candle burns all night without anyone getting up to trim it.",
+      "title": "A Flame Worth Keeping",
+      "text": "Bring me three Wisp Motes from the Wandering Wisps that appear in the {name:wispfen} after dark. I need them for the vigil candles. When the last visitor leaves, I like there to be a little light left behind.",
       "objectives": [
         {
           "type": "item",
@@ -285,8 +285,8 @@
       "requires": [
         "mournfen_fen_03"
       ],
-      "title": "The Unclaimed at the Cairns",
-      "text": "Pauper Shamblers climb out of the {name:cairns} {dir_of:mournfen_village:cairns} at night. Nobody claimed them in life and nobody claims them now, which is exactly why they will not lie still. Lay six of them down; I will write their numbers in the book, since we have no names.",
+      "title": "A Place in the Book",
+      "text": "The Pauper Shamblers rise at night among the {name:cairns} {dir_of:mournfen_village:cairns}, with no one left to claim them. Lay six to rest. I shall enter each in the burial book, though I have only numbers to give them. A number is a poor memorial, but a blank page is worse.",
       "objectives": [
         {
           "type": "kill",
@@ -314,8 +314,8 @@
       "requires": [
         "mournfen_watch_02"
       ],
-      "title": "Lookouts over the Barrows",
-      "text": "The bandits who sell barrow goods to the mirefolk hold the {name:bandit_camp} {dir_from_giver:bandit_camp}. Their Bandit Lookouts shoot first; get in close and drop six of them. They have a prisoner up there, Hollis Grey, and I would like him back talking.",
+      "title": "Arrows Over the Evidence",
+      "text": "The trail of stolen barrow goods ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where the Bandit Lookouts discourage inquiries with arrows. Close the distance and kill six. They are holding Hollis Grey there; I need his account of things, preferably before it requires a medium.",
       "objectives": [
         {
           "type": "kill",
@@ -343,8 +343,8 @@
       "requires": [
         "mournfen_watch_03"
       ],
-      "title": "A Prisoner Who Kept Count",
-      "text": "The lookouts are thinned. Go into the {name:bandit_camp} and speak with Hollis Grey; he spent weeks watching where the bandits carried their sacks.",
+      "title": "The Witness Is Still Talking",
+      "text": "With fewer lookouts, you have a chance to reach Hollis Grey in the {name:bandit_camp}. Go and speak with him; he has spent weeks watching the bandits carry sacks away. Captivity gives a man time to notice things, particularly when he no longer needs to sleep.",
       "objectives": [
         {
           "type": "talk",
@@ -368,8 +368,8 @@
       "requires": [
         "mournfen_watch_04"
       ],
-      "title": "Silt's Final Tally",
-      "text": "Every sack went to the {name:mire_nests} {dir_from_giver:mire_nests}, where {name:reed_counter_silt} counts the bones and pays the bandits in pearls. Kill five Reed Mirefolk there and end Silt's count; without the tally the whole trade falls apart.",
+      "title": "Strike Out the Counter",
+      "text": "I counted every sack they carried to the {name:mire_nests} {dir_from_giver:mire_nests}; there was precious little else to do from a cage. {name:reed_counter_silt} counts the bones there and pays the bandits in pearls. Kill five Reed Mirefolk at the nests and Silt as well. I would dearly like my last memory of this place to be of their accounts failing to add up.",
       "objectives": [
         {
           "type": "kill",
@@ -405,8 +405,8 @@
       "requires": [
         "mournfen_testimony_01"
       ],
-      "title": "Nhal Veyr Must Hear It",
-      "text": "I am getting out of this camp, and you are going to Nhal Veyr. Tell Ossa Quietregister in the Vigil Hall what Silt was buying; the capital keeps the register of the dead, and the register has gaps now.",
+      "title": "Names Missing From the Register",
+      "text": "Please go to Nhal Veyr and tell Ossa Quietregister in the Vigil Hall what Silt was buying. The capital's register has gaps where our dead should be, and someone must account for them. I shall begin my own recovery by looking at something that is not the inside of a cage.",
       "objectives": [
         {
           "type": "talk",
@@ -430,8 +430,8 @@
       "requires": [
         "mournfen_fen_03"
       ],
-      "title": "Repeatable: Gnawers in the Barrowfields",
-      "text": "Grave Gnawers burrow into the {name:barrowfields} {zone_area:barrowfields} every night. Kill six and come back; I post this again twenty minutes after you hand it in.",
+      "title": "Repeatable: The Graves Need Minding",
+      "text": "Each night the Grave Gnawers burrow into the {name:barrowfields} {zone_area:barrowfields}, undoing another day's careful burial work. Kill six and return to me. You may take this task again twenty minutes after handing it in; eternal rest has proved surprisingly demanding to maintain.",
       "objectives": [
         {
           "type": "kill",
@@ -462,8 +462,8 @@
       "requires": [
         "mournfen_watch_04"
       ],
-      "title": "Repeatable: Deepfen Lights",
-      "text": "Wandering Wisps gather over the {name:deepfen} {zone_area:deepfen} after dark. Put out six and report; the watch posts this again twenty-five minutes after you hand it in.",
+      "title": "Repeatable: Six Fewer False Lights",
+      "text": "Wandering Wisps are gathering over the {name:deepfen} {zone_area:deepfen} after dark, and I have no wish to drag another hopeful traveller out of the reeds. Put out six and report to me. The watch offers this task again twenty-five minutes after you hand it in; until then, distrust anything that glows and beckons.",
       "objectives": [
         {
           "type": "kill",

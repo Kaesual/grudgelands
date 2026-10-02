@@ -32,8 +32,8 @@
       "min_level": 19,
       "level": 21,
       "requires": [],
-      "title": "Debts Nobody Owes",
-      "text": "At night Debtbound Zombies walk the {name:blightfields} {zone_area:blightfields} and knock on doors to collect what they think they are owed. Lay eight of them to rest. Every one of them carries a clerk's stamp; somebody has been registering the dead without telling me.",
+      "title": "Payment Due After Death",
+      "text": "Debtbound Zombies walk the {name:blightfields} {zone_area:blightfields} at night, knocking to collect debts that appear nowhere in my register. Lay eight to rest before they wear their knuckles down to the last joint. Each carries a clerk's stamp, so this is an unauthorised collection conducted with an infuriating air of legitimacy.",
       "objectives": [
         {
           "type": "kill",
@@ -59,8 +59,8 @@
       "min_level": 20,
       "level": 22,
       "requires": [],
-      "title": "Optional: Bowls for the Vigil",
-      "text": "The Moss-Antler Gaunt Stags graze the {name:blightfields} by day. Bring me eight Raw Meat; the mourners keep vigil for nights on end, and an empty bowl makes for a short vigil.",
+      "title": "Optional: A Seat at the Table",
+      "text": "Bring me eight Raw Meat from the Moss-Antler Gaunt Stags grazing the {name:blightfields} by day. Some mourners have kept vigil so long they have forgotten there is a kitchen. I set places for them anyway; a warm bowl gives the hands something to do when they have run out of things to hold.",
       "objectives": [
         {
           "type": "item",
@@ -90,8 +90,8 @@
       "requires": [
         "nhal_veyr_vigil_01"
       ],
-      "title": "Shelves in the Ledgerstead",
-      "text": "Sovel Namekeeper at Ossuary Ledgerstead asked for a strong pair of hands; the Gravewood is waking around the archive. Go and see Sovel, and take my regards; Sovel never eats.",
+      "title": "Send My Regards, They Keep Better",
+      "text": "Sovel Namekeeper at Ossuary Ledgerstead needs help: the Gravewood around the archive has begun waking, which cannot be good for quiet study. Go and speak with Sovel, and pass along my regards. I would send a meal, but Sovel never eats, and I refuse to have my cooking filed for posterity.",
       "objectives": [
         {
           "type": "talk",
@@ -115,8 +115,8 @@
       "requires": [
         "nhal_veyr_vigil_01"
       ],
-      "title": "Revenants Collecting Tithes",
-      "text": "Tithe Revenants stalk the {name:gravefields} {zone_area:gravefields} after dark, demanding a tithe for the dead from the living and from the dead alike. Destroy eight. The stamps they carry all bear one clerk's mark: Hush.",
+      "title": "The Cost of Staying Dead",
+      "text": "Tithe Revenants stalk the {name:gravefields} {zone_area:gravefields} after dark, charging the dead for being dead and the living for taking their time. Destroy eight. Their stamps bear the same clerk's mark: Hush. I have spent centuries keeping these names, and I will not have them turned into a list of debtors.",
       "objectives": [
         {
           "type": "kill",
@@ -144,8 +144,8 @@
       "requires": [
         "nhal_veyr_provisions_01"
       ],
-      "title": "Optional: Pickled, Not Preserved",
-      "text": "The Tithe Revenants of the {name:gravefields} carry Pickled Flesh. Bring me four. I do not cook it, before you ask; I compare it with my own brine, because someone in this city is pickling the dead without a licence.",
+      "title": "Optional: Keep It Off the Menu",
+      "text": "Bring me four Pickled Flesh from the Tithe Revenants in the {name:gravefields} after dark. I mean to compare the samples with my brine; someone is pickling the dead without a licence, and it is giving preservation a bad name. Hand them to me directly, please, well away from the serving bowls.",
       "objectives": [
         {
           "type": "item",
@@ -175,8 +175,8 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "Sister Errand: Speargrass Wellhold",
-      "text": "Our allies need hands as much as we do. Brakka Jarward at Speargrass Wellhold in Speargrass Reach has work for someone who does not tire easily. Go if the grass calls to you; one errand of the three is plenty.",
+      "title": "Sister Errand: Hands for the Wellhold",
+      "text": "Brakka Jarward at Speargrass Wellhold in Speargrass Reach could use another pair of hands. Go and speak with Brakka; do keep the hands attached, since our allies tend to find the alternative unsettling. Choose one of my three sister errands to follow; I am sending you for work, not trying to misplace you.",
       "objectives": [
         {
           "type": "talk",
@@ -200,8 +200,8 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "Sister Errand: Gor Drazhak",
-      "text": "Thorga Roadspeaker in Gor Drazhak keeps the orcs' roads and complains that nobody walks them. Walk them, then. One errand of the three is plenty.",
+      "title": "Sister Errand: Someone to Walk the Roads",
+      "text": "Thorga Roadspeaker in Gor Drazhak complains that everyone wants good roads and nobody turns up to help keep them. Go and speak with Thorga; you have made a fine habit of turning up where you are needed. One of my three sister errands is enough, even if you do have an eternity to fill.",
       "objectives": [
         {
           "type": "talk",
@@ -225,8 +225,8 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "Sister Errand: Whisperreed Landing",
-      "text": "Taleko Drycord at Whisperreed Landing in the Whispering Reedlands wants help with the trolls' wet country. Bring a dry pair of boots and go. One errand of the three is plenty.",
+      "title": "Sister Errand: Try to Stay Dry",
+      "text": "If you choose the Whispering Reedlands, speak with Taleko Drycord at Whisperreed Landing about the work there. Take care of your boots; damp gets into joints you had forgotten you owned. You need only follow one of my three sister errands, so there is no obligation to fall apart in every climate.",
       "objectives": [
         {
           "type": "talk",
@@ -250,8 +250,8 @@
       "requires": [
         "nhal_veyr_vigil_02"
       ],
-      "title": "The Clerk Who Kept Count",
-      "text": "{name:mortuary_clerk_hush} keeps a ledger in the {name:tombfields}, {dir_from_giver:mortuary_clerk_hush}, and stamps every dead name into debt. Close the ledger for good: end Hush and destroy four of the Tithe Revenants that rise round the tombs at night.",
+      "title": "The Account Is Closed",
+      "text": "{name:mortuary_clerk_hush} holds court over a ledger in the {name:tombfields}, {dir_from_giver:mortuary_clerk_hush}, entering our dead as debtors. Kill Hush, and destroy four Tithe Revenants among those tombs at night. A name is all some of these people have left, and I will not let a clerk seize it for arrears.",
       "objectives": [
         {
           "type": "kill",
@@ -287,8 +287,8 @@
       "requires": [
         "nhal_veyr_vigil_03"
       ],
-      "title": "To Ashveil Watch",
-      "text": "The register is closed and the city is in your debt, which is the only debt I accept. The Throng holds Blackwind Rise against the Accord; go to Ashveil Watch and report to Vaska Ashlistener.",
+      "title": "A Debt Freely Owed",
+      "text": "I have entered your service in the register, with thanks rather than a sum beside it. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener; the Throng holds that ground against the Accord. I would prefer to hear of your next deeds from you, rather than from someone bringing me a name to enter.",
       "objectives": [
         {
           "type": "talk",
@@ -312,8 +312,8 @@
       "requires": [
         "nhal_veyr_provisions_02"
       ],
-      "title": "Repeatable: Razorback for the Kitchen",
-      "text": "Plague Razorbacks root through the {name:gravefields} {zone_area:gravefields} by day. Kill six and bring the news; my kitchen takes another order thirty minutes after you hand this one in.",
+      "title": "Repeatable: The Kitchen Keeps Going",
+      "text": "Plague Razorbacks root through the {name:gravefields} {zone_area:gravefields} by day, and the kitchen has another hunt to pay for. Kill six and report back; this order calls for news of the hunt, so keep whatever meat you gather. I can offer it again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
       "objectives": [
         {
           "type": "kill",

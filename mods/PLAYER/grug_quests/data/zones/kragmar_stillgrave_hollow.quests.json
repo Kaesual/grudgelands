@@ -32,8 +32,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Furrow Diggers",
-      "text": "Small Plague Boars root up the {name:dead_furrows} {dir_of:stillgrave:dead_furrows} by day, and every furrow they turn spills somebody's remains. Put down eight; their yellow names mean they only fight back. Someone has been digging in our graves as well, but boars first: they at least leave the bones behind.",
+      "title": "Please Leave the Residents Buried",
+      "text": "Small Plague Boars spend their days rooting through the {name:dead_furrows} {dir_of:stillgrave:dead_furrows}, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Keep the meat for the cook. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
       "objectives": [
         {
           "type": "kill",
@@ -59,8 +59,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Tools Before Sorrow",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe and bring both to me. I will check the joints and hand you back a pair that will not split; the dead are patient, but timber is not.",
+      "title": "Hands to Work",
+      "text": "Make a Wooden Axe and a Wooden Pickaxe and bring them to me for inspection. I will give you a pair in return; even a second life deserves a proper start. Mind your fingers while you work, especially any you have only recently acquired.",
       "objectives": [
         {
           "type": "item",
@@ -97,8 +97,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Wood for the Salting Fire",
-      "text": "Bring me five logs from any tree outside Stillgrave's warded ground. Salt does the preserving, but the fire under the brine still has to be fed, and it will not eat excuses.",
+      "title": "The Fire Still Eats",
+      "text": "The fire beneath my brine pot has gone out, and glaring at it has achieved very little. Bring me five logs from any tree outside Stillgrave's warded ground; logs, please, not planks. Death excuses a great many appetites, but apparently a fire's is not among them.",
       "objectives": [
         {
           "type": "item",
@@ -123,8 +123,8 @@
       "requires": [
         "stillgrave_hunt_01"
       ],
-      "title": "The Night Gnawers",
-      "text": "When the light goes, Large Grave Rats take the same {name:dead_furrows} the boars keep by day. Kill eight after nightfall and leave gaps between your fights: a rat in trouble calls its relatives, and it has a great many relatives.",
+      "title": "Family Comes Running",
+      "text": "At night the Large Grave Rats take over the {name:dead_furrows}, and the sound of their teeth carries all the way to my chair. Kill eight after dark. Pick your fights well apart: one squeal brings the relatives, who are distressingly prompt about visiting.",
       "objectives": [
         {
           "type": "kill",
@@ -152,8 +152,8 @@
       "requires": [
         "stillgrave_tools_01"
       ],
-      "title": "A Stone Edge",
-      "text": "Use the wooden pick on plain rock outside town and make a Stone Axe and a Stone Pickaxe. Bring both and I will return a pair; headstones are not for quarrying, so take your stone from the hills.",
+      "title": "Leave the Headstones",
+      "text": "Take your wooden pick to plain rock in the hills outside town, then make a Stone Axe and a Stone Pickaxe. Bring me both and I will return a pair after inspection. If the rock has a name and two dates on it, find another rock.",
       "objectives": [
         {
           "type": "item",
@@ -192,8 +192,8 @@
       "requires": [
         "stillgrave_kitchen_01"
       ],
-      "title": "Coal for the Brine Pots",
-      "text": "Bring five Coal Lumps from the rock outside Stillgrave, whenever the hunt leaves you a moment. Coal goes in the oven's fuel slot and raw food in its cooking slot; the oven stands by my table.",
+      "title": "A Little Warmth, Professionally",
+      "text": "Bring me five Coal Lumps from the rock outside Stillgrave; you can mine while you wait for nightfall. The public oven by my table takes coal in the fuel slot and raw food in the cooking slot. Mixing those up is how we discovered a meal even the dead would send back.",
       "objectives": [
         {
           "type": "item",
@@ -218,8 +218,8 @@
       "requires": [
         "stillgrave_hunt_02"
       ],
-      "title": "Patches for the Shroud Sacks",
-      "text": "The Large Grave Rats you met in the {name:dead_furrows} drop Rat Fur Patches. Bring me two; the shroud sacks in the crypt store have more holes than shroud. Keep any spares for your own armour enchants.",
+      "title": "A Sack Ought to Hold Something",
+      "text": "Our shroud sacks have begun returning their contents to the floor. Bring me two Rat Fur Patches from the Large Grave Rats in the {name:dead_furrows}; anything you saved from your night hunt will do. Keep the spares for your armour enchants, and let me worry about dressing the storage.",
       "objectives": [
         {
           "type": "item",
@@ -248,8 +248,8 @@
       "requires": [
         "stillgrave_hunt_02"
       ],
-      "title": "The Uncalled",
-      "text": "Braindead Zombies stumble about the {name:barrow_hills} {dir_of:stillgrave:barrow_hills}, day and night. They were never called back properly and nobody wrote down their names, which is worse. Lay eight of them down; these ones were raised on blight soil, so do not wait for the sun to do it for you.",
+      "title": "No Names to Call Them By",
+      "text": "Braindead Zombies wander the {name:barrow_hills} {dir_of:stillgrave:barrow_hills}, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
       "objectives": [
         {
           "type": "kill",
@@ -278,8 +278,8 @@
         "stillgrave_kitchen_02",
         "stillgrave_hunt_03"
       ],
-      "title": "Salt Meat for the Long Rest",
-      "text": "Bring ten Raw Meat from the boars and rats around Stillgrave. I salt it for the mourners who still eat, and I will send you off with some cooked meat for the road; the living part of you will thank me.",
+      "title": "Mourning Is Hungry Work",
+      "text": "Bring me ten Raw Meat from the boars and rats around Stillgrave; whatever you kept from your hunts is welcome. A mourner may insist they cannot face a meal, but I still leave a bowl within reach. You shall have some cooked meat for the road, too; I dislike sending anyone away empty.",
       "objectives": [
         {
           "type": "item",
@@ -309,8 +309,8 @@
       "requires": [
         "stillgrave_tools_02"
       ],
-      "title": "Two Metals for One Bronze",
-      "text": "Mine copper and tin, smelt them, and bring three Copper Bars and three Tin Bars. You get a Dual Furnace for your trouble; bronze needs both metals in one fire, much like a good funeral needs both mourners and a cook.",
+      "title": "An Introduction in the Furnace",
+      "text": "Mine copper and tin, smelt them, and bring me three Copper Bars and three Tin Bars. I will give you a Dual Furnace so you can begin making bronze. The metals must share a fire; happily, they get along better than most families at a reading of the will.",
       "objectives": [
         {
           "type": "item",
@@ -345,8 +345,8 @@
       "requires": [
         "stillgrave_hunt_03"
       ],
-      "title": "Teeth on the Blightmoor",
-      "text": "After dark the {name:blightmoor} {zone_area:blightmoor} fills with Aggressive Grave Rats. They do not wait to be struck, and they bring friends. Kill eight; by day the moor belongs to the Young Gaunt Stags, which mind their own business, so let them.",
+      "title": "The Moor Changes Tenants",
+      "text": "Watch the {name:blightmoor} {zone_area:blightmoor} at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight and call others into the fight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
       "objectives": [
         {
           "type": "kill",
@@ -375,8 +375,8 @@
         "stillgrave_pantry_01",
         "stillgrave_hunt_04"
       ],
-      "title": "Crab Legs and Sinew",
-      "text": "Bring two Crab Legs from the Small Crabs on the {name:saltbones} {dir_of:stillgrave:saltbones} and one Fine Sinew from the Young Gaunt Stags on the {name:blightmoor} by day. The legs go in the broth; the sinew ties the brine sacks shut.",
+      "title": "Broth and Loose Ends",
+      "text": "For once, my shopping can be done in daylight. Bring me two Crab Legs from the Small Crabs on the {name:saltbones} {dir_of:stillgrave:saltbones}, and one Fine Sinew from the Young Gaunt Stags on the {name:blightmoor} by day. I have a broth to finish and brine sacks to tie shut; separate tasks, despite what you may have heard about my cooking.",
       "objectives": [
         {
           "type": "item",
@@ -414,8 +414,8 @@
       "requires": [
         "stillgrave_tools_03"
       ],
-      "title": "A Pick for Deeper Rock",
-      "text": "Alloy three Bronze Bars and bring them to me. I will hand you a Bronze Pickaxe; the rock past Stillgrave gets harder, and so, I am told, does the rest of the world.",
+      "title": "Something to Take With You",
+      "text": "Use your Dual Furnace to alloy three Bronze Bars and bring them to me. There is a Bronze Pickaxe waiting for you, for the harder rock beyond Stillgrave. I cannot go along to see how you fare, but I can at least see you properly equipped.",
       "objectives": [
         {
           "type": "item",
@@ -445,8 +445,8 @@
       "requires": [
         "stillgrave_hunt_04"
       ],
-      "title": "Borrow Returns Nothing",
-      "text": "The grave robbers have pitched the {name:robbers_camp} {dir_from_giver:robbers_camp}. Confused as they are, they still dig, and their chief, {name:grave_robber_chief}, keeps whatever they bring up. Drive off six of the Confused Grave Robbers and put an end to Borrow himself; Stillgrave wants its dead back in the right order.",
+      "title": "Borrow Has Had Long Enough",
+      "text": "Our missing bones have led us to the {name:robbers_camp} {dir_from_giver:robbers_camp}, where {name:grave_robber_chief} has been treating the graves as a lending library. Kill six Confused Grave Robbers and their chief. Confusion might excuse digging the wrong hole once; arriving with sacks suggests a settled intention.",
       "objectives": [
         {
           "type": "kill",
@@ -482,8 +482,8 @@
       "requires": [
         "stillgrave_hunt_05"
       ],
-      "title": "The Road to Mournfen",
-      "text": "Stillgrave is quiet again, which is how we like it. Take the road to Mournfen Village and speak with Mordec Silt; the fen keeps older graves than ours, and it is losing them to the water.",
+      "title": "Older Graves, Deeper Water",
+      "text": "Listen: for once, that is only the wind among the stones. Follow the road to Mournfen Village and speak with Mordec Silt; the graves in his care are older than ours, and the water is rising around them. Come back when you can, preferably on your own feet.",
       "objectives": [
         {
           "type": "talk",
@@ -507,8 +507,8 @@
       "requires": [
         "stillgrave_hunt_05"
       ],
-      "title": "Repeatable: Deadlands Rat Count",
-      "text": "Monstrous Grave Rats breed in the {name:deadlands} {zone_area:deadlands} after dark faster than I can count them, and I do count. Kill six and report back; I can post this again twenty minutes after you hand it in.",
+      "title": "Repeatable: A Census With Teeth",
+      "text": "The Monstrous Grave Rats in the {name:deadlands} {zone_area:deadlands} have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
       "objectives": [
         {
           "type": "kill",
