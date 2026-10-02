@@ -111,7 +111,7 @@
         "totemwater_knots_03"
       ],
       "title": "The Name Beneath the Water",
-      "text": "I have the name at last: Crocodile Reed-Maw, waiting in the {name:blackwater} {dir_from_giver:reed_maw_crocodile}. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
+      "text": "I have the name at last: Crocodile Reed-Maw, waiting in its dark water {dir_from_giver:reed_maw_crocodile}. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
       "objectives": [
         {
           "type": "kill",

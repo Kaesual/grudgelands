@@ -180,7 +180,7 @@
         "whispering_cut_01"
       ],
       "title": "Quiet the Pumps",
-      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Bubbling Bog Oozes in the {name:hushmire} {dir_from_giver:hushmire}. The oozes are there day and night, making considerably less fuss than my machinery.",
+      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Bubbling Bog Oozes in the {name:thicket}, {zone_area:thicket}. The oozes come out there after dark, making considerably less fuss than my machinery.",
       "objectives": [
         {
           "type": "item",
@@ -189,7 +189,7 @@
           "roles": [
             "sullen_bog_ooze"
           ],
-          "area": "kragmar_whispering_reedlands/hushmire"
+          "area": "kragmar_whispering_reedlands/thicket"
         }
       ],
       "rewards": {
