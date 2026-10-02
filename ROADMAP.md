@@ -48,7 +48,10 @@ Earlier delivery narratives are preserved in the
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
   Summit are contested offshore dragon islands, each with a dragon lair and an
-  apex camp, reached by boat. Minerals never regrow anywhere, camps included.
+  apex camp, reached by boat. Each boat landing has a small beach and a wooden
+  pier (Round 30); beyond them the islands stay untamed, without paths or
+  roads, so the climb is part of reaching the dragon. Minerals never regrow
+  anywhere, camps included.
 - **Housing lives in the open world** (delivered in Round 25,
   [housing.md](docs/design/housing.md)). From level 20 each player gets one
   free, soulbound Claim Stone from a capital's Housing Steward. It claims a
@@ -91,7 +94,8 @@ Earlier delivery narratives are preserved in the
   water mounts (Round 29): the Shipwright in every capital sells the Boat
   from level 15 and the twice-as-fast Improved Boat from level 30, and any
   damage ejects a rider from a boat exactly as it dismounts one from a
-  mount.
+  mount. There are no docks; a boat lands anywhere in water, and only the
+  four island landings have piers (Round 30).
 - **Story remains light and environmental.** The Accord–Throng war is old; an
   ancient demonic threat reaches upward through the Nether. Both factions face
   it in parallel without becoming allies.
@@ -99,7 +103,7 @@ Earlier delivery narratives are preserved in the
 **Scope versus delivery:** this vision includes approved future systems, not just
 running code. WP41's exact PvP transaction and the WP9 story from level 41
 remain unfinished; WP17 boats/waypoints and the WP44 economy are delivered
-(Round 29) and await the playtest. [BACKLOG](BACKLOG.md) distinguishes them.
+(Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
 
 ## V1 scope
 
@@ -174,8 +178,8 @@ B1–B7) settle the rest:
   track per race, the contested 31–40 zones, the 41–60 front with
   repeatable and island bounties); the spawn playtest fixes; a mapgen bundle
   (gems by depth, `apex_sockets` removed, mapgen band data, the
-  Battlegrounds 50 % wider with a middle road). Local, not pushed. Next:
-  fresh world and GUI test.
+  Battlegrounds 50 % wider with a middle road). Pushed and tested by the
+  user on a fresh world (2026-10-02).
 - [x] **WP17 travel (V1)**, Round 29: boats as water mounts from the
   Shipwright in every capital, the Kraken retune, and visit-unlocked
   waystones at every start and capital. Innkeeper return and the Claim Stone
@@ -185,17 +189,28 @@ B1–B7) settle the rest:
   quest copper from weight and mount, boat and respec prices from a simple
   income estimate. It absorbed the price remainders of WP7, WP11, WP22, WP30
   and WP31.
+- [x] **Round 30 "Performance and clean-up"**
+  ([completion](docs/planning/round30-plan.md#completion-2026-10-02)): the
+  [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
+  with the user's rulings — a quest-state cache and the Map tab at most every
+  2 s, the region-map file cache (a later start about 7 s instead of about
+  16 s) and lower boot memory, a per-step A* budget and mobs that give up
+  unreachable targets, three merged spawn ABMs instead of 88, cheaper
+  crafting lookups, crosshair and name tags; Return home on the Character
+  page; piers and beaches at the dragon-island landings; the legacy quest
+  fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
+  smoothing with recomputed prices. Local, not pushed. Next: fresh world and
+  GUI test.
 
 ### Remaining work
 
-- [ ] **Round 30 performance** (next): the
-  [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
-  with the user's rulings of 2026-10-02 (quest state and map UI, mob pathing
-  and allocation, the region-map file cache and boot memory, per-player
-  ticks; fewer spawn ABMs). Items:
-  [BACKLOG](BACKLOG.md#round-30--performance).
-- [ ] **WP41 (V1):** exact geographic PvP transaction and shared eligibility seam.
-- [ ] **WP9 (V1):** the level-41–60 main questline and the finale. Round 29's
+- [ ] **WP41 (V1), Round 31:** exact geographic PvP transaction and shared
+  eligibility seam, with enemy-guard quest objectives and small PvP POIs
+  (planned in its own design session).
+- [ ] **Dragon arenas** (next round, a small design step first): terrain that
+  shapes each dragon fight inside the protected arena core
+  ([BACKLOG](BACKLOG.md#round-30--performance)).
+- [ ] **WP9 (V1), Round 32:** the level-41–60 main questline and the finale. Round 29's
   front quests and bounties carry the 41–60 leveling; the main storyline and
   the finale are reassessed on top of them.
 - [ ] **WP5 / WP10 items and professions:** cultural/PvP finishes, masterwork
