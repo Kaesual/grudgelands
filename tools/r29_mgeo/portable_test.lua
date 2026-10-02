@@ -15,7 +15,8 @@
 -- 4. A generated camp on a steep belt (once, seed 42, the world as the
 --    region tools build it): no block of Blackwind Rise's belt l34_37 meets
 --    the slope rule, so the bandit hideout takes the flattest block that
---    meets every other rule (score 0) and its leader stands at the camp.
+--    meets every other rule (score 0, slope at most HIGH_SLOPE) and its
+--    leader stands at the camp.
 -- The Battlegrounds width itself is measured by zone_check.lua next to this
 -- file. Prints "R29 MGEO PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
@@ -102,6 +103,8 @@ do
 		if unit.id == "bandit_hideout" then hideout = unit end
 	end
 	check(hideout ~= nil and hideout.score == 0, "the hideout stands on the flattest block (score 0)")
+	check(hideout.slope > CORE.CAMP_SLOPE and hideout.slope <= CORE.HIGH_SLOPE,
+		("its slope %.3f lies between CAMP_SLOPE and HIGH_SLOPE"):format(hideout.slope))
 	check(#m.problems == 0, "no problem in " .. zone .. ": " .. table.concat(m.problems, "; "))
 	local leader
 	for _, l in ipairs(m.leaders) do
