@@ -32,8 +32,8 @@
       "min_level": 19,
       "level": 21,
       "requires": [],
-      "title": "Stings at the Gates",
-      "text": "Dust-Stinger Scorpions crawl over the {name:steppe} at night, {dir_of:gor_drazhak:steppe}, and sting our sentries. Kill eight. A capital that cannot keep scorpions off its gate is only a large village.",
+      "title": "A Sentry Needs Both Feet",
+      "text": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust-Stinger Scorpions after dark on the {name:steppe}, {dir_of:gor_drazhak:steppe}. The Throng needs its guards standing firm.",
       "objectives": [
         {
           "type": "kill",
@@ -60,8 +60,8 @@
       "requires": [
         "gor_drazhak_muster_01"
       ],
-      "title": "Optional: Laughter in the Badlands",
-      "text": "Dustpack Hyenas hunt the {name:badlands} by day, {dir_of:gor_drazhak:badlands}, and they laugh at our supply carts. Kill eight and see who laughs.",
+      "title": "Optional: The Last Laugh Costs Extra",
+      "text": "Kill eight Dustpack Hyenas by day in the {name:badlands}, {dir_of:gor_drazhak:badlands}, and keep our supply carts moving. They follow the rations as though we packed lunch for them; if they want a meal from the Throng, they can learn to carry a spear.",
       "objectives": [
         {
           "type": "kill",
@@ -89,8 +89,8 @@
       "requires": [
         "gor_drazhak_muster_01"
       ],
-      "title": "Garr Rations Our Rations",
-      "text": "Toll Bandit Archers hold the {name:tollcamp} {dir_of:gor_drazhak:tollcamp} for Bandit Ration-Broker Garr, who buys from Korr and sells to fools. Kill six archers and Garr himself, and the muster eats again.",
+      "title": "His Profit, Our Empty Bowls",
+      "text": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the {name:tollcamp}, {dir_of:gor_drazhak:tollcamp}, kill six Toll Bandit Archers and Garr himself. The hands that fill our war bands' bowls deserve better than this.",
       "objectives": [
         {
           "type": "kill",
@@ -125,8 +125,8 @@
       "requires": [
         "gor_drazhak_muster_03"
       ],
-      "title": "The Red Ramp",
-      "text": "The Throng holds the line on Bannerbreak Mesa, and it needs fighters who have finished their errands. Report to Drek Rampbinder at Red Ramp Post.",
+      "title": "Your Place in the Line",
+      "text": "You have seen what it takes to keep the Throng fed and marching. Now report to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa, where our fighters hold the line. Stand with them as you stood for the people behind these walls.",
       "objectives": [
         {
           "type": "talk",
@@ -149,8 +149,8 @@
       "requires": [
         "gor_drazhak_muster_03"
       ],
-      "title": "Bounty: Archers at the Tollcamp",
-      "text": "Garr's archers come back to the {name:tollcamp} whether Garr does or not. Kill six and collect; the muster pays again twenty minutes after you do.",
+      "title": "Bounty: A Toll Paid in Arrows",
+      "text": "More Toll Bandit Archers have settled into the {name:tollcamp}; evidently word travels slower than greed. Kill six and return for your bounty. You may take the job again twenty minutes after collecting your pay.",
       "objectives": [
         {
           "type": "kill",
@@ -179,8 +179,8 @@
       "min_level": 20,
       "level": 22,
       "requires": [],
-      "title": "The Longladle Ration",
-      "text": "The muster eats from my ladle. Bring eight Raw Meat and two Braided Sinew from the Waterhole Zebras on the {name:steppe}; the sinew ties the ration bundles, the meat goes in them.",
+      "title": "The Ladle Commands",
+      "text": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Waterhole Zebras on the {name:steppe}. We have ration bundles to tie and a hungry muster to fill them for.",
       "objectives": [
         {
           "type": "item",
@@ -213,8 +213,8 @@
       "requires": [
         "gor_drazhak_muster_01"
       ],
-      "title": "Word for Brakka Jarward",
-      "text": "Speargrass Wellhold sends us spears and wants word back. Take the road to Speargrass Reach and greet Brakka Jarward for me, and mention that the stew is still better here.",
+      "title": "Spears Out, Word Back",
+      "text": "Speargrass Wellhold keeps sending us spears. Brakka Jarward wants word back, and you look ready for a walk. Travel to the Wellhold in Speargrass Reach and speak to Brakka for me. If Brakka asks about my stew, say the bowls come back empty.",
       "objectives": [
         {
           "type": "talk",
@@ -237,8 +237,8 @@
       "requires": [
         "gor_drazhak_muster_01"
       ],
-      "title": "Reeds and Rations",
-      "text": "Our troll allies at Whisperreed Landing trade fish for our salt. Go to Whispering Reedlands and find Taleko Drycord; the trolls always have more work than hands.",
+      "title": "Salt Keeps a Friendship",
+      "text": "Our troll allies send fish from Whisperreed Landing, and our salt makes the return journey. Go to Whispering Reedlands and speak to Taleko Drycord at the landing. Give our allies a hand; a shared cooking pot holds the Throng together as surely as any war banner.",
       "objectives": [
         {
           "type": "talk",

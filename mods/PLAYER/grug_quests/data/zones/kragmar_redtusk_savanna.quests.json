@@ -58,8 +58,8 @@
       "requires": [
         "sunscar_departure"
       ],
-      "title": "Stripes for the Hide Racks",
-      "text": "Waterhole Zebras graze the {name:grasslands} by day, {zone_area:grasslands}. Bring down eight; Redtusk eats what it hunts and wears what it eats.",
+      "title": "Waste Nothing With Stripes",
+      "text": "Bring down eight Waterhole Zebras by day in the {name:grasslands}, {zone_area:grasslands}. Redtusk fills bellies and hide racks from the same hunt; waste any of it and the tanners will tan you instead.",
       "objectives": [
         {
           "type": "kill",
@@ -86,8 +86,8 @@
       "requires": [
         "redtusk_herd_01"
       ],
-      "title": "Stings in the Grass",
-      "text": "After dark the same {name:grasslands} belong to Dust-Stinger Scorpions. Kill eight before they find our herders' ankles.",
+      "title": "Bring the Herders Home",
+      "text": "A herder watching the herd should not have to watch both boots as well. Kill eight Dust-Stinger Scorpions in the {name:grasslands} after dark. I want our people coming home on their own feet.",
       "objectives": [
         {
           "type": "kill",
@@ -114,8 +114,8 @@
       "requires": [
         "redtusk_herd_02"
       ],
-      "title": "Gnawers in the Tallgrass",
-      "text": "Dust Gnawers swarm the {name:tallgrass} at night, {zone_area:tallgrass}, and chew through every rope we tie. Kill eight; bring a torch and a friend if you own either.",
+      "title": "All Knot, No Rope",
+      "text": "I tied a pen shut last night and found the knot this morning, with precious little rope attached. Hunt the Dust Gnawers in the {name:tallgrass}, {zone_area:tallgrass}, and kill eight after dark. Give them something worse than rope to bite.",
       "objectives": [
         {
           "type": "kill",
@@ -142,8 +142,8 @@
       "requires": [
         "redtusk_herd_03"
       ],
-      "title": "Kesh Has the Other Half",
-      "text": "Kesh Longstride watches the plains from Redtusk Outpost and says the real trouble lies past the tallgrass. Go and hear it at the outpost; Kesh talks less than I do.",
+      "title": "Trust the Worn Boots",
+      "text": "Kesh Longstride has worn enough trail into those boots to know when trouble is moving. Go to Redtusk Outpost and speak to Kesh about what lies beyond the tallgrass. Listen closely; a scout should never have to tell you twice.",
       "objectives": [
         {
           "type": "talk",
@@ -164,8 +164,8 @@
       "min_level": 10,
       "level": 12,
       "requires": [],
-      "title": "Sinew for the Bowstrings",
-      "text": "Our bowyers need Tough Sinew, and the Waterhole Zebras of the {name:grasslands} carry plenty. Bring three; the rest of the zebra is your business.",
+      "title": "Give the Bows Their Voices",
+      "text": "The bowyers have a rack of unstrung bows and a fine collection of excuses. Bring me three Tough Sinew from the Waterhole Zebras that graze the {name:grasslands} by day. Then we can all listen to something besides complaining.",
       "objectives": [
         {
           "type": "item",
@@ -194,8 +194,8 @@
         "redtusk_hides_01",
         "redtusk_herd_02"
       ],
-      "title": "Venom for the Hunters",
-      "text": "Three Bitter Venom from the Dust-Stinger Scorpions of the {name:grasslands}, collected at night. Our hunters tip their spears with it; our cooks are forbidden to touch it, mostly.",
+      "title": "Keep It Out of the Stew",
+      "text": "The hunters want three Bitter Venom for their spears, and I have promised to keep the cooks well away from it. Gather it from Dust-Stinger Scorpions in the {name:grasslands} at night and bring it straight to me. Straight to me, even if somebody offers you a clean bowl.",
       "objectives": [
         {
           "type": "item",
@@ -221,8 +221,8 @@
       "min_level": 13,
       "level": 14,
       "requires": [],
-      "title": "Iron for the Herd Pens",
-      "text": "The pens need new hinges and the smith needs Iron Bars. Bring six Iron Bars and four Coal Lumps, and Redtusk sleeps behind gates that actually shut.",
+      "title": "A Gate Worth Shutting",
+      "text": "Our pen gate groans louder than the beasts behind it, and I know which one will give way first. Bring me six Iron Bars and four Coal Lumps so the smith can mend the hinges. I have spent enough mornings chasing our supper through the dust.",
       "objectives": [
         {
           "type": "item",
@@ -251,8 +251,8 @@
       "requires": [
         "redtusk_stores_01"
       ],
-      "title": "Hides Before the Dry Season",
-      "text": "The tanners want eight Raw Meat and three Leather before the dry season. The Waterhole Zebras of the {name:tallgrass} give both by day.",
+      "title": "Feed the Hands That Tan",
+      "text": "The dry season is coming, and the tanners cannot work on empty bellies or empty racks. Bring eight pieces of Raw Meat and three Leather; hunt Waterhole Zebras in the {name:tallgrass} by day for the leather. Our hunters will thank us when their boots hold together.",
       "objectives": [
         {
           "type": "item",
@@ -285,8 +285,8 @@
       "requires": [
         "redtusk_herd_04"
       ],
-      "title": "Tuskers on the Borderveld",
-      "text": "Ridgeback Tuskers have taken the {name:borderveld}, {zone_area:borderveld}, and they charge anything that walks. Kill eight by daylight, before they charge a caravan.",
+      "title": "Tusks Across the Trail",
+      "text": "I can read a trail, but these Ridgeback Tuskers keep ploughing tusk marks through it. Kill eight by daylight in the {name:borderveld}, {zone_area:borderveld}. Get them before a caravan finds out how little a loaded cart helps against a charge.",
       "objectives": [
         {
           "type": "kill",
@@ -313,8 +313,8 @@
       "requires": [
         "redtusk_watch_01"
       ],
-      "title": "Mummies on the Ashbluffs",
-      "text": "Pauper Mummies walk the {name:ashbluffs} {dir_of:redtusk_outpost:ashbluffs}, day and night. Kill six. Whoever wrapped them did a poor job and nobody wants a second look.",
+      "title": "Footprints That Never Rest",
+      "text": "Those Pauper Mummies tramp through the {name:ashbluffs}, {dir_of:redtusk_outpost:ashbluffs}, day and night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -341,8 +341,8 @@
       "requires": [
         "redtusk_watch_02"
       ],
-      "title": "A Captive Who Keeps Count",
-      "text": "Rokka Emberhand is held in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and still counts every barrel the bandits steal. Get there and hear what Rokka knows.",
+      "title": "Rokka Is Still Counting",
+      "text": "The bandits have Rokka Emberhand captive, and Rokka has been counting every stolen barrel that rolls past. Find Rokka in the {name:bandit_camp}, {dir_from_giver:bandit_camp}, and hear what those thieves would rather keep quiet. They should have put a sack over the barrels.",
       "objectives": [
         {
           "type": "talk",
@@ -365,8 +365,8 @@
       "requires": [
         "redtusk_watch_02"
       ],
-      "title": "Bounty: Gnawers on the Borderveld",
-      "text": "Dust Gnawers breed on the {name:borderveld} at night faster than we can count them. Kill six and report back; the bounty opens again twenty minutes after you collect.",
+      "title": "Bounty: Teeth in the Dark",
+      "text": "Dust Gnawers keep chewing their way through our night supplies on the {name:borderveld}. Kill six after dark and report back for your pay. The bounty is available again twenty minutes after you collect; I expect we will still have rats.",
       "objectives": [
         {
           "type": "kill",
@@ -397,8 +397,8 @@
       "requires": [
         "redtusk_watch_03"
       ],
-      "title": "Lookouts Without Eyes",
-      "text": "Bandit Lookouts watch every path into this camp. Kill eight of them and the {name:bandit_camp} goes blind; then we talk about their master.",
+      "title": "Eight Fewer Witnesses",
+      "text": "Keep your voice down. The Bandit Lookouts in the {name:bandit_camp} think I have nothing left to say. Kill eight of them, then come back. I have plenty to say about their master.",
       "objectives": [
         {
           "type": "kill",
@@ -425,8 +425,8 @@
       "requires": [
         "redtusk_ransom_01"
       ],
-      "title": "Korr Sells Our Water",
-      "text": "Bandit Water-Broker Korr stands {dir_from_giver:water_broker_korr} and sells Redtusk's own water back to Redtusk. Kill him and bring two Knotted Talismans from his lookouts, so the clan believes it.",
+      "title": "No Coin for Our Own Water",
+      "text": "Bandit Water-Broker Korr stands {dir_from_giver:water_broker_korr}, putting a price on water he stole from our wells. Kill him, and bring me two Knotted Talismans from the Bandit Lookouts in the {name:bandit_camp} as proof for the clan. I have listened to him count his profits long enough.",
       "objectives": [
         {
           "type": "kill",
@@ -462,8 +462,8 @@
       "requires": [
         "redtusk_ransom_02"
       ],
-      "title": "Gor Drazhak Must Hear This",
-      "text": "Korr's tallies name buyers inside Gor Drazhak itself. Take the road to the capital and tell Thorga Roadspeaker in the Skull Hall, who knows which throats to squeeze.",
+      "title": "Follow the Stolen Water",
+      "text": "Korr's tallies name buyers in Gor Drazhak; the rot reaches all the way to our capital's tables. Go to the Skull Hall there and tell Thorga Roadspeaker what we found. I counted barrels from captivity; those buyers can start counting their excuses.",
       "objectives": [
         {
           "type": "talk",

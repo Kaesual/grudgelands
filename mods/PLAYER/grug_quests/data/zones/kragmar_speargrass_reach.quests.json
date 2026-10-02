@@ -49,8 +49,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "Vultures Over the Cutters",
-      "text": "Mesa Vultures circle the {name:ridges} by day, {zone_area:ridges}, and dive at our grass cutters. Kill eight; the cutters will thank you by complaining about something else.",
+      "title": "Still Using Those Shoulders",
+      "text": "Kill eight Mesa Vultures by day along the {name:ridges}, {zone_area:ridges}; our grass cutters are coming home with pecked shoulders and a whole new respect for hats. Tell those birds Brakka's people are still using their flesh, if you think they will listen.",
       "objectives": [
         {
           "type": "kill",
@@ -77,8 +77,8 @@
       "requires": [
         "speargrass_grass_01"
       ],
-      "title": "Optional: Stripes in the Cutting Grass",
-      "text": "Tallgrass Tigers stalk the {name:tallgrass} by day, {zone_area:tallgrass}, and our cutters have stopped counting the missing. Kill eight before they start counting us.",
+      "title": "Optional: Count the Cutters Home",
+      "text": "I count every cutter who leaves the Wellhold, and lately the returning count has been short. Kill eight Tallgrass Tigers by day in the {name:tallgrass}, {zone_area:tallgrass}. Let our people keep their eyes on their work for once.",
       "objectives": [
         {
           "type": "kill",
@@ -106,8 +106,8 @@
       "requires": [
         "speargrass_grass_01"
       ],
-      "title": "A Message for Nhal Veyr",
-      "text": "The undead of Nhal Veyr buy our spears and pay in quiet favours. Carry word to Ossa Quietregister in their city; they will have work for a living orc who does not stare.",
+      "title": "Promises Outlast Breath",
+      "text": "The undead of Nhal Veyr buy our spears, and I have never had to ask twice for a favour they owed. Travel to their city and speak to Ossa Quietregister on our behalf. Mind your manners; a bare jaw can still take offence.",
       "objectives": [
         {
           "type": "talk",
@@ -128,8 +128,8 @@
       "min_level": 23,
       "level": 24,
       "requires": [],
-      "title": "Steel for the Sorting Trays",
-      "text": "Redpick Yard wears out a pick a day and the trays rust faster. Bring four Steel Bars and I will stop calling you a tourist.",
+      "title": "The Yard Eats Steel",
+      "text": "Redpick Yard has worn out another pick, and the sorting trays are trying to follow it into the scrap heap. Bring me four Steel Bars so we can keep working. The rock will still be here tomorrow, but I would prefer less of it.",
       "objectives": [
         {
           "type": "item",
@@ -153,8 +153,8 @@
       "requires": [
         "speargrass_yard_01"
       ],
-      "title": "Optional: Claws for the Picks",
-      "text": "Tallgrass Tigers in the {name:tallgrass} grow Shearing Cat Claws harder than our pick tips. Bring three and the smith will fit them.",
+      "title": "Optional: Put the Claws to Work",
+      "text": "The smith has an idea for our pick tips, and for once I like the sound of it. Bring me three Shearing Cat Claws from Tallgrass Tigers in the {name:tallgrass}; hunt them by day. Getting the claws is your part, and convincing the smith to stop talking and start fitting them is mine.",
       "objectives": [
         {
           "type": "item",
@@ -183,8 +183,8 @@
       "requires": [
         "speargrass_yard_02"
       ],
-      "title": "Bounty: Tigers in the Hunting Grounds",
-      "text": "Tigers keep coming back to the {name:hunting_grounds} by day. Kill six and come back for your pay; the yard pays again twenty minutes later.",
+      "title": "Bounty: Stripes on the Payroll",
+      "text": "Tallgrass Tigers keep prowling the {name:hunting_grounds} by day, and chasing them off is eating into our work. Kill six and return for the yard's bounty. The job opens again twenty minutes after you collect; I can pay for dead tigers or lost shifts, and I prefer the tigers.",
       "objectives": [
         {
           "type": "kill",
@@ -213,8 +213,8 @@
       "min_level": 26,
       "level": 28,
       "requires": [],
-      "title": "Optional: Night in the Hunting Grounds",
-      "text": "At night Dustpack Hyenas own the {name:hunting_grounds}, {zone_area:hunting_grounds}. Kill eight; Cutgrass Watch is tired of being laughed at by dinner.",
+      "title": "Optional: Teeth Beyond the Watch",
+      "text": "When dark falls, Dustpack Hyenas gather in the {name:hunting_grounds}, {zone_area:hunting_grounds}, and our patrols hear every hungry mouth. Kill eight at night for Cutgrass Watch. I would sleep better knowing fewer teeth were waiting for the next patrol.",
       "objectives": [
         {
           "type": "kill",
@@ -240,8 +240,8 @@
       "min_level": 28,
       "level": 29,
       "requires": [],
-      "title": "Rakk's Stolen Banners",
-      "text": "Goblins have built the {name:goblin_camp} {dir_from_giver:goblin_camp} and fly banners stolen from our own war bands. Kill eight goblins and Goblin Banner-Broker Rakk, who sells the banners back to us.",
+      "title": "Our Colours Are Not for Sale",
+      "text": "Goblin Banner-Broker Rakk is selling our stolen war banners back to us from the {name:goblin_camp}, {dir_from_giver:goblin_camp}. Kill eight of his Ore-Thieving Goblins or Rubble Goblin Slingers in any mix, and kill Rakk himself. Orcs bled beneath those colours; he will not haggle over them.",
       "objectives": [
         {
           "type": "kill",
@@ -277,8 +277,8 @@
       "requires": [
         "speargrass_watch_02"
       ],
-      "title": "Ashes on Blackwind Rise",
-      "text": "The Throng fights for Blackwind Rise and Vaska Ashlistener asks for anyone who can hold a spear. Go; you have proved you can.",
+      "title": "Stand Where the Ash Falls",
+      "text": "Vaska Ashlistener needs fighters at Ashveil Watch on Blackwind Rise, where the Throng is fighting to hold its ground. Go and report to Vaska. I have watched you protect the people who put spears in our hands; now carry that strength to the line.",
       "objectives": [
         {
           "type": "talk",

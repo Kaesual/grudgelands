@@ -32,8 +32,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Tusks at the Water Skins",
-      "text": "By day Small Boars root through our water skins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight. Their names are yellow, so they only fight once you hit them; hit them anyway.",
+      "title": "A Drink Too Far",
+      "text": "Small Boars are ripping our waterskins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight by day; their yellow names mean they wait for you to strike first. Make that first blow count.",
       "objectives": [
         {
           "type": "kill",
@@ -61,8 +61,8 @@
       "requires": [
         "sunscar_hunt_01"
       ],
-      "title": "Rats Under the Hide Racks",
-      "text": "When the sun goes down, Large Dust Rats crawl out of the same {name:wellfields} and chew our hides. Kill eight after dark, and mind that one squeaking rat brings its cousins.",
+      "title": "No Hides for Rat Beds",
+      "text": "Kill eight Large Dust Rats in the {name:wellfields} after dark; they are chewing the clan's drying hides into bedding. Listen for the squeal that brings their kin running, and keep your feet under you.",
       "objectives": [
         {
           "type": "kill",
@@ -90,8 +90,8 @@
       "requires": [
         "sunscar_hunt_02"
       ],
-      "title": "Runners for the Long Fire",
-      "text": "Young Plains Runners graze the {name:runner_plains} by day, {zone_area:runner_plains}. Bring down eight; the fire wants meat and the clan wants hunters who can catch something faster than a rat.",
+      "title": "Earn Your Breath",
+      "text": "The clan's cooking fires need feeding, and your hunting arm needs work. Bring down eight Young Plains Runners by day in the {name:runner_plains}, {zone_area:runner_plains}. Save the boasting for when you catch your breath.",
       "objectives": [
         {
           "type": "kill",
@@ -118,8 +118,8 @@
       "requires": [
         "sunscar_hunt_03"
       ],
-      "title": "The Thirsting Dead",
-      "text": "At night Sluggish Sun-Dried Husks drag themselves out of the {name:saltflats} {dir_from_giver:saltflats}, still looking for water they no longer need. Put eight of them back in the salt. They are slow; do not be slower.",
+      "title": "Let the Thirst End",
+      "text": "Even death has not quenched the Sluggish Sun-Dried Husks that wander the {name:saltflats} at night, {dir_from_giver:saltflats}. Put eight to rest before they reach our wells. Whatever they were, they have crawled through enough salt.",
       "objectives": [
         {
           "type": "kill",
@@ -146,8 +146,8 @@
       "requires": [
         "sunscar_hunt_04"
       ],
-      "title": "Lastdrop's Thirst",
-      "text": "Water thieves dig at our wells and camp {dir_from_giver:thieves_camp} in the {name:thieves_camp}. Kill six Confused Water Thieves and their chief, Lastdrop, who has stolen so much water he can no longer remember why. Then Sunscar drinks in peace.",
+      "title": "The Last Drop Is Ours",
+      "text": "We share water with a thirsty stranger; these thieves took that for weakness. Strike the {name:thieves_camp} {dir_from_giver:thieves_camp} and kill six Confused Water Thieves and Confused Water Thief Chief Lastdrop. Let Sunscar fill its cups without looking over its shoulder.",
       "objectives": [
         {
           "type": "kill",
@@ -183,8 +183,8 @@
       "requires": [
         "sunscar_hunt_05"
       ],
-      "title": "The Road to Borak Redgrass",
-      "text": "You have outgrown our wells. Follow the road out of Sunscar to Redtusk Village and tell Borak Redgrass that Gara sends a hunter, not a mouth to feed.",
+      "title": "Carry Sunscar With You",
+      "text": "You have earned a place at our fire, even when your boots carry you beyond it. Follow the road from Sunscar to Redtusk Village and speak to Borak Redgrass. Tell him Gara Stonevoice trusts your hands; he can judge your boasting for himself.",
       "objectives": [
         {
           "type": "talk",
@@ -207,8 +207,8 @@
       "requires": [
         "sunscar_hunt_05"
       ],
-      "title": "Bounty: Thieves at the Wells",
-      "text": "Water thieves return to the {name:thieves_camp} like flies to a spill. Kill six more and come back; the clan pays again twenty minutes after you collect.",
+      "title": "Bounty: A Thirst for Trouble",
+      "text": "Every Confused Water Thief who wanders into the {name:thieves_camp} thinks the last lot merely lacked talent. Kill six and return for the clan's bounty. You can take the job again twenty minutes after collecting your pay; apparently the supply of fools needs less time.",
       "objectives": [
         {
           "type": "kill",
@@ -237,8 +237,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Two Hands, Two Tools",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe and show me both. I give them back; an orc who cannot cut wood or break stone has only fists, and fists are for later.",
+      "title": "Put Those Hands to Work",
+      "text": "A clan needs hands that can build as well as break. Make one Wooden Axe and one Wooden Pickaxe, then bring both to me. I will give them back after a look; I have enough tools and too many idle pupils.",
       "objectives": [
         {
           "type": "item",
@@ -277,8 +277,8 @@
       "requires": [
         "sunscar_tools_01"
       ],
-      "title": "Stone Has No Pride",
-      "text": "Wood breaks, stone bites. Bring me a Stone Axe and a Stone Pickaxe, and you get them back with my blessing.",
+      "title": "Leave the Splinters Behind",
+      "text": "Still pulling splinters out? Then you have learned what wood can do. Bring me one Stone Axe and one Stone Pickaxe for inspection. I will return both, ready for your next lesson.",
       "objectives": [
         {
           "type": "item",
@@ -316,8 +316,8 @@
       "requires": [
         "sunscar_tools_02"
       ],
-      "title": "Two Metals, One Purpose",
-      "text": "Dig copper and tin below the flats and smelt three Copper Bars and three Tin Bars. Bring them, and I give you a Dual Furnace to make bronze from both.",
+      "title": "A Lesson in the Coals",
+      "text": "The ground keeps its good things buried; make it yield some. Mine copper and tin beneath the flats, smelt three Copper Bars and three Tin Bars, and bring them here. I will give you a Dual Furnace so you can turn the two metals into bronze.",
       "objectives": [
         {
           "type": "item",
@@ -351,8 +351,8 @@
       "requires": [
         "sunscar_tools_03"
       ],
-      "title": "An Edge for the Road",
-      "text": "Three Bronze Bars, from that furnace of yours. In return you get a Bronze Pickaxe, because the stone past Sunscar does not care how loud you shout at it.",
+      "title": "Let Bronze Do the Talking",
+      "text": "Bring me three Bronze Bars from your furnace, and I will put a Bronze Pickaxe in your hands. The rocks beyond Sunscar have ignored some very fine threats; take something they will listen to.",
       "objectives": [
         {
           "type": "item",
@@ -379,8 +379,8 @@
       "min_level": 3,
       "level": 4,
       "requires": [],
-      "title": "Legs for the Pot",
-      "text": "Small Crabs scuttle on the {name:strand} by day, {dir_from_giver:strand}. Bring me three Crab Legs. They are only yellow names, so the pot is the only danger they face.",
+      "title": "Supper Has Too Many Legs",
+      "text": "Supper is scuttling about on the {name:strand}, {dir_from_giver:strand}, and I have a pot to mind. Hunt Small Crabs there by day and bring me three Crab Legs. Their yellow names mean they wait for the first hit, which is more courtesy than I get from hungry hunters.",
       "objectives": [
         {
           "type": "item",
@@ -409,8 +409,8 @@
         "sunscar_pantry_01",
         "sunscar_hunt_03"
       ],
-      "title": "Sinew for the Racks",
-      "text": "The runners you hunted carry Fine Sinew; bring me three for the drying racks. If you ate them all already, more graze the {name:runner_plains} by day.",
+      "title": "Keep Dinner Off the Dirt",
+      "text": "Bring me three Fine Sinew from the Young Plains Runners that graze the {name:runner_plains} by day. My drying rack needs new bindings before it drops supper into the dirt, and I am too old to wrestle rats for dinner.",
       "objectives": [
         {
           "type": "item",
@@ -436,8 +436,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Wood for the Long Fire",
-      "text": "Bring five logs from any tree outside the town. The Long Fire has burned since my grandmother's grandmother and it will not go out because you were shy of an axe.",
+      "title": "Grandmother's Fire",
+      "text": "My grandmother's grandmother tended the Long Fire. Every cook since has kept it fed. Bring me five logs from any tree outside town. You can tell your grandchildren you helped; leave out how much I had to ask.",
       "objectives": [
         {
           "type": "item",
@@ -462,8 +462,8 @@
       "requires": [
         "sunscar_kitchen_01"
       ],
-      "title": "Black Stone, Hot Fire",
-      "text": "Logs burn, coal roars. Dig five Coal Lumps from the stone around Sunscar and bring them to my oven.",
+      "title": "Give the Oven a Roar",
+      "text": "This oven is sulking, and shouting at it only gets ash in my teeth. Mine five Coal Lumps from the stone around Sunscar and bring them here. We have a clan to feed before anyone starts gnawing the ladle.",
       "objectives": [
         {
           "type": "item",
@@ -488,8 +488,8 @@
         "sunscar_kitchen_02",
         "sunscar_hunt_02"
       ],
-      "title": "Meat for the Long Fire",
-      "text": "Ten pieces of Raw Meat, from boar, rat or runner; the fire does not ask. I cook some of it back for you, because a hungry hunter is a short-lived hunter.",
+      "title": "A Bowl You Earned",
+      "text": "Hear those stomachs growling louder than the hunters' stories? Bring me ten pieces of Raw Meat from your hunts. I will cook a share for you too; nobody who feeds this fire leaves it hungry.",
       "objectives": [
         {
           "type": "item",
