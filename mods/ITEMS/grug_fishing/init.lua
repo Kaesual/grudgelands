@@ -131,14 +131,14 @@ mobs.add_eatable("grug_fishing:cooked_fish", 8)
 --
 -- The recipes
 --
--- The rod is three sticks and two lengths of Raw Silk -- the game's only
--- string-class material (`grug_mobs/items.lua`, `grug_mobs:spider_silk`) --
--- in VoxeLibre's own diagonal shape, mirrored so either hand's worth of
--- muscle memory works. Traders buy neither the rod nor the cooked fish (no
--- loot class in grug_traders/prices.lua); the raw band fish are gathered
--- goods and sell by their tier.
+-- The rod is three sticks and two Thread -- the job supply every vendor
+-- sells (grug_professions), so it is an early T1 Basics craft (user decision,
+-- Round 29) -- in VoxeLibre's own diagonal shape, mirrored so either hand's
+-- worth of muscle memory works. Traders buy neither the rod nor the cooked
+-- fish (no loot class in grug_traders/prices.lua); the raw band fish are
+-- gathered goods and sell by their tier.
 --
-local STRING_ITEM = "grug_mobs:spider_silk"
+local STRING_ITEM = "grug_professions:thread"
 
 core.register_craft({
 	output = "grug_fishing:rod",

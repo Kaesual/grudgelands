@@ -83,8 +83,8 @@ material("sleek_pelt", "Sleek Pelt")
 
 -- Cloth line (§6 "linen cloth" / "heavy cloth"). Raw Silk keeps its old id:
 -- spiders spin it, and T5/T6 outlaws carry it as stolen bales. Its catalogue
--- tier is 1 (band-1 spiderlings drop it, the fishing rod needs it); the
--- Tailor declares it a T4 ingredient (grug_professions/tailor.lua).
+-- tier is 1 because band-1 spiderlings drop it; the Tailor declares it a T4
+-- ingredient (grug_professions/tailor.lua).
 material("linen_scrap", "Linen Scrap")
 material("linen_cloth", "Linen Cloth")
 material("heavy_cloth", "Heavy Cloth")
