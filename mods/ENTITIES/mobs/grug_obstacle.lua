@@ -298,6 +298,21 @@ function obstacle.note_search_result(temp, now, target, mob_pos, target_pos,
 		tx = tx, ty = ty, tz = tz}
 end
 
+-- core.find_path refuses a walkable source or destination node
+-- (src/pathfinder.cpp, "Destination is walkable"). A player standing on a
+-- bottom slab, a lower stair step or snow dust stands inside a walkable
+-- node: the search aims at the node above it, as smart_mobs already lifts
+-- its own end. `source` and `dest` are rounded node positions; `dest` may be
+-- lifted in place. False when an end is still walkable: such a search cannot
+-- succeed, and its nil path says nothing about reachability, so it is not
+-- run and never counts toward giving up.
+function obstacle.fit_path_ends(source, dest, walkable)
+	if walkable(dest) then
+		dest.y = dest.y + 1
+	end
+	return not walkable(dest) and not walkable(source)
+end
+
 function obstacle.forget_no_path(temp)
 	temp.grug_no_path = nil
 end

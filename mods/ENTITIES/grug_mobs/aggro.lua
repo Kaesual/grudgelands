@@ -461,10 +461,12 @@ end
 -- change (mobs/grug_obstacle.lua no_path_gate): a player in a closed house, on
 -- a pillar or in a boat. The mob drops the target and goes home through the
 -- ordinary leash reset above (heal, forget threat and tags, run home when it
--- stands beyond its radius); guards, rares and dragons included, since their
--- own rules end such a chase only after the 15 s contact timeout or never.
--- The bespoke no-leash actors (Kraken, royal guards) keep their encounter
--- rules and only drop the target.
+-- stands beyond its radius); guards and rares included, since their own rules
+-- end such a chase only after the 15 s contact timeout or never. The bespoke
+-- no-leash actors (Kraken, royal guards) and the kings (coordinator ruling,
+-- Round 30 review) keep their encounter rules and only drop the target: no
+-- heal, no royal encounter reset. The dragons and whelps never get here
+-- (flying actors only wait, api.lua smart_mobs).
 --
 -- A player given up on is ignored by target acquisition until they stand on
 -- another node (grug_mobs.gave_up_on, the _grug_ignore_player veto in
@@ -485,7 +487,7 @@ function grug_mobs.give_up_target(self)
 		self.temp.grug_gave_up = {name = target:get_player_name(),
 			x = x, y = y, z = z}
 	end
-	if self._grug_no_leash then
+	if self._grug_no_leash or self._grug_royal_king then
 		self:stop_attack()
 		return
 	end

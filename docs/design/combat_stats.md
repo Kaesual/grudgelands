@@ -839,23 +839,31 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   (searchdistance 8 instead of the chase's 24, about a tenth of the search
   box).
 - **Unreachable targets are given up** (Round 30, the user's ruling on perf
-  review 2026-10 #4). After an A* search finds no path, the mob does not
-  repeat the search for the same two nodes for **1 s**, then **2 s**, then
-  **4 s** (a mob or target that changes node lifts the wait). After **3
-  failed searches in a row** against a target whose node has not changed —
-  a player in a closed house, on a pillar, in a boat — the mob gives the
-  target up at its next search instead: it drops the target and goes home
-  through the ordinary reset (Evade below: threat, target and tags cleared,
-  healed, a run home when it stands beyond its radius). A target that moves
-  to another node restarts the count; about 7 s of trying covers a player
-  stepping round a corner. Afterwards target acquisition ignores that player
-  while they stay on the same node; once they move, or hit the mob, or a
-  group alert calls it, the mob fights as usual. Guards, rares, kings and
-  dragons follow the same rule; the bespoke no-leash actors (Kraken, royal
-  guards) only drop the target and keep their own encounter rules. The
-  patrol path nudge shares the budget and the waits (1, 2, 4, 8 s, then 8 s)
-  but never gives anything up (`mobs/grug_obstacle.lua`,
-  `mobs/api.lua` `smart_mobs`, `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard
+  review 2026-10 #4). A mob searches for a path only while it has no line of
+  sight to its target; a player it can see (on an open pillar, across a
+  fence) is not searched for and never given up. After an A* search finds no
+  path, the mob does not repeat the search for the same two nodes for
+  **1 s**, then **2 s**, then **4 s** (a mob or target that changes node
+  lifts the wait). After **3 failed searches in a row** against a target
+  whose node has not changed — a player hidden in a closed house, in a
+  walled-in hole, in a boat behind cover — the mob gives the target up at its
+  next search instead: it drops the target and goes home through the
+  ordinary reset (Evade below: threat, target and tags cleared, healed, a run
+  home when it stands beyond its radius). A target that moves to another node
+  restarts the count; about 7 s of trying covers a player stepping round a
+  corner. Afterwards target acquisition ignores that player while they stay
+  on the same node; once they move, or hit the mob, or a group alert calls
+  it, the mob fights as usual. A target standing in a walkable node (a bottom
+  slab, a lower stair step, snow dust) is searched for from the node above
+  it, since the engine refuses a walkable destination; a search whose ends
+  are still walkable is not run and never counts. Guards and rares follow the
+  rule; the kings, like the bespoke no-leash actors (Kraken, royal guards),
+  only drop the target (no heal, no royal encounter reset); the dragons and
+  their whelps never give up and only wait, since a reset would restart the
+  boss attempt with a full heal. The patrol path nudge shares the budget and
+  the waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
+  (`mobs/grug_obstacle.lua`, `mobs/api.lua` `smart_mobs`,
+  `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard
   (`mobs/grug_obstacle.lua:4-15,26-196,209-235`;
   `mobs/api.lua:157-218,887-975,2176-2864,2491-2819,2927-3538`).
   *Rationale, because the defect was invisible on paper*: the following

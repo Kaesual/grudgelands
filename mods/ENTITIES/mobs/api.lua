@@ -1793,6 +1793,13 @@ local function path_height_blocked(self)
 	end
 end
 
+-- GRUG PATCH (Round 30 P2): is the node at `pos` walkable for the engine's
+-- pathfinder? An unknown node counts as walkable, as it does there.
+local function grug_walkable_at(pos)
+	local def = core.registered_nodes[get_node(pos).name]
+	return not def or def.walkable == true
+end
+
 -- path finding and smart mob routine by rnd, line_of_sight and other edits by Elkien3
 
 function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
@@ -1857,9 +1864,16 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	-- and after three failures against a target that did not move it gives
 	-- the target up (grug_mobs: drop it and go home through the leash reset).
 	local grug_now = core.get_us_time() / 1000000
+	-- Flying actors (the dragons and their whelps) never give a target up:
+	-- their own flight logic handles a blocked ray, and the dragons' reset
+	-- would restart the boss attempt with a full heal. They only wait.
 	local grug_gate = grug_obstacle.no_path_gate(self.temp, grug_now,
-			self.attack, s, target_pos)
-	if grug_gate == "wait" then return "backoff" end
+			self.attack, s, target_pos, self.keep_flying == true)
+	if grug_gate == "wait" then
+		-- No queued request may take a grant this mob will not claim.
+		grug_obstacle.cancel_path_request(self.temp)
+		return "backoff"
+	end
 	if grug_gate == "give_up" then
 		if grug_mobs and grug_mobs.give_up_target then
 			grug_mobs.give_up_target(self)
@@ -1903,10 +1917,21 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 	local grug_searchdistance = grug_force_path
 			and min(grug_obstacle.close_searchdistance, pathfinding_searchdistance)
 			or pathfinding_searchdistance
-	local grug_t0 = core.get_us_time()
-	self.path.way = core.find_path(s, p1, grug_searchdistance,
-			jumpheight, dropheight, pathfinding_algorithm)
-	grug_obstacle.note_path_cost(core.get_us_time() - grug_t0)
+	-- GRUG PATCH (Round 30 P2): a target standing in a walkable node (slab,
+	-- stair, snow dust) is aimed at from the node above; a search whose ends
+	-- the engine would refuse is not run and not counted
+	-- (grug_obstacle.fit_path_ends).
+	local grug_ends_valid = grug_obstacle.fit_path_ends(
+			{x = floor(s.x + 0.5), y = floor(s.y + 0.5), z = floor(s.z + 0.5)},
+			p1, grug_walkable_at)
+	if grug_ends_valid then
+		local grug_t0 = core.get_us_time()
+		self.path.way = core.find_path(s, p1, grug_searchdistance,
+				jumpheight, dropheight, pathfinding_algorithm)
+		grug_obstacle.note_path_cost(core.get_us_time() - grug_t0)
+	else
+		self.path.way = nil
+	end
 
 	local cbox = mob_cbox(self) -- GRUG PATCH (Round 30 P2)
 	local height = cbox[5] - cbox[2]
@@ -1929,8 +1954,10 @@ function mob_class:smart_mobs(s, p, dist, dtime, grug_force_path,
 				self.path.way and #self.path.way > 0)
 	end
 	-- GRUG PATCH (Round 30 P2): remember the result for the negative cache.
-	grug_obstacle.note_search_result(self.temp, grug_now, self.attack,
-			grug_mob_pos, target_pos, self.path.way and #self.path.way > 0)
+	if grug_ends_valid then
+		grug_obstacle.note_search_result(self.temp, grug_now, self.attack,
+				grug_mob_pos, target_pos, self.path.way and #self.path.way > 0)
+	end
 
 	--[[ do we still have a path after check
 	if self.path.way and #self.path.way > 0 then
