@@ -422,9 +422,11 @@ interfaces are frozen in the C0 framework document before Track B starts.
     and drop family. The display name and tint may vary per zone (a
     "Small Boar" in Kapok reads "Small Jungle Boar") while the entity name
     stays the role, so quest kill matching by entity name keeps working.
-    Names carry meaning ("Small/Young" = neutral and low, "Aggressive/Rabid/
-    Giant" = hostile and higher); light humour is welcome ("Braindead
-    Zombie", "Moaning Zombie", "Sluggish Zombie"). New names are added to
+    Names follow the design frame §5 (user, 2026-10-02): signal words
+    (Small/Young, Large/Aggressive/Monstrous, Braindead/Sluggish, Confused)
+    only in the start zones, one ladder for all six starts; everywhere else
+    a unique descriptive name per sub-type. Light humour is welcome
+    ("Braindead Zombie", "Cairn Zombie"). New names are added to
     `grug_mobs/disposition.lua`.
 36. **Loot by band.** Drops come from a family table keyed by the mob's
     level band (1–10 → T1, 11–20 → T2 …). Each family has one or two
@@ -586,15 +588,15 @@ faces the Battlegrounds toward +z, the ocean is behind toward −z):
   By day **Small Boars** (neutral, L1–3, slightly smaller model and box),
   at night **Large Rats** (aggressive, L1–3). First kill quests here, plus
   logs, a Wood Axe and a Wood Pickaxe for the first gathering quests.
-- **Home beach** (the easy side, toward the ocean): **Shore Crabs** by day
+- **Home beach** (the easy side, toward the ocean): **Small Crabs** by day
   (neutral, L3–5), the first zombies at night (aggressive, L3–5, e.g.
   "Braindead Zombie").
 - **Toward the Battlegrounds**, possibly split into ±x areas: by day
-  **Aggressive Boars** (aggressive, L5–7) and **Small Foxes** (neutral,
+  **Aggressive Boars** (aggressive, L5–7) and **Young Foxes** (neutral,
   L5–7) around the town's x; at night "Sluggish Zombies" with "Monstrous
-  Rats" or "Rabid Rats" (aggressive, L5–7).
-- **Beaches toward the Battlegrounds** (further out): **Giant Crabs** by
-  day, **Drowned Zombies** at night (aggressive, L7–9).
+  Rats" or "Aggressive Rats" (aggressive, L5–7).
+- **Beaches toward the Battlegrounds** (further out): **Monstrous Crabs** by
+  day, **Monstrous Drowned Zombies** at night (aggressive, L7–9).
 - **Finale near the border** to the next zone: a bandit area ("Confused
   Bandits", L9–10) around a defined point; no POI needed.
 - **Four lines** (2× kill, 2× gather, at most two per giver; split in the
