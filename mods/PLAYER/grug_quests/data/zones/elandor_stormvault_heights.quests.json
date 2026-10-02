@@ -1,28 +1,28 @@
 {
   "zone": "elandor_stormvault_heights",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Stormvault is the Accord's high road to the front: the storm watch keeps the passes open while the dead walk them at night, a goblin siege crew chews through the watch's bolts, and a split stone golem guards the stormcrags.",
   "hubs": [
     {
-      "id": "r20_anchor_027",
+      "id": "splitbolt_station",
       "anchor": "r20_anchor_027",
       "givers": [
         {
           "npc": "r20_anchor_027_host",
           "lines": [
-            "legacy",
+            "passes",
             "front"
           ]
         }
       ]
     },
     {
-      "id": "r20_anchor_028",
+      "id": "archshadow_post",
       "anchor": "r20_anchor_028",
       "givers": [
         {
           "npc": "r20_anchor_028_host",
           "lines": [
-            "legacy",
+            "sighting",
             "front"
           ]
         }
@@ -31,163 +31,346 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_027_01",
-      "line": "legacy",
+      "id": "stormvault_passes_01",
+      "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 31,
+      "min_level": 30,
       "level": 31,
       "requires": [],
-      "faction": "accord",
-      "title": "Shutters Against the Storm",
-      "text": "The wind has pulled Splitbolt's shutters off their braces. Bring eight pine planks for the storm-facing shelter; the snowy pines of Stormvault Heights provide suitable timber. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:pine_wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_027_02",
-      "line": "legacy",
-      "giver": "r20_anchor_027_host",
-      "turnin": "r20_anchor_027_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Frost That Walks",
-      "text": "Frost strays stand on Stormvault Heights' gravel and snow after dark, loosing arrows across the ascent. Defeat four so the watch can reach its storm markers.",
+      "title": "Eagles on the Ascent",
+      "text": "Ridge Crag Eagles nest in the {name:eagle_crags} {zone_area:eagle_crags} and drop on anything that climbs by day, couriers included. Bring down five of them. An eagle in the air is a problem; an eagle on the ground is a meal.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:rime_skeleton_stray"
+          "roles": [
+            "ridge_crag_eagle"
           ],
-          "zone": "elandor_stormvault_heights",
-          "count": 4
+          "count": 5,
+          "area": "elandor_stormvault_heights/eagle_crags"
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Contested ground: aggressive hunters by day in the first belt.",
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_027_03",
-      "line": "legacy",
+      "id": "stormvault_passes_02",
+      "line": "passes",
       "giver": "r20_anchor_027_host",
       "turnin": "r20_anchor_027_host",
-      "min_level": 33,
+      "min_level": 31,
+      "level": 32,
+      "requires": [
+        "stormvault_passes_01"
+      ],
+      "title": "The Rime Watch",
+      "text": "When the eagles roost, Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and shoot at the watch fires. Break five of them at night. Same crags, different tenants; the mountain keeps two shifts.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rime_skeleton_stray"
+          ],
+          "count": 5,
+          "area": "elandor_stormvault_heights/eagle_crags"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "One area, two clocks: the night roster differs from the day roster.",
+      "duration_min": 10
+    },
+    {
+      "id": "stormvault_passes_03",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 31,
       "level": 33,
       "requires": [
-        "r20_anchor_027_02"
+        "stormvault_passes_01"
       ],
-      "faction": "accord",
-      "title": "Slatehook's Cargo",
-      "text": "With the ascent watched again, Borin can point you toward Slatehook Camp in Stormvault Heights. Defeat four bandit archers around that occupied camp; they are camp guards, not the roaming night poachers.",
+      "title": "A Pick for the Deep Rock",
+      "text": "Bring me four Silversteel Bars: steel and silver, worked together in the dual furnace. I will trade you a Silversteel Pickaxe for them, because tier four rock laughs at anything softer, and Emberglass sits in it. Smelt whenever it suits you; the mountain is not going anywhere.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:bandit_archer"
-          ],
-          "zone": "elandor_stormvault_heights",
+          "type": "item",
+          "item": "grug_materials:silversteel_bar",
           "count": 4
         }
       ],
       "rewards": {
-        "xp": 1300,
-        "copper": 85,
+        "weight": 2.5,
+        "items": [
+          {
+            "item": "grug_materials:pick_silversteel",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Silversteel from the dual furnace; the silversteel pick opens tier four rock.",
+      "duration_min": 15
+    },
+    {
+      "id": "stormvault_road_ashenward",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 32,
+      "level": 33,
+      "requires": [
+        "stormvault_passes_02"
+      ],
+      "title": "Word for Cinderline Watch",
+      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March keeps the Accord's supply road and never has enough hands. Tell him the passes are open again. The heights alone will not make you a veteran; the March will help, and Toren knows the road to the Glassroot Wilds too.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
         "items": []
+      },
+      "lesson": "Contested circuit: the three zones carry the band together.",
+      "duration_min": 10
+    },
+    {
+      "id": "stormvault_road_archshadow",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 34,
+      "level": 34,
+      "requires": [
+        "stormvault_passes_02"
+      ],
+      "title": "Up to Archshadow Post",
+      "text": "Alna Archsight holds Archshadow Post, higher up where the snow never leaves and the goblins build their engines. Report to her once you can handle the high crags. She counts arrows the way I count bolts.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_028_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff to the zone's second outpost and its harder ground.",
+      "duration_min": 10
+    },
+    {
+      "id": "stormvault_bounty_strays",
+      "line": "passes",
+      "giver": "r20_anchor_027_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 32,
+      "level": 32,
+      "requires": [
+        "stormvault_passes_02"
+      ],
+      "title": "Bounty: Strays in the Passes",
+      "text": "Repeatable bounty: the strays rise again every night. Break six Rime Skeleton Strays in the {name:passes} {zone_area:passes} after dark; the next bounty opens twenty minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rime_skeleton_stray"
+          ],
+          "count": 6,
+          "area": "elandor_stormvault_heights/passes"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 8,
+      "repeatable": {
+        "cooldown": 1200
       }
     },
     {
-      "id": "r20_anchor_028_01",
-      "line": "legacy",
+      "id": "stormvault_sighting_01",
+      "line": "sighting",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 31,
-      "level": 31,
+      "min_level": 34,
+      "level": 36,
       "requires": [],
-      "faction": "accord",
-      "title": "Stones for the Sighting Line",
-      "text": "Archshadow's sighting stones no longer line up across the ridge crossing. Bring eight cobble blocks for their low footing so the watch can reset the line without narrowing the passage. Existing or traded supplies are welcome.",
+      "title": "Bolts for the Engine",
+      "text": "Siege Goblins hold the {name:goblin_camp} {dir_from_giver:goblin_camp} and build their engine out of our stolen bolts. Defeat six of them or their slingers. Keep moving; the slingers reward anyone who stands still.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_goblin",
+            "siege_goblin_slinger"
+          ],
+          "count": 6,
+          "area": "elandor_stormvault_heights/goblin_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "A camp with a ranged minority.",
+      "duration_min": 12
+    },
+    {
+      "id": "stormvault_sighting_02",
+      "line": "sighting",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "stormvault_sighting_01"
+      ],
+      "title": "{name:bolt_chewer}",
+      "text": "{name:bolt_chewer} guards the goblins' bolt pile at the {name:goblin_camp} {dir_from_giver:bolt_chewer} and chews the iron off every bolt it brings home. Put the beast down. Without its teeth the siege crew will have to steal whole bolts again, and those we count.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "bolt_chewer"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Normal named leader at its camp; resolves the stolen bolts.",
+      "duration_min": 10,
+      "climax": true
+    },
+    {
+      "id": "stormvault_sighting_03",
+      "line": "sighting",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 37,
+      "level": 39,
+      "requires": [
+        "stormvault_sighting_02"
+      ],
+      "title": "Slatehook's Archers",
+      "text": "Entrenched Bandit Archers hold {name:slatehook} {dir_from_giver:slatehook}, close enough to the front to rob both armies and loyal to neither. Defeat five of them. Their cover is good, so get inside their range quickly.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "entrenched_bandit_archer"
+          ],
+          "count": 5,
+          "area": "elandor_stormvault_heights/slatehook"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Ranged camp at the top of the zone.",
+      "duration_min": 12
+    },
+    {
+      "id": "stormvault_sighting_04",
+      "line": "sighting",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 36,
+      "level": 37,
+      "requires": [
+        "stormvault_sighting_01"
+      ],
+      "title": "Glass for the Sighting Lenses",
+      "text": "The sighting line needs Emberglass for its lenses. Bring me two pieces from the tier four rock, deep below the passes, where a silversteel pick bites. The lenses see farther than any dwarf, and they never ask for ale.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:cobble",
-          "count": 8
+          "item": "grug_materials:emberglass",
+          "count": 2
         }
       ],
       "rewards": {
-        "xp": 1220,
-        "copper": 85,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "lesson": "Mining by depth: Emberglass in tier four rock, the next metal's input.",
+      "duration_min": 15
     },
     {
-      "id": "r20_anchor_028_02",
-      "line": "legacy",
+      "id": "stormvault_sighting_05",
+      "line": "sighting",
       "giver": "r20_anchor_028_host",
       "turnin": "r20_anchor_028_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "title": "Wings Over the Crossing",
-      "text": "Crag eagles dive over Stormvault Heights' rocky ground by day. Defeat three that threaten travellers using the crossing, then report to Archshadow Post.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:ridge_crag_eagle"
-          ],
-          "zone": "elandor_stormvault_heights",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 1220,
-        "copper": 85,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_028_03",
-      "line": "legacy",
-      "giver": "r20_anchor_028_host",
-      "turnin": "r20_anchor_028_host",
-      "min_level": 40,
-      "level": 40,
+      "min_level": 38,
+      "level": 39,
       "requires": [
-        "r20_anchor_028_02"
+        "stormvault_sighting_03"
       ],
-      "faction": "accord",
-      "title": "The Watch Beyond the Ash Wind",
-      "text": "The ridge report names the Throng watch in Blackwind Rise across the frontier. At level 40, defeat three Throng guards at its military outposts or their patrols. These are armed garrisons, not villagers or players; do not approach Nhal Veyr's stronger city watch.",
+      "title": "Group: The Split-Seam Golem",
+      "text": "Group quest. {name:split_seam_warden} walks the {name:stormcrags} {dir_from_giver:split_seam_warden}, cracked down the middle and still stronger than a squad. Bring a group and break it. Alone you will only learn how much a golem weighs.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:guard_throng"
+          "roles": [
+            "split_seam_warden"
           ],
-          "zone": "kragmar_blackwind_rise",
-          "count": 3
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 1975,
-        "copper": 100,
+        "weight": 6,
         "items": []
+      },
+      "lesson": "Elite climax for a group; the route reaches 40 without it.",
+      "duration_min": 15,
+      "climax": true,
+      "group": true
+    },
+    {
+      "id": "stormvault_bounty_shamblers",
+      "line": "sighting",
+      "giver": "r20_anchor_028_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 38,
+      "level": 39,
+      "requires": [
+        "stormvault_sighting_03"
+      ],
+      "title": "Bounty: Shamblers in the Frost",
+      "text": "Repeatable bounty: Trench Shamblers keep marching out of the {name:frostfields} {zone_area:frostfields} at night. Put down eight of them; the next bounty opens twenty-five minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "unrelenting_zombie"
+          ],
+          "count": 8,
+          "area": "elandor_stormvault_heights/frostfields"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 10,
+      "repeatable": {
+        "cooldown": 1500
       }
     }
   ]
