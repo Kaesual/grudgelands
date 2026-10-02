@@ -12,6 +12,10 @@
 --   3. Coalbrand Yard and Sunderstrap Camp stand at |x| >= 80, and every
 --      anchor of the source stands in its own zone on land (the zone field's
 --      self-check, observed through the session).
+-- 4. A generated camp on a steep belt (once, seed 42, the world as the
+--    region tools build it): no block of Blackwind Rise's belt l34_37 meets
+--    the slope rule, so the bandit hideout takes the flattest block that
+--    meets every other rule (score 0) and its leader stands at the camp.
 -- The Battlegrounds width itself is measured by zone_check.lua next to this
 -- file. Prints "R29 MGEO PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
@@ -67,5 +71,43 @@ for _, seed in ipairs(seeds) do
 	end
 	print(("  seed %s: middle road %d nodes, crosses z = 0 at x = %.0f, max |x| %.0f (%.1f s)")
 		:format(seed, #road.X, cross, max_x, os.clock() - t0))
+end
+do
+	local t0 = os.clock()
+	local CORE = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
+	local json = dofile(repo .. "/tools/r28_b1/json.lua")
+	local function read(path)
+		local f = assert(io.open(path, "rb"))
+		local t = f:read("*a")
+		f:close()
+		return t
+	end
+	local catalogue = {}
+	for _, row in ipairs(json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/subtypes.json"))) do
+		catalogue[row.role] = row
+	end
+	local W = dofile(repo .. "/tools/r28_zone_atlas/world.lua")(repo, "42")
+	local zone = "kragmar_blackwind_rise"
+	local q = CORE.queries({zones = W.session, column_values_at = W.planner_source.column_values_at,
+		road_polylines = W.wp40.road_polylines, source = W.source})
+	local record = W.session.get(zone)
+	local data = json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/zones/" .. zone .. ".spawns.json"))
+	local recipe = CORE.parse_recipe(zone, data.recipe, {band = {record.level_min, record.level_max},
+		role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
+		leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,
+		pois = function(id) return CORE.zone_pois(W.source, id) end})
+	local m = CORE.build(zone, q, recipe)
+	local hideout
+	for _, unit in ipairs(m.camps) do
+		if unit.id == "bandit_hideout" then hideout = unit end
+	end
+	check(hideout ~= nil and hideout.score == 0, "the hideout stands on the flattest block (score 0)")
+	check(#m.problems == 0, "no problem in " .. zone .. ": " .. table.concat(m.problems, "; "))
+	local leader
+	for _, l in ipairs(m.leaders) do
+		if l.role == "grave_broker_mute" then leader = l end
+	end
+	check(leader and leader.level == 37, "the hideout's leader stands")
+	print(("  steep camp: %s at %d,%d (%.1f s)"):format(hideout.id, hideout.x, hideout.z, os.clock() - t0))
 end
 print(("R29 MGEO PORTABLE PASS checks=%d"):format(checks))

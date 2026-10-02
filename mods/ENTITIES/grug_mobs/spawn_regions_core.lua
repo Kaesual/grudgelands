@@ -1321,7 +1321,9 @@ function M.build(zone_id, q, recipe)
 		if camp.site == "generate" then generated[#generated + 1] = camp end
 	end
 	for _, camp in ipairs(generated) do
-		local best, best_score
+		-- `steep`: the flattest block that meets every rule but the slope,
+		-- taken only when no block meets them all (a belt on steep ground).
+		local best, best_score, steep, steep_slope
 		for _, c in ipairs(order) do
 			if belts[c.belt] == camp.belt and not c.camp then
 				local ok, slope_sum, road = true, 0, huge
@@ -1338,7 +1340,7 @@ function M.build(zone_id, q, recipe)
 						end
 					end
 				end
-				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 <= M.CAMP_SLOPE then
+				if ok and road >= M.CAMP_ROAD_MIN then
 					for _, other in ipairs(camps) do
 						if math.max(math.abs(other.cell.i - c.i), math.abs(other.cell.j - c.j)) <
 								camp.apart then
@@ -1357,7 +1359,11 @@ function M.build(zone_id, q, recipe)
 						end
 					end
 				end
-				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 <= M.CAMP_SLOPE then
+				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 > M.CAMP_SLOPE then
+					if not steep_slope or slope_sum < steep_slope then
+						steep, steep_slope = c, slope_sum
+					end
+				elseif ok and road >= M.CAMP_ROAD_MIN then
 					-- Forest edge: forest within two cells, but not forest all
 					-- round.
 					local forest, total = 0, 0
@@ -1379,6 +1385,9 @@ function M.build(zone_id, q, recipe)
 					end
 				end
 			end
+		end
+		if not best and steep then
+			best, best_score = steep, 0
 		end
 		if best then
 			local unit = new_camp(camp, best, best.x, best.z)

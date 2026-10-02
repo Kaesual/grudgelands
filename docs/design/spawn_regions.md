@@ -110,8 +110,10 @@ table order.
    is the camp's own region; members stand within 40 nodes of its centre.
    An aggressive camp member, like an ambient spawn, never stands in the
    drift band.
-   No candidate is logged as a problem; the camp is then missing (its leader
-   still stands, step 8).
+   When no block meets every rule because the belt lies on steep ground
+   (Round 29), the flattest block that meets all the others takes the camp
+   (score 0); only a belt with no such block either is logged as a problem,
+   and the camp is then missing (its leader still stands, step 8).
 8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
    its camp's centre. A kind leader stands on the best cell (farthest from
    roads, then deepest inside its region) of the largest region of its kind;
