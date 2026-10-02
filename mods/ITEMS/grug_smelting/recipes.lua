@@ -132,7 +132,7 @@ core.register_craft({
 -- two tables above are that comparison's left-hand side, so what is left to
 -- prove at startup is that the engine and the registry agree with them -- every
 -- input and output really registered, every alloy really in `RECIPES`, and no
--- regional, cultural or trophy material anywhere in the surface.
+-- gem, cultural or trophy material anywhere in the surface.
 --
 
 local function fail(message)
@@ -143,14 +143,10 @@ end
 local function forbidden_inputs()
 	local set = {}
 	for _, resource in ipairs(grug_materials.RESOURCES) do
-		if resource.scope == "regional" then
-			set[resource.raw_item] = "regional gem"
-			if resource.cut_item then
-				set[resource.cut_item] = "regional gem"
-			end
-			if resource.block_node then
-				set[resource.block_node] = "regional gem"
-			end
+		if resource.gem then
+			set[resource.raw_item] = "gem"
+			set[resource.cut_item] = "gem"
+			set[resource.block_node] = "gem"
 		end
 	end
 	for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do

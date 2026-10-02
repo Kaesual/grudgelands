@@ -19,7 +19,6 @@
 -- dug natural ore or gem node settles gathering XP (ruling 28, grug_xp).
 
 local TIER_COUNT = #grug_materials.TIERS
-local HARVEST_TIER_COUNT = 5
 
 -- Provisional WP43 profiles. They make all six progression tiers mechanically
 -- complete without registering WP29's final gear catalog. WP22 owns the later
@@ -68,7 +67,7 @@ end
 -- resource at all is the level gate, not a missing time entry.
 local function resource_times(ordinary_time)
 	local times = {}
-	for harvest_tier = 1, HARVEST_TIER_COUNT do
+	for harvest_tier = 1, TIER_COUNT do
 		times[harvest_tier] = ordinary_time
 	end
 	return times
@@ -388,11 +387,7 @@ function grug_materials.mining_decision(pos, node, digger)
 	end
 	result.pick_tier = stack and grug_materials.pick_tier_for_stack(stack) or nil
 	result.required_tier = grug_materials.required_pick_tier(node.name, def)
-	local harvest_tier = exact_tier((def.groups or {}).grug_resource)
-	if harvest_tier and harvest_tier > HARVEST_TIER_COUNT then
-		harvest_tier = nil
-	end
-	result.resource_harvest_tier = harvest_tier
+	result.resource_harvest_tier = exact_tier((def.groups or {}).grug_resource)
 	if is_player(digger) and not grug_materials.stack_can_dig(stack, def) then
 		result.allowed = false
 		result.reason = result.required_tier and "too_hard" or "not_diggable"
@@ -433,7 +428,7 @@ end
 -- Round 24 ruling 28: every natural ore or gem node a player digs gives
 -- gathering XP (Round 28 ruling 32: ore 0.10, gem 0.20 kill equivalents).
 -- grug_xp owns the ratios and the formula (gather_xp); a gem is one of the
--- six regional G1/G2 species (a resource with a `grade`), every other
+-- six depth-tiered species (a resource with `gem = true`), every other
 -- resource node is an ore. Only this transaction settles a harvest: a player
 -- dig of a natural resource node. Explosions and mobs never reach node_dig,
 -- and ore nodes drop their raw item, so no player can place one.
@@ -444,7 +439,7 @@ function grug_materials.award_gathering_xp(event)
 			not event.harvest_tier then
 		return nil
 	end
-	local kind = event.resource and event.resource.grade and "gem" or "ore"
+	local kind = event.resource and event.resource.gem and "gem" or "ore"
 	return xp.award_gathering(player, kind,
 		xp.gathering_reference_level(event.harvest_tier))
 end

@@ -221,7 +221,7 @@ def build(dump):
             entry["req_level"] = fields["_grug_req_level"]
         if raw.get("resource"):
             entry["gathering"] = {"kind": raw["resource"]["kind"], "tier": raw["resource"]["tier"],
-                                  "node": raw["resource"].get("node"), "scope": raw["resource"].get("scope")}
+                                  "node": raw["resource"].get("node")}
         fish = [row for row in raw.get("fishing") or [] if row.get("fish")]
         if fish:
             entry["gathering"] = {"kind": "fish", "tier": fish[0]["band"]}
