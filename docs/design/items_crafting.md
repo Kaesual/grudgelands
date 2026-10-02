@@ -1124,7 +1124,7 @@ Neither of these costs a main profession slot (professions.md §1).
 
   Fishing remains universal. `grug_fishing.table_for(pos)` maps the
   authoritative mob level at the cast position to six ten-level tables; each
-  table is 78% its band fish, 12% stick and 10% papyrus. Fresh and salt water
+  table is 90% its band fish and 10% papyrus (no sticks since Round 29). Fresh and salt water
   use the same table for the same level.
 
   Round 14 fishing uses one visible bobber per angler. Right-click casts and

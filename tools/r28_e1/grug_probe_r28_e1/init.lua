@@ -180,7 +180,8 @@ local function item_checks()
 	end
 	log(("items: %d signature, %d generic, %d quest; %d new, %d existing"):format(
 		kinds.signature or 0, kinds.generic or 0, kinds.quest or 0, new, existing))
-	check(#ITEMS == 119 and new == 89, "119 items, 89 new")
+	-- 118 since Round 29 E1: Stick is no longer loot.
+	check(#ITEMS == 118 and new == 89, "118 items, 89 new")
 	local rows, missing = 0, 0
 	for family, entry in pairs(DROPS) do
 		local lists = {entry.leader_bonus or {}}

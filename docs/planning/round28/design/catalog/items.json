@@ -1407,19 +1407,6 @@
     "notes": "Existing item and icon reused; retain the registered name."
   },
   {
-    "id": "default:stick",
-    "name": "Stick",
-    "tier": 1,
-    "family": "common",
-    "kind": "generic",
-    "description": "A straight stick.",
-    "uses": [
-      "existing recipes",
-      "quest"
-    ],
-    "notes": "Existing item and icon reused; retain the registered name."
-  },
-  {
     "id": "default:apple",
     "name": "Apple",
     "tier": 2,

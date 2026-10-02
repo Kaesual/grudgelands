@@ -2,36 +2,32 @@
 -- installed world difficulty authority; salt and fresh water deliberately use
 -- the same table for a given level band. `fish = true` marks the entries that
 -- are a caught fish and pay gathering XP (Round 24 ruling 28); junk does not.
+-- No sticks (Round 29): a stick is crafted from free wood and traders do not
+-- buy it, so its former 12 % went to the fish.
 
 local TABLES = {
 	[1] = {
-		{name = "grug_mobs:raw_fish", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_mobs:raw_fish", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 	[2] = {
-		{name = "grug_fishing:silver_trout", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_fishing:silver_trout", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 	[3] = {
-		{name = "grug_fishing:mire_carp", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_fishing:mire_carp", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 	[4] = {
-		{name = "grug_fishing:frostfin", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_fishing:frostfin", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 	[5] = {
-		{name = "grug_fishing:ember_eel", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_fishing:ember_eel", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 	[6] = {
-		{name = "grug_fishing:storm_tuna", count = 1, weight = 78, fish = true},
-		{name = "default:stick", count = 1, weight = 12},
+		{name = "grug_fishing:storm_tuna", count = 1, weight = 90, fish = true},
 		{name = "default:papyrus", count = 1, weight = 10},
 	},
 }

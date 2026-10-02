@@ -196,7 +196,6 @@ local function treant_def(description, tint)
 			punch_start = 48, punch_end = 62, punch_speed = 35,
 		},
 		drops = {
-			{name = "default:stick", chance = 1, min = 1, max = 2},
 			{name = "default:apple", chance = 4, min = 1, max = 1},
 		},
 		do_custom = function(self, dtime)
