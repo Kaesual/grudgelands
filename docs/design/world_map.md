@@ -89,10 +89,17 @@ size; a small unused margin is acceptable. Never distort/crop the full overview.
 projection use the same world bounds. Markers retain constant UI dimensions:
 only positions scale with zoom; clipping and scroll translate image and markers
 together. Hover/click bounds remain aligned. No clustered/offset markers.
-Native scrolling does not itself trigger live-form rebuilds; actual changed
-marker state is refreshed at most twice per second with current scroll values.
-While scroll changes continue, defer a live rebuild until a short 0.5-second
-quiet interval; pending marker changes must still appear afterward.
+Native scrolling does not itself trigger live-form rebuilds. While the tab is
+open, the arrows and markers are brought up to date at most every 2 seconds
+(Round 30 ruling, perf review #3), with current scroll values: a cheap
+signature (zoom, selection, location label, minimap switch, each arrow's place
+on a 0.02-unit grid and heading frame, the quest markers' version, the home
+and its status, the discovered waystones) is compared, and the form is built
+and sent only when it changed. Zoom, marker and button clicks still answer at
+once. Arrows are drawn on that grid, so a move inside one grid cell sends
+nothing. Markers of one look share one `style[]`. While scroll changes
+continue, defer a live rebuild until a short 0.5-second quiet interval;
+pending marker changes must still appear afterward.
 
 ## Map quality and relief
 
@@ -201,9 +208,12 @@ drawn from the base image above. The gliding version (approved in playtest,
 - **Updates:** the map, markers and party members are checked every server
   step. Static markers are asked from their providers on joining, on every
   quest change and every 5 s (each player in their own phase); party member
-  names are read again only on a party change and that 5 s refresh. A window
-  change resends every element's position. Only changed HUD values are sent;
-  a standing player costs no packets.
+  names are read again only on a party change and that 5 s refresh. The
+  window size and the location line are read every 0.5 s (Round 30, perf
+  review #12); a window change then resends every element's position. Only
+  changed HUD values are sent; a standing player costs no packets. The quest
+  givers' states come from one `grug_quests.marker_states` call per player
+  (one decoded quest state for all givers, memoized for a second).
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets

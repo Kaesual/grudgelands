@@ -102,17 +102,24 @@ local npcs = {}
 for i, socket in ipairs(sockets) do
 	if socket.role == "quest" then npcs["q" .. i] = {settlement = "town", socket = socket.id, title = "Q"} end
 end
+-- marker_state for trees before Round 30, marker_states (one table for all
+-- givers) since Round 30 lane P1.
+local marker_states = {}
+for id in pairs(npcs) do marker_states[id] = "available" end
 rawset(_G, "grug_quests", {registered_npcs = npcs, marker_state = function() return "available" end,
+	marker_states = function() return marker_states, 1 end,
 	register_on_change = function() end})
 rawset(_G, "grug_parties", {view = function()
 	return {members = {{name = "me"}, {name = "p1"}, {name = "p2"}}}
 end, register_on_change = function() end})
 rawset(_G, "grug_home", {get = function() return nil end, locations = function()
 	return {{id = "inn", label = "Inn", pos = {x = -80, y = 20, z = -1450}}}
-end})
+end, known_waypoints = function() return {} end})
 rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
-rawset(_G, "grug_map", {atlas = dofile(tree .. "/mods/PLAYER/grug_map/atlas.lua")})
+-- The location line under the minimap (Round 28 M1) reads this every step.
+rawset(_G, "grug_map", {atlas = dofile(tree .. "/mods/PLAYER/grug_map/atlas.lua"),
+	location = {text_of = function() return "Dawnmere Fields" end}})
 local base = dofile(tree .. "/mods/PLAYER/grug_map/base.lua")
 grug_map.base = base
 local installed = {quality = "normal", width = 1080, height = 960,
