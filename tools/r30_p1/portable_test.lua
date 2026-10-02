@@ -303,7 +303,6 @@ quest("bounty", {npc = "hunter", repeatable = {cooldown = 60},
 quest("tusk", {npc = "envoy", objectives = {{type = "item", item = "grug_mobs:tusk", count = 1}},
 	quest_drops = {{item = "grug_mobs:tusk", mobs = {"grug_mobs:boar"}, chance = 1}}})
 quest("veteran", {npc = "envoy", min_level = 5, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
-quest("other_side", {npc = "envoy", faction = "horde", objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 1}}})
 local clock = 1000
 Q.clock = function() return clock end
 
@@ -631,20 +630,29 @@ grug_parties = {view = function(player)
 	for _, name in ipairs(party) do members[#members + 1] = {name = name} end
 	return {members = members}
 end, register_on_change = function() end}
-local home_left = 0
-grug_home = {get = function() return {id = "inn", label = "Inn"} end,
+local home_left, home_pending, has_home, home_returns = 0, false, true, 0
+grug_home = {get = function() return has_home and {id = "inn", label = "Inn"} or nil end,
 	locations = function() return {{id = "inn", label = "Inn", pos = {x = 80, y = 10, z = -210}}} end,
-	remaining = function() return home_left end, is_pending = function() return false end,
+	remaining = function() return home_left end, is_pending = function() return home_pending end,
+	return_home = function() home_returns = home_returns + 1; home_pending = true; return true end,
 	known_waypoints = function() return {} end}
 grug_jobs = {PROFESSIONS = {}}
 local inventory_sets = 0
 local page
-sfinv = {contexts = {}, register_page = function(_, def) page = def end,
+local pages = {}
+sfinv = {contexts = {}, pages = pages, pages_unordered = {},
+	register_page = function(name, def)
+		def.name = name
+		pages[name] = def
+		sfinv.pages_unordered[#sfinv.pages_unordered + 1] = def
+		if name == "grug_map:atlas" then page = def end
+	end,
 	make_formspec = function(_, _, content) return content end,
 	set_page = function() end, inventory_suspended = function() return false end}
 function sfinv.set_player_inventory_formspec(player, context)
 	inventory_sets = inventory_sets + 1
-	player:set_inventory_formspec(page.get(page, player, context))
+	local def = pages[context.page or "grug_map:atlas"]
+	player:set_inventory_formspec(def.get(def, player, context))
 end
 grug_map = {atlas = dofile(repo .. "/mods/PLAYER/grug_map/atlas.lua")}
 local atlas = grug_map.atlas
@@ -784,20 +792,114 @@ do
 		"P the elder's marker turns from ! to ? (" .. tostring(before) .. " -> " .. tostring(after) .. ")")
 end
 
--- the home countdown and the party arrow are part of the signature
+-- Return home lives on the Character page (Round 30 ruling): a running
+-- countdown sends nothing here; a party member turning does.
 do
 	page_steps(4)
+	check(not walker.form:find("Return home", 1, true) and not walker.form:find("grug_map_home", 1, true),
+		"P the Map tab has no Return home button")
 	walker.sends = 0
 	home_left = 90
-	page_steps(2)
-	eq(walker.sends, 1, "P the home countdown is sent")
-	check(walker.form:find("Return home: Inn (1:30)", 1, true), "P ...with its value")
+	page_steps(4)
+	eq(walker.sends, 0, "P a home countdown sends nothing on the Map tab")
 	home_left = 0
 	page_steps(4)
 	walker.sends = 0
 	mate.yaw = math.pi
 	page_steps(2)
 	eq(walker.sends, 1, "P a party member turning is sent")
+end
+
+-- ---------------------------------------------------------------------------
+-- K: Return home on the Character page (Round 30 ruling)
+-- ---------------------------------------------------------------------------
+do
+	grug_inventory.equipment_slots = {}
+	grug_inventory.has_quiver = function() return false end
+	grug_inventory.selected_button_style = function(field, selected)
+		return "style[" .. field .. ";" .. tostring(selected) .. "]"
+	end
+	grug_core.status_effects = function() return {} end
+	grug_classes.get_class_def = function() return {resource = "rage"} end
+	grug_classes.get_pool_breakdown = function() return {final = 100} end
+	grug_classes.get_crit_chance = function() return 0 end
+	grug_classes.get_dodge_chance = function() return 0 end
+	grug_classes.get_class = function() return "warrior" end
+	grug_core.get_armor_rating = function() return 0 end
+	grug_core.armor_reduction = function() return 0 end
+	grug_core.get_player_level = function() return 1 end
+	grug_core.register_on_equipment_change = function() end
+	grug_core.register_on_status_modifiers_changed = function() end
+	grug_xp.register_on_level_change = function() end
+	grug_money.register_on_change = function() end
+	local steps_before = #registered.register_globalstep
+	dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
+	local character_step = registered.register_globalstep[steps_before + 1]
+	check(character_step ~= nil and #registered.register_globalstep == steps_before + 1,
+		"K the Character page registers its one 1 s pass")
+	local character = pages["grug_inventory:character"]
+	local kay = new_player("kay", {x = 0, y = 10, z = 0})
+	function kay:get_properties() return {visual = "mesh", mesh = "m.b3d", textures = {"t.png"}} end
+	join(kay)
+	local ctx = {page = "grug_inventory:character"}
+	sfinv.contexts.kay = ctx
+	home_left, home_pending, has_home = 0, false, true
+	sfinv.set_player_inventory_formspec(kay, ctx)
+	local button = "button[2.75,6.25;5.2,0.7;grug_character_home;"
+	check(kay.form:find(button .. "Return home: Inn (Ready)]", 1, true),
+		"K the Stats tab shows Return home: Inn (Ready)")
+	local function second() character_step(1.0) end
+	kay.sends = 0
+	for _ = 1, 5 do second() end
+	eq(kay.sends, 0, "K Ready: nothing re-sent")
+	home_left = 90
+	second()
+	eq(kay.sends, 1, "K a cooldown starts: re-sent")
+	check(kay.form:find(button .. "Return home: Inn (1:30)]", 1, true), "K ...as m:ss")
+	second()
+	eq(kay.sends, 1, "K the same text is not re-sent")
+	home_left = 89
+	second()
+	eq(kay.sends, 2, "K each new second is re-sent")
+	check(kay.form:find("Return home: Inn (1:29)", 1, true), "K ...with the new value")
+	character_step(0.5)
+	home_left = 88
+	character_step(0.4)
+	eq(kay.sends, 2, "K at most once per second")
+	home_left = 0
+	second()
+	eq(kay.sends, 3, "K once when it becomes Ready")
+	check(kay.form:find("Return home: Inn (Ready)", 1, true), "K ...showing Ready")
+	for _ = 1, 3 do second() end
+	eq(kay.sends, 3, "K and then nothing")
+	-- another tab or page: nothing re-sent for the countdown
+	ctx.grug_character_tab, ctx.grug_effects_key = "effects", ""
+	home_left = 50
+	for _ = 1, 3 do second(); home_left = home_left - 1 end
+	eq(kay.sends, 3, "K the Effects tab is not re-sent for the countdown")
+	ctx.grug_character_tab = nil
+	ctx.page = "grug_inventory:bags"
+	for _ = 1, 3 do second(); home_left = home_left - 1 end
+	eq(kay.sends, 3, "K another page is not re-sent")
+	ctx.page = "grug_inventory:character"
+	home_left = 0
+	second()
+	-- the click
+	local sets = inventory_sets
+	character:on_player_receive_fields(kay, ctx, {grug_character_home = "Return home"})
+	eq(home_returns, 1, "K the button asks grug_home.return_home")
+	eq(inventory_sets, sets + 1, "K ...and rebuilds the page at once")
+	check(kay.form:find("Return home: Inn (Preparing arrival)", 1, true), "K Preparing arrival shows")
+	home_pending = false
+	-- no home, no button
+	has_home = false
+	sfinv.set_player_inventory_formspec(kay, ctx)
+	check(not kay.form:find("grug_character_home", 1, true), "K without a home there is no button")
+	kay.sends = 0
+	for _ = 1, 3 do second() end
+	eq(kay.sends, 0, "K without a home nothing is re-sent")
+	has_home = true
+	leave(kay)
 end
 
 -- ---------------------------------------------------------------------------
