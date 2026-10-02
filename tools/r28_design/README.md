@@ -44,8 +44,11 @@ into a region map for each world seed. Format and rules:
 `mods/ENTITIES/grug_mobs/spawn_regions_core.lua` (`parse_recipe`), is the
 reference, and `r28common.parse_recipe` mirrors it. In short:
 
-- `from: {"anchor": <slot or anchor id>}`, `to: {"border": <zone id or
-  list>}` (other zones only): progress runs from the anchor to that border.
+- `from: {"anchor": <slot or anchor id, or a list>}` or `{"border": <zone
+  id or list>}` (the entry), `to: {"border": <zone id or list>}` (other zones
+  only) or `{"core": true}` (the cells farthest from every source are the
+  top belt): progress runs from the entry to the exit. A one-belt recipe
+  may omit `to`, and then `from`.
 - `belts`: `{id, share, levels: [lo, hi], max_from?, kinds}`; shares add up
   to 100; `kinds` keyed by terrain type (`shore`, `bank`, `swamp`,
   `forest`, `highland`, `open`), `open` required (the parent of the others).
@@ -54,7 +57,12 @@ reference, and `r28common.parse_recipe` mirrors it. In short:
   `{role, weight}`) or `"open"` (the belt's open kind's roster; not in the
   open kind itself); density `sparse`, `normal` or `dense`.
 - `camps`: `{id, name, belt, roster, slots, respawn: [a, b],
-  min_player_distance, apart}`. Kind and camp ids are unique in the zone.
+  min_player_distance, apart, site?}`. Kind and camp ids are unique in the
+  zone. `site`: `"generate"` (default) or `{"poi": "bandit" | "mirefolk",
+  "name"?: <POI name>}`: on a camp POI of the zone (the atlas `camps`);
+  `belt` stays required (exact quest levels; the renderer's stats name the
+  belt the POI lies in per seed and warn when it is more than one belt
+  away) and `apart` is not allowed.
 - `leaders`: `{role, at: {"camp": id} | {"kind": id, "pick":
   "farthest_from_roads"}, respawn}`; the role is marked `"leader": true`
   in the catalogue, placed once, and stands at the top of its belt's levels
@@ -121,7 +129,11 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   (density), `E-unknown-role`, `E-not-a-mob`, `E-leader-flag` (leader role
   not `"leader": true`), `E-critter` (non-critter in `critters`),
   `W-critter-area` (a critter in a roster), `E-required` (no recipe and no
-  palette).
+  palette), `E-recipe-poi` (a camp site's POI: not bandit or mirefolk, a
+  type or name the zone lacks with `--atlas`, two of the type unnamed, two
+  camps on one POI); `E-unknown-anchor` /
+  `E-unknown-zone` / `W-border-neighbour` check every `from` anchor and
+  every `from`/`to` border zone with `--atlas`.
 - Level fit is **containment** (`E-level-fit`): every level a kill target or
   quest-drop source is met at lies within the quest's reward `level` ±3.
   "Met at" is the named leader's level, else the referenced kind's or camp's

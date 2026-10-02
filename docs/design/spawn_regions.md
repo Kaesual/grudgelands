@@ -38,10 +38,14 @@ table order.
    nodes of a road, village or start town / capital (the drift band of Round
    28 ruling 2), and on protected ground; its distance to the nearest road.
 2. **Progress.** Graph distances over the land cells (eight neighbours, so a
-   bay is no shortcut) from the recipe's `from` anchor (`d_from`) and to the
-   land cells bordering its `to` zone (`d_to`); progress = d_from ÷ (d_from +
-   d_to): 0 at the town, 1 at the exit. Cells cut off over land take the
-   progress of the nearest reachable cell.
+   bay is no shortcut) from the recipe's sources (`d_from`: the cells of its
+   `from` anchors, or its land cells bordering the `from` zones) and to the
+   land cells bordering its `to` zones (`d_to`); progress = d_from ÷ (d_from
+   + d_to): 0 at the entry, 1 at the exit. With `to` core, progress is the
+   rank of d_from alone (d_from ÷ the largest d_from), so the cells farthest
+   from every source are the top belt. Without `to` (one belt) it is 0
+   everywhere. Cells cut off over land take the progress of the nearest
+   reachable cell.
 3. **Belts.** The cells sorted by progress are cut by area share (e.g. 10 /
    30 / 30 / 30 %), so every belt has its share on every seed. A belt's
    `max_from` (nodes of graph distance from `from`) moves cells beyond it
@@ -77,14 +81,31 @@ table order.
    its belt's top (it may start higher: bandits L9–10 in an L8–10 belt), and
    the last belt ends at the top of the zone's band. The game refuses a
    recipe that breaks this at load; `validate.py` reports `E-recipe-cover`.
-7. **Camps.** Candidates are cells of the camp's belt whose 3 × 3 block is
-   land of the zone, unprotected, outside the drift band, at least 48 nodes
-   from roads, mean slope ≤ 0.35, and at least `apart` cells from the other
-   camps. Score: 2 for a forest edge (forest within two cells, but not all
-   round), 1 for highland in the block, then flatness and road distance;
-   ties to the first cell in grid order. The 3 × 3 block is the camp's own
-   region; members stand within 40 nodes of its centre. No candidate is
-   logged as a problem; the camp and its leader are then missing.
+7. **Camps.** Camps on a POI come first: the centre is the POI's anchor
+   (fitted per seed), the camp's region the zone's land cells within the
+   camp radius (40 nodes, box distance to the cell), its belt and levels
+   the camp's stated `belt` (checked at load like any camp's, so the camp
+   stands on every seed and its quest levels are exact). The belt the POI's
+   cell lies in differs per seed (Goldmead's bandit camp lies in L14–16 on
+   seed 42, in L17–20 on seed 7); the renderer's stats name it per camp and
+   add a WARNING when it lies more than one belt from the stated one (the
+   game logs the same). Each camp claims its POI's own cell before the
+   cells round it, so two close POIs both keep a region (two POIs in one
+   cell: the second is a build problem). The region keeps the 40-node
+   footprint (no ambient spawns there), but the members stand within 24
+   nodes of the POI, near its tents: a POI may lie close to a road or an
+   outpost. Then the generated camps: candidates are
+   cells of the camp's belt whose 3 × 3 block is land of the zone, outside
+   other camps, unprotected, outside the drift band, at least 48 nodes from
+   roads, mean slope ≤ 0.35, and at least `apart` cells from the other camps
+   (POI camps included). Score: 2 for a forest edge (forest within two
+   cells, but not all round), 1 for highland in the block, then flatness
+   and road distance; ties to the first cell in grid order. The 3 × 3 block
+   is the camp's own region; members stand within 40 nodes of its centre.
+   An aggressive camp member, like an ambient spawn, never stands in the
+   drift band.
+   No candidate is logged as a problem; the camp and its leader are then
+   missing.
 8. **Leaders** stand at a camp centre, or on the cell farthest from roads in
    the largest region of a kind; their level is the top of their region.
 
@@ -120,8 +141,14 @@ the mapgen.
 }
 ```
 
-- `from`: an anchor slot or anchor id of the zone; `to`: `border` = the
-  neighbour zone (or a list) whose land border is the exit.
+- `from`: `{"anchor": <slot or anchor id>}` (or a list: every anchor is a
+  source) or `{"border": <zone id or list>}`: the zone's land cells bordering
+  those zones are the sources, so levels in a home zone rise from where the
+  player enters (Round 28 S2). `to`: `{"border": <zone id or list>}`, the
+  exit, or `{"core": true}`: the cells farthest from every source are the
+  top belt (front zones entered from both factions' sides, harder toward the
+  middle). An entry border cannot also be the exit. A recipe with exactly
+  one belt may omit `to` (islands: L60 throughout) and then also `from`.
 - `belts`: shares in percent adding up to 100; `levels` inside the zone's
   band; optional `max_from`; `kinds` keyed by type, `open` required.
 - A kind: `id` (unique among the zone's kinds and camps), `name`, `day` and
@@ -133,9 +160,22 @@ the mapgen.
   its belt (coverage, step 6; load errors otherwise). The last belt ends at
   the zone band's top.
 - `camps`: `belt`, `roster`, `slots`, `respawn` [min, max] seconds,
-  `min_player_distance`, `apart` (cells between camps).
+  `min_player_distance`, `apart` (cells between camps), and `site`:
+  `"generate"` (the default, step 7's scoring) or `{"poi": "bandit" |
+  "mirefolk", "name": <POI name>}`: the camp stands on that camp POI of the
+  world model (the anchors whose template is `bandit_home`,
+  `bandit_frontier` or `mirefolk`; their names are the settlement roster's
+  labels, and the zone atlas lists them under `camps`). `name` is needed
+  only where the zone has two POIs of the type. Every camp states its
+  `belt`, a camp on a POI too (the coordinator, 2026-10-02: exact quest
+  levels, never missing on a seed); `apart` is not allowed on a POI. A type
+  the zone lacks, a guard post (`outpost`: guards, no mob camp) and two
+  camps on one POI are load errors. In a recipe zone the POI's camp fire is
+  scenery (camps.lua), so the recipe camp is the POI's only population.
 - `leaders`: a catalogue role marked `"leader": true`, `at` `{"camp": id}`
-  or `{"kind": id, "pick": "farthest_from_roads"}`, `respawn` seconds.
+  or `{"kind": id, "pick": "farthest_from_roads"}`, `respawn` seconds. Its
+  level is fixed (ruling 38) and the same on every seed: its camp's stated
+  belt, or its kind's belt.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 
 ## Quests
@@ -185,7 +225,14 @@ read the analytic field only run in zones without a recipe.
 
 ## Review images
 
-`tools/r28_regions/run.sh [ZONE] [OUT_DIR] [SEED ...]` renders a zone's
-regions for several seeds (base map, regions by kind, belt borders and level
-labels, camps, leaders, legend with rosters, describe phrases) and writes a
-stats file per seed. Dawnmere: `docs/planning/round28/regions/dawnmere/`.
+`tools/r28_regions/run.sh [ZONE ...] [--seeds "SEED ..."] [--out ROOT]`
+renders zones' regions for several seeds (base map, regions by kind, belt
+borders and level labels, camps, leaders, legend with rosters, describe
+phrases) and writes a stats file per seed, to
+`ROOT/<short>/seed_<seed>.png|md` (ROOT defaults to
+`docs/planning/round28/regions`; `<short>` is the zone id without its region
+prefix, first word only unless that word has three letters or fewer:
+`dawnmere`, `goldmead`, `gor_drazhak`). One process per seed builds the world
+once and renders every listed zone on it; up to eight processes (and
+renders) run at once. Three zones on two seeds take about 25 s. Dawnmere:
+`docs/planning/round28/regions/dawnmere/`.

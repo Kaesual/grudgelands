@@ -98,6 +98,48 @@
       "z": -2116
     }
   ],
+  "camps": [
+    {
+      "anchor": "anchor_029",
+      "count": [
+        2,
+        3
+      ],
+      "level_at_anchor": 15,
+      "mobs": [
+        "grug_mobs:guard_accord"
+      ],
+      "name": "Goldmead Outpost",
+      "respawn_s": [
+        180,
+        360
+      ],
+      "type": "guard post",
+      "x": 176,
+      "z": -2026
+    },
+    {
+      "anchor": "anchor_051",
+      "count": [
+        3,
+        5
+      ],
+      "level_at_anchor": 16,
+      "mobs": [
+        "grug_mobs:bandit",
+        "grug_mobs:bandit_archer"
+      ],
+      "name": "Goldmead Bandit Camp",
+      "radius": 12,
+      "respawn_s": [
+        120,
+        300
+      ],
+      "type": "bandit",
+      "x": 320,
+      "z": -1980
+    }
+  ],
   "settlements": [
     {
       "key": "goldmead_village",

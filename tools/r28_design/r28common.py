@@ -333,7 +333,11 @@ PALETTE_KEYS = ("families", "exact_mobs", "night_fallback", "boar", "lookalikes"
 RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "critters", "notes")
 BELT_KEYS = ("id", "share", "levels", "max_from", "kinds", "notes")
 KIND_KEYS = ("id", "name", "day", "night", "density", "notes")
-CAMP_KEYS = ("id", "name", "belt", "roster", "slots", "respawn", "min_player_distance", "apart", "notes")
+CAMP_KEYS = ("id", "name", "belt", "site", "roster", "slots", "respawn", "min_player_distance", "apart",
+             "notes")
+# Camp POIs a recipe camp may stand on (the zone atlas's `camps` types);
+# guard posts keep their guards.
+CAMP_POIS = ("bandit", "mirefolk")
 LEADER_KEYS = ("role", "at", "respawn", "notes")
 
 
@@ -363,17 +367,22 @@ def is_level_pair(value):
             and value[0] <= value[1])
 
 
-def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
+def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois=None):
     """Parses a zone's spawn recipe like the game. `band` = the zone's
     levels [lo, hi] (None: 1..60), `role_levels(role)` -> [lo, hi] or None
     (no catalogue row: unrestricted), `is_leader(role)` -> bool (None: not
-    checked). Returns (parsed, errors): parsed is None when the recipe is
-    not an object, else {"zone", "from", "to", "belts", "kinds", "camps",
-    "leaders", "critters"}; a kind is {"id", "name", "unit": "kind", "type",
-    "belt", "density", "rosters": {"day", "night"}, "inherits",
-    "levels_by_role", "roles", "levels"}, a camp the same with "unit":
-    "camp", one roster for both clocks and its camp numbers; a leader is
-    {"role", "at", "respawn", "level"}. errors: RecipeError strings."""
+    checked), `pois` = the zone's camp POIs [{"poi", "name", "anchor"}] (the
+    atlas's `camps`; None: unknown, a camp site's POI is not checked).
+    Returns (parsed, errors): parsed is None when the recipe is not an
+    object, else {"zone", "from", "to", "belts", "kinds", "camps",
+    "leaders", "critters"}; "from" is {"anchor": [ids]} or {"border":
+    [zones]} or None, "to" {"border": [zones]} or {"core": True} or None; a
+    kind is {"id", "name", "unit": "kind", "type", "belt", "density",
+    "rosters": {"day", "night"}, "inherits", "levels_by_role", "roles",
+    "levels"}, a camp the same with "unit": "camp", one roster for both
+    clocks, its camp numbers and "site" ("generate" or {"poi", "name"});
+    every camp states its belt; a leader is {"role", "at", "respawn",
+    "level"}. errors: RecipeError strings."""
     errors = []
     band_known = band is not None
     band = band or [1, LEVEL_CAP]
@@ -471,26 +480,60 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
     out = {"zone": zone, "from": None, "to": None, "belts": [], "kinds": [], "camps": [],
            "leaders": [], "critters": []}
     ids = {}  # kind and camp ids -> unit
-    # from / to
-    src = recipe.get("from")
-    if not isinstance(src, dict) or not isinstance(src.get("anchor"), str) or not src["anchor"]:
-        err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id>}")
-    else:
-        known(src, ("anchor",), "from")
-        out["from"] = {"anchor": src["anchor"]}
-    dst = recipe.get("to")
-    borders = dst.get("border") if isinstance(dst, dict) else None
-    borders = [borders] if isinstance(borders, str) else borders
-    if not isinstance(borders, list) or not borders:
-        err("E-recipe", "to", "needs {\"border\": <zone id or list of zone ids>}")
-    else:
-        known(dst, ("border",), "to")
-        out["to"] = {"border": []}
-        for i, other in enumerate(borders):
+    # from / to (Round 28 S2): `from` names anchors of the zone or the zones
+    # whose land border is the entry; `to` the exit border or the zone's
+    # core. A one-belt recipe may omit `to` (and then `from`).
+    def zone_list(value, path):
+        value = [value] if isinstance(value, str) else value
+        if not isinstance(value, list) or not value:
+            err("E-recipe", path, "needs a zone id or a list of zone ids")
+            return []
+        out_ids = []
+        for i, other in enumerate(value):
             if not isinstance(other, str) or not other or other == zone:
-                err("E-recipe-ref", "to.border[%d]" % i, "border entries are other zones' ids (not %r)" % other)
+                err("E-recipe-ref", "%s[%d]" % (path, i), "border entries are other zones' ids (not %r)" % other)
             else:
-                out["to"]["border"].append(other)
+                out_ids.append(other)
+        return out_ids
+
+    one_belt = isinstance(recipe.get("belts"), list) and len(recipe["belts"]) == 1
+    src, dst = recipe.get("from"), recipe.get("to")
+    if dst is None and not one_belt:
+        err("E-recipe", "to", "needs {\"border\": <zone id or list>} or {\"core\": true} (only a one-belt "
+            "recipe may omit it)")
+    if src is None and dst is not None:
+        err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>} or {\"border\": <zone id "
+            "or list>}")
+    if src is not None:
+        if not isinstance(src, dict) or ("anchor" in src) == ("border" in src):
+            err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>} or {\"border\": "
+                "<zone id or list>}")
+        else:
+            known(src, ("anchor", "border"), "from")
+            if "anchor" in src:
+                anchors = [src["anchor"]] if isinstance(src["anchor"], str) else src["anchor"]
+                if not isinstance(anchors, list) or not anchors or \
+                        not all(isinstance(a, str) and a for a in anchors):
+                    err("E-recipe", "from.anchor", "anchor is a slot or anchor id, or a list of them")
+                else:
+                    out["from"] = {"anchor": list(anchors)}
+            else:
+                out["from"] = {"border": zone_list(src["border"], "from.border")}
+    if dst is not None:
+        if not isinstance(dst, dict) or ("border" in dst) == ("core" in dst):
+            err("E-recipe", "to", "needs {\"border\": <zone id or list>} or {\"core\": true}")
+        else:
+            known(dst, ("border", "core"), "to")
+            if "core" in dst:
+                if dst["core"] is not True:
+                    err("E-recipe", "to.core", "core must be true")
+                else:
+                    out["to"] = {"core": True}
+            else:
+                out["to"] = {"border": zone_list(dst["border"], "to.border")}
+                for other in out["to"]["border"]:
+                    if other in ((out["from"] or {}).get("border") or []):
+                        err("E-recipe-ref", "to.border", "%s is both the entry and the exit border" % other)
     # belts
     belts = recipe.get("belts")
     if not isinstance(belts, list) or not belts:
@@ -588,6 +631,46 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
     if band_known and last and last["levels"] and last["levels"][1] != band[1]:
         err("E-recipe-cover", "belts[%s].levels" % last["id"], "the last belt ends at L%d, the zone's band at "
             "L%d: every zone runs to its round level" % (last["levels"][1], band[1]))
+    # A camp's site: "generate" (default) or {"poi": <type>, "name": <POI
+    # name>}, checked against the zone's camp POIs when they are known.
+    poi_used = {}
+
+    def camp_site(site, path):
+        if site is None or site == "generate":
+            return "generate"
+        if not isinstance(site, dict) or not isinstance(site.get("poi"), str):
+            err("E-recipe", path, "site is \"generate\" or {\"poi\": <type>, \"name\": <POI name>}")
+            return None
+        known(site, ("poi", "name"), path)
+        if site["poi"] not in CAMP_POIS:
+            err("E-recipe-poi", path + ".poi", "%r is not a mob camp POI (%s; guard posts keep their guards)"
+                % (site["poi"], " or ".join(CAMP_POIS)))
+            return None
+        name = site.get("name")
+        if name is not None and (not isinstance(name, str) or not name):
+            err("E-recipe", path + ".name", "site.name must be the POI's name")
+            return None
+        out_site = {"poi": site["poi"], "name": name}
+        if pois is None:
+            return out_site
+        names = [p["name"] for p in pois if p["poi"] == site["poi"]]
+        found = [p for p in pois if p["poi"] == site["poi"] and (name is None or p["name"] == name)]
+        if not found:
+            err("E-recipe-poi", path, "the zone has no %s POI%s" % (site["poi"], (
+                " named %s (its %s POIs: %s)" % (name, site["poi"], ", ".join(names) or "none")) if name else ""))
+            return None
+        if len(found) > 1:
+            err("E-recipe-poi", path, "the zone has %d %s POIs (%s): site.name picks one"
+                % (len(found), site["poi"], ", ".join(names)))
+            return None
+        key = found[0].get("anchor") or found[0]["name"]
+        if key in poi_used:
+            err("E-recipe-poi", path, "POI %s already holds camp %s" % (found[0]["name"], poi_used[key]))
+            return None
+        poi_used[key] = path
+        out_site["name"] = found[0]["name"]
+        return out_site
+
     # camps
     camps = recipe.get("camps")
     if camps is not None and not isinstance(camps, list):
@@ -608,9 +691,14 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
         cpath = "camps[%s]" % row["id"]
         if not isinstance(row.get("name"), str) or not row["name"].strip():
             err("E-recipe", cpath, "camp needs a display name")
+        site = camp_site(row.get("site"), cpath + ".site")
         belt = belt_by_id.get(row.get("belt"))
         if belt is None:
-            err("E-recipe-ref", cpath + ".belt", "belt %r is not a belt of the recipe" % row.get("belt"))
+            # Every camp states its belt, a camp on a POI too: exact quest
+            # levels, and the camp stands on every seed.
+            err("E-recipe-ref", cpath + ".belt", "belt %r is not a belt of the recipe%s" % (
+                row.get("belt"), " (every camp states its belt, a camp on a POI too)"
+                if row.get("belt") is None else ""))
         if not _is_int(row.get("slots"), 1):
             err("E-recipe", cpath + ".slots", "slots must be an integer >= 1")
         respawn = row.get("respawn")
@@ -619,14 +707,18 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
             err("E-recipe", cpath + ".respawn", "respawn must be [min, max] seconds")
         if not _is_num(row.get("min_player_distance")) or row["min_player_distance"] < 0:
             err("E-recipe", cpath + ".min_player_distance", "min_player_distance must be a distance in nodes")
-        if not _is_int(row.get("apart"), 1):
+        if site != "generate":
+            if row.get("apart") is not None:
+                err("E-recipe-key", cpath + ".apart", "apart places a generated site; a camp on a POI stands "
+                    "where the POI is")
+        elif not _is_int(row.get("apart"), 1):
             err("E-recipe", cpath + ".apart", "apart (cells between two camps) must be an integer >= 1")
         value = roster(row.get("roster"), cpath + ".roster")
         camp = {"id": row["id"], "name": row.get("name"), "unit": "camp", "type": None,
                 "belt": belt["id"] if belt else None, "density": "dense",
                 "rosters": {"day": value, "night": value}, "inherits": [], "slots": row.get("slots"),
                 "respawn": respawn, "min_player_distance": row.get("min_player_distance"),
-                "apart": row.get("apart")}
+                "apart": row.get("apart"), "site": site}
         unit_levels(camp, [value], belt["levels"] if belt else None, cpath)
         cover(camp, value, belt["levels"] if belt else None, False, cpath + ".roster")
         out["camps"].append(camp)
@@ -835,6 +927,10 @@ class Atlas:
             "hub": (hub["x"], hub["z"]) if isinstance(hub.get("x"), int) else None,
             "borders": borders, "front_sign": -1 if axis.startswith("-") else 1,
             "free_sockets": free_sockets,
+            # Camp POIs (bandit, mirefolk, guard post) for a recipe camp's
+            # site; None for an atlas file without `camps`.
+            "pois": [{"poi": c.get("type"), "name": c.get("name"), "anchor": c.get("anchor")}
+                     for c in rec["camps"] if isinstance(c, dict)] if isinstance(rec.get("camps"), list) else None,
         }
 
     def all_npcs(self):

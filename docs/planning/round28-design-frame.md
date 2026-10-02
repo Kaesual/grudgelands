@@ -359,9 +359,15 @@ regions for any seed. The build and the full format:
 - **Trigger (Ruling 34):** a zone without a recipe keeps today's palette
   (`palette`) and level field. A zone with a recipe spawns its surface mobs
   only from its regions.
-- **Progress:** `from` (an anchor slot or id of the zone) to `to` (the
-  neighbour zone, or zones, whose land border is the exit). Land cells are
-  ordered by their progress from 0 at `from` to 1 at the exit.
+- **Progress:** `from` to `to`; land cells are ordered by their progress
+  from 0 at `from` to 1 at the exit. `from` is `{"anchor": <slot or id>}` (or
+  a list of them) or, since Round 28 S2, `{"border": <zone id or list>}`:
+  the zone's land cells bordering those zones (levels in a home zone rise
+  from where the player enters, not from a hub). `to` is `{"border": <zone
+  id or list>}` (the exit) or `{"core": true}`: the cells farthest from every
+  source form the top belt (front zones are entered from several sides and
+  get harder toward their middle). A one-belt recipe may omit `to` (and then
+  `from`): islands are L60 throughout.
 - **Belts** cut the land by area share (shares add up to 100), each with its
   `levels` inside the zone's band; an optional `max_from` (nodes from
   `from`) keeps a belt near the start.
@@ -384,9 +390,20 @@ regions for any seed. The build and the full format:
   roads, forest edge or highland preferred, `apart` cells from other
   camps): `roster`, `slots`, `respawn` [min, max] seconds (30–60),
   `min_player_distance` (16); members stand within 40 nodes of the centre.
+  Since Round 28 S2 a camp may stand on a camp POI of the world model
+  instead (`"site": {"poi": "bandit" | "mirefolk", "name": <POI name>}`; the
+  name only where the zone has two of the type; the zone atlas lists them
+  under `camps`), so camps sit where the map shows tents and fires: centre
+  = the POI, members within 24 nodes of it (outside the drift band like
+  every aggressive camp member), no `apart`, and it states its `belt` like
+  every camp (exact
+  quest levels, never missing on a seed). The POI's own belt differs per
+  seed: the region stats name it and warn when it lies more than one belt
+  from the stated one. Guard posts are no mob camp. In a recipe zone the
+  POI's own fire is scenery, so the recipe camp is its only population.
 - **Leaders** (§2.4): a leader-flagged role `at` a camp's centre or
   `{"kind": id, "pick": "farthest_from_roads"}`; level = the top of their
-  region; `respawn` (about 300 s). Every leader is 1.15× size with twice the
+  region, the same on every seed; `respawn` (about 300 s). Every leader is 1.15× size with twice the
   HP of its level and tier, whatever the catalogue `size` says.
 - `critters`: ambient critters that keep spawning in the zone.
 - **Quests** name an area as `<zone>/<kind or camp id>`; a mob remembers the

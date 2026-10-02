@@ -1165,14 +1165,16 @@ gate, protected surface).
   at dusk do not block the night), never above its share. Camp members,
   leaders, rares and bosses are not counted.
 - **Camps (ruling 37)** — bandits, poachers and mirefolk of a recipe camp at
-  the spot its region map picked by rule: `slots` members, each death
+  the spot its region map picked by rule, or on the camp POI its recipe
+  names (Round 28 S2; in its stated belt): `slots` members, each death
   refilled after a roll in `respawn` (30–60 s), a spot within 40 nodes of the
   camp centre and at least `min_player_distance` (16) from every player.
   Members roam free under the normal wander leash and carry the camp's tag
   and levels. The first look after a server start, once a player is within
   64 nodes of the centre, fills what is missing at once; later refills
   follow the slot queue with dormant catch-up (world.md §4a). In a zone with
-  a recipe the bandit camp fires stay scenery; guard posts keep spawning.
+  a recipe the bandit camp fires stay scenery (so a recipe camp on a POI is
+  its only population); guard posts keep spawning.
 - **Leaders (ruling 38)** at their rule-placed spot (a camp centre, or the
   cell farthest from roads of the largest region of a kind; snapped to the
   nearest standable column within 4 nodes), with the level at the top of

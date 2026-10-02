@@ -1,50 +1,94 @@
 #!/usr/bin/env bash
-# Round 28 Lane S1: render a zone's spawn regions for several seeds.
+# Round 28 Lanes S1/S2: render zones' spawn regions for several seeds.
 #
-#   tools/r28_regions/run.sh [ZONE] [OUT_DIR] [SEED ...]
+#   tools/r28_regions/run.sh [ZONE ...] [--seeds "SEED ..."] [--out ROOT]
 #
-# Defaults: elandor_dawnmere_fields, docs/planning/round28/regions/dawnmere,
-# seeds 42 7 1234 2026 99999 314159. One LuaJIT process per seed
-# (regions.lua: the analytic world, the zone's shipped recipe and the game's
-# own spawn_regions_core.lua), at most six at once under idle scheduling,
-# then render.py per seed: seed_<seed>.png and seed_<seed>.md. The dumps go
-# to a scratch directory (WORK, default a fresh mktemp dir). Thin lines are
-# drawn only between different kinds (render.py --kind-borders); BORDERS=regions
-# draws every region border instead.
+# Defaults: elandor_dawnmere_fields, seeds 42 7 1234 2026 99999 314159, ROOT
+# docs/planning/round28/regions. Each zone goes to ROOT/<short>/seed_<seed>.png
+# and seed_<seed>.md, <short> being the zone id without its region prefix,
+# first word only unless that word has three letters or fewer
+# (elandor_dawnmere_fields -> dawnmere, kragmar_gor_drazhak -> gor_drazhak).
+# One LuaJIT process per seed builds the analytic world once and renders
+# every zone of the list on it (regions.lua: the world, each zone's shipped
+# recipe and the game's own spawn_regions_core.lua), at most JOBS (8) at once
+# under idle scheduling; then render.py per zone and seed, also up to JOBS at
+# once. The dumps go to a scratch directory (WORK, default a fresh mktemp
+# dir). Thin lines are drawn only between different kinds (render.py
+# --kind-borders); BORDERS=regions draws every region border instead.
 set -euo pipefail
 export LC_ALL=C
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 repo="$(cd "$here/../.." && pwd -P)"
-zone="${1:-elandor_dawnmere_fields}"
-out="${2:-$repo/docs/planning/round28/regions/dawnmere}"
-shift $(( $# > 2 ? 2 : $# )) || true
-seeds=("$@")
-[ ${#seeds[@]} -gt 0 ] || seeds=(42 7 1234 2026 99999 314159)
+zones=()
+seeds=(42 7 1234 2026 99999 314159)
+root="$repo/docs/planning/round28/regions"
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--seeds) read -r -a seeds <<< "$2"; shift 2 ;;
+		--out) root="$2"; shift 2 ;;
+		-*) echo "unknown option $1" >&2; exit 2 ;;
+		*) zones+=("$1"); shift ;;
+	esac
+done
+[ ${#zones[@]} -gt 0 ] || zones=(elandor_dawnmere_fields)
+for zone in "${zones[@]}"; do
+	if [ ! -f "$repo/mods/ENTITIES/grug_mobs/data/zones/$zone.spawns.json" ]; then
+		echo "no spawns file for zone $zone" >&2
+		exit 2
+	fi
+done
+jobs_max="${JOBS:-8}"
 work="${WORK:-$(mktemp -d /tmp/r28_regions.XXXXXX)}"
 render_args=(--kind-borders)
 [ "${BORDERS:-kinds}" = regions ] && render_args=()
-mkdir -p "$work" "$out"
+mkdir -p "$work"
 idle=()
 command -v chrt >/dev/null && idle=(chrt --idle 0)
+
+short_name() {
+	local rest="${1#*_}"
+	local first="${rest%%_*}"
+	if [ ${#first} -le 3 ]; then echo "$rest"; else echo "$first"; fi
+}
+
+# Waits until fewer than jobs_max background jobs run (finished jobs keep
+# their exit status for the `wait PID` in reap).
+throttle() {
+	while [ "$(jobs -rp | wc -l)" -ge "$jobs_max" ]; do
+		sleep 0.2
+	done
+}
+status=0
 pids=()
+reap() {
+	local pid
+	for pid in "${pids[@]}"; do
+		wait "$pid" || status=1
+	done
+	pids=()
+}
+
 for seed in "${seeds[@]}"; do
-	"${idle[@]}" luajit "$here/regions.lua" "$repo" "$seed" "$zone" "$work" \
+	throttle
+	"${idle[@]}" luajit "$here/regions.lua" "$repo" "$seed" "$work" "${zones[@]}" \
 		2> "$work/$seed.log" &
 	pids+=($!)
 done
-status=0
-for i in "${!pids[@]}"; do
-	if ! wait "${pids[$i]}"; then
-		echo "seed ${seeds[$i]} FAILED:" >&2
-		cat "$work/${seeds[$i]}.log" >&2
-		status=1
-	else
-		cat "$work/${seeds[$i]}.log" >&2
-	fi
-done
+reap
 for seed in "${seeds[@]}"; do
-	[ -f "$work/${zone}_${seed}.json" ] || continue
-	python3 "$here/render.py" --dump "$work" --zone "$zone" --seed "$seed" --out "$out" "${render_args[@]}"
+	cat "$work/$seed.log" >&2
 done
-echo "images and stats written to $out (dumps in $work)"
+for zone in "${zones[@]}"; do
+	out="$root/$(short_name "$zone")"
+	mkdir -p "$out"
+	for seed in "${seeds[@]}"; do
+		[ -f "$work/${zone}_${seed}.json" ] || continue
+		throttle
+		python3 "$here/render.py" --dump "$work" --zone "$zone" --seed "$seed" --out "$out" \
+			"${render_args[@]}" &
+		pids+=($!)
+	done
+done
+reap
+echo "images and stats written under $root (dumps in $work)"
 exit "$status"
