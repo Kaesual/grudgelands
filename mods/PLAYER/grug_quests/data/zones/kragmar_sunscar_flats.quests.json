@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_sunscar_flats",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Sunscar lives by its wells; boars, rats, husks and a band of very confused water thieves all want a drink first.",
   "hubs": [
     {
       "id": "sunscar",
@@ -9,13 +9,15 @@
         {
           "npc": "r14_orc_elder",
           "lines": [
-            "legacy"
+            "hunt",
+            "tools"
           ]
         },
         {
           "npc": "r20_orc_start_cook",
           "lines": [
-            "legacy"
+            "pantry",
+            "kitchen"
           ]
         }
       ]
@@ -23,157 +25,166 @@
   ],
   "quests": [
     {
-      "id": "r14_orc_01_tusks_at_the_water_skins",
-      "line": "legacy",
+      "id": "sunscar_hunt_01",
+      "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
       "min_level": 1,
-      "level": 1,
+      "level": 2,
       "requires": [],
-      "faction": "throng",
-      "race": "orc",
       "title": "Tusks at the Water Skins",
-      "text": "Boars tear the water skins outside Sunscar by day. Drive off three and carry spare raw meat to Ugra Brothstone at the separate oven.",
+      "text": "By day Small Boars root through our water skins in the {name:wellfields}, {dir_of:sunscar:wellfields}. Kill eight. Their names are yellow, so they only fight once you hit them; hit them anyway.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:small_boar"
+          "roles": [
+            "small_boar"
           ],
-          "count": 3
+          "count": 8,
+          "area": "kragmar_sunscar_flats/wellfields"
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Yellow names are neutral single pulls.",
+      "duration_min": 8
     },
     {
-      "id": "r14_orc_02_meat_for_the_long_fire",
-      "line": "legacy",
-      "giver": "r20_orc_start_cook",
-      "turnin": "r20_orc_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Meat for the Long Fire",
-      "text": "The shared oven feeds everyone returning from sunscar's outer paths. Bring four raw meat portions to Ugra Brothstone beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_orc_03_rats_under_the_hide_racks",
-      "line": "legacy",
+      "id": "sunscar_hunt_02",
+      "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 3,
-      "level": 3,
+      "min_level": 2,
+      "level": 2,
       "requires": [
-        "r14_orc_01_tusks_at_the_water_skins"
+        "sunscar_hunt_01"
       ],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Posts Beneath the Hide Racks",
-      "text": "The hide racks need new feet before another load pulls them into the dust. Bring six acacia planks from the ordinary local timber, or use boards already carried or traded.",
+      "title": "Rats Under the Hide Racks",
+      "text": "When the sun goes down, Large Dust Rats crawl out of the same {name:wellfields} and chew our hides. Kill eight after dark, and mind that one squeaking rat brings its cousins.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:acacia_wood",
-          "count": 6
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 8,
+          "area": "kragmar_sunscar_flats/wellfields"
         }
       ],
       "rewards": {
-        "xp": 100,
-        "copper": 20,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Night rosters differ from day ones; rats call nearby rats.",
+      "duration_min": 8
     },
     {
-      "id": "r14_orc_04_the_thirsting_dead",
-      "line": "legacy",
+      "id": "sunscar_hunt_03",
+      "line": "hunt",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "sunscar_hunt_02"
+      ],
+      "title": "Runners for the Long Fire",
+      "text": "Young Plains Runners graze the {name:runner_plains} by day, {zone_area:runner_plains}. Bring down eight; the fire wants meat and the clan wants hunters who can catch something faster than a rat.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "young_plains_runner"
+          ],
+          "count": 8,
+          "area": "kragmar_sunscar_flats/runner_plains"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "sunscar_hunt_04",
+      "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
       "min_level": 5,
-      "level": 5,
+      "level": 6,
       "requires": [
-        "r14_orc_01_tusks_at_the_water_skins"
+        "sunscar_hunt_03"
       ],
-      "faction": "throng",
-      "race": "orc",
       "title": "The Thirsting Dead",
-      "text": "Sun-dried husks walk the outer flats toward Redtusk after nightfall. Defeat three on the level-4-and-up ground between the camp and the Redtusk border before they reach the water skins. The rack repairs and optional tool lessons remain daytime work.",
+      "text": "At night Sluggish Sun-Dried Husks drag themselves out of the {name:saltflats} {dir_from_giver:saltflats}, still looking for water they no longer need. Put eight of them back in the salt. They are slow; do not be slower.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:befuddled_husk",
-            "grug_mobs:sluggish_husk"
+          "roles": [
+            "sluggish_husk"
           ],
-          "count": 3
+          "count": 8,
+          "area": "kragmar_sunscar_flats/saltflats"
         }
       ],
       "rewards": {
-        "xp": 180,
-        "copper": 25,
+        "weight": 3,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r14_orc_05_shells_by_the_bedrolls",
-      "line": "legacy",
+      "id": "sunscar_hunt_05",
+      "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
-      "min_level": 5,
-      "level": 5,
+      "min_level": 8,
+      "level": 9,
       "requires": [
-        "r14_orc_03_rats_under_the_hide_racks"
+        "sunscar_hunt_04"
       ],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Shells by the Bedrolls",
-      "text": "Scorpions have crawled under the bedrolls. Clear the camp edge before nightfall. Near the start they hunt by day and by night on level-4-and-up ground.",
+      "title": "Lastdrop's Thirst",
+      "text": "Water thieves dig at our wells and camp {dir_from_giver:thieves_camp} in the {name:thieves_camp}. Kill six Confused Water Thieves and their chief, Lastdrop, who has stolen so much water he can no longer remember why. Then Sunscar drinks in peace.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:irritable_scorpion"
+          "roles": [
+            "confused_bandit"
           ],
-          "count": 5
+          "count": 6,
+          "area": "kragmar_sunscar_flats/thieves_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "water_thief_chief"
+          ],
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 180,
-        "copper": 30,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "lesson": "Camps hold several enemies; pull the edge, then the chief.",
+      "duration_min": 15,
+      "climax": true
     },
     {
-      "id": "r14_orc_06_husks_on_redtusk_road",
-      "line": "legacy",
+      "id": "sunscar_departure",
+      "line": "hunt",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_steward",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 9,
+      "level": 9,
       "requires": [
-        "r14_orc_05_shells_by_the_bedrolls"
+        "sunscar_hunt_05"
       ],
-      "faction": "throng",
-      "race": "orc",
       "title": "The Road to Borak Redgrass",
-      "text": "At level 10, follow Redtusk Road to Redtusk Village and speak with Borak Redgrass. Redtusk Savanna is level 11–20 country, not a beginner hunting ground. Complete the conversation with Borak; this handoff requires neither a kill nor a return trip.",
+      "text": "You have outgrown our wells. Follow the road out of Sunscar to Redtusk Village and tell Borak Redgrass that Gara sends a hunter, not a mouth to feed.",
       "objectives": [
         {
           "type": "talk",
@@ -181,51 +192,99 @@
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 1,
         "items": []
-      }
+      },
+      "duration_min": 6
     },
     {
-      "id": "r14_orc_10_edge_of_the_first_camp",
-      "line": "legacy",
+      "id": "sunscar_bounty",
+      "line": "hunt",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 9,
+      "level": 9,
+      "requires": [
+        "sunscar_hunt_05"
+      ],
+      "title": "Bounty: Thieves at the Wells",
+      "text": "Water thieves return to the {name:thieves_camp} like flies to a spill. Kill six more and come back; the clan pays again twenty minutes after you collect.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "confused_bandit"
+          ],
+          "count": 6,
+          "area": "kragmar_sunscar_flats/thieves_camp"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "sunscar_tools_01",
+      "line": "tools",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Edge of the First Camp",
-      "text": "Bring a wood axe. Gara will show the safe cut before strength becomes waste.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "title": "Two Hands, Two Tools",
+      "text": "Make a Wooden Axe and a Wooden Pickaxe and show me both. I give them back; an orc who cannot cut wood or break stone has only fists, and fists are for later.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_materials:axe_wood",
           "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:pick_wood",
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 15,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 1,
+        "items": [
+          {
+            "item": "grug_materials:axe_wood",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_wood",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Basic tools; handed-in tools come back as the reward.",
+      "duration_min": 5
     },
     {
-      "id": "r14_orc_11_stone_has_no_pride",
-      "line": "legacy",
+      "id": "sunscar_tools_02",
+      "line": "tools",
       "giver": "r14_orc_elder",
       "turnin": "r14_orc_elder",
       "min_level": 2,
-      "level": 2,
+      "level": 3,
       "requires": [
-        "r14_orc_10_edge_of_the_first_camp"
+        "sunscar_tools_01"
       ],
-      "faction": "throng",
-      "race": "orc",
       "title": "Stone Has No Pride",
-      "text": "Bring a stone pick. Stone has no pride, but it punishes a careless swing.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "text": "Wood breaks, stone bites. Bring me a Stone Axe and a Stone Pickaxe, and you get them back with my blessing.",
       "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_stone",
+          "count": 1
+        },
         {
           "type": "item",
           "item": "grug_materials:pick_stone",
@@ -233,59 +292,221 @@
         }
       ],
       "rewards": {
-        "xp": 45,
-        "copper": 15,
-        "items": []
-      }
+        "weight": 1.5,
+        "items": [
+          {
+            "item": "grug_materials:axe_stone",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_stone",
+            "count": 1
+          }
+        ]
+      },
+      "duration_min": 6
     },
     {
-      "id": "r20_orc_start_cook",
-      "line": "legacy",
+      "id": "sunscar_tools_03",
+      "line": "tools",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "sunscar_tools_02"
+      ],
+      "title": "Two Metals, One Purpose",
+      "text": "Dig copper and tin below the flats and smelt three Copper Bars and three Tin Bars. Bring them, and I give you a Dual Furnace to make bronze from both.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:copper_bar",
+          "count": 3
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:tin_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "sunscar_tools_04",
+      "line": "tools",
+      "giver": "r14_orc_elder",
+      "turnin": "r14_orc_elder",
+      "min_level": 7,
+      "level": 8,
+      "requires": [
+        "sunscar_tools_03"
+      ],
+      "title": "An Edge for the Road",
+      "text": "Three Bronze Bars, from that furnace of yours. In return you get a Bronze Pickaxe, because the stone past Sunscar does not care how loud you shout at it.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "sunscar_pantry_01",
+      "line": "pantry",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 3,
+      "level": 4,
+      "requires": [],
+      "title": "Legs for the Pot",
+      "text": "Small Crabs scuttle on the {name:strand} by day, {dir_from_giver:strand}. Bring me three Crab Legs. They are only yellow names, so the pot is the only danger they face.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 3,
+          "roles": [
+            "quiet_shore_crab"
+          ],
+          "area": "kragmar_sunscar_flats/strand"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "sunscar_pantry_02",
+      "line": "pantry",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "sunscar_pantry_01",
+        "sunscar_hunt_03"
+      ],
+      "title": "Sinew for the Racks",
+      "text": "The runners you hunted carry Fine Sinew; bring me three for the drying racks. If you ate them all already, more graze the {name:runner_plains} by day.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:fine_sinew",
+          "count": 3,
+          "roles": [
+            "young_plains_runner"
+          ],
+          "area": "kragmar_sunscar_flats/runner_plains"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 6
+    },
+    {
+      "id": "sunscar_kitchen_01",
+      "line": "kitchen",
       "giver": "r20_orc_start_cook",
       "turnin": "r20_orc_start_cook",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Keep the Long Fire Fed",
-      "text": "Ugra Brothstone keeps Sunscar's long fire supplied beside the oven. Bring three coal lumps for the covered fuel box. Existing or traded coal is welcome; You can mine natural coal with any pickaxe, including wood or stone.",
+      "title": "Wood for the Long Fire",
+      "text": "Bring five logs from any tree outside the town. The Long Fire has burned since my grandmother's grandmother and it will not go out because you were shy of an axe.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Any log counts; planks do not.",
+      "duration_min": 4
+    },
+    {
+      "id": "sunscar_kitchen_02",
+      "line": "kitchen",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "sunscar_kitchen_01"
+      ],
+      "title": "Black Stone, Hot Fire",
+      "text": "Logs burn, coal roars. Dig five Coal Lumps from the stone around Sunscar and bring them to my oven.",
       "objectives": [
         {
           "type": "item",
           "item": "default:coal_lump",
-          "count": 3
+          "count": 5
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 8
     },
     {
-      "id": "r20_orc_capital_intro",
-      "line": "legacy",
-      "giver": "r14_orc_elder",
-      "turnin": "r20_orc_capital_envoy",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "The Road to Gor Drazhak",
-      "text": "Gor Drazhak offers public workspaces, trainers and repairs beyond Sunscar's camp. At level 10, follow the road to Thorga Roadspeaker in the skull hall. Its surrounding country is level 20–30, so avoid the wildlife and keep to the route. Speak with Thorga and complete this introduction there.",
+      "id": "sunscar_kitchen_03",
+      "line": "kitchen",
+      "giver": "r20_orc_start_cook",
+      "turnin": "r20_orc_start_cook",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "sunscar_kitchen_02",
+        "sunscar_hunt_02"
+      ],
+      "title": "Meat for the Long Fire",
+      "text": "Ten pieces of Raw Meat, from boar, rat or runner; the fire does not ask. I cook some of it back for you, because a hungry hunter is a short-lived hunter.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_orc_capital_envoy"
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 10
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
+        "weight": 2,
+        "items": [
+          {
+            "item": "mobs:meat",
+            "count": 3
+          }
+        ]
+      },
+      "duration_min": 6
     }
   ]
 }

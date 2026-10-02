@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_speargrass_reach",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Speargrass Reach cuts the Throng's spears from its grass; vultures, tigers and a goblin banner-broker cut into the harvest.",
   "hubs": [
     {
       "id": "r20_anchor_022",
@@ -9,19 +9,8 @@
         {
           "npc": "r20_anchor_022_host",
           "lines": [
-            "legacy"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "r20_anchor_042",
-      "anchor": "r20_anchor_042",
-      "givers": [
-        {
-          "npc": "r20_anchor_042_host",
-          "lines": [
-            "legacy"
+            "grass",
+            "journeys"
           ]
         }
       ]
@@ -33,7 +22,19 @@
         {
           "npc": "r20_anchor_065_host",
           "lines": [
-            "legacy"
+            "yard"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "r20_anchor_042",
+      "anchor": "r20_anchor_042",
+      "givers": [
+        {
+          "npc": "r20_anchor_042_host",
+          "lines": [
+            "watch"
           ]
         }
       ]
@@ -41,292 +42,254 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_022_01",
-      "line": "legacy",
+      "id": "speargrass_grass_01",
+      "line": "grass",
       "giver": "r20_anchor_022_host",
       "turnin": "r20_anchor_022_host",
       "min_level": 21,
-      "level": 21,
+      "level": 22,
       "requires": [],
-      "faction": "throng",
-      "title": "Shade Before Strength",
-      "text": "Wellhold's water jars stand in the sun whenever a shade brace splits. Bring eight acacia planks for the roof above the jars; do not dismantle the village's shelters for timber. Existing or traded supplies are welcome.",
+      "title": "Vultures Over the Cutters",
+      "text": "Mesa Vultures circle the {name:ridges} by day, {zone_area:ridges}, and dive at our grass cutters. Kill eight; the cutters will thank you by complaining about something else.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:acacia_wood",
-          "count": 8
+          "type": "kill",
+          "roles": [
+            "dustwing_vulture"
+          ],
+          "count": 8,
+          "area": "kragmar_speargrass_reach/ridges"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_022_02",
-      "line": "legacy",
+      "id": "speargrass_grass_02",
+      "line": "grass",
       "giver": "r20_anchor_022_host",
       "turnin": "r20_anchor_022_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Stripes in the Cutting Grass",
-      "text": "Speargrass tigers cross the dry grass by day and stalk the cutters approaching Wellhold. Clear three from Speargrass Reach while the shade is repaired.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:speargrass_tiger"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_022_03",
-      "line": "legacy",
-      "giver": "r20_anchor_022_host",
-      "turnin": "r20_anchor_022_host",
-      "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_022_02"
-      ],
-      "faction": "throng",
-      "title": "Night at the Water Jars",
-      "text": "The cutters can reach the well again, but the jars are unsafe after sunset. Hunt four scorpions on Speargrass Reach's dry grass and clay when they emerge at night.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:dust_stinger"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 900,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_042_01",
-      "line": "legacy",
-      "giver": "r20_anchor_042_host",
-      "turnin": "r20_anchor_042_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Posts for the Shade",
-      "text": "Cutgrass Watch has a roof cloth but too few sound posts to hold its shade. Bring eight acacia planks for the cutters' waiting place beside the shelter. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:acacia_wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_042_02",
-      "line": "legacy",
-      "giver": "r20_anchor_042_host",
-      "turnin": "r20_anchor_042_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "The Cutters' Long Walk",
-      "text": "Speargrass tigers hunt the dry cutting grounds by day. Defeat three in Speargrass Reach so the cutters can bring their bundles back to the watch.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:speargrass_tiger"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_042_03",
-      "line": "legacy",
-      "giver": "r20_anchor_042_host",
-      "turnin": "r20_anchor_042_host",
-      "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_042_02"
-      ],
-      "faction": "throng",
-      "title": "Raiders at the Signal Fire",
-      "text": "The daytime route is clearer, but goblin raiders gather near the signal paths after sunset. Defeat four in Speargrass Reach during the night watch.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:goblin_raider"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 900,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_065_01",
-      "line": "legacy",
-      "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_065_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Roof Over the Sorting Trays",
-      "text": "Redpick's sorting trays lie beneath a roof whose braces have begun to split. Bring ten acacia planks so the yard can keep its loads covered before the next caravan. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:acacia_wood",
-          "count": 10
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_065_02",
-      "line": "legacy",
-      "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_065_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Hunters at the Water Shade",
-      "text": "Hyenas prowl Speargrass Reach's dry grass and clay near the cutters' water stops. Defeat four while the crew repairs the sorting roof.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:hyena"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_065_03",
-      "line": "legacy",
-      "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_065_host",
-      "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_065_02"
-      ],
-      "faction": "throng",
-      "title": "Stings in the Drill Stack",
-      "text": "The water stops are safer, but scorpions emerge around the drill stacks after sunset. Defeat four in Speargrass Reach on the night shift.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:dust_stinger"
-          ],
-          "zone": "kragmar_speargrass_reach",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 900,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_orc_journey_02",
-      "line": "legacy",
-      "giver": "r20_anchor_022_host",
-      "turnin": "r20_anchor_065_host",
       "min_level": 24,
+      "level": 25,
+      "requires": [
+        "speargrass_grass_01"
+      ],
+      "title": "Optional: Stripes in the Cutting Grass",
+      "text": "Tallgrass Tigers stalk the {name:tallgrass} by day, {zone_area:tallgrass}, and our cutters have stopped counting the missing. Kill eight before they start counting us.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 8,
+          "area": "kragmar_speargrass_reach/tallgrass"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12,
+      "optional": true
+    },
+    {
+      "id": "speargrass_journeys_01",
+      "line": "journeys",
+      "giver": "r20_anchor_022_host",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "speargrass_grass_01"
+      ],
+      "title": "A Message for Nhal Veyr",
+      "text": "The undead of Nhal Veyr buy our spears and pay in quiet favours. Carry word to Ossa Quietregister in their city; they will have work for a living orc who does not stare.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_undead_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "speargrass_yard_01",
+      "line": "yard",
+      "giver": "r20_anchor_065_host",
+      "turnin": "r20_anchor_065_host",
+      "min_level": 23,
       "level": 24,
       "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Word for Gorren Redpick",
-      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Redpick Yard in Speargrass Reach and speak with Gorren Redpick. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Gorren Redpick there. No parcel, fighting errand or return trip is required.",
+      "title": "Steel for the Sorting Trays",
+      "text": "Redpick Yard wears out a pick a day and the trays rust faster. Bring four Steel Bars and I will stop calling you a tourist.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_065_host"
+          "type": "item",
+          "item": "grug_materials:steel_bar",
+          "count": 4
         }
       ],
       "rewards": {
-        "xp": 705,
-        "copper": 50,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "duration_min": 15
     },
     {
-      "id": "r20_orc_journey_03",
-      "line": "legacy",
+      "id": "speargrass_yard_02",
+      "line": "yard",
       "giver": "r20_anchor_065_host",
-      "turnin": "r20_anchor_043_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Word for Drek Rampbinder",
-      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Red Ramp Post in Bannerbreak Mesa and speak with Drek Rampbinder. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Drek Rampbinder there. No parcel, fighting errand or return trip is required.",
+      "turnin": "r20_anchor_065_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "speargrass_yard_01"
+      ],
+      "title": "Optional: Claws for the Picks",
+      "text": "Tallgrass Tigers in the {name:tallgrass} grow Shearing Cat Claws harder than our pick tips. Bring three and the smith will fit them.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_043_host"
+          "type": "item",
+          "item": "grug_mobs:shearing_cat_claw",
+          "count": 3,
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "area": "kragmar_speargrass_reach/tallgrass"
         }
       ],
       "rewards": {
-        "xp": 915,
-        "copper": 50,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "speargrass_bounty",
+      "line": "yard",
+      "giver": "r20_anchor_065_host",
+      "turnin": "r20_anchor_065_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "speargrass_yard_02"
+      ],
+      "title": "Bounty: Tigers in the Hunting Grounds",
+      "text": "Tigers keep coming back to the {name:hunting_grounds} by day. Kill six and come back for your pay; the yard pays again twenty minutes later.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 6,
+          "area": "kragmar_speargrass_reach/hunting_grounds"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "speargrass_watch_01",
+      "line": "watch",
+      "giver": "r20_anchor_042_host",
+      "turnin": "r20_anchor_042_host",
+      "min_level": 26,
+      "level": 28,
+      "requires": [],
+      "title": "Optional: Night in the Hunting Grounds",
+      "text": "At night Dustpack Hyenas own the {name:hunting_grounds}, {zone_area:hunting_grounds}. Kill eight; Cutgrass Watch is tired of being laughed at by dinner.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "dustpack_hyena"
+          ],
+          "count": 8,
+          "area": "kragmar_speargrass_reach/hunting_grounds"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12,
+      "optional": true
+    },
+    {
+      "id": "speargrass_watch_02",
+      "line": "watch",
+      "giver": "r20_anchor_042_host",
+      "turnin": "r20_anchor_042_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [],
+      "title": "Rakk's Stolen Banners",
+      "text": "Goblins have built the {name:goblin_camp} {dir_from_giver:goblin_camp} and fly banners stolen from our own war bands. Kill eight goblins and Goblin Banner-Broker Rakk, who sells the banners back to us.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "ore_thieving_goblin",
+            "rubble_goblin_slinger"
+          ],
+          "count": 8,
+          "area": "kragmar_speargrass_reach/goblin_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "banner_broker_rakk"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6.5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "speargrass_watch_03",
+      "line": "watch",
+      "giver": "r20_anchor_042_host",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "speargrass_watch_02"
+      ],
+      "title": "Ashes on Blackwind Rise",
+      "text": "The Throng fights for Blackwind Rise and Vaska Ashlistener asks for anyone who can hold a spear. Go; you have proved you can.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_039_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 12
     }
   ]
 }

@@ -1,22 +1,23 @@
 {
   "zone": "kragmar_gor_drazhak",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Gor Drazhak musters the Throng; round its walls scorpions, hyenas and a bandit ration-broker take their cut.",
   "hubs": [
     {
       "id": "gor_drazhak",
       "anchor": "gor_drazhak",
       "givers": [
         {
-          "npc": "r20_orc_capital_cook",
+          "npc": "r20_orc_capital_envoy",
           "lines": [
-            "legacy"
+            "muster",
+            "front"
           ]
         },
         {
-          "npc": "r20_orc_capital_envoy",
+          "npc": "r20_orc_capital_cook",
           "lines": [
-            "legacy",
-            "front"
+            "provisions",
+            "dispatch"
           ]
         }
       ]
@@ -24,93 +25,196 @@
   ],
   "quests": [
     {
-      "id": "r20_orc_capital_cook",
-      "line": "legacy",
+      "id": "gor_drazhak_muster_01",
+      "line": "muster",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 19,
+      "level": 21,
+      "requires": [],
+      "title": "Stings at the Gates",
+      "text": "Dust-Stinger Scorpions crawl over the {name:steppe} at night, {dir_of:gor_drazhak:steppe}, and sting our sentries. Kill eight. A capital that cannot keep scorpions off its gate is only a large village.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "dust_stinger"
+          ],
+          "count": 8,
+          "area": "kragmar_gor_drazhak/steppe"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "gor_drazhak_muster_02",
+      "line": "muster",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 23,
+      "level": 25,
+      "requires": [
+        "gor_drazhak_muster_01"
+      ],
+      "title": "Optional: Laughter in the Badlands",
+      "text": "Dustpack Hyenas hunt the {name:badlands} by day, {dir_of:gor_drazhak:badlands}, and they laugh at our supply carts. Kill eight and see who laughs.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "dustpack_hyena"
+          ],
+          "count": 8,
+          "area": "kragmar_gor_drazhak/badlands"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12,
+      "optional": true
+    },
+    {
+      "id": "gor_drazhak_muster_03",
+      "line": "muster",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "gor_drazhak_muster_01"
+      ],
+      "title": "Garr Rations Our Rations",
+      "text": "Toll Bandit Archers hold the {name:tollcamp} {dir_of:gor_drazhak:tollcamp} for Bandit Ration-Broker Garr, who buys from Korr and sells to fools. Kill six archers and Garr himself, and the muster eats again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer"
+          ],
+          "count": 6,
+          "area": "kragmar_gor_drazhak/tollcamp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "ration_broker_garr"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6.5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "gor_drazhak_muster_04",
+      "line": "muster",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 29,
+      "level": 29,
+      "requires": [
+        "gor_drazhak_muster_03"
+      ],
+      "title": "The Red Ramp",
+      "text": "The Throng holds the line on Bannerbreak Mesa, and it needs fighters who have finished their errands. Report to Drek Rampbinder at Red Ramp Post.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_043_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "gor_drazhak_bounty",
+      "line": "muster",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "gor_drazhak_muster_03"
+      ],
+      "title": "Bounty: Archers at the Tollcamp",
+      "text": "Garr's archers come back to the {name:tollcamp} whether Garr does or not. Kill six and collect; the muster pays again twenty minutes after you do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer"
+          ],
+          "count": 6,
+          "area": "kragmar_gor_drazhak/tollcamp"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "gor_drazhak_provisions_01",
+      "line": "provisions",
       "giver": "r20_orc_capital_cook",
       "turnin": "r20_orc_capital_cook",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 20,
+      "level": 22,
       "requires": [],
-      "faction": "throng",
-      "race": "orc",
       "title": "The Longladle Ration",
-      "text": "Gorla Longladle has a ration pot beside Gor Drazhak's cook-court oven. Bring five raw meat portions for the next watch and its travellers. You can help without learning Cooking.",
+      "text": "The muster eats from my ladle. Bring eight Raw Meat and two Braided Sinew from the Waterhole Zebras on the {name:steppe}; the sinew ties the ration bundles, the meat goes in them.",
       "objectives": [
         {
           "type": "item",
           "item": "mobs:meat_raw",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 45,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_orc_capital_services",
-      "line": "legacy",
-      "giver": "r20_orc_capital_envoy",
-      "turnin": "r20_orc_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r20_orc_capital_intro"
-      ],
-      "faction": "throng",
-      "race": "orc",
-      "title": "A Bowl at Longladle",
-      "text": "Thorga recommends a stop at Gorla Longladle's cook court. Speak with the cook beside the oven in the warren, then complete the introduction there. The nearby Cooking trainer is not required for this conversation.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_orc_capital_cook"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_orc_capital_stores",
-      "line": "legacy",
-      "giver": "r20_orc_capital_envoy",
-      "turnin": "r20_orc_capital_envoy",
-      "min_level": 20,
-      "level": 20,
-      "requires": [],
-      "faction": "throng",
-      "race": "orc",
-      "title": "Stone for the Muster Yard",
-      "text": "The muster yard's supply edge has been worn down by loaded carts. Bring twelve cobble blocks to Thorga so the watch can reset it without taking stone from occupied homes.",
-      "objectives": [
+          "count": 8
+        },
         {
           "type": "item",
-          "item": "default:cobble",
-          "count": 12
+          "item": "grug_mobs:braided_sinew",
+          "count": 2,
+          "roles": [
+            "watchful_zebra"
+          ],
+          "area": "kragmar_gor_drazhak/steppe"
         }
       ],
       "rewards": {
-        "xp": 780,
-        "copper": 60,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r20_orc_journey_01",
-      "line": "legacy",
-      "giver": "r20_orc_capital_envoy",
+      "id": "gor_drazhak_dispatch_01",
+      "line": "dispatch",
+      "giver": "r20_orc_capital_cook",
       "turnin": "r20_anchor_022_host",
       "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "race": "orc",
+      "level": 22,
+      "requires": [
+        "gor_drazhak_muster_01"
+      ],
       "title": "Word for Brakka Jarward",
-      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Speargrass Wellhold in Speargrass Reach and speak with Brakka Jarward. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Brakka Jarward there. No parcel, fighting errand or return trip is required.",
+      "text": "Speargrass Wellhold sends us spears and wants word back. Take the road to Speargrass Reach and greet Brakka Jarward for me, and mention that the stew is still better here.",
       "objectives": [
         {
           "type": "talk",
@@ -118,10 +222,34 @@
         }
       ],
       "rewards": {
-        "xp": 615,
-        "copper": 50,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "gor_drazhak_dispatch_02",
+      "line": "dispatch",
+      "giver": "r20_orc_capital_cook",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "gor_drazhak_muster_01"
+      ],
+      "title": "Reeds and Rations",
+      "text": "Our troll allies at Whisperreed Landing trade fish for our salt. Go to Whispering Reedlands and find Taleko Drycord; the trolls always have more work than hands.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_024_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 12
     }
   ]
 }
