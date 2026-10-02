@@ -1241,6 +1241,9 @@ function SR.start_maps()
 		core.log("warning", "[grug_mobs] spawn regions: the region map cache could not be " ..
 			"written: " .. store_error)
 	end
+	-- A build pass leaves about 1 GiB of garbage: collected now, not on top
+	-- of what the boot allocates next (peak memory, Round 30 P3).
+	if built > 0 then collectgarbage("collect") end
 end
 
 -- Roles exist once every mob file has registered (sub-types included).
