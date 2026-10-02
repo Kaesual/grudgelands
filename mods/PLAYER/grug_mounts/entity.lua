@@ -97,9 +97,14 @@ function grug_mounts.boat_surface(pos)
 	return nil, "Swim up to the surface to summon a boat."
 end
 
+local function sign(value)
+	return value > 0 and 1 or (value < 0 and -1 or 0)
+end
+
 -- Disembarking: the nearest free land cell within LANDING_RADIUS of the boat
 -- (feet on a solid, dry floor, two free cells), else the boat's own position
--- in the water.
+-- in the water. A cell two nodes out also needs the cell between it and the
+-- boat open at its height, so a landing never crosses a one-node wall.
 function grug_mounts.boat_landing(pos)
 	local base = position_node(pos)
 	local best, best_distance
@@ -110,7 +115,13 @@ function grug_mounts.boat_landing(pos)
 				for dy = 0, 1 do
 					local cell = {x = base.x + dx, y = base.y + dy, z = base.z + dz}
 					local floor = node_definition({x = cell.x, y = cell.y - 1, z = cell.z})
-					if floor and floor.walkable and (floor.liquidtype or "none") == "none" and
+					local way = true
+					if math.max(math.abs(dx), math.abs(dz)) > 1 then
+						local between = {x = cell.x - sign(dx), y = cell.y, z = cell.z - sign(dz)}
+						way = open_cell(between) and
+							open_cell({x = between.x, y = between.y + 1, z = between.z})
+					end
+					if way and floor and floor.walkable and (floor.liquidtype or "none") == "none" and
 							open_cell(cell) and
 							open_cell({x = cell.x, y = cell.y + 1, z = cell.z}) then
 						best = {x = cell.x, y = cell.y - 0.5, z = cell.z}
@@ -609,7 +620,13 @@ local function summon_position(player, tier_id)
 	if not tier or not pos or player:get_hp() <= 0 then
 		return nil, "The mount cannot be summoned."
 	end
-	if tier.mode == "water" then return grug_mounts.boat_surface(pos) end
+	if tier.mode == "water" then
+		-- On a boat the player's position is the boat's, on the water surface:
+		-- the water node is the half node below it.
+		local record = active[player:get_player_name()]
+		if record and record.mode == "water" then pos.y = pos.y - 0.5 end
+		return grug_mounts.boat_surface(pos)
+	end
 	if tier.mode == "flight" then
 		local legal = grug_mounts.flight_state(player, pos)
 		if not legal then return nil, "Flying mounts are forbidden here." end

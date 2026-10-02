@@ -404,6 +404,26 @@ check(ada.pos.x == 0 and ada.pos.y == 0.5 and ada.pos.z == 0, "open water: the r
 eq(#entities - 0 > 0 and (function()
 	for _, e in ipairs(entities) do if e.object:is_valid() then return false end end
 	return true end)(), true, "no boat remains in the world")
+-- A one-node wall beside the boat with land behind it: no landing across it.
+pond()
+for z = -6, 6 do
+	for y = -3, 0 do set_node(2, y, z, "default:water_source") end
+	for y = 1, 3 do set_node(2, y, z, "default:dirt") end -- the wall above x = 2
+	set_node(3, 0, z, "default:dirt"); set_node(4, 0, z, "default:dirt") -- land behind it
+end
+for x = -3, 1 do for z = -3, 3 do set_node(x, 0, z, "default:water_source") end end
+ada.pos = {x = 1, y = 0, z = 0}
+grug_mounts.mount(ada, 5)
+grug_mounts.toggle(ada, 5)
+check(ada.pos.x == 1 and ada.pos.y == 0.5 and ada.pos.z == 0,
+	"a wall between boat and land: the rider stays in the water")
+for z = -6, 6 do for y = 1, 3 do set_node(2, y, z, "air") end end
+set_node(2, 0, 0, "default:dirt") -- a bank one node out, land beyond it
+ada.pos = {x = 0, y = 0, z = 0}
+grug_mounts.mount(ada, 5)
+grug_mounts.toggle(ada, 5)
+check(ada.pos.x == 2 and ada.pos.y == 0.5 and ada.pos.z == 0, "open bank two nodes out: landed")
+pond()
 ada.pos = {x = 3, y = 0, z = 1}
 grug_mounts.mount(ada, 5)
 for _, fn in ipairs(callbacks.leave) do fn(ada) end
@@ -424,6 +444,18 @@ eq(record and record.mode, "water", "the boat item replaces the horse")
 check(not horse.object:is_valid(), "the horse is gone")
 grug_mounts.toggle(ada, 1)
 eq(grug_mounts.active.ada and grug_mounts.active.ada.mode, "land", "a mount item replaces the boat")
+grug_mounts.dismount(ada, nil, true)
+-- Boat to boat on open water, both ways.
+pond()
+ada.pos = {x = 0, y = -1, z = 0}
+check((grug_mounts.mount(ada, 5)), "Boat summoned for the switch")
+local first = controller_of(ada)
+grug_mounts.toggle(ada, 6)
+eq(grug_mounts.active.ada and grug_mounts.active.ada.tier, 6, "Boat -> Improved Boat on water")
+check(not first.object:is_valid(), "the Boat is gone after the switch")
+eq(controller_of(ada).object:get_pos().y, 0.5, "the Improved Boat floats on the same surface")
+grug_mounts.toggle(ada, 5)
+eq(grug_mounts.active.ada and grug_mounts.active.ada.tier, 5, "Improved Boat -> Boat on water")
 grug_mounts.dismount(ada, nil, true)
 ada.pos = {x = 0, y = 2, z = 0} -- on land, out of the water
 grug_mounts.mount(ada, 1)
