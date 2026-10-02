@@ -367,7 +367,10 @@ class Ledger:
         missing = count - have
         if missing <= 0:
             return
-        source = self.drop_source(item, zone)
+        # The objective's source area names the zone it drops in (a front
+        # file's quests hunt in another zone than their host's).
+        source_zone = C.split_area_ref(obj["area"], zone)[0] if obj.get("area") else zone
+        source = self.drop_source(item, source_zone)
         if source is None:
             entry = (self.existing.get("items") or {}).get(item) or self.catalog_items.get(item)
             if entry is None:
@@ -687,6 +690,15 @@ def self_test():
           "zone catalogue roles and items merge into the catalogue")
     check(solo.role_levels("confused_bandit_chief", "elandor_goldmead_vale") == (10, 10),
           "a leader of another zone keeps its fixed level")
+    # An item objective's source area in another zone than the quest's host
+    # (a front file): its drop kills are found there (Highcourt has no recipe).
+    fresh, _ = run(design, existing, Route("elandor_dawnmere_fields:1-10"), 1, args)
+    drop_acc = defaultdict(float)
+    fresh.item_objective("elandor_highcourt", {"id": "sample_front_tails", "level": 2},
+                         {"type": "item", "item": "grug_mobs:rat_tail", "count": 40, "roles": ["large_rat"],
+                          "area": "elandor_dawnmere_fields/home_fields"}, 40, {}, drop_acc)
+    check(drop_acc["drop_kills"] > 0, "drop kills in the source area's zone, not the host's (%.0f XP)"
+          % drop_acc["drop_kills"])
     check(set(solo.per_band) == {(1, 10), (10, 20)}, "the level-10 quests count in 10 -> 20 (%s)"
           % sorted(solo.per_band))
     lined = A()
