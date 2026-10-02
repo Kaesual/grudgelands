@@ -1,7 +1,7 @@
 {
   "zone": "elandor_whitebridge_shire",
   "recipe": {
-    "from": {"border": ["elandor_highcourt", "elandor_goldmead_vale"]},
+    "from": {"border": ["elandor_copperfell_foothills", "elandor_dur_brannoc", "elandor_goldmead_vale", "elandor_highcourt"]},
     "to": {"border": ["elandor_ashenward_march", "elandor_stormvault_heights"]},
     "belts": [
       {

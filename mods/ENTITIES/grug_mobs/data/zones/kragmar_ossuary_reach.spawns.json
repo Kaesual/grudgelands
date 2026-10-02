@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_ossuary_reach",
   "recipe": {
-    "from": {"border": ["kragmar_nhal_veyr", "kragmar_mournfen"]},
+    "from": {"border": ["kragmar_mournfen", "kragmar_nhal_veyr", "kragmar_stillgrave_hollow"]},
     "to": {"border": "kragmar_blackwind_rise"},
     "belts": [
       {

@@ -595,7 +595,6 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
    ]
@@ -609,7 +608,6 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
    ]
@@ -758,7 +756,6 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_bannerbreak_mesa",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
@@ -773,10 +770,65 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_bannerbreak_mesa",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "causeway_mire_husk",
+   "current": "Mire-Cured Husk",
+   "proposed": "Mire-Cured Husk",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_ford_zombie",
+   "current": "Fordwater Zombie",
+   "proposed": "Fordwater Zombie",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_toll_skeleton",
+   "current": "Tollroad Skeleton",
+   "proposed": "Tollroad Skeleton",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_brigand",
+   "current": "Causeway Brigand",
+   "proposed": "Causeway Brigand",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_aqueduct_bowman",
+   "current": "Aqueduct Bowman",
+   "proposed": "Aqueduct Bowman",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_sinkmire_viper",
+   "current": "Sinkmire Viper",
+   "proposed": "Sinkmire Viper",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "causeway_fenrunner_wolf",
+   "current": "Fenrunner Wolf",
+   "proposed": "Fenrunner Wolf",
+   "zones": [
+    "front_broken_causeway"
    ]
   },
   {
@@ -949,7 +1001,6 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_bannerbreak_mesa",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
@@ -963,7 +1014,6 @@
     "elandor_ashenward_march",
     "elandor_glassroot_wilds",
     "elandor_stormvault_heights",
-    "front_broken_causeway",
     "kragmar_bannerbreak_mesa",
     "kragmar_blackwind_rise",
     "kragmar_thunderroot_wilds"
@@ -1392,8 +1442,7 @@
    "proposed": "Battle Wisp",
    "zones": [
     "elandor_ashenward_march",
-    "elandor_glassroot_wilds",
-    "front_broken_causeway"
+    "elandor_glassroot_wilds"
    ]
   },
   {
@@ -1651,7 +1700,6 @@
    "proposed": "March Skeleton Raider",
    "zones": [
     "elandor_ashenward_march",
-    "front_broken_causeway",
     "kragmar_bannerbreak_mesa",
     "kragmar_blackwind_rise"
    ]
@@ -1695,7 +1743,6 @@
    "current": "Reed-Hex Bog Witch",
    "proposed": "Reed-Hex Bog Witch",
    "zones": [
-    "front_broken_causeway",
     "kragmar_thunderroot_wilds"
    ]
   },

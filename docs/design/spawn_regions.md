@@ -167,9 +167,11 @@ mapgen.
   player enters (Round 28 S2), or both, `{"anchor": …, "border": …}`: the
   anchors' cells and the border cells are all sources (a capital zone: the
   city and the border with its race's home zone, Round 28 W1). `to`:
-  `{"border": <zone id or list>}`, the exit, or `{"core": true}`: the cells farthest from every source are the
-  top belt (front zones entered from both factions' sides, harder toward the
-  middle). An entry border cannot also be the exit. A recipe with exactly
+  `{"border": <zone id or list>}`, the exit, or `{"core": true}`: the cells
+  farthest from every source are the top belt (a zone with no higher
+  neighbour: Gravesalt Escarpment and The Skyglass Canopy, harder toward their
+  middle). Which borders are entry and exit follows the border rule below. An
+  entry border cannot also be the exit. A recipe with exactly
   one belt may omit `to` (islands: L60 throughout) and then also `from`.
 - `belts`: shares in percent adding up to 100; `levels` inside the zone's
   band; optional `max_from`; `kinds` keyed by type, `open` required.
@@ -199,6 +201,35 @@ mapgen.
   level is fixed (ruling 38) and the same on every seed: its camp's stated
   belt, or its kind's belt.
 - `critters`: ambient critters that keep their ABM rows in the zone.
+
+## Entry and exit borders (the border rule)
+
+Every recipe's `from` and `to` follow one rule per zone kind (the user,
+2026-10-02, Round 28 W1), so that the levels on both sides of a zone border
+fit wherever a player crosses it, not only along the zone's own main route.
+A border is low (`from`, where players come in), high (`to`, where they move
+on) or neutral (no condition):
+
+| Zone kind | Low (`from`) | High (`to`) | Neutral |
+|---|---|---|---|
+| Start 1–10 | the start town | the border to the race's own home zone (11–20) | borders to heartlands |
+| Home 11–20 | the border to its race's start zone | the borders to its race's capital zone and to every adjacent heartland | — |
+| Capital 20–30 | the capital city and the border to its race's home zone | the borders to contested zones | borders to heartlands |
+| Heartland 21–30 | every border to the faction's capital and home (11–20) zones, and to a start zone | the borders to contested zones (or a front zone) | other heartlands |
+| Contested 31–40 | every border to the faction's 20–30 zones | the borders to front zones | other contested zones |
+| Front 41–60 | every border to a lower-band neighbour | the borders to higher-band neighbours; none: the core | same-band fronts |
+| Dragon islands | one belt, no `from` / `to` | | |
+
+So The Broken Causeway and The Shattered Line (41–50) rise from their
+contested borders toward Gravesalt Escarpment and The Skyglass Canopy (51–60),
+which rise from their lower neighbours to their core; the Causeway | Shattered
+Line border is neutral. A start zone's border to a heartland is a forced gap
+(10 → 21): neutral on the start side, low on the heartland side, so a player
+crossing from the start zone meets the heartland's lowest levels. The rule
+names the neighbours of the zone atlas (seed 42); a contact another seed
+creates is neutral. `tools/r28_world/border_rule.py` derives every zone's
+`from` / `to` from the atlas (`--apply` writes them into the recipes) and
+`tools/r28_world/run.sh` draws the level fit across every border.
 
 ## Quests
 

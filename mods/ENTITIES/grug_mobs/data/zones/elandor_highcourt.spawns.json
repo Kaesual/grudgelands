@@ -1,7 +1,7 @@
 {
   "zone": "elandor_highcourt",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "elandor_goldmead_vale"},
     "to": {"border": "elandor_ashenward_march"},
     "belts": [
       {

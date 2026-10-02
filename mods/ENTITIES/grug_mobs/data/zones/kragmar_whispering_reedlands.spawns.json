@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_whispering_reedlands",
   "recipe": {
-    "from": {"border": ["kragmar_kezamba", "kragmar_raincall_basin"]},
+    "from": {"border": ["kragmar_gor_drazhak", "kragmar_kezamba", "kragmar_raincall_basin", "kragmar_redtusk_savanna"]},
     "to": {"border": ["kragmar_bannerbreak_mesa", "kragmar_thunderroot_wilds"]},
     "belts": [
       {

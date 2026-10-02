@@ -2,72 +2,72 @@
   "zone": "front_broken_causeway",
   "recipe": {
     "from": {"border": ["elandor_ashenward_march", "elandor_stormvault_heights", "kragmar_bannerbreak_mesa", "kragmar_blackwind_rise"]},
-    "to": {"core": true},
+    "to": {"border": "front_gravesalt_escarpment"},
     "belts": [
       {
-        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "id": "l41_43", "share": 30, "levels": [41, 43],
         "kinds": {
           "open": {"id": "floodmeadows", "name": "Causeway Floodmeadows",
-            "day": [{"role": "marching_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
           "bank": {"id": "fords", "name": "Causeway Fords",
             "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "reedmire", "name": "Causeway Reedmire",
-            "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_sinkmire_viper", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "alderwood", "name": "Causeway Alderwood",
-            "day": [{"role": "entrenched_bandit", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_brigand", "weight": 1}], "density": "normal"},
           "highland": {"id": "dikes", "name": "Causeway Dikes",
-            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "marching_husk", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"}
+            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
         }
       },
       {
-        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "id": "l44_47", "share": 40, "levels": [44, 47],
         "kinds": {
           "open": {"id": "battlefield", "name": "Causeway Battlefield",
-            "day": [{"role": "marching_husk", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "causeway_brigand", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
           "bank": {"id": "wreck_fords", "name": "Causeway Wreck Fords",
             "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "sinkmire", "name": "Causeway Sinkmire",
-            "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_sinkmire_viper", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "wraithwood", "name": "Causeway Wraithwood",
-            "day": [{"role": "entrenched_bandit", "weight": 3}, {"role": "entrenched_bandit_archer", "weight": 1}],
-            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "entrenched_bandit_archer", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_brigand", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}], "density": "normal"},
           "highland": {"id": "ramparts", "name": "Causeway Ramparts",
-            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"}
+            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
         }
       },
       {
-        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "id": "l48_50", "share": 30, "levels": [48, 50],
         "kinds": {
           "open": {"id": "toll_fields", "name": "Causeway Toll Fields",
-            "day": [{"role": "unrelenting_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_mire_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_ford_zombie", "weight": 1}], "density": "normal"},
           "bank": {"id": "last_ford", "name": "Causeway Last Ford",
             "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"},
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "drowned_mire", "name": "Causeway Drowned Mire",
-            "day": "open",
-            "night": [{"role": "reed_hex_witch", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_sinkmire_viper", "weight": 3}, {"role": "causeway_mire_husk", "weight": 1}],
+            "night": [{"role": "causeway_ford_zombie", "weight": 3}, {"role": "causeway_sinkmire_viper", "weight": 1}], "density": "normal"},
           "forest": {"id": "gallows_wood", "name": "Causeway Gallows Wood",
-            "day": [{"role": "entrenched_bandit_archer", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
-            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "entrenched_bandit_archer", "weight": 1}], "density": "normal"},
+            "day": [{"role": "causeway_aqueduct_bowman", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "causeway_fenrunner_wolf", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}], "density": "normal"},
           "highland": {"id": "arch_heights", "name": "Causeway Arch Heights",
-            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
-            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"}
+            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "causeway_aqueduct_bowman", "weight": 1}],
+            "night": [{"role": "causeway_toll_skeleton", "weight": 3}, {"role": "causeway_fenrunner_wolf", "weight": 1}], "density": "normal"}
         }
       }
     ],
     "camps": [
-      {"id": "toll_camp", "name": "Causeway Toll Camp", "belt": "l38_40",
-       "roster": [{"role": "entrenched_bandit_archer", "weight": 3}, {"role": "unrelenting_husk", "weight": 1}],
+      {"id": "toll_camp", "name": "Causeway Toll Camp", "belt": "l48_50",
+       "roster": [{"role": "causeway_aqueduct_bowman", "weight": 3}, {"role": "causeway_brigand", "weight": 1}],
        "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
     ],
     "leaders": [

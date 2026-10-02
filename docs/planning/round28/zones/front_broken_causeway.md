@@ -1,6 +1,6 @@
 # The Broken Causeway (`front_broken_causeway`)
 
-Zone 35 · front zone · contested · race region **human** · levels **31-40** · contested · relief `wetland_delta` · seed 42
+Zone 35 · front zone · contested · race region **human** · levels **41-50** · contested · relief `wetland_delta` · seed 42
 
 Map: [maps/front_broken_causeway.png](maps/front_broken_causeway.png). Machine-readable: [front_broken_causeway.json](front_broken_causeway.json). Coordinates are world nodes (x east, z north, y up).
 

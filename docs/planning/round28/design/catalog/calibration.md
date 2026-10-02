@@ -80,9 +80,9 @@ reachable from the player's own route. Never use another race's 11–20
 zone. A two-zone 40%+40% selection is the simplest ledger; a three-zone
 route selects shorter portions rather than completing three 40% catalogues.
 
-At 31–40 each of the faction's three contested zones and the shared
-Broken Causeway offers about 30–40%. About three zones are visited, but
-the selected quests need not exhaust all three. Three full 35% offers
+At 31–40 each of the faction's three contested zones offers about
+30–40% (The Broken Causeway plays 41–50 since Round 28 W1). All three
+zones are visited, but the selected quests need not exhaust all three. Three full 35% offers
 would total 105%, contradicting the route's 80% aim. For example, select
 30% + 30% + 20%; the remaining quests are alternatives. Publish which
 lines/quests are selected and prove their prerequisites, rather than

@@ -9,7 +9,7 @@ Measured facts for the design round (plan [round28-questing-leveling-plan.md](..
 - x grows east, z grows **north** (maps: north up), y up. The world spans x -3600..3600, z -3200..3200; sea level is y = 1.
 - **Accord (Elandor) is south (-z)**: start zones at z ≈ -2550, home zones 11-20 at z ≈ -2050, capitals and 21-30 zones at z ≈ -1500, contested 31-40 zones at z ≈ -700. Their front is **north (+z)**; their home ocean is south.
 - **Throng (Kragmar) is north (+z)**, mirrored: start z ≈ 2550 → 2050 → 1500 → 700. Front **south (-z)**.
-- **Battlegrounds**: one land band around **z = 0** (about -300..300), four zones west to east: Gravesalt Escarpment (51-60), The Broken Causeway (31-40), The Shattered Line (41-50), The Skyglass Canopy (51-60). The two dragon islands (60) lie offshore west (x ≈ -3150) and east (x ≈ 3150).
+- **Battlegrounds**: one land band around **z = 0** (about -300..300), four zones west to east: Gravesalt Escarpment (51-60), The Broken Causeway (41-50), The Shattered Line (41-50), The Skyglass Canopy (51-60). The two dragon islands (60) lie offshore west (x ≈ -3150) and east (x ≈ 3150).
 - Race columns: dwarf/undead x ≈ -1800, human/orc x ≈ 0, elf/troll x ≈ 1800; side zones at x ≈ ±900 and ±2400.
 
 ## What depends on the seed
@@ -61,7 +61,7 @@ Measured facts for the design round (plan [round28-questing-leveling-plan.md](..
 | 32 | [kragmar_thunderroot_wilds](kragmar_thunderroot_wilds.md) | Thunderroot Wilds | contested 31-40 (troll) | 31-40 | 1800, 700 | 908..2676; 224..1096 | deep_jungle, swamp, badlands_east | 1 bandit hideout, 1 outpost | 3 | Jungle Ape, Serpent, Shore Crab | Bog Witch, Jungle Spider, Panther |
 | 33 | [front_wyrmglass_crown](front_wyrmglass_crown.md) | The Wyrmglass Crown | dragon island (60) | 60-60 | -3150, 0 | -3404..-2880; -292..292 | crags, crags_snowy, beach | 1 apex mine camp, 1 clash site, 1 dragon arena | 0 | Carrion Crow, Crag Eagle, Gull, Mountain Ram, Stone Golem | Carrion Crow, Frost Stray, Rift Spawn, Snow Leopard, Stone Golem, Zombie |
 | 34 | [front_gravesalt_escarpment](front_gravesalt_escarpment.md) | Gravesalt Escarpment | front zone | 51-60 | -2000, 0 | -2528..-1300; -308..288 | bone_forest, swamp, blight | 2 clash site | 0 | Bear, Blightfang Wolf, Bone Weevil, Carrion Crow, Gaunt Stag, Gull, Plaguehide Bear, Reef Lurker, Stag, Wolf, Zombie | Blightfang Wolf, Bog Witch, Bonelurker Spider, Carrion Crow, Giant Spider, Rift Spawn, Skeleton Raider, Wolf, Zombie |
-| 35 | [front_broken_causeway](front_broken_causeway.md) | The Broken Causeway | front zone | 31-40 | -750, 0 | -1488..20; -532..460 | swamp, meadows, deep_forest | 3 clash site, 1 rare route | 0 | Carrion Crow, Gull, War Construct, Zombie | Bog Witch, Carrion Crow, Skeleton Raider, War Construct, Wisp, Zombie |
+| 35 | [front_broken_causeway](front_broken_causeway.md) | The Broken Causeway | front zone | 41-50 | -750, 0 | -1488..20; -532..460 | swamp, meadows, deep_forest | 3 clash site, 1 rare route | 0 | Carrion Crow, Gull, War Construct, Zombie | Bog Witch, Carrion Crow, Skeleton Raider, War Construct, Wisp, Zombie |
 | 36 | [front_shattered_line](front_shattered_line.md) | The Shattered Line | front zone | 41-50 | 750, 0 | -8..1448; -340..368 | badlands, swamp, savanna | 3 clash site, 1 rare route | 0 | Carrion Crow, Hyena, Mesa Golem, Speargrass Tiger, Vulture, War Construct | Carrion Crow, Hyena, Mesa Golem, Scorpion, Skeleton Raider, Sun-Dried Husk, War Construct |
 | 37 | [front_skyglass_canopy](front_skyglass_canopy.md) | The Skyglass Canopy | front zone | 51-60 | 2000, 0 | 1368..2600; -264..340 | jungle_fringe, elf_forest, deep_forest | 2 clash site, 1 rare route | 0 | Carrion Crow, Jungle Ape, Reef Lurker, Serpent | Carrion Crow, Jungle Spider, Panther, Rift Spawn, Skeleton Raider, Zombie |
 | 38 | [front_stormscale_summit](front_stormscale_summit.md) | Stormscale Summit | dragon island (60) | 60-60 | 3150, 0 | 2880..3404; -316..296 | deep_jungle, badlands_east, beach | 1 apex mine camp, 1 clash site, 1 dragon arena, 1 rare route | 0 | Carrion Crow, Gull, Jungle Ape, Serpent | Bog Witch, Carrion Crow, Jungle Spider, Panther, Rift Spawn, Skeleton Raider, Zombie |
@@ -77,7 +77,7 @@ Measured facts for the design round (plan [round28-questing-leveling-plan.md](..
 | orc | Sunscar Flats | Redtusk Savanna | Gor Drazhak | Speargrass Reach | Bannerbreak Mesa |
 | troll | Kapok Cradle | Raincall Basin | Kezamba | Whispering Reedlands, Totemwater Reach | Thunderroot Wilds |
 
-Front (shared): The Broken Causeway 31-40, The Shattered Line 41-50, Gravesalt Escarpment and The Skyglass Canopy 51-60, The Wyrmglass Crown and Stormscale Summit 60 (islands). Today the front zones and islands have no quest givers and no roads.
+Front (shared): The Broken Causeway and The Shattered Line 41-50, Gravesalt Escarpment and The Skyglass Canopy 51-60, The Wyrmglass Crown and Stormscale Summit 60 (islands). Today the front zones and islands have no quest givers and no roads.
 
 ## Counts
 

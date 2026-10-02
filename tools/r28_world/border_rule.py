@@ -22,7 +22,14 @@ players come in), high (`to`, where they move on) or neutral:
   contested  (31-40) low: every border to the faction's 20-30 zones
              (capitals, heartlands); high: the borders to front zones;
              neutral: other contested zones.
-  front, island (incl. The Broken Causeway): unchanged.
+  front      (the Battlegrounds, 41-60; the user, 2026-10-02) low: every
+             border to a lower-band neighbour; high: the borders to
+             higher-band neighbours, or the zone's core (`to: core`) where
+             it has none; neutral: same-band fronts. The Broken Causeway and
+             The Shattered Line (41-50) rise from their contested borders
+             toward Gravesalt Escarpment and The Skyglass Canopy (51-60),
+             which rise from their lower neighbours to their core.
+  island     unchanged (one belt, no land border).
 
 A contested zone's faction is its race's (`race_region`), as the start zones
 give it. A neighbour the table does not cover (a kind or race the row does
@@ -62,7 +69,7 @@ ROLE_KIND = {
     "front zone": "front",
     "dragon island (60)": "island",
 }
-UNCHANGED = ("front", "island")
+UNCHANGED = ("island",)
 
 
 def load_atlas(atlas_dir):
@@ -75,6 +82,7 @@ def load_atlas(atlas_dir):
         zones[rec["id"]] = {"kind": ROLE_KIND.get(rec["role"]), "role": rec["role"],
                             "race": rec.get("race_region"), "faction": rec.get("faction"),
                             "name": rec.get("name", rec["id"]),
+                            "band": (rec.get("level_min"), rec.get("level_max")),
                             "neighbours": sorted(rec.get("neighbors") or [])}
     # A race's faction, as its start zones give it; contested zones take it.
     race_faction = {}
@@ -89,8 +97,9 @@ def load_atlas(atlas_dir):
 
 def classify(zones, zid):
     """(low_anchor, low_borders, high_borders, neutral, uncovered) for one
-    zone; low_anchor is a slot or None. Kinds `front` / `island` / unknown
-    return None (unchanged / not covered)."""
+    zone; low_anchor is a slot or None. high_borders empty: `to` core (a
+    front zone with no higher neighbour). Kinds `island` / unknown return
+    None (unchanged / not covered)."""
     z = zones[zid]
     kind = z["kind"]
     if kind is None or kind in UNCHANGED:
@@ -136,8 +145,15 @@ def classify(zones, zid):
                 side = "high"
             elif nk == "contested":
                 side = "neutral"
+        elif kind == "front" and n is not None and n["band"][0] and z["band"][0]:
+            if n["band"][0] < z["band"][0]:
+                side = "low"
+            elif n["band"][0] > z["band"][0]:
+                side = "high"
+            elif nk == "front":
+                side = "neutral"
         {"low": low, "high": high, "neutral": neutral, None: uncovered}[side].append(nid)
-    if not high:
+    if not high and kind != "front":
         uncovered.append("(no high border)")
     if not low and not anchor:
         uncovered.append("(no low border)")
@@ -146,7 +162,7 @@ def classify(zones, zid):
 
 def rule_from_to(anchor, low, high):
     """The recipe's `from` and `to` objects (one id as a string, several as
-    a sorted list)."""
+    a sorted list; no high border: `to` core)."""
     def ids(v):
         v = sorted(v)
         return v[0] if len(v) == 1 else v
@@ -155,7 +171,7 @@ def rule_from_to(anchor, low, high):
         frm["anchor"] = anchor
     if low:
         frm["border"] = ids(low)
-    return frm, {"border": ids(high)}
+    return frm, ({"border": ids(high)} if high else {"core": True})
 
 
 def norm(obj):
@@ -276,9 +292,9 @@ def run(atlas_dir, zones_dir, report, out_dir):
 def self_test():
     """The table on a small synthetic atlas (two races of one faction, one of
     the other side's contested zone as a stranger)."""
-    def zone(kind, race, faction, nb):
+    def zone(kind, race, faction, nb, band=(None, None)):
         return {"kind": kind, "role": kind, "race": race, "faction": faction, "name": kind,
-                "neighbours": sorted(nb)}
+                "band": band, "neighbours": sorted(nb)}
     zones = {
         "s_h": zone("start", "human", "accord", ["h_h", "hl_e"]),
         "h_h": zone("home", "human", "accord", ["s_h", "c_h", "hl_e", "hl_h"]),
@@ -286,9 +302,13 @@ def self_test():
         "hl_h": zone("heartland", "human", "accord", ["h_h", "c_h", "hl_e", "x_h", "c_e"]),
         "hl_e": zone("heartland", "elf", "accord", ["hl_h", "h_h", "s_h", "x_h"]),
         "c_e": zone("capital", "elf", "accord", ["hl_h"]),
-        "x_h": zone("contested", "human", "accord", ["c_h", "hl_h", "hl_e", "x_o", "f"]),
-        "x_o": zone("contested", "orc", "throng", ["x_h", "f", "h_h"]),
-        "f": zone("front", None, None, ["x_h", "x_o"]),
+        "x_h": zone("contested", "human", "accord", ["c_h", "hl_h", "hl_e", "x_o", "f", "f2"], (31, 40)),
+        "x_o": zone("contested", "orc", "throng", ["x_h", "f", "g", "h_h"], (31, 40)),
+        "f": zone("front", None, None, ["x_h", "x_o", "f2", "g"], (41, 50)),
+        "f2": zone("front", None, None, ["x_h", "f", "g2"], (41, 50)),
+        "g": zone("front", None, None, ["f", "x_o"], (51, 60)),
+        "g2": zone("front", None, None, ["f2"], (51, 60)),
+        "i": zone("island", None, None, [], (60, 60)),
     }
     fails = []
 
@@ -301,10 +321,19 @@ def self_test():
     expect("c_h", ("capital", ["h_h"], ["x_h"], ["hl_h"], []))
     expect("hl_h", (None, ["c_e", "c_h", "h_h"], ["x_h"], ["hl_e"], []))
     expect("hl_e", (None, ["h_h", "s_h"], ["x_h"], ["hl_h"], []))
-    expect("x_h", (None, ["c_h", "hl_e", "hl_h"], ["f"], ["x_o"], []))
+    expect("x_h", (None, ["c_h", "hl_e", "hl_h"], ["f", "f2"], ["x_o"], []))
     # The orc contested zone beside an accord home zone: not covered.
-    expect("x_o", (None, [], ["f"], ["x_h"], ["h_h", "(no low border)"]))
-    expect("f", None)
+    expect("x_o", (None, [], ["f", "g"], ["x_h"], ["h_h", "(no low border)"]))
+    # Fronts: lower bands low, higher bands high, same band neutral; no
+    # higher neighbour: the core. Islands stay as they are.
+    expect("f", (None, ["x_h", "x_o"], ["g"], ["f2"], []))
+    expect("f2", (None, ["x_h"], ["g2"], ["f"], []))
+    expect("g", (None, ["f", "x_o"], [], [], []))
+    expect("g2", (None, ["f2"], [], [], []))
+    expect("i", None)
+    frm, to = rule_from_to(None, ["f", "x_o"], [])
+    if frm != {"border": ["f", "x_o"]} or to != {"core": True}:
+        fails.append("rule_from_to without a high border: %r %r" % (frm, to))
     # The capital's elf neighbour (another race's capital) is no low border;
     # c_e has no contested neighbour: not covered (no exit).
     expect("c_e", ("capital", [], [], ["hl_h"], ["(no high border)"]))

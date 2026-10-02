@@ -1,7 +1,7 @@
 {
   "zone": "elandor_lethariel",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "elandor_starbough_vale"},
     "to": {"border": "elandor_glassroot_wilds"},
     "belts": [
       {

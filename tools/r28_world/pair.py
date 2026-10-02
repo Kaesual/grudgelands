@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Round 28 Lane W1: current | proposed side by side for one seed.
+"""Round 28 Lane W1: two world views of one seed side by side.
 
-Reads <out>/current_seed_<s>.png and proposed_seed_<s>.png (render.py) and
-the two dumps' edge classes, and writes <out>/compare_seed_<s>.png: the two
-maps (without their side panels) next to each other under a strip with the
+Reads <out>/<left>_seed_<s>.png and <right>_seed_<s>.png (render.py) and the
+two dumps' edge classes, and writes <out>/compare_seed_<s>.png: the two maps
+(without their side panels) next to each other under a strip with the
 border length per class for both.
 
-Usage: pair.py --out DIR --seed SEED --current DUMP_DIR --proposed DUMP_DIR
+Usage: pair.py --out DIR --seed SEED --left NAME DUMP_DIR LABEL --right NAME DUMP_DIR LABEL
 """
 import argparse
 import json
@@ -34,16 +34,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True)
     ap.add_argument("--seed", required=True)
-    ap.add_argument("--current", required=True)
-    ap.add_argument("--proposed", required=True)
+    ap.add_argument("--left", nargs=3, required=True, metavar=("NAME", "DUMP", "LABEL"))
+    ap.add_argument("--right", nargs=3, required=True, metavar=("NAME", "DUMP", "LABEL"))
     args = ap.parse_args()
     out = Path(args.out)
     parts = []
-    for name, dump in (("current", args.current), ("proposed", args.proposed)):
+    for name, dump, label in (args.left, args.right):
         t, w = totals(dump, args.seed)
         img = Image.open(out / ("%s_seed_%s.png" % (name, args.seed)))
         maps = img.crop((LEFT, TOP, LEFT + w, img.height - BOTTOM))
-        parts.append((name, t, maps))
+        parts.append((name, t, maps, label))
     gap = 24
     W = LEFT * 2 + sum(p[2].width for p in parts) + gap
     H = STRIP + max(p[2].height for p in parts) + BOTTOM
@@ -51,11 +51,9 @@ def main():
     d = ImageDraw.Draw(canvas)
     f_title, f_text, f_bold = font(26, True), font(16), font(16, True)
     x = LEFT
-    for name, t, maps in parts:
+    for name, t, maps, label in parts:
         canvas.paste(maps, (x, STRIP))
-        label = "seed %s - %s recipes" % (args.seed, "today's" if name == "current" else
-                                          "border-rule (proposed)")
-        d.text((x, 12), label, font=f_title, fill=INK)
+        d.text((x, 12), "seed %s - %s" % (args.seed, label), font=f_title, fill=INK)
         cx = x
         for c in CLASSES:
             d.rectangle([cx, 58, cx + 26, 66], fill=CLASS_RGB[c], outline=INK)

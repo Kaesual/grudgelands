@@ -77,9 +77,11 @@ in this file as of commit `082982da`.
   frontier approaches, all four Battlegrounds zones and both dragon islands.
   Capitals remain the peaceful civic exception described in §3.
 - Most land where the faction continents meet is level 41–50 or 51–60. The six
-  level-31–40 faction-front approaches and The Broken Causeway are the first
+  level-31–40 faction-front approaches (three per faction) are the first
   contested destinations; their authored contacts introduce PvP without
-  making the whole shared front a mid-level band.
+  making the whole shared front a mid-level band. The Battlegrounds play
+  41–50 in The Broken Causeway and The Shattered Line and 51–60 in Gravesalt
+  Escarpment and The Skyglass Canopy.
 - **Levels follow the zone (Round 22, decided 2026-09-25; replaces the R7.6
   axial bands).** Every surface position takes its level from the zone that
   owns it, so level and PvP status always agree and warped borders move both
@@ -98,6 +100,11 @@ in this file as of commit `082982da`.
   plants, resources and P9G content and the generated world must not change.
   In a zone with a spawn recipe the gameplay surface level is the region's
   ([spawn_regions.md](spawn_regions.md#one-level-truth)).
+- **The Broken Causeway plays 41–50** (the user, 2026-10-02, Round 28 W1),
+  beside The Shattered Line, through the same gameplay band. Until the mapgen
+  work of the next round its analytic level field, plants and resources stay
+  at the mapgen band 31–40 (31–33 / 34–36 / 37–40); its spawns, mob levels and
+  quests follow 41–50 already.
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
   zones use their published ranges but retain `civic_no_hostiles`.
@@ -980,7 +987,7 @@ and terrain rules without deriving political ownership from cultural origin.
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
 | `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
-| `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Wisp/Bog Witch; **K×3, R:Captain Bonerattle** |
+| `front_broken_causeway` | The Broken Causeway | Human | 41–50 (mapgen field 31–40) | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, R:Captain Bonerattle** |
 | `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
 | `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
 | `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |

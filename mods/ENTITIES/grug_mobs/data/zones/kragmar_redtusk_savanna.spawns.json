@@ -2,7 +2,7 @@
   "zone": "kragmar_redtusk_savanna",
   "recipe": {
     "from": {"border": "kragmar_sunscar_flats"},
-    "to": {"border": "kragmar_gor_drazhak"},
+    "to": {"border": ["kragmar_gor_drazhak", "kragmar_speargrass_reach", "kragmar_whispering_reedlands"]},
     "belts": [
       {
         "id": "l11_13", "share": 30, "levels": [11, 13],

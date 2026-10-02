@@ -2,7 +2,7 @@
   "zone": "elandor_goldmead_vale",
   "recipe": {
     "from": {"border": "elandor_dawnmere_fields"},
-    "to": {"border": "elandor_highcourt"},
+    "to": {"border": ["elandor_highcourt", "elandor_lorindor", "elandor_whitebridge_shire"]},
     "belts": [
       {
         "id": "l11_13", "share": 30, "levels": [11, 13],

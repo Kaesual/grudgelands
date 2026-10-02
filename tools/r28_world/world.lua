@@ -3,6 +3,8 @@
 --
 --   luajit tools/r28_world/world.lua <repo> <seed> <out_dir> [<zones_dir>]
 --
+-- <repo> is the tree whose game code and data are drawn (this repository, or
+-- an older commit extracted by run.sh --before).
 -- Builds the analytic world of the seed once (tools/r28_zone_atlas/world.lua,
 -- as main builds it), then the region map of every mainland zone with the
 -- game's own spawn_regions_core.lua and query adapter, as
@@ -30,7 +32,9 @@ local t0 = os.clock()
 local W = dofile(repo .. "/tools/r28_zone_atlas/world.lua")(repo, seed)
 local world_seconds = os.clock() - t0
 local core = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
-local borders = dofile(repo .. "/tools/r28_world/borders.lua")
+-- borders.lua sits next to this script (repo may be another tree: run.sh
+-- --before builds an older commit's world with this file).
+local borders = dofile((arg[0]:match("^(.*)/[^/]*$") or ".") .. "/borders.lua")
 local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
 local S = W.session

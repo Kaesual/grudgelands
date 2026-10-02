@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_nhal_veyr",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "kragmar_mournfen"},
     "to": {"border": "kragmar_blackwind_rise"},
     "belts": [
       {

@@ -16,7 +16,8 @@ writes <out>/<name>_seed_<seed>.png and .md:
     borders; the .md file lists every red, yellow and forced border with its
     zone pair, length and the level ranges on both sides.
 
-Usage: render.py --dump DIR --seed SEED --out DIR --name current|proposed
+Usage: render.py --dump DIR --seed SEED --out DIR --name NAME [--label TEXT]
+(NAME is the file prefix; TEXT, default "NAME recipes", names the recipes in the title.)
 Python 3 + numpy + Pillow.
 """
 import argparse
@@ -159,7 +160,8 @@ def main():
     ap.add_argument("--dump", required=True)
     ap.add_argument("--seed", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--name", required=True, help="current or proposed (file prefix and title)")
+    ap.add_argument("--name", required=True, help="file prefix: current, proposed, final, before")
+    ap.add_argument("--label", help="what the recipes are, for the title (default: NAME recipes)")
     args = ap.parse_args()
     dump = Path(args.dump)
     doc = json.load(open(dump / ("world_%s.json" % args.seed)))
@@ -326,8 +328,8 @@ def main():
                     text_halo(d, (x - tw / 2, y - th / 2), t, f_tiny)
                     break
 
-    title = "Spawn levels across the mainland - seed %s - %s recipes" % (
-        args.seed, "proposed (border rule)" if args.name == "proposed" else args.name)
+    label = args.label or "%s recipes" % args.name
+    title = "Spawn levels across the mainland - seed %s - %s" % (args.seed, label)
     d.text((LEFT, 12), title, font=f_title, fill=INK)
     d.text((LEFT, 42), "north up; one belt cell = 32 nodes; the two dragon islands (one belt, L60, no land "
            "border) are left out", font=f_small, fill=INK2)
@@ -408,9 +410,9 @@ def main():
 
     # The stats file.
     md = []
-    md.append("# Spawn levels across the mainland: seed %s, %s recipes\n" % (args.seed, args.name))
+    md.append("# Spawn levels across the mainland: seed %s, %s\n" % (args.seed, label))
     src = ("the border rule's recipe copies (`border_rule.py --out`; a zone without a copy keeps its "
-           "shipped file)" if doc.get("proposal") else "the shipped recipes")
+           "shipped file)" if doc.get("proposal") else "the recipes of the tree it ran in (%s)" % label)
     md.append("Built with `tools/r28_world/run.sh` from %s (one world build, every mainland zone's "
               "region map through the game's `spawn_regions_core.lua`). The two dragon islands are "
               "left out (one belt, L60, no land border). Border edges are sides shared by land cells "
