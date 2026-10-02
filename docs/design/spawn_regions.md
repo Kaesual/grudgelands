@@ -293,13 +293,22 @@ once and renders every listed zone on it; up to eight processes (and
 renders) run at once. Three zones on two seeds take about 25 s. Dawnmere:
 `docs/planning/round28/regions/dawnmere/`.
 
-`tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT]` draws the whole
-mainland per seed (default 42, 7, 2026; ROOT
+Kill quests per seed: `tools/r28_regions/quest_targets.py` (run by
+`run.sh` at its end) reads every quest file, the recipes and the region
+stats of each seed and lists every kill objective without an area whose
+targets are in its zone's recipe but form no region on some seed (the quest
+has no targets there; the run fails), apart from the accepted ones whose
+targets the recipe never spawns (the game's `W-recipe-target` warning).
+
+`tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT] [--variants "A [B]"]
+[--before REF]` draws the whole mainland per seed (default 42, 7, 2026; ROOT
 `docs/planning/round28/world`): every land cell coloured by its region's
 level, each zone border coloured by the level fit across it (the gap between
 the two regions' level ranges: green ≤ 1, yellow 2–5, red > 5, magenta where
-the two zones' bands lie more than 5 apart), for the shipped recipes
-(`current_seed_<s>`) and for the copies `tools/r28_world/border_rule.py`
-writes by the border rule (`proposed_seed_<s>`), both side by side
-(`compare_seed_<s>`), plus a stats file per image
-and `border_rule.md` (every zone's `from` / `to`, today and by the rule).
+the two zones' bands lie more than 5 apart), one image and stats file per
+variant (`<variant>_seed_<s>`: `current` or `final` for this tree's recipes,
+`proposed` for the copies `tools/r28_world/border_rule.py` writes by the
+border rule, `before` for the tree of a git commit), two variants side by
+side (`compare_seed_<s>`), and `border_rule.md` (every zone's `from` / `to`,
+as shipped and by the rule). Shipped today: `before_seed_<s>` (main
+`38e1da4b`, before the rule), `final_seed_<s>` and `compare_seed_<s>`.

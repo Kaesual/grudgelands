@@ -280,7 +280,9 @@ def run(atlas_dir, zones_dir, report, out_dir):
     lines.append("")
     lines.append("Zones: " + ", ".join("%s %d" % (k, v) for k, v in sorted(counts.items())) + ".")
     if out_dir:
-        lines.append("Recipe files written to `%s`: %d." % (out_dir, written))
+        place = rel(out_dir)
+        lines.append("Recipe files written: %d (%s)." % (
+            written, "`%s`" % place if not place.is_absolute() else "a scratch directory"))
     text = "\n".join(lines) + "\n"
     if report:
         Path(report).write_text(text)

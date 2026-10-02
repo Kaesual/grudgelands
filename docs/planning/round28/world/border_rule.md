@@ -44,4 +44,4 @@ Atlas `docs/planning/round28/zones`, recipes `mods/ENTITIES/grug_mobs/data/zones
 | Whispering Reedlands | heartland | border kragmar_gor_drazhak, kragmar_kezamba, kragmar_raincall_basin, kragmar_redtusk_savanna -> border kragmar_bannerbreak_mesa, kragmar_thunderroot_wilds | border kragmar_gor_drazhak, kragmar_kezamba, kragmar_raincall_basin, kragmar_redtusk_savanna -> border kragmar_bannerbreak_mesa, kragmar_thunderroot_wilds |  | same |
 
 Zones: same 36, unchanged 2.
-Recipe files written to `/tmp/r28_world.1FOOzs/proposal`: 38.
+Recipe files written: 38 (a scratch directory).
