@@ -210,3 +210,49 @@ drawn from the base image above. The gliding version (approved in playtest,
   world directory, the Map tab shows "No minimap available" instead; the
   native minimap stays off.
 - No client mod, per-viewer entity proxies or fog of war.
+
+## Zone and town names
+
+Round 28 Lane M1 (user, 2026-10-02): players could not tell which zone they
+were in, and quest texts and level routes now name zones.
+
+- **Location:** each player has one location, sampled about once a second
+  (each player in their own phase): the zone's display name; inside a
+  **start town** or a **capital city** the town's or city's name instead.
+  "Inside" is the town's protected footprint (start-town pad and band,
+  capital protected city shape), asked with `grug_zones.hard_footprint_in`
+  on the player's column only when the player is within 266 nodes of a
+  town's anchor on both axes (half the capital's reserved square). Villages,
+  outposts, camps and POIs keep the zone's name; where no zone owns the
+  column the text is "Open sea". The town still belongs to its zone for
+  everything else. The minimap line, the entry banner and the Map tab's
+  "Current:" label show the same text.
+- **Location line:** a small text centred under the minimap bezel (4 HUD px
+  gap), in the feed's calm notice colour, created and removed with the
+  minimap (hidden when the minimap is switched off or unavailable) and moved
+  with it when the window changes. It is sent only when the text changes.
+- **Entry banner:** when the location changes, its name shows top centre for
+  1.5 s at 2.5 times the default font, bold, in the same colour, below the
+  target frame's line (`hud_layout.zone_banner_offset`), clear of the
+  level-up banner (0.25 of the window height) and the flash line (0.35).
+  While a display runs no new one starts; when it ends, a fresh sample
+  decides: a location other than the one just shown displays at once,
+  otherwise the banner hides (leaving a city and coming back within the
+  1.5 s shows nothing new). The location a player joins in shows once on
+  join. A change shows within about a second.
+- **Zone markers on the Map tab:** one marker per zone (islands and front
+  zones included), a plain pennant icon, with the zone name and level band
+  in its tooltip, e.g. "Dawnmere Fields (levels 1–10)" ("(level 60)" for a
+  one-level zone). Clicking selects it like any marker. Zone markers draw
+  under every other marker. Each sits at the land cell of its zone farthest
+  from the zone's border and coast on a 32-node grid (the pole of
+  inaccessibility), computed once at server start from the world authority.
+  If another marker (service, king, dragon, quest giver, settlement,
+  innkeeper) or a region name is too close, the marker takes the deepest
+  cell of its zone that keeps 0.45 formspec units (zoom 1) from every other
+  marker's centre on both axes and clear of the region names' text; where no
+  cell is clear it takes the one clearest of other markers first and of the
+  names' text second (the island names cover almost their whole island). The
+  map has no layer filters; zone markers zoom and scroll like every marker.
+- **King markers** name their settlement: "King of Highcourt" (a king with a
+  name of his own would read "<name>, King of Highcourt").

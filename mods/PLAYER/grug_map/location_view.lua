@@ -1,8 +1,8 @@
 -- Zone and town names for players (Round 28 Lane M1; docs/design/world_map.md
--- §5): which name a position shows, when the entry banner shows it, and where
--- each zone's marker sits on the Map tab. PURE Lua: it calls nothing from
--- `core`, so the portable fixture loads the real file. location.lua is the
--- runtime around it.
+-- "Zone and town names"): which name a position shows, when the entry banner
+-- shows it, and where each zone's marker sits on the Map tab. PURE Lua: it
+-- calls nothing from `core`, so the portable fixture loads the real file.
+-- location.lua is the runtime around it.
 
 local L = {}
 
@@ -159,25 +159,32 @@ function L.depths(grid)
 	return depth
 end
 
--- How clear world point x/z is of `obstacles` ({x, z, rx, rz}: a marker or
--- label occupies |dx| < rx and |dz| < rz round x/z): the smallest
--- max(|dx| / rx, |dz| / rz) over them, capped at 1 (1 = clear of all).
+-- How clear world point x/z is of `obstacles` ({x, z, rx, rz, soft}: a
+-- marker, or with `soft` a region name, occupies |dx| < rx and |dz| < rz
+-- round x/z): the smallest max(|dx| / rx, |dz| / rz) over the markers and
+-- over the names, each capped at 1 (1 = clear of all).
 local function clearance(x, z, obstacles)
-	local worst = 1
+	local hard, soft = 1, 1
 	for index = 1, #obstacles do
 		local o = obstacles[index]
 		local score = math.max(math.abs(x - o.x) / o.rx, math.abs(z - o.z) / o.rz)
-		if score < worst then worst = score end
+		if o.soft then
+			if score < soft then soft = score end
+		elseif score < hard then
+			hard = score
+		end
 	end
-	return worst
+	return hard, soft
 end
 
 -- One marker per zone, in `order` (zone ids), at the land cell of that zone
 -- farthest from its border and coast (the pole of inaccessibility on the
 -- grid), nudged deterministically: the deepest cell that is clear of every
 -- obstacle and of the markers placed before it (a square of `gap` nodes
--- round each), or, if no cell is, the clearest one (then the deepest). Ties
--- go to the lower cell index. Zones without land in the grid get no marker.
+-- round each), or, if no cell is, the one clearest of markers, then of
+-- names, then the deepest (an icon on an icon is worse than an icon on a
+-- name's text; the island names cover almost their whole island). Ties go
+-- to the lower cell index. Zones without land in the grid get no marker.
 -- Returns zone id -> {x, z}.
 function L.place_labels(grid, order, obstacles, gap)
 	local depth = L.depths(grid)
@@ -219,12 +226,14 @@ function L.place_labels(grid, order, obstacles, gap)
 					end
 				end
 			end
-			local best, best_score = list[1], -1
+			local best, best_hard, best_soft = list[1], -1, -1
 			for _, index in ipairs(list) do
 				local x, z = centre(index)
-				local score = clearance(x, z, near)
-				if score > best_score then best, best_score = index, score end
-				if score >= 1 then break end
+				local hard, soft = clearance(x, z, near)
+				if hard > best_hard or (hard == best_hard and soft > best_soft) then
+					best, best_hard, best_soft = index, hard, soft
+				end
+				if hard >= 1 and soft >= 1 then break end
 			end
 			local x, z = centre(best)
 			result[id] = {x = x, z = z}
@@ -251,7 +260,7 @@ function L.text_obstacle(text, x, z, box_w, marker, nodes)
 		end
 	end
 	widest = math.max(widest, current)
-	return {x = x, z = z,
+	return {x = x, z = z, soft = true,
 		rx = (math.min(box_w, widest * L.CHAR) / 2 + marker / 2) * nodes,
 		rz = (lines * L.LINE / 2 + marker / 2) * nodes}
 end

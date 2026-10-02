@@ -3,7 +3,8 @@
 -- of the pre-rendered world map, top right in the native minimap's box
 -- (grug_core.hud_layout.minimap_box), with the player's arrow, party
 -- members (rim arrows when outside), quest givers with their state, the
--- Housing Steward, trainers, innkeepers and the player's home.
+-- Housing Steward, trainers, innkeepers and the player's home. Under it a
+-- line names the player's location (Round 28 M1, location.lua).
 --
 -- Glide (test variant for the playtest): the arrow stays in the centre and
 -- the map moves under it pixel by pixel, every server step. The map is ONE

@@ -1,6 +1,6 @@
 -- Zone and town names for players (Round 28 Lane M1; docs/design/world_map.md
--- §5). Why: players could not tell which zone they were in, and quest texts
--- and level routes now name zones.
+-- "Zone and town names"). Why: players could not tell which zone they were
+-- in, and quest texts and level routes now name zones.
 --
 --   * one location per player, sampled every second: the zone's display
 --     name, or the town's name inside a start town or capital city (their

@@ -223,9 +223,15 @@ do
 	local near_wall = {x = 45, z = -35, rx = 40, rz = 40}
 	local clearest = L.place_labels(world, {"A"}, {near_wall}, 25)
 	check(cheb(clearest.A, near_wall) >= 40, "P a clear cell found beside a big obstacle")
+	-- A name covering the whole zone and a marker on part of it: the marker
+	-- stays clear of the icon and accepts the text.
+	local name = {x = 45, z = -35, rx = 1000, rz = 1000, soft = true}
+	local icon = {x = 45, z = -35, rx = 30, rz = 30}
+	local icon_first = L.place_labels(world, {"A"}, {name, icon}, 25)
+	check(cheb(icon_first.A, icon) >= 30, "P fallback keeps clear of icons before names")
 	-- A region name's obstacle: wrapped text, half a marker round it.
 	local text = L.text_obstacle("Human Lands", 0, 0, 4.6, 0.45, 100)
-	check(math.abs(text.rx - (11 * 0.2 / 2 + 0.225) * 100) < 1e-9 and
+	check(text.soft and math.abs(text.rx - (11 * 0.2 / 2 + 0.225) * 100) < 1e-9 and
 		math.abs(text.rz - (0.45 / 2 + 0.225) * 100) < 1e-9, "P one-line region name box")
 	local island = L.text_obstacle("Wyrmglass Crown", 0, 0, 2.4, 0.45, 100)
 	check(math.abs(island.rz - (2 * 0.45 / 2 + 0.225) * 100) < 1e-9 and
