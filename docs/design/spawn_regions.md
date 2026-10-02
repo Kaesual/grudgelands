@@ -214,8 +214,11 @@ region's level (the middle of its belt): `grug_core.mob_level_at` and
 `grug_core.surface_mob_level_at` consult the region overlay, so mob levels,
 the fishing band and the bandit loot level match the mob map. The analytic
 level field (`grug_zones.*_level_at`) stays the mapgen's own and is never
-overlaid; below y = 0 the depth term applies unchanged. ABM spawn gates that
-read the analytic field only run in zones without a recipe.
+overlaid; below y = 0 the depth term applies unchanged. A zone's band is the
+gameplay band of its zone record: Gravesalt Escarpment and The Skyglass Canopy
+play 51–60 (`grug_core/zone_bands.lua`) while their analytic field keeps the
+mapgen's 51–59. ABM spawn gates that read the analytic field only run in
+zones without a recipe.
 
 ## Review images
 

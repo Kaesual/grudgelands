@@ -1,6 +1,6 @@
 # The Skyglass Canopy (`front_skyglass_canopy`)
 
-Zone 37 · front zone · contested · race region **elf** · levels **51-59** · contested · relief `highland` · seed 42
+Zone 37 · front zone · contested · race region **elf** · levels **51-60** · contested · relief `highland` · seed 42
 
 Map: [maps/front_skyglass_canopy.png](maps/front_skyglass_canopy.png). Machine-readable: [front_skyglass_canopy.json](front_skyglass_canopy.json). Coordinates are world nodes (x east, z north, y up).
 

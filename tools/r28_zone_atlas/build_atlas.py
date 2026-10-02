@@ -1110,8 +1110,8 @@ def index_markdown(zone_order, meta, probe, seed):
       "home ocean is south.")
     w("- **Throng (Kragmar) is north (+z)**, mirrored: start z ≈ 2550 → 2050 → 1500 → 700. Front **south (-z)**.")
     w("- **Battlegrounds**: one land band around **z = 0** (about -300..300), four zones west to east: Gravesalt "
-      "Escarpment (51-59), The Broken Causeway (31-40), The Shattered Line (41-50), The Skyglass Canopy "
-      "(51-59). The two dragon islands (60) lie offshore west (x ≈ -3150) and east (x ≈ 3150).")
+      "Escarpment (51-60), The Broken Causeway (31-40), The Shattered Line (41-50), The Skyglass Canopy "
+      "(51-60). The two dragon islands (60) lie offshore west (x ≈ -3150) and east (x ≈ 3150).")
     w("- Race columns: dwarf/undead x ≈ -1800, human/orc x ≈ 0, elf/troll x ≈ 1800; side zones at x ≈ ±900 "
       "and ±2400.\n")
     w("## What depends on the seed\n")
@@ -1166,7 +1166,7 @@ def index_markdown(zone_order, meta, probe, seed):
         w("| %s | %s | %s | %s | %s | %s |" % (race, names[t[0]], names[t[1]], names[t[2]],
                                               ", ".join(names[z] for z in t[3:-1]), names[t[-1]]))
     w("\nFront (shared): The Broken Causeway 31-40, The Shattered Line 41-50, Gravesalt Escarpment and The "
-      "Skyglass Canopy 51-59, The Wyrmglass Crown and Stormscale Summit 60 (islands). Today the front zones and "
+      "Skyglass Canopy 51-60, The Wyrmglass Crown and Stormscale Summit 60 (islands). Today the front zones and "
       "islands have no quest givers and no roads.\n")
     w("## Counts\n")
     w("- Quests registered today: %d; quest NPCs: %d; settlements with sockets: %d." % (

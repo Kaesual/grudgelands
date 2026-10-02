@@ -69,7 +69,7 @@ in this file as of commit `082982da`.
   2. adjacent home zones: levels **11–20**;
   3. central heartland: levels **21–30**;
   4. contested faction-front approaches and shared-front regions: levels
-     **31–40**, **41–50**, **51–59** and the level-**60** endpoint summits.
+     **31–40**, **41–50**, **51–60** and the level-**60** endpoint summits.
 - No level-1–30 zone is contested. Level-21–30 heartland may show military
   preparation and lead toward the front, but remains peaceful under the
   voluntary-tag rules of §4.
@@ -90,6 +90,14 @@ in this file as of commit `082982da`.
   becomes 51–53 / 54–56 / 57–59, and 60 stays 60. How progress across the
   zone is measured is an implementation choice, as long as the level never
   leaves the zone's range, never falls toward the front and rises gradually.
+- **Gravesalt Escarpment and The Skyglass Canopy play 51–60** (the user,
+  2026-10-02, Round 28 S2c: the level cap is reached in leveling zones). Their
+  zone records (`grug_zones.get` / `at`: map, quests, spawn regions) carry the
+  gameplay band from `grug_core/zone_bands.lua`; the analytic level field
+  above keeps the mapgen band 51–59 (51–53 / 54–56 / 57–59), because it places
+  plants, resources and P9G content and the generated world must not change.
+  In a zone with a spawn recipe the gameplay surface level is the region's
+  ([spawn_regions.md](spawn_regions.md#one-level-truth)).
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
   zones use their published ranges but retain `civic_no_hostiles`.
@@ -971,10 +979,10 @@ and terrain rules without deriving political ownership from cultural origin.
 | Stable id | Display name | Race region | Level | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
-| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–59 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
+| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
 | `front_broken_causeway` | The Broken Causeway | Human | 31–40 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Wisp/Bog Witch; **K×3, R:Captain Bonerattle** |
 | `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
-| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–59 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
+| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
 | `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |
 
 The identity column is flavour. Routes, trenches, siege ramps, galleries and
@@ -1350,7 +1358,7 @@ code, not by this document.
   bracket. Different families may carry the same paired table.
 - T1 gravemoss is supplied by Copperfell Foothills / Mournfen; T2 dragonweed
   by the Dwarf/forest side and Undead/Orc wilds; T3 crimson lotus only by the
-  level-51–59 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
+  level-51–60 Skyglass Canopy / level-60 Stormscale Summit palettes. Marshbloom
   uses Lorindor, Whitebridge Shire, Ossuary Reach and Whispering Reedlands;
   this 2026-08-31 ruling replaces the former Mournfen row with Ossuary Reach
   to preserve paired level-21–30 supply. Stormkelp uses both endpoint island

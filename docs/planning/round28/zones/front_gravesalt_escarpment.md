@@ -1,6 +1,6 @@
 # Gravesalt Escarpment (`front_gravesalt_escarpment`)
 
-Zone 34 · front zone · contested · race region **undead** · levels **51-59** · contested · relief `highland` · seed 42
+Zone 34 · front zone · contested · race region **undead** · levels **51-60** · contested · relief `highland` · seed 42
 
 Map: [maps/front_gravesalt_escarpment.png](maps/front_gravesalt_escarpment.png). Machine-readable: [front_gravesalt_escarpment.json](front_gravesalt_escarpment.json). Coordinates are world nodes (x east, z north, y up).
 
