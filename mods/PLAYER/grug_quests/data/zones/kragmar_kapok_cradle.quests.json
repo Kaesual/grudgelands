@@ -38,7 +38,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:jungle_boar",
             "grug_mobs:small_boar"
           ],
           "count": 3
@@ -120,7 +119,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:zombie",
             "grug_mobs:braindead_zombie",
             "grug_mobs:sluggish_zombie"
           ],
@@ -151,7 +149,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:viper",
             "grug_mobs:reed_viper"
           ],
           "count": 5

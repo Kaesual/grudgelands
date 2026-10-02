@@ -55,7 +55,6 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:bandit",
             "grug_mobs:entrenched_bandit"
           ],
           "zone": "kragmar_thunderroot_wilds",
