@@ -225,7 +225,9 @@ end
 -- Shaped recipes use the same placement rule as the engine grid: surrounding
 -- empty rows and columns only move the pattern, while every slot inside the
 -- trimmed rectangle is authoritative. Shapeless recipes retain the registry's
--- maximum-matching group semantics.
+-- maximum-matching group semantics. recipe_for_craft applies this rule through
+-- the craft index below; the function stays as the per-recipe reference for
+-- tools/r30_p4/portable_test.lua.
 local function shaped_inputs_match(declared, actual)
 	local declared_matrix, declared_width, declared_height =
 		matrix_from_nested(declared)
@@ -251,6 +253,81 @@ local function shaped_inputs_match(declared, actual)
 				return false
 			end
 		end
+	end
+	return true
+end
+
+-- Craft lookup index (Round 30, perf review #7). The engine asks for a grid
+-- recipe twice per crafted item, so a shift-click of a stack used to scan and
+-- re-trim every recipe hundreds of times. Each recipe is filed once, at
+-- registration, under its station and the property the matchers above
+-- require of any grid it accepts: a shaped recipe under its trimmed size and
+-- the mask of its occupied cells (empty cells must coincide), then under the
+-- item in its first occupied cell or, when that cell is a group, in the
+-- bucket's group list; every other recipe under its ingredient count. A
+-- lookup trims the grid once and runs the full matcher only on those
+-- candidates, so it finds exactly the recipes the scan over all of them found.
+local craft_index = {}
+
+-- The trimmed cells (row-major item names, "" for empty) and the shape key.
+local function grid_shape(matrix, width, height)
+	local trimmed, trimmed_width, trimmed_height = trim_matrix(matrix, width, height)
+	local cells, mask = {}, {}
+	for row = 1, trimmed_height do
+		for column = 1, trimmed_width do
+			local name = trimmed[row][column]
+			cells[#cells + 1] = name
+			mask[#mask + 1] = name == "" and "0" or "1"
+		end
+	end
+	return cells, trimmed_width .. "x" .. trimmed_height .. ":" .. table.concat(mask)
+end
+
+local function first_occupied(cells)
+	for index = 1, #cells do
+		if cells[index] ~= "" then return cells[index] end
+	end
+end
+
+local function index_recipe(recipe)
+	local station = craft_index[recipe.station]
+	if not station then
+		station = {shaped = {}, counted = {}}
+		craft_index[recipe.station] = station
+	end
+	if recipe.shaped then
+		local cells, shape = grid_shape(matrix_from_nested(recipe.inputs))
+		local bucket = station.shaped[shape]
+		if not bucket then
+			bucket = {items = {}, groups = {}}
+			station.shaped[shape] = bucket
+		end
+		local first = first_occupied(cells)
+		local list = bucket.groups
+		if first and not first:match("^group:") then
+			list = bucket.items[first]
+			if not list then
+				list = {}
+				bucket.items[first] = list
+			end
+		end
+		list[#list + 1] = {recipe = recipe, cells = cells}
+	else
+		local count = #recipe.flat_inputs
+		local list = station.counted[count]
+		if not list then
+			list = {}
+			station.counted[count] = list
+		end
+		list[#list + 1] = recipe
+	end
+end
+
+-- Same cells as `wanted` under the same mask: every occupied cell must match.
+local function cells_match(wanted, got)
+	for index = 1, #wanted do
+		local token = wanted[index]
+		if token ~= "" and not group_matches(token, got[index]) then return false end
 	end
 	return true
 end
@@ -699,6 +776,7 @@ function grug_jobs.register_recipe(definition)
 			in_place_universal_routes[output] or 0, universal_routes)
 	end
 	grug_jobs.recipes[#grug_jobs.recipes + 1] = recipe
+	index_recipe(recipe)
 	if not output_routes then
 		output_routes = {}
 		recipes_by_output[output] = output_routes
@@ -747,17 +825,40 @@ function grug_jobs.recipe_for_craft(station, output, inputs)
 	if inputs == nil then
 		return grug_jobs.recipe_for_output(output, station)
 	end
+	local index = craft_index[station]
+	if not index then return nil end
 	local found
-	for index = 1, #grug_jobs.recipes do
-		local candidate = grug_jobs.recipes[index]
-		if candidate.station == station then
-			local matches = candidate.shaped and
-				shaped_inputs_match(candidate.inputs, inputs) or
-				(not candidate.shaped and inputs_match(candidate.inputs, inputs))
-			if matches then
-				if found then return ambiguous_craft(station, inputs) end
-				found = candidate
+	-- Shaped recipes: the grid is trimmed once, as shaped_inputs_match did per
+	-- candidate.
+	local matrix, width, height
+	if type(inputs[1]) == "table" and type(inputs[1].get_name) ~= "function" then
+		matrix, width, height = matrix_from_nested(inputs)
+	else
+		matrix, width, height = matrix_from_grid(inputs, 3)
+	end
+	local cells, shape = grid_shape(matrix, width, height)
+	local bucket = index.shaped[shape]
+	if bucket then
+		local lists = {bucket.items[first_occupied(cells)], bucket.groups}
+		for list_index = 1, 2 do
+			local list = lists[list_index] or {}
+			for entry_index = 1, #list do
+				local entry = list[entry_index]
+				if cells_match(entry.cells, cells) then
+					if found then return ambiguous_craft(station, inputs) end
+					found = entry.recipe
+				end
 			end
+		end
+	end
+	-- Every other recipe: maximum matching over the same ingredient count.
+	local got = flatten_inputs(inputs)
+	local counted = index.counted[#got] or {}
+	for entry_index = 1, #counted do
+		local candidate = counted[entry_index]
+		if can_match_all(candidate.flat_inputs, got, group_matches) then
+			if found then return ambiguous_craft(station, inputs) end
+			found = candidate
 		end
 	end
 	return found
@@ -874,6 +975,7 @@ grug_jobs._item_name = item_name
 grug_jobs._flatten_inputs = flatten_inputs
 grug_jobs._normalized_inputs = normalized_inputs
 grug_jobs._inputs_match = inputs_match
+grug_jobs._shaped_inputs_match = shaped_inputs_match
 grug_jobs._group_matches = group_matches
 grug_jobs._input_languages_overlap = function(first, second)
 	return input_languages_overlap(first, second, registration_comparison_phase())
