@@ -380,11 +380,9 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
     kind is {"id", "name", "unit": "kind", "type", "belt", "density",
     "rosters": {"day", "night"}, "inherits", "levels_by_role", "roles",
     "levels"}, a camp the same with "unit": "camp", one roster for both
-    clocks, its camp numbers and "site" ("generate" or {"poi", "name"}); a
-    camp on a POI without its own belt has "belt" None and its roles' levels
-    within the zone's band (the game cuts them to the belt the POI lies in
-    on each seed); a leader is {"role", "at", "respawn", "level"}. errors:
-    RecipeError strings."""
+    clocks, its camp numbers and "site" ("generate" or {"poi", "name"});
+    every camp states its belt; a leader is {"role", "at", "respawn",
+    "level"}. errors: RecipeError strings."""
     errors = []
     band_known = band is not None
     band = band or [1, LEVEL_CAP]
@@ -695,8 +693,12 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
             err("E-recipe", cpath, "camp needs a display name")
         site = camp_site(row.get("site"), cpath + ".site")
         belt = belt_by_id.get(row.get("belt"))
-        if belt is None and (row.get("belt") is not None or site == "generate"):
-            err("E-recipe-ref", cpath + ".belt", "belt %r is not a belt of the recipe" % row.get("belt"))
+        if belt is None:
+            # Every camp states its belt, a camp on a POI too: exact quest
+            # levels, and the camp stands on every seed.
+            err("E-recipe-ref", cpath + ".belt", "belt %r is not a belt of the recipe%s" % (
+                row.get("belt"), " (every camp states its belt, a camp on a POI too)"
+                if row.get("belt") is None else ""))
         if not _is_int(row.get("slots"), 1):
             err("E-recipe", cpath + ".slots", "slots must be an integer >= 1")
         respawn = row.get("respawn")
@@ -717,14 +719,8 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
                 "rosters": {"day": value, "night": value}, "inherits": [], "slots": row.get("slots"),
                 "respawn": respawn, "min_player_distance": row.get("min_player_distance"),
                 "apart": row.get("apart"), "site": site}
-        if belt is None and site not in (None, "generate"):
-            # The POI's belt differs per seed: the roles' levels within the
-            # zone's band here (the game cuts them to the belt and checks the
-            # cover there).
-            unit_levels(camp, [value], band, cpath)
-        else:
-            unit_levels(camp, [value], belt["levels"] if belt else None, cpath)
-            cover(camp, value, belt["levels"] if belt else None, False, cpath + ".roster")
+        unit_levels(camp, [value], belt["levels"] if belt else None, cpath)
+        cover(camp, value, belt["levels"] if belt else None, False, cpath + ".roster")
         out["camps"].append(camp)
         ids[camp["id"]] = camp
     # leaders
@@ -764,12 +760,6 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
             unit = ids.get(at["camp"]) if isinstance(at["camp"], str) else None
             if unit is None or unit["unit"] != "camp":
                 err("E-recipe-ref", lpath + ".at.camp", "camp %r is not a camp of the recipe" % at["camp"])
-                continue
-            if unit["belt"] is None and unit["site"] not in (None, "generate"):
-                # A leader's level is fixed (ruling 38); a POI's belt may
-                # differ per seed.
-                err("E-leader-camp-belt", lpath + ".at.camp", "camp %s states no belt: a leader's camp states its belt, "
-                    "so the leader's level is the same on every seed" % unit["id"])
                 continue
             leader["at"] = {"camp": at["camp"]}
         else:

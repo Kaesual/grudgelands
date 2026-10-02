@@ -1166,8 +1166,7 @@ gate, protected surface).
   leaders, rares and bosses are not counted.
 - **Camps (ruling 37)** — bandits, poachers and mirefolk of a recipe camp at
   the spot its region map picked by rule, or on the camp POI its recipe
-  names (Round 28 S2; then in the belt that POI lies in unless the camp
-  states one): `slots` members, each death
+  names (Round 28 S2; in its stated belt): `slots` members, each death
   refilled after a roll in `respawn` (30–60 s), a spot within 40 nodes of the
   camp centre and at least `min_player_distance` (16) from every player.
   Members roam free under the normal wander leash and carry the camp's tag

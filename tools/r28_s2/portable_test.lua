@@ -10,13 +10,14 @@
 -- B. The parser: `from` by anchor list or border, `to` core, a one-belt
 --    recipe without `to` (and `from`), camp sites on POIs (type, name,
 --    ambiguity, guard posts, apart, a leader's camp without a belt, two
---    camps on one POI, a generated camp without a belt).
+--    camps on one POI; every camp states its belt).
 -- C. The builder on a synthetic world: border sources (d_from 0 on the
 --    border cells), progress toward the exit, `to` core (the top belt is
 --    the cells farthest from every source), one belt, anchor lists, camps on
---    POIs (centre, cells within the camp radius, the belt of the POI's cell
---    or the stated one, levels cut to that belt, a cover problem on the
---    wrong belt, generated camps kept apart, a leader at the POI).
+--    POIs (centre, cells within the camp radius, the stated belt and its
+--    levels, the POI cell's own belt in the stats and a warning when it lies
+--    more than one belt away, generated camps kept apart, a leader at the
+--    POI).
 -- Prints "R28 S2 PORTABLE PASS checks=<n>" or raises on the first failure.
 local repo = arg[1] or "."
 local checks = 0
@@ -158,8 +159,11 @@ local function parse_fails(recipe, pattern, label)
 end
 local function bandit_camp(fields)
 	local row = {id = "bandits", name = "Bandits", site = {poi = "bandit", name = "Test Bandit Camp"},
-		roster = roster("raider"), slots = 5, respawn = {30, 60}, min_player_distance = 16}
-	for k, v in pairs(fields or {}) do row[k] = v end
+		belt = "high", roster = roster("raider"), slots = 5, respawn = {30, 60},
+		min_player_distance = 16}
+	for k, v in pairs(fields or {}) do
+		if v == false then row[k] = nil else row[k] = v end
+	end
 	return row
 end
 
@@ -208,11 +212,11 @@ local function with_camps(camps, leaders)
 	return recipe
 end
 r = parse(with_camps({bandit_camp()}))
-check(r.camps[1].site.anchor == "anchor_002" and r.camps[1].belt == nil and
+check(r.camps[1].site.anchor == "anchor_002" and r.camps[1].belt.id == "high" and
 	r.camps[1].levels_by_role.raider[1] == 17 and r.camps[1].levels_by_role.raider[2] == 20,
-	"a camp on a named POI: no belt yet, the role's levels within the band")
-r = parse(with_camps({bandit_camp({belt = "high"})}))
-check(r.camps[1].belt.id == "high", "a camp on a POI with a stated belt")
+	"a camp on a named POI: its stated belt and the levels in it")
+parse_fails(with_camps({bandit_camp({belt = false})}), "every camp states its belt",
+	"a camp on a POI without a belt")
 parse_fails(with_camps({bandit_camp({site = {poi = "bandit"}})}), "has 2 bandit POIs",
 	"two bandit POIs without a name")
 parse_fails(with_camps({bandit_camp({site = {poi = "bandit", name = "Nowhere"}})}),
@@ -227,12 +231,11 @@ parse_fails(with_camps({bandit_camp({apart = 8})}), "apart places a generated si
 	"apart on a camp on a POI")
 parse_fails(with_camps({bandit_camp(), bandit_camp({id = "more"})}), "already holds camp",
 	"two camps on one POI")
-parse_fails(with_camps({bandit_camp({site = "generate", apart = 4})}), "is not a belt",
-	"a generated camp without a belt")
-parse_fails(with_camps({bandit_camp()}, {{role = "chief", at = {camp = "bandits"}, respawn = 300}}),
-	"states no belt", "a leader at a camp on a POI without a belt")
-r = parse(with_camps({bandit_camp({belt = "high"})},
-	{{role = "chief", at = {camp = "bandits"}, respawn = 300}}))
+parse_fails(with_camps({bandit_camp({site = "generate", apart = 4, belt = false})}),
+	"every camp states its belt", "a generated camp without a belt")
+parse_fails(with_camps({bandit_camp({roster = {{role = "topling", weight = 4},
+	{role = "gapling", weight = 1}}, belt = "low"})}), "[cover]", "the camp cover rule on a POI camp")
+r = parse(with_camps({bandit_camp()}, {{role = "chief", at = {camp = "bandits"}, respawn = 300}}))
 check(r.leaders[1].level == 20, "a leader at a camp on a POI with a stated belt: its level is fixed")
 parse_fails(with_camps({bandit_camp({belt = "low"})}), "never meets the belt",
 	"a stated belt still checks the roles' levels")
@@ -320,33 +323,40 @@ local function check_poi_camp(m, unit, belt_index, label)
 	check(m.region_at(400, -500) == unit.region and unit.region.camp == unit,
 		label .. ": the POI's column lies in the camp region")
 end
--- The POI (400, -500) sits in the southern half: on the low belt.
-local recipe = with_camps({bandit_camp({roster = roster("lowling")})})
-map = build(recipe)
+-- The POI (400, -500) sits in the southern half: on the low belt. The camp
+-- states its belt; one belt away is fine.
+map = build(with_camps({bandit_camp({roster = roster("highling")})}))
 local unit = camp_unit(map, "bandits")
-check(unit and unit.belt.id == "low", "a camp on a POI takes the belt its cell lies in")
-check_poi_camp(map, unit, 1, "inferred belt")
-check(unit.levels_by_role.lowling[1] == 11 and unit.levels_by_role.lowling[2] == 14 and
-	unit.levels[2] == 14 and unit.region.levels[2] == 14, "levels cut to the POI's belt")
+check(unit and unit.belt.id == "high" and unit.poi_belt.id == "low" and #map.warnings == 0,
+	"a camp on a POI stands in its stated belt; the POI cell's own belt is kept")
+check_poi_camp(map, unit, 2, "stated belt")
+check(unit.levels_by_role.highling[1] == 15 and unit.levels[2] == 20 and unit.region.levels[2] == 20,
+	"the stated belt's levels")
 check(unit.tag == A .. "/bandits" and unit.is_camp and unit.rosters.day == unit.camp.roster,
 	"the unit spawns in the camp's stead (tag, rosters, is_camp)")
-check(CORE.stats(map).camps[1].poi == "Test Bandit Camp", "stats name the POI")
--- A stated belt overrides the POI's.
-map = build(with_camps({bandit_camp({belt = "high"})}))
+local st = CORE.stats(map).camps[1]
+check(st.poi == "Test Bandit Camp" and st.poi_belt == "low", "stats name the POI and its cell's belt")
+-- More than one belt away: a warning (stats), the camp still stands.
+local three = {
+	{id = "low", share = 34, levels = {11, 14}, kinds = kind("low_open", "lowling")},
+	{id = "mid", share = 33, levels = {15, 17}, kinds = kind("mid_open", "highling")},
+	{id = "high", share = 33, levels = {18, 20}, kinds = kind("high_open", "highling")},
+}
+local function three_camps(belt)
+	local recipe = with_camps({bandit_camp({belt = belt})})
+	recipe.belts = deep_copy(three)
+	return recipe
+end
+map = build(three_camps("high"))
 unit = camp_unit(map, "bandits")
-check(unit and unit.belt.id == "high" and unit.levels_by_role.raider[1] == 17, "a stated belt wins")
-check_poi_camp(map, unit, 2, "stated belt")
--- A roster that does not reach the POI's belt top: a problem, no camp.
-map = build(with_camps({bandit_camp()}))
-check(camp_unit(map, "bandits") == nil and #map.problems == 1 and
-	map.problems[1]:find("never meets", 1, true) ~= nil and map.region_at(400, -500).camp == nil,
-	"a POI belt the roster misses: a problem, no camp, ordinary cells (" ..
-	tostring(map.problems[1]) .. ")")
-map = build(with_camps({bandit_camp({roster = {{role = "topling", weight = 4}, {role = "gapling", weight = 1}}})}))
-check(camp_unit(map, "bandits") == nil and map.problems[1]:find("[cover]", 1, true) ~= nil,
-	"a POI belt the roster leaves a gap in: the cover rule, a problem")
+check(unit and unit.poi_belt.id == "low" and #map.warnings == 1 and
+	map.warnings[1]:find("states belt high, its POI lies in belt low", 1, true) ~= nil and
+	CORE.stats(map).warnings[1] == map.warnings[1] and #map.problems == 0,
+	"two belts away: a warning, the camp stands (" .. tostring(map.warnings[1]) .. ")")
+map = build(three_camps("mid"))
+check(camp_unit(map, "bandits") and #map.warnings == 0, "one belt away: no warning")
 -- A generated camp keeps `apart` from a camp on a POI.
-recipe = with_camps({bandit_camp({roster = roster("lowling")}),
+local recipe = with_camps({bandit_camp({roster = roster("lowling"), belt = "low"}),
 	{id = "gen", name = "Gen", belt = "low", roster = roster("lowling"), slots = 4,
 		respawn = {30, 60}, min_player_distance = 16, apart = 30}})
 map = build(recipe)
@@ -355,8 +365,42 @@ check(poi_unit and gen and math.max(math.abs(gen.cell.i - poi_unit.cell.i),
 	math.abs(gen.cell.j - poi_unit.cell.j)) >= 30, "a generated camp stays apart from a POI camp")
 check(gen.region.size == 9 and gen.score ~= nil and poi_unit.score == nil,
 	"the generated camp keeps its 3x3 block and score")
+-- Two close POIs (Round 28 S2 review): each camp keeps its POI's own cell,
+-- so both have a region; two POIs in one cell give a build problem, no crash.
+local function close_world(mx, mz)
+	local anchors = deep_copy(ANCHORS)
+	anchors[#anchors + 1] = {id = "anchor_005", slot = "mirefolk", template = "mirefolk", x = mx, z = mz}
+	local source = deep_copy(SOURCE)
+	source.anchors[#source.anchors + 1] = {id = "anchor_005", zone_numeric_id = 1,
+		slot_id = "mirefolk", template_id = "mirefolk"}
+	local zones = {}
+	for k, v in pairs(ZONES) do zones[k] = v end
+	zones.anchor = function(zone, slot)
+		if zone ~= A then return nil end
+		for _, a in ipairs(anchors) do
+			if a.slot == slot then return {x = a.x, y = 20, z = a.z, id = a.id} end
+		end
+		return nil
+	end
+	local q = CORE.queries({zones = zones, road_polylines = {}, source = source,
+		column_values_at = function() return "land" end})
+	local c = ctx()
+	c.pois = function(zone) return CORE.zone_pois(source, zone, {anchor_002 = "Test Bandit Camp",
+		anchor_003 = "Test Hideout", anchor_005 = "Test Fen"}) end
+	local rec = with_camps({bandit_camp(), bandit_camp({id = "fen", site = {poi = "mirefolk"}})})
+	return CORE.build(A, q, CORE.parse_recipe(A, rec, c))
+end
+map = close_world(420, -480) -- the next cell, inside the bandit camp's radius
+local bandits, fen = camp_unit(map, "bandits"), camp_unit(map, "fen")
+check(bandits and fen and fen.region and fen.region.size >= 1 and bandits.region.size >= 1 and
+	map.region_at(420, -480) == fen.region and map.region_at(400, -500) == bandits.region,
+	"two close POIs: each camp holds its POI's own cell")
+map = close_world(405, -505) -- the same cell
+check(camp_unit(map, "bandits") and not camp_unit(map, "fen") and #map.problems == 1 and
+	map.problems[1]:find("shares its cell with camp bandits", 1, true) ~= nil,
+	"two POIs in one cell: a build problem for the second (" .. tostring(map.problems[1]) .. ")")
 -- A leader at the POI camp.
-map = build(with_camps({bandit_camp({belt = "high"})},
+map = build(with_camps({bandit_camp()},
 	{{role = "chief", at = {camp = "bandits"}, respawn = 300}}))
 check(map.leaders[1].x == 400 and map.leaders[1].z == -500 and map.leaders[1].level == 20,
 	"a leader at a POI camp stands at the POI at its fixed level")

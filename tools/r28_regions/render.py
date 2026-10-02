@@ -303,7 +303,8 @@ def main():
         y += 6
     for c in doc["camps"]:
         draw_tent(d, x0 + 8, y + 8, 7)
-        name = "%s (on %s, belt %s)" % (c["name"], c["poi"], c["belt"]) if c.get("poi") else c["name"]
+        name = "%s (on %s, belt %s, POI in %s)" % (c["name"], c["poi"], c["belt"], c["poi_belt"]) \
+            if c.get("poi") else c["name"]
         d.text((x0 + 20, y), "%s: %s, %d slots, respawn %d-%d s" % (
             name, roster_text(c["roster"]), c["slots"], c["respawn"][0], c["respawn"][1]),
             font=f_med, fill=(0, 0, 0))
@@ -390,9 +391,10 @@ def write_stats(doc, path):
     lines.append("")
     for c in doc["camps"]:
         if c.get("poi"):
-            lines.append("- Camp `%s` on the POI %s at (%d, %d): belt %s, nearest road %.0f nodes, "
-                         "levels %s." % (c["id"], c["poi"], c["x"], c["z"], c["belt"], c["road"],
-                                         levels_text(c["levels"])))
+            lines.append("- Camp `%s` on the POI %s at (%d, %d): belt %s (the POI's cell lies in belt %s "
+                         "on this seed), nearest road %.0f nodes, levels %s." % (
+                             c["id"], c["poi"], c["x"], c["z"], c["belt"], c["poi_belt"], c["road"],
+                             levels_text(c["levels"])))
             continue
         lines.append("- Camp `%s` at (%d, %d): score %.2f, nearest road %.0f nodes, levels %s." % (
             c["id"], c["x"], c["z"], c["score"], c["road"], levels_text(c["levels"])))
@@ -401,6 +403,8 @@ def write_stats(doc, path):
             l["name"], l["role"], l["x"], l["z"], l["level"], l["respawn"]))
     for p in st["problems"]:
         lines.append("- PROBLEM: %s" % p)
+    for w in st.get("warnings") or []:
+        lines.append("- WARNING: %s" % w)
     lines.append("")
     lines.append("## Directions")
     lines.append("")
