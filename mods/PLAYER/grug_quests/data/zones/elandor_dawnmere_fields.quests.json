@@ -114,7 +114,7 @@
       "line": "hunt",
       "giver": "r14_human_elder",
       "turnin": "r14_human_elder",
-      "min_level": 6,
+      "min_level": 7,
       "level": 8,
       "requires": [
         "dawnmere_hunt_03"

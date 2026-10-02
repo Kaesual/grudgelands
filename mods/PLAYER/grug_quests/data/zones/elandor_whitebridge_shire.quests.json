@@ -109,7 +109,7 @@
         "whitebridge_baskets_02"
       ],
       "title": "Thorn's Double Sale",
-      "text": "{name:basket_poacher_thorn} does his business {dir_from_giver:basket_poacher_thorn}, day and night; apparently a man who sells everything twice needs the extra hours. Defeat him and report back to me. Ansel's kitchen paid for those baskets in good faith, and I mean to honour the order.",
+      "text": "{name:basket_poacher_thorn} does his business in the {name:willowbanks} {dir_from_giver:basket_poacher_thorn}, day and night; apparently a man who sells everything twice needs the extra hours. Defeat him and report back to me. Ansel's kitchen paid for those baskets in good faith, and I mean to honour the order.",
       "objectives": [
         {
           "type": "kill",
@@ -240,7 +240,7 @@
       "level": 26,
       "requires": [],
       "title": "Optional: Bears in the Stores",
-      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Drive off five by day. After dark the Briar-Web Spiders take that wood, and you are welcome to leave them to it.",
+      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Bring down five by day. After dark the Briar-Web Spiders take that wood, and you are welcome to leave them to it.",
       "objectives": [
         {
           "type": "kill",

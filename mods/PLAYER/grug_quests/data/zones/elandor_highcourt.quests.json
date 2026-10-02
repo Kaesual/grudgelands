@@ -88,7 +88,7 @@
       "min_level": 24,
       "level": 26,
       "requires": [
-        "highcourt_accounts_01"
+        "highcourt_accounts_02"
       ],
       "title": "Optional: Tithes After Dark",
       "text": "The petitions now include Tithe Revenants in the {name:orchards} {zone_area:orchards}, rising at night to demand payments nobody remembers owing. Lay five of them to rest after dark. I would prefer the dead stop collecting before the living start believing them.",
@@ -182,7 +182,9 @@
       "turnin": "r20_human_capital_cook",
       "min_level": 21,
       "level": 22,
-      "requires": [],
+      "requires": [
+        "highcourt_provisions_01"
+      ],
       "title": "Optional: Venison for the Long Table",
       "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags in the {name:kingswood} {zone_area:kingswood} by day. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
       "objectives": [

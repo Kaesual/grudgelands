@@ -59,7 +59,7 @@
         "dawnmere_departure"
       ],
       "title": "A Harvest Worth Stealing",
-      "text": "Crumb's accounts name Requisitioner Hobb, but his collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards} {zone_area:orchards}, where the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
+      "text": "Crumb's accounts name Requisitioner Hobb as the man he answered to. Hobb's collectors will find precious little to steal if we cannot bring the harvest in. Hunt eight Bracken Foxes by day in the {name:orchards} {zone_area:orchards}, where the pickers need room to work. We will untangle Hobb's business once ours is back on its feet.",
       "objectives": [
         {
           "type": "kill",
