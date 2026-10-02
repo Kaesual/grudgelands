@@ -21,8 +21,8 @@ function grug_repair.cost(stack)
 	return math.ceil(price * stack:get_wear() / (5 * 65535))
 end
 
--- Future Housing registers a station provider here. Merely placing a
--- crafting station does not grant access to a city repair service.
+-- providers.lua registers the city trainers and the claim stations. Merely
+-- placing a crafting station outside an active claim grants no repair.
 function grug_repair.register_provider(kind, permitted)
 	assert(type(kind) == "string" and not provider_types[kind])
 	assert(type(permitted) == "function")

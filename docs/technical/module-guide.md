@@ -587,21 +587,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     the clamp, the HUD refresh and the change callbacks all live in
     those functions. `PlayerMetaRef:set_int` is a real 32-bit signed
     store, hence the hard ceiling `grug_money.MAX`.
-  - **`_grug_sell_price` (copper) is the universal buy-back field** in
-    an item def — that is how "traders buy EVERY mob drop" is
-    guaranteed. For **foreign items we must not touch** (vendored
-    `default:` / `mobs:`) use `grug_traders.set_price(name, copper)`
-    instead of overriding someone else's def; `grug_traders.sell_price`
-    resolves override → def field → 0, and **0 means "not sellable"**.
+  - **One price module owns every payout** (`grug_traders/prices.lua`,
+    pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
+    class × tier factor, processed goods by their cheapest recipe, sold
+    goods by 5% ceiling buy-back capped by their recipe. It reads each
+    item's tier from its own registration and resolves once when every mod
+    has loaded; items carry **no** price field. `grug_traders.sell_price`
+    returns the payout, and **0 means "not sellable"**. A new loot or
+    gathered item gets a class there, not a number in its def.
   - **`grug_gear` is a GENERATED catalog, never a hand-written list**:
     the six bracket catalogs come out of the §3.1/§3.2 curves at load
     time. Public surface for anything that sells gear:
-    `grug_gear.BRACKETS`, `bracket_for_level`, `get_price`,
-    `get_sell_price`, `catalog[b].fixed/.extras/.all`. **Running WP7 legacy
-    still buys back at 25%** and still uses its old generated price curve.
-    The authoritative target is the Common-price axis plus ceiling-rounded
-    **5%** buy-back in `economy.md`; WP44 migrates the catalog and payout
-    tables without bypassing these APIs.
+    `grug_gear.BRACKETS` (the Common slot table of `economy.md` §2),
+    `bracket_for_level`, `get_price`, `catalog[b].fixed/.extras/.all`.
   - **Armor pipeline**: item `_grug_armor` values and every additive source
     aggregate as uncapped raw rating `A`. The deep Bulwark Unbroken capstone
     multiplies that aggregate by 1.65 and its emergency window then adds 15.

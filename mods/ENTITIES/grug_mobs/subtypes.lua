@@ -210,10 +210,10 @@ end
 -- belong to grug_professions. The inventory image is the item's own icon
 -- `<mod>_<name>.png` from this mod's textures/ (the Round 28 art set), else a
 -- tinted placeholder; the `icon` text is kept as `_grug_icon_brief`.
--- A new signature item's `tier` (1-6) is its vendor price in copper (the
--- 1-6c mob-material band, economy.md §3) and its ingredient tier, which
--- grug_professions registers with grug_jobs (grug_mobs loads before it). A
--- quest item has neither: traders do not buy quest props.
+-- A new signature item's `tier` (1-6) is its ingredient tier, which
+-- grug_professions registers with grug_jobs (grug_mobs loads before it), and
+-- with its kind sets its vendor payout (grug_traders/prices.lua). A quest item
+-- has neither: traders do not buy quest props.
 --
 
 local PLACEHOLDER_IMAGE = {
@@ -271,7 +271,6 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 				inventory_image = item_image(row.id, row.kind),
 				groups = table.copy(ITEM_GROUPS[row.kind]),
 				_grug_icon_brief = row.icon,
-				_grug_sell_price = row.kind == "signature" and row.tier or nil,
 			})
 			if row.kind == "signature" then
 				grug_mobs.loot_item_tiers[row.id] = row.tier

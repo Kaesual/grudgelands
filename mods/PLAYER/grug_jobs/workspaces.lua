@@ -205,6 +205,11 @@ local function formspec(ctx)
 		end
 		if ctx.operation then result = result .. "button[7.3,2.3;2,0.8;apply;Apply]" end
 	end
+	-- A station inside an active Claim Stone claim also repairs (grug_repair).
+	local repair = rawget(_G, "grug_repair")
+	if repair and repair.can_open_station(core.get_player_by_name(ctx.name), ctx.pos) then
+		result = result .. "button[9.3,4.95;2.4,0.8;grug_jobs_repair;Repair equipment]"
+	end
 	return result .. "list[current_player;main;1,6;8,1;]list[current_player;main;1,7.25;8,3;8]" ..
 		default.get_hotbar_bg(1, 6) .. grug_jobs.station_book_button(ctx.station, 10.3, 2.3)
 end
@@ -331,6 +336,15 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	if fields.quit then detach(ctx) return true end
 	if not accessible(ctx, player) then return true end
 	if fields.grug_jobs_book then grug_jobs.open_book(player, "station", ctx.station) return true end
+	if fields.grug_jobs_repair then
+		local repair = rawget(_G, "grug_repair")
+		if repair then
+			local pos = ctx.pos
+			detach(ctx)
+			repair.open_station(player, pos)
+		end
+		return true
+	end
 	if fields.operation and not ctx.produced then
 		local index = tonumber(fields.operation)
 		if index and ctx.choices and ctx.choices[index] ~= nil then ctx.operation = ctx.choices[index] or nil end

@@ -44,6 +44,33 @@ function grug_repair.can_open_trainer(player, entity)
 	return grug_repair.provider_permitted(player, trainer_provider(entity))
 end
 
+-- Claim stations (durability_repair.md, D7): a player-placed crafting station
+-- inside an active Claim Stone claim repairs at the same trader price, for
+-- anyone who may use that station. Authored public stations stand in cities
+-- and never inside a claim.
+local function station_provider(pos)
+	if type(pos) ~= "table" then return nil end
+	return {kind = "station", pos = vector.new(pos)}
+end
+
+grug_repair.register_provider("station", function(player, provider)
+	local pos = provider.pos
+	local node = pos and core.get_node_or_nil(pos)
+	local station = node and (core.registered_nodes[node.name] or {})._grug_station
+	if not station or grug_jobs.is_public_station(station, pos) or
+			distance_squared(player:get_pos(), pos) > 64 then
+		return false
+	end
+	local housing = rawget(_G, "grug_housing")
+	local claim = housing and housing.claim_at(pos)
+	return claim ~= nil and housing.is_active(claim) and
+		not grug_core.interaction_protected(pos, player:get_player_name())
+end)
+
+function grug_repair.can_open_station(player, pos)
+	return grug_repair.provider_permitted(player, station_provider(pos))
+end
+
 local function esc(text) return core.formspec_escape(tostring(text)) end
 
 local function form(session)
@@ -85,6 +112,10 @@ end
 
 function grug_repair.open_trainer(player, entity)
 	return grug_repair.open(player, trainer_provider(entity))
+end
+
+function grug_repair.open_station(player, pos)
+	return grug_repair.open(player, station_provider(pos))
 end
 
 core.register_on_player_receive_fields(function(player, formname, fields)

@@ -1296,12 +1296,6 @@
     "bands": {
       "3": [
         {
-          "item": "default:stick",
-          "chance": 1,
-          "min": 1,
-          "max": 2
-        },
-        {
           "item": "default:apple",
           "chance": 4,
           "min": 1,
@@ -1316,12 +1310,6 @@
       ],
       "4": [
         {
-          "item": "default:stick",
-          "chance": 1,
-          "min": 1,
-          "max": 2
-        },
-        {
           "item": "default:apple",
           "chance": 4,
           "min": 1,
@@ -1335,14 +1323,7 @@
         }
       ]
     },
-    "leader_bonus": [
-      {
-        "item": "default:stick",
-        "chance": 1,
-        "min": 2,
-        "max": 3
-      }
-    ]
+    "leader_bonus": []
   },
   {
     "family": "weevil",
@@ -1878,12 +1859,6 @@
           "chance": 3,
           "min": 1,
           "max": 1
-        },
-        {
-          "item": "grug_mobs:sharp_feather",
-          "chance": 2,
-          "min": 1,
-          "max": 1
         }
       ],
       "4": [
@@ -1902,12 +1877,6 @@
         {
           "item": "grug_mobs:storm_feather",
           "chance": 3,
-          "min": 1,
-          "max": 1
-        },
-        {
-          "item": "grug_mobs:sharp_feather",
-          "chance": 2,
           "min": 1,
           "max": 1
         }
@@ -1982,12 +1951,6 @@
           "chance": 25,
           "min": 1,
           "max": 1
-        },
-        {
-          "item": "grug_mobs:stone_core",
-          "chance": 3,
-          "min": 1,
-          "max": 1
         }
       ],
       "4": [
@@ -2000,12 +1963,6 @@
         {
           "item": "grug_materials:silversteel_bar",
           "chance": 25,
-          "min": 1,
-          "max": 1
-        },
-        {
-          "item": "grug_mobs:stone_core",
-          "chance": 3,
           "min": 1,
           "max": 1
         }
