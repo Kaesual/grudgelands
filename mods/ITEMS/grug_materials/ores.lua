@@ -98,9 +98,7 @@ local PROCESSED_VISUALS = {
 }
 
 -- A bar pays what its smelting inputs pay (grug_traders' price module), so
--- no price lives here. The Iron row's `sell_price` in PROCESSED_MATERIALS is
--- read by nobody; it stays until that table's frozen WP40 projection is
--- re-pinned (lane M-res).
+-- no price lives here or in PROCESSED_MATERIALS (WP40's frozen projection).
 for _, material in ipairs(grug_materials.PROCESSED_MATERIALS) do
 	local visual = PROCESSED_VISUALS[material.key]
 	if material.kind == "bar" and not core.registered_items[material.item] then
