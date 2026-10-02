@@ -25,8 +25,8 @@
       "min_level": 20,
       "level": 22,
       "requires": [],
-      "title": "Trampled Knot-Reeds",
-      "text": "Reed Tapirs trample the reeds I tie my reading knots from, all over the {name:jungle} {zone_area:jungle} by day. Drive off six. The knots already say something old is hungry in the water, and I would like to read the rest.",
+      "title": "A Future Trampled Flat",
+      "text": "My reading knots speak of something old and hungry beneath the water, but I need fresh reeds to finish the telling. Kill six Reed Tapirs by day in the {name:jungle} {zone_area:jungle}, where they trample the reeds I use. It is hard enough to read tomorrow without a tapir sitting on it.",
       "objectives": [
         {
           "type": "kill",
@@ -53,8 +53,8 @@
       "requires": [
         "totemwater_knots_01"
       ],
-      "title": "Cats Among the Totems",
-      "text": "Reed Jungle Lynxes sleep on the carved totems of the {name:totemwood} {zone_area:totemwood} and wake up angry. Kill six by day so the carvers can work.",
+      "title": "Our Ancestors Are Not Cushions",
+      "text": "The carvers leave their totems in the {name:totemwood} {zone_area:totemwood}, and the Reed Jungle Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
       "objectives": [
         {
           "type": "kill",
@@ -81,8 +81,8 @@
       "requires": [
         "totemwater_knots_02"
       ],
-      "title": "Motes for the Reading",
-      "text": "A knot read by wisp-light tells the truth. Bring two Bound Wisp Motes from the Wandering Wisps of the {name:wispfen} {dir_from_giver:wispfen} after dark.",
+      "title": "Read by Restless Light",
+      "text": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Wandering Wisps in the {name:wispfen} {dir_from_giver:wispfen} after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
       "objectives": [
         {
           "type": "item",
@@ -110,8 +110,8 @@
       "requires": [
         "totemwater_knots_03"
       ],
-      "title": "The Reed-Maw",
-      "text": "The knots name it now: Crocodile Reed-Maw, older than this post, lying in the {name:blackwater} {dir_from_giver:reed_maw_crocodile}. It takes its own offerings from the river, and lately our fishers too. Kill it.",
+      "title": "The Name Beneath the Water",
+      "text": "I have the name at last: Crocodile Reed-Maw, waiting in the {name:blackwater} {dir_from_giver:reed_maw_crocodile}. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
       "objectives": [
         {
           "type": "kill",
@@ -138,8 +138,8 @@
       "requires": [
         "totemwater_knots_04"
       ],
-      "title": "The Road to Thunderroot",
-      "text": "The river is quiet, and the war is not. Rumela Stormstep holds Thunderstep Watch in Thunderroot Wilds, beyond the edge of the reach. Go; my knots say you will be useful there.",
+      "title": "The Knot Beyond the River",
+      "text": "For once, the knots show me a road instead of teeth. Go to Thunderstep Watch in Thunderroot Wilds and speak with Rumela Stormstep, who needs help on the Throng's front. I cannot promise you gentle weather there, but I would trust your hands with whatever the storm brings.",
       "objectives": [
         {
           "type": "talk",
@@ -160,8 +160,8 @@
       "min_level": 24,
       "level": 26,
       "requires": [],
-      "title": "Pinchers in the Shallows",
-      "text": "Barnacle Pinchers have taken the {name:shallows} {dir_from_giver:shallows} where we set the fish traps. Kill six by day; their shells are thick, so hit where the barnacles are not.",
+      "title": "A Trap Full of Pincers",
+      "text": "I set traps for fish, yet the Barnacle Pinchers in the {name:shallows} {dir_from_giver:shallows} seem convinced everything I lower into the water belongs to them. Kill six by day and clear space for our traps. A reading on an empty stomach always seems to predict supper.",
       "objectives": [
         {
           "type": "kill",
@@ -188,8 +188,8 @@
       "requires": [
         "totemwater_tides_01"
       ],
-      "title": "Shells for the Traps",
-      "text": "Fish traps last longer with a crab shell for a lid. Bring two Layered Crab Shells from the Barnacle Pinchers of the {name:shallows}.",
+      "title": "Put the Shells to Work",
+      "text": "The Barnacle Pinchers have spent long enough meddling with my traps; now they can contribute something useful. Bring me two Layered Crab Shells from them in the {name:shallows} {dir_from_giver:shallows} by day, and I will make new lids. There is a pleasing turn in that knot.",
       "objectives": [
         {
           "type": "item",
@@ -217,8 +217,8 @@
       "requires": [
         "totemwater_tides_02"
       ],
-      "title": "Bounty: Pinchers on the Breakers",
-      "text": "Repeatable. Barnacle Pinchers climb the {name:breakers} {dir_from_giver:breakers} with every tide. Kill six by day; the next bounty opens twenty minutes after you hand this one in.",
+      "title": "Bounty: What the Tide Brings",
+      "text": "The tide lays Barnacle Pinchers across the {name:breakers} {dir_from_giver:breakers} as though scattering seeds. Kill six by day for this repeatable bounty. You can take it again twenty minutes after turning it in; no gift of foresight is needed to know I will still want them gone.",
       "objectives": [
         {
           "type": "kill",

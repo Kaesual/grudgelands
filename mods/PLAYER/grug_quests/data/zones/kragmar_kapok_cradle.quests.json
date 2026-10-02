@@ -32,8 +32,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Roots Before Teeth",
-      "text": "Small Jungle Boars dig up the {name:yam_beds} {dir_of:kapok:yam_beds} by day. Bring down eight; their yellow names mean they only fight when you start it. And keep an eye out: somebody keeps taking the little offerings we leave for the rain, and a boar never ate a carved bead.",
+      "title": "A Boar Has No Use for Beads",
+      "text": "A root feeds a troll, a troll tends the roots; the Small Jungle Boars have skipped their half of the bargain. Kill eight by day in the {name:yam_beds} {dir_of:kapok:yam_beds}; their yellow names mean they leave you alone until you strike. Watch the rain offerings while you hunt, too. Yams go missing into bellies, but carved beads have been disappearing as well.",
       "objectives": [
         {
           "type": "kill",
@@ -61,8 +61,8 @@
       "requires": [
         "kapok_hunt_01"
       ],
-      "title": "What Comes Out After Dark",
-      "text": "When the sun goes down the Large Kapok Rats take over the same {name:yam_beds}. Kill eight after nightfall and mind the gaps between them: one squeak and its cousins come running.",
+      "title": "One Squeak, Many Cousins",
+      "text": "The boars sleep, the Large Kapok Rats wake, and our yams get no peace at all. Kill eight rats after dark in the {name:yam_beds} {dir_of:kapok:yam_beds}. Pick your fights carefully: one squeak calls nearby rats, and they are a very attentive family.",
       "objectives": [
         {
           "type": "kill",
@@ -90,8 +90,8 @@
       "requires": [
         "kapok_hunt_02"
       ],
-      "title": "Dead Feet in the Rootways",
-      "text": "Braindead Zombies shuffle through the {name:rootways} {zone_area:rootways} at night, among the rats. Put six of them back in the ground. Any you miss will try the sunrise, and the sun is a poor host to the dead.",
+      "title": "The Roots Remember Feet",
+      "text": "Listen in the {name:rootways} {zone_area:rootways} after dark: rats scurry, but Braindead Zombies drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
       "objectives": [
         {
           "type": "kill",
@@ -119,8 +119,8 @@
       "requires": [
         "kapok_hunt_03"
       ],
-      "title": "Tusks in the Thornwood",
-      "text": "Past the broadleaf trees the {name:thornwood} grows mean, and so do its boars. Kill eight Aggressive Jungle Boars there by day {zone_area:thornwood}. Red names come for you, so do not walk into two at once, and watch the vines for the Monstrous Vipers that share the ground.",
+      "title": "Read the Tusks",
+      "text": "The {name:thornwood} {zone_area:thornwood} teaches a harsher lesson than the yam beds. Kill eight Aggressive Jungle Boars there by day; a red name means they will start the fight without asking. Take them one at a time, and watch for Monstrous Vipers among the vines. Wisdom is mostly noticing the second set of teeth.",
       "objectives": [
         {
           "type": "kill",
@@ -148,8 +148,8 @@
       "requires": [
         "kapok_hunt_04"
       ],
-      "title": "The Offering Thieves",
-      "text": "Now I know where the rain offerings went. The Confused Offering Thieves camp at the {name:thieves_camp} {dir_from_giver:thieves_camp}, and their chief Tangle sells our beads back to travellers as lucky charms. Drive off six of them, settle Tangle, and the rain can have its due again.",
+      "title": "Luck Stolen Twice",
+      "text": "Our rain beads have become lucky charms for sale at the {name:thieves_camp} {dir_from_giver:thieves_camp}. Kill six Confused Offering Thieves there and their leader, Confused Offering Thief Chief Tangle, at the camp's centre. More thieves will come to fill the gaps, so do not wait for an empty camp before you face Tangle. Let us see how much luck a stolen bead can buy.",
       "objectives": [
         {
           "type": "kill",
@@ -185,8 +185,8 @@
       "requires": [
         "kapok_hunt_05"
       ],
-      "title": "The Road to Raincall",
-      "text": "The cradle has taught you what it can. Daro Kapok keeps Raincall Village along the road out of the jungle, and the basin always needs another pair of hands when the rains come. Go and tell him Zalima sent you.",
+      "title": "Roots Hold, Feet Travel",
+      "text": "The kapok keeps its roots here; you need not do the same. Follow the road to Raincall Village in Raincall Basin and speak with Daro Kapok, who can always find work for willing hands. Tell him Zalima sent you, and that I expect those hands back with all their fingers.",
       "objectives": [
         {
           "type": "talk",
@@ -207,8 +207,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "A Handle for Everything",
-      "text": "Make a Wooden Axe and a Wooden Pickaxe and bring both to me. I will look them over and give you back a pair; a spear does not cut a tree and a fist does not cut a stone.",
+      "title": "Save Your Knuckles",
+      "text": "Before you wrestle the jungle, give your hands something sensible to hold. Craft a Wooden Axe and a Wooden Pickaxe, then bring me one of each to inspect. I will give you a pair back; I teach with my hands, too, and have no use for yours beaten flat against a tree.",
       "objectives": [
         {
           "type": "item",
@@ -247,8 +247,8 @@
       "requires": [
         "kapok_tools_01"
       ],
-      "title": "Stone Under the Moss",
-      "text": "Use your wooden pick on the rock under the moss outside town and make a Stone Axe and a Stone Pickaxe. Bring both; I will hand back a pair for the ore work ahead.",
+      "title": "A Lesson Under the Moss",
+      "text": "Moss makes every rock look welcoming; your pick will tell you which ones mean it. Use your Wooden Pickaxe on rock it can break outside town, then craft a Stone Axe and a Stone Pickaxe. Bring me one of each, and I will give you a pair back for the digging ahead.",
       "objectives": [
         {
           "type": "item",
@@ -287,8 +287,8 @@
       "requires": [
         "kapok_tools_02"
       ],
-      "title": "Copper and Tin",
-      "text": "Dig copper and tin out of the rock, smelt them, and bring me three Copper Bars and three Tin Bars. The rain rusts what is careless, so we start with metal that forgives.",
+      "title": "What the Fire Leaves",
+      "text": "You have learned to read roots; now read the rock beneath them. Mine copper and tin outside town, smelt the lumps in a furnace, and bring me three Copper Bars and three Tin Bars. One lump makes one bar, which is the sort of honest accounting I wish we had at feasts.",
       "objectives": [
         {
           "type": "item",
@@ -318,8 +318,8 @@
       "requires": [
         "kapok_tools_03"
       ],
-      "title": "Bronze for the Basin",
-      "text": "Bring three Bronze Bars. Copper and tin go into a dual furnace together and come out stronger, which is also how the best marriages in Kapok work.",
+      "title": "Two Voices in the Fire",
+      "text": "Copper and tin must share a dual furnace for this lesson. Smelt them together and bring me three Bronze Bars. Think of it as a song with two voices, only neither voice can wander off halfway through.",
       "objectives": [
         {
           "type": "item",
@@ -342,8 +342,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Wood for the Pot",
-      "text": "Bring me five logs from any tree outside town. The pot does not care which tree, and neither do I, as long as it burns.",
+      "title": "The Pot Is Waiting",
+      "text": "Hear that quiet pot? That is the sound of no supper. Chop trees outside town and bring me five logs of any kind, not planks; the trees in town stay standing, unless you plan to hold up our shade yourself.",
       "objectives": [
         {
           "type": "item",
@@ -368,8 +368,8 @@
       "requires": [
         "kapok_kitchen_01"
       ],
-      "title": "A Proper Fire",
-      "text": "Bring five Coal Lumps from the rock outside town. Coal goes in the oven's fuel slot and the food goes in the cooking slot; mix them up once and you eat charcoal for a week.",
+      "title": "Heat Before Hospitality",
+      "text": "Rain drums on my roof, hungry trolls drum on my table, and neither will wait for damp wood. Mine five Coal Lumps from the rock outside town and bring them here. When you use the oven, coal goes in the fuel slot and food in the cooking slot; I already have enough complaints without serving fuel.",
       "objectives": [
         {
           "type": "item",
@@ -395,8 +395,8 @@
         "kapok_kitchen_02",
         "kapok_hunt_01"
       ],
-      "title": "Cooked, Not Just Warm",
-      "text": "You have been carrying Raw Meat since the yam beds. Cook five pieces in the oven by my hearth and bring me the Meat. A hunter who can cook never goes hungry, and never goes unvisited.",
+      "title": "A Hunter Worth Inviting",
+      "text": "You can hunt, but can I leave you alone with supper? Put five pieces of Raw Meat in the oven by my hearth, cook them, and bring me the five Meat. Learn this well and you will always have friends arriving just as the pot is ready.",
       "objectives": [
         {
           "type": "item",
@@ -421,8 +421,8 @@
       "requires": [
         "kapok_hunt_02"
       ],
-      "title": "Patches for the Sacks",
-      "text": "The rats chewed my yam sacks to lace. Bring two Rat Fur Patches from the Large Kapok Rats in the {name:yam_beds} and I will stitch the holes with their own coats. Keep any spare patches; armour likes them too.",
+      "title": "You Chew It, You Patch It",
+      "text": "My yam sacks have more holes than sack, thanks to the Large Kapok Rats. Hunt them after dark in the {name:yam_beds} {dir_of:kapok:yam_beds} and bring me two Rat Fur Patches for repairs. Keep any spare patches for armour; tonight those rats are supplying two trades and ruining neither.",
       "objectives": [
         {
           "type": "item",
@@ -451,8 +451,8 @@
       "requires": [
         "kapok_pantry_01"
       ],
-      "title": "Crab for the Feast",
-      "text": "Small Crabs scuttle in the {name:shallows} {dir_from_giver:shallows}. Bring two Crab Legs; they only pinch back if you pinch first, which is more manners than most guests have.",
+      "title": "Guests with Pincers",
+      "text": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Small Crabs in the {name:shallows} {dir_from_giver:shallows}. They leave you be until you strike, so choose your crab before you start waving your hands.",
       "objectives": [
         {
           "type": "item",
@@ -481,8 +481,8 @@
       "requires": [
         "kapok_pantry_02"
       ],
-      "title": "Sinew for the Drying Racks",
-      "text": "Young Tapirs graze the {name:broadleaf_wood} {zone_area:broadleaf_wood} by day. Bring two Fine Sinews to tie my drying racks. Careful: Aggressive Jungle Lynxes hunt the same leaves, and they do not wait to be asked.",
+      "title": "Supper Above the Mud",
+      "text": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinews from the Young Tapirs grazing by day in the {name:broadleaf_wood} {zone_area:broadleaf_wood}. The tapirs wait for you to start trouble; the Aggressive Jungle Lynxes sharing their ground do not.",
       "objectives": [
         {
           "type": "item",

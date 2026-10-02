@@ -49,8 +49,8 @@
       "min_level": 20,
       "level": 22,
       "requires": [],
-      "title": "Lights That Whisper",
-      "text": "At night Wandering Wisps drift over the {name:canopy} {zone_area:canopy} and lead travellers off the dry paths. Put out six of them. The ones they lead away always end up owing a toll to somebody.",
+      "title": "Do Not Follow Every Light",
+      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Wandering Wisps after dark in the {name:canopy} {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
       "objectives": [
         {
           "type": "kill",
@@ -77,8 +77,8 @@
       "requires": [
         "whispering_reeds_01"
       ],
-      "title": "The Hushwater Nests",
-      "text": "Toll Mirefolk nest at the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and charge anyone who crosses the water. Kill six of them; the reeds were here first and never charged anyone.",
+      "title": "The Water Signed Nothing",
+      "text": "Toll Mirefolk have settled in the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and decided every crossing belongs to them. Kill six before another traveller pays for the same stretch of water twice. I asked who gave them the river; they were strangely unwilling to introduce us.",
       "objectives": [
         {
           "type": "kill",
@@ -105,8 +105,8 @@
       "requires": [
         "whispering_reeds_01"
       ],
-      "title": "A Trade Road to Speargrass",
-      "text": "If you want to see how the orcs do things, Brakka Jarward keeps Speargrass Wellhold in Speargrass Reach, past Gor Drazhak. Carry my greetings and see what work Brakka has.",
+      "title": "Where the Reeds Give Way",
+      "text": "A troll who knows only reeds will try to weave every problem into a basket. Visit Brakka Jarward at Speargrass Wellhold in Speargrass Reach, carry my greetings, and ask what work needs doing. Our orc kin may show you another use for those hands.",
       "objectives": [
         {
           "type": "talk",
@@ -129,8 +129,8 @@
       "requires": [
         "whispering_reeds_01"
       ],
-      "title": "A Long Road to Ossuary Reach",
-      "text": "The undead keep their records at Ossuary Ledgerstead in Ossuary Reach, a long way from any reed. Sovel Namekeeper there always has a task for the living. Take the road if you have the patience.",
+      "title": "Names That Outlast the Rain",
+      "text": "Rain takes the ink from my tallies, but our undead kin seem determined to remember everything. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper about work. Give my greetings before giving your name, or you may end up filed among the supplies.",
       "objectives": [
         {
           "type": "talk",
@@ -151,8 +151,8 @@
       "min_level": 23,
       "level": 25,
       "requires": [],
-      "title": "Jaws at the Haul Path",
-      "text": "Reed Crocodiles lie in the {name:mudbanks} {dir_from_giver:mudbanks} by day and by night, right where we haul stone. Kill six. They have eaten two carts and one very surprised mule.",
+      "title": "That Is No Floating Log",
+      "text": "Two carts and a mule lost, and still somebody says the Reed Crocodiles look like logs. Kill six in the {name:mudbanks} {dir_from_giver:mudbanks}, where we haul our stone. They wait there day and night; at least one thing around this quarry never misses a shift.",
       "objectives": [
         {
           "type": "kill",
@@ -179,8 +179,8 @@
       "requires": [
         "whispering_cut_01"
       ],
-      "title": "Gel for the Quarry Pumps",
-      "text": "The quarry pumps squeal unless they are greased, and nothing greases like Slime Gel. Bring two from the Bubbling Bog Oozes of the {name:hushmire} {dir_from_giver:hushmire}; they wobble about there day and night.",
+      "title": "Quiet the Pumps",
+      "text": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Bubbling Bog Oozes in the {name:hushmire} {dir_from_giver:hushmire}. The oozes are there day and night, making considerably less fuss than my machinery.",
       "objectives": [
         {
           "type": "item",
@@ -208,8 +208,8 @@
       "requires": [
         "whispering_cut_02"
       ],
-      "title": "Bounty: Crocodiles at the Cut",
-      "text": "Repeatable. The Reed Crocodiles of the {name:mudbanks} come back with every flood. Kill six and come back; the next bounty opens twenty minutes after you hand this one in.",
+      "title": "Bounty: Jaws on the Haul Path",
+      "text": "Every flood leaves fresh Reed Crocodiles in the {name:mudbanks} {dir_from_giver:mudbanks}, and none has offered to pull a cart. Kill six there, by day or night, for this repeatable bounty. It opens again twenty minutes after you turn it in; stone waits patiently, but my haulers should not have to.",
       "objectives": [
         {
           "type": "kill",
@@ -237,8 +237,8 @@
       "min_level": 27,
       "level": 28,
       "requires": [],
-      "title": "Nests in the Deep Reeds",
-      "text": "More Toll Mirefolk nest at the {name:mire_nests} {dir_from_giver:mire_nests}, and these ones answer to a tollkeeper. Kill six of them so the tollkeeper has to come out and count for itself.",
+      "title": "Who Speaks for the Mire",
+      "text": "Listen to the {name:mire_nests} {dir_from_giver:mire_nests}: the reeds whisper, and the Toll Mirefolk shout over them. Kill six mirefolk there to weaken their tollkeeper's hold on these waters. We have heard quite enough about what we owe for crossing our own home.",
       "objectives": [
         {
           "type": "kill",
@@ -265,8 +265,8 @@
       "requires": [
         "whispering_voice_01"
       ],
-      "title": "The Tollkeeper of the Mire",
-      "text": "Mirefolk Tollkeeper Ush sits at the heart of the {name:mire_nests} {dir_from_giver:tollkeeper_ush} and takes a toll from everything that floats. Kill Ush; the reeds will whisper about it for years.",
+      "title": "The River Has No Purse",
+      "text": "Mirefolk Tollkeeper Ush waits in the {name:mire_nests} {dir_from_giver:tollkeeper_ush}, demanding coin from everything that floats. Kill Ush and end that claim upon our waters. When the reeds whisper the tale, I want them to remember who stood up for the folk with empty hands.",
       "objectives": [
         {
           "type": "kill",
@@ -293,8 +293,8 @@
       "requires": [
         "whispering_voice_02"
       ],
-      "title": "Tornstandard Hold",
-      "text": "The tolls are paid, and the war waits past the reeds. Yarra Standardmender holds Tornstandard Hold on Bannerbreak Mesa; go and show her what the reedlands taught you.",
+      "title": "Let the Reeds Tell It",
+      "text": "You have given these waters a tale worth carrying, and I will see that it travels. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender. The Throng needs hands like yours where the banners tear, as surely as we needed them among the reeds.",
       "objectives": [
         {
           "type": "talk",
