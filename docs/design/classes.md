@@ -385,7 +385,7 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   hand-reach ray per player, plus one skill ray while a targeted skill is
   selected; the skill ray is skipped when the hand ray's first hit is a
   walkable node, because a combat ray along the same line would end there
-  without a target, and for up to 0.5 s while the same skill looks from the
+  without a target, and for up to 0.25 s while the same skill looks from the
   same eye position along the same direction and its last ray hit no object)
   and sends a HUD packet only when it changes. Its server-driven latency is
   accepted.

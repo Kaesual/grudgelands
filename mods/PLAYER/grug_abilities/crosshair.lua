@@ -94,14 +94,14 @@ return function(api)
 
 	-- player name -> the last skill ray: {eye, look, id, at, object}
 	local last_rays = {}
-	-- player name -> the last aim a refresh established: {at, ray} for a skill
-	-- ray, {at, blocked = true} when a walkable node within hand reach ends
-	-- every ray along the look line. Read by the Target Frame (recent_aim).
+	-- player name -> the aim the last refresh established: {at, ray} for a
+	-- skill ray, {at, blocked = true} when a walkable node within hand reach
+	-- ends every ray along the look line, nil when it established none (no
+	-- targeted skill, dead). Read by the Target Frame (recent_aim).
 	local aims = {}
 	-- An unchanged skill ray is cast again at least this often anyway, so a
-	-- mob that walks into a still crosshair is marked within the half second
-	-- the Target Frame has always taken to name it.
-	local UNCHANGED_RAY_US = 500000
+	-- mob that walks into a still crosshair is marked within about 0.3 s.
+	local UNCHANGED_RAY_US = 250000
 
 	function C.leave(player)
 		local name = player:get_player_name()
@@ -121,13 +121,16 @@ return function(api)
 	-- objects) would end there without a target and is skipped. Every other
 	-- first hit (object, non-walkable node such as a sign or grass, nothing)
 	-- still takes the skill ray, unless the same skill's last ray, from the
-	-- same eye position along the same look direction less than half a second
-	-- ago, hit no object: then it is taken as still empty (an idle player).
+	-- same eye position along the same look direction less than 0.25 s ago,
+	-- hit no object: then it is taken as still empty (an idle player), and the
+	-- aim of that last ray stays the recent aim. Every other refresh replaces
+	-- the recent aim or clears it.
 	function C.state(player)
+		local name = player:get_player_name()
+		aims[name] = nil
 		if player:get_hp() <= 0 then return nil end
 		local eye = grug_core.combat_eye_pos(player)
 		if not eye then return nil end
-		local name = player:get_player_name()
 		local now = core.get_us_time()
 		local input = grug_abilities.input
 		local interact, walled = false, false
@@ -146,11 +149,13 @@ return function(api)
 					now - last.at < UNCHANGED_RAY_US and
 					vector.equals(last.eye, eye) and vector.equals(last.look, look) then
 				C.unchanged_skill_rays = C.unchanged_skill_rays + 1
+				aims[name] = last.aim
 			else
 				local target, ray = grug_abilities.aimed_target(player, def, eye)
-				last_rays[name] = {eye = eye, look = look, id = def.id, at = now,
-					object = ray.pointed ~= nil and ray.pointed.type == "object"}
 				aims[name] = {at = now, ray = ray}
+				last_rays[name] = {eye = eye, look = look, id = def.id, at = now,
+					object = ray.pointed ~= nil and ray.pointed.type == "object",
+					aim = aims[name]}
 				if target then return def.target_kind end
 			end
 		end

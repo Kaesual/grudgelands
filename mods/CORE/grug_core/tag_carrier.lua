@@ -360,13 +360,19 @@ local function manage_carriers(slot)
 	end
 end
 
+-- One slot per elapsed 1/8 s: a long (lagging) step handles every slot it
+-- covered, at most all eight, so the cycle stays about one second.
 core.register_globalstep(function(dtime)
 	slot_elapsed = slot_elapsed + dtime
 	if slot_elapsed < SLOT_INTERVAL then return end
-	slot_elapsed = slot_elapsed % SLOT_INTERVAL
+	local due = math.min(SLOTS, math.floor(slot_elapsed / SLOT_INTERVAL))
+	slot_elapsed = slot_elapsed - due * SLOT_INTERVAL
+	if slot_elapsed >= SLOT_INTERVAL then slot_elapsed = slot_elapsed % SLOT_INTERVAL end
 	refresh_snapshot()
-	current_slot = current_slot % SLOTS + 1
-	manage_carriers(current_slot)
+	for _ = 1, due do
+		current_slot = current_slot % SLOTS + 1
+		manage_carriers(current_slot)
+	end
 end)
 
 -- The engine draws a nametag at its OWN object's selection-box max Y + 0.3, so

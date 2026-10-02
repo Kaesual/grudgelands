@@ -24,7 +24,7 @@
 --   X  grug_abilities/crosshair.lua and grug_mobs/target_frame.lua: the
 --      skill ray is repeated from the last result (no ray) while the same
 --      skill looks from the same eye along the same direction and the last
---      ray hit no object, for at most half a second; any change or an object hit
+--      ray hit no object, for at most 0.25 s; any change or an object hit
 --      casts again; recent_aim hands the Target Frame the last aim, which it
 --      uses instead of its own ray when that settles the frame (empty, node,
 --      beyond 20 m, a framable target, a wall within hand reach) and not
@@ -684,6 +684,25 @@ do
 	for _ = 1, 8 do step(0.125) end
 	eq(#calls, 0, "T: nothing reported while nobody observes anything")
 
+	-- Lag: a 0.5 s step handles four slots, a 3 s step all eight once.
+	visits()
+	step(0.5)
+	local visited = 0
+	for i = 1, 40 do visited = visited + carriers[i].visits end
+	eq(visited, 20, "T: a 0.5 s step covers four slots (20 carriers)")
+	step(0.5)
+	local twice = true
+	for _, n in ipairs(visits()) do if n ~= 1 then twice = false end end
+	check(twice, "T: two 0.5 s steps visit every carrier once")
+	step(3)
+	local capped = true
+	for _, n in ipairs(visits()) do if n ~= 1 then capped = false end end
+	check(capped, "T: a 3 s step visits every carrier exactly once (cap of eight)")
+	step(0.125)
+	visited = 0
+	for _, n in ipairs(visits()) do visited = visited + n end
+	eq(visited, 5, "T: after the long step the cadence is one slot per 1/8 s again")
+
 	-- Removal reports and the carrier leaves its slot.
 	grug_core.remove_tag_carrier(carriers[3])
 	check(#calls == 1 and calls[1].removed and calls[1].parent == parents[3],
@@ -762,12 +781,14 @@ do
 	now = 150000
 	C.state(mage)
 	eq(rays, 1, "X: unchanged eye, look and skill: no second ray")
-	now = 400000
+	check(C.recent_aim(mage, 500000).ray.reason == "empty",
+		"X: the repeated ray's aim stays the recent aim")
+	now = 200000
 	C.state(mage)
-	eq(rays, 1, "X: still none within half a second")
-	now = 500001
+	eq(rays, 1, "X: still none within 0.25 s")
+	now = 250001
 	C.state(mage)
-	eq(rays, 2, "X: after half a second the ray is cast again")
+	eq(rays, 2, "X: after 0.25 s the ray is cast again")
 	look = {x = 0.1, y = 0, z = 0.995}
 	C.state(mage)
 	eq(rays, 3, "X: a turned look casts again")
@@ -782,13 +803,13 @@ do
 		get_luaentity = function() return mob end}
 	next_ray = {reason = "hostile", status = "target", range = 30, distance = 12,
 		target = mob_ref, pointed = {type = "object", ref = mob_ref}}
-	-- A mob walks into a still crosshair: marked within half a second.
+	-- A mob walks into a still crosshair: marked within 0.25 s.
 	local since = now
 	now = since + 150000
 	eq(C.state(mage), nil, "X: a still crosshair repeats the empty ray for now")
 	eq(rays, 5, "X: no ray while unchanged")
-	now = since + 500001
-	eq(C.state(mage), "hostile", "X: within half a second the mob is marked")
+	now = since + 250001
+	eq(C.state(mage), "hostile", "X: within 0.25 s the mob is marked")
 	eq(rays, 6, "X: the repeat ray found it")
 	now = now + 150000
 	eq(C.state(mage), "hostile", "X: still marked")
@@ -798,6 +819,19 @@ do
 	eq(rays, 7, "X: a wall within hand reach skips the ray")
 	check(C.recent_aim(mage, 500000).blocked, "X: the wall is the recent aim")
 	walled = false
+	-- Turning from the wall: no stale "blocked" aim survives a refresh.
+	look = {x = 1, y = 0, z = 0}
+	now = now + 150000
+	C.state(mage)
+	check(C.recent_aim(mage, 500000).ray ~= nil, "X: the next skill ray replaces the wall")
+	walled = true
+	C.state(mage)
+	def = {id = "blink", target_kind = "self"}
+	walled = false
+	now = now + 150000
+	C.state(mage)
+	eq(C.recent_aim(mage, 500000), nil, "X: without a targeted skill the wall aim is cleared")
+	def = {id = "smite", target_kind = "hostile"}
 
 	-- The Target Frame on top of recent_aim.
 	local frame_hud = {}
