@@ -286,7 +286,7 @@
         "mournfen_fen_03"
       ],
       "title": "A Place in the Book",
-      "text": "The Pauper Shamblers rise at night among the {name:cairns} {dir_of:mournfen_village:cairns}, with no one left to claim them. Lay six to rest. I shall enter each in the burial book, though I have only numbers to give them. A number is a poor memorial, but a blank page is worse.",
+      "text": "The Pauper Shamblers rise at night across the {name:gravemoor} {dir_of:mournfen_village:gravemoor}, with no one left to claim them. Lay six to rest. I shall enter each in the burial book, though I have only numbers to give them. A number is a poor memorial, but a blank page is worse.",
       "objectives": [
         {
           "type": "kill",
@@ -294,14 +294,14 @@
             "muttering_zombie"
           ],
           "count": 6,
-          "area": "kragmar_mournfen/cairns"
+          "area": "kragmar_mournfen/gravemoor"
         }
       ],
       "rewards": {
         "weight": 4.5,
         "items": []
       },
-      "lesson": "A night hunt on high ground near the top of the band.",
+      "lesson": "A night hunt near the top of the band; the Shamblers walk among the Grave Gnawers.",
       "duration_min": 12
     },
     {

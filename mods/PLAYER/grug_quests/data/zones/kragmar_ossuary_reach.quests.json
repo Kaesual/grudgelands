@@ -132,7 +132,7 @@
       "level": 25,
       "requires": [],
       "title": "Under the New Names",
-      "text": "The stones of the {name:barrow_ridge}, which lies {dir_of:r20_anchor_038:barrow_ridge}, carry fresh names cut over older letters. Barrow Skeleton Archers guard them at night; destroy eight so I can get close enough to make rubbings. I can work around weather, but arrows make a dreadful mess of the paper.",
+      "text": "The stones of the {name:barrowlands}, which lies {dir_of:r20_anchor_038:barrowlands}, carry fresh names cut over older letters. Barrow Skeleton Archers guard them at night; destroy eight so I can get close enough to make rubbings. I can work around weather, but arrows make a dreadful mess of the paper.",
       "objectives": [
         {
           "type": "kill",
@@ -140,7 +140,7 @@
             "barrow_skeleton_archer"
           ],
           "count": 8,
-          "area": "kragmar_ossuary_reach/barrow_ridge"
+          "area": "kragmar_ossuary_reach/barrowlands"
         }
       ],
       "rewards": {
@@ -159,7 +159,7 @@
       "level": 25,
       "requires": [],
       "title": "Optional: A Hand I Might Recognise",
-      "text": "Bring me three Etched Bone from the Barrow Skeleton Archers on the {name:barrow_ridge} after dark. I need to compare the lettering with my rubbings to learn who has been changing the names. A thief may borrow someone else's name, but usually keeps their own bad handwriting.",
+      "text": "Bring me three Etched Bone from the Barrow Skeleton Archers on the {name:barrowlands} after dark. I need to compare the lettering with my rubbings to learn who has been changing the names. A thief may borrow someone else's name, but usually keeps their own bad handwriting.",
       "objectives": [
         {
           "type": "item",
@@ -168,7 +168,7 @@
           "roles": [
             "barrow_skeleton_archer"
           ],
-          "area": "kragmar_ossuary_reach/barrow_ridge"
+          "area": "kragmar_ossuary_reach/barrowlands"
         }
       ],
       "rewards": {

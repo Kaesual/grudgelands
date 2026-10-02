@@ -249,7 +249,7 @@
         "stillgrave_hunt_02"
       ],
       "title": "No Names to Call Them By",
-      "text": "Braindead Zombies wander the {name:barrow_hills} {dir_of:stillgrave:barrow_hills}, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
+      "text": "Braindead Zombies wander the {name:ashfields}, which lies {zone_area:ashfields}, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
       "objectives": [
         {
           "type": "kill",
@@ -257,14 +257,14 @@
             "braindead_zombie"
           ],
           "count": 8,
-          "area": "kragmar_stillgrave_hollow/barrow_hills"
+          "area": "kragmar_stillgrave_hollow/ashfields"
         }
       ],
       "rewards": {
         "weight": 3.5,
         "items": []
       },
-      "lesson": "Red names are aggressive; zombies on blight dirt never burn in daylight.",
+      "lesson": "Red names are aggressive; zombies on blight dirt never burn in daylight. They walk among the neutral boars by day and the rats by night.",
       "duration_min": 10
     },
     {
