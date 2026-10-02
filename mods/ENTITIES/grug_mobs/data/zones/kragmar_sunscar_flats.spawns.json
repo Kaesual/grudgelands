@@ -48,7 +48,7 @@
             "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "giant_scorpion", "weight": 1}], "density": "normal"},
           "shore": {"id": "bone_beach", "name": "Sunscar Bone Beach",
             "day": [{"role": "giant_crab", "weight": 1}],
-            "night": [{"role": "salt_caked_husk", "weight": 3}, {"role": "giant_crab", "weight": 1}], "density": "dense"},
+            "night": [{"role": "salt_caked_husk", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "dense"},
           "highland": {"id": "scorpion_rocks", "name": "Sunscar Scorpion Rocks",
             "day": [{"role": "giant_scorpion", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
             "night": [{"role": "giant_scorpion", "weight": 3}, {"role": "monstrous_rat", "weight": 1}], "density": "normal"}

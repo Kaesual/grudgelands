@@ -44,7 +44,7 @@
           "forest": {"id": "gravewood", "name": "Nhal Veyr Gravewood",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "monstrous_boar", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
-          "highland": {"id": "tomb_heights", "name": "Nhal Veyr Tomb Heights",
+          "highland": {"id": "barrows", "name": "Nhal Veyr Barrows",
             "day": [{"role": "stubborn_husk", "weight": 1}],
             "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
         }

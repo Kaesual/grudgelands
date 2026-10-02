@@ -17,7 +17,7 @@
             "day": [{"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "mudpools", "name": "Mournfen Mudpools",
-            "day": [{"role": "sullen_bog_ooze", "weight": 1}],
+            "day": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
         }
       },

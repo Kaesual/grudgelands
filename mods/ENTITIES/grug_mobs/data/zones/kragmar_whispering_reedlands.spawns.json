@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "canopy", "name": "Whispering Canopy",
             "day": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
           "shore": {"id": "strand", "name": "Whispering Strand",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
@@ -26,10 +26,7 @@
         "kinds": {
           "open": {"id": "thicket", "name": "Whispering Thicket",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
-          "shore": {"id": "shallows", "name": "Whispering Shallows",
-            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
-            "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
+            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
           "bank": {"id": "mudbanks", "name": "Whispering Mudbanks",
             "day": [{"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse"},
@@ -43,7 +40,7 @@
         "kinds": {
           "open": {"id": "deepwood", "name": "Whispering Deepwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+            "night": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}], "density": "normal"},
           "bank": {"id": "floodbanks", "name": "Whispering Floodbanks",
             "day": [{"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "sparse"},

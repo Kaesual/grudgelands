@@ -9,7 +9,7 @@
         "kinds": {
           "open": {"id": "jungle", "name": "Totemwater Jungle",
             "day": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "reed_tapir", "weight": 3}, {"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "normal"},
           "shore": {"id": "strand", "name": "Totemwater Strand",
             "day": [{"role": "bank_crab", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 1}], "density": "dense"},
@@ -17,7 +17,7 @@
             "day": [{"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "reed_crocodile", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
           "swamp": {"id": "bogs", "name": "Totemwater Bogs",
-            "day": [{"role": "sullen_bog_ooze", "weight": 1}],
+            "day": [{"role": "sullen_bog_ooze", "weight": 3}, {"role": "reed_crocodile", "weight": 1}],
             "night": [{"role": "wandering_wisp", "weight": 3}, {"role": "sullen_bog_ooze", "weight": 1}], "density": "sparse"}
         }
       },
@@ -26,10 +26,10 @@
         "kinds": {
           "open": {"id": "totemwood", "name": "Totemwater Totemwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "reed_tapir", "weight": 1}],
-            "night": [{"role": "reed_jungle_lynx", "weight": 3}, {"role": "reed_tapir", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
           "shore": {"id": "shallows", "name": "Totemwater Shallows",
             "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
-            "night": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}], "density": "dense"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "dense"},
           "bank": {"id": "reedbanks", "name": "Totemwater Reedbanks",
             "day": [{"role": "reed_tapir", "weight": 1}],
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
@@ -43,10 +43,10 @@
         "kinds": {
           "open": {"id": "deepwood", "name": "Totemwater Deepwood",
             "day": [{"role": "reed_jungle_lynx", "weight": 1}],
-            "night": [{"role": "reed_jungle_lynx", "weight": 1}], "density": "normal"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
           "shore": {"id": "breakers", "name": "Totemwater Breakers",
             "day": [{"role": "armored_crab", "weight": 1}],
-            "night": [{"role": "armored_crab", "weight": 1}], "density": "dense"},
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "dense"},
           "swamp": {"id": "blackwater", "name": "Totemwater Blackwater",
             "day": [{"role": "reed_tapir", "weight": 1}],
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
