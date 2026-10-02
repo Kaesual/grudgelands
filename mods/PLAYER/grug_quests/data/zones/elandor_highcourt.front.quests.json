@@ -1,0 +1,100 @@
+{
+  "zone": "elandor_highcourt",
+  "quests": [
+    {
+      "id": "highcourt_front_01",
+      "line": "front",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [],
+      "title": "The Wreck Shore",
+      "text": "The crown's charts end at Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water. Take a boat from the coast; the Shipwright at the stables sells one if you lack it. On the {name:front_stormscale_summit/wreck_shore}, defeat six Last Watchmen that walk the beach at night, and keep to the shelf and the channel, where the Kraken does not hunt.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_zombie"
+          ],
+          "count": 6,
+          "area": "front_stormscale_summit/wreck_shore"
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "lesson": "Island trip by boat; coin at the cap, no XP.",
+      "duration_min": 25,
+      "optional": true
+    },
+    {
+      "id": "highcourt_front_02",
+      "line": "front",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "highcourt_front_01"
+      ],
+      "title": "Group: The Last-Offering",
+      "text": "{name:last_offering_ape} rules the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, an elite ape that takes offerings and gives back bruises. Bring a full group. The crown pays for the story as much as for the deed.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_offering_ape"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 800,
+        "items": []
+      },
+      "lesson": "Optional group elite on the island.",
+      "duration_min": 25,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "highcourt_front_bounty",
+      "line": "front",
+      "giver": "r20_human_capital_envoy",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "highcourt_front_01"
+      ],
+      "title": "Bounty: Silver Ape Hair",
+      "text": "Glass-Knuckle Jungle Apes roam the {name:front_stormscale_summit/thunderwood} on Stormscale Summit by day. Bring me four Silver Ape Hair and I pay each time; the court tailors cannot get enough. The next bounty opens an hour after you hand this one in.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:silver_ape_hair",
+          "count": 4,
+          "roles": [
+            "glass_knuckle_ape"
+          ],
+          "area": "front_stormscale_summit/thunderwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 3600
+      },
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "lesson": "Island salvage bounty: coin at the cap.",
+      "duration_min": 25,
+      "optional": true
+    }
+  ]
+}

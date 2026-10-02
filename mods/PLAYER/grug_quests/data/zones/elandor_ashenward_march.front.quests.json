@@ -1,0 +1,325 @@
+{
+  "zone": "elandor_ashenward_march",
+  "quests": [
+    {
+      "id": "cinderline_front_01",
+      "line": "front",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Husks on the Floodmeadows",
+      "text": "Our supply carts cross the {name:front_broken_causeway/floodmeadows} {zone_area:front_broken_causeway/floodmeadows}, and by day Mire-Cured Husks crawl out of the mud to meet them. Put five of them back where they came from. Whoever else is shouting out there, the husks are nobody's allies.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_mire_husk"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/floodmeadows"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Front entry: a day hunt in the easiest belt, by the middle road.",
+      "duration_min": 10
+    },
+    {
+      "id": "cinderline_front_02",
+      "line": "front",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Skeletons on the Toll Road",
+      "text": "After dark Tollroad Skeletons march the {name:front_broken_causeway/floodmeadows} as if the old toll road still paid them. Break five of them at night. The carts leave at dawn, and I would like them to arrive with their drivers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_toll_skeleton"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/floodmeadows"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "The same ground at night holds a different roster; one outing serves both.",
+      "duration_min": 10
+    },
+    {
+      "id": "cinderline_front_03",
+      "line": "front",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 43,
+      "level": 45,
+      "requires": [
+        "cinderline_front_01",
+        "cinderline_front_02"
+      ],
+      "title": "The Old Battlefield",
+      "text": "Deeper in, the {name:front_broken_causeway/battlefield} {zone_area:front_broken_causeway/battlefield} is where the last war stopped and never quite ended. By day, defeat five of the Mire-Cured Husks and Causeway Brigands that pick over it. Bring back nothing that rattles.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_mire_husk",
+            "causeway_brigand"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/battlefield"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "The middle belt: harder mobs, one step farther from the road.",
+      "duration_min": 12
+    },
+    {
+      "id": "cinderline_front_04",
+      "line": "front",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_028_host",
+      "min_level": 44,
+      "level": 45,
+      "requires": [
+        "cinderline_front_03"
+      ],
+      "title": "Orders for Archshadow Post",
+      "text": "Take these orders to Alna Archsight at Archshadow Post in Stormvault Heights. The far end of the Causeway is hers to hold, and it grows nastier the closer it runs to Gravesalt. Tell her Cinderline still stands.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_028_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff to the harder half of the Causeway.",
+      "duration_min": 8
+    },
+    {
+      "id": "lasthedge_front_01",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Hyenas on the Approaches",
+      "text": "Warpack Hyenas run the {name:front_shattered_line/approaches} {zone_area:front_shattered_line/approaches} by day and laugh at our patrols. Bring down five of them. The hedge has held for a hundred years; it can hold against dogs.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/approaches"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Front entry: packs call each other, pull them one at a time.",
+      "duration_min": 10
+    },
+    {
+      "id": "lasthedge_front_02",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "lasthedge_front_01"
+      ],
+      "title": "Claws from the Bluffs",
+      "text": "Tallgrass Tigers stalk the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs} by day. Bring me three Siege Cat Claws; the fletchers swear nothing makes a better arrow notch. I swear nothing else bites a scout in half, so take care.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:siege_cat_claw",
+          "count": 3,
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "area": "front_shattered_line/bluffs"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Highland kinds: big cats by day, scorpions by night.",
+      "duration_min": 12
+    },
+    {
+      "id": "lasthedge_front_03",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 44,
+      "level": 46,
+      "requires": [
+        "lasthedge_front_02"
+      ],
+      "title": "Stingers on the Ramparts",
+      "text": "After dark War-Stinger Scorpions swarm the {name:front_shattered_line/ramparts} {zone_area:front_shattered_line/ramparts}, and our sentries refuse to stand there. Kill five of them at night. I will tell the sentries it was easy.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/ramparts"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "The middle belt of the Line by night.",
+      "duration_min": 12
+    },
+    {
+      "id": "lasthedge_front_04",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 47,
+      "level": 49,
+      "requires": [
+        "lasthedge_front_03"
+      ],
+      "title": "The Standard-Bearer",
+      "text": "{name:standard_bearer_ninepins} still carries his banner through the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, and the Siege Skeleton Raiders rally to it every night. Break five of the raiders there after dark, then Ninepins himself. A banner with nobody under it is just a rag.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_skeleton_raider"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/breach"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "standard_bearer_ninepins"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Line climax: a named normal leader beside a night roster, toward Skyglass.",
+      "duration_min": 16,
+      "climax": true
+    },
+    {
+      "id": "lasthedge_front_05",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "lasthedge_front_04"
+      ],
+      "title": "Group: Engine Nine",
+      "text": "{name:siege_engine_nine} still grinds along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, an elite war construct nobody remembers building. Take a group and bring it down. Do not try this alone; I have run out of letters to write home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_engine_nine"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Optional group elite; the route reaches 50 without it.",
+      "duration_min": 12,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "lasthedge_front_bounty",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 47,
+      "level": 48,
+      "requires": [
+        "lasthedge_front_04"
+      ],
+      "title": "Bounty: Siegecrest Tigers",
+      "text": "The biggest Tallgrass Tigers sleep on the {name:front_shattered_line/siegecrest} {zone_area:front_shattered_line/siegecrest}, right where I want a lookout. Bring down five of them by day and I will pay you again each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/siegecrest"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Repeatable hunting bounty, upper Shattered Line by day.",
+      "duration_min": 10
+    },
+    {
+      "id": "lasthedge_front_06",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "lasthedge_front_04"
+      ],
+      "title": "Word for Splitbolt Station",
+      "text": "Carry word to Borin Splitbolt at Splitbolt Station in Stormvault Heights. Past the Causeway lies Gravesalt Escarpment, and Borin keeps asking for anyone who survived the Line. You qualify.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff from the 41-50 front to Gravesalt.",
+      "duration_min": 10
+    }
+  ]
+}

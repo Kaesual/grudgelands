@@ -1,0 +1,100 @@
+{
+  "zone": "elandor_dur_brannoc",
+  "quests": [
+    {
+      "id": "durbrannoc_front_01",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [],
+      "title": "Surveying the Wyrmglass Crown",
+      "text": "The Wyrmglass Crown rises out of the sea {dir_from_giver:front_wyrmglass_crown/spires}, and no map of ours shows its {name:front_wyrmglass_crown/spires}. Take a boat; the Shipwright at our stables sells them. Defeat six Crown Crag Eagles on the spires by day, keep to the shelf and the channel, and leave the deep water to the Kraken.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "crown_crag_eagle"
+          ],
+          "count": 6,
+          "area": "front_wyrmglass_crown/spires"
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "lesson": "Island trip by boat; coin at the cap, no XP.",
+      "duration_min": 25,
+      "optional": true
+    },
+    {
+      "id": "durbrannoc_front_02",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "durbrannoc_front_01"
+      ],
+      "title": "Group: The Rime-Bell",
+      "text": "{name:rime_bell_warden} guards the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, an elite stone golem with a bell of rime for a heart. Take a full group, and a boat each. The clan pays well for the bell's silence.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rime_bell_warden"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 0,
+        "copper": 800,
+        "items": []
+      },
+      "lesson": "Optional group elite on the island.",
+      "duration_min": 25,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "durbrannoc_front_bounty",
+      "line": "front",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "durbrannoc_front_01"
+      ],
+      "title": "Bounty: Rime Sinew",
+      "text": "Rimehorn Rams graze the {name:front_wyrmglass_crown/scree} on the Wyrmglass Crown by day, and their Rime Sinew makes the best bowstring a dwarf ever refused to use. Bring me four, and I pay each time. The next bounty opens an hour after you hand this one in.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:rime_sinew",
+          "count": 4,
+          "roles": [
+            "rimehorn_ram"
+          ],
+          "area": "front_wyrmglass_crown/scree"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 3600
+      },
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "lesson": "Island salvage bounty: coin at the cap.",
+      "duration_min": 25,
+      "optional": true
+    }
+  ]
+}
