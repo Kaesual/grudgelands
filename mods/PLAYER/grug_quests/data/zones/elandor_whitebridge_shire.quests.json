@@ -232,6 +232,34 @@
       "duration_min": 14
     },
     {
+      "id": "whitebridge_materials_bears",
+      "line": "materials",
+      "giver": "r20_anchor_062_host",
+      "turnin": "r20_anchor_062_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [],
+      "title": "Optional: Bears in the Stores",
+      "text": "Bramble Bears from the {name:briarwood} {dir_of:r20_anchor_062:briarwood} keep raiding our stores, and one of them has developed a taste for chalk-dusted biscuits. Drive off five by day. After dark the Briar-Web Spiders take that wood, and you are welcome to leave them to it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 5,
+          "area": "elandor_whitebridge_shire/briarwood"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Optional: heavy daytime animals; the wood changes owner at night.",
+      "duration_min": 10,
+      "optional": true
+    },
+    {
       "id": "whitebridge_materials_02",
       "line": "materials",
       "giver": "r20_anchor_062_host",
@@ -282,6 +310,34 @@
       },
       "lesson": "A swarm camp: fight at the edge.",
       "duration_min": 10
+    },
+    {
+      "id": "whitebridge_river_siltbasket",
+      "line": "river",
+      "giver": "r20_anchor_030_host",
+      "turnin": "r20_anchor_030_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [],
+      "title": "Optional: The Siltbasket Toll",
+      "text": "Before Murk built his ferry business, his relatives set up the {name:siltbasket} {dir_from_giver:siltbasket}, and they still charge carters for the privilege of being robbed. Defeat six Toll Mirefolk there, by day or night. Fight from the edge of the camp; they rush to help each other.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_mirefolk"
+          ],
+          "count": 6,
+          "area": "elandor_whitebridge_shire/siltbasket"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Optional: a smaller swarm camp in the lower shire.",
+      "duration_min": 10,
+      "optional": true
     },
     {
       "id": "whitebridge_river_02",
