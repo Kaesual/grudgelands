@@ -162,6 +162,9 @@ local function install_world(mobs_root)
 		return out
 	end
 	function seams.leader(role) return leaders[role] end
+	-- A named place of a {dir_of:<place>:...} placeholder: any key is known
+	-- here (the Q1 test checks the real places).
+	function seams.place(ref) return {x = 0, z = 0, name = ref} end
 	grug_mobs = {
 		register_on_eligible_kill = function() end,
 		register_participant_drop_hook = function() end,
