@@ -29,3 +29,10 @@ CC0-1.0. No third-party source images.
 
 The minimap's round mask (`grug_map_minimap_mask.png`) is not shipped: the
 server generates it at start (`grug_map/base.lua`, `mask_png`).
+
+# Zone marker (Round 28)
+
+`textures/grug_map_zone.png`: original 16×16 RGBA pixel art (a parchment
+swallowtail pennant with a dark red band on a dark pole) drawn from a
+character grid by `tools/r28_m1/render_zone_icon.py` for Grudgelands,
+CC0-1.0. No third-party source images. A plain placeholder.

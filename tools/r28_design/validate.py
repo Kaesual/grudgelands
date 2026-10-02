@@ -810,6 +810,8 @@ class Validator:
                 for key in LEGACY_OBJECTIVE_KEYS:
                     if key in obj:
                         self.W("W-unknown-key", file, opath, "unknown field %r on an item objective" % key)
+                if "roles" in obj or "area" in obj:
+                    self.item_source(zone, obj, level, file, opath, all_areas)
             else:
                 self.E("E-objective", file, opath, "type %r must be kill, item or talk" % kind)
         drops = q.get("quest_drops") or []
@@ -1001,6 +1003,24 @@ class Validator:
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
         self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
+
+    def item_source(self, zone, obj, level, file, path, all_areas):
+        """An item objective's optional source (Lane Q0): the roles that drop
+        it, optionally in one area. Checked like a quest drop's source; the
+        game shows their level range with the objective."""
+        roles = obj.get("roles")
+        if roles is None:
+            self.E("E-area", file, path, "an item's source area is 'zone_id/area_id' next to its 'roles'")
+            return
+        if not isinstance(roles, list) or not roles:
+            self.E("E-objective", file, path, "an item's source 'roles' must be a non-empty list")
+            return
+        area_ref = obj.get("area")
+        area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if area_ref else None
+        for role in roles:
+            if self.target_role_ok(role, file, path, "item source"):
+                levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
+                self.check_level_fit(role, levels, level, file, path)
 
     def check_recipe_targets(self, zone, obj, roles, file, path, all_areas):
         """A kill objective without an area in a zone with a spawn recipe,
@@ -1265,6 +1285,13 @@ def _mutations():
         quest(d, "sample_hunt_01")["level"] = 9
         quest(d, "sample_hunt_01")["min_level"] = 9
 
+    def item_source_area(d):
+        quest(d, "sample_pantry_01")["objectives"][0].update(
+            {"roles": ["large_rat"], "area": "elandor_dawnmere_fields/home_beach"})
+
+    def item_source_no_roles(d):
+        quest(d, "sample_pantry_01")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_fields"
+
     def bare_cross(d):
         quest(d, "sample_hunt_01")["objectives"][0]["area"] = "other_zone_area"
 
@@ -1527,6 +1554,8 @@ def _mutations():
         ("kill target the recipe zone never spawns", Q, base_role_only, "W-recipe-target"),
         ("target not in area", Q, wrong_area_role, "E-role-not-in-area"),
         ("target levels do not fit quest level", Q, level_fit, "E-level-fit"),
+        ("item source not in its area", Q, item_source_area, "E-role-not-in-area"),
+        ("item source area without roles", Q, item_source_no_roles, "E-area"),
         ("bare area id not in own zone", Q, bare_cross, "E-unknown-area"),
         ("cross-zone area missing", Q, missing_area, "E-unknown-area"),
         ("quest drop without item objective", Q, unpaired_drop, "E-quest-drop-pair"),

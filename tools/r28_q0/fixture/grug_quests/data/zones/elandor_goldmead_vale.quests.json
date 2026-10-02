@@ -1,0 +1,17 @@
+{
+  "zone": "elandor_goldmead_vale",
+  "identity": "Fixture for tools/r28_q0/portable_test.lua: a zone without a spawn recipe.",
+  "hubs": [
+    {"id": "goldmead", "anchor": "anchor_014", "givers": [{"npc": "r20_anchor_014_host", "lines": ["hunt"]}]}
+  ],
+  "quests": [
+    {"id": "q0_catalogue", "line": "hunt", "giver": "r20_anchor_014_host", "turnin": "r20_anchor_014_host",
+     "min_level": 12, "level": 14, "title": "Ridge Boars", "text": "Ridge boars on the hills.",
+     "objectives": [{"type": "kill", "roles": ["ridge_boar"], "count": 5}],
+     "rewards": {"weight": 4, "copper": 10}},
+    {"id": "q0_base", "line": "hunt", "giver": "r20_anchor_014_host", "turnin": "r20_anchor_014_host",
+     "min_level": 16, "level": 18, "title": "Old Boars", "text": "Boars of the vale.",
+     "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar"], "count": 4}],
+     "rewards": {"xp": 300, "copper": 10}}
+  ]
+}
