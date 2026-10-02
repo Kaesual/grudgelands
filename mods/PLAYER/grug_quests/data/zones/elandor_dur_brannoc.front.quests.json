@@ -9,7 +9,7 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "A Blank Space on the Clan's Map",
+      "title": "Optional: A Blank Space on the Clan's Map",
       "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} on the Wyrmglass Crown {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and a keeper of records. Reach the island by boat; the Shipwright at our stables sells them. Keep to the shelf and the channel on the crossing, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
       "objectives": [
         {

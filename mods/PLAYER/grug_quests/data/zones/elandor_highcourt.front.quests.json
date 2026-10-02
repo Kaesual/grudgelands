@@ -9,7 +9,7 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "Beyond the Ink",
+      "title": "Optional: Beyond the Ink",
       "text": "The crown's chart of Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water, has more empty space than I'm comfortable signing. Take a boat from the coast; the Shipwright at the stables sells them. Follow the shelf and the channel to avoid the Kraken in deep water, then defeat six Last Watchmen on the {name:front_stormscale_summit/wreck_shore} after dark. I'd like the next expedition to find somewhere to land, and you to come home to your payment.",
       "objectives": [
         {

@@ -10,7 +10,7 @@
       "level": 42,
       "requires": [],
       "title": "Bread Before Banners",
-      "text": "The officers can argue over banners once our drivers get the bread through. Kill five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows} {zone_area:front_broken_causeway/floodmeadows}; they keep dragging themselves out of the mud into the carts' path. I'd like to count returning drivers tonight, for a change.",
+      "text": "The officers can argue over banners once our drivers get the bread through. Kill five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}; they keep dragging themselves out of the mud into the carts' path. I'd like to count returning drivers tonight, for a change.",
       "objectives": [
         {
           "type": "kill",
@@ -67,7 +67,7 @@
         "cinderline_front_02"
       ],
       "title": "What the War Left Standing",
-      "text": "My father called that war finished, but the {name:front_broken_causeway/battlefield} {zone_area:front_broken_causeway/battlefield} seems to have missed the announcement. Go by day and defeat five enemies in all, counting either Mire-Cured Husks or Causeway Brigands. We still need a way through the ground they died fighting over.",
+      "text": "My father called that war finished, but the {name:front_broken_causeway/battlefield}, which lies {zone_area:front_broken_causeway/battlefield}, seems to have missed the announcement. Go by day and put down five of the Mire-Cured Husks and Causeway Brigands picking over it. We still need a way through the ground they died fighting over.",
       "objectives": [
         {
           "type": "kill",
@@ -85,6 +85,35 @@
       },
       "lesson": "The middle belt: harder mobs, one step farther from the road.",
       "duration_min": 12
+    },
+    {
+      "id": "cinderline_front_05",
+      "line": "front",
+      "giver": "r20_anchor_031_host",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "cinderline_front_01"
+      ],
+      "title": "Toll Collectors in the Alderwood",
+      "text": "Causeway Brigands have set up in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}, and charge our drivers for the privilege of being robbed. Defeat five of them by day. The only toll on that road should be the mud.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_brigand"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/alderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "Forest kinds: brigands by day, wolves by night.",
+      "duration_min": 10
     },
     {
       "id": "cinderline_front_04",
@@ -120,7 +149,7 @@
       "level": 42,
       "requires": [],
       "title": "Nobody's Laughing Here",
-      "text": "Warpack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the {name:front_shattered_line/approaches} {zone_area:front_shattered_line/approaches}. I promised those sentries they'd get home, and I intend to keep it.",
+      "text": "Warpack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I promised those sentries they'd get home, and I intend to keep it.",
       "objectives": [
         {
           "type": "kill",
@@ -149,7 +178,7 @@
         "lasthedge_front_01"
       ],
       "title": "The Fletchers' Bright Idea",
-      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Tallgrass Tigers by day on the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs} and bring the claws to me. I'll see that your name goes on the delivery.",
+      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Tallgrass Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring the claws to me. I'll see that your name goes on the delivery.",
       "objectives": [
         {
           "type": "item",
@@ -179,7 +208,7 @@
         "lasthedge_front_02"
       ],
       "title": "A Sentry Needs Somewhere to Stand",
-      "text": "My sentries will face an army, but they've asked for somewhere to put their feet. Kill five War-Stinger Scorpions after dark on the {name:front_shattered_line/ramparts} {zone_area:front_shattered_line/ramparts}. Seems a fair request from people who spend all night standing up for us.",
+      "text": "My sentries will face an army, but they've asked for somewhere to put their feet. Kill five War-Stinger Scorpions after dark on the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}. Seems a fair request from people who spend all night standing up for us.",
       "objectives": [
         {
           "type": "kill",
@@ -198,6 +227,35 @@
       "duration_min": 12
     },
     {
+      "id": "lasthedge_front_07",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 45,
+      "level": 46,
+      "requires": [
+        "lasthedge_front_03"
+      ],
+      "title": "Raiders in the Trenches",
+      "text": "Both armies dug the {name:front_shattered_line/trenches}, which lie {zone_area:front_shattered_line/trenches}, and Siege Skeleton Raiders now man them every night. Break five of them after dark. I would like to hear what our scouts saw out there without first hearing what chased them home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_skeleton_raider"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/trenches"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "The middle belt of the Line at night, before its standard-bearer.",
+      "duration_min": 12
+    },
+    {
       "id": "lasthedge_front_04",
       "line": "front",
       "giver": "r20_anchor_032_host",
@@ -205,7 +263,7 @@
       "min_level": 47,
       "level": 49,
       "requires": [
-        "lasthedge_front_03"
+        "lasthedge_front_07"
       ],
       "title": "Nobody Left to Rally",
       "text": "Every night, Siege Skeleton Raiders gather beneath the banner of {name:standard_bearer_ninepins} at the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Kill five of those raiders after dark and defeat their standard-bearer. Let the next thing our watch hears from that breach be the wind.",
@@ -275,7 +333,7 @@
         "lasthedge_front_04"
       ],
       "title": "Bounty: Room for a Lookout",
-      "text": "The Tallgrass Tigers have picked the {name:front_shattered_line/siegecrest} {zone_area:front_shattered_line/siegecrest} for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
+      "text": "The Tallgrass Tigers have picked the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
       "objectives": [
         {
           "type": "kill",
