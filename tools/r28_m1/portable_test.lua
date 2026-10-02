@@ -270,6 +270,10 @@ rawset(_G, "core", {
 	get_current_modname = function() return "grug_map" end,
 	get_modpath = function() return repo .. "/mods/PLAYER/grug_map" end,
 	get_us_time = function() return now_us end,
+	-- Round 30 P3 caches the zone-marker grid in the world directory; a path
+	-- that never exists makes every run sample afresh and the write a no-op.
+	get_worldpath = function() return "/nonexistent/grug_r28_m1_world" end,
+	safe_file_write = function() return false end,
 	log = function(_, text) logs[#logs + 1] = text end,
 	register_on_mods_loaded = function(fn) loaded[#loaded + 1] = fn end,
 	register_on_joinplayer = function(fn) joins[#joins + 1] = fn end,
