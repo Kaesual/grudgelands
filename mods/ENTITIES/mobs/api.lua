@@ -44,8 +44,42 @@ local table_copy, table_remove = table.copy, table.remove
 -- creative check
 
 local creative_cache = core.settings:get_bool("creative_mode")
+
+-- GRUG PATCH (Round 30 P2, perf review 2026-10 #17): privilege answers are
+-- cached per player and privilege. check_player_privs cost 35 us on average
+-- under combat load, once per target candidate and per hit. Every privilege
+-- change runs the grant/revoke callbacks (builtin auth.lua set_privileges,
+-- also behind core.set_player_privs), which drop that player's answers; so
+-- does leaving. The callbacks return true: run_priv_callbacks stops at the
+-- first one that returns nothing.
+local grug_priv_cache = {}
+
+function mobs.has_priv(name, priv)
+	local privs = grug_priv_cache[name]
+	if not privs then
+		privs = {}
+		grug_priv_cache[name] = privs
+	end
+	local answer = privs[priv]
+	if answer == nil then
+		answer = core.check_player_privs(name, priv) == true
+		privs[priv] = answer
+	end
+	return answer
+end
+
+local function grug_forget_privs(name)
+	grug_priv_cache[name] = nil
+	return true
+end
+core.register_on_priv_grant(grug_forget_privs)
+core.register_on_priv_revoke(grug_forget_privs)
+core.register_on_leaveplayer(function(player)
+	grug_priv_cache[player:get_player_name()] = nil
+end)
+
 function mobs.is_creative(name)
-	return creative_cache or core.check_player_privs(name, {creative = true})
+	return creative_cache or mobs.has_priv(name, "creative")
 end
 
 -- load settings
@@ -1921,7 +1955,8 @@ local function is_peaceful_player(player)
 
 	local player_name = player:get_player_name() or ""
 
-	return core.check_player_privs(player_name, "peaceful_player")
+	-- GRUG PATCH (Round 30 P2): cached answer, see mobs.has_priv.
+	return mobs.has_priv(player_name, "peaceful_player")
 end
 
 -- general attack function
@@ -1998,17 +2033,21 @@ function mob_class:general_attack()
 		end
 	end
 
-	local p, sp, dist, min_player
+	local p, dist, min_player
 	local min_dist = self.view_range + 1
+	-- GRUG PATCH (Round 30 P2): the mob's eye is a copy. Upstream aliased
+	-- `sp = s` and raised `sp.y` inside the loop, so the eye (and every later
+	-- distance) climbed one node per candidate.
+	local sp = {x = s.x, y = s.y + 1, z = s.z}
 
 	for _,player in pairs(objs) do
 
-		p = player:get_pos() ; sp = s
+		p = player:get_pos()
 
 		dist = get_distance(p, s)
 
 		-- aim higher to make looking up hills more realistic
-		p.y = p.y + 1 ; sp.y = sp.y + 1
+		p.y = p.y + 1
 
 		-- choose closest entity to attack
 		if dist ~= 0 and dist < min_dist and self:line_of_sight(sp, p) then
@@ -3368,7 +3407,10 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		wear = 0
 	end
 
-	local grug_creative = mobs.is_creative(hitter:get_player_name())
+	-- GRUG PATCH (Round 30 P2, perf review #17): only a player can be in
+	-- creative; a mob or other object hitter skips the privilege lookup.
+	local grug_creative = is_player(hitter)
+			and mobs.is_creative(hitter:get_player_name())
 	if grug_creative then
 		wear = use_tr and 1 or 0
 	end
@@ -4839,7 +4881,8 @@ function mobs:boom(self, pos, node_damage_radius, entity_radius, texture)
 
 	texture = texture or "mobs_tnt_smoke.png"
 
-	if mobs_griefing and not minetest.is_protected(pos, "") then
+	-- GRUG PATCH (Round 30 P2): core.* namespace (luanti-lua.md sweep 5).
+	if mobs_griefing and not core.is_protected(pos, "") then
 
 		if core.get_modpath("mcl_explosions") then
 
