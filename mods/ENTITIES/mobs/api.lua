@@ -4740,7 +4740,11 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			end
 		})
 	else
-		core.register_abm({ -- abm spawns at every interval/chance
+		-- GRUG PATCH (Round 30 P2, perf review 2026-10 #11): the row's ABM goes
+		-- through mobs.register_spawn_abm, which grug_mobs replaces to retire
+		-- or merge the rows (grug_mobs/spawn_abms.lua); the default below
+		-- registers it as before.
+		mobs.register_spawn_abm({ -- abm spawns at every interval/chance
 			label = name .. " spawning",
 			nodenames = nodes,
 			neighbors = neighbors,
@@ -4752,8 +4756,13 @@ function mobs:spawn_specific(name, nodes, neighbors, min_light, max_light, inter
 			action = function(pos, node, active_object_count, active_object_count_wider)
 				spawn_action(pos, node, active_object_count, active_object_count_wider)
 			end
-		})
+		}, name)
 	end
+end
+
+-- GRUG PATCH (Round 30 P2): see the call above. `name` is the row's mob.
+function mobs.register_spawn_abm(spec, name)
+	core.register_abm(spec)
 end
 
 -- MarkBu's newer spawn function (USE this one please modders)

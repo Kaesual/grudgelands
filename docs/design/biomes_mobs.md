@@ -49,37 +49,20 @@ content requirements remain explicitly separate from delivered behavior.
   visible mob per 15–20 m of wilderness travel.
 - **Density is a per-zone budget** (Round 24 ruling 27, 2026-09-29;
   `mods/ENTITIES/grug_mobs/density.lua`), independent of how many species a
-  zone allows. It covers the ordinary natural surface species of the
-  named-zone palettes (hostile and neutral hunted wildlife, normal and elite
-  tiers). The species "at a point" are those that could spawn there: their
-  hosts include the node the spawning row matched, and policy, level gate, row
-  check and clock allow them. Around each spawn point (the 128-node sphere
-  mobs_redo counts in) the budgeted mobs never exceed the point budget
-  `max(zone budget, old population of the species at the point)`:
-  - the zone budget is **15 by day, 23 by night** = 1.5 × the pre-Round-24
-    median area population (10 / 15, measured per land column on the
-    biome-top hosts; `tools/r24_density_xp/fixture.lua`), times an optional
-    per-zone multiplier `grug_mobs.ZONE_DENSITY` for later tuning;
-  - the old population is the sum of those species' Round 16 caps (row cap ×
-    1.3, rounded; × 5/4, rounded up, at night), so no point and no zone gets
-    sparser than before; species-rich points (war fronts, forests at night)
-    keep their old population, and sparse points get the ×1.5 lift.
-
-  Each species at the point gets the share point budget × its row cap ÷ their
-  summed row caps, rounded (at least 1), but never more than
-  **ceil(1.5 × its own Round 16 cap)** (review decision): a lone Stone Golem
-  on bare stone stays at 2 by day and 3 by night, not the budget, so points
-  with only one or two eligible species end below the zone budget but never
-  below their old population. Below its own Round 16 cap a species always
-  spawns, so neighbours of a mixed area (a higher-level edge, another biome
-  patch) never hold it below its pre-Round-24 population. The night count covers only the night cast, so day animals still
-  about at dusk do not block night spawns. Budgeted rows spawn with 1.5x
-  attempt frequency, and their own mobs_redo cap is lifted to 64 so the budget
-  binds. Critters, underground rows, the Kraken and Reed Angelfish, shore
-  crabs, NPCs, authored guards, camps, patrols, kings, dragons,
-  summoned/encounter adds, bosses and named rares are neither counted nor
-  limited; ambient rows outside the palettes keep the Round 16 rule (1.3x
-  attempt frequency and a nearest-integer 1.3x species cap).
+  zone allows: **15 by day, 23 by night** = 1.5 × the pre-Round-24 median
+  area population (10 / 15, measured per land column on the biome-top hosts
+  by the Round 24 density fixture, retired in Round 30; git history keeps
+  it), times an optional per-zone multiplier `grug_mobs.ZONE_DENSITY` for
+  later tuning. The spawn regions share it out per region and roster (§4.2
+  "Density"). Round 24 also shared it per spawn point among the ABM rows of
+  the named-zone palettes; no zone has had a palette since the Round 28
+  spawn recipes, and Round 30 retired those surface rows (§4), so that part
+  is gone. Critters, underground rows, the Kraken and Reed Angelfish, NPCs,
+  authored guards, camps, patrols, kings, dragons, summoned/encounter adds,
+  bosses and named rares are neither counted nor limited. An ordinary
+  (non-critter) ABM row above y = -40, today the Kraken's, keeps the Round 16
+  rule (1.3x attempt frequency and a nearest-integer 1.3x species cap); the
+  Rift Spawn's surface row states its final numbers (§4).
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
@@ -841,6 +824,23 @@ rolls ride on WP5's item/enchantment tables.
 Mechanism: mobs_redo `mobs:spawn` plus the named-zone spawn policy. In a
 zone with a spawn recipe the surface rows other than the recipe's critters
 are refused and the spawn regions of §4.2 spawn instead.
+**Retired and merged rows (Round 30, the user's ruling on perf review
+2026-10 #11):** a surface row that no zone can use registers no ABM
+(`spawn_policy.lua` `spawn_row_kept`): every zone has a recipe, and the only
+land outside every zone is dragon-channel floor under water, so on the
+surface only the recipes' critters and the Rift Spawn's surface row stay.
+The surface tables below are therefore history for every other family. The
+remaining rows run through three merged ABMs, one per node set: underground
+(stone and strata, y ≤ −40), water (Kraken, Reed Angelfish) and surface
+(`grug_mobs/spawn_abms.lua`). A merged ABM takes its rows' shortest interval
+and the largest chance that keeps every row's own rate; its dispatcher runs a
+row only on that row's nodes, in its y range, with its neighbours and with
+probability `C × I / (c × i)` (`c`, `i` the row's chance and interval, `C`,
+`I` the merged ABM's), so each row keeps its chance × interval rate,
+and everything after the trigger (light, clock, cap, players, policy) is the
+row's own unchanged code. The engine scanned an active block for some spawn
+ABM nearly every second before (88 ABMs on independent timers); now three
+ABMs do it every 20–30 s.
 Host nodes, authored zone palettes, regional identity and local level must all
 admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 600` (the flight
 ceiling) on all surface entries, since the natural terrain reaches past
@@ -858,9 +858,10 @@ at night never opens a day row), night rows with `max_light = 5` plus
 `day_toggle = false`, and leaves any-time rows ungated.
 Rows wholly below y = -40 are the exception: their family clock is ignored,
 they retain only their explicit light filter, and they never receive a
-`day_toggle`. Night rows outside the §0 density budget receive
-`ceil(day aoc × 1.25)` while their interval and chance stay unchanged; budgeted
-night rows use the night budget instead. If a named zone exposes fewer than two explicit
+`day_toggle`. Night rows receive `ceil(day aoc × 1.25)` while their interval
+and chance stay unchanged; the Rift Spawn's surface row states its final
+chance 4000 and cap 3 (the effective numbers of its Round 24 palette budget,
+gone in Round 30). If a named zone exposes fewer than two explicit
 night-role families, the policy admits its palette fallback: Zombie for
 settled/war, Skeleton Archer for forest/mountain, Jungle Spider for jungle,
 or Bog Ooze for swamp. Capitals retain empty palettes and never receive a
@@ -870,10 +871,9 @@ fallback; mobs already alive at a clock boundary are not despawned.
 of that one name inside a 128-node sphere). Two spawn rows of the same
 name — the Skeleton Archer's two node lists, a family's surface + cave
 rows — share ONE budget; the per-biome tints are separate entities and
-each carries the full row of its family. For the species under the §0
-density budget the row `aoc` in the tables below is the species' weight
-within its zone's budget, not the effective area cap; for every other row
-it remains the cap.
+each carries the full row of its family. Until Round 30 the row `aoc` of
+the species under the palette density budget (§0) was the species' weight
+within its zone's budget; every row still running is its own cap.
 
 Historical ring/filler calibration and its 16-day/12-night peak estimates are
 preserved in [the archive](../archive/design/world-historical.md). They do not
@@ -998,7 +998,8 @@ Row notes:
   budgets.
 
 Current spawn budgeting retains per-entity-name local caps, throttled spawn
-work and separate authored camp/rare mechanisms. Round 16 expressly authorized
+work (the three merged spawn ABMs above) and separate authored camp/rare
+mechanisms. Round 16 expressly authorized
 the fightable surface rate/cap increase without a new PERF campaign; old WP6
 ring measurements cannot be promoted into fresh acceptance evidence.
 
@@ -1007,10 +1008,11 @@ ring measurements cannot be promoted into fresh acceptance evidence.
 **Approved future WP34 scope** (kept, for later; WP audit E5). Placement
 geometry and the below-−1000 servant roster remain open in
 `TODO-design-depth.md`; the pulse is not current runtime behavior. Existing
-cave ABMs remain separate. The Land Guard and the Rift Spawn's deep row, which
-ship today as ordinary ABM rows below −1000 (`grug_mobs/land_guard.lua:31-33`,
-`rift_spawn.lua:103-106`), join the pulse when it ships (WP audit E4); the
-Rift Spawn's surface row (`rift_spawn.lua:107-111`) stays.
+cave rows remain separate (since Round 30 merged into the one underground
+spawn ABM, §4). The Land Guard and the Rift Spawn's deep row, which ship today
+as ordinary rows below −1000 (`grug_mobs/land_guard.lua`, `rift_spawn.lua`),
+join the pulse when it ships (WP audit E4); the Rift Spawn's surface row
+stays.
 
 Depth is a danger axis, not only a material axis (`combat_stats.md` §3,
 `world.md` §4c). Because regular mobs cap at level 60, everything past
@@ -1082,7 +1084,8 @@ mob**, and the servant roster becomes content that lands on top rather
 than a blocker underneath.
 
 **The ABM cave rows are untouched.** They stay exactly as §4's table
-registers them and remain the ambient cave life; the pulse is a second,
+registers them (merged into one dispatching ABM since Round 30, rates
+unchanged) and remain the ambient cave life; the pulse is a second,
 independent source layered over them, and it is the only one that scales
 with depth.
 
@@ -1110,7 +1113,8 @@ gate, protected surface).
   its beach host) and, in Gravesalt, Skyglass and both islands (the zones
   whose palette had it), the Rift Spawn's surface row with its host ground
   and night clock (the catalogue keeps its spawning, Round 28 S2c); shore crabs
-  and every other surface row are refused there.
+  and every other surface row are refused there, and since Round 30 a
+  surface row no zone keeps registers no ABM at all (§4).
   Unchanged everywhere: underground rows and their depth level, water rows
   and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
   guard posts, and the mapgen content. Since Round 28 (S2, W1) every one of

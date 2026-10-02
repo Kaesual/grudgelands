@@ -343,8 +343,8 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 	end
 end
 
--- The complete per-point spawn decision without the density budget: the
--- closed common policy first; a per-mob domain and check may then narrow it.
+-- The complete per-point spawn decision: the closed common policy first; a
+-- per-mob domain and check may then narrow it.
 local function spawn_allowed(name, pos)
 	if not grug_mobs.spawn_policy_allows(name, pos) then
 		return false
@@ -362,24 +362,17 @@ end
 grug_mobs.spawn_allowed = spawn_allowed
 
 -- mobs_redo's global hook for additional spawn checks (an empty stub
--- upstream; returning true BLOCKS the spawn). The per-zone density budget
--- (density.lua, Round 24 ruling 27) runs last, only for an otherwise allowed
--- attempt, and resolves the species eligible at the point through the same
--- decision.
+-- upstream; returning true BLOCKS the spawn).
 function mobs:spawn_abm_check(pos, node, name)
 	if not spawn_allowed(name, pos) then
 		return true
 	end
 	-- Round 25 ruling 24 (spawn_policy.lua claim_refuses_spawn): at most one
 	-- claim lookup, only for a hostile attempt the policy already allows. It
-	-- stays out of spawn_allowed, so the budget's eligible species at a point
-	-- are the same with or without a claim and the refusal is an ordinary
-	-- failed attempt. The mob would stand on top of the matched node.
+	-- stays out of spawn_allowed, so the policy's answer at a point is the
+	-- same with or without a claim and the refusal is an ordinary failed
+	-- attempt. The mob would stand on top of the matched node.
 	if grug_mobs.claim_refuses_spawn(name, {x = pos.x, y = pos.y + 1, z = pos.z}) then
-		return true
-	end
-	if not grug_mobs.density_allows(name, pos, node and node.name,
-			spawn_allowed) then
 		return true
 	end
 end
@@ -944,6 +937,8 @@ dofile(modpath .. "/spawn_regions.lua")
 dofile(modpath .. "/spawn_policy.lua")
 dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()
+-- Round 30: retired and merged spawn ABMs; before any mob file adds a row.
+dofile(modpath .. "/spawn_abms.lua")
 dofile(modpath .. "/levels.lua")
 dofile(modpath .. "/aggro.lua")
 dofile(modpath .. "/roam_avoid.lua")
