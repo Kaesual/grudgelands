@@ -299,3 +299,16 @@ checking the whole legacy set) and `python3 tools/r28_design/ledger.py --game --
 [--sister <zone>]` for the route budget (31–40 the faction's three contested
 zones, 41–50 The Broken Causeway and The Shattered Line, 51–60 Gravesalt
 Escarpment and The Skyglass Canopy, each with the faction's front quests).
+On the region stats of three seeds, `python3
+tools/r28_regions/quest_targets.py` checks that every target forms: each
+kill objective, item source and quest drop, each leader and each
+placeholder target (0 MISSING; after a recipe change re-render with
+`tools/r28_regions/run.sh <zones>` first; CLOCK lists a text that names
+only the clock its targets are not met at). The portable tests run the
+real loader: `luajit tools/r28_q0/portable_test.lua` (section 5: the
+shipped files over the shipped recipes, catalogue, item registry dump
+`docs/planning/round28/items/existing.json` and settlement places; refresh
+the dump with `tools/r28_design/dump_items.sh` after registering new
+items), `luajit tools/r29_q1/portable_test.lua` (compass words) and
+`luajit tools/r28_b4_quests/portable_test.lua` (the quest engine on its
+fixture).
