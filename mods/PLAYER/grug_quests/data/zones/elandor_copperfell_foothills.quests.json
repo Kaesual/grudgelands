@@ -59,7 +59,7 @@
         "hearthpine_departure"
       ],
       "title": "The Surveyor Has Tusks",
-      "text": "I paid a surveyor to mark our claims, and the Rooting Boars have submitted their own revisions. Kill eight of them in the {name:lower_pines} {zone_area:lower_pines} by day. We cannot run a mine on measurements taken by snout.",
+      "text": "I paid a surveyor to mark our claims, and the Rooting Boars have submitted their own revisions. Kill eight of them by day in the {name:lower_pines}, which lie {zone_area:lower_pines}. We cannot run a mine on measurements taken by snout.",
       "objectives": [
         {
           "type": "kill",
@@ -240,7 +240,7 @@
         "copperfell_survey_03"
       ],
       "title": "The Road Has Gone Hollow",
-      "text": "A cart wheel went through the ground, and I've no wish to see a carter follow it. Hunt eight Burrow Gnawers after dark on the {name:pine_slopes} {zone_area:pine_slopes}. They tunnel while we sleep; tonight we interrupt the shift.",
+      "text": "A cart wheel went through the ground, and I've no wish to see a carter follow it. Hunt eight Burrow Gnawers after dark on the {name:pine_slopes}, which lie {zone_area:pine_slopes}. They tunnel while we sleep; tonight we interrupt the shift.",
       "objectives": [
         {
           "type": "kill",

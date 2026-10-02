@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "Payment Was Final",
-      "text": "Our ancestors deserve respect, but a settled account deserves to stay settled. Put eight Debtbound Zombies to rest in the {name:pastures} {zone_area:pastures} at night. They keep knocking to collect debts we wrote off generations ago, and I refuse to wake the entire records hall to prove it.",
+      "text": "Our ancestors deserve respect, but a settled account deserves to stay settled. Put eight Debtbound Zombies to rest at night in the {name:pastures}, which lie {zone_area:pastures}. They keep knocking to collect debts we wrote off generations ago, and I refuse to wake the entire records hall to prove it.",
       "objectives": [
         {
           "type": "kill",
@@ -86,7 +86,7 @@
         "durbrannoc_provisions_01"
       ],
       "title": "Optional: A Ram for the Roast",
-      "text": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Hill Rams in the {name:uplands} {zone_area:uplands} by day. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
+      "text": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Hill Rams by day in the {name:uplands}, which lie {zone_area:uplands}. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
       "objectives": [
         {
           "type": "kill",
@@ -216,7 +216,7 @@
         "durbrannoc_gate_01"
       ],
       "title": "His Majesty Signed Nothing",
-      "text": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Bandit Archers and Toll Bandits, in the {name:tollwood} {zone_area:tollwood} at night. Deal with the archers before they put their objections in writing on your coat.",
+      "text": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Bandit Archers and Toll Bandits, at night in the {name:tollwood}, which lies {zone_area:tollwood}. Deal with the archers before they put their objections in writing on your coat.",
       "objectives": [
         {
           "type": "kill",
@@ -246,7 +246,7 @@
         "durbrannoc_gate_02"
       ],
       "title": "Optional: Tithes for the Dead",
-      "text": "The Tithe Revenants on the {name:heights} {zone_area:heights} still collect a tithe that was abolished before my grandmother's beard went grey. Put six of them down at night if you have the time; it isn't the road's most urgent business, but I'd like the ledger to stop arguing with the dead.",
+      "text": "The Tithe Revenants on the {name:heights}, which lie {zone_area:heights}, still collect a tithe that was abolished before my grandmother's beard went grey. Put six of them down at night if you have the time; it isn't the road's most urgent business, but I'd like the ledger to stop arguing with the dead.",
       "objectives": [
         {
           "type": "kill",
@@ -315,7 +315,7 @@
         "durbrannoc_provisions_01"
       ],
       "title": "Bounty: Supper for a City",
-      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Hill Rams on the {name:heights} by day, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
+      "text": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Hill Rams by day on the {name:heights}, which lie {zone_area:heights}, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
       "objectives": [
         {
           "type": "kill",

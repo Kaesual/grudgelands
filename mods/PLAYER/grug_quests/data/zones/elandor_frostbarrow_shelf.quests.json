@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "No Bell on Those Cats",
-      "text": "I can hear a loaded sled through a gale, but a Crag Snow Leopard gives no warning before it pounces. Kill eight Crag Snow Leopards along the sled track in the {name:pinewood} {zone_area:pinewood} at night. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
+      "text": "I can hear a loaded sled through a gale, but a Crag Snow Leopard gives no warning before it pounces. Kill eight Crag Snow Leopards at night along the sled track in the {name:pinewood}, which lies {zone_area:pinewood}. Folk hauling our supplies deserve to arrive with nothing worse to complain of than cold toes.",
       "objectives": [
         {
           "type": "kill",
@@ -124,6 +124,31 @@
       "duration_min": 6
     },
     {
+      "id": "frostbarrow_sleds_hedra",
+      "line": "sleds",
+      "giver": "r20_anchor_014_host",
+      "turnin": "r20_anchor_026_host",
+      "min_level": 23,
+      "level": 24,
+      "requires": [
+        "frostbarrow_sleds_01"
+      ],
+      "title": "A Lantern at Rimebell",
+      "text": "Hedra Rimebell keeps the signal lantern at Rimebell Watch, and she sees trouble on the shore long before it reaches the sleds. Walk up and tell her Edda sent you; a watch with one pair of eyes needs a second pair of hands.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_026_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Handoff to the zone's third hub.",
+      "duration_min": 8
+    },
+    {
       "id": "frostbarrow_bounty_leopards",
       "line": "bounties",
       "giver": "r20_anchor_014_host",
@@ -164,7 +189,7 @@
       "level": 25,
       "requires": [],
       "title": "Horns Have Right of Way",
-      "text": "I spent half the morning hauling a sled back onto the track while a Hill Ram watched me chew my beard. Cull six Hill Rams along the haul lane in the {name:snowpines} {zone_area:snowpines} by day. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
+      "text": "I spent half the morning hauling a sled back onto the track while a Hill Ram watched me chew my beard. Cull six Hill Rams by day along the haul lane in the {name:snowpines}, which lie {zone_area:snowpines}. They graze quietly until challenged, so take your time choosing the fight; I've already supplied the temper.",
       "objectives": [
         {
           "type": "kill",
@@ -224,7 +249,7 @@
         "frostbarrow_cutting_02"
       ],
       "title": "Bring Yourself Back Too",
-      "text": "Use your Steel Pickaxe to look for Rough Garnet deep beneath these mines, below the copper and jade, and bring me two pieces. Pack food and see that you have light. Keep a route back to the surface. I count a mining trip successful when the miner comes back with the stone.",
+      "text": "Use your Steel Pickaxe to look for Rough Garnet deep beneath these mines, below the copper and jade, and bring me two pieces. Pack food and see that you have light. Keep a route back to the surface. I count a trip successful when the stone and the miner both come back up; one without the other is just paperwork.",
       "objectives": [
         {
           "type": "item",
@@ -250,7 +275,7 @@
         "frostbarrow_cutting_03"
       ],
       "title": "An Explosive Miscalculation",
-      "text": "Goblin Powder-Counter Nib stole our blasting powder and is counting the barrels in the {name:rimewood} {dir_from_giver:powder_counter_nib}. Kill him before he finishes his sums; I'll sleep better knowing he's stopped thinking of uses for it.",
+      "text": "Goblin Powder-Counter Nib stole our blasting powder and is counting the barrels in the {name:rimewood} {dir_from_giver:powder_counter_nib}. Go by daylight, when the leopards there have bedded down and only rams and the odd eagle are about. Clear your approach first, then pull Nib away from his barrels and fight him alone; he hits like a goblin who knows exactly how much powder he has left. Kill him before he finishes his sums.",
       "objectives": [
         {
           "type": "kill",
@@ -306,7 +331,7 @@
         "frostbarrow_watch_01"
       ],
       "title": "Optional: Eyes in the Rimewood",
-      "text": "From the watch I count fresh tracks in the {name:rimewood} {zone_area:rimewood} every night, and every one of them belongs to a Crag Snow Leopard. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
+      "text": "From the watch I count fresh tracks every night in the {name:rimewood}, which lies {zone_area:rimewood}, and every one of them belongs to a Crag Snow Leopard. Kill six there after dark if you've the nerve and the hours. Nobody will order you to, which is why I'm asking nicely.",
       "objectives": [
         {
           "type": "kill",
@@ -336,7 +361,7 @@
         "frostbarrow_watch_01"
       ],
       "title": "Bounty: Claws with the Tide",
-      "text": "The tide has brought us another welcome committee with claws. Kill six Barnacle Pinchers on the {name:rime_shore} by day and return for your bounty. This job is repeatable thirty minutes after you hand it in; the sea has never respected a finished shift.",
+      "text": "The tide has brought us another welcome committee with claws. Kill six Barnacle Pinchers on the {name:rime_shore} {dir_from_giver:rime_shore} by day and return for your bounty. This job is repeatable thirty minutes after you hand it in; the sea has never respected a finished shift.",
       "objectives": [
         {
           "type": "kill",

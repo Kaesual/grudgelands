@@ -60,7 +60,7 @@
       "level": 1,
       "requires": [],
       "title": "Hands Before Heroics",
-      "text": "Before you go making a name for yourself, make something with a handle. Craft a Wooden Axe and a Wooden Pickaxe, then bring both to me here in Hearthpine. I'll keep those for the timber crew and give you a fresh pair. We look after our own tools and our own folk.",
+      "text": "Before you go making a name for yourself, make something with a handle. Craft a Wooden Axe and a Wooden Pickaxe and bring both to me here in Hearthpine. A miner's first tools hang on the hall wall for luck, so yours go up beside your grandmother's, and you take a seasoned pair from the rack in their place.",
       "objectives": [
         {
           "type": "item",
@@ -278,7 +278,7 @@
         "hearthpine_hunt_02"
       ],
       "title": "A Hard Hat Has Limits",
-      "text": "Young Ibex are kicking slate onto the path through the {name:high_pines} {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
+      "text": "Young Ibex are kicking slate onto the path through the {name:high_pines}, which lie {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
       "objectives": [
         {
           "type": "kill",
