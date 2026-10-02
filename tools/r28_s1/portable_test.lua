@@ -310,7 +310,8 @@ do
 	local lc = m.cells[CORE.key(math.floor(l.x / 32), math.floor(l.z / 32))]
 	check(lc.road == best and l.level == 10, "leader on the cell farthest from roads, top level")
 end
--- No camp spot: reported, not fatal.
+-- No camp spot: reported, not fatal; the camp's leader still stands, in the
+-- camp's belt (Round 28 S2c: a named leader stands on every seed).
 do
 	local r = base_recipe()
 	-- A second camp that must keep 100 cells from the first finds no spot.
@@ -318,9 +319,11 @@ do
 	r.camps[2].id, r.camps[2].apart = "camp2", 100
 	r.leaders = {{role = "confused_bandit_chief", at = {camp = "camp2"}, respawn = 300}}
 	local m = CORE.build(DAWN, Q, CORE.parse_recipe(DAWN, r, CTX))
-	check(#m.camps == 1 and #m.problems == 2 and m.problems[1]:find("no valid camp cell for camp2", 1, true)
-		and m.problems[2]:find("no spot for leader", 1, true),
-		"no valid camp cell (and so no leader spot) is a reported problem")
+	local l = m.leaders[1]
+	check(#m.camps == 1 and #m.problems == 1 and m.problems[1]:find("no valid camp cell for camp2", 1, true),
+		"no valid camp cell is a reported problem")
+	check(l and l.fallback == "border" and l.region.belt == 3 and l.level == 10,
+		"the camp's leader falls back to its camp's belt")
 end
 
 -- The region at a point: its cell, else the nearest land cell around it.

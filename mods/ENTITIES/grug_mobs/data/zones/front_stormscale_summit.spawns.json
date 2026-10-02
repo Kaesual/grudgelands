@@ -1,7 +1,31 @@
 {
   "zone": "front_stormscale_summit",
-  "palette": {
-    "families": ["bog_witch", "jungle", "rift_spawn", "war"],
-    "lookalikes": {"cat": "grug_mobs:panther", "skeleton_archer": "grug_mobs:skeleton_raider", "spider": "grug_mobs:jungle_spider"}
+  "recipe": {
+    "belts": [
+      {
+        "id": "l60", "share": 100, "levels": [60, 60],
+        "kinds": {
+          "open": {"id": "scorchlands", "name": "Stormscale Scorchlands",
+            "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "glass_web_spider", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_shore", "name": "Stormscale Wreck Shore",
+            "day": [{"role": "last_watch_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "salt_hex_witch", "weight": 1}], "density": "dense"},
+          "bank": {"id": "rainpools", "name": "Stormscale Rainpools",
+            "day": "open",
+            "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "thunderwood", "name": "Stormscale Thunderwood",
+            "day": [{"role": "glass_knuckle_ape", "weight": 3}, {"role": "glass_fang_serpent", "weight": 1}],
+            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "glass_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crags", "name": "Stormscale Crags",
+            "day": [{"role": "last_pay_archer", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "leaders": [
+      {"role": "last_offering_ape", "at": {"kind": "thunderwood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["gull"]
   }
 }

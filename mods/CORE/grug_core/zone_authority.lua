@@ -337,6 +337,16 @@ local function public_registry(session)
 			return session[name](...)
 		end
 	end
+	-- The zone records carry the gameplay level band (zone_bands.lua: the
+	-- mapgen's own band stays in its level field). The session hands out
+	-- copies, so the record is set in place.
+	local bands = grug_core.zone_bands
+	methods.get = function(zone_id)
+		return bands.apply(session.get(zone_id))
+	end
+	methods.at = function(position)
+		return bands.apply(session.at(position))
+	end
 	return setmetatable({}, {
 		__index = methods,
 		__newindex = function()

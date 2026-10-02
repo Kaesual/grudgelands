@@ -34,12 +34,10 @@ local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local MOBS = repo .. "/mods/ENTITIES/grug_mobs"
 local DATA = MOBS .. "/data/zones"
 
--- The world's 38 zone ids and level bands, from the mapgen's own source; a
--- data file per id.
-local WORLD_ZONES, BANDS = {}, {}
+-- The world's 38 zone ids, from the mapgen's own source; a data file per id.
+local WORLD_ZONES = {}
 for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
 	WORLD_ZONES[#WORLD_ZONES + 1] = row.id
-	BANDS[row.id] = {row.level_min, row.level_max}
 end
 table.sort(WORLD_ZONES)
 local function list_dir()
@@ -216,6 +214,17 @@ local ZONE_X = {} -- zone id -> x stripe origin
 for i, id in ipairs(zone_files) do ZONE_X[id] = i * 1000 end
 local BIOMES = {"grug_blight", "grug_beach", "grug_meadows", "grug_pine_hills"}
 
+-- Each zone's level band as grug_zones serves it (the mapgen source with the
+-- gameplay bands of zone_bands.lua), so the shipped recipes parse.
+local ZONE_BANDS = {}
+do
+	local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
+	for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
+		ZONE_BANDS[row.id] = zone_bands.apply({level_min = row.level_min,
+			level_max = row.level_max}, row.id)
+	end
+end
+
 local function stripe_world()
 	local world = {time = 0.5, protected = {},
 		anchors = {["elandor_highcourt/capital"] = {x = 0, y = 0, z = 0}}}
@@ -231,9 +240,11 @@ local function stripe_world()
 		end,
 		hard_protection_kind_at = function(pos) return world.protected.town and world.protected.town(pos) or nil end,
 		anchor = function(zone, slot) return world.anchors and world.anchors[zone .. "/" .. slot] or nil end,
-		get = function(zone) return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
-			level_min = BANDS[zone] and BANDS[zone][1] or 1,
-			level_max = BANDS[zone] and BANDS[zone][2] or 10} end,
+		get = function(zone)
+			local band = ZONE_BANDS[zone] or {level_min = 1, level_max = 10}
+			return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
+				level_min = band.level_min, level_max = band.level_max}
+		end,
 		pvp_rule_at = function() return "peaceful" end,
 		race_region_at = function() return "human" end,
 	}
@@ -285,8 +296,11 @@ for _, zone in ipairs(zone_files) do
 	local data = json.parse(io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a"))
 	if data.recipe == nil then shipped_palettes = shipped_palettes + 1 end
 end
-check(#palette_zones == shipped_palettes and #palette_zones >= 1, "the " .. shipped_palettes ..
+check(#palette_zones == shipped_palettes, "the " .. shipped_palettes ..
 	" zones without a recipe keep their palette (" .. #palette_zones .. ")")
+-- Round 28 S2 adds recipes zone by zone: every zone has one or the other.
+check(#palette_zones < #zone_files, "some zone has a spawn recipe (" ..
+	(#zone_files - #palette_zones) .. " of " .. #zone_files .. ")")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -425,6 +439,27 @@ do
 		"listed critter keeps its row")
 	check(NEW.spawn_policy_allows("grug_mobs:gull", {x = x0 + 5, y = 10, z = 102}) == false,
 		"unlisted critter refused")
+	-- Rift Spawn keeps its row (Round 28 S2c) in the recipe zones whose
+	-- palette carried it, at its clock; never in the others (Dawnmere).
+	local gx = ZONE_X.front_gravesalt_escarpment
+	new_world.time = 0.0
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == true,
+		"Rift Spawn keeps its row in Gravesalt at night")
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == false,
+		"no Rift Spawn in Dawnmere, whose palette never had it")
+	-- Ruling 3 still refuses it on a protected surface (memoised per
+	-- position: each case at its own height).
+	for step, kind in ipairs({"road", "bridge", "village"}) do
+		new_world.protected.feature = function() return kind end
+		check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10 + step, z = 102}) == false,
+			"no Rift Spawn on a " .. kind .. " in Gravesalt")
+	end
+	new_world.protected.feature = nil
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 20, z = 102}) == true,
+		"Rift Spawn beside the protected surface in Gravesalt")
+	new_world.time = 0.5
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == false,
+		"Rift Spawn keeps its night clock in Gravesalt")
 	check(NEW.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}) ==
 		OLD.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}),
 		"underground unchanged in a recipe zone")

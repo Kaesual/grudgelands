@@ -69,6 +69,8 @@ M.CAMP_ROAD_MIN = 48
 M.CAMP_SLOPE = 0.35
 M.CAMP_RADIUS = 40    -- slot spots are drawn within this of the centre
 M.POI_MEMBER_RADIUS = 24 -- ... of a camp on a POI: near its tents (camps.lua)
+-- Leaders: two leaders of a zone stand at least this far apart (nodes).
+M.LEADER_SPACING = 32
 -- Camp POIs of the world model (the zone atlas's `camps`): the anchor
 -- template -> the POI type a recipe camp's site names. Guard posts are
 -- listed so a recipe naming one gets a clear error; they are no mob camp.
@@ -1216,6 +1218,18 @@ function M.build(zone_id, q, recipe)
 	-- A camp unit: the parsed camp, its centre and cell. It spawns in the
 	-- camp's stead (spawn_regions.lua spawn_mob: tag, rosters,
 	-- levels_by_role).
+	-- The one-belt step (step 3) holds for camp cells too: a cell takes its
+	-- camp's belt `b` only when every neighbour outside the camp (`inside`)
+	-- lies within one belt of `b`.
+	local function fits(c, b, inside)
+		for n = 1, 8 do
+			local nb = cells[key(c.i + N8[n][1], c.j + N8[n][2])]
+			if nb and not inside(nb) and math.abs(nb.belt - b) > 1 then
+				return false
+			end
+		end
+		return true
+	end
 	local function new_camp(camp, cell, x, z)
 		local unit = {id = camp.id, camp = camp, cell = cell, x = x, z = z,
 			tag = camp.tag, rosters = camp.rosters, is_camp = true, belt = camp.belt,
@@ -1251,15 +1265,37 @@ function M.build(zone_id, q, recipe)
 						camp.id, camp.site.name, camp.belt.id, unit.poi_belt.id)
 				end
 				cell.camp = unit
+				cell.belt = camp.belt.index
 				poi_units[#poi_units + 1] = unit
 			end
 		end
 	end
+	-- The cells round a POI within the camp radius, minus those beside land
+	-- more than one belt from the camp's (dropping one may expose another,
+	-- so until none is left).
 	for _, unit in ipairs(poi_units) do
+		local b, set = unit.belt.index, {}
 		for _, c in ipairs(order) do
 			if not c.camp and box_dist(unit.x, unit.z, c.i * CELL, c.j * CELL,
 					c.i * CELL + CELL, c.j * CELL + CELL) < M.CAMP_RADIUS then
+				set[c] = true
+			end
+		end
+		local inside = function(nb) return set[nb] or nb.camp == unit end
+		local changed = true
+		while changed do
+			changed = false
+			for _, c in ipairs(order) do
+				if set[c] and not fits(c, b, inside) then
+					set[c] = nil
+					changed = true
+				end
+			end
+		end
+		for _, c in ipairs(order) do
+			if set[c] then
 				c.camp = unit
+				c.belt = b
 			end
 		end
 	end
@@ -1293,6 +1329,17 @@ function M.build(zone_id, q, recipe)
 							ok = false
 						end
 					end
+					-- The block takes the camp's belt: the one-belt step holds.
+					local inside = function(nb)
+						return math.max(math.abs(nb.i - c.i), math.abs(nb.j - c.j)) <= 1
+					end
+					for a = -1, 1 do
+						for b = -1, 1 do
+							if ok and not fits(cells[key(c.i + a, c.j + b)], c.belt, inside) then
+								ok = false
+							end
+						end
+					end
 				end
 				if ok and road >= M.CAMP_ROAD_MIN and slope_sum / 9 <= M.CAMP_SLOPE then
 					-- Forest edge: forest within two cells, but not forest all
@@ -1322,12 +1369,23 @@ function M.build(zone_id, q, recipe)
 			unit.score = best_score
 			for a = -1, 1 do
 				for b = -1, 1 do
-					cells[key(best.i + a, best.j + b)].camp = unit
+					local n = cells[key(best.i + a, best.j + b)]
+					n.camp = unit
+					n.belt = best.belt
 				end
 			end
 		else
 			problems[#problems + 1] = "no valid camp cell for " .. camp.id ..
 				" in belt " .. camp.belt.id
+		end
+	end
+	-- A camp on a POI owns the POI's cell whatever its stated belt; a belt
+	-- more than one from the land beside that cell is the one way the step
+	-- can break, and is a warning (state the belt the POI lies in).
+	for _, unit in ipairs(poi_units) do
+		if not fits(unit.cell, unit.belt.index, function(nb) return nb.camp == unit end) then
+			warnings[#warnings + 1] = ("camp %s on %s: belt %s is more than one belt from " ..
+				"the land beside its POI"):format(unit.id, unit.site.name, unit.belt.id)
 		end
 	end
 
@@ -1397,7 +1455,7 @@ function M.build(zone_id, q, recipe)
 			end
 		end
 		-- A merge into another belt must not put the fragment two belts
-		-- from one of its other neighbours.
+		-- from one of its other neighbours: such a neighbour cannot take it.
 		local function smooth_with(belt)
 			for _, c in ipairs(r.cells) do
 				for n = 1, 8 do
@@ -1411,16 +1469,19 @@ function M.build(zone_id, q, recipe)
 		end
 		local best, best_key
 		for _, other in ipairs(list) do
-			rank[other] = (other.belt == r.belt and 1000 or 0) +
-				(smooth_with(other.belt) and 100 or 0) + edges[other]
-			if not best or rank[other] > best_key + 1e-12 or
-					(math.abs(rank[other] - best_key) <= 1e-12 and
-						other.cells[1].order < best.cells[1].order) then
-				best, best_key = other, rank[other]
+			if other.belt == r.belt or smooth_with(other.belt) then
+				rank[other] = (other.belt == r.belt and 1000 or 0) + edges[other]
+				if not best or rank[other] > best_key + 1e-12 or
+						(math.abs(rank[other] - best_key) <= 1e-12 and
+							other.cells[1].order < best.cells[1].order) then
+					best, best_key = other, rank[other]
+				end
 			end
 		end
 		if not best then
-			r.stuck = true -- an isolated fragment (an islet): it stays
+			-- An isolated fragment (an islet), or one that no neighbour can
+			-- take without a two-belt step: it stays a small region.
+			r.stuck = true
 		else
 			for _, c in ipairs(r.cells) do
 				c.region = best
@@ -1562,51 +1623,118 @@ function M.build(zone_id, q, recipe)
 	end
 	map.regions, map.by_kind = regions, by_kind
 
-	-- 8. Leaders.
-	local leaders = {}
-	map.leaders = leaders
+	-- 8. Leaders. A named leader stands on every seed (Round 28 S2c). A camp
+	-- leader stands at its camp's centre. A kind leader takes the best cell
+	-- (farthest from roads, then deepest inside its region) of its kind's
+	-- largest region; where the kind has no region on this seed, the chain
+	-- goes on to the belt's open kind and then to every region of the belt,
+	-- largest first (a camp leader whose camp found no site takes that chain
+	-- in its camp's belt). The chain never leaves the belt, so the leader's
+	-- fixed level stays inside its region's levels. Leaders stand at least
+	-- LEADER_SPACING apart: camp leaders first, then the others in recipe
+	-- order, each on the first cell of its chain far enough from those
+	-- placed (the next-best cell of a region, then the next region).
+	local function by_size(list)
+		local out = {}
+		for i = 1, #list do out[i] = list[i] end
+		table.sort(out, function(a, b)
+			if a.size ~= b.size then return a.size > b.size end
+			return a.id < b.id
+		end)
+		return out
+	end
+	local function chain_for(kind, belt_index)
+		local out, seen = {}, {}
+		local function add(list)
+			for _, r in ipairs(by_size(list)) do
+				if not seen[r] and not r.camp then
+					seen[r] = true
+					out[#out + 1] = r
+				end
+			end
+		end
+		if kind then add(by_kind[kind.id] or {}) end
+		add(by_kind[belts[belt_index].kinds.open.id] or {})
+		local in_belt = {}
+		for _, r in ipairs(regions) do
+			if r.belt == belt_index then in_belt[#in_belt + 1] = r end
+		end
+		add(in_belt)
+		return out
+	end
+	-- A region's cells, best first: farthest from roads, then deepest
+	-- (steps from the region's edge), then grid order.
+	local function ranked_cells(r)
+		local member, edge = {}, {}
+		for _, c in ipairs(r.cells) do member[c] = true end
+		for _, c in ipairs(r.cells) do
+			for n = 1, 4 do
+				local nb = cells[key(c.i + N4[n][1], c.j + N4[n][2])]
+				if not nb or not member[nb] then
+					edge[#edge + 1] = c
+					break
+				end
+			end
+		end
+		local _, depth = bfs(r.cells, edge, member)
+		local out = {}
+		for i = 1, #r.cells do out[i] = r.cells[i] end
+		table.sort(out, function(a, b)
+			if math.abs(a.road - b.road) > 1e-9 then return a.road > b.road end
+			local da, db = depth[a] or 0, depth[b] or 0
+			if da ~= db then return da > db end
+			return a.order < b.order
+		end)
+		return out
+	end
+	local placed = {}
+	local function spaced(x, z)
+		local min2 = M.LEADER_SPACING * M.LEADER_SPACING
+		for _, p in ipairs(placed) do
+			local dx, dz = p.x - x, p.z - z
+			if dx * dx + dz * dz < min2 then return false end
+		end
+		return true
+	end
+	local spots = {}
 	for _, leader in ipairs(recipe.leaders) do
-		local spot
 		if leader.camp then
 			for _, unit in ipairs(camps) do
 				if unit.camp == leader.camp then
-					spot = {x = unit.x, z = unit.z, region = unit.region}
+					spots[leader] = {x = unit.x, z = unit.z, region = unit.region}
+					placed[#placed + 1] = spots[leader]
 				end
-			end
-		else
-			local largest
-			for _, r in ipairs(by_kind[leader.kind.id] or {}) do
-				if not largest or r.size > largest.size then largest = r end
-			end
-			if largest then
-				-- Depth: steps from the region's edge.
-				local member, edge = {}, {}
-				for _, c in ipairs(largest.cells) do member[c] = true end
-				for _, c in ipairs(largest.cells) do
-					for n = 1, 4 do
-						local nb = cells[key(c.i + N4[n][1], c.j + N4[n][2])]
-						if not nb or not member[nb] then
-							edge[#edge + 1] = c
-							break
-						end
-					end
-				end
-				local _, depth = bfs(largest.cells, edge, member)
-				local best
-				for _, c in ipairs(largest.cells) do
-					if not best or c.road > best.road + 1e-9 or
-							(math.abs(c.road - best.road) <= 1e-9 and
-								(depth[c] or 0) > (depth[best] or 0)) then
-						best = c
-					end
-				end
-				spot = {x = best.x, z = best.z, region = largest}
 			end
 		end
+	end
+	for _, leader in ipairs(recipe.leaders) do
+		if not spots[leader] then
+			local kind = leader.kind
+			local belt_index = kind and kind.belt.index or leader.camp.belt.index
+			for _, r in ipairs(chain_for(kind, belt_index)) do
+				for _, c in ipairs(ranked_cells(r)) do
+					if spaced(c.x, c.z) then
+						local fallback
+						if r.kind ~= kind then
+							fallback = r.kind.id
+						end
+						spots[leader] = {x = c.x, z = c.z, region = r, fallback = fallback}
+						break
+					end
+				end
+				if spots[leader] then break end
+			end
+			if spots[leader] then placed[#placed + 1] = spots[leader] end
+		end
+	end
+	local leaders = {}
+	map.leaders = leaders
+	for _, leader in ipairs(recipe.leaders) do
+		local spot = spots[leader]
 		if spot then
 			leaders[#leaders + 1] = {role = leader.role, x = floor(spot.x),
 				z = floor(spot.z), level = leader.level, respawn = leader.respawn,
-				region = spot.region}
+				region = spot.region, fallback = spot.fallback}
 		else
 			problems[#problems + 1] = "no spot for leader " .. leader.role
 		end
@@ -1776,11 +1904,12 @@ function M.stats(map)
 	end
 	for i, r in ipairs(map.regions) do out.sizes[i] = r.size end
 	table.sort(out.sizes)
-	-- Adjacent regions: the largest belt difference.
+	-- Adjacent regions (eight neighbours, as regions connect): the largest
+	-- belt difference. The build keeps it at most 1.
 	local jump = 0
 	for _, c in ipairs(map.order) do
-		for n4 = 1, 4 do
-			local nb = map.cells[key(c.i + N4[n4][1], c.j + N4[n4][2])]
+		for n = 1, 8 do
+			local nb = map.cells[key(c.i + N8[n][1], c.j + N8[n][2])]
 			if nb and nb.region ~= c.region then
 				jump = math.max(jump, math.abs(nb.belt - c.belt))
 			end
@@ -1793,7 +1922,8 @@ function M.stats(map)
 			poi_belt = unit.poi_belt and unit.poi_belt.id}
 	end
 	for _, l in ipairs(map.leaders) do
-		out.leaders[#out.leaders + 1] = {role = l.role, x = l.x, z = l.z, level = l.level}
+		out.leaders[#out.leaders + 1] = {role = l.role, x = l.x, z = l.z, level = l.level,
+			fallback = l.fallback}
 	end
 	return out
 end

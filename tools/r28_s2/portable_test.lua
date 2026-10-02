@@ -349,10 +349,12 @@ local function three_camps(belt)
 end
 map = build(three_camps("high"))
 unit = camp_unit(map, "bandits")
-check(unit and unit.poi_belt.id == "low" and #map.warnings == 1 and
+check(unit and unit.poi_belt.id == "low" and #map.warnings == 2 and
 	map.warnings[1]:find("states belt high, its POI lies in belt low", 1, true) ~= nil and
+	map.warnings[2]:find("more than one belt from the land beside its POI", 1, true) ~= nil and
 	CORE.stats(map).warnings[1] == map.warnings[1] and #map.problems == 0,
-	"two belts away: a warning, the camp stands (" .. tostring(map.warnings[1]) .. ")")
+	"two belts away: warnings (the stated belt, the step at the POI's cell), the camp stands (" ..
+	tostring(map.warnings[1]) .. ")")
 map = build(three_camps("mid"))
 check(camp_unit(map, "bandits") and #map.warnings == 0, "one belt away: no warning")
 -- A generated camp keeps `apart` from a camp on a POI.

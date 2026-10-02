@@ -1,7 +1,52 @@
 {
   "zone": "front_skyglass_canopy",
-  "palette": {
-    "families": ["jungle", "rift_spawn", "war"],
-    "lookalikes": {"cat": "grug_mobs:panther", "skeleton_archer": "grug_mobs:skeleton_raider", "spider": "grug_mobs:jungle_spider"}
+  "recipe": {
+    "from": {"border": ["elandor_glassroot_wilds", "front_shattered_line", "kragmar_thunderroot_wilds"]},
+    "to": {"core": true},
+    "belts": [
+      {
+        "id": "l51_53", "share": 30, "levels": [51, 53],
+        "kinds": {
+          "open": {"id": "clearings", "name": "Skyglass Clearings",
+            "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "cloudwood", "name": "Skyglass Cloudwood",
+            "day": [{"role": "glass_knuckle_ape", "weight": 3}, {"role": "saltroad_deserter", "weight": 1}],
+            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l54_57", "share": 40, "levels": [54, 57],
+        "kinds": {
+          "open": {"id": "glades", "name": "Skyglass Glades",
+            "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "rootways", "name": "Skyglass Rootways",
+            "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "saltbound_husk", "weight": 1}],
+            "night": [{"role": "glass_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l58_60", "share": 30, "levels": [58, 60],
+        "kinds": {
+          "open": {"id": "skyfall", "name": "Skyglass Skyfall",
+            "day": [{"role": "glass_fang_serpent", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "high_canopy", "name": "Skyglass High Canopy",
+            "day": [{"role": "glass_knuckle_ape", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+            "night": [{"role": "glass_shadow_panther", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "paymaster_camp", "name": "Skyglass Paymaster Camp", "belt": "l58_60",
+       "roster": [{"role": "last_pay_archer", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "paymaster_chirr", "at": {"camp": "paymaster_camp"}, "respawn": 300},
+      {"role": "glass_throat_serpent", "at": {"kind": "high_canopy", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }
