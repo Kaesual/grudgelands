@@ -204,7 +204,7 @@ core.after(2, function()
 		core.request_shutdown("r28 s1 probe failed", false, 0)
 		return
 	end
-	log(("region map: %d cells, %d regions in %.0f ms (first build)"):format(#map.order,
+	log(("region map: %d cells, %d regions in %.0f ms (ready at start)"):format(map.cell_count,
 		#map.regions, (core.get_us_time() - t0) / 1000))
 	for _, kind in ipairs({"home_fields", "strand", "pastures", "borderlands"}) do
 		local t = SR.core.target_of(map, kind)

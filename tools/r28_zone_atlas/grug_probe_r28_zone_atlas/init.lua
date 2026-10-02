@@ -132,7 +132,7 @@ local function run()
 			local cast = {day = {}, night = {}}
 			for _, r in ipairs(map.regions) do
 				local unit = r.camp or r.kind
-				local n = #r.cells
+				local n = r.size -- the region's cell count (compact map, Round 30 P3)
 				cells = cells + n
 				levels[r.level] = (levels[r.level] or 0) + n
 				for _, clock in ipairs({"day", "night"}) do
