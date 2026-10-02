@@ -9,8 +9,8 @@
       "min_level": 53,
       "level": 55,
       "requires": [],
-      "title": "Shrouds That Do Not Rot",
-      "text": "Glass-Web Jungle Spiders spin in the {name:front_skyglass_canopy/rootways} of The Skyglass Canopy at night {zone_area:front_skyglass_canopy/rootways}. Bring me two Glass Spider Silk. It does not rot, which makes it the only shroud worth registering.",
+      "title": "Dressed for the Long Rest",
+      "text": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Glass-Web Jungle Spiders in the {name:front_skyglass_canopy/rootways} at night, {zone_area:front_skyglass_canopy/rootways}. We may keep our dead for centuries; we can at least dress them properly.",
       "objectives": [
         {
           "type": "item",
@@ -38,8 +38,8 @@
       "requires": [
         "nv_front_01"
       ],
-      "title": "The Last Watchmen",
-      "text": "Last Watchmen walk the {name:front_gravesalt_escarpment/whitewall} of Gravesalt Escarpment after dark {zone_area:front_gravesalt_escarpment/whitewall}, still keeping a post the register closed long ago. Lay five to rest, and I will finally write the date.",
+      "title": "An Empty Space for the Date",
+      "text": "The register has a space for the end of every watch; I have left these entries open for far too long. Lay five Last Watchmen to rest on the {name:front_gravesalt_escarpment/whitewall} after dark, {zone_area:front_gravesalt_escarpment/whitewall}, and I can finally record their release.",
       "objectives": [
         {
           "type": "kill",
@@ -66,8 +66,8 @@
       "requires": [
         "nv_front_02"
       ],
-      "title": "Bounty: Wyrmglass Strays",
-      "text": "Crown Frost Strays wander the {name:front_wyrmglass_crown/scree} of The Wyrmglass Crown at night {zone_area:front_wyrmglass_crown/scree}. Take a boat from the Shipwright across the channel and destroy eight. The register pays in coin, again an hour after you collect.",
+      "title": "Bounty: An Island's Unfinished Dead",
+      "text": "The Crown Frost Strays on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight in the {name:front_wyrmglass_crown/scree} at night, {zone_area:front_wyrmglass_crown/scree}. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
       "objectives": [
         {
           "type": "kill",

@@ -9,8 +9,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Husks on the Causeway",
-      "text": "The old Causeway runs from our ramp down into the floodwater, and Mire-Cured Husks walk the {name:front_broken_causeway/floodmeadows} by day {zone_area:front_broken_causeway/floodmeadows}. Break five of them. The Accord counts the same husks from their side; make sure our count is bigger.",
+      "title": "Make the Mud Keep Them",
+      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks in the {name:front_broken_causeway/floodmeadows} by day, {zone_area:front_broken_causeway/floodmeadows}. The Accord can count footprints; give the Throng something worth counting.",
       "objectives": [
         {
           "type": "kill",
@@ -37,8 +37,8 @@
       "requires": [
         "bb_front_ramp_01"
       ],
-      "title": "The Fords After Dark",
-      "text": "When the sun goes down, Fordwater Zombies climb out of the {name:front_broken_causeway/reedmire} {zone_area:front_broken_causeway/reedmire}. Put five of them back under the water. They do not drown twice, but they do stop walking.",
+      "title": "No Marching After Death",
+      "text": "Hear that sloshing after sundown? Fordwater Zombies are climbing through the {name:front_broken_causeway/reedmire}, {zone_area:front_broken_causeway/reedmire}, and every patrol has to fight for dry footing. Kill five there at night; I want boots coming home with soldiers still in them.",
       "objectives": [
         {
           "type": "kill",
@@ -65,8 +65,8 @@
       "requires": [
         "bb_front_ramp_01"
       ],
-      "title": "Wolves of the Wraithwood",
-      "text": "Deeper in, Fenrunner Wolves hunt the {name:front_broken_causeway/wraithwood} at night {zone_area:front_broken_causeway/wraithwood}. Kill five. The deeper you go, the harder the Causeway bites back, so keep your axe close.",
+      "title": "Teeth in the Dark",
+      "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves in the {name:front_broken_causeway/wraithwood} at night, {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
       "objectives": [
         {
           "type": "kill",
@@ -94,8 +94,8 @@
         "bb_front_ramp_02",
         "bb_front_ramp_03"
       ],
-      "title": "The Toll-Taker",
-      "text": "Every toll on the Causeway ends up in one purse: Toll-Taker Senn's, at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}. Kill four Aqueduct Bowmen at the camp and then Senn. The bowmen shoot from the walls, so get in close.",
+      "title": "Payment in Full",
+      "text": "Toll-Taker Senn wants coin for every Throng boot that crosses his road. Find him at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, kill four Aqueduct Bowmen there, and kill Senn. He can bill me for the trouble.",
       "objectives": [
         {
           "type": "kill",
@@ -130,8 +130,8 @@
       "requires": [
         "bb_front_ramp_04"
       ],
-      "title": "Hollowarch Station",
-      "text": "The Causeway gets worse the deeper it runs, and so does the work. Orrel Hollowstep at Hollowarch Station in Blackwind Rise watches the far end. Go and tell Orrel that Red Ramp sent you.",
+      "title": "A Name Worth Sending",
+      "text": "You have put enough dents in the Causeway for me to send your name ahead. Speak with Orrel Hollowstep at Hollowarch Station in Blackwind Rise and tell him Drek Rampbinder sent you. He'll find work for hands like yours, even if he complains about the fingerprints.",
       "objectives": [
         {
           "type": "talk",
@@ -154,8 +154,8 @@
       "requires": [
         "bb_front_ramp_04"
       ],
-      "title": "Bounty: Wraithwood Brigands",
-      "text": "Causeway Brigands keep coming back to the {name:front_broken_causeway/wraithwood} by day {zone_area:front_broken_causeway/wraithwood}; their kind never learns. Kill five and collect. The next bounty opens twenty minutes after you hand them in.",
+      "title": "Bounty: Bad Career Choices",
+      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five in the {name:front_broken_causeway/wraithwood} by day, {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; apparently word travels slower than greed.",
       "objectives": [
         {
           "type": "kill",
@@ -183,8 +183,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Hyenas on the Approaches",
-      "text": "Warpack Hyenas run the {name:front_shattered_line/approaches} by day {zone_area:front_shattered_line/approaches} and steal from both armies. Kill five. Let the Accord feed the next pack.",
+      "title": "Nobody Laughs at Supper",
+      "text": "Warpack Hyenas have found our supply trail, and now the laughing starts before supper. Kill five in the {name:front_shattered_line/approaches} by day, {zone_area:front_shattered_line/approaches}. I can mend a torn ration sack; I cannot sew the meat back into it.",
       "objectives": [
         {
           "type": "kill",
@@ -209,8 +209,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Stingers on the Bluffs",
-      "text": "After dark the War-Stinger Scorpions climb the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs}. Kill five. One sting through a boot and a soldier limps for a week, and I need soldiers who march.",
+      "title": "Mind the Boots",
+      "text": "I patch enough holes in our soldiers without War-Stinger Scorpions punching fresh ones through their boots. Kill five on the {name:front_shattered_line/bluffs} after dark, {zone_area:front_shattered_line/bluffs}, and give the next patrol a fighting chance to march home.",
       "objectives": [
         {
           "type": "kill",
@@ -237,8 +237,8 @@
       "requires": [
         "bb_front_torn_01"
       ],
-      "title": "Tigers in the Tallgrass",
-      "text": "Tallgrass Tigers hunt the {name:front_shattered_line/bluffs} by day {zone_area:front_shattered_line/bluffs}. Kill four and bring me two Siege Cat Claws. I sew them onto our standards, and the Accord hates looking at them.",
+      "title": "A Standard with Claws",
+      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Tallgrass Tigers on the {name:front_shattered_line/bluffs} by day, {zone_area:front_shattered_line/bluffs}, and bring me two Siege Cat Claws. Let's give the Accord something new to stare at.",
       "objectives": [
         {
           "type": "kill",
@@ -274,8 +274,8 @@
       "requires": [
         "bb_front_torn_02"
       ],
-      "title": "Venom on the Ramparts",
-      "text": "The {name:front_shattered_line/ramparts} crawl with War-Stinger Scorpions at night {zone_area:front_shattered_line/ramparts}. Kill five and bring two Scorch Venom; our archers put it to better use than the scorpions do.",
+      "title": "Stings for Our Side",
+      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl over the {name:front_shattered_line/ramparts} at night, {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Try to keep the stings out of our side of the war.",
       "objectives": [
         {
           "type": "kill",
@@ -312,8 +312,8 @@
         "bb_front_torn_03",
         "bb_front_torn_04"
       ],
-      "title": "Standard-Bearer Ninepins",
-      "text": "Standard-Bearer Ninepins keeps the dead raiders marching from the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Destroy four Siege Skeleton Raiders there at night, then knock Ninepins down for good. Leave his standard where it falls; it is cursed, and worse, it is ugly.",
+      "title": "Let That Banner Fall",
+      "text": "Standard-Bearer Ninepins waves that rag of his over the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, and the dead still salute. Destroy four Siege Skeleton Raiders there at night and kill Ninepins. I have spent my life keeping standards upright; I'll enjoy hearing about this one falling.",
       "objectives": [
         {
           "type": "kill",
@@ -348,8 +348,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Group: Engine Nine",
-      "text": "War Construct Engine Nine still grinds along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, stronger than any one fighter. Bring friends and break it; this is work for a group.",
+      "title": "Group: Break the War Machine",
+      "text": "War Construct Engine Nine is still grinding through the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, as if the war were a nail that needs more hammering. Gather a group and destroy it; one fighter will only add to the dents. I want all of you back to boast about this.",
       "objectives": [
         {
           "type": "kill",
@@ -377,8 +377,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Word for Kezamba",
-      "text": "You have seen the worst of the Line. Past it lies The Skyglass Canopy, and Nalo Pathdrum in Kezamba sends fighters there. Go to Kezamba and tell Nalo that Tornstandard vouches for you.",
+      "title": "Send a Fighter, Save a Banner",
+      "text": "I could send Kezamba a banner listing what you have done, but I am running short of cloth. Go speak with Nalo Pathdrum in Kezamba; he sends fighters into The Skyglass Canopy. Tell him Yarra Standardmender vouches for you, and mind that you keep earning it.",
       "objectives": [
         {
           "type": "talk",
@@ -401,8 +401,8 @@
       "requires": [
         "bb_front_torn_05"
       ],
-      "title": "Bounty: Siegecrest Tigers",
-      "text": "Tallgrass Tigers prowl the {name:front_shattered_line/siegecrest} by day {zone_area:front_shattered_line/siegecrest}, at the far end of the Line. Kill five and collect. The next bounty opens twenty minutes after you hand them in.",
+      "title": "Bounty: Stripes at the Front",
+      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them a nuisance to everybody. Kill five on the {name:front_shattered_line/siegecrest} by day, {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
       "objectives": [
         {
           "type": "kill",

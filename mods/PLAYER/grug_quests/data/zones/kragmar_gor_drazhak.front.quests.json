@@ -9,8 +9,8 @@
       "min_level": 41,
       "level": 43,
       "requires": [],
-      "title": "Venom for the Road Wardens",
-      "text": "The new road from Gor Drazhak runs straight through both front lines, and the road wardens need arrows that bite. Sinkmire Vipers lie in the {name:front_broken_causeway/reedmire} of the Causeway by day {zone_area:front_broken_causeway/reedmire}; bring me two Scorch Venom. The Accord dips its arrows too, so we dip faster.",
+      "title": "Give the Road Some Fangs",
+      "text": "Gor Drazhak did not build a road through two front lines just to watch our wardens get buried beside it. Bring me two Scorch Venom from the Sinkmire Vipers in the {name:front_broken_causeway/reedmire} by day, {zone_area:front_broken_causeway/reedmire}. Our archers have volunteered to handle the arrows; funny how nobody volunteered for the snakes.",
       "objectives": [
         {
           "type": "item",
@@ -38,8 +38,8 @@
       "requires": [
         "gd_front_01"
       ],
-      "title": "Fangs for the Recruits",
-      "text": "On the other side of the road, Warpack Hyenas hunt the {name:front_shattered_line/trenches} of the Shattered Line by day {zone_area:front_shattered_line/trenches}. Kill four and bring two Siegepack Fangs. Every new recruit gets one; it is cheaper than a medal.",
+      "title": "Wear the Teeth This Time",
+      "text": "A recruit ought to wear a fang before a fang wears the recruit. Kill four Warpack Hyenas in the {name:front_shattered_line/trenches} by day, {zone_area:front_shattered_line/trenches}, and bring me two Siegepack Fangs for the next recruits sent to the front.",
       "objectives": [
         {
           "type": "kill",
@@ -75,8 +75,8 @@
       "requires": [
         "gd_front_02"
       ],
-      "title": "Bounty: The Wreck Shore",
-      "text": "Last-Watch Mummies wash up on the {name:front_stormscale_summit/wreck_shore} of Stormscale Summit by day {zone_area:front_stormscale_summit/wreck_shore}. Buy a boat from the Shipwright, sail across and lay eight of them down. The war chest pays in coin, again an hour after you collect.",
+      "title": "Bounty: Dead Weight Ashore",
+      "text": "The sea keeps dumping soldiers on Stormscale Summit, and the Last-Watch Mummies insist they are still fit for duty. Buy a boat from the Shipwright and sail to the island, then destroy eight on the {name:front_stormscale_summit/wreck_shore} by day, {zone_area:front_stormscale_summit/wreck_shore}. Return for coin from the war chest. You can take the bounty again one hour after turn-in; the sea has plenty of reserves.",
       "objectives": [
         {
           "type": "kill",
