@@ -397,9 +397,39 @@ local function remove_socket_holder(entity)
 	else mobs:remove(entity, true) end
 end
 
+--
+-- THE ENGINE'S FIRST SNAPSHOT OF A PLACED NPC IS TAKEN BEFORE `install`
+-- (Round 30 lane C, the Dawnmere "53 objects"). `core.add_entity` stores the
+-- entity's staticdata in its mapblock the moment it activates
+-- (`ServerEnvironment::addActiveObjectRaw`), and only a later deactivation
+-- replaces that entry. If the block is saved and unloaded first (a start
+-- placed at world-ready into blocks that sat idle longer than
+-- `server_unload_unused_data_timeout`, when the map's unload timer runs before
+-- the next deactivation pass), that pass finds no active entry, keeps the
+-- reloaded copy and stores a second one: every NPC comes back twice, once as
+-- itself and once as that first snapshot, which carried no settlement key and
+-- so was nobody's twin.
+--
+-- So `place` hands the entity `_grug_unplaced` in its staticdata, `install`
+-- clears it, and only the first snapshot can ever carry it. Such a copy
+-- removes itself at its claim (activation or first tick); `placing` keeps the
+-- claim from firing on the entity being placed right now, whose activation
+-- runs inside `core.add_entity`, before `install`.
+--
+local placing = false
+
 function grug_mobs.start_npc_claim(entity)
 	if type(entity) ~= "table" then
 		return true
+	end
+	if entity._grug_unplaced and not placing then
+		core.log("warning", "[grug_mobs] start npcs " .. tostring(entity._grug_start) ..
+			": the engine's first snapshot of a " .. tostring(entity.name) ..
+			" came back next to it and removed itself")
+		if entity.object then
+			remove_socket_holder(entity)
+		end
+		return false
 	end
 	local key, socket_id = entity._grug_start, entity._grug_socket
 	if type(key) ~= "string" or type(socket_id) ~= "string" then
@@ -1068,6 +1098,9 @@ end
 -- survives unload/reload inside the mob's staticdata (AGENTS.md's WP6 rule:
 -- never an ObjectRef, never a function).
 local function install(entity, row, slot)
+	-- Installed: from here on every snapshot of this NPC is a real one
+	-- (`start_npc_claim`).
+	entity._grug_unplaced = nil
 	-- The settlement KEY, not the race: `start_guard_died` looks the row up by
 	-- it, and a race has two settlements. The field name is the one guard.lua
 	-- already reads.
@@ -1198,7 +1231,16 @@ local function install(entity, row, slot)
 end
 
 local function place(row, slot)
-	local object = core.add_entity(slot.pos, slot.entity)
+	-- The settlement key comes along so the families that claim only a keyed
+	-- NPC (guard.lua, bosses.lua) reach the claim with a stray first snapshot.
+	-- A capital display is a plain entity that reads only its own saved
+	-- fields and removes an incomplete copy itself (capital_displays.lua).
+	local def = core.registered_entities[slot.entity]
+	local staticdata = not (def and def._grug_capital_display) and
+		core.serialize({_grug_unplaced = true, _grug_start = row.key}) or nil
+	placing = true
+	local object = core.add_entity(slot.pos, slot.entity, staticdata)
+	placing = false
 	if not object then return false end
 	local entity = object:get_luaentity()
 	if not entity then
