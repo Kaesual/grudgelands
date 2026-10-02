@@ -2555,7 +2555,10 @@ function mob_class:do_states(dtime)
 			and not self.fly and self.attack_type == "dogfight"
 		if grug_obstacle.close_path_due(obstacle_state, dtime,
 				grug_blocked_close, can_close_path, self.path.following) then
-			self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
+			-- GRUG PATCH (Round 30 P2): a given-up target ends the attack
+			-- state like the give-up distance above does.
+			if self:smart_mobs(s, target_pos, dist, dtime, true, in_sight)
+					== "give_up" then return end
 		end
 
 		local ds_var = 0
@@ -2798,7 +2801,9 @@ function mob_class:do_states(dtime)
 				-- simply costs nothing now.
 				if self.pathfinding and pathfinding_enable
 				and self.attack_type ~= "dogshoot" then
-					self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
+					-- GRUG PATCH (Round 30 P2): see the close-obstacle call.
+					if self:smart_mobs(s, target_pos, dist, dtime, false, in_sight)
+							== "give_up" then return end
 				end
 
 				-- distance padding to stop mob spinning
