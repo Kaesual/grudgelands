@@ -62,7 +62,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Edda Tarnmantle | -2402, 88, -1576 | r20_anchor_014_01, r20_anchor_014_02, r20_anchor_014_03, r20_dwarf_journey_02 |
+| quest_host | quest giver | Edda Tarnmantle | -2402, 88, -1576 | frostbarrow_bounty_leopards, frostbarrow_sleds_01, frostbarrow_sleds_02, frostbarrow_sleds_hedra, frostbarrow_sleds_optional |
 
 Distances: zone edge N 576 (elandor_stormvault_heights), S 508 (coastal_shelf), E 256 (elandor_dur_brannoc), W 140 (coastal_shelf); nearest other-zone land 246 E; sea 79 SW; sea-beach sand 126 SW; nearest road 17.
 Nearest hubs (straight / by road): Tarncut Mine 280 / 662; Dur Brannoc 609 / 877; Rimebell Watch 342 / 1070; Copperfell Village 706 / 1538; Copperfell Bandit Camp 969 / 1896.
@@ -73,7 +73,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Hedra Rimebell | -2298, 114, -1250 | r20_anchor_026_01, r20_anchor_026_02, r20_anchor_026_03 |
+| quest_host | quest giver | Hedra Rimebell | -2298, 114, -1250 | frostbarrow_bounty_pinchers, frostbarrow_watch_01, frostbarrow_watch_optional |
 
 Distances: zone edge N 240 (elandor_stormvault_heights), S 836 (elandor_copperfell_foothills), E 212 (elandor_dur_brannoc), W 224 (coastal_shelf); nearest other-zone land 197 E; sea 187 W; sea-beach sand 168 W; nearest road 12.
 Nearest hubs (straight / by road): Tarnwatch Fold 342 / 1070; Dur Brannoc 559 / 1085; Tarncut Mine 127 / 1529; Copperfell Village 897 / 1745; Copperfell Bandit Camp 1096 / 2104.
@@ -84,26 +84,28 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Kelda Screesort | -2416, 40, -1296 | r20_anchor_061_01, r20_anchor_061_02, r20_anchor_061_03, r20_dwarf_journey_03 |
+| quest_host | quest giver | Kelda Screesort | -2416, 40, -1296 | frostbarrow_cutting_01, frostbarrow_cutting_02, frostbarrow_cutting_03, frostbarrow_cutting_04, frostbarrow_departure |
 
 Distances: zone edge N 296 (elandor_stormvault_heights), S 512 (coastal_shelf), E 312 (elandor_dur_brannoc), W 84 (coastal_shelf); nearest other-zone land 296 N; sea 60 W; sea-beach sand 42 W; nearest road 13.
 Nearest hubs (straight / by road): Tarnwatch Fold 280 / 662; Dur Brannoc 651 / 1336; Rimebell Watch 127 / 1529; Copperfell Village 922 / 1997; Copperfell Bandit Camp 1147 / 2355.
 
-### Current quests (11, given in this zone)
+### Current quests (13, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_014_01 | The Cairn Mortar | Edda Tarnmantle (Tarnwatch Fold) | 21 | bring 10 default:cobble | 820 | - |
-| r20_anchor_014_02 | Hooves Above the Sleds | Edda Tarnmantle (Tarnwatch Fold) | 21 | kill 4 ibex or surefoot_ibex [in elandor_frostbarrow_shelf] | 820 | - |
-| r20_anchor_026_01 | Fuel Under Cover | Hedra Rimebell (Rimebell Watch) | 21 | bring 6 default:coal_lump | 820 | - |
-| r20_anchor_026_02 | The Sled Track Pack | Hedra Rimebell (Rimebell Watch) | 21 | kill 3 snow_leopard [in elandor_frostbarrow_shelf] | 820 | - |
-| r20_anchor_061_01 | A Handle for the Cutting | Kelda Screesort (Tarncut Mine) | 21 | bring 1 grug_materials:pick_stone | 820 | - |
-| r20_anchor_061_02 | Rams on the Haul Lane | Kelda Screesort (Tarncut Mine) | 21 | kill 4 mountain_ram [in elandor_frostbarrow_shelf] | 820 | - |
-| r20_anchor_014_03 | The Bell After Dark | Edda Tarnmantle (Tarnwatch Fold) | 23 | kill 4 goblin_raider or ore_thieving_goblin [in elandor_frostbarrow_shelf] | 900 | r20_anchor_014_02 |
-| r20_anchor_026_03 | Notches on the Signal Pole | Hedra Rimebell (Rimebell Watch) | 23 | kill 4 goblin_slinger or rubble_goblin_slinger [in elandor_frostbarrow_shelf] | 900 | r20_anchor_026_02 |
-| r20_anchor_061_03 | The Cold Shift | Kelda Screesort (Tarncut Mine) | 23 | kill 3 snow_leopard [in elandor_frostbarrow_shelf] | 900 | r20_anchor_061_02 |
-| r20_dwarf_journey_02 | Word for Kelda Screesort | Edda Tarnmantle (Tarnwatch Fold) | 24 | talk to Kelda Screesort (r20_anchor_061) | 705 | - |
-| r20_dwarf_journey_03 | Word for Borin Splitbolt | Kelda Screesort (Tarncut Mine) | 31 | talk to Borin Splitbolt (r20_anchor_027) | 915 | - |
+| frostbarrow_sleds_01 | No Bell on Those Cats | Edda Tarnmantle (Tarnwatch Fold) | 21 | kill 8 prowling_snow_leopard [in elandor_frostbarrow_shelf/pinewood] | 540 | - |
+| frostbarrow_sleds_optional | Optional: Pinched Runners | Edda Tarnmantle (Tarnwatch Fold) | 21 | kill 6 bank_crab [in elandor_frostbarrow_shelf/shingle] | 473 | frostbarrow_sleds_01 |
+| frostbarrow_bounty_leopards | Bounty: Pawprints Beside the Runners (repeatable) | Edda Tarnmantle (Tarnwatch Fold) | 22 | kill 6 prowling_snow_leopard [in elandor_frostbarrow_shelf/pinewood] | 270 | frostbarrow_sleds_01 |
+| frostbarrow_sleds_02 | An Extra Pair for Kelda | Edda Tarnmantle (Tarnwatch Fold) | 22 | talk to Kelda Screesort (r20_anchor_061) | 140 | frostbarrow_sleds_01 |
+| frostbarrow_cutting_01 | Horns Have Right of Way | Kelda Screesort (Tarncut Mine) | 23 | kill 6 hill_ram [in elandor_frostbarrow_shelf/snowpines] | 525 | - |
+| frostbarrow_sleds_hedra | A Lantern at Rimebell | Edda Tarnmantle (Tarnwatch Fold) | 23 | talk to Hedra Rimebell (r20_anchor_026) | 145 | frostbarrow_sleds_01 |
+| frostbarrow_cutting_02 | What Holds the Roof | Kelda Screesort (Tarncut Mine) | 24 | bring 4 grug_materials:steel_bar | 465 | frostbarrow_cutting_01 |
+| frostbarrow_watch_01 | The Landing Bites Back | Hedra Rimebell (Rimebell Watch) | 24 | kill 6 armored_crab [in elandor_frostbarrow_shelf/icy_shore] | 543 | - |
+| frostbarrow_cutting_03 | Bring Yourself Back Too | Kelda Screesort (Tarncut Mine) | 26 | bring 2 grug_materials:rough_garnet | 480 | frostbarrow_cutting_02 |
+| frostbarrow_watch_optional | Optional: Eyes in the Rimewood | Hedra Rimebell (Rimebell Watch) | 27 | kill 6 prowling_snow_leopard [in elandor_frostbarrow_shelf/rimewood] | 595 | frostbarrow_watch_01 |
+| frostbarrow_bounty_pinchers | Bounty: Claws with the Tide (repeatable) | Hedra Rimebell (Rimebell Watch) | 28 | kill 6 armored_crab [in elandor_frostbarrow_shelf/rime_shore] | 425 | frostbarrow_watch_01 |
+| frostbarrow_cutting_04 | An Explosive Miscalculation | Kelda Screesort (Tarncut Mine) | 28 | kill 1 powder_counter_nib | 850 | frostbarrow_cutting_03 |
+| frostbarrow_departure | A Miner for Splitbolt | Kelda Screesort (Tarncut Mine) | 29 | talk to Borin Splitbolt (r20_anchor_027) | 175 | frostbarrow_cutting_04 |
 
 ## Mobs by spawn region
 

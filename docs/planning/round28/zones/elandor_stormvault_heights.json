@@ -402,166 +402,771 @@
  "pvp_rule": "contested",
  "quests": [
   {
-   "copper": 85,
-   "description": "The wind has pulled Splitbolt's shutters off their braces. Bring eight pine planks for the storm-facing shelter; the snowy pines of Stormvault Heights provide suitable timber. Existing or traded supplies are welcome.",
+   "copper": 96,
+   "description": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Ridge Crag Eagles by day in the Stormvault Eagle Crags, which lie in the south of Stormvault Heights, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
    "giver": "r20_anchor_027_host",
    "giver_name": "Borin Splitbolt",
    "giver_settlement": "Splitbolt Station",
-   "id": "r20_anchor_027_01",
-   "min_level": 31,
+   "id": "stormvault_passes_01",
+   "min_level": 30,
    "objectives": [
-    "bring 8 default:pine_wood"
+    "kill 5 ridge_crag_eagle [in elandor_stormvault_heights/eagle_crags]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:pine_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Shutters Against the Storm",
-   "turnin": "r20_anchor_027_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Frost strays stand on Stormvault Heights' gravel and snow after dark, loosing arrows across the ascent. Defeat four so the watch can reach its storm markers.",
-   "giver": "r20_anchor_027_host",
-   "giver_name": "Borin Splitbolt",
-   "giver_settlement": "Splitbolt Station",
-   "id": "r20_anchor_027_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 4 frost_stray or rime_skeleton_stray [in elandor_stormvault_heights]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
+     "area": "elandor_stormvault_heights/eagle_crags",
+     "count": 5,
      "mobs": [
-      "grug_mobs:frost_stray",
-      "grug_mobs:rime_skeleton_stray"
-     ],
-     "type": "kill",
-     "zone": "elandor_stormvault_heights"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Frost That Walks",
-   "turnin": "r20_anchor_027_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Archshadow's sighting stones no longer line up across the ridge crossing. Bring eight cobble blocks for their low footing so the watch can reset the line without narrowing the passage. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_028_host",
-   "giver_name": "Alna Archsight",
-   "giver_settlement": "Archshadow Post",
-   "id": "r20_anchor_028_01",
-   "min_level": 31,
-   "objectives": [
-    "bring 8 default:cobble"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Stones for the Sighting Line",
-   "turnin": "r20_anchor_028_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Crag eagles dive over Stormvault Heights' rocky ground by day. Defeat three that threaten travellers using the crossing, then report to Archshadow Post.",
-   "giver": "r20_anchor_028_host",
-   "giver_name": "Alna Archsight",
-   "giver_settlement": "Archshadow Post",
-   "id": "r20_anchor_028_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 3 crag_eagle or ridge_crag_eagle [in elandor_stormvault_heights]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:crag_eagle",
       "grug_mobs:ridge_crag_eagle"
      ],
-     "type": "kill",
-     "zone": "elandor_stormvault_heights"
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Wings Over the Crossing",
-   "turnin": "r20_anchor_028_host",
-   "xp": 1220
+   "title": "Postage and Talons",
+   "turnin": "r20_anchor_027_host",
+   "xp": 540
   },
   {
-   "copper": 85,
-   "description": "With the ascent watched again, Borin can point you toward Slatehook Camp in Stormvault Heights. Defeat four bandit archers around that occupied camp; they are camp guards, not the roaming night poachers.",
+   "copper": 96,
+   "description": "The eagles clock off at dusk, but don't put your weapon away. Rime Skeleton Strays climb out of the snow in the Stormvault Eagle Crags and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
    "giver": "r20_anchor_027_host",
    "giver_name": "Borin Splitbolt",
    "giver_settlement": "Splitbolt Station",
-   "id": "r20_anchor_027_03",
-   "min_level": 33,
+   "id": "stormvault_passes_02",
+   "min_level": 31,
    "objectives": [
-    "kill 4 bandit_archer [in elandor_stormvault_heights]"
+    "kill 5 rime_skeleton_stray [in elandor_stormvault_heights/eagle_crags]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "area": "elandor_stormvault_heights/eagle_crags",
+     "count": 5,
      "mobs": [
-      "grug_mobs:bandit_archer"
+      "grug_mobs:rime_skeleton_stray"
      ],
-     "type": "kill",
-     "zone": "elandor_stormvault_heights"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_027_02"
+    "stormvault_passes_01"
    ],
    "reward_items": [],
-   "title": "Slatehook's Cargo",
+   "title": "The Mountain's Night Shift",
    "turnin": "r20_anchor_027_host",
+   "xp": 555
+  },
+  {
+   "copper": 64,
+   "description": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need it when you dig deep enough for Emberglass, where the rock turns too hard for steel.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "stormvault_passes_03",
+   "min_level": 31,
+   "objectives": [
+    "bring 4 grug_materials:silversteel_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_materials:silversteel_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_passes_01"
+   ],
+   "reward_items": [
+    "grug_materials:pick_silversteel 1"
+   ],
+   "title": "A Proper Introduction to Rock",
+   "turnin": "r20_anchor_027_host",
+   "xp": 380
+  },
+  {
+   "copper": 64,
+   "description": "Every night, Rime Skeleton Strays insist on holding the Stormvault Passes, which lie in the southeast of Stormvault Heights. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "stormvault_bounty_strays",
+   "min_level": 32,
+   "objectives": [
+    "kill 6 rime_skeleton_stray [in elandor_stormvault_heights/passes]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_stormvault_heights/passes",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:rime_skeleton_stray"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_passes_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Bones Off the Road (repeatable)",
+   "turnin": "r20_anchor_027_host",
+   "xp": 370
+  },
+  {
+   "copper": 32,
+   "description": "Tell Toren Waterbarrel at Cinderline Watch in Ashenward March that the passes are open again. He keeps the Accord supplied, which means every clear road earns him another wagon to worry about. Lend him a hand, then ask after Glassroot Wilds; this front takes mountain, march and forest to hold it.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "stormvault_road_ashenward",
+   "min_level": 32,
+   "objectives": [
+    "talk to Toren Waterbarrel (r20_anchor_031)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_031_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_passes_02"
+   ],
+   "reward_items": [],
+   "title": "Good News Travels on Foot",
+   "turnin": "r20_anchor_031_host",
+   "xp": 190
+  },
+  {
+   "copper": 32,
+   "description": "Report to Alna Archsight at Archshadow Post when you're ready for harder ground. She keeps the sighting line trained on the front while goblins make off with our bolts. Mind your sums around her; she once found a missing crate by counting what the thieves dropped.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "stormvault_road_archshadow",
+   "min_level": 34,
+   "objectives": [
+    "talk to Alna Archsight (r20_anchor_028)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_028_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_passes_02"
+   ],
+   "reward_items": [],
+   "title": "Alna Keeps Count",
+   "turnin": "r20_anchor_028_host",
+   "xp": 195
+  },
+  {
+   "copper": 112,
+   "description": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Goblin Slingers at the Stormvault Goblin Camp west from here. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_sighting_01",
+   "min_level": 34,
+   "objectives": [
+    "kill 6 siege_goblin or siege_goblin_slinger [in elandor_stormvault_heights/goblin_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_stormvault_heights/goblin_camp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:siege_goblin",
+      "grug_mobs:siege_goblin_slinger"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Some Assembly Stolen",
+   "turnin": "r20_anchor_028_host",
+   "xp": 718
+  },
+  {
+   "copper": 128,
+   "description": "Bolt-Chewer guards the stolen hardware at the Stormvault Goblin Camp west from here, chewing through the stock between meals. Those bolts took a smith all morning; the beast doesn't even pause to admire the threads. Kill it before another crate ends up between its teeth.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_sighting_02",
+   "min_level": 35,
+   "objectives": [
+    "kill 1 bolt_chewer"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:bolt_chewer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_sighting_01"
+   ],
+   "reward_items": [],
+   "title": "No More Bolts for Bolt-Chewer",
+   "turnin": "r20_anchor_028_host",
+   "xp": 820
+  },
+  {
+   "copper": 80,
+   "description": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Dig deep below the passes, where the rock turns too hard for a steel pick, and bring me two pieces of Emberglass; take a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_sighting_04",
+   "min_level": 36,
+   "objectives": [
+    "bring 2 grug_materials:emberglass"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_materials:emberglass",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_sighting_01"
+   ],
+   "reward_items": [],
+   "title": "A Clearer View of Trouble",
+   "turnin": "r20_anchor_028_host",
+   "xp": 525
+  },
+  {
+   "copper": 112,
+   "description": "The Entrenched Bandit Archers at Slatehook Hideout west from here rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_sighting_03",
+   "min_level": 37,
+   "objectives": [
+    "kill 5 entrenched_bandit_archer [in elandor_stormvault_heights/slatehook]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_stormvault_heights/slatehook",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_sighting_02"
+   ],
+   "reward_items": [],
+   "title": "A Toll Paid in Arrows",
+   "turnin": "r20_anchor_028_host",
+   "xp": 770
+  },
+  {
+   "copper": 64,
+   "description": "The Trench Shamblers in the Stormvault Frostfields, which lie in the northeast of Stormvault Heights, still march after dark, long past any reasonable end to their service. Put down eight of them so the living watch can hold its ground. You may take this bounty again twenty-five minutes after turning it in; I'll keep the pay ready.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_bounty_shamblers",
+   "min_level": 38,
+   "objectives": [
+    "kill 8 unrelenting_zombie [in elandor_stormvault_heights/frostfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_stormvault_heights/frostfields",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:unrelenting_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_sighting_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: An Overdue Dismissal (repeatable)",
+   "turnin": "r20_anchor_028_host",
+   "xp": 440
+  },
+  {
+   "copper": 192,
+   "description": "Stone Golem Split-Seam roams the Stormvault Stormcrags northwest from here, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a group and destroy it, and leave the single-handed masonry to the workshop.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "stormvault_sighting_05",
+   "min_level": 38,
+   "objectives": [
+    "kill 1 split_seam_warden"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:split_seam_warden"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stormvault_sighting_03"
+   ],
+   "reward_items": [],
+   "title": "Group: A Crack Is Not a Weakness",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1320
+  },
+  {
+   "copper": 400,
+   "description": "I'd welcome a proper look at the old masonry, if Causeway Brigands and Aqueduct Bowmen would let our surveyors near it. Go by day to the Causeway Wraithwood, which lies in the east of The Broken Causeway, and defeat five of the brigands and bowmen lurking there. A dwarf should be able to criticise a crumbling arch in peace.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "archshadow_front_01",
+   "min_level": 45,
+   "objectives": [
+    "kill 5 causeway_brigand or causeway_aqueduct_bowman [in front_broken_causeway/wraithwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/wraithwood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_brigand",
+      "grug_mobs:causeway_aqueduct_bowman"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Bad Workmanship, Worse Company",
+   "turnin": "r20_anchor_028_host",
    "xp": 1300
   },
   {
-   "copper": 100,
-   "description": "The ridge report names the Throng watch in Blackwind Rise across the frontier. At level 40, defeat three Throng guards at its military outposts or their patrols. These are armed garrisons, not villagers or players; do not approach Nhal Veyr's stronger city watch.",
+   "copper": 400,
+   "description": "Our runesmiths reckon they can trace whoever put the Tollroad Skeletons back on their feet. Bring me three Siege Bones from those skeletons in the Causeway Toll Fields, which lie in the west of The Broken Causeway, after dark. I've given the smiths a bench of their own; their questions were spoiling everyone's supper.",
    "giver": "r20_anchor_028_host",
    "giver_name": "Alna Archsight",
    "giver_settlement": "Archshadow Post",
-   "id": "r20_anchor_028_03",
-   "min_level": 40,
+   "id": "archshadow_front_02",
+   "min_level": 47,
    "objectives": [
-    "kill 3 guard_throng [in kragmar_blackwind_rise]"
+    "bring 3 grug_mobs:siege_bone"
    ],
    "objectives_raw": [
     {
      "count": 3,
-     "mobs": [
-      "grug_mobs:guard_throng"
-     ],
-     "type": "kill",
-     "zone": "kragmar_blackwind_rise"
+     "item": "grug_mobs:siege_bone",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r20_anchor_028_02"
+    "archshadow_front_01"
    ],
    "reward_items": [],
-   "title": "The Watch Beyond the Ash Wind",
+   "title": "A Runesmith's Awkward Questions",
    "turnin": "r20_anchor_028_host",
-   "xp": 1975
+   "xp": 1350
+  },
+  {
+   "copper": 480,
+   "description": "The runesmiths have a name: Toll-Taker Senn, working out of the Causeway Toll Camp northeast from here. Seems he raised the dead to collect his tolls, which explains the service. Defeat him and five of his Aqueduct Bowmen; the next coin spent on that road ought to repair it.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "archshadow_front_03",
+   "min_level": 48,
+   "objectives": [
+    "kill 5 causeway_aqueduct_bowman [in front_broken_causeway/toll_camp]",
+    "kill 1 toll_taker_senn"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/toll_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_aqueduct_bowman"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:toll_taker_senn"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "archshadow_front_02"
+   ],
+   "reward_items": [],
+   "title": "Collection Ends Here",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1620
+  },
+  {
+   "copper": 200,
+   "description": "Senn's Aqueduct Bowmen are still at work in the Causeway Gallows Wood, which lies in the heart of The Broken Causeway, despite the change in management. Defeat five there by day for a bounty. I can pay for another five twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "archshadow_front_bounty",
+   "min_level": 48,
+   "objectives": [
+    "kill 5 causeway_aqueduct_bowman [in front_broken_causeway/gallows_wood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/gallows_wood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_aqueduct_bowman"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "archshadow_front_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: An Arrow Too Many (repeatable)",
+   "turnin": "r20_anchor_028_host",
+   "xp": 675
+  },
+  {
+   "copper": 320,
+   "description": "Whoever built War Construct Last-Toll in the Causeway Toll Fields northeast from here did solid work and left miserable instructions. The elite war construct is still enforcing its toll. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "archshadow_front_04",
+   "min_level": 49,
+   "objectives": [
+    "kill 1 last_toll_construct"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:last_toll_construct"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "archshadow_front_03"
+   ],
+   "reward_items": [],
+   "title": "Group: No More Toll",
+   "turnin": "r20_anchor_028_host",
+   "xp": 1100
+  },
+  {
+   "copper": 80,
+   "description": "You've done work here that will hold, and Borin Splitbolt needs that sort of hand for Gravesalt Escarpment. Speak with him at Splitbolt Station in Stormvault Heights and pass on my report. He'll grumble that I should have sent you sooner; that's his welcome speech.",
+   "giver": "r20_anchor_028_host",
+   "giver_name": "Alna Archsight",
+   "giver_settlement": "Archshadow Post",
+   "id": "archshadow_front_05",
+   "min_level": 49,
+   "objectives": [
+    "talk to Borin Splitbolt (r20_anchor_027)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_027_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "archshadow_front_03"
+   ],
+   "reward_items": [],
+   "title": "Fit for Borin's Crew",
+   "turnin": "r20_anchor_027_host",
+   "xp": 275
+  },
+  {
+   "copper": 1000,
+   "description": "Salt-Boring Weevils are tunnelling through the Gravesalt Saltflats, which lie in the northeast of Gravesalt Escarpment, without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_01",
+   "min_level": 50,
+   "objectives": [
+    "kill 6 salt_boring_weevil [in front_gravesalt_escarpment/saltflats]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/saltflats",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:salt_boring_weevil"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "No Shoring, No Sense",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1425
+  },
+  {
+   "copper": 1000,
+   "description": "A line strung between trees ought to help a traveller find the path. In the Gravesalt Bonewood, which lies in the northwest of Gravesalt Escarpment, it helps Salt-Web Bonelurker Spiders find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_02",
+   "min_level": 50,
+   "objectives": [
+    "kill 6 salt_web_spider [in front_gravesalt_escarpment/bonewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/bonewood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:salt_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Rope with Opinions",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1425
+  },
+  {
+   "copper": 1100,
+   "description": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Salt-Boring Weevils on the Gravesalt Blight Terraces, which lie in the northeast of Gravesalt Escarpment, by day. I'll keep them busy arguing over the mixing trough until you're back.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_03",
+   "min_level": 53,
+   "objectives": [
+    "bring 3 grug_mobs:salt_chitin"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:salt_chitin",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_01",
+    "splitbolt_front_02"
+   ],
+   "reward_items": [],
+   "title": "Something for the Mortar Crew",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1650
+  },
+  {
+   "copper": 1200,
+   "description": "Salt-Hex Bog Witches gather after dark in the Gravesalt Tomb Fen, which lies in the southwest of Gravesalt Escarpment, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_04",
+   "min_level": 54,
+   "objectives": [
+    "kill 6 salt_hex_witch [in front_gravesalt_escarpment/tomb_fen]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/tomb_fen",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:salt_hex_witch"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_03"
+   ],
+   "reward_items": [],
+   "title": "Leave the Graves Out of It",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1830
+  },
+  {
+   "copper": 600,
+   "description": "My crews keep finding fresh webs in the Gravesalt Tombwood, which lies in the southwest of Gravesalt Escarpment. Kill five Salt-Web Bonelurker Spiders there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_bounty",
+   "min_level": 54,
+   "objectives": [
+    "kill 5 salt_web_spider [in front_gravesalt_escarpment/tombwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/tombwood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:salt_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_05"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Keep the Night Shift Moving (repeatable)",
+   "turnin": "r20_anchor_027_host",
+   "xp": 900
+  },
+  {
+   "copper": 1100,
+   "description": "Last-Pay Archers still loose arrows from the Gravesalt Saltroad Cliffs, which lie in the heart of Gravesalt Escarpment, every night. Defeat five there after dark so our road crews can work. Their paymaster got his money's worth; everyone else has been paying for it ever since.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_05",
+   "min_level": 55,
+   "objectives": [
+    "kill 5 last_pay_archer [in front_gravesalt_escarpment/saltroad_cliffs]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/saltroad_cliffs",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_pay_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_04"
+   ],
+   "reward_items": [],
+   "title": "An Overdue Dismissal",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1678
+  },
+  {
+   "copper": 1200,
+   "description": "Past the cliffs the salt has built the Gravesalt Whitewall, which lies in the northeast of Gravesalt Escarpment, and Last-Watch Mummies walk it by day as if they still had a post to keep. Put six of them down. A dwarf respects a long shift, but not one this long.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_07",
+   "min_level": 56,
+   "objectives": [
+    "kill 6 last_watch_husk [in front_gravesalt_escarpment/whitewall]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/whitewall",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:last_watch_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_05"
+   ],
+   "reward_items": [],
+   "title": "The Whitewall Dead",
+   "turnin": "r20_anchor_027_host",
+   "xp": 1890
+  },
+  {
+   "copper": 200,
+   "description": "Eriath Boughwarden in Lethariel asked for someone who'd walked Gravesalt Escarpment and come back with their wits. Speak with him there and give him my account; his people are watching The Skyglass Canopy. I've put in a good word for you, though he'll take three graceful sentences to say whether he agrees.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_06",
+   "min_level": 57,
+   "objectives": [
+    "talk to Eriath Boughwarden (lethariel)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_elf_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_08"
+   ],
+   "reward_items": [],
+   "title": "Someone Who Came Back",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 315
+  },
+  {
+   "copper": 1400,
+   "description": "Watch-Captain Huskell still commands the Gravesalt Ossuary Wood northwest from here, and his Last-Watch Skeleton Raiders march his rounds every night. Defeat five of the raiders after dark, then the captain himself. Somebody has to relieve that watch, and it may as well be you.",
+   "giver": "r20_anchor_027_host",
+   "giver_name": "Borin Splitbolt",
+   "giver_settlement": "Splitbolt Station",
+   "id": "splitbolt_front_08",
+   "min_level": 57,
+   "objectives": [
+    "kill 5 last_watch_skeleton_raider [in front_gravesalt_escarpment/ossuary_wood]",
+    "kill 1 watch_captain_huskell"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/ossuary_wood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_watch_skeleton_raider"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:watch_captain_huskell"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "splitbolt_front_07"
+   ],
+   "reward_items": [],
+   "title": "The Last Watch Ends",
+   "turnin": "r20_anchor_027_host",
+   "xp": 2240
   }
  ],
  "race_region": "dwarf",
@@ -910,9 +1515,21 @@
      "npc_id": "r20_anchor_027_host",
      "npc_name": "Borin Splitbolt",
      "quests": [
-      "r20_anchor_027_01",
-      "r20_anchor_027_02",
-      "r20_anchor_027_03"
+      "splitbolt_front_01",
+      "splitbolt_front_02",
+      "splitbolt_front_03",
+      "splitbolt_front_04",
+      "splitbolt_front_05",
+      "splitbolt_front_06",
+      "splitbolt_front_07",
+      "splitbolt_front_08",
+      "splitbolt_front_bounty",
+      "stormvault_bounty_strays",
+      "stormvault_passes_01",
+      "stormvault_passes_02",
+      "stormvault_passes_03",
+      "stormvault_road_archshadow",
+      "stormvault_road_ashenward"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1124,9 +1741,18 @@
      "npc_id": "r20_anchor_028_host",
      "npc_name": "Alna Archsight",
      "quests": [
-      "r20_anchor_028_01",
-      "r20_anchor_028_02",
-      "r20_anchor_028_03"
+      "archshadow_front_01",
+      "archshadow_front_02",
+      "archshadow_front_03",
+      "archshadow_front_04",
+      "archshadow_front_05",
+      "archshadow_front_bounty",
+      "stormvault_bounty_shamblers",
+      "stormvault_sighting_01",
+      "stormvault_sighting_02",
+      "stormvault_sighting_03",
+      "stormvault_sighting_04",
+      "stormvault_sighting_05"
      ],
      "role": "quest",
      "role_text": "quest giver",

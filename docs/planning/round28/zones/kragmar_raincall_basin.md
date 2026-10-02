@@ -59,8 +59,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Daro Kapok | 1878, 74, 2044 | r14_troll_07_the_coiled_footpath |
-| quest_local | quest giver | Amari Palmweave | 1874, 74, 2042 | r15_troll_local_01, r15_troll_local_02 |
+| quest_steward | quest giver | Daro Kapok | 1878, 74, 2044 | raincall_bounty_village, raincall_rains_01, raincall_rains_02, raincall_rains_03, raincall_rains_04 |
+| quest_local | quest giver | Amari Palmweave | 1874, 74, 2042 | raincall_weave_01, raincall_weave_02, raincall_weave_03, raincall_weave_04 |
 
 Distances: zone edge N 272 (kragmar_kapok_cradle), S 192 (kragmar_kezamba), E 424 (kragmar_totemwater_reach), W 688 (kragmar_whispering_reedlands); nearest other-zone land 188 S; sea 645 NE; sea-beach sand 618 NE; nearest road 16.
 Nearest hubs (straight / by road): Raincall Outpost 259 / 422; Kapok 512 / 707; Raincall Bandit Camp 244 / 1191; Kezamba 549 / 1741; Whisperreed Landing 1093 / 1796.
@@ -71,7 +71,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Neshi Reedstep | 2135, 71, 2081 | r14_troll_08_cats_at_the_reed_line, r14_troll_09_smoke_beneath_the_rain, r15_troll_local_03, r15_troll_local_04 |
+| quest_scout | quest giver | Neshi Reedstep | 2135, 71, 2081 | raincall_bounty_outpost, raincall_watch_01, raincall_watch_02, raincall_watch_03, raincall_watch_04 |
 
 Distances: zone edge N 164 (kragmar_kapok_cradle), S 316 (kragmar_kezamba), E 232 (kragmar_totemwater_reach), W 984 (kragmar_whispering_reedlands); nearest other-zone land 164 N; sea 411 NE; sea-beach sand 383 NE; nearest road 11.
 Nearest hubs (straight / by road): Raincall Village 259 / 422; Kapok 572 / 945; Raincall Bandit Camp 502 / 1429; Kezamba 672 / 1979; Whisperreed Landing 1345 / 2034.
@@ -82,24 +82,31 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Veko Bluefeather | 1642, 62, 2044 | r15_troll_local_05, r15_troll_local_06 |
+| quest_captive | quest giver | Veko Bluefeather | 1642, 62, 2044 | raincall_departure, raincall_tithe_01 |
 
 Distances: zone edge N 292 (kragmar_kapok_cradle), S 144 (kragmar_kezamba), E 672 (kragmar_totemwater_reach), W 432 (kragmar_whispering_reedlands); nearest other-zone land 141 S; sea 494 NW; sea-beach sand 466 NW; nearest road 17.
 Nearest hubs (straight / by road): Kezamba 560 / 1008; Whisperreed Landing 870 / 1062; Kapok 543 / 1089; Raincall Village 244 / 1191; Reedstone Cut 949 / 1202.
 
-### Current quests (9, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_troll_07_the_coiled_footpath | The Coiled Footpath | Daro Kapok (Raincall Village) | 10 | kill 6 viper or reed_fang_viper [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
-| r15_troll_local_01 | Meat for the Preparation Roof | Amari Palmweave (Raincall Village) | 10 | bring 4 mobs:meat_raw | 285 | r14_troll_06_claws_on_raincall_road |
-| r15_troll_local_02 | Hooves Between the Stilt Posts | Amari Palmweave (Raincall Village) | 10 | kill 5 tapir or reed_tapir [in kragmar_raincall_basin] | 380 | r14_troll_06_claws_on_raincall_road |
-| r14_troll_08_cats_at_the_reed_line | Cats at the Reed Line | Neshi Reedstep (Raincall Outpost) | 11 | kill 6 jungle_lynx [in kragmar_raincall_basin] | 525 | r14_troll_07_the_coiled_footpath |
-| r15_troll_local_03 | A Dry Niche for Supplies | Neshi Reedstep (Raincall Outpost) | 11 | kill 4 viper or reed_fang_viper [in kragmar_raincall_basin] | 315 | r14_troll_07_the_coiled_footpath |
-| r15_troll_local_04 | Leather for the Reed-Line Packs | Neshi Reedstep (Raincall Outpost) | 11 | bring 2 mobs:leather | 420 | r14_troll_07_the_coiled_footpath |
-| r14_troll_09_smoke_beneath_the_rain | Smoke Beneath the Rain | Neshi Reedstep (Raincall Outpost) | 12 | kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_raincall_basin] | 805 | r14_troll_08_cats_at_the_reed_line |
-| r15_troll_local_05 | Pay from the Ferry Road | Veko Bluefeather (Raincall Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_troll_08_cats_at_the_reed_line |
-| r15_troll_local_06 | Dry Bindings in the Rain | Veko Bluefeather (Raincall Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_troll_08_cats_at_the_reed_line |
+| raincall_rains_01 | A Garden Is No Wallow | Daro Kapok (Raincall Village) | 10 | kill 8 reed_tapir [in kragmar_raincall_basin/rainwood] | 320 | kapok_departure |
+| raincall_rains_02 | Mind Where the Path Hisses | Daro Kapok (Raincall Village) | 11 | kill 8 reed_fang_viper [in kragmar_raincall_basin/rainwood] | 340 | raincall_rains_01 |
+| raincall_weave_01 | Capes Before the Downpour | Amari Palmweave (Raincall Village) | 11 | bring 3 mobs:leather | 213 | kapok_departure |
+| raincall_rains_03 | The Rain Owes You Nothing | Daro Kapok (Raincall Village) | 12 | kill 6 quarrelsome_bandit [in kragmar_raincall_basin/rainwood] | 360 | raincall_rains_02 |
+| raincall_rains_04 | Let the Scouts Hear It | Daro Kapok (Raincall Village) | 13 | talk to Neshi Reedstep (raincall_outpost) | 95 | raincall_rains_03 |
+| raincall_weave_02 | Houses Should Not Bow | Amari Palmweave (Raincall Village) | 13 | bring 4 grug_materials:iron_bar; bring 4 default:coal_lump | 285 | raincall_weave_01 |
+| raincall_watch_01 | A Trail with Claws | Neshi Reedstep (Raincall Outpost) | 14 | kill 8 reed_jungle_lynx [in kragmar_raincall_basin/cloudwood] | 450 | raincall_rains_04 |
+| raincall_watch_02 | Someone Ate the Trail | Neshi Reedstep (Raincall Outpost) | 15 | kill 8 mangy_rat [in kragmar_raincall_basin/cloudwood] | 473 | raincall_watch_01 |
+| raincall_weave_03 | Claws at the Loom | Amari Palmweave (Raincall Village) | 15 | bring 2 grug_mobs:hooked_cat_claw | 315 | raincall_weave_02 |
+| raincall_bounty_village | Bounty: Claws Above the Gardens (repeatable) | Daro Kapok (Raincall Village) | 17 | kill 6 reed_jungle_lynx [in kragmar_raincall_basin/highwood] | 300 | raincall_rains_04 |
+| raincall_watch_03 | Eyes on the Bowstrings | Neshi Reedstep (Raincall Outpost) | 17 | kill 8 vigilant_bandit_archer [in kragmar_raincall_basin/bandit_camp] | 518 | raincall_watch_02 |
+| raincall_weave_04 | Our Tithe, Their Shirts | Amari Palmweave (Raincall Village) | 17 | bring 3 grug_mobs:linen_cloth | 288 | raincall_weave_03 |
+| raincall_bounty_outpost | Bounty: Teeth on the Ropes (repeatable) | Neshi Reedstep (Raincall Outpost) | 18 | kill 8 mangy_rat [in kragmar_raincall_basin/highwood] | 300 | raincall_watch_03 |
+| raincall_tithe_01 | Vek Can Keep the Bill | Veko Bluefeather (Raincall Bandit Camp) | 18 | kill 1 tithe_keeper_vek | 720 | raincall_watch_04 |
+| raincall_watch_04 | A Voice Behind the Bows | Neshi Reedstep (Raincall Outpost) | 18 | talk to Veko Bluefeather (raincall_bandit_camp) | 115 | raincall_watch_03 |
+| raincall_departure | News Too Good to Whisper | Veko Bluefeather (Raincall Bandit Camp) | 19 | talk to Nalo Pathdrum (kezamba) | 180 | raincall_tithe_01 |
 
 ## Mobs by spawn region
 

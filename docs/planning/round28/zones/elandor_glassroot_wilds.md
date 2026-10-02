@@ -57,18 +57,25 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Faeris Rootbinder | 1934, 156, -686 | r20_anchor_036_01, r20_anchor_036_02, r20_anchor_036_03 |
+| quest_host | quest giver | Faeris Rootbinder | 1934, 156, -686 | glassroot_bounty_spiders, glassroot_canopy_01, glassroot_canopy_02, glassroot_canopy_03, glassroot_canopy_04, glassroot_canopy_05, glassroot_fringe_01, glassroot_fringe_02, glassroot_road_ashenward, glassroot_road_front |
 
 Distances: zone edge N 348 (front_skyglass_canopy), S 328 (elandor_moonfall_wood), E 652 (coastal_shelf), W 1064 (elandor_ashenward_march); nearest other-zone land 258 S; sea 589 E; sea-beach sand 571 E; nearest road 12.
 Nearest hubs (straight / by road): Cinderline Watch 2288 / 3841; Last Hedge Redoubt 1636 / 4361; Tornstandard Hold 2093 / 5661; Red Ramp Post 2784 / 6745; Archshadow Post 3434 / 6999.
 
-### Current quests (3, given in this zone)
+### Current quests (10, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_036_01 | Stone Under the Passage | Faeris Rootbinder (Glassroot Gate) | 31 | bring 10 default:cobble | 1220 | - |
-| r20_anchor_036_02 | Rootsnare's Stolen Cloth | Faeris Rootbinder (Glassroot Gate) | 31 | kill 4 bandit or entrenched_bandit [in elandor_glassroot_wilds] | 1220 | - |
-| r20_anchor_036_03 | The Other Rootwatch | Faeris Rootbinder (Glassroot Gate) | 40 | kill 3 guard_throng [in kragmar_thunderroot_wilds] | 1975 | r20_anchor_036_02 |
+| glassroot_fringe_01 | Room for the Living | Faeris Rootbinder (Glassroot Gate) | 30 | kill 5 briarpack_wolf [in elandor_glassroot_wilds/fringe] | 540 | - |
+| glassroot_fringe_02 | A Warning Without Words | Faeris Rootbinder (Glassroot Gate) | 31 | bring 3 grug_mobs:warpack_fang | 370 | glassroot_fringe_01 |
+| glassroot_road_ashenward | Regards, and a Leaking Barrel | Faeris Rootbinder (Glassroot Gate) | 31 | talk to Toren Waterbarrel (r20_anchor_031) | 190 | glassroot_fringe_01 |
+| glassroot_canopy_01 | An Unwelcome Rain of Branches | Faeris Rootbinder (Glassroot Gate) | 34 | kill 5 territorial_ape [in elandor_glassroot_wilds/tangle] | 600 | - |
+| glassroot_canopy_02 | When the Branches Fall Silent | Faeris Rootbinder (Glassroot Gate) | 35 | kill 5 stalking_panther [in elandor_glassroot_wilds/tangle] | 615 | glassroot_canopy_01 |
+| glassroot_canopy_03 | Years Felled for Arrows | Faeris Rootbinder (Glassroot Gate) | 37 | kill 5 entrenched_bandit_archer [in elandor_glassroot_wilds/rootsnare] | 770 | glassroot_canopy_02 |
+| glassroot_canopy_04 | No Picnic for Basket-Biter | Faeris Rootbinder (Glassroot Gate) | 37 | kill 1 basket_biter | 880 | glassroot_canopy_03 |
+| glassroot_bounty_spiders | Bounty: Leave a Path Unspun (repeatable) | Faeris Rootbinder (Glassroot Gate) | 38 | kill 8 canopy_web_spider [in elandor_glassroot_wilds/canopy] | 440 | glassroot_canopy_03 |
+| glassroot_canopy_05 | Group: No More Broken Bows | Faeris Rootbinder (Glassroot Gate) | 38 | kill 1 canopy_knuckle | 1320 | glassroot_canopy_04 |
+| glassroot_road_front | What We Keep Behind Us | Faeris Rootbinder (Glassroot Gate) | 38 | talk to Nella Hedgeward (r20_anchor_032) | 225 | glassroot_canopy_04 |
 
 ## Mobs by spawn region
 

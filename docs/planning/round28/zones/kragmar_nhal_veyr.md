@@ -44,12 +44,12 @@ Share of land per level: L20 10.1%, L21 11.1%, L22 11.5%, L23 9.3%, L24 8.7%, L2
 
 ### Nhal Veyr (`nhal_veyr`, anchor_010) at -1800, 46, 1500
 
-Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manager 1, idle 137, innkeeper 1, king 1, mount_display 4, public_station 7, quest 2, riding_trainer 1, trainer 8, vendor 6, waypoint 1, work 45.
+Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manager 1, idle 137, innkeeper 1, king 1, mount_display 4, public_station 7, quest 2, riding_trainer 1, shipwright 1, trainer 8, vendor 6, waypoint 1, work 45.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | -1800, 52, 1532 | - |
-| vigil_hall_quest | quest giver | Ossa Quietregister | -1838, 47, 1521 | r20_undead_capital_services, r20_undead_capital_stores, r20_undead_journey_01 |
+| vigil_hall_quest | quest giver | Ossa Quietregister | -1838, 47, 1521 | nhal_veyr_vigil_01, nhal_veyr_vigil_02, nhal_veyr_vigil_03, nhal_veyr_vigil_04, nv_front_01, nv_front_02, nv_front_island |
 | vendor_race | vendor | vendor kind: race | -1757, 47, 1509 | - |
 | vendor_general | vendor | vendor kind: general | -1757, 47, 1516 | - |
 | travel_waypoint | waypoint |  | -1781, 47, 1478 | - |
@@ -60,6 +60,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manage
 | market_cart_yard/market_cart_yard_mount_3 | mount display |  | -1687, 43, 1454 | - |
 | market_cart_yard/market_cart_yard_mount_4 | mount display |  | -1687, 43, 1444 | - |
 | market_cart_yard/market_cart_yard_riding | riding trainer |  | -1696, 43, 1449 | - |
+| market_cart_yard/market_cart_yard_shipwright | shipwright |  | -1696, 43, 1441 | - |
 | market_bonesmith/market_bonesmith_vendor_smith | vendor | vendor kind: smith | -1705, 45, 1482 | - |
 | market_bonesmith/market_bonesmith_weaponsmith | profession trainer | trains: weaponsmith | -1714, 45, 1475 | - |
 | market_bonesmith/market_bonesmith_armorsmith | profession trainer | trains: armorsmith | -1714, 45, 1479 | - |
@@ -74,7 +75,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manage
 | vigil_candle_works/vigil_candle_works_woodcarver | profession trainer | trains: woodcarver | -1694, 47, 1560 | - |
 | homes_lane_house/homes_lane_house_gate_idle | innkeeper (respawn bind) |  | -1838, 47, 1585 | - |
 | homes_mourners_hall/homes_mourners_hall_cooking | profession trainer | trains: cooking | -1869, 47, 1556 | - |
-| homes_mourners_hall/homes_mourners_hall_quest_cook | quest giver | Velis Mourningbowl | -1869, 47, 1552 | r20_undead_capital_cook |
+| homes_mourners_hall/homes_mourners_hall_quest_cook | quest giver | Velis Mourningbowl | -1869, 47, 1552 | nhal_veyr_dispatch_01, nhal_veyr_dispatch_orc_capital, nhal_veyr_dispatch_orc_wellhold, nhal_veyr_dispatch_troll, nhal_veyr_provisions_01, nhal_veyr_provisions_02, nhal_veyr_provisions_bounty |
 | vigil_embalmer/vigil_embalmer_vendor_embalmer | vendor | vendor kind: embalmer | -1752, 49, 1603 | - |
 
 Public stations: market_bone_store/market_bone_store_station (jewellers_bench), market_bonesmith/market_bonesmith_station (forge), market_shroud_house/market_shroud_house_station (tailor_bench), market_physic/market_physic_station (brewing_stand), market_charnel/market_charnel_station (tanning_rack), vigil_candle_works/vigil_candle_works_station (carving_bench), homes_mourners_hall/homes_mourners_hall_station (furnace).
@@ -82,14 +83,24 @@ Public stations: market_bone_store/market_bone_store_station (jewellers_bench), 
 Distances: zone edge N 460 (kragmar_mournfen), S 468 (kragmar_blackwind_rise), E 468 (kragmar_speargrass_reach), W 380 (kragmar_ossuary_reach); nearest other-zone land 366 W; sea 639 W; sea-beach sand 612 NE; nearest road 50.
 Nearest hubs (straight / by road): Ossuary Ledgerstead 589 / 687; Mournfen Village 530 / 717; Mournfen Outpost 671 / 935; Boneledger Post 538 / 940; Memoryvein Dig 662 / 1036.
 
-### Current quests (4, given in this zone)
+### Current quests (14, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_undead_capital_cook | Bowls for the Vigil | Velis Mourningbowl (Nhal Veyr) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_undead_capital_services | The Vigil Table | Ossa Quietregister (Nhal Veyr) | 10 | talk to Velis Mourningbowl (nhal_veyr) | 285 | r20_undead_capital_intro |
-| r20_undead_capital_stores | Coal for the Vigil Lamps | Ossa Quietregister (Nhal Veyr) | 20 | bring 8 default:coal_lump | 780 | - |
-| r20_undead_journey_01 | Word for Sovel Namekeeper | Ossa Quietregister (Nhal Veyr) | 21 | talk to Sovel Namekeeper (r20_anchor_020) | 615 | - |
+| nhal_veyr_vigil_01 | Payment Due After Death | Ossa Quietregister (Nhal Veyr) | 19 | kill 8 debtbound_zombie [in kragmar_nhal_veyr/blightfields] | 585 | - |
+| nhal_veyr_dispatch_01 | Send My Regards, They Keep Better | Velis Mourningbowl (Nhal Veyr) | 20 | talk to Sovel Namekeeper (r20_anchor_020) | 195 | nhal_veyr_vigil_01 |
+| nhal_veyr_provisions_01 | Optional: A Seat at the Table | Velis Mourningbowl (Nhal Veyr) | 20 | bring 8 mobs:meat_raw | 338 | - |
+| nhal_veyr_vigil_02 | The Cost of Staying Dead | Ossa Quietregister (Nhal Veyr) | 23 | kill 8 stubborn_zombie [in kragmar_nhal_veyr/gravefields] | 750 | nhal_veyr_vigil_01 |
+| nhal_veyr_dispatch_orc_capital | Sister Errand: Someone to Walk the Roads | Velis Mourningbowl (Nhal Veyr) | 24 | talk to Thorga Roadspeaker (gor_drazhak) | 150 | nhal_veyr_vigil_02 |
+| nhal_veyr_dispatch_orc_wellhold | Sister Errand: Hands for the Wellhold | Velis Mourningbowl (Nhal Veyr) | 24 | talk to Brakka Jarward (r20_anchor_022) | 150 | nhal_veyr_vigil_02 |
+| nhal_veyr_dispatch_troll | Sister Errand: Try to Stay Dry | Velis Mourningbowl (Nhal Veyr) | 24 | talk to Taleko Drycord (r20_anchor_024) | 150 | nhal_veyr_vigil_02 |
+| nhal_veyr_provisions_02 | Optional: Keep It Off the Menu | Velis Mourningbowl (Nhal Veyr) | 24 | bring 4 grug_mobs:pickled_flesh | 375 | nhal_veyr_provisions_01 |
+| nhal_veyr_provisions_bounty | Repeatable: The Kitchen Keeps Going (repeatable) | Velis Mourningbowl (Nhal Veyr) | 26 | kill 6 monstrous_boar [in kragmar_nhal_veyr/gravefields] | 388 | nhal_veyr_provisions_02 |
+| nhal_veyr_vigil_03 | The Account Is Closed | Ossa Quietregister (Nhal Veyr) | 26 | kill 1 mortuary_clerk_hush; kill 4 stubborn_zombie [in kragmar_nhal_veyr/tombfields] | 990 | nhal_veyr_vigil_02 |
+| nhal_veyr_vigil_04 | A Debt Freely Owed | Ossa Quietregister (Nhal Veyr) | 29 | talk to Vaska Ashlistener (r20_anchor_039) | 263 | nhal_veyr_vigil_03 |
+| nv_front_01 | Dressed for the Long Rest | Ossa Quietregister (Nhal Veyr) | 53 | bring 2 grug_mobs:glass_spider_silk | 1050 | - |
+| nv_front_02 | Closing the Watch Register | Ossa Quietregister (Nhal Veyr) | 57 | kill 5 last_watch_zombie [in front_gravesalt_escarpment/whitewall] | 1260 | nv_front_01 |
+| nv_front_island | Bounty: An Island's Unfinished Dead (repeatable) | Ossa Quietregister (Nhal Veyr) | 60 | kill 8 crown_frost_stray [in front_wyrmglass_crown/scree] | 0 | nv_front_02 |
 
 ## Mobs by spawn region
 

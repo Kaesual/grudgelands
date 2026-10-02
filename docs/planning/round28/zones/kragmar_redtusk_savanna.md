@@ -66,8 +66,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Borak Redgrass | -86, 52, 2004 | r14_orc_07_teeth_around_the_herd |
-| quest_local | quest giver | Morga Clayhand | -90, 52, 2002 | r15_orc_local_01, r15_orc_local_02 |
+| quest_steward | quest giver | Borak Redgrass | -86, 52, 2004 | redtusk_herd_01, redtusk_herd_02, redtusk_herd_03, redtusk_herd_04 |
+| quest_local | quest giver | Morga Clayhand | -90, 52, 2002 | redtusk_hides_01, redtusk_hides_02, redtusk_stores_01, redtusk_stores_02 |
 
 Distances: zone edge N 256 (kragmar_sunscar_flats), S 172 (kragmar_gor_drazhak), E 748 (kragmar_whispering_reedlands), W 588 (kragmar_speargrass_reach); nearest other-zone land 168 S; sea 564 NE; sea-beach sand 563 NE; nearest road 17.
 Nearest hubs (straight / by road): Gor Drazhak 512 / 675; Sunscar 553 / 793; Redtusk Outpost 273 / 1168; Redtusk Bandit Camp 409 / 1251; Cutgrass Watch 940 / 1507.
@@ -78,7 +78,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Kesh Longstride | 179, 56, 2071 | r14_orc_08_scour_the_dry_wash, r14_orc_09_no_forge_made_this_brand, r15_orc_local_03, r15_orc_local_04 |
+| quest_scout | quest giver | Kesh Longstride | 179, 56, 2071 | redtusk_bounty, redtusk_watch_01, redtusk_watch_02, redtusk_watch_03 |
 
 Distances: zone edge N 172 (kragmar_sunscar_flats), S 208 (kragmar_gor_drazhak), E 532 (kragmar_whispering_reedlands), W 892 (kragmar_speargrass_reach); nearest other-zone land 173 N; sea 298 NE; sea-beach sand 309 NE; nearest road 11.
 Nearest hubs (straight / by road): Sunscar 507 / 617; Redtusk Village 273 / 1168; Gor Drazhak 600 / 1644; Redtusk Bandit Camp 172 / 2220; Cutgrass Watch 1167 / 2475.
@@ -89,24 +89,30 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Rokka Emberhand | 330, 89, 1990 | r15_orc_local_05, r15_orc_local_06 |
+| quest_captive | quest giver | Rokka Emberhand | 330, 89, 1990 | redtusk_departure, redtusk_ransom_01, redtusk_ransom_02 |
 
 Distances: zone edge N 292 (kragmar_sunscar_flats), S 136 (kragmar_gor_drazhak), E 324 (kragmar_whispering_reedlands), W 984 (kragmar_speargrass_reach); nearest other-zone land 132 S; sea 249 NE; sea-beach sand 211 NE; nearest road 17.
 Nearest hubs (straight / by road): Gor Drazhak 577 / 992; Reedvoice Station 829 / 1001; Whisperreed Landing 671 / 1120; Redtusk Village 409 / 1251; Red Ramp Post 1306 / 1660.
 
-### Current quests (9, given in this zone)
+### Current quests (15, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_orc_07_teeth_around_the_herd | Teeth Around the Herd | Borak Redgrass (Redtusk Village) | 10 | kill 6 hyena or dustpack_hyena [in kragmar_redtusk_savanna] | 380 | r14_orc_06_husks_on_redtusk_road |
-| r15_orc_local_01 | Hide for the Low Annex | Morga Clayhand (Redtusk Village) | 10 | bring 2 mobs:leather | 285 | r14_orc_06_husks_on_redtusk_road |
-| r15_orc_local_02 | Fangs Beyond the Annex | Morga Clayhand (Redtusk Village) | 10 | bring 2 grug_mobs:fang | 380 | r14_orc_06_husks_on_redtusk_road |
-| r14_orc_08_scour_the_dry_wash | Scour the Dry Wash | Kesh Longstride (Redtusk Outpost) | 11 | kill 6 scorpion or dust_stinger [in kragmar_redtusk_savanna] | 525 | r14_orc_07_teeth_around_the_herd |
-| r15_orc_local_03 | Howls Below the Lookout | Kesh Longstride (Redtusk Outpost) | 11 | kill 4 hyena or dustpack_hyena [in kragmar_redtusk_savanna] | 315 | r14_orc_07_teeth_around_the_herd |
-| r15_orc_local_04 | Venom Beside the Palisade | Kesh Longstride (Redtusk Outpost) | 11 | bring 2 grug_mobs:venom_sac | 420 | r14_orc_07_teeth_around_the_herd |
-| r14_orc_09_no_forge_made_this_brand | No Forge Made This Brand | Kesh Longstride (Redtusk Outpost) | 12 | kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_redtusk_savanna] | 805 | r14_orc_08_scour_the_dry_wash |
-| r15_orc_local_05 | The Carriers' Cut | Rokka Emberhand (Redtusk Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_orc_08_scour_the_dry_wash |
-| r15_orc_local_06 | Bindings from the Loaded Sled | Rokka Emberhand (Redtusk Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_orc_08_scour_the_dry_wash |
+| redtusk_herd_01 | Waste Nothing With Stripes | Borak Redgrass (Redtusk Village) | 9 | kill 8 watchful_zebra [in kragmar_redtusk_savanna/grasslands] | 320 | sunscar_departure |
+| redtusk_hides_01 | Give the Bows Their Voices | Morga Clayhand (Redtusk Village) | 10 | bring 3 grug_mobs:tough_sinew | 255 | - |
+| redtusk_herd_02 | Bring the Herders Home | Borak Redgrass (Redtusk Village) | 11 | kill 8 dust_stinger [in kragmar_redtusk_savanna/grasslands] | 340 | redtusk_herd_01 |
+| redtusk_hides_02 | Keep It Out of the Stew | Morga Clayhand (Redtusk Village) | 12 | bring 3 grug_mobs:bitter_venom | 270 | redtusk_hides_01, redtusk_herd_02 |
+| redtusk_herd_03 | All Knot, No Rope | Borak Redgrass (Redtusk Village) | 13 | kill 8 mangy_rat [in kragmar_redtusk_savanna/tallgrass] | 450 | redtusk_herd_02 |
+| redtusk_stores_01 | A Gate Worth Shutting | Morga Clayhand (Redtusk Village) | 13 | bring 6 grug_materials:iron_bar; bring 4 default:coal_lump | 333 | - |
+| redtusk_herd_04 | Trust the Worn Boots | Borak Redgrass (Redtusk Village) | 14 | talk to Kesh Longstride (redtusk_outpost) | 100 | redtusk_herd_03 |
+| redtusk_stores_02 | Feed the Hands That Tan | Morga Clayhand (Redtusk Village) | 15 | bring 8 mobs:meat_raw; bring 3 mobs:leather | 315 | redtusk_stores_01 |
+| redtusk_watch_01 | Tusks Across the Trail | Kesh Longstride (Redtusk Outpost) | 16 | kill 8 bristling_boar [in kragmar_redtusk_savanna/borderveld] | 495 | redtusk_herd_04 |
+| redtusk_watch_02 | Footprints That Never Rest | Kesh Longstride (Redtusk Outpost) | 17 | kill 6 parched_husk [in kragmar_redtusk_savanna/borderveld] | 460 | redtusk_watch_01 |
+| redtusk_watch_03 | Rokka Is Still Counting | Kesh Longstride (Redtusk Outpost) | 17 | talk to Rokka Emberhand (redtusk_bandit_camp) | 115 | redtusk_watch_02 |
+| redtusk_bounty | Bounty: Teeth in the Dark (repeatable) | Kesh Longstride (Redtusk Outpost) | 18 | kill 6 mangy_rat [in kragmar_redtusk_savanna/borderveld] | 300 | redtusk_watch_02 |
+| redtusk_ransom_01 | Eight Fewer Witnesses | Rokka Emberhand (Redtusk Bandit Camp) | 18 | kill 8 vigilant_bandit_archer [in kragmar_redtusk_savanna/bandit_camp] | 600 | redtusk_watch_03 |
+| redtusk_departure | Follow the Stolen Water | Rokka Emberhand (Redtusk Bandit Camp) | 19 | talk to Thorga Roadspeaker (gor_drazhak) | 180 | redtusk_ransom_02 |
+| redtusk_ransom_02 | No Coin for Our Own Water | Rokka Emberhand (Redtusk Bandit Camp) | 19 | kill 1 water_broker_korr; bring 2 grug_mobs:knotted_talisman | 720 | redtusk_ransom_01 |
 
 ## Mobs by spawn region
 

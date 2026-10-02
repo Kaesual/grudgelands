@@ -208,86 +208,63 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 45,
-   "description": "Varda Copperpan has places at the table for late arrivals in Dur Brannoc. Bring five raw meat portions to the bakehouse cook. The meal is a shared provision task, not a Cooking qualification test.",
+   "copper": 51,
+   "description": "Our ancestors deserve respect, but a settled account deserves to stay settled. Put eight Debtbound Zombies to rest at night in the Dur Brannoc Pastures, which lie in the south of Dur Brannoc. They keep knocking to collect debts we wrote off generations ago, and I refuse to wake the entire records hall to prove it.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_01",
+   "min_level": 20,
+   "objectives": [
+    "kill 8 debtbound_zombie [in elandor_dur_brannoc/pastures]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_dur_brannoc/pastures",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:debtbound_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Payment Was Final",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 520
+  },
+  {
+   "copper": 26,
+   "description": "The crusts are ready, but a pie full of air won't see a smith through a shift. Bring me four Mire Carp from the rivers or tarns outside Dur Brannoc's gates; take your time with the rod while I take mine with the pastry.",
    "giver": "r20_dwarf_capital_cook",
    "giver_name": "Varda Copperpan",
    "giver_settlement": "Dur Brannoc",
-   "id": "r20_dwarf_capital_cook",
-   "min_level": 10,
-   "objectives": [
-    "bring 5 mobs:meat_raw"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "item": "mobs:meat_raw",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Copperpan Supper",
-   "turnin": "r20_dwarf_capital_cook",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "Dorrin recommends the terrace bakehouse before your next climb. Speak with Varda Copperpan at the cook's place beside the oven, then complete the introduction with her. The Cooking trainer has a separate role; you do not need to learn the profession.",
-   "giver": "r20_dwarf_capital_envoy",
-   "giver_name": "Dorrin Gateledger",
-   "giver_settlement": "Dur Brannoc",
-   "id": "r20_dwarf_capital_services",
-   "min_level": 10,
-   "objectives": [
-    "talk to Varda Copperpan (dur_brannoc)"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "npc": "r20_dwarf_capital_cook",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [
-    "r20_dwarf_capital_intro"
-   ],
-   "reward_items": [],
-   "title": "A Seat at Copperpan",
-   "turnin": "r20_dwarf_capital_cook",
-   "xp": 285
-  },
-  {
-   "copper": 60,
-   "description": "The gate shift keeps its lamp fuel apart from the smiths' metal stock. Bring eight coal lumps to Dorrin so the night watch can replenish that reserve without taking the bakehouse's fuel.",
-   "giver": "r20_dwarf_capital_envoy",
-   "giver_name": "Dorrin Gateledger",
-   "giver_settlement": "Dur Brannoc",
-   "id": "r20_dwarf_capital_stores",
+   "id": "durbrannoc_provisions_01",
    "min_level": 20,
    "objectives": [
-    "bring 8 default:coal_lump"
+    "bring 4 grug_fishing:mire_carp"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:coal_lump",
+     "count": 4,
+     "item": "grug_fishing:mire_carp",
      "type": "item"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Lamp Coal for the Gate Shift",
-   "turnin": "r20_dwarf_capital_envoy",
-   "xp": 780
+   "title": "A Pie Needs a Middle",
+   "turnin": "r20_dwarf_capital_cook",
+   "xp": 260
   },
   {
-   "copper": 50,
-   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Tarnwatch Fold in Frostbarrow Shelf and speak with Edda Tarnmantle. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Edda Tarnmantle there. No parcel, fighting errand or return trip is required.",
-   "giver": "r20_dwarf_capital_envoy",
-   "giver_name": "Dorrin Gateledger",
+   "copper": 13,
+   "description": "Edda Tarnmantle asked me for bread and someone who can swing more than a butter knife. The loaves are already on the cart. Go speak to her at Tarnwatch Fold on the Frostbarrow Shelf about the other half of her order. Button your coat before you leave, or I'll hear about it from Edda.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
    "giver_settlement": "Dur Brannoc",
-   "id": "r20_dwarf_journey_01",
+   "id": "durbrannoc_dispatch_01",
    "min_level": 21,
    "objectives": [
     "talk to Edda Tarnmantle (r20_anchor_014)"
@@ -299,11 +276,401 @@
      "type": "talk"
     }
    ],
+   "prerequisites": [
+    "durbrannoc_gate_01"
+   ],
+   "reward_items": [],
+   "title": "The Other Half of Edda's Order",
+   "turnin": "r20_anchor_014_host",
+   "xp": 135
+  },
+  {
+   "copper": 13,
+   "description": "Highcourt has plenty of fine words; Mariel Waybook could use another pair of working hands. Go speak with her there if you fancy helping our human allies. Tell her I trust you with a job, which is only one step below trusting you with my oven.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_dispatch_highcourt",
+   "min_level": 22,
+   "objectives": [
+    "talk to Mariel Waybook (highcourt)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_human_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_dispatch_01"
+   ],
+   "reward_items": [],
+   "title": "Varda's Recommendation",
+   "turnin": "r20_human_capital_envoy",
+   "xp": 140
+  },
+  {
+   "copper": 13,
+   "description": "A dwarf can lend a hand beneath branches as well as beams. If you'd like to help our elven neighbours, find Ilwen Petalmeasure at Lorindor Berrycourt and ask what needs doing; good neighbours make room at the hearth before the weather turns.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_dispatch_lorindor",
+   "min_level": 22,
+   "objectives": [
+    "talk to Ilwen Petalmeasure (r20_anchor_018)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_018_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_dispatch_01"
+   ],
+   "reward_items": [],
+   "title": "Room at Another Hearth",
+   "turnin": "r20_anchor_018_host",
+   "xp": 140
+  },
+  {
+   "copper": 13,
+   "description": "An Accord worth its salt ought to mean more than sharing a colour on a banner. If you'd like work among our human neighbours, speak with Merren Oakstamp at Whitebridge Market Close. Tell Merren that Varda sent someone dependable, and try to make me look a sound judge of character.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_dispatch_whitebridge",
+   "min_level": 22,
+   "objectives": [
+    "talk to Merren Oakstamp (r20_anchor_016)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_016_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_dispatch_01"
+   ],
+   "reward_items": [],
+   "title": "A Neighbour's Table",
+   "turnin": "r20_anchor_016_host",
+   "xp": 140
+  },
+  {
+   "copper": 58,
+   "description": "I checked the toll register twice; the king has granted these thieves precisely nothing. Defeat eight outlaws in all, counting Toll Bandit Archers and Toll Bandits, at night in the Dur Brannoc Tollwood, which lies in the east of Dur Brannoc. Deal with the archers before they put their objections in writing on your coat.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_02",
+   "min_level": 23,
+   "objectives": [
+    "kill 8 toll_bandit_archer or toll_bandit [in elandor_dur_brannoc/tollwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_dur_brannoc/tollwood",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:toll_bandit_archer",
+      "grug_mobs:toll_bandit"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_01"
+   ],
+   "reward_items": [],
+   "title": "His Majesty Signed Nothing",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 675
+  },
+  {
+   "copper": 45,
+   "description": "Fish fills a pie, but a feast-day roast wants ram. If you have a spare afternoon, hunt six Hill Rams by day in the Dur Brannoc Uplands, which lie in the heart of Dur Brannoc. They stay quiet until someone starts the argument, so pick your ram and pick your moment.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_provisions_optional",
+   "min_level": 24,
+   "objectives": [
+    "kill 6 hill_ram [in elandor_dur_brannoc/uplands]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_dur_brannoc/uplands",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:hill_ram"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: A Ram for the Roast",
+   "turnin": "r20_dwarf_capital_cook",
+   "xp": 543
+  },
+  {
+   "copper": 77,
+   "description": "Every crooked entry leads to the Dur Brannoc Goblin Camp north from here, where Goblin Ore-Factor Brakk buys the stolen ore. Recover two Clasped Purses from his Ore-Thieving Goblins or Rubble Goblin Slingers, and kill Brakk himself. Draw him out alone if you can; we've lost enough honest folk balancing his books.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_03",
+   "min_level": 27,
+   "objectives": [
+    "kill 1 ore_factor_brakk",
+    "bring 2 grug_mobs:clasped_purse"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:ore_factor_brakk"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:clasped_purse",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_02"
+   ],
+   "reward_items": [],
+   "title": "Close Brakk's Account",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 1020
+  },
+  {
+   "copper": 45,
+   "description": "The Tithe Revenants on the Dur Brannoc Heights, which lie in the northwest of Dur Brannoc, still collect a tithe that was abolished before my grandmother's beard went grey. Put six of them down at night if you have the time; it isn't the road's most urgent business, but I'd like the ledger to stop arguing with the dead.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_optional",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 stubborn_zombie [in elandor_dur_brannoc/heights]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_dur_brannoc/heights",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:stubborn_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: Tithes for the Dead",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 595
+  },
+  {
+   "copper": 32,
+   "description": "The forge bell rings, the doors open, and suddenly every dwarf in Dur Brannoc is starving. Hunt six Hill Rams by day on the Dur Brannoc Heights, which lie in the northwest of Dur Brannoc, then come back for your bounty. It's repeatable twenty minutes after you hand it in; I've yet to meet a city that stays fed.",
+   "giver": "r20_dwarf_capital_cook",
+   "giver_name": "Varda Copperpan",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_provisions_bounty",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 hill_ram [in elandor_dur_brannoc/heights]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_dur_brannoc/heights",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:hill_ram"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Supper for a City (repeatable)",
+   "turnin": "r20_dwarf_capital_cook",
+   "xp": 425
+  },
+  {
+   "copper": 13,
+   "description": "Dur Brannoc's walls are sound, but the Accord cannot shelter behind them all at once. Report to Toren Waterbarrel at Cinderline Watch in Ashenward March; he needs capable hands on that contested ground. We keep our word to our allies by turning up when the work gets hard.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_ashenward",
+   "min_level": 29,
+   "objectives": [
+    "talk to Toren Waterbarrel (r20_anchor_031)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_031_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_03"
+   ],
+   "reward_items": [],
+   "title": "Beyond Our Own Gate",
+   "turnin": "r20_anchor_031_host",
+   "xp": 175
+  },
+  {
+   "copper": 13,
+   "description": "I can stamp a pledge of support all day, but Faeris Rootbinder needs someone to walk through the gate. Report to Faeris at Glassroot Gate in the contested Glassroot Wilds and let our elven allies see what a promise from Dur Brannoc weighs.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_glassroot",
+   "min_level": 29,
+   "objectives": [
+    "talk to Faeris Rootbinder (r20_anchor_036)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_036_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_03"
+   ],
+   "reward_items": [],
+   "title": "The Weight of Our Word",
+   "turnin": "r20_anchor_036_host",
+   "xp": 175
+  },
+  {
+   "copper": 13,
+   "description": "A mountain hold stands because every stone bears its share, and the Accord needs yours on contested ground. Report to Borin Splitbolt at Splitbolt Station in Stormvault Heights; you've kept our roads open, and he'll find a use for that steadiness.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_gate_stormvault",
+   "min_level": 29,
+   "objectives": [
+    "talk to Borin Splitbolt (r20_anchor_027)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_027_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_gate_03"
+   ],
+   "reward_items": [],
+   "title": "Stone Enough to Stand On",
+   "turnin": "r20_anchor_027_host",
+   "xp": 175
+  },
+  {
+   "copper": 600,
+   "description": "Our chart leaves the Wyrmglass Spires on the Wyrmglass Crown northwest from here blank, which offends me as a dwarf and a keeper of records. Reach the island by boat; the Shipwright at our stables sells them. Keep to the shelf and the channel on the crossing, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_front_01",
+   "min_level": 60,
+   "objectives": [
+    "kill 6 crown_crag_eagle [in front_wyrmglass_crown/spires]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_wyrmglass_crown/spires",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:crown_crag_eagle"
+     ],
+     "type": "kill"
+    }
+   ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Edda Tarnmantle",
-   "turnin": "r20_anchor_014_host",
-   "xp": 615
+   "title": "Optional: A Blank Space on the Clan's Map",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 0
+  },
+  {
+   "copper": 800,
+   "description": "There's an elite stone golem, Stone Golem Rime-Bell, guarding the Wyrmglass Spires northwest from here, and the clan wants its bell silenced. Gather a full group, take a boat each to the Wyrmglass Crown and destroy the golem. I've a payment ready and a space in the record for everyone who comes back.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_front_02",
+   "min_level": 60,
+   "objectives": [
+    "kill 1 rime_bell_warden"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:rime_bell_warden"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_front_01"
+   ],
+   "reward_items": [],
+   "title": "Group: Silence for the Clan",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 0
+  },
+  {
+   "copper": 600,
+   "description": "The clan has placed another order for Rime Sinew, with an impressive number of signatures from dwarves staying home. Take a boat to the Wyrmglass Crown and hunt Rimehorn Rams by day on the Wyrmglass Scree. Bring me four Rime Sinew for payment. You can take this bounty again one hour after each turn-in; I'll keep the signatories busy finding your coin.",
+   "giver": "r20_dwarf_capital_envoy",
+   "giver_name": "Dorrin Gateledger",
+   "giver_settlement": "Dur Brannoc",
+   "id": "durbrannoc_front_bounty",
+   "min_level": 60,
+   "objectives": [
+    "bring 4 grug_mobs:rime_sinew"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_mobs:rime_sinew",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "durbrannoc_front_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: The Clan's Standing Order (repeatable)",
+   "turnin": "r20_dwarf_capital_envoy",
+   "xp": 0
   }
  ],
  "race_region": "dwarf",
@@ -851,9 +1218,16 @@
      "npc_id": "r20_dwarf_capital_envoy",
      "npc_name": "Dorrin Gateledger",
      "quests": [
-      "r20_dwarf_capital_services",
-      "r20_dwarf_capital_stores",
-      "r20_dwarf_journey_01"
+      "durbrannoc_front_01",
+      "durbrannoc_front_02",
+      "durbrannoc_front_bounty",
+      "durbrannoc_gate_01",
+      "durbrannoc_gate_02",
+      "durbrannoc_gate_03",
+      "durbrannoc_gate_ashenward",
+      "durbrannoc_gate_glassroot",
+      "durbrannoc_gate_optional",
+      "durbrannoc_gate_stormvault"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -930,6 +1304,14 @@
      "role_text": "riding trainer",
      "socket": "forge_pack_stable/forge_pack_stable_riding",
      "x": -1866,
+     "y": 70,
+     "z": -1491
+    },
+    {
+     "role": "shipwright",
+     "role_text": "shipwright",
+     "socket": "forge_pack_stable/forge_pack_stable_shipwright",
+     "x": -1858,
      "y": 70,
      "z": -1491
     },
@@ -1153,7 +1535,13 @@
      "npc_id": "r20_dwarf_capital_cook",
      "npc_name": "Varda Copperpan",
      "quests": [
-      "r20_dwarf_capital_cook"
+      "durbrannoc_dispatch_01",
+      "durbrannoc_dispatch_highcourt",
+      "durbrannoc_dispatch_lorindor",
+      "durbrannoc_dispatch_whitebridge",
+      "durbrannoc_provisions_01",
+      "durbrannoc_provisions_bounty",
+      "durbrannoc_provisions_optional"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1211,6 +1599,7 @@
     "public_station": 7,
     "quest": 3,
     "riding_trainer": 1,
+    "shipwright": 1,
     "trainer": 8,
     "vendor": 9,
     "waypoint": 1,

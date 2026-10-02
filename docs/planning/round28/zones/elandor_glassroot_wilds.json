@@ -329,85 +329,279 @@
  "pvp_rule": "contested",
  "quests": [
   {
-   "copper": 85,
-   "description": "Rain has loosened the footing beneath Glassroot Gate's cliff passage. Bring ten cobble blocks for the low support so carriers can keep using the route while it is repaired. Existing or traded supplies are welcome.",
+   "copper": 96,
+   "description": "Briarpack Wolves hunt the Glassroot Fringe, which lies in the south of Glassroot Wilds, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
    "giver": "r20_anchor_036_host",
    "giver_name": "Faeris Rootbinder",
    "giver_settlement": "Glassroot Gate",
-   "id": "r20_anchor_036_01",
-   "min_level": 31,
+   "id": "glassroot_fringe_01",
+   "min_level": 30,
    "objectives": [
-    "bring 10 default:cobble"
+    "kill 5 briarpack_wolf [in elandor_glassroot_wilds/fringe]"
    ],
    "objectives_raw": [
     {
-     "count": 10,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Stone Under the Passage",
-   "turnin": "r20_anchor_036_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "Rootsnare Camp's bandits have taken supplies intended for the passage. Defeat four bandits at the occupied camp in Glassroot Wilds, rather than hunting unrelated forest creatures.",
-   "giver": "r20_anchor_036_host",
-   "giver_name": "Faeris Rootbinder",
-   "giver_settlement": "Glassroot Gate",
-   "id": "r20_anchor_036_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 4 bandit or entrenched_bandit [in elandor_glassroot_wilds]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
+     "area": "elandor_glassroot_wilds/fringe",
+     "count": 5,
      "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:entrenched_bandit"
+      "grug_mobs:briarpack_wolf"
      ],
-     "type": "kill",
-     "zone": "elandor_glassroot_wilds"
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Rootsnare's Stolen Cloth",
+   "title": "Room for the Living",
    "turnin": "r20_anchor_036_host",
-   "xp": 1220
+   "xp": 540
   },
   {
-   "copper": 100,
-   "description": "The recovered report points across Thunderroot Wilds to the Throng's frontier watch. At level 40, defeat three Throng guards at those military outposts or their patrols. This does not include villagers, players or Kezamba's capital guard.",
+   "copper": 64,
+   "description": "Bring me three Warpack Fangs from the Briarpack Wolves of the Glassroot Fringe for our wardens' sleeves. The pack has learned what those trophies mean, and sometimes that is enough to keep a wolf among the trees. A warning understood saves us both a hunt.",
    "giver": "r20_anchor_036_host",
    "giver_name": "Faeris Rootbinder",
    "giver_settlement": "Glassroot Gate",
-   "id": "r20_anchor_036_03",
-   "min_level": 40,
+   "id": "glassroot_fringe_02",
+   "min_level": 31,
    "objectives": [
-    "kill 3 guard_throng [in kragmar_thunderroot_wilds]"
+    "bring 3 grug_mobs:warpack_fang"
    ],
    "objectives_raw": [
     {
      "count": 3,
-     "mobs": [
-      "grug_mobs:guard_throng"
-     ],
-     "type": "kill",
-     "zone": "kragmar_thunderroot_wilds"
+     "item": "grug_mobs:warpack_fang",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r20_anchor_036_02"
+    "glassroot_fringe_01"
    ],
    "reward_items": [],
-   "title": "The Other Rootwatch",
+   "title": "A Warning Without Words",
    "turnin": "r20_anchor_036_host",
-   "xp": 1975
+   "xp": 370
+  },
+  {
+   "copper": 32,
+   "description": "Speak with Toren Waterbarrel at Cinderline Watch in Ashenward March; his water carts keep much of the front alive. Carry our thanks, ask how you can help, and let him direct you onward to Stormvault Heights. Mention that his last barrel watered more roots than soldiers; I suspect the trees are his greatest admirers.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_road_ashenward",
+   "min_level": 31,
+   "objectives": [
+    "talk to Toren Waterbarrel (r20_anchor_031)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_031_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_fringe_01"
+   ],
+   "reward_items": [],
+   "title": "Regards, and a Leaking Barrel",
+   "turnin": "r20_anchor_031_host",
+   "xp": 190
+  },
+  {
+   "copper": 96,
+   "description": "By day, the Treetop Jungle Apes in the Glassroot Tangle, which lies in the heart of Glassroot Wilds, greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_canopy_01",
+   "min_level": 34,
+   "objectives": [
+    "kill 5 territorial_ape [in elandor_glassroot_wilds/tangle]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_glassroot_wilds/tangle",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:territorial_ape"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "An Unwelcome Rain of Branches",
+   "turnin": "r20_anchor_036_host",
+   "xp": 600
+  },
+  {
+   "copper": 96,
+   "description": "The Glassroot Tangle grows quiet when the apes sleep, which is precisely when our least experienced wardens relax. Kill five Shade Panthers there at night before another patrol mistakes silence for safety. Watch the gaps between the roots; the forest has more than one way of keeping a secret.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_canopy_02",
+   "min_level": 35,
+   "objectives": [
+    "kill 5 stalking_panther [in elandor_glassroot_wilds/tangle]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_glassroot_wilds/tangle",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:stalking_panther"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_01"
+   ],
+   "reward_items": [],
+   "title": "When the Branches Fall Silent",
+   "turnin": "r20_anchor_036_host",
+   "xp": 615
+  },
+  {
+   "copper": 112,
+   "description": "I remember planting glassroots that the Entrenched Bandit Archers at Rootsnare Camp northwest from here now fell for arrow shafts. Defeat five of those archers and stop them cutting deeper into the grove. An afternoon with an axe has undone years of tending; I find I have very little patience left for their excuses.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_canopy_03",
+   "min_level": 37,
+   "objectives": [
+    "kill 5 entrenched_bandit_archer [in elandor_glassroot_wilds/rootsnare]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_glassroot_wilds/rootsnare",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_02"
+   ],
+   "reward_items": [],
+   "title": "Years Felled for Arrows",
+   "turnin": "r20_anchor_036_host",
+   "xp": 770
+  },
+  {
+   "copper": 128,
+   "description": "We have lost enough provisions near the Glassroot Serpent Pools to feed a patrol, and the carriers now refuse to go near the water. Kill Basket-Biter, the serpent lurking north from here in those pools. I would prefer our supplies to reach the front without first passing through a snake.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_canopy_04",
+   "min_level": 37,
+   "objectives": [
+    "kill 1 basket_biter"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:basket_biter"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_03"
+   ],
+   "reward_items": [],
+   "title": "No Picnic for Basket-Biter",
+   "turnin": "r20_anchor_036_host",
+   "xp": 880
+  },
+  {
+   "copper": 64,
+   "description": "Each night the Canopy-Web Jungle Spiders stitch shut the Glassroot Canopy, which lies in the north of Glassroot Wilds, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_bounty_spiders",
+   "min_level": 38,
+   "objectives": [
+    "kill 8 canopy_web_spider [in elandor_glassroot_wilds/canopy]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_glassroot_wilds/canopy",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:canopy_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Leave a Path Unspun (repeatable)",
+   "turnin": "r20_anchor_036_host",
+   "xp": 440
+  },
+  {
+   "copper": 192,
+   "description": "Jungle Ape Canopy-Knuckle holds the Glassroot Canopy northwest from here; three wardens have returned with their bows snapped across its knee. Gather a group and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_canopy_05",
+   "min_level": 38,
+   "objectives": [
+    "kill 1 canopy_knuckle"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:canopy_knuckle"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_04"
+   ],
+   "reward_items": [],
+   "title": "Group: No More Broken Bows",
+   "turnin": "r20_anchor_036_host",
+   "xp": 1320
+  },
+  {
+   "copper": 32,
+   "description": "You have made room for life here, and that is worth remembering when the front seems to hold nothing else. Speak with Nella Hedgeward at Last Hedge Redoubt in Ashenward March when you are ready to serve beyond these woods. She sends our wardens and soldiers onward; I will keep a place for you beneath the boughs.",
+   "giver": "r20_anchor_036_host",
+   "giver_name": "Faeris Rootbinder",
+   "giver_settlement": "Glassroot Gate",
+   "id": "glassroot_road_front",
+   "min_level": 38,
+   "objectives": [
+    "talk to Nella Hedgeward (r20_anchor_032)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_032_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "glassroot_canopy_04"
+   ],
+   "reward_items": [],
+   "title": "What We Keep Behind Us",
+   "turnin": "r20_anchor_032_host",
+   "xp": 225
   }
  ],
  "race_region": "elf",
@@ -621,9 +815,16 @@
      "npc_id": "r20_anchor_036_host",
      "npc_name": "Faeris Rootbinder",
      "quests": [
-      "r20_anchor_036_01",
-      "r20_anchor_036_02",
-      "r20_anchor_036_03"
+      "glassroot_bounty_spiders",
+      "glassroot_canopy_01",
+      "glassroot_canopy_02",
+      "glassroot_canopy_03",
+      "glassroot_canopy_04",
+      "glassroot_canopy_05",
+      "glassroot_fringe_01",
+      "glassroot_fringe_02",
+      "glassroot_road_ashenward",
+      "glassroot_road_front"
      ],
      "role": "quest",
      "role_text": "quest giver",

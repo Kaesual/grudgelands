@@ -364,255 +364,226 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "The namekeeper will not let another stone tablet rest on a rotten archive shelf. Bring eight gravewood planks to Ossuary Ledgerstead; the local gravewood trunks make the boards these shelves require. Existing or traded supplies are welcome.",
+   "copper": 64,
+   "description": "Briarpack Blightfang Wolves prowl the Ossuary Bonewood northeast of Ossuary Ledgerstead by day, carrying off bones that ought to be on my shelves. Kill eight before more of our ancestors disappear into their dens. I have seen unfamiliar labels dangling from their mouths; apparently I now have a rival archivist as well as a wolf problem.",
    "giver": "r20_anchor_020_host",
    "giver_name": "Sovel Namekeeper",
    "giver_settlement": "Ossuary Ledgerstead",
-   "id": "r20_anchor_020_01",
+   "id": "ossuary_names_01",
    "min_level": 21,
    "objectives": [
-    "bring 8 grug_trees:gravewood_wood"
+    "kill 8 briarpack_wolf [in kragmar_ossuary_reach/bonewood]"
    ],
    "objectives_raw": [
     {
+     "area": "kragmar_ossuary_reach/bonewood",
      "count": 8,
-     "item": "grug_trees:gravewood_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Shelves for the Remembered",
-   "turnin": "r20_anchor_020_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Blightfang wolves hunt along Ossuary Reach's bone-forest floor and cut off visitors carrying names to the archive. Defeat four of them without disturbing the memorial plots.",
-   "giver": "r20_anchor_020_host",
-   "giver_name": "Sovel Namekeeper",
-   "giver_settlement": "Ossuary Ledgerstead",
-   "id": "r20_anchor_020_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
      "mobs": [
-      "grug_mobs:blightfang_wolf",
       "grug_mobs:briarpack_wolf"
      ],
-     "type": "kill",
-     "zone": "kragmar_ossuary_reach"
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Teeth Beside the Archive",
+   "title": "Misfiled in a Wolf",
    "turnin": "r20_anchor_020_host",
-   "xp": 820
+   "xp": 675
   },
   {
-   "copper": 70,
-   "description": "Boneledger's stone names have outlasted their wooden shelf. Bring eight gravewood planks for the record shelter so the watch can keep road reports separate from memorial tablets. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_038_host",
-   "giver_name": "Mereth Rubbinghand",
-   "giver_settlement": "Boneledger Post",
-   "id": "r20_anchor_038_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 8 grug_trees:gravewood_wood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "grug_trees:gravewood_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Shelf for Stone Names",
-   "turnin": "r20_anchor_038_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Gravewood treants stir on Ossuary Reach's bone-covered forest floor after dark. Defeat three before the next ledger carrier follows that road.",
-   "giver": "r20_anchor_038_host",
-   "giver_name": "Mereth Rubbinghand",
-   "giver_settlement": "Boneledger Post",
-   "id": "r20_anchor_038_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:gravewood_treant",
-      "grug_mobs:mourning_treant"
-     ],
-     "type": "kill",
-     "zone": "kragmar_ossuary_reach"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Hungry Gravewood",
-   "turnin": "r20_anchor_038_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Memoryvein keeps its rock tallies in a shed apart from the memorial stones. Bring eight gravewood planks for that shed's frame, using the local tree's ordinary sawn boards. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_064_host",
-   "giver_name": "Neris Fossilhand",
-   "giver_settlement": "Memoryvein Dig",
-   "id": "r20_anchor_064_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 8 grug_trees:gravewood_wood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "grug_trees:gravewood_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Record Shed Frame",
-   "turnin": "r20_anchor_064_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Gravewood treants move through Ossuary Reach's bone forest after dark and keep the cutters from their return path. Defeat three without disturbing the tended memorials.",
-   "giver": "r20_anchor_064_host",
-   "giver_name": "Neris Fossilhand",
-   "giver_settlement": "Memoryvein Dig",
-   "id": "r20_anchor_064_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:gravewood_treant",
-      "grug_mobs:mourning_treant"
-     ],
-     "type": "kill",
-     "zone": "kragmar_ossuary_reach"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Cutters' Uneasy Night",
-   "turnin": "r20_anchor_064_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Once the wolf tracks are cleared, the night watch can reach the older grove. Three gravewood treants there keep tearing at the boundary markers after dark. Put them down in Ossuary Reach and bring the report to Sovel.",
+   "copper": 19,
+   "description": "Mereth Rubbinghand at Boneledger Post copies the names on our barrow stones before weather can take another letter. Go and speak with Mereth; those rubbings may tell us why the names on my shelves no longer agree with the graves. Stone was supposed to be the durable option, but I have learned to keep a second copy.",
    "giver": "r20_anchor_020_host",
    "giver_name": "Sovel Namekeeper",
    "giver_settlement": "Ossuary Ledgerstead",
-   "id": "r20_anchor_020_03",
-   "min_level": 23,
+   "id": "ossuary_names_02",
+   "min_level": 22,
    "objectives": [
-    "kill 3 gravewood_treant or mourning_treant [in kragmar_ossuary_reach]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:gravewood_treant",
-      "grug_mobs:mourning_treant"
-     ],
-     "type": "kill",
-     "zone": "kragmar_ossuary_reach"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_020_02"
-   ],
-   "reward_items": [],
-   "title": "The Trees That Refuse Rest",
-   "turnin": "r20_anchor_020_host",
-   "xp": 900
-  },
-  {
-   "copper": 70,
-   "description": "With the night grove quiet, the keeper can send carriers farther along the road. Defeat four blightfang wolves in Ossuary Reach so the hungry packs do not take their place.",
-   "giver": "r20_anchor_038_host",
-   "giver_name": "Mereth Rubbinghand",
-   "giver_settlement": "Boneledger Post",
-   "id": "r20_anchor_038_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 4 blightfang_wolf or briarpack_wolf [in kragmar_ossuary_reach]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:blightfang_wolf",
-      "grug_mobs:briarpack_wolf"
-     ],
-     "type": "kill",
-     "zone": "kragmar_ossuary_reach"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_038_02"
-   ],
-   "reward_items": [],
-   "title": "A Pack on the Ledger Road",
-   "turnin": "r20_anchor_038_host",
-   "xp": 900
-  },
-  {
-   "copper": 70,
-   "description": "The night route is quiet enough for a new cutting shift. Bring one ordinary stone pick for the crew's spare rack; no special relic or freshly mined stone is required. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_064_host",
-   "giver_name": "Neris Fossilhand",
-   "giver_settlement": "Memoryvein Dig",
-   "id": "r20_anchor_064_03",
-   "min_level": 23,
-   "objectives": [
-    "bring 1 grug_materials:pick_stone"
+    "talk to Mereth Rubbinghand (r20_anchor_038)"
    ],
    "objectives_raw": [
     {
      "count": 1,
-     "item": "grug_materials:pick_stone",
-     "type": "item"
+     "npc": "r20_anchor_038_host",
+     "type": "talk"
     }
    ],
    "prerequisites": [
-    "r20_anchor_064_02"
+    "ossuary_names_01"
    ],
    "reward_items": [],
-   "title": "A Tool for Unnamed Stone",
-   "turnin": "r20_anchor_064_host",
-   "xp": 900
+   "title": "Paper Remembers",
+   "turnin": "r20_anchor_038_host",
+   "xp": 210
   },
   {
-   "copper": 50,
-   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Memoryvein Dig in Ossuary Reach and speak with Neris Fossilhand. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Neris Fossilhand there. No parcel, fighting errand or return trip is required.",
+   "copper": 51,
+   "description": "The Lichen Gravewood Treants in the Ossuary Bonewood spend their nights walking through the burial rows, dragging roots across generations of careful work. Fell eight after dark, and watch for the Grave-Web Bonelurker Spiders among them. I planted trees to shade the dead; I never expected to have to explain that they should stay beside the graves.",
    "giver": "r20_anchor_020_host",
    "giver_name": "Sovel Namekeeper",
    "giver_settlement": "Ossuary Ledgerstead",
-   "id": "r20_undead_journey_02",
+   "id": "ossuary_names_03",
+   "min_level": 22,
+   "objectives": [
+    "kill 8 mourning_treant [in kragmar_ossuary_reach/bonewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_ossuary_reach/bonewood",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:mourning_treant"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ossuary_names_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: The Trees Have Taken to Walking",
+   "turnin": "r20_anchor_020_host",
+   "xp": 560
+  },
+  {
+   "copper": 26,
+   "description": "Briarpack Blightfang Wolves hunt the Ossuary Ashfields, which lies in the northeast of Ossuary Reach, after dark, and I cannot keep revising the catalogue to account for digestion. Kill six and report back. This task is available again twenty minutes after you hand it in; the shelves will stay labelled, even if I have to keep filling them.",
+   "giver": "r20_anchor_020_host",
+   "giver_name": "Sovel Namekeeper",
+   "giver_settlement": "Ossuary Ledgerstead",
+   "id": "ossuary_names_bounty",
+   "min_level": 22,
+   "objectives": [
+    "kill 6 briarpack_wolf [in kragmar_ossuary_reach/ashfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_ossuary_reach/ashfields",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:briarpack_wolf"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ossuary_names_01"
+   ],
+   "reward_items": [],
+   "title": "Repeatable: Teeth in the Catalogue (repeatable)",
+   "turnin": "r20_anchor_020_host",
+   "xp": 270
+  },
+  {
+   "copper": 64,
+   "description": "The stones of the Ossuary Barrowlands, which lies north of Boneledger Post, carry fresh names cut over older letters. Barrow Skeleton Archers guard them at night; destroy eight so I can get close enough to make rubbings. I can work around weather, but arrows make a dreadful mess of the paper.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "ossuary_rubbings_01",
    "min_level": 24,
+   "objectives": [
+    "kill 8 barrow_skeleton_archer [in kragmar_ossuary_reach/barrowlands]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_ossuary_reach/barrowlands",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:barrow_skeleton_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Under the New Names",
+   "turnin": "r20_anchor_038_host",
+   "xp": 750
+  },
+  {
+   "copper": 32,
+   "description": "Bring me three Etched Bone from the Barrow Skeleton Archers on the Ossuary Barrowlands after dark. I need to compare the lettering with my rubbings to learn who has been changing the names. A thief may borrow someone else's name, but usually keeps their own bad handwriting.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "ossuary_rubbings_02",
+   "min_level": 24,
+   "objectives": [
+    "bring 3 grug_mobs:etched_bone"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:etched_bone",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Optional: A Hand I Might Recognise",
+   "turnin": "r20_anchor_038_host",
+   "xp": 375
+  },
+  {
+   "copper": 51,
+   "description": "Bonewood Plaguehide Bears dig into the old shafts in the Ossuary Webwood, which lies in the heart of Ossuary Reach, by day, helping themselves to the marrow. Kill eight before they bring more of the workings down. I have watched the Marrow Archivist gather what they leave behind; the bears do the digging and it takes the credit, which is a familiar arrangement.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "ossuary_dig_01",
+   "min_level": 25,
+   "objectives": [
+    "kill 8 territorial_bear [in kragmar_ossuary_reach/webwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_ossuary_reach/webwood",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:territorial_bear"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Optional: Disturbing the Workings",
+   "turnin": "r20_anchor_064_host",
+   "xp": 620
+  },
+  {
+   "copper": 32,
+   "description": "Smelt six Steel Bars and bring them here to Memoryvein Dig for the shaft supports. There are still names down there we have not read, and the timbers have begun making persuasive arguments for leaving. I have been buried once already; next time, I would prefer to make an appointment.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "ossuary_dig_02",
+   "min_level": 25,
+   "objectives": [
+    "bring 6 grug_materials:steel_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 6,
+     "item": "grug_materials:steel_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Optional: Hold Up the Past",
+   "turnin": "r20_anchor_064_host",
+   "xp": 388
+  },
+  {
+   "copper": 19,
+   "description": "Those new letters were cut with a miner's chisel, and the scratches may tell us more than the words. Go to Memoryvein Dig and speak with Neris Fossilhand, who knows the tools used in the Reach. I trust Neris to recognise the workmanship, even if the owner would prefer to remain uncredited.",
+   "giver": "r20_anchor_038_host",
+   "giver_name": "Mereth Rubbinghand",
+   "giver_settlement": "Boneledger Post",
+   "id": "ossuary_rubbings_03",
+   "min_level": 25,
    "objectives": [
     "talk to Neris Fossilhand (r20_anchor_064)"
    ],
@@ -623,20 +594,57 @@
      "type": "talk"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "ossuary_rubbings_01"
+   ],
    "reward_items": [],
-   "title": "Word for Neris Fossilhand",
+   "title": "A Chisel Leaves Its Signature",
    "turnin": "r20_anchor_064_host",
-   "xp": 705
+   "xp": 233
   },
   {
-   "copper": 50,
-   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Ashveil Watch in Blackwind Rise and speak with Vaska Ashlistener. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Vaska Ashlistener there. No parcel, fighting errand or return trip is required.",
+   "copper": 83,
+   "description": "You will find the Skeleton Marrow Archivist in the Ossuary Deepwood south from here, giving every bone it collects the same name: its own. Kill it, and destroy four Grave-Web Bonelurker Spiders in that wood at night. Those people had names long before it found a use for them. I intend to see those names stay theirs.",
    "giver": "r20_anchor_064_host",
    "giver_name": "Neris Fossilhand",
    "giver_settlement": "Memoryvein Dig",
-   "id": "r20_undead_journey_03",
-   "min_level": 31,
+   "id": "ossuary_dig_03",
+   "min_level": 27,
+   "objectives": [
+    "kill 4 grave_web_spider [in kragmar_ossuary_reach/deepwood]",
+    "kill 1 marrow_archivist"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_ossuary_reach/deepwood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:grave_web_spider"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:marrow_archivist"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Filed Under Theft",
+   "turnin": "r20_anchor_064_host",
+   "xp": 1073
+  },
+  {
+   "copper": 13,
+   "description": "The Reach can file its own dead again; the living are needed elsewhere. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener, who holds that ground for the Throng against the Accord. Tell Vaska the Archivist is closed, and that I would like the stones there left as they were carved.",
+   "giver": "r20_anchor_064_host",
+   "giver_name": "Neris Fossilhand",
+   "giver_settlement": "Memoryvein Dig",
+   "id": "ossuary_dig_04",
+   "min_level": 28,
    "objectives": [
     "talk to Vaska Ashlistener (r20_anchor_039)"
    ],
@@ -647,11 +655,13 @@
      "type": "talk"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "ossuary_dig_03"
+   ],
    "reward_items": [],
-   "title": "Word for Vaska Ashlistener",
+   "title": "Ashveil Keeps Its Own Records",
    "turnin": "r20_anchor_039_host",
-   "xp": 915
+   "xp": 170
   }
  ],
  "race_region": "undead",
@@ -921,10 +931,10 @@
      "npc_id": "r20_anchor_020_host",
      "npc_name": "Sovel Namekeeper",
      "quests": [
-      "r20_anchor_020_01",
-      "r20_anchor_020_02",
-      "r20_anchor_020_03",
-      "r20_undead_journey_02"
+      "ossuary_names_01",
+      "ossuary_names_02",
+      "ossuary_names_03",
+      "ossuary_names_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1038,9 +1048,9 @@
      "npc_id": "r20_anchor_038_host",
      "npc_name": "Mereth Rubbinghand",
      "quests": [
-      "r20_anchor_038_01",
-      "r20_anchor_038_02",
-      "r20_anchor_038_03"
+      "ossuary_rubbings_01",
+      "ossuary_rubbings_02",
+      "ossuary_rubbings_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1154,10 +1164,10 @@
      "npc_id": "r20_anchor_064_host",
      "npc_name": "Neris Fossilhand",
      "quests": [
-      "r20_anchor_064_01",
-      "r20_anchor_064_02",
-      "r20_anchor_064_03",
-      "r20_undead_journey_03"
+      "ossuary_dig_01",
+      "ossuary_dig_02",
+      "ossuary_dig_03",
+      "ossuary_dig_04"
      ],
      "role": "quest",
      "role_text": "quest giver",

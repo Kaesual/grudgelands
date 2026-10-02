@@ -44,20 +44,21 @@ Share of land per level: L20 10.1%, L21 11.2%, L22 11.9%, L23 8.9%, L24 9.0%, L2
 
 ### Highcourt (`highcourt`, anchor_008) at 0, 41, -1500
 
-Residents/guards: gear_display 3, guard_patrol 56, guard_post 19, housing_manager 1, idle 134, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, trainer 8, vendor 7, waypoint 1, work 36.
+Residents/guards: gear_display 3, guard_patrol 56, guard_post 19, housing_manager 1, idle 134, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, shipwright 1, trainer 8, vendor 7, waypoint 1, work 36.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | 0, 47, -1468 | - |
 | vendor_race | vendor | vendor kind: race | 42, 42, -1493 | - |
 | vendor_general | vendor | vendor kind: general | 42, 42, -1487 | - |
-| chapel_quest | quest giver | Mariel Waybook | -22, 42, -1473 | r20_human_capital_services, r20_human_capital_stores, r20_human_journey_01 |
+| chapel_quest | quest giver | Mariel Waybook | -22, 42, -1473 | highcourt_accounts_01, highcourt_accounts_02, highcourt_accounts_03, highcourt_accounts_tithes, highcourt_front_01, highcourt_front_02, highcourt_front_bounty |
 | travel_waypoint | waypoint |  | 22, 42, -1522 | - |
 | market_stable/market_stable_mount_1 | mount display |  | 12, 42, -1562 | - |
 | market_stable/market_stable_mount_2 | mount display |  | 12, 42, -1572 | - |
 | market_stable/market_stable_mount_3 | mount display |  | 18, 42, -1562 | - |
 | market_stable/market_stable_mount_4 | mount display |  | 18, 42, -1572 | - |
 | market_stable/market_stable_riding | riding trainer |  | 9, 42, -1567 | - |
+| market_stable/market_stable_shipwright | shipwright |  | 9, 42, -1575 | - |
 | market_workshop/market_workshop_vendor_smith | vendor | vendor kind: smith | 58, 42, -1505 | - |
 | market_workshop/market_workshop_weaponsmith | profession trainer | trains: weaponsmith | 65, 42, -1514 | - |
 | market_workshop/market_workshop_armorsmith | profession trainer | trains: armorsmith | 61, 42, -1514 | - |
@@ -75,7 +76,7 @@ Residents/guards: gear_display 3, guard_patrol 56, guard_post 19, housing_manage
 | homes_tavern/homes_tavern_gate_idle | innkeeper (respawn bind) |  | 63, 42, -1493 | - |
 | homes_bakehouse/homes_bakehouse_vendor_baker | vendor | vendor kind: baker | 38, 41, -1432 | - |
 | homes_bakehouse/homes_bakehouse_cooking | profession trainer | trains: cooking | 32, 41, -1424 | - |
-| homes_bakehouse/homes_bakehouse_quest_cook | quest giver | Ansel Ovenward | 36, 41, -1424 | r20_human_capital_cook |
+| homes_bakehouse/homes_bakehouse_quest_cook | quest giver | Ansel Ovenward | 36, 41, -1424 | highcourt_bounty_razorbacks, highcourt_dispatch_01, highcourt_dispatch_02, highcourt_provisions_01, highcourt_provisions_02, highcourt_provisions_venison |
 | lore_shrine/lore_shrine_quest | quest giver | (free quest socket: no quest NPC bound) | -97, 43, -1492 | - |
 | market_pond/market_pond_vendor_fishmonger | vendor | vendor kind: fishmonger | 131, 46, -1608 | - |
 
@@ -84,14 +85,23 @@ Public stations: market_workshop/market_workshop_station (forge), market_countin
 Distances: zone edge N 440 (elandor_ashenward_march), S 352 (elandor_goldmead_vale), E 480 (elandor_lorindor), W 488 (elandor_whitebridge_shire); nearest other-zone land 337 S; sea 764 SE; sea-beach sand 713 SE; nearest road 50.
 Nearest hubs (straight / by road): Goldmead Bandit Camp 577 / 828; Goldmead Outpost 555 / 866; Goldmead Village 534 / 880; Oakspan Tollhouse 661 / 990; Cinderline Watch 738 / 1039.
 
-### Current quests (4, given in this zone)
+### Current quests (13, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_human_capital_cook | Bread for the Late Arrivals | Ansel Ovenward (Highcourt) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_human_capital_services | The Ovenward Welcome | Mariel Waybook (Highcourt) | 10 | talk to Ansel Ovenward (highcourt) | 285 | r20_human_capital_intro |
-| r20_human_capital_stores | Stone for the River Watch | Mariel Waybook (Highcourt) | 20 | bring 12 default:cobble | 780 | - |
-| r20_human_journey_01 | Word for Merren Oakstamp | Mariel Waybook (Highcourt) | 21 | talk to Merren Oakstamp (r20_anchor_016) | 615 | - |
+| highcourt_accounts_01 | The Dead Cannot Owe Toll | Mariel Waybook (Highcourt) | 19 | kill 5 debtbound_zombie [in elandor_highcourt/commons] | 390 | - |
+| highcourt_dispatch_01 | The Empty River Baskets | Ansel Ovenward (Highcourt) | 21 | talk to Merren Oakstamp (r20_anchor_016) | 135 | highcourt_accounts_01 |
+| highcourt_provisions_01 | A Peg for the Bread Board | Ansel Ovenward (Highcourt) | 21 | bring 1 grug_mobs:gnarled_boar_tusk | 203 | - |
+| highcourt_provisions_venison | Optional: Venison for the Long Table | Ansel Ovenward (Highcourt) | 21 | kill 6 moss_antler_stag [in elandor_highcourt/commons] | 405 | highcourt_provisions_01 |
+| highcourt_accounts_02 | An Arrow Is Not a Receipt | Mariel Waybook (Highcourt) | 24 | kill 5 toll_bandit_archer [in elandor_highcourt/deer_park] | 450 | highcourt_accounts_01 |
+| highcourt_accounts_tithes | Optional: Tithes After Dark | Mariel Waybook (Highcourt) | 24 | kill 5 stubborn_zombie [in elandor_highcourt/orchards] | 465 | highcourt_accounts_02 |
+| highcourt_provisions_02 | Pies Have Consequences | Ansel Ovenward (Highcourt) | 24 | kill 5 redfang_fox [in elandor_highcourt/orchards] | 450 | highcourt_provisions_01 |
+| highcourt_accounts_03 | The Last Unauthorised Stamp | Mariel Waybook (Highcourt) | 27 | kill 5 toll_bandit_archer [in elandor_highcourt/toll_camp]; kill 1 tollmaster_penn | 680 | highcourt_accounts_02 |
+| highcourt_bounty_razorbacks | Bounty: Razorbacks (repeatable) | Ansel Ovenward (Highcourt) | 27 | kill 6 monstrous_boar [in elandor_highcourt/outer_fields] | 330 | highcourt_provisions_02 |
+| highcourt_dispatch_02 | Bread for the March | Ansel Ovenward (Highcourt) | 29 | talk to Toren Waterbarrel (r20_anchor_031) | 170 | highcourt_accounts_03 |
+| highcourt_front_01 | Optional: Beyond the Ink | Mariel Waybook (Highcourt) | 60 | kill 6 last_watch_zombie [in front_stormscale_summit/wreck_shore] | 0 | - |
+| highcourt_front_02 | Group: An Audience Nobody Requested | Mariel Waybook (Highcourt) | 60 | kill 1 last_offering_ape | 0 | highcourt_front_01 |
+| highcourt_front_bounty | Bounty: Fashion at a Safe Distance (repeatable) | Mariel Waybook (Highcourt) | 60 | bring 4 grug_mobs:silver_ape_hair | 0 | highcourt_front_01 |
 
 ## Mobs by spawn region
 

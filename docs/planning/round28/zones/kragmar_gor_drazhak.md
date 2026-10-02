@@ -44,12 +44,12 @@ Share of land per level: L20 10.9%, L21 10.6%, L22 11.0%, L23 8.4%, L24 8.4%, L2
 
 ### Gor Drazhak (`gor_drazhak`, anchor_011) at 0, 61, 1500
 
-Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manager 1, idle 167, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, trainer 8, vendor 7, waypoint 1, work 53.
+Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manager 1, idle 167, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, shipwright 1, trainer 8, vendor 7, waypoint 1, work 53.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | 0, 67, 1532 | - |
-| skull_hall_quest | quest giver | Thorga Roadspeaker | -38, 62, 1521 | r20_orc_capital_services, r20_orc_capital_stores, r20_orc_journey_01 |
+| skull_hall_quest | quest giver | Thorga Roadspeaker | -38, 62, 1521 | gd_front_01, gd_front_02, gd_front_island, gor_drazhak_bounty, gor_drazhak_muster_01, gor_drazhak_muster_02, gor_drazhak_muster_03, gor_drazhak_muster_04 |
 | vendor_race | vendor | vendor kind: race | 43, 62, 1509 | - |
 | vendor_general | vendor | vendor kind: general | 43, 62, 1516 | - |
 | travel_waypoint | waypoint |  | 19, 62, 1478 | - |
@@ -61,10 +61,11 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 21, housing_manage
 | war_beast_pen/war_beast_pen_mount_3 | mount display |  | 123, 61, 1521 | - |
 | war_beast_pen/war_beast_pen_mount_4 | mount display |  | 123, 61, 1511 | - |
 | war_beast_pen/war_beast_pen_riding | riding trainer |  | 114, 61, 1516 | - |
+| war_beast_pen/war_beast_pen_shipwright | shipwright |  | 114, 61, 1508 | - |
 | bone_herb_house/bone_herb_house_alchemist | profession trainer | trains: alchemist | 56, 65, 1601 | - |
 | warren_clan_house/warren_clan_house_gate_idle | innkeeper (respawn bind) |  | -61, 60, 1570 | - |
 | warren_cook_court/warren_cook_court_cooking | profession trainer | trains: cooking | -87, 62, 1518 | - |
-| warren_cook_court/warren_cook_court_quest_cook | quest giver | Gorla Longladle | -87, 62, 1522 | r20_orc_capital_cook |
+| warren_cook_court/warren_cook_court_quest_cook | quest giver | Gorla Longladle | -87, 62, 1522 | gor_drazhak_dispatch_01, gor_drazhak_dispatch_02, gor_drazhak_provisions_01 |
 | warren_weaver/warren_weaver_gate_idle | housing steward |  | -28, 62, 1572 | - |
 | warren_weaver/warren_weaver_tailor | profession trainer | trains: tailor | -26, 62, 1566 | - |
 | bazaar_armourer/bazaar_armourer_vendor_armourer | vendor | vendor kind: armourer | 94, 62, 1499 | - |
@@ -84,14 +85,21 @@ Public stations: bazaar_tannery/bazaar_tannery_station (tanning_rack), bazaar_ca
 Distances: zone edge N 352 (kragmar_redtusk_savanna), S 428 (kragmar_bannerbreak_mesa), E 520 (kragmar_whispering_reedlands), W 480 (kragmar_speargrass_reach); nearest other-zone land 343 N; sea 820 NE; sea-beach sand 779 NE; nearest road 50.
 Nearest hubs (straight / by road): Redtusk Village 512 / 675; Cutgrass Watch 696 / 982; Redtusk Bandit Camp 577 / 992; Red Ramp Post 729 / 1025; Reedvoice Station 732 / 1267.
 
-### Current quests (4, given in this zone)
+### Current quests (11, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_orc_capital_cook | The Longladle Ration | Gorla Longladle (Gor Drazhak) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_orc_capital_services | A Bowl at Longladle | Thorga Roadspeaker (Gor Drazhak) | 10 | talk to Gorla Longladle (gor_drazhak) | 285 | r20_orc_capital_intro |
-| r20_orc_capital_stores | Stone for the Muster Yard | Thorga Roadspeaker (Gor Drazhak) | 20 | bring 12 default:cobble | 780 | - |
-| r20_orc_journey_01 | Word for Brakka Jarward | Thorga Roadspeaker (Gor Drazhak) | 21 | talk to Brakka Jarward (r20_anchor_022) | 615 | - |
+| gor_drazhak_muster_01 | A Sentry Needs Both Feet | Thorga Roadspeaker (Gor Drazhak) | 19 | kill 8 dust_stinger [in kragmar_gor_drazhak/steppe] | 585 | - |
+| gor_drazhak_dispatch_01 | Spears Out, Word Back | Gorla Longladle (Gor Drazhak) | 21 | talk to Brakka Jarward (r20_anchor_022) | 203 | gor_drazhak_muster_01 |
+| gor_drazhak_dispatch_02 | Salt Keeps a Friendship | Gorla Longladle (Gor Drazhak) | 22 | talk to Taleko Drycord (r20_anchor_024) | 210 | gor_drazhak_muster_01 |
+| gor_drazhak_provisions_01 | The Ladle Commands | Gorla Longladle (Gor Drazhak) | 22 | bring 8 mobs:meat_raw; bring 2 grug_mobs:braided_sinew | 580 | - |
+| gor_drazhak_muster_02 | Optional: The Last Laugh Costs Extra | Thorga Roadspeaker (Gor Drazhak) | 23 | kill 8 dustpack_hyena [in kragmar_gor_drazhak/badlands] | 675 | gor_drazhak_muster_01 |
+| gor_drazhak_muster_03 | His Profit, Our Empty Bowls | Thorga Roadspeaker (Gor Drazhak) | 27 | kill 6 toll_bandit_archer [in kragmar_gor_drazhak/tollcamp]; kill 1 ration_broker_garr | 1073 | gor_drazhak_muster_01 |
+| gor_drazhak_bounty | Bounty: A Toll Paid in Arrows (repeatable) | Thorga Roadspeaker (Gor Drazhak) | 28 | kill 6 toll_bandit_archer [in kragmar_gor_drazhak/tollcamp] | 425 | gor_drazhak_muster_03 |
+| gor_drazhak_muster_04 | Your Place in the Line | Thorga Roadspeaker (Gor Drazhak) | 29 | talk to Drek Rampbinder (r20_anchor_043) | 255 | gor_drazhak_muster_03 |
+| gd_front_01 | Give the Road Some Fangs | Thorga Roadspeaker (Gor Drazhak) | 41 | bring 2 grug_mobs:scorch_venom | 720 | - |
+| gd_front_02 | Wear the Teeth This Time | Thorga Roadspeaker (Gor Drazhak) | 43 | kill 4 warpack_hyena [in front_shattered_line/trenches]; bring 2 grug_mobs:siegepack_fang | 1125 | gd_front_01 |
+| gd_front_island | Bounty: Dead Weight Ashore (repeatable) | Thorga Roadspeaker (Gor Drazhak) | 60 | kill 8 last_watch_husk [in front_stormscale_summit/wreck_shore] | 0 | gd_front_02 |
 
 ## Mobs by spawn region
 

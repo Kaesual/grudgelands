@@ -202,87 +202,40 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 45,
-   "description": "Velis Mourningbowl has set bowls for Nhal Veyr's vigil keepers. Bring five raw meat portions to the cook in the mourners' hall so the preserved stores can last another shift. This does not require the Cooking profession.",
+   "copper": 58,
+   "description": "Debtbound Zombies walk the Nhal Veyr Blightfields, which lies in the heart of Nhal Veyr, at night, knocking to collect debts that appear nowhere in my register. Lay eight to rest before they wear their knuckles down to the last joint. Each carries a clerk's stamp, so this is an unauthorised collection conducted with an infuriating air of legitimacy.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_vigil_01",
+   "min_level": 19,
+   "objectives": [
+    "kill 8 debtbound_zombie [in kragmar_nhal_veyr/blightfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_nhal_veyr/blightfields",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:debtbound_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Payment Due After Death",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 585
+  },
+  {
+   "copper": 19,
+   "description": "Sovel Namekeeper at Ossuary Ledgerstead needs help: the Gravewood around the archive has begun waking, which cannot be good for quiet study. Go and speak with Sovel, and pass along my regards. I would send a meal, but Sovel never eats, and I refuse to have my cooking filed for posterity.",
    "giver": "r20_undead_capital_cook",
    "giver_name": "Velis Mourningbowl",
    "giver_settlement": "Nhal Veyr",
-   "id": "r20_undead_capital_cook",
-   "min_level": 10,
-   "objectives": [
-    "bring 5 mobs:meat_raw"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "item": "mobs:meat_raw",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Bowls for the Vigil",
-   "turnin": "r20_undead_capital_cook",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "Ossa asks you to meet Velis Mourningbowl at the homes mourners' hall. Speak with the cook at the oven and complete this introduction there. The Cooking trainer remains a separate, optional service.",
-   "giver": "r20_undead_capital_envoy",
-   "giver_name": "Ossa Quietregister",
-   "giver_settlement": "Nhal Veyr",
-   "id": "r20_undead_capital_services",
-   "min_level": 10,
-   "objectives": [
-    "talk to Velis Mourningbowl (nhal_veyr)"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "npc": "r20_undead_capital_cook",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [
-    "r20_undead_capital_intro"
-   ],
-   "reward_items": [],
-   "title": "The Vigil Table",
-   "turnin": "r20_undead_capital_cook",
-   "xp": 285
-  },
-  {
-   "copper": 60,
-   "description": "The vigil lamps must outlast each watch, even when the covered courtyard is wet. Bring eight coal lumps to Ossa for the lamp reserve. Ordinary carried or traded fuel is sufficient.",
-   "giver": "r20_undead_capital_envoy",
-   "giver_name": "Ossa Quietregister",
-   "giver_settlement": "Nhal Veyr",
-   "id": "r20_undead_capital_stores",
+   "id": "nhal_veyr_dispatch_01",
    "min_level": 20,
-   "objectives": [
-    "bring 8 default:coal_lump"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "default:coal_lump",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Coal for the Vigil Lamps",
-   "turnin": "r20_undead_capital_envoy",
-   "xp": 780
-  },
-  {
-   "copper": 50,
-   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Sovel Namekeeper there. No parcel, fighting errand or return trip is required.",
-   "giver": "r20_undead_capital_envoy",
-   "giver_name": "Ossa Quietregister",
-   "giver_settlement": "Nhal Veyr",
-   "id": "r20_undead_journey_01",
-   "min_level": 21,
    "objectives": [
     "talk to Sovel Namekeeper (r20_anchor_020)"
    ],
@@ -293,11 +246,344 @@
      "type": "talk"
     }
    ],
+   "prerequisites": [
+    "nhal_veyr_vigil_01"
+   ],
+   "reward_items": [],
+   "title": "Send My Regards, They Keep Better",
+   "turnin": "r20_anchor_020_host",
+   "xp": 195
+  },
+  {
+   "copper": 32,
+   "description": "Bring me eight Raw Meat from the Moss-Antler Gaunt Stags grazing the Nhal Veyr Blightfields by day. Some mourners have kept vigil so long they have forgotten there is a kitchen. I set places for them anyway; a warm bowl gives the hands something to do when they have run out of things to hold.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_provisions_01",
+   "min_level": 20,
+   "objectives": [
+    "bring 8 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Sovel Namekeeper",
-   "turnin": "r20_anchor_020_host",
-   "xp": 615
+   "title": "Optional: A Seat at the Table",
+   "turnin": "r20_undead_capital_cook",
+   "xp": 338
+  },
+  {
+   "copper": 64,
+   "description": "Tithe Revenants stalk the Nhal Veyr Gravefields, which lies in the east of Nhal Veyr, after dark, charging the dead for being dead and the living for taking their time. Destroy eight. Their stamps bear the same clerk's mark: Hush. I have spent centuries keeping these names, and I will not have them turned into a list of debtors.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_vigil_02",
+   "min_level": 23,
+   "objectives": [
+    "kill 8 stubborn_zombie [in kragmar_nhal_veyr/gravefields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_nhal_veyr/gravefields",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:stubborn_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_01"
+   ],
+   "reward_items": [],
+   "title": "The Cost of Staying Dead",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 750
+  },
+  {
+   "copper": 13,
+   "description": "Thorga Roadspeaker in Gor Drazhak complains that everyone wants good roads and nobody turns up to help keep them. Go and speak with Thorga; you have made a fine habit of turning up where you are needed. One of my three sister errands is enough, even if you do have an eternity to fill.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_dispatch_orc_capital",
+   "min_level": 24,
+   "objectives": [
+    "talk to Thorga Roadspeaker (gor_drazhak)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_orc_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_02"
+   ],
+   "reward_items": [],
+   "title": "Sister Errand: Someone to Walk the Roads",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 150
+  },
+  {
+   "copper": 13,
+   "description": "Brakka Jarward at Speargrass Wellhold in Speargrass Reach could use another pair of hands. Go and speak with Brakka; do keep the hands attached, since our allies tend to find the alternative unsettling. Choose one of my three sister errands to follow; I am sending you for work, not trying to misplace you.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_dispatch_orc_wellhold",
+   "min_level": 24,
+   "objectives": [
+    "talk to Brakka Jarward (r20_anchor_022)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_022_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_02"
+   ],
+   "reward_items": [],
+   "title": "Sister Errand: Hands for the Wellhold",
+   "turnin": "r20_anchor_022_host",
+   "xp": 150
+  },
+  {
+   "copper": 13,
+   "description": "If you choose the Whispering Reedlands, speak with Taleko Drycord at Whisperreed Landing about the work there. Take care of your boots; damp gets into joints you had forgotten you owned. You need only follow one of my three sister errands, so there is no obligation to fall apart in every climate.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_dispatch_troll",
+   "min_level": 24,
+   "objectives": [
+    "talk to Taleko Drycord (r20_anchor_024)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_024_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_02"
+   ],
+   "reward_items": [],
+   "title": "Sister Errand: Try to Stay Dry",
+   "turnin": "r20_anchor_024_host",
+   "xp": 150
+  },
+  {
+   "copper": 32,
+   "description": "Bring me four Pickled Flesh from the Tithe Revenants in the Nhal Veyr Gravefields after dark. I mean to compare the samples with my brine; someone is pickling the dead without a licence, and it is giving preservation a bad name. Hand them to me directly, please, well away from the serving bowls.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_provisions_02",
+   "min_level": 24,
+   "objectives": [
+    "bring 4 grug_mobs:pickled_flesh"
+   ],
+   "objectives_raw": [
+    {
+     "count": 4,
+     "item": "grug_mobs:pickled_flesh",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: Keep It Off the Menu",
+   "turnin": "r20_undead_capital_cook",
+   "xp": 375
+  },
+  {
+   "copper": 32,
+   "description": "Plague Razorbacks root through the Nhal Veyr Gravefields, which lies in the east of Nhal Veyr, by day, and the kitchen has another hunt to pay for. Kill six and report back; this order calls for news of the hunt, so keep whatever meat you gather. I can offer it again thirty minutes after you hand it in, by which time someone will certainly be asking about supper.",
+   "giver": "r20_undead_capital_cook",
+   "giver_name": "Velis Mourningbowl",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_provisions_bounty",
+   "min_level": 26,
+   "objectives": [
+    "kill 6 monstrous_boar [in kragmar_nhal_veyr/gravefields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_nhal_veyr/gravefields",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:monstrous_boar"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_provisions_02"
+   ],
+   "reward_items": [],
+   "title": "Repeatable: The Kitchen Keeps Going (repeatable)",
+   "turnin": "r20_undead_capital_cook",
+   "xp": 388
+  },
+  {
+   "copper": 77,
+   "description": "Zombie Mortuary-Clerk Hush holds court over a ledger in the Nhal Veyr Tombfields, southwest from here, entering our dead as debtors. Kill Hush, and destroy four Tithe Revenants among those tombs at night. A name is all some of these people have left, and I will not let a clerk seize it for arrears.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_vigil_03",
+   "min_level": 26,
+   "objectives": [
+    "kill 1 mortuary_clerk_hush",
+    "kill 4 stubborn_zombie [in kragmar_nhal_veyr/tombfields]"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:mortuary_clerk_hush"
+     ],
+     "type": "kill"
+    },
+    {
+     "area": "kragmar_nhal_veyr/tombfields",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:stubborn_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_02"
+   ],
+   "reward_items": [],
+   "title": "The Account Is Closed",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 990
+  },
+  {
+   "copper": 19,
+   "description": "I have entered your service in the register, with thanks rather than a sum beside it. Go to Ashveil Watch in Blackwind Rise and report to Vaska Ashlistener; the Throng holds that ground against the Accord. I would prefer to hear of your next deeds from you, rather than from someone bringing me a name to enter.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nhal_veyr_vigil_04",
+   "min_level": 29,
+   "objectives": [
+    "talk to Vaska Ashlistener (r20_anchor_039)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_039_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "nhal_veyr_vigil_03"
+   ],
+   "reward_items": [],
+   "title": "A Debt Freely Owed",
+   "turnin": "r20_anchor_039_host",
+   "xp": 263
+  },
+  {
+   "copper": 700,
+   "description": "Our shroud cupboard is nearly bare, and I refuse to enter 'wrapped in a sack' beside another name. Bring me two Glass Spider Silk from the Glass-Web Jungle Spiders at night in the Skyglass Rootways, which lie in the north of The Skyglass Canopy. We may keep our dead for centuries; we can at least dress them properly.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nv_front_01",
+   "min_level": 53,
+   "objectives": [
+    "bring 2 grug_mobs:glass_spider_silk"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:glass_spider_silk",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Dressed for the Long Rest",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 1050
+  },
+  {
+   "copper": 800,
+   "description": "The register has a space for the end of every watch; I have left these entries open for far too long. Lay five Last Watchmen to rest after dark on the Gravesalt Whitewall, which lies in the northeast of Gravesalt Escarpment, and I can finally record their release.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nv_front_02",
+   "min_level": 57,
+   "objectives": [
+    "kill 5 last_watch_zombie [in front_gravesalt_escarpment/whitewall]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_gravesalt_escarpment/whitewall",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_watch_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "nv_front_01"
+   ],
+   "reward_items": [],
+   "title": "Closing the Watch Register",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 1260
+  },
+  {
+   "copper": 600,
+   "description": "The Crown Frost Strays on The Wyrmglass Crown have outlasted every record I can find of them. Get a boat from the Shipwright and sail across the channel to the island, then destroy eight at night in the Wyrmglass Scree, which lies in the north of The Wyrmglass Crown. Return for your payment in coin; the bounty becomes available again one hour after turn-in. Do return in person, please, rather than as another entry.",
+   "giver": "r20_undead_capital_envoy",
+   "giver_name": "Ossa Quietregister",
+   "giver_settlement": "Nhal Veyr",
+   "id": "nv_front_island",
+   "min_level": 60,
+   "objectives": [
+    "kill 8 crown_frost_stray [in front_wyrmglass_crown/scree]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_wyrmglass_crown/scree",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:crown_frost_stray"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "nv_front_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: An Island's Unfinished Dead (repeatable)",
+   "turnin": "r20_undead_capital_envoy",
+   "xp": 0
   }
  ],
  "race_region": "undead",
@@ -863,9 +1149,13 @@
      "npc_id": "r20_undead_capital_envoy",
      "npc_name": "Ossa Quietregister",
      "quests": [
-      "r20_undead_capital_services",
-      "r20_undead_capital_stores",
-      "r20_undead_journey_01"
+      "nhal_veyr_vigil_01",
+      "nhal_veyr_vigil_02",
+      "nhal_veyr_vigil_03",
+      "nhal_veyr_vigil_04",
+      "nv_front_01",
+      "nv_front_02",
+      "nv_front_island"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -971,6 +1261,14 @@
      "x": -1696,
      "y": 43,
      "z": 1449
+    },
+    {
+     "role": "shipwright",
+     "role_text": "shipwright",
+     "socket": "market_cart_yard/market_cart_yard_shipwright",
+     "x": -1696,
+     "y": 43,
+     "z": 1441
     },
     {
      "role": "vendor",
@@ -1156,7 +1454,13 @@
      "npc_id": "r20_undead_capital_cook",
      "npc_name": "Velis Mourningbowl",
      "quests": [
-      "r20_undead_capital_cook"
+      "nhal_veyr_dispatch_01",
+      "nhal_veyr_dispatch_orc_capital",
+      "nhal_veyr_dispatch_orc_wellhold",
+      "nhal_veyr_dispatch_troll",
+      "nhal_veyr_provisions_01",
+      "nhal_veyr_provisions_02",
+      "nhal_veyr_provisions_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1188,6 +1492,7 @@
     "public_station": 7,
     "quest": 2,
     "riding_trainer": 1,
+    "shipwright": 1,
     "trainer": 8,
     "vendor": 6,
     "waypoint": 1,

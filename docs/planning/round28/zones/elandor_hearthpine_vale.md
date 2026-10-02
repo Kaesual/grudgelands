@@ -59,35 +59,41 @@ Share of land per level: L1 6.2%, L2 7.8%, L3 46.3%, L4 8.5%, L5 7.9%, L6 7.2%, 
 
 ### Hearthpine (`hearthpine`, anchor_001) at -1800, 35, -2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | plaza_vendor | vendor | vendor kind: race | -1793, 36, -2555 | - |
 | idle_west_door | innkeeper (respawn bind) |  | -1816, 36, -2546 | - |
-| hall_quest | quest giver | Brunna Flintbraid | -1828, 36, -2524 | r14_dwarf_01_tusks_at_the_timberline, r14_dwarf_03_rats_in_the_woodpiles, r14_dwarf_04_lanterns_after_sundown, r14_dwarf_05_the_high_path, r14_dwarf_06_loose_stone_on_copper_road, r14_dwarf_10_an_axe_worth_carrying, r14_dwarf_11_stone_before_steel, r20_dwarf_capital_intro |
+| hall_quest | quest giver | Brunna Flintbraid | -1828, 36, -2524 | hearthpine_departure, hearthpine_hunt_01, hearthpine_hunt_02, hearthpine_hunt_03, hearthpine_hunt_04, hearthpine_hunt_05, hearthpine_tools_01, hearthpine_tools_02, hearthpine_tools_03, hearthpine_tools_04 |
+| travel_waypoint | waypoint |  | -1809, 36, -2538 | - |
 | trainer_cooking | profession trainer | trains: cooking | -1798, 36, -2540 | - |
-| quest_cook | quest giver | Hilda Hearthspoon | -1798, 36, -2537 | r14_dwarf_02_meat_for_the_smokehouse, r20_dwarf_start_cook |
+| quest_cook | quest giver | Hilda Hearthspoon | -1798, 36, -2537 | hearthpine_kitchen_01, hearthpine_kitchen_02, hearthpine_kitchen_03, hearthpine_pantry_01, hearthpine_pantry_02 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 244 (elandor_copperfell_foothills), S 320 (coastal_shelf), E 332 (coastal_shelf), W 548 (elandor_copperfell_foothills); nearest other-zone land 206 NW; sea 282 S; sea-beach sand 267 S; nearest road 64.
 Nearest hubs (straight / by road): Copperfell Outpost 541 / 638; Copperfell Village 518 / 655; Copperfell Bandit Camp 537 / 673; Dur Brannoc 1050 / 1378; Tarnwatch Fold 1146 / 2058.
 
-### Current quests (10, given in this zone)
+### Current quests (15, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_dwarf_01_tusks_at_the_timberline | Tusks at the Timberline | Brunna Flintbraid (Hearthpine) | 1 | kill 3 boar or small_boar | 20 | - |
-| r14_dwarf_02_meat_for_the_smokehouse | Meat for the Smokehouse | Hilda Hearthspoon (Hearthpine) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_dwarf_10_an_axe_worth_carrying | An Axe Worth Carrying | Brunna Flintbraid (Hearthpine) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_dwarf_start_cook | Warmth for the Timber Shift | Hilda Hearthspoon (Hearthpine) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_dwarf_11_stone_before_steel | Stone Before Steel | Brunna Flintbraid (Hearthpine) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_dwarf_10_an_axe_worth_carrying |
-| r14_dwarf_03_rats_in_the_woodpiles | Boards for the Winter Stacks | Brunna Flintbraid (Hearthpine) | 3 | bring 6 default:pine_wood | 100 | r14_dwarf_01_tusks_at_the_timberline |
-| r14_dwarf_04_lanterns_after_sundown | Lanterns After Sundown | Brunna Flintbraid (Hearthpine) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_dwarf_01_tusks_at_the_timberline |
-| r14_dwarf_05_the_high_path | The High Path | Brunna Flintbraid (Hearthpine) | 5 | kill 5 ibex or young_ibex | 180 | r14_dwarf_03_rats_in_the_woodpiles |
-| r14_dwarf_06_loose_stone_on_copper_road | The Road to Orrik Pineledger | Brunna Flintbraid (Hearthpine) | 10 | talk to Orrik Pineledger (copperfell_village) | 285 | r14_dwarf_05_the_high_path |
-| r20_dwarf_capital_intro | The Road to Dur Brannoc | Brunna Flintbraid (Hearthpine) | 10 | talk to Dorrin Gateledger (dur_brannoc) | 285 | - |
+| hearthpine_hunt_01 | A Pig's Breakfast | Brunna Flintbraid (Hearthpine) | 1 | kill 8 small_boar [in elandor_hearthpine_vale/timberline] | 105 | - |
+| hearthpine_kitchen_01 | Feed the Fire First | Hilda Hearthspoon (Hearthpine) | 1 | bring 5 group:tree | 30 | - |
+| hearthpine_tools_01 | Hands Before Heroics | Brunna Flintbraid (Hearthpine) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| hearthpine_hunt_02 | The Unpaid Night Crew | Brunna Flintbraid (Hearthpine) | 2 | kill 8 large_rat [in elandor_hearthpine_vale/timberline] | 105 | hearthpine_hunt_01 |
+| hearthpine_kitchen_02 | Supper Needs a Spark | Hilda Hearthspoon (Hearthpine) | 2 | bring 5 default:coal_lump | 60 | hearthpine_kitchen_01 |
+| hearthpine_tools_02 | An Edge Worth Keeping | Brunna Flintbraid (Hearthpine) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | hearthpine_tools_01 |
+| hearthpine_hunt_03 | The Dead Can Clock Out | Brunna Flintbraid (Hearthpine) | 3 | kill 8 braindead_zombie [in elandor_hearthpine_vale/shingle] | 135 | hearthpine_hunt_02 |
+| hearthpine_pantry_01 | You Chew It, You Patch It | Hilda Hearthspoon (Hearthpine) | 3 | bring 2 grug_mobs:rat_fur_patch | 60 | hearthpine_hunt_02 |
+| hearthpine_hunt_04 | A Hard Hat Has Limits | Brunna Flintbraid (Hearthpine) | 4 | kill 8 young_ibex [in elandor_hearthpine_vale/high_pines] | 193 | hearthpine_hunt_02 |
+| hearthpine_kitchen_03 | Winter Doesn't Bring Lunch | Hilda Hearthspoon (Hearthpine) | 4 | bring 10 mobs:meat_raw | 100 | hearthpine_kitchen_02, hearthpine_hunt_02 |
+| hearthpine_tools_03 | Fittings Before Fortune | Brunna Flintbraid (Hearthpine) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 110 | hearthpine_tools_02 |
+| hearthpine_pantry_02 | The Feast Fights Back | Hilda Hearthspoon (Hearthpine) | 6 | bring 3 grug_mobs:crab_leg | 150 | hearthpine_pantry_01 |
+| hearthpine_tools_04 | Your Next Bite of Mountain | Brunna Flintbraid (Hearthpine) | 7 | bring 3 grug_materials:bronze_bar | 163 | hearthpine_tools_03 |
+| hearthpine_hunt_05 | Bracket Doesn't Add Up | Brunna Flintbraid (Hearthpine) | 8 | kill 7 confused_bandit [in elandor_hearthpine_vale/ore_thief_camp]; kill 1 muddled_ore_chief | 315 | hearthpine_hunt_04 |
+| hearthpine_departure | Follow the Missing Ore | Brunna Flintbraid (Hearthpine) | 9 | talk to Orrik Pineledger (copperfell_village) | 35 | hearthpine_hunt_05 |
 
 ## Mobs by spawn region
 

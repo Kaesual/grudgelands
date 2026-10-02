@@ -311,86 +311,309 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "Moonfall's chart table rocks whenever the lookout marks a route. Bring eight oak planks for its frame; the observatory is a shelter for path-watchers, not a new magical instrument. Existing or traded supplies are welcome.",
+   "copper": 32,
+   "description": "I have watched the heavens for years without hearing a star demand an answer; the Briarpack Wolves beneath my window are less considerate. Kill five in the Moonfall Eaves, which lie in the south of Moonfall Wood; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
    "giver": "r20_anchor_035_host",
    "giver_name": "Lethen Moonledger",
    "giver_settlement": "Moonfall Observatory",
-   "id": "r20_anchor_035_01",
+   "id": "moonfall_stars_01",
    "min_level": 21,
    "objectives": [
-    "bring 8 default:wood"
+    "kill 5 briarpack_wolf [in elandor_moonfall_wood/eaves]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:wood",
+     "area": "elandor_moonfall_wood/eaves",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:briarpack_wolf"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Stars Have No Need to Howl",
+   "turnin": "r20_anchor_035_host",
+   "xp": 338
+  },
+  {
+   "copper": 26,
+   "description": "Someone has strung snares between my sighting posts, all stamped with a warden's mark that no honest warden granted. Defeat four Unlicensed Poachers at night in the Moonfall Eaves, which lie in the south of Moonfall Wood. I use those posts to study where things belong; I can state with some certainty that poachers do not.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_01",
+   "min_level": 22,
+   "objectives": [
+    "kill 4 unlicensed_poacher [in elandor_moonfall_wood/eaves]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_moonfall_wood/eaves",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:unlicensed_poacher"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Wrong Kind of Binding",
+   "turnin": "r20_anchor_035_host",
+   "xp": 280
+  },
+  {
+   "copper": 13,
+   "description": "The poachers have pulled down my sighting posts; without them, a hundred nights of careful work become a collection of guesses. Bring me ten planks of any wood here at the Observatory so I can rebuild them. Craft the planks wherever convenient, and let us have something steady beneath the moving sky again.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_02",
+   "min_level": 24,
+   "objectives": [
+    "bring 10 group:wood"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "group": "wood",
      "type": "item"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "moonfall_snares_01"
+   ],
    "reward_items": [],
-   "title": "A Chart Table Repaired",
+   "title": "A Clear View Needs Sound Wood",
    "turnin": "r20_anchor_035_host",
-   "xp": 820
+   "xp": 150
   },
   {
-   "copper": 70,
-   "description": "Wolves prowl Moonfall Wood's forest floor beneath the fallen boughs. Defeat four so the observers can check the lake paths without abandoning their charts.",
+   "copper": 32,
+   "description": "My apprentices can account for the motion of the heavens, but their field notes become rather brief whenever a bear arrives. Kill five Bramble Bears by day in the Moonfall Deepwood, which lies in the northwest of Moonfall Wood, so we can resume our measurements. We have already established that the bears object; no further evidence is needed on that point.",
    "giver": "r20_anchor_035_host",
    "giver_name": "Lethen Moonledger",
    "giver_settlement": "Moonfall Observatory",
-   "id": "r20_anchor_035_02",
-   "min_level": 21,
+   "id": "moonfall_stars_02",
+   "min_level": 24,
    "objectives": [
-    "kill 4 wolf or briarpack_wolf [in elandor_moonfall_wood]"
+    "kill 5 territorial_bear [in elandor_moonfall_wood/deepwood]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "area": "elandor_moonfall_wood/deepwood",
+     "count": 5,
      "mobs": [
-      "grug_mobs:wolf",
-      "grug_mobs:briarpack_wolf"
+      "grug_mobs:territorial_bear"
      ],
-     "type": "kill",
-     "zone": "elandor_moonfall_wood"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Fangs Beneath the Fallen Bough",
-   "turnin": "r20_anchor_035_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "The clear paths expose a second hazard: poachers return to the wood at night. Defeat four in Moonfall Wood before the next dawn survey follows their snare line.",
-   "giver": "r20_anchor_035_host",
-   "giver_name": "Lethen Moonledger",
-   "giver_settlement": "Moonfall Observatory",
-   "id": "r20_anchor_035_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 4 poacher or unlicensed_poacher [in elandor_moonfall_wood]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:poacher",
-      "grug_mobs:unlicensed_poacher"
-     ],
-     "type": "kill",
-     "zone": "elandor_moonfall_wood"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_035_02"
+    "moonfall_stars_01"
    ],
    "reward_items": [],
-   "title": "The Moonlit Snare Line",
+   "title": "A Bear in the Calculation",
    "turnin": "r20_anchor_035_host",
-   "xp": 900
+   "xp": 375
+  },
+  {
+   "copper": 19,
+   "description": "The Wandering Wisps of the Moonfall Deepwood keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_stars_03",
+   "min_level": 25,
+   "objectives": [
+    "bring 1 grug_mobs:bound_wisp_mote"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_mobs:bound_wisp_mote",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_stars_02"
+   ],
+   "reward_items": [],
+   "title": "One Light, Properly Accounted For",
+   "turnin": "r20_anchor_035_host",
+   "xp": 233
+  },
+  {
+   "copper": 26,
+   "description": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Briar-Web Spiders after dark in the Moonfall Deepwood and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_stars_bounty",
+   "min_level": 25,
+   "objectives": [
+    "kill 6 briar_web_spider [in elandor_moonfall_wood/deepwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_moonfall_wood/deepwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:briar_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_stars_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Keep the View Clear (repeatable)",
+   "turnin": "r20_anchor_035_host",
+   "xp": 310
+  },
+  {
+   "copper": 32,
+   "description": "A steady stance is essential to observation, and the Barnacle Pinchers on the Moonfall Moonstrand south from here make it impossible to maintain one. Kill five by day, before I set up for my night's work. Spare the Bank Crabs; they have never tried to dismantle the observer.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_stars_opt_01",
+   "min_level": 25,
+   "objectives": [
+    "kill 5 armored_crab [in elandor_moonfall_wood/moonstrand]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_moonfall_wood/moonstrand",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_stars_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: An Astronomer's Ankles",
+   "turnin": "r20_anchor_035_host",
+   "xp": 388
+  },
+  {
+   "copper": 32,
+   "description": "The marks continue into the Moonfall Elderwood, which lies in the north of Moonfall Wood, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_opt_01",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 territorial_bear [in elandor_moonfall_wood/elderwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_moonfall_wood/elderwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:territorial_bear"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_snares_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: Teeth Along the Trail",
+   "turnin": "r20_anchor_035_host",
+   "xp": 413
+  },
+  {
+   "copper": 51,
+   "description": "Follow enough false marks and you find the hand that makes them: Poacher Snarewarden Bracken. Vetch and Rusk answered to him, and he waits north from here, by day and night. Find and defeat him. A warden should leave the wood alive behind him, not measured out in snares.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_03",
+   "min_level": 28,
+   "objectives": [
+    "kill 1 snarewarden_bracken"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:snarewarden_bracken"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_snares_02"
+   ],
+   "reward_items": [],
+   "title": "A Warden in Name Alone",
+   "turnin": "r20_anchor_035_host",
+   "xp": 680
+  },
+  {
+   "copper": 32,
+   "description": "At night, Briar-Web Spiders stretch their webs through the Moonfall Elderwood, which lies in the north of Moonfall Wood, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_opt_02",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 briar_web_spider [in elandor_moonfall_wood/elderwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_moonfall_wood/elderwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:briar_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_snares_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: Thread Across the Stars",
+   "turnin": "r20_anchor_035_host",
+   "xp": 425
+  },
+  {
+   "copper": 13,
+   "description": "With Bracken gone, the marks in this wood mean nothing again, and my instruments can finally hear themselves think. His trade ran on into the Glassroot Wilds; take what you found to Faeris Rootbinder at Glassroot Gate. The wilds are contested ground, so finish your training before you leave the shelter of the trees.",
+   "giver": "r20_anchor_035_host",
+   "giver_name": "Lethen Moonledger",
+   "giver_settlement": "Moonfall Observatory",
+   "id": "moonfall_snares_04",
+   "min_level": 29,
+   "objectives": [
+    "talk to Faeris Rootbinder (r20_anchor_036)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_036_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "moonfall_snares_03"
+   ],
+   "reward_items": [],
+   "title": "Beyond the Last Snare",
+   "turnin": "r20_anchor_036_host",
+   "xp": 175
   }
  ],
  "race_region": "elf",
@@ -550,9 +773,17 @@
      "npc_id": "r20_anchor_035_host",
      "npc_name": "Lethen Moonledger",
      "quests": [
-      "r20_anchor_035_01",
-      "r20_anchor_035_02",
-      "r20_anchor_035_03"
+      "moonfall_snares_01",
+      "moonfall_snares_02",
+      "moonfall_snares_03",
+      "moonfall_snares_04",
+      "moonfall_snares_opt_01",
+      "moonfall_snares_opt_02",
+      "moonfall_stars_01",
+      "moonfall_stars_02",
+      "moonfall_stars_03",
+      "moonfall_stars_bounty",
+      "moonfall_stars_opt_01"
      ],
      "role": "quest",
      "role_text": "quest giver",

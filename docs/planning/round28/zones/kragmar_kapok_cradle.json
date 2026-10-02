@@ -345,21 +345,21 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 10,
-   "description": "Jungle boars turn up the yam beds outside Kapok by day. Drive off three, and bring spare raw meat to Zemi Sweetroot at the separate oven shelter.",
+   "copper": 6,
+   "description": "A root feeds a troll, a troll tends the roots; the Small Jungle Boars have skipped their half of the bargain. Kill eight by day in the Kapok Yam Beds north of Kapok; their yellow names mean they leave you alone until you strike. Watch the rain offerings while you hunt, too. Yams go missing into bellies, but carved beads have been disappearing as well.",
    "giver": "r14_troll_elder",
    "giver_name": "Zalima Rainhum",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_01_boars_in_the_yam_beds",
+   "id": "kapok_hunt_01",
    "min_level": 1,
    "objectives": [
-    "kill 3 jungle_boar or small_boar"
+    "kill 8 small_boar [in kragmar_kapok_cradle/yam_beds]"
    ],
    "objectives_raw": [
     {
-     "count": 3,
+     "area": "kragmar_kapok_cradle/yam_beds",
+     "count": 8,
      "mobs": [
-      "grug_mobs:jungle_boar",
       "grug_mobs:small_boar"
      ],
      "type": "kill"
@@ -367,94 +367,140 @@
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Boars in the Yam Beds",
+   "title": "A Boar Has No Use for Beads",
    "turnin": "r14_troll_elder",
-   "xp": 20
+   "xp": 105
   },
   {
-   "copper": 10,
-   "description": "The shared oven feeds everyone returning from kapok's outer paths. Bring four raw meat portions to Zemi Sweetroot beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+   "copper": 2,
+   "description": "Hear that quiet pot? That is the sound of no supper. Chop trees outside town and bring me five logs of any kind, not planks; the trees in town stay standing, unless you plan to hold up our shade yourself.",
    "giver": "r20_troll_start_cook",
    "giver_name": "Zemi Sweetroot",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_02_fill_the_evening_pot",
+   "id": "kapok_kitchen_01",
    "min_level": 1,
    "objectives": [
-    "bring 4 mobs:meat_raw"
+    "bring 5 group:tree"
    ],
    "objectives_raw": [
     {
-     "count": 4,
-     "item": "mobs:meat_raw",
+     "count": 5,
+     "group": "tree",
      "type": "item"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Fill the Evening Pot",
+   "title": "The Pot Is Waiting",
    "turnin": "r20_troll_start_cook",
-   "xp": 20
+   "xp": 30
   },
   {
-   "copper": 10,
-   "description": "Bring a wood axe and Zalima will show how to keep the handle dry and the cut clean.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+   "copper": 2,
+   "description": "Before you wrestle the jungle, give your hands something sensible to hold. Craft a Wooden Axe and a Wooden Pickaxe, then bring me one of each to inspect. I will give you a pair back; I teach with my hands, too, and have no use for yours beaten flat against a tree.",
    "giver": "r14_troll_elder",
    "giver_name": "Zalima Rainhum",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_10_a_dry_handled_axe",
+   "id": "kapok_tools_01",
    "min_level": 1,
    "objectives": [
-    "bring 1 grug_materials:axe_wood"
+    "bring 1 grug_materials:axe_wood",
+    "bring 1 grug_materials:pick_wood"
    ],
    "objectives_raw": [
     {
      "count": 1,
      "item": "grug_materials:axe_wood",
      "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Dry-Handled Axe",
-   "turnin": "r14_troll_elder",
-   "xp": 15
-  },
-  {
-   "copper": 10,
-   "description": "Zemi Sweetroot has moved the common pot under Kapok's oven shelter before the rain arrives. Bring three coal lumps for the dry fuel basket. Traded supplies count; mining coal yourself only requires a pickaxe; wood and stone picks work too.",
-   "giver": "r20_troll_start_cook",
-   "giver_name": "Zemi Sweetroot",
-   "giver_settlement": "Kapok",
-   "id": "r20_troll_start_cook",
-   "min_level": 1,
-   "objectives": [
-    "bring 3 default:coal_lump"
-   ],
-   "objectives_raw": [
+    },
     {
-     "count": 3,
-     "item": "default:coal_lump",
+     "count": 1,
+     "item": "grug_materials:pick_wood",
      "type": "item"
     }
    ],
    "prerequisites": [],
-   "reward_items": [],
-   "title": "The Pot Before the Rain",
-   "turnin": "r20_troll_start_cook",
-   "xp": 20
+   "reward_items": [
+    "grug_materials:axe_wood 1",
+    "grug_materials:pick_wood 1"
+   ],
+   "title": "Save Your Knuckles",
+   "turnin": "r14_troll_elder",
+   "xp": 30
   },
   {
-   "copper": 15,
-   "description": "Bring a stone pick for a lesson in reading rock beneath moss and root.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+   "copper": 6,
+   "description": "The boars sleep, the Large Kapok Rats wake, and our yams get no peace at all. Kill eight rats after dark in the Kapok Yam Beds north of Kapok. Pick your fights carefully: one squeak calls nearby rats, and they are a very attentive family.",
    "giver": "r14_troll_elder",
    "giver_name": "Zalima Rainhum",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_11_stone_beneath_the_moss",
+   "id": "kapok_hunt_02",
    "min_level": 2,
    "objectives": [
+    "kill 8 large_rat [in kragmar_kapok_cradle/yam_beds]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_kapok_cradle/yam_beds",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:large_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "kapok_hunt_01"
+   ],
+   "reward_items": [],
+   "title": "One Squeak, Many Cousins",
+   "turnin": "r14_troll_elder",
+   "xp": 105
+  },
+  {
+   "copper": 3,
+   "description": "Rain drums on my roof, hungry trolls drum on my table, and neither will wait for damp wood. Mine five Coal Lumps from the rock outside town and bring them here. When you use the oven, coal goes in the fuel slot and food in the cooking slot; I already have enough complaints without serving fuel.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "kapok_kitchen_02",
+   "min_level": 2,
+   "objectives": [
+    "bring 5 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_kitchen_01"
+   ],
+   "reward_items": [],
+   "title": "Heat Before Hospitality",
+   "turnin": "r20_troll_start_cook",
+   "xp": 60
+  },
+  {
+   "copper": 3,
+   "description": "Moss makes every rock look welcoming; your pick will tell you which ones mean it. Use your Wooden Pickaxe on rock it can break outside town, then craft a Stone Axe and a Stone Pickaxe. Bring me one of each, and I will give you a pair back for the digging ahead.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "kapok_tools_02",
+   "min_level": 2,
+   "objectives": [
+    "bring 1 grug_materials:axe_stone",
     "bring 1 grug_materials:pick_stone"
    ],
    "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_materials:axe_stone",
+     "type": "item"
+    },
     {
      "count": 1,
      "item": "grug_materials:pick_stone",
@@ -462,106 +508,282 @@
     }
    ],
    "prerequisites": [
-    "r14_troll_10_a_dry_handled_axe"
+    "kapok_tools_01"
    ],
-   "reward_items": [],
-   "title": "Stone Beneath the Moss",
+   "reward_items": [
+    "grug_materials:axe_stone 1",
+    "grug_materials:pick_stone 1"
+   ],
+   "title": "A Lesson Under the Moss",
    "turnin": "r14_troll_elder",
-   "xp": 45
+   "xp": 60
   },
   {
-   "copper": 20,
-   "description": "Kapok's dry baskets need a new frame above the wet ground. Bring six junglewood planks for the supports. Ordinary planks from local jungle trunks, existing supplies and traded boards all count.",
+   "copper": 6,
+   "description": "Listen in the Kapok Rootways after dark, in the north of Kapok Cradle: rats scurry, but Braindead Zombies drag their feet. Kill six zombies before they shuffle into somebody's doorway. Sunlight burns them, but I would rather trust your hands than wait for a clear morning.",
    "giver": "r14_troll_elder",
    "giver_name": "Zalima Rainhum",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_03_teeth_in_the_basket_weave",
+   "id": "kapok_hunt_03",
    "min_level": 3,
    "objectives": [
-    "bring 6 default:junglewood"
+    "kill 6 braindead_zombie [in kragmar_kapok_cradle/rootways]"
    ],
    "objectives_raw": [
     {
+     "area": "kragmar_kapok_cradle/rootways",
      "count": 6,
-     "item": "default:junglewood",
+     "mobs": [
+      "grug_mobs:braindead_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "kapok_hunt_02"
+   ],
+   "reward_items": [],
+   "title": "The Roots Remember Feet",
+   "turnin": "r14_troll_elder",
+   "xp": 135
+  },
+  {
+   "copper": 3,
+   "description": "My yam sacks have more holes than sack, thanks to the Large Kapok Rats. Hunt them after dark in the Kapok Yam Beds north of Kapok and bring me two Rat Fur Patches for repairs. Keep any spare patches for armour; tonight those rats are supplying two trades and ruining neither.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "kapok_pantry_01",
+   "min_level": 3,
+   "objectives": [
+    "bring 2 grug_mobs:rat_fur_patch"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:rat_fur_patch",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_troll_01_boars_in_the_yam_beds"
+    "kapok_hunt_02"
    ],
    "reward_items": [],
-   "title": "A Dry Frame for the Baskets",
-   "turnin": "r14_troll_elder",
-   "xp": 100
+   "title": "You Chew It, You Patch It",
+   "turnin": "r20_troll_start_cook",
+   "xp": 60
   },
   {
-   "copper": 25,
-   "description": "Zombies wander the rootways beyond Kapok after nightfall. Defeat three on level-3-and-up ground. The basket repair and optional tool lessons are available without waiting for the night patrol.",
-   "giver": "r14_troll_elder",
-   "giver_name": "Zalima Rainhum",
+   "copper": 3,
+   "description": "You can hunt, but can I leave you alone with supper? Put five pieces of Raw Meat in the oven by my hearth, cook them, and bring me the five Meat. Learn this well and you will always have friends arriving just as the pot is ready.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_04_dead_in_the_rootways",
+   "id": "kapok_kitchen_03",
    "min_level": 4,
    "objectives": [
-    "kill 3 zombie or braindead_zombie or sluggish_zombie"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:zombie",
-      "grug_mobs:braindead_zombie",
-      "grug_mobs:sluggish_zombie"
-     ],
-     "type": "kill"
-    }
-   ],
-   "prerequisites": [
-    "r14_troll_01_boars_in_the_yam_beds"
-   ],
-   "reward_items": [],
-   "title": "Dead in the Rootways",
-   "turnin": "r14_troll_elder",
-   "xp": 140
-  },
-  {
-   "copper": 30,
-   "description": "Vipers shelter beneath the broad leaves beside the homes. Clear the nearest nests. Near the start they hunt by day and by night on level-4-and-up ground.",
-   "giver": "r14_troll_elder",
-   "giver_name": "Zalima Rainhum",
-   "giver_settlement": "Kapok",
-   "id": "r14_troll_05_vipers_under_broad_leaves",
-   "min_level": 5,
-   "objectives": [
-    "kill 5 viper or reed_viper"
+    "bring 5 mobs:meat"
    ],
    "objectives_raw": [
     {
      "count": 5,
+     "item": "mobs:meat",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_kitchen_02",
+    "kapok_hunt_01"
+   ],
+   "reward_items": [],
+   "title": "A Hunter Worth Inviting",
+   "turnin": "r20_troll_start_cook",
+   "xp": 75
+  },
+  {
+   "copper": 4,
+   "description": "A feast needs Crab Legs, and I refuse to count the guests' legs as a substitute. Bring me two from the Small Crabs in the Kapok Shallows north from here. They leave you be until you strike, so choose your crab before you start waving your hands.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "kapok_pantry_02",
+   "min_level": 4,
+   "objectives": [
+    "bring 2 grug_mobs:crab_leg"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:crab_leg",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_pantry_01"
+   ],
+   "reward_items": [],
+   "title": "Guests with Pincers",
+   "turnin": "r20_troll_start_cook",
+   "xp": 90
+  },
+  {
+   "copper": 4,
+   "description": "One loose knot and my drying racks will serve supper to the mud. Bring me two Fine Sinews from the Young Tapirs grazing by day in the west of Kapok Cradle, in the Kapok Broadleaf Wood. The tapirs wait for you to start trouble; the Aggressive Jungle Lynxes sharing their ground do not.",
+   "giver": "r20_troll_start_cook",
+   "giver_name": "Zemi Sweetroot",
+   "giver_settlement": "Kapok",
+   "id": "kapok_pantry_03",
+   "min_level": 5,
+   "objectives": [
+    "bring 2 grug_mobs:fine_sinew"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:fine_sinew",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_pantry_02"
+   ],
+   "reward_items": [],
+   "title": "Supper Above the Mud",
+   "turnin": "r20_troll_start_cook",
+   "xp": 110
+  },
+  {
+   "copper": 3,
+   "description": "You have learned to read roots; now read the rock beneath them. Mine copper and tin outside town, smelt the lumps in a furnace, and bring me three Copper Bars and three Tin Bars. One lump makes one bar, which is the sort of honest accounting I wish we had at feasts.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "kapok_tools_03",
+   "min_level": 5,
+   "objectives": [
+    "bring 3 grug_materials:copper_bar",
+    "bring 3 grug_materials:tin_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_materials:copper_bar",
+     "type": "item"
+    },
+    {
+     "count": 3,
+     "item": "grug_materials:tin_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_tools_02"
+   ],
+   "reward_items": [],
+   "title": "What the Fire Leaves",
+   "turnin": "r14_troll_elder",
+   "xp": 83
+  },
+  {
+   "copper": 7,
+   "description": "The Kapok Thornwood, in the southeast of Kapok Cradle, teaches a harsher lesson than the yam beds. Kill eight Aggressive Jungle Boars there by day; a red name means they will start the fight without asking. Take them one at a time, and watch for Monstrous Vipers among the vines. Wisdom is mostly noticing the second set of teeth.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "kapok_hunt_04",
+   "min_level": 7,
+   "objectives": [
+    "kill 8 aggressive_boar [in kragmar_kapok_cradle/thornwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_kapok_cradle/thornwood",
+     "count": 8,
      "mobs": [
-      "grug_mobs:viper",
-      "grug_mobs:reed_viper"
+      "grug_mobs:aggressive_boar"
      ],
      "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_troll_03_teeth_in_the_basket_weave"
+    "kapok_hunt_03"
    ],
    "reward_items": [],
-   "title": "Vipers Under Broad Leaves",
+   "title": "Read the Tusks",
    "turnin": "r14_troll_elder",
-   "xp": 180
+   "xp": 245
   },
   {
-   "copper": 40,
-   "description": "At level 10, follow the route to Raincall Village and speak with Daro Kapok. Raincall Basin is level 11\u201320 country; prepare your equipment and avoid wandering into its hunters. Complete this handoff with Daro, with no fighting errand or return trip.",
+   "copper": 4,
+   "description": "Copper and tin must share a dual furnace for this lesson. Smelt them together and bring me three Bronze Bars. Think of it as a song with two voices, only neither voice can wander off halfway through.",
    "giver": "r14_troll_elder",
    "giver_name": "Zalima Rainhum",
    "giver_settlement": "Kapok",
-   "id": "r14_troll_06_claws_on_raincall_road",
-   "min_level": 10,
+   "id": "kapok_tools_04",
+   "min_level": 7,
+   "objectives": [
+    "bring 3 grug_materials:bronze_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_materials:bronze_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "kapok_tools_03"
+   ],
+   "reward_items": [],
+   "title": "Two Voices in the Fire",
+   "turnin": "r14_troll_elder",
+   "xp": 130
+  },
+  {
+   "copper": 9,
+   "description": "Our rain beads have become lucky charms for sale at the Kapok Thieves' Camp southeast from here. Kill six Confused Offering Thieves there and their leader, Confused Offering Thief Chief Tangle, at the camp's centre. More thieves will come to fill the gaps, so do not wait for an empty camp before you face Tangle. Let us see how much luck a stolen bead can buy.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "kapok_hunt_05",
+   "min_level": 8,
+   "objectives": [
+    "kill 6 confused_bandit [in kragmar_kapok_cradle/thieves_camp]",
+    "kill 1 offering_thief_chief"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_kapok_cradle/thieves_camp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:confused_bandit"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:offering_thief_chief"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "kapok_hunt_04"
+   ],
+   "reward_items": [],
+   "title": "Luck Stolen Twice",
+   "turnin": "r14_troll_elder",
+   "xp": 315
+  },
+  {
+   "copper": 2,
+   "description": "The kapok keeps its roots here; you need not do the same. Follow the road to Raincall Village in Raincall Basin and speak with Daro Kapok, who can always find work for willing hands. Tell him Zalima sent you, and that I expect those hands back with all their fingers.",
+   "giver": "r14_troll_elder",
+   "giver_name": "Zalima Rainhum",
+   "giver_settlement": "Kapok",
+   "id": "kapok_departure",
+   "min_level": 9,
    "objectives": [
     "talk to Daro Kapok (raincall_village)"
    ],
@@ -573,36 +795,12 @@
     }
    ],
    "prerequisites": [
-    "r14_troll_05_vipers_under_broad_leaves"
+    "kapok_hunt_05"
    ],
    "reward_items": [],
-   "title": "The Road to Daro Kapok",
+   "title": "Roots Hold, Feet Travel",
    "turnin": "r14_troll_steward",
-   "xp": 285
-  },
-  {
-   "copper": 40,
-   "description": "Kezamba's shrine receives travellers looking for trainers, repairs and the city's public workspaces. At level 10, follow the road to Nalo Pathdrum there. The country around the city is level 20\u201330; leave its wildlife alone on the journey. Speak with Nalo and complete the introduction at the shrine.",
-   "giver": "r14_troll_elder",
-   "giver_name": "Zalima Rainhum",
-   "giver_settlement": "Kapok",
-   "id": "r20_troll_capital_intro",
-   "min_level": 10,
-   "objectives": [
-    "talk to Nalo Pathdrum (kezamba)"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "npc": "r20_troll_capital_envoy",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Road to Kezamba",
-   "turnin": "r20_troll_capital_envoy",
-   "xp": 285
+   "xp": 70
   }
  ],
  "race_region": "troll",
@@ -834,14 +1032,16 @@
      "npc_id": "r14_troll_elder",
      "npc_name": "Zalima Rainhum",
      "quests": [
-      "r14_troll_01_boars_in_the_yam_beds",
-      "r14_troll_03_teeth_in_the_basket_weave",
-      "r14_troll_04_dead_in_the_rootways",
-      "r14_troll_05_vipers_under_broad_leaves",
-      "r14_troll_06_claws_on_raincall_road",
-      "r14_troll_10_a_dry_handled_axe",
-      "r14_troll_11_stone_beneath_the_moss",
-      "r20_troll_capital_intro"
+      "kapok_departure",
+      "kapok_hunt_01",
+      "kapok_hunt_02",
+      "kapok_hunt_03",
+      "kapok_hunt_04",
+      "kapok_hunt_05",
+      "kapok_tools_01",
+      "kapok_tools_02",
+      "kapok_tools_03",
+      "kapok_tools_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -850,6 +1050,14 @@
      "x": 1803,
      "y": 8,
      "z": 2567
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": 1788,
+     "y": 8,
+     "z": 2555
     },
     {
      "profession": "cooking",
@@ -864,8 +1072,12 @@
      "npc_id": "r20_troll_start_cook",
      "npc_name": "Zemi Sweetroot",
      "quests": [
-      "r14_troll_02_fill_the_evening_pot",
-      "r20_troll_start_cook"
+      "kapok_kitchen_01",
+      "kapok_kitchen_02",
+      "kapok_kitchen_03",
+      "kapok_pantry_01",
+      "kapok_pantry_02",
+      "kapok_pantry_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -894,6 +1106,7 @@
     "quest": 2,
     "trainer": 1,
     "vendor": 1,
+    "waypoint": 1,
     "work": 2
    }
   }

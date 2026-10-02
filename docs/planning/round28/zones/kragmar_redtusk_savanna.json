@@ -435,255 +435,432 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 50,
-   "description": "Hyenas circle the village herd. Thin the pack before it learns the fences.",
+   "copper": 21,
+   "description": "Bring down eight Waterhole Zebras by day in the Redtusk Grasslands, in the north of Redtusk Savanna. Redtusk fills bellies and hide racks from the same hunt; waste any of it and the tanners will tan you instead.",
    "giver": "r14_orc_steward",
    "giver_name": "Borak Redgrass",
    "giver_settlement": "Redtusk Village",
-   "id": "r14_orc_07_teeth_around_the_herd",
+   "id": "redtusk_herd_01",
+   "min_level": 9,
+   "objectives": [
+    "kill 8 watchful_zebra [in kragmar_redtusk_savanna/grasslands]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_redtusk_savanna/grasslands",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:watchful_zebra"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "sunscar_departure"
+   ],
+   "reward_items": [],
+   "title": "Waste Nothing With Stripes",
+   "turnin": "r14_orc_steward",
+   "xp": 320
+  },
+  {
+   "copper": 16,
+   "description": "The bowyers have a rack of unstrung bows and a fine collection of excuses. Bring me three Tough Sinew from the Waterhole Zebras that graze the Redtusk Grasslands by day. Then we can all listen to something besides complaining.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_hides_01",
    "min_level": 10,
    "objectives": [
-    "kill 6 hyena or dustpack_hyena [in kragmar_redtusk_savanna]"
+    "bring 3 grug_mobs:tough_sinew"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:tough_sinew",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Give the Bows Their Voices",
+   "turnin": "r15_orc_local",
+   "xp": 255
+  },
+  {
+   "copper": 21,
+   "description": "A herder watching the herd should not have to watch both boots as well. Kill eight Dust-Stinger Scorpions in the Redtusk Grasslands after dark. I want our people coming home on their own feet.",
+   "giver": "r14_orc_steward",
+   "giver_name": "Borak Redgrass",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_herd_02",
+   "min_level": 11,
+   "objectives": [
+    "kill 8 dust_stinger [in kragmar_redtusk_savanna/grasslands]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_redtusk_savanna/grasslands",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:dust_stinger"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_herd_01"
+   ],
+   "reward_items": [],
+   "title": "Bring the Herders Home",
+   "turnin": "r14_orc_steward",
+   "xp": 340
+  },
+  {
+   "copper": 16,
+   "description": "The hunters want three Bitter Venom for their spears, and I have promised to keep the cooks well away from it. Gather it from Dust-Stinger Scorpions in the Redtusk Grasslands at night and bring it straight to me. Straight to me, even if somebody offers you a clean bowl.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_hides_02",
+   "min_level": 12,
+   "objectives": [
+    "bring 3 grug_mobs:bitter_venom"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:bitter_venom",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_hides_01",
+    "redtusk_herd_02"
+   ],
+   "reward_items": [],
+   "title": "Keep It Out of the Stew",
+   "turnin": "r15_orc_local",
+   "xp": 270
+  },
+  {
+   "copper": 23,
+   "description": "I tied a pen shut last night and found the knot this morning, with precious little rope attached. Hunt the Dust Gnawers in the Redtusk Tallgrass, in the southwest of Redtusk Savanna, and kill eight after dark. Give them something worse than rope to bite.",
+   "giver": "r14_orc_steward",
+   "giver_name": "Borak Redgrass",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_herd_03",
+   "min_level": 13,
+   "objectives": [
+    "kill 8 mangy_rat [in kragmar_redtusk_savanna/tallgrass]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_redtusk_savanna/tallgrass",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:mangy_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_herd_02"
+   ],
+   "reward_items": [],
+   "title": "All Knot, No Rope",
+   "turnin": "r14_orc_steward",
+   "xp": 450
+  },
+  {
+   "copper": 18,
+   "description": "Our pen gate groans louder than the beasts behind it, and I know which one will give way first. Bring me six Iron Bars and four Coal Lumps so the smith can mend the hinges. I have spent enough mornings chasing our supper through the dust.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_stores_01",
+   "min_level": 13,
+   "objectives": [
+    "bring 6 grug_materials:iron_bar",
+    "bring 4 default:coal_lump"
    ],
    "objectives_raw": [
     {
      "count": 6,
-     "mobs": [
-      "grug_mobs:hyena",
-      "grug_mobs:dustpack_hyena"
-     ],
-     "type": "kill",
-     "zone": "kragmar_redtusk_savanna"
+     "item": "grug_materials:iron_bar",
+     "type": "item"
+    },
+    {
+     "count": 4,
+     "item": "default:coal_lump",
+     "type": "item"
     }
    ],
-   "prerequisites": [
-    "r14_orc_06_husks_on_redtusk_road"
-   ],
+   "prerequisites": [],
    "reward_items": [],
-   "title": "Teeth Around the Herd",
-   "turnin": "r14_orc_steward",
-   "xp": 380
+   "title": "A Gate Worth Shutting",
+   "turnin": "r15_orc_local",
+   "xp": 333
   },
   {
-   "copper": 40,
-   "description": "The broad house's low annex needs fresh ties for its hide screens. Bring ordinary leather from the local hunt.",
-   "giver": "r15_orc_local",
-   "giver_name": "Morga Clayhand",
+   "copper": 5,
+   "description": "Kesh Longstride has worn enough trail into those boots to know when trouble is moving. Go to Redtusk Outpost and speak to Kesh about what lies beyond the tallgrass. Listen closely; a scout should never have to tell you twice.",
+   "giver": "r14_orc_steward",
+   "giver_name": "Borak Redgrass",
    "giver_settlement": "Redtusk Village",
-   "id": "r15_orc_local_01",
-   "min_level": 10,
+   "id": "redtusk_herd_04",
+   "min_level": 14,
    "objectives": [
-    "bring 2 mobs:leather"
+    "talk to Kesh Longstride (redtusk_outpost)"
    ],
    "objectives_raw": [
     {
-     "count": 2,
+     "count": 1,
+     "npc": "r14_orc_scout",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_herd_03"
+   ],
+   "reward_items": [],
+   "title": "Trust the Worn Boots",
+   "turnin": "r14_orc_scout",
+   "xp": 100
+  },
+  {
+   "copper": 16,
+   "description": "The dry season is coming, and the tanners cannot work on empty bellies or empty racks. Bring eight pieces of Raw Meat and three Leather; hunt Waterhole Zebras in the Redtusk Tallgrass by day for the leather. Our hunters will thank us when their boots hold together.",
+   "giver": "r15_orc_local",
+   "giver_name": "Morga Clayhand",
+   "giver_settlement": "Redtusk Village",
+   "id": "redtusk_stores_02",
+   "min_level": 15,
+   "objectives": [
+    "bring 8 mobs:meat_raw",
+    "bring 3 mobs:leather"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    },
+    {
+     "count": 3,
      "item": "mobs:leather",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_orc_06_husks_on_redtusk_road"
+    "redtusk_stores_01"
    ],
    "reward_items": [],
-   "title": "Hide for the Low Annex",
+   "title": "Feed the Hands That Tan",
    "turnin": "r15_orc_local",
-   "xp": 285
-  },
-  {
-   "copper": 45,
-   "description": "Bring two ordinary fangs from the hyenas circling Redtusk's herd. Morga will hang them beside the repaired hide screens while Borak's herd patrol is under way.",
-   "giver": "r15_orc_local",
-   "giver_name": "Morga Clayhand",
-   "giver_settlement": "Redtusk Village",
-   "id": "r15_orc_local_02",
-   "min_level": 10,
-   "objectives": [
-    "bring 2 grug_mobs:fang"
-   ],
-   "objectives_raw": [
-    {
-     "count": 2,
-     "item": "grug_mobs:fang",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_orc_06_husks_on_redtusk_road"
-   ],
-   "reward_items": [],
-   "title": "Fangs Beyond the Annex",
-   "turnin": "r15_orc_local",
-   "xp": 380
-  },
-  {
-   "copper": 60,
-   "description": "Scorpions fill the dry wash below the outpost. Clear Kesh's patrol route. Look for this threat after nightfall in the named regional zone.",
-   "giver": "r14_orc_scout",
-   "giver_name": "Kesh Longstride",
-   "giver_settlement": "Redtusk Outpost",
-   "id": "r14_orc_08_scour_the_dry_wash",
-   "min_level": 11,
-   "objectives": [
-    "kill 6 scorpion or dust_stinger [in kragmar_redtusk_savanna]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 6,
-     "mobs": [
-      "grug_mobs:scorpion",
-      "grug_mobs:dust_stinger"
-     ],
-     "type": "kill",
-     "zone": "kragmar_redtusk_savanna"
-    }
-   ],
-   "prerequisites": [
-    "r14_orc_07_teeth_around_the_herd"
-   ],
-   "reward_items": [],
-   "title": "Scour the Dry Wash",
-   "turnin": "r14_orc_scout",
-   "xp": 525
-  },
-  {
-   "copper": 50,
-   "description": "Hyenas wait below the timber lookout and scatter anyone carrying stores uphill. Clear the post's approach.",
-   "giver": "r14_orc_scout",
-   "giver_name": "Kesh Longstride",
-   "giver_settlement": "Redtusk Outpost",
-   "id": "r15_orc_local_03",
-   "min_level": 11,
-   "objectives": [
-    "kill 4 hyena or dustpack_hyena [in kragmar_redtusk_savanna]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:hyena",
-      "grug_mobs:dustpack_hyena"
-     ],
-     "type": "kill",
-     "zone": "kragmar_redtusk_savanna"
-    }
-   ],
-   "prerequisites": [
-    "r14_orc_07_teeth_around_the_herd"
-   ],
-   "reward_items": [],
-   "title": "Howls Below the Lookout",
-   "turnin": "r14_orc_scout",
    "xp": 315
   },
   {
-   "copper": 55,
-   "description": "The scorpions in Redtusk's dry wash emerge after sunset. Bring two ordinary venom sacs from that same outing so Kesh can show the guards what to avoid along the angled palisade.",
+   "copper": 23,
+   "description": "I can read a trail, but these Ridgeback Tuskers keep ploughing tusk marks through it. Kill eight by daylight in the Redtusk Borderveld, in the east of Redtusk Savanna. Get them before a caravan finds out how little a loaded cart helps against a charge.",
    "giver": "r14_orc_scout",
    "giver_name": "Kesh Longstride",
    "giver_settlement": "Redtusk Outpost",
-   "id": "r15_orc_local_04",
-   "min_level": 11,
+   "id": "redtusk_watch_01",
+   "min_level": 16,
    "objectives": [
-    "bring 2 grug_mobs:venom_sac"
+    "kill 8 bristling_boar [in kragmar_redtusk_savanna/borderveld]"
    ],
    "objectives_raw": [
     {
-     "count": 2,
-     "item": "grug_mobs:venom_sac",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_orc_07_teeth_around_the_herd"
-   ],
-   "reward_items": [],
-   "title": "Venom Beside the Palisade",
-   "turnin": "r14_orc_scout",
-   "xp": 420
-  },
-  {
-   "copper": 80,
-   "description": "The bandits branded supplies with a hooked sun no orcish forge made. Defeat them and hear Rokka's account. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
-   "giver": "r14_orc_scout",
-   "giver_name": "Kesh Longstride",
-   "giver_settlement": "Redtusk Outpost",
-   "id": "r14_orc_09_no_forge_made_this_brand",
-   "min_level": 12,
-   "objectives": [
-    "kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_redtusk_savanna]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
+     "area": "kragmar_redtusk_savanna/borderveld",
+     "count": 8,
      "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:bandit_archer",
-      "grug_mobs:quarrelsome_bandit"
+      "grug_mobs:bristling_boar"
      ],
-     "type": "kill",
-     "zone": "kragmar_redtusk_savanna"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_orc_08_scour_the_dry_wash"
+    "redtusk_herd_04"
    ],
    "reward_items": [],
-   "title": "No Forge Made This Brand",
-   "turnin": "r14_orc_captive",
-   "xp": 805
+   "title": "Tusks Across the Trail",
+   "turnin": "r14_orc_scout",
+   "xp": 495
   },
   {
-   "copper": 65,
-   "description": "The bandits kept the carriers' pay in stolen purses instead of adding it to the food stores. Recover two for the captive so the raided herd crews can reclaim their share. Accept this request before the camp fight; ordinary carried or traded purses also count.",
-   "giver": "r14_orc_captive",
-   "giver_name": "Rokka Emberhand",
-   "giver_settlement": "Redtusk Bandit Camp",
-   "id": "r15_orc_local_05",
-   "min_level": 12,
+   "copper": 21,
+   "description": "Those Pauper Mummies tramp through the Redtusk Borderveld, east of Redtusk Outpost, every night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "redtusk_watch_02",
+   "min_level": 17,
    "objectives": [
-    "bring 2 grug_mobs:stolen_purse"
+    "kill 6 parched_husk [in kragmar_redtusk_savanna/borderveld]"
    ],
    "objectives_raw": [
     {
-     "count": 2,
-     "item": "grug_mobs:stolen_purse",
-     "type": "item"
+     "area": "kragmar_redtusk_savanna/borderveld",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:parched_husk"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_orc_08_scour_the_dry_wash"
+    "redtusk_watch_01"
    ],
    "reward_items": [],
-   "title": "The Carriers' Cut",
-   "turnin": "r14_orc_captive",
+   "title": "Footprints That Never Rest",
+   "turnin": "r14_orc_scout",
    "xp": 460
   },
   {
-   "copper": 75,
-   "description": "The stolen freight is tied with the raiders' linen cloth. Bring enough of it for Rokka to compare the knots and brands.",
-   "giver": "r14_orc_captive",
-   "giver_name": "Rokka Emberhand",
-   "giver_settlement": "Redtusk Bandit Camp",
-   "id": "r15_orc_local_06",
-   "min_level": 12,
+   "copper": 5,
+   "description": "The bandits have Rokka Emberhand captive, and Rokka has been counting every stolen barrel that rolls past. Find Rokka in the Redtusk Bandit Camp, southeast from here, and hear what those thieves would rather keep quiet. They should have put a sack over the barrels.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "redtusk_watch_03",
+   "min_level": 17,
    "objectives": [
-    "bring 5 grug_mobs:linen_cloth"
+    "talk to Rokka Emberhand (redtusk_bandit_camp)"
    ],
    "objectives_raw": [
     {
-     "count": 5,
-     "item": "grug_mobs:linen_cloth",
+     "count": 1,
+     "npc": "r14_orc_captive",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_watch_02"
+   ],
+   "reward_items": [],
+   "title": "Rokka Is Still Counting",
+   "turnin": "r14_orc_captive",
+   "xp": 115
+  },
+  {
+   "copper": 13,
+   "description": "Dust Gnawers keep chewing their way through our night supplies on the Redtusk Borderveld. Kill six after dark and report back for your pay. The bounty is available again twenty minutes after you collect; I expect we will still have rats.",
+   "giver": "r14_orc_scout",
+   "giver_name": "Kesh Longstride",
+   "giver_settlement": "Redtusk Outpost",
+   "id": "redtusk_bounty",
+   "min_level": 18,
+   "objectives": [
+    "kill 6 mangy_rat [in kragmar_redtusk_savanna/borderveld]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_redtusk_savanna/borderveld",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:mangy_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_watch_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Teeth in the Dark (repeatable)",
+   "turnin": "r14_orc_scout",
+   "xp": 300
+  },
+  {
+   "copper": 26,
+   "description": "Keep your voice down. The Bandit Lookouts in the Redtusk Bandit Camp think I have nothing left to say. Kill eight of them, then come back. I have plenty to say about their master.",
+   "giver": "r14_orc_captive",
+   "giver_name": "Rokka Emberhand",
+   "giver_settlement": "Redtusk Bandit Camp",
+   "id": "redtusk_ransom_01",
+   "min_level": 18,
+   "objectives": [
+    "kill 8 vigilant_bandit_archer [in kragmar_redtusk_savanna/bandit_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_redtusk_savanna/bandit_camp",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:vigilant_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_watch_03"
+   ],
+   "reward_items": [],
+   "title": "Eight Fewer Witnesses",
+   "turnin": "r14_orc_captive",
+   "xp": 600
+  },
+  {
+   "copper": 8,
+   "description": "Korr's tallies name buyers in Gor Drazhak; the rot reaches all the way to our capital's tables. Go to the Skull Hall there and tell Thorga Roadspeaker what we found. I counted barrels from captivity; those buyers can start counting their excuses.",
+   "giver": "r14_orc_captive",
+   "giver_name": "Rokka Emberhand",
+   "giver_settlement": "Redtusk Bandit Camp",
+   "id": "redtusk_departure",
+   "min_level": 19,
+   "objectives": [
+    "talk to Thorga Roadspeaker (gor_drazhak)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_orc_capital_envoy",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "redtusk_ransom_02"
+   ],
+   "reward_items": [],
+   "title": "Follow the Stolen Water",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 180
+  },
+  {
+   "copper": 31,
+   "description": "Bandit Water-Broker Korr stands nearby, putting a price on water he stole from our wells. Kill him, and bring me two Knotted Talismans from the Bandit Lookouts in the Redtusk Bandit Camp as proof for the clan. I have listened to him count his profits long enough.",
+   "giver": "r14_orc_captive",
+   "giver_name": "Rokka Emberhand",
+   "giver_settlement": "Redtusk Bandit Camp",
+   "id": "redtusk_ransom_02",
+   "min_level": 19,
+   "objectives": [
+    "kill 1 water_broker_korr",
+    "bring 2 grug_mobs:knotted_talisman"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:water_broker_korr"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:knotted_talisman",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_orc_08_scour_the_dry_wash"
+    "redtusk_ransom_01"
    ],
    "reward_items": [],
-   "title": "Bindings from the Loaded Sled",
+   "title": "No Coin for Our Own Water",
    "turnin": "r14_orc_captive",
-   "xp": 575
+   "xp": 720
   }
  ],
  "race_region": "orc",
@@ -974,7 +1151,10 @@
      "npc_id": "r14_orc_steward",
      "npc_name": "Borak Redgrass",
      "quests": [
-      "r14_orc_07_teeth_around_the_herd"
+      "redtusk_herd_01",
+      "redtusk_herd_02",
+      "redtusk_herd_03",
+      "redtusk_herd_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -987,8 +1167,10 @@
      "npc_id": "r15_orc_local",
      "npc_name": "Morga Clayhand",
      "quests": [
-      "r15_orc_local_01",
-      "r15_orc_local_02"
+      "redtusk_hides_01",
+      "redtusk_hides_02",
+      "redtusk_stores_01",
+      "redtusk_stores_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1103,10 +1285,10 @@
      "npc_id": "r14_orc_scout",
      "npc_name": "Kesh Longstride",
      "quests": [
-      "r14_orc_08_scour_the_dry_wash",
-      "r14_orc_09_no_forge_made_this_brand",
-      "r15_orc_local_03",
-      "r15_orc_local_04"
+      "redtusk_bounty",
+      "redtusk_watch_01",
+      "redtusk_watch_02",
+      "redtusk_watch_03"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1220,8 +1402,9 @@
      "npc_id": "r14_orc_captive",
      "npc_name": "Rokka Emberhand",
      "quests": [
-      "r15_orc_local_05",
-      "r15_orc_local_06"
+      "redtusk_departure",
+      "redtusk_ransom_01",
+      "redtusk_ransom_02"
      ],
      "role": "quest",
      "role_text": "quest giver",

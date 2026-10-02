@@ -62,8 +62,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Ilyra Mossveil | 1902, 130, -2020 | r14_elf_07_quiet_the_lower_boughs |
-| quest_local | quest giver | Lethri Reedshade | 1898, 130, -2022 | r15_elf_local_01, r15_elf_local_02 |
+| quest_steward | quest giver | Ilyra Mossveil | 1902, 130, -2020 | starbough_boughs_01, starbough_boughs_02, starbough_boughs_03, starbough_boughs_04 |
+| quest_local | quest giver | Lethri Reedshade | 1898, 130, -2022 | starbough_stores_01, starbough_stores_02, starbough_stores_03, starbough_stores_bounty |
 
 Distances: zone edge N 84 (elandor_lethariel), S 272 (elandor_silverleaf_glades), E 312 (elandor_lethariel), W 532 (coastal_shelf); nearest other-zone land 84 N; sea 528 W; sea-beach sand 485 W; nearest road 21.
 Nearest hubs (straight / by road): Starbough Bandit Camp 272 / 467; Starbough Outpost 215 / 583; Silverleaf 539 / 696; Lethariel 530 / 812; Paleroot Cutting 1161 / 1699.
@@ -74,7 +74,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Theren Farstep | 2103, 99, -2103 | r14_elf_08_watch_the_green_road, r14_elf_09_cinders_in_green_cloth, r15_elf_local_03, r15_elf_local_04 |
+| quest_scout | quest giver | Theren Farstep | 2103, 99, -2103 | starbough_watch_01, starbough_watch_02, starbough_watch_03, starbough_watch_04, starbough_watch_bounty |
 
 Distances: zone edge N 180 (elandor_lethariel), S 252 (elandor_silverleaf_glades), E 156 (elandor_moonfall_wood), W 860 (bay_water); nearest other-zone land 131 NE; sea 459 E; sea-beach sand 437 E; nearest road 14.
 Nearest hubs (straight / by road): Starbough Village 215 / 583; Silverleaf 541 / 774; Starbough Bandit Camp 469 / 831; Lethariel 671 / 1176; Paleroot Cutting 1366 / 2063.
@@ -85,24 +85,33 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Nima Fern | 1642, 104, -2056 | r15_elf_local_05, r15_elf_local_06 |
+| quest_captive | quest giver | Nima Fern | 1642, 104, -2056 | starbough_departure, starbough_testimony_01, starbough_testimony_02, starbough_testimony_03, starbough_testimony_bounty |
 
 Distances: zone edge N 232 (elandor_lethariel), S 252 (elandor_silverleaf_glades), E 612 (elandor_moonfall_wood), W 284 (coastal_shelf); nearest other-zone land 204 NE; sea 261 W; sea-beach sand 217 W; nearest road 17.
 Nearest hubs (straight / by road): Starbough Village 272 / 467; Starbough Outpost 469 / 831; Lethariel 590 / 889; Silverleaf 512 / 944; Paleroot Cutting 1012 / 1775.
 
-### Current quests (9, given in this zone)
+### Current quests (18, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_elf_07_quiet_the_lower_boughs | Quiet the Lower Boughs | Ilyra Mossveil (Starbough Village) | 10 | kill 6 poacher or snaring_poacher [in elandor_starbough_vale] | 380 | r14_elf_06_axes_without_leave |
-| r15_elf_local_01 | Leather for the Covered Walk | Lethri Reedshade (Starbough Village) | 10 | bring 2 mobs:leather | 285 | r14_elf_06_axes_without_leave |
-| r15_elf_local_02 | Linen at the Sapling Cuts | Lethri Reedshade (Starbough Village) | 10 | bring 3 grug_mobs:linen_cloth | 380 | r14_elf_06_axes_without_leave |
-| r14_elf_08_watch_the_green_road | Watch the Green Road | Theren Farstep (Starbough Outpost) | 11 | kill 6 fox or young_fox [in elandor_starbough_vale] | 525 | r14_elf_07_quiet_the_lower_boughs |
-| r15_elf_local_03 | No Shadow on the Sightline | Theren Farstep (Starbough Outpost) | 11 | kill 4 poacher or snaring_poacher [in elandor_starbough_vale] | 315 | r14_elf_07_quiet_the_lower_boughs |
-| r15_elf_local_04 | Fangs Beside the Trail Signs | Theren Farstep (Starbough Outpost) | 11 | bring 2 grug_mobs:fang | 420 | r14_elf_07_quiet_the_lower_boughs |
-| r14_elf_09_cinders_in_green_cloth | Cinders in Green Cloth | Theren Farstep (Starbough Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_starbough_vale] | 805 | r14_elf_08_watch_the_green_road |
-| r15_elf_local_05 | Knots from the Bough Road | Nima Fern (Starbough Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_elf_08_watch_the_green_road |
-| r15_elf_local_06 | Bindings from the Worksite | Nima Fern (Starbough Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_elf_08_watch_the_green_road |
+| starbough_boughs_01 | Hunger Beneath the Boughs | Ilyra Mossveil (Starbough Village) | 10 | kill 8 young_fox [in elandor_starbough_vale/lower_boughs] | 280 | silverleaf_departure |
+| starbough_stores_01 | Marks Worth Renewing | Lethri Reedshade (Starbough Village) | 10 | bring 2 grug_mobs:brush_fox_tail | 160 | silverleaf_departure |
+| starbough_boughs_02 | Winter Has Enough Mouths | Ilyra Mossveil (Starbough Village) | 11 | kill 8 granary_rat [in elandor_starbough_vale/lower_boughs] | 298 | starbough_boughs_01 |
+| starbough_boughs_03 | One Knot, Many Hands | Ilyra Mossveil (Starbough Village) | 12 | kill 5 snaring_poacher [in elandor_starbough_vale/lower_boughs] | 315 | starbough_boughs_02 |
+| starbough_stores_02 | Trust the Branch, Check the Brace | Lethri Reedshade (Starbough Village) | 12 | bring 6 grug_materials:iron_bar; bring 4 default:coal_lump | 270 | starbough_stores_01 |
+| starbough_boughs_04 | A Scout's Eye for Knots | Ilyra Mossveil (Starbough Village) | 13 | talk to Theren Farstep (starbough_outpost) | 95 | starbough_boughs_03 |
+| starbough_watch_01 | When the Underbrush Answers | Theren Farstep (Starbough Outpost) | 14 | kill 7 rabid_fox [in elandor_starbough_vale/greenwood] | 400 | starbough_boughs_04 |
+| starbough_watch_02 | Unhelpful Allies | Theren Farstep (Starbough Outpost) | 14 | kill 7 mangy_rat [in elandor_starbough_vale/greenwood] | 400 | starbough_boughs_04 |
+| starbough_stores_03 | A Ribbon Means We Remember | Lethri Reedshade (Starbough Village) | 15 | bring 3 grug_mobs:linen_cloth | 263 | starbough_stores_02 |
+| starbough_watch_03 | Where the Wires Lead | Theren Farstep (Starbough Outpost) | 15 | kill 8 quarrelsome_bandit [in elandor_starbough_vale/bandit_camp] | 420 | starbough_watch_01, starbough_watch_02 |
+| starbough_watch_bounty | Bounty: Room for a Patrol (repeatable) | Theren Farstep (Starbough Outpost) | 15 | kill 6 rabid_fox [in elandor_starbough_vale/greenwood] | 210 | starbough_watch_04 |
+| starbough_testimony_01 | An Audience We Can Spare | Nima Fern (Starbough Bandit Camp) | 16 | kill 4 vigilant_bandit_archer [in elandor_starbough_vale/bandit_camp] | 330 | starbough_watch_04 |
+| starbough_testimony_bounty | Bounty: Unwelcome Successors (repeatable) | Nima Fern (Starbough Bandit Camp) | 16 | kill 6 quarrelsome_bandit [in elandor_starbough_vale/bandit_camp] | 210 | starbough_testimony_01 |
+| starbough_watch_04 | What Nima Remembered | Theren Farstep (Starbough Outpost) | 16 | talk to Nima Fern (starbough_bandit_camp) | 105 | starbough_watch_03 |
+| starbough_testimony_02 | Bristles Before Vetch | Nima Fern (Starbough Bandit Camp) | 17 | kill 8 bristling_boar [in elandor_starbough_vale/high_boughs] | 460 | starbough_testimony_01 |
+| starbough_stores_bounty | Bounty: Teeth at the Roots (repeatable) | Lethri Reedshade (Starbough Village) | 18 | kill 8 mangy_rat [in elandor_starbough_vale/high_boughs] | 240 | starbough_stores_03 |
+| starbough_testimony_03 | The Hand Behind the Knot | Nima Fern (Starbough Bandit Camp) | 18 | kill 1 snarekeeper_vetch | 600 | starbough_testimony_02 |
+| starbough_departure | A Seal Among the Snares | Nima Fern (Starbough Bandit Camp) | 19 | talk to Eriath Boughwarden (lethariel) | 180 | starbough_testimony_03 |
 
 ## Mobs by spawn region
 

@@ -198,86 +198,69 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 45,
-   "description": "Mirael Petalpot keeps a common pot beside Lethariel's market bakehouse. Bring five raw meat portions for travellers and wardens sharing that table. You need no Cooking qualification to contribute.",
+   "copper": 19,
+   "description": "The Star Hall has requested a meal worthy of its deliberations; I should prefer one ready before they end. Bring me five pieces of Raw Meat and one Braided Sinew, hunting Moss-Antler Stags by day in the Lethariel Glades south of Lethariel for the sinew. Their yellow names mean they will not attack first, so choose your quarry with care.",
    "giver": "r20_elf_capital_cook",
    "giver_name": "Mirael Petalpot",
    "giver_settlement": "Lethariel",
-   "id": "r20_elf_capital_cook",
-   "min_level": 10,
+   "id": "lethariel_provisions_01",
+   "min_level": 20,
    "objectives": [
-    "bring 5 mobs:meat_raw"
+    "bring 5 mobs:meat_raw",
+    "bring 1 grug_mobs:braided_sinew"
    ],
    "objectives_raw": [
     {
      "count": 5,
      "item": "mobs:meat_raw",
      "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Petalpot Share",
-   "turnin": "r20_elf_capital_cook",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "Eriath recommends Mirael Petalpot's table at the market bakehouse before you set out again. Speak with the cook beside the oven, then complete this introduction there. Learning Cooking from its separate trainer is optional.",
-   "giver": "r20_elf_capital_envoy",
-   "giver_name": "Eriath Boughwarden",
-   "giver_settlement": "Lethariel",
-   "id": "r20_elf_capital_services",
-   "min_level": 10,
-   "objectives": [
-    "talk to Mirael Petalpot (lethariel)"
-   ],
-   "objectives_raw": [
+    },
     {
      "count": 1,
-     "npc": "r20_elf_capital_cook",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [
-    "r20_elf_capital_intro"
-   ],
-   "reward_items": [],
-   "title": "Petalpot Hospitality",
-   "turnin": "r20_elf_capital_cook",
-   "xp": 285
-  },
-  {
-   "copper": 60,
-   "description": "The grove patrol needs ordinary oak boards for its covered stores. Bring ten planks to Eriath in Lethariel. Oak is welcome here; you do not need to cut a silverwood tree for this repair.",
-   "giver": "r20_elf_capital_envoy",
-   "giver_name": "Eriath Boughwarden",
-   "giver_settlement": "Lethariel",
-   "id": "r20_elf_capital_stores",
-   "min_level": 20,
-   "objectives": [
-    "bring 10 default:wood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 10,
-     "item": "default:wood",
+     "item": "grug_mobs:braided_sinew",
      "type": "item"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Boards for the Grove Patrol",
-   "turnin": "r20_elf_capital_envoy",
-   "xp": 780
+   "title": "Before the Speeches Begin",
+   "turnin": "r20_elf_capital_cook",
+   "xp": 195
   },
   {
-   "copper": 50,
-   "description": "The capital keeps contact with the working settlements beyond its groves. Travel to Lorindor Berrycourt in Lorindor and speak with Ilwen Petalmeasure. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Ilwen Petalmeasure there. No parcel, fighting errand or return trip is required.",
+   "copper": 32,
+   "description": "Even death has not persuaded the Debtbound Zombies to abandon their unpaid tolls. Lay six to rest at night in the Lethariel Glades south of Lethariel, before their wandering feet ruin more saplings. Dawn will burn them, but I would sooner grant them peace than leave the matter to the sun.",
    "giver": "r20_elf_capital_envoy",
    "giver_name": "Eriath Boughwarden",
    "giver_settlement": "Lethariel",
-   "id": "r20_elf_journey_01",
+   "id": "lethariel_wardens_01",
+   "min_level": 20,
+   "objectives": [
+    "kill 6 debtbound_zombie [in elandor_lethariel/glades]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lethariel/glades",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:debtbound_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Debt Beyond the Grave",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 325
+  },
+  {
+   "copper": 13,
+   "description": "Ilwen Petalmeasure's berry deliveries keep shrinking, though her crate lists remain beautifully written. Visit her at Lorindor Berrycourt, following the road out into Lorindor, and ask what these tolls are costing us. One cannot bake the missing half of a pie from elegant handwriting.",
+   "giver": "r20_elf_capital_cook",
+   "giver_name": "Mirael Petalpot",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_dispatch_01",
    "min_level": 21,
    "objectives": [
     "talk to Ilwen Petalmeasure (r20_anchor_018)"
@@ -289,11 +272,416 @@
      "type": "talk"
     }
    ],
+   "prerequisites": [
+    "lethariel_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "The Missing Half of the Pie",
+   "turnin": "r20_anchor_018_host",
+   "xp": 135
+  },
+  {
+   "copper": 13,
+   "description": "Lethen Moonledger can predict a star's return but has missed a month's worth of bread collections. Speak with him at the Moonfall Observatory in Moonfall Wood and find out what keeps him from us. If he says he has been busy, remind him that dough rises without an appointment.",
+   "giver": "r20_elf_capital_cook",
+   "giver_name": "Mirael Petalpot",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_dispatch_02",
+   "min_level": 21,
+   "objectives": [
+    "talk to Lethen Moonledger (r20_anchor_035)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_035_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Bread Does Not Keep Star-Time",
+   "turnin": "r20_anchor_035_host",
+   "xp": 135
+  },
+  {
+   "copper": 26,
+   "description": "Someone has decided that walking beneath Lethariel's trees requires a fee, complete with an imitation of our bough-seal. Defeat four Toll Bandits after dark in the Lethariel Glades south of Lethariel; they appear only at night and are few enough to require a patient search. We planted shade for travellers, not a source of revenue for thieves.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_wardens_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 4 toll_bandit [in elandor_lethariel/glades]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lethariel/glades",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:toll_bandit"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_wardens_01"
+   ],
+   "reward_items": [],
+   "title": "No Charge for the Grass",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 270
+  },
+  {
+   "copper": 19,
+   "description": "We have recipes older than the Accord and a larder that never survives the week. Bring me eight pieces of Raw Meat here in Lethariel for payment. This supply order is repeatable; long life has done nothing to diminish anyone's appetite.",
+   "giver": "r20_elf_capital_cook",
+   "giver_name": "Mirael Petalpot",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_provisions_bounty",
+   "min_level": 22,
+   "objectives": [
+    "bring 8 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Hunger Returns to Court (repeatable)",
+   "turnin": "r20_elf_capital_cook",
+   "xp": 210
+  },
+  {
+   "copper": 26,
+   "description": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Redfang Vixens in the Lethariel Greatwood east of Lethariel by day, and I can replace my brushes. At least the vixens make their objections quickly.",
+   "giver": "r20_elf_capital_cook",
+   "giver_name": "Mirael Petalpot",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_provisions_opt_01",
+   "min_level": 24,
+   "objectives": [
+    "bring 2 grug_mobs:silver_tip_fox_tail"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:silver_tip_fox_tail",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_provisions_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: The Hall Notices Everything",
+   "turnin": "r20_elf_capital_cook",
+   "xp": 300
+  },
+  {
+   "copper": 32,
+   "description": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Redfang Vixens by day in the Lethariel Greatwood east of Lethariel. They attack passing travellers, so tend to your wounds before seeking the next.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_wardens_opt_01",
+   "min_level": 24,
+   "objectives": [
+    "kill 6 redfang_fox [in elandor_lethariel/greatwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lethariel/greatwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:redfang_fox"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_wardens_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: A Forester's Right of Way",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 375
+  },
+  {
+   "copper": 32,
+   "description": "The lord is long dead, his claim forgotten, yet the Tithe Revenants still come to collect. Lay six to rest at night in the Lethariel Greatwood east of Lethariel. They endure more punishment than the Debtbound Zombies, so approach them prepared. Let this be the last service anyone performs in that lord's name.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_wardens_opt_02",
+   "min_level": 25,
+   "objectives": [
+    "kill 6 stubborn_zombie [in elandor_lethariel/greatwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lethariel/greatwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:stubborn_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_wardens_02"
+   ],
+   "reward_items": [],
+   "title": "Optional: The Last Collection",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 375
+  },
+  {
+   "copper": 51,
+   "description": "Our bough-seal once meant that a tree would be tended; at the Lethariel Poacher Camp northwest from here, it marks trees for the axe. Defeat five Unlicensed Poachers there, then Poacher Bough-Counter Rusk, who records the theft. They keep the camp by day and night; separate the leader from his guards before you face him. Some of those trees shaded the hands that first carved our seal.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_wardens_03",
+   "min_level": 27,
+   "objectives": [
+    "kill 5 unlicensed_poacher [in elandor_lethariel/poacher_camp]",
+    "kill 1 bough_counter_rusk"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_lethariel/poacher_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:unlicensed_poacher"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:bough_counter_rusk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_wardens_02"
+   ],
+   "reward_items": [],
+   "title": "What the Seal Was For",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 660
+  },
+  {
+   "copper": 19,
+   "description": "Rusk's reckoning reaches into the Glassroot Wilds, beyond the comfort of our walls. Report what you have learned to Faeris Rootbinder at Glassroot Gate. Those lands are contested, and the Accord's seal offers little shelter there; finish your training before you set out.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_wardens_04",
+   "min_level": 29,
+   "objectives": [
+    "talk to Faeris Rootbinder (r20_anchor_036)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_036_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_wardens_03"
+   ],
+   "reward_items": [],
+   "title": "Where the Writ Wears Thin",
+   "turnin": "r20_anchor_036_host",
+   "xp": 263
+  },
+  {
+   "copper": 1100,
+   "description": "Our healers have patients waiting and no Glass Venom left; I would spare them having to choose who waits longest. Bring me three portions from Glass-Fang Serpents in the Skyglass Rootways, which lie in the north of The Skyglass Canopy, by day. Walk with care among those roots; I would rather not hand the healers another patient.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_01",
+   "min_level": 55,
+   "objectives": [
+    "bring 3 grug_mobs:glass_venom"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_mobs:glass_venom",
+     "type": "item"
+    }
+   ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Ilwen Petalmeasure",
-   "turnin": "r20_anchor_018_host",
-   "xp": 615
+   "title": "The Healers Are Waiting",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 1678
+  },
+  {
+   "copper": 1100,
+   "description": "Glass-Web Jungle Spiders draw their threads across the Skyglass Rootways each night, until even familiar paths become snares. Kill six of them after dark. A forest must leave room for more than one kind of hunger.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_02",
+   "min_level": 55,
+   "objectives": [
+    "kill 6 glass_web_spider [in front_skyglass_canopy/rootways]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_skyglass_canopy/rootways",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:glass_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Threads Across the Living Path",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 1678
+  },
+  {
+   "copper": 1200,
+   "description": "I sent a scout to listen to the Skyglass High Canopy, which lies in the heart of The Skyglass Canopy; the Glass-Knuckle Jungle Apes answered with a branch. Defeat six of them there by day so our watchers can return. Listening to the forest requires a little quiet, and preferably an unbroken head.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_03",
+   "min_level": 57,
+   "objectives": [
+    "kill 6 glass_knuckle_ape [in front_skyglass_canopy/high_canopy]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_skyglass_canopy/high_canopy",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:glass_knuckle_ape"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_front_01",
+    "lethariel_front_02"
+   ],
+   "reward_items": [],
+   "title": "A Disagreement in the Branches",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 1920
+  },
+  {
+   "copper": 1400,
+   "description": "Paymaster Chirr pays his Last-Pay Archers with coin stripped from the dead of both banners at the Skyglass Paymaster Camp north from here. Defeat five of those archers and the paymaster himself. We have watched this forest grow through enough wars; he will not purchase another beneath its branches.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_04",
+   "min_level": 58,
+   "objectives": [
+    "kill 5 last_pay_archer [in front_skyglass_canopy/paymaster_camp]",
+    "kill 1 paymaster_chirr"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_skyglass_canopy/paymaster_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:last_pay_archer"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:paymaster_chirr"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_front_03"
+   ],
+   "reward_items": [],
+   "title": "The Price of Another War",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 2240
+  },
+  {
+   "copper": 600,
+   "description": "When the lanterns are lit, Glass-Shadow Panthers begin their hunt in the Skyglass High Canopy. Bring down five there after dark, and I will pay a bounty so our watchers can make their rounds. You may accept the bounty again twenty-five minutes after each turn-in. The forest has time to spare; those walking home tonight do not.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_bounty",
+   "min_level": 58,
+   "objectives": [
+    "kill 5 glass_shadow_panther [in front_skyglass_canopy/high_canopy]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_skyglass_canopy/high_canopy",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:glass_shadow_panther"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_front_04"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Eyes Beyond the Lanterns (repeatable)",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 960
+  },
+  {
+   "copper": 800,
+   "description": "The branches bend beneath Serpent Glass-Throat in the Skyglass High Canopy north from here. Gather a group and slay that elite serpent before it takes another of our watchers. There is wisdom in a solitary walk, but this is a task for companions who will watch one another's backs.",
+   "giver": "r20_elf_capital_envoy",
+   "giver_name": "Eriath Boughwarden",
+   "giver_settlement": "Lethariel",
+   "id": "lethariel_front_05",
+   "min_level": 59,
+   "objectives": [
+    "kill 1 glass_throat_serpent"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:glass_throat_serpent"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lethariel_front_04"
+   ],
+   "reward_items": [],
+   "title": "Group: Beneath the Waiting Coils",
+   "turnin": "r20_elf_capital_envoy",
+   "xp": 1280
   }
  ],
  "race_region": "elf",
@@ -709,9 +1097,18 @@
      "npc_id": "r20_elf_capital_envoy",
      "npc_name": "Eriath Boughwarden",
      "quests": [
-      "r20_elf_capital_services",
-      "r20_elf_capital_stores",
-      "r20_elf_journey_01"
+      "lethariel_front_01",
+      "lethariel_front_02",
+      "lethariel_front_03",
+      "lethariel_front_04",
+      "lethariel_front_05",
+      "lethariel_front_bounty",
+      "lethariel_wardens_01",
+      "lethariel_wardens_02",
+      "lethariel_wardens_03",
+      "lethariel_wardens_04",
+      "lethariel_wardens_opt_01",
+      "lethariel_wardens_opt_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -790,6 +1187,14 @@
      "x": 1809,
      "y": 56,
      "z": -1566
+    },
+    {
+     "role": "shipwright",
+     "role_text": "shipwright",
+     "socket": "market_stable/market_stable_shipwright",
+     "x": 1809,
+     "y": 56,
+     "z": -1574
     },
     {
      "role": "vendor",
@@ -885,7 +1290,11 @@
      "npc_id": "r20_elf_capital_cook",
      "npc_name": "Mirael Petalpot",
      "quests": [
-      "r20_elf_capital_cook"
+      "lethariel_dispatch_01",
+      "lethariel_dispatch_02",
+      "lethariel_provisions_01",
+      "lethariel_provisions_bounty",
+      "lethariel_provisions_opt_01"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1070,6 +1479,7 @@
     "public_station": 7,
     "quest": 3,
     "riding_trainer": 1,
+    "shipwright": 1,
     "trainer": 8,
     "vendor": 9,
     "waypoint": 1,

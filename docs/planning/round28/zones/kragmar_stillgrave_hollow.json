@@ -346,21 +346,21 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 10,
-   "description": "Plague boars churn Stillgrave's outer furrows by day. Drive off three before the retaining stones loosen, and take spare raw meat to Neral Saltkeeper by the oven.",
+   "copper": 6,
+   "description": "Small Plague Boars spend their days rooting through the Stillgrave Dead Furrows near Stillgrave, scattering people I took considerable trouble to bury. Kill eight; their yellow names mean they will leave you alone until you strike. Someone is also stealing bones, but let us begin with the offenders who cannot carry a sack.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_01_boars_in_the_dead_furrows",
+   "id": "stillgrave_hunt_01",
    "min_level": 1,
    "objectives": [
-    "kill 3 plague_boar or small_boar"
+    "kill 8 small_boar [in kragmar_stillgrave_hollow/dead_furrows]"
    ],
    "objectives_raw": [
     {
-     "count": 3,
+     "area": "kragmar_stillgrave_hollow/dead_furrows",
+     "count": 8,
      "mobs": [
-      "grug_mobs:plague_boar",
       "grug_mobs:small_boar"
      ],
      "type": "kill"
@@ -368,94 +368,140 @@
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Boars in the Dead Furrows",
+   "title": "Please Leave the Residents Buried",
    "turnin": "r14_undead_elder",
-   "xp": 20
+   "xp": 105
   },
   {
-   "copper": 10,
-   "description": "The shared oven feeds everyone returning from stillgrave's outer paths. Bring four raw meat portions to Neral Saltkeeper beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
+   "copper": 2,
+   "description": "The fire beneath my brine pot has gone out, and glaring at it has achieved very little. Bring me five logs from any tree outside Stillgrave's warded ground; logs, please, not planks. Death excuses a great many appetites, but apparently a fire's is not among them.",
    "giver": "r20_undead_start_cook",
    "giver_name": "Neral Saltkeeper",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_02_salt_for_what_remains",
+   "id": "stillgrave_kitchen_01",
    "min_level": 1,
    "objectives": [
-    "bring 4 mobs:meat_raw"
+    "bring 5 group:tree"
    ],
    "objectives_raw": [
     {
-     "count": 4,
-     "item": "mobs:meat_raw",
+     "count": 5,
+     "group": "tree",
      "type": "item"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Salt for What Remains",
+   "title": "The Fire Still Eats",
    "turnin": "r20_undead_start_cook",
-   "xp": 20
+   "xp": 30
   },
   {
-   "copper": 10,
-   "description": "Bring a wood axe so Veyra can show how living handles are kept sound in dead soil.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+   "copper": 2,
+   "description": "Make a Wooden Axe and a Wooden Pickaxe and bring them to me for inspection. I will give you a pair in return; even a second life deserves a proper start. Mind your fingers while you work, especially any you have only recently acquired.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_10_a_handle_that_will_not_rot",
+   "id": "stillgrave_tools_01",
    "min_level": 1,
    "objectives": [
-    "bring 1 grug_materials:axe_wood"
+    "bring 1 grug_materials:axe_wood",
+    "bring 1 grug_materials:pick_wood"
    ],
    "objectives_raw": [
     {
      "count": 1,
      "item": "grug_materials:axe_wood",
      "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Handle That Will Not Rot",
-   "turnin": "r14_undead_elder",
-   "xp": 15
-  },
-  {
-   "copper": 10,
-   "description": "Neral Saltkeeper warms Stillgrave's salting room from the oven beside the common table. Bring three coal lumps to keep the damp out. Traded fuel counts; if you mine coal yourself, bring a pickaxe; wood and stone picks work too.",
-   "giver": "r20_undead_start_cook",
-   "giver_name": "Neral Saltkeeper",
-   "giver_settlement": "Stillgrave",
-   "id": "r20_undead_start_cook",
-   "min_level": 1,
-   "objectives": [
-    "bring 3 default:coal_lump"
-   ],
-   "objectives_raw": [
+    },
     {
-     "count": 3,
-     "item": "default:coal_lump",
+     "count": 1,
+     "item": "grug_materials:pick_wood",
      "type": "item"
     }
    ],
    "prerequisites": [],
-   "reward_items": [],
-   "title": "Salt Against the Damp",
-   "turnin": "r20_undead_start_cook",
-   "xp": 20
+   "reward_items": [
+    "grug_materials:axe_wood 1",
+    "grug_materials:pick_wood 1"
+   ],
+   "title": "Hands to Work",
+   "turnin": "r14_undead_elder",
+   "xp": 30
   },
   {
-   "copper": 15,
-   "description": "Bring a stone pick for a lesson in separating useful rock from a sealed grave.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+   "copper": 6,
+   "description": "At night the Large Grave Rats take over the Stillgrave Dead Furrows, and the sound of their teeth carries all the way to my chair. Kill eight after dark. Pick your fights well apart: one squeal brings the relatives, who are distressingly prompt about visiting.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_11_a_pick_among_headstones",
+   "id": "stillgrave_hunt_02",
    "min_level": 2,
    "objectives": [
+    "kill 8 large_rat [in kragmar_stillgrave_hollow/dead_furrows]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_stillgrave_hollow/dead_furrows",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:large_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_hunt_01"
+   ],
+   "reward_items": [],
+   "title": "Family Comes Running",
+   "turnin": "r14_undead_elder",
+   "xp": 105
+  },
+  {
+   "copper": 3,
+   "description": "Bring me five Coal Lumps from the rock outside Stillgrave; you can mine while you wait for nightfall. The public oven by my table takes coal in the fuel slot and raw food in the cooking slot. Mixing those up is how we discovered a meal even the dead would send back.",
+   "giver": "r20_undead_start_cook",
+   "giver_name": "Neral Saltkeeper",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_kitchen_02",
+   "min_level": 2,
+   "objectives": [
+    "bring 5 default:coal_lump"
+   ],
+   "objectives_raw": [
+    {
+     "count": 5,
+     "item": "default:coal_lump",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_kitchen_01"
+   ],
+   "reward_items": [],
+   "title": "A Little Warmth, Professionally",
+   "turnin": "r20_undead_start_cook",
+   "xp": 60
+  },
+  {
+   "copper": 3,
+   "description": "Take your wooden pick to plain rock in the hills outside town, then make a Stone Axe and a Stone Pickaxe. Bring me both and I will return a pair after inspection. If the rock has a name and two dates on it, find another rock.",
+   "giver": "r14_undead_elder",
+   "giver_name": "Veyra Pall",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_tools_02",
+   "min_level": 2,
+   "objectives": [
+    "bring 1 grug_materials:axe_stone",
     "bring 1 grug_materials:pick_stone"
    ],
    "objectives_raw": [
+    {
+     "count": 1,
+     "item": "grug_materials:axe_stone",
+     "type": "item"
+    },
     {
      "count": 1,
      "item": "grug_materials:pick_stone",
@@ -463,103 +509,269 @@
     }
    ],
    "prerequisites": [
-    "r14_undead_10_a_handle_that_will_not_rot"
+    "stillgrave_tools_01"
    ],
-   "reward_items": [],
-   "title": "A Pick Among Headstones",
+   "reward_items": [
+    "grug_materials:axe_stone 1",
+    "grug_materials:pick_stone 1"
+   ],
+   "title": "Leave the Headstones",
    "turnin": "r14_undead_elder",
-   "xp": 45
+   "xp": 60
   },
   {
-   "copper": 20,
-   "description": "The crypt stores need dry shelves above the damp soil. Bring six gravewood planks, the ordinary boards cut from this region's gravewood trunks. Existing or traded boards count; nothing must be taken from a protected tomb.",
+   "copper": 7,
+   "description": "Braindead Zombies wander the Stillgrave Ashfields, which lies in the north of Stillgrave Hollow, raised without anyone to remember who they were. I have read the burial rolls aloud; not one turned its head. Lay eight to rest, by day or night. The blight soil shelters them from the sun, so waiting for dawn is no kindness.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_03_gnawing_in_the_crypt_stores",
+   "id": "stillgrave_hunt_03",
    "min_level": 3,
    "objectives": [
-    "bring 6 grug_trees:gravewood_wood"
+    "kill 8 braindead_zombie [in kragmar_stillgrave_hollow/ashfields]"
    ],
    "objectives_raw": [
     {
-     "count": 6,
-     "item": "grug_trees:gravewood_wood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [
-    "r14_undead_01_boars_in_the_dead_furrows"
-   ],
-   "reward_items": [],
-   "title": "Dry Shelves for the Crypt Stores",
-   "turnin": "r14_undead_elder",
-   "xp": 100
-  },
-  {
-   "copper": 25,
-   "description": "Three uncalled zombies have wandered into Stillgrave's outer furrows. The patrol sets out after nightfall, although blight-ground zombies can linger through daylight too. Seek level-3-and-up ground; the store repairs do not depend on this patrol.",
-   "giver": "r14_undead_elder",
-   "giver_name": "Veyra Pall",
-   "giver_settlement": "Stillgrave",
-   "id": "r14_undead_04_the_uncalled_dead",
-   "min_level": 4,
-   "objectives": [
-    "kill 3 zombie or braindead_zombie or sluggish_zombie"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
+     "area": "kragmar_stillgrave_hollow/ashfields",
+     "count": 8,
      "mobs": [
-      "grug_mobs:zombie",
-      "grug_mobs:braindead_zombie",
-      "grug_mobs:sluggish_zombie"
+      "grug_mobs:braindead_zombie"
      ],
      "type": "kill"
     }
    ],
    "prerequisites": [
-    "r14_undead_01_boars_in_the_dead_furrows"
+    "stillgrave_hunt_02"
    ],
    "reward_items": [],
-   "title": "The Uncalled Dead",
+   "title": "No Names to Call Them By",
    "turnin": "r14_undead_elder",
-   "xp": 140
+   "xp": 158
   },
   {
-   "copper": 30,
-   "description": "Bring eight cobble blocks to shore up Stillgrave's outer retaining stones. The boar patrol has already done its part; this repair is ordinary material delivery, not another hunt.",
-   "giver": "r14_undead_elder",
-   "giver_name": "Veyra Pall",
+   "copper": 3,
+   "description": "Our shroud sacks have begun returning their contents to the floor. Bring me two Rat Fur Patches from the Large Grave Rats in the Stillgrave Dead Furrows; anything you saved from your night hunt will do. Keep the spares for your armour enchants, and let me worry about dressing the storage.",
+   "giver": "r20_undead_start_cook",
+   "giver_name": "Neral Saltkeeper",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_05_furrows_gone_sour",
-   "min_level": 5,
+   "id": "stillgrave_pantry_01",
+   "min_level": 3,
    "objectives": [
-    "bring 8 default:cobble"
+    "bring 2 grug_mobs:rat_fur_patch"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:cobble",
+     "count": 2,
+     "item": "grug_mobs:rat_fur_patch",
      "type": "item"
     }
    ],
    "prerequisites": [
-    "r14_undead_03_gnawing_in_the_crypt_stores"
+    "stillgrave_hunt_02"
    ],
    "reward_items": [],
-   "title": "Stones Against the Sour Furrows",
-   "turnin": "r14_undead_elder",
-   "xp": 180
+   "title": "A Sack Ought to Hold Something",
+   "turnin": "r20_undead_start_cook",
+   "xp": 60
   },
   {
-   "copper": 40,
-   "description": "At level 10, take the fen road to Mournfen Village and speak with Mordec Silt. Mournfen is level 11\u201320 country; keep clear of its hungry banks while travelling. Complete this conversation with Mordec there, without an added hunt or return journey.",
+   "copper": 4,
+   "description": "Bring me ten Raw Meat from the boars and rats around Stillgrave; whatever you kept from your hunts is welcome. A mourner may insist they cannot face a meal, but I still leave a bowl within reach. You shall have some cooked meat for the road, too; I dislike sending anyone away empty.",
+   "giver": "r20_undead_start_cook",
+   "giver_name": "Neral Saltkeeper",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_kitchen_03",
+   "min_level": 4,
+   "objectives": [
+    "bring 10 mobs:meat_raw"
+   ],
+   "objectives_raw": [
+    {
+     "count": 10,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_kitchen_02",
+    "stillgrave_hunt_03"
+   ],
+   "reward_items": [
+    "mobs:meat 3"
+   ],
+   "title": "Mourning Is Hungry Work",
+   "turnin": "r20_undead_start_cook",
+   "xp": 100
+  },
+  {
+   "copper": 7,
+   "description": "Watch the Stillgrave Blightmoor, which lies in the west of Stillgrave Hollow, at dusk: the grazing stops, and then the squealing begins. Kill eight Aggressive Grave Rats there after dark; they attack on sight and call others into the fight. The Young Gaunt Stags graze there by day, and I have no complaint against them to add to your duties.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r14_undead_06_tusks_along_the_fen_road",
-   "min_level": 10,
+   "id": "stillgrave_hunt_04",
+   "min_level": 5,
+   "objectives": [
+    "kill 8 rabid_rat [in kragmar_stillgrave_hollow/blightmoor]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_stillgrave_hollow/blightmoor",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:rabid_rat"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_hunt_03"
+   ],
+   "reward_items": [],
+   "title": "The Moor Changes Tenants",
+   "turnin": "r14_undead_elder",
+   "xp": 193
+  },
+  {
+   "copper": 4,
+   "description": "Mine copper and tin, smelt them, and bring me three Copper Bars and three Tin Bars. I will give you a Dual Furnace so you can begin making bronze. The metals must share a fire; happily, they get along better than most families at a reading of the will.",
+   "giver": "r14_undead_elder",
+   "giver_name": "Veyra Pall",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_tools_03",
+   "min_level": 5,
+   "objectives": [
+    "bring 3 grug_materials:copper_bar",
+    "bring 3 grug_materials:tin_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_materials:copper_bar",
+     "type": "item"
+    },
+    {
+     "count": 3,
+     "item": "grug_materials:tin_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_tools_02"
+   ],
+   "reward_items": [
+    "grug_smelting:dual_furnace 1"
+   ],
+   "title": "An Introduction in the Furnace",
+   "turnin": "r14_undead_elder",
+   "xp": 110
+  },
+  {
+   "copper": 4,
+   "description": "For once, my shopping can be done in daylight. Bring me two Crab Legs from the Small Crabs on the Stillgrave Saltbones west of Stillgrave, and one Fine Sinew from the Young Gaunt Stags on the Stillgrave Blightmoor by day. I have a broth to finish and brine sacks to tie shut; separate tasks, despite what you may have heard about my cooking.",
+   "giver": "r20_undead_start_cook",
+   "giver_name": "Neral Saltkeeper",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_pantry_02",
+   "min_level": 6,
+   "objectives": [
+    "bring 2 grug_mobs:crab_leg",
+    "bring 1 grug_mobs:fine_sinew"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:crab_leg",
+     "type": "item"
+    },
+    {
+     "count": 1,
+     "item": "grug_mobs:fine_sinew",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_pantry_01",
+    "stillgrave_hunt_04"
+   ],
+   "reward_items": [],
+   "title": "Broth and Loose Ends",
+   "turnin": "r20_undead_start_cook",
+   "xp": 120
+  },
+  {
+   "copper": 4,
+   "description": "Use your Dual Furnace to alloy three Bronze Bars and bring them to me. There is a Bronze Pickaxe waiting for you, for the harder rock beyond Stillgrave. I cannot go along to see how you fare, but I can at least see you properly equipped.",
+   "giver": "r14_undead_elder",
+   "giver_name": "Veyra Pall",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_tools_04",
+   "min_level": 7,
+   "objectives": [
+    "bring 3 grug_materials:bronze_bar"
+   ],
+   "objectives_raw": [
+    {
+     "count": 3,
+     "item": "grug_materials:bronze_bar",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_tools_03"
+   ],
+   "reward_items": [
+    "grug_materials:pick_bronze 1"
+   ],
+   "title": "Something to Take With You",
+   "turnin": "r14_undead_elder",
+   "xp": 130
+  },
+  {
+   "copper": 9,
+   "description": "Our missing bones have led us to the Stillgrave Robbers' Camp west from here, where Confused Grave Robber Chief Borrow has been treating the graves as a lending library. Kill six Confused Grave Robbers and their chief. Confusion might excuse digging the wrong hole once; arriving with sacks suggests a settled intention.",
+   "giver": "r14_undead_elder",
+   "giver_name": "Veyra Pall",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_hunt_05",
+   "min_level": 8,
+   "objectives": [
+    "kill 6 confused_bandit [in kragmar_stillgrave_hollow/robbers_camp]",
+    "kill 1 grave_robber_chief"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_stillgrave_hollow/robbers_camp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:confused_bandit"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:grave_robber_chief"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "stillgrave_hunt_04"
+   ],
+   "reward_items": [],
+   "title": "Borrow Has Had Long Enough",
+   "turnin": "r14_undead_elder",
+   "xp": 315
+  },
+  {
+   "copper": 1,
+   "description": "Listen: for once, that is only the wind among the stones. Follow the road to Mournfen Village and speak with Mordec Silt; the graves in his care are older than ours, and the water is rising around them. Come back when you can, preferably on your own feet.",
+   "giver": "r14_undead_elder",
+   "giver_name": "Veyra Pall",
+   "giver_settlement": "Stillgrave",
+   "id": "stillgrave_departure",
+   "min_level": 9,
    "objectives": [
     "talk to Mordec Silt (mournfen_village)"
    ],
@@ -571,36 +783,41 @@
     }
    ],
    "prerequisites": [
-    "r14_undead_05_furrows_gone_sour"
+    "stillgrave_hunt_05"
    ],
    "reward_items": [],
-   "title": "The Road to Mordec Silt",
+   "title": "Older Graves, Deeper Water",
    "turnin": "r14_undead_steward",
-   "xp": 285
+   "xp": 35
   },
   {
-   "copper": 40,
-   "description": "Nhal Veyr keeps its profession trainers, repair services and public workspaces beyond Stillgrave's narrow paths. At level 10, follow the road to Ossa Quietregister in the vigil hall. Outside the city the country is level 20\u201330; pass through without provoking its wildlife. Speak with Ossa and complete the introduction there.",
+   "copper": 4,
+   "description": "The Monstrous Grave Rats in the Stillgrave Deadlands, which lies in the southeast of Stillgrave Hollow, have outgrown both their burrows and my patience. Kill six after dark and report back. I can offer this work again twenty minutes after you hand it in; the rats have declined to observe a longer interval.",
    "giver": "r14_undead_elder",
    "giver_name": "Veyra Pall",
    "giver_settlement": "Stillgrave",
-   "id": "r20_undead_capital_intro",
-   "min_level": 10,
+   "id": "stillgrave_hunt_bounty",
+   "min_level": 9,
    "objectives": [
-    "talk to Ossa Quietregister (nhal_veyr)"
+    "kill 6 monstrous_rat [in kragmar_stillgrave_hollow/deadlands]"
    ],
    "objectives_raw": [
     {
-     "count": 1,
-     "npc": "r20_undead_capital_envoy",
-     "type": "talk"
+     "area": "kragmar_stillgrave_hollow/deadlands",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:monstrous_rat"
+     ],
+     "type": "kill"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "stillgrave_hunt_05"
+   ],
    "reward_items": [],
-   "title": "The Road to Nhal Veyr",
-   "turnin": "r20_undead_capital_envoy",
-   "xp": 285
+   "title": "Repeatable: A Census With Teeth (repeatable)",
+   "turnin": "r14_undead_elder",
+   "xp": 140
   }
  ],
  "race_region": "undead",
@@ -782,14 +999,17 @@
      "npc_id": "r14_undead_elder",
      "npc_name": "Veyra Pall",
      "quests": [
-      "r14_undead_01_boars_in_the_dead_furrows",
-      "r14_undead_03_gnawing_in_the_crypt_stores",
-      "r14_undead_04_the_uncalled_dead",
-      "r14_undead_05_furrows_gone_sour",
-      "r14_undead_06_tusks_along_the_fen_road",
-      "r14_undead_10_a_handle_that_will_not_rot",
-      "r14_undead_11_a_pick_among_headstones",
-      "r20_undead_capital_intro"
+      "stillgrave_departure",
+      "stillgrave_hunt_01",
+      "stillgrave_hunt_02",
+      "stillgrave_hunt_03",
+      "stillgrave_hunt_04",
+      "stillgrave_hunt_05",
+      "stillgrave_hunt_bounty",
+      "stillgrave_tools_01",
+      "stillgrave_tools_02",
+      "stillgrave_tools_03",
+      "stillgrave_tools_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -798,6 +1018,14 @@
      "x": -1798,
      "y": 37,
      "z": 2560
+    },
+    {
+     "role": "waypoint",
+     "role_text": "waypoint",
+     "socket": "travel_waypoint",
+     "x": -1814,
+     "y": 37,
+     "z": 2572
     },
     {
      "profession": "cooking",
@@ -812,8 +1040,11 @@
      "npc_id": "r20_undead_start_cook",
      "npc_name": "Neral Saltkeeper",
      "quests": [
-      "r14_undead_02_salt_for_what_remains",
-      "r20_undead_start_cook"
+      "stillgrave_kitchen_01",
+      "stillgrave_kitchen_02",
+      "stillgrave_kitchen_03",
+      "stillgrave_pantry_01",
+      "stillgrave_pantry_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -842,6 +1073,7 @@
     "quest": 2,
     "trainer": 1,
     "vendor": 1,
+    "waypoint": 1,
     "work": 2
    }
   }

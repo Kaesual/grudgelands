@@ -359,295 +359,275 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "Whisperreed's landing needs crosspieces strong enough to keep laden travellers above the mud. Bring eight junglewood planks to the sheltered landing workshop; this is a repair delivery, not a boatbuilding lesson. Existing or traded supplies are welcome.",
+   "copper": 38,
+   "description": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Wandering Wisps after dark in the Whispering Canopy, in the east of Whispering Reedlands. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
    "giver": "r20_anchor_024_host",
    "giver_name": "Taleko Drycord",
    "giver_settlement": "Whisperreed Landing",
-   "id": "r20_anchor_024_01",
-   "min_level": 21,
+   "id": "whispering_reeds_01",
+   "min_level": 20,
    "objectives": [
-    "bring 8 default:junglewood"
+    "kill 6 wandering_wisp [in kragmar_whispering_reedlands/canopy]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:junglewood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Landing That Holds",
-   "turnin": "r20_anchor_024_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Tapirs crowd the dry paths through Whispering Reedlands by day. Clear four so carriers can bring their loads to Whisperreed Landing without stepping into the pools.",
-   "giver": "r20_anchor_024_host",
-   "giver_name": "Taleko Drycord",
-   "giver_settlement": "Whisperreed Landing",
-   "id": "r20_anchor_024_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 tapir or reed_tapir [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
+     "area": "kragmar_whispering_reedlands/canopy",
+     "count": 6,
      "mobs": [
-      "grug_mobs:tapir",
-      "grug_mobs:reed_tapir"
-     ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Tapirs on the Dry Path",
-   "turnin": "r20_anchor_024_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Reedvoice's signal shelf has sunk below the driest line on its posts. Bring eight junglewood planks to raise the shelf inside the shelter without blocking the reed-path entrance. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_046_host",
-   "giver_name": "Enashi Reedvoice",
-   "giver_settlement": "Reedvoice Station",
-   "id": "r20_anchor_046_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 8 default:junglewood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "default:junglewood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "A Dry Signal Shelf",
-   "turnin": "r20_anchor_046_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Jungle lynx watch Whispering Reedlands' forest margins by day and keep the signal carriers from their paths. Defeat four, then return to Reedvoice Station.",
-   "giver": "r20_anchor_046_host",
-   "giver_name": "Enashi Reedvoice",
-   "giver_settlement": "Reedvoice Station",
-   "id": "r20_anchor_046_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 jungle_lynx [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:jungle_lynx"
-     ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Cats by the Reed Pipes",
-   "turnin": "r20_anchor_046_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Reedstone's timber stacks must stay above the wet ground if the quarry is to remain workable. Bring eight junglewood planks for the raised supports beside its shelter. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_066_host",
-   "giver_name": "Zali Runoff",
-   "giver_settlement": "Reedstone Cut",
-   "id": "r20_anchor_066_01",
-   "min_level": 21,
-   "objectives": [
-    "bring 8 default:junglewood"
-   ],
-   "objectives_raw": [
-    {
-     "count": 8,
-     "item": "default:junglewood",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Timbers Kept Above Water",
-   "turnin": "r20_anchor_066_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "Bog ooze collects on Whispering Reedlands' muddy ground around the quarry approaches. Break up four so the crew can reach its stored tools.",
-   "giver": "r20_anchor_066_host",
-   "giver_name": "Zali Runoff",
-   "giver_settlement": "Reedstone Cut",
-   "id": "r20_anchor_066_02",
-   "min_level": 21,
-   "objectives": [
-    "kill 4 bog_ooze [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:bog_ooze"
-     ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Quarry Pool Moves",
-   "turnin": "r20_anchor_066_host",
-   "xp": 820
-  },
-  {
-   "copper": 70,
-   "description": "The cleared paths are drawing travellers after dusk, when false lights gather over the reeds. Disperse three wisps in Whispering Reedlands at night and return to Taleko.",
-   "giver": "r20_anchor_024_host",
-   "giver_name": "Taleko Drycord",
-   "giver_settlement": "Whisperreed Landing",
-   "id": "r20_anchor_024_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:wisp",
       "grug_mobs:wandering_wisp"
      ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
+     "type": "kill"
     }
    ],
-   "prerequisites": [
-    "r20_anchor_024_02"
-   ],
+   "prerequisites": [],
    "reward_items": [],
-   "title": "Cold Lights in the Reeds",
+   "title": "Do Not Follow Every Light",
    "turnin": "r20_anchor_024_host",
-   "xp": 900
+   "xp": 405
   },
   {
-   "copper": 70,
-   "description": "The carriers can travel by day, but lights in the wet reeds mimic the station's signals after dusk. Disperse three wisps in Whispering Reedlands at night.",
-   "giver": "r20_anchor_046_host",
-   "giver_name": "Enashi Reedvoice",
-   "giver_settlement": "Reedvoice Station",
-   "id": "r20_anchor_046_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:wisp",
-      "grug_mobs:wandering_wisp"
-     ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_046_02"
-   ],
-   "reward_items": [],
-   "title": "The False Answering Lights",
-   "turnin": "r20_anchor_046_host",
-   "xp": 900
-  },
-  {
-   "copper": 70,
-   "description": "Once the ooze is cleared, the haulers can use the bank path again. Defeat three crocodiles on Whispering Reedlands' muddy banks before the next load leaves Reedstone Cut.",
-   "giver": "r20_anchor_066_host",
-   "giver_name": "Zali Runoff",
-   "giver_settlement": "Reedstone Cut",
-   "id": "r20_anchor_066_03",
-   "min_level": 23,
-   "objectives": [
-    "kill 3 crocodile [in kragmar_whispering_reedlands]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:crocodile"
-     ],
-     "type": "kill",
-     "zone": "kragmar_whispering_reedlands"
-    }
-   ],
-   "prerequisites": [
-    "r20_anchor_066_02"
-   ],
-   "reward_items": [],
-   "title": "Jaws Along the Haul Path",
-   "turnin": "r20_anchor_066_host",
-   "xp": 900
-  },
-  {
-   "copper": 50,
-   "description": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Reedstone Cut in Whispering Reedlands and speak with Zali Runoff. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Zali Runoff there. No parcel, fighting errand or return trip is required.",
+   "copper": 45,
+   "description": "Toll Mirefolk have settled in the Hushwater Nests northeast from here and decided every crossing belongs to them. Kill six before another traveller pays for the same stretch of water twice. I asked who gave them the river; they were strangely unwilling to introduce us.",
    "giver": "r20_anchor_024_host",
    "giver_name": "Taleko Drycord",
    "giver_settlement": "Whisperreed Landing",
-   "id": "r20_troll_journey_02",
+   "id": "whispering_reeds_02",
+   "min_level": 21,
+   "objectives": [
+    "kill 6 toll_mirefolk [in kragmar_whispering_reedlands/hushwater_nests]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_whispering_reedlands/hushwater_nests",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:toll_mirefolk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "whispering_reeds_01"
+   ],
+   "reward_items": [],
+   "title": "The Water Signed Nothing",
+   "turnin": "r20_anchor_024_host",
+   "xp": 473
+  },
+  {
+   "copper": 6,
+   "description": "Rain takes the ink from my tallies, but our undead kin seem determined to remember everything. Travel to Ossuary Ledgerstead in Ossuary Reach and speak with Sovel Namekeeper about work. Give my greetings before giving your name, or you may end up filed among the supplies.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "whispering_journey_ossuary",
+   "min_level": 22,
+   "objectives": [
+    "talk to Sovel Namekeeper (r20_anchor_020)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_020_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "whispering_reeds_01"
+   ],
+   "reward_items": [],
+   "title": "Names That Outlast the Rain",
+   "turnin": "r20_anchor_020_host",
+   "xp": 70
+  },
+  {
+   "copper": 6,
+   "description": "A troll who knows only reeds will try to weave every problem into a basket. Visit Brakka Jarward at Speargrass Wellhold in Speargrass Reach, carry my greetings, and ask what work needs doing. Our orc kin may show you another use for those hands.",
+   "giver": "r20_anchor_024_host",
+   "giver_name": "Taleko Drycord",
+   "giver_settlement": "Whisperreed Landing",
+   "id": "whispering_journey_speargrass",
+   "min_level": 22,
+   "objectives": [
+    "talk to Brakka Jarward (r20_anchor_022)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_022_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "whispering_reeds_01"
+   ],
+   "reward_items": [],
+   "title": "Where the Reeds Give Way",
+   "turnin": "r20_anchor_022_host",
+   "xp": 70
+  },
+  {
+   "copper": 38,
+   "description": "Two carts and a mule lost, and still somebody says the Reed Crocodiles look like logs. Kill six in the Whispering Mudbanks north from here, where we haul our stone. They wait there day and night; at least one thing around this quarry never misses a shift.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "whispering_cut_01",
+   "min_level": 23,
+   "objectives": [
+    "kill 6 reed_crocodile [in kragmar_whispering_reedlands/mudbanks]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_whispering_reedlands/mudbanks",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:reed_crocodile"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "That Is No Floating Log",
+   "turnin": "r20_anchor_066_host",
+   "xp": 450
+  },
+  {
+   "copper": 26,
+   "description": "The quarry pumps squeal loud enough to drown out the frogs, and the frogs have put years into that chorus. Bring me two Slime Gel to grease them, taken from the Bubbling Bog Oozes in the Whispering Thicket, in the heart of Whispering Reedlands. The oozes come out there after dark, making considerably less fuss than my machinery.",
+   "giver": "r20_anchor_066_host",
+   "giver_name": "Zali Runoff",
+   "giver_settlement": "Reedstone Cut",
+   "id": "whispering_cut_02",
    "min_level": 24,
    "objectives": [
-    "talk to Zali Runoff (r20_anchor_066)"
+    "bring 2 grug_mobs:slime_gel"
    ],
    "objectives_raw": [
     {
-     "count": 1,
-     "npc": "r20_anchor_066_host",
-     "type": "talk"
+     "count": 2,
+     "item": "grug_mobs:slime_gel",
+     "type": "item"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "whispering_cut_01"
+   ],
    "reward_items": [],
-   "title": "Word for Zali Runoff",
+   "title": "Quiet the Pumps",
    "turnin": "r20_anchor_066_host",
-   "xp": 705
+   "xp": 310
   },
   {
-   "copper": 50,
-   "description": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Thunderstep Watch in Thunderroot Wilds and speak with Rumela Stormstep. This is level 31\u201340 country; prepare your equipment before leaving the road. Complete the conversation with Rumela Stormstep there. No parcel, fighting errand or return trip is required.",
+   "copper": 19,
+   "description": "Every flood leaves fresh Reed Crocodiles in the Whispering Mudbanks north from here, and none has offered to pull a cart. Kill six there, by day or night, for this repeatable bounty. It opens again twenty minutes after you turn it in; stone waits patiently, but my haulers should not have to.",
    "giver": "r20_anchor_066_host",
    "giver_name": "Zali Runoff",
    "giver_settlement": "Reedstone Cut",
-   "id": "r20_troll_journey_03",
-   "min_level": 31,
+   "id": "whispering_cut_bounty",
+   "min_level": 25,
    "objectives": [
-    "talk to Rumela Stormstep (r20_anchor_048)"
+    "kill 6 reed_crocodile [in kragmar_whispering_reedlands/mudbanks]"
    ],
    "objectives_raw": [
     {
-     "count": 1,
-     "npc": "r20_anchor_048_host",
-     "type": "talk"
+     "area": "kragmar_whispering_reedlands/mudbanks",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:reed_crocodile"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "whispering_cut_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Jaws on the Haul Path (repeatable)",
+   "turnin": "r20_anchor_066_host",
+   "xp": 233
+  },
+  {
+   "copper": 38,
+   "description": "Listen to the Whispering Mire Nests southeast from here: the reeds whisper, and the Toll Mirefolk shout over them. Kill six mirefolk there to weaken their tollkeeper's hold on these waters. We have heard quite enough about what we owe for crossing our own home.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "whispering_voice_01",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 toll_mirefolk [in kragmar_whispering_reedlands/mire_nests]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_whispering_reedlands/mire_nests",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:toll_mirefolk"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Rumela Stormstep",
-   "turnin": "r20_anchor_048_host",
-   "xp": 915
+   "title": "Who Speaks for the Mire",
+   "turnin": "r20_anchor_046_host",
+   "xp": 495
+  },
+  {
+   "copper": 58,
+   "description": "Mirefolk Tollkeeper Ush waits in the Whispering Mire Nests southeast from here, demanding coin from everything that floats. Kill Ush and end that claim upon our waters. When the reeds whisper the tale, I want them to remember who stood up for the folk with empty hands.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "whispering_voice_02",
+   "min_level": 28,
+   "objectives": [
+    "kill 1 tollkeeper_ush"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:tollkeeper_ush"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "whispering_voice_01"
+   ],
+   "reward_items": [],
+   "title": "The River Has No Purse",
+   "turnin": "r20_anchor_046_host",
+   "xp": 765
+  },
+  {
+   "copper": 6,
+   "description": "You have given these waters a tale worth carrying, and I will see that it travels. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender. The Throng needs hands like yours where the banners tear, as surely as we needed them among the reeds.",
+   "giver": "r20_anchor_046_host",
+   "giver_name": "Enashi Reedvoice",
+   "giver_settlement": "Reedvoice Station",
+   "id": "whispering_front_bannerbreak",
+   "min_level": 29,
+   "objectives": [
+    "talk to Yarra Standardmender (r20_anchor_044)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_044_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "whispering_voice_02"
+   ],
+   "reward_items": [],
+   "title": "Let the Reeds Tell It",
+   "turnin": "r20_anchor_044_host",
+   "xp": 88
   }
  ],
  "race_region": "troll",
@@ -943,10 +923,10 @@
      "npc_id": "r20_anchor_024_host",
      "npc_name": "Taleko Drycord",
      "quests": [
-      "r20_anchor_024_01",
-      "r20_anchor_024_02",
-      "r20_anchor_024_03",
-      "r20_troll_journey_02"
+      "whispering_journey_ossuary",
+      "whispering_journey_speargrass",
+      "whispering_reeds_01",
+      "whispering_reeds_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1060,9 +1040,9 @@
      "npc_id": "r20_anchor_046_host",
      "npc_name": "Enashi Reedvoice",
      "quests": [
-      "r20_anchor_046_01",
-      "r20_anchor_046_02",
-      "r20_anchor_046_03"
+      "whispering_front_bannerbreak",
+      "whispering_voice_01",
+      "whispering_voice_02"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1176,10 +1156,9 @@
      "npc_id": "r20_anchor_066_host",
      "npc_name": "Zali Runoff",
      "quests": [
-      "r20_anchor_066_01",
-      "r20_anchor_066_02",
-      "r20_anchor_066_03",
-      "r20_troll_journey_03"
+      "whispering_cut_01",
+      "whispering_cut_02",
+      "whispering_cut_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",

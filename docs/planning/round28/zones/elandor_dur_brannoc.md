@@ -44,12 +44,12 @@ Share of land per level: L20 13.2%, L21 11.1%, L22 12.2%, L23 8.7%, L24 8.4%, L2
 
 ### Dur Brannoc (`dur_brannoc`, anchor_007) at -1800, 69, -1500
 
-Residents/guards: gear_display 3, guard_patrol 50, guard_post 19, housing_manager 1, idle 125, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, trainer 8, vendor 9, waypoint 1, work 54.
+Residents/guards: gear_display 3, guard_patrol 50, guard_post 19, housing_manager 1, idle 125, innkeeper 1, king 1, mount_display 4, public_station 7, quest 3, riding_trainer 1, shipwright 1, trainer 8, vendor 9, waypoint 1, work 54.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | king | king |  | -1800, 75, -1468 | - |
-| ancestor_hall_quest | quest giver | Dorrin Gateledger | -1838, 70, -1479 | r20_dwarf_capital_services, r20_dwarf_capital_stores, r20_dwarf_journey_01 |
+| ancestor_hall_quest | quest giver | Dorrin Gateledger | -1838, 70, -1479 | durbrannoc_front_01, durbrannoc_front_02, durbrannoc_front_bounty, durbrannoc_gate_01, durbrannoc_gate_02, durbrannoc_gate_03, durbrannoc_gate_ashenward, durbrannoc_gate_glassroot, durbrannoc_gate_optional, durbrannoc_gate_stormvault |
 | vendor_race | vendor | vendor kind: race | -1757, 70, -1491 | - |
 | vendor_general | vendor | vendor kind: general | -1757, 70, -1484 | - |
 | travel_waypoint | waypoint |  | -1781, 70, -1522 | - |
@@ -58,6 +58,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 19, housing_manage
 | forge_pack_stable/forge_pack_stable_mount_3 | mount display |  | -1871, 70, -1482 | - |
 | forge_pack_stable/forge_pack_stable_mount_4 | mount display |  | -1861, 70, -1482 | - |
 | forge_pack_stable/forge_pack_stable_riding | riding trainer |  | -1866, 70, -1491 | - |
+| forge_pack_stable/forge_pack_stable_shipwright | shipwright |  | -1858, 70, -1491 | - |
 | forge_smithy/forge_smithy_vendor_smith | vendor | vendor kind: smith | -1805, 70, -1433 | - |
 | forge_smithy/forge_smithy_weaponsmith | profession trainer | trains: weaponsmith | -1814, 70, -1440 | - |
 | forge_smithy/forge_smithy_armorsmith | profession trainer | trains: armorsmith | -1814, 70, -1436 | - |
@@ -75,7 +76,7 @@ Residents/guards: gear_display 3, guard_patrol 50, guard_post 19, housing_manage
 | terrace_brewhouse/terrace_brewhouse_alchemist | profession trainer | trains: alchemist | -1898, 71, -1461 | - |
 | terrace_bakehouse/terrace_bakehouse_vendor_baker | vendor | vendor kind: baker | -1826, 67, -1371 | - |
 | terrace_bakehouse/terrace_bakehouse_cooking | profession trainer | trains: cooking | -1833, 67, -1362 | - |
-| terrace_bakehouse/terrace_bakehouse_quest_cook | quest giver | Varda Copperpan | -1829, 67, -1362 | r20_dwarf_capital_cook |
+| terrace_bakehouse/terrace_bakehouse_quest_cook | quest giver | Varda Copperpan | -1829, 67, -1362 | durbrannoc_dispatch_01, durbrannoc_dispatch_highcourt, durbrannoc_dispatch_lorindor, durbrannoc_dispatch_whitebridge, durbrannoc_provisions_01, durbrannoc_provisions_bounty, durbrannoc_provisions_optional |
 | garrison_armoury/garrison_armoury_vendor_armourer | vendor | vendor kind: armourer | -1869, 70, -1512 | - |
 | deep_hall_of_record/deep_hall_of_record_quest | quest giver | (free quest socket: no quest NPC bound) | -1721, 72, -1548 | - |
 | deep_memory_hall/deep_memory_hall_vendor_deep_embalmer | vendor | vendor kind: embalmer | -1730, 74, -1609 | - |
@@ -86,14 +87,27 @@ Public stations: forge_smithy/forge_smithy_station (forge), forge_guild_house/fo
 Distances: zone edge N 440 (elandor_stormvault_heights), S 328 (elandor_copperfell_foothills), E 560 (elandor_whitebridge_shire), W 332 (elandor_frostbarrow_shelf); nearest other-zone land 313 W; sea 673 W; sea-beach sand 677 W; nearest road 50.
 Nearest hubs (straight / by road): Copperfell Village 540 / 857; Tarnwatch Fold 609 / 877; Rimebell Watch 559 / 1085; Copperfell Bandit Camp 612 / 1216; Bridgechalk Dig 766 / 1331.
 
-### Current quests (4, given in this zone)
+### Current quests (17, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_dwarf_capital_cook | Copperpan Supper | Varda Copperpan (Dur Brannoc) | 10 | bring 5 mobs:meat_raw | 380 | - |
-| r20_dwarf_capital_services | A Seat at Copperpan | Dorrin Gateledger (Dur Brannoc) | 10 | talk to Varda Copperpan (dur_brannoc) | 285 | r20_dwarf_capital_intro |
-| r20_dwarf_capital_stores | Lamp Coal for the Gate Shift | Dorrin Gateledger (Dur Brannoc) | 20 | bring 8 default:coal_lump | 780 | - |
-| r20_dwarf_journey_01 | Word for Edda Tarnmantle | Dorrin Gateledger (Dur Brannoc) | 21 | talk to Edda Tarnmantle (r20_anchor_014) | 615 | - |
+| durbrannoc_gate_01 | Payment Was Final | Dorrin Gateledger (Dur Brannoc) | 20 | kill 8 debtbound_zombie [in elandor_dur_brannoc/pastures] | 520 | - |
+| durbrannoc_provisions_01 | A Pie Needs a Middle | Varda Copperpan (Dur Brannoc) | 20 | bring 4 grug_fishing:mire_carp | 260 | - |
+| durbrannoc_dispatch_01 | The Other Half of Edda's Order | Varda Copperpan (Dur Brannoc) | 21 | talk to Edda Tarnmantle (r20_anchor_014) | 135 | durbrannoc_gate_01 |
+| durbrannoc_dispatch_highcourt | Varda's Recommendation | Varda Copperpan (Dur Brannoc) | 22 | talk to Mariel Waybook (highcourt) | 140 | durbrannoc_dispatch_01 |
+| durbrannoc_dispatch_lorindor | Room at Another Hearth | Varda Copperpan (Dur Brannoc) | 22 | talk to Ilwen Petalmeasure (r20_anchor_018) | 140 | durbrannoc_dispatch_01 |
+| durbrannoc_dispatch_whitebridge | A Neighbour's Table | Varda Copperpan (Dur Brannoc) | 22 | talk to Merren Oakstamp (r20_anchor_016) | 140 | durbrannoc_dispatch_01 |
+| durbrannoc_gate_02 | His Majesty Signed Nothing | Dorrin Gateledger (Dur Brannoc) | 23 | kill 8 toll_bandit_archer or toll_bandit [in elandor_dur_brannoc/tollwood] | 675 | durbrannoc_gate_01 |
+| durbrannoc_provisions_optional | Optional: A Ram for the Roast | Varda Copperpan (Dur Brannoc) | 24 | kill 6 hill_ram [in elandor_dur_brannoc/uplands] | 543 | durbrannoc_provisions_01 |
+| durbrannoc_gate_03 | Close Brakk's Account | Dorrin Gateledger (Dur Brannoc) | 27 | kill 1 ore_factor_brakk; bring 2 grug_mobs:clasped_purse | 1020 | durbrannoc_gate_02 |
+| durbrannoc_gate_optional | Optional: Tithes for the Dead | Dorrin Gateledger (Dur Brannoc) | 27 | kill 6 stubborn_zombie [in elandor_dur_brannoc/heights] | 595 | durbrannoc_gate_02 |
+| durbrannoc_provisions_bounty | Bounty: Supper for a City (repeatable) | Varda Copperpan (Dur Brannoc) | 28 | kill 6 hill_ram [in elandor_dur_brannoc/heights] | 425 | durbrannoc_provisions_01 |
+| durbrannoc_gate_ashenward | Beyond Our Own Gate | Dorrin Gateledger (Dur Brannoc) | 29 | talk to Toren Waterbarrel (r20_anchor_031) | 175 | durbrannoc_gate_03 |
+| durbrannoc_gate_glassroot | The Weight of Our Word | Dorrin Gateledger (Dur Brannoc) | 29 | talk to Faeris Rootbinder (r20_anchor_036) | 175 | durbrannoc_gate_03 |
+| durbrannoc_gate_stormvault | Stone Enough to Stand On | Dorrin Gateledger (Dur Brannoc) | 29 | talk to Borin Splitbolt (r20_anchor_027) | 175 | durbrannoc_gate_03 |
+| durbrannoc_front_01 | Optional: A Blank Space on the Clan's Map | Dorrin Gateledger (Dur Brannoc) | 60 | kill 6 crown_crag_eagle [in front_wyrmglass_crown/spires] | 0 | - |
+| durbrannoc_front_02 | Group: Silence for the Clan | Dorrin Gateledger (Dur Brannoc) | 60 | kill 1 rime_bell_warden | 0 | durbrannoc_front_01 |
+| durbrannoc_front_bounty | Bounty: The Clan's Standing Order (repeatable) | Dorrin Gateledger (Dur Brannoc) | 60 | bring 4 grug_mobs:rime_sinew | 0 | durbrannoc_front_01 |
 
 ## Mobs by spawn region
 

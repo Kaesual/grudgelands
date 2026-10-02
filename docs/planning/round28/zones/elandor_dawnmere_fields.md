@@ -61,35 +61,41 @@ Share of land per level: L1 3.8%, L2 4.7%, L3 64.0%, L4 6.3%, L5 5.4%, L6 4.4%, 
 
 ### Dawnmere (`dawnmere`, anchor_002) at 0, 36, -2550
 
-Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, work 2.
+Residents/guards: guard_patrol 5, guard_post 2, idle 6, innkeeper 1, public_station 1, quest 2, trainer 1, vendor 1, waypoint 1, work 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
 | green_vendor | vendor | vendor kind: race | 6, 37, -2554 | - |
 | home_innkeeper | innkeeper (respawn bind) |  | 11, 37, -2541 | - |
-| hall_quest | quest giver | Elian Reed | -11, 37, -2542 | r14_human_01_boars_beyond_the_fence, r14_human_03_granary_teeth, r14_human_04_shapes_by_lanternlight, r14_human_05_the_missing_flock, r14_human_06_flock_on_mill_road, r14_human_10_a_woodsman_s_edge, r14_human_11_a_pick_for_the_road, r20_human_capital_intro |
+| hall_quest | quest giver | Elian Reed | -11, 37, -2542 | dawnmere_departure, dawnmere_hunt_01, dawnmere_hunt_02, dawnmere_hunt_03, dawnmere_hunt_04, dawnmere_hunt_05, dawnmere_tools_01, dawnmere_tools_02, dawnmere_tools_03, dawnmere_tools_04 |
+| travel_waypoint | waypoint |  | 14, 37, -2556 | - |
 | trainer_cooking | profession trainer | trains: cooking | 2, 37, -2540 | - |
-| quest_cook | quest giver | Bess Honeycrust | 2, 37, -2537 | r14_human_02_the_smokehouse_share, r20_human_start_cook |
+| quest_cook | quest giver | Bess Honeycrust | 2, 37, -2537 | dawnmere_kitchen_01, dawnmere_kitchen_02, dawnmere_kitchen_03, dawnmere_pantry_01, dawnmere_pantry_02 |
 
 Public stations: cook_oven (furnace).
 
 Distances: zone edge N 236 (elandor_goldmead_vale), S 552 (coastal_shelf), E 476 (bay_water), W 696 (coastal_shelf); nearest other-zone land 229 N; sea 362 E; sea-beach sand 345 E; nearest road 64.
 Nearest hubs (straight / by road): Goldmead Outpost 553 / 686; Goldmead Bandit Camp 654 / 1022; Highcourt 1050 / 1366; Goldmead Village 543 / 1576; Petalbank Wardenry 1465 / 2173.
 
-### Current quests (10, given in this zone)
+### Current quests (15, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_human_01_boars_beyond_the_fence | Boars Beyond the Fence | Elian Reed (Dawnmere) | 1 | kill 3 boar or small_boar | 20 | - |
-| r14_human_02_the_smokehouse_share | The Smokehouse Share | Bess Honeycrust (Dawnmere) | 1 | bring 4 mobs:meat_raw | 20 | - |
-| r14_human_10_a_woodsman_s_edge | A Woodsman's Edge | Elian Reed (Dawnmere) | 1 | bring 1 grug_materials:axe_wood | 15 | - |
-| r20_human_start_cook | The Second Oven | Bess Honeycrust (Dawnmere) | 1 | bring 3 default:coal_lump | 20 | - |
-| r14_human_11_a_pick_for_the_road | A Pick for the Road | Elian Reed (Dawnmere) | 2 | bring 1 grug_materials:pick_stone | 45 | r14_human_10_a_woodsman_s_edge |
-| r14_human_03_granary_teeth | Braces for the Granary | Elian Reed (Dawnmere) | 3 | bring 6 default:wood | 100 | r14_human_01_boars_beyond_the_fence |
-| r14_human_04_shapes_by_lanternlight | Shapes by Lanternlight | Elian Reed (Dawnmere) | 4 | kill 3 zombie or braindead_zombie or sluggish_zombie | 140 | r14_human_01_boars_beyond_the_fence |
-| r14_human_05_the_missing_flock | The Missing Flock | Elian Reed (Dawnmere) | 5 | kill 5 fox or small_fox | 180 | r14_human_03_granary_teeth |
-| r14_human_06_flock_on_mill_road | The Road to Marta Millward | Elian Reed (Dawnmere) | 10 | talk to Marta Millward (goldmead_village) | 285 | r14_human_05_the_missing_flock |
-| r20_human_capital_intro | The Road to Highcourt | Elian Reed (Dawnmere) | 10 | talk to Mariel Waybook (highcourt) | 285 | - |
+| dawnmere_hunt_01 | Crop Thieves | Elian Reed (Dawnmere) | 1 | kill 8 small_boar [in elandor_dawnmere_fields/home_fields] | 105 | - |
+| dawnmere_kitchen_01 | Five Logs, Any Tree | Bess Honeycrust (Dawnmere) | 1 | bring 5 group:tree | 30 | - |
+| dawnmere_tools_01 | Two Hands, Two Tools | Elian Reed (Dawnmere) | 1 | bring 1 grug_materials:axe_wood; bring 1 grug_materials:pick_wood | 30 | - |
+| dawnmere_hunt_02 | The Night Shift | Elian Reed (Dawnmere) | 2 | kill 8 large_rat [in elandor_dawnmere_fields/meadows] | 120 | dawnmere_hunt_01 |
+| dawnmere_kitchen_02 | A Proper Fire | Bess Honeycrust (Dawnmere) | 2 | bring 5 default:coal_lump | 60 | dawnmere_kitchen_01 |
+| dawnmere_tools_02 | A Stone Edge | Elian Reed (Dawnmere) | 2 | bring 1 grug_materials:axe_stone; bring 1 grug_materials:pick_stone | 60 | dawnmere_tools_01 |
+| dawnmere_pantry_01 | The Rats Can Mend It | Bess Honeycrust (Dawnmere) | 3 | bring 2 grug_mobs:rat_fur_patch | 60 | dawnmere_hunt_02 |
+| dawnmere_hunt_03 | Foxes Before Breakfast | Elian Reed (Dawnmere) | 4 | kill 8 small_fox [in elandor_dawnmere_fields/pastures] | 165 | dawnmere_hunt_02 |
+| dawnmere_kitchen_03 | The Smokehouse Share | Bess Honeycrust (Dawnmere) | 4 | bring 10 mobs:meat_raw | 100 | dawnmere_kitchen_02, dawnmere_hunt_02 |
+| dawnmere_tools_03 | Metal for the Mending | Elian Reed (Dawnmere) | 5 | bring 3 grug_materials:copper_bar; bring 3 grug_materials:tin_bar | 110 | dawnmere_tools_02 |
+| dawnmere_hunt_04 | Five Claws Too Many | Elian Reed (Dawnmere) | 7 | kill 5 giant_crab [in elandor_dawnmere_fields/wreck_coast] | 163 | dawnmere_hunt_03 |
+| dawnmere_pantry_02 | A Brush and a Better Supper | Bess Honeycrust (Dawnmere) | 7 | bring 2 grug_mobs:crab_leg; bring 1 grug_mobs:fox_tail | 130 | dawnmere_pantry_01, dawnmere_hunt_04 |
+| dawnmere_tools_04 | An Edge for the Road | Elian Reed (Dawnmere) | 7 | bring 3 grug_materials:bronze_bar | 130 | dawnmere_tools_03 |
+| dawnmere_hunt_05 | Requisition for One Crumb | Elian Reed (Dawnmere) | 8 | kill 7 confused_bandit [in elandor_dawnmere_fields/bandit_camp]; kill 1 confused_bandit_chief | 280 | dawnmere_hunt_04 |
+| dawnmere_departure | The Next Sack of Grain | Elian Reed (Dawnmere) | 9 | talk to Marta Millward (goldmead_village) | 35 | dawnmere_hunt_05 |
 
 ## Mobs by spawn region
 

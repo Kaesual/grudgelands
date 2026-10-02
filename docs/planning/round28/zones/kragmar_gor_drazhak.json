@@ -205,86 +205,39 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 45,
-   "description": "Gorla Longladle has a ration pot beside Gor Drazhak's cook-court oven. Bring five raw meat portions for the next watch and its travellers. You can help without learning Cooking.",
+   "copper": 58,
+   "description": "Gor Drazhak's sentries should be watching for enemy banners, yet half their night goes to watching their ankles. Kill eight Dust-Stinger Scorpions after dark on the Gor Drazhak Steppe, near Gor Drazhak. The Throng needs its guards standing firm.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_muster_01",
+   "min_level": 19,
+   "objectives": [
+    "kill 8 dust_stinger [in kragmar_gor_drazhak/steppe]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_gor_drazhak/steppe",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:dust_stinger"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Sentry Needs Both Feet",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 585
+  },
+  {
+   "copper": 19,
+   "description": "Speargrass Wellhold keeps sending us spears. Brakka Jarward wants word back, and you look ready for a walk. Travel to the Wellhold in Speargrass Reach and speak to Brakka for me. If Brakka asks about my stew, say the bowls come back empty.",
    "giver": "r20_orc_capital_cook",
    "giver_name": "Gorla Longladle",
    "giver_settlement": "Gor Drazhak",
-   "id": "r20_orc_capital_cook",
-   "min_level": 10,
-   "objectives": [
-    "bring 5 mobs:meat_raw"
-   ],
-   "objectives_raw": [
-    {
-     "count": 5,
-     "item": "mobs:meat_raw",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Longladle Ration",
-   "turnin": "r20_orc_capital_cook",
-   "xp": 380
-  },
-  {
-   "copper": 40,
-   "description": "Thorga recommends a stop at Gorla Longladle's cook court. Speak with the cook beside the oven in the warren, then complete the introduction there. The nearby Cooking trainer is not required for this conversation.",
-   "giver": "r20_orc_capital_envoy",
-   "giver_name": "Thorga Roadspeaker",
-   "giver_settlement": "Gor Drazhak",
-   "id": "r20_orc_capital_services",
-   "min_level": 10,
-   "objectives": [
-    "talk to Gorla Longladle (gor_drazhak)"
-   ],
-   "objectives_raw": [
-    {
-     "count": 1,
-     "npc": "r20_orc_capital_cook",
-     "type": "talk"
-    }
-   ],
-   "prerequisites": [
-    "r20_orc_capital_intro"
-   ],
-   "reward_items": [],
-   "title": "A Bowl at Longladle",
-   "turnin": "r20_orc_capital_cook",
-   "xp": 285
-  },
-  {
-   "copper": 60,
-   "description": "The muster yard's supply edge has been worn down by loaded carts. Bring twelve cobble blocks to Thorga so the watch can reset it without taking stone from occupied homes.",
-   "giver": "r20_orc_capital_envoy",
-   "giver_name": "Thorga Roadspeaker",
-   "giver_settlement": "Gor Drazhak",
-   "id": "r20_orc_capital_stores",
-   "min_level": 20,
-   "objectives": [
-    "bring 12 default:cobble"
-   ],
-   "objectives_raw": [
-    {
-     "count": 12,
-     "item": "default:cobble",
-     "type": "item"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Stone for the Muster Yard",
-   "turnin": "r20_orc_capital_envoy",
-   "xp": 780
-  },
-  {
-   "copper": 50,
-   "description": "The capital keeps contact with the working settlements beyond its walls. Travel to Speargrass Wellhold in Speargrass Reach and speak with Brakka Jarward. This is level 21\u201330 country; prepare your equipment before leaving the road. Complete the conversation with Brakka Jarward there. No parcel, fighting errand or return trip is required.",
-   "giver": "r20_orc_capital_envoy",
-   "giver_name": "Thorga Roadspeaker",
-   "giver_settlement": "Gor Drazhak",
-   "id": "r20_orc_journey_01",
+   "id": "gor_drazhak_dispatch_01",
    "min_level": 21,
    "objectives": [
     "talk to Brakka Jarward (r20_anchor_022)"
@@ -296,11 +249,278 @@
      "type": "talk"
     }
    ],
+   "prerequisites": [
+    "gor_drazhak_muster_01"
+   ],
+   "reward_items": [],
+   "title": "Spears Out, Word Back",
+   "turnin": "r20_anchor_022_host",
+   "xp": 203
+  },
+  {
+   "copper": 19,
+   "description": "Our troll allies send fish from Whisperreed Landing, and our salt makes the return journey. Go to Whispering Reedlands and speak to Taleko Drycord at the landing. Give our allies a hand; a shared cooking pot holds the Throng together as surely as any war banner.",
+   "giver": "r20_orc_capital_cook",
+   "giver_name": "Gorla Longladle",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_dispatch_02",
+   "min_level": 22,
+   "objectives": [
+    "talk to Taleko Drycord (r20_anchor_024)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_024_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "gor_drazhak_muster_01"
+   ],
+   "reward_items": [],
+   "title": "Salt Keeps a Friendship",
+   "turnin": "r20_anchor_024_host",
+   "xp": 210
+  },
+  {
+   "copper": 51,
+   "description": "Warriors can argue about who leads the march; at supper, every last one answers to my ladle. Bring me eight pieces of Raw Meat and two Braided Sinew from the Waterhole Zebras that graze the Gor Drazhak Badlands by day. We have ration bundles to tie and a hungry muster to fill them for.",
+   "giver": "r20_orc_capital_cook",
+   "giver_name": "Gorla Longladle",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_provisions_01",
+   "min_level": 22,
+   "objectives": [
+    "bring 8 mobs:meat_raw",
+    "bring 2 grug_mobs:braided_sinew"
+   ],
+   "objectives_raw": [
+    {
+     "count": 8,
+     "item": "mobs:meat_raw",
+     "type": "item"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:braided_sinew",
+     "type": "item"
+    }
+   ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Word for Brakka Jarward",
-   "turnin": "r20_anchor_022_host",
-   "xp": 615
+   "title": "The Ladle Commands",
+   "turnin": "r20_orc_capital_cook",
+   "xp": 580
+  },
+  {
+   "copper": 58,
+   "description": "Kill eight Dustpack Hyenas by day in the Gor Drazhak Badlands, east of Gor Drazhak, and keep our supply carts moving. They follow the rations as though we packed lunch for them; if they want a meal from the Throng, they can learn to carry a spear.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_muster_02",
+   "min_level": 23,
+   "objectives": [
+    "kill 8 dustpack_hyena [in kragmar_gor_drazhak/badlands]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_gor_drazhak/badlands",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:dustpack_hyena"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "gor_drazhak_muster_01"
+   ],
+   "reward_items": [],
+   "title": "Optional: The Last Laugh Costs Extra",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 675
+  },
+  {
+   "copper": 83,
+   "description": "Bandit Ration-Broker Garr buys Korr's stolen supplies and charges hungry fighters for the privilege of getting them back. At the Gor Drazhak Tollcamp, southeast of Gor Drazhak, kill six Toll Bandit Archers and Garr himself. The hands that fill our war bands' bowls deserve better than this.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_muster_03",
+   "min_level": 27,
+   "objectives": [
+    "kill 6 toll_bandit_archer [in kragmar_gor_drazhak/tollcamp]",
+    "kill 1 ration_broker_garr"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_gor_drazhak/tollcamp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:toll_bandit_archer"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:ration_broker_garr"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "gor_drazhak_muster_01"
+   ],
+   "reward_items": [],
+   "title": "His Profit, Our Empty Bowls",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 1073
+  },
+  {
+   "copper": 32,
+   "description": "More Toll Bandit Archers have settled into the Gor Drazhak Tollcamp; evidently word travels slower than greed. Kill six and return for your bounty. You may take the job again twenty minutes after collecting your pay.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_bounty",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 toll_bandit_archer [in kragmar_gor_drazhak/tollcamp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_gor_drazhak/tollcamp",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:toll_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "gor_drazhak_muster_03"
+   ],
+   "reward_items": [],
+   "title": "Bounty: A Toll Paid in Arrows (repeatable)",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 425
+  },
+  {
+   "copper": 19,
+   "description": "You have seen what it takes to keep the Throng fed and marching. Now report to Drek Rampbinder at Red Ramp Post on Bannerbreak Mesa, where our fighters hold the line. Stand with them as you stood for the people behind these walls.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gor_drazhak_muster_04",
+   "min_level": 29,
+   "objectives": [
+    "talk to Drek Rampbinder (r20_anchor_043)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_043_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "gor_drazhak_muster_03"
+   ],
+   "reward_items": [],
+   "title": "Your Place in the Line",
+   "turnin": "r20_anchor_043_host",
+   "xp": 255
+  },
+  {
+   "copper": 240,
+   "description": "Gor Drazhak did not build a road through two front lines just to watch our wardens get buried beside it. Bring me two Scorch Venom from the Sinkmire Vipers by day in the Causeway Reedmire, which lies in the southeast of The Broken Causeway. Our archers have volunteered to handle the arrows; funny how nobody volunteered for the snakes.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gd_front_01",
+   "min_level": 41,
+   "objectives": [
+    "bring 2 grug_mobs:scorch_venom"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:scorch_venom",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Give the Road Some Fangs",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 720
+  },
+  {
+   "copper": 360,
+   "description": "A recruit ought to wear a fang before a fang wears the recruit. Kill four Warpack Hyenas by day in the Shattered Line Trenches, which lie in the west of The Shattered Line, and bring me two Siegepack Fangs for the next recruits sent to the front.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gd_front_02",
+   "min_level": 43,
+   "objectives": [
+    "kill 4 warpack_hyena [in front_shattered_line/trenches]",
+    "bring 2 grug_mobs:siegepack_fang"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/trenches",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:warpack_hyena"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:siegepack_fang",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "gd_front_01"
+   ],
+   "reward_items": [],
+   "title": "Wear the Teeth This Time",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 1125
+  },
+  {
+   "copper": 600,
+   "description": "The sea keeps dumping soldiers on Stormscale Summit, and the Last-Watch Mummies insist they are still fit for duty. Buy a boat from the Shipwright and sail to the island, then destroy eight by day on the Stormscale Wreck Shore, which lies in the northwest of Stormscale Summit. Return for coin from the war chest. You can take the bounty again one hour after turn-in; the sea has plenty of reserves.",
+   "giver": "r20_orc_capital_envoy",
+   "giver_name": "Thorga Roadspeaker",
+   "giver_settlement": "Gor Drazhak",
+   "id": "gd_front_island",
+   "min_level": 60,
+   "objectives": [
+    "kill 8 last_watch_husk [in front_stormscale_summit/wreck_shore]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_stormscale_summit/wreck_shore",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:last_watch_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "gd_front_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Dead Weight Ashore (repeatable)",
+   "turnin": "r20_orc_capital_envoy",
+   "xp": 0
   }
  ],
  "race_region": "orc",
@@ -938,9 +1158,14 @@
      "npc_id": "r20_orc_capital_envoy",
      "npc_name": "Thorga Roadspeaker",
      "quests": [
-      "r20_orc_capital_services",
-      "r20_orc_capital_stores",
-      "r20_orc_journey_01"
+      "gd_front_01",
+      "gd_front_02",
+      "gd_front_island",
+      "gor_drazhak_bounty",
+      "gor_drazhak_muster_01",
+      "gor_drazhak_muster_02",
+      "gor_drazhak_muster_03",
+      "gor_drazhak_muster_04"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1066,6 +1291,14 @@
      "z": 1516
     },
     {
+     "role": "shipwright",
+     "role_text": "shipwright",
+     "socket": "war_beast_pen/war_beast_pen_shipwright",
+     "x": 114,
+     "y": 61,
+     "z": 1508
+    },
+    {
      "role": "public_station",
      "role_text": "public station",
      "socket": "bone_herb_house/bone_herb_house_station",
@@ -1114,7 +1347,9 @@
      "npc_id": "r20_orc_capital_cook",
      "npc_name": "Gorla Longladle",
      "quests": [
-      "r20_orc_capital_cook"
+      "gor_drazhak_dispatch_01",
+      "gor_drazhak_dispatch_02",
+      "gor_drazhak_provisions_01"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1281,6 +1516,7 @@
     "public_station": 7,
     "quest": 3,
     "riding_trainer": 1,
+    "shipwright": 1,
     "trainer": 8,
     "vendor": 7,
     "waypoint": 1,

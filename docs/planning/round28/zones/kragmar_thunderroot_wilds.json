@@ -321,85 +321,297 @@
  "pvp_rule": "contested",
  "quests": [
   {
-   "copper": 85,
-   "description": "Thunderstep's roof runoff cuts across the forest ascent. Bring eight cobble blocks for a shallow gutter beside the shelter, keeping the walking line free. Existing or traded supplies are welcome.",
+   "copper": 112,
+   "description": "The Treetop Jungle Apes in the Thunderroot Canopy, which lies in the northwest of Thunderroot Wilds, greet every scout with a chorus loud enough to guide an Accord patrol. Hunt them by day and kill four. I asked the spirits for silence; they sent more rain, which was thoughtful but unhelpful.",
    "giver": "r20_anchor_048_host",
    "giver_name": "Rumela Stormstep",
    "giver_settlement": "Thunderstep Watch",
-   "id": "r20_anchor_048_01",
-   "min_level": 31,
+   "id": "thunderroot_storm_01",
+   "min_level": 29,
    "objectives": [
-    "bring 8 default:cobble"
+    "kill 4 territorial_ape [in kragmar_thunderroot_wilds/canopy]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:cobble",
+     "area": "kragmar_thunderroot_wilds/canopy",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:territorial_ape"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "An Unhelpful Chorus",
+   "turnin": "r20_anchor_048_host",
+   "xp": 630
+  },
+  {
+   "copper": 128,
+   "description": "The Reed-Hex Bog Witches gather after dark in the Thunderroot Bogs, which lie in the north of Thunderroot Wilds, bottling thunder as though the sky were theirs to pickle. Kill four and bring me two Hex Bottle Shards; let us see whose storm they thought they could keep.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_storm_02",
+   "min_level": 31,
+   "objectives": [
+    "kill 4 reed_hex_witch [in kragmar_thunderroot_wilds/bogs]",
+    "bring 2 grug_mobs:hex_bottle_shard"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/bogs",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:reed_hex_witch"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 2,
+     "item": "grug_mobs:hex_bottle_shard",
      "type": "item"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "thunderroot_storm_01"
+   ],
    "reward_items": [],
-   "title": "A Gutter Before the Rain",
+   "title": "Thunder Needs No Cork",
    "turnin": "r20_anchor_048_host",
-   "xp": 1220
+   "xp": 740
   },
   {
-   "copper": 85,
-   "description": "Rainchar Camp's bandits hold supplies intended for the ascent. Defeat four bandits at that occupied camp in Thunderroot Wilds and report to Rumela.",
+   "copper": 48,
+   "description": "Our drums carry through rain, but our allies at Ashveil Watch have only the ash wind for company. Find Vaska Ashlistener there on Blackwind Rise and offer your help. Roots hold together beneath the soil; so must the Throng, even where our branches cannot touch.",
    "giver": "r20_anchor_048_host",
    "giver_name": "Rumela Stormstep",
    "giver_settlement": "Thunderstep Watch",
-   "id": "r20_anchor_048_02",
-   "min_level": 31,
+   "id": "thunderroot_storm_03",
+   "min_level": 32,
    "objectives": [
-    "kill 4 bandit or entrenched_bandit [in kragmar_thunderroot_wilds]"
+    "talk to Vaska Ashlistener (r20_anchor_039)"
    ],
    "objectives_raw": [
     {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:bandit",
-      "grug_mobs:entrenched_bandit"
-     ],
-     "type": "kill",
-     "zone": "kragmar_thunderroot_wilds"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Rainchar's Burning Cargo",
-   "turnin": "r20_anchor_048_host",
-   "xp": 1220
-  },
-  {
-   "copper": 100,
-   "description": "The report points across Glassroot Wilds to the Accord's frontier watch. At level 40, defeat three Accord guards at its military outposts or their patrols. This mission concerns armed guards, never villagers, players or Lethariel's capital watch.",
-   "giver": "r20_anchor_048_host",
-   "giver_name": "Rumela Stormstep",
-   "giver_settlement": "Thunderstep Watch",
-   "id": "r20_anchor_048_03",
-   "min_level": 40,
-   "objectives": [
-    "kill 3 guard_accord [in elandor_glassroot_wilds]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 3,
-     "mobs": [
-      "grug_mobs:guard_accord"
-     ],
-     "type": "kill",
-     "zone": "elandor_glassroot_wilds"
+     "count": 1,
+     "npc": "r20_anchor_039_host",
+     "type": "talk"
     }
    ],
    "prerequisites": [
-    "r20_anchor_048_02"
+    "thunderroot_storm_02"
    ],
    "reward_items": [],
-   "title": "Across the Glass Passage",
+   "title": "Rain for the Ashes",
+   "turnin": "r20_anchor_039_host",
+   "xp": 285
+  },
+  {
+   "copper": 112,
+   "description": "The marsh speaks to those who listen, but lately our foragers hear nothing except hissing. Kill four Coiled Serpents basking by day in the Thunderroot Witchmire, which lies in the heart of Thunderroot Wilds. The spirits may teach patience; I would rather our foragers came home to learn it.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_rainchar_01",
+   "min_level": 34,
+   "objectives": [
+    "kill 4 coiled_serpent [in kragmar_thunderroot_wilds/witchmire]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/witchmire",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:coiled_serpent"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Listen for the Hiss",
    "turnin": "r20_anchor_048_host",
-   "xp": 1975
+   "xp": 718
+  },
+  {
+   "copper": 112,
+   "description": "A message wrapped in silk sounds grand until you learn the messenger is still inside. Kill four Canopy-Web Jungle Spiders after dark in the Thunderroot Deepwood, which lies in the heart of Thunderroot Wilds. Our words must reach the other outposts before the spiders finish reading them.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_storm_04",
+   "min_level": 34,
+   "objectives": [
+    "kill 4 canopy_web_spider [in kragmar_thunderroot_wilds/deepwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/deepwood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:canopy_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_storm_02"
+   ],
+   "reward_items": [],
+   "title": "Messages Wrapped in Silk",
+   "turnin": "r20_anchor_048_host",
+   "xp": 700
+  },
+  {
+   "copper": 64,
+   "description": "The Treetop Jungle Apes have claimed the day's chorus in the Thunderroot Deepwood; even the birds sound offended. Kill six there by day and return for your reward. Wait twenty minutes after collecting before taking this bounty again; that gives me time to remember what a bird sounds like.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_storm_bounty",
+   "min_level": 34,
+   "objectives": [
+    "kill 6 territorial_ape [in kragmar_thunderroot_wilds/deepwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/deepwood",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:territorial_ape"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_storm_04"
+   ],
+   "reward_items": [],
+   "title": "Bounty: The Chorus Returns (repeatable)",
+   "turnin": "r20_anchor_048_host",
+   "xp": 410
+  },
+  {
+   "copper": 112,
+   "description": "The bandits at the Rainchar Camp southwest from here sell our stolen supplies while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there. Hungry fighters hold no line, whatever the spirits promise.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_rainchar_02",
+   "min_level": 37,
+   "objectives": [
+    "kill 4 entrenched_bandit_archer [in kragmar_thunderroot_wilds/rainchar_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/rainchar_camp",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_rainchar_01"
+   ],
+   "reward_items": [],
+   "title": "A Debt at Rainchar Camp",
+   "turnin": "r20_anchor_048_host",
+   "xp": 753
+  },
+  {
+   "copper": 160,
+   "description": "Bottle-Keeper Zek guards the witches' stolen storms in the Thunderroot Stormglades, southwest from here, with thunder in bottles and apes in the grass. Go by day and kill Zek along with four Treetop Jungle Apes in those glades. I want to hear the sky speak with its whole voice again.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_rainchar_03",
+   "min_level": 38,
+   "objectives": [
+    "kill 4 territorial_ape [in kragmar_thunderroot_wilds/stormglades]",
+    "kill 1 bottle_keeper_zek"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_thunderroot_wilds/stormglades",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:territorial_ape"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:bottle_keeper_zek"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_rainchar_02"
+   ],
+   "reward_items": [],
+   "title": "Zek Keeps the Wrong Company",
+   "turnin": "r20_anchor_048_host",
+   "xp": 1100
+  },
+  {
+   "copper": 128,
+   "description": "The Bog Witch Storm-Bottle waits in the Thunderroot Heartwood, west from here, clutching enough stolen thunder to make even the spirits keep their distance. Bring a group and kill her; no one should face that storm alone. Courage is easier to find with friends standing in the rain beside you.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_rainchar_group",
+   "min_level": 38,
+   "objectives": [
+    "kill 1 storm_bottle_witch"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:storm_bottle_witch"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_rainchar_03"
+   ],
+   "reward_items": [],
+   "title": "Group: A Storm Too Many",
+   "turnin": "r20_anchor_048_host",
+   "xp": 880
+  },
+  {
+   "copper": 48,
+   "description": "You came through this jungle listening for danger; now the jungle knows your footsteps. Travel to Tornstandard Hold on Bannerbreak Mesa and report to Yarra Standardmender; she sends Throng fighters on to the front from there. Carry our thunder with you.",
+   "giver": "r20_anchor_048_host",
+   "giver_name": "Rumela Stormstep",
+   "giver_settlement": "Thunderstep Watch",
+   "id": "thunderroot_rainchar_04",
+   "min_level": 39,
+   "objectives": [
+    "talk to Yarra Standardmender (r20_anchor_044)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_044_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "thunderroot_rainchar_03"
+   ],
+   "reward_items": [],
+   "title": "Carry the Thunder",
+   "turnin": "r20_anchor_044_host",
+   "xp": 338
   }
  ],
  "race_region": "troll",
@@ -613,9 +825,16 @@
      "npc_id": "r20_anchor_048_host",
      "npc_name": "Rumela Stormstep",
      "quests": [
-      "r20_anchor_048_01",
-      "r20_anchor_048_02",
-      "r20_anchor_048_03"
+      "thunderroot_rainchar_01",
+      "thunderroot_rainchar_02",
+      "thunderroot_rainchar_03",
+      "thunderroot_rainchar_04",
+      "thunderroot_rainchar_group",
+      "thunderroot_storm_01",
+      "thunderroot_storm_02",
+      "thunderroot_storm_03",
+      "thunderroot_storm_04",
+      "thunderroot_storm_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",

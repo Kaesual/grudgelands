@@ -289,86 +289,249 @@
  "pvp_rule": "peaceful",
  "quests": [
   {
-   "copper": 70,
-   "description": "Totemwater's rope rack needs sound crosspieces before the next river crossing. Bring eight junglewood planks for the covered rack; the river path must stay open beside it. Existing or traded supplies are welcome.",
+   "copper": 38,
+   "description": "My reading knots speak of something old and hungry beneath the water, but I need fresh reeds to finish the telling. Kill six Reed Tapirs by day in the Totemwater Jungle, in the west of Totemwater Reach, where they trample the reeds I use. It is hard enough to read tomorrow without a tapir sitting on it.",
    "giver": "r20_anchor_047_host",
    "giver_name": "Tokai Knotreader",
    "giver_settlement": "Totemwater Post",
-   "id": "r20_anchor_047_01",
-   "min_level": 21,
+   "id": "totemwater_knots_01",
+   "min_level": 20,
    "objectives": [
-    "bring 8 default:junglewood"
+    "kill 6 reed_tapir [in kragmar_totemwater_reach/jungle]"
    ],
    "objectives_raw": [
     {
-     "count": 8,
-     "item": "default:junglewood",
-     "type": "item"
+     "area": "kragmar_totemwater_reach/jungle",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:reed_tapir"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Rope Rack Timbers",
+   "title": "A Future Trampled Flat",
    "turnin": "r20_anchor_047_host",
-   "xp": 820
+   "xp": 405
   },
   {
-   "copper": 70,
-   "description": "Crocodiles wait on Totemwater Reach's muddy banks where carriers leave the path. Defeat three and give the crossing crew room to work.",
+   "copper": 32,
+   "description": "After dark the Wandering Wisps drift through the Totemwater Jungle and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
    "giver": "r20_anchor_047_host",
    "giver_name": "Tokai Knotreader",
    "giver_settlement": "Totemwater Post",
-   "id": "r20_anchor_047_02",
+   "id": "totemwater_tides_optional_wisps",
    "min_level": 21,
    "objectives": [
-    "kill 3 crocodile or reed_crocodile [in kragmar_totemwater_reach]"
+    "kill 6 wandering_wisp [in kragmar_totemwater_reach/jungle]"
    ],
    "objectives_raw": [
     {
-     "count": 3,
+     "area": "kragmar_totemwater_reach/jungle",
+     "count": 6,
      "mobs": [
-      "grug_mobs:crocodile",
-      "grug_mobs:reed_crocodile"
+      "grug_mobs:wandering_wisp"
      ],
-     "type": "kill",
-     "zone": "kragmar_totemwater_reach"
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "Jaws at the River Path",
+   "title": "Optional: Lights Over the Fish Traps",
    "turnin": "r20_anchor_047_host",
-   "xp": 820
+   "xp": 350
   },
   {
-   "copper": 70,
-   "description": "With the banks clearer, the crew can see bog ooze collecting below the route marker. Break up four in Totemwater Reach's muddy ground before the next load comes through.",
+   "copper": 38,
+   "description": "The carvers leave their totems in the Totemwater Totemwood, in the southwest of Totemwater Reach, and the Reed Jungle Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
    "giver": "r20_anchor_047_host",
    "giver_name": "Tokai Knotreader",
    "giver_settlement": "Totemwater Post",
-   "id": "r20_anchor_047_03",
-   "min_level": 23,
+   "id": "totemwater_knots_02",
+   "min_level": 24,
    "objectives": [
-    "kill 4 bog_ooze or sullen_bog_ooze [in kragmar_totemwater_reach]"
+    "kill 6 reed_jungle_lynx [in kragmar_totemwater_reach/totemwood]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "area": "kragmar_totemwater_reach/totemwood",
+     "count": 6,
      "mobs": [
-      "grug_mobs:bog_ooze",
-      "grug_mobs:sullen_bog_ooze"
+      "grug_mobs:reed_jungle_lynx"
      ],
-     "type": "kill",
-     "zone": "kragmar_totemwater_reach"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_047_02"
+    "totemwater_knots_01"
    ],
    "reward_items": [],
-   "title": "Mud Around the Marker",
+   "title": "Our Ancestors Are Not Cushions",
    "turnin": "r20_anchor_047_host",
-   "xp": 900
+   "xp": 450
+  },
+  {
+   "copper": 38,
+   "description": "I set traps for fish, yet the Barnacle Pinchers in the Totemwater Shallows north from here seem convinced everything I lower into the water belongs to them. Kill six by day and clear space for our traps. A reading on an empty stomach always seems to predict supper.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_tides_01",
+   "min_level": 24,
+   "objectives": [
+    "kill 6 armored_crab [in kragmar_totemwater_reach/shallows]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_totemwater_reach/shallows",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "A Trap Full of Pincers",
+   "turnin": "r20_anchor_047_host",
+   "xp": 465
+  },
+  {
+   "copper": 26,
+   "description": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Wandering Wisps in the Totemwater Wispfen north from here after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_knots_03",
+   "min_level": 26,
+   "objectives": [
+    "bring 2 grug_mobs:bound_wisp_mote"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:bound_wisp_mote",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "totemwater_knots_02"
+   ],
+   "reward_items": [],
+   "title": "Read by Restless Light",
+   "turnin": "r20_anchor_047_host",
+   "xp": 320
+  },
+  {
+   "copper": 26,
+   "description": "The Barnacle Pinchers have spent long enough meddling with my traps; now they can contribute something useful. Bring me two Layered Crab Shells from them in the Totemwater Shallows north from here by day, and I will make new lids. There is a pleasing turn in that knot.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_tides_02",
+   "min_level": 26,
+   "objectives": [
+    "bring 2 grug_mobs:layered_crab_shell"
+   ],
+   "objectives_raw": [
+    {
+     "count": 2,
+     "item": "grug_mobs:layered_crab_shell",
+     "type": "item"
+    }
+   ],
+   "prerequisites": [
+    "totemwater_tides_01"
+   ],
+   "reward_items": [],
+   "title": "Put the Shells to Work",
+   "turnin": "r20_anchor_047_host",
+   "xp": 320
+  },
+  {
+   "copper": 58,
+   "description": "I have the name at last: Crocodile Reed-Maw, waiting in its dark water southwest from here. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_knots_04",
+   "min_level": 28,
+   "objectives": [
+    "kill 1 reed_maw_crocodile"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:reed_maw_crocodile"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "totemwater_knots_03"
+   ],
+   "reward_items": [],
+   "title": "The Name Beneath the Water",
+   "turnin": "r20_anchor_047_host",
+   "xp": 765
+  },
+  {
+   "copper": 19,
+   "description": "The tide lays Barnacle Pinchers across the Totemwater Breakers east from here as though scattering seeds. Kill six by day for this repeatable bounty. You can take it again twenty minutes after turning it in; no gift of foresight is needed to know I will still want them gone.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_tides_bounty",
+   "min_level": 28,
+   "objectives": [
+    "kill 6 armored_crab [in kragmar_totemwater_reach/breakers]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "kragmar_totemwater_reach/breakers",
+     "count": 6,
+     "mobs": [
+      "grug_mobs:armored_crab"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "totemwater_tides_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: What the Tide Brings (repeatable)",
+   "turnin": "r20_anchor_047_host",
+   "xp": 255
+  },
+  {
+   "copper": 6,
+   "description": "For once, the knots show me a road instead of teeth. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender, who holds the Throng's banners against the Accord. I cannot promise you gentle weather up there, but I would trust your hands with whatever the wind brings.",
+   "giver": "r20_anchor_047_host",
+   "giver_name": "Tokai Knotreader",
+   "giver_settlement": "Totemwater Post",
+   "id": "totemwater_front_bannerbreak",
+   "min_level": 29,
+   "objectives": [
+    "talk to Yarra Standardmender (r20_anchor_044)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_044_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "totemwater_knots_04"
+   ],
+   "reward_items": [],
+   "title": "The Knot Toward the Mesa",
+   "turnin": "r20_anchor_044_host",
+   "xp": 88
   }
  ],
  "race_region": "troll",
@@ -524,9 +687,15 @@
      "npc_id": "r20_anchor_047_host",
      "npc_name": "Tokai Knotreader",
      "quests": [
-      "r20_anchor_047_01",
-      "r20_anchor_047_02",
-      "r20_anchor_047_03"
+      "totemwater_front_bannerbreak",
+      "totemwater_knots_01",
+      "totemwater_knots_02",
+      "totemwater_knots_03",
+      "totemwater_knots_04",
+      "totemwater_tides_01",
+      "totemwater_tides_02",
+      "totemwater_tides_bounty",
+      "totemwater_tides_optional_wisps"
      ],
      "role": "quest",
      "role_text": "quest giver",

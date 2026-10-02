@@ -436,166 +436,743 @@
  "pvp_rule": "contested",
  "quests": [
   {
-   "copper": 85,
-   "description": "Embers blow straight through the low gap in Cinderline's wind wall. Bring ten cobble blocks for that gap so the watch's covered barrels stay sheltered. Existing or traded supplies are welcome.",
+   "copper": 96,
+   "description": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Entrenched Bandits at the Ashenward Ration Camp east from here, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
    "giver": "r20_anchor_031_host",
    "giver_name": "Toren Waterbarrel",
    "giver_settlement": "Cinderline Watch",
-   "id": "r20_anchor_031_01",
-   "min_level": 31,
+   "id": "ashenward_rations_01",
+   "min_level": 30,
    "objectives": [
-    "bring 10 default:cobble"
+    "kill 5 entrenched_bandit [in elandor_ashenward_march/ration_camp]"
    ],
    "objectives_raw": [
     {
-     "count": 10,
-     "item": "default:cobble",
-     "type": "item"
+     "area": "elandor_ashenward_march/ration_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:entrenched_bandit"
+     ],
+     "type": "kill"
     }
    ],
    "prerequisites": [],
    "reward_items": [],
-   "title": "A Wall Against Embers",
+   "title": "Three Crates Out, Two Crates In",
    "turnin": "r20_anchor_031_host",
-   "xp": 1220
+   "xp": 540
   },
   {
-   "copper": 85,
-   "description": "Ashen treants move through Ashenward March's forest litter at night. Defeat three before the watch sends another barrel crew into those scorched stands.",
+   "copper": 96,
+   "description": "At night, Rootbound Ashen Treants roam the Ashenward Cinderwood, which lies in the south of Ashenward March, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
    "giver": "r20_anchor_031_host",
    "giver_name": "Toren Waterbarrel",
    "giver_settlement": "Cinderline Watch",
-   "id": "r20_anchor_031_02",
+   "id": "ashenward_rations_02",
    "min_level": 31,
    "objectives": [
-    "kill 3 ashen_treant or rootbound_treant [in elandor_ashenward_march]"
+    "kill 5 rootbound_treant [in elandor_ashenward_march/cinderwood]",
+    "bring 2 grug_mobs:bitter_resin"
    ],
    "objectives_raw": [
     {
-     "count": 3,
+     "area": "elandor_ashenward_march/cinderwood",
+     "count": 5,
      "mobs": [
-      "grug_mobs:ashen_treant",
       "grug_mobs:rootbound_treant"
      ],
-     "type": "kill",
-     "zone": "elandor_ashenward_march"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "The Ashen Wood Stirs",
-   "turnin": "r20_anchor_031_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "The last hedge has gaps wide enough for loaded wagons to drift off the dispatch lane. Bring eight oak planks for the marker posts at Last Hedge Redoubt. Existing or traded supplies are welcome.",
-   "giver": "r20_anchor_032_host",
-   "giver_name": "Nella Hedgeward",
-   "giver_settlement": "Last Hedge Redoubt",
-   "id": "r20_anchor_032_01",
-   "min_level": 31,
-   "objectives": [
-    "bring 8 default:wood"
-   ],
-   "objectives_raw": [
+     "type": "kill"
+    },
     {
-     "count": 8,
-     "item": "default:wood",
+     "count": 2,
+     "item": "grug_mobs:bitter_resin",
      "type": "item"
     }
    ],
-   "prerequisites": [],
+   "prerequisites": [
+    "ashenward_rations_01"
+   ],
    "reward_items": [],
-   "title": "Posts for the Last Hedge",
-   "turnin": "r20_anchor_032_host",
-   "xp": 1220
+   "title": "The Trees Can Pay for That",
+   "turnin": "r20_anchor_031_host",
+   "xp": 555
   },
   {
-   "copper": 85,
-   "description": "Skeleton raiders take the dispatch road through Ashenward March after nightfall. Defeat four while the watch restores the road's markers.",
-   "giver": "r20_anchor_032_host",
-   "giver_name": "Nella Hedgeward",
-   "giver_settlement": "Last Hedge Redoubt",
-   "id": "r20_anchor_032_02",
-   "min_level": 31,
-   "objectives": [
-    "kill 4 skeleton_raider or march_skeleton_raider [in elandor_ashenward_march]"
-   ],
-   "objectives_raw": [
-    {
-     "count": 4,
-     "mobs": [
-      "grug_mobs:skeleton_raider",
-      "grug_mobs:march_skeleton_raider"
-     ],
-     "type": "kill",
-     "zone": "elandor_ashenward_march"
-    }
-   ],
-   "prerequisites": [],
-   "reward_items": [],
-   "title": "Dead on the Dispatch Road",
-   "turnin": "r20_anchor_032_host",
-   "xp": 1220
-  },
-  {
-   "copper": 85,
-   "description": "The barrel route is usable again, and its stolen cargo has been traced to Coalbrand Camp in Ashenward March. Defeat four bandit archers guarding that camp's supplies.",
+   "copper": 64,
+   "description": "Every night, March Skeleton Raiders haunt the ration road through the Ashenward Ashfields, which lie in the southwest of Ashenward March, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
    "giver": "r20_anchor_031_host",
    "giver_name": "Toren Waterbarrel",
    "giver_settlement": "Cinderline Watch",
-   "id": "r20_anchor_031_03",
-   "min_level": 33,
+   "id": "ashenward_bounty_raiders",
+   "min_level": 32,
    "objectives": [
-    "kill 4 bandit_archer [in elandor_ashenward_march]"
+    "kill 6 march_skeleton_raider [in elandor_ashenward_march/ashfields]"
    ],
    "objectives_raw": [
     {
-     "count": 4,
+     "area": "elandor_ashenward_march/ashfields",
+     "count": 6,
      "mobs": [
-      "grug_mobs:bandit_archer"
+      "grug_mobs:march_skeleton_raider"
      ],
-     "type": "kill",
-     "zone": "elandor_ashenward_march"
+     "type": "kill"
     }
    ],
    "prerequisites": [
-    "r20_anchor_031_02"
+    "ashenward_rations_01"
    ],
    "reward_items": [],
-   "title": "Coalbrand's Watchers",
+   "title": "Bounty: No Rations for the Dead (repeatable)",
    "turnin": "r20_anchor_031_host",
-   "xp": 1300
+   "xp": 370
   },
   {
-   "copper": 100,
-   "description": "The dispatches identify a Throng garrison across Bannerbreak Mesa. At level 40, defeat three Throng guards at those frontier military posts or their patrols. Leave civilians, players and Gor Drazhak's city watch outside this mission.",
+   "copper": 128,
+   "description": "Our own supply seal is on those stolen crates: Quartermaster Scrip has been selling the line's supper out from under it. Find the quartermaster at the Ashenward Ration Camp east from here and defeat them. There are soldiers scraping empty bowls while that ledger balances beautifully.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "ashenward_rations_03",
+   "min_level": 32,
+   "objectives": [
+    "kill 1 quartermaster_scrip"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:quartermaster_scrip"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_rations_02"
+   ],
+   "reward_items": [],
+   "title": "The Account of Quartermaster Scrip",
+   "turnin": "r20_anchor_031_host",
+   "xp": 760
+  },
+  {
+   "copper": 32,
+   "description": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds keeps sending water, even when all I send back is an apology. Tell her the barrels are coming again, and ask where she needs help. I've work to send you to in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "ashenward_road_glassroot",
+   "min_level": 32,
+   "objectives": [
+    "talk to Faeris Rootbinder (r20_anchor_036)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_036_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_rations_03"
+   ],
+   "reward_items": [],
+   "title": "An Answer for Faeris",
+   "turnin": "r20_anchor_036_host",
+   "xp": 190
+  },
+  {
+   "copper": 32,
+   "description": "Take word to Borin Splitbolt at Splitbolt Station in Stormvault Heights: the March road is clear and his supplies can move again. Ask what needs doing while you're there; Borin won't send a useful pair of hands home idle. Between his passes and Faeris's woods in Glassroot Wilds, there's work enough for both journeys.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "ashenward_road_stormvault",
+   "min_level": 32,
+   "objectives": [
+    "talk to Borin Splitbolt (r20_anchor_027)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_027_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_rations_03"
+   ],
+   "reward_items": [],
+   "title": "Bread for the Mountain Watch",
+   "turnin": "r20_anchor_027_host",
+   "xp": 190
+  },
+  {
+   "copper": 80,
+   "description": "The Bramble Bears in the Ashenward Hedgewood, which lies in the heart of Ashenward March, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
    "giver": "r20_anchor_032_host",
    "giver_name": "Nella Hedgeward",
    "giver_settlement": "Last Hedge Redoubt",
-   "id": "r20_anchor_032_03",
+   "id": "ashenward_hedge_01",
+   "min_level": 34,
+   "objectives": [
+    "kill 4 territorial_bear [in elandor_ashenward_march/hedgewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_ashenward_march/hedgewood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:territorial_bear"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Honey Is Not Worth a Driver",
+   "turnin": "r20_anchor_032_host",
+   "xp": 500
+  },
+  {
+   "copper": 32,
+   "description": "Nella Hedgeward at Last Hedge Redoubt keeps the last post before the front standing by sheer refusal to leave it. Report to her when you're ready for the harder fighting. Her last request was for timber, food and people who could think on their feet; I can at least send her you.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "ashenward_road_last_hedge",
+   "min_level": 34,
+   "objectives": [
+    "talk to Nella Hedgeward (r20_anchor_032)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_032_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_rations_03"
+   ],
+   "reward_items": [],
+   "title": "One More Pair of Hands",
+   "turnin": "r20_anchor_032_host",
+   "xp": 195
+  },
+  {
+   "copper": 80,
+   "description": "With the bears thinned, Briar-Web Spiders take the Ashenward Hedgewood at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "ashenward_hedge_webs",
+   "min_level": 35,
+   "objectives": [
+    "kill 4 briar_web_spider [in elandor_ashenward_march/hedgewood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_ashenward_march/hedgewood",
+     "count": 4,
+     "mobs": [
+      "grug_mobs:briar_web_spider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_hedge_01"
+   ],
+   "reward_items": [],
+   "title": "Webs Across the Wagon Road",
+   "turnin": "r20_anchor_032_host",
+   "xp": 513
+  },
+  {
+   "copper": 112,
+   "description": "Entrenched Bandit Archers at Coalbrand Yard west from here have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Approach carefully; courage has its uses, but it doesn't stop an arrow.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "ashenward_hedge_02",
+   "min_level": 37,
+   "objectives": [
+    "kill 5 entrenched_bandit_archer [in elandor_ashenward_march/coalbrand_yard]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_ashenward_march/coalbrand_yard",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:entrenched_bandit_archer"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_hedge_webs"
+   ],
+   "reward_items": [],
+   "title": "A Uniform Is Not a Target",
+   "turnin": "r20_anchor_032_host",
+   "xp": 770
+  },
+  {
+   "copper": 112,
+   "description": "Wartrail Poachers at the Ashenward Poacher Camp west from here take the March's game, then charge our cooks whatever desperation will bear. Defeat five of them and break their hold on the hunting grounds. Their marshal signs every sale, as though neat handwriting could make this honest.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "ashenward_hedge_03",
+   "min_level": 37,
+   "objectives": [
+    "kill 5 wartrail_poacher [in elandor_ashenward_march/poacher_camp]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_ashenward_march/poacher_camp",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:wartrail_poacher"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_hedge_02"
+   ],
+   "reward_items": [],
+   "title": "The Price of an Empty Pot",
+   "turnin": "r20_anchor_032_host",
+   "xp": 770
+  },
+  {
+   "copper": 64,
+   "description": "After dark, Trench Shamblers cross the Ashenward Warfields, which lie in the northeast of Ashenward March, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "ashenward_bounty_shamblers",
+   "min_level": 38,
+   "objectives": [
+    "kill 8 unrelenting_zombie [in elandor_ashenward_march/warfields]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "elandor_ashenward_march/warfields",
+     "count": 8,
+     "mobs": [
+      "grug_mobs:unrelenting_zombie"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_hedge_02"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Let the Watch Come Home (repeatable)",
+   "turnin": "r20_anchor_032_host",
+   "xp": 440
+  },
+  {
+   "copper": 192,
+   "description": "Poacher Marshal Red-Receipt still runs the trade from the Ashenward Poacher Camp west from here, signing away our soldiers' supper in red ink. Gather a group and kill the marshal; a fighter that dangerous is no job for one exhausted hero. I want all of you back to share the meal when this is done.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "ashenward_hedge_04",
+   "min_level": 38,
+   "objectives": [
+    "kill 1 red_receipt_marshal"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:red_receipt_marshal"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "ashenward_hedge_03"
+   ],
+   "reward_items": [],
+   "title": "Group: The Last Receipt",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1320
+  },
+  {
+   "copper": 280,
+   "description": "The officers can argue over banners once our drivers get the bread through. Kill five Mire-Cured Husks by day in the Causeway Floodmeadows, which lie in the southeast of The Broken Causeway; they keep dragging themselves out of the mud into the carts' path. I'd like to count returning drivers tonight, for a change.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "cinderline_front_01",
    "min_level": 40,
    "objectives": [
-    "kill 3 guard_throng [in kragmar_bannerbreak_mesa]"
+    "kill 5 causeway_mire_husk [in front_broken_causeway/floodmeadows]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/floodmeadows",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_mire_husk"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Bread Before Banners",
+   "turnin": "r20_anchor_031_host",
+   "xp": 823
+  },
+  {
+   "copper": 280,
+   "description": "Daylight gets the husks moving; night brings out the Tollroad Skeletons in the Causeway Floodmeadows. Kill five of those skeletons after dark, before our dawn carts set out. Nobody should have to pay a toll to a man who's outlived his pockets.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "cinderline_front_02",
+   "min_level": 40,
+   "objectives": [
+    "kill 5 causeway_toll_skeleton [in front_broken_causeway/floodmeadows]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/floodmeadows",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_toll_skeleton"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "The Night Shift Never Left",
+   "turnin": "r20_anchor_031_host",
+   "xp": 823
+  },
+  {
+   "copper": 280,
+   "description": "Warpack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the Shattered Line Approaches, which lie in the southwest of The Shattered Line. I promised those sentries they'd get home, and I intend to keep it.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_01",
+   "min_level": 40,
+   "objectives": [
+    "kill 5 warpack_hyena [in front_shattered_line/approaches]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/approaches",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:warpack_hyena"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [],
+   "reward_items": [],
+   "title": "Nobody's Laughing Here",
+   "turnin": "r20_anchor_032_host",
+   "xp": 823
+  },
+  {
+   "copper": 360,
+   "description": "Causeway Brigands have set up in the Causeway Alderwood, which lies in the south of The Broken Causeway, and charge our drivers for the privilege of being robbed. Defeat five of them by day. The only toll on that road should be the mud.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "cinderline_front_05",
+   "min_level": 41,
+   "objectives": [
+    "kill 5 causeway_brigand [in front_broken_causeway/alderwood]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/alderwood",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_brigand"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "cinderline_front_01"
+   ],
+   "reward_items": [],
+   "title": "Toll Collectors in the Alderwood",
+   "turnin": "r20_anchor_031_host",
+   "xp": 1080
+  },
+  {
+   "copper": 320,
+   "description": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Tallgrass Tigers by day on the Shattered Line Bluffs, which lie in the northeast of The Shattered Line, and bring the claws to me. I'll see that your name goes on the delivery.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_02",
+   "min_level": 41,
+   "objectives": [
+    "bring 3 grug_mobs:siege_cat_claw"
    ],
    "objectives_raw": [
     {
      "count": 3,
-     "mobs": [
-      "grug_mobs:guard_throng"
-     ],
-     "type": "kill",
-     "zone": "kragmar_bannerbreak_mesa"
+     "item": "grug_mobs:siege_cat_claw",
+     "type": "item"
     }
    ],
    "prerequisites": [
-    "r20_anchor_032_02"
+    "lasthedge_front_01"
    ],
    "reward_items": [],
-   "title": "Standards Across the Mesa",
+   "title": "The Fletchers' Bright Idea",
    "turnin": "r20_anchor_032_host",
-   "xp": 1975
+   "xp": 960
+  },
+  {
+   "copper": 400,
+   "description": "My father called that war finished, but the Causeway Battlefield, which lies in the south of The Broken Causeway, seems to have missed the announcement. Go by day and put down five of the Mire-Cured Husks and Causeway Brigands picking over it. We still need a way through the ground they died fighting over.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "cinderline_front_03",
+   "min_level": 43,
+   "objectives": [
+    "kill 5 causeway_mire_husk or causeway_brigand [in front_broken_causeway/battlefield]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_broken_causeway/battlefield",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:causeway_mire_husk",
+      "grug_mobs:causeway_brigand"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "cinderline_front_01",
+    "cinderline_front_02"
+   ],
+   "reward_items": [],
+   "title": "What the War Left Standing",
+   "turnin": "r20_anchor_031_host",
+   "xp": 1250
+  },
+  {
+   "copper": 80,
+   "description": "Speak with Alna Archsight at Archshadow Post in Stormvault Heights and give her our report: Cinderline Watch still stands. She needs to hear what you've seen on The Broken Causeway before she sends more people into it. If she asks whether we're cheerful, tell her we're fed; she'll understand.",
+   "giver": "r20_anchor_031_host",
+   "giver_name": "Toren Waterbarrel",
+   "giver_settlement": "Cinderline Watch",
+   "id": "cinderline_front_04",
+   "min_level": 44,
+   "objectives": [
+    "talk to Alna Archsight (r20_anchor_028)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_028_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "cinderline_front_03"
+   ],
+   "reward_items": [],
+   "title": "Cinderline Still Stands",
+   "turnin": "r20_anchor_028_host",
+   "xp": 250
+  },
+  {
+   "copper": 400,
+   "description": "My sentries will face an army, but they've asked for somewhere to put their feet. Kill five War-Stinger Scorpions after dark on the Shattered Line Ramparts, which lie in the northeast of The Shattered Line. Seems a fair request from people who spend all night standing up for us.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_03",
+   "min_level": 44,
+   "objectives": [
+    "kill 5 war_stinger [in front_shattered_line/ramparts]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/ramparts",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:war_stinger"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_02"
+   ],
+   "reward_items": [],
+   "title": "A Sentry Needs Somewhere to Stand",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1275
+  },
+  {
+   "copper": 400,
+   "description": "Both armies dug the Shattered Line Trenches, which lie in the west of The Shattered Line, and Siege Skeleton Raiders now man them every night. Break five of them after dark. I would like to hear what our scouts saw out there without first hearing what chased them home.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_07",
+   "min_level": 45,
+   "objectives": [
+    "kill 5 siege_skeleton_raider [in front_shattered_line/trenches]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/trenches",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:siege_skeleton_raider"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_03"
+   ],
+   "reward_items": [],
+   "title": "Raiders in the Trenches",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1275
+  },
+  {
+   "copper": 480,
+   "description": "Every night, Siege Skeleton Raiders gather beneath the banner of Standard-Bearer Ninepins at the Shattered Line Breach northeast from here. Kill five of those raiders after dark and defeat their standard-bearer. Let the next thing our watch hears from that breach be the wind.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_04",
+   "min_level": 47,
+   "objectives": [
+    "kill 5 siege_skeleton_raider [in front_shattered_line/breach]",
+    "kill 1 standard_bearer_ninepins"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/breach",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:siege_skeleton_raider"
+     ],
+     "type": "kill"
+    },
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:standard_bearer_ninepins"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_07"
+   ],
+   "reward_items": [],
+   "title": "Nobody Left to Rally",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1620
+  },
+  {
+   "copper": 200,
+   "description": "The Tallgrass Tigers have picked the Shattered Line Siegecrest, which lies in the northeast of The Shattered Line, for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_bounty",
+   "min_level": 47,
+   "objectives": [
+    "kill 5 reed_stalking_tiger [in front_shattered_line/siegecrest]"
+   ],
+   "objectives_raw": [
+    {
+     "area": "front_shattered_line/siegecrest",
+     "count": 5,
+     "mobs": [
+      "grug_mobs:reed_stalking_tiger"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_04"
+   ],
+   "reward_items": [],
+   "title": "Bounty: Room for a Lookout (repeatable)",
+   "turnin": "r20_anchor_032_host",
+   "xp": 663
+  },
+  {
+   "copper": 320,
+   "description": "I can hear War Construct Engine Nine grinding along the Shattered Line Siegecrest northeast from here, even when I close my eyes. Gather a group and destroy that elite war construct. Before you go, learn each other's names; I want everyone answering to them when you get back.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_05",
+   "min_level": 49,
+   "objectives": [
+    "kill 1 siege_engine_nine"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "mobs": [
+      "grug_mobs:siege_engine_nine"
+     ],
+     "type": "kill"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_04"
+   ],
+   "reward_items": [],
+   "title": "Group: An End to the Grinding",
+   "turnin": "r20_anchor_032_host",
+   "xp": 1100
+  },
+  {
+   "copper": 80,
+   "description": "Borin Splitbolt needs fighters for Gravesalt Escarpment, and I can think of one who's earned the recommendation. Speak with him at Splitbolt Station in Stormvault Heights and tell him what happened on The Shattered Line. Leave the mud on your boots; Borin trusts that more than a seal.",
+   "giver": "r20_anchor_032_host",
+   "giver_name": "Nella Hedgeward",
+   "giver_settlement": "Last Hedge Redoubt",
+   "id": "lasthedge_front_06",
+   "min_level": 49,
+   "objectives": [
+    "talk to Borin Splitbolt (r20_anchor_027)"
+   ],
+   "objectives_raw": [
+    {
+     "count": 1,
+     "npc": "r20_anchor_027_host",
+     "type": "talk"
+    }
+   ],
+   "prerequisites": [
+    "lasthedge_front_04"
+   ],
+   "reward_items": [],
+   "title": "A Recommendation with Mud on It",
+   "turnin": "r20_anchor_027_host",
+   "xp": 275
   }
  ],
  "race_region": "human",
@@ -1054,9 +1631,18 @@
      "npc_id": "r20_anchor_031_host",
      "npc_name": "Toren Waterbarrel",
      "quests": [
-      "r20_anchor_031_01",
-      "r20_anchor_031_02",
-      "r20_anchor_031_03"
+      "ashenward_bounty_raiders",
+      "ashenward_rations_01",
+      "ashenward_rations_02",
+      "ashenward_rations_03",
+      "ashenward_road_glassroot",
+      "ashenward_road_last_hedge",
+      "ashenward_road_stormvault",
+      "cinderline_front_01",
+      "cinderline_front_02",
+      "cinderline_front_03",
+      "cinderline_front_04",
+      "cinderline_front_05"
      ],
      "role": "quest",
      "role_text": "quest giver",
@@ -1268,9 +1854,20 @@
      "npc_id": "r20_anchor_032_host",
      "npc_name": "Nella Hedgeward",
      "quests": [
-      "r20_anchor_032_01",
-      "r20_anchor_032_02",
-      "r20_anchor_032_03"
+      "ashenward_bounty_shamblers",
+      "ashenward_hedge_01",
+      "ashenward_hedge_02",
+      "ashenward_hedge_03",
+      "ashenward_hedge_04",
+      "ashenward_hedge_webs",
+      "lasthedge_front_01",
+      "lasthedge_front_02",
+      "lasthedge_front_03",
+      "lasthedge_front_04",
+      "lasthedge_front_05",
+      "lasthedge_front_06",
+      "lasthedge_front_07",
+      "lasthedge_front_bounty"
      ],
      "role": "quest",
      "role_text": "quest giver",

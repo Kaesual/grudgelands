@@ -61,7 +61,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Taleko Drycord | 878, 12, 1604 | r20_anchor_024_01, r20_anchor_024_02, r20_anchor_024_03, r20_troll_journey_02 |
+| quest_host | quest giver | Taleko Drycord | 878, 12, 1604 | whispering_journey_ossuary, whispering_journey_speargrass, whispering_reeds_01, whispering_reeds_02 |
 
 Distances: zone edge N 352 (coastal_shelf), S 644 (kragmar_bannerbreak_mesa), E 396 (kragmar_kezamba), W 368 (kragmar_gor_drazhak); nearest other-zone land 357 W; sea 337 N; sea-beach sand 283 N; nearest road 15.
 Nearest hubs (straight / by road): Reedstone Cut 335 / 787; Raincall Bandit Camp 870 / 1062; Redtusk Bandit Camp 671 / 1120; Reedvoice Station 418 / 1184; Kezamba 930 / 1244.
@@ -72,7 +72,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Enashi Reedvoice | 684, 45, 1234 | r20_anchor_046_01, r20_anchor_046_02, r20_anchor_046_03 |
+| quest_host | quest giver | Enashi Reedvoice | 684, 45, 1234 | whispering_front_bannerbreak, whispering_voice_01, whispering_voice_02 |
 
 Distances: zone edge N 804 (kragmar_redtusk_savanna), S 144 (kragmar_bannerbreak_mesa), E 700 (kragmar_kezamba), W 184 (kragmar_gor_drazhak); nearest other-zone land 122 SW; sea 739 N; sea-beach sand 692 N; nearest road 11.
 Nearest hubs (straight / by road): Redtusk Bandit Camp 829 / 1001; Whisperreed Landing 418 / 1184; Gor Drazhak 732 / 1267; Redtusk Village 1089 / 1526; Reedstone Cut 351 / 1726.
@@ -83,26 +83,25 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Zali Runoff | 1028, 27, 1304 | r20_anchor_066_01, r20_anchor_066_02, r20_anchor_066_03, r20_troll_journey_03 |
+| quest_host | quest giver | Zali Runoff | 1028, 27, 1304 | whispering_cut_01, whispering_cut_02, whispering_cut_bounty |
 
 Distances: zone edge N 808 (bay_water), S 308 (kragmar_thunderroot_wilds), E 332 (kragmar_kezamba), W 528 (kragmar_gor_drazhak); nearest other-zone land 258 SE; sea 646 N; sea-beach sand 580 N; nearest road 18.
 Nearest hubs (straight / by road): Whisperreed Landing 335 / 787; Raincall Bandit Camp 949 / 1202; Kezamba 798 / 1384; Redtusk Bandit Camp 977 / 1662; Reedvoice Station 351 / 1726.
 
-### Current quests (11, given in this zone)
+### Current quests (10, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_024_01 | A Landing That Holds | Taleko Drycord (Whisperreed Landing) | 21 | bring 8 default:junglewood | 820 | - |
-| r20_anchor_024_02 | Tapirs on the Dry Path | Taleko Drycord (Whisperreed Landing) | 21 | kill 4 tapir or reed_tapir [in kragmar_whispering_reedlands] | 820 | - |
-| r20_anchor_046_01 | A Dry Signal Shelf | Enashi Reedvoice (Reedvoice Station) | 21 | bring 8 default:junglewood | 820 | - |
-| r20_anchor_046_02 | Cats by the Reed Pipes | Enashi Reedvoice (Reedvoice Station) | 21 | kill 4 jungle_lynx [in kragmar_whispering_reedlands] | 820 | - |
-| r20_anchor_066_01 | Timbers Kept Above Water | Zali Runoff (Reedstone Cut) | 21 | bring 8 default:junglewood | 820 | - |
-| r20_anchor_066_02 | The Quarry Pool Moves | Zali Runoff (Reedstone Cut) | 21 | kill 4 bog_ooze [in kragmar_whispering_reedlands] | 820 | - |
-| r20_anchor_024_03 | Cold Lights in the Reeds | Taleko Drycord (Whisperreed Landing) | 23 | kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_024_02 |
-| r20_anchor_046_03 | The False Answering Lights | Enashi Reedvoice (Reedvoice Station) | 23 | kill 3 wisp or wandering_wisp [in kragmar_whispering_reedlands] | 900 | r20_anchor_046_02 |
-| r20_anchor_066_03 | Jaws Along the Haul Path | Zali Runoff (Reedstone Cut) | 23 | kill 3 crocodile [in kragmar_whispering_reedlands] | 900 | r20_anchor_066_02 |
-| r20_troll_journey_02 | Word for Zali Runoff | Taleko Drycord (Whisperreed Landing) | 24 | talk to Zali Runoff (r20_anchor_066) | 705 | - |
-| r20_troll_journey_03 | Word for Rumela Stormstep | Zali Runoff (Reedstone Cut) | 31 | talk to Rumela Stormstep (r20_anchor_048) | 915 | - |
+| whispering_reeds_01 | Do Not Follow Every Light | Taleko Drycord (Whisperreed Landing) | 20 | kill 6 wandering_wisp [in kragmar_whispering_reedlands/canopy] | 405 | - |
+| whispering_reeds_02 | The Water Signed Nothing | Taleko Drycord (Whisperreed Landing) | 21 | kill 6 toll_mirefolk [in kragmar_whispering_reedlands/hushwater_nests] | 473 | whispering_reeds_01 |
+| whispering_journey_ossuary | Names That Outlast the Rain | Taleko Drycord (Whisperreed Landing) | 22 | talk to Sovel Namekeeper (r20_anchor_020) | 70 | whispering_reeds_01 |
+| whispering_journey_speargrass | Where the Reeds Give Way | Taleko Drycord (Whisperreed Landing) | 22 | talk to Brakka Jarward (r20_anchor_022) | 70 | whispering_reeds_01 |
+| whispering_cut_01 | That Is No Floating Log | Zali Runoff (Reedstone Cut) | 23 | kill 6 reed_crocodile [in kragmar_whispering_reedlands/mudbanks] | 450 | - |
+| whispering_cut_02 | Quiet the Pumps | Zali Runoff (Reedstone Cut) | 24 | bring 2 grug_mobs:slime_gel | 310 | whispering_cut_01 |
+| whispering_cut_bounty | Bounty: Jaws on the Haul Path (repeatable) | Zali Runoff (Reedstone Cut) | 25 | kill 6 reed_crocodile [in kragmar_whispering_reedlands/mudbanks] | 233 | whispering_cut_02 |
+| whispering_voice_01 | Who Speaks for the Mire | Enashi Reedvoice (Reedvoice Station) | 27 | kill 6 toll_mirefolk [in kragmar_whispering_reedlands/mire_nests] | 495 | - |
+| whispering_voice_02 | The River Has No Purse | Enashi Reedvoice (Reedvoice Station) | 28 | kill 1 tollkeeper_ush | 765 | whispering_voice_01 |
+| whispering_front_bannerbreak | Let the Reeds Tell It | Enashi Reedvoice (Reedvoice Station) | 29 | talk to Yarra Standardmender (r20_anchor_044) | 88 | whispering_voice_02 |
 
 ## Mobs by spawn region
 

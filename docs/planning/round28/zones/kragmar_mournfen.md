@@ -63,8 +63,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Mordec Silt | -1898, 25, 2020 | r14_undead_07_mud_that_moves |
-| quest_local | quest giver | Edris Wax | -1902, 25, 2018 | r15_undead_local_01, r15_undead_local_02 |
+| quest_steward | quest giver | Mordec Silt | -1898, 25, 2020 | mournfen_bounty_fen, mournfen_fen_01, mournfen_fen_02, mournfen_fen_03, mournfen_fen_04 |
+| quest_local | quest giver | Edris Wax | -1902, 25, 2018 | mournfen_stores_01, mournfen_stores_02, mournfen_wax_01 |
 
 Distances: zone edge N 280 (kragmar_stillgrave_hollow), S 68 (kragmar_nhal_veyr), E 500 (kragmar_speargrass_reach), W 308 (kragmar_ossuary_reach); nearest other-zone land 68 S; sea 482 E; sea-beach sand 419 NE; nearest road 22.
 Nearest hubs (straight / by road): Mournfen Outpost 215 / 261; Stillgrave 539 / 592; Nhal Veyr 530 / 717; Ossuary Ledgerstead 638 / 1179; Mournfen Bandit Camp 301 / 1422.
@@ -75,7 +75,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Sera Vane | -2097, 22, 2097 | r14_undead_08_clear_the_sluice, r14_undead_09_fire_that_the_fen_cannot_drown, r15_undead_local_03, r15_undead_local_04 |
+| quest_scout | quest giver | Sera Vane | -2097, 22, 2097 | mournfen_bounty_watch, mournfen_departure, mournfen_watch_01, mournfen_watch_02, mournfen_watch_03, mournfen_watch_04 |
 
 Distances: zone edge N 228 (kragmar_stillgrave_hollow), S 208 (kragmar_nhal_veyr), E 772 (bay_water), W 212 (kragmar_ossuary_reach); nearest other-zone land 124 SW; sea 343 W; sea-beach sand 316 W; nearest road 11.
 Nearest hubs (straight / by road): Mournfen Village 215 / 261; Stillgrave 541 / 761; Nhal Veyr 671 / 935; Ossuary Ledgerstead 573 / 1396; Mournfen Bandit Camp 502 / 1639.
@@ -86,24 +86,30 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Hollis Grey | -1590, 58, 2060 | r15_undead_local_05, r15_undead_local_06 |
+| quest_captive | quest giver | Hollis Grey | -1590, 58, 2060 | mournfen_testimony_01 |
 
 Distances: zone edge N 292 (kragmar_stillgrave_hollow), S 120 (kragmar_nhal_veyr), E 236 (kragmar_speargrass_reach), W 648 (kragmar_ossuary_reach); nearest other-zone land 116 S; sea 199 NE; sea-beach sand 160 NE; nearest road 16.
 Nearest hubs (straight / by road): Nhal Veyr 585 / 1142; Speargrass Wellhold 879 / 1350; Mournfen Village 301 / 1422; Redpick Yard 946 / 1460; Ossuary Ledgerstead 900 / 1604.
 
-### Current quests (9, given in this zone)
+### Current quests (15, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_undead_07_mud_that_moves | Mud That Moves | Mordec Silt (Mournfen Village) | 10 | kill 6 bog_ooze or sullen_bog_ooze [in kragmar_mournfen] | 380 | r14_undead_06_tusks_along_the_fen_road |
-| r15_undead_local_01 | Gel for the Wax Store | Edris Wax (Mournfen Village) | 10 | bring 3 grug_mobs:slime_gel | 285 | r14_undead_06_tusks_along_the_fen_road |
-| r15_undead_local_02 | Furrows by the Memorial | Edris Wax (Mournfen Village) | 10 | kill 5 plague_boar or young_boar [in kragmar_mournfen] | 380 | r14_undead_06_tusks_along_the_fen_road |
-| r14_undead_08_clear_the_sluice | Clear the Sluice | Sera Vane (Mournfen Outpost) | 11 | kill 6 crocodile or reed_crocodile [in kragmar_mournfen] | 525 | r14_undead_07_mud_that_moves |
-| r15_undead_local_03 | Teeth from the Watch Channel | Sera Vane (Mournfen Outpost) | 11 | bring 2 grug_mobs:croc_tooth | 315 | r14_undead_07_mud_that_moves |
-| r15_undead_local_04 | The Sheltered Niche | Sera Vane (Mournfen Outpost) | 11 | kill 5 bog_ooze or sullen_bog_ooze [in kragmar_mournfen] | 420 | r14_undead_07_mud_that_moves |
-| r14_undead_09_fire_that_the_fen_cannot_drown | Fire That the Fen Cannot Drown | Sera Vane (Mournfen Outpost) | 12 | kill 4 bandit or bandit_archer or quarrelsome_bandit [in kragmar_mournfen] | 805 | r14_undead_08_clear_the_sluice |
-| r15_undead_local_05 | Names on the Purse Tags | Hollis Grey (Mournfen Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_undead_08_clear_the_sluice |
-| r15_undead_local_06 | Dry Cloth from a Wet Ruin | Hollis Grey (Mournfen Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_undead_08_clear_the_sluice |
+| mournfen_fen_01 | The Fen Gives Them Back | Mordec Silt (Mournfen Village) | 9 | kill 8 young_boar [in kragmar_mournfen/blightfields] | 320 | stillgrave_departure |
+| mournfen_stores_01 | By the Light of Supper | Edris Wax (Mournfen Village) | 10 | bring 8 mobs:meat_raw | 200 | - |
+| mournfen_fen_02 | The Marks in the Reeds | Mordec Silt (Mournfen Village) | 11 | talk to Sera Vane (mournfen_outpost) | 85 | mournfen_fen_01 |
+| mournfen_watch_01 | Somebody's Grandfather as Wages | Sera Vane (Mournfen Outpost) | 11 | kill 8 reed_mirefolk [in kragmar_mournfen/blackreed_enclosure] | 405 | mournfen_fen_02 |
+| mournfen_watch_02 | A Light Can Lie | Sera Vane (Mournfen Outpost) | 13 | kill 7 wandering_wisp [in kragmar_mournfen/wispfen] | 450 | mournfen_watch_01 |
+| mournfen_fen_03 | Visiting Hours Are Cancelled | Mordec Silt (Mournfen Village) | 14 | kill 7 bristling_boar [in kragmar_mournfen/barrowfields] | 473 | mournfen_fen_02 |
+| mournfen_stores_02 | Lanterns Belong Above the Mud | Edris Wax (Mournfen Village) | 14 | bring 6 grug_materials:iron_bar; bring 4 default:coal_lump | 300 | mournfen_stores_01 |
+| mournfen_wax_01 | A Flame Worth Keeping | Edris Wax (Mournfen Village) | 15 | bring 3 grug_mobs:wisp_mote | 315 | mournfen_watch_02 |
+| mournfen_bounty_fen | Repeatable: The Graves Need Minding (repeatable) | Mordec Silt (Mournfen Village) | 16 | kill 6 mangy_rat [in kragmar_mournfen/barrowfields] | 210 | mournfen_fen_03 |
+| mournfen_fen_04 | A Place in the Book | Mordec Silt (Mournfen Village) | 16 | kill 6 muttering_zombie [in kragmar_mournfen/gravemoor] | 518 | mournfen_fen_03 |
+| mournfen_watch_03 | Arrows Over the Evidence | Sera Vane (Mournfen Outpost) | 17 | kill 6 vigilant_bandit_archer [in kragmar_mournfen/bandit_camp] | 460 | mournfen_watch_02 |
+| mournfen_testimony_01 | Strike Out the Counter | Hollis Grey (Mournfen Bandit Camp) | 18 | kill 5 reed_mirefolk [in kragmar_mournfen/mire_nests]; kill 1 reed_counter_silt | 720 | mournfen_watch_04 |
+| mournfen_watch_04 | The Witness Is Still Talking | Sera Vane (Mournfen Outpost) | 18 | talk to Hollis Grey (mournfen_bandit_camp) | 115 | mournfen_watch_03 |
+| mournfen_bounty_watch | Repeatable: Six Fewer False Lights (repeatable) | Sera Vane (Mournfen Outpost) | 19 | kill 6 wandering_wisp [in kragmar_mournfen/deepfen] | 300 | mournfen_watch_04 |
+| mournfen_departure | Names Missing From the Register | Sera Vane (Mournfen Outpost) | 19 | talk to Ossa Quietregister (nhal_veyr) | 180 | mournfen_testimony_01 |
 
 ## Mobs by spawn region
 

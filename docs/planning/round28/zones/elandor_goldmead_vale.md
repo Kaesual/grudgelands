@@ -62,8 +62,8 @@ Residents/guards: idle 2, quest 2.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_steward | quest giver | Marta Millward | -118, 38, -2020 | r14_human_07_orchard_watch |
-| quest_local | quest giver | Alda Sheaf | -122, 38, -2022 | r15_human_local_01, r15_human_local_02 |
+| quest_steward | quest giver | Marta Millward | -118, 38, -2020 | goldmead_harvest_01, goldmead_harvest_02, goldmead_harvest_03, goldmead_harvest_04, goldmead_supplies_01, goldmead_supplies_02 |
+| quest_local | quest giver | Alda Sheaf | -122, 38, -2022 | goldmead_bounty_rats, goldmead_stores_01, goldmead_stores_02 |
 
 Distances: zone edge N 136 (elandor_highcourt), S 304 (elandor_dawnmere_fields), E 700 (coastal_shelf), W 532 (elandor_whitebridge_shire); nearest other-zone land 136 N; sea 563 E; sea-beach sand 526 E; nearest road 16.
 Nearest hubs (straight / by road): Highcourt 534 / 880; Goldmead Bandit Camp 442 / 1037; Goldmead Outpost 296 / 1076; Dawnmere 543 / 1576; Petalbank Wardenry 1089 / 1687.
@@ -74,7 +74,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_scout | quest giver | Jon Vale | 179, 54, -2029 | r14_human_08_empty_snares, r14_human_09_the_blackened_tally, r15_human_local_03, r15_human_local_04 |
+| quest_scout | quest giver | Jon Vale | 179, 54, -2029 | goldmead_bounty_bandits, goldmead_watch_01, goldmead_watch_02, goldmead_watch_03 |
 
 Distances: zone edge N 208 (elandor_highcourt), S 260 (elandor_dawnmere_fields), E 400 (coastal_shelf), W 832 (elandor_whitebridge_shire); nearest other-zone land 194 N; sea 291 SE; sea-beach sand 242 E; nearest road 11.
 Nearest hubs (straight / by road): Goldmead Bandit Camp 151 / 522; Dawnmere 553 / 686; Highcourt 555 / 866; Goldmead Village 296 / 1076; Petalbank Wardenry 918 / 1673.
@@ -85,24 +85,31 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_captive | quest giver | Pella Thatch | 330, 58, -1970 | r15_human_local_05, r15_human_local_06 |
+| quest_captive | quest giver | Pella Thatch | 330, 58, -1970 | goldmead_departure, goldmead_testimony_01, goldmead_testimony_02 |
 
 Distances: zone edge N 204 (elandor_highcourt), S 224 (elandor_dawnmere_fields), E 312 (coastal_shelf), W 952 (elandor_whitebridge_shire); nearest other-zone land 188 NW; sea 206 SE; sea-beach sand 151 SE; nearest road 18.
 Nearest hubs (straight / by road): Goldmead Outpost 151 / 522; Highcourt 577 / 828; Dawnmere 654 / 1022; Goldmead Village 442 / 1037; Petalbank Wardenry 814 / 1635.
 
-### Current quests (9, given in this zone)
+### Current quests (16, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r14_human_07_orchard_watch | Orchard Watch | Marta Millward (Goldmead Village) | 10 | kill 6 fox or young_fox [in elandor_goldmead_vale] | 380 | r14_human_06_flock_on_mill_road |
-| r15_human_local_01 | Food for the Granary Crew | Alda Sheaf (Goldmead Village) | 10 | bring 4 mobs:meat_raw | 285 | r14_human_06_flock_on_mill_road |
-| r15_human_local_02 | Apples for the Orchard Crew | Alda Sheaf (Goldmead Village) | 10 | bring 4 default:apple | 380 | r14_human_06_flock_on_mill_road |
-| r14_human_08_empty_snares | Empty Snares | Jon Vale (Goldmead Outpost) | 11 | kill 6 poacher or snaring_poacher [in elandor_goldmead_vale] | 525 | r14_human_07_orchard_watch |
-| r15_human_local_03 | Cloth from the Empty Snares | Jon Vale (Goldmead Outpost) | 11 | bring 3 grug_mobs:linen_cloth | 315 | r14_human_07_orchard_watch |
-| r15_human_local_04 | A Clear Eastern View | Jon Vale (Goldmead Outpost) | 11 | kill 5 fox or young_fox [in elandor_goldmead_vale] | 420 | r14_human_07_orchard_watch |
-| r14_human_09_the_blackened_tally | The Blackened Tally | Jon Vale (Goldmead Outpost) | 12 | kill 4 bandit or bandit_archer [in elandor_goldmead_vale] | 805 | r14_human_08_empty_snares |
-| r15_human_local_05 | The Millers' Missing Pay | Pella Thatch (Goldmead Bandit Camp) | 12 | bring 2 grug_mobs:stolen_purse | 460 | r14_human_08_empty_snares |
-| r15_human_local_06 | Linen Around the Grain | Pella Thatch (Goldmead Bandit Camp) | 12 | bring 5 grug_mobs:linen_cloth | 575 | r14_human_08_empty_snares |
+| goldmead_harvest_01 | A Harvest Worth Stealing | Marta Millward (Goldmead Village) | 9 | kill 8 young_fox [in elandor_goldmead_vale/orchards] | 280 | dawnmere_departure |
+| goldmead_stores_01 | Feed the Counters | Alda Sheaf (Goldmead Village) | 10 | bring 8 mobs:meat_raw | 160 | dawnmere_departure |
+| goldmead_harvest_02 | The Granary Has Teeth | Marta Millward (Goldmead Village) | 11 | kill 8 granary_rat [in elandor_goldmead_vale/orchards] | 298 | goldmead_harvest_01 |
+| goldmead_supplies_01 | Iron Before Promises | Marta Millward (Goldmead Village) | 12 | bring 6 grug_materials:iron_bar; bring 4 default:coal_lump | 285 | goldmead_harvest_01 |
+| goldmead_harvest_03 | Tusks in the Wheat | Marta Millward (Goldmead Village) | 13 | kill 8 bristling_boar [in elandor_goldmead_vale/wheatfields] | 400 | goldmead_harvest_02 |
+| goldmead_harvest_04 | Jon Has the Other Half | Marta Millward (Goldmead Village) | 13 | talk to Jon Vale (goldmead_outpost) | 95 | goldmead_harvest_02 |
+| goldmead_watch_01 | Collectors Without a Collection | Jon Vale (Goldmead Outpost) | 14 | kill 8 quarrelsome_bandit [in elandor_goldmead_vale/bandit_camp] | 420 | goldmead_harvest_04 |
+| goldmead_supplies_02 | Counted and Sealed | Marta Millward (Goldmead Village) | 15 | bring 4 grug_materials:iron_bar; bring 6 group:wood | 330 | goldmead_supplies_01 |
+| goldmead_watch_02 | Teeth Along the Cart Track | Jon Vale (Goldmead Outpost) | 15 | kill 6 rabid_fox [in elandor_goldmead_vale/thickets] | 368 | goldmead_watch_01 |
+| goldmead_stores_02 | Cloth Around the Truth | Alda Sheaf (Goldmead Village) | 16 | bring 2 grug_mobs:linen_cloth | 275 | goldmead_stores_01, goldmead_watch_01 |
+| goldmead_bounty_bandits | Bounty: Roadside Bandits (repeatable) | Jon Vale (Goldmead Outpost) | 17 | kill 8 quarrelsome_bandit [in elandor_goldmead_vale/bandit_camp] | 220 | goldmead_watch_03 |
+| goldmead_testimony_01 | Nobody Requisitions Pella | Pella Thatch (Goldmead Bandit Camp) | 17 | kill 8 vigilant_bandit_archer [in elandor_goldmead_vale/requisition_camp] | 460 | goldmead_watch_03 |
+| goldmead_watch_03 | A Witness, Not Cargo | Jon Vale (Goldmead Outpost) | 17 | talk to Pella Thatch (goldmead_bandit_camp) | 110 | goldmead_watch_02 |
+| goldmead_bounty_rats | Bounty: Burrow Gnawers (repeatable) | Alda Sheaf (Goldmead Village) | 18 | kill 8 mangy_rat [in elandor_goldmead_vale/hedgerows] | 240 | goldmead_harvest_03 |
+| goldmead_testimony_02 | Hobb's Last Requisition | Pella Thatch (Goldmead Bandit Camp) | 18 | kill 1 requisitioner_hobb | 600 | goldmead_testimony_01 |
+| goldmead_departure | Highcourt Must Hear This | Pella Thatch (Goldmead Bandit Camp) | 19 | talk to Mariel Waybook (highcourt) | 120 | goldmead_testimony_02 |
 
 ## Mobs by spawn region
 

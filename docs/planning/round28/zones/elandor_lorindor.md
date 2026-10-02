@@ -62,7 +62,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Ilwen Petalmeasure | 878, 101, -1556 | r20_anchor_018_01, r20_anchor_018_02, r20_anchor_018_03, r20_elf_journey_02 |
+| quest_host | quest giver | Ilwen Petalmeasure | 878, 101, -1556 | lorindor_berries_01, lorindor_berries_02, lorindor_berries_03, lorindor_berries_04, lorindor_berries_bounty, lorindor_journeys_01, lorindor_journeys_02 |
 
 Distances: zone edge N 420 (elandor_glassroot_wilds), S 228 (bay_water), E 452 (elandor_lethariel), W 396 (elandor_highcourt); nearest other-zone land 382 SW; sea 215 S; sea-beach sand 211 S; nearest road 16.
 Nearest hubs (straight / by road): Paleroot Cutting 335 / 1051; Lethariel 926 / 1126; Petalbank Wardenry 414 / 1147; Highcourt 878 / 1360; Goldmead Bandit Camp 699 / 1784.
@@ -73,7 +73,7 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Orya Petalward | 628, 54, -1226 | r20_anchor_034_01, r20_anchor_034_02, r20_anchor_034_03 |
+| quest_host | quest giver | Orya Petalward | 628, 54, -1226 | lorindor_wardenry_01, lorindor_wardenry_bounty, lorindor_wardenry_opt_01, lorindor_wardenry_opt_02 |
 
 Distances: zone edge N 80 (elandor_ashenward_march), S 684 (elandor_goldmead_vale), E 700 (elandor_lethariel), W 120 (elandor_ashenward_march); nearest other-zone land 65 N; sea 572 S; sea-beach sand 594 S; nearest road 13.
 Nearest hubs (straight / by road): Lorindor Berrycourt 414 / 1147; Highcourt 683 / 1211; Goldmead Bandit Camp 814 / 1635; Goldmead Outpost 918 / 1673; Goldmead Village 1089 / 1687.
@@ -84,26 +84,30 @@ Residents/guards: quest 1.
 
 | Socket | Role | Who / what | Position | Quests given |
 |---|---|---|---|---|
-| quest_host | quest giver | Saevin Rootscribe | 1028, 179, -1256 | r20_anchor_063_01, r20_anchor_063_02, r20_anchor_063_03, r20_elf_journey_03 |
+| quest_host | quest giver | Saevin Rootscribe | 1028, 179, -1256 | lorindor_cutting_01, lorindor_cutting_02, lorindor_cutting_bounty, lorindor_cutting_opt_01 |
 
 Distances: zone edge N 96 (elandor_glassroot_wilds), S 548 (coastal_shelf), E 308 (elandor_lethariel), W 576 (elandor_ashenward_march); nearest other-zone land 89 N; sea 539 S; sea-beach sand 516 S; nearest road 13.
 Nearest hubs (straight / by road): Lethariel 812 / 1033; Lorindor Berrycourt 335 / 1051; Starbough Village 1161 / 1699; Starbough Bandit Camp 1012 / 1775; Petalbank Wardenry 401 / 1983.
 
-### Current quests (11, given in this zone)
+### Current quests (15, given in this zone)
 
 | Id | Title | Giver | Min L | Objectives | XP | Needs |
 |---|---|---|---|---|---|---|
-| r20_anchor_018_01 | Stones Around the Roots | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | bring 8 default:cobble | 820 | - |
-| r20_anchor_018_02 | No Snares in Berrycourt | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
-| r20_anchor_034_01 | The Trough's New Kerb | Orya Petalward (Petalbank Wardenry) | 21 | bring 8 default:cobble | 820 | - |
-| r20_anchor_034_02 | Wardens Without Arrows | Orya Petalward (Petalbank Wardenry) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
-| r20_anchor_063_01 | A Gentle Edge | Saevin Rootscribe (Paleroot Cutting) | 21 | bring 1 grug_materials:pick_stone | 820 | - |
-| r20_anchor_063_02 | The Survey Stakes Vanish | Saevin Rootscribe (Paleroot Cutting) | 21 | kill 4 poacher or unlicensed_poacher [in elandor_lorindor] | 820 | - |
-| r20_anchor_018_03 | The Uninvited Lanterns | Ilwen Petalmeasure (Lorindor Berrycourt) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_018_02 |
-| r20_anchor_034_03 | Lanterns We Did Not Hang | Orya Petalward (Petalbank Wardenry) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_034_02 |
-| r20_anchor_063_03 | Light on the Cutting Marks | Saevin Rootscribe (Paleroot Cutting) | 23 | kill 3 wisp [in elandor_lorindor] | 900 | r20_anchor_063_02 |
-| r20_elf_journey_02 | Word for Saevin Rootscribe | Ilwen Petalmeasure (Lorindor Berrycourt) | 24 | talk to Saevin Rootscribe (r20_anchor_063) | 705 | - |
-| r20_elf_journey_03 | Word for Faeris Rootbinder | Saevin Rootscribe (Paleroot Cutting) | 31 | talk to Faeris Rootbinder (r20_anchor_036) | 915 | - |
+| lorindor_berries_01 | The Harvest Should Have a Song | Ilwen Petalmeasure (Lorindor Berrycourt) | 21 | kill 5 unlicensed_poacher [in elandor_lorindor/berrywoods] | 338 | - |
+| lorindor_berries_02 | A Pearl for Every Basket | Ilwen Petalmeasure (Lorindor Berrycourt) | 22 | kill 5 toll_mirefolk [in elandor_lorindor/fenhold] | 350 | lorindor_berries_01 |
+| lorindor_berries_bounty | Bounty: Keep a Song in the Branches (repeatable) | Ilwen Petalmeasure (Lorindor Berrycourt) | 22 | kill 6 unlicensed_poacher [in elandor_lorindor/berrywoods] | 270 | lorindor_berries_02 |
+| lorindor_cutting_01 | Give the Old Roots a Brace | Saevin Rootscribe (Paleroot Cutting) | 24 | bring 4 grug_materials:steel_bar | 225 | - |
+| lorindor_cutting_02 | A Rootscribe Recommends You | Saevin Rootscribe (Paleroot Cutting) | 24 | talk to Kelda Screesort (r20_anchor_061) | 150 | lorindor_cutting_01 |
+| lorindor_journeys_01 | Let the Ledgers Agree | Ilwen Petalmeasure (Lorindor Berrycourt) | 24 | talk to Mariel Waybook (highcourt) | 150 | lorindor_berries_02 |
+| lorindor_journeys_02 | Berries Do Not Walk Away | Ilwen Petalmeasure (Lorindor Berrycourt) | 24 | talk to Merren Oakstamp (r20_anchor_016) | 150 | lorindor_berries_02 |
+| lorindor_wardenry_01 | Do Not Follow That Light | Orya Petalward (Petalbank Wardenry) | 24 | kill 5 wandering_wisp [in elandor_lorindor/elderwood] | 375 | - |
+| lorindor_cutting_bounty | Bounty: A Little Help for Old Roots (repeatable) | Saevin Rootscribe (Paleroot Cutting) | 25 | bring 4 grug_materials:steel_bar | 233 | lorindor_cutting_02 |
+| lorindor_wardenry_bounty | Bounty: The Wardens' Night Watch (repeatable) | Orya Petalward (Petalbank Wardenry) | 25 | kill 6 wandering_wisp [in elandor_lorindor/elderwood] | 300 | lorindor_wardenry_01 |
+| lorindor_wardenry_opt_01 | Optional: Passage at Ankle Height | Orya Petalward (Petalbank Wardenry) | 25 | kill 5 armored_crab [in elandor_lorindor/shell_strand] | 388 | lorindor_wardenry_01 |
+| lorindor_cutting_opt_01 | Optional: What the Bark Cannot Bear | Saevin Rootscribe (Paleroot Cutting) | 27 | kill 6 moss_antler_stag [in elandor_lorindor/paleroots] | 413 | lorindor_cutting_01 |
+| lorindor_berries_03 | Close the Pearl Account | Ilwen Petalmeasure (Lorindor Berrycourt) | 28 | kill 4 toll_mirefolk [in elandor_lorindor/pearl_camp]; kill 1 pearl_counter_iss | 595 | lorindor_berries_02 |
+| lorindor_wardenry_opt_02 | Optional: A Light Between Every Root | Orya Petalward (Petalbank Wardenry) | 28 | kill 6 wandering_wisp [in elandor_lorindor/paleroots] | 425 | lorindor_wardenry_01 |
+| lorindor_berries_04 | Accounts on the Border | Ilwen Petalmeasure (Lorindor Berrycourt) | 29 | talk to Toren Waterbarrel (r20_anchor_031) | 175 | lorindor_berries_03 |
 
 ## Mobs by spawn region
 
