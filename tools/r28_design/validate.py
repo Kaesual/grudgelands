@@ -1039,6 +1039,9 @@ class Validator:
             spawned |= set(unit.get("roles") or ())
         spawned |= set(self.d.leaders(kill_zone))
         bare = {r.split(":", 1)[1] if r.startswith("grug_mobs:") else r for r in roles if isinstance(r, str)}
+        # Guards stand at their guard posts, never in a recipe's regions.
+        if bare & set(LEGACY_GUARD_TARGETS):
+            return
         if not bare & spawned:
             self.W("W-recipe-target", file, path, "no kill target (%s) is spawned by %s's spawn recipe"
                    % (", ".join(sorted(bare)), kill_zone))
@@ -1921,6 +1924,8 @@ def _scenarios():
         ("legacy kill objective with mobs", legacy_kill, True, None),
         ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
         ("legacy enemy guard kill (split of today's quests)", guard_kill("mobs"), True, "!E-not-a-mob"),
+        ("legacy guard kill in a recipe zone: guards are no recipe spawn", guard_kill("mobs"), True,
+         "!W-recipe-target"),
         ("guard as a designed kill role", guard_kill("roles"), True, "E-not-a-mob"),
     ]
 

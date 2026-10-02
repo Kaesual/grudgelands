@@ -1,6 +1,66 @@
 {
   "zone": "kragmar_speargrass_reach",
-  "palette": {
-    "families": ["goblin_raid", "mountain", "savanna", "scorpion", "speargrass_tiger"]
+  "recipe": {
+    "from": {"border": ["kragmar_gor_drazhak", "kragmar_redtusk_savanna"]},
+    "to": {"border": ["kragmar_bannerbreak_mesa", "kragmar_blackwind_rise"]},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "plains", "name": "Speargrass Plains",
+            "day": [{"role": "watchful_zebra", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Speargrass Strand",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 1}], "density": "dense"},
+          "bank": {"id": "waterholes", "name": "Speargrass Waterholes",
+            "day": [{"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "ridges", "name": "Speargrass Ridges",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
+            "night": [{"role": "dust_stinger", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "tallgrass", "name": "Speargrass Tallgrass",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shallows", "name": "Speargrass Shallows",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "dense"},
+          "bank": {"id": "wallows", "name": "Speargrass Wallows",
+            "day": [{"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "crags", "name": "Speargrass Crags",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "hunting_grounds", "name": "Speargrass Hunting Grounds",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustpack_hyena", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"},
+          "bank": {"id": "dry_wells", "name": "Speargrass Dry Wells",
+            "day": [{"role": "watchful_zebra", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "heights", "name": "Speargrass Heights",
+            "day": [{"role": "dustwing_vulture", "weight": 3}, {"role": "reed_stalking_tiger", "weight": 1}],
+            "night": [{"role": "dustpack_hyena", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "goblin_camp", "name": "Speargrass Goblin Camp", "belt": "l28_30",
+       "roster": [{"role": "ore_thieving_goblin", "weight": 3}, {"role": "rubble_goblin_slinger", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "banner_broker_rakk", "at": {"camp": "goblin_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

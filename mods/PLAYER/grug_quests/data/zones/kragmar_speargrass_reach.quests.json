@@ -108,7 +108,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:scorpion"
+            "grug_mobs:scorpion",
+            "grug_mobs:dust_stinger"
           ],
           "zone": "kragmar_speargrass_reach",
           "count": 4
@@ -268,7 +269,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:scorpion"
+            "grug_mobs:scorpion",
+            "grug_mobs:dust_stinger"
           ],
           "zone": "kragmar_speargrass_reach",
           "count": 4

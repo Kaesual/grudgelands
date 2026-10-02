@@ -38,7 +38,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:boar"
+            "grug_mobs:boar",
+            "grug_mobs:small_boar"
           ],
           "count": 3
         }
@@ -119,7 +120,9 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:sun_dried_husk"
+            "grug_mobs:sun_dried_husk",
+            "grug_mobs:befuddled_husk",
+            "grug_mobs:sluggish_husk"
           ],
           "count": 3
         }
@@ -148,7 +151,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:scorpion"
+            "grug_mobs:scorpion",
+            "grug_mobs:irritable_scorpion"
           ],
           "count": 5
         }

@@ -124,6 +124,8 @@ table order.
    leaders first, then the others in recipe order, each on the first cell of
    its chain far enough from those placed (the next-best cell, then the
    next region).
+   In the game a zombie-family leader steps to the nearest blight-dirt column
+   within 16 nodes of its spot, where it is sunproof (biomes_mobs.md §4.2).
 
 Unchanged by regions: underground and water spawns, the Rift Spawn's
 surface row (on its host ground at night, in the four zones whose palette

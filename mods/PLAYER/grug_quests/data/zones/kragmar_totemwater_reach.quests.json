@@ -55,7 +55,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:crocodile"
+            "grug_mobs:crocodile",
+            "grug_mobs:reed_crocodile"
           ],
           "zone": "kragmar_totemwater_reach",
           "count": 3
@@ -84,7 +85,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:bog_ooze"
+            "grug_mobs:bog_ooze",
+            "grug_mobs:sullen_bog_ooze"
           ],
           "zone": "kragmar_totemwater_reach",
           "count": 4

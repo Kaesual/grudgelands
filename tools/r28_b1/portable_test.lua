@@ -287,13 +287,17 @@ for _, name in ipairs(mob_names) do
 	check(OLD.register_spawn_role(name, defs[name]) == NEW.register_spawn_role(name, defs[name]),
 		"hostile role " .. name)
 end
--- A zone with a spawn recipe (Lane S1) has no palette: it is compared on its
--- own in part 3. Every other zone answers exactly as before.
+-- A zone with a spawn recipe (Lanes S1, S2) has no palette: it is compared on
+-- its own in part 3. Every other zone answers exactly as before.
 local SR = NEW.spawn_regions
-local palette_zones = {}
+local palette_zones, shipped_palettes = {}, 0
 for _, zone in ipairs(zone_files) do
 	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
+	local data = json.parse(io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a"))
+	if data.recipe == nil then shipped_palettes = shipped_palettes + 1 end
 end
+check(#palette_zones == shipped_palettes, "the " .. shipped_palettes ..
+	" zones without a recipe keep their palette (" .. #palette_zones .. ")")
 -- Round 28 S2 adds recipes zone by zone: every zone has one or the other.
 check(#palette_zones < #zone_files, "some zone has a spawn recipe (" ..
 	(#zone_files - #palette_zones) .. " of " .. #zone_files .. ")")
