@@ -150,7 +150,21 @@ local function quiver_content(player)
 	return table.concat(fs)
 end
 
-local function character_content(player)
+-- Return home (Round 30 ruling, moved here from the Map tab): the travel
+-- home's name and the cooldown as m:ss, "Preparing arrival" while a return
+-- is under way, else "Ready"; nil without grug_home or a home. grug_home
+-- does not depend on this mod, so it is read at build time.
+local function home_button_text(player)
+	local home_mod = rawget(_G, "grug_home")
+	local home = home_mod and home_mod.get(player)
+	if not home then return nil end
+	local remaining = home_mod.remaining(player)
+	local state = home_mod.is_pending(player) and "Preparing arrival" or
+		(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
+	return ("Return home: %s (%s)"):format(home.label, state)
+end
+
+local function character_content(player, context)
 	local class = grug_classes.get_class_def(player)
 	local hp = grug_classes.get_pool_breakdown(player, "hp")
 	local mana = class and class.resource == "mana"
@@ -191,6 +205,13 @@ local function character_content(player)
 	if housing and housing.character_status_formspec then
 		fs[#fs + 1] = housing.character_status_formspec(
 			player:get_player_name(), 2.75, 4.55)
+	end
+	-- Below the at most three status lines, above the main inventory. The
+	-- text shown is kept in the context for the countdown poll below.
+	local home_text = home_button_text(player)
+	context.grug_home_text = home_text
+	if home_text then
+		fs[#fs + 1] = ("button[2.75,6.25;5.2,0.7;grug_character_home;%s]"):format(esc(home_text))
 	end
 
 	local class_id = grug_classes.get_class(player)
@@ -364,11 +385,17 @@ sfinv.register_page(CHARACTER_PAGE, {
 		elseif tab == "professions" then
 			body = professions_content(player)
 		else
-			body = character_content(player)
+			body = character_content(player, context)
 		end
 		return sfinv.make_formspec(player, context, tab_row(tab) .. body, true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		if fields.grug_character_home then
+			local home_mod = rawget(_G, "grug_home")
+			if home_mod then home_mod.return_home(player) end
+			sfinv.set_player_inventory_formspec(player, context)
+			return true
+		end
 		for _, tab in ipairs(TABS) do
 			if fields["grug_character_" .. tab.id] then
 				context.grug_character_tab = tab.id
@@ -382,7 +409,9 @@ sfinv.register_page(CHARACTER_PAGE, {
 -- The cached inventory formspec is only re-sent when the Effects tab is the
 -- selected view AND its printed text changed: an effect came or went, a
 -- shield value moved, or a coarse remaining time ticked (whole minutes, so
--- about once a minute). Nothing is re-sent for the Stats tab or other pages.
+-- about once a minute). On the Stats tab it is re-sent when the Return home
+-- text changed: each second of a running cooldown or arrival, and once when
+-- it becomes Ready. Nothing is re-sent for other pages.
 local effects_elapsed = 0
 core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed + dtime
@@ -390,10 +419,12 @@ core.register_globalstep(function(dtime)
 	effects_elapsed = 0
 	for _, player in ipairs(core.get_connected_players()) do
 		local context = sfinv.contexts[player:get_player_name()]
-		if context and context.page == CHARACTER_PAGE and
-				selected_tab(context) == "effects" and
-				grug_inventory.effects_key(player) ~= context.grug_effects_key then
-			sfinv.set_player_inventory_formspec(player, context)
+		if context and context.page == CHARACTER_PAGE then
+			local tab = selected_tab(context)
+			if (tab == "effects" and grug_inventory.effects_key(player) ~= context.grug_effects_key) or
+					(tab == "stats" and home_button_text(player) ~= context.grug_home_text) then
+				sfinv.set_player_inventory_formspec(player, context)
+			end
 		end
 	end
 end)

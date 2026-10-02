@@ -67,9 +67,11 @@ marker never unlocks or starts travel.
 
 ## Innkeeper home travel
 
-Round 17 adds the twelve innkeeper locations, labels/current-home distinction
-and a Return home button with destination and cooldown. Its server authority
-is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
+Round 17 adds the twelve innkeeper locations and the labels/current-home
+distinction. The Return home button with destination and cooldown moved to
+the Character page in Round 30 (user ruling, 2026-10-02: its live countdown
+is cheap in that small form and no longer resends the Map tab). Its server
+authority is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
 waypoint unlock; binding still requires visiting an eligible innkeeper.
 
 ## Atlas navigation
@@ -93,9 +95,9 @@ Native scrolling does not itself trigger live-form rebuilds. While the tab is
 open, the arrows and markers are brought up to date at most every 2 seconds
 (Round 30 ruling, perf review #3), with current scroll values: a cheap
 signature (zoom, selection, location label, minimap switch, each arrow's place
-on a 0.02-unit grid and heading frame, the quest markers' version, the home
-and its status, the discovered waystones) is compared, and the form is built
-and sent only when it changed. Zoom, marker and button clicks still answer at
+on a 0.02-unit grid and heading frame, the quest markers' version, which
+location is the home, the discovered waystones) is compared, and the form is built
+and sent only when it changed. Zoom, marker and switch clicks still answer at
 once. Arrows are drawn on that grid, so a move inside one grid cell sends
 nothing. Markers of one look share one `style[]`. While scroll changes
 continue, defer a live rebuild until a short 0.5-second quiet interval;

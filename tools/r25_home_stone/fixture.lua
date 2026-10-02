@@ -453,7 +453,47 @@ rawset(_G, "grug_inventory", {UI={width=10.4, height=11.1}})
 -- Round 27 minimap switch (page.lua asks it); this server has no world map.
 grug_map.minimap = {available=function() return false end, enabled=function() return false end}
 dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
-check(page.get(page, player, {}):find("Return home: Claim Stone (1:17)", 1, true), "M map button")
+check(not page.get(page, player, {}):find("Return home", 1, true), "M no Return home on the Map tab")
+-- Round 30 ruling: Return home is on the Character page (the real
+-- grug_inventory/pages.lua on stubs for everything but grug_home).
+do
+ local pages, sets = {}, 0
+ rawset(_G, "sfinv", {pages=pages, pages_unordered={}, contexts={},
+  register_page=function(name, def) def.name = name; pages[name] = def end,
+  make_formspec=function(_, _, fs) return fs end, set_page=function() end,
+  set_player_inventory_formspec=function() sets = sets + 1 end})
+ rawset(_G, "grug_inventory", {equipment_slots={}, has_quiver=function() return false end,
+  selected_button_style=function() return "" end, wrap_text=function(text) return text end})
+ rawset(_G, "grug_classes", {get_class_def=function() return {resource="rage"} end,
+  get_pool_breakdown=function() return {final=20} end, get_crit_chance=function() return 0 end,
+  get_dodge_chance=function() return 0 end, get_class=function() return "warrior" end})
+ rawset(_G, "grug_money", {format=function(c) return c .. "c" end, get=function() return 0 end,
+  register_on_change=function() end})
+ rawset(_G, "grug_xp", {register_on_level_change=function() end})
+ grug_core.get_armor_rating = function() return 0 end
+ grug_core.armor_reduction = function() return 0 end
+ grug_core.get_player_level = function() return 1 end
+ grug_core.register_on_equipment_change = function() end
+ grug_core.register_on_status_modifiers_changed = function() end
+ player.get_properties = function() return {visual="mesh", mesh="m.b3d", textures={"t.png"}} end
+ core.get_current_modname = function() return "grug_inventory" end
+ dofile(repo .. "/mods/PLAYER/grug_inventory/pages.lua")
+ core.get_current_modname = function() return "grug_home" end
+ local character = pages["grug_inventory:character"]
+ local context = {page="grug_inventory:character"}
+ check(character.get(character, player, context):find(
+  "grug_character_home;Return home: Claim Stone (1:17)]", 1, true), "M Character page button")
+ data["grug_home:ready_at"] = tostring(clock)
+ check(character.get(character, player, context):find("Return home: Claim Stone (Ready)]", 1, true),
+  "M Character page button ready")
+ check(not home.is_pending(player), "M no return under way before the click")
+ check(character.on_player_receive_fields(character, player, context, {grug_character_home="x"}) and
+  sets == 1, "M the button rebuilds the page")
+ check(home.is_pending(player), "M the button starts the return home")
+ check(character.get(character, player, context):find("Return home: Claim Stone (Preparing arrival)]",
+  1, true), "M Character page button while arriving")
+ player.get_properties = nil
+end
 
 -- ---------------------------------------------------------------------------
 -- D: no dependency path from grug_home back to itself (depends and
