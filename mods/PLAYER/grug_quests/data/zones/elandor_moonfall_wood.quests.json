@@ -1,6 +1,6 @@
 {
   "zone": "elandor_moonfall_wood",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "The Moonfall Observatory charts the stars over a wood that someone is quietly emptying with marked snares.",
   "hubs": [
     {
       "id": "r20_anchor_035",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_035_host",
           "lines": [
-            "legacy"
+            "stars",
+            "snares"
           ]
         }
       ]
@@ -17,84 +18,310 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_035_01",
-      "line": "legacy",
+      "id": "moonfall_stars_01",
+      "line": "stars",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_035_host",
       "min_level": 21,
-      "level": 21,
+      "level": 22,
       "requires": [],
-      "faction": "accord",
-      "title": "A Chart Table Repaired",
-      "text": "Moonfall's chart table rocks whenever the lookout marks a route. Bring eight oak planks for its frame; the observatory is a shelter for path-watchers, not a new magical instrument. Existing or traded supplies are welcome.",
+      "title": "The Stars Have No Need to Howl",
+      "text": "I have watched the heavens for years without hearing a star demand an answer; the Briarpack Wolves beneath my window are less considerate. Kill five in the {name:eaves}, which lie {zone_area:eaves}; they roam there by day and are more plentiful after dark. A wounded wolf calls its pack, so leave yourself room to retreat.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briarpack_wolf"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/eaves"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "moonfall_snares_01",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [],
+      "title": "The Wrong Kind of Binding",
+      "text": "Someone has strung snares between my sighting posts, all stamped with a warden's mark that no honest warden granted. Defeat four Unlicensed Poachers at night in the {name:eaves}, which lie {zone_area:eaves}. I use those posts to study where things belong; I can state with some certainty that poachers do not.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "unlicensed_poacher"
+          ],
+          "count": 4,
+          "area": "elandor_moonfall_wood/eaves"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "moonfall_stars_02",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "moonfall_stars_01"
+      ],
+      "title": "A Bear in the Calculation",
+      "text": "My apprentices can account for the motion of the heavens, but their field notes become rather brief whenever a bear arrives. Kill five Bramble Bears by day in the {name:deepwood}, which lies {zone_area:deepwood}, so we can resume our measurements. We have already established that the bears object; no further evidence is needed on that point.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/deepwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "moonfall_stars_03",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_02"
+      ],
+      "title": "One Light, Properly Accounted For",
+      "text": "The Wandering Wisps of the {name:deepwood} keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_035_02",
-      "line": "legacy",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "Fangs Beneath the Fallen Bough",
-      "text": "Wolves prowl Moonfall Wood's forest floor beneath the fallen boughs. Defeat four so the observers can check the lake paths without abandoning their charts.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:briarpack_wolf"
+          "item": "grug_mobs:bound_wisp_mote",
+          "count": 1,
+          "roles": [
+            "wandering_wisp"
           ],
-          "zone": "elandor_moonfall_wood",
-          "count": 4
+          "area": "elandor_moonfall_wood/deepwood"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 6
     },
     {
-      "id": "r20_anchor_035_03",
-      "line": "legacy",
+      "id": "moonfall_snares_02",
+      "line": "snares",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_035_host",
-      "min_level": 23,
-      "level": 23,
+      "min_level": 24,
+      "level": 25,
       "requires": [
-        "r20_anchor_035_02"
+        "moonfall_snares_01"
       ],
-      "faction": "accord",
-      "title": "The Moonlit Snare Line",
-      "text": "The clear paths expose a second hazard: poachers return to the wood at night. Defeat four in Moonfall Wood before the next dawn survey follows their snare line.",
+      "title": "A Clear View Needs Sound Wood",
+      "text": "The poachers have pulled down my sighting posts; without them, a hundred nights of careful work become a collection of guesses. Bring me ten planks of any wood here at the Observatory so I can rebuild them. Craft the planks wherever convenient, and let us have something steady beneath the moving sky again.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
-          ],
-          "zone": "elandor_moonfall_wood",
-          "count": 4
+          "type": "item",
+          "group": "wood",
+          "count": 10
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 1,
         "items": []
-      }
+      },
+      "duration_min": 5
+    },
+    {
+      "id": "moonfall_snares_03",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "A Warden in Name Alone",
+      "text": "Follow enough false marks and you find the hand that makes them: {name:snarewarden_bracken}. Vetch and Rusk answered to him, and he waits {dir_from_giver:snarewarden_bracken}, by day and night. Find and defeat him. A warden should leave the wood alive behind him, not measured out in snares.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "snarewarden_bracken"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "The track's last normal-tier leader.",
+      "duration_min": 10,
+      "climax": true
+    },
+    {
+      "id": "moonfall_snares_04",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "moonfall_snares_03"
+      ],
+      "title": "Beyond the Last Snare",
+      "text": "With Bracken gone, the marks in this wood mean nothing again, and my instruments can finally hear themselves think. His trade ran on into the Glassroot Wilds; take what you found to Faeris Rootbinder at Glassroot Gate. The wilds are contested ground, so finish your training before you leave the shelter of the trees.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Heartland to contested handoff at 30.",
+      "duration_min": 10
+    },
+    {
+      "id": "moonfall_stars_opt_01",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_02"
+      ],
+      "title": "Optional: An Astronomer's Ankles",
+      "text": "A steady stance is essential to observation, and the Barnacle Pinchers on the {name:moonstrand} {dir_from_giver:moonstrand} make it impossible to maintain one. Kill five by day, before I set up for my night's work. Spare the Bank Crabs; they have never tried to dismantle the observer.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "armored_crab"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/moonstrand"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "moonfall_snares_opt_01",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "Optional: Teeth Along the Trail",
+      "text": "The marks continue into the {name:elderwood}, which lies {zone_area:elderwood}, where Bramble Bears make daylight travel a costly undertaking. Kill six by day to ease the search for whoever lays those snares. I doubt the bears care whose business they protect; that does little to comfort the searchers.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/elderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "moonfall_snares_opt_02",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "Optional: Thread Across the Stars",
+      "text": "At night, Briar-Web Spiders stretch their webs through the {name:elderwood}, which lies {zone_area:elderwood}, giving the snare-setters convenient markers and everyone else a faceful of silk. Kill six after dark. I prefer to admire fine weaving when it is not attached to my eyebrows.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/elderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "moonfall_stars_bounty",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_03"
+      ],
+      "title": "Bounty: Keep the View Clear",
+      "text": "Each clear night should add a little to our knowledge, not another layer of web to the lenses. Kill six Briar-Web Spiders after dark in the {name:deepwood} and return for the Observatory's payment. The bounty stands as long as the spiders keep weaving, which, judging by their diligence, will be some time.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/deepwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "duration_min": 8
     }
   ]
 }

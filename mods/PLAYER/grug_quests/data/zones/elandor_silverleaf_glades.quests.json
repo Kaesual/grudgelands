@@ -1,6 +1,6 @@
 {
   "zone": "elandor_silverleaf_glades",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Silverleaf tends its saplings for centuries; a band of confused poachers is cutting them for this week.",
   "hubs": [
     {
       "id": "silverleaf",
@@ -9,13 +9,15 @@
         {
           "npc": "r14_elf_elder",
           "lines": [
-            "legacy"
+            "hunt",
+            "tools"
           ]
         },
         {
           "npc": "r20_elf_start_cook",
           "lines": [
-            "legacy"
+            "pantry",
+            "kitchen"
           ]
         }
       ]
@@ -23,209 +25,141 @@
   ],
   "quests": [
     {
-      "id": "r14_elf_01_roots_laid_bare",
-      "line": "legacy",
+      "id": "silverleaf_hunt_01",
+      "line": "hunt",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "A Century Down the Snout",
+      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. The boars are not our only trouble, though: some stems out there were cut clean, and no snout cuts clean.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "small_boar"
+          ],
+          "count": 8,
+          "area": "elandor_silverleaf_glades/home_glades"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Yellow names are neutral single pulls.",
+      "duration_min": 8
+    },
+    {
+      "id": "silverleaf_tools_01",
+      "line": "tools",
       "giver": "r14_elf_elder",
       "turnin": "r14_elf_elder",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Roots Laid Bare",
-      "text": "Boars expose young roots outside Silverleaf by day. Drive off three, then consider taking spare raw meat to Liora Dewpot at the grove's separate oven.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:small_boar"
-          ],
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_02_the_grove_s_portion",
-      "line": "legacy",
-      "giver": "r20_elf_start_cook",
-      "turnin": "r20_elf_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "The Grove's Portion",
-      "text": "The shared oven feeds everyone returning from silverleaf's outer paths. Bring four raw meat portions to Liora Dewpot beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_03_beneath_the_seed_baskets",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 3,
-      "level": 3,
-      "requires": [
-        "r14_elf_01_roots_laid_bare"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "A Frame for the Seed Baskets",
-      "text": "The seed baskets need a sound frame before the youngest roots can be covered again. Bring six ordinary oak planks; nearby oak trunks provide them, and traded boards are welcome. Silverwood is not required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:wood",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "xp": 100,
-        "copper": 20,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_04_footfalls_without_breath",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 4,
-      "level": 4,
-      "requires": [
-        "r14_elf_01_roots_laid_bare"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Footfalls Without Breath",
-      "text": "Zombies cross the moss ring outside Silverleaf after nightfall. Defeat three in the level-3-and-up glades. Store repairs and optional tool lessons need not wait for darkness.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:braindead_zombie",
-            "grug_mobs:sluggish_zombie"
-          ],
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 140,
-        "copper": 25,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_05_keepers_of_the_saplings",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 5,
-      "level": 5,
-      "requires": [
-        "r14_elf_03_beneath_the_seed_baskets"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Keepers of the Saplings",
-      "text": "Foxes worry the sapling guards by day on level-4-and-up ground outside Silverleaf. Clear the animals from the tended ring.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:small_fox"
-          ],
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "xp": 180,
-        "copper": 30,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_06_axes_without_leave",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_steward",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_elf_05_keepers_of_the_saplings"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "The Road to Ilyra Mossveil",
-      "text": "At level 10, follow the road to Starbough Village and speak with Ilyra Mossveil. Starbough Vale is level 11–20 country, so prepare before leaving the safer glades. Complete the conversation with Ilyra; no fighting or return trip is part of this handoff.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r14_elf_steward"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_10_the_careful_axe",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r14_elf_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "The Careful Axe",
-      "text": "Bring a wood axe. Saelin's lesson is about choosing a tree before raising the tool.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "title": "Begin with the Grain",
+      "text": "Before you tend a forest, learn what a piece of wood will bear. Make one Wooden Axe and one Wooden Pickaxe and bring them to me here in Silverleaf. Your work will serve the seed store; in exchange, you shall have a tested pair from mine.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_materials:axe_wood",
           "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:pick_wood",
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 15,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 1,
+        "items": [
+          {
+            "item": "grug_materials:axe_wood",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_wood",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Basic tools; handed-in tools are consumed, the reward replaces them.",
+      "duration_min": 5
     },
     {
-      "id": "r14_elf_11_stone_s_patient_lesson",
-      "line": "legacy",
+      "id": "silverleaf_kitchen_01",
+      "line": "kitchen",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "title": "The Oven Keeps No Seasons",
+      "text": "An elf may spend a century choosing a tree; supper allows me rather less. Bring me five logs of any tree, cut outside Silverleaf's protected ground. Whole logs, please, not planks: I have an oven to feed, not a floor to mend.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Any log counts, planks do not; town plants cannot be gathered.",
+      "duration_min": 4
+    },
+    {
+      "id": "silverleaf_hunt_02",
+      "line": "hunt",
       "giver": "r14_elf_elder",
       "turnin": "r14_elf_elder",
       "min_level": 2,
       "level": 2,
       "requires": [
-        "r14_elf_10_the_careful_axe"
+        "silverleaf_hunt_01"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Stone's Patient Lesson",
-      "text": "Bring a stone pick and learn why stone rewards patience rather than force.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "title": "The Ferns Have Teeth",
+      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Large Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Draw them out carefully; one frightened squeal brings the neighbours.",
       "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 8,
+          "area": "elandor_silverleaf_glades/home_glades"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "The night clock in the same area; rats call nearby rats.",
+      "duration_min": 8
+    },
+    {
+      "id": "silverleaf_tools_02",
+      "line": "tools",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "silverleaf_tools_01"
+      ],
+      "title": "A Lesson That Holds Its Edge",
+      "text": "You have learned the grain; now learn the weight. Mine plain stone outside Silverleaf with your wooden pick, then make one Stone Axe and one Stone Pickaxe. Bring both here for a tested pair in exchange, and let patience guide your hands before strength does.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_stone",
+          "count": 1
+        },
         {
           "type": "item",
           "item": "grug_materials:pick_stone",
@@ -233,59 +167,359 @@
         }
       ],
       "rewards": {
-        "xp": 45,
-        "copper": 15,
-        "items": []
-      }
+        "weight": 1.5,
+        "items": [
+          {
+            "item": "grug_materials:axe_stone",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_stone",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Tool progression; rock asks for a pick tier.",
+      "duration_min": 7
     },
     {
-      "id": "r20_elf_start_cook",
-      "line": "legacy",
+      "id": "silverleaf_kitchen_02",
+      "line": "kitchen",
       "giver": "r20_elf_start_cook",
       "turnin": "r20_elf_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "A Shared Grove Supper",
-      "text": "Liora Dewpot wants the grove's evening meal ready before the gatherers return. Bring three coal lumps to the oven in Silverleaf. Existing or traded fuel is welcome; a pickaxe is needed (wood and stone work too) if you choose to mine natural coal yourself.",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "silverleaf_kitchen_01"
+      ],
+      "title": "Embers Before Eloquence",
+      "text": "The elder can warm a gathering with a speech; I have tried it on the oven without success. Mine five Coal Lumps from the rock outside Silverleaf and bring them to me. When you cook for yourself, put fuel in the fuel slot and raw food in the cooking slot; neither benefits from a speech.",
       "objectives": [
         {
           "type": "item",
           "item": "default:coal_lump",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Gather while waiting for night; the public oven is in town.",
+      "duration_min": 7
+    },
+    {
+      "id": "silverleaf_pantry_01",
+      "line": "pantry",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "silverleaf_hunt_02"
+      ],
+      "title": "The Basket-Mender's Due",
+      "text": "Three generations of careful weaving, and a rat decides my seed baskets need doors. Hunt Large Rats after dark in the glades {dir_of:silverleaf:home_glades} and bring me two Rat Fur Patches. I shall mend the baskets; you may keep any extra patches for your own work.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:rat_fur_patch",
+          "count": 2,
+          "roles": [
+            "large_rat"
+          ],
+          "area": "elandor_silverleaf_glades/home_glades"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Ordinary loot from an earlier hunt.",
+      "duration_min": 3
+    },
+    {
+      "id": "silverleaf_hunt_03",
+      "line": "hunt",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 3,
+      "level": 4,
+      "requires": [
+        "silverleaf_hunt_02"
+      ],
+      "title": "Let the Grass Remember Footsteps",
+      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Braindead Zombies to rest at night on the {name:strand}, which lies {zone_area:strand}. Go before sunrise, when the light takes them, and leave the shore its quiet.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "braindead_zombie"
+          ],
+          "count": 6,
+          "area": "elandor_silverleaf_glades/strand"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Zombies walk at night and burn in the sun.",
+      "duration_min": 9
+    },
+    {
+      "id": "silverleaf_pantry_02",
+      "line": "pantry",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "silverleaf_pantry_01"
+      ],
+      "title": "A Shore Supper",
+      "text": "Even an ancient recipe needs someone willing to get their boots wet. By day, bring me two Crab Legs from the Small Crabs on the {name:strand}, which lies {zone_area:strand}. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 2,
+          "roles": [
+            "quiet_shore_crab"
+          ],
+          "area": "elandor_silverleaf_glades/strand"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "The same shore by day and by night holds different mobs.",
+      "duration_min": 6
+    },
+    {
+      "id": "silverleaf_kitchen_03",
+      "line": "kitchen",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "silverleaf_kitchen_02"
+      ],
+      "title": "Enough for the Latecomers",
+      "text": "The planting crews eat last and pretend they are not hungry. Bring me ten pieces of Raw Meat from your hunts; boars or rats will do, and anything already in your pack counts. I mean to have supper waiting before anyone has to pretend.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "mobs:meat",
+            "count": 3
+          }
+        ]
+      },
+      "lesson": "Earlier hunt loot is useful; cooking closes the kitchen line.",
+      "duration_min": 4,
+      "climax": true
+    },
+    {
+      "id": "silverleaf_hunt_04",
+      "line": "hunt",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 4,
+      "level": 6,
+      "requires": [
+        "silverleaf_hunt_03"
+      ],
+      "title": "Eight Shadows in the Seedbeds",
+      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Young Foxes by day in the {name:foxglades}, which lie {zone_area:foxglades}. Mind the Aggressive Boars nearby: a red name means the creature may start the fight itself.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "small_fox"
+          ],
+          "count": 8,
+          "area": "elandor_silverleaf_glades/foxglades"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Neutral and aggressive mobs side by side.",
+      "duration_min": 9
+    },
+    {
+      "id": "silverleaf_tools_03",
+      "line": "tools",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "silverleaf_tools_02"
+      ],
+      "title": "A Hall Should Not Creak",
+      "text": "Our hall has heard a great deal of wisdom; lately its hinges insist on answering. Smelt three Copper Bars and three Tin Bars from ore around Silverleaf and bring them here for the repairs. I will give you my old Dual Furnace for your next lesson; set it up outside protected ground.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:copper_bar",
+          "count": 3
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:tin_bar",
           "count": 3
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Ore to bar; a portable furnace.",
+      "duration_min": 10
     },
     {
-      "id": "r20_elf_capital_intro",
-      "line": "legacy",
-      "giver": "r14_elf_elder",
-      "turnin": "r20_elf_capital_envoy",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "The Road to Lethariel",
-      "text": "Lethariel's star hall receives travellers looking for the city's trainers, repairs and public workspaces. At level 10, follow the road to Eriath Boughwarden there. The woods beyond the protected city are level 20–30; avoid their wildlife while travelling. Speak with Eriath and complete the introduction in the hall.",
+      "id": "silverleaf_pantry_03",
+      "line": "pantry",
+      "giver": "r20_elf_start_cook",
+      "turnin": "r20_elf_start_cook",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "silverleaf_pantry_02",
+        "silverleaf_hunt_04"
+      ],
+      "title": "Dust Is Not a Seasoning",
+      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Young Foxes in the {name:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_elf_capital_envoy"
+          "type": "item",
+          "item": "grug_mobs:fox_tail",
+          "count": 2,
+          "roles": [
+            "small_fox"
+          ],
+          "area": "elandor_silverleaf_glades/foxglades"
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 2,
         "items": []
-      }
+      },
+      "lesson": "A regional drop with an ordinary use.",
+      "duration_min": 6,
+      "climax": true
+    },
+    {
+      "id": "silverleaf_tools_04",
+      "line": "tools",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 7,
+      "level": 8,
+      "requires": [
+        "silverleaf_tools_03"
+      ],
+      "title": "The Third Metal",
+      "text": "Copper and tin each have their virtues; put them together and you gain another. Use your Dual Furnace to alloy three Bronze Bars and bring them here, gathering fresh materials because the earlier bars went into our hinges. A Bronze Pickaxe awaits you in exchange, for the rock beyond these glades has lessons of its own.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Alloys; the Bronze Pickaxe is the onward tool.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "silverleaf_hunt_05",
+      "line": "hunt",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_elder",
+      "min_level": 8,
+      "level": 9,
+      "requires": [
+        "silverleaf_hunt_04"
+      ],
+      "title": "A Forest Is Not a Woodpile",
+      "text": "Those clean cuts lead to the {name:poacher_camp} {dir_from_giver:poacher_camp}, occupied day and night by Confused Poachers and Confused Wood Thieves. Defeat seven of them in all, then their leader, {name:misguided_poacher_chief}; draw him apart from his guards if you can. He sees a week's firewood where we planted a century of shade.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "furtive_poacher",
+            "confused_bandit"
+          ],
+          "count": 7,
+          "area": "elandor_silverleaf_glades/poacher_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "misguided_poacher_chief"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "A camp and its normal-tier leader; pull the leader alone.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "silverleaf_departure",
+      "line": "hunt",
+      "giver": "r14_elf_elder",
+      "turnin": "r14_elf_steward",
+      "min_level": 9,
+      "level": 9,
+      "requires": [
+        "silverleaf_hunt_05"
+      ],
+      "title": "Beyond the First Ring",
+      "text": "Twig did not teach himself to turn our trees into profit. Follow the road to Starbough Village and tell Ilyra Mossveil what happened here; the cutters in her vale have had longer to practise. Attend to any unfinished business before you leave, and remember that a forest grows one ring at a time.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_elf_steward"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "lesson": "Start to home handoff; leave at level 10.",
+      "duration_min": 7
     }
   ]
 }
