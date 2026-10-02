@@ -1,6 +1,6 @@
 {
   "zone": "elandor_hearthpine_vale",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Hearthpine cuts the pit props for the Copperfell shafts; this year the woods bite back, and a gang of ore thieves under a chief called Bracket is carting off what the shift digs.",
   "hubs": [
     {
       "id": "hearthpine",
@@ -9,13 +9,15 @@
         {
           "npc": "r14_dwarf_elder",
           "lines": [
-            "legacy"
+            "hunt",
+            "tools"
           ]
         },
         {
           "npc": "r20_dwarf_start_cook",
           "lines": [
-            "legacy"
+            "pantry",
+            "kitchen"
           ]
         }
       ]
@@ -23,209 +25,141 @@
   ],
   "quests": [
     {
-      "id": "r14_dwarf_01_tusks_at_the_timberline",
-      "line": "legacy",
+      "id": "hearthpine_hunt_01",
+      "line": "hunt",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 1,
+      "level": 2,
+      "requires": [],
+      "title": "A Pig's Breakfast",
+      "text": "Small Boars are rooting through our pit props {zone_area:timberline}, and I refuse to lose a miner to a pig's breakfast. Kill eight by day; a yellow name means they leave you be until you strike. Save any meat for Hilda, then we'll see about the ore thieves.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "small_boar"
+          ],
+          "count": 8,
+          "area": "elandor_hearthpine_vale/timberline"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Yellow names are neutral single pulls; keep the meat.",
+      "duration_min": 8
+    },
+    {
+      "id": "hearthpine_tools_01",
+      "line": "tools",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Tusks at the Timberline",
-      "text": "Boars are tearing through the timberline stores outside Hearthpine. Drive off three by day, and bring any ordinary meat you keep to Hilda Hearthspoon at the separate oven.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:small_boar"
-          ],
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_02_meat_for_the_smokehouse",
-      "line": "legacy",
-      "giver": "r20_dwarf_start_cook",
-      "turnin": "r20_dwarf_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Meat for the Smokehouse",
-      "text": "The shared oven feeds everyone returning from hearthpine's outer paths. Bring four raw meat portions to Hilda Hearthspoon beside the oven. Take this provision job before the short local hunt; carried or traded meat counts, and Cooking is not required.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_03_rats_in_the_woodpiles",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 3,
-      "level": 3,
-      "requires": [
-        "r14_dwarf_01_tusks_at_the_timberline"
-      ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Boards for the Winter Stacks",
-      "text": "The woodpile pests exposed rotten braces beneath the winter stacks. Bring six pine planks for the store frames; ordinary boards from local pine trunks, carried or traded, are equally useful.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:pine_wood",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "xp": 100,
-        "copper": 20,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_04_lanterns_after_sundown",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 4,
-      "level": 4,
-      "requires": [
-        "r14_dwarf_01_tusks_at_the_timberline"
-      ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Lanterns After Sundown",
-      "text": "After nightfall, zombies approach the lantern line outside Hearthpine. Defeat three on that night patrol. They begin in the level-3 country; do the daytime store work or optional tool lessons if the sun is still up.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:braindead_zombie",
-            "grug_mobs:sluggish_zombie"
-          ],
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 140,
-        "copper": 25,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_05_the_high_path",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 5,
-      "level": 5,
-      "requires": [
-        "r14_dwarf_03_rats_in_the_woodpiles"
-      ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "The High Path",
-      "text": "Ibex knock loose slate above Hearthpine's high path by day. Clear the animals on level-4-and-up ground along the ledges.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:young_ibex"
-          ],
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "xp": 180,
-        "copper": 30,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_06_loose_stone_on_copper_road",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_steward",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_dwarf_05_the_high_path"
-      ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "The Road to Orrik Pineledger",
-      "text": "At level 10, take the road to Copperfell Village and speak with Orrik Pineledger. Copperfell Foothills is level 11–20 country: this is a conversation handoff, not a demand to clear the whole road. Complete it with Orrik at the village.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r14_dwarf_steward"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_dwarf_10_an_axe_worth_carrying",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r14_dwarf_elder",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "An Axe Worth Carrying",
-      "text": "Bring a wood axe so Brunna can show where its edge belongs and where it does not.\n\nOpen Basics in your Crafting tab to see the wood axe recipe: three planks and two sticks. You can make planks from a tree trunk and sticks from planks. Wood tools are fragile; stone lasts longer and bronze is your first durable upgrade. This lesson is optional; an axe made by a friend is welcome too.",
+      "title": "Hands Before Heroics",
+      "text": "Before you go making a name for yourself, make something with a handle. Craft a Wooden Axe and a Wooden Pickaxe and bring both to me here in Hearthpine. A miner's first tools hang on the hall wall for luck, so yours go up beside your grandmother's, and you take a seasoned pair from the rack in their place.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_materials:axe_wood",
           "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:pick_wood",
+          "count": 1
         }
       ],
       "rewards": {
-        "xp": 15,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 1,
+        "items": [
+          {
+            "item": "grug_materials:axe_wood",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_wood",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Grid crafting of the first tools; turned-in tools are replaced.",
+      "duration_min": 5
     },
     {
-      "id": "r14_dwarf_11_stone_before_steel",
-      "line": "legacy",
+      "id": "hearthpine_kitchen_01",
+      "line": "kitchen",
+      "giver": "r20_dwarf_start_cook",
+      "turnin": "r20_dwarf_start_cook",
+      "min_level": 1,
+      "level": 1,
+      "requires": [],
+      "title": "Feed the Fire First",
+      "text": "Every mouth in Hearthpine wants supper, including the smokehouse. Bring me five logs from trees outside town, at any hour; logs, mind, not planks. Leave the town trees standing, or you'll answer to Brunna before you answer to me.",
+      "objectives": [
+        {
+          "type": "item",
+          "group": "tree",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Any log counts; planks do not; protected town trees cannot be cut.",
+      "duration_min": 4
+    },
+    {
+      "id": "hearthpine_hunt_02",
+      "line": "hunt",
       "giver": "r14_dwarf_elder",
       "turnin": "r14_dwarf_elder",
       "min_level": 2,
       "level": 2,
       "requires": [
-        "r14_dwarf_10_an_axe_worth_carrying"
+        "hearthpine_hunt_01"
       ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Stone Before Steel",
-      "text": "Bring a stone pick. The lesson is optional, but the mountain is less forgiving than wood.\n\nUse Basics to make a wooden pick first, then mine stone. The stone pick recipe uses three stone blocks across the top and two sticks down the middle. Keep valuable tools repaired through a profession trainer in a settlement. This lesson is optional; a traded pick counts too.",
+      "title": "The Unpaid Night Crew",
+      "text": "Our timber has acquired a night crew with teeth and no respect for joinery. Kill eight Large Rats {zone_area:timberline} after dark. A red name means they'll attack on sight, and a rat's squeal brings nearby rats running; pick your fights before they pick you.",
       "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "large_rat"
+          ],
+          "count": 8,
+          "area": "elandor_hearthpine_vale/timberline"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Night clock and red names; rats call nearby rats.",
+      "duration_min": 8
+    },
+    {
+      "id": "hearthpine_tools_02",
+      "line": "tools",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "hearthpine_tools_01"
+      ],
+      "title": "An Edge Worth Keeping",
+      "text": "Good, you've learned which end to hold. Take your Wooden Pickaxe to plain rock outside the walls, then craft a Stone Axe and a Stone Pickaxe and bring both for inspection. I'll swap them for a fresh pair; the next rock won't yield to wood and encouragement.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:axe_stone",
+          "count": 1
+        },
         {
           "type": "item",
           "item": "grug_materials:pick_stone",
@@ -233,59 +167,329 @@
         }
       ],
       "rewards": {
-        "xp": 45,
-        "copper": 15,
-        "items": []
-      }
+        "weight": 1.5,
+        "items": [
+          {
+            "item": "grug_materials:axe_stone",
+            "count": 1
+          },
+          {
+            "item": "grug_materials:pick_stone",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Pick tiers gate rock; stone tools open the next rock.",
+      "duration_min": 7
     },
     {
-      "id": "r20_dwarf_start_cook",
-      "line": "legacy",
+      "id": "hearthpine_kitchen_02",
+      "line": "kitchen",
       "giver": "r20_dwarf_start_cook",
       "turnin": "r20_dwarf_start_cook",
-      "min_level": 1,
-      "level": 1,
-      "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Warmth for the Timber Shift",
-      "text": "Hilda keeps the timber shift fed beside Hearthpine's oven. Bring three coal lumps for its fuel box; existing or traded coal is welcome. If you mine it yourself, use a pickaxe, even wood or stone, on a natural coal source rather than dismantling protected village scenery.",
+      "min_level": 2,
+      "level": 3,
+      "requires": [
+        "hearthpine_kitchen_01"
+      ],
+      "title": "Supper Needs a Spark",
+      "text": "A cold oven is just a cupboard with ambitions. Mine five Coal Lumps from the rock outside town and bring them to me when you have a break from hunting. Try the public oven while you're here: coal in the fuel slot, raw food in the cooking slot, and patience until supper.",
       "objectives": [
         {
           "type": "item",
           "item": "default:coal_lump",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Gathering while waiting for night; the public oven stands in town.",
+      "duration_min": 7
+    },
+    {
+      "id": "hearthpine_pantry_01",
+      "line": "pantry",
+      "giver": "r20_dwarf_start_cook",
+      "turnin": "r20_dwarf_start_cook",
+      "min_level": 3,
+      "level": 3,
+      "requires": [
+        "hearthpine_hunt_02"
+      ],
+      "title": "You Chew It, You Patch It",
+      "text": "The rats have eaten at my expense and chewed through my flour sacks, so they can pay for the mending. Bring me two Rat Fur Patches from the Large Rats in the {name:timberline} after nightfall.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:rat_fur_patch",
+          "count": 2,
+          "roles": [
+            "large_rat"
+          ],
+          "area": "elandor_hearthpine_vale/timberline"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Ordinary family loot answers a pantry request.",
+      "duration_min": 4
+    },
+    {
+      "id": "hearthpine_hunt_03",
+      "line": "hunt",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 3,
+      "level": 4,
+      "requires": [
+        "hearthpine_hunt_02"
+      ],
+      "title": "The Dead Can Clock Out",
+      "text": "I know a dragging footstep after a hard shift, and those aren't tired miners. Kill eight Braindead Zombies on the {name:shingle} {dir_from_giver:shingle} after nightfall. They burn in sunlight, so get your daytime work done while you wait. The dead can have your next shift.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "braindead_zombie"
+          ],
+          "count": 8,
+          "area": "elandor_hearthpine_vale/shingle"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Zombies come at night and burn in the sun.",
+      "duration_min": 9
+    },
+    {
+      "id": "hearthpine_hunt_04",
+      "line": "hunt",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 4,
+      "level": 6,
+      "requires": [
+        "hearthpine_hunt_02"
+      ],
+      "title": "A Hard Hat Has Limits",
+      "text": "Young Ibex are kicking slate onto the path through the {name:high_pines}, which lie {zone_area:high_pines}. Hunt eight by day; they'll graze peaceably until you start the fight. Our skulls are sturdy, but I'd rather not test them against the whole hillside.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "young_ibex"
+          ],
+          "count": 8,
+          "area": "elandor_hearthpine_vale/high_pines"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "A daytime hunt beside the night work; ibex are neutral grazers.",
+      "duration_min": 9
+    },
+    {
+      "id": "hearthpine_kitchen_03",
+      "line": "kitchen",
+      "giver": "r20_dwarf_start_cook",
+      "turnin": "r20_dwarf_start_cook",
+      "min_level": 4,
+      "level": 5,
+      "requires": [
+        "hearthpine_kitchen_02",
+        "hearthpine_hunt_02"
+      ],
+      "title": "Winter Doesn't Bring Lunch",
+      "text": "When the snow shuts us in, I mean to hear snoring, not stomachs. Bring me ten pieces of Raw Meat for the winter racks; what you've saved counts, or hunt boar and ibex by day and rats by night here in Hearthpine Vale. I'll send you off with three portions of Meat, because the cook gets the last word on leaving hungry.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "mobs:meat_raw",
+          "count": 10
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": [
+          {
+            "item": "mobs:meat",
+            "count": 3
+          }
+        ]
+      },
+      "lesson": "Earlier hunting loot pays a later request.",
+      "duration_min": 4,
+      "climax": true
+    },
+    {
+      "id": "hearthpine_tools_03",
+      "line": "tools",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 5,
+      "level": 6,
+      "requires": [
+        "hearthpine_tools_02"
+      ],
+      "title": "Fittings Before Fortune",
+      "text": "A shaft prop is only as trustworthy as its fittings, and miners put their lives beneath ours. Smelt three Copper Bars and three Tin Bars from the local ore and bring them to me. I'll give you a Dual Furnace for your own work. Place it outside protected ground.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:copper_bar",
+          "count": 3
+        },
+        {
+          "type": "item",
+          "item": "grug_materials:tin_bar",
           "count": 3
         }
       ],
       "rewards": {
-        "xp": 20,
-        "copper": 10,
-        "items": []
-      }
+        "weight": 2,
+        "items": [
+          {
+            "item": "grug_smelting:dual_furnace",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Ore to bar; a dual furnace takes two inputs.",
+      "duration_min": 10
     },
     {
-      "id": "r20_dwarf_capital_intro",
-      "line": "legacy",
-      "giver": "r14_dwarf_elder",
-      "turnin": "r20_dwarf_capital_envoy",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "The Road to Dur Brannoc",
-      "text": "Dur Brannoc's gates lead to trainers, repair services and the city's public workspaces. At level 10, follow the road to Dorrin Gateledger in the ancestor hall. Outside the city the country is more dangerous; keep to the route and avoid the higher-level wildlife. Speak with Dorrin and complete this introduction there.",
+      "id": "hearthpine_pantry_02",
+      "line": "pantry",
+      "giver": "r20_dwarf_start_cook",
+      "turnin": "r20_dwarf_start_cook",
+      "min_level": 6,
+      "level": 7,
+      "requires": [
+        "hearthpine_pantry_01"
+      ],
+      "title": "The Feast Fights Back",
+      "text": "For once I'd like a feast that nobody can mistake for yesterday's stew. Bring me three Crab Legs from Small Crabs or Monstrous Crabs at the {name:rockpools} {dir_from_giver:rockpools} by day. Small Crabs leave you alone until provoked; Monstrous Crabs start the argument themselves, so keep all your fingers for the cutlery.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_dwarf_capital_envoy"
+          "type": "item",
+          "item": "grug_mobs:crab_leg",
+          "count": 3,
+          "roles": [
+            "quiet_shore_crab",
+            "giant_crab"
+          ],
+          "area": "elandor_hearthpine_vale/rockpools"
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "lesson": "Shore strips by day; neutral and aggressive crabs share the rocks.",
+      "duration_min": 8,
+      "climax": true
+    },
+    {
+      "id": "hearthpine_tools_04",
+      "line": "tools",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 7,
+      "level": 8,
+      "requires": [
+        "hearthpine_tools_03"
+      ],
+      "title": "Your Next Bite of Mountain",
+      "text": "Those Copper Bars and Tin Bars are holding up mine shafts now, so you'll need fresh supplies for this. Use your Dual Furnace to make three Bronze Bars and bring them to me here. You've earned a Bronze Pickaxe and a crack at tougher rock; remember who taught you when you strike something worth bragging about.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:bronze_bar",
+          "count": 3
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": [
+          {
+            "item": "grug_materials:pick_bronze",
+            "count": 1
+          }
+        ]
+      },
+      "lesson": "Alloys need fresh inputs; the Bronze Pickaxe is the onward tool.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "hearthpine_hunt_05",
+      "line": "hunt",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_elder",
+      "min_level": 8,
+      "level": 9,
+      "requires": [
+        "hearthpine_hunt_04"
+      ],
+      "title": "Bracket Doesn't Add Up",
+      "text": "Bracket has written our ore into his ledger as though stealing it were a trade. Go to the {name:ore_thief_camp} {dir_from_giver:ore_thief_camp}, where his crew lurks day and night, and defeat seven Confused Ore Thieves and Confused Ore Chief Bracket himself. Draw the chief away from his crew if you can; you've done enough honest work to know the value of coming home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "confused_bandit"
+          ],
+          "count": 7,
+          "area": "elandor_hearthpine_vale/ore_thief_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "muddled_ore_chief"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "Seven helpers and one normal named leader; pull the chief alone.",
+      "duration_min": 12,
+      "climax": true
+    },
+    {
+      "id": "hearthpine_departure",
+      "line": "hunt",
+      "giver": "r14_dwarf_elder",
+      "turnin": "r14_dwarf_steward",
+      "min_level": 9,
+      "level": 9,
+      "requires": [
+        "hearthpine_hunt_05"
+      ],
+      "title": "Follow the Missing Ore",
+      "text": "You put an end to Bracket's stealing, but his carts already took our ore to Copperfell. Follow the main road to Copperfell Village and tell Orrik Pineledger what happened. Finish any business here first; Hearthpine sends you off with pride, not a boot to the backside.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_dwarf_steward"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "lesson": "Start to home zone handoff at level 9 to 10.",
+      "duration_min": 7
     }
   ]
 }
