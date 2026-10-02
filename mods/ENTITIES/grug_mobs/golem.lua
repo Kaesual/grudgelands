@@ -148,7 +148,7 @@ local function golem_def(description, texture)
 		drops = {
 			{name = "grug_mobs:stone_core", chance = 1, min = 1, max = 1},
 			{name = "default:iron_lump", chance = 2, min = 1, max = 1},
-			{name = "grug_materials:rough_diamond", chance = 8, min = 1, max = 1},
+			{name = "grug_materials:rough_citrine", chance = 8, min = 1, max = 1},
 		},
 
 		water_damage = 0,

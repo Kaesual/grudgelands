@@ -1226,38 +1226,37 @@ license-clean, keep attribution.
 ## 6. Base-material map (both continents feed all base recipes)
 
 The universal metal/pick spine is available on both faction sides and never
-requires a regional gem or cultural material: Bronze (Copper + Tin), Iron,
+requires a gem or cultural material: Bronze (Copper + Tin), Iron,
 Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
 (Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
 Quartz is the universal T1 jewelry mineral. Emberglass and Abyssal Crystal are
-universal fantastic progression resources rather than regional gems.
+universal fantastic progression resources rather than gems.
 
-Regional geology follows the owning `race_region` column at every depth:
+Gems are depth-tiered and the same in every region (Round 29,
+`items_crafting.md` §3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
+T5 Ruby, T6 Diamond, each only in its own tier rock, about one per 512 host
+nodes there. Cultural material and signature wood follow the owning
+`race_region` column:
 
-| Faction | Race region | G1 | G2 | Cultural material | Signature wood |
-|---|---|---|---|---|---|
-| Accord | Human | Citrine | Diamond | Sunwax | Oak |
-| Accord | Dwarf | Garnet | Sapphire | Runeslate | Mountain Pine |
-| Accord | Elf | Jade | Sapphire | Moonresin | Silverwood |
-| Throng | Orc | Garnet | Diamond | Red Ochre | Spikethorn Acacia |
-| Throng | Troll | Jade | Ruby | Spirit Resin | Kapok |
-| Throng | Undead | Citrine | Ruby | Gravesalt | Gravewood |
+| Faction | Race region | Cultural material | Signature wood |
+|---|---|---|---|
+| Accord | Human | Sunwax | Oak |
+| Accord | Dwarf | Runeslate | Mountain Pine |
+| Accord | Elf | Moonresin | Silverwood |
+| Throng | Orc | Red Ochre | Spikethorn Acacia |
+| Throng | Troll | Spirit Resin | Kapok |
+| Throng | Undead | Gravesalt | Gravewood |
 
-- G1 begins sparsely in the upper progression, rises through T4 and retains
-  its T4 density in T5 and ordinary T6. G2 is sparse in T4, doubles in T5 and
-  reaches four times its T4 density in ordinary T6; first-pass targets are
-  approximately one eligible ore per species per 12,000/6,000/3,000 host
-  nodes. Every G2 node requires a T4 pick to harvest.
 - Every culture has an ordinary home-region surface source sufficient for
   architecture, decoration, quests and trade. A concentrated T4 source also
   exists in its contested level-31+ zones or projected deep column. Foreign
   cultural material is optional PvP-counter input, never base progression.
 - At y = −701 and below, territory is contested but the surface race region
-  continues to select G1/G2 and cultural deposits. Players can mine through
+  continues to select cultural deposits. Players can mine through
   opposing deep columns without gaining ownership of the surface above.
 - Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The
   initial density target is approximately one crystal per 2,048 eligible host
-  nodes through T5/T6. Ordinary ores, G1/G2 and Abyssal Crystal receive +25%
+  nodes through T5/T6. Ordinary ores, Diamond and Abyssal Crystal receive +25%
   density at y = −1500..−1999 and +50% at y ≤ −2000, capped and implemented as
   placement rather than respawn.
 - The Wyrmglass Crown and Stormscale Summit apex camps have no renewable gem
@@ -1287,7 +1286,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
-| G1/G2 regional gems | depth + race-region axis | Citrine/Garnet/Jade + Diamond/Sapphire; foreign Ruby through contested/deep/island/trade routes | Citrine/Garnet/Jade + Diamond/Ruby; foreign Sapphire through contested/deep/island/trade routes |
+| Gems | depth axis (one per tier rock) | all six, each in its own tier rock | same |
 | Cultural materials | surface + contested concentration | Sunwax, Runeslate, Moonresin | Red Ochre, Spirit Resin, Gravesalt |
 
 Every row has at least one source per continent. Race woods are

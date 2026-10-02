@@ -299,9 +299,10 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   dragon channels remain full-column exceptions.
 
   Natural resources need the pick of the layer where they first appear, at any
-  depth: T1 digs Copper, Tin, Coal, Iron and Quartz; T2 Gold and all G1 gems
-  (Citrine, Garnet, Jade); T3 Silver; T4 Emberglass and all G2 gems (Diamond,
-  Sapphire, Ruby); T5 Abyssal Crystal. A weaker pick cannot dig the ore at all
+  depth: T1 digs Copper, Tin, Coal, Iron, Quartz and Citrine; T2 Gold and
+  Jade; T3 Silver and Garnet; T4 Emberglass and Sapphire; T5 Abyssal Crystal
+  and Ruby; T6 Diamond. Each gem occurs only in the rock of its own tier,
+  everywhere (`items_crafting.md` §3.0.1). A weaker pick cannot dig the ore at all
   (the former under-tier shatter path is retired). Crafted storage/building
   blocks are never natural resources: any real pick recovers them where
   territory allows, and they always drop themselves.
@@ -637,7 +638,8 @@ belongs in the mapgen environment and uses a y-range fast path above the band.
 
 Deep mining pays in raw materials rather than a separate gear-drop layer. The
 first resource-calibration pass uses these bounded density multipliers for
-ordinary continental ores, G1/G2 gems and Abyssal Crystal:
+ordinary continental ores, Diamond (the only gem below −1000) and Abyssal
+Crystal:
 
 | Depth | Resource density |
 |---|---:|

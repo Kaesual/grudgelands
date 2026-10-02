@@ -48,8 +48,9 @@ in this file as of commit `082982da`.
   range, PvP rule, allowed biome
   list, signature terrain/property, mob and gathering palette, and reserved
   POI slots. `race_region` means cultural/geological provenance;
-  it selects architecture, regional loot, one G1 gem, one G2 gem, one cultural
-  material and one signature wood, but does not
+  it selects architecture, regional loot, one cultural material and one
+  signature wood (gems are depth-tiered and the same everywhere, §11), but
+  does not
   make a contested zone safe or politically controlled. `territory_rule`
   separately controls building and digging. Later quests and post-MVP POIs
   attach to the stable zone id.
@@ -1195,24 +1196,21 @@ graph requirement may shape a zone, and nothing may require a graph to be
 
 ## 10. Race-region character
 
-| Race region | G1 / G2 | Cultural material / wood | Geographic and content language |
-|---|---|---|---|
-| Dwarf | Garnet / Sapphire | Runeslate / Mountain Pine | pine shelves, granite, snow ridges, quarries, golems, feathers, heavy leather and gravemoss/dragonweed |
-| Human | Citrine / Diamond | Sunwax / Oak | fields, oak woods, river forks, marsh roads, boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
-| Elf | Jade / Sapphire | Moonresin / Silverwood | silverwood, pale cliffs, lakes, canopy paths, forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
-| Undead | Citrine / Ruby | Gravesalt / Gravewood | blight basins, bone ridges, salt cliffs, drowned roads, undead/forest families, cloth, leather and gravemoss/dragonweed |
-| Orc | Garnet / Diamond | Red Ochre / Spikethorn Acacia | ochre grass, dry rivers, red mesas, siege earthworks, savanna/mountain families, feathers, leather and golem materials |
-| Troll | Jade / Ruby | Spirit Resin / Kapok | kapok basins, rivers, reed mazes, storm jungle, swamp/jungle families, silk, scaled hide, marshbloom and high-tier lotus |
+| Race region | Cultural material / wood | Geographic and content language |
+|---|---|---|
+| Dwarf | Runeslate / Mountain Pine | pine shelves, granite, snow ridges, quarries, golems, feathers, heavy leather and gravemoss/dragonweed |
+| Human | Sunwax / Oak | fields, oak woods, river forks, marsh roads, boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
+| Elf | Moonresin / Silverwood | silverwood, pale cliffs, lakes, canopy paths, forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
+| Undead | Gravesalt / Gravewood | blight basins, bone ridges, salt cliffs, drowned roads, undead/forest families, cloth, leather and gravemoss/dragonweed |
+| Orc | Red Ochre / Spikethorn Acacia | ochre grass, dry rivers, red mesas, siege earthworks, savanna/mountain families, feathers, leather and golem materials |
+| Troll | Spirit Resin / Kapok | kapok basins, rivers, reed mazes, storm jungle, swamp/jungle families, silk, scaled hide, marshbloom and high-tier lotus |
 
 Race visuals may use different trophies and building materials, while the
 paired base drop tables remain economically equivalent.
 
-G1 comprises Citrine, Garnet and Jade; G2 comprises Diamond, Sapphire and
-Ruby. Accord therefore has native Diamond/Sapphire and seeks foreign Ruby;
-Throng has native Diamond/Ruby and seeks foreign Sapphire. The six universal
-metal/pick tiers never consume these regional gems or cultural materials, so a
-player can reach the contested source before an ordinary high-tier gear recipe
-asks for it.
+Gems are not regional (Round 29, economy plan §6): every race region holds
+all six, each in the tier rock of its own tier (§11). The six universal
+metal/pick tiers never consume gems or cultural materials.
 
 ## 11. Resource, loot and POI budgets
 
@@ -1238,12 +1236,14 @@ code, not by this document.
   Mournfen and Whispering Reedlands for the Throng.
 - Named rares migrate as listed in §8. Their level is clamped into the owning
   zone's band; no old ring coordinate survives.
-- Every non-city zone exposes its race region's assigned G1 and G2 species only
-  where their authored depth/tier curves permit them. G1 rises through T4,
-  retains its T4 density in T5/ordinary T6 and then receives the shared deep-T6
-  multiplier. G2 is sparse in T4 (1×), clearer in T5 (2×) and abundant in
-  ordinary T6 (4×), with initial targets of approximately one eligible ore per
-  2,048/1,024/512 host nodes per species (Round 21 calibration). All G2 requires a T4 pick to harvest.
+- **Gems are depth-tiered** (Round 29, economy plan §6): each of the six
+  species has one tier and occurs only in that tier's rock, identically in
+  every race region, zone and faction: T1 Citrine (`default:stone`,
+  y ≥ −100), T2 Jade, T3 Garnet, T4 Sapphire, T5 Ruby, T6 Diamond (below
+  −1000). Its harvest tier equals its tier. One rough density for all six:
+  one gem per 512 eligible host nodes in its band, in veins of at most two
+  nodes (the former G1 veins held three); the deep multipliers apply to
+  Diamond like every T6 resource.
 - **Round 21 density calibration (accepted 2026-09-24):**
   numbers below are eligible host nodes per target resource node. Dashes mean
   absent. Tiers are absolute-Y strata; existing deep multipliers apply afterward.
@@ -1261,8 +1261,12 @@ code, not by this document.
   | Silver | — | — | 256 | 128 | 256 | 512 |
   | Emberglass | — | — | — | 256 | 128 | 256 |
   | Abyssal Crystal | — | — | — | — | 512 | 256 |
-  | Assigned G1 species | — | 2048 | 1024 | 512 | 512 | 512 |
-  | Assigned G2 species | — | — | — | 2048 | 1024 | 512 |
+  | Citrine | 512 | — | — | — | — | — |
+  | Jade | — | 512 | — | — | — | — |
+  | Garnet | — | — | 512 | — | — | — |
+  | Sapphire | — | — | — | 512 | — | — |
+  | Ruby | — | — | — | — | 512 | — |
+  | Diamond | — | — | — | — | — | 512 |
 
   The quarter-density floor retains older inputs at depth; T1 Iron keeps its
   former density as a bootstrap exception. Gold peaks at T4 and remains
@@ -1307,8 +1311,8 @@ code, not by this document.
   without repeats, so natural ore is finite and reproducible for a world seed.
 - **Natural-resource parity:** the six race regions receive about the same
   natural-resource rate, within roughly 5%: accepted natural veins per
-  accessible host volume, counting all universal resources plus the region's
-  assigned G1 and G2. Placed natural nodes are a separate density concern.
+  accessible host volume, counting all resources (every one is universal).
+  Placed natural nodes are a separate density concern.
   Spot-checked on representative seeds.
 - Every race region supplies its cultural material ordinarily at the surface
   for its own architecture, trade and quests and supplies one concentrated T4
@@ -1338,10 +1342,6 @@ code, not by this document.
   `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
   No production world is generated with permanently empty cultural
   reservations.
-- Each faction-native exclusive G2 species has at least one practical
-  contested level-31+ surface route: Ruby for Accord raiders and Sapphire for
-  Throng raiders. The y = −701 deep opening also permits cross-border mining
-  beneath the opposing race-region columns. Trade remains an alternative, never the only route.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
   subject to tools, explicit hard-protected capital or functional-anchor

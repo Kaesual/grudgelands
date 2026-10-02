@@ -42,7 +42,7 @@ local function register_owned_resource(resource)
 
 	local visual = ITEM_VISUALS[resource.key]
 	local raw_description = resource.name
-	if resource.grade then
+	if resource.gem then
 		raw_description = "Rough " .. resource.name
 	elseif resource.key == "quartz" then
 		raw_description = "Quartz"

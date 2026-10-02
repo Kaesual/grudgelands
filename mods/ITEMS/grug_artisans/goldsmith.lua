@@ -13,24 +13,20 @@ local function grid(inputs)
 	return result
 end
 
-local cuts = {
-	{key = "quartz", tier = 1, raw = M .. "quartz"},
-	{key = "citrine", tier = 2, raw = M .. "rough_citrine"},
-	{key = "garnet", tier = 2, raw = M .. "rough_garnet"},
-	{key = "jade", tier = 2, raw = M .. "rough_jade"},
-	{key = "diamond", tier = 4, raw = M .. "rough_diamond"},
-	{key = "sapphire", tier = 4, raw = M .. "rough_sapphire"},
-	{key = "ruby", tier = 4, raw = M .. "rough_ruby"},
-}
-
-for index = 1, #cuts do
-	local row = cuts[index]
-	local cut = M .. "cut_" .. row.key
-	A.register_ingredient(row.raw, row.tier)
-	A.register_ingredient(cut, row.tier)
-	A.register_recipe("goldsmith", {tier = row.tier,
-		station = "jewellers_bench", inputs = {{row.raw}}, output = cut,
-		material = true, hint = "Cut at a Jeweller's Bench"})
+-- Quartz and the six depth-tiered gems (economy plan §6): each cuts at the
+-- tier it is mined at, and its raw and cut forms are ingredients of that tier.
+local gem_by_tier = {}
+for _, resource in ipairs(grug_materials.RESOURCES) do
+	if resource.cut_item then
+		local tier = resource.harvest_tier
+		A.register_ingredient(resource.raw_item, tier)
+		A.register_ingredient(resource.cut_item, tier)
+		A.register_recipe("goldsmith", {tier = tier,
+			station = "jewellers_bench", inputs = {{resource.raw_item}},
+			output = resource.cut_item, material = true,
+			hint = "Cut at a Jeweller's Bench"})
+		if resource.gem then gem_by_tier[tier] = resource.cut_item end
+	end
 end
 
 local settings = {
@@ -70,24 +66,25 @@ for tier = 1, #settings do
 end
 
 local trinkets = {
-	{key = "manawell", settings = 1, g1 = "citrine", g4 = "sapphire"},
-	{key = "last_light", settings = 2, g1 = "jade", g4 = "sapphire"},
-	{key = "battlebeat", settings = 3, g1 = "garnet", g4 = "ruby"},
-	{key = "apothecary_loop", settings = 4, g1 = "jade", g4 = "ruby"},
-	{key = "mercy_seal", settings = 5, g1 = "citrine", g4 = "sapphire"},
-	{key = "reclaimers_mark", settings = 6, g1 = "garnet", g4 = "ruby"},
+	{key = "manawell", settings = 1},
+	{key = "last_light", settings = 2},
+	{key = "battlebeat", settings = 3},
+	{key = "apothecary_loop", settings = 4},
+	{key = "mercy_seal", settings = 5},
+	{key = "reclaimers_mark", settings = 6},
 }
 
 -- Round 9 ruling 39: the identity-specific Setting counts are a temporary
 -- collision key for the input-authoritative station registry. Replace them
 -- with station output selection or one authored per-identity ingredient.
 
-local function trinket_gems(row, tier)
+-- T1 takes Cut Quartz, the common T1 jewelry mineral; from T2 the cut gem of
+-- the recipe tier, plus the T4 gem at T5 and the T5 and T4 gems at T6.
+local function trinket_gems(tier)
 	if tier == 1 then return {M .. "cut_quartz"} end
-	if tier <= 3 then return {M .. "cut_" .. row.g1} end
-	if tier == 4 then return {M .. "cut_" .. row.g4} end
-	if tier == 5 then return {M .. "cut_sapphire", M .. "cut_ruby"} end
-	return {M .. "cut_diamond", M .. "cut_sapphire", M .. "cut_ruby"}
+	local gems = {gem_by_tier[tier]}
+	for lower = tier - 1, 4, -1 do gems[#gems + 1] = gem_by_tier[lower] end
+	return gems
 end
 
 for tier = 1, 6 do
@@ -102,7 +99,7 @@ for tier = 1, 6 do
 		local row = trinkets[identity_index]
 		local inputs = {}
 		for setting_index = 1, row.settings do inputs[#inputs + 1] = setting end
-		local gems = trinket_gems(row, tier)
+		local gems = trinket_gems(tier)
 		for gem_index = 1, #gems do inputs[#inputs + 1] = gems[gem_index] end
 		A.register_recipe("goldsmith", {tier = tier,
 			station = "jewellers_bench", inputs = grid(inputs),
@@ -131,7 +128,7 @@ end
 
 function grug_artisans.settle_goldsmith_bonus(event, roll)
 	if type(event) ~= "table" or type(event.resource) ~= "table" or
-			(event.resource.grade ~= "G1" and event.resource.grade ~= "G2") or
+			not event.resource.gem or
 			type(event.raw_item) ~= "string" then
 		return false
 	end
