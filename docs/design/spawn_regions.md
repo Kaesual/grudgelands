@@ -305,9 +305,10 @@ Quest targets per seed: `tools/r28_regions/quest_targets.py` (run by
 `run.sh` at its end; `--quests DIR` checks another copy of the quest files)
 reads every quest file, the recipes and the region stats of each seed and
 checks every target on every seed: a kill objective, an item objective's
-source `roles` and a quest drop (with an area: that kind or camp, also of
-another zone, forms a region; without one: each role is a placed leader or
-stands in a kind or camp of the file's zone that forms one), and every
+source `roles` and a quest drop (with an area: every role stands in that
+kind or camp, also of another zone, and it forms a region; without one: a
+kill of any listed role counts, so one of them is a placed leader or stands
+in a kind or camp of the file's zone that forms one), and every
 placeholder target of the title and text (else the text has no direction
 there). A target missing on some seed fails the run (MISSING). It notes
 the clock a target is met at when only one, and lists under CLOCK a quest

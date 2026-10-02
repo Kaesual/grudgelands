@@ -10,9 +10,11 @@ the Round 28 quest format on every seed:
 
   * a kill objective, an item objective naming its source `roles`, and a
     quest drop: with an `area` (`<zone>/<kind|camp>`, a bare id is the
-    file's zone) that kind or camp forms a region; without one, every role
-    is a leader that is placed, or stands in a kind or camp of the file's
-    zone that forms a region;
+    file's zone) every role stands in that kind or camp (no leader: it has
+    no area; the game's E-role-not-in-area, E-leader-area) and it forms a
+    region; without one, a kill of any listed role counts, so on every seed
+    one of them is a placed leader or stands in a kind or camp of the
+    file's zone that forms a region;
   * every placeholder target of the title and text ({name:T},
     {dir_from_giver:T}, {dir_of:P:T}, {zone_area:T}): the kind or camp
     forms a region, the leader (any zone) is placed; else the text reads
@@ -27,8 +29,10 @@ MISSING: exit status 1.
 Legacy kill objectives (entity `mobs`, optional `zone` filter, Round 28's
 split older quests) are sorted as before: ok, ACCEPTED when the recipe never
 spawns a target (the game's W-recipe-target), MISSING. The legacy path is
-the block marked LEGACY below; once no quest file ships a `mobs` objective
-(the report says so), delete that block and the lines that call it.
+the block marked LEGACY below and the lines tagged `# LEGACY`; once no quest
+file ships a `mobs` objective (the report says so), delete them (the block
+lists every site). A `mobs` objective the legacy path does not take is
+MISSING.
 
 A stats file whose kinds and camps differ from the recipe's is stale (re-run
 tools/r28_regions/run.sh): exit status 2.
@@ -139,39 +143,49 @@ class World:
         return role in self.stats[(self.leader_zone[role], seed)][1]
 
     def unit_target(self, zone, unit, roles):
-        """(gaps, clocks, problem) for `roles` in one kind or camp: the seeds
-        it forms no region on, the clocks the roles are met at there."""
+        """(gaps, clocks, problems) for `roles` in one kind or camp: the seeds
+        it forms no region on, the clocks a kill of any role counts at there,
+        and every role that does not stand in it (as the game's load check:
+        E-role-not-in-area, a leader E-leader-area)."""
         units = self.recipes.get(zone, ({}, set()))[0]
         if unit not in units:
-            return [], set(), "%s is no kind or camp of %s's recipe" % (unit, zone)
+            return [], set(), ["%s is no kind or camp of %s's recipe" % (unit, zone)]
+        problems = []
+        for role in sorted(roles):
+            if role in self.leader_zone:
+                problems.append("%s is a leader at a fixed spot, not in an area" % role)
+            elif role not in units[unit]["day"] | units[unit]["night"]:
+                problems.append("%s does not spawn in %s/%s" % (role, zone, unit))
         clocks = {c for c in CLOCKS if not roles or roles & units[unit][c]}
         gaps = [s for s in self.seeds if not self.formed(zone, unit, s)]
-        return gaps, clocks, None
+        return gaps, clocks, problems
 
-    def role_target(self, zone, role):
-        """(gaps, clocks, problem) for one role without an area: a placed
-        leader, else the kinds and camps of `zone` that host it."""
-        if role in self.leader_zone:
-            return [s for s in self.seeds if not self.placed(role, s)], set(CLOCKS), None
+    def roles_target(self, zone, roles):
+        """(gaps, clocks, problems) for roles without an area: a kill of any
+        of them counts, so a seed has the target when one of them is a placed
+        leader (any zone) or stands in a kind or camp of `zone` that forms a
+        region there."""
         units = self.recipes.get(zone, ({}, set()))[0]
-        holding = {u: c for u, c in units.items() if role in c["day"] | c["night"]}
-        if not holding:
-            return [], set(), "%s is no leader and not in %s's recipe (name its area)" % (role, zone)
+        leaders = {r for r in roles if r in self.leader_zone}
+        holding = {u: c for u, c in units.items() if roles & (c["day"] | c["night"])}
+        if not leaders and not holding:
+            return [], set(), ["no leader and not in %s's recipe (name its area)" % zone]
         gaps, clocks = [], set()
         for seed in self.seeds:
-            present = {c for u, cl in holding.items() if self.formed(zone, u, seed) for c in CLOCKS if role in cl[c]}
+            present = set(CLOCKS) if any(self.placed(r, seed) for r in leaders) else set()
+            present |= {c for u, cl in holding.items() if self.formed(zone, u, seed) for c in CLOCKS if roles & cl[c]}
             if not present:
                 gaps.append(seed)
             clocks |= present
-        return gaps, clocks, None
+        return gaps, clocks, []
 
     def placeholder_target(self, zone, ref):
-        """(gaps, problem) for a placeholder target."""
+        """(gaps, problems) for a placeholder target."""
         qualified, _, rest = ref.rpartition("/")
         if rest in self.leader_zone and (not qualified or qualified == self.leader_zone[rest]):
-            return [s for s in self.seeds if not self.placed(rest, s)], None
-        gaps, _, problem = self.unit_target(qualified or zone, rest, set())
-        return gaps, problem
+            return [s for s in self.seeds if not self.placed(rest, s)], []
+        gaps, _, problems = self.unit_target(qualified or zone, rest, set())
+        return gaps, problems
 
 
 def area_ref(area, zone):
@@ -186,12 +200,20 @@ def text_clock(quest):
 
 
 # LEGACY: Round 28's split older quests (entity `mobs`, optional `zone`
-# filter). Delete this block, its call in main() and the "accepted" lines
-# once the report shows no legacy objective.
+# filter). Once the report says "no legacy kill objective left", delete:
+#   1. this block, down to END LEGACY;
+#   2. in check_quest(), the three lines tagged `# LEGACY` (the `if` that
+#      sends a legacy kill objective here, the call, its `continue`); a
+#      `mobs` objective is then MISSING;
+#   3. in main(), the lines tagged `# LEGACY`: the legacy summary (`if`/
+#      `else`, five lines) and the accepted list (three lines).
+LEGACY = {"ok": [], "accepted": [], "missing": 0, "seen": 0}
 GUARD = re.compile(r"^guard_")  # guards stand at their posts, never in a region
 
 
-def legacy_kill(world, obj, file_zone, where, out):
+def legacy_kill(world, obj, file_zone, where, new):
+    """Sorts one legacy kill objective; a MISSING one goes to new["missing"]."""
+    LEGACY["seen"] += 1
     zone = obj.get("zone") if isinstance(obj.get("zone"), str) else file_zone
     if zone not in world.recipes:
         return
@@ -201,31 +223,34 @@ def legacy_kill(world, obj, file_zone, where, out):
         return
     units, leaders = world.recipes[zone]
     if roles & leaders:
-        out["ok"].append(where + ": a leader")
+        LEGACY["ok"].append(where + ": a leader")
         return
     holding = {u: c for u, c in units.items() if roles & (c["day"] | c["night"])}
     if not holding:
-        out["accepted"].append(where)
+        LEGACY["accepted"].append(where)
         return
     gaps = [s for s in world.seeds
             if not any(world.formed(zone, u, s) for u in holding)]
     if gaps:
-        out["missing"].append("%s: no region on seed %s (kinds/camps %s)" % (
+        LEGACY["missing"] += 1
+        new["missing"].append("%s: no region on seed %s (kinds/camps %s)" % (
             where, ", ".join(gaps), ", ".join(sorted(holding))))
     else:
-        out["ok"].append(where)
+        LEGACY["ok"].append(where)
 # END LEGACY
 
 
-def check_quest(world, quest, file_zone, new, legacy):
+def check_quest(world, quest, file_zone, new):
     qid = quest.get("id", "?")
     clocks_met = set()
     sources = []
     for n, obj in enumerate(quest.get("objectives") or [], 1):
         if obj.get("mobs") is not None:
-            if obj.get("type") == "kill" and not obj.get("area"):
-                legacy["seen"] += 1
-                legacy_kill(world, obj, file_zone, "%s obj %d" % (qid, n), legacy)
+            if obj.get("type") == "kill" and not obj.get("area"):  # LEGACY
+                legacy_kill(world, obj, file_zone, "%s obj %d" % (qid, n), new)  # LEGACY
+                continue  # LEGACY
+            new["missing"].append("%s obj %d: names entities (`mobs`), the split older format; "
+                                  "name `roles` and an area" % (qid, n))
             continue
         if obj.get("type") in ("kill", "item") and obj.get("roles"):
             sources.append(("obj %d" % n, obj))
@@ -238,15 +263,9 @@ def check_quest(world, quest, file_zone, new, legacy):
         if row.get("area"):
             zone, unit = area_ref(row["area"], file_zone)
             where += " in %s/%s" % (zone, unit)
-            parts = [world.unit_target(zone, unit, roles)]
+            gaps, clocks, problems = world.unit_target(zone, unit, roles)
         else:
-            parts = [world.role_target(file_zone, role) for role in sorted(roles)]
-        gaps = sorted({s for g, _, _ in parts for s in g}, key=world.seeds.index)
-        problems = [p for _, _, p in parts if p]
-        clocks = set(CLOCKS)
-        for _, c, p in parts:
-            if not p:
-                clocks &= c
+            gaps, clocks, problems = world.roles_target(file_zone, roles)
         if problems:
             new["missing"].append("%s: %s" % (where, "; ".join(problems)))
         elif gaps:
@@ -259,9 +278,9 @@ def check_quest(world, quest, file_zone, new, legacy):
         for kind, args in PLACEHOLDER.findall(quest.get(key) or ""):
             ref = args.split(":")[-1]
             where = "%s %s {%s:%s}" % (qid, key, kind, args)
-            gaps, problem = world.placeholder_target(file_zone, ref)
-            if problem:
-                new["missing"].append("%s: %s" % (where, problem))
+            gaps, problems = world.placeholder_target(file_zone, ref)
+            if problems:
+                new["missing"].append("%s: %s" % (where, "; ".join(problems)))
             elif gaps:
                 new["missing"].append("%s: no region or leader spot on seed %s (no direction there)" % (
                     where, ", ".join(gaps)))
@@ -291,22 +310,21 @@ def main():
         return 2
 
     new = {"ok": [], "missing": [], "clock": []}
-    legacy = {"ok": [], "accepted": [], "missing": [], "seen": 0}
     for qpath in sorted(Path(args.quests).glob("*.json")):
         data = json.loads(qpath.read_text())
         file_zone = qpath.name.split(".", 1)[0]
         for quest in data.get("quests") or []:
-            check_quest(world, quest, file_zone, new, legacy)
+            check_quest(world, quest, file_zone, new)
 
-    missing = new["missing"] + legacy["missing"]
+    missing = new["missing"]
     print("Quest targets against the spawn regions of seeds %s" % ", ".join(seeds))
     print("  targets: ok %d, MISSING on some seed %d, CLOCK %d" % (
-        len(new["ok"]), len(new["missing"]), len(new["clock"])))
-    if legacy["seen"]:
-        print("  legacy kill objectives: ok %d, accepted (recipe never spawns a target) %d, MISSING %d" % (
-            len(legacy["ok"]), len(legacy["accepted"]), len(legacy["missing"])))
-    else:
-        print("  no legacy kill objective left: delete the LEGACY block of quest_targets.py")
+        len(new["ok"]), len(missing), len(new["clock"])))
+    if LEGACY["seen"]:  # LEGACY
+        print("  legacy kill objectives: ok %d, accepted (recipe never spawns a target) %d, MISSING %d" % (  # LEGACY
+            len(LEGACY["ok"]), len(LEGACY["accepted"]), LEGACY["missing"]))  # LEGACY
+    else:  # LEGACY
+        print("  no legacy kill objective left: delete the LEGACY block of quest_targets.py and its tagged lines")  # LEGACY
     if missing:
         print("MISSING (no region or leader spot on that seed, or no such target):")
         for m in missing:
@@ -315,13 +333,12 @@ def main():
         print("CLOCK (the text names a clock its targets are not met at):")
         for c in new["clock"]:
             print("  " + c)
-    if legacy["accepted"]:
-        print("Accepted legacy objectives, always absent (W-recipe-target; the targets are not in the zone's recipe):")
-        for a in legacy["accepted"]:
-            print("  " + a)
+    if LEGACY["accepted"]:  # LEGACY
+        print("Accepted legacy objectives, always absent (W-recipe-target; the targets are not in the zone's "  # LEGACY
+              "recipe):\n  " + "\n  ".join(LEGACY["accepted"]))  # LEGACY
     if args.verbose:
         print("ok:")
-        for o in new["ok"] + legacy["ok"]:
+        for o in new["ok"]:
             print("  " + o)
     return 1 if missing else 0
 

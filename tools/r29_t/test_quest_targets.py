@@ -4,10 +4,12 @@
 Two recipe zones (Alpha with two kinds, a camp and its chief; Beta with one
 kind and a leader picked in it), their region stats on two seeds and one
 quest file, and checks the report: area kinds and camps, a kind that forms
-no region on one seed, an unknown area, leaders of the file's zone and of
-another zone, item sources and quest drops, roles without an area,
-placeholder targets, the clock note and CLOCK, the legacy path, and the exit
-status (1 MISSING, 2 stale stats, 0 clean).
+no region on one seed, an unknown area, a role not in its area, a leader
+given an area, leaders of the file's zone and of another zone, item sources
+and quest drops, roles without an area (any listed role counts), placeholder
+targets, the clock note and CLOCK, the legacy path and the tool with it
+removed as its comment says, and the exit status (1 MISSING, 2 stale stats,
+0 clean).
 
 Usage (repo root): python3 tools/r29_t/test_quest_targets.py
 """
@@ -87,6 +89,11 @@ QUESTS = [
     quest("q_noarea_other", [kill(["wolf"])]),
     quest("q_text_gap", [{"type": "talk", "npc": "someone"}], "The copse lies {dir_from_giver:copse}."),
     quest("q_name_unknown", [{"type": "item", "item": "x:log", "count": 1}], "The {name:castle} burns."),
+    quest("q_not_in_area", [kill(["large_rat", "zombie"], "meadows")]),
+    quest("q_leader_area", [kill(["chief"], "camp")]),
+    quest("q_any_role", [kill(["small_boar", "large_rat"])]),
+    quest("q_any_role_mixed", [kill(["small_boar", "wolf"])]),
+    quest("q_mobs_area", [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "area": "meadows", "count": 1}]),
     quest("q_legacy", [{"type": "kill", "mobs": ["grug_mobs:deer"], "count": 1}], line="legacy"),
 ]
 
@@ -134,6 +141,8 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_sources obj 1 (bandit) in elandor_alpha_fields/camp",), "an item objective's source area"),
         (("q_sources quest drop 1 (small_boar)",), "a quest drop's source area"),
         (("q_noarea obj 1 (small_boar) (day only)",), "a role without an area in the file zone's kinds"),
+        (("q_any_role obj 1 (large_rat, small_boar)",), "two roles without an area, day and night"),
+        (("q_any_role_mixed obj 1 (small_boar, wolf) (day only)",), "any listed role counts without an area"),
         (("q_xleader text {dir_of:alpha:elandor_beta_wood/oakwood}",), "a kind of another zone"),
     ]:
         row = line_with(out, *parts)
@@ -147,6 +156,9 @@ with tempfile.TemporaryDirectory() as tmp:
         (("q_text_gap text {dir_from_giver:copse}", "on seed 2 (no direction there)"),
          "a placeholder target without a region on seed 2"),
         (("q_name_unknown text {name:castle}", "castle is no kind or camp"), "an unknown placeholder target"),
+        (("q_not_in_area obj 1", "zombie does not spawn in elandor_alpha_fields/meadows"), "a role not in the area"),
+        (("q_leader_area obj 1", "chief is a leader at a fixed spot, not in an area"), "a leader given an area"),
+        (("q_mobs_area obj 1", "names entities (`mobs`)"), "a `mobs` objective the legacy path does not take"),
     ]:
         check(line_with(missing, *parts) is not None, label + ": MISSING")
     check("Accepted" not in (line_with(out, "chief") or ""), "a leader is never accepted")
@@ -155,6 +167,22 @@ with tempfile.TemporaryDirectory() as tmp:
     check(line_with(clock, "q_kind") is None and line_with(clock, "q_bare_area") is None, "CLOCK: matching texts pass")
     check(line_with(out, "legacy kill objectives: ok 0, accepted", "1, MISSING 0") is not None, "legacy counts")
     check(line_with(out, "q_legacy obj 1 (deer in elandor_alpha_fields)") is not None, "legacy target accepted")
+    check(line_with(out, "q_any_role obj 1", "only)") is None, "a day and a night role: no clock note")
+    check(line_with(missing, "q_not_in_area", "large_rat does not spawn") is None, "a role in the area is no problem")
+
+    # The legacy path removed as its comment says: the block and every line
+    # tagged `# LEGACY`. The result runs, and a `mobs` objective is MISSING.
+    source = TOOL.read_text()
+    head, rest = source.split("# LEGACY: Round 28", 1)
+    source = head + rest.split("# END LEGACY\n", 1)[1]
+    source = "\n".join(l for l in source.splitlines() if not l.endswith("# LEGACY")) + "\n"
+    check("LEGACY" not in source.split('"""', 2)[2], "nothing of the legacy path is left")
+    stripped = Path(tmp) / "quest_targets_without_legacy.py"
+    stripped.write_text(source)
+    args = write_world(Path(tmp) / "legacy", [QUESTS[0], QUESTS[-1]])
+    done = subprocess.run([sys.executable, str(stripped)] + args, capture_output=True, text=True)
+    check(done.returncode == 1 and line_with(done.stdout, "q_legacy obj 1", "names entities (`mobs`)") is not None,
+          "without the legacy path a `mobs` objective is MISSING: " + done.stdout + done.stderr)
 
     good = [q for q in QUESTS if q["id"] in ("q_kind", "q_bare_area", "q_leader", "q_sources", "q_noarea")]
     code, out = run(write_world(Path(tmp) / "good", good), verbose=False)
