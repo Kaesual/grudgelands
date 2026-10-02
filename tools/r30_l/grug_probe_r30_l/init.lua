@@ -10,8 +10,9 @@
 -- 2. POSTS: at 10, 7, 4 and 1 out every post column is trunk from the floor
 --    up (no water left under it), the side posts carry a fence at y 3;
 -- 3. BEACH: sand top nodes at y 1..3 within 12 nodes either side of the
---    boat line (at least 150), and the boat-line column's top 8 land
---    columns no higher than y 3;
+--    boat line and 11 inland (at least 150), and on every line across
+--    within 6 nodes of the boat line the first 8 land columns from the
+--    water no higher than y 3;
 -- 4. WALK: from the pier head, over walkable top nodes (deck, ground; no
 --    water, no fence), stepping at most one node up or down between
 --    4-neighbours, the back of the beach (top node y 3) is reached. The
@@ -85,7 +86,7 @@ local function landing(row, done)
 			local ok, err = pcall(function()
 				log(("%s: shore %d,%d emerged in %.1f s"):format(row.id, sx, sz,
 					(core.get_us_time() - t0) / 1000000))
-				local function water(x, z) return liquid(name_at(x, 1, z)) end
+				local function water(x, z) return grug_zones.water_class_at(x, z) ~= "land" end
 				-- 1. deck
 				local deck = 0
 				for a = 1, 10 do
@@ -133,7 +134,7 @@ local function landing(row, done)
 								a <= 0 and a >= -11 then
 							sand = sand + 1
 						end
-						if not first and y then first = a end
+						if not first and not water(x, z) then first = a end
 					end
 					if math.abs(b) <= 6 and first then
 						for a = first, first - 7, -1 do
