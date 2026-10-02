@@ -107,6 +107,14 @@ local function check_objective(add, where, quest, objective, index)
 		if (type(objective.item) == "string") == (type(objective.group) == "string") then
 			add(where, "an item objective names exactly one of 'item' or 'group' [E-objective]")
 		end
+		-- Optional source of a dropped item (Lane Q0): `roles`, optionally
+		-- one `area`, shown as the targets' level range.
+		if objective.roles ~= nil and not (type(objective.roles) == "table" and #objective.roles > 0) then
+			add(where, "an item's source 'roles' must be a non-empty list [E-objective]")
+		end
+		if objective.area ~= nil and (type(objective.area) ~= "string" or objective.roles == nil) then
+			add(where, "an item's source area is 'zone_id/area_id' next to its 'roles' [E-area]")
+		end
 	else
 		add(where, ("type %s must be kill, item or talk [E-objective]"):format(tostring(objective.type)))
 	end
@@ -444,6 +452,10 @@ function V.world(files, world)
 				elseif not world.group((objective.group:gsub("^group:", ""))) then
 					add(where, ("item group %s does not exist [E-unknown-group]"):format(objective.group))
 				end
+				for _, name in ipairs(objective.roles and V.target_names(objective) or {}) do
+					check_target(add, where, world, zone, name, V.area_ref(objective.area, zone), quest.level,
+						"item source", false)
+				end
 			end
 		end
 		for index, drop in ipairs(quest.quest_drops or {}) do
@@ -459,4 +471,62 @@ function V.world(files, world)
 		end
 	end
 	return errors, warnings
+end
+
+-- The level range shown with an objective (Lane Q0): the levels its targets
+-- are met at, so a player can judge them without a signal word in the name.
+-- Per role, first match: a named leader's fixed level; in the objective's
+-- area (a kind or camp) that role's levels there; the role's levels in the
+-- kinds and camps of the kill zone's recipe (the level-fit check's source);
+-- its catalogue levels within the quest level +- LEVEL_SLACK; a base mob
+-- (no catalogue row) in a zone without a recipe: the zone's level band
+-- within the quest level +- LEVEL_SLACK. A recipe zone spawns only its own
+-- roles on the surface, so a base mob there adds nothing.
+local function role_range(world, zone, level, role, area_ref)
+	local leader = world.leader(role)
+	if leader then return leader.level, leader.level end
+	if area_ref then
+		local zone_id, area_id = area_ref:match("^([^/]+)/(.+)$")
+		local area = zone_id and world.area(zone_id, area_id)
+		local range = area and area.levels_by_role[role]
+		if range then return range[1], range[2] end
+		return nil
+	end
+	local areas, lo, hi = world.zone_areas(zone), nil, nil
+	for _, area in ipairs(areas) do
+		local range = area.levels_by_role[role]
+		if range then
+			lo = math.min(lo or range[1], range[1])
+			hi = math.max(hi or range[2], range[2])
+		end
+	end
+	if lo then return lo, hi end
+	local own = world.role_levels(role) or (#areas == 0 and world.zone_band(zone))
+	if not own then return nil end
+	lo, hi = math.max(own[1], level - V.LEVEL_SLACK), math.min(own[2], level + V.LEVEL_SLACK)
+	if lo > hi then return nil end
+	return lo, hi
+end
+
+-- {lo, hi} for one objective of `quest` (design data) in `zone`, or nil: a
+-- kill objective's targets; an item objective's named source (`roles`) and
+-- the quest drops of its item. The union over the roles.
+function V.objective_levels(world, zone, quest, objective)
+	local lo, hi
+	local function add(names, area_ref, kill_zone)
+		for _, name in ipairs(names) do
+			local a, b = role_range(world, kill_zone, quest.level, name:match("^grug_mobs:(.+)$") or name, area_ref)
+			if a then lo, hi = math.min(lo or a, a), math.max(hi or b, b) end
+		end
+	end
+	if objective.type == "kill" then
+		add(V.target_names(objective), V.area_ref(objective.area, zone),
+			type(objective.zone) == "string" and objective.zone or zone)
+	elseif objective.type == "item" then
+		if objective.roles then add(V.target_names(objective), V.area_ref(objective.area, zone), zone) end
+		for _, drop in ipairs(objective.item and quest.quest_drops or {}) do
+			if drop.item == objective.item then add(V.target_names(drop), V.area_ref(drop.area, zone), zone) end
+		end
+	end
+	return lo and {lo, hi} or nil
 end

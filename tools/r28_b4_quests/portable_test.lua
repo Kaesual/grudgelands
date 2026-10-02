@@ -159,7 +159,12 @@ grug_factions = {get_faction = function() return "accord" end, same_faction = fu
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 local zone_at = {}
-grug_zones = {id_at = function(x, z) return zone_at[x .. "," .. z] or "elandor_dawnmere_fields" end}
+grug_zones = {id_at = function(x, z) return zone_at[x .. "," .. z] or "elandor_dawnmere_fields" end,
+	-- Level bands (Lane Q0's base-mob ranges) of the fixture's recipe zones.
+	get = function(zone)
+		local band = ({elandor_dawnmere_fields = {1, 10}, front_shattered_line = {41, 50}})[zone]
+		return band and {level_min = band[1], level_max = band[2]} or nil
+	end}
 local pages = {}
 sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end,

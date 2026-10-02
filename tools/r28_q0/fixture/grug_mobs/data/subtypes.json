@@ -1,0 +1,10 @@
+[
+  {"role": "small_boar", "levels": [1, 4]},
+  {"role": "large_rat", "levels": [1, 4]},
+  {"role": "young_boar", "levels": [5, 8]},
+  {"role": "aggressive_fox", "levels": [6, 10]},
+  {"role": "border_ghoul", "levels": [9, 10]},
+  {"role": "confused_bandit", "levels": [8, 10]},
+  {"role": "confused_bandit_chief", "levels": [9, 10], "leader": true},
+  {"role": "ridge_boar", "levels": [12, 15]}
+]

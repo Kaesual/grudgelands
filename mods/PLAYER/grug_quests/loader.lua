@@ -169,7 +169,8 @@ local function world_view()
 	local function area(zone, id)
 		local found = areas.get_area(zone, id)
 		if not found then return nil end
-		return {levels = found.levels, roles = areas.area_roles(zone, id) or {}}
+		return {levels = found.levels, levels_by_role = found.levels_by_role,
+			roles = areas.area_roles(zone, id) or {}}
 	end
 	return {
 		entity = function(name) return core.registered_entities[name] end,
@@ -179,6 +180,11 @@ local function world_view()
 		end,
 		role_levels = function(role) return levels[role] end,
 		leader = function(role) return areas.leader(role) end,
+		-- {level_min, level_max} of a named zone (base mobs' surface levels).
+		zone_band = function(zone)
+			local record = grug_zones.get(zone)
+			return record and record.level_min and {record.level_min, record.level_max} or nil
+		end,
 		area = area,
 		zone_areas = function(zone)
 			if zone_cache[zone] then return zone_cache[zone] end
@@ -213,13 +219,23 @@ function Q.load_quest_files(files)
 	register_quests(files)
 end
 
--- The world checks, once every mod has loaded.
+-- The world checks, once every mod has loaded; then each registered
+-- objective's level range (Lane Q0), computed once here and read by the
+-- dialogue and the quest log.
 function Q.validate_quest_data(files)
-	local found, warnings = V.world(files or Q.quest_files, world_view())
+	files = files or Q.quest_files
+	local world = world_view()
+	local found, warnings = V.world(files, world)
 	for _, message in ipairs(warnings) do
 		core.log("warning", "[grug_quests] " .. message)
 	end
 	if #found > 0 then fail(found) end
+	for _, row in ipairs(V.each_quest(files)) do
+		local def = Q.registered_quests[row.quest.id]
+		for index, objective in ipairs(def and row.quest.objectives or {}) do
+			def.objectives[index].levels = V.objective_levels(world, row.file.zone, row.quest, objective)
+		end
+	end
 end
 
 Q.quest_files = read_files()

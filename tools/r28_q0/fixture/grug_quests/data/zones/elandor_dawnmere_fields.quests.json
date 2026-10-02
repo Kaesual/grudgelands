@@ -1,0 +1,57 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "identity": "Fixture for tools/r28_q0/portable_test.lua: every source of an objective's level range.",
+  "hubs": [
+    {"id": "dawnmere", "anchor": "start", "givers": [
+      {"npc": "r14_human_elder", "lines": ["hunt", "tools"]},
+      {"npc": "r20_human_start_cook", "lines": ["pantry"]}
+    ]}
+  ],
+  "quests": [
+    {"id": "q0_area_kind", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 1, "level": 2, "title": "Crop Thieves", "text": "Small Boars raid the home fields by day.",
+     "objectives": [{"type": "kill", "roles": ["small_boar"], "count": 8,
+       "area": "elandor_dawnmere_fields/home_fields"}],
+     "rewards": {"weight": 4, "copper": 10}},
+    {"id": "q0_area_minor", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 5, "level": 7, "title": "Foxes in the Woods", "text": "Foxes slip between the young boars.",
+     "objectives": [{"type": "kill", "roles": ["aggressive_fox"], "count": 4, "area": "woods"}],
+     "rewards": {"weight": 4, "copper": 10}},
+    {"id": "q0_camp", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 8, "level": 9, "title": "The Bandit Camp", "text": "Bandits camp at the border. Bring back their ledger pages.",
+     "objectives": [
+       {"type": "kill", "roles": ["confused_bandit"], "count": 5, "area": "elandor_dawnmere_fields/bandit_camp"},
+       {"type": "item", "item": "grug_mobs:ledger_page", "count": 3}
+     ],
+     "quest_drops": [{"item": "grug_mobs:ledger_page", "roles": ["confused_bandit"],
+       "area": "elandor_dawnmere_fields/bandit_camp", "chance": 2}],
+     "rewards": {"weight": 6, "copper": 20}},
+    {"id": "q0_leader", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 9, "level": 10, "title": "The Chief", "text": "The bandit chief waits at the camp.",
+     "objectives": [{"type": "kill", "roles": ["confused_bandit_chief"], "count": 1}],
+     "rewards": {"weight": 6, "copper": 20}},
+    {"id": "q0_zone_roles", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 5, "level": 6, "title": "Young Boars", "text": "Young boars roam the woods.",
+     "objectives": [{"type": "kill", "roles": ["young_boar"], "count": 6}],
+     "rewards": {"weight": 4, "copper": 10}},
+    {"id": "q0_legacy_base", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 1, "level": 2, "title": "Boars Beyond the Fence", "text": "Boars, any boars.",
+     "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar", "grug_mobs:small_boar"], "count": 3}],
+     "rewards": {"xp": 50, "copper": 5}},
+    {"id": "q0_legacy_filter", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 10, "level": 12, "title": "Boars of Goldmead", "text": "Hunt boars in Goldmead Vale.",
+     "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar"], "zone": "elandor_goldmead_vale", "count": 2}],
+     "rewards": {"xp": 80, "copper": 5}},
+    {"id": "q0_tusks", "line": "tools", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 1, "level": 3, "title": "Tusks", "text": "Small Boars carry the tusks we need.",
+     "objectives": [{"type": "item", "item": "grug_mobs:boar_tusk", "count": 4, "roles": ["small_boar"]}],
+     "rewards": {"weight": 3, "copper": 5}},
+    {"id": "q0_plain", "line": "pantry", "giver": "r20_human_start_cook", "turnin": "r20_human_start_cook",
+     "min_level": 1, "level": 1, "title": "Stones and Logs", "text": "Bring stones and logs.",
+     "objectives": [
+       {"type": "item", "item": "default:cobble", "count": 10},
+       {"type": "item", "group": "group:tree", "count": 5}
+     ],
+     "rewards": {"weight": 2, "copper": 5}}
+  ]
+}

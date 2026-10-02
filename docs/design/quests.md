@@ -128,6 +128,23 @@ Item objectives show the concise item name, not description stat/durability line
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the
 minimum-level-aware local wildlife roster and remain locally achievable.
 
+**Level ranges** (Round 28 Lane Q0): signal words exist only in the start
+zones, so the offer dialogue and the quest log show each objective's target
+levels after it, in the objective's own colour: "Defeat Small Boar × 8
+(level 1–4)", "Defeat Small Boar: 0/8 (level 1–4)", "(level 10)" for one
+level. Per role, first match: a leader's fixed level; in the objective's
+area that role's levels there (not the whole kind's); the role's levels in
+the kinds and camps of the kill zone's recipe (the zone filter's zone, else
+the quest's); its catalogue levels within the quest level ±3; a base mob
+(no catalogue row) in a zone without a recipe: the zone's level band within
+the quest level ±3 (a base mob adds nothing in a recipe zone). The
+objective shows the union over its roles. An item objective shows the range
+of its quest drops' roles and of its named source (below); plain gathering,
+crafting and travel objectives show none. The ranges are computed once at
+load. The HUD tracker keeps its compact line without a range: added, it
+would cut 22 of the 204 shipped tracker lines at the 38-character width
+instead of 2.
+
 ## Objectives (Round 28)
 
 - **Kill**: a list of roles (entity `grug_mobs:<role>`; a sub-type is its own
@@ -147,7 +164,10 @@ minimum-level-aware local wildlife roster and remain locally achievable.
   faction guards in the contested zones.
 - **Item**: one item, or any member of an item group (`group:tree`: "any
   log"), and a count. Objectives of one quest draw from the holdings in
-  order, so two objectives never count the same item twice.
+  order, so two objectives never count the same item twice. An item that
+  mobs drop (a family drop such as a boar tusk) may name its source:
+  `roles` and optionally one `area`, checked like a quest drop's source and
+  shown only as the level range (the item counts however it was obtained).
 - **Travel**: one conversation, the quest's only objective, credited on
   accept (Ruling 39): the destination NPC shows its yellow "?" at once and the
   HUD reads "Travel to <NPC>". The turn-in still needs the visit.
@@ -194,8 +214,8 @@ Quest content is data, one file per zone, read at load by
   finding listed, each naming the file and the quest: givers and lines per
   hub, front lines, objective shapes, known NPCs, items, groups and roles,
   critter targets, areas that host their target, quest-drop pairing, and the
-  level fit (every level a target is met at lies within the quest's reward
-  level ±3). `tools/r28_design/validate.py` checks the same rules on the
+  level fit (every level a target, quest-drop source or item source is met
+  at lies within the quest's reward level ±3). `tools/r28_design/validate.py` checks the same rules on the
   design files, plus the atlas checks.
 - Item objectives allocate held items exact items first, then groups; the
   turn-in takes exactly what the progress counted.

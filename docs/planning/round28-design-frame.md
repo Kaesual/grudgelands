@@ -444,7 +444,8 @@ regions for any seed. The build and the full format:
   order).
 - Objectives: `kill` (`roles` list, `count`, optional `area` as
   `zone_id/kind_id` or `zone_id/camp_id` (§4.6); a kill of a leader carries no area, the leader's fixed
-  spot and level apply, also from another zone); `item` (`item` or `group`, `count`); `talk` (`npc`;
+  spot and level apply, also from another zone); `item` (`item` or `group`, `count`; a mob-dropped item may
+  name its source `roles` and optional `area`, shown as their level range, Lane Q0); `talk` (`npc`;
   the only objective of its quest; credited on accept, Ruling 39).
 - `quest_drops` (optional list): `{"item", "roles", "area"?, "chance"}`;
   each pairs with an `item` objective of the same quest and an
