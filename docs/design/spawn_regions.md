@@ -269,5 +269,6 @@ level, each zone border coloured by the level fit across it (the gap between
 the two regions' level ranges: green ≤ 1, yellow 2–5, red > 5, magenta where
 the two zones' bands lie more than 5 apart), for the shipped recipes
 (`current_seed_<s>`) and for the copies `tools/r28_world/border_rule.py`
-writes by the border rule (`proposed_seed_<s>`), plus a stats file per image
+writes by the border rule (`proposed_seed_<s>`), both side by side
+(`compare_seed_<s>`), plus a stats file per image
 and `border_rule.md` (every zone's `from` / `to`, today and by the rule).

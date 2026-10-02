@@ -33,6 +33,9 @@ user decides.
   yellow borders (length in nodes, zone and level range on each side).
 - The two dragon islands are left out: one belt (L60) and no land border.
 
+`compare_seed_<s>.png` puts both maps side by side (today's recipes left,
+the proposal right) with the border length per class above each.
+
 Each image has a stats file (`.md`) with the totals per class, every red,
 yellow and forced border (zone pair, length, level ranges, gap), a table per
 zone pair, the zone pairs that touch on that seed but are not neighbours in
@@ -55,6 +58,30 @@ A capital's `from` names the city and the border together:
 start zone's border to a heartland is a forced gap (10 → 21); the rule keeps
 it neutral on the start side and makes it low on the heartland side, so a
 player crossing from the start zone meets the heartland's lowest levels.
+
+## Results (main 38e1da4b, all 38 zones with recipes)
+
+Border length in nodes per class, today → proposed (the rule changes 19
+zones' `from` / `to`, 13 already follow it, 6 front and island zones stay):
+
+| seed | fit | step | jump | forced |
+|---|---:|---:|---:|---:|
+| 42 | 38496 → 45536 | 16096 → 9952 | 1984 → 1088 | 5696 |
+| 7 | 39232 → 46336 | 14464 → 9088 | 2656 → 928 | 4960 |
+| 2026 | 38016 → 45920 | 14720 → 8096 | 2048 → 768 | 6304 |
+
+The red borders left under the proposal are short (32–160 nodes each):
+between the unchanged front zones (The Broken Causeway L31-33 against The
+Shattered Line L41-43; The Shattered Line against The Skyglass Canopy), and
+at corners where three zones meet and two zones' entries come together (a
+home zone's start border beside the heartland it leads into: Mournfen |
+Ossuary Reach, Raincall Basin | Totemwater Reach; a heartland's capital
+border beside a contested zone: Blackwind Rise | Ossuary Reach, Glassroot
+Wilds | Lorindor). Most yellow left is the neutral capital | heartland
+border (a capital's top belt L28-30 beside the heartland's first belt
+L21-23) and the fronts. Seeds 7 and 2026 have start | heartland contacts the
+seed-42 atlas does not list (Dawnmere | Whitebridge, Hearthpine |
+Frostbarrow, Sunscar | Whispering Reedlands): forced gaps either way.
 
 ## Re-running
 

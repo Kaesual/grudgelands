@@ -9,6 +9,7 @@
 #   ROOT/current_seed_<s>.png|md        the shipped recipes
 #   ROOT/proposed_seed_<s>.png|md       the rule's recipe copies (border_rule.py --out
 #                                       into WORK/proposal; shipped data untouched)
+#   ROOT/compare_seed_<s>.png           both maps side by side (pair.py)
 # One LuaJIT process per seed and variant builds the analytic world once and
 # every mainland zone's region map on it (world.lua, the game's own
 # spawn_regions_core.lua), at most JOBS (7) at once under idle scheduling;
@@ -74,5 +75,16 @@ for variant in "${variants[@]}"; do
 	done
 done
 reap
+# current | proposed side by side (both variants rendered).
+if [ ${#variants[@]} -eq 2 ]; then
+	for seed in "${seeds[@]}"; do
+		[ -f "$root/current_seed_$seed.png" ] && [ -f "$root/proposed_seed_$seed.png" ] || continue
+		throttle
+		python3 "$here/pair.py" --out "$root" --seed "$seed" --current "$work/current" \
+			--proposed "$work/proposed" &
+		pids+=($!)
+	done
+	reap
+fi
 echo "images and stats written under $root (dumps in $work)"
 exit "$status"
