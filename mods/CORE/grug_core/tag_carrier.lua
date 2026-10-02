@@ -9,6 +9,11 @@ local HP_ENTITY_NAME = "grug_core:injured_hp_bar"
 local SHOW_D2 = 25 * 25
 local HIDE_D2 = 30 * 30
 local SNAPSHOT_INTERVAL = 1
+-- The carrier pass is spread over this many steps of each second (Round 30,
+-- perf review #10): every carrier belongs to one slot and is still visited
+-- once per second, but no single server step carries all of them.
+local SLOTS = 8
+local SLOT_INTERVAL = SNAPSHOT_INTERVAL / SLOTS
 
 local CATEGORY_DEFAULTS = {
 	aggressive = {foreground = "#ff4b4b", background = "#00000040"},
@@ -37,15 +42,24 @@ local HP_BARS_ENABLED = core.settings:get_bool("grug_injured_mob_hp_bars", true)
 
 local player_snapshot = {}
 local player_count = 0
-local snapshot_elapsed = 0
+local slot_elapsed = 0
 local visibility_callbacks = {}
 -- callback(parent, observers, removed): membership is borrowed, read-only.
--- Called every existing visibility tick so consumers can refresh state without scans.
+-- Called on the carrier's visibility tick whenever somebody observes it or its
+-- observer set just changed (so once with the empty set after the last
+-- observer left), and with removed = true when the carrier goes, so consumers
+-- can refresh state without scans. An unobserved carrier whose set stays
+-- empty is skipped.
 function grug_core.register_tag_visibility(callback)
 	visibility_callbacks[#visibility_callbacks + 1] = callback
 end
 local managed_carriers = {}
 local carrier_by_parent = {}
+-- slot -> {carrier = row}: the carriers visited on that step of the second.
+local carrier_slots = {}
+for slot = 1, SLOTS do carrier_slots[slot] = {} end
+local last_slot = 0 -- the slot the newest carrier joined (round robin)
+local current_slot = 0
 
 function grug_core.register_hp_bar_presentation(entity_name, definition)
 	local registered = type(entity_name) == "string"
@@ -290,6 +304,7 @@ local function forget_carrier(carrier, row)
 	end
 	managed_carriers[carrier] = nil
 	remove_hp_bar(row)
+	if row then carrier_slots[row.slot][carrier] = nil end
 	if row and carrier_by_parent[row.parent] == carrier then
 		carrier_by_parent[row.parent] = nil
 	end
@@ -321,29 +336,37 @@ local function update_observers(carrier, parent, owner_name)
 	return true
 end
 
-local function manage_carriers()
-	for carrier, row in pairs(managed_carriers) do
-		local parent = row.parent
-		if not object_valid(carrier) then
-			forget_carrier(carrier, row)
-		elseif not object_valid(parent) or carrier:get_attach() ~= parent then
-			forget_carrier(carrier, row)
-			carrier:remove()
-		else
-			update_observers(carrier, parent, row.owner_name)
-			local observers = carrier:get_luaentity()._grug_observers or {}
-			refresh_hp_bar(row, observers)
+local function manage_carrier(carrier, row)
+	local parent = row.parent
+	if not object_valid(carrier) then
+		forget_carrier(carrier, row)
+	elseif not object_valid(parent) or carrier:get_attach() ~= parent then
+		forget_carrier(carrier, row)
+		carrier:remove()
+	else
+		local changed = update_observers(carrier, parent, row.owner_name)
+		local observers = carrier:get_luaentity()._grug_observers or {}
+		refresh_hp_bar(row, observers)
+		if changed or next(observers) ~= nil then
 			for _, callback in ipairs(visibility_callbacks) do callback(parent, observers, false) end
 		end
 	end
 end
 
+-- One slot's carriers, or every carrier when `slot` is nil.
+local function manage_carriers(slot)
+	for carrier, row in pairs(slot and carrier_slots[slot] or managed_carriers) do
+		manage_carrier(carrier, row)
+	end
+end
+
 core.register_globalstep(function(dtime)
-	snapshot_elapsed = snapshot_elapsed + dtime
-	if snapshot_elapsed < SNAPSHOT_INTERVAL then return end
-	snapshot_elapsed = snapshot_elapsed % SNAPSHOT_INTERVAL
+	slot_elapsed = slot_elapsed + dtime
+	if slot_elapsed < SLOT_INTERVAL then return end
+	slot_elapsed = slot_elapsed % SLOT_INTERVAL
 	refresh_snapshot()
-	manage_carriers()
+	current_slot = current_slot % SLOTS + 1
+	manage_carriers(current_slot)
 end)
 
 -- The engine draws a nametag at its OWN object's selection-box max Y + 0.3, so
@@ -382,8 +405,11 @@ function grug_core.create_tag_carrier(parent, owner_name)
 	copy_parent_box(carrier, parent)
 	carrier:set_attach(parent, "", {x = 0, y = 0, z = 0},
 		{x = 0, y = 0, z = 0})
-	managed_carriers[carrier] = {parent = parent, owner_name = owner_name,
-		category = category_for(parent)}
+	last_slot = last_slot % SLOTS + 1
+	local row = {parent = parent, owner_name = owner_name,
+		category = category_for(parent), slot = last_slot}
+	managed_carriers[carrier] = row
+	carrier_slots[last_slot][carrier] = row
 	carrier_by_parent[parent] = carrier
 	return carrier
 end
@@ -431,6 +457,7 @@ function grug_core.is_tag_carrier(entity)
 	return type(entity) == "table" and entity.name == ENTITY_NAME
 end
 
--- Test seam: production refreshes only through the throttled globalstep.
+-- Test seam: production refreshes only through the throttled globalstep,
+-- one slot per step; the seam runs a full pass over every carrier.
 grug_core.refresh_tag_player_snapshot = refresh_snapshot
-grug_core.manage_tag_carriers = manage_carriers
+grug_core.manage_tag_carriers = function() manage_carriers(nil) end

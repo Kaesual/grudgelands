@@ -15,6 +15,12 @@
 --      the empty grid and for random grids; plus a small synthetic registry
 --      with group-first and item-first recipes in one bucket and a late group
 --      that makes two recipes ambiguous. Also times both lookups.
+--   T  grug_core/tag_carrier.lua: the carrier pass runs in eight slots of
+--      the second, each carrier still once per second with the same 25/30
+--      node hysteresis; visibility callbacks run while a carrier is observed
+--      or when its observer set changes, never for an unobserved carrier
+--      whose set stays empty; removal still reports; the test seam
+--      manage_tag_carriers is a full pass.
 --   M  grug_mounts/entity.lua: flight_state and the flight-boundary sweep
 --      (warning_state) give exactly the answers of the former per-sample
 --      code (faction read per sample, grug_zones.at per sample) on a field
@@ -554,6 +560,135 @@ do
 		"C synth: the linear scan agrees it is ambiguous")
 	check(#logged == 1, "C synth: the ambiguity is logged once")
 	_G.core, _G.grug_jobs = nil, nil
+end
+
+------------------------------------------------------------------------------
+-- T: tag-carrier slots (#10).
+------------------------------------------------------------------------------
+do
+	local registered, players, globalsteps = {}, {}, {}
+	local function new_object(pos, entity)
+		local o = {pos = pos, valid = true, entity = entity, props = {}, visits = 0}
+		function o:is_valid() return self.valid end
+		function o:get_pos() return self.valid and self.pos or nil end
+		function o:get_properties() return self.props end
+		function o:set_properties(p) for k, v in pairs(p) do self.props[k] = v end end
+		function o:set_attach(parent) self.parent = parent end
+		function o:get_attach() self.visits = self.visits + 1; return self.parent end
+		function o:get_luaentity() return self.entity end
+		function o:is_player() return false end
+		function o:set_observers(observers) self.observers = observers end
+		function o:remove() self.valid = false end
+		if entity then entity.object = o end
+		return o
+	end
+	_G.core = {
+		settings = {get = function() return nil end,
+			get_bool = function(_, _, default) return default end},
+		colorspec_to_colorstring = function(v) return v end,
+		registered_entities = registered,
+		register_entity = function(name, def) registered[name] = def end,
+		register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end,
+		get_connected_players = function() return players end,
+		add_entity = function(pos, name)
+			local def = registered[name]
+			local entity = setmetatable({name = name}, {__index = def})
+			local o = new_object(pos, entity)
+			if def.on_activate then def.on_activate(entity) end
+			return o
+		end,
+	}
+	_G.grug_core = {}
+	dofile(repo .. "/mods/CORE/grug_core/tag_carrier.lua")
+	local step = globalsteps[1]
+	local calls = {}
+	grug_core.register_tag_visibility(function(parent, observers, removed)
+		local n = 0
+		for _ in pairs(observers) do n = n + 1 end
+		calls[#calls + 1] = {parent = parent, count = n, removed = removed}
+	end)
+	local function player(name, x)
+		return {get_pos = function(self) return {x = self.x, y = 0, z = 0} end,
+			get_player_name = function() return name end, x = x}
+	end
+	-- 40 mob parents in a row 2 nodes apart; carriers attach to them.
+	local parents, carriers = {}, {}
+	for i = 1, 40 do
+		parents[i] = new_object({x = i * 2, y = 0, z = 0},
+			{name = "grug_mobs:test", _grug_disposition = "aggressive"})
+		carriers[i] = grug_core.create_tag_carrier(parents[i])
+	end
+	local viewer = player("viewer", 0)
+	players[1] = viewer
+	local function seen(i) return carriers[i]:get_luaentity()._grug_observers.viewer == true end
+	local function visits()
+		local list = {}
+		for i = 1, 40 do list[i] = carriers[i].visits; carriers[i].visits = 0 end
+		return list
+	end
+
+	-- Eight steps of 0.125 s: one slot each, every carrier exactly once.
+	visits()
+	local per_step = {}
+	for s = 1, 8 do
+		local before = 0
+		for i = 1, 40 do before = before + carriers[i].visits end
+		step(0.125)
+		local after = 0
+		for i = 1, 40 do after = after + carriers[i].visits end
+		per_step[s] = after - before
+	end
+	local once = true
+	for _, n in ipairs(visits()) do if n ~= 1 then once = false end end
+	check(once, "T: every carrier visited exactly once per second")
+	local balanced = true
+	for s = 1, 8 do if per_step[s] ~= 5 then balanced = false end end
+	check(balanced, "T: 40 carriers spread 5 per slot")
+	local shown = 0
+	for i = 1, 40 do if seen(i) then shown = shown + 1 end end
+	eq(shown, 12, "T: carriers within 25 nodes are shown (x = 2..24)")
+
+	-- Hysteresis: moving 4 nodes away keeps 25..30 observed, hides beyond.
+	viewer.x = -4
+	for _ = 1, 8 do step(0.125) end
+	check(seen(12) and not seen(14) and not seen(15),
+		"T: an observed carrier at 28 nodes stays, one at 32 is hidden")
+	viewer.x = 0
+	for _ = 1, 8 do step(0.125) end
+	check(not seen(13), "T: a carrier first seen at 26 nodes is not shown")
+
+	-- Callbacks: observed carriers every visit, unobserved unchanged never.
+	calls = {}
+	for _ = 1, 8 do step(0.125) end
+	local by_parent = {}
+	for _, call in ipairs(calls) do by_parent[call.parent] = (by_parent[call.parent] or 0) + 1 end
+	eq(by_parent[parents[1]], 1, "T: an observed carrier reports on its tick")
+	eq(by_parent[parents[30]], nil, "T: an unobserved carrier with an unchanged set is skipped")
+	viewer.x = 200
+	calls = {}
+	for _ = 1, 8 do step(0.125) end
+	local emptied = 0
+	for _, call in ipairs(calls) do
+		if call.count == 0 and not call.removed then emptied = emptied + 1 end
+	end
+	eq(emptied, 12, "T: each carrier reports once with the empty set when the viewer leaves")
+	calls = {}
+	for _ = 1, 8 do step(0.125) end
+	eq(#calls, 0, "T: nothing reported while nobody observes anything")
+
+	-- Removal reports and the carrier leaves its slot.
+	grug_core.remove_tag_carrier(carriers[3])
+	check(#calls == 1 and calls[1].removed and calls[1].parent == parents[3],
+		"T: removal reports once")
+	visits()
+	for _ = 1, 8 do step(0.125) end
+	eq(visits()[3], 0, "T: a removed carrier is no longer visited")
+	-- The test seam is a full pass over every carrier.
+	grug_core.manage_tag_carriers()
+	local all = true
+	for i, n in ipairs(visits()) do if i ~= 3 and n ~= 1 then all = false end end
+	check(all, "T: manage_tag_carriers visits every carrier once")
+	_G.core, _G.grug_core = nil, nil
 end
 
 ------------------------------------------------------------------------------
