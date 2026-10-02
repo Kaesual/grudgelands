@@ -186,7 +186,7 @@
         "highcourt_provisions_01"
       ],
       "title": "Optional: Venison for the Long Table",
-      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day in the {name:kingswood}, which lies {zone_area:kingswood}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
+      "text": "The palace has ordered venison for a banquet and left the hunting to whoever happens to be standing near my oven. Bring down six Moss-Antler Stags by day on the {name:commons}. Their yellow names mean they only fight back when struck, which is more patience than the banquet guests will show.",
       "objectives": [
         {
           "type": "kill",
@@ -194,14 +194,14 @@
             "moss_antler_stag"
           ],
           "count": 6,
-          "area": "elandor_highcourt/kingswood"
+          "area": "elandor_highcourt/commons"
         }
       ],
       "rewards": {
         "weight": 3,
         "items": []
       },
-      "lesson": "Optional: neutral daytime game in the capital's wood.",
+      "lesson": "Optional: neutral daytime game, the minor role on the capital commons.",
       "duration_min": 9,
       "optional": true
     },
