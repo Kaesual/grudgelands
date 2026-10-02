@@ -643,9 +643,13 @@ local L = SR.leader("confused_bandit_chief")
 check(L and L.zone == DAWN and L.level == 10 and L.respawn == 300 and L.pos == nil, "leader seam (static)")
 check(SR.leader("small_boar") == nil, "no leader for a plain role")
 
--- The map builds lazily.
+-- The map builds lazily and keeps its compact form; the cells come from a
+-- full build (SR.full_map, Round 30 P3), which is the same map.
 local M = SR.map(DAWN)
-check(M and #M.regions > 0 and SR.build_stats[DAWN].cells == #M.order, "lazy build")
+local F = SR.full_map(DAWN)
+check(M and M.compact and M.order == nil and #M.regions > 0 and
+	SR.build_stats[DAWN].cells == #F.order and M.cell_count == #F.order and
+	#F.regions == #M.regions, "lazy build")
 check(SR.map(DAWN) == M, "cached")
 check(SR.map(GOLD) == nil, "no map without a recipe")
 -- One level truth: the overlay answers the region's level.
@@ -668,7 +672,7 @@ end
 -- Find an open point of a kind (its largest region) away from roads.
 local function point_of(kind_id)
 	local best
-	for _, reg in ipairs(M.by_kind[kind_id] or {}) do
+	for _, reg in ipairs(F.by_kind[kind_id] or {}) do
 		for _, c in ipairs(reg.cells) do
 			if c.road >= 40 and c.drift == 0 and c.prot == 0 and (not best or c.road > best.road) then best = c end
 		end
@@ -711,7 +715,7 @@ check(SR.attempt(PT.pos, {PT}, "day", 0, 0) == "protected", "the start town refu
 -- The drift band: an aggressive role near the road is refused, a neutral one is not.
 do
 	local road_cell
-	for _, c in ipairs(M.order) do
+	for _, c in ipairs(F.order) do
 		if c.x == 16 and c.z > -2400 and not c.camp and not road_cell and c.kind.rosters then
 			road_cell = c
 		end
@@ -738,7 +742,7 @@ end
 do
 	local strand_cell
 	for _, kid in ipairs({"strand", "tideflats", "wreck_coast"}) do
-		for _, reg in ipairs(M.by_kind[kid] or {}) do
+		for _, reg in ipairs(F.by_kind[kid] or {}) do
 			for _, c in ipairs(reg.cells) do
 				if not strand_cell and c.z < -2860 and c.drift == 0 and c.prot == 0 then strand_cell = c end
 			end

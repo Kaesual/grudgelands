@@ -267,7 +267,11 @@ were in, and quest texts and level routes now name zones.
   one-level zone). Clicking selects it like any marker. Zone markers draw
   under every other marker. Each sits at the land cell of its zone farthest
   from the zone's border and coast on a 32-node grid (the pole of
-  inaccessibility), computed once at server start from the world authority.
+  inaccessibility), computed once at server start from the world authority
+  (a later start of the same world reads the 32-node zone grid from
+  `grug_map_zone_grid.txt`, keyed by `grug_mapgen.wp40.world_key`, the zone
+  queries' seam and the sampling code; the placement itself runs every
+  start).
   If another marker (service, king, dragon, quest giver, settlement,
   innkeeper) or a region name is too close, the marker takes the deepest
   cell of its zone that keeps 0.45 formspec units (zoom 1) from every other

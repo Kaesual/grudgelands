@@ -39,3 +39,22 @@ do
 		return false
 	end)
 end
+
+-- Boot memory (Round 30 P3): the construction above leaves several hundred
+-- MiB of garbage; collecting it here, before the other mods load and the
+-- region maps and the map base are made, lowers the server's peak memory
+-- (VmHWM, measured 2.12 -> 1.76 GB on a first start, 1.84 -> 1.71 GB on a
+-- later one). The heap after a full collection at the first server step is
+-- logged as a regression guard.
+do
+	local loaded, started = collectgarbage("count"), core.get_us_time()
+	collectgarbage("collect")
+	core.log("action", ("[grug_mapgen] Lua heap after loading %.0f MiB, %.0f MiB after a " ..
+		"full collection (%.0f ms)"):format(loaded / 1024, collectgarbage("count") / 1024,
+		(core.get_us_time() - started) / 1000))
+	core.after(0, function()
+		collectgarbage("collect")
+		core.log("action", ("[grug_mapgen] Lua heap at the first server step after a full " ..
+			"collection: %.0f MiB"):format(collectgarbage("count") / 1024))
+	end)
+end
