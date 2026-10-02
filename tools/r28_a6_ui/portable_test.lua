@@ -384,7 +384,16 @@ end
 local journal_state
 grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Maren"}},
 	register_on_change = function(fn) grug_quests._changed = fn end,
-	journal = function() return deep_copy(journal_state) end}
+	journal = function() return deep_copy(journal_state) end,
+	-- The tracker builds the journal only when this key changes (Round 30).
+	journal_key = function()
+		local parts = {}
+		for _, quest in ipairs(journal_state.quests) do
+			parts[#parts + 1] = quest.id
+			for _, objective in ipairs(quest.objectives) do parts[#parts + 1] = objective.count end
+		end
+		return table.concat(parts, " "), ""
+	end}
 core.registered_entities["grug_mobs:small_boar"] = {description = "Small Boar"}
 dofile("mods/PLAYER/grug_quests/labels.lua")
 dofile("mods/PLAYER/grug_quests/hud.lua")
@@ -412,11 +421,13 @@ journal_state.quests[2] = quest("q2", {deep_copy(axe)})
 journal_state.quests[2].objectives[1].count = 1
 grug_quests._changed(carol)
 eq(#fed, 1, "a newly accepted quest posts nothing")
+-- The 0.5 s pass refreshes each player in one of five 0.1 s slots.
+local function half_second() for _ = 1, 6 do run_steps(0.1) end end
 journal_state.quests[2].objectives[1].count = 0
-run_steps(0.6)
+half_second()
 eq(#fed, 1, "a falling item count is silent")
 journal_state.quests[2].objectives[1].count = 1
-run_steps(0.6)
+half_second()
 eq(fed[2] and fed[2].text, "Light Leather 1/1", "an item gain posts through the 0.5 s pass")
 grug_core.feed = nil
 

@@ -8,20 +8,51 @@ Q.MAX_TRACKED = 10
 -- was running in between. Fixtures replace the clock.
 Q.clock = os.time
 local callbacks, busy = {}, {}
+-- The decoded state per player name, keyed by the raw meta string it came
+-- from (Round 30, perf review #1): {raw = string, state = table}. Readers
+-- share the cached table, so a table `load` returns is never written to;
+-- mutating paths take `editable`'s copy, and `save` caches what it stores.
+-- Cleared on leave.
+local cache = {}
 -- `completed` keeps the first completion forever (prerequisites read it);
 -- `cooldowns` holds when a completed repeatable may be accepted again.
+-- Returns the shared read-only state and the raw string.
 local function load(player)
-	local state = core.deserialize(player:get_meta():get_string(KEY)) or
-		{active = {}, completed = {}, tracked = {}, hud = true}
-	state.cooldowns = state.cooldowns or {}
-	return state
+	local name, raw = player:get_player_name(), player:get_meta():get_string(KEY)
+	local entry = cache[name]
+	if not entry or entry.raw ~= raw then
+		local state = core.deserialize(raw) or
+			{active = {}, completed = {}, tracked = {}, hud = true}
+		state.cooldowns = state.cooldowns or {}
+		entry = {raw = raw, state = state}
+		cache[name] = entry
+	end
+	return entry.state, raw
+end
+-- A private copy to change and then `save`.
+local function editable(player)
+	return table.copy((load(player)))
 end
 local function save(player, state)
-	player:get_meta():set_string(KEY, core.serialize(state))
+	local raw = core.serialize(state)
+	player:get_meta():set_string(KEY, raw)
+	cache[player:get_player_name()] = {raw = raw, state = state}
 end
+-- For fixtures: the cache, to prove that no reader writes into it.
+Q._state_cache = cache
+-- player name -> {raw, at, states, version}: Q.marker_states' memo.
+local marker_memo = {}
 local function changed(player)
+	-- Holdings may have changed without the state (a quest drop): the next
+	-- marker_states call recomputes.
+	local memo = marker_memo[player:get_player_name()]
+	if memo then memo.at = nil end
 	for _, callback in ipairs(callbacks) do callback(player) end
 end
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	cache[name], marker_memo[name] = nil, nil
+end)
 function Q.register_on_change(callback) callbacks[#callbacks + 1] = callback end
 local function owned_lists(player)
 	local lists, inv = {"main"}, player:get_inventory()
@@ -141,29 +172,35 @@ function Q.status(player, id)
 	local allowed, reason = offerable(player, def, state)
 	return allowed and "available" or "locked", reason
 end
--- One bounded state/holdings snapshot for one NPC viewer; no persistent cache.
+-- What quest `def` shows at `npc` for this player: "ready", "active",
+-- "available" or "locked" (with the reason), or nil when it is not listed
+-- there. `faction` and `race` are the player's, read once per pass; `pass`
+-- carries one holdings snapshot through the pass (`pass.counts`).
+local function status_at(player, npc, def, state, faction, race, pass)
+	local id = def.id
+	if state.completed[id] and def.repeatable == nil then return nil end
+	if (def.faction and def.faction ~= faction) or (def.race and def.race ~= race) then return nil end
+	for _, prior in ipairs(def.prerequisites) do
+		if not state.completed[prior] then return nil end
+	end
+	local active = state.active[id]
+	if (active and def.turnin_npc or def.npc) ~= npc then return nil end
+	if active then
+		pass.counts = pass.counts or holdings(player)
+		local _, ready = progress(player, def, active, pass.counts)
+		return ready and "ready" or "active"
+	end
+	local allowed, reason = offerable(player, def, state)
+	return allowed and "available" or "locked", reason
+end
+-- One bounded state/holdings snapshot for one NPC viewer.
 function Q.npc_quests(player, npc)
-	local state, rows, counts = load(player), {}, nil
+	local state, rows, pass = load(player), {}, {}
+	local faction, race = grug_factions.get_faction(player), grug_classes.get_race(player)
 	for id in pairs(Q.quests_by_npc[npc] or {}) do
 		local def = Q.registered_quests[id]
-		local relevant = (not state.completed[id] or def.repeatable ~= nil) and
-			(not def.faction or def.faction == grug_factions.get_faction(player)) and
-			(not def.race or def.race == grug_classes.get_race(player))
-		for _, prior in ipairs(def.prerequisites) do
-			if not state.completed[prior] then relevant = false end
-		end
-		local active = state.active[id]
-		if relevant and (active and def.turnin_npc or def.npc) == npc then
-			local status, reason
-			if active then
-				counts = counts or holdings(player)
-				local _, ready = progress(player, def, active, counts)
-				status = ready and "ready" or "active"
-			else
-				local allowed
-				allowed, reason = offerable(player, def, state)
-				status = allowed and "available" or "locked"
-			end
+		local status, reason = status_at(player, npc, def, state, faction, race, pass)
+		if status then
 			rows[#rows + 1] = {id = id, title = def.title, status = status, reason = reason,
 				repeatable = def.repeatable ~= nil}
 		end
@@ -171,8 +208,52 @@ function Q.npc_quests(player, npc)
 	table.sort(rows, function(a, b) return a.id < b.id end)
 	return rows
 end
+-- The marker of every quest NPC for this player (Round 30, perf review #1):
+-- NPC id -> the most urgent status of its rows in Q.npc_quests (ready, then
+-- available, active, locked); NPCs without rows are absent. One state load
+-- and one holdings snapshot for all NPCs, memoized per player for a second
+-- and until the state or a quest change (`changed`) says otherwise. Also
+-- returns a version that rises whenever the markers differ from the
+-- previous result, for cheap change tests (the Map tab). Read-only: the
+-- table is shared until the next change.
+local MARKER_PRIORITY = {ready = 1, available = 2, active = 3, locked = 4}
+local MARKER_MEMO_US = 1000000
+function Q.marker_states(player)
+	local name = player:get_player_name()
+	local state, raw = load(player)
+	local now, memo = core.get_us_time(), marker_memo[name]
+	if memo and memo.at and memo.raw == raw and now - memo.at < MARKER_MEMO_US then
+		return memo.states, memo.version
+	end
+	local states, pass = {}, {}
+	local faction, race = grug_factions.get_faction(player), grug_classes.get_race(player)
+	for npc, ids in pairs(Q.quests_by_npc) do
+		local best
+		for id in pairs(ids) do
+			local status = status_at(player, npc, Q.registered_quests[id], state, faction, race, pass)
+			if status and (not best or MARKER_PRIORITY[status] < MARKER_PRIORITY[best]) then best = status end
+		end
+		states[npc] = best
+	end
+	local same = memo ~= nil
+	if same then
+		for npc, status in pairs(memo.states) do
+			if states[npc] ~= status then same = false; break end
+		end
+		for npc in pairs(states) do
+			if memo.states[npc] == nil then same = false; break end
+		end
+	end
+	if same then
+		memo.raw, memo.at = raw, now
+	else
+		memo = {states = states, version = (memo and memo.version or 0) + 1, raw = raw, at = now}
+		marker_memo[name] = memo
+	end
+	return memo.states, memo.version
+end
 function Q.accept(player, id)
-	local def, state = Q.registered_quests[id], load(player)
+	local def, state = Q.registered_quests[id], editable(player)
 	if not def then return false, "This quest is not available." end
 	local allowed, reason = offerable(player, def, state)
 	if not allowed then return false, reason end
@@ -194,7 +275,7 @@ local function untrack(state, id)
 	end
 end
 function Q.abandon(player, id)
-	local state = load(player)
+	local state = editable(player)
 	if not state.active[id] then return false end
 	state.active[id] = nil
 	untrack(state, id)
@@ -203,7 +284,7 @@ function Q.abandon(player, id)
 	return true
 end
 function Q.set_tracked(player, id, enabled)
-	local state = load(player)
+	local state = editable(player)
 	if not state.active[id] then return false end
 	untrack(state, id)
 	if enabled then
@@ -217,14 +298,15 @@ function Q.set_tracked(player, id, enabled)
 	return true
 end
 function Q.set_hud_enabled(player, enabled)
-	local state = load(player)
+	local state = editable(player)
 	state.hud = enabled == true
 	save(player, state)
 	changed(player)
 end
-function Q.journal(player)
+-- `counts`, if given, is the holdings snapshot Q.journal_key returned.
+function Q.journal(player, counts)
 	local state, rows = load(player), {}
-	local counts = next(state.active) and holdings(player) or {}
+	counts = counts or next(state.active) and holdings(player) or {}
 	local ids = {}
 	for id in pairs(state.active) do ids[#ids + 1] = id end
 	table.sort(ids)
@@ -236,7 +318,31 @@ function Q.journal(player)
 			repeatable = def.repeatable ~= nil, travel = Q.is_travel(def),
 			rewards = table.copy(def.rewards), reward_xp = Q.reward_xp(def)}
 	end
-	return {quests = rows, tracked = state.tracked, hud_enabled = state.hud ~= false}
+	return {quests = rows, tracked = table.copy(state.tracked), hud_enabled = state.hud ~= false}
+end
+-- The tracker's change test (Round 30, perf review #5): the raw state string
+-- and, as one string, the count of every held item that an active item
+-- objective accepts. Equal keys give equal journals. The third value is
+-- the holdings snapshot read for it, for Q.journal.
+function Q.journal_key(player)
+	local state, raw = load(player)
+	if not next(state.active) then return raw, "" end
+	local counts, objectives, names = holdings(player), {}, {}
+	for id in pairs(state.active) do
+		for _, objective in ipairs(Q.registered_quests[id].objectives) do
+			if objective.type == "item" then objectives[#objectives + 1] = objective end
+		end
+	end
+	for name, count in pairs(counts) do
+		if count > 0 then
+			for _, objective in ipairs(objectives) do
+				if accepts(objective, name) then names[#names + 1] = name; break end
+			end
+		end
+	end
+	table.sort(names)
+	for index, name in ipairs(names) do names[index] = name .. " " .. counts[name] end
+	return raw, table.concat(names, ","), counts
 end
 -- Preflight copies every owned slot. Removing requirements and adding rewards
 -- to the same copies accounts for space freed by this very hand-in.
@@ -276,7 +382,7 @@ local function settlement(player, def, active)
 	return rows
 end
 function Q.turn_in(player, id)
-	local name, state = player:get_player_name(), load(player)
+	local name, state = player:get_player_name(), editable(player)
 	local def = Q.registered_quests[id]
 	if busy[name] or not def or not state.active[id] then return false, "This quest is not active." end
 	local allowed, reason = permitted(player, def, state)
@@ -331,22 +437,27 @@ local function mob_counts(target, mob, pos)
 	end
 	return false
 end
+-- Most kills credit nothing: the shared state is only read, and copied
+-- once a counter actually rises.
 function Q.credit_kill(player, mob, pos)
-	local state, dirty = load(player), false
 	if grug_factions.same_faction(player, mob.object) then return end
+	local state, copy = load(player), nil
 	for id, counters in pairs(state.active) do
 		local def = Q.registered_quests[id]
 		if permitted(player, def, state) then
 			for index, objective in ipairs(def.objectives) do
 				if objective.type == "kill" and mob_counts(objective, mob, pos) then
 					local before = counters[index] or 0
-					counters[index] = math.min(objective.count, before + 1)
-					dirty = dirty or counters[index] ~= before
+					local after = math.min(objective.count, before + 1)
+					if after ~= before then
+						copy = copy or editable(player)
+						copy.active[id][index] = after
+					end
 				end
 			end
 		end
 	end
-	if dirty then save(player, state); changed(player) end
+	if copy then save(player, copy); changed(player) end
 end
 -- Into the player's inventory and bags; what does not fit drops at the feet.
 local function give(player, item)

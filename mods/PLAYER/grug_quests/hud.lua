@@ -1,5 +1,4 @@
 local huds = {}
-local elapsed = 0
 
 -- Text can carry translation escapes ("\27(T@mobs)Raw Meat\27E"). Resolve
 -- them to the game's English text first, so a cut never lands inside an
@@ -113,32 +112,60 @@ local function post_progress(player, journal)
 	end
 end
 
+-- The journal is built only when its key (Q.journal_key: the raw quest
+-- state and the counts of held objective items) changed, and the text only
+-- when the journal or the line width did (Round 30, perf review #5).
 local function refresh(player)
-	local row = huds[player:get_player_name()]
+	local name = player:get_player_name()
+	local row = huds[name]
 	if not row then return end
-	local journal = grug_quests.journal(player)
-	post_progress(player, journal)
-	local text = grug_quests.hud_text(journal,
-		core.get_player_window_information(player:get_player_name()))
+	local raw, held, counts = grug_quests.journal_key(player)
+	local window = core.get_player_window_information(name)
+	local width = grug_core.hud_layout.side_text_width(window)
+	local fresh = raw ~= row.raw or held ~= row.held
+	if not fresh and width == row.width then return end
+	if fresh then
+		row.journal, row.raw, row.held = grug_quests.journal(player, counts), raw, held
+		post_progress(player, row.journal)
+	end
+	row.width = width
+	local text = grug_quests.hud_text(row.journal, window)
 	if row.text ~= text then player:hud_change(row.id, "text", text); row.text = text end
 end
 
+-- Each player is polled every SLOTS x SLOT_PERIOD = 0.5 s, in one of SLOTS
+-- phases by join order, so many players never refresh in the same step
+-- (the pattern of grug_core/atmosphere_zones.lua).
+local SLOTS, SLOT_PERIOD = 5, 0.1
+local slot_of, joined, accumulator, current_slot = {}, 0, 0, 0
+
 core.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
 	local anchor = grug_core.hud_layout.anchors.quest_list
-	huds[player:get_player_name()] = {text = "", id = player:hud_add({type = "text",
+	huds[name] = {text = "", id = player:hud_add({type = "text",
 		position = anchor.position, offset = anchor.offset, alignment = anchor.alignment,
 		text = "", number = 0xffe080, z_index = 1})}
+	joined = joined + 1
+	slot_of[name] = joined % SLOTS + 1
 	refresh(player)
 end)
 core.register_on_leaveplayer(function(player)
-	huds[player:get_player_name()] = nil
-	seen[player:get_player_name()] = nil
+	local name = player:get_player_name()
+	huds[name], seen[name], slot_of[name] = nil, nil, nil
 end)
 grug_quests.register_on_change(refresh)
 core.register_on_player_inventory_action(function(player) refresh(player) end)
 core.register_globalstep(function(dtime)
-	elapsed = elapsed + dtime
-	if elapsed < 0.5 then return end
-	elapsed = elapsed % 0.5
-	for _, player in ipairs(core.get_connected_players()) do refresh(player) end
+	accumulator = accumulator + dtime
+	if accumulator < SLOT_PERIOD then return end
+	-- A stall longer than one period collapses to a single slot.
+	accumulator = accumulator - SLOT_PERIOD
+	if accumulator > SLOT_PERIOD then accumulator = 0 end
+	current_slot = current_slot % SLOTS + 1
+	for name, slot in pairs(slot_of) do
+		if slot == current_slot then
+			local player = core.get_player_by_name(name)
+			if player then refresh(player) end
+		end
+	end
 end)
