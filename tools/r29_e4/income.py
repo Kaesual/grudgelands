@@ -1,0 +1,264 @@
+#!/usr/bin/env python3
+"""Round 29 lane E4: the simple income estimate and the prices it sets.
+
+Economy plan (docs/planning/economy-vendor-plan.md) section 5 and lane E4:
+reliable net solo income per level band = quest copper plus expected loot
+payout, minus routine repair and potions, per played hour. No checksummed
+ledger (WP44 lighter pass, D1); this script is the whole record.
+
+Inputs:
+  * quests      one leveling route per faction (r28common.track_route, the
+                ledger's route definition): the shipped quest files walked
+                by ledger.py (one-time quests, no repeatables, no race XP
+                perk). Copper is the game's rule (grug_quests.quest_copper):
+                rewards.copper, else round_half_up(0.08 x P(T) x weight).
+  * kills       the band's kill equivalents (progression.md) times the XP
+                share quests do not pay as rewards or gathering: quest
+                kills, drop kills and free play, all at the band's level.
+  * loot        the band's median kill payout measured by lane E1
+                (tools/r29_e1/band_payout.sh: the real price module over
+                grug_mobs/data/drops.json, leader bonus rows left out).
+  * time        progression.md section 1, level 60 in about 10-20 played
+                hours: the midpoint, 15 h, split over the bands by their
+                kill equivalents.
+  * repair      per kill ACTIONS_PER_KILL wear points on the weapon and
+                HITS_PER_KILL on a random armour piece (durability_repair.md),
+                band-tier Uncommon gear (quality x3), ceil left out (the
+                quote rounds per item, this is an hourly mean).
+  * potions     POTIONS_PER_HOUR Weak Healing Potions at 8c (the only
+                vendor potion, every tier).
+
+Prices (economy.md section 4.1 rounding, section 4.2 and 4.3 targets): the
+four riding tiers at 15 min / 45 min / 2 h / 5 h of the income at their
+level's bracket (ceil(level / 10), as respec), the Boat like Apprentice and
+the Improved Boat like Journeyman Riding (travel plan ruling 3), respec at
+5 min per bracket.
+
+Usage:
+  income.py            print the estimate and the prices (Markdown)
+  income.py --check    also compare the prices with the shipped Lua tables
+                       (grug_mounts.PRICES, grug_classes.RESPEC_PRICES); exit
+                       1 on a difference
+  income.py --self-test
+"""
+import argparse
+import math
+import re
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parents[1]
+sys.path.insert(0, str(REPO / "tools" / "r28_design"))
+import r28common as C  # noqa: E402
+import ledger as L  # noqa: E402
+
+ROUTES = ("dwarf", "orc")  # one per faction: Accord, Throng
+LOOT_PER_KILL = (4.3, 9.0, 16.7, 39.0, 147.6, 239.3)  # E1 median, bands 1-6
+PACE_HOURS = 15.0
+POTIONS_PER_HOUR = 4
+POTION_PRICE = 8
+ACTIONS_PER_KILL = 4
+HITS_PER_KILL = 3
+QUALITY = 3
+# economy.md section 2 (Common slot prices) and durability_repair.md (uses).
+WEAPON = (25, 65, 160, 400, 1000, 2500)
+CHEST = (20, 50, 130, 320, 800, 2000)
+OTHER = (15, 35, 80, 200, 500, 1250)
+WEAR_USES = (1000, 1500, 2000, 2500, 3000, 4000)
+COPPER_PRICE = (25, 65, 160, 400, 1000, 2500)  # grug_quests.COPPER_PRICE
+
+# (price table index, name, level, minutes of income)
+MOUNTS = ((1, "Apprentice Riding", 15, 15), (2, "Journeyman Riding", 30, 45),
+          (3, "Expert Riding", 45, 120), (4, "Master Riding", 60, 300))
+BOATS = ((5, "Boat", 1), (6, "Improved Boat", 2))  # priced like that riding tier
+RESPEC_MINUTES = 5
+
+MOUNT_FILE = REPO / "mods" / "PLAYER" / "grug_mounts" / "catalog.lua"
+RESPEC_FILE = REPO / "mods" / "PLAYER" / "grug_classes" / "talents_ui.lua"
+
+
+def income_round(target):
+    """economy.md section 4.1: the coarsest of 1s / 25c / 5c / 1c whose
+    nearest multiple stays within 5 % of the target; midpoints round up."""
+    for step in (100, 25, 5, 1):
+        value = int(math.floor(target / step + 0.5)) * step
+        if value > 0 and abs(value - target) <= 0.05 * target:
+            return value
+    return max(1, int(math.floor(target + 0.5)))
+
+
+def quest_copper(quest):
+    rewards = quest.get("rewards") or {}
+    if isinstance(rewards.get("copper"), int):
+        return rewards["copper"]
+    weight = rewards.get("weight") or 0
+    if weight <= 0:
+        return 0
+    level = quest.get("level", 1) if isinstance(quest.get("level"), int) else 1
+    tier = max(1, min(6, (level - 1) // 10 + 1))
+    return max(1, C.round_half_up(0.08 * COPPER_PRICE[tier - 1] * weight))
+
+
+class CopperLedger(L.Ledger):
+    """The ledger's walk, also summing each quest's copper into its band."""
+
+    def run_quest(self, zone, q, acc):
+        super().run_quest(zone, q, acc)
+        acc["copper"] += quest_copper(q)
+
+
+def route_bands(design, existing, race):
+    ledger = CopperLedger(design, existing)
+    for zone, lines, levels, label in C.track_route(race):
+        band = (tuple(C.band_of_level(levels[0])[:2]) if levels
+                else L.zone_band(L.Route(), design, zone))
+        ledger.run_zone(zone, band, lines, levels, label)
+    out = []
+    for index, band in enumerate(C.BANDS):
+        lo, hi = band[0], band[1]
+        acc = ledger.per_band[(lo, hi)]
+        need = C.xp_between(lo, hi)
+        killed = max(0.0, need - acc["rewards"] - acc["gathering"])
+        out.append({"copper": acc["copper"], "kills": C.ke_between(lo, hi) * killed / need})
+    return out
+
+
+def repair_per_kill(tier):
+    armour = (CHEST[tier] + 4 * OTHER[tier]) / 5.0  # chest, head, legs, feet, offhand
+    wear = ACTIONS_PER_KILL * WEAPON[tier] + HITS_PER_KILL * armour
+    return 0.20 * QUALITY * wear / WEAR_USES[tier]
+
+
+def estimate():
+    design = C.Design(C.DEFAULT_DESIGN, C.GAME_ZONE_DIRS)
+    if design.errors:
+        raise SystemExit("design errors: " + "; ".join(design.errors))
+    existing = C.load_existing(C.DEFAULT_EXISTING)
+    routes = {race: route_bands(design, existing, race) for race in ROUTES}
+    total_ke = C.ke_between(1, C.LEVEL_CAP)
+    bands = []
+    for index, band in enumerate(C.BANDS):
+        hours = PACE_HOURS * C.ke_between(band[0], band[1]) / total_ke
+        copper = sum(routes[r][index]["copper"] for r in ROUTES) / len(ROUTES)
+        kills = sum(routes[r][index]["kills"] for r in ROUTES) / len(ROUTES)
+        loot = kills * LOOT_PER_KILL[index]
+        repair = kills * repair_per_kill(index)
+        potions = hours * POTIONS_PER_HOUR * POTION_PRICE
+        net = copper + loot - repair - potions
+        bands.append({"band": "%d-%d" % (band[0], band[1] if band[1] < 60 else 60),
+                      "routes": {r: routes[r][index] for r in ROUTES},
+                      "hours": hours, "copper": copper, "kills": kills, "loot": loot,
+                      "repair": repair, "potions": potions, "net": net, "per_hour": net / hours})
+    return bands
+
+
+def bracket(level):
+    return max(1, min(6, -(-level // 10)))
+
+
+def prices(bands):
+    mounts = {}
+    for index, name, level, minutes in MOUNTS:
+        target = bands[bracket(level) - 1]["per_hour"] * minutes / 60.0
+        mounts[index] = (name, level, minutes, target, income_round(target))
+    for index, name, reference in BOATS:
+        ref = mounts[reference]
+        mounts[index] = (name, ref[1], ref[2], ref[3], ref[4])
+    respec = [income_round(b["per_hour"] * RESPEC_MINUTES / 60.0) for b in bands]
+    respec_targets = [b["per_hour"] * RESPEC_MINUTES / 60.0 for b in bands]
+    return mounts, respec, respec_targets
+
+
+def money(copper):
+    gold, rest = divmod(int(copper), 10000)
+    silver, cu = divmod(rest, 100)
+    if gold:
+        return "%dg %ds %dc" % (gold, silver, cu)
+    if silver:
+        return "%ds %dc" % (silver, cu)
+    return "%dc" % cu
+
+
+def report(bands, mounts, respec, respec_targets):
+    out = ["# Round 29 E4 income estimate", "",
+           "Routes: %s (one per faction). Pace %.0f h to level 60 split by kill equivalents; "
+           "loot per kill = E1 band median; %d potions/h at %dc; repair %d weapon uses and %d armour "
+           "hits per kill on Uncommon gear." % (", ".join(ROUTES), PACE_HOURS, POTIONS_PER_HOUR,
+                                                POTION_PRICE, ACTIONS_PER_KILL, HITS_PER_KILL), "",
+           "| Band | Minutes | Kills (%s) | Kills/h | Quest copper (%s) | Loot/kill | Loot | Repair | "
+           "Potions | Net | Net per hour |" % (" / ".join(ROUTES), " / ".join(ROUTES)),
+           "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|"]
+    for index, b in enumerate(bands):
+        out.append("| %s | %.0f | %s | %.0f | %s | %.1fc | %.0fc | %.0fc | %.0fc | %.0fc | %.0fc |" % (
+            b["band"], b["hours"] * 60, " / ".join("%.0f" % b["routes"][r]["kills"] for r in ROUTES),
+            b["kills"] / b["hours"], " / ".join("%.0f" % b["routes"][r]["copper"] for r in ROUTES),
+            LOOT_PER_KILL[index], b["loot"], b["repair"], b["potions"], b["net"], b["per_hour"]))
+    out += ["", "| Price | Level | Income time | Target | Price |", "|---|---:|---|---:|---:|"]
+    for index in sorted(mounts):
+        name, level, minutes, target, price = mounts[index]
+        out.append("| %s | %d | %s | %.0fc | %s |" % (name, level, "%d min" % minutes if minutes < 60
+                                                       else "%g h" % (minutes / 60.0), target, money(price)))
+    for index, price in enumerate(respec):
+        out.append("| Respec, bracket %d | %d-%d | %d min | %.0fc | %s |" % (
+            index + 1, index * 10 + 1, index * 10 + 10, RESPEC_MINUTES, respec_targets[index], money(price)))
+    return "\n".join(out)
+
+
+def lua_table(path, name):
+    m = re.search(re.escape(name) + r"\s*=\s*\{([^}]*)\}", path.read_text(encoding="utf-8"))
+    if not m:
+        return None
+    return [int(x) for x in re.findall(r"\d+", m.group(1))]
+
+
+def check(mounts, respec):
+    problems = []
+    want = [mounts[i][4] for i in sorted(mounts)]
+    have = lua_table(MOUNT_FILE, "grug_mounts.PRICES")
+    if have != want:
+        problems.append("grug_mounts.PRICES is %s, the estimate gives %s" % (have, want))
+    have = lua_table(RESPEC_FILE, "grug_classes.RESPEC_PRICES")
+    if have != respec:
+        problems.append("grug_classes.RESPEC_PRICES is %s, the estimate gives %s" % (have, respec))
+    return problems
+
+
+def self_test():
+    cases = ((737, 725), (750, 750), (18, 18), (120.4, 125), (1000, 1000), (16430, 16400),
+             (97, 100), (96, 100), (95, 95), (3, 3), (0.4, 1))
+    failures = ["income_round(%s) = %s, expected %s" % (t, income_round(t), e)
+                for t, e in cases if income_round(t) != e]
+    if quest_copper({"level": 3, "rewards": {"weight": 3}}) != 6:
+        failures.append("T1 3-KE quest pays 6c")
+    if quest_copper({"level": 55, "rewards": {"weight": 3}}) != 600:
+        failures.append("T6 3-KE quest pays 6s")
+    if quest_copper({"level": 55, "rewards": {"weight": 0, "copper": 40}}) != 40:
+        failures.append("explicit copper wins")
+    for line in failures:
+        print("FAIL " + line)
+    print("R29 E4 SELF-TEST %s checks=%d" % ("FAIL" if failures else "PASS", len(cases) + 3))
+    return 1 if failures else 0
+
+
+def main(argv):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--check", action="store_true")
+    ap.add_argument("--self-test", action="store_true")
+    args = ap.parse_args(argv)
+    if args.self_test:
+        return self_test()
+    bands = estimate()
+    mounts, respec, respec_targets = prices(bands)
+    print(report(bands, mounts, respec, respec_targets))
+    if args.check:
+        problems = check(mounts, respec)
+        for line in problems:
+            print("CHECK FAIL " + line)
+        print("R29 E4 CHECK %s" % ("FAIL" if problems else "PASS"))
+        return 1 if problems else 0
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

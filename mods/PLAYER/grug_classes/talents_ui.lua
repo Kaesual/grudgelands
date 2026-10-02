@@ -5,12 +5,10 @@
 local PAGE_NAME = "grug_classes:talents"
 local META_RESPEC_USED = "grug_classes:respec_used"
 
--- COORDINATOR PLACEHOLDER: WP44 has not published its measured reliable net
--- solo income ledger yet. Replace these six already-denominated copper values
--- with the ledger's five-minute T1..T6 outputs. They deliberately mirror the
--- decided Common-weapon axis only to keep the transaction testable; they are
--- NOT presented as measured income and are a merge blocker for the coordinator.
-grug_classes.COORDINATOR_PLACEHOLDER_RESPEC_PRICES = {25, 65, 160, 400, 1000, 2500}
+-- Respec copper price per level bracket (1-10 ... 51-60): five minutes of
+-- reliable net solo income (economy.md section 4), derived and checked by
+-- tools/r29_e4/income.py (economy plan, E4). The first respec is free.
+grug_classes.RESPEC_PRICES = {15, 35, 75, 190, 700, 1200}
 
 local function esc(text)
 	return core.formspec_escape(tostring(text or ""))
@@ -25,8 +23,7 @@ function grug_classes.respec_price(player)
 	if player:get_meta():get_int(META_RESPEC_USED) == 0 then
 		return 0
 	end
-	return grug_classes.COORDINATOR_PLACEHOLDER_RESPEC_PRICES[
-		level_bracket(player)]
+	return grug_classes.RESPEC_PRICES[level_bracket(player)]
 end
 
 -- Returns true, points returned, copper charged; or false plus a refusal.

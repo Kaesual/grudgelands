@@ -92,7 +92,7 @@ end
 -- What the Riding Trainer and the Shipwright show for one tier (Round 28 ruling 19), in this
 -- order: "owned"; "level" (the character is below tier.level); "previous"
 -- (the preceding tier is not owned yet -- for a tier not owned this is the
--- same rule prerequisite_met applies); "pending" (no valid price); "buy".
+-- same rule prerequisite_met applies); "buy".
 -- Returns the state and, for "buy", the price.
 function grug_mounts.tier_state(player, tier_id)
 	local tier = grug_mounts.TIERS[tier_id]
@@ -100,9 +100,7 @@ function grug_mounts.tier_state(player, tier_id)
 	if grug_mounts.owns_tier(player, tier_id) then return "owned" end
 	if grug_xp.get_level(player) < tier.level then return "level" end
 	if not prerequisite_met(player, tier_id) then return "previous" end
-	local price = grug_mounts.price_for_tier(tier_id)
-	if not price then return "pending" end
-	return "buy", price
+	return "buy", grug_mounts.PRICES[tier_id]
 end
 
 function grug_mounts.purchase(player, tier_id)
@@ -115,9 +113,7 @@ function grug_mounts.purchase(player, tier_id)
 		return false, "Buy the preceding " .. (tier.mode == "water" and "boat" or "riding tier") .. " first."
 	end
 	if not grug_mounts.model_for(player, tier_id) then return false, "Choose a faction and race before buying a mount." end
-	local price = grug_mounts.price_for_tier(tier_id)
-	if not price then return false, tier.mode == "water" and "This boat is awaiting its price." or
-		"This tier is awaiting its measured trainer price." end
+	local price = grug_mounts.PRICES[tier_id]
 	if not grug_money.take(player, price) then return false, "You do not have enough money." end
 	player:get_meta():set_int(meta_key(tier.mode), tier_id)
 	for _, func in ipairs(owned_changed) do func(player) end

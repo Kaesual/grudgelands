@@ -9,8 +9,8 @@
 --   D. the eject seams: HP-change observer and entity on_punch, both leaving
 --      the rider in the water; disembark onto land within 2 nodes, else water;
 --   E. one mount or boat: replacement of a horse, refusal keeps the horse;
---   F. purchase gating: Shipwright rows, own faction, Price pending, levels,
---      Learn Boat first, purchase with an injected price, Skills recovery ids;
+--   F. purchase gating: Shipwright rows, own faction, levels, Learn Boat
+--      first, purchase at the shipped price, Skills recovery ids;
 --   G. Kraken speed switch: 10 in deep ocean, 5 elsewhere, leash, view range,
 --      and the switch writing the speed base while a slow runs.
 --
@@ -476,19 +476,18 @@ end
 level = 14
 eq(boat_states(), "level,level", "level 14: Requires level 15")
 level = 15
-eq(boat_states(), "pending,level", "level 15 before E4: Price pending")
+eq(boat_states(), "buy,level", "level 15: the Boat is for sale")
 level = 30
-eq(boat_states(), "pending,previous", "level 30 without the Boat: learn it first")
-ok, message = grug_mounts.purchase(bo, 5)
-check(not ok and message:find("awaiting", 1, true), "no purchase without a price")
-grug_mounts.PRICES = {200, 1500, 24000, 100000, 300, 2000}
+eq(boat_states(), "buy,previous", "level 30 without the Boat: learn it first")
+eq(select(2, grug_mounts.tier_state(bo, 5)), grug_mounts.PRICES[1], "the Boat costs like Apprentice Riding")
+eq(grug_mounts.PRICES[6], grug_mounts.PRICES[2], "the Improved Boat costs like Journeyman Riding")
 money = 100
 ok = grug_mounts.purchase(bo, 5)
 check(not ok, "not enough money")
 money = 5000
 ok, message = grug_mounts.purchase(bo, 5)
 check(ok and message == "Boat bought. Open Inventory > Skills to use it.", "Boat bought: " .. tostring(message))
-eq(money, 4700, "Boat price taken")
+eq(money, 4890, "Boat price taken")
 eq(boat_states(), "owned,buy", "Improved Boat for sale after the Boat")
 level = 29
 eq(boat_states(), "owned,level", "level 29: Requires level 30")
@@ -511,19 +510,14 @@ sockets.lethariel = {{id = "riding.shipwright", role = "shipwright", pos = {x = 
 local cy = make_player("cy", "accord", "dwarf")
 cy.pos = {x = 11, y = 5, z = 10}
 level = 30
-grug_mounts.PRICES = {200, 1500, 24000, 100000}
 check(grug_mounts.open_trainer(cy, shipwright), "own-faction Shipwright opens")
 local fs = shown[#shown].fs
 check(fs:find("label[0.4,0.4;Shipwright]", 1, true) ~= nil, "Shipwright title")
 check(fs:find("Boat (L15)", 1, true) and fs:find("Improved Boat (L30)", 1, true), "two rows")
-check(fs:find("Price pending", 1, true) ~= nil, "Price pending until E4")
+check(fs:find("buy_5;Buy 110 copper", 1, true) ~= nil, "Buy button with the price")
 check(fs:find("Learn Boat first", 1, true) ~= nil, "Learn Boat first")
 check(not fs:find("Riding", 1, true), "no riding tier in the Shipwright dialogue")
-grug_mounts.PRICES = {200, 1500, 24000, 100000, 300, 2000}
 money = 1000
-grug_mounts.open_trainer(cy, shipwright)
-fs = shown[#shown].fs
-check(fs:find("buy_5;Buy 300 copper", 1, true) ~= nil, "Buy button with the price")
 local formname = shown[#shown].formname
 for _, fn in ipairs(callbacks.fields) do fn(cy, formname, {buy_1 = true}) end
 eq(grug_mounts.highest_owned(cy, "land"), 0, "a riding tier cannot be bought at the Shipwright")

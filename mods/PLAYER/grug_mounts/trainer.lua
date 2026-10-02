@@ -72,10 +72,8 @@ function grug_mounts.trainer_formspec(rows, notice, service)
 				text = core.colorize(OWNED, "Owned")
 			elseif row.state == "level" then
 				text = core.colorize(GREY, ("Requires level %d"):format(row.level))
-			elseif row.state == "previous" then
-				text = core.colorize(GREY, "Learn " .. row.previous .. " first")
 			else
-				text = core.colorize(GREY, "Price pending")
+				text = core.colorize(GREY, "Learn " .. row.previous .. " first")
 			end
 			fs[#fs + 1] = ("label[5.0,%.2f;%s]"):format(y, esc(text))
 		end

@@ -4,11 +4,11 @@ grug_mounts.WARNING_WIDTH = 48
 -- One source of truth: full-world preparation sizes its columns from it.
 grug_mounts.FLIGHT_CEILING = grug_core.FLIGHT_CEILING
 
--- WP44 replaces these coordinator placeholders with the measured 15 min,
--- 45 min, 2 h and 5 h income values. The two boats (tiers 5 and 6) have no
--- price until economy lane E4 sets one; the Shipwright shows "Price pending".
-grug_mounts.COORDINATOR_PLACEHOLDER_PRICES = {200, 1500, 24000, 100000}
-grug_mounts.PRICES = grug_mounts.COORDINATOR_PLACEHOLDER_PRICES
+-- Copper price per tier: the four riding tiers at 15 min, 45 min, 2 h and
+-- 5 h of reliable net solo income at their level, the Boat like Apprentice
+-- and the Improved Boat like Journeyman Riding (economy.md section 4.2).
+-- Derived and checked by tools/r29_e4/income.py (economy plan, E4).
+grug_mounts.PRICES = {110, 700, 16300, 73300, 110, 700}
 
 grug_mounts.TIERS = {
 	[1] = {id = 1, key = "apprentice", name = "Apprentice Riding",
@@ -213,10 +213,3 @@ function grug_mounts.model_for(player, tier_id)
 	return nil
 end
 
-function grug_mounts.price_for_tier(tier_id)
-	local price = grug_mounts.PRICES[tier_id]
-	if type(price) ~= "number" or price <= 0 or price % 1 ~= 0 then
-		return nil
-	end
-	return price
-end
