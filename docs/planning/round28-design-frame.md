@@ -79,9 +79,10 @@ per zone.
   `front`, for the front lane; the front lane writes those quests into
   `zones/<host_zone>.front.quests.json` (§4.7). Contested zones with a
   single quest NPC (Glassroot Wilds, Thunderroot Wilds) are exempt.
-- **Islands (60):** not part of leveling; reachable with flying mounts (from
-  level 45, no boats yet, WP17); endgame content with coin and material
-  incentives.
+- **Islands (60):** not part of leveling; endgame content with coin and
+  material incentives. Both islands and their water channels forbid flight
+  (`mounts.md` §4.2); boats are the designed access (WP17, planned for
+  Round 29). Island quests must not promise or assume flying.
 - **Quests may point into any zone of the own faction from 20 on, and into
   shared zones; never into another race's 11–20 zone** (Ruling 44).
 

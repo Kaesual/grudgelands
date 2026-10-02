@@ -27,7 +27,12 @@ is enabled. Not yet re-run on 0.159.3: `workspace-write` with the writable
 roots, `resume`, and image generation inside `exec`; the first Astra lane of
 Round 28 re-verifies them. Never use reasoning effort `ultra`: the model
 cache describes it as automatic task delegation, which breaks "a worker never
-delegates".
+delegates". 2026-10-02: two pitfalls reported by another Claude orchestrator
+were added (2.1, 2.2, §5). The worktree metadata name was re-checked in this
+repository (folder `agent-a8a25333ca242e35c`, branch `r28-w1-world`, metadata
+`.git/worktrees/agent-a8a25333ca242e35c`, git 2.55); the immediate move of
+Claude Code's working directory after a `cd` is that agent's finding and was
+not re-measured here.
 
 ## 1. Roles and invariants
 
@@ -96,10 +101,14 @@ worker runs.
   lives under the main checkout's `.git`, so `git commit` fails with
   `index.lock: Read-only file system` unless
   both `/home/jan/projects/grudgelands/.git` (object store and refs are
-  shared) **and** the lane's own `.git/worktrees/<branch>` directory are
-  writable roots (measured: with `.git` alone the worktree directory stays
-  read-only and `index.lock` fails; with `.git/worktrees` alone it fails
-  too);
+  shared) **and** the lane's own metadata directory under `.git/worktrees/`
+  are writable roots (measured: with `.git` alone the worktree directory
+  stays read-only and `index.lock` fails; with `.git/worktrees` alone it fails
+  too). Git names that metadata directory after the **basename of the
+  worktree folder**, not after the branch (and appends a number when the name
+  is taken), so never build either path by hand: query both from the lane
+  with `git -C "$wt" rev-parse --path-format=absolute --git-common-dir
+  --git-dir` (2.2). Both directories already exist; do not `mkdir` them;
   and `flatpak run` fails with `Unable to allocate instance id` unless
   `$XDG_RUNTIME_DIR/.flatpak` is writable. Never use
   `--dangerously-bypass-approvals-and-sandbox` for a lane; the worktree plus
@@ -110,9 +119,12 @@ worker runs.
 ```bash
 wt=/home/jan/projects/grudgelands/.claude/worktrees/<lane>   # own branch
 out=<scratchpad>/<round>/<lane>                               # brief.md lives here
+git_common="$(git -C "$wt" rev-parse --path-format=absolute --git-common-dir)"
+git_dir="$(git -C "$wt" rev-parse --path-format=absolute --git-dir)"  # .git/worktrees/<folder>, not <branch>
+roots="[\"/run/user/1000/.flatpak\",\"$git_common\",\"$git_dir\"]"
 codex exec -C "$wt" -s workspace-write \
   -c sandbox_workspace_write.network_access=true \
-  -c 'sandbox_workspace_write.writable_roots=["/run/user/1000/.flatpak","/home/jan/projects/grudgelands/.git","/home/jan/projects/grudgelands/.git/worktrees/<branch>"]' \
+  -c "sandbox_workspace_write.writable_roots=$roots" \
   -m gpt-5.6-sol -c model_reasoning_effort=high \
   --json -o "$out/last.md" - \
   < "$out/brief.md" > "$out/events.jsonl" 2> "$out/stderr.log"
@@ -128,8 +140,14 @@ codex exec -C "$wt" -s workspace-write \
 - Launch from the orchestrator's command runner **in background mode** (the
   harness reports the exit) and never with a trailing `&` inside a
   short-lived shell. Never `cd` into the worktree in the orchestrator's own
-  shell; use `-C` for Codex and `git -C` for inspection, otherwise removing
-  the worktree later leaves the orchestrator with a dead working directory.
+  shell, not even once for a test run: Claude Code moves its primary working
+  directory there immediately (the environment then reports "This is a git
+  worktree … Do NOT cd to the original repository root"), every later
+  relative command runs in the lane instead of the main checkout, and
+  removing the worktree later leaves the orchestrator with a dead working
+  directory. Use `-C` for Codex, `git -C` for inspection, or a subshell
+  `( cd "$wt" && … )` as in 2.4. If it happened anyway, `cd` back to the main
+  checkout with an absolute path at once and check `pwd`.
 - Up to eight lanes may run in parallel (host rule); each lane's Luanti
   server runs under `nice -n 19` on the lane's own port block.
 
@@ -181,7 +199,7 @@ context:
 (cd "$wt" && codex exec resume --all "$thread_id" \
   -c sandbox_mode=workspace-write \
   -c sandbox_workspace_write.network_access=true \
-  -c 'sandbox_workspace_write.writable_roots=["/run/user/1000/.flatpak","/home/jan/projects/grudgelands/.git","/home/jan/projects/grudgelands/.git/worktrees/<branch>"]' \
+  -c "sandbox_workspace_write.writable_roots=$roots" \
   --json -o "$out/fix.md" - < "$out/fix-brief.md" > "$out/fix.jsonl" 2>> "$out/stderr.log")
 ```
 
@@ -194,7 +212,8 @@ through relative paths (measured; killed within a minute, no damage). So
 the resume is launched from a subshell that `cd`s into the worktree, which
 leaves the orchestrator's own shell where it was. The sandbox is set
 through `-c sandbox_mode=...`; `--all` disables the cwd filter on the
-session list.
+session list. `$roots` is computed exactly as in 2.2; shell variables do not
+survive between the runner's calls, so recompute it before the resume.
 
 `codex exec resume --last` picks the most recent session and is only safe
 when one lane runs at a time.
@@ -299,6 +318,7 @@ with a correction.
 | Network or stream error on launch from Claude | command-runner sandbox | rerun through the unsandboxed runner capability |
 | Claude reports the API as offline when launched from Codex | Claude sandbox | escalated runner (claude-cli-review.md) |
 | Orchestrator shell reports `getcwd` failure after cleanup | it had `cd`-ed into a removed worktree | never `cd` into worktrees; `-C` / `git -C` |
+| Orchestrator's relative commands suddenly run in a lane; the environment reports "This is a git worktree … Do NOT cd to the original repository root" | a single `cd "$wt"` in the orchestrator's own shell; Claude Code moves its primary working directory at once, not only after `git worktree remove` | never `cd` into worktrees: `-C`, `git -C` or `( cd "$wt" && … )`; if it happened, `cd /home/jan/projects/grudgelands` at once and check `pwd` (reported 2026-10-02) |
 | `resume --last` picks the wrong lane | several lanes ran | resume by saved `thread_id` / `--session-id` |
 | `codex exec resume`: "unexpected argument '-C'" | `resume` has no `-C`/`-s` | `--all <thread_id>` plus `-c sandbox_mode=...` (2.4) |
 | Resumed worker edits the main checkout | `resume` runs in the orchestrator's cwd | `(cd "$wt" && codex exec resume ...)` (2.4) |
@@ -306,7 +326,8 @@ with a correction.
 | Review launched on a worktree with an unfinished merge | orchestrator merged `main` into the lane and did not check for conflicts first | after `git -C "$wt" merge main` require `git -C "$wt" diff --name-only --diff-filter=U` to be empty before any launch |
 | Codex stderr: `failed to renew cache TTL: missing field supports_parallel_tool_calls` | models-cache format of this CLI build | harmless noise; the lane keeps producing events |
 | Orphaned `luanti.bin --server` after a lane | worker killed mid-run | kill by PID, then `pgrep -f '^luanti.bin'` |
-| `git commit` in a worktree: `index.lock: Read-only file system` | worktree metadata lives under the main checkout's `.git` | writable roots `<repo>/.git` AND `<repo>/.git/worktrees/<branch>` (2.1) |
+| `git commit` in a worktree: `index.lock: Read-only file system` | worktree metadata lives under the main checkout's `.git` | writable roots `<repo>/.git` AND the lane's metadata dir, both from `git -C "$wt" rev-parse --path-format=absolute --git-common-dir --git-dir` (2.1, 2.2) |
+| `bwrap: Can't write data to file …: Bad file descriptor`, or `index.lock: Read-only file system` although both git roots are listed | the second root was built by hand as `.git/worktrees/<branch>`; git names it after the worktree folder's basename, so it does not exist (or `mkdir -p` created an empty decoy) when folder and branch names differ | query both roots with `rev-parse` (2.2); never build or `mkdir` them (re-checked 2026-10-02: folder `agent-a8a25333ca242e35c`, branch `r28-w1-world`) |
 | Headless boot: `Unable to allocate instance id` | Flatpak cannot write `$XDG_RUNTIME_DIR/.flatpak` | writable root `$XDG_RUNTIME_DIR/.flatpak` (2.1) |
 | Fresh worktree has no `tools/bin/lua51` or `tools/bin/luac51` | `tools/bin/` is gitignored | immediately after `git worktree add`, copy both binaries from the main checkout into the lane's `tools/bin/` |
 | `resume` with an empty id reports "direct app-server input is not allowed for multi-agent v2 sub-agents" and does nothing | the first JSONL record's `thread_id` was not saved | extract and persist `thread_id` immediately after launch; never construct a resume before it is non-empty |
@@ -314,7 +335,7 @@ with a correction.
 | A Codex review ends with `turn.failed: Selected model is at capacity` and produces no report | the selected model had no available capacity; this is not a review verdict | relaunch the review and require a real report before continuing (measured 2026-09-18) |
 | A lane that edits `start_npcs.lua` or `AGENTS.md` conflicts when the orchestrator merges it | another concurrent lane changed the shared file first | merge `main` into that lane before its review and resolve the conflict there, so the reviewer sees the integrated result (measured 2026-09-18) |
 | `git worktree remove` refuses: "Arbeitsverzeichnisse, die Submodule enthalten, können nicht ... entfernt werden" | the worktree carries the reference_projects submodule directories | `git worktree remove --force --force <dir>` after confirming `git -C <dir> status --porcelain` is empty and the branch is merged |
-| Every command in a Codex lane fails before it runs: `bwrap: Can't write data to file /tmp/<dir>: Bad file descriptor`; the worker reports a broken environment and stops | a `sandbox_workspace_write.writable_roots` entry names a directory that does not exist yet | create every writable root (`mkdir -p`) before the launch; the sandbox does not create them (measured 2026-09-18, five lanes lost their first run) |
+| Every command in a Codex lane fails before it runs: `bwrap: Can't write data to file /tmp/<dir>: Bad file descriptor`; the worker reports a broken environment and stops | a `sandbox_workspace_write.writable_roots` entry names a directory that does not exist yet | create every non-git writable root (`mkdir -p`) before the launch; the sandbox does not create them (measured 2026-09-18, five lanes lost their first run). The git roots already exist and come from `rev-parse` (2.2); a `mkdir -p` on a wrong git path only hides the error |
 | A lane's final commit adds its report (`last.md`) to the repository root | the worker wrote its `-o` report a second time into the worktree and committed it | the brief says explicitly that reports go to the `-o` path only; on review, remove the file from the branch (measured 2026-09-18: two of three implementation lanes did this) |
 | A worker reports "independent review … verdict MERGE" for its own lane | the worker launched a Codex review and fix round itself | the brief says explicitly "never launch Codex, Claude or any agent yourself; the orchestrator reviews"; the orchestrator's review still runs and is the review of record (measured 2026-09-18) |
 | Orchestrator gate run on one worktree fails its headless boot with `Failed to bind socket` while another gate run is alive | two `gates.sh` runs shared one `PORT` | give every concurrent gate run its own port; rerun only the boot on a free port to confirm |
