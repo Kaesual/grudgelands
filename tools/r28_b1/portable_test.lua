@@ -435,13 +435,17 @@ do
 		"listed critter keeps its row")
 	check(NEW.spawn_policy_allows("grug_mobs:gull", {x = x0 + 5, y = 10, z = 102}) == false,
 		"unlisted critter refused")
-	-- Rift Spawn keeps its row in a recipe zone (Round 28 S2c), at its clock.
+	-- Rift Spawn keeps its row (Round 28 S2c) in the recipe zones whose
+	-- palette carried it, at its clock; never in the others (Dawnmere).
+	local gx = ZONE_X.front_gravesalt_escarpment
 	new_world.time = 0.0
-	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == true,
-		"Rift Spawn keeps its row in a recipe zone at night")
-	new_world.time = 0.5
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == true,
+		"Rift Spawn keeps its row in Gravesalt at night")
 	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == false,
-		"Rift Spawn keeps its night clock in a recipe zone")
+		"no Rift Spawn in Dawnmere, whose palette never had it")
+	new_world.time = 0.5
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == false,
+		"Rift Spawn keeps its night clock in Gravesalt")
 	check(NEW.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}) ==
 		OLD.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}),
 		"underground unchanged in a recipe zone")

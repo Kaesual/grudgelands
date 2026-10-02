@@ -126,8 +126,9 @@ table order.
    next region).
 
 Unchanged by regions: underground and water spawns, the Rift Spawn's
-surface row (on its host ground at night, as before), rares, vendors,
-guards, the mapgen.
+surface row (on its host ground at night, in the four zones whose palette
+had it: Gravesalt, Skyglass and both islands), rares, vendors, guards, the
+mapgen.
 
 ## The recipe
 

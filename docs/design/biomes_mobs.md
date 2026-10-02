@@ -1115,8 +1115,9 @@ gate, protected surface).
 - **Trigger:** a zone without a recipe keeps its palette and the level field
   exactly as before. A zone with a recipe spawns its surface mobs only from
   its regions: its ABM rows keep only the recipe's critters (the Gull with
-  its beach host) and the Rift Spawn's surface row (its host ground and
-  night clock; the catalogue keeps its spawning, Round 28 S2c); shore crabs
+  its beach host) and, in Gravesalt, Skyglass and both islands (the zones
+  whose palette had it), the Rift Spawn's surface row with its host ground
+  and night clock (the catalogue keeps its spawning, Round 28 S2c); shore crabs
   and every other surface row are refused there.
   Unchanged everywhere: underground rows and their depth level, water rows
   and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
