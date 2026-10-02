@@ -58,7 +58,9 @@ content requirements remain explicitly separate from delivered behavior.
   `max(zone budget, old population of the species at the point)`:
   - the zone budget is **15 by day, 23 by night** = 1.5 × the pre-Round-24
     median area population (10 / 15, measured per land column on the
-    biome-top hosts; `tools/r24_density_xp/fixture.lua`), times an optional
+    biome-top hosts by the Round 24 density fixture, retired in Round 30
+    because no zone keeps a palette cast since the Round 28 spawn recipes;
+    git history keeps it), times an optional
     per-zone multiplier `grug_mobs.ZONE_DENSITY` for later tuning;
   - the old population is the sum of those species' Round 16 caps (row cap ×
     1.3, rounded; × 5/4, rounded up, at night), so no point and no zone gets
