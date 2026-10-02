@@ -49,16 +49,16 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "Still Using Those Shoulders",
-      "text": "Kill eight Mesa Vultures by day along the {name:ridges}, {zone_area:ridges}; our grass cutters are coming home with pecked shoulders and a whole new respect for hats. Tell those birds my cutters are still using their shoulders, if you think they will listen.",
+      "title": "Still Using Those Ankles",
+      "text": "Kill eight Dust-Stinger Scorpions after dark on the {name:plains}, {zone_area:plains}; they burrow into the cut grass and our cutters come home limping and swearing at every shadow. Tell those scorpions my cutters are still using their ankles, if you think they will listen.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
-            "dustwing_vulture"
+            "dust_stinger"
           ],
           "count": 8,
-          "area": "kragmar_speargrass_reach/ridges"
+          "area": "kragmar_speargrass_reach/plains"
         }
       ],
       "rewards": {

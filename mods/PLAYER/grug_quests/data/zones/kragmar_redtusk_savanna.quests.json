@@ -314,7 +314,7 @@
         "redtusk_watch_01"
       ],
       "title": "Footprints That Never Rest",
-      "text": "Those Pauper Mummies tramp through the {name:ashbluffs}, {dir_of:redtusk_outpost:ashbluffs}, day and night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
+      "text": "Those Pauper Mummies tramp through the {name:borderveld}, {dir_of:redtusk_outpost:borderveld}, every night without resting. Kill six before they wander onto our supply trails; I would like one watch where every footprint belongs to something breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -322,7 +322,7 @@
             "parched_husk"
           ],
           "count": 6,
-          "area": "kragmar_redtusk_savanna/ashbluffs"
+          "area": "kragmar_redtusk_savanna/borderveld"
         }
       ],
       "rewards": {
