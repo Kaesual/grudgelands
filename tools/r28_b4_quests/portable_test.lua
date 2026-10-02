@@ -617,6 +617,14 @@ do
 	quest_of(files, "fx_hunt_01").level = 9
 	_, warnings = V.world(files, loader_world)
 	eq(about(warnings, "fx_hunt_01"), 0, "the zone's leader counts as spawned")
+	-- A leader of another zone (a front file names the front's leaders from
+	-- its host zone): it stands at its own spot, so it counts as spawned too.
+	local elsewhere = setmetatable({leader = function(role)
+		local row = loader_world.leader(role)
+		return row and {zone = "front_shattered_line", level = row.level, respawn = row.respawn}
+	end}, {__index = loader_world})
+	_, warnings = V.world(files, elsewhere)
+	eq(about(warnings, "fx_hunt_01"), 0, "another zone's leader counts as spawned")
 	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
 	-- regions, so the recipe check skips them.
 	files = deep_copy(base_files)

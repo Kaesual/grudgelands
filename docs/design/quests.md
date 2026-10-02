@@ -158,8 +158,9 @@ instead of 2.
   by where it died. A named leader stands at a rule-placed spot without an
   area; its kill objective names no area. In a zone with a spawn recipe only
   the recipe's roles appear on the surface; a kill objective there whose
-  roles the recipe never spawns is reported as a load-time warning
-  (W-recipe-target). Critters
+  roles the recipe never spawns and none of which is a leader (a leader of
+  any zone counts: a front file names the front's leaders) is reported as a
+  load-time warning (W-recipe-target). Critters
   are never kill targets (Ruling 29), nor rares (Ruling 38). The split older
   quests keep entity names (`mobs`) and an optional named-zone filter
   (`zone`, matched at the death position), and some of them ask for enemy
