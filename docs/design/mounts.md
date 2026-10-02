@@ -6,7 +6,7 @@ front, 2026-09-18 for the Round-9 entity, border and safety rules, and
 
 Neighbouring rules: the named-zone faction front `world_zones.md`, travel plus
 ocean/dragon-island integration in `world.md`, the complete open-world Claim
-Stone contract in `housing.md`, the playable-boat contract in
+Stone contract in `housing.md`, boats as the water mode in
 `boats.md`, the four mastery names in `items_crafting.md` §2.1,
 universal skills `professions.md` §1, the mob speed pillar
 `combat_stats.md` §3 and the pursuit rules of `combat_stats.md` §4 and its
@@ -138,6 +138,12 @@ arbitrary fixed-price wall.
 
 ## 3. What a mount is, mechanically
 
+Boats are the third movement mode, **water**, next to land and flight
+(`boats.md`, 2026-10-02): two boat tiers with the same owner-bound item,
+Skills recovery, ephemeral entity, eject and teardown rules as this section,
+sold by the Shipwright instead of the Riding Trainer and summoned only in
+water. Flight and its geography (§3.2, §4) do not apply to them.
+
 - **Mounts are bought, never tamed.** Taming was considered and
   **rejected**: there is no taming design, and the vendored mobs_redo's
   taming items (`mobs:saddle`, `mobs:lasso`, `mobs:net`) and its other
@@ -177,13 +183,15 @@ arbitrary fixed-price wall.
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
 - While mounted, the status icon row (`inventory_equipment.md` §5) shows a
-  land or flight mount icon with an empty caption (no countdown); the tier
+  land, flight or boat icon with an empty caption (no countdown); the tier
   name and speed bonus (for example "+60% speed") appear on the Character
   page's Effects tab. This is
   runtime-only UI state, supplies no movement modifier and is cleared by the
   shared dismount path.
-- Only one active mount entity may exist per player. Using the active mount item
-  again dismounts. Every dismount removes the ephemeral entity; no horse or
+- Only one active mount entity (mount or boat) may exist per player. Using the
+  active mount item again dismounts. Using another owned tier's item replaces
+  the active mount when that tier may be summoned there; otherwise the active
+  mount stays and the refusal is shown. Every dismount removes the ephemeral entity; no horse or
   flying creature remains parked in the world, and the unchanged item was in
   the inventory throughout.
 - **Mount speed is the entity's velocity, never

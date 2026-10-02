@@ -1,176 +1,153 @@
 # Boats — Water Travel, Ocean Danger and the Dragon Islands
 
-Decided 2026-08-13. **Nothing here is built yet**: this file is the spec a
-later work package implements, not a description of shipped behaviour. It
-replaces `TODO-design-boats.md`, which is deleted.
+Decided 2026-08-13; revised 2026-10-02 by the WP17 travel plan
+([travel-boats-waypoints-plan.md](../planning/travel-boats-waypoints-plan.md),
+rulings 1–8 and the confirmed defaults of §1.1), which retired the placed,
+craftable and decaying boat. Implemented in Round 29 (lane B) in
+`mods/PLAYER/grug_mounts`.
 
-Neighbouring rules: ocean classes and deep-sea danger in `world.md` §2b, the
-authored channel geometry and both offshore islands in `world_zones.md` §7 and
-§9.4, waypoints and home travel in `world.md` §6, riding in `mounts.md`, the
-two recipes in `items_crafting.md` §3.0.5 and the Kraken Guard in
-`biomes_mobs.md` §3.
+Neighbouring rules: ocean classes and the Kraken Guard's pursuit in `world.md`
+§2b, the authored channel geometry and both offshore islands in
+`world_zones.md` §7 and §9.4, waypoints and home travel in `world.md` §6, the
+mount contract this file reuses in `mounts.md` §3, and the Kraken Guard's
+values in `biomes_mobs.md` §3.1.
 
-## 1. Two boats, and who may build them
+## 1. A boat is a water mount
 
-- **The base boat is a universal base recipe** (`items_crafting.md` §3.0.3):
-  five `group:wood`, craftable by every character from level 1. No trainer,
-  vendor, quest, level or profession is involved. Water travel is not a
-  reward and the sea is not a gated resource.
-- **The improved boat** is built from one base boat plus universal T4
-  materials, and it is the one gated part of water travel: a character learns
-  it once from a **shipwright** (§2), from character level 30.
-- **Boat building belongs to no profession.** It consumes neither of the two
-  main profession slots (`professions.md` §1), and it is not a universal
-  skill with a trainer ladder like Cooking, First Aid or Riding. The
-  improved-boat unlock is a single permanent per-character flag in player
-  meta, in the same spirit as the riding steps of `mounts.md` §1.
-- Player-facing, that flag is one entry named **Improved Boat**, and it gates
-  **both crafting and driving** it. A character without the flag may still
-  carry, trade, place and pick up an improved boat but cannot sit in one; the
-  base boat is never affected. *Rationale*: the item is craftable and
-  tradeable, so gating only the recipe would let one taught player hand the
-  level-30 speed to a whole starting zone.
+- **Boats work exactly like mounts** (ruling 1). `grug_mounts` has three
+  movement modes — land, flight and **water** — and two water tiers: the
+  **Boat** (tier 5) and the **Improved Boat** (tier 6). One active mount *or*
+  boat per player.
+- Each bought boat is an **owner-bound skill item**: `stack_max = 1`, group
+  `grug_bound_skill`, owner metadata, deleted when dropped, never traded or
+  stored outside the character's own main inventory and bags. Ownership is
+  the per-character metadata `grug_mounts:water_tier` (highest owned boat);
+  the item is only its representation and is recovered manually from the
+  Skills page, like a riding tier. Buying the Improved Boat keeps the Boat.
+- **An empty boat never exists in the world.** Using the item creates an
+  ephemeral boat entity with the player seated in it; using it again removes
+  it. There is no placing, pickup, decay timer, theft, ownership window or
+  boat persistence. A boat has no inventory, no passenger seat and no mob or
+  NPC seat.
+- Using another tier's item while mounted or boating **replaces** the active
+  mount or boat when that tier may be summoned at that spot; otherwise the
+  current one stays and the refusal is shown. Using the active tier's item
+  dismounts or disembarks.
+- A boating player cannot use abilities, casts or combat swings (the mount
+  block, `mounts.md` §3).
 
-*Rationale*: the two dragon islands are reachable only by boat
-(`world_zones.md` §6), and both apex camps are one of the three decided
-routes to the opposing faction's exclusive G2 gem (`world_zones.md` §11). A
-purchase price, profession or high level gate in front of a boat would put a
-paywall in front of a content pillar and in front of a resource-parity
-guarantee. The gate that remains is geography: the mainland ends of both
-channels lie in level-51–60 contested zones.
+*Rationale:* one lifecycle instead of two; no litter, no decay timer, no
+theft or pickup rules and no item/entity persistence.
 
-## 2. The shipwright
+## 2. The Shipwright
 
-- **Exactly one shipwright per continent.** Each lives in the mandatory
-  village (**V**) of a peaceful level-21–30 zone with inland water (rivers
-  and lakes from the terrain's drainage, Round 22 Phase 5):
-  **Whitebridge Shire** (`elandor_whitebridge_shire`) for the Accord and
-  **Whispering Reedlands** (`kragmar_whispering_reedlands`) for the Throng.
-  Both sit on the lateral capital axis of their continent and are reachable
-  from all three of that faction's races over peaceful roads
-  (`world_zones.md` §9.2), so the two faction routes stay equivalent.
-- The shipwright is an ordinary **passive, invulnerable service NPC**, not a
-  trainer role and not a vendor: he sells nothing and buys nothing.
-- **The teaching transaction** is one exchange, repeatable never: a character
-  of level 30 or higher hands over exactly the ingredients of one improved
-  boat (§4). They are consumed, the character permanently gains the Improved
-  Boat unlock, and the shipwright hands back **one finished improved boat** —
-  he demonstrates the build rather than selling a lesson. A character below
-  level 30, or without the full ingredients, is refused and loses nothing.
-- His plot carries **one improved boat on display as scenery**, on a
-  slipway or trestle at the plot. The village keeps its fixed position and
-  need not border water: inland water is laid out per world seed, and the
-  nearest river or lake usually lies a few dozen nodes away (Round 22
-  Phase 5). The display boat cannot be entered, driven or collected, and it
-  is not a spawned boat entity that decays under §3. The shipwright, his
-  plot and the display boat form one **bounded functional anchor**:
-  `world.md` §2 R1
-  hard-protects "small functional NPC anchors" with an exact authored
-  footprint, and this is one of them. The village's building
-  core is a protected POI box and the rest of its shell stays mutable, like
-  every other village (`world.md` §2 R1b).
+- **One Shipwright in every capital** (ruling 4), at the shared capital stable
+  beside the Riding Trainer (socket role `shipwright` in the stable design).
+  He is a passive, invulnerable service NPC; he sells the two boats and
+  nothing else, and buys nothing.
+- **Boat from character level 15, Improved Boat from level 30 (requires the
+  Boat)** (ruling 3), each for a copper price set by the economy plan (lane
+  E4; references: the Apprentice and Journeyman Riding prices). No
+  materials, no recipe, nothing at character creation.
+- His dialogue uses the Riding Trainer format (`mounts.md` §1): two rows,
+  each **Owned**, a **Buy <price>** button, greyed **Requires level N**,
+  greyed **Learn Boat first** or greyed **Price pending** while a boat has no
+  price. A purchase result shows in the flash line and in the reopened
+  dialogue. Only characters of the capital's own faction are served (the same
+  check as the Riding Trainer).
+- The former one-per-continent shipwright in a level-21–30 village is retired;
+  the two village display hulls (Whitebridge Market Close, Whisperreed
+  Landing) stay as plain scenery.
 
-## 3. What a boat is, mechanically
+*Rationale:* players come to the capital for riding at 15 anyway, so both
+travel unlocks arrive on the same trip, and no race has to cross into another
+race's region for a boat. Players stay in their starting region at first and
+are not nudged into travelling by owning a boat.
 
-- **A boat is an inventory item that becomes a world entity when placed on a
-  water surface, and an item again when picked up.** It has no owner: the
-  item carries no player binding, and boats are freely tradeable and
-  droppable like any other item.
-- **Placing and picking up a boat is free for everyone**, independent of
-  level and of the Improved Boat unlock. A character who cannot drive an
-  improved boat may still carry, place, hand over and pick up one.
-- **Exactly one player per boat, and only players.** A boat carries no
-  passenger, no second seat and **no mob or NPC**. Storing a creature in a
-  boat — the VoxeLibre pattern, where anything with a Lua entity may be
-  seated (`reference_projects/VoxeLibre/mods/ENTITIES/mcl_boats/init.lua`) —
-  does not exist in this game and must not be ported.
-- **A boat with a driver may be picked up only by that driver.** An empty
-  boat may be picked up by anyone. There is no theft protection beyond that,
-  and none is intended: a base boat costs five wood.
-- **A boat has no inventory.** Nothing is stored in it and nothing can be
-  lost with it.
-- **An unused boat disappears after 24 hours.** The timer is persistent
-  wall-clock time, it restarts whenever a player drives the boat, and expiry
-  deletes the entity without dropping an item. This is the whole anti-litter
-  rule; boats are cheap enough that recovery is a rebuild.
-- **Death, logout and server shutdown detach the player.** The boat stays
-  where it is and starts its 24-hour timer; the player always returns to
-  land on foot.
-- **A boat is an entity, not a node.** Placing one modifies no terrain, so it
-  is legal on every water surface the player can reach — including immutable
-  deep ocean, the dragon channels and Battlegrounds water. Terrain protection
-  never blocks a boat, and a boat never makes protected water editable.
+## 3. Summoning and leaving the water
 
-## 4. Recipes
+- **A boat can be summoned only in water** (ruling 5): the player's feet are
+  in a `group:water` node — normal or river water, source or flowing. Every
+  water body works: rivers, lakes, bays, shelf, deep ocean, channels. There
+  are no docks.
+- The boat appears on the surface of that water column, centred on its water
+  node, with the player seated in it. A column whose surface lies more than 16
+  nodes above the player, or whose surface is closed (ice, a roof), refuses
+  with a message.
+- Summoning is also refused in combat (`grug_core.in_combat`) and while dead.
+- **A boat that loses contact with water disappears** (ruling 8). Once per
+  second each active boat checks its own node and the node below for
+  `group:water`; if neither is water, the boat is removed and the rider
+  disembarks where the boat was. This covers waterfalls, dug-out water and
+  every other way off the water.
+- **Disembarking** removes the boat and places the player on the nearest free
+  land cell within 2 nodes (a dry, solid floor and two open cells above it),
+  otherwise in the water at the boat's position.
+- **Death, logout and server shutdown** disembark exactly as mounts dismount;
+  every reconnect starts in the water or on foot, never in a boat.
+- A boat is an entity, not a node: it modifies no terrain, so it is legal on
+  every water surface the player can reach, including immutable deep ocean,
+  the dragon channels and Battlegrounds water. Terrain protection never blocks
+  a boat, and a boat never makes protected water editable.
 
-Both recipes are ordinary 3×3 grid recipes and live in `items_crafting.md`
-§3.0.5. The base boat is a universal base recipe; the improved boat is
-craftable only with the Improved Boat unlock.
+## 4. Status display
+
+While boating, the status icon row shows the boat icon (`mount` status,
+variant `water`) with an empty caption; the Character page's Effects tab
+shows the tier name and its speed ("4 nodes/s on water").
 
 ## 5. Movement
 
-- **Base boat 4 nodes/s, improved boat 8 nodes/s** on the water surface.
-  Both numbers are the decided anchors of the land ladder read onto water:
-  4 is the player's own walking speed
+- **Boat 4 nodes/s, Improved Boat 8 nodes/s** on the water surface. Both
+  numbers are the anchors of the land ladder read onto water: 4 is the
+  player's own walking speed
   (`reference_projects/luanti/src/defaultsettings.cpp:520`), and 8 is the
-  fast land mount of `mounts.md` §1.1 — which unlocks at the same character
-  level 30. Rowing therefore never beats walking and the improved boat
-  matches, but never exceeds, its land contemporary.
+  fast land mount of `mounts.md` §1.1, which unlocks at the same character
+  level 30.
 - **Speed is the boat entity's velocity, never `physics_override.speed`** —
   the same rule and the same reason as `mounts.md` §3: that field has exactly
-  one owner, the `grug_core` movement aggregator (ruling 11, 2026-09-16), and
-  must not gain a second.
-- The player attaches to the boat, steers with the ordinary movement
-  controls, and accelerates and brakes rather than snapping to top speed.
-- Boats move on water only. They have no currents to fight, no fuel and no
-  docking rules: a landing is simply the player leaving the boat.
+  one owner, the `grug_core` movement aggregator.
+- Steering uses the mount controls: forward and A/D strafe relative to the
+  camera at full speed, reverse at 35%. The boat accelerates and brakes
+  toward the requested velocity at 1.5 × its speed per second instead of
+  snapping to it.
+- The boat floats with its origin on the water surface and rises when it is
+  below the surface. It has step height 0 and a hull box that reaches above a
+  one-node bank, so it cannot drive onto land; the box is narrower than one
+  node, so it fits every channel.
+- Boats have no currents, fuel or docking rules.
 
 ## 6. Damage: any hit ejects the rider
 
 - **Any incoming damage ejects the player from the boat, immediately, in PvE
-  and PvP alike** — the same rule as `mounts.md` §3.1 and for the same
-  reason: escaping must not become free. The boat is not destroyed. It stays
-  floating where it was, and the player may re-enter it if they survive long
-  enough to reach it.
-- **Boats have no hit points and are never destroyed by damage.** No player,
-  mob or environmental effect can sink one; the only way a boat leaves the
-  world is a pickup or the 24-hour decay.
-- **Implementation seam, and the one engine fact this rule depends on:**
-  mobs_redo punches *what the player is attached to*
-  (`mods/ENTITIES/mobs/api.lua:2808-2813`,
-  `local target = self.attack:get_attach() or self.attack`), so a mob's melee
-  swing lands on the boat entity and the player loses no HP from it. That one
-  swallowed swing is what ejects them; every later swing hits the player
-  normally. Damage that targets the player directly — our own PvP pipeline,
-  projectiles, drowning, environment — never touches the boat. The eject
-  therefore needs **two** hooks: the boat entity's `on_punch` and the central
-  HP-change hook in `grug_core`.
-- **Consequence, accepted:** one hit from an enemy player separates a driver
-  from their boat, and the now-empty boat may be picked up by anyone. On the
-  open sea that can be fatal. PvP on water is voluntary — deep-ocean and
-  channel columns never force the tag (`world_zones.md` §15.1) — and a
-  replacement boat is five wood, so no grace period, ownership window or
-  recovery mechanism is introduced for this case.
+  and PvP alike** — the same rule and reason as `mounts.md` §3.1: escaping
+  must not become free. The boat vanishes; the player is in the water where
+  the boat was. Re-summoning then waits for the five-second combat window.
+- Boats have no hit points and are never sunk by damage; a hit only ejects.
+- **Implementation seam:** mobs_redo punches what the player is attached to
+  (`local target = self.attack:get_attach() or self.attack`), so a mob's melee
+  swing lands on the boat entity. The eject therefore uses **two** hooks, the
+  mount pattern: the boat entity's `on_punch` forwards the punch to the rider,
+  and the player HP-change observer ejects on any HP loss.
+- PvP on water is voluntary — deep-ocean and channel columns never force the
+  tag (`world_zones.md` §15.1).
 
-## 7. Ocean danger
+## 7. Ocean danger and the dragon islands
 
 The water classes, the Kraken Guard's pursuit rules and the dragon channels
 are owned by `world.md` §2b. What matters for a boat:
 
-- **The coastal shelf is not patrolled.** No Kraken Guard spawns there. One
-  that followed a boat in behaves like any ordinary mob — it may spend the
-  rest of its 40-metre drag allowance and then leashes and runs home
-  (`world.md` §2b, `combat_stats.md` §4) — so hugging the coast is safe
-  travel but the shelf edge is not a safe firing position.
-- **Deep ocean is not survivable in a boat.** The Kraken Guard is faster than
-  the base boat, but its revised 5 nodes/s is below the improved boat's 8
-  (`biomes_mobs.md` §3.1). The intended deadly deep-sea role relies on the
-  authored view range, reach and relentless pursuit, not the superseded 8.8
-  speed target. Boat-system acceptance must still validate that danger.
-- **The dragon channels are required boat routes and carry no Kraken.** Both
-  approaches to either island (`world_zones.md` §7.4) are ordinary safe
-  water for a boat at any level; the level-60 island itself is the gate.
-- Because the shelf follows the entire mainland perimeter, a low-level
-  character may legally coast all the way to a channel mouth and visit an
-  island. That is accepted: the islands are contested level-60 zones, their
-  apex gems need a T4 pick, and sightseeing is not progression.
+- **The dragon islands are reachable by boat only** (ruling 2). Flying mounts
+  stay forbidden over every ocean column, including the dragon channels, and
+  on both islands (`mounts.md` §4.1/§4.2).
+- **Deep ocean is not survivable in a boat.** The Kraken Guard swims 10
+  nodes/s inside deep-ocean columns, above the Improved Boat's 8, with a view
+  range of 40 (ruling 7); one hit ejects the rider into deep water.
+- **The coastal shelf and the dragon channels are safe boat water.** No
+  Kraken Guard spawns there, and a guard outside deep ocean drops its target
+  and holds position, so it never pursues a boat beyond the deep-ocean edge.
+- Both approaches to either island (`world_zones.md` §7.4) are required boat
+  routes; a crossing is about 390–420 nodes, roughly 100 s by Boat and 50 s by
+  Improved Boat. Because the shelf follows the entire mainland perimeter, a
+  low-level character may coast to a channel mouth and visit an island; the
+  level-60 island itself is the gate.

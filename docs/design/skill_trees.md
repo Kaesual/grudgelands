@@ -1098,7 +1098,7 @@ today.
 
 **Measured, not inherited.** `grug_mobs/verbs.lua:100-118` says there are two
 owners of `physics_override.speed`, and `mounts.md:128-133` and
-`boats.md:113-117` both repeat that count. A `grep` over the tree finds
+the former `boats.md` §5 (2026-08-13 text) both repeat that count. A `grep` over the tree finds
 **three**:
 
 | Writer | Lines | What it writes |

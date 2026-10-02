@@ -572,7 +572,7 @@ and the Mage take damage sooner"):
   temperament says so (bear, panther, mirefolk, stag, spider, jungle ape), 10
   low to the ground or at the village belt (boar and its tints, bog ooze, ram,
   serpent). The critters see 8; the Crocodile's 6 and the Crag Eagle's 16 keep
-  their own documented reasons, and the aquatic Kraken's 20 is outside the
+  their own documented reasons, and the aquatic Kraken's 40 is outside the
   comparison.
 - **16 is the CEILING for a land mob, not a direction of travel.** Bound
   actors (camps, guards, rares) give up a chase at 45 m and leash at 40
@@ -752,39 +752,31 @@ one exception, it is a deterrent not content): mobs_mc_squid at
 visual_size ×6, verb: drags under (pulls target down, heavy melee),
 spawns only in open sea beyond the coastal ocean. No drops.
 
-Three fields carry the boat contract of `boats.md`. All three target values
-were **decided by the design owner on 2026-08-13**; two of them replace what
-the mob ships with and the third confirms it unchanged. The anchors quoted
-below are the rationale for each choice, not the authority for it:
+Three fields carry the boat contract of `boats.md`; the travel plan's ruling
+7 (user, 2026-10-02) sets the first two:
 
-- **`run_velocity` 5** (shipped: 5). The 2026-09-17 speed ruling supersedes
-  the earlier boat-derived 8.8 target: the code value stands. It remains above
-  the ordinary 4.6 melee floor, while the guard's deep-ocean pressure relies
-  on its view range, fixed level and model-specific reach rather than outrunning
-  the improved 8 nodes/s boat (`boats.md` §5).
-- **`view_range` 40** (shipped: 20) — the same 40 m that is already the
-  threat-validity and leash radius of `combat_stats.md` §4, so the guard
-  notices a boat before the boat is past it. Large, deliberately not unfair.
+- **`run_velocity` 10 inside a deep-ocean column, 5 everywhere else.** The
+  existing once-per-second `do_custom` tick switches it at the guard's own
+  position. Ten is above the improved boat's 8 nodes/s (`boats.md` §5), and
+  one hit ejects a boat's rider, so a guard that sees a boat in deep ocean
+  ends the trip. While a root or slow runs, the switch writes the saved base
+  speed, so the effect engine stays the one owner of the live field.
+- **`view_range` 40**, the same 40 m that is the threat-validity and leash
+  radius of `combat_stats.md` §4, so the guard notices a boat before the boat
+  is past it.
 - **`reach` 4 is unchanged.** It remains above the ordinary roster's 3 because
   the model is ×6 and mobs_redo measures centre to centre
   (`mods/ENTITIES/mobs/api.lua:298-305`); the reason a fleeing target used to
   be nearly unhittable was the attack cadence, not the reach, and that is
   fixed once for every mob in `combat_stats.md` §4.
 
-The guard's pursuit rules — relentless in deep ocean, ordinary §4 leash and
-evade everywhere else, never spawning in a dragon channel — are owned by
-`world.md` §2b. They **replace** the mob's shipped blanket exceptions —
-`_grug_no_leash = true` and `_grug_soft_deaggro = false`
-(`mods/ENTITIES/grug_mobs/kraken.lua:25-26`) plus its own water-class leash
-(`do_custom`, `:115-134`, which drops the target and holds position as soon as
-the guard leaves deep ocean) — with the position-dependent state: the same
-suspensions inside a deep-ocean column, the ordinary §4 leash and evade
-outside it. The shipped comment at `:21-24` states the reason those
-exceptions are global today, and that reason survives exactly where it is
-true, on the open sea. Its `_grug_spawn_check` already is `in_deep_ocean`
-(`grug_zones.water_class_at(...) == "deep_ocean"`, `kraken.lua:7-9`, `:20`),
-so deep-ocean-only spawning needs no separate mechanism. `view_range` is
-still 20 (`:62`; target 40). Citations checked 2026-09-29.
+The guard's pursuit rules are owned by `world.md` §2b: the generic leash and
+soft de-aggro stay off (`_grug_no_leash = true`, `_grug_soft_deaggro =
+false`), and its own water-class leash in `do_custom` drops the target and
+holds position as soon as the guard is outside deep ocean, so shelf water and
+the dragon channels are never pursued into. Its `_grug_spawn_check` is
+`in_deep_ocean` (`grug_zones.water_class_at(...) == "deep_ocean"`), so
+deep-ocean-only spawning needs no separate mechanism.
 
 **Caves (depth axis, WP6 note):** reuse Zombie, Giant Spider, Stone
 Golem with `underground` zone gating; levels come from the depth term

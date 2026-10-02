@@ -264,7 +264,7 @@ restoring to `speed = 1` when its own effect ends, "so an overlapping mob web
 shared owner in `grug_core`**". That comment counts **two** — mob webs
 (`verbs.lua:140-169`) and the ability movement aggregator seam
 (`kits.lua:149-201`) — and
-`mounts.md:128-133` and `boats.md:113-117` both repeat the count. **Measured,
+`mounts.md:128-133` and the former `boats.md` §5 (2026-08-13 text) both repeat the count. **Measured,
 there are three**: `grug_classes/selection.lua:52` freezes a player during
 character creation with `{speed = 0, jump = 0, gravity = 0}`, re-asserts it
 whenever it drifts (`:49-53`), and restores a **snapshot** at `:91` — which
