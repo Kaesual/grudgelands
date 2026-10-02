@@ -646,13 +646,31 @@ grug_jobs.recipes_for = function(profession, station)
 	end
 	return out
 end
+-- Basics tiers (Round 29 P4): a gear bracket beats the item-level band (ilvl
+-- 50 is the T6 bracket, not T5), a bar takes its ingredient tier, an untiered
+-- pick its bar's.
+item("grug_test:abyss_bar", "Abyssal Bar"); item("grug_test:abyss_pick", "Abyssal Pick")
+item("grug_test:abyss_sword", "Abyssal Sword")
+core.registered_items["grug_test:abyss_sword"]._grug_bracket = 6
+core.registered_items["grug_test:abyss_sword"]._grug_ilvl = 50
+grug_jobs.register_ingredient_tier("grug_test:abyss_bar", 6)
+local basics_crafts = {
+	["grug_test:plank"] = {method = "normal", width = 1, items = {"grug_test:bar"}, output = "grug_test:plank 4"},
+	["grug_test:abyss_bar"] = {method = "cooking", width = 1, items = {"grug_test:plank"}, output = "grug_test:abyss_bar"},
+	["grug_test:abyss_pick"] = {method = "normal", width = 1, items = {"grug_test:abyss_bar", "grug_test:plank"},
+		output = "grug_test:abyss_pick"},
+	["grug_test:abyss_sword"] = {method = "normal", width = 1, items = {"grug_test:plank"}, output = "grug_test:abyss_sword"},
+}
 core.get_all_craft_recipes = function(name)
-	if name == "grug_test:plank" then
-		return {{method = "normal", width = 1, items = {"grug_test:bar"}, output = "grug_test:plank 4"}}
-	end
-	return nil
+	return basics_crafts[name] and {basics_crafts[name]} or nil
 end
 dofile("mods/PLAYER/grug_jobs/ui.lua")
+local basics_tiers = {}
+for _, record in ipairs(grug_jobs.book_records(smith, "general")) do
+	basics_tiers[#basics_tiers + 1] = record.output_name .. "=" .. record.tier
+end
+eq(table.concat(basics_tiers, " "), "grug_test:plank=1 grug_test:abyss_bar=6 grug_test:abyss_pick=6 " ..
+	"grug_test:abyss_sword=6", "Basics tiers: plank 1, bar, pick and bracket-6 sword 6")
 -- smith: Weaponsmith tier 2 at character level 15 (tier capped at 2).
 local book_fs = grug_jobs.book_formspec(smith, "weaponsmith", nil, 1, "", nil, 1)
 formspec_ok(book_fs, "weaponsmith book")

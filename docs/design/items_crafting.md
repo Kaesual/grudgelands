@@ -171,6 +171,11 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 - The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
+  A Basics recipe's tier (its "Undiscovered" count and sort order) is its
+  output's material tier: the item's own tier, else its gear bracket, else
+  its registered ingredient tier, else its item-level band; an output with
+  none of these takes the highest tier among its inputs (a pick, block or
+  rod takes its bar's tier), else T1 (Round 29).
 - **Basics visibility (user decision 2026-09-20):** an explicit starter set is
   visible immediately: bootstrap wood/stick/torch/chest/furnace/wooden-hoe
   routes, every universal T1 weapon/tool/shield and metal/cloth/leather armor,
