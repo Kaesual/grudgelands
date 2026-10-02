@@ -10,9 +10,6 @@
           "open": {"id": "eaves", "name": "Moonfall Eaves",
             "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
             "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"},
-          "shore": {"id": "strand", "name": "Moonfall Strand",
-            "day": [{"role": "bank_crab", "weight": 1}],
-            "night": "open", "density": "dense"},
           "swamp": {"id": "mistmarsh", "name": "Moonfall Mistmarsh",
             "day": "open",
             "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}

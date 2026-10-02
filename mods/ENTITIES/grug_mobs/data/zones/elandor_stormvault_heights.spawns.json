@@ -10,9 +10,6 @@
           "open": {"id": "passes", "name": "Stormvault Passes",
             "day": [{"role": "ridge_ibex", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
             "night": [{"role": "rime_skeleton_stray", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
-          "shore": {"id": "shore", "name": "Stormvault Shore",
-            "day": [{"role": "breakwater_crab", "weight": 1}],
-            "night": "open", "density": "dense"},
           "highland": {"id": "eagle_crags", "name": "Stormvault Eagle Crags",
             "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "storm_ridge_ram", "weight": 1}],
             "night": [{"role": "rime_skeleton_stray", "weight": 1}], "density": "normal"}
@@ -38,9 +35,6 @@
           "open": {"id": "frostfields", "name": "Stormvault Frostfields",
             "day": [{"role": "storm_ridge_ram", "weight": 3}, {"role": "ridge_ibex", "weight": 1}],
             "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
-          "shore": {"id": "storm_shore", "name": "Stormvault Storm Shore",
-            "day": [{"role": "breakwater_crab", "weight": 1}],
-            "night": "open", "density": "dense"},
           "highland": {"id": "stormcrags", "name": "Stormvault Stormcrags",
             "day": [{"role": "storm_ridge_ram", "weight": 1}],
             "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
