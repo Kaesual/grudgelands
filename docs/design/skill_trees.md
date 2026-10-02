@@ -942,7 +942,7 @@ the sfinv area only if the two trees are **tabbed rather than side by side**:
 | Character | Bags | Talents |                        (sfinv tabs)
 +---------------------------------------------------------------+
 | Warrior      [ BULWARK 21 ] [ Ruin 9 ]      Points left: 0     |
-|                                            [ Respec  --  1s25c]|
+|                                            [ Respec  --    12s]|
 |      WALL                       ANVIL                          |
 | T1 | Ironbound      5/5 |   | Spite          5/5 |             |
 | T2 | Weathered     4/4 |   | Affront        3/4 |     (>=5)   |

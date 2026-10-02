@@ -62,7 +62,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   One output may have one route per station when every route agrees on
   profession and tier; `recipe_for_output(output, station)` resolves the
   station-specific route. This is how a Cooking grid dish and its raw-assembly
-  furnace path meet at the same edible item.
+  furnace path meet at the same edible item. A grid craft finds its recipe
+  through an index built at registration (Round 30, `registry.lua`
+  `recipe_for_craft`: station and shape, then trimmed size and cell mask or
+  ingredient count); a new matcher rule must keep the index and the former
+  linear scan equal (`tools/r30_p4` replays the shipped recipe corpus).
   Grid and selected enchant commits revalidate qualification and inputs before
   consuming anything and record progress once after settlement. Alchemists make
   mixtures in their inventory grid; Brewing Stands finish them universally.
@@ -87,6 +91,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   rewards. Multi-position growth/harvest preflights loaded, protected and exact
   matching nodes before mutation. Mature regrowers use right-click; annuals are
   replanted, while harvested Cane/Bamboo retain and reset the base.
+  Since Round 30 soil without a growing crop checks its water once a minute
+  (15 s under a growing crop; planting and regrowth re-arm 15 s), and the
+  crop geometry LBM leaves a plant whose helpers already stand untouched.
 - **Skills catalogue**: `grug_skills` lists unlocked active class/talent
   abilities and every purchased mount tier. Entitlement is authoritative;
   inventory stacks are disposable bound representations. Drop/catalog return
@@ -116,7 +123,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   active mount or boat. The Riding Trainer dialogue is one service format
   (`grug_mounts.SERVICES`); `shipwright.lua` serves the `shipwright` socket
   role of the capital stable. Prices: `grug_mounts.PRICES` (E4,
-  `tools/r29_e4/income.py --check`). Fixture `tools/r29_b`.
+  `tools/r29_e4/income.py --check`). Fixture `tools/r29_b` (boats, and since
+  Round 30 section H the riding-tier purchases at the shipped prices). The
+  flight-border sweep reads the faction once and each column's zone id
+  (`grug_zones.id_at`), never a copied zone record per sample (Round 30).
 - **R7 audit boundary**: the 157-file R7 source-audit roster is frozen
   historical evidence and is not a current-source gate. Its audit script was
   retired in Round 22 and WP49, the planned replacement, is canceled
@@ -239,6 +249,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   first owner to show it keeps it until it hides it. The
   game's `crosshair.png`/`object_crosshair.png` are byte-identical on purpose;
   regenerate them with `tools/pt_fixes/lane_b/gen_crosshair_textures.py`.
+  Since Round 30 the state overlay refreshes every 0.15 s (input and the
+  ready ring stay on the 0.05 s pass), an unchanged skill ray that hit no
+  object is reused for up to 0.25 s, and the Target Frame
+  (`grug_mobs/target_frame.lua`) reads
+  `grug_abilities.crosshair.recent_aim` before casting its own 20 m ray.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
@@ -379,7 +394,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     / 30 m hide independently per viewer, with a player's owner excluded.
     Create/remove carriers through the shared `grug_core/tag_carrier.lua` seam,
     update text there (including telegraph/tier/HP changes), and leave observer
-    sets plus orphan cleanup to that module's one central 1 Hz pass. Carriers
+    sets plus orphan cleanup to that module's one central 1 Hz pass (since
+    Round 30 spread over eight slots of each second; visibility callbacks run
+    only for observed carriers or on an observer-set change). Carriers
     are non-pointable, non-physical and unsaved. Unsaved Lua entities never
     enter the engine's static-object count used by mobs_redo `aoc`; do not
     compensate or otherwise modify that spawn-budget comparison for carriers.
@@ -409,6 +426,18 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     deactivation then stores a second copy, so the entity comes back twice.
     Pass what identifies the entity in `add_entity`'s staticdata
     (`start_npcs.lua` `place`: `_grug_unplaced`, Round 30).
+  - **Per-step mob code allocates nothing it can avoid (Round 30 P2):** read
+    a mob's collision box from `self._grug_cbox` (written wherever the box is
+    set; `grug_obstacle.mob_cbox` / `object_cbox`), never `get_properties()`
+    in a step; privilege checks go through the cached `mobs.has_priv`. A*
+    runs inside a per-step time budget (about 3 ms) with a negative path
+    cache and the give-up rule of `combat_stats.md` ("Unreachable targets are
+    given up"): `grug_obstacle.no_path_gate` / `note_search_result`,
+    `grug_mobs.give_up_target` (`aggro.lua`). A new chase or patrol search
+    asks that budget (`claim_path_budget` / `spare_path_budget`), reports its
+    cost (`note_path_cost`) and result, as `patrol.lua` `path_nudge` does;
+    never an unbudgeted `core.find_path`. Fixture `tools/r30_p2` (also the
+    merged spawn ABMs and the eye height).
   - **Countdowns tick in `do_custom`, never `core.after`**: a mob can
     die, be unloaded or leash-reset inside the window, and mobs_redo
     persists plain fields — a lost timer would save the mob permanently
@@ -502,7 +531,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     every recipe zone's region map at server start (mods loaded) through the
     lazy `SR.map` and the pure
     `spawn_regions_core.lua`, which `tools/r28_regions` runs unchanged, so
-    the review images are what spawns. API: `region_at`, `level_at`,
+    the review images are what spawns. Since Round 30 (P3)
+    `spawn_regions_cache.lua` (pure, plain Lua 5.1) keeps only the compact
+    form of each map (`SR.map`; `SR.full_map` builds the full one for tools)
+    and `SR.start_maps` reads every current zone from
+    `<world>/grug_region_maps.txt` and builds the rest. Its key is the
+    world-layout key (`grug_mapgen.wp40.world_key`) plus a digest of the
+    builder's files: **a new file the build reads must join that key**, or
+    `tools/r30_p3` (input coverage) fails. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
     `leader_pos`; every spawned mob carries `_grug_area` for area kill
     credit. Rules: [spawn_regions.md](../design/spawn_regions.md),
@@ -695,7 +731,16 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Q1): titles (`{name:...}` only) at load, texts on first display through
   `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
   `registry.lua` computes the copper of a quest without `rewards.copper`
-  (`quest_copper`). The catalog requires only V1 overworld content; the Nether is
+  (`quest_copper`). Since Round 30 `state.lua` caches each player's decoded
+  state keyed by the raw meta string: readers share that table and must
+  never write into it, mutating paths take a copy (`editable`) and `save`
+  re-caches. Marker consumers (minimap, Map tab, NPC tags) ask
+  `Q.marker_states(player)` once for every giver (memoized for a second) and
+  listen to `Q.register_on_markers_changed`; `Q.markers_changed` fires on a
+  quest change, a held objective-item change (the tracker's `Q.journal_key`
+  poll, `hud.lua`, five 0.1 s slots) and a level change (fixture
+  `tools/r30_p1`). Unknown quest fields stop the load (`E-unknown-key`,
+  Round 30). The catalog requires only V1 overworld content; the Nether is
   reserved for the first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
@@ -764,8 +809,15 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   coordinates. Keep center-preserving zoom, fixed-size markers, clipping and
   hit bounds in the same transform. A new tab visit resets zoom/scroll; live
   updates preserve them. Stable byte-encoded IDs own marker identity. Only open
-  Map sessions poll at 0.5 s and write changed formspecs; scrolling defers rebuilds
-  until a 0.5 s quiet interval. Closing resets to Character; leave/death clean up.
+  Map sessions refresh, at most every 2 s since Round 30 (`page.lua`): a cheap
+  signature (zoom, selection, location, minimap switch, arrows on a 0.02-unit
+  grid, the quest markers' version, the home, the waystones) is compared and
+  the form is built and sent only when it changed; clicks rebuild at once.
+  Anything a marker draws must be in that signature, or it goes stale.
+  Scrolling defers rebuilds until a 0.5 s quiet interval. Closing resets to
+  Character; leave/death clean up. Return home lives on the Character page
+  since Round 30 (`grug_inventory/pages.lua`, its 1 s pass re-sends that page
+  only while the button text changes).
   Since Round 27 `base.lua` renders the base per `grug_map_quality` and sends
   it as 512 px tiles; `minimap.lua` (HUD state, marker slots, change-only
   `hud_change` per whole screen pixel, every server step) and the pure
@@ -774,7 +826,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   placement, rim arrows) draw the gliding minimap in
   `grug_core.hud_layout.minimap_box`. Keep the texture and position change
   in the same step and the scale a whole multiple of 1/grid, or cell swaps
-  jump. The minimap asks only the quest, service, home and (since Round 29)
+  jump. Since Round 30 the window size, the frame-only elements and the
+  location line are handled every 0.5 s or on a window change, and the
+  static markers are re-asked on `grug_quests.register_on_markers_changed`
+  and every 5 s. The minimap asks only the quest, service, home and (since Round 29)
   waypoint marker providers (`atlas.collect_markers(player, only)`); the
   `waypoint` provider shows the player's discovered waystones on both maps.
   Fixture:
@@ -782,7 +837,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `tools/r27_minimap/bench_glide.lua`.
   Zone and town names (Round 28 M1): `location.lua` samples each player's
   location every second, writes the line under the minimap and the entry
-  banner and places one zone marker per zone at startup; the pure
+  banner and places one zone marker per zone at startup (since Round 30 a
+  later start reads the sampled zone grid from `<world>/grug_map_zone_grid.txt`,
+  keyed like the region maps); the pure
   `location_view.lua` holds the rules (fixture `tools/r28_m1`).
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
@@ -889,7 +946,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   gravel, stone or nil) from the final terrain and exposes the same rule as
   `bank_material_at(x, z, water_y, distance)` for Phase 5 banks.
   `r6_content.lua` maps it to surface rows and is the only source of dry
-  near-water sand; ordinary wet-bed sand remains unchanged.
+  near-water sand; ordinary wet-bed sand remains unchanged. The one exception
+  is the four dragon-island landing beaches (Round 30, `boats.md` §7.1):
+  `height.lua` grades them (`landing_graded_at` decides which columns, also
+  for the sand override) and `road_writer.lua` builds the pier from the same
+  shore point (fixture `tools/r30_l/portable_test.lua`, engine probe
+  `tools/r30_l/engine.sh`).
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
@@ -907,10 +969,16 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `register_spawn_role` also owns each family's `clock`; its spawn wrapper
   stamps the mobs_redo light/day convention and the night `aoc`, while rows
   wholly below y = -40 remain light-only. Never hand-maintain those fields on
-  a new surface row. Palette species of normal/elite tier are budgeted
-  (`grug_mobs/density.lua`, Round 24): their row `aoc` becomes the species
-  weight, the area cap is the point budget (zone budget or the old population, whichever is larger) enforced in `mobs:spawn_abm_check`
-  after the policy, so a new such row needs no cap tuning of its own.
+  a new surface row. Since Round 30 (P2) a surface row no zone keeps
+  registers no ABM at all (`spawn_policy.lua` `spawn_row_kept`; the spawn
+  regions own every zone's surface), and every remaining row goes through
+  `mobs.register_spawn_abm` into one of three merged ABMs
+  (`grug_mobs/spawn_abms.lua`: underground, water, surface). A merged ABM
+  picks at most one row per triggered node with the probability that keeps
+  that row's chance × interval rate, then runs the row's own unchanged
+  `spawn_action`; a new row needs nothing beyond `mobs:spawn`. The Round 24
+  per-point palette budget is gone; the zone budget of `grug_mobs/density.lua`
+  is what the region spawner shares out.
   Fixed bosses do not register ambient rows: `grug_mobs/bosses.lua` owns the
   two authenticated island `dragon` anchors, while the six kings and their
   four-guard groups consume the capital `king`/royal `guard_post` sockets via

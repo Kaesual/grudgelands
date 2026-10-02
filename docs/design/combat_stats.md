@@ -848,7 +848,7 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   whose node has not changed — a player hidden in a closed house, in a
   walled-in hole, in a boat behind cover — the mob gives the target up at its
   next search instead: it drops the target and goes home through the
-  ordinary reset (Evade below: threat, target and tags cleared, healed, a run
+  ordinary reset (Evade above: threat, target and tags cleared, healed, a run
   home when it stands beyond its radius). A target that moves to another node
   restarts the count; about 7 s of trying covers a player stepping round a
   corner. Afterwards target acquisition ignores that player while they stay
