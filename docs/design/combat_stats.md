@@ -840,8 +840,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   box).
 - **Unreachable targets are given up** (Round 30, the user's ruling on perf
   review 2026-10 #4). A mob searches for a path only while it has no line of
-  sight to its target; a player it can see (on an open pillar, across a
-  fence) is not searched for and never given up. After an A* search finds no
+  sight to its target; a player it can see but not reach (across a fence
+  or water) is not searched for and never given up. After an A* search finds no
   path, the mob does not repeat the search for the same two nodes for
   **1 s**, then **2 s**, then **4 s** (a mob or target that changes node
   lifts the wait). After **3 failed searches in a row** against a target
