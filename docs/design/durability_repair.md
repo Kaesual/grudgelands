@@ -1,8 +1,9 @@
 # Durability and repair
 
 Decided 2026-09-20. V1 uses copper-ledger repair for everyone. No material cost,
-profession-matching requirement or repair skill is imposed. This is a bounded
-WP22 delivery and does not rebase the WP44 economy or calibrate mining speeds.
+profession-matching requirement or repair skill is imposed. Since the WP44
+cutover (Round 29) quotes use the Common price axis of
+[economy.md](economy.md) §2.
 
 ## Eligible items and wear
 
@@ -42,12 +43,13 @@ access applies. Riding trainers are not profession trainers. No additional NPC
 or trader distribution is introduced.
 
 The service offers a preview and repair of one item or all eligible items in
-equipment, main and bag inventories. Crafting stations inside an active Claim
-Stone claim will offer the same service at the same trader price, as a
-convenience only (user decision 2026-09-29,
-[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D7;
-not yet implemented). Repair at wilderness stations outside a claim is not
-offered.
+equipment, main and bag inventories. Every player-placed crafting station
+inside an active (activated and fuelled) Claim Stone claim offers the same
+service at the same trader price, as a convenience only (user decision
+2026-09-29, [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
+D7): its window shows a "Repair equipment" button to anyone who may use the
+station there (a claim's interact permission is enough). Repair at wilderness
+stations outside a claim, in a draft or an expired claim is not offered.
 
 ## Price
 
@@ -63,18 +65,15 @@ no discount. Reference **purchase** price is never the buy-back/sale price or
 an inferred price paid by the player. Do not introduce race discounts or
 material costs.
 
-Use the existing regular gear purchase catalog and fixed stock as authority
-for sold items. Unsold weapons/tools use their matching material-tier weapon
+Use the regular gear purchase catalog (the Common slot table of economy.md
+§2) and fixed stock as authority for sold items. Unsold weapons/tools use their matching material-tier weapon
 reference; shields/books use that tier's other-slot reference. Keep wooden and
 stone fixed-stock prices; wooden/stone hoes use their corresponding tool prices. Quality
 multipliers are **1 / 3 / 6** for Common / Uncommon / Rare. Above-ladder items use the T6
 slot reference and quality multiplier. Missing catalog identities fail the
 catalog audit and service rather than receiving free repair.
 
-Register and review the complete eligible-identity reference-price catalog
-before implementing repair. This round retains the shipped purchase curve;
-the full future economy curve in [economy.md](economy.md) remains WP44 work.
-No buy-back, income, mount or Housing price rebase is implicit in repair.
+Repair never changes buy-back, income, mount or Housing prices.
 
 ## Transaction
 

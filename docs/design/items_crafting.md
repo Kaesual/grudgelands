@@ -25,13 +25,6 @@ the rebased 25c→25s Common-price axis are authoritative below. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
 design. Historical decisions in §10 remain design history only.
 
-**Economy delivery boundary.** The 25c→25s Common-price axis and 5% buy-back
-in §8 are the approved **WP44 target**, not the current trader runtime. Until
-WP44 lands, vendors and the Round-11 repair service continue to use the shipped
-50c→2s69c Common-weapon ladder and 25% buy-back/reference catalog. New design
-must not treat that temporary runtime curve as the target, and current repair
-quotes must not silently price against the future table.
-
 Feeds: WP5 (loot/enchant rolls), WP7 (traders/consumables), WP10
 (professions/workbenches), WP22 (repair). Crafting mechanics frame:
 `inventory_equipment.md` §4 (3×3 grid, multi-stage, profession-level
@@ -74,8 +67,9 @@ ladders are independent; §2.1 spells out how they meet.
   small gold sink; world materials tiered by source level. Authored city/POI
   stations are personal workspaces; crafted player-placed stations are shared.
   Bags have parallel Tailor and Leatherworker lines.
-- Vendor floor rule: vendors sell only the LOWEST tier per category
-  (professions.md §4, economy.md §1).
+- Vendor rule: vendors sell supplies, consumables, tools, the Common gear
+  floor and a few T1 basics; never an enchant input and never a crafting
+  ingredient above T1 (professions.md §4, economy.md §2).
 - **One item per concept** (decided 2026-08-07, binding): no two items
   may fill the same role. The vendor bracket catalog *is* the base craft
   ladder, and both are material-named (§3.0.3).
@@ -915,7 +909,9 @@ buy leather for bags, Alchemists for apothecary gear. No enchant consumes grips.
 **Material chain**: 2 cloth + thread → bolt. Authored grades are **T1 linen
 scrap → patch bolt** (zombies drop scraps from L1 — Tailors start in safe
 starting zones), **T2 linen cloth → woven bolt**, **T3 heavy cloth → heavy
-bolt** and **T4 heavy + spider silk → silkweave bolt**; decided 2026-08-13:
+bolt** and **T4 heavy + spider silk → silkweave bolt** (spider silk is the
+item `grug_mobs:spider_silk`, shown as **Raw Silk** because T5/T6 outlaws drop
+it too); decided 2026-08-13:
 **T5 spider silk → silk bolt** (pure silk, the same 2 + thread pattern;
 spiders exist 25–60 on both continents) and **T6 spider silk + stormkelp →
 stormweave bolt** — stormkelp (coast 45–60, both continents,
@@ -1177,16 +1173,19 @@ Neither of these costs a main profession slot (professions.md §1).
   not chat (`inventory_equipment.md`, "Message feed").
   Current catch tables and catch-only rod wear stay unchanged. Death, logout,
   unequipping or leaving the permitted range removes the line. No fishing
-  profession or lure system is introduced.
+  profession or lure system is introduced. The rod is an early T1 Basics
+  craft: three sticks and two thread (user decision, Round 29).
 
 - **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
   6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
   "recently bandaged". Cloth competes with Tailoring demand — intended.
   **No book** — all recipes at once, materials are the only gate.
 - **Vendor stock**: the level-independent core (small bag, weak healing
-  potion, wooden/stone tools, bronze pick, torches, job supplies —
-  thread/flux/vial/parchment/whetstone blank) plus the **bracket
-  catalogs** of §3.8.
+  potion, torches, wooden/stone tools, bronze pick, player arrows, job
+  supplies — thread/parchment/vial) plus the **bracket catalogs** of §3.8.
+  Profession shelves carry their trade's supplies, food and T1 basics
+  ([economy plan](../planning/economy-vendor-plan.md) §2.3); no shelf sells
+  an enchant input or an ingredient above T1, which a load audit enforces.
 
 ### 3.8 Vendor bracket catalogs (decided 2026-08-07)
 
@@ -1307,9 +1306,9 @@ changes:
 - Cultural-region vendor presentation and the same-race purchase discount
   layer on top without changing catalog strength or buy-back (§8.2).
 
-Every craft output carries `_grug_sell_price` with the **anti-loop rule:
-vendor value of a crafted item < summed vendor value of its
-ingredients** — vendors are a floor, never a factory profit.
+Every craft output follows the **anti-loop rule: the payout of a crafted
+item is at most the summed payout of its ingredients** (economy.md §2) —
+vendors are a floor, never a factory profit.
 
 ## 4. Cultural materials, finishing and PvP counters
 
@@ -2018,10 +2017,9 @@ Imbue/Temper kits, random crafted application rolls or separate refinement steps
 
 ## 8. Prices and money pacing
 
-This section specifies the WP44 target economy. The currently shipped trader
-and repair price catalog remains the legacy curve stated in the delivery
-boundary at the top of this document; [durability_repair.md](durability_repair.md)
-owns how repair quotes use it before and after the WP44 cutover.
+This section specifies the economy as shipped since the WP44 cutover (Round
+29); [economy.md](economy.md) §2 owns the payout rules and
+[durability_repair.md](durability_repair.md) the repair quotes.
 
 All values use ledger copper (100c = 1s, 100s = 1g). No creature, NPC or
 world node drops currency or a physical coin. Tiered combat income is the
@@ -2037,14 +2035,12 @@ Goldsmith/build material.
 - Reliable net solo income is measured after routine tier-appropriate repair
   and consumables, excluding rare jackpots, boss rewards and player trade.
   Mount Gold targets derive from those measured tier rates.
-- Every mob drop has a positive `_grug_sell_price` or registered foreign-item
-  override; zero means unsellable. Material values rise with tier and scarcity,
-  while player trade remains their intended high-value market. Rough/Cut Gem,
-  Gold, Emberglass, Abyssal Crystal, trophies and processed bars each receive
-  an explicit reference value before recipes ship.
-- Every craft/cook, nine-unit pack/unpack and service path passes the anti-loop
-  audit: output vendor value stays below consumed-input value after discounts
-  and rounding, while reversible storage shares one value budget.
+- Every mob drop and every gathered good has a positive payout from the loot
+  formula of economy.md §2 (class value × tier factor); processed goods pay
+  their cheapest recipe's inputs. Material values rise with tier, while player
+  trade remains their intended high-value market. Zero means unsellable.
+- Every craft/cook and service path passes the anti-loop audit: an output pays
+  at most its consumed inputs (break-even allowed).
 
 ### 8.2 Vendor prices and buy-back
 
@@ -2061,13 +2057,12 @@ than Common, but no premium may alter these baseline references. The rotating
 Uncommon shelf remains a luxury source and must be priced against its final
 quality multiplier before activation.
 
-Vendor buy-back is capped at **5% of the applicable purchase or authoritative
-reference price, rounded up to the next copper**. A T1 Common weapon therefore
-returns 2c and a T6 weapon returns 1s25c. Same-race purchase discounts never
-raise buy-back. For an item the vendor does not sell, the economy catalog
-assigns a reference price and `_grug_sell_price` stores the resulting final
-payout; foreign definitions use `grug_traders.set_price`. Zero means
-unsellable, while every mob drop receives a positive payout.
+Vendor buy-back is capped at **5% of the purchase price, rounded up to the
+next copper**, and applies only to goods a vendor sells. A T1 Common weapon
+therefore returns 2c and a T6 weapon returns 1s25c; a crafted good never
+returns more than its cheapest recipe's inputs. Same-race purchase discounts
+never raise buy-back. Loot and gathered goods are paid by the formula of
+economy.md §2, never by a reference price; zero means unsellable.
 
 Core supplies remain simple fixed-price goods. No profession book is sold or
 replaced: the UI book reflects player-meta progression directly. Finder-item
@@ -2151,10 +2146,11 @@ consumer are active:
 - **Arrows** stack to **100** in any inventory (Round 28 ruling 26, which
   replaced the 200 of the 2026-09-20 playtest ruling); new Scouts receive 200
   in their quiver slot, which holds up to 500 (`inventory_equipment.md` §3). Ammo also has a targeted projectile entity;
-  craft 20/batch: 1 iron bar + 4 sticks + 4 feathers (sharp feathers —
-  eagle/vulture drops finally get their reagent role). The current
-  Bowyer offer is 3c per arrow (2c after the same-race discount), with 1c
-  buy-back; purchase remains strictly above buy-back after rounding.
+  one Basics craft fills one stack of 100 from 1 bronze bar + 2 sticks
+  (Round 28 ruling 26). Arrows cost 3c each
+  (2c after the same-race discount) at every race vendor and the Bowyer;
+  traders do not buy them back, because the basic craft makes a full stack
+  from one bar (economy.md §2).
 - **Plain production is Basics; Woodcarver owns enchantments.** The
   Scout consumes the family in V1. Shots draw from the Scout's quiver slot
   first, then `main`.

@@ -598,7 +598,7 @@ and the Mage take damage sooner"):
 |-----|------|-----------|-------|-------|-------|
 | Wolf (Blightfang Wolf) — also inner pine-hills/meadows patches from L10 | hunts in packs; flees low, returns with pack | 24 h | 4.6 | meat 1/1; leather 1/2 `[leather]`; fang 1/3 | mobs_mc_wolf (+tint) |
 | Bear (Plaguehide Bear) — elite variant "Elder" ×1.4 scale, rolled **1 in 10 at spawn** | territorial (guards radius ~20 m, short chase) | day | 4.6 | meat 1/1 ×2; heavy leather 1/2 `[leather]`; bear claw 1/4 | mobs_mc_polarbear retexture |
-| Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | spider silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
+| Giant Spider (tints per biome; also jungle, caves) | webs (hit applies 40% slow 3 s) | night | 4.6 | raw silk 1/1 ×1–2; venom gland 1/6 | mobs_monster spider |
 | Stag (Gaunt Stag) | grazes (**passive prey**, §3.0: no aggro, retaliates) | day | 4.6 | meat 1/1 ×2; leather 1/2 `[leather]` | animalia reindeer (asset harvest) |
 | Skeleton Archer — bone forest + war coast only | dogshoot (ranged) | night | 4.0 in combat, roams at 1 | bone 1/1; linen scrap 1/2; arrows | mobs_mc_skeleton |
 | **Bone Weevil** — bone forest **and blight** (the two "creepy" biomes; one entity name, one `aoc` budget, per-biome tint stamped at spawn) | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only | mobs_mc_silverfish, bone-pale + blight tints |
@@ -686,7 +686,7 @@ and apply texture modifiers at runtime; they add no media file.
 | Frost Stray | dogshoot | night | Stormvault and Wyrmglass, L31–60 | Skeleton table | Skeleton Archer / ice-blue modifier |
 | Sun-Dried Husk | damage-sustained pursuit; 15 s without incoming damage plus moving target | night | Redtusk and Shattered Line; Sunscar from band 2, L4–50 | Zombie table | Zombie / sand-gold modifier |
 | Song Bird | flees (**critter**) | day | Silverleaf, L1 fixed | meat 1/1 — food only | Gull / blue modifier, ×0.8 |
-| Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | spider silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
+| Spiderling | weak web (20% slow, 2 s) | any (cave) | y −40…−100, L3–6 | raw silk 1/2 | Giant Spider / stone-brown modifier, ×0.5 |
 | Blood Bat | swarm dive | any (cave) | y −101…−300, L6–18 | meat 1/1 | Cave Bat / blood-red modifier, ×1.25 |
 | Stone Mite | swarms | any (cave) | y ≤ −700, L42–60 | stone core 1/8 | Cave Crawler / stone-grey modifier, ×1.33 |
 
@@ -1283,7 +1283,7 @@ Regional geology follows the owning `race_region` column at every depth:
 | Linen **scrap** (trash tier, sells; not the cloth) | 1–30 | zombies, skeletons | same |
 | Linen cloth | 10–30 | home-zone **bandit camps**, mirefolk | same |
 | Heavy cloth | 25–45 | frontier bandit camps, war-front raiders | same |
-| Spider silk (Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
+| Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
 | Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |

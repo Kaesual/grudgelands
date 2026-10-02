@@ -186,13 +186,19 @@ Weapon Grips remain Leatherworker components without a current consumer; any
 future use must be specified explicitly and must not make another profession
 depend on them.
 
-## 4. Vendor floor rule
+## 4. Vendor supply rule
 
-**Vendors sell only the lowest tier of each item category** (smallest
-bag, weak heal potion, basic tools). The harder the tier, the more social
-the supply chain. (Also anchored in economy.md §2/§3.)
+**Vendors sell supplies, consumables, tools, the Common gear floor and a
+few T1 basics. They never sell an enchant input, and never a crafting
+ingredient above T1** (user ruling 1 of 2026-10-02,
+[economy plan](../planning/economy-vendor-plan.md) §2). Every ingredient
+from T2 up and every enchant input comes from loot, mining or gathering:
+the hunt is the game. T1 basics stay buyable because T1 is the tutorial
+band. A load audit in `grug_traders` drops and reports any shelf entry that
+breaks the rule. Flavour shelves (the mason's blocks, candles, food to eat)
+stay. (Also anchored in economy.md §2.)
 
-Revised 2026-08-07 twice over:
+The gear floor (revised 2026-08-07 twice over):
 
 - The floor is not frozen at the starter set — it **moves with the
   player** through six bracket catalogs, one per material tier

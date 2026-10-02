@@ -5,17 +5,14 @@ Decided spec (established 2026-08-06; material and housing economy rebased
 `items_crafting.md` §8; this file owns the currency rules, shared price axis,
 income relationship and sink structure.
 
-The price axis in §2 is the approved **WP44 target**. It is not a claim about
-the current trader bytes: until WP44 lands, the shipped six-bracket Common
-weapon prices are 50c/70c/98c/1s37c/1s92c/2s69c and buy-back is 25% rounded
-down (minimum 1c). Round-11 repair deliberately quotes from that current
-purchase catalog. WP44 must switch traders, reference prices, buy-back,
-anti-loop audits and repair's price source together. WP44 is a **lighter
-pass** (user decision 2026-09-29,
+The price axis in §2 is live since the WP44 cutover (Round 29 lane E1,
+[economy plan](../planning/economy-vendor-plan.md) §2–§3): traders, loot and
+gathered payouts, buy-back, the anti-loop audit and repair's price source
+switched together. WP44 is a **lighter pass** (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) D1):
 price tables, buy-back, the audit fixes and a simple income estimate, without
-a checksummed manifest or audit DAG. Quest copper rewards move onto the ×2.5
-axis in the same cutover (D2).
+a checksummed manifest or audit DAG. Quest copper rewards use the same ×2.5
+axis (D2).
 
 ## 1. Currency: copper / silver / gold
 
@@ -46,9 +43,9 @@ axis in the same cutover (D2).
 
 ## 2. Ordinary price axis and buy-back
 
-The WP44 target money axis follows one approximate **×2.5 tier index**. The
-binding Common weapon anchors are 25c at T1 and 25s at T6; clean displayed
-prices take precedence over preserving the exact mathematical ratio.
+The money axis follows one approximate **×2.5 tier index**. The binding
+Common weapon anchors are 25c at T1 and 25s at T6; clean displayed prices take
+precedence over preserving the exact mathematical ratio.
 
 | Common vendor slot | T1 | T2 | T3 | T4 | T5 | T6 |
 |---|---:|---:|---:|---:|---:|---:|
@@ -60,21 +57,43 @@ prices take precedence over preserving the exact mathematical ratio.
   one tier uses the same Common reference price. Common gear is the plain,
   enchant-free baseline; quality and enchantment premiums are applied above
   it and may never redefine the table.
-- A vendor's **buy-back is capped at 5%** of the item's applicable purchase or
-  authoritative reference price, **rounded up to the next copper**. Thus a T1
-  Common weapon returns 2c and a T6 Common weapon returns 1s25c. The same-race
-  purchase discount never increases buy-back.
-- Items a vendor never sells still receive an authoritative **reference
-  price** in the economy catalog. `_grug_sell_price` stores the resulting
-  vendor payout (never more than the 5%-ceiling rule), while
-  `grug_traders.set_price` supplies that payout for foreign definitions. Zero
-  means not sellable. Every mob drop has a positive payout so selling loot
-  remains a universal income stream; "paid in full" means the trader pays that
-  authored `_grug_sell_price`, not 100% of the item's reference value.
-- A craft, cook, pack/unpack or service loop may not print money. The vendor
-  value of an output must stay below the summed vendor value of consumed
-  inputs after every discount and rounding rule. Reversible storage recipes
-  preserve one shared reference-value budget in both directions.
+- **Vendor rule** ([professions.md](professions.md) §4): vendors sell
+  supplies, consumables, tools, the Common gear floor and a few T1 basics,
+  never an enchant input and never a crafting ingredient above T1.
+- A vendor's **buy-back is capped at 5%** of the item's purchase price,
+  **rounded up to the next copper**, and applies only to goods a vendor also
+  sells (gear, supplies). Thus a T1 Common weapon returns 2c and a T6 Common
+  weapon returns 1s25c. The same-race purchase discount never increases
+  buy-back; a 1–2c supply (thread, torch) is not sellable at all, because 5%
+  rounded up would equal its discounted price.
+- **Loot and gathered goods** pay one formula, `max(1, round(class value ×
+  tier factor))`, with tier factors **1 / 2.6 / 6.4 / 16 / 40 / 100** (the
+  weapon axis ÷ 25c) and the class values below, tuned once so the median kill
+  of each band lands near 3c × the tier factor. The tier is the item's own:
+  its catalogue tier, a mined resource's harvest tier, a plant's raw tier
+  (`items_crafting.md` §3.7), a band fish's band. Every mob drop and every
+  gathered plant, herb, ore, gem and band fish is sellable.
+
+  | Class | T1 value | Members |
+  |---|---:|---|
+  | Trash / food | 1c | raw meat, bone, feather, linen scrap, stolen purse, war trophy, raw fish, sticks, apples, rotting flesh, papyrus |
+  | Raw material | 1c | ore lumps, coal, quartz, gold, silver, emberglass, abyssal crystal, herbs, gathered plants, band fish, cultural materials |
+  | Generic material | 2c | leathers, cloth, teeth, hides, silk and other `generic` catalogue loot |
+  | Signature loot | 7c | every `signature` item of the loot catalogue |
+  | Gem | 4c | rough gem; a cut gem pays the same as its rough gem |
+
+- **Processed goods** (bars, leather grades, cloth bolts and bundles, jewellery
+  settings, wood grades, reagents) pay the summed payout of their cheapest
+  recipe's inputs; a vendor supply counts 0 in that sum. A leather grade that
+  is also loot pays the lower of both.
+- One price module (`grug_traders/prices.lua`) owns every payout; items have
+  no per-definition price field. Anything it does not price is not sellable.
+- A craft, cook, pack/unpack or service loop may not print money: an output
+  pays **at most** the summed payout of its consumed inputs (break-even is
+  allowed). The startup audit judges every engine, dual-furnace and
+  profession-station recipe whose inputs are all priced, a `group:` input by
+  its cheapest priced member. Goods a vendor sells are capped by their
+  cheapest such recipe, so 100 arrows from one bar sell for nothing.
 
 ## 3. Income streams and tier pacing
 
@@ -103,14 +122,12 @@ prices take precedence over preserving the exact mathematical ratio.
 - **Repair:** broken gear is never destroyed; at zero durability its effects
   stop until repaired with ledger money at any city profession trainer, including
   Cooking. The V1 cost is `ceil(0.20 × reference purchase price × missing
-  durability fraction)` per item; intact items are free. Anyone may repair any
-  eligible item, with no profession or material requirement. Crafting
-  stations inside an active Claim Stone claim will offer the same repair at
-  the same trader price, as a convenience (D7). The precise eligibility,
-  current-price catalog, transaction and claim-station rules are in
-  [durability_repair.md](durability_repair.md). This bounded Round-11
-  service retains the shipped purchase curve until WP44 rebases it; it does not
-  deploy the full target price axis below/above by implication.
+  durability fraction)` per item, from the §2 purchase table; intact items are
+  free. Anyone may repair any eligible item, with no profession or material
+  requirement. Crafting stations inside an active Claim Stone claim offer the
+  same repair at the same trader price, as a convenience (D7). The precise
+  eligibility, price catalog, transaction and claim-station rules are in
+  [durability_repair.md](durability_repair.md).
 - **Talent respec:** repeatable **in the talent UI — there is no class
   trainer and no NPC** (user ruling 4 of 2026-09-16, `skill_trees.md` §5,
   `progression.md` §2). The price is **five minutes of measured reliable net
