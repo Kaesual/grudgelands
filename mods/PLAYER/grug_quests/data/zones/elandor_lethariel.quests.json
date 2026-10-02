@@ -32,8 +32,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "The Debt Walks at Night",
-      "text": "At night, Debtbound Zombies shuffle through the {name:glades} {dir_of:lethariel:glades}, still trying to pay tolls nobody asked for. Lay six of them to rest. They burn at dawn, but the saplings they trample do not grow back by morning.",
+      "title": "A Debt Beyond the Grave",
+      "text": "Even death has not persuaded the Debtbound Zombies to abandon their unpaid tolls. Lay six to rest at night in the {name:glades} {dir_of:lethariel:glades}, before their wandering feet ruin more saplings. Dawn will burn them, but I would sooner grant them peace than leave the matter to the sun.",
       "objectives": [
         {
           "type": "kill",
@@ -58,8 +58,8 @@
       "min_level": 20,
       "level": 21,
       "requires": [],
-      "title": "Venison for the Star Hall",
-      "text": "Bring me five Raw Meat and one Braided Sinew from the Moss-Antler Stags that graze the {name:glades} {dir_of:lethariel:glades} by day. The stags are yellow and will not start a quarrel. The sinew ties my roasting bundles; the meat, well, you can guess.",
+      "title": "Before the Speeches Begin",
+      "text": "The Star Hall has requested a meal worthy of its deliberations; I should prefer one ready before they end. Bring me five pieces of Raw Meat and one Braided Sinew, hunting Moss-Antler Stags by day in the {name:glades} {dir_of:lethariel:glades} for the sinew. Their yellow names mean they will not attack first, so choose your quarry with care.",
       "objectives": [
         {
           "type": "item",
@@ -92,8 +92,8 @@
       "requires": [
         "lethariel_wardens_01"
       ],
-      "title": "Tolls on a Public Glade",
-      "text": "Toll Bandits stop travellers in the {name:glades} after dark and charge them for walking on our grass. Defeat four of them; they come out only at night and in small numbers. Their toll slips bear a seal very like our bough-seal, which is why I am annoyed.",
+      "title": "No Charge for the Grass",
+      "text": "Someone has decided that walking beneath Lethariel's trees requires a fee, complete with an imitation of our bough-seal. Defeat four Toll Bandits after dark in the {name:glades} {dir_of:lethariel:glades}; they appear only at night and are few enough to require a patient search. We planted shade for travellers, not a source of revenue for thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -120,8 +120,8 @@
       "requires": [
         "lethariel_provisions_01"
       ],
-      "title": "Short Crates from Berrycourt",
-      "text": "Take this crate list to Ilwen Petalmeasure in Lorindor Berrycourt; the capital road leads out into Lorindor. Her berry deliveries have been short, and she blames the tolls. I blame the tolls for everything, but she has numbers.",
+      "title": "The Missing Half of the Pie",
+      "text": "Ilwen Petalmeasure's berry deliveries keep shrinking, though her crate lists remain beautifully written. Visit her at Lorindor Berrycourt, following the road out into Lorindor, and ask what these tolls are costing us. One cannot bake the missing half of a pie from elegant handwriting.",
       "objectives": [
         {
           "type": "talk",
@@ -145,8 +145,8 @@
       "requires": [
         "lethariel_provisions_01"
       ],
-      "title": "The Observatory Forgot to Eat",
-      "text": "Lethen Moonledger at the Moonfall Observatory has not collected his bread in a month, which for an astronomer means he forgot to eat. Take him word and see what keeps him from the road. The Moonfall Wood begins where Lethariel's trees grow darker.",
+      "title": "Bread Does Not Keep Star-Time",
+      "text": "Lethen Moonledger can predict a star's return but has missed a month's worth of bread collections. Speak with him at the Moonfall Observatory in Moonfall Wood and find out what keeps him from us. If he says he has been busy, remind him that dough rises without an appointment.",
       "objectives": [
         {
           "type": "talk",
@@ -170,8 +170,8 @@
       "requires": [
         "lethariel_wardens_02"
       ],
-      "title": "The Bough-Counter",
-      "text": "The forged bough-seal leads to the {name:poacher_camp} {dir_from_giver:poacher_camp}, where Unlicensed Poachers mark our oldest trees for felling. Defeat five of them, then {name:bough_counter_rusk}, who keeps the count. The camp is manned day and night; take the counter last, and alone.",
+      "title": "What the Seal Was For",
+      "text": "Our bough-seal once meant that a tree would be tended; at the {name:poacher_camp} {dir_from_giver:poacher_camp}, it marks trees for the axe. Defeat five Unlicensed Poachers there, then {name:bough_counter_rusk}, who records the theft. They keep the camp by day and night; separate the leader from his guards before you face him. Some of those trees shaded the hands that first carved our seal.",
       "objectives": [
         {
           "type": "kill",
@@ -207,8 +207,8 @@
       "requires": [
         "lethariel_wardens_03"
       ],
-      "title": "Roots Across the Border",
-      "text": "Rusk's count runs on into the Glassroot Wilds, where the Accord's writ grows thin. Take it to Faeris Rootbinder at Glassroot Gate; the road out of the capital leads into the contested wilds. You will want your full strength there, so finish your training first.",
+      "title": "Where the Writ Wears Thin",
+      "text": "Rusk's reckoning reaches into the Glassroot Wilds, beyond the comfort of our walls. Report what you have learned to Faeris Rootbinder at Glassroot Gate. Those lands are contested, and the Accord's seal offers little shelter there; finish your training before you set out.",
       "objectives": [
         {
           "type": "talk",
@@ -232,8 +232,8 @@
       "requires": [
         "lethariel_wardens_02"
       ],
-      "title": "Optional: Redfang Season",
-      "text": "Redfang Vixens prowl the {name:greatwood} {dir_of:lethariel:greatwood} by day and attack anyone who walks there. Kill six so our foresters can mark the old trees again. Bring bandages; the name is not decorative.",
+      "title": "Optional: A Forester's Right of Way",
+      "text": "Our foresters know which roots will trip them; it is the teeth between the roots that trouble me. Kill six Redfang Vixens by day in the {name:greatwood} {dir_of:lethariel:greatwood}. They attack passing travellers, so tend to your wounds before seeking the next.",
       "objectives": [
         {
           "type": "kill",
@@ -261,8 +261,8 @@
       "requires": [
         "lethariel_wardens_02"
       ],
-      "title": "Optional: Tithes Nobody Owes",
-      "text": "At night, Tithe Revenants walk the {name:greatwood} collecting a tithe for a lord who died before the capital was planted. Lay six of them to rest. They are tougher than the Debtbound Zombies of the glades, and far more insistent.",
+      "title": "Optional: The Last Collection",
+      "text": "The lord is long dead, his claim forgotten, yet the Tithe Revenants still come to collect. Lay six to rest at night in the {name:greatwood} {dir_of:lethariel:greatwood}. They endure more punishment than the Debtbound Zombies, so approach them prepared. Let this be the last service anyone performs in that lord's name.",
       "objectives": [
         {
           "type": "kill",
@@ -290,8 +290,8 @@
       "requires": [
         "lethariel_provisions_01"
       ],
-      "title": "Optional: Brushes for the Glaze",
-      "text": "Bring me two Silver-Tip Fox Tails from the Redfang Vixens of the {name:greatwood}. Nothing else spreads honey glaze so evenly, and the Star Hall notices uneven glaze. The vixens bite, so I will add a pie to your trouble.",
+      "title": "Optional: The Hall Notices Everything",
+      "text": "A councillor who overlooked a forged seal spent ten minutes discussing the streaks in my glaze. Bring me two Silver-Tip Fox Tails from Redfang Vixens in the {name:greatwood} {dir_of:lethariel:greatwood} by day, and I can replace my brushes. At least the vixens make their objections quickly.",
       "objectives": [
         {
           "type": "item",
@@ -320,8 +320,8 @@
       "requires": [
         "lethariel_provisions_01"
       ],
-      "title": "Bounty: The Bakehouse Larder",
-      "text": "The bakehouse eats faster than I can fill it. Bring me eight Raw Meat whenever you return to Lethariel, and I will pay each time.",
+      "title": "Bounty: Hunger Returns to Court",
+      "text": "We have recipes older than the Accord and a larder that never survives the week. Bring me eight pieces of Raw Meat here in Lethariel for payment. This supply order is repeatable; long life has done nothing to diminish anyone's appetite.",
       "objectives": [
         {
           "type": "item",

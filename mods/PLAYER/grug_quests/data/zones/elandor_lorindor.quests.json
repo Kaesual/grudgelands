@@ -49,8 +49,8 @@
       "min_level": 21,
       "level": 22,
       "requires": [],
-      "title": "Nets in the Berrywoods",
-      "text": "Unlicensed Poachers net the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods} after dark and take the birds before the berries ripen. Defeat five of them. By day the woods belong to the stags again, which is how it should be.",
+      "title": "The Harvest Should Have a Song",
+      "text": "I count the harvest in baskets, but I know something is wrong when I cannot hear the birds. Defeat five Unlicensed Poachers after dark in the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods}, where their nets have emptied the branches. A berrywood ought to offer more than fruit and silence.",
       "objectives": [
         {
           "type": "kill",
@@ -77,8 +77,8 @@
       "requires": [
         "lorindor_berries_01"
       ],
-      "title": "The Fenhold Toll",
-      "text": "Toll Mirefolk at {name:fenhold} {dir_from_giver:fenhold} charge my carters a pearl for every crate, day and night. Defeat five of them. They rush to help each other, so pull from the edge of their camp.",
+      "title": "A Pearl for Every Basket",
+      "text": "The Toll Mirefolk at {name:fenhold} {dir_from_giver:fenhold} demand a pearl for every crate my carters carry. Defeat five of them, by day or night, and approach from the edge of the camp so they cannot all rush you together. At these rates, I shall soon be packing pearls and charging extra for the berries.",
       "objectives": [
         {
           "type": "kill",
@@ -105,8 +105,8 @@
       "requires": [
         "lorindor_berries_02"
       ],
-      "title": "Highcourt Keeps Ledgers Too",
-      "text": "Some of the toll pearls end up in Highcourt, where Mariel Waybook keeps the human capital's road accounts. Take her my tally and see whether her outskirts have the same trouble. The road beyond Lorindor's border leads to Highcourt.",
+      "title": "Let the Ledgers Agree",
+      "text": "Some of those toll pearls reach Highcourt, and I would like our human neighbours to know what bought them. Travel to Highcourt and speak with Mariel Waybook about Lorindor's tolls; she keeps the road accounts there. Between her ledger and mine, we may find where an honest delivery becomes somebody else's profit.",
       "objectives": [
         {
           "type": "talk",
@@ -130,8 +130,8 @@
       "requires": [
         "lorindor_berries_02"
       ],
-      "title": "Half-Empty Crates at Whitebridge",
-      "text": "Merren Oakstamp at Whitebridge Market Close buys our berries and swears the crates arrive half empty. Carry my tally to her and help her find out where the rest went. It is a long road through the human lands, so a mount would not hurt.",
+      "title": "Berries Do Not Walk Away",
+      "text": "Merren Oakstamp says my crates arrive half empty, as though the berries have taken a stroll. Speak with her at Whitebridge Market Close in Whitebridge Shire about the missing deliveries. It is a long journey through the human lands; a mount will spare your feet for the work awaiting you.",
       "objectives": [
         {
           "type": "talk",
@@ -155,8 +155,8 @@
       "requires": [
         "lorindor_berries_02"
       ],
-      "title": "The Pearl-Counter",
-      "text": "The fenhold pearls all go to {name:pearl_counter_iss} at the {name:pearl_camp} {dir_from_giver:pearl_camp}, who counts them twice and pays nobody. Defeat four of the camp's Toll Mirefolk and then Iss, day or night. Count to one when you are done; that is how many tolls we owe.",
+      "title": "Close the Pearl Account",
+      "text": "All those stolen tolls pass through the hands of {name:pearl_counter_iss} at the {name:pearl_camp} {dir_from_giver:pearl_camp}. Defeat four Toll Mirefolk there and then Iss, by day or night. I have checked the accounts twice: we owe them nothing, and our carters deserve to travel without paying for that conclusion.",
       "objectives": [
         {
           "type": "kill",
@@ -189,8 +189,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "Lanterns Nobody Hung",
-      "text": "At night, Wandering Wisps drift through the {name:elderwood} {zone_area:elderwood} and lead travellers off the path. Put out five of them. By day the wood is calm, so plan your watch for the dark hours.",
+      "title": "Do Not Follow That Light",
+      "text": "A traveller sees a light between the trunks and thinks someone has left a lantern for them. Extinguish five Wandering Wisps after dark in the {name:elderwood} {zone_area:elderwood}, before that kindness turns into another lost traveller. They appear only at night; keep the path in sight while you work.",
       "objectives": [
         {
           "type": "kill",
@@ -215,8 +215,8 @@
       "min_level": 24,
       "level": 25,
       "requires": [],
-      "title": "Steel for the Pale Roots",
-      "text": "Bring me four Steel Bars, iron alloyed with coal and smelted wherever suits you. The paleroot props in this cutting are older than the Accord, and I would like them to outlive it. The deeper seams ask for a better pick, so check yours.",
+      "title": "Give the Old Roots a Brace",
+      "text": "These roots held the earth before anyone thought to call us the Accord; I mean to repay the favour. Alloy iron with coal and bring me four Steel Bars here at the cutting for the props. Check your pick before seeking the deeper seams: respect for stone begins with the right tool.",
       "objectives": [
         {
           "type": "item",
@@ -241,8 +241,8 @@
       "requires": [
         "lorindor_cutting_01"
       ],
-      "title": "Stone Talk at Tarncut",
-      "text": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf props her tunnels with the same steel I use. Take her my measurements; dwarves trust numbers more than elves do, and she will have work for you. It is a long road to the dwarven heights.",
+      "title": "A Rootscribe Recommends You",
+      "text": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf knows what stone will bear, and I value her judgment. Make the journey to her and say I sent you to help with her work. She will probably ask whether I have measured anything properly yet; tell her the roots remain entirely satisfied.",
       "objectives": [
         {
           "type": "talk",
@@ -266,8 +266,8 @@
       "requires": [
         "lorindor_wardenry_01"
       ],
-      "title": "Optional: Pinchers on the Shell Strand",
-      "text": "Barnacle Pinchers have taken the {name:shell_strand} {dir_from_giver:shell_strand} and snap at every warden who walks it by day. Five of them will do; the strand is short and they are not. Leave the gentler Bank Crabs be.",
+      "title": "Optional: Passage at Ankle Height",
+      "text": "The Barnacle Pinchers on the {name:shell_strand} {dir_from_giver:shell_strand} have made our daytime shore patrol a rather undignified dance. Kill five by day so the wardens can walk their rounds. Leave the Bank Crabs alone; they have kept their side of the peace.",
       "objectives": [
         {
           "type": "kill",
@@ -295,8 +295,8 @@
       "requires": [
         "lorindor_wardenry_01"
       ],
-      "title": "Optional: Pale Lights in the Paleroots",
-      "text": "The wisps that leave the elderwood gather in the {name:paleroots} {zone_area:paleroots}, and there they burn brighter and meaner. Put out six of them at night. The Wardenry has never found where they go by day, and would rather not.",
+      "title": "Optional: A Light Between Every Root",
+      "text": "Among the {name:paleroots} {zone_area:paleroots}, Wandering Wisps make every gap look like a welcoming doorway. Extinguish six at night. I would rather our travellers find their way by the stars than trust anything so eager to lead them astray.",
       "objectives": [
         {
           "type": "kill",
@@ -324,8 +324,8 @@
       "requires": [
         "lorindor_cutting_01"
       ],
-      "title": "Optional: Bark-Strippers",
-      "text": "The Moss-Antler Stags of the {name:paleroots} {zone_area:paleroots} strip the bark from the pale roots faster than the trees can mend. Thin the herd by six, by day; the stags are yellow and will not start it. Stewardship is not always gentle.",
+      "title": "Optional: What the Bark Cannot Bear",
+      "text": "The Moss-Antler Stags are stripping bark faster than the roots can mend, and affection alone will not save the trees. Cull six by day in the {name:paleroots} {zone_area:paleroots}. Their yellow names mean they will not attack first; choose your quarry, and take no more than I ask.",
       "objectives": [
         {
           "type": "kill",
@@ -353,8 +353,8 @@
       "requires": [
         "lorindor_berries_03"
       ],
-      "title": "Bounty: Night Netters",
-      "text": "The poachers' nets come back to the {name:berrywoods} every night. Defeat six netters whenever you pass after dark, and Berrycourt will pay each time.",
+      "title": "Bounty: Keep a Song in the Branches",
+      "text": "The Unlicensed Poachers return to the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods} whenever they think we have stopped listening. Defeat six after dark and return to me for Berrycourt's payment. This bounty remains available for further hunts; I intend to hear birds here next harvest too.",
       "objectives": [
         {
           "type": "kill",
@@ -384,8 +384,8 @@
       "requires": [
         "lorindor_wardenry_01"
       ],
-      "title": "Bounty: Lanterns in the Elderwood",
-      "text": "The wisps of the {name:elderwood} relight themselves every night. Put out six whenever you can, and the Wardenry will pay each time.",
+      "title": "Bounty: The Wardens' Night Watch",
+      "text": "We cannot leave a lamp beside every traveller, but we can put out the lights that deceive them. Extinguish six Wandering Wisps at night in the {name:elderwood} {zone_area:elderwood} and return for the Wardenry's payment. Further watches carry the same bounty.",
       "objectives": [
         {
           "type": "kill",
@@ -415,8 +415,8 @@
       "requires": [
         "lorindor_cutting_02"
       ],
-      "title": "Bounty: Steel for the Props",
-      "text": "Props wear out, and so do I. Bring me four Steel Bars whenever you have them, and the cutting will pay each time.",
+      "title": "Bounty: A Little Help for Old Roots",
+      "text": "Even roots that have held for centuries appreciate a brace before they need it. Bring me four Steel Bars here at the cutting for payment; this is a standing order you may fill again. I would rather replace a prop than write a song about the tunnel it failed to hold.",
       "objectives": [
         {
           "type": "item",

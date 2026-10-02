@@ -32,8 +32,8 @@
       "min_level": 1,
       "level": 2,
       "requires": [],
-      "title": "Roots in the Open",
-      "text": "Small Boars dig up our saplings {dir_of:silverleaf:home_glades} by day; drive off eight of them. Their names are yellow, so they fight only once you strike first. Someone has also been cutting saplings at the trunk, which no boar has learned yet.",
+      "title": "A Century Down the Snout",
+      "text": "We planted those saplings for children yet unborn; the Small Boars consider them breakfast. Cull eight by day {dir_of:silverleaf:home_glades}; their yellow names mean they will leave you alone until you strike. Look at the cut stems while you are there, too. A snout leaves a mess, but those cuts are clean.",
       "objectives": [
         {
           "type": "kill",
@@ -59,8 +59,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "A Tool for Every Hand",
-      "text": "Carve a Wooden Axe and a Wooden Pickaxe and show them to me. I keep yours for the seed store and give you a pair that has already learned some manners. A bow is a fine thing, but it digs poorly.",
+      "title": "Begin with the Grain",
+      "text": "Before you tend a forest, learn what a piece of wood will bear. Make one Wooden Axe and one Wooden Pickaxe and bring them to me here in Silverleaf. Your work will serve the seed store; in exchange, you shall have a tested pair from mine.",
       "objectives": [
         {
           "type": "item",
@@ -97,8 +97,8 @@
       "min_level": 1,
       "level": 1,
       "requires": [],
-      "title": "Fallen Wood Only",
-      "text": "Bring me five logs of any tree for the oven, cut outside Silverleaf's protected ground. Planks will not do; my oven likes its wood whole. The old trees will tell you they object, but any of them will serve.",
+      "title": "The Oven Keeps No Seasons",
+      "text": "An elf may spend a century choosing a tree; supper allows me rather less. Bring me five logs of any tree, cut outside Silverleaf's protected ground. Whole logs, please, not planks: I have an oven to feed, not a floor to mend.",
       "objectives": [
         {
           "type": "item",
@@ -123,8 +123,8 @@
       "requires": [
         "silverleaf_hunt_01"
       ],
-      "title": "What Moves Under the Ferns",
-      "text": "After dark, Large Rats take over the same glades {dir_of:silverleaf:home_glades}. Thin out eight of them, and mind their friends: a rat in trouble calls every rat nearby. The saplings will thank you, quietly.",
+      "title": "The Ferns Have Teeth",
+      "text": "Listen beneath the ferns after dark: that scratching is no woodland lullaby. Kill eight Large Rats in the glades {dir_of:silverleaf:home_glades}, before they gnaw through another season's planting. Draw them out carefully; one frightened squeal brings the neighbours.",
       "objectives": [
         {
           "type": "kill",
@@ -152,8 +152,8 @@
       "requires": [
         "silverleaf_tools_01"
       ],
-      "title": "Stone Takes Patience",
-      "text": "Use your wooden pick on plain stone outside town and make a Stone Axe and a Stone Pickaxe. Bring both to me and take a tested pair back. Stone is slow to learn, but it never forgets.",
+      "title": "A Lesson That Holds Its Edge",
+      "text": "You have learned the grain; now learn the weight. Mine plain stone outside Silverleaf with your wooden pick, then make one Stone Axe and one Stone Pickaxe. Bring both here for a tested pair in exchange, and let patience guide your hands before strength does.",
       "objectives": [
         {
           "type": "item",
@@ -192,8 +192,8 @@
       "requires": [
         "silverleaf_kitchen_01"
       ],
-      "title": "Something Hotter Than Wood",
-      "text": "Bring me five Coal Lumps from the rock outside Silverleaf, whenever the hunt leaves you a free hour. Coal goes into the oven's fuel slot and raw food into the cooking slot. The oven does the rest; I only take credit for the seasoning.",
+      "title": "Embers Before Eloquence",
+      "text": "The elder can warm a gathering with a speech; I have tried it on the oven without success. Mine five Coal Lumps from the rock outside Silverleaf and bring them to me. When you cook for yourself, put fuel in the fuel slot and raw food in the cooking slot; neither benefits from a speech.",
       "objectives": [
         {
           "type": "item",
@@ -218,8 +218,8 @@
       "requires": [
         "silverleaf_hunt_02"
       ],
-      "title": "Patches for the Seed Baskets",
-      "text": "The rats chewed holes in my seed baskets, so the rats can supply the patches. Bring me two Rat Fur Patches from the Large Rats in the glades at night. Keep any spares for your own gear.",
+      "title": "The Basket-Mender's Due",
+      "text": "Three generations of careful weaving, and a rat decides my seed baskets need doors. Hunt Large Rats after dark in the glades {dir_of:silverleaf:home_glades} and bring me two Rat Fur Patches. I shall mend the baskets; you may keep any extra patches for your own work.",
       "objectives": [
         {
           "type": "item",
@@ -248,8 +248,8 @@
       "requires": [
         "silverleaf_hunt_02"
       ],
-      "title": "Footfalls Without Breath",
-      "text": "At night, Braindead Zombies wander the {name:strand} {zone_area:strand}. Lay six of them to rest before they trample the dune grass. They burn when the sun rises, so the dark hours are the only time to find them.",
+      "title": "Let the Grass Remember Footsteps",
+      "text": "Dune grass bends beneath a living foot and rises after it; the dead give it no such respite. Lay six Braindead Zombies to rest on the {name:strand} {zone_area:strand} at night. Go before sunrise, when the light takes them, and leave the shore its quiet.",
       "objectives": [
         {
           "type": "kill",
@@ -277,8 +277,8 @@
       "requires": [
         "silverleaf_pantry_01"
       ],
-      "title": "Legs for Supper",
-      "text": "Small Crabs walk the {name:strand} {zone_area:strand} by day. Bring me two Crab Legs for supper and keep the Crab Eyes; an enchanter wants those more than I do. The crabs are yellow, so they leave you alone until you start it.",
+      "title": "A Shore Supper",
+      "text": "Even an ancient recipe needs someone willing to get their boots wet. Bring me two Crab Legs from the Small Crabs on the {name:strand} {zone_area:strand} by day. Their yellow names mean they will not attack first. Keep any Crab Eyes for an enchanter; I prefer supper to stop watching me.",
       "objectives": [
         {
           "type": "item",
@@ -307,8 +307,8 @@
       "requires": [
         "silverleaf_kitchen_02"
       ],
-      "title": "A Full Larder",
-      "text": "Bring me ten Raw Meat from your hunts; boars and rats both give it, so you may already carry some. The oven turns raw into supper. A full larder is the best answer to a poacher I know.",
+      "title": "Enough for the Latecomers",
+      "text": "The planting crews eat last and pretend they are not hungry. Bring me ten pieces of Raw Meat from your hunts; boars or rats will do, and anything already in your pack counts. I mean to have supper waiting before anyone has to pretend.",
       "objectives": [
         {
           "type": "item",
@@ -339,8 +339,8 @@
       "requires": [
         "silverleaf_hunt_03"
       ],
-      "title": "Keepers of the Saplings",
-      "text": "Young Foxes den in the {name:foxglades} {zone_area:foxglades} by day and eat the seed we sow. Drive off eight of them. Watch for the Aggressive Boars among them: a red name starts the fight without waiting for you.",
+      "title": "Eight Shadows in the Seedbeds",
+      "text": "Every spring we sow for a forest; every spring the foxes discover our generosity. Cull eight Young Foxes by day in the {name:foxglades} {zone_area:foxglades}. Mind the Aggressive Boars nearby: a red name means the creature may start the fight itself.",
       "objectives": [
         {
           "type": "kill",
@@ -368,8 +368,8 @@
       "requires": [
         "silverleaf_tools_02"
       ],
-      "title": "Two Metals Make a Third",
-      "text": "Smelt three Copper Bars and three Tin Bars from the ores around Silverleaf and bring them to me. They will mend the hall's hinges, and you will have my old Dual Furnace for your own work. Set it up outside protected ground.",
+      "title": "A Hall Should Not Creak",
+      "text": "Our hall has heard a great deal of wisdom; lately its hinges insist on answering. Smelt three Copper Bars and three Tin Bars from ore around Silverleaf and bring them here for the repairs. I will give you my old Dual Furnace for your next lesson; set it up outside protected ground.",
       "objectives": [
         {
           "type": "item",
@@ -405,8 +405,8 @@
         "silverleaf_pantry_02",
         "silverleaf_hunt_04"
       ],
-      "title": "A Brush for the Flour Shelf",
-      "text": "Bring me two Fox Tails from the Young Foxes in the {name:foxglades}. One dusts the flour shelf, the other dusts the elder, who will not notice. After that my pantry is the best-kept in the glades.",
+      "title": "Dust Is Not a Seasoning",
+      "text": "A little age improves a recipe, but it does nothing for the dust above my flour. Bring me two Fox Tails from Young Foxes in the {name:foxglades} {zone_area:foxglades} by day. One brush for the shelf, one held in reserve: that is how a kitchen survives an elf's idea of a short visit.",
       "objectives": [
         {
           "type": "item",
@@ -436,8 +436,8 @@
       "requires": [
         "silverleaf_tools_03"
       ],
-      "title": "Bronze for the Long Road",
-      "text": "Alloy fresh copper and tin into three Bronze Bars in your Dual Furnace and bring them here. The earlier bars already hold the hall together, so these must be new. Take this Bronze Pickaxe in return; the deeper rock ahead will ask for it.",
+      "title": "The Third Metal",
+      "text": "Copper and tin each have their virtues; put them together and you gain another. Use your Dual Furnace to alloy three Bronze Bars and bring them here, gathering fresh materials because the earlier bars went into our hinges. A Bronze Pickaxe awaits you in exchange, for the rock beyond these glades has lessons of its own.",
       "objectives": [
         {
           "type": "item",
@@ -468,8 +468,8 @@
       "requires": [
         "silverleaf_hunt_04"
       ],
-      "title": "Axes Without Leave",
-      "text": "The sapling cutters are Confused Poachers and Wood Thieves camped at the {name:poacher_camp} {dir_from_giver:poacher_camp}, day and night. Drive off seven of them, then deal with their chief, {name:misguided_poacher_chief}, who counts stumps as profit. Pull him away from his guards if you can.",
+      "title": "A Forest Is Not a Woodpile",
+      "text": "Those clean cuts lead to the {name:poacher_camp} {dir_from_giver:poacher_camp}, occupied day and night by Confused Poachers and Confused Wood Thieves. Defeat seven of them in all, then their leader, {name:misguided_poacher_chief}; draw him apart from his guards if you can. He sees a week's firewood where we planted a century of shade.",
       "objectives": [
         {
           "type": "kill",
@@ -506,8 +506,8 @@
       "requires": [
         "silverleaf_hunt_05"
       ],
-      "title": "Word for Ilyra Mossveil",
-      "text": "Take word of Twig's stumps to Ilyra Mossveil in Starbough Village; the road out of the glades leads up into the vale. Twig was only the youngest of the cutters, and the older ones work in Starbough. Finish what you like here first; the glades will wait, they are good at it.",
+      "title": "Beyond the First Ring",
+      "text": "Twig did not teach himself to turn our trees into profit. Follow the road to Starbough Village and tell Ilyra Mossveil what happened here; the cutters in her vale have had longer to practise. Attend to any unfinished business before you leave, and remember that a forest grows one ring at a time.",
       "objectives": [
         {
           "type": "talk",

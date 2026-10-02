@@ -56,8 +56,8 @@
       "requires": [
         "silverleaf_departure"
       ],
-      "title": "Bracken in the Lower Boughs",
-      "text": "Bracken Foxes have grown bold in the {name:lower_boughs} {zone_area:lower_boughs}; drive off eight of them by day. Someone has been snaring their prey, so they come begging at our doors. I would rather they learned to hunt again.",
+      "title": "Hunger Beneath the Boughs",
+      "text": "A fox at the door is a question the forest cannot answer. Poachers have emptied the hunting grounds, and Bracken Foxes now trouble our homes; cull eight by day in the {name:lower_boughs} {zone_area:lower_boughs}. I can ask you to quiet the hunger here, but we must still find who caused it.",
       "objectives": [
         {
           "type": "kill",
@@ -84,8 +84,8 @@
       "requires": [
         "silverleaf_departure"
       ],
-      "title": "Two Brushes",
-      "text": "Bring me two Brush Fox Tails from the Bracken Foxes in the {name:lower_boughs}. They make the best brushes for the bough-marks we paint on the old trees. Ilyra will send you there anyway; I am only saving you a walk.",
+      "title": "Marks Worth Renewing",
+      "text": "Our oldest trees still bear their tending marks, though mine have begun to look like sneezes. Bring me two Brush Fox Tails from Bracken Foxes in the {name:lower_boughs} {zone_area:lower_boughs} by day, so I can replace my brushes. If Ilyra sends you hunting there, attend to both tasks together; no tree grows faster because we walk past it twice.",
       "objectives": [
         {
           "type": "item",
@@ -113,8 +113,8 @@
       "requires": [
         "starbough_boughs_01"
       ],
-      "title": "Rats in the Granary Hollow",
-      "text": "At night, Granary Rats swarm the {name:lower_boughs} {zone_area:lower_boughs}. Clear eight before they find our winter stores. Pull them one at a time where you can; a squealing rat brings its cousins.",
+      "title": "Winter Has Enough Mouths",
+      "text": "The seed we set aside must last until the thaw, and Granary Rats have no respect for that agreement. Kill eight after dark in the {name:lower_boughs} {zone_area:lower_boughs}, before their burrows reach our stores. Choose your fights carefully: their squeals invite company.",
       "objectives": [
         {
           "type": "kill",
@@ -141,8 +141,8 @@
       "requires": [
         "starbough_boughs_02"
       ],
-      "title": "Snares on the Old Paths",
-      "text": "Snaring Poachers walk the {name:lower_boughs} after dark, setting wire where our deer drink. Stop five of them; they are fewer than the rats, so be patient. Every snare carries the same knot, and someone taught them that knot.",
+      "title": "One Knot, Many Hands",
+      "text": "Every wire beside the drinking places bears the same knot, tied as neatly as a gardener's binding. Defeat five Snaring Poachers at night in the {name:lower_boughs} {zone_area:lower_boughs}; they are scattered, so give the search time. Someone taught those hands, and I intend to learn the teacher's name.",
       "objectives": [
         {
           "type": "kill",
@@ -169,8 +169,8 @@
       "requires": [
         "starbough_stores_01"
       ],
-      "title": "Iron for the Bough-Bridges",
-      "text": "Bring me six Iron Bars and four Coal Lumps for the walkway braces. The vale's rock holds iron, but check which pick it asks for before you dig. Wood bends and forgives; iron bends only once.",
+      "title": "Trust the Branch, Check the Brace",
+      "text": "I trust a living branch to bend; a neglected brace is another matter. Bring me six Iron Bars and four Coal Lumps for the walkway repairs, using the vale's rock for ore if you need it. Check your pick before mining: admiring a seam has yet to put metal on my workbench.",
       "objectives": [
         {
           "type": "item",
@@ -200,8 +200,8 @@
       "requires": [
         "starbough_boughs_03"
       ],
-      "title": "Theren Has Seen the Knot",
-      "text": "Take the snare wire to Theren Farstep at Starbough Outpost; the vale road leads there. He watches the greenwood and may know whose knot this is. Tell him I said to stop sulking about his last report.",
+      "title": "A Scout's Eye for Knots",
+      "text": "Theren Farstep at Starbough Outpost can read a bent fern as readily as I read a letter. Follow the vale road to him and describe the poachers' knot; his watch may have seen where the wires lead. Tell him I read his last report in full, including the remarks about my handwriting.",
       "objectives": [
         {
           "type": "talk",
@@ -224,8 +224,8 @@
       "requires": [
         "starbough_boughs_04"
       ],
-      "title": "Vixens on the Watch Path",
-      "text": "Thicket Vixens hunt the {name:greenwood} {zone_area:greenwood} by day, and they no longer flee from a patrol. Kill seven so my scouts can walk the path again. They start the fight, so keep your back to a tree.",
+      "title": "When the Underbrush Answers",
+      "text": "My scouts can pass without stirring a leaf; that helps little when the underbrush bites back. Kill seven Thicket Vixens by day in the {name:greenwood} {zone_area:greenwood}. They attack on sight, so choose your ground before they choose you.",
       "objectives": [
         {
           "type": "kill",
@@ -252,8 +252,8 @@
       "requires": [
         "starbough_boughs_04"
       ],
-      "title": "Gnawers by Moonlight",
-      "text": "After nightfall, Burrow Gnawers dig under the {name:greenwood} and chew through every snare line, which would be helpful if they stopped there. Kill seven of them. Cairn Zombies wander the same ground at night, so do not linger.",
+      "title": "Unhelpful Allies",
+      "text": "Burrow Gnawers chew through the poachers' wires, then our bootlaces, without the slightest sense of allegiance. Kill seven after nightfall in the {name:greenwood} {zone_area:greenwood}. Watch for Cairn Zombies on the same ground; I would like this patrol to return breathing.",
       "objectives": [
         {
           "type": "kill",
@@ -281,8 +281,8 @@
         "starbough_watch_01",
         "starbough_watch_02"
       ],
-      "title": "Whose Knot",
-      "text": "The snares end at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Roadside Bandits buy what the poachers catch. Defeat eight of them, day or night. They hold one of ours there, Nima Fern, so do not burn the place down around her.",
+      "title": "Where the Wires Lead",
+      "text": "The trail ends at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Roadside Bandits buy the poachers' catch. Defeat eight of them; they conduct their trade by day and night alike. Nima Fern is held there, so keep your head: we need her alive to tell us what she has seen.",
       "objectives": [
         {
           "type": "kill",
@@ -309,8 +309,8 @@
       "requires": [
         "starbough_stores_02"
       ],
-      "title": "Cloth for the Watched Trees",
-      "text": "Bring me three Linen Cloth; the bandits at the camp carry plenty they never wove. I will bind the marked trees with it so the poachers know which ones are watched. Cloth from the Cairn Zombies serves as well, if you can bear the smell.",
+      "title": "A Ribbon Means We Remember",
+      "text": "A ribbon round a trunk tells our wardens which trees need watching. Bring me three pieces of Linen Cloth from the Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where you can find them day or night. Their stolen cloth can serve the wood for once.",
       "objectives": [
         {
           "type": "item",
@@ -338,8 +338,8 @@
       "requires": [
         "starbough_watch_03"
       ],
-      "title": "A Word with Nima",
-      "text": "Go into the {name:bandit_camp} and speak with Nima Fern. She has watched the bandits trade for weeks and knows who sells them the snares. Get her story out of their reach.",
+      "title": "What Nima Remembered",
+      "text": "Nima Fern has endured weeks among those traders, watching while they mistook silence for surrender. Speak with her at the {name:bandit_camp} {dir_from_giver:bandit_camp} and learn who supplies the snares. Give her time to answer; she has earned a listener.",
       "objectives": [
         {
           "type": "talk",
@@ -362,8 +362,8 @@
       "requires": [
         "starbough_watch_04"
       ],
-      "title": "Lookouts First",
-      "text": "Before I tell you anything, the Bandit Lookouts in this camp need to stop looking. Defeat four of them; they shoot from the edges, so close in fast. Then we can talk without being counted.",
+      "title": "An Audience We Can Spare",
+      "text": "I have learned quite enough here to make these people nervous, and I would rather not recite it within bowshot. Defeat four Bandit Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night. Close the distance before their arrows settle the conversation, then return to me.",
       "objectives": [
         {
           "type": "kill",
@@ -391,8 +391,8 @@
       "requires": [
         "starbough_testimony_01"
       ],
-      "title": "The Snarekeeper's Ground",
-      "text": "The snares are sold by a man called Vetch, who works the {name:high_boughs} {zone_area:high_boughs}. Ridgeback Tuskers roam there by day and trample anyone who comes looking for him. Thin out eight of them and the way will be clear.",
+      "title": "Bristles Before Vetch",
+      "text": "Vetch sells the snares, and he has chosen ground that discourages questions. Cull eight Ridgeback Tuskers by day in the {name:high_boughs} {zone_area:high_boughs}, where he works. You will have fewer tusks to contend with when you go looking for him.",
       "objectives": [
         {
           "type": "kill",
@@ -419,8 +419,8 @@
       "requires": [
         "starbough_testimony_02"
       ],
-      "title": "Vetch Keeps the Knots",
-      "text": "{name:snarekeeper_vetch} keeps his snares {dir_from_giver:snarekeeper_vetch}, day and night. Defeat him and the knot Ilyra found has no one left to tie it. He fights alone, which is the only fair thing about him.",
+      "title": "The Hand Behind the Knot",
+      "text": "I watched {name:snarekeeper_vetch} tie that knot so often I could do it with my eyes shut. Find him {dir_from_giver:snarekeeper_vetch}, by day or night, and defeat him. Let the next hands that learn the pattern use it to support a sapling.",
       "objectives": [
         {
           "type": "kill",
@@ -448,8 +448,8 @@
       "requires": [
         "starbough_testimony_03"
       ],
-      "title": "Lethariel Should Hear This",
-      "text": "Vetch carried a tally stamped with Lethariel's bough-seal, and that seal was never his to use. Take it to Eriath Boughwarden in Lethariel; the vale road leads to the capital. I will find my own way home, slowly and with great dignity.",
+      "title": "A Seal Among the Snares",
+      "text": "There is one thing I have not told you: Vetch's tallies bore Lethariel's bough-seal. Follow the vale road to the capital and report that to Eriath Boughwarden. Our seal is meant to protect what grows beneath it; someone has turned it into permission to take.",
       "objectives": [
         {
           "type": "talk",
@@ -473,8 +473,8 @@
       "requires": [
         "starbough_stores_03"
       ],
-      "title": "Bounty: Gnawers in the High Boughs",
-      "text": "Burrow Gnawers dig under the {name:high_boughs} again every night. Kill eight there whenever you pass, and I will pay each time. The trees do not keep count, but I do.",
+      "title": "Bounty: Teeth at the Roots",
+      "text": "I repair the root braces; the Burrow Gnawers return to inspect my work with their teeth. Kill eight at night in the {name:high_boughs} {zone_area:high_boughs} and report back for payment. This is a standing bounty, since neither the trees nor I can afford to retire.",
       "objectives": [
         {
           "type": "kill",
@@ -504,8 +504,8 @@
       "requires": [
         "starbough_watch_04"
       ],
-      "title": "Bounty: Vixens on the Path",
-      "text": "The Thicket Vixens of the {name:greenwood} come back faster than my scouts. Kill six by day and report to me; the offer stands as long as they do.",
+      "title": "Bounty: Room for a Patrol",
+      "text": "A path stays open only as long as someone tends it. Kill six Thicket Vixens by day in the {name:greenwood} {zone_area:greenwood} and return to me for payment; you may take this bounty again when more threaten the patrols.",
       "objectives": [
         {
           "type": "kill",
@@ -535,8 +535,8 @@
       "requires": [
         "starbough_departure"
       ],
-      "title": "Bounty: Roadside Toll",
-      "text": "Roadside Bandits keep drifting back to this camp. Defeat six of them whenever you are near, day or night, and I will make sure Starbough pays you for it.",
+      "title": "Bounty: Unwelcome Successors",
+      "text": "Another bandit always seems eager to inherit a patch of stolen ground. Defeat six Roadside Bandits at the {name:bandit_camp} {dir_from_giver:bandit_camp}, by day or night, and return to me for Starbough's payment. You may take the bounty again; I have plenty of patience for making their trade unprofitable.",
       "objectives": [
         {
           "type": "kill",
