@@ -91,10 +91,12 @@ Waypoints:
 the Kraken retune of ruling 7, waystones with unlock/formspec/travel/map
 markers, the mapgen items of §4, the documentation of §6.
 
-**Out:** docks, harbours, piers, landing structures on the islands,
-passengers, boat inventories, boat combat, currents, zone-hub waypoints,
-Nether crossings (V2), any change to flight rules, island content (Round 28
-writes island quests and bounties).
+**Out:** docks, harbours, piers, landing structures on the islands (narrowed
+by the user for Round 30: each of the four island landings gets a wooden
+pier and a sand beach, `boats.md` §7.1; a path up the island is not built,
+user 2026-10-02, it goes to the backlog), passengers, boat inventories, boat
+combat, currents, zone-hub waypoints, Nether crossings (V2), any change to
+flight rules, island content (Round 28 writes island quests and bounties).
 
 ## 3. What already exists (verified 2026-10-02)
 
@@ -117,7 +119,8 @@ writes island quests and bounties).
   ±2860..±3440, z ≈ ±340; channels x ±2500..±2860, z ±350, warning 48,
   minimum hard width 104; two boat paths per island at z ≈ ±125 with fixed
   landings kept as land (`zone_field.lua:321-330`) and ≥ 9 nodes of carved
-  water (`height.lua:81,482-510`). Crossing ≈ 390–420 nodes: about 100 s by
+  water (`height.lua:81,482-510`); since Round 30 each landing has a pier
+  and a beach (`boats.md` §7.1). Crossing ≈ 390–420 nodes: about 100 s by
   base boat, 50 s by improved boat. Runtime water classes via
   `grug_zones.water_class_at(x,z)`.
 - Flight ban over ocean and islands: shipped (`grug_mounts/entity.lua:126-193,355-360,487-489`).
@@ -158,7 +161,8 @@ Exactly these WP17 items:
    passes. The middle road gets no waypoint.
 
 **Not needed:** docks, harbours, slipways for players, island landing
-structures, buoys or channel markers.
+structures (until Round 30's piers and beaches, `boats.md` §7.1), buoys or
+channel markers.
 
 Everything else in WP17 is runtime and can merge before the bundle; the
 capital waystones only become clickable once the bundle's world exists

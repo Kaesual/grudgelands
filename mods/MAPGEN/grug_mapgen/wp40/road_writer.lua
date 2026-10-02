@@ -19,10 +19,14 @@
 -- the same materials as roads, only narrower (D75). Settlement and POI
 -- stamps come later in the same settle and overwrite a road where they meet
 -- it.
-return function(core_api)
+-- The same pass builds the piers of the dragon-island boat landings (Round
+-- 30 lane L, boats.md §7) from the landing zone's bridge planks, rail fence
+-- and post trunk (`source` is `source/simple_map.lua`).
+return function(core_api, source)
 	local function fail(message) error("WP40 road writer: " .. message, 0) end
 	if type(core_api) ~= "table" or type(core_api.get_content_id) ~= "function" or
-			type(core_api.registered_nodes) ~= "table" then
+			type(core_api.registered_nodes) ~= "table" or type(source) ~= "table" or
+			type(source.island_landings) ~= "table" then
 		fail("construction seam differs")
 	end
 	local floor = math.floor
@@ -30,23 +34,29 @@ return function(core_api)
 	local MATERIALS = {
 		human = {surface = "default:cobble", slab = "stairs:slab_cobble",
 			bridge = "default:wood", bridge_slab = "stairs:slab_wood",
-			pillar = "default:tree", wall = "default:stonebrick", rail = "default:fence_wood"},
+			pillar = "default:tree", wall = "default:stonebrick", rail = "default:fence_wood",
+			post = "default:tree"},
 		dwarf = {surface = "default:stone_block", slab = "stairs:slab_stone_block",
 			bridge = "default:pine_wood", bridge_slab = "stairs:slab_pine_wood",
-			pillar = "default:stonebrick", wall = "default:stonebrick", rail = "default:fence_pine_wood"},
+			pillar = "default:stonebrick", wall = "default:stonebrick", rail = "default:fence_pine_wood",
+			post = "default:pine_tree"},
 		elf = {surface = "default:silver_sandstone_block",
 			slab = "stairs:slab_silver_sandstone_block",
 			bridge = "default:aspen_wood", bridge_slab = "stairs:slab_aspen_wood",
-			pillar = "default:aspen_tree", wall = "default:silver_sandstone_brick", rail = "default:fence_aspen_wood"},
+			pillar = "default:aspen_tree", wall = "default:silver_sandstone_brick", rail = "default:fence_aspen_wood",
+			post = "default:aspen_tree"},
 		undead = {surface = "default:stonebrick", slab = "stairs:slab_stonebrick",
 			bridge = "default:pine_wood", bridge_slab = "stairs:slab_pine_wood",
-			pillar = "default:mossycobble", wall = "default:mossycobble", rail = "default:fence_pine_wood"},
+			pillar = "default:mossycobble", wall = "default:mossycobble", rail = "default:fence_pine_wood",
+			post = "default:pine_tree"},
 		orc = {surface = "default:desert_cobble", slab = "stairs:slab_desert_cobble",
 			bridge = "default:acacia_wood", bridge_slab = "stairs:slab_acacia_wood",
-			pillar = "default:acacia_tree", wall = "default:desert_stonebrick", rail = "default:fence_acacia_wood"},
+			pillar = "default:acacia_tree", wall = "default:desert_stonebrick", rail = "default:fence_acacia_wood",
+			post = "default:acacia_tree"},
 		troll = {surface = "default:mossycobble", slab = "stairs:slab_mossycobble",
 			bridge = "default:junglewood", bridge_slab = "stairs:slab_junglewood",
-			pillar = "default:jungletree", wall = "default:mossycobble", rail = "default:fence_junglewood"},
+			pillar = "default:jungletree", wall = "default:mossycobble", rail = "default:fence_junglewood",
+			post = "default:jungletree"},
 	}
 	-- nodes cleared above a road surface or deck (the walking space)
 	local CLEAR_ABOVE = 4
@@ -73,6 +83,87 @@ return function(core_api)
 			liquid_by_cid[c] = v
 		end
 		return v
+	end
+
+	-- Island landing piers (Round 30 lane L, boats.md §7). The shore point is
+	-- the last land column on the boat line, walking from the landing toward
+	-- the mainland until the first sea column (the same walk as the beach in
+	-- `height.lua`). From there a deck of planks PIER_WIDTH nodes wide runs
+	-- PIER_LENGTH nodes out over the water at PIER_DECK_Y (one node above the
+	-- water) and PIER_ROOT columns back onto the beach's water line. Every
+	-- PIER_POST_EVERY nodes from the pier head a row of trunk posts stands on
+	-- the floor: under the deck up to the water surface, beside it up to the
+	-- deck with a fence on top. Materials: the landing zone's race (planks,
+	-- fence, trunk); default planks without one.
+	local PIER_LENGTH, PIER_ROOT, PIER_WIDTH, PIER_POST_EVERY = 10, 2, 2, 3
+	local PIER_DECK_Y, PIER_WALK = 2, 160
+	local piers = {}
+	do
+		local path_by_id = {}
+		for _, path in ipairs(source.boat_paths or {}) do path_by_id[path.id] = path end
+		for _, landing in ipairs(source.island_landings) do
+			local path = path_by_id[landing.boat_path_id]
+			local zone = source.zones[landing.zone_numeric_id]
+			if not path or not zone then fail("island landing row differs: " .. tostring(landing.id)) end
+			local line = path.centreline
+			local dx = line[#line - 1].x - line[#line].x
+			local dz = line[#line - 1].z - line[#line].z
+			-- the boat paths are axis-aligned: one unit step toward the mainland
+			local ux, uz = 0, 0
+			if math.abs(dx) >= math.abs(dz) then ux = dx > 0 and 1 or -1 else uz = dz > 0 and 1 or -1 end
+			local px, pz = landing.position.x, landing.position.z
+			local ex = px + ux * (PIER_WALK + PIER_LENGTH)
+			local ez = pz + uz * (PIER_WALK + PIER_LENGTH)
+			-- every column the pier can reach, whatever the shore point
+			local reach = PIER_WIDTH + 1
+			piers[#piers + 1] = {x = px, z = pz, ux = ux, uz = uz,
+				m = resolved[zone.race_region] or resolved.human,
+				min_x = math.min(px, ex) - reach, max_x = math.max(px, ex) + reach,
+				min_z = math.min(pz, ez) - reach, max_z = math.max(pz, ez) + reach}
+		end
+	end
+	-- A sea column: water that is not a river or lake (those stay land).
+	local function sea_at(context, x, z)
+		local water_class, _, _, _, _, _, _, river_id = context.column_values_at(x, z)
+		return water_class ~= "land" and river_id == nil
+	end
+	local function dress_pier(context, pier, put)
+		local sx, sz
+		for k = 0, PIER_WALK do
+			local x, z = pier.x + k * pier.ux, pier.z + k * pier.uz
+			if sea_at(context, x, z) then
+				if k > 0 then sx, sz = x - pier.ux, z - pier.uz end
+				break
+			end
+		end
+		if not sx then return end
+		local m = pier.m
+		-- `a` along the pier (1 = the first water column), `b` across it
+		local vx, vz = -pier.uz, pier.ux
+		for a = 1 - PIER_ROOT, PIER_LENGTH do
+			local post_row = a >= 1 and (PIER_LENGTH - a) % PIER_POST_EVERY == 0
+			for b = -1, PIER_WIDTH do
+				local x, z = sx + a * pier.ux + b * vx, sz + a * pier.uz + b * vz
+				local deck = b >= 0 and b < PIER_WIDTH
+				if (deck or post_row) and x >= context.min_x and x <= context.max_x and
+						z >= context.min_z and z <= context.max_z then
+					local ground = select(6, context.column_values_at(x, z))
+					local wet = sea_at(context, x, z)
+					-- dry land above the water line is the beach: no pier
+					if wet or ground < PIER_DECK_Y then
+						if deck then
+							put(x, PIER_DECK_Y, z, m.bridge)
+							if post_row and wet then
+								for y = ground + 1, PIER_DECK_Y - 1 do put(x, y, z, m.post) end
+							end
+						else
+							for y = ground + 1, PIER_DECK_Y do put(x, y, z, m.post) end
+							put(x, PIER_DECK_Y + 1, z, m.rail)
+						end
+					end
+				end
+			end
+		end
 	end
 
 	local writer = {}
@@ -132,6 +223,13 @@ return function(core_api)
 						for y = wall_base, terrain_y do put(x, y, z, m.wall) end
 					end
 				end
+			end
+		end
+		for index = 1, #piers do
+			local pier = piers[index]
+			if pier.min_x <= context.max_x and pier.max_x >= context.min_x and
+					pier.min_z <= context.max_z and pier.max_z >= context.min_z then
+				dress_pier(context, pier, put)
 			end
 		end
 		return count
