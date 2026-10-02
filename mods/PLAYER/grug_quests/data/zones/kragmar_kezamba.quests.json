@@ -1,22 +1,23 @@
 {
   "zone": "kragmar_kezamba",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Kezamba trades with the spirits at its cenote shrine, and a broker has started trading the offerings instead.",
   "hubs": [
     {
       "id": "kezamba",
       "anchor": "kezamba",
       "givers": [
         {
-          "npc": "r20_troll_capital_cook",
+          "npc": "r20_troll_capital_envoy",
           "lines": [
-            "legacy"
+            "offerings",
+            "front"
           ]
         },
         {
-          "npc": "r20_troll_capital_envoy",
+          "npc": "r20_troll_capital_cook",
           "lines": [
-            "legacy",
-            "front"
+            "smokehouse",
+            "dispatch"
           ]
         }
       ]
@@ -24,93 +25,264 @@
   ],
   "quests": [
     {
-      "id": "r20_troll_capital_cook",
-      "line": "legacy",
+      "id": "kezamba_offerings_01",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 20,
+      "level": 21,
+      "requires": [],
+      "title": "Offerings Walk Away",
+      "text": "Offerings left at the cenote shrine have been walking off at night. Toll Bandits work the {name:canopy} {zone_area:canopy} after dark, among the Reed-Fang Vipers. Take six of them off the paths and let us see whose purse the offerings end up in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit"
+          ],
+          "count": 6,
+          "area": "kragmar_kezamba/canopy"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "The bandits are the canopy's minor night role.",
+      "duration_min": 11
+    },
+    {
+      "id": "kezamba_offerings_02",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 23,
+      "level": 25,
+      "requires": [
+        "kezamba_offerings_01"
+      ],
+      "title": "Razorbacks on the Shrine Paths",
+      "text": "Somebody pays hunters to drive Jungle Razorbacks onto the shrine paths, so pilgrims turn back and leave their offerings on the ground. Kill six razorbacks in the {name:vinewood} {zone_area:vinewood} by day.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "monstrous_boar"
+          ],
+          "count": 6,
+          "area": "kragmar_kezamba/vinewood"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "kezamba_offerings_03",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "kezamba_offerings_02"
+      ],
+      "title": "The Tollcamp",
+      "text": "The somebody is Takka, and Takka's archers hold the {name:tollcamp} {dir_from_giver:tollcamp}. Kill six Toll Bandit Archers; they shoot from range, so close the distance or use the trees.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer"
+          ],
+          "count": 6,
+          "area": "kragmar_kezamba/tollcamp"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "lesson": "Archers keep their distance; close in or use cover.",
+      "duration_min": 12
+    },
+    {
+      "id": "kezamba_offerings_04",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "kezamba_offerings_03"
+      ],
+      "title": "The Offering-Broker",
+      "text": "Bandit Offering-Broker Takka sells the shrine's own offerings back to the pilgrims who brought them, from the middle of the {name:tollcamp} {dir_from_giver:offering_broker_takka}. End the trade, and the spirits get paid in full again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "offering_broker_takka"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "climax": true,
+      "duration_min": 10
+    },
+    {
+      "id": "kezamba_front_thunderroot",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_anchor_048_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "kezamba_offerings_04"
+      ],
+      "title": "Thunderstep Watch",
+      "text": "With the broker gone, the shrine can spare you. Rumela Stormstep holds Thunderstep Watch in Thunderroot Wilds, past the edge of our jungle, and the Accord presses hard there. Go and lend her your spear.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_048_host"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "kezamba_front_blackwind",
+      "line": "offerings",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_anchor_039_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "kezamba_offerings_04"
+      ],
+      "title": "Ashveil Watch",
+      "text": "The Throng holds more than one front. Vaska Ashlistener keeps Ashveil Watch on Blackwind Rise, a long road away beyond the undead lands. If you want to see the whole war, start there.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_039_host"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "duration_min": 14
+    },
+    {
+      "id": "kezamba_smokehouse_01",
+      "line": "smokehouse",
       "giver": "r20_troll_capital_cook",
       "turnin": "r20_troll_capital_cook",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 20,
+      "level": 21,
       "requires": [],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Smoke Above the Cenote",
-      "text": "Teshani Smokereed is preparing the next meal beside Kezamba's shore smokehouse. Bring five raw meat portions for the travellers waiting above the cenote. No Cooking profession is required.",
+      "title": "Meat for the Smokehouse",
+      "text": "The smokehouse never sleeps, so it is always hungry. Bring eight Raw Meat; the Reed Tapirs of the {name:canopy} give it up easily enough, and so does nearly everything else with legs.",
       "objectives": [
         {
           "type": "item",
           "item": "mobs:meat_raw",
-          "count": 5
+          "count": 8,
+          "roles": [
+            "reed_tapir"
+          ],
+          "area": "kragmar_kezamba/canopy"
         }
       ],
       "rewards": {
-        "xp": 380,
-        "copper": 45,
+        "weight": 2,
         "items": []
-      }
+      },
+      "duration_min": 8
     },
     {
-      "id": "r20_troll_capital_services",
-      "line": "legacy",
-      "giver": "r20_troll_capital_envoy",
+      "id": "kezamba_smokehouse_02",
+      "line": "smokehouse",
+      "giver": "r20_troll_capital_cook",
       "turnin": "r20_troll_capital_cook",
-      "min_level": 10,
-      "level": 10,
+      "min_level": 24,
+      "level": 25,
       "requires": [
-        "r20_troll_capital_intro"
+        "kezamba_smokehouse_01"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "The Smokereed Welcome",
-      "text": "Nalo sends new arrivals to Teshani Smokereed at the shore smokehouse. Speak with the cook beside the oven and complete this introduction there; the separate Cooking trainer is optional.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_troll_capital_cook"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_troll_capital_stores",
-      "line": "legacy",
-      "giver": "r20_troll_capital_envoy",
-      "turnin": "r20_troll_capital_envoy",
-      "min_level": 20,
-      "level": 20,
-      "requires": [],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Boards for the Rain Stores",
-      "text": "The rain stores need sound crosspieces above the damp floor. Bring ten junglewood planks to Nalo in Kezamba so the next cargo can stay dry without narrowing the walkway.",
+      "title": "Tusks for the Hooks",
+      "text": "Smoked meat hangs from tusk hooks, and the best hooks are Gnarled Boar Tusks from the Jungle Razorbacks of the {name:vinewood}. Bring two; if Nalo has you hunting razorbacks anyway, you are halfway done.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:junglewood",
-          "count": 10
+          "item": "grug_mobs:gnarled_boar_tusk",
+          "count": 2,
+          "roles": [
+            "monstrous_boar"
+          ],
+          "area": "kragmar_kezamba/vinewood"
         }
       ],
       "rewards": {
-        "xp": 780,
-        "copper": 60,
+        "weight": 2,
         "items": []
-      }
+      },
+      "duration_min": 8
     },
     {
-      "id": "r20_troll_journey_01",
-      "line": "legacy",
-      "giver": "r20_troll_capital_envoy",
+      "id": "kezamba_smokehouse_bounty",
+      "line": "smokehouse",
+      "giver": "r20_troll_capital_cook",
+      "turnin": "r20_troll_capital_cook",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "kezamba_smokehouse_02"
+      ],
+      "title": "Bounty: Razorbacks for the Fire",
+      "text": "Repeatable. The smokehouse burns through razorbacks the way the rain burns through roofs. Kill six Jungle Razorbacks in the {name:vinewood} by day; the next bounty opens twenty minutes after you hand this one in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "monstrous_boar"
+          ],
+          "count": 6,
+          "area": "kragmar_kezamba/vinewood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "kezamba_dispatch_whispering",
+      "line": "dispatch",
+      "giver": "r20_troll_capital_cook",
       "turnin": "r20_anchor_024_host",
       "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Word for Taleko Drycord",
-      "text": "The capital keeps contact with the working settlements beyond its thresholds. Travel to Whisperreed Landing in Whispering Reedlands and speak with Taleko Drycord. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Taleko Drycord there. No parcel, fighting errand or return trip is required.",
+      "level": 22,
+      "requires": [
+        "kezamba_smokehouse_01"
+      ],
+      "title": "Smoke for Whisperreed Landing",
+      "text": "Taleko Drycord at Whisperreed Landing trades reeds for my smoked fish, and the Whispering Reedlands always need help. Take the road there and tell Taleko the smokehouse sends its regards.",
       "objectives": [
         {
           "type": "talk",
@@ -118,10 +290,34 @@
         }
       ],
       "rewards": {
-        "xp": 615,
-        "copper": 50,
+        "weight": 0.5,
         "items": []
-      }
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "kezamba_dispatch_totemwater",
+      "line": "dispatch",
+      "giver": "r20_troll_capital_cook",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [
+        "kezamba_smokehouse_01"
+      ],
+      "title": "Smoke for Totemwater Post",
+      "text": "Tokai Knotreader at Totemwater Post reads the river knots and eats more smoked fish than any troll alive. Take the road to Totemwater Reach and tell Tokai the smokehouse has not forgotten.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_047_host"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "duration_min": 10
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_whispering_reedlands",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "The Whispering Reedlands charge a toll for every crossing, and the mirefolk collect it.",
   "hubs": [
     {
       "id": "r20_anchor_024",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_024_host",
           "lines": [
-            "legacy"
+            "reeds",
+            "journeys"
           ]
         }
       ]
@@ -21,7 +22,7 @@
         {
           "npc": "r20_anchor_046_host",
           "lines": [
-            "legacy"
+            "voice"
           ]
         }
       ]
@@ -33,7 +34,7 @@
         {
           "npc": "r20_anchor_066_host",
           "lines": [
-            "legacy"
+            "cut"
           ]
         }
       ]
@@ -41,292 +42,270 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_024_01",
-      "line": "legacy",
+      "id": "whispering_reeds_01",
+      "line": "reeds",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_024_host",
+      "min_level": 20,
+      "level": 22,
+      "requires": [],
+      "title": "Lights That Whisper",
+      "text": "At night Wandering Wisps drift over the {name:canopy} {zone_area:canopy} and lead travellers off the dry paths. Put out six of them. The ones they lead away always end up owing a toll to somebody.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wandering_wisp"
+          ],
+          "count": 6,
+          "area": "kragmar_whispering_reedlands/canopy"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "whispering_reeds_02",
+      "line": "reeds",
       "giver": "r20_anchor_024_host",
       "turnin": "r20_anchor_024_host",
       "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "A Landing That Holds",
-      "text": "Whisperreed's landing needs crosspieces strong enough to keep laden travellers above the mud. Bring eight junglewood planks to the sheltered landing workshop; this is a repair delivery, not a boatbuilding lesson. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:junglewood",
-          "count": 8
-        }
+      "level": 22,
+      "requires": [
+        "whispering_reeds_01"
       ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_024_02",
-      "line": "legacy",
-      "giver": "r20_anchor_024_host",
-      "turnin": "r20_anchor_024_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Tapirs on the Dry Path",
-      "text": "Tapirs crowd the dry paths through Whispering Reedlands by day. Clear four so carriers can bring their loads to Whisperreed Landing without stepping into the pools.",
+      "title": "The Hushwater Nests",
+      "text": "Toll Mirefolk nest at the {name:hushwater_nests} {dir_from_giver:hushwater_nests} and charge anyone who crosses the water. Kill six of them; the reeds were here first and never charged anyone.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_tapir"
+          "roles": [
+            "toll_mirefolk"
           ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 4
+          "count": 6,
+          "area": "kragmar_whispering_reedlands/hushwater_nests"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 11
     },
     {
-      "id": "r20_anchor_024_03",
-      "line": "legacy",
+      "id": "whispering_journey_speargrass",
+      "line": "journeys",
       "giver": "r20_anchor_024_host",
-      "turnin": "r20_anchor_024_host",
-      "min_level": 23,
+      "turnin": "r20_anchor_022_host",
+      "min_level": 22,
       "level": 23,
       "requires": [
-        "r20_anchor_024_02"
+        "whispering_reeds_01"
       ],
-      "faction": "throng",
-      "title": "Cold Lights in the Reeds",
-      "text": "The cleared paths are drawing travellers after dusk, when false lights gather over the reeds. Disperse three wisps in Whispering Reedlands at night and return to Taleko.",
+      "title": "A Trade Road to Speargrass",
+      "text": "If you want to see how the orcs do things, Brakka Jarward keeps Speargrass Wellhold in Speargrass Reach, past Gor Drazhak. Carry my greetings and see what work Brakka has.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:wandering_wisp"
-          ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_022_host"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 0.5,
         "items": []
-      }
+      },
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_046_01",
-      "line": "legacy",
-      "giver": "r20_anchor_046_host",
-      "turnin": "r20_anchor_046_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "A Dry Signal Shelf",
-      "text": "Reedvoice's signal shelf has sunk below the driest line on its posts. Bring eight junglewood planks to raise the shelf inside the shelter without blocking the reed-path entrance. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:junglewood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_046_02",
-      "line": "legacy",
-      "giver": "r20_anchor_046_host",
-      "turnin": "r20_anchor_046_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Cats by the Reed Pipes",
-      "text": "Jungle lynx watch Whispering Reedlands' forest margins by day and keep the signal carriers from their paths. Defeat four, then return to Reedvoice Station.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:jungle_lynx"
-          ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_046_03",
-      "line": "legacy",
-      "giver": "r20_anchor_046_host",
-      "turnin": "r20_anchor_046_host",
-      "min_level": 23,
+      "id": "whispering_journey_ossuary",
+      "line": "journeys",
+      "giver": "r20_anchor_024_host",
+      "turnin": "r20_anchor_020_host",
+      "min_level": 22,
       "level": 23,
       "requires": [
-        "r20_anchor_046_02"
+        "whispering_reeds_01"
       ],
-      "faction": "throng",
-      "title": "The False Answering Lights",
-      "text": "The carriers can travel by day, but lights in the wet reeds mimic the station's signals after dusk. Disperse three wisps in Whispering Reedlands at night.",
+      "title": "A Long Road to Ossuary Reach",
+      "text": "The undead keep their records at Ossuary Ledgerstead in Ossuary Reach, a long way from any reed. Sovel Namekeeper there always has a task for the living. Take the road if you have the patience.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:wandering_wisp"
-          ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_anchor_020_host"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 0.5,
         "items": []
-      }
+      },
+      "duration_min": 16
     },
     {
-      "id": "r20_anchor_066_01",
-      "line": "legacy",
-      "giver": "r20_anchor_066_host",
-      "turnin": "r20_anchor_066_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "Timbers Kept Above Water",
-      "text": "Reedstone's timber stacks must stay above the wet ground if the quarry is to remain workable. Bring eight junglewood planks for the raised supports beside its shelter. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:junglewood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_066_02",
-      "line": "legacy",
-      "giver": "r20_anchor_066_host",
-      "turnin": "r20_anchor_066_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "throng",
-      "title": "The Quarry Pool Moves",
-      "text": "Bog ooze collects on Whispering Reedlands' muddy ground around the quarry approaches. Break up four so the crew can reach its stored tools.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:bog_ooze"
-          ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_066_03",
-      "line": "legacy",
+      "id": "whispering_cut_01",
+      "line": "cut",
       "giver": "r20_anchor_066_host",
       "turnin": "r20_anchor_066_host",
       "min_level": 23,
-      "level": 23,
-      "requires": [
-        "r20_anchor_066_02"
-      ],
-      "faction": "throng",
-      "title": "Jaws Along the Haul Path",
-      "text": "Once the ooze is cleared, the haulers can use the bank path again. Defeat three crocodiles on Whispering Reedlands' muddy banks before the next load leaves Reedstone Cut.",
+      "level": 25,
+      "requires": [],
+      "title": "Jaws at the Haul Path",
+      "text": "Reed Crocodiles lie in the {name:mudbanks} {dir_from_giver:mudbanks} by day and by night, right where we haul stone. Kill six. They have eaten two carts and one very surprised mule.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:crocodile"
+          "roles": [
+            "reed_crocodile"
           ],
-          "zone": "kragmar_whispering_reedlands",
-          "count": 3
+          "count": 6,
+          "area": "kragmar_whispering_reedlands/mudbanks"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 3,
         "items": []
-      }
+      },
+      "duration_min": 11
     },
     {
-      "id": "r20_troll_journey_02",
-      "line": "legacy",
-      "giver": "r20_anchor_024_host",
+      "id": "whispering_cut_02",
+      "line": "cut",
+      "giver": "r20_anchor_066_host",
       "turnin": "r20_anchor_066_host",
       "min_level": 24,
-      "level": 24,
-      "requires": [],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Word for Zali Runoff",
-      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Reedstone Cut in Whispering Reedlands and speak with Zali Runoff. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Zali Runoff there. No parcel, fighting errand or return trip is required.",
+      "level": 26,
+      "requires": [
+        "whispering_cut_01"
+      ],
+      "title": "Gel for the Quarry Pumps",
+      "text": "The quarry pumps squeal unless they are greased, and nothing greases like Slime Gel. Bring two from the Bubbling Bog Oozes of the {name:hushmire} {dir_from_giver:hushmire}; they wobble about there day and night.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_066_host"
+          "type": "item",
+          "item": "grug_mobs:slime_gel",
+          "count": 2,
+          "roles": [
+            "sullen_bog_ooze"
+          ],
+          "area": "kragmar_whispering_reedlands/hushmire"
         }
       ],
       "rewards": {
-        "xp": 705,
-        "copper": 50,
+        "weight": 2,
         "items": []
-      }
+      },
+      "duration_min": 9
     },
     {
-      "id": "r20_troll_journey_03",
-      "line": "legacy",
+      "id": "whispering_cut_bounty",
+      "line": "cut",
       "giver": "r20_anchor_066_host",
-      "turnin": "r20_anchor_048_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Word for Rumela Stormstep",
-      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Thunderstep Watch in Thunderroot Wilds and speak with Rumela Stormstep. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Rumela Stormstep there. No parcel, fighting errand or return trip is required.",
+      "turnin": "r20_anchor_066_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "whispering_cut_02"
+      ],
+      "title": "Bounty: Crocodiles at the Cut",
+      "text": "Repeatable. The Reed Crocodiles of the {name:mudbanks} come back with every flood. Kill six and come back; the next bounty opens twenty minutes after you hand this one in.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_048_host"
+          "type": "kill",
+          "roles": [
+            "reed_crocodile"
+          ],
+          "count": 6,
+          "area": "kragmar_whispering_reedlands/mudbanks"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "whispering_voice_01",
+      "line": "voice",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [],
+      "title": "Nests in the Deep Reeds",
+      "text": "More Toll Mirefolk nest at the {name:mire_nests} {dir_from_giver:mire_nests}, and these ones answer to a tollkeeper. Kill six of them so the tollkeeper has to come out and count for itself.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_mirefolk"
+          ],
+          "count": 6,
+          "area": "kragmar_whispering_reedlands/mire_nests"
         }
       ],
       "rewards": {
-        "xp": 915,
-        "copper": 50,
+        "weight": 3,
         "items": []
-      }
+      },
+      "duration_min": 11
+    },
+    {
+      "id": "whispering_voice_02",
+      "line": "voice",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_046_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "whispering_voice_01"
+      ],
+      "title": "The Tollkeeper of the Mire",
+      "text": "Mirefolk Tollkeeper Ush sits at the heart of the {name:mire_nests} {dir_from_giver:tollkeeper_ush} and takes a toll from everything that floats. Kill Ush; the reeds will whisper about it for years.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "tollkeeper_ush"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "climax": true,
+      "duration_min": 9
+    },
+    {
+      "id": "whispering_front_bannerbreak",
+      "line": "voice",
+      "giver": "r20_anchor_046_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "whispering_voice_02"
+      ],
+      "title": "Tornstandard Hold",
+      "text": "The tolls are paid, and the war waits past the reeds. Yarra Standardmender holds Tornstandard Hold on Bannerbreak Mesa; go and show her what the reedlands taught you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_044_host"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "duration_min": 10
     }
   ]
 }
