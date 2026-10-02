@@ -37,19 +37,14 @@ local function read_files()
 	return files
 end
 
-local function entity_names(row)
-	return V.target_names(row)
-end
-
 -- One quest of a file as a registry definition.
 local function definition(file, quest)
 	local objectives = {}
 	for index, objective in ipairs(quest.objectives) do
 		local row = {type = objective.type, count = objective.count or 1}
 		if objective.type == "kill" then
-			row.mobs = entity_names(objective)
+			row.mobs = V.target_names(objective)
 			row.area = V.area_ref(objective.area, file.zone)
-			row.zone = objective.zone
 		elseif objective.type == "item" then
 			row.item = objective.item
 			row.group = objective.group and objective.group:gsub("^group:", "") or nil
@@ -60,12 +55,12 @@ local function definition(file, quest)
 	end
 	local drops = {}
 	for index, drop in ipairs(quest.quest_drops or {}) do
-		drops[index] = {item = drop.item, chance = drop.chance, mobs = entity_names(drop),
+		drops[index] = {item = drop.item, chance = drop.chance, mobs = V.target_names(drop),
 			area = V.area_ref(drop.area, file.zone)}
 	end
 	local rewards = quest.rewards
 	local copper = rewards.copper
-	if copper == nil and rewards.weight then copper = Q.quest_copper(quest.level, rewards.weight) end
+	if copper == nil then copper = Q.quest_copper(quest.level, rewards.weight) end
 	local items = {}
 	for index, item in ipairs(rewards.items or {}) do
 		items[index] = item.item .. " " .. (item.count or 1)
@@ -74,10 +69,9 @@ local function definition(file, quest)
 		title = Q.fill_names(quest.title, file.zone), description = quest.text,
 		npc = quest.giver, turnin_npc = quest.turnin,
 		min_level = quest.min_level, level = quest.level, prerequisites = quest.requires or {},
-		faction = quest.faction, race = quest.race, objectives = objectives, quest_drops = drops,
+		objectives = objectives, quest_drops = drops,
 		repeatable = quest.repeatable and {cooldown = quest.repeatable.cooldown} or nil,
-		rewards = {weight = rewards.weight, xp = rewards.weight == nil and rewards.xp or nil,
-			copper = copper or 0, items = items},
+		rewards = {weight = rewards.weight, copper = copper, items = items},
 		zone = file.zone, line = quest.line, source = "zones/" .. file.name,
 	}
 end

@@ -84,16 +84,17 @@ python3 tools/r28_design/validate.py                         # whole design dir
 python3 tools/r28_design/validate.py --atlas docs/planning/round28/zones/
 python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
 python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/ --zone <your zones>   # a content lane's shipped files
-python3 tools/r28_design/validate.py --game --legacy --atlas docs/planning/round28/zones/   # the whole shipped set incl. legacy quests
+python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/   # the whole shipped set
 ```
 
 - `--game` reads the zone files from the game
   (`mods/ENTITIES/grug_mobs/data/zones` and
   `mods/PLAYER/grug_quests/data/zones`) instead of the design's `zones/`;
-  the catalogue stays the design's. A content lane checks its own zones
-  **without** `--legacy` (that option lets a quest through with a fixed `xp`
-  or without `weight`); `--legacy` is only for the whole shipped set while
-  legacy quests ship.
+  the catalogue stays the design's.
+- `E-unknown-key`: a quest, an objective, its rewards or a quest drop
+  carries a field the formats do not have (Round 30: the retired `xp`,
+  `faction`, `race`, kill `mobs` and `zone` among them); the game refuses
+  the same at load. Elsewhere an unknown field is `W-unknown-key`.
 - Quest texts (Round 29 Q1, [quests.md](../../docs/design/quests.md#for-content-lanes)):
   `E-placeholder` (a brace outside a well-formed placeholder, an unknown
   placeholder, a wrong argument count, a direction placeholder in a title),
@@ -206,14 +207,9 @@ python3 tools/r28_design/validate.py --game --legacy --atlas docs/planning/round
     front). Zones without a spawn recipe are not checked (`W-loot-unchecked`
     names those tracks).
   Without `--atlas` these checks are skipped with one `W-no-atlas` warning.
-- `--legacy` allows the legacy-only fields of B4's mechanical split (`xp`,
-  `faction`, `race`; kill objectives with `mobs` entity names and `zone`
-  instead of `roles`). Such a legacy kill objective may also name the enemy
-  faction guards (`grug_mobs:guard_accord`, `grug_mobs:guard_throng`) that
-  today's contested-zone quests ask for; a designed `roles` objective may
-  not (`E-not-a-mob`). The split itself is
-  `mods/PLAYER/grug_quests/data/zones/`; the game checks the same rules at
-  load (`grug_quests/validate.lua`).
+- Kill objectives name `roles` only; a guard or another NPC is no kill
+  target (`E-not-a-mob`). The game checks the same rules at load
+  (`grug_quests/validate.lua`).
 - Output: one line per finding, `error [E-code] file: json.path: message` or
   `warning [W-code] …`. Exit 0 = no errors, 1 = errors (or warnings with
   `--strict`), 2 = unreadable files.
@@ -251,8 +247,7 @@ python3 tools/r28_design/ledger.py \
   `--route <the 31-40 and capital zones> --lines front --start-level 40
   --repeat 3` for `ledger/front.md`.
 - Kill objectives and quest drops on a leader (of any zone) use its fixed
-  level; legacy
-  kill objectives (`mobs`) are read too.
+  level.
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
@@ -316,14 +311,14 @@ and the chief as its leader), `samples/existing_min.json`, `samples/mobs_min.jso
 `samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 102 variants each give
+`W-loot-unchecked` (only Dawnmere is designed) and that 144 variants each give
 their expected finding (broken designs and recipes, plus allowed forms: a
 `from` anchor by anchor id, a leader deep in a kind, a palette-only spawns
 file, a leader kill without area, a leader of another zone, a declared
 front file, a capital front giver, both outpost givers declared, the
 single-NPC contested exemption, a new giver at a free socket, a zone-added
-leader used from another zone, a critter sub-type of a critter base, legacy kill
-objectives, a legacy enemy-guard kill). The ledger test checks the
+leader used from another zone, a critter sub-type of a critter base) and the
+retired quest fields refused (`E-unknown-key`). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
 per-quest bands, per-role levels in kinds, species mix, `--lines` and

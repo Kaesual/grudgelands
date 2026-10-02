@@ -72,7 +72,7 @@ local function run()
 	Q.register_npc("probe_giver", {settlement = "probe", socket = "quest", title = "Probe Giver"})
 	Q.register_quest("zz_probe_rewards", {title = "Probe Rewards", description = "Probe.",
 		npc = "probe_giver", objectives = {{type = "item", item = "grug_materials:pick_stone", count = 1}},
-		rewards = {xp = 1, copper = 1, items = {"mobs:meat_raw 3", "grug_materials:axe_wood"}}})
+		rewards = {weight = 1, copper = 1, items = {"mobs:meat_raw 3", "grug_materials:axe_wood"}}})
 
 	-- 2. Every quest item and reward item: name only, no stat line.
 	local ids, items, seen = {}, {}, {}
@@ -125,7 +125,6 @@ local function run()
 		local sample = {}
 		for _, id in ipairs(ids) do
 			local def = Q.registered_quests[id]
-			faction, race = def.faction or "accord", def.race or "human"
 			check(not stat_hit(def.description), "hand-written stats: " .. id .. " " .. tostring(stat_hit(def.description)))
 			local completed = {}
 			for _, prior in ipairs(def.prerequisites) do completed[prior] = true end

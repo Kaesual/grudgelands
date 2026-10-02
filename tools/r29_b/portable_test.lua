@@ -12,7 +12,12 @@
 --   F. purchase gating: Shipwright rows, own faction, levels, Learn Boat
 --      first, purchase at the shipped price, Skills recovery ids;
 --   G. Kraken speed switch: 10 in deep ocean, 5 elsewhere, leash, view range,
---      and the switch writing the speed base while a slow runs.
+--      and the switch writing the speed base while a slow runs;
+--   H. riding tiers 1-4 bought in order through the Riding Trainer dialogue
+--      at the shipped prices (grug_mounts.PRICES, which
+--      `python3 tools/r29_e4/income.py --check` ties to the income estimate):
+--      level gate, preceding tier, one copper short, the exact price taken
+--      (Round 30 lane C).
 --
 --   luajit tools/r29_b/portable_test.lua [REPO]
 -- Prints "R29 B PORTABLE PASS checks=<n>" or the failures.
@@ -572,6 +577,57 @@ water_class = "deep_ocean"
 kraken_def.do_custom(guard, 1)
 eq(guard._grug_speed_base.run, 10, "switch writes the speed base while slowed")
 eq(guard.run_velocity, 2.5, "the slowed live speed stays the effect engine's")
+
+------------------------------------------------------------------------------
+-- H. Riding tiers 1-4 at the shipped prices, through the real dialogue and
+--    purchase code.
+------------------------------------------------------------------------------
+local ed = make_player("ed", "accord", "human")
+ed.pos = {x = 11, y = 5, z = 10}
+local function trainer_buy(tier_id)
+	check(grug_mounts.open_trainer(ed, trainer), "Riding Trainer opens for tier " .. tier_id)
+	local form = shown[#shown]
+	for _, fn in ipairs(callbacks.fields) do fn(ed, form.formname, {["buy_" .. tier_id] = true}) end
+	return form.fs
+end
+for tier_id = 1, 4 do
+	local tier, price = grug_mounts.TIERS[tier_id], grug_mounts.PRICES[tier_id]
+	local name = tier.name
+	check(type(price) == "number" and price > 0, name .. ": a shipped price")
+	if tier_id < 4 then
+		level = 60
+		eq((grug_mounts.tier_state(ed, tier_id + 1)), "previous", name .. ": comes before the next tier")
+		money = 1000000
+		check(not grug_mounts.purchase(ed, tier_id + 1), name .. ": the next tier cannot be skipped to")
+	end
+	level = tier.level - 1
+	eq((grug_mounts.tier_state(ed, tier_id)), "level", name .. ": below level " .. tier.level)
+	money = price
+	trainer_buy(tier_id)
+	eq(grug_mounts.owns_tier(ed, tier_id), false, name .. ": not bought below its level")
+	eq(money, price, name .. ": nothing taken below its level")
+	level = tier.level
+	local state, shown_price = grug_mounts.tier_state(ed, tier_id)
+	eq(state, "buy", name .. ": for sale at level " .. tier.level)
+	eq(shown_price, price, name .. ": the dialogue's price is the shipped price")
+	money = price - 1
+	local fs = trainer_buy(tier_id)
+	check(fs:find(("buy_%d;Buy %d copper"):format(tier_id, price), 1, true) ~= nil,
+		name .. ": the Buy button shows " .. price .. " copper")
+	eq(grug_mounts.owns_tier(ed, tier_id), false, name .. ": one copper short is refused")
+	eq(money, price - 1, name .. ": nothing taken when one copper short")
+	money = price + 7
+	trainer_buy(tier_id)
+	check(grug_mounts.owns_tier(ed, tier_id), name .. ": bought")
+	eq(money, 7, name .. ": exactly the shipped price taken")
+	eq((grug_mounts.tier_state(ed, tier_id)), "owned", name .. ": owned afterwards")
+	ok, message = grug_mounts.purchase(ed, tier_id)
+	check(not ok and message == "You already own this riding tier.", name .. ": no second purchase")
+end
+eq(grug_mounts.highest_owned(ed, "land"), 2, "riding: the two land tiers")
+eq(grug_mounts.highest_owned(ed, "flight"), 4, "riding: the two flight tiers")
+eq(table.concat(grug_mounts.owned_tier_ids(ed), ","), "1,2,3,4", "Skills recovery lists the four riding tiers")
+eq(grug_mounts.highest_owned(ed, "water"), 0, "riding tiers are no boat")
 
 if failures > 0 then
 	print(("%d checks, %d failures"):format(checks, failures))

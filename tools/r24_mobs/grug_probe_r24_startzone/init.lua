@@ -12,11 +12,6 @@
 -- sand and the start-town ground; world_zones.md §7). Hostile (H), prey that
 -- fights back (P) and passive critters (C) are marked.
 --
--- The quest audit reads every registered quest of a race chain whose kill
--- objective names no zone (the start-zone chain) and reports the level range
--- at which each target can spawn in that race's start zone. A quest whose
--- targets cannot spawn at or below its level is a finding.
---
 -- Ruling 25 in the real mapgen: a strip ahead of the Sunscar start is
 -- emerged and every level-banded plant there must stand on a column whose
 -- content level (surface_mob_level_at, the start-zone gradient) lies in the
@@ -108,7 +103,6 @@ local function run()
 	log(("%d species with spawn rows"):format(#names))
 
 	-- per zone: samples per band
-	local results = {}
 	for _, z in ipairs(ZONES) do
 		local record = grug_zones.get(z.zone)
 		local ground = {}
@@ -163,7 +157,6 @@ local function run()
 				zone_result.cells[band][clock[1]] = cell
 			end
 		end
-		results[z.race] = zone_result
 		for band = 1, 3 do
 			for _, clock in ipairs(CLOCKS) do
 				local cell = zone_result.cells[band][clock[1]]
@@ -188,39 +181,6 @@ local function run()
 	end
 	core.set_timeofday(0.5)
 
-	-- Quest audit.
-	local ids = {}
-	for id in pairs(grug_quests.registered_quests) do ids[#ids + 1] = id end
-	table.sort(ids)
-	for _, id in ipairs(ids) do
-		local quest = grug_quests.registered_quests[id]
-		local zone_result = quest.race and results[quest.race]
-		for _, objective in ipairs(quest.objectives) do
-			if zone_result and objective.type == "kill" and not objective.zone then
-				local level = quest.target_level or quest.min_level
-				local parts, best = {}, nil
-				for _, mob in ipairs(objective.mobs) do
-					local low, high
-					for band = 1, 3 do
-						for _, clock in ipairs(CLOCKS) do
-							local range = zone_result.cells[band][clock[1]][mob]
-							if range then
-								low = math.min(low or 99, range.low)
-								high = math.max(high or 0, range.high)
-							end
-						end
-					end
-					parts[#parts + 1] = ("%s %s"):format(mob:sub(11),
-						low and ("L%d-%d"):format(low, high) or "never")
-					if low and (not best or low < best) then best = low end
-				end
-				log(("quest %s (level %d, %d XP): %s"):format(id, level, quest.rewards.xp,
-					table.concat(parts, ", ")))
-				check(best ~= nil and best <= level, ("%s: a target spawns at or below level %d"):format(
-					id, level))
-			end
-		end
-	end
 	content_test()
 end
 

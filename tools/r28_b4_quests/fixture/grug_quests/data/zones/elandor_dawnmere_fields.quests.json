@@ -126,18 +126,16 @@
       "rewards": {"weight": 1, "copper": 10}
     },
     {
-      "id": "fx_legacy",
+      "id": "fx_boar_hunt",
       "line": "pantry",
       "giver": "r20_human_start_cook",
       "turnin": "r20_human_start_cook",
       "min_level": 1,
       "level": 1,
-      "faction": "accord",
-      "race": "human",
-      "title": "Legacy Boars",
-      "text": "A quest in the legacy fields of the mechanical split.",
-      "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar"], "zone": "elandor_dawnmere_fields", "count": 2}],
-      "rewards": {"xp": 50, "copper": 3, "items": []}
+      "title": "Boars Anywhere",
+      "text": "A base-role hunt without an area: any boar counts, wherever it falls.",
+      "objectives": [{"type": "kill", "roles": ["boar"], "count": 2}],
+      "rewards": {"weight": 1, "copper": 3, "items": []}
     }
   ]
 }

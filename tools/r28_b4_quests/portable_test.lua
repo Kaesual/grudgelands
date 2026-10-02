@@ -7,7 +7,7 @@
 --   2. play through a player stand-in: every objective kind, area credit by
 --      the mob's tag, leader kills, the compact HUD line, travel credit on
 --      accept ("Travel to"), quest drops per eligible participant, repeatable
---      cooldown and labels, weight and legacy rewards;
+--      cooldown and labels, weight rewards;
 --   3. load-time validation: one designer mistake per case, each refused with
 --      a message naming the file and the quest.
 --
@@ -498,22 +498,23 @@ Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_night")
 eq(journal_row(ann, "fx_kitchen_bounty").objectives[1].count, 1, "a repeat starts from zero")
 eq(Q.status(ann, "fx_kitchen_after"), "available", "dependant stays available during a repeat")
 
--- Legacy fields: fixed XP, entity names. (The runtime zone filter is gone
--- since Round 30: no shipped quest carries one.)
-check(Q.accept(ann, "fx_legacy"), "accept the legacy quest")
+-- An area-less kill counts the role wherever it falls (there is no zone filter).
+check(Q.accept(ann, "fx_boar_hunt"), "accept the area-less hunt")
+zone_at["5,5"] = "elandor_goldmead_vale"
+Q.credit_kill(ann, mob("boar"), {x = 5, y = 0, z = 5})
+eq(journal_row(ann, "fx_boar_hunt").objectives[1].count, 1, "a kill in another zone counts")
 Q.credit_kill(ann, mob("boar"), AT)
-Q.credit_kill(ann, mob("boar"), AT)
-check(Q.turn_in(ann, "fx_legacy"), "turn in the legacy quest")
-eq(granted_xp[#granted_xp], "ann 50 quest", "legacy fixed XP")
+check(Q.turn_in(ann, "fx_boar_hunt"), "turn in the area-less hunt")
+eq(granted_xp[#granted_xp], "ann 30 quest", "weight 1 at level 1 = M(1)")
 
 -- A group objective overlapping an exact-item objective (review case): the
 -- readiness shown and the items taken use one allocation, exact items first.
 Q.register_quest("fx_overlap_a", {title = "Overlap A", description = "A.", npc = "r14_human_elder",
 	objectives = {{type = "item", group = "tree", count = 5}, {type = "item", item = "default:tree", count = 5}},
-	rewards = {xp = 1}})
+	rewards = {weight = 1}})
 Q.register_quest("fx_overlap_b", {title = "Overlap B", description = "B.", npc = "r14_human_elder",
 	objectives = {{type = "item", group = "tree", count = 5}, {type = "item", item = "default:pine_tree", count = 5}},
-	rewards = {xp = 1}})
+	rewards = {weight = 1}})
 local function overlap(id, first, second)
 	local p = make_player("ov_" .. id, 60)
 	p:give(first)
@@ -598,11 +599,11 @@ do
 		end
 		return n
 	end
-	-- The fixture's legacy quest hunts a base role (grug_mobs:boar) in the
-	-- recipe zone: exactly the case the warning is for.
+	-- The fixture's area-less hunt names a base role (boar) in the recipe
+	-- zone: exactly the case the warning is for.
 	local _, warnings = V.world(deep_copy(base_files), loader_world)
 	eq(#warnings, 1, "fixture quests: one recipe-target warning")
-	eq(about(warnings, "fx_legacy"), 1, "the legacy base-role hunt is warned about")
+	eq(about(warnings, "fx_boar_hunt"), 1, "the base-role hunt is warned about")
 	local files = deep_copy(base_files)
 	quest_of(files, "fx_hunt_01").objectives[1] = {type = "kill", roles = {"boar"}, count = 3}
 	local errors
@@ -624,28 +625,10 @@ do
 	end}, {__index = loader_world})
 	_, warnings = V.world(files, elsewhere)
 	eq(about(warnings, "fx_hunt_01"), 0, "another zone's leader counts as spawned")
-	-- A legacy zone filter counts only kills in its zone: another zone's
-	-- leader is not met there.
-	local filtered = deep_copy(files)
-	quest_of(filtered, "fx_legacy").objectives[1] = {type = "kill", count = 1,
-		mobs = {"grug_mobs:confused_bandit_chief"}, zone = "elandor_dawnmere_fields"}
-	_, warnings = V.world(filtered, elsewhere)
-	eq(about(warnings, "fx_legacy"), 1, "a zone filter: another zone's leader still warns")
-	_, warnings = V.world(filtered, loader_world)
-	eq(about(warnings, "fx_legacy"), 0, "a zone filter: the filter zone's own leader counts")
-	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
-	-- regions, so the recipe check skips them.
-	files = deep_copy(base_files)
-	quest_of(files, "fx_legacy").objectives[1].mobs = {"grug_mobs:guard_throng"}
-	_, warnings = V.world(files, loader_world)
-	eq(about(warnings, "fx_legacy"), 0, "a legacy guard target: no recipe-target warning")
 end
 local cases = {
 	{"critter as a kill target", "E-critter-target", "fx_hunt_01", function(f)
 		quest_of(f, "fx_hunt_01").objectives[1] = {type = "kill", roles = {"wild_turkey"}, count = 3}
-	end},
-	{"legacy critter target", "E-critter-target", "fx_legacy", function(f)
-		quest_of(f, "fx_legacy").objectives[1].mobs = {"grug_mobs:wild_turkey"}
 	end},
 	{"role not in the area", "E-role-not-in-area", "fx_hunt_01", function(f)
 		quest_of(f, "fx_hunt_01").objectives[1].roles = {"large_rat"}
@@ -657,8 +640,8 @@ local cases = {
 	{"level outside the slack", "E-level-fit", "fx_hunt_01", function(f)
 		quest_of(f, "fx_hunt_01").level = 7
 	end},
-	{"zone areas decide the level of an area-less target", "E-level-fit", "fx_legacy", function(f)
-		quest_of(f, "fx_legacy").objectives[1] = {type = "kill", roles = {"confused_bandit"}, count = 2}
+	{"zone areas decide the level of an area-less target", "E-level-fit", "fx_boar_hunt", function(f)
+		quest_of(f, "fx_boar_hunt").objectives[1] = {type = "kill", roles = {"confused_bandit"}, count = 2}
 	end},
 	{"leader with an area", "E-leader-area", "fx_hunt_02", function(f)
 		quest_of(f, "fx_hunt_02").objectives[1].area = "elandor_dawnmere_fields/border_bandits"
@@ -738,9 +721,28 @@ local cases = {
 	{"guard as a designed kill role", "E-not-a-mob", "fx_hunt_01", function(f)
 		quest_of(f, "fx_hunt_01").objectives[1] = {type = "kill", roles = {"guard_throng"}, count = 1}
 	end},
-	{"legacy enemy guard kill", nil, "fx_legacy", function(f)
-		quest_of(f, "fx_legacy").objectives[1].mobs = {"grug_mobs:guard_throng"}
-		quest_of(f, "fx_legacy").objectives[1].zone = nil
+	-- Fields the game does not read are refused (Round 30: the retired
+	-- `mobs`, `zone`, fixed `xp` and `faction`/`race` gates among them).
+	{"entity names instead of roles", "E-unknown-key", "fx_boar_hunt: objective 1", function(f)
+		quest_of(f, "fx_boar_hunt").objectives[1] = {type = "kill", mobs = {"grug_mobs:boar"}, count = 2}
+	end},
+	{"a zone filter on a kill", "E-unknown-key", "fx_boar_hunt: objective 1", function(f)
+		quest_of(f, "fx_boar_hunt").objectives[1].zone = "elandor_dawnmere_fields"
+	end},
+	{"fixed reward XP", "E-unknown-key", "fx_boar_hunt: rewards", function(f)
+		quest_of(f, "fx_boar_hunt").rewards.xp = 50
+	end},
+	{"a faction gate", "E-unknown-key", "quest fx_boar_hunt", function(f)
+		quest_of(f, "fx_boar_hunt").faction = "accord"
+	end},
+	{"a race gate", "E-unknown-key", "quest fx_boar_hunt", function(f)
+		quest_of(f, "fx_boar_hunt").race = "human"
+	end},
+	{"an unknown quest-drop field", "E-unknown-key", "fx_pantry_01: quest drop 1", function(f)
+		quest_of(f, "fx_pantry_01").quest_drops[1].mobs = {"grug_mobs:boar"}
+	end},
+	{"a kill without roles", "E-objective", "fx_boar_hunt: objective 1", function(f)
+		quest_of(f, "fx_boar_hunt").objectives[1].roles = nil
 	end},
 }
 for _, case in ipairs(cases) do

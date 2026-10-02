@@ -216,7 +216,7 @@ end
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end}
 grug_classes = {get_race = function() return "human" end}
-grug_xp = {get_level = function() return 60 end}
+grug_xp = {get_level = function() return 60 end, quest_reward = function() return 0 end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_money = {}
 grug_quests = {}
@@ -231,11 +231,11 @@ Q.register_npc("giver", {settlement = "s", socket = "a", title = "Brunna Flintbr
 Q.register_npc("other", {settlement = "s", socket = "b", title = "Orrik Pineledger"})
 for i = 1, 12 do
 	Q.register_quest(("q%02d"):format(i), {title = "Quest Title Number " .. i,
-		description = "d", npc = "giver",
+		description = "d", npc = "giver", rewards = {weight = 1},
 		objectives = {{type = "item", item = "grug_food:raw_meat", count = 4}}})
 end
 Q.register_quest("hunt", {title = "Tusks at the Timberline", description = "d", npc = "giver",
-	turnin_npc = "other", objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 3}}})
+	turnin_npc = "other", rewards = {weight = 1}, objectives = {{type = "kill", mobs = {"grug_mobs:boar"}, count = 3}}})
 
 local meta_store = {}
 local held = {}

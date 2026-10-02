@@ -40,7 +40,6 @@ for tier = 1, #tiers do
 		P.register_ingredient("grug_gathering:stormkelp", 5)
 	end
 	P.register_ingredient(bolt, tier)
-	core.clear_craft({output = bolt})
 	core.register_craft({output = bolt, recipe = grid(row.inputs)})
 
 end

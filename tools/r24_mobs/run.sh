@@ -9,8 +9,8 @@
 #
 # Usage: tools/r24_mobs/run.sh OUT_DIR [TIMEOUT_SECONDS] [PROBE]
 #   PROBE: grug_probe_r24_mobs (default; Lane D levels, speeds, wander leash)
-#   or grug_probe_r24_startzone (Lane D2 band x clock species table and the
-#   start-zone quest audit).
+#   or grug_probe_r24_startzone (Lane D2 band x clock species table; its
+#   start-zone quest audit went with the race-gated quests in Round 30).
 #   SEED=<unsigned decimal> is forwarded (4242424242 matches the portable
 #   levels fixture's first seed).
 set -euo pipefail

@@ -15,9 +15,11 @@
 --    the density budget; the stand position is the matched node + 1),
 --    camps.lua spawn_one (a refused slot is "not served", guards pass) and
 --    rares.lua try_spawn (a refused rare is not placed and not marked alive).
--- 4. The Round 24 budget is claim-agnostic: spawn_policy_allows /
---    spawn_allowed and density_allows never consult the claim, so the same
---    objects give the same budget answer at a claimed and an unclaimed point.
+-- 4. The spawn policy is claim-agnostic: spawn_policy_allows and
+--    spawn_allowed never consult the claim (the claim is its own check after
+--    them). The Round 24 zone density budget this section also compared is
+--    gone in practice since the Round 28 spawn recipes: no zone keeps a
+--    palette cast (Round 30 lane C).
 -- Prints "R25 SPAWN GUARD FIXTURE PASS checks=<n>" or raises.
 
 local repo = assert(arg and arg[1], "usage: luajit fixture.lua REPO")
@@ -289,7 +291,7 @@ try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {FREE}}, 0)
 check(rare_added == 2 and marked == 2, "rare: hostile rare outside claims placed")
 
 -- ---------------------------------------------------------------------------
--- 4. The Round 24 budget never sees the claim
+-- 4. The spawn policy never sees the claim
 -- ---------------------------------------------------------------------------
 _G.grug_core = {DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125,
 	-- Round 28 ruling 3 (protected spawn surface): no road or village here.
@@ -308,46 +310,12 @@ _G.grug_zones = {
 	faction_at = function() return "accord" end,
 	anchor = function() return nil end,
 }
-local objects = {}
 _G.core = {
 	settings = {get = function() return nil end, get_bool = function() return nil end},
 	get_timeofday = function() return 0.5 end,
 	get_item_group = function() return 1 end,
-	get_objects_inside_radius = function() return objects end,
 	log = function() end,
 }
-local function mob_object(name) return {get_luaentity = function() return {name = name} end} end
-local budgeted_prey, budgeted_hostile
-local cast = gm.zone_density_cast("elandor_moonfall_wood", "day")
-for _, name in ipairs(cast) do
-	if gm.spawn_role_hostile(name) then
-		budgeted_hostile = budgeted_hostile or name
-	else
-		budgeted_prey = budgeted_prey or name
-	end
-end
-print("Moonfall day cast: " .. table.concat(cast, " "))
-check(budgeted_hostile ~= nil, "a budgeted hostile species in Moonfall by day")
-check(budgeted_prey ~= nil, "a budgeted non-hostile species in Moonfall by day")
-local prey = budgeted_prey
-local answers = {}
-for _, fill in ipairs({0, 3, 8, 15, 30}) do
-	objects = {}
-	for i = 1, fill do objects[i] = mob_object(i % 2 == 0 and budgeted_hostile or prey) end
-	for _, name in ipairs({prey, budgeted_hostile}) do
-		local calls0 = claim_at_calls
-		local in_claim = gm.density_allows(name, ACTIVE, "default:dirt_with_grass",
-			roster.spawn_allowed)
-		local outside = gm.density_allows(name, FREE, "default:dirt_with_grass",
-			roster.spawn_allowed)
-		check(in_claim == outside, name .. " fill " .. fill ..
-			": same budget answer inside and outside a claim")
-		answers[in_claim and "allow" or "refuse"] = true
-		check(claim_at_calls == calls0, name .. " fill " .. fill ..
-			": the budget never looks up a claim")
-	end
-end
-check(answers.allow and answers.refuse, "the budget both allowed and refused")
 local calls0 = claim_at_calls
 -- Row checks read further zone queries and engine calls; any stub answer
 -- does, since only the claim lookups are counted.

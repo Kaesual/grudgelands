@@ -291,7 +291,7 @@ Q.register_npc("envoy", {settlement = "s", socket = "c", title = "Envoy Lysa"})
 Q.register_npc("smith", {settlement = "s", socket = "d", title = "Smith Orrin"})
 local function quest(id, def)
 	def.title, def.description = def.title or id, def.description or "Text of " .. id
-	def.rewards = def.rewards or {copper = 5}
+	def.rewards = def.rewards or {weight = 1, copper = 5}
 	Q.register_quest(id, def)
 end
 quest("intro", {npc = "elder", objectives = {{type = "item", item = "grug_food:raw_meat", count = 2}}})
