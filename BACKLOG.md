@@ -19,16 +19,15 @@ numbers (for example E5) are cited below.
 
 - **Latest delivery:
   [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
-  complete** (2026-10-02; pushed up to `9dd85b6e`, the lanes after it
-  local): the 2026-09-30 playtest fixes (Track A), the questing and leveling
+  complete and pushed** (2026-10-02): the 2026-09-30 playtest fixes (Track A), the questing and leveling
   framework (Track B: sub-types and loot by band, the kill-equivalent XP
   curve, per-zone quest data, self-contained professions), the catalogue
   with 89 icons and the naming rule, rule-based spawn regions for all 38
   zones with the border rule, The Broken Causeway 41–50 and
   Gravesalt/Skyglass 51–60, quest-log level ranges and zone names. No WP
-  closes; it advances WP5, WP6, WP8, WP9 and WP10. The quest content moves
+  closes; it advances WP5, WP6, WP8 and WP10. The quest content moves
   to Round 29 ([carry-overs](#round-28-carry-overs-and-round-29)). Next:
-  fresh world and spawn playtest.
+  fresh world and spawn playtest, then Round 29 planning.
 - [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
   (2026-09-30; pushed): WP50 delivered — our own
   round minimap with quest, service, home and party markers in place of the
@@ -320,10 +319,12 @@ none blocks the playtest.
 ### Round 28 carry-overs and Round 29
 
 **Noted 2026-10-02** ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02));
-none blocks the spawn playtest. The Round 29 proposal "Economy and travel"
-was agreed with the user on 2026-10-02 (`docs/planning/economy-vendor-plan.md`
-§10; WP17: `docs/planning/travel-boats-waypoints-plan.md`); it is not yet a
-round plan.
+none blocks the spawn playtest. Round 29 "Economy and travel" is not yet a
+round plan; its inputs, approved by the user on 2026-10-02, are the
+[quests plan](docs/planning/round29-quests-plan.md) (why the quests moved:
+[§1](docs/planning/round29-quests-plan.md#1-why-this-is-its-own-step)), the
+[economy plan](docs/planning/economy-vendor-plan.md) and the
+[boats and waypoints plan](docs/planning/travel-boats-waypoints-plan.md).
 
 **Round 29 content (proposed):**
 
@@ -337,15 +338,20 @@ round plan.
   step: direction placeholders in quest texts filled from
   `spawn_regions.describe` ([spawn_regions.md](docs/design/spawn_regions.md#directions)),
   a load check that rejects fixed compass words, and the cutover copper
-  column (economy plan §4). Then the leveling ledger and kill reachability
+  column ([economy plan §4](docs/planning/economy-vendor-plan.md#4-quest-copper)). Then the leveling ledger and kill reachability
   per track (Round 28 plan "Coordination"). The unmerged branch `r28-c2`
   (44 Human-route quests, texts and leaders) is content input only; its
   spawn areas are rejected.
 - **Economy lanes E1–E5** (WP44 row), with claim-station repair (D7), the
   loot text pass below and the WP5 loot/demand audit.
-- **WP17** boats and waypoints.
-- **Mapgen bundle** (one fresh world): gem depth tiers (economy E2); the
-  `apex_sockets` removal (Round 25 carry-overs); the Battlegrounds 50 %
+- **WP17** boats and waypoints
+  ([travel plan](docs/planning/travel-boats-waypoints-plan.md)).
+- **Mapgen bundle** (one fresh world): gem depth tiers and the
+  `apex_sockets` removal (Round 25 carry-overs), both from the
+  [economy plan §10](docs/planning/economy-vendor-plan.md#10-proposal-for-round-29-economy-and-travel);
+  from the [travel plan](docs/planning/travel-boats-waypoints-plan.md#4-mapgen-needs-for-the-round-29-mapgen-bundle)
+  and the [quests plan](docs/planning/round29-quests-plan.md#5-order-and-dependencies-in-round-29):
+  the Battlegrounds 50 %
   larger in z, the area taken equally from both factions' contested 31–40
   zones (total map size unchanged; POIs in the donor strips move toward
   their home side); one road across the Battlegrounds at the map's x-middle
@@ -364,8 +370,10 @@ playtest of the front quests and bounties.
 - Elite ideas never shipped (dropped from the catalogue ideas): Rat King,
   Old/Giant Boar, Silver Fox, Rotting Brute, an elite Giant Scorpion.
 - Loot text pass: items of one kind carry identical descriptions across
-  tiers; T5/T6 outlaws drop "Spider Silk" by design (`world.md`), a naming
-  oddity. Proposed with Round 29 E1.
+  tiers; T5/T6 outlaws drop "Spider Silk" by design (recovered cloth;
+  [catalogue README](docs/planning/round28/design/catalog/README.md#existing-recipe-materials),
+  [catalog/economy.md](docs/planning/round28/design/catalog/economy.md)), a
+  naming oddity. Proposed with Round 29 E1.
 - Six of the 195 sub-types appear in no recipe (measured 2026-10-02): the
   optional cap-1 elites `causeway_construct`, `siege_war_construct`,
   `seam_mesa_golem`, `seam_stone_golem` and `crown_stone_golem` (a recipe

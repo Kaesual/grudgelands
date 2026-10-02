@@ -52,18 +52,15 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 The systems above are implemented and installed in the local development build.
 [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
-is complete locally and awaits a playtest on a fresh world. Every zone now
-places its creatures by rules that read the world's own terrain, so beaches,
-woods, fields and camps carry their own kinds and the levels rise smoothly
-from the start town toward the next zone, on any world. Creatures come in
-named kinds per region (a Small Boar near your start town, a unique name
-everywhere else), drop loot that matches their level, and named leaders guard
-their camps. Leveling follows a new, gentler curve, the quest log shows the
-level range of each target, and the zone or town you are in shows under the
-minimap. Many playtest fixes ship alongside: a message feed above your bars,
-Scout ranged and melee slots with a quiver, per-class offhands, mobs that
-take environmental damage, knock back on melee hits and keep away from roads,
-and a Professions tab.
+is complete and awaits a playtest on a fresh world. Every zone now places its
+creatures by rules that read the world's own terrain, in named kinds per
+region whose levels rise smoothly from the start town toward the next zone,
+with loot that matches their level and named leaders at their camps. Leveling
+follows a gentler curve, the quest log shows each target's level range, and
+the zone or town you are in shows under the minimap. Playtest fixes ship
+alongside: a message feed above your bars, per-class offhands, Scout ranged
+and melee slots with a quiver, mob environmental damage in percent of max HP,
+melee knockback, mobs that keep away from roads, and a Professions tab.
 [Round 27](docs/planning/round27-minimap-plan.md#completion-2026-09-30)
 awaits a short playtest. Our own round minimap
 replaces the built-in one: north up, drawn from the world map, it shows quest
@@ -125,8 +122,8 @@ is a tracking count, not a percentage of game completion. The latest delivered
 increment is
 [Round 28](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)
 (playtest fixes, the questing and leveling framework, the mob catalogue and
-rule-based spawn regions for all 38 zones), independently reviewed and merged
-locally; Round 24 is the latest accepted state.
+rule-based spawn regions for all 38 zones), independently reviewed and
+pushed; Round 24 is the latest accepted state.
 [Project status](docs/STATUS.md) records acceptance, and the
 [Round 28](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 [Round 27](docs/planning/round27-minimap-plan.md#playtest-checklist) and

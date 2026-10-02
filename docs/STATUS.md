@@ -2,11 +2,10 @@
 
 Updated 2026-10-02. This is the delivery pointer, not another game specification.
 
-- **Round 28 delivered locally** (2026-10-02,
+- **Round 28 complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
-  Every lane is merged on main (last lane W1 `f35998d5`); pushed up to
-  `9dd85b6e` (Tracks A and B, catalogue, icons); N1, S1, M1, Q0, S2 and W1
-  are local. Each lane was independently reviewed by Opus.
+  Every lane is merged on main (last lane W1 `f35998d5`), synchronized to
+  Luanti and pushed. Each lane was independently reviewed by Opus.
   - **Track A (playtest fixes):** road protection half width + 1 and idle
     aggressive mobs walk away from roads and towns; mob environmental damage
     in percent of max HP, melee knockback as a small displacement, hits never
@@ -45,12 +44,16 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
     them (their XP is oversized against the new curve; 22 accepted
     `W-recipe-target` warnings); the Causeway's plants and ores still follow
     31–40. The quest content per race track, the front and island quests
-    move to Round 29 with the economy, WP17 and a mapgen bundle.
-  - Next: synchronize, push, fresh world and spawn playtest.
+    move to Round 29
+    ([quests plan](planning/round29-quests-plan.md#1-why-this-is-its-own-step))
+    with the [economy](planning/economy-vendor-plan.md),
+    [boats and waypoints](planning/travel-boats-waypoints-plan.md) and a
+    mapgen bundle.
+  - Next: fresh world and spawn playtest, then Round 29 planning.
 
-- **Round 27 delivered locally** (2026-09-30, WP50,
+- **Round 27 delivered and pushed** (2026-09-30, WP50,
   [plan, completion and playtest checklist](planning/round27-minimap-plan.md#completion-2026-09-30)).
-  Lanes M (`cda93c90`) and D merged on main; pushed up to `96bcab41`.
+  Lanes M (`cda93c90`) and D merged on main; fully pushed (in `9dd85b6e`).
   The Round 26 playtest fix for capital walls (no gaps at gatehouses, fewer
   walls in rivers) is merged as `1ff541e4`; follow-ups in the BACKLOG.
   - **M:** our own round, north-up minimap in the native minimap's box
@@ -173,7 +176,7 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 28, which includes Rounds 20–27
+- **Latest game:** main carries Round 28, which includes Rounds 20–27
   and the 2026-09-28 playtest fixes. Round 24 is the latest accepted state;
   the 2026-09-30 playtest with friends fed Round 28. Fresh-world development
   remains in force.
@@ -198,9 +201,8 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** local `origin/main` is `9dd85b6e` (observed
-  2026-10-02: Round 27 complete and Round 28 up to the loot icons). Round 28
-  N1, S1, M1, Q0, S2 and W1 are local only.
+- **Remote observation:** Round 28 is pushed complete (2026-10-02),
+  including all of Round 27 and its glide fixes.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

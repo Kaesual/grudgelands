@@ -731,8 +731,7 @@ The user ended Round 28 on 2026-10-02. Every lane below is merged on main
 was independently reviewed by Opus and passed the gates the coordinator ran
 on main after every merge (all `tools/r28_*/portable_test.lua`,
 `tools/r28_design/validate.py`, `tools/check_fresh_server.py`, a headless
-boot). Pushed up to `9dd85b6e` (the loot icons); N1 and everything after it
-are local.
+boot). Round 28 is complete and pushed (2026-10-02).
 
 **How the round changed course.** Ruling 34's anchor-relative areas
 (Lane B1) shipped as a framework, but the user rejected the C2 sample's
@@ -815,16 +814,18 @@ zones on spawn recipes.
 
 Section C's quest content (C2/C3 and E2/E3: new quest files per race track,
 the contested zones, the front lane with island quests and bounties) moves
-to Round 29, "Economy and travel" (`docs/planning/economy-vendor-plan.md`
-§10, agreed with the user on 2026-10-02). Why:
+to Round 29, "Economy and travel", as the
+[quests plan](round29-quests-plan.md) (user, 2026-10-02), beside the
+[economy plan](economy-vendor-plan.md) and the
+[boats and waypoints plan](travel-boats-waypoints-plan.md). Why
+([quests plan §1](round29-quests-plan.md#1-why-this-is-its-own-step)):
 
-- **Parallel work.** The quest lanes touch the same things as the economy
-  lanes (quest copper on the cutover column), WP17 (boats are the only
-  access to the island quests) and the mapgen bundle (Causeway and
-  Gravesalt/Skyglass band data, the wider Battlegrounds). One round runs
-  them side by side and prepares one fresh world.
-- **Spawn playtest first.** Quests reference region kinds; the user wants to
-  see the new distribution in play before quest content is written on it.
+- **Parallel work.** The quest lanes are nearly pure data in
+  `grug_quests/data` and run in parallel with the economy, travel and mapgen
+  lanes without touching their files.
+- **Spawn playtest first.** A short playtest of the new spawn distribution
+  with the legacy quests comes first, so density, region size or camp
+  problems surface before some 300 new quests sit on top.
 
 Until then the 240 legacy quests stay, with their oversized XP and 22
 accepted `W-recipe-target` warnings. A small quest-core step opens the

@@ -64,15 +64,16 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 28 delivered, 2026-10-02.** The 2026-09-30 playtest fixes (Track A),
+**Round 28 complete and pushed, 2026-10-02.** The 2026-09-30 playtest fixes (Track A),
 the questing and leveling framework (Track B: sub-types and loot by band,
 kill XP `25 + 5L` with its curve, per-zone quest data, self-contained
 professions), the catalogue with 89 icons and the naming rule, rule-based
 spawn regions for all 38 zones with the border rule, quest-log level ranges
-and zone names. Pushed up to `9dd85b6e`; the later lanes are local. Quest
-content per race track, the front and the islands moved to Round 29
-("Economy and travel", with the economy lanes, WP17 and a mapgen bundle).
-Next: fresh world and spawn playtest.
+and zone names. Quest content per race track, the front and the islands
+moved to Round 29 ([quests plan](docs/planning/round29-quests-plan.md), with
+the [economy lanes](docs/planning/economy-vendor-plan.md),
+[WP17](docs/planning/travel-boats-waypoints-plan.md) and a mapgen bundle).
+Next: fresh world and spawn playtest, then Round 29 planning.
 [Plan, completion and playtest checklist](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02).
 
 **Round 27 delivered, 2026-09-30.** WP50: our own round minimap
@@ -80,7 +81,7 @@ Next: fresh world and spawn playtest.
 the native minimap, the `grug_map_quality` setting (normal/high) for the Map
 tab and the minimap, readable relief and a tiled map base (Lane M), and the
 documentation (Lane D), then the gliding minimap with a pewter bezel after the
-user's playtest. Pushed up to `96bcab41` on 2026-09-30; the glide fixes and docs after it are local.
+user's playtest. Fully pushed (in `9dd85b6e`).
 Next: short playtest.
 [Plan, completion and playtest checklist](docs/planning/round27-minimap-plan.md#completion-2026-09-30).
 

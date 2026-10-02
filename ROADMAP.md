@@ -164,16 +164,20 @@ B1–B7) settle the rest:
   naming rule; rule-based spawn regions for all 38 zones
   ([spawn_regions.md](docs/design/spawn_regions.md)); The Broken Causeway
   41–50 and Gravesalt/Skyglass 51–60; quest-log level ranges and zone
-  names. Next: fresh world and spawn playtest.
+  names. Complete and pushed 2026-10-02. Next: fresh world and spawn
+  playtest, then Round 29 planning.
 
 ### Remaining work
 
-- [ ] **Round 29 "Economy and travel"** (agreed 2026-10-02, not yet
-  planned): new quest files per race track, the front and the islands on the
-  Round 28 framework (they replace the 240 legacy quests); the WP44 economy
-  lanes; WP17; a mapgen bundle (gem depth tiers, `apex_sockets` removal, the
-  Battlegrounds 50 % larger in z with one road across them, mapgen band
-  data for the Causeway and Gravesalt/Skyglass). Items:
+- [ ] **Round 29 "Economy and travel"** (plans approved 2026-10-02, round
+  plan to follow): new quest files per race track, the front and the islands
+  on the Round 28 framework, replacing the 240 legacy quests
+  ([quests plan](docs/planning/round29-quests-plan.md)); the WP44 economy
+  lanes ([economy plan](docs/planning/economy-vendor-plan.md)); WP17
+  ([travel plan](docs/planning/travel-boats-waypoints-plan.md)); a mapgen
+  bundle: gem depth tiers and `apex_sockets` removal (economy plan), the
+  Battlegrounds 50 % larger in z with one road across them (travel plan
+  §4), mapgen band data for the Causeway and Gravesalt/Skyglass. Items:
   [BACKLOG](BACKLOG.md#round-28-carry-overs-and-round-29).
 - [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
   waypoints at every start and capital. Innkeeper return and the Claim Stone
