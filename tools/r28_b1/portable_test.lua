@@ -443,6 +443,16 @@ do
 		"Rift Spawn keeps its row in Gravesalt at night")
 	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == false,
 		"no Rift Spawn in Dawnmere, whose palette never had it")
+	-- Ruling 3 still refuses it on a protected surface (memoised per
+	-- position: each case at its own height).
+	for step, kind in ipairs({"road", "bridge", "village"}) do
+		new_world.protected.feature = function() return kind end
+		check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10 + step, z = 102}) == false,
+			"no Rift Spawn on a " .. kind .. " in Gravesalt")
+	end
+	new_world.protected.feature = nil
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 20, z = 102}) == true,
+		"Rift Spawn beside the protected surface in Gravesalt")
 	new_world.time = 0.5
 	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == false,
 		"Rift Spawn keeps its night clock in Gravesalt")

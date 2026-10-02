@@ -144,7 +144,10 @@ local INDEPENDENT_AUTHORITY = {
 -- whose palette carried them before the recipes (Round 28 S2c; the
 -- catalogue: Rift Spawn keeps its current spawning; the zones are the
 -- atlas's). Unlike the independent authorities above, the row still meets
--- the start footprint and its night clock; its host ground decides there.
+-- the start footprint, its night clock and the protected surface (ruling 3);
+-- its host ground decides there. A recipe zone has no palette, so the row
+-- shares no zone density budget there (zone_density_cast is empty): it keeps
+-- only its own ABM chance and object cap, accepted (Round 28 S2c review).
 local RECIPE_ZONE_ROWS = {
 	["grug_mobs:rift_spawn"] = {front_gravesalt_escarpment = true,
 		front_skyglass_canopy = true, front_stormscale_summit = true,
@@ -786,7 +789,8 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	if zone_id and grug_mobs.spawn_regions.zone_has_recipe(zone_id) then
 		local kept = RECIPE_ZONE_ROWS[mob_name]
 		if kept then
-			return kept[zone_id] == true
+			-- Ruling 3 still last: never on a protected surface.
+			return kept[zone_id] == true and not grug_mobs.protected_spawn_surface(pos)
 		end
 		if not grug_mobs.spawn_regions.zone_critter(zone_id, mob_name) then
 			return false
