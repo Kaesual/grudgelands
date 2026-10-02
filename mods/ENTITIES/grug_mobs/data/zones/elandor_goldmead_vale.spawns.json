@@ -1,7 +1,78 @@
 {
   "zone": "elandor_goldmead_vale",
-  "palette": {
-    "families": ["fox", "poacher", "settled", "wild_turkey"],
-    "boar": "grug_mobs:boar"
+  "recipe": {
+    "from": {"border": "elandor_dawnmere_fields"},
+    "to": {"border": "elandor_highcourt"},
+    "belts": [
+      {
+        "id": "l11_13", "share": 30, "levels": [11, 13],
+        "kinds": {
+          "open": {"id": "orchards", "name": "Goldmead Orchards",
+            "day": [{"role": "young_fox", "weight": 3}, {"role": "young_boar", "weight": 1}],
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "snaring_poacher", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Goldmead Strand",
+            "day": [{"role": "tidepool_crab", "weight": 1}],
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
+          "bank": {"id": "millbanks", "name": "Goldmead Millbanks",
+            "day": "open",
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "reed_marsh", "name": "Goldmead Reed Marsh",
+            "day": "open",
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "copse", "name": "Goldmead Copse",
+            "day": [{"role": "young_boar", "weight": 3}, {"role": "young_fox", "weight": 1}],
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l14_17", "share": 40, "levels": [14, 17],
+        "kinds": {
+          "open": {"id": "wheatfields", "name": "Goldmead Wheatfields",
+            "day": [{"role": "bristling_boar", "weight": 3}, {"role": "young_boar", "weight": 1}],
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+          "shore": {"id": "tideflats", "name": "Goldmead Tideflats",
+            "day": [{"role": "reefclaw_crab", "weight": 3}, {"role": "tidepool_crab", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "dense"},
+          "bank": {"id": "brooksides", "name": "Goldmead Brooksides",
+            "day": "open",
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "sedge_marsh", "name": "Goldmead Sedge Marsh",
+            "day": "open",
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "thickets", "name": "Goldmead Thickets",
+            "day": [{"role": "rabid_fox", "weight": 3}, {"role": "young_boar", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l18_20", "share": 30, "levels": [18, 20],
+        "kinds": {
+          "open": {"id": "hedgerows", "name": "Goldmead Hedgerows",
+            "day": [{"role": "bristling_boar", "weight": 1}],
+            "night": [{"role": "mangy_rat", "weight": 1}], "density": "normal"},
+          "bank": {"id": "weirbanks", "name": "Goldmead Weirbanks",
+            "day": "open",
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "fen", "name": "Goldmead Fen",
+            "day": "open",
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "deepwood", "name": "Goldmead Deepwood",
+            "day": [{"role": "rabid_fox", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "bandit_camp", "name": "Goldmead Bandit Camp", "site": {"poi": "bandit"}, "belt": "l14_17",
+       "roster": [{"role": "quarrelsome_bandit", "weight": 3}, {"role": "vigilant_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "requisition_camp", "name": "Goldmead Requisition Camp", "belt": "l18_20",
+       "roster": [{"role": "vigilant_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "requisitioner_hobb", "at": {"camp": "requisition_camp"}, "respawn": 300}
+    ],
+    "critters": ["rabbit", "wild_turkey"]
   }
 }

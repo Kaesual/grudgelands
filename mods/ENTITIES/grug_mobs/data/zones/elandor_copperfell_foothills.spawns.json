@@ -1,7 +1,63 @@
 {
   "zone": "elandor_copperfell_foothills",
-  "palette": {
-    "families": ["fox", "goblin_raid", "ibex", "settled"],
-    "boar": "grug_mobs:boar"
+  "recipe": {
+    "from": {"border": "elandor_hearthpine_vale"},
+    "to": {"border": "elandor_dur_brannoc"},
+    "belts": [
+      {
+        "id": "l11_13", "share": 30, "levels": [11, 13],
+        "kinds": {
+          "open": {"id": "scrub", "name": "Copperfell Scrub",
+            "day": [{"role": "young_fox", "weight": 3}, {"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shingle", "name": "Copperfell Shingle",
+            "day": [{"role": "tidepool_crab", "weight": 1}],
+            "night": [{"role": "moaning_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "lower_pines", "name": "Copperfell Lower Pines",
+            "day": [{"role": "young_boar", "weight": 3}, {"role": "young_fox", "weight": 1}],
+            "night": [{"role": "granary_rat", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l14_17", "share": 40, "levels": [14, 17],
+        "kinds": {
+          "open": {"id": "heath", "name": "Copperfell Heath",
+            "day": [{"role": "rabid_fox", "weight": 3}, {"role": "young_boar", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "pine_slopes", "name": "Copperfell Pine Slopes",
+            "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "bristling_boar", "weight": 1}],
+            "night": [{"role": "mangy_rat", "weight": 3}, {"role": "granary_rat", "weight": 1}], "density": "normal"},
+          "highland": {"id": "ibex_ledges", "name": "Copperfell Ibex Ledges",
+            "day": [{"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 3}, {"role": "moaning_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l18_20", "share": 30, "levels": [18, 20],
+        "kinds": {
+          "open": {"id": "uplands", "name": "Copperfell Uplands",
+            "day": [{"role": "rabid_fox", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "high_pines", "name": "Copperfell High Pines",
+            "day": [{"role": "bristling_boar", "weight": 1}],
+            "night": [{"role": "mangy_rat", "weight": 1}], "density": "normal"},
+          "highland": {"id": "copper_crags", "name": "Copperfell Copper Crags",
+            "day": [{"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "muttering_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "bandit_camp", "name": "Copperfell Bandit Camp", "site": {"poi": "bandit"}, "belt": "l14_17",
+       "roster": [{"role": "quarrelsome_bandit", "weight": 3}, {"role": "vigilant_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "goblin_dig", "name": "Copperfell Goblin Dig", "belt": "l18_20",
+       "roster": [{"role": "rubble_goblin_slinger", "weight": 3}, {"role": "ore_guard_hound", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "foreman_nog", "at": {"camp": "goblin_dig"}, "respawn": 300}
+    ],
+    "critters": ["rabbit"]
   }
 }

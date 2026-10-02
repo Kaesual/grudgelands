@@ -7,7 +7,9 @@
 -- 1. Fallback identity (ruling 34 trigger): the real spawn_policy.lua of
 --    BASE_COMMIT (default 7af1aaf2, the palettes as Lua tables, read with
 --    `git show`) and the current spawn_policy.lua + spawn_regions.lua (the
---    palettes as data/zones/*.spawns.json, every zone without a recipe) give the
+--    palettes as data, for a zone without a recipe; since Round 28 S2 every
+--    shipped zone has one, so the test installs Goldmead's last shipped
+--    palette as test-only data) give the
 --    same answer for every zone, every policy mob, several heights, biomes,
 --    levels and both clocks: spawn_policy_allows, spawn_clock_for,
 --    zone_density_cast, zone_clock_cast, zone_spawn_palette_allows and
@@ -16,8 +18,8 @@
 -- 2. Ruling 3 on ABM rows: road, bridge, village, start footprint and capital
 --    city refuse ordinary natural rows; camps and POIs do not; critters and
 --    NPC rows are never refused.
--- 3. The loader on the 38 shipped files: all zones, a palette in every
---    zone without a recipe, the recipe zone (Dawnmere) refuses its ABM rows
+-- 3. The loader on the 38 shipped files: all zones, each with a recipe and
+--    no palette, a recipe zone (Dawnmere) refuses its ABM rows
 --    but its critters, format errors fail loudly.
 -- 4. levels.lua: a region or leader level replaces the field; the field
 --    level comes from the gameplay level (grug_core.mob_level_at).
@@ -290,17 +292,22 @@ end
 -- A zone with a spawn recipe (Lanes S1, S2) has no palette: it is compared on
 -- its own in part 3. Every other zone answers exactly as before.
 local SR = NEW.spawn_regions
-local palette_zones, shipped_palettes = {}, 0
+-- Since Round 28 S2 every shipped zone has a recipe, but a zone without one
+-- still runs on its palette. Parts 1 and 2 therefore install test-only data:
+-- Goldmead's last shipped palette (before its S2a recipe), compared with the
+-- baseline's Goldmead palette. Part 3 restores the shipped file.
+local PALETTE_ZONE = "elandor_goldmead_vale"
+for _, zone in ipairs(zone_files) do
+	check(SR.zone_has_recipe(zone), zone .. " ships a spawn recipe")
+end
+SR.install_zone(PALETTE_ZONE, {zone = PALETTE_ZONE, palette = {
+	families = {"fox", "poacher", "settled", "wild_turkey"}, boar = "grug_mobs:boar"}})
+local palette_zones = {}
 for _, zone in ipairs(zone_files) do
 	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
-	local data = json.parse(io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a"))
-	if data.recipe == nil then shipped_palettes = shipped_palettes + 1 end
 end
-check(#palette_zones == shipped_palettes, "the " .. shipped_palettes ..
-	" zones without a recipe keep their palette (" .. #palette_zones .. ")")
--- Round 28 S2 adds recipes zone by zone: every zone has one or the other.
-check(#palette_zones < #zone_files, "some zone has a spawn recipe (" ..
-	(#zone_files - #palette_zones) .. " of " .. #zone_files .. ")")
+check(#palette_zones == 1 and palette_zones[1] == PALETTE_ZONE,
+	"the test-only palette zone is the one zone without a recipe")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -354,7 +361,7 @@ do
 	local x0 = ZONE_X.elandor_goldmead_vale
 	new_world.time, old_world.time = 0.5, 0.5
 	local boar, rabbit, guard = "grug_mobs:boar", "grug_mobs:rabbit", "grug_mobs:guard_accord"
-	-- A day boar on open ground is allowed in Goldmead (palette settled).
+	-- A day boar on open ground is allowed in the test palette zone (settled).
 	local probe = {x = x0 + 5, y = 10, z = 102}
 	defs[boar].clock = "day"
 	check(NEW.spawn_policy_allows(boar, probe) == OLD.spawn_policy_allows(boar, probe), "probe agrees")
@@ -412,6 +419,7 @@ end
 -- 3. The shipped files
 -- ---------------------------------------------------------------------------
 do
+	SR.install_zone(PALETTE_ZONE, json.parse(io.open(DATA .. "/" .. PALETTE_ZONE .. ".spawns.json"):read("*a")))
 	check(#SR.zone_ids() == 38, "loader installed 38 zones")
 	for _, zone in ipairs(SR.zone_ids()) do
 		local text = io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a")
@@ -475,8 +483,8 @@ do
 		"zone mismatch")
 	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", recipe = {belts = {}}}),
 		"a broken recipe")
-	check(NEW.spawn_regions.fallback_palettes().elandor_goldmead_vale ~= nil,
-		"a refused install keeps the zone's palette")
+	check(SR.zone_has_recipe(PALETTE_ZONE),
+		"a refused install keeps the zone's recipe")
 	local palettes = upvalue(OLD.zone_density_cast, "ZONE_MOB_PALETTES")
 	check(#sorted_keys(palettes) == 38, "baseline had 38 palettes")
 end

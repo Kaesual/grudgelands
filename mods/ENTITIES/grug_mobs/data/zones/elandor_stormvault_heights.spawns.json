@@ -1,6 +1,58 @@
 {
   "zone": "elandor_stormvault_heights",
-  "palette": {
-    "families": ["frost_stray", "goblin_raid", "ibex", "mountain", "snow_leopard"]
+  "recipe": {
+    "from": {"border": ["elandor_dur_brannoc", "elandor_frostbarrow_shelf", "elandor_whitebridge_shire"]},
+    "to": {"border": ["front_broken_causeway", "front_gravesalt_escarpment"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "passes", "name": "Stormvault Passes",
+            "day": [{"role": "ridge_ibex", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
+            "night": [{"role": "rime_skeleton_stray", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "highland": {"id": "eagle_crags", "name": "Stormvault Eagle Crags",
+            "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "storm_ridge_ram", "weight": 1}],
+            "night": [{"role": "rime_skeleton_stray", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "snowfields", "name": "Stormvault Snowfields",
+            "day": [{"role": "ridge_ibex", "weight": 3}, {"role": "storm_ridge_ram", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "ice_shore", "name": "Stormvault Ice Shore",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "highland": {"id": "highcrags", "name": "Stormvault Highcrags",
+            "day": [{"role": "storm_ridge_ram", "weight": 3}, {"role": "ridge_ibex", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "frostfields", "name": "Stormvault Frostfields",
+            "day": [{"role": "storm_ridge_ram", "weight": 3}, {"role": "ridge_ibex", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "highland": {"id": "stormcrags", "name": "Stormvault Stormcrags",
+            "day": [{"role": "storm_ridge_ram", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "slatehook", "name": "Slatehook Hideout", "site": {"poi": "bandit"}, "belt": "l38_40",
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "goblin_camp", "name": "Stormvault Goblin Camp", "belt": "l34_37",
+       "roster": [{"role": "siege_goblin", "weight": 3}, {"role": "siege_goblin_slinger", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "bolt_chewer", "at": {"camp": "goblin_camp"}, "respawn": 300},
+      {"role": "split_seam_warden", "at": {"kind": "stormcrags", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["gull"]
   }
 }

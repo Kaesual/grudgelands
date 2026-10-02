@@ -79,7 +79,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_whitebridge_shire",
           "count": 4
@@ -108,7 +109,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:wisp"
+            "grug_mobs:wisp",
+            "grug_mobs:wandering_wisp"
           ],
           "zone": "elandor_whitebridge_shire",
           "count": 3
@@ -159,7 +161,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_whitebridge_shire",
           "count": 4
@@ -188,7 +191,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:wisp"
+            "grug_mobs:wisp",
+            "grug_mobs:wandering_wisp"
           ],
           "zone": "elandor_whitebridge_shire",
           "count": 3
@@ -239,7 +243,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_whitebridge_shire",
           "count": 4

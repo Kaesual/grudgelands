@@ -1,7 +1,64 @@
 {
   "zone": "elandor_glassroot_wilds",
-  "palette": {
-    "families": ["forest", "jungle", "wisp"],
-    "lookalikes": {"cat": "grug_mobs:panther", "spider": "grug_mobs:jungle_spider"}
+  "recipe": {
+    "from": {"border": ["elandor_lethariel", "elandor_lorindor", "elandor_moonfall_wood"]},
+    "to": {"border": ["front_shattered_line", "front_skyglass_canopy"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "fringe", "name": "Glassroot Fringe",
+            "day": [{"role": "watchful_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "entrenched_bandit", "weight": 1}], "density": "normal"},
+          "bank": {"id": "streams", "name": "Glassroot Streams",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "mirewood", "name": "Glassroot Mirewood",
+            "day": "open",
+            "night": [{"role": "marching_zombie", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "tangle", "name": "Glassroot Tangle",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "territorial_bear", "weight": 1}],
+            "night": [{"role": "stalking_panther", "weight": 3}, {"role": "canopy_web_spider", "weight": 1}], "density": "normal"},
+          "bank": {"id": "rootbanks", "name": "Glassroot Rootbanks",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "glassmire", "name": "Glassroot Glassmire",
+            "day": "open",
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "canopy", "name": "Glassroot Canopy",
+            "day": [{"role": "territorial_ape", "weight": 3}, {"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "canopy_web_spider", "weight": 3}, {"role": "stalking_panther", "weight": 1}], "density": "normal"},
+          "shore": {"id": "far_shore", "name": "Glassroot Far Shore",
+            "day": [{"role": "breakwater_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "bank": {"id": "serpent_pools", "name": "Glassroot Serpent Pools",
+            "day": [{"role": "coiled_serpent", "weight": 1}],
+            "night": [{"role": "coiled_serpent", "weight": 1}], "density": "sparse"},
+          "swamp": {"id": "rotfen", "name": "Glassroot Rotfen",
+            "day": "open",
+            "night": [{"role": "battle_wisp", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "rootsnare", "name": "Rootsnare Camp", "site": {"poi": "bandit"}, "belt": "l38_40",
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16}
+    ],
+    "leaders": [
+      {"role": "canopy_knuckle", "at": {"kind": "canopy", "pick": "farthest_from_roads"}, "respawn": 300},
+      {"role": "basket_biter", "at": {"kind": "serpent_pools", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }
