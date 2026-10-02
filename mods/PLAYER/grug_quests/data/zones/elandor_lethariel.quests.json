@@ -223,6 +223,94 @@
       "duration_min": 10
     },
     {
+      "id": "lethariel_wardens_opt_01",
+      "line": "wardens",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "lethariel_wardens_02"
+      ],
+      "title": "Optional: Redfang Season",
+      "text": "Redfang Vixens prowl the {name:greatwood} {dir_of:lethariel:greatwood} by day and attack anyone who walks there. Kill six so our foresters can mark the old trees again. Bring bandages; the name is not decorative.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "redfang_fox"
+          ],
+          "count": 6,
+          "area": "elandor_lethariel/greatwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "lethariel_wardens_opt_02",
+      "line": "wardens",
+      "giver": "r20_elf_capital_envoy",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 25,
+      "level": 25,
+      "requires": [
+        "lethariel_wardens_02"
+      ],
+      "title": "Optional: Tithes Nobody Owes",
+      "text": "At night, Tithe Revenants walk the {name:greatwood} collecting a tithe for a lord who died before the capital was planted. Lay six of them to rest. They are tougher than the Debtbound Zombies of the glades, and far more insistent.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "stubborn_zombie"
+          ],
+          "count": 6,
+          "area": "elandor_lethariel/greatwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "lethariel_provisions_opt_01",
+      "line": "provisions",
+      "giver": "r20_elf_capital_cook",
+      "turnin": "r20_elf_capital_cook",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "lethariel_provisions_01"
+      ],
+      "title": "Optional: Brushes for the Glaze",
+      "text": "Bring me two Silver-Tip Fox Tails from the Redfang Vixens of the {name:greatwood}. Nothing else spreads honey glaze so evenly, and the Star Hall notices uneven glaze. The vixens bite, so I will add a pie to your trouble.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:silver_tip_fox_tail",
+          "count": 2,
+          "roles": [
+            "redfang_fox"
+          ],
+          "area": "elandor_lethariel/greatwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 8,
+      "optional": true
+    },
+    {
       "id": "lethariel_provisions_bounty",
       "line": "provisions",
       "giver": "r20_elf_capital_cook",

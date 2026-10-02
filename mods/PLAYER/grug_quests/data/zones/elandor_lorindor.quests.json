@@ -257,6 +257,93 @@
       "duration_min": 15
     },
     {
+      "id": "lorindor_wardenry_opt_01",
+      "line": "wardenry",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "lorindor_wardenry_01"
+      ],
+      "title": "Optional: Pinchers on the Shell Strand",
+      "text": "Barnacle Pinchers have taken the {name:shell_strand} {dir_from_giver:shell_strand} and snap at every warden who walks it by day. Five of them will do; the strand is short and they are not. Leave the gentler Bank Crabs be.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "armored_crab"
+          ],
+          "count": 5,
+          "area": "elandor_lorindor/shell_strand"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "lorindor_wardenry_opt_02",
+      "line": "wardenry",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "lorindor_wardenry_01"
+      ],
+      "title": "Optional: Pale Lights in the Paleroots",
+      "text": "The wisps that leave the elderwood gather in the {name:paleroots} {zone_area:paleroots}, and there they burn brighter and meaner. Put out six of them at night. The Wardenry has never found where they go by day, and would rather not.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "wandering_wisp"
+          ],
+          "count": 6,
+          "area": "elandor_lorindor/paleroots"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "lorindor_cutting_opt_01",
+      "line": "cutting",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "lorindor_cutting_01"
+      ],
+      "title": "Optional: Bark-Strippers",
+      "text": "The Moss-Antler Stags of the {name:paleroots} {zone_area:paleroots} strip the bark from the pale roots faster than the trees can mend. Thin the herd by six, by day; the stags are yellow and will not start it. Stewardship is not always gentle.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "moss_antler_stag"
+          ],
+          "count": 6,
+          "area": "elandor_lorindor/paleroots"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 8,
+      "optional": true
+    },
+    {
       "id": "lorindor_berries_bounty",
       "line": "berries",
       "giver": "r20_anchor_018_host",

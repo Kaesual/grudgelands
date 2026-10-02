@@ -181,6 +181,93 @@
       "climax": true
     },
     {
+      "id": "moonfall_stars_opt_01",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_02"
+      ],
+      "title": "Optional: Pinchers on the Moonstrand",
+      "text": "Barnacle Pinchers crowd the {name:moonstrand} {dir_from_giver:moonstrand} by day, right where I set up to watch the moon rise over the water. Defeat five of them. Leave the Bank Crabs; they at least keep quiet.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "armored_crab"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/moonstrand"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9,
+      "optional": true
+    },
+    {
+      "id": "moonfall_snares_opt_01",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 27,
+      "level": 28,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "Optional: The Warden's Bears",
+      "text": "The snare marks lead into the {name:elderwood} {zone_area:elderwood}, where Bramble Bears stand guard by day. Clear six of them so the way to the one behind the marks stays open. They are old and very large; so is the problem.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/elderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
+      "id": "moonfall_snares_opt_02",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "Optional: Webs over the Elderwood",
+      "text": "At night, Briar-Web Spiders hang their webs across the {name:elderwood}, and the snare-setters use them as markers. Kill six. Their silk is worth keeping; my lenses are not worth covering.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/elderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10,
+      "optional": true
+    },
+    {
       "id": "moonfall_stars_bounty",
       "line": "stars",
       "giver": "r20_anchor_035_host",
