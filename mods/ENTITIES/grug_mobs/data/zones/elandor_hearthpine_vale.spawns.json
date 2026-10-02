@@ -1,7 +1,68 @@
 {
   "zone": "elandor_hearthpine_vale",
-  "palette": {
-    "families": ["fox", "giant_rat", "ibex", "settled"],
-    "boar": "grug_mobs:boar"
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_copperfell_foothills"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "timberline", "name": "Hearthpine Timberline",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "clearings", "name": "Hearthpine Clearings",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shingle", "name": "Hearthpine Shingle",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "pinewood", "name": "Hearthpine Pinewood",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "foxholes", "name": "Hearthpine Foxholes",
+            "day": [{"role": "small_fox", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "rockpools", "name": "Hearthpine Rockpools",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "high_pines", "name": "Hearthpine High Pines",
+            "day": [{"role": "young_ibex", "weight": 3}, {"role": "small_fox", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "stonefields", "name": "Hearthpine Stonefields",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "cold_shore", "name": "Hearthpine Cold Shore",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "darkpines", "name": "Hearthpine Darkpines",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "ore_thief_camp", "name": "Hearthpine Thieves' Camp", "belt": "l8_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "muddled_ore_chief", "at": {"camp": "ore_thief_camp"}, "respawn": 300}
+    ],
+    "critters": ["rabbit"]
   }
 }

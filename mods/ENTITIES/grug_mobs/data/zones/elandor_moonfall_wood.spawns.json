@@ -1,6 +1,53 @@
 {
   "zone": "elandor_moonfall_wood",
-  "palette": {
-    "families": ["forest", "poacher", "wisp"]
+  "recipe": {
+    "from": {"border": ["elandor_lethariel", "elandor_starbough_vale"]},
+    "to": {"border": "elandor_glassroot_wilds"},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "eaves", "name": "Moonfall Eaves",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "mistmarsh", "name": "Moonfall Mistmarsh",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "deepwood", "name": "Moonfall Deepwood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+          "shore": {"id": "moonstrand", "name": "Moonfall Moonstrand",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "swamp": {"id": "wisp_fen", "name": "Moonfall Wisp Fen",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "elderwood", "name": "Moonfall Elderwood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"},
+          "shore": {"id": "night_shore", "name": "Moonfall Night Shore",
+            "day": [{"role": "armored_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "swamp": {"id": "black_fen", "name": "Moonfall Black Fen",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [],
+    "leaders": [
+      {"role": "snarewarden_bracken", "at": {"kind": "elderwood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

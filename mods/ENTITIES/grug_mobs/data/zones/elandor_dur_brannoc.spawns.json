@@ -1,6 +1,54 @@
 {
   "zone": "elandor_dur_brannoc",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "elandor_stormvault_heights"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "pastures", "name": "Dur Brannoc Pastures",
+            "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "forest": {"id": "pinewood", "name": "Dur Brannoc Pinewood",
+            "day": [{"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "uplands", "name": "Dur Brannoc Uplands",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "tollwood", "name": "Dur Brannoc Tollwood",
+            "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "toll_bandit_archer", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "heights", "name": "Dur Brannoc Heights",
+            "day": [{"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "forest": {"id": "ridgepines", "name": "Dur Brannoc Ridgepines",
+            "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crags", "name": "Dur Brannoc Crags",
+            "day": [{"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "goblin_camp", "name": "Dur Brannoc Goblin Camp", "belt": "l28_30",
+       "roster": [{"role": "ore_thieving_goblin", "weight": 3}, {"role": "rubble_goblin_slinger", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "ore_factor_brakk", "at": {"camp": "goblin_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

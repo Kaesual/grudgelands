@@ -1,7 +1,70 @@
 {
   "zone": "elandor_whitebridge_shire",
-  "palette": {
-    "families": ["forest", "poacher", "settled", "wisp"],
-    "boar": "grug_mobs:boar"
+  "recipe": {
+    "from": {"border": ["elandor_highcourt", "elandor_goldmead_vale"]},
+    "to": {"border": ["elandor_ashenward_march", "elandor_stormvault_heights"]},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "meadows", "name": "Whitebridge Meadows",
+            "day": [{"role": "furrow_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Whitebridge Strand",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "swamp": {"id": "withybeds", "name": "Whitebridge Withybeds",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "oakwood", "name": "Whitebridge Oakwood",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "hayfields", "name": "Whitebridge Hayfields",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shell_strand", "name": "Whitebridge Shell Strand",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "bank": {"id": "willowbanks", "name": "Whitebridge Willowbanks",
+            "day": "open",
+            "night": [{"role": "briarpack_wolf", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "briarwood", "name": "Whitebridge Briarwood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "far_fields", "name": "Whitebridge Far Fields",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "territorial_bear", "weight": 1}],
+            "night": [{"role": "briarpack_wolf", "weight": 3}, {"role": "briar_web_spider", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "ferry_fen", "name": "Whitebridge Ferry Fen",
+            "day": "open",
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "thornwood", "name": "Whitebridge Thornwood",
+            "day": [{"role": "territorial_bear", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "siltbasket", "name": "Siltbasket Camp", "site": {"poi": "mirefolk"}, "belt": "l21_23",
+       "roster": [{"role": "toll_mirefolk", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "ferry_camp", "name": "Whitebridge Ferry Camp", "belt": "l28_30",
+       "roster": [{"role": "toll_mirefolk", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "basket_poacher_thorn", "at": {"kind": "willowbanks", "pick": "farthest_from_roads"}, "respawn": 300},
+      {"role": "ferryman_murk", "at": {"camp": "ferry_camp"}, "respawn": 300}
+    ],
+    "critters": ["rabbit"]
   }
 }

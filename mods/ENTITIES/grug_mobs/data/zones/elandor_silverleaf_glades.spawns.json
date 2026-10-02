@@ -1,7 +1,59 @@
 {
   "zone": "elandor_silverleaf_glades",
-  "palette": {
-    "families": ["fox", "giant_rat", "poacher", "settled", "song_bird"],
-    "boar": "grug_mobs:boar"
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_starbough_vale"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "home_glades", "name": "Silverleaf Home Glades",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "fernways", "name": "Silverleaf Fernways",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 3}, {"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Silverleaf Strand",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "foxglades", "name": "Silverleaf Foxglades",
+            "day": [{"role": "small_fox", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 3}, {"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "driftwood_shore", "name": "Silverleaf Driftwood Shore",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "deepwood", "name": "Silverleaf Deepwood",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 3}, {"role": "drowned_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wrack_shore", "name": "Silverleaf Wrack Shore",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "poacher_camp", "name": "Silverleaf Poacher Camp", "belt": "l8_10",
+       "roster": [{"role": "furtive_poacher", "weight": 3}, {"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "misguided_poacher_chief", "at": {"camp": "poacher_camp"}, "respawn": 300}
+    ],
+    "critters": ["rabbit", "song_bird"]
   }
 }

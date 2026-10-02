@@ -79,7 +79,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_lorindor",
           "count": 4
@@ -159,7 +160,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_lorindor",
           "count": 4
@@ -239,7 +241,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:unlicensed_poacher"
           ],
           "zone": "elandor_lorindor",
           "count": 4

@@ -1,7 +1,73 @@
 {
   "zone": "elandor_ashenward_march",
-  "palette": {
-    "families": ["ashen_treant", "forest", "poacher", "war", "wisp"],
-    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
+  "recipe": {
+    "from": {"border": ["elandor_highcourt", "elandor_lorindor", "elandor_whitebridge_shire"]},
+    "to": {"border": ["front_broken_causeway", "front_shattered_line"]},
+    "belts": [
+      {
+        "id": "l31_33", "share": 30, "levels": [31, 33],
+        "kinds": {
+          "open": {"id": "ashfields", "name": "Ashenward Ashfields",
+            "day": [{"role": "watchful_stag", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "march_skeleton_raider", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "sootfen", "name": "Ashenward Sootfen",
+            "day": "open",
+            "night": [{"role": "marching_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "cinderwood", "name": "Ashenward Cinderwood",
+            "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "rootbound_treant", "weight": 3}, {"role": "march_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l34_37", "share": 40, "levels": [34, 37],
+        "kinds": {
+          "open": {"id": "wheelbreak", "name": "Ashenward Wheelbreak Fields",
+            "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 3}, {"role": "marching_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "wisp_fen", "name": "Ashenward Wisp Fen",
+            "day": "open",
+            "night": [{"role": "battle_wisp", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "hedgewood", "name": "Ashenward Hedgewood",
+            "day": [{"role": "territorial_bear", "weight": 3}, {"role": "briarpack_wolf", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "battle_wisp", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crow_ridges", "name": "Ashenward Crow Ridges",
+            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l38_40", "share": 30, "levels": [38, 40],
+        "kinds": {
+          "open": {"id": "warfields", "name": "Ashenward Warfields",
+            "day": [{"role": "briarpack_wolf", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "deadfen", "name": "Ashenward Deadfen",
+            "day": "open",
+            "night": [{"role": "unrelenting_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "ashwood", "name": "Ashenward Ashwood",
+            "day": [{"role": "territorial_bear", "weight": 1}],
+            "night": [{"role": "briar_web_spider", "weight": 3}, {"role": "unrelenting_zombie", "weight": 1}], "density": "normal"},
+          "highland": {"id": "high_ridges", "name": "Ashenward High Ridges",
+            "day": [{"role": "watchful_carrion_crow", "weight": 3}, {"role": "watchful_stag", "weight": 1}],
+            "night": [{"role": "battle_wisp", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "coalbrand_yard", "name": "Coalbrand Yard", "site": {"poi": "bandit"}, "belt": "l38_40",
+       "roster": [{"role": "entrenched_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "ration_camp", "name": "Ashenward Ration Camp", "belt": "l31_33",
+       "roster": [{"role": "entrenched_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8},
+      {"id": "poacher_camp", "name": "Ashenward Poacher Camp", "belt": "l38_40",
+       "roster": [{"role": "wartrail_poacher", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "quartermaster_scrip", "at": {"camp": "ration_camp"}, "respawn": 300},
+      {"role": "red_receipt_marshal", "at": {"camp": "poacher_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

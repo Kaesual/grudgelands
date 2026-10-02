@@ -1,6 +1,48 @@
 {
   "zone": "elandor_lethariel",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "elandor_glassroot_wilds"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "glades", "name": "Lethariel Glades",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "bank": {"id": "brooks", "name": "Lethariel Brooks",
+            "day": "open",
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "greatwood", "name": "Lethariel Greatwood",
+            "day": [{"role": "redfang_fox", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "fernbrooks", "name": "Lethariel Fernbrooks",
+            "day": "open",
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "wildwood", "name": "Lethariel Wildwood",
+            "day": [{"role": "redfang_fox", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "unlicensed_poacher", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "poacher_camp", "name": "Lethariel Poacher Camp", "belt": "l28_30",
+       "roster": [{"role": "unlicensed_poacher", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "bough_counter_rusk", "at": {"camp": "poacher_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

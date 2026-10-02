@@ -1,8 +1,60 @@
 {
   "zone": "elandor_lorindor",
-  "palette": {
-    "families": ["poacher", "wisp"],
-    "exact_mobs": ["grug_mobs:stag"],
-    "night_fallback": ["forest"]
+  "recipe": {
+    "from": {"border": ["elandor_lethariel", "elandor_starbough_vale"]},
+    "to": {"border": ["elandor_glassroot_wilds", "elandor_ashenward_march"]},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "berrywoods", "name": "Lorindor Berrywoods",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "unlicensed_poacher", "weight": 3}, {"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+          "shore": {"id": "pearl_shore", "name": "Lorindor Pearl Shore",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "swamp": {"id": "petalfens", "name": "Lorindor Petalfens",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "elderwood", "name": "Lorindor Elderwood",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shell_strand", "name": "Lorindor Shell Strand",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "swamp": {"id": "wisp_marsh", "name": "Lorindor Wisp Marsh",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "paleroots", "name": "Lorindor Paleroots",
+            "day": [{"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "blackfen", "name": "Lorindor Blackfen",
+            "day": "open",
+            "night": [{"role": "wandering_wisp", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "fenhold", "name": "Whitepetal Fenhold", "site": {"poi": "mirefolk"}, "belt": "l21_23",
+       "roster": [{"role": "toll_mirefolk", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16},
+      {"id": "pearl_camp", "name": "Lorindor Pearl Camp", "belt": "l28_30",
+       "roster": [{"role": "toll_mirefolk", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "pearl_counter_iss", "at": {"camp": "pearl_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }
