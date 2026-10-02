@@ -871,7 +871,9 @@ grug_mobs.register_camp_type("guard_throng", {
 --
 -- Recipe camps (Round 28 ruling 37, Lane S1): bandits, poachers and
 -- mirefolk of a zone's spawn recipe, at the camp spot its region map picked
--- by rule (spawn_regions_core.lua step 7).
+-- by rule or on the camp POI the recipe names (spawn_regions_core.lua step
+-- 7). A recipe camp on a POI is that POI's only population: the POI's fire
+-- is scenery in a recipe zone (camp_tick above).
 --
 -- The slot model above without a node: `slots` members, each death booked
 -- into a refill queue whose due time advances by a roll in the camp's
@@ -940,9 +942,11 @@ local function spawn_region_member(unit, zone_id, players, center_y, clock)
 			if g and g.y >= 0 then
 				local stand = {x = g.x, y = g.y + 1, z = g.z}
 				local role = SR.pick_role(camp.roster)
+				-- The unit carries the camp's tag and its levels in the belt
+				-- it stands in (a camp on a POI takes the POI's belt).
 				if SR.players_clear(stand, camp.min_player_distance, players) and
 						not SR.spawn_refused("grug_mobs:" .. role, stand) and
-						SR.spawn_mob(camp, role, g, clock) then
+						SR.spawn_mob(unit, role, g, clock) then
 					return true
 				end
 			end

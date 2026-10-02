@@ -141,11 +141,40 @@ local function parse_palette(palette, where)
 	return out, palette.boar, lookalikes
 end
 
--- The context a recipe is parsed in: the zone's band and the catalogue.
+-- The world model's anchor source (simple_map) and settlement roster, read
+-- on first need: the region builder, the POI list of a recipe camp's site
+-- and the place names of describe share them.
+local mapgen_source, settlement_roster
+local function world_source()
+	if not mapgen_source then
+		mapgen_source = dofile(core.get_modpath("grug_mapgen") .. "/wp40/source/simple_map.lua")
+	end
+	return mapgen_source
+end
+local function roster()
+	if not settlement_roster then
+		settlement_roster = dofile(core.get_modpath("grug_mapgen") ..
+			"/wp40/r7_settlement.lua").roster
+	end
+	return settlement_roster
+end
+
+-- The zone's camp POIs with their names (the roster labels).
+local function zone_pois(zone_id)
+	local labels = {}
+	for _, row in ipairs(roster()) do
+		if row.anchor_id then labels[row.anchor_id] = row.label end
+	end
+	return CORE.zone_pois(world_source(), zone_id, labels)
+end
+
+-- The context a recipe is parsed in: the zone's band, the catalogue and
+-- the zone's camp POIs.
 local function recipe_context(zone_id)
 	local record = grug_zones.get(zone_id)
 	local rows = catalogue_rows()
 	return {
+		pois = zone_pois,
 		band = {record.level_min or 1, record.level_max or 60},
 		role_levels = function(role)
 			local row = rows[role]
@@ -241,12 +270,11 @@ local query_env
 local function queries()
 	if not query_env then
 		local wp40 = grug_mapgen.wp40
-		local dir = core.get_modpath("grug_mapgen") .. "/wp40"
 		query_env = CORE.queries({
 			zones = grug_zones,
 			column_values_at = wp40.planner_source.column_values_at,
 			road_polylines = wp40.road_polylines,
-			source = dofile(dir .. "/source/simple_map.lua"),
+			source = world_source(),
 		})
 	end
 	return query_env
@@ -424,8 +452,7 @@ local function place(ref)
 	end
 	if not places then
 		places = {}
-		local dir = core.get_modpath("grug_mapgen") .. "/wp40"
-		for _, row in ipairs(dofile(dir .. "/r7_settlement.lua").roster) do
+		for _, row in ipairs(roster()) do
 			places[row.key] = row
 			places[row.anchor_id] = row
 		end
