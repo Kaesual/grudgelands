@@ -1428,6 +1428,18 @@ sub-types burn like the Zombie).
   1-in-10 Elder Bear and Silverback rolls only apply to the base names), and
   the display name is put back if a roll renamed it. `leader: true` marks a
   named leader (normal tier in 1–30).
+- **Names (user, 2026-10-02):** words that announce size, age, strength,
+  temperament or wits appear only on start-zone roles (levels 1–10), as one
+  ladder shared by all six starts: Small/Young for neutral animals,
+  Large → Aggressive → Monstrous for hostile animals, Braindead → Sluggish →
+  Monstrous for zombies and husks, Confused for outlaws and the start
+  chiefs. Everywhere else every display name (including `display_by_zone`
+  variants) belongs to one role, avoids base-mob and rare names, has at most
+  three words (named leaders excepted) and describes the creature in its
+  place; roles of one family sharing a zone differ in more than their first
+  word. The name tag colour shows disposition. Full rule and ladder:
+  [Round 28 design frame §5](../planning/round28-design-frame.md#5-naming);
+  `tools/r28_names/build_review.py --check` enforces it on the data.
 - **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
   step (the floor is also the fallback where the level field has no value);
   spawn areas narrow it further.
