@@ -328,7 +328,7 @@
         "bw_front_ashveil_04"
       ],
       "title": "Group: Nobody's Number",
-      "text": "Bog Witch Salt-Counter sits in the {name:front_gravesalt_escarpment/mourning_mire} {dir_from_giver:salt_counter_witch}, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
+      "text": "Bog Witch Salt-Counter holds court {dir_from_giver:salt_counter_witch}, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
       "objectives": [
         {
           "type": "kill",

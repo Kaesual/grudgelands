@@ -48,40 +48,19 @@ content requirements remain explicitly separate from delivered behavior.
   follow the fixed disposition contract below. Density target ~1
   visible mob per 15–20 m of wilderness travel.
 - **Density is a per-zone budget** (Round 24 ruling 27, 2026-09-29;
-  `mods/ENTITIES/grug_mobs/density.lua`), independent of how many species a
-  zone allows. It covers the ordinary natural surface species of the
-  named-zone palettes (hostile and neutral hunted wildlife, normal and elite
-  tiers). The species "at a point" are those that could spawn there: their
-  hosts include the node the spawning row matched, and policy, level gate, row
-  check and clock allow them. Around each spawn point (the 128-node sphere
-  mobs_redo counts in) the budgeted mobs never exceed the point budget
-  `max(zone budget, old population of the species at the point)`:
-  - the zone budget is **15 by day, 23 by night** = 1.5 × the pre-Round-24
-    median area population (10 / 15, measured per land column on the
-    biome-top hosts by the Round 24 density fixture, retired in Round 30
-    because no zone keeps a palette cast since the Round 28 spawn recipes;
-    git history keeps it), times an optional
-    per-zone multiplier `grug_mobs.ZONE_DENSITY` for later tuning;
-  - the old population is the sum of those species' Round 16 caps (row cap ×
-    1.3, rounded; × 5/4, rounded up, at night), so no point and no zone gets
-    sparser than before; species-rich points (war fronts, forests at night)
-    keep their old population, and sparse points get the ×1.5 lift.
-
-  Each species at the point gets the share point budget × its row cap ÷ their
-  summed row caps, rounded (at least 1), but never more than
-  **ceil(1.5 × its own Round 16 cap)** (review decision): a lone Stone Golem
-  on bare stone stays at 2 by day and 3 by night, not the budget, so points
-  with only one or two eligible species end below the zone budget but never
-  below their old population. Below its own Round 16 cap a species always
-  spawns, so neighbours of a mixed area (a higher-level edge, another biome
-  patch) never hold it below its pre-Round-24 population. The night count covers only the night cast, so day animals still
-  about at dusk do not block night spawns. Budgeted rows spawn with 1.5x
-  attempt frequency, and their own mobs_redo cap is lifted to 64 so the budget
-  binds. Critters, underground rows, the Kraken and Reed Angelfish, shore
-  crabs, NPCs, authored guards, camps, patrols, kings, dragons,
-  summoned/encounter adds, bosses and named rares are neither counted nor
-  limited; ambient rows outside the palettes keep the Round 16 rule (1.3x
-  attempt frequency and a nearest-integer 1.3x species cap).
+  `mods/ENTITIES/grug_mobs/density.lua`): the zone budget is **15 by day,
+  23 by night** (1.5 × the pre-Round-24 median area population of 10 / 15),
+  times an optional per-zone multiplier `grug_mobs.ZONE_DENSITY` for later
+  tuning. Since Round 28 the region spawner is what spends it: each kind's
+  density class scales it, and the roster's roles share it (§4.2 Spawn
+  regions, [spawn_regions.md](spawn_regions.md)). The Round 24
+  per-point budget of the zone *palettes* (species sharing the budget by
+  their row caps around an ABM spawn point) applies to no zone any more,
+  because no zone keeps a palette cast since the spawn recipes replaced the
+  palettes (measured in Round 30: 0 of 38 zones; its fixture was retired).
+  Its code is still loaded; the Round 30 spawn-ABM change (lane P2) decides
+  whether it goes. Ambient rows outside the recipes keep their own row
+  chance and cap.
 - Target patch model: logical biomes vary only inside their zone-owned
   weighted palette. Fixed village/outpost/camp slots come from
   `world_zones.md` §§8/11; Elves keep tree-integrated settlements.
