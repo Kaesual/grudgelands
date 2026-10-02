@@ -3,8 +3,5 @@
   "palette": {
     "families": ["fox", "giant_rat", "poacher", "settled", "song_bird"],
     "boar": "grug_mobs:boar"
-  },
-  "critters": ["rabbit", "song_bird"],
-  "areas": [],
-  "leaders": []
+  }
 }

@@ -692,13 +692,15 @@ level field applies; in the six starting zones the start-zone gradient
 applies instead (band 1 behind the start, rising toward the front, band 3
 only shortly before the front border; `world_zones.md` §2, Round 24). It is
 the same surface level for spawns and for the mapgen's level-banded
-content, except that in a zone whose data defines spawn areas (Round 28
-ruling 34, `biomes_mobs.md` §4.2) a surface mob from an area takes a level
-rolled in its area's fixed range and a named leader its fixed level; the
-field keeps serving every zone without areas, the depth axis, water, rares,
-guards and the mapgen. Capital city zones contain no ambient hostile mobs
-while they have no areas; with areas they spawn outside the protected city
-only (ruling 3). Guards use
+content, except in a zone with a spawn recipe (Round 28 ruling 34, Lane
+S1, [spawn_regions.md](spawn_regions.md)): there a surface mob takes a level
+rolled in its role's range of its spawn region and a named leader the top of
+its region, and the gameplay surface level (`grug_core.mob_level_at`: mob
+levels, the fishing band, bandit loot) is the region's level. The field
+itself keeps serving every zone without a recipe, the depth axis, guards and
+the mapgen. Capital city zones contain no ambient hostile mobs while they
+have no recipe; with one they spawn outside the protected city only
+(ruling 3). Guards use
 the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
@@ -1174,9 +1176,9 @@ patrollers, named rares, bosses and summons, royals, bespoke no-leash actors,
 NPCs and water-bound swimmers keep their own movement rules. Player participation/credit rules remain separate.
 Friendly guard healing stays deferred; current healing targets remain players.
 Round 28 ruling 4 keeps the leash anchored at the spawn point with radius 32;
-spawn areas (`biomes_mobs.md` §4.2) are sized so that it keeps mobs inside
-their area. Members of a camp AREA (ruling 37) roam free under this leash;
-only the camp fires keep the 20-node roam cap.
+spawn regions (about 100–200 m across, `spawn_regions.md`) keep mobs near
+the region they spawned in. Members of a recipe camp (ruling 37) roam free
+under this leash; only the camp fires keep the 20-node roam cap.
 
 **Road and town push (Round 28 ruling 2):** roads and towns should feel safe
 to travel and rest in without becoming a combat refuge. An idle (standing or

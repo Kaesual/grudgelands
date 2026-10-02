@@ -3,8 +3,5 @@
   "palette": {
     "families": ["goblin_raid", "mountain", "scorpion", "war"],
     "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
-  },
-  "critters": [],
-  "areas": [],
-  "leaders": []
+  }
 }

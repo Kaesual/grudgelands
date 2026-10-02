@@ -85,7 +85,7 @@ end
 
 local function subtype_checks()
 	local zones = {}
-	for _, id in ipairs(grug_mobs.spawn_areas.zone_ids()) do zones[id] = true end
+	for _, id in ipairs(grug_mobs.spawn_regions.zone_ids()) do zones[id] = true end
 	local registered, leaders = 0, 0
 	for _, row in ipairs(SUBS) do
 		local name = "grug_mobs:" .. row.role
@@ -97,7 +97,9 @@ local function subtype_checks()
 			local pp, bp = proto.initial_properties, base.initial_properties
 			check(sub.base == row.base and pp.mesh == bp.mesh and pp.visual == bp.visual,
 				name .. " is a copy of " .. row.base)
-			local s = row.size
+			-- Every leader has the one leader size (Lane S1), whatever the
+			-- catalogue's size says.
+			local s = row.leader and grug_mobs.LEADER.size or row.size
 			local boxes = near(pp.visual_size.x, bp.visual_size.x * s)
 				and near(pp.visual_size.y, bp.visual_size.y * s)
 			for i = 1, 6 do

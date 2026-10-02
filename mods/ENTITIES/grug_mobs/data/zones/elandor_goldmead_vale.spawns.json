@@ -3,8 +3,5 @@
   "palette": {
     "families": ["fox", "poacher", "settled", "wild_turkey"],
     "boar": "grug_mobs:boar"
-  },
-  "critters": ["rabbit", "wild_turkey"],
-  "areas": [],
-  "leaders": []
+  }
 }

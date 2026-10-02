@@ -41,7 +41,7 @@
             "small_boar"
           ],
           "count": 8,
-          "area": "elandor_dawnmere_fields/home_fields_day"
+          "area": "elandor_dawnmere_fields/home_fields"
         }
       ],
       "rewards": {
@@ -71,7 +71,7 @@
             "large_rat"
           ],
           "count": 8,
-          "area": "elandor_dawnmere_fields/home_fields_night"
+          "area": "elandor_dawnmere_fields/home_fields"
         }
       ],
       "rewards": {
@@ -100,7 +100,7 @@
             "braindead_zombie"
           ],
           "count": 8,
-          "area": "elandor_dawnmere_fields/home_beach_night"
+          "area": "elandor_dawnmere_fields/home_beach"
         }
       ],
       "rewards": {
@@ -346,7 +346,7 @@
             "large_rat"
           ],
           "count": 10,
-          "area": "elandor_dawnmere_fields/home_fields_night"
+          "area": "elandor_dawnmere_fields/home_fields"
         }
       ],
       "rewards": {

@@ -133,7 +133,7 @@ strap also covers Armor), and per family a mined or gathered input (bar,
 quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp).
 
 **Gap until the zone content lands.** The catalogue's sub-types spawn only
-from zone spawn areas, which the Round 28 content lanes (E2/E3) still have to
+from zone spawn recipes (Dawnmere Fields has one), which the Round 28 content lanes still have to
 write. Until then the stat loot comes only from the existing mobs whose role
 names a drop family (Boar tusks, Zombie flesh and teeth; biomes_mobs.md
 "Loot by band"), so only Strength, Critical chance and Maximum HP enchants

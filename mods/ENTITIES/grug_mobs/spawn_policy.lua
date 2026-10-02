@@ -26,12 +26,13 @@ local NIGHT_FALLBACKS = {
 -- Closed named-zone mob palettes (world_zones.md Section 8), the boar tint
 -- and the lookalike choices per zone. Since Round 28 they are data: the
 -- `palette` of each zone's data/zones/<zone_id>.spawns.json, read by
--- spawn_areas.lua. Capitals deliberately have empty palettes. Lorindor is
+-- spawn_regions.lua. Capitals deliberately have empty palettes. Lorindor is
 -- intentionally literal: its row names pale stags, not the complete forest
--- family. A zone whose data defines spawn areas (ruling 34) ignores its
--- palette for surface mobs; see spawn_policy_allows.
+-- family. A zone whose data holds a spawn recipe (ruling 34, Lane S1) has no
+-- palette and spawns its surface mobs from its regions; see
+-- spawn_policy_allows.
 local ZONE_MOB_PALETTES, BOAR_VARIANT_BY_ZONE, ZONE_LOOKALIKE_SELECTION =
-	grug_mobs.spawn_areas.fallback_palettes()
+	grug_mobs.spawn_regions.fallback_palettes()
 
 -- A mob may name more than one Section 8 family where the catalog says so.
 -- Existing mobs:spawn node lists remain the narrower habitat selector.
@@ -196,7 +197,7 @@ local RACE_FACTIONS = {
 -- deliberately NOT covered here: their named zones' mob palettes are empty,
 -- so no ordinary row reaches the city or the ground around it anyway. Round
 -- 28 ruling 3 adds the capital city for every ambient non-critter spawn
--- (grug_mobs.protected_spawn_surface below), which spawn areas in a capital
+-- (grug_mobs.protected_spawn_surface below), which spawn regions in a capital
 -- zone's outskirts need.
 local START_PAD_LOW = 64 -- the pad: anchor - 64 .. anchor + 63, half-open
 local START_PAD_HIGH = 63
@@ -703,7 +704,7 @@ end
 -- are not refused, and critters may still appear in towns.
 --
 -- Called for ABM rows (spawn_policy_allows, ordinary natural rows only) and
--- for every non-critter area spawn (spawn_areas.lua). `pos` is where the mob
+-- for every non-critter region spawn (spawn_regions.lua). `pos` is where the mob
 -- stands or the node it stands on: the road corridor reaches +-5 around the
 -- road surface and the other shapes are full columns, so both answer alike.
 -- The start footprint is the plain-number test above; the capital query is
@@ -767,12 +768,12 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 		return false
 	end
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
-	-- Round 28 ruling 34: a zone whose data defines spawn areas spawns its
-	-- surface mobs only from them (spawn_areas.lua). Its ABM rows keep the
-	-- critters its data lists; crabs and every other row are refused. The
-	-- Gull keeps its beach host.
-	if zone_id and grug_mobs.spawn_areas.zone_has_areas(zone_id) then
-		if not grug_mobs.spawn_areas.zone_critter(zone_id, mob_name) then
+	-- Round 28 ruling 34: a zone whose data holds a spawn recipe spawns its
+	-- surface mobs only from its regions (spawn_regions.lua). Its ABM rows
+	-- keep the critters the recipe lists; crabs and every other row are
+	-- refused. The Gull keeps its beach host.
+	if zone_id and grug_mobs.spawn_regions.zone_has_recipe(zone_id) then
+		if not grug_mobs.spawn_regions.zone_critter(zone_id, mob_name) then
 			return false
 		end
 		if mob_name == "grug_mobs:gull" then

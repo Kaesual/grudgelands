@@ -135,7 +135,7 @@ function grug_mobs.bandit_def(description)
 		-- integer in player meta (economy.md §1) and there is deliberately no coin
 		-- item; a purse only turns into copper across a trader's counter.
 		drops = function(pos)
-			local level = grug_zones.surface_mob_level_at(pos.x, pos.z)
+			local level = grug_core.surface_mob_level_at(pos.x, pos.z)
 			-- "inner camps" vs. "outer camps" of §3.1, read against the
 			-- Named-zone level contract: levels through 30 use settled cloth;
 			-- rings, everything further out (outer, coast, war_coast, strait,

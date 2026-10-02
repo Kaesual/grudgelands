@@ -79,7 +79,7 @@ end
 --                          where the level field has no value
 --   def._grug_max_level   — level cap (default: the source cap, 60/70)
 --   def._grug_fixed_level — hand-set level, bypasses the field and the cap
---   def._grug_level_source — "mob" (default, grug_zones.mob_level_at) or
+--   def._grug_level_source — "mob" (default, grug_core.mob_level_at) or
 --                          "guard" (grug_zones.guard_level_at)
 --   def._grug_tier        — "normal" (default) | "elite" | "rare" | "boss"
 --   def._grug_faction     — faction id; the mob never attacks its own faction
@@ -935,9 +935,9 @@ function grug_mobs.register_mob(name, def)
 end
 
 local modpath = core.get_modpath(core.get_current_modname())
--- Round 28: the per-zone spawn data (palettes, spawn areas, leaders) first;
+-- Round 28: the per-zone spawn data (palettes, spawn recipes) first;
 -- spawn_policy.lua reads the palettes from it.
-dofile(modpath .. "/spawn_areas.lua")
+dofile(modpath .. "/spawn_regions.lua")
 dofile(modpath .. "/spawn_policy.lua")
 dofile(modpath .. "/density.lua")
 grug_mobs.install_spawn_clock_wrapper()

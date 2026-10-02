@@ -176,6 +176,7 @@ class Design:
         self.subtype_origin = [("catalog/subtypes.json", None)] * len(self.subtypes or [])
         self.item_origin = [("catalog/items.json", None)] * len(self.items or [])
         self.zone_catalogs = {}
+        self._recipes = {}
         self.spawns = {}
         self.quests = {}
         # zones/<host_zone>.front.quests.json: front quests (owned by the
@@ -224,9 +225,44 @@ class Design:
     def quest_zones(self):
         return sorted(set(self.quests) | set(self.front))
 
+    def role_levels(self, role):
+        """A role's catalogue levels [lo, hi] (global or zone catalogue), or
+        None (an existing mob without a sub-type row: unrestricted)."""
+        levels = (self.subtype_map().get(role) or {}).get("levels")
+        return levels if is_level_pair(levels) else None
+
+    def is_leader(self, role):
+        return (self.subtype_map().get(role) or {}).get("leader") is True
+
+    def recipe(self, zone):
+        """The zone's parsed recipe (see parse_recipe) and its errors; (None,
+        []) without a recipe. Parsed in the catalogue's context, without the
+        zone band (the validator adds that with an atlas)."""
+        if zone not in self._recipes:
+            data = self.spawns.get(zone)
+            if not isinstance(data, dict) or "recipe" not in data:
+                self._recipes[zone] = (None, [])
+            else:
+                self._recipes[zone] = parse_recipe(zone, data["recipe"], None, self.role_levels,
+                                                   self.is_leader)
+        return self._recipes[zone]
+
+    def areas(self, zone):
+        """The zone's quest areas: its recipe's kinds and camps, normalized
+        (id -> unit_summary). A file without a recipe has none."""
+        parsed = self.recipe(zone)[0]
+        if parsed is None:
+            return {}
+        return {unit["id"]: unit_summary(unit) for unit in parsed["kinds"] + parsed["camps"]}
+
     def leaders(self, zone):
-        data = self.spawns.get(zone) or {}
-        return {row.get("role"): row for row in data.get("leaders") or [] if isinstance(row, dict)}
+        """{role: {"role", "level", "respawn", "at"}}; level is None when the
+        recipe gives the leader no level (a parse error)."""
+        parsed = self.recipe(zone)[0]
+        if parsed is None:
+            return {}
+        return {row["role"]: {"role": row["role"], "level": row["level"], "respawn": row["respawn"],
+                              "at": row["at"]} for row in parsed["leaders"]}
 
     def find_leader(self, role, zone=None):
         """(zone, leader) for a leader role: the given zone first, then every
@@ -273,9 +309,6 @@ class Design:
     def drop_map(self):
         return {row.get("family"): row for row in self.drops or [] if isinstance(row, dict)}
 
-    def areas(self, zone):
-        data = self.spawns.get(zone) or {}
-        return {area.get("id"): area for area in data.get("areas") or [] if isinstance(area, dict)}
 
 
 def split_area_ref(ref, own_zone):
@@ -284,6 +317,415 @@ def split_area_ref(ref, own_zone):
         zone, area = ref.split("/", 1)
         return zone, area
     return own_zone, ref
+
+
+# --- spawn recipe -----------------------------------------------------------
+# Mirrors M.parse_recipe in mods/ENTITIES/grug_mobs/spawn_regions_core.lua
+# (the game's parser and the reference). The game stops at the first error;
+# this one collects as many as practical and skips the broken part.
+
+RECIPE_TYPES = ("shore", "bank", "swamp", "forest", "highland", "open")
+DENSITIES = ("sparse", "normal", "dense")
+MAX_MINOR = 0.25  # a roster's minor role: at most this share of the weight
+LEADER_PICKS = ("farthest_from_roads",)
+SPAWNS_FILE_KEYS = ("zone", "palette", "recipe", "notes")
+PALETTE_KEYS = ("families", "exact_mobs", "night_fallback", "boar", "lookalikes")
+RECIPE_KEYS = ("from", "to", "belts", "camps", "leaders", "critters", "notes")
+BELT_KEYS = ("id", "share", "levels", "max_from", "kinds", "notes")
+KIND_KEYS = ("id", "name", "day", "night", "density", "notes")
+CAMP_KEYS = ("id", "name", "belt", "roster", "slots", "respawn", "min_player_distance", "apart", "notes")
+LEADER_KEYS = ("role", "at", "respawn", "notes")
+
+
+class RecipeError(str):
+    """One recipe finding: a string "path: message" that also carries the
+    finding code (`code`), the JSON path inside the recipe (`path`) and the
+    bare message (`msg`)."""
+
+    def __new__(cls, code, path, msg):
+        self = str.__new__(cls, "%s: %s" % (path or "recipe", msg))
+        self.code, self.path, self.msg = code, path, msg
+        return self
+
+
+def _is_int(value, lo=None, hi=None):
+    return (isinstance(value, int) and not isinstance(value, bool)
+            and (lo is None or value >= lo) and (hi is None or value <= hi))
+
+
+def _is_num(value):
+    return (isinstance(value, (int, float)) and not isinstance(value, bool)
+            and math.isfinite(value))
+
+
+def is_level_pair(value):
+    return (isinstance(value, list) and len(value) == 2 and all(_is_int(v, 1, LEVEL_CAP) for v in value)
+            and value[0] <= value[1])
+
+
+def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None):
+    """Parses a zone's spawn recipe like the game. `band` = the zone's
+    levels [lo, hi] (None: 1..60), `role_levels(role)` -> [lo, hi] or None
+    (no catalogue row: unrestricted), `is_leader(role)` -> bool (None: not
+    checked). Returns (parsed, errors): parsed is None when the recipe is
+    not an object, else {"zone", "from", "to", "belts", "kinds", "camps",
+    "leaders", "critters"}; a kind is {"id", "name", "unit": "kind", "type",
+    "belt", "density", "rosters": {"day", "night"}, "inherits",
+    "levels_by_role", "roles", "levels"}, a camp the same with "unit":
+    "camp", one roster for both clocks and its camp numbers; a leader is
+    {"role", "at", "respawn", "level"}. errors: RecipeError strings."""
+    errors = []
+    band_known = band is not None
+    band = band or [1, LEVEL_CAP]
+
+    def err(code, path, msg):
+        errors.append(RecipeError(code, path, msg))
+
+    def cover(unit, value, levels, from_bottom, path):
+        """Every zone runs to its round level (the user, 2026-10-02): a kind's
+        roster covers its whole belt at each clock (no gap, bottom to top); a
+        camp may start above its belt's bottom but has no gap and reaches the
+        top. Rosters with a role that never meets the belt are reported
+        already."""
+        if value is None or levels is None:
+            return
+        rows = value.get("list") or []
+        ranges = sorted(unit["levels_by_role"][r["role"]] for r in rows if r["role"] in unit["levels_by_role"])
+        if not ranges or len(ranges) < len(rows):
+            return
+        reached = (levels[0] if from_bottom else ranges[0][0]) - 1
+        for lo, hi in ranges:
+            if lo > reached + 1:
+                break
+            reached = max(reached, hi)
+        if reached < levels[1]:
+            parts = ", ".join("L%d" % lo if lo == hi else "L%d-%d" % (lo, hi) for lo, hi in ranges)
+            err("E-recipe-cover", path, "roles cover %s of the belt's L%d-%d: %s" % (
+                parts, levels[0], levels[1], "every kind covers its whole belt at each clock" if from_bottom
+                else "a camp has no gap and reaches its belt's top"))
+
+    def known(row, allowed, path):
+        bad = sorted(str(k) for k in row if k not in allowed)
+        if bad:
+            err("E-recipe-key", path, "unknown field %s" % ", ".join(bad))
+
+    def snake(value):
+        return isinstance(value, str) and SNAKE.match(value) is not None
+
+    def roster(value, path):
+        if not isinstance(value, list) or not 1 <= len(value) <= 2:
+            err("E-recipe-roster", path, "a roster lists one main role and at most one minor role")
+            return None
+        out, seen = [], set()
+        for i, row in enumerate(value):
+            rpath = "%s[%d]" % (path, i)
+            if not isinstance(row, dict) or not isinstance(row.get("role"), str) or not row["role"] \
+                    or not _is_num(row.get("weight")) or row["weight"] <= 0:
+                err("E-recipe-roster", rpath, "roster entries need a role and a positive weight")
+                return None
+            known(row, ("role", "weight"), rpath)
+            if row["role"] in seen:
+                err("E-recipe-roster", rpath, "role %s is listed twice" % row["role"])
+                return None
+            seen.add(row["role"])
+            out.append({"role": row["role"], "weight": row["weight"]})
+        total = sum(r["weight"] for r in out)
+        if len(out) == 2 and min(r["weight"] for r in out) > total * MAX_MINOR + 1e-9:
+            err("E-recipe-roster", path, "the minor role may hold at most %d %% of the weight"
+                % round(MAX_MINOR * 100))
+            return None
+        return {"list": out, "total": total}
+
+    def role_range(role, levels, path):
+        """Levels of `role` inside `levels` (a belt); None when they never meet."""
+        own = role_levels(role) if role_levels else None
+        if not own:
+            return [levels[0], levels[1]]
+        lo, hi = max(levels[0], own[0]), min(levels[1], own[1])
+        if lo > hi:
+            err("E-recipe-levels", path, "%s (levels %d-%d) never meets the belt's levels %d-%d"
+                % (role, own[0], own[1], levels[0], levels[1]))
+            return None
+        return [lo, hi]
+
+    def unit_levels(unit, rosters, levels, path):
+        unit["levels_by_role"], roles = {}, []
+        for value in rosters:
+            for row in (value or {}).get("list") or []:
+                if row["role"] in roles:
+                    continue
+                roles.append(row["role"])
+                if levels is None:
+                    continue
+                rng = role_range(row["role"], levels, path)
+                if rng:
+                    unit["levels_by_role"][row["role"]] = rng
+        unit["roles"] = roles
+        ranges = list(unit["levels_by_role"].values())
+        unit["levels"] = [min(r[0] for r in ranges), max(r[1] for r in ranges)] if ranges else None
+
+    if not isinstance(recipe, dict):
+        err("E-recipe", "recipe", "recipe must be an object")
+        return None, errors
+    known(recipe, RECIPE_KEYS, "recipe")
+    out = {"zone": zone, "from": None, "to": None, "belts": [], "kinds": [], "camps": [],
+           "leaders": [], "critters": []}
+    ids = {}  # kind and camp ids -> unit
+    # from / to
+    src = recipe.get("from")
+    if not isinstance(src, dict) or not isinstance(src.get("anchor"), str) or not src["anchor"]:
+        err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id>}")
+    else:
+        known(src, ("anchor",), "from")
+        out["from"] = {"anchor": src["anchor"]}
+    dst = recipe.get("to")
+    borders = dst.get("border") if isinstance(dst, dict) else None
+    borders = [borders] if isinstance(borders, str) else borders
+    if not isinstance(borders, list) or not borders:
+        err("E-recipe", "to", "needs {\"border\": <zone id or list of zone ids>}")
+    else:
+        known(dst, ("border",), "to")
+        out["to"] = {"border": []}
+        for i, other in enumerate(borders):
+            if not isinstance(other, str) or not other or other == zone:
+                err("E-recipe-ref", "to.border[%d]" % i, "border entries are other zones' ids (not %r)" % other)
+            else:
+                out["to"]["border"].append(other)
+    # belts
+    belts = recipe.get("belts")
+    if not isinstance(belts, list) or not belts:
+        err("E-recipe", "belts", "belts must be a non-empty list")
+        belts = []
+    share_sum, belt_by_id = 0, {}
+    for b, row in enumerate(belts):
+        bpath = "belts[%d]" % b
+        if not isinstance(row, dict):
+            err("E-recipe", bpath, "belt must be an object")
+            continue
+        known(row, BELT_KEYS, bpath)
+        if not snake(row.get("id")):
+            err("E-id", bpath, "belt id %r must be snake_case" % row.get("id"))
+            continue
+        if row["id"] in belt_by_id:
+            err("E-duplicate", bpath, "belt id %s is used twice" % row["id"])
+            continue
+        bpath = "belts[%s]" % row["id"]
+        belt = {"index": b, "id": row["id"], "share": row.get("share"), "levels": None,
+                "max_from": row.get("max_from"), "kinds": {}}
+        belt_by_id[row["id"]] = belt
+        out["belts"].append(belt)
+        if not _is_num(row.get("share")) or row["share"] <= 0:
+            err("E-recipe-shares", bpath + ".share", "share must be a positive percentage")
+        else:
+            share_sum += row["share"]
+        if not is_level_pair(row.get("levels")):
+            err("E-recipe-levels", bpath + ".levels", "levels must be [lo, hi] integers within 1..60")
+        else:
+            belt["levels"] = list(row["levels"])
+            if row["levels"][0] < band[0] or row["levels"][1] > band[1]:
+                err("E-recipe-levels", bpath + ".levels", "levels %d-%d leave the zone's band %d-%d"
+                    % (row["levels"][0], row["levels"][1], band[0], band[1]))
+        if row.get("max_from") is not None and (not _is_num(row["max_from"]) or row["max_from"] <= 0):
+            err("E-recipe", bpath + ".max_from", "max_from must be a positive distance in nodes")
+        kinds = row.get("kinds")
+        if not isinstance(kinds, dict) or not isinstance(kinds.get("open"), dict):
+            err("E-recipe-open", bpath + ".kinds", "every belt defines kinds.open (the parent of its other types)")
+            kinds = kinds if isinstance(kinds, dict) else {}
+        for t in sorted(kinds):
+            if t not in RECIPE_TYPES:
+                err("E-recipe-key", bpath + ".kinds", "kinds.%s is not a terrain type (%s)"
+                    % (t, ", ".join(RECIPE_TYPES)))
+        # The open entry first (the others inherit from it), then the rest.
+        for t in ("open",) + tuple(x for x in RECIPE_TYPES if x != "open"):
+            krow = kinds.get(t)
+            if krow is None:
+                continue
+            kpath = "%s.kinds.%s" % (bpath, t)
+            if not isinstance(krow, dict):
+                err("E-recipe", kpath, "kind must be an object")
+                continue
+            known(krow, KIND_KEYS, kpath)
+            if not snake(krow.get("id")):
+                err("E-id", kpath, "kind id %r must be snake_case" % krow.get("id"))
+                continue
+            if krow["id"] in ids:
+                err("E-duplicate", kpath, "kind id %s is used twice in the zone" % krow["id"])
+                continue
+            if not isinstance(krow.get("name"), str) or not krow["name"].strip():
+                err("E-recipe", kpath, "kind needs a display name")
+            if krow.get("density") not in DENSITIES:
+                err("E-enum", kpath + ".density", "density %r must be sparse, normal or dense"
+                    % krow.get("density"))
+            kind = {"id": krow["id"], "name": krow.get("name"), "unit": "kind", "type": t,
+                    "belt": belt["id"], "density": krow.get("density"), "rosters": {}, "inherits": []}
+            for clock in ("day", "night"):
+                value = krow.get(clock)
+                if value == "open":
+                    if t == "open":
+                        err("E-recipe-open", "%s.%s" % (kpath, clock),
+                            "%s \"open\" names the parent; the open kind lists roles" % clock)
+                        kind["rosters"][clock] = None
+                    else:
+                        parent = belt["kinds"].get("open")
+                        kind["rosters"][clock] = parent["rosters"].get(clock) if parent else None
+                        kind["inherits"].append(clock)
+                elif value is None:
+                    err("E-recipe-roster", kpath, "needs a %s roster (a role list, or \"open\")" % clock)
+                    kind["rosters"][clock] = None
+                else:
+                    kind["rosters"][clock] = roster(value, "%s.%s" % (kpath, clock))
+            unit_levels(kind, [kind["rosters"]["day"], kind["rosters"]["night"]], belt["levels"], kpath)
+            for clock in ("day", "night"):
+                cover(kind, kind["rosters"][clock], belt["levels"], True, "%s.%s" % (kpath, clock))
+            belt["kinds"][t] = kind
+            out["kinds"].append(kind)
+            ids[kind["id"]] = kind
+    if belts and abs(share_sum - 100) > 1e-6:
+        err("E-recipe-shares", "belts", "belt shares must add up to 100 (they add up to %s)" % share_sum)
+    # The last belt (the exit) ends at the top of the zone's band, where the
+    # band is known (the validator passes it with an atlas).
+    last = out["belts"][-1] if out["belts"] else None
+    if band_known and last and last["levels"] and last["levels"][1] != band[1]:
+        err("E-recipe-cover", "belts[%s].levels" % last["id"], "the last belt ends at L%d, the zone's band at "
+            "L%d: every zone runs to its round level" % (last["levels"][1], band[1]))
+    # camps
+    camps = recipe.get("camps")
+    if camps is not None and not isinstance(camps, list):
+        err("E-recipe", "camps", "camps must be a list")
+        camps = []
+    for c, row in enumerate(camps or []):
+        cpath = "camps[%d]" % c
+        if not isinstance(row, dict):
+            err("E-recipe", cpath, "camp must be an object")
+            continue
+        known(row, CAMP_KEYS, cpath)
+        if not snake(row.get("id")):
+            err("E-id", cpath, "camp id %r must be snake_case" % row.get("id"))
+            continue
+        if row["id"] in ids:
+            err("E-duplicate", cpath, "camp id %s is used twice among the zone's kinds and camps" % row["id"])
+            continue
+        cpath = "camps[%s]" % row["id"]
+        if not isinstance(row.get("name"), str) or not row["name"].strip():
+            err("E-recipe", cpath, "camp needs a display name")
+        belt = belt_by_id.get(row.get("belt"))
+        if belt is None:
+            err("E-recipe-ref", cpath + ".belt", "belt %r is not a belt of the recipe" % row.get("belt"))
+        if not _is_int(row.get("slots"), 1):
+            err("E-recipe", cpath + ".slots", "slots must be an integer >= 1")
+        respawn = row.get("respawn")
+        if not (isinstance(respawn, list) and len(respawn) == 2 and _is_int(respawn[0], 1)
+                and _is_int(respawn[1], respawn[0])):
+            err("E-recipe", cpath + ".respawn", "respawn must be [min, max] seconds")
+        if not _is_num(row.get("min_player_distance")) or row["min_player_distance"] < 0:
+            err("E-recipe", cpath + ".min_player_distance", "min_player_distance must be a distance in nodes")
+        if not _is_int(row.get("apart"), 1):
+            err("E-recipe", cpath + ".apart", "apart (cells between two camps) must be an integer >= 1")
+        value = roster(row.get("roster"), cpath + ".roster")
+        camp = {"id": row["id"], "name": row.get("name"), "unit": "camp", "type": None,
+                "belt": belt["id"] if belt else None, "density": "dense",
+                "rosters": {"day": value, "night": value}, "inherits": [], "slots": row.get("slots"),
+                "respawn": respawn, "min_player_distance": row.get("min_player_distance"),
+                "apart": row.get("apart")}
+        unit_levels(camp, [value], belt["levels"] if belt else None, cpath)
+        cover(camp, value, belt["levels"] if belt else None, False, cpath + ".roster")
+        out["camps"].append(camp)
+        ids[camp["id"]] = camp
+    # leaders
+    leaders = recipe.get("leaders")
+    if leaders is not None and not isinstance(leaders, list):
+        err("E-recipe", "leaders", "leaders must be a list")
+        leaders = []
+    placed = set()
+    for i, row in enumerate(leaders or []):
+        lpath = "leaders[%d]" % i
+        if not isinstance(row, dict) or not isinstance(row.get("role"), str) or not row["role"]:
+            err("E-recipe", lpath, "leader needs a role")
+            continue
+        known(row, LEADER_KEYS, lpath)
+        role = row["role"]
+        lpath = "leaders[%s]" % role
+        if role in placed:
+            err("E-duplicate", lpath, "leader %s is placed twice" % role)
+            continue
+        placed.add(role)
+        if is_leader is not None and not is_leader(role):
+            err("E-leader-flag", lpath, "the catalogue does not mark %s a leader (\"leader\": true)" % role)
+        if not _is_int(row.get("respawn"), 1):
+            err("E-recipe", lpath + ".respawn", "respawn must be seconds (integer >= 1)")
+        at = row.get("at")
+        leader = {"role": role, "at": None, "respawn": row.get("respawn"), "level": None}
+        out["leaders"].append(leader)
+        if not isinstance(at, dict):
+            err("E-recipe", lpath + ".at", "needs at: {\"camp\": id} or {\"kind\": id, \"pick\": ...}")
+            continue
+        known(at, ("camp", "kind", "pick"), lpath + ".at")
+        belt = None
+        if "camp" in at:
+            if "kind" in at or "pick" in at:
+                err("E-recipe", lpath + ".at", "at names a camp or a kind, not both")
+                continue
+            unit = ids.get(at["camp"]) if isinstance(at["camp"], str) else None
+            if unit is None or unit["unit"] != "camp":
+                err("E-recipe-ref", lpath + ".at.camp", "camp %r is not a camp of the recipe" % at["camp"])
+                continue
+            leader["at"] = {"camp": at["camp"]}
+        else:
+            unit = ids.get(at.get("kind")) if isinstance(at.get("kind"), str) else None
+            if unit is None or unit["unit"] != "kind":
+                err("E-recipe-ref", lpath + ".at.kind", "kind %r is not a kind of the recipe" % at.get("kind"))
+                continue
+            if at.get("pick") not in LEADER_PICKS:
+                err("E-recipe-ref", lpath + ".at.pick", "pick must be %s" % " or ".join(LEADER_PICKS))
+                continue
+            leader["at"] = {"kind": at["kind"], "pick": at["pick"]}
+        belt = belt_by_id.get(unit["belt"])
+        if belt and belt["levels"]:
+            # The top of the leader's region, within the leader role's levels.
+            rng = role_range(role, belt["levels"], lpath)
+            if rng:
+                leader["level"] = rng[1]
+    # critters
+    critters = recipe.get("critters")
+    if critters is not None and not isinstance(critters, list):
+        err("E-recipe", "critters", "critters must be a list of roles")
+        critters = []
+    for i, role in enumerate(critters or []):
+        if not isinstance(role, str) or not role:
+            err("E-recipe", "critters[%d]" % i, "critters must be a list of roles")
+        elif role not in out["critters"]:
+            out["critters"].append(role)
+    return out, errors
+
+
+def unit_summary(unit):
+    """A kind or camp as a quest area: {"id", "name", "unit" ("kind" or
+    "camp"), "kind", "camp" (flags), "belt", "type", "levels" ([lo, hi] or
+    None), "levels_by_role", "roles", "species" ([{"role", "weight",
+    "clock"}]: the day and night rosters; a camp's one roster has clock
+    "both"), "density"}."""
+    species = []
+    if unit["unit"] == "camp":
+        species = [dict(row, clock="both") for row in (unit["rosters"]["day"] or {}).get("list") or []]
+    else:
+        for clock in ("day", "night"):
+            species += [dict(row, clock=clock) for row in (unit["rosters"][clock] or {}).get("list") or []]
+    return {"id": unit["id"], "name": unit["name"], "unit": unit["unit"], "kind": unit["unit"] == "kind",
+            "camp": unit["unit"] == "camp", "belt": unit["belt"], "type": unit["type"],
+            "levels": unit["levels"], "levels_by_role": dict(unit["levels_by_role"]),
+            "roles": list(unit["roles"]), "species": species, "density": unit["density"]}
+
+
+def species_text(area):
+    """"day: small_fox 3, aggressive_boar 1; night: rabid_rat 1" (a camp:
+    "confused_bandit 1")."""
+    parts = []
+    for clock in ("both", "day", "night"):
+        rows = [s for s in area.get("species") or [] if s.get("clock") == clock]
+        if rows:
+            text = ", ".join("%s %s" % (s["role"], s["weight"]) for s in rows)
+            parts.append(text if clock == "both" else "%s: %s" % (clock, text))
+    return "; ".join(parts)
 
 
 # --- zone atlas (optional) ------------------------------------------------
@@ -337,12 +779,16 @@ class Atlas:
             # Contested 31-40 zones belong to their race's faction (shared per
             # faction); front zones and islands to nobody.
             faction = RACE_FACTION.get(race) if role == "contested" else None
-        anchors, anchor_kinds, anchor_pos = {}, {}, {}
+        anchors, anchor_kinds, anchor_pos, anchor_refs = {}, {}, {}, {}
         for anchor in rec.get("anchors") or []:
             aid = anchor.get("id")
             if not aid:
                 continue
             anchor_kinds[aid] = anchor.get("kind")
+            # The spawn recipe's `from` names an anchor by id or slot only.
+            for ref in (aid, anchor.get("slot")):
+                if ref:
+                    anchor_refs.setdefault(ref, aid)
             if isinstance(anchor.get("x"), int) and isinstance(anchor.get("z"), int):
                 anchor_pos[aid] = (anchor["x"], anchor["z"])
             for ref in (aid, anchor.get("settlement_key"), anchor.get("slot")):
@@ -384,6 +830,7 @@ class Atlas:
         self.zones[rec["id"]] = {
             "name": rec.get("name"), "role": role, "levels": levels, "faction": faction,
             "race": race, "anchors": anchors, "anchor_kinds": anchor_kinds, "npcs": npcs,
+            "anchor_refs": anchor_refs, "neighbours": {b.get("zone") for b in rec.get("borders") or [] if b.get("zone")},
             "biomes": biomes, "palette": palette, "anchor_pos": anchor_pos, "extent": extent,
             "hub": (hub["x"], hub["z"]) if isinstance(hub.get("x"), int) else None,
             "borders": borders, "front_sign": -1 if axis.startswith("-") else 1,
@@ -412,39 +859,3 @@ class Atlas:
             return info["hub"]
         aid = info["anchors"].get(ref)
         return info["anchor_pos"].get(aid) if aid else None
-
-    def box_overshoot(self, zone, x, z):
-        """How far (nodes) a point lies outside the zone's land extent box;
-        None when unknown. Large values mean a sign or axis mistake."""
-        info = self.zones.get(zone)
-        if info is None or info["extent"] is None:
-            return None
-        min_x, max_x, min_z, max_z = info["extent"]
-        return max(0, min_x - x, x - max_x, min_z - z, z - max_z)
-
-    def outside_by(self, zone, x, z):
-        """Rough in-zone test: how far (nodes) a point lies outside the zone;
-        0 inside, None when the atlas lacks the geometry. Inside means within
-        the zone's land extent box and on the zone's side of every measured
-        border, each border taken as the line through its midpoint
-        perpendicular to the two zones' hubs. Real borders are warped by up
-        to a few hundred nodes, so small values are a guide only; the spawn
-        code clips areas to the real zone."""
-        info = self.zones.get(zone)
-        if info is None or info["extent"] is None:
-            return None
-        min_x, max_x, min_z, max_z = info["extent"]
-        out = max(0, min_x - x, x - max_x, min_z - z, z - max_z)
-        own = info["hub"]
-        for neighbour, (mx, mz) in info["borders"]:
-            other = (self.zones.get(neighbour) or {}).get("hub")
-            if own is None or other is None:
-                continue
-            dx, dz = other[0] - own[0], other[1] - own[1]
-            length = math.hypot(dx, dz) or 1.0
-            out = max(out, ((x - mx) * dx + (z - mz) * dz) / length)
-        return out
-
-    def contains(self, zone, x, z):
-        out = self.outside_by(zone, x, z)
-        return None if out is None else out <= 0

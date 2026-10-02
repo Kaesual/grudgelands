@@ -119,14 +119,16 @@ in this file as of commit `082982da`.
   resources, the P9G level bracket). Its border walk is cached per 8×8 cell
   and is a pure function of the cell, so every mapgen owner and every query
   order gets the same answer. Other zones keep their gradient.
-- **Mob levels in zones with spawn areas (Round 28 ruling 34, decided
-  2026-10-01).** A zone is a closed unit with planned progression: where its
-  spawn data defines areas (`biomes_mobs.md` §4.2), each surface mob takes a
-  fixed level from the range of the area it spawned from, and named leaders
-  their fixed level; the three sub-ranges toward the front above no longer
-  apply to mobs there. Zones without areas keep the field. The field still
-  serves the mapgen's level-banded content, the depth floor, water, rares
-  and guards everywhere.
+- **Mob levels in zones with a spawn recipe (Round 28 ruling 34, Lane S1,
+  2026-10-02).** A zone is a closed unit with planned progression: where its
+  spawn data holds a recipe ([spawn_regions.md](spawn_regions.md)), each
+  surface mob takes a level in its role's range of the spawn region it came
+  from, named leaders the top of their region; the three sub-ranges toward
+  the front above no longer apply to mobs there. Gameplay asks the surface
+  level through `grug_core.mob_level_at`, which returns the region's level
+  there (the level overlay); zones without a recipe keep the field. The
+  field itself is never overlaid: it serves the mapgen's level-banded
+  content, the depth floor and guards everywhere.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
