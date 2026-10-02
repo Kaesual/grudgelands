@@ -19,7 +19,7 @@ JSON path. Exit code 0 = no errors, 1 = errors (or warnings with --strict),
 2 = files could not be read.
 
 Usage:
-  validate.py [--design DIR] [--existing FILE] [--atlas FILE_OR_DIR]
+  validate.py [--design DIR] [--game] [--existing FILE] [--atlas FILE_OR_DIR]
               [--zone ZONE ...] [--legacy] [--strict] [--quiet]
   validate.py --self-test
 """
@@ -66,6 +66,55 @@ DISPOSITIONS = ("neutral", "aggressive", "critter")
 FRONT_LINE = "front"
 FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
             "bow", "caster_weapon", "spellbook", "trinket")
+
+# Quest text placeholders and the compass-word rule (Round 29 Q1; the game's
+# rules in mods/PLAYER/grug_quests/labels.lua): placeholder -> argument count.
+PLACEHOLDER_KINDS = {"dir_from_giver": 1, "dir_of": 2, "zone_area": 1, "name": 1}
+PLACEHOLDER_DIRECTIONS = ("dir_from_giver", "dir_of", "zone_area")
+PLACEHOLDER_ID = re.compile(r"^[a-z][a-z0-9_]*$")
+PLACEHOLDER_TARGET = re.compile(r"^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)?$")
+COMPASS = {base + suffix for base in ("north", "south", "east", "west", "northeast", "northwest",
+                                      "southeast", "southwest")
+           for suffix in ("", "ern", "erly", "ward", "wards")}
+
+
+def scan_placeholders(text):
+    """([(kind, args, raw)], [syntax error]) of a title or text, as the
+    game's placeholders.scan: a brace outside a well-formed placeholder, an
+    unknown kind, a wrong argument count or a malformed id is an error."""
+    found, errors = [], []
+    pos = 0
+    while True:
+        m = re.compile(r"[{}]").search(text, pos)
+        if not m:
+            break
+        s = m.start()
+        e = re.compile(r"[{}]").search(text, s + 1) if text[s] == "{" else None
+        if e is None or text[e.start()] != "}":
+            errors.append("unmatched brace at character %d" % (s + 1))
+            pos = s + 1
+            continue
+        e = e.start()
+        raw = text[s:e + 1]
+        parts = text[s + 1:e].split(":")
+        kind, args = parts[0], parts[1:]
+        if kind not in PLACEHOLDER_KINDS:
+            errors.append("%s: unknown placeholder" % raw)
+        elif len(args) != PLACEHOLDER_KINDS[kind]:
+            n = PLACEHOLDER_KINDS[kind]
+            errors.append("%s: takes %d argument%s" % (raw, n, "" if n == 1 else "s"))
+        elif not PLACEHOLDER_TARGET.match(args[-1]) or (kind == "dir_of" and not PLACEHOLDER_ID.match(args[0])):
+            errors.append("%s: ids are snake_case (a target may be zone_id/id)" % raw)
+        else:
+            found.append((kind, args, raw))
+        pos = e + 1
+    return found, errors
+
+
+def compass_words(text):
+    """The fixed compass words of a title or text (whole words, any case;
+    "north-east" reads as two words), placeholders left out."""
+    return [w for w in re.findall(r"[A-Za-z]+", re.sub(r"\{[^{}]*\}", " ", text)) if w.lower() in COMPASS]
 
 
 class Findings:
@@ -443,7 +492,7 @@ class Validator:
             file = self.d.root / self.role_files[role]
             for other, data in self.d.spawns.items():
                 if other != zone and role in self.d.leaders(other):
-                    self.E("E-zone-leader", self.d.root / "zones" / ("%s.spawns.json" % other), "recipe.leaders",
+                    self.E("E-zone-leader", self.d.zone_file("%s.spawns.json" % other), "recipe.leaders",
                            "%s was added by %s's zone catalogue and is a leader of %s only" % (role, zone, zone))
             if role not in self.d.leaders(zone):
                 self.W("W-zone-leader", file, "subtypes[%s]" % role, "zone-added leader %s is not placed in "
@@ -466,7 +515,7 @@ class Validator:
         The recipe is parsed like the game (r28common.parse_recipe mirrors
         spawn_regions_core.lua); its roles, critters, leaders and, with an
         atlas, its band, `from` anchor and `to` borders are checked here."""
-        file = self.d.root / "zones" / ("%s.spawns.json" % zone)
+        file = self.d.zone_file("%s.spawns.json" % zone)
         if not isinstance(data, dict):
             self.E("E-type", file, "$", "spawns file must be an object")
             return
@@ -554,7 +603,7 @@ class Validator:
                                                                       ", ".join(sorted(info["neighbours"])) or "none"))
 
     def quests(self, zone, data, all_areas, hub_givers):
-        file = self.d.root / "zones" / ("%s.quests.json" % zone)
+        file = self.d.zone_file("%s.quests.json" % zone)
         if not isinstance(data, dict):
             self.E("E-type", file, "$", "quests file must be an object")
             return
@@ -690,7 +739,7 @@ class Validator:
     def front_quests(self, host, data, all_areas, giver_lines):
         """zones/<host>.front.quests.json: front quests given by the host
         zone's givers, only on a line `front` the host's quests.json declares."""
-        file = self.d.root / "zones" / ("%s.front.quests.json" % host)
+        file = self.d.zone_file("%s.front.quests.json" % host)
         if not isinstance(data, dict):
             self.E("E-type", file, "$", "front quests file must be an object")
             return
@@ -767,6 +816,7 @@ class Validator:
             self.E("E-text", file, path + ".text", "text must be a non-empty string")
         elif not 2 <= sentences(text) <= 4:
             self.W("W-text", file, path + ".text", "text has %d sentences (two to four)" % sentences(text))
+        self.check_texts(zone, q, file, path, all_areas)
         objectives = q.get("objectives")
         if not isinstance(objectives, list) or not objectives:
             self.E("E-objective", file, path + ".objectives", "objectives must be a non-empty list")
@@ -872,6 +922,47 @@ class Validator:
             if key in q and not isinstance(q[key], bool):
                 self.E("E-type", file, path + "." + key, "%s must be true or false" % key)
         self.check_destinations(zone, q, file, path)
+
+    def placeholder_target(self, zone, ref, all_areas):
+        """A placeholder target: a leader role (any zone), else a kind or
+        camp of the zone's recipe (a bare id: the quest's zone). The area
+        summary, {"type": "leader"} or None."""
+        qualified, _, rest = ref.partition("/")
+        target_zone, tid = (qualified, rest) if rest else (zone, ref)
+        found = self.d.find_leader(tid, target_zone if rest else None)
+        if found is not None and (not rest or found[0] == target_zone):
+            return {"type": "leader"}
+        return (all_areas.get(target_zone) or {}).get(tid)
+
+    def check_texts(self, zone, q, file, path, all_areas):
+        """Round 29 Q1: placeholders in the title and text resolve (a title
+        takes only {name:...}), places exist (with --atlas), "from here"
+        points at a compact target, and no fixed compass word is written."""
+        for key in ("title", "text"):
+            value = q.get(key)
+            if not isinstance(value, str):
+                continue
+            kpath = "%s.%s" % (path, key)
+            found, problems = scan_placeholders(value)
+            for problem in problems:
+                self.E("E-placeholder", file, kpath, problem)
+            for kind, args, raw in found:
+                if key == "title" and kind in PLACEHOLDER_DIRECTIONS:
+                    self.E("E-placeholder", file, kpath, "%s: a title takes only {name:...}; directions "
+                           "belong in the text" % raw)
+                target = self.placeholder_target(zone, args[-1], all_areas)
+                if target is None:
+                    self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp or leader of %s"
+                           % (raw, args[-1], args[-1].split("/")[0] if "/" in args[-1] else zone))
+                elif kind == "dir_from_giver" and target.get("type") == "open":
+                    self.W("W-placeholder-spread", file, kpath, "%s: %s is an open kind spread over many "
+                           "patches; use {zone_area:...} or {dir_of:<place>:...}" % (raw, args[-1]))
+                if kind == "dir_of" and self.atlas and args[0] not in self.atlas.places:
+                    self.E("E-placeholder-place", file, kpath, "%s: %s is not a settlement key or anchor id"
+                           % (raw, args[0]))
+            for word in compass_words(value):
+                self.E("E-compass", file, kpath, "fixed compass word %r; write a direction placeholder or "
+                       "neutral wording" % word)
 
     def check_destinations(self, zone, q, file, path):
         """Ruling 44: no quest sends players into another race's 11-20 zone;
@@ -1065,7 +1156,7 @@ class Validator:
                     if isinstance(q, dict) and isinstance(q.get("id"), str):
                         path = "quests[%s]" % q["id"]
                         if q["id"] in self.quest_ids:
-                            self.E("E-duplicate", self.d.root / "zones" / (zone + suffix), path,
+                            self.E("E-duplicate", self.d.zone_file(zone + suffix), path,
                                    "quest id %s also in %s" % (q["id"], self.quest_ids[q["id"]][0]))
                         else:
                             self.quest_ids[q["id"]] = (zone, path)
@@ -1083,7 +1174,7 @@ class Validator:
         self.loot_coverage()
         self.zone_leaders_placed()
         for zone, data in self.d.zone_catalogs.items():
-            file = self.d.root / "zones" / ("%s.catalog.json" % zone)
+            file = self.d.zone_file("%s.catalog.json" % zone)
             if not isinstance(data, dict):
                 self.E("E-type", file, "$", "a zone catalogue is {\"subtypes\": [...], \"items\": [...]}")
                 continue
@@ -1167,7 +1258,7 @@ class Validator:
             for nxt in graph.get(node, []):
                 if state.get(nxt) == 1:
                     cycle = stack[stack.index(nxt):] + [nxt] if nxt in stack else [node, nxt]
-                    self.E("E-cycle", self.d.root / "zones", "requires", "prerequisite cycle: %s" % " -> ".join(cycle))
+                    self.E("E-cycle", self.d.zone_dirs[-1], "requires", "prerequisite cycle: %s" % " -> ".join(cycle))
                 elif nxt in graph and not state.get(nxt):
                     visit(nxt, stack + [nxt])
             state[node] = 2
@@ -1182,7 +1273,11 @@ def print_findings(findings, root, quiet=False):
     for level, code, where, path, msg in sorted(findings.rows, key=lambda r: (r[0] != "E", r[2], r[3])):
         if quiet and level == "W":
             continue
-        shown = where[len(root) + 1:] if where.startswith(root + "/") else where
+        shown = where
+        for base in (root, str(C.REPO)):
+            if where.startswith(base + "/"):
+                shown = where[len(base) + 1:]
+                break
         print("%s [%s] %s: %s: %s" % ("error" if level == "E" else "warning", code, shown, path, msg))
     print("validate: %d error(s), %d warning(s)" % (len(findings.errors()), len(findings.warnings())))
 
@@ -1194,6 +1289,9 @@ def parse(argv):
     ap.add_argument("--atlas", help="zone atlas JSON file or directory (optional)")
     ap.add_argument("--mobs", default=str(C.DEFAULT_MOBS),
                     help="mob catalogue (attack_type of sub-type bases)")
+    ap.add_argument("--game", action="store_true",
+                    help="read the zone files from the game (grug_mobs and grug_quests data/zones) "
+                         "instead of the design's zones/; the catalogue stays the design's")
     ap.add_argument("--zone", action="append", help="check only these zones' files (all are still loaded)")
     ap.add_argument("--legacy", action="store_true", help="allow legacy-only fields (B4's mechanical split)")
     ap.add_argument("--strict", action="store_true", help="warnings fail too")
@@ -1210,8 +1308,9 @@ def load_mob_facts(path):
     return {row["entity"]: row for row in (data.get("mobs") or []) if isinstance(row, dict) and row.get("entity")}
 
 
-def validate(design_dir, existing_path, atlas_path=None, legacy=False, zones=None, mobs_path=C.DEFAULT_MOBS):
-    design = C.Design(design_dir)
+def validate(design_dir, existing_path, atlas_path=None, legacy=False, zones=None, mobs_path=C.DEFAULT_MOBS,
+             zone_dirs=None):
+    design = C.Design(design_dir, zone_dirs)
     existing = C.load_existing(existing_path)
     atlas = C.Atlas(atlas_path) if atlas_path else None
     return Validator(design, existing, atlas, legacy, zones, load_mob_facts(mobs_path)).run()
@@ -1225,7 +1324,8 @@ def main(argv):
         print("validate: design directory %s not found" % args.design, file=sys.stderr)
         return 2
     try:
-        findings = validate(args.design, args.existing, args.atlas, args.legacy, args.zone, args.mobs)
+        findings = validate(args.design, args.existing, args.atlas, args.legacy, args.zone, args.mobs,
+                            C.GAME_ZONE_DIRS if args.game else None)
     except C.LoadError as err:
         print("validate: %s" % err, file=sys.stderr)
         return 2
@@ -1561,7 +1661,33 @@ def _mutations():
     def no_tusk(d):
         d[0]["bands"]["1"] = [row for row in d[0]["bands"]["1"] if row["item"] != "grug_mobs:boar_tusk"]
 
+    def text_set(qid, key, value):
+        def change(d):
+            quest(d, qid)[key] = value
+        return change
+
     return [
+        ("placeholder: unknown kind", Q, text_set("sample_hunt_01", "text", "Go {where:home_fields}. Now."),
+         "E-placeholder"),
+        ("placeholder: unmatched brace", Q, text_set("sample_hunt_01", "text", "Go {name:home_fields. Now."),
+         "E-placeholder"),
+        ("placeholder: wrong argument count", Q, text_set("sample_hunt_01", "text", "Go {dir_of:meadows}. Now."),
+         "E-placeholder"),
+        ("placeholder: direction in a title", Q, text_set("sample_hunt_01", "title", "Crops {zone_area:meadows}"),
+         "E-placeholder"),
+        ("placeholder: unknown target", Q, text_set("sample_hunt_01", "text", "Go {zone_area:castle}. Now."),
+         "E-placeholder-target"),
+        ("placeholder: target in another zone", Q,
+         text_set("sample_hunt_01", "text", "Go {zone_area:elandor_goldmead_vale/meadows}. Now."), "E-placeholder-target"),
+        ("placeholder: unknown name in a title", Q, text_set("sample_hunt_01", "title", "The {name:castle}"),
+         "E-placeholder-target"),
+        ("placeholder: unknown place (atlas)", Q,
+         text_set("sample_hunt_01", "text", "Go {dir_of:rivendell:meadows}. Now."), "E-placeholder-place"),
+        ("placeholder: from here on an open kind", Q,
+         text_set("sample_hunt_01", "text", "Go {dir_from_giver:meadows}. Now."), "W-placeholder-spread"),
+        ("compass word in a text", Q, text_set("sample_hunt_01", "text", "Boars come from the south-east. Stop them."),
+         "E-compass"),
+        ("compass word in a title", Q, text_set("sample_hunt_01", "title", "Eastern Fields"), "E-compass"),
         ("three givers in a hub", Q, add_giver, "E-givers"),
         ("three lines for a giver", Q, three_lines, "E-lines"),
         ("critter kill target", Q, critter_target, "E-critter-target"),
@@ -1955,6 +2081,17 @@ def self_test():
     if no_atlas.errors() or no_atlas.codes() != {"W-no-atlas"}:
         print_findings(no_atlas, valid)
         failures.append("without an atlas the valid sample gives exactly W-no-atlas")
+    # Compass words: whole words in any case and hyphenation; names that
+    # only contain one pass (the game's placeholders.compass_words).
+    got = compass_words("Head north, then South-East, the southeastern ford, Westward; {zone_area:west}.")
+    if got != ["north", "South", "East", "southeastern", "Westward"]:
+        failures.append("compass words: %s" % got)
+    got = compass_words("Northfold, Westbrook, Eastmarch, Southwatch, beast, Easter, the westerner")
+    if got:
+        failures.append("names that only contain a compass word pass: %s" % got)
+    found, errors = scan_placeholders("{dir_of:highcourt:elandor_lorindor/woods} and {name:chief}, {x}")
+    if [f[0] for f in found] != ["dir_of", "name"] or len(errors) != 1:
+        failures.append("placeholder scan: %s %s" % (found, errors))
     cases = [(name, rel, mutate, False, code) for name, rel, mutate, code in _mutations()]
     cases += [(name, None, setup, legacy, code) for name, setup, legacy, code in _scenarios()]
     for name, rel, change, legacy, code in cases:
