@@ -37,7 +37,7 @@ routes to the opposing faction's exclusive G2 gem (`world_zones.md` §11). A
 purchase price, profession or high level gate in front of a boat would put a
 paywall in front of a content pillar and in front of a resource-parity
 guarantee. The gate that remains is geography: the mainland ends of both
-channels lie in level-51–59 contested zones.
+channels lie in level-51–60 contested zones.
 
 ## 2. The shipwright
 

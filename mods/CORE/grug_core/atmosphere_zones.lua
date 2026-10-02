@@ -451,7 +451,7 @@ local function classify(zones, zone_id)
 	end
 	-- The two dragon islands are the only 60/60 zones in the catalog
 	-- (world_zones.md §8.3: every other contested band is 31-40, 41-50 or
-	-- 51-59).
+	-- 51-60).
 	if record.level_min == 60 and record.level_max == 60 then
 		return "dragon_island"
 	end

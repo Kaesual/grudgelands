@@ -1597,7 +1597,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
 | Contested approaches 31–40 | equivalent T4 access plus practical foreign-G2 routes | T4, improved windows on qualifying elites | all six race approaches and the Battlegrounds entry are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | war-front objectives and quest hooks; no free supply crates |
-| High front 51–59 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
+| High front 51–60 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
 | Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass and G2 by T4, Abyssal Crystal by T5; race-region columns select G1/G2/cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 

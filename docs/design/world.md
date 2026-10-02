@@ -90,7 +90,7 @@ faction front:
 | Outer race starting zones | 1–10 | safe spawn settlements, one per race |
 | Home zones | 11–20 | safe early questing; roads toward the capitals |
 | Central heartland | 21–30 | safe capital approaches and middle progression |
-| Frontier and Battlegrounds | 31–40 / 41–50 / 51–59 | contested war infrastructure and dangerous wildlife |
+| Frontier and Battlegrounds | 31–40 / 41–50 / 51–60 | contested war infrastructure and dangerous wildlife |
 | Offshore dragon islands | 60 | contested apex mining and world-boss destinations |
 | Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
 

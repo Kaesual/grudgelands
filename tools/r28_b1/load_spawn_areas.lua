@@ -15,10 +15,12 @@ return function(repo)
 	local mobs_dir = repo .. "/mods/ENTITIES/grug_mobs"
 	local data_dir = mobs_dir .. "/data/zones"
 	local source = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
+	-- The gameplay bands, as grug_zones serves them (zone_bands.lua).
+	local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
 	local records, files = {}, {}
 	for _, zone in ipairs(source.zones) do
-		records[zone.id] = {macro_region = zone.macro_region, hub = zone.hub,
-			level_min = zone.level_min, level_max = zone.level_max}
+		records[zone.id] = zone_bands.apply({macro_region = zone.macro_region, hub = zone.hub,
+			level_min = zone.level_min, level_max = zone.level_max}, zone.id)
 		local f = io.open(data_dir .. "/" .. zone.id .. ".spawns.json")
 		if f then
 			f:close()

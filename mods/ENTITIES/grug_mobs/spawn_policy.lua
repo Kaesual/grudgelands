@@ -140,6 +140,20 @@ local INDEPENDENT_AUTHORITY = {
 	["grug_mobs:reed_angelfish"] = true,
 }
 
+-- Surface rows a spawn-recipe zone keeps beside its critters, in the zones
+-- whose palette carried them before the recipes (Round 28 S2c; the
+-- catalogue: Rift Spawn keeps its current spawning; the zones are the
+-- atlas's). Unlike the independent authorities above, the row still meets
+-- the start footprint, its night clock and the protected surface (ruling 3);
+-- its host ground decides there. A recipe zone has no palette, so the row
+-- shares no zone density budget there (zone_density_cast is empty): it keeps
+-- only its own ABM chance and object cap, accepted (Round 28 S2c review).
+local RECIPE_ZONE_ROWS = {
+	["grug_mobs:rift_spawn"] = {front_gravesalt_escarpment = true,
+		front_skyglass_canopy = true, front_stormscale_summit = true,
+		front_wyrmglass_crown = true},
+}
+
 -- The existing cave rows are exact. Keeping this list closed preserves their
 -- y < -40 behavior without letting a new Grudgelands family silently bypass
 -- the named-zone policy merely because it added a negative-height ABM.
@@ -770,9 +784,14 @@ function grug_mobs.spawn_policy_allows(mob_name, pos)
 	local zone_id = grug_zones.id_at(pos.x, pos.z)
 	-- Round 28 ruling 34: a zone whose data holds a spawn recipe spawns its
 	-- surface mobs only from its regions (spawn_regions.lua). Its ABM rows
-	-- keep the critters the recipe lists; crabs and every other row are
-	-- refused. The Gull keeps its beach host.
+	-- keep the critters the recipe lists and RECIPE_ZONE_ROWS (Rift Spawn);
+	-- crabs and every other row are refused. The Gull keeps its beach host.
 	if zone_id and grug_mobs.spawn_regions.zone_has_recipe(zone_id) then
+		local kept = RECIPE_ZONE_ROWS[mob_name]
+		if kept then
+			-- Ruling 3 still last: never on a protected surface.
+			return kept[zone_id] == true and not grug_mobs.protected_spawn_surface(pos)
+		end
 		if not grug_mobs.spawn_regions.zone_critter(zone_id, mob_name) then
 			return false
 		end

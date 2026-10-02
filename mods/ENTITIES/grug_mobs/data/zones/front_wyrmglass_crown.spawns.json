@@ -1,7 +1,25 @@
 {
   "zone": "front_wyrmglass_crown",
-  "palette": {
-    "families": ["frost_stray", "mountain", "rift_spawn", "snow_leopard", "war"],
-    "lookalikes": {"cat": "grug_mobs:snow_leopard", "skeleton_archer": "grug_mobs:frost_stray"}
+  "recipe": {
+    "belts": [
+      {
+        "id": "l60", "share": 100, "levels": [60, 60],
+        "kinds": {
+          "open": {"id": "scree", "name": "Wyrmglass Scree",
+            "day": [{"role": "rimehorn_ram", "weight": 3}, {"role": "crown_crag_eagle", "weight": 1}],
+            "night": [{"role": "crown_frost_stray", "weight": 3}, {"role": "rime_pelt_leopard", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shingle", "name": "Wyrmglass Shingle",
+            "day": [{"role": "last_watch_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "crown_frost_stray", "weight": 1}], "density": "dense"},
+          "highland": {"id": "spires", "name": "Wyrmglass Spires",
+            "day": [{"role": "crown_crag_eagle", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
+            "night": [{"role": "rime_pelt_leopard", "weight": 3}, {"role": "last_pay_archer", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "leaders": [
+      {"role": "rime_bell_warden", "at": {"kind": "spires", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["gull"]
   }
 }

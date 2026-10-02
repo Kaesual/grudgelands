@@ -1,7 +1,56 @@
 {
   "zone": "front_shattered_line",
-  "palette": {
-    "families": ["mountain", "scorpion", "speargrass_tiger", "sun_dried_husk", "war", "war_construct"],
-    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider", "zombie": "grug_mobs:sun_dried_husk"}
+  "recipe": {
+    "from": {"border": ["elandor_ashenward_march", "elandor_glassroot_wilds", "front_broken_causeway", "kragmar_bannerbreak_mesa", "kragmar_thunderroot_wilds"]},
+    "to": {"core": true},
+    "belts": [
+      {
+        "id": "l41_43", "share": 30, "levels": [41, 43],
+        "kinds": {
+          "open": {"id": "approaches", "name": "Shattered Line Approaches",
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "siege_deserter", "weight": 1}],
+            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "siege_deserter", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "sumps", "name": "Shattered Line Sumps",
+            "day": [{"role": "siege_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "siege_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "bluffs", "name": "Shattered Line Bluffs",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "siege_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l44_47", "share": 40, "levels": [44, 47],
+        "kinds": {
+          "open": {"id": "trenches", "name": "Shattered Line Trenches",
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "siege_deserter", "weight": 1}],
+            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "mudholes", "name": "Shattered Line Mudholes",
+            "day": [{"role": "siege_husk", "weight": 3}, {"role": "unburied_husk", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "ramparts", "name": "Shattered Line Ramparts",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l48_50", "share": 30, "levels": [48, 50],
+        "kinds": {
+          "open": {"id": "breach", "name": "Shattered Line Breach",
+            "day": [{"role": "warpack_hyena", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}],
+            "night": [{"role": "siege_skeleton_raider", "weight": 3}, {"role": "siege_deserter_archer", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "bloodmire", "name": "Shattered Line Bloodmire",
+            "day": [{"role": "unburied_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "unburied_husk", "weight": 3}, {"role": "war_stinger", "weight": 1}], "density": "sparse"},
+          "highland": {"id": "siegecrest", "name": "Shattered Line Siegecrest",
+            "day": [{"role": "reed_stalking_tiger", "weight": 3}, {"role": "dustwing_vulture", "weight": 1}],
+            "night": [{"role": "war_stinger", "weight": 3}, {"role": "unburied_husk", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "leaders": [
+      {"role": "standard_bearer_ninepins", "at": {"kind": "breach", "pick": "farthest_from_roads"}, "respawn": 300},
+      {"role": "siege_engine_nine", "at": {"kind": "siegecrest", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

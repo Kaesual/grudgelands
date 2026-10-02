@@ -61,11 +61,13 @@ table order.
 5. **Regions.** Connected cells (eight neighbours) of one kind, the kind
    each belt gives each type (step 6). Fragments under 8 cells (3 for shore
    kinds: a narrow beach stays a region) join the neighbour region they
-   share most edges with: same belt first, then a neighbour whose belt keeps
-   the fragment within one belt of all its other neighbours (preferred, not
-   forced). The step-down pass of step 3 is what keeps neighbours within one
-   belt; the renderer's stats report the largest belt difference between
-   adjacent regions as the check (1 on every Dawnmere seed). Regions over 40
+   share most edges with: same belt first, then a neighbour of another belt
+   only when its belt keeps the fragment within one belt of all its other
+   neighbours; a fragment no neighbour can take that way stays a small region
+   of its own. So **adjacent regions (eight neighbours) are never more than
+   one belt apart**: the step-down pass of step 3 makes it true of the cells,
+   camps (step 7) and merges keep it, and the renderer's stats report the
+   largest belt difference as the check (at most 1 on every seed). Regions over 40
    cells split into ⌈size ÷ 25⌉ compact parts
    (farthest-point seeds grown together, three Lloyd rounds). On Dawnmere
    regions are 3–40 cells, median 12–19 (about 100–200 m across); a lone
@@ -94,23 +96,39 @@ table order.
    cell: the second is a build problem). The region keeps the 40-node
    footprint (no ambient spawns there), but the members stand within 24
    nodes of the POI, near its tents: a POI may lie close to a road or an
-   outpost. Then the generated camps: candidates are
+   outpost. A camp's cells take its belt, so a cell round the POI joins the
+   camp only where its neighbours outside the camp lie within one belt of it
+   (the POI's own cell always joins; a stated belt more than one from the
+   land beside it is a WARNING). Then the generated camps: candidates are
    cells of the camp's belt whose 3 × 3 block is land of the zone, outside
    other camps, unprotected, outside the drift band, at least 48 nodes from
-   roads, mean slope ≤ 0.35, and at least `apart` cells from the other camps
-   (POI camps included). Score: 2 for a forest edge (forest within two
+   roads, mean slope ≤ 0.35, at least `apart` cells from the other camps
+   (POI camps included), and whose block's neighbours lie within one belt of
+   the camp's. Score: 2 for a forest edge (forest within two
    cells, but not all round), 1 for highland in the block, then flatness
    and road distance; ties to the first cell in grid order. The 3 × 3 block
    is the camp's own region; members stand within 40 nodes of its centre.
    An aggressive camp member, like an ambient spawn, never stands in the
    drift band.
-   No candidate is logged as a problem; the camp and its leader are then
-   missing.
-8. **Leaders** stand at a camp centre, or on the cell farthest from roads in
-   the largest region of a kind; their level is the top of their region.
+   No candidate is logged as a problem; the camp is then missing (its leader
+   still stands, step 8).
+8. **Leaders** stand on every seed (Round 28 S2c). A camp leader stands at
+   its camp's centre. A kind leader stands on the best cell (farthest from
+   roads, then deepest inside its region) of the largest region of its kind;
+   where the kind has no region on the seed, the chain goes on to the belt's
+   `open` kind and then to every region of the belt, largest first (a camp
+   leader whose camp found no site takes that chain in the camp's belt; the
+   stats name the fallback kind). The chain never leaves the belt, so the
+   leader's fixed level (the top of its belt within its role's levels) stays
+   inside its region. Two leaders stand at least 32 nodes apart: camp
+   leaders first, then the others in recipe order, each on the first cell of
+   its chain far enough from those placed (the next-best cell, then the
+   next region).
 
-Unchanged by regions: underground and water spawns, rares, vendors, guards,
-the mapgen.
+Unchanged by regions: underground and water spawns, the Rift Spawn's
+surface row (on its host ground at night, in the four zones whose palette
+had it: Gravesalt, Skyglass and both islands), rares, vendors, guards, the
+mapgen.
 
 ## The recipe
 
@@ -220,8 +238,11 @@ region's level (the middle of its belt): `grug_core.mob_level_at` and
 `grug_core.surface_mob_level_at` consult the region overlay, so mob levels,
 the fishing band and the bandit loot level match the mob map. The analytic
 level field (`grug_zones.*_level_at`) stays the mapgen's own and is never
-overlaid; below y = 0 the depth term applies unchanged. ABM spawn gates that
-read the analytic field only run in zones without a recipe.
+overlaid; below y = 0 the depth term applies unchanged. A zone's band is the
+gameplay band of its zone record: Gravesalt Escarpment and The Skyglass Canopy
+play 51–60 (`grug_core/zone_bands.lua`) while their analytic field keeps the
+mapgen's 51–59. ABM spawn gates that read the analytic field only run in
+zones without a recipe.
 
 ## Review images
 

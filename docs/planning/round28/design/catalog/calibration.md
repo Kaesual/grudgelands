@@ -32,7 +32,7 @@ start handoff at reward level 9 if its reward pays the start budget.
 
 ## Weight guide (KE at the quest's reward level)
 
-| Quest type | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–59 |
+| Quest type | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
 |---|---:|---:|---:|---:|---:|---:|
 | Ordinary hunt, normally 8–10 targets | 2.5–3.5 | 4–5 | 4–6 | 4.5–6 | 5–7 | 6–8 |
 | Gathering / bring request, one short task | 1–2.5 | 3–4 | 3–5 | 4–5 | 4–6 | 5–6 |
