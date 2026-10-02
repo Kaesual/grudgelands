@@ -1,6 +1,6 @@
-# Spawn levels across the mainland: seed 42, current recipes
+# Spawn levels across the mainland: seed 42, recipes of 38e1da4b
 
-Built with `tools/r28_world/run.sh` from the shipped recipes (one world build, every mainland zone's region map through the game's `spawn_regions_core.lua`). The two dragon islands are left out (one belt, L60, no land border). Border edges are sides shared by land cells (32 nodes each) of two zones; the gap is the distance between the two regions' level ranges.
+Built with `tools/r28_world/run.sh` from the recipes of the tree it ran in (recipes of 38e1da4b) (one world build, every mainland zone's region map through the game's `spawn_regions_core.lua`). The two dragon islands are left out (one belt, L60, no land border). Border edges are sides shared by land cells (32 nodes each) of two zones; the gap is the distance between the two regions' level ranges.
 
 ## Border length per class
 
@@ -225,4 +225,4 @@ None.
 | The Shattered Line | 41-50 | border elandor_ashenward_march, elandor_glassroot_wilds, front_broken_causeway, kragmar_bannerbreak_mesa, kragmar_thunderroot_wilds | core | `mods/ENTITIES/grug_mobs/data/zones/front_shattered_line.spawns.json` |  |
 | The Skyglass Canopy | 51-60 | border elandor_glassroot_wilds, front_shattered_line, kragmar_thunderroot_wilds | core | `mods/ENTITIES/grug_mobs/data/zones/front_skyglass_canopy.spawns.json` |  |
 
-Cells two zones both claim (kept by the first): 151. Seconds: world 18.6, raster 2.9, regions 10.4.
+Cells two zones both claim (kept by the first): 151. Seconds: world 18.2, raster 3.2, regions 11.5.
