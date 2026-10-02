@@ -498,11 +498,9 @@ Q.credit_kill(ann, mob("large_rat", "elandor_dawnmere_fields/home_fields_night")
 eq(journal_row(ann, "fx_kitchen_bounty").objectives[1].count, 1, "a repeat starts from zero")
 eq(Q.status(ann, "fx_kitchen_after"), "available", "dependant stays available during a repeat")
 
--- Legacy fields: fixed XP, entity names, zone filter.
+-- Legacy fields: fixed XP, entity names. (The runtime zone filter is gone
+-- since Round 30: no shipped quest carries one.)
 check(Q.accept(ann, "fx_legacy"), "accept the legacy quest")
-zone_at["5,5"] = "elandor_goldmead_vale"
-Q.credit_kill(ann, mob("boar"), {x = 5, y = 0, z = 5})
-eq(journal_row(ann, "fx_legacy").objectives[1].count, 0, "legacy zone filter")
 Q.credit_kill(ann, mob("boar"), AT)
 Q.credit_kill(ann, mob("boar"), AT)
 check(Q.turn_in(ann, "fx_legacy"), "turn in the legacy quest")

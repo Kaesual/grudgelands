@@ -11,8 +11,12 @@ Decided 2026-09-22, Round 17. Uses the standard unmodified Luanti client.
   enemy home. The UI offers **Set home here** or **This is your home**.
 - Persist the location ID per character, not player-selected coordinates.
   Binding is authenticated by the nearby innkeeper interaction.
-- The Map tab offers **Return home**, destination and remaining cooldown;
-  innkeeper markers label the locations and identify the current home.
+- The Character page (Stats tab) offers **Return home** with the destination
+  and the remaining cooldown as m:ss ("Preparing arrival" during a return,
+  "Ready" when it may be used); while that page is the selected inventory
+  page the button is re-sent each second the text changes, and once when it
+  becomes Ready (Round 30 ruling; it was on the Map tab before). The Map
+  tab's innkeeper markers label the locations and identify the current home.
 - Return is immediate, without a cast time, and allowed only alive and outside
   combat. It dismounts the player before arrival. There is no inventory item or
   skill. Initial range/interaction checks apply to binding, not return travel.
@@ -52,7 +56,7 @@ Full rules: [housing.md](housing.md) §8.
 - The owner makes the own Claim Stone the travel-home target with the stone
   form's "Set as home" button (`grug_home.set_home_claim`). Binding an
   innkeeper later replaces the claim home.
-- Return uses the Map tab's **Return home** and the same 30-minute
+- Return uses the Character page's **Return home** and the same 30-minute
   cooldown. Arrival is the stone's arrival cube. If the cube is blocked, that
   one trip goes to the bound innkeeper instead, with a message, and the
   cooldown is charged. An expired (unfuelled) claim still works as a target.

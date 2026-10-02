@@ -99,8 +99,9 @@ local function clear_markers(parent)
 	markers[parent] = nil
 end
 -- Called for every tag carrier's parent each second, mobs included: a parent
--- that is no quest NPC costs one lookup and allocates nothing (Round 30,
--- perf review #10).
+-- without a settlement socket (every mob) costs two field reads and
+-- allocates nothing (Round 30, perf review #10). Socket NPCs without quests
+-- (villagers, guards) still build their "start/socket" key once per second.
 grug_core.register_tag_visibility(function(parent, observers, removed)
 	if removed then clear_markers(parent); return end
 	local id = npc_id(parent:get_luaentity())

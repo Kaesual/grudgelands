@@ -108,7 +108,7 @@ local SECTIONS = {
 		heading("Riding, home and death"),
 		"• The Riding Trainer at the stable of each capital of your faction sells riding at levels 15 and 30 (ground mounts) and 45 and 60 (flying mounts). Your mount then waits in the Skills tab: use its icon to mount or dismount.",
 		"• The Shipwright beside the Riding Trainer sells a Boat at level 15 and an Improved Boat at level 30. Use the boat icon while standing or swimming in water, and again to go ashore. Any hit throws you into the water.",
-		"• Set your home at an innkeeper in a start town or capital of your faction. The Map tab has Return home (every 30 minutes, not in combat).",
+		"• Set your home at an innkeeper in a start town or capital of your faction. The Character page has Return home (every 30 minutes, not in combat).",
 		"• Dying costs no items, money or XP, but ends your active buffs. You respawn at your home.",
 		"• The Group tab makes a party of up to 10 players of your faction.",
 	})},
