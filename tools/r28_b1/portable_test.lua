@@ -34,10 +34,12 @@ local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local MOBS = repo .. "/mods/ENTITIES/grug_mobs"
 local DATA = MOBS .. "/data/zones"
 
--- The world's 38 zone ids, from the mapgen's own source; a data file per id.
-local WORLD_ZONES = {}
+-- The world's 38 zone ids and level bands, from the mapgen's own source; a
+-- data file per id.
+local WORLD_ZONES, BANDS = {}, {}
 for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
 	WORLD_ZONES[#WORLD_ZONES + 1] = row.id
+	BANDS[row.id] = {row.level_min, row.level_max}
 end
 table.sort(WORLD_ZONES)
 local function list_dir()
@@ -230,7 +232,8 @@ local function stripe_world()
 		hard_protection_kind_at = function(pos) return world.protected.town and world.protected.town(pos) or nil end,
 		anchor = function(zone, slot) return world.anchors and world.anchors[zone .. "/" .. slot] or nil end,
 		get = function(zone) return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
-			level_min = 1, level_max = 10} end,
+			level_min = BANDS[zone] and BANDS[zone][1] or 1,
+			level_max = BANDS[zone] and BANDS[zone][2] or 10} end,
 		pvp_rule_at = function() return "peaceful" end,
 		race_region_at = function() return "human" end,
 	}
@@ -273,14 +276,17 @@ for _, name in ipairs(mob_names) do
 	check(OLD.register_spawn_role(name, defs[name]) == NEW.register_spawn_role(name, defs[name]),
 		"hostile role " .. name)
 end
--- A zone with a spawn recipe (Lane S1) has no palette: it is compared on its
--- own in part 3. Every other zone answers exactly as before.
+-- A zone with a spawn recipe (Lanes S1, S2) has no palette: it is compared on
+-- its own in part 3. Every other zone answers exactly as before.
 local SR = NEW.spawn_regions
-local palette_zones = {}
+local palette_zones, shipped_palettes = {}, 0
 for _, zone in ipairs(zone_files) do
 	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
+	local data = json.parse(io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a"))
+	if data.recipe == nil then shipped_palettes = shipped_palettes + 1 end
 end
-check(#palette_zones == 37, "37 zones keep their palette (" .. #palette_zones .. ")")
+check(#palette_zones == shipped_palettes and #palette_zones >= 1, "the " .. shipped_palettes ..
+	" zones without a recipe keep their palette (" .. #palette_zones .. ")")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -397,7 +403,6 @@ do
 		local text = io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a")
 		local data = json.parse(text)
 		if SR.zone_has_recipe(zone) then
-			check(zone == "elandor_dawnmere_fields", "only Dawnmere has a recipe")
 			check(data.palette == nil and type(data.recipe) == "table", zone .. " recipe, no palette")
 		else
 			check(type(data.palette) == "table" and type(data.palette.families) == "table",
