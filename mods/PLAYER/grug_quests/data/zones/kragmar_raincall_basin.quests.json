@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_raincall_basin",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Raincall Basin lives by the rains, and Vek's bandits have started selling them back as a tithe.",
   "hubs": [
     {
       "id": "raincall_village",
@@ -9,13 +9,14 @@
         {
           "npc": "r14_troll_steward",
           "lines": [
-            "legacy"
+            "rains",
+            "bounty"
           ]
         },
         {
           "npc": "r15_troll_local",
           "lines": [
-            "legacy"
+            "weave"
           ]
         }
       ]
@@ -27,7 +28,8 @@
         {
           "npc": "r14_troll_scout",
           "lines": [
-            "legacy"
+            "watch",
+            "bounty"
           ]
         }
       ]
@@ -39,7 +41,7 @@
         {
           "npc": "r14_troll_captive",
           "lines": [
-            "legacy"
+            "tithe"
           ]
         }
       ]
@@ -47,262 +49,453 @@
   ],
   "quests": [
     {
-      "id": "r14_troll_07_the_coiled_footpath",
-      "line": "legacy",
+      "id": "raincall_rains_01",
+      "line": "rains",
       "giver": "r14_troll_steward",
       "turnin": "r14_troll_steward",
       "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_troll_06_claws_on_raincall_road"
-      ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "The Coiled Footpath",
-      "text": "Vipers emerge along the village footpath after nightfall. Clear Raincall's nearby rainforest ground so Daro can reopen the walk.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_fang_viper"
-          ],
-          "zone": "kragmar_raincall_basin",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 50,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_troll_08_cats_at_the_reed_line",
-      "line": "legacy",
-      "giver": "r14_troll_scout",
-      "turnin": "r14_troll_scout",
-      "min_level": 11,
       "level": 11,
       "requires": [
-        "r14_troll_07_the_coiled_footpath"
+        "kapok_departure"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Cats at the Reed Line",
-      "text": "Jungle lynx watch the reed line below the outpost. Clear Neshi's patrol route.",
+      "title": "A Garden Is No Wallow",
+      "text": "Welcome to Raincall, where we catch the rain and the Reed Tapirs sit on what it grows. Kill eight tapirs by day in the {name:rainwood}, which grows {zone_area:rainwood}, so our gardens can stand up again. Strangers have started demanding a rain tithe from the farms, too. I have tended this basin for years, and the clouds have never once sent a collector.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:jungle_lynx"
+          "roles": [
+            "reed_tapir"
           ],
-          "zone": "kragmar_raincall_basin",
-          "count": 6
+          "count": 8,
+          "area": "kragmar_raincall_basin/rainwood"
         }
       ],
       "rewards": {
-        "xp": 525,
-        "copper": 60,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r14_troll_09_smoke_beneath_the_rain",
-      "line": "legacy",
-      "giver": "r14_troll_scout",
-      "turnin": "r14_troll_captive",
-      "min_level": 12,
+      "id": "raincall_rains_02",
+      "line": "rains",
+      "giver": "r14_troll_steward",
+      "turnin": "r14_troll_steward",
+      "min_level": 11,
       "level": 12,
       "requires": [
-        "r14_troll_08_cats_at_the_reed_line"
+        "raincall_rains_01"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Smoke Beneath the Rain",
-      "text": "The bandits' wet cargo smoulders without being consumed and bears a hooked sun. Defeat them and speak with Veko. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "title": "Mind Where the Path Hisses",
+      "text": "A wet root trips you; a Reed-Fang Viper takes offence at your whole foot. Kill eight vipers after dark on the paths through the {name:rainwood}. Their venom is quick, so mind where you step and keep something to drink close at hand.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:quarrelsome_bandit"
+          "roles": [
+            "reed_fang_viper"
           ],
-          "zone": "kragmar_raincall_basin",
-          "count": 4
+          "count": 8,
+          "area": "kragmar_raincall_basin/rainwood"
         }
       ],
       "rewards": {
-        "xp": 805,
-        "copper": 80,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r15_troll_local_01",
-      "line": "legacy",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 10,
-      "level": 10,
+      "id": "raincall_rains_03",
+      "line": "rains",
+      "giver": "r14_troll_steward",
+      "turnin": "r14_troll_steward",
+      "min_level": 12,
+      "level": 13,
       "requires": [
-        "r14_troll_06_claws_on_raincall_road"
+        "raincall_rains_02"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Meat for the Preparation Roof",
-      "text": "The village preparation shelter has room for another shared meal. Bring raw meat from the basin hunt.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r15_troll_local_02",
-      "line": "legacy",
-      "giver": "r15_troll_local",
-      "turnin": "r15_troll_local",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_troll_06_claws_on_raincall_road"
-      ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Hooves Between the Stilt Posts",
-      "text": "Tapirs push through the shade beneath the communal house. Thin the herd before the low path is blocked.",
+      "title": "The Rain Owes You Nothing",
+      "text": "Those rain-tithe men are Roadside Bandits, prowling the {name:rainwood} after dark among the vipers. Kill six of them. They claim to collect for Vek, but Vek has yet to send us so much as a drizzle.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_tapir"
+          "roles": [
+            "quarrelsome_bandit"
           ],
-          "zone": "kragmar_raincall_basin",
-          "count": 5
+          "count": 6,
+          "area": "kragmar_raincall_basin/rainwood"
         }
       ],
       "rewards": {
-        "xp": 380,
-        "copper": 45,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r15_troll_local_03",
-      "line": "legacy",
+      "id": "raincall_rains_04",
+      "line": "rains",
+      "giver": "r14_troll_steward",
+      "turnin": "r14_troll_scout",
+      "min_level": 13,
+      "level": 14,
+      "requires": [
+        "raincall_rains_03"
+      ],
+      "title": "Let the Scouts Hear It",
+      "text": "Those collectors have to carry our coin somewhere, and I cannot follow them while keeping this village above water. Go to Raincall Outpost and tell Neshi Reedstep what you found on the paths. She can follow a trail through rain that would wash the spots off a cat.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_troll_scout"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 6
+    },
+    {
+      "id": "raincall_watch_01",
+      "line": "watch",
       "giver": "r14_troll_scout",
       "turnin": "r14_troll_scout",
-      "min_level": 11,
-      "level": 11,
+      "min_level": 14,
+      "level": 15,
       "requires": [
-        "r14_troll_07_the_coiled_footpath"
+        "raincall_rains_04"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "A Dry Niche for Supplies",
-      "text": "Vipers have claimed the dry equipment niche beside the roofed lookout. Clear them after nightfall.",
+      "title": "A Trail with Claws",
+      "text": "I can follow a tithe collector through the {name:cloudwood}, {zone_area:cloudwood}; doing it with Reed Jungle Lynxes following me is another matter. Kill eight lynxes there by day and give my scouts room to work. The collectors leave clumsy tracks, but I would prefer to read them without teeth in my shoulder.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_fang_viper"
+          "roles": [
+            "reed_jungle_lynx"
           ],
-          "zone": "kragmar_raincall_basin",
-          "count": 4
+          "count": 8,
+          "area": "kragmar_raincall_basin/cloudwood"
         }
       ],
       "rewards": {
-        "xp": 315,
-        "copper": 50,
+        "weight": 4.5,
         "items": []
-      }
+      },
+      "duration_min": 11
     },
     {
-      "id": "r15_troll_local_04",
-      "line": "legacy",
+      "id": "raincall_watch_02",
+      "line": "watch",
       "giver": "r14_troll_scout",
       "turnin": "r14_troll_scout",
-      "min_level": 11,
-      "level": 11,
+      "min_level": 15,
+      "level": 16,
       "requires": [
-        "r14_troll_07_the_coiled_footpath"
+        "raincall_watch_01"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Leather for the Reed-Line Packs",
-      "text": "Bring two ordinary leather pieces for Neshi's patrol packs while clearing the daytime jungle lynx from Raincall's reed line. Carried or traded leather is welcome; there is no second counted cat hunt.",
+      "title": "Someone Ate the Trail",
+      "text": "We marked the trail with rope, and the Kapok Gnawers took that as an invitation to supper. Kill eight after dark in the {name:cloudwood}. I can teach a scout to find a trail in the rain; I cannot teach one to find it inside a rat.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mangy_rat"
+          ],
+          "count": 8,
+          "area": "kragmar_raincall_basin/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 11
+    },
+    {
+      "id": "raincall_watch_03",
+      "line": "watch",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 17,
+      "level": 18,
+      "requires": [
+        "raincall_watch_02"
+      ],
+      "title": "Eyes on the Bowstrings",
+      "text": "Found them: Bandit Lookouts guard the {name:bandit_camp} {dir_from_giver:bandit_camp}. Kill eight, closing the distance or using cover when they keep you at bow range. A tree between you and an arrow is worth more than any brave speech.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "vigilant_bandit_archer"
+          ],
+          "count": 8,
+          "area": "kragmar_raincall_basin/bandit_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "Archers keep their distance; close in or use cover.",
+      "duration_min": 12
+    },
+    {
+      "id": "raincall_watch_04",
+      "line": "watch",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_captive",
+      "min_level": 18,
+      "level": 18,
+      "requires": [
+        "raincall_watch_03"
+      ],
+      "title": "A Voice Behind the Bows",
+      "text": "There is someone in the {name:bandit_camp} {dir_from_giver:bandit_camp} who did not volunteer: Veko Bluefeather. Veko refused the rain tithe, and the collectors found room for a prisoner. Go and speak with Veko while your work among the lookouts gives you an opening.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_troll_captive"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 5
+    },
+    {
+      "id": "raincall_tithe_01",
+      "line": "tithe",
+      "giver": "r14_troll_captive",
+      "turnin": "r14_troll_captive",
+      "min_level": 18,
+      "level": 19,
+      "requires": [
+        "raincall_watch_04"
+      ],
+      "title": "Vek Can Keep the Bill",
+      "text": "Bandit Tithe-Keeper Vek is {dir_from_giver:tithe_keeper_vek}, counting coin in the middle of this camp as though he wrung every drop from the sky himself. Kill him and break his hold on the basin. I refused to pay before they locked me up, and I am certainly not paying a leaving fee.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "tithe_keeper_vek"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "climax": true,
+      "duration_min": 10
+    },
+    {
+      "id": "raincall_departure",
+      "line": "tithe",
+      "giver": "r14_troll_captive",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 19,
+      "level": 19,
+      "requires": [
+        "raincall_tithe_01"
+      ],
+      "title": "News Too Good to Whisper",
+      "text": "Take word of Vek's fall to Nalo Pathdrum at the shrine in Kezamba. The capital ought to hear that Raincall has no need of a man to sell it rain. I will spread the news here; I spent long enough tied up and quiet, and now I intend to be heard.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_troll_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "raincall_weave_01",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 11,
+      "level": 12,
+      "requires": [
+        "kapok_departure"
+      ],
+      "title": "Capes Before the Downpour",
+      "text": "A rain cape with a hole is just a very personal waterfall. Bring me three Leather from the Reed Tapirs that roam the {name:rainwood} by day, {zone_area:rainwood}. If Daro already has you clearing the gardens, let one muddy walk earn its keep twice.",
       "objectives": [
         {
           "type": "item",
           "item": "mobs:leather",
-          "count": 2
+          "count": 3,
+          "roles": [
+            "reed_tapir"
+          ],
+          "area": "kragmar_raincall_basin/rainwood"
         }
       ],
       "rewards": {
-        "xp": 420,
-        "copper": 55,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "duration_min": 8
     },
     {
-      "id": "r15_troll_local_05",
-      "line": "legacy",
-      "giver": "r14_troll_captive",
-      "turnin": "r14_troll_captive",
-      "min_level": 12,
-      "level": 12,
+      "id": "raincall_weave_02",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 13,
+      "level": 14,
       "requires": [
-        "r14_troll_08_cats_at_the_reed_line"
+        "raincall_weave_01"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Pay from the Ferry Road",
-      "text": "Ferry workers tie coloured cords around their pay purses. Recover two stolen purses from the camp and let the captive match those cords to the missing crews. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "title": "Houses Should Not Bow",
+      "text": "Our stilt houses nod when the water rises, and I do not care for that sort of greeting. Bring me four Iron Bars and four Coal Lumps for the smith to make new brackets. I can mend the curtains, but someone else must persuade the walls to stay under them.",
       "objectives": [
         {
           "type": "item",
-          "item": "grug_mobs:stolen_purse",
-          "count": 2
+          "item": "grug_materials:iron_bar",
+          "count": 4
+        },
+        {
+          "type": "item",
+          "item": "default:coal_lump",
+          "count": 4
         }
       ],
       "rewards": {
-        "xp": 460,
-        "copper": 65,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Iron is the second tier of ore.",
+      "duration_min": 12
     },
     {
-      "id": "r15_troll_local_06",
-      "line": "legacy",
-      "giver": "r14_troll_captive",
-      "turnin": "r14_troll_captive",
-      "min_level": 12,
-      "level": 12,
+      "id": "raincall_weave_03",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 15,
+      "level": 16,
       "requires": [
-        "r14_troll_08_cats_at_the_reed_line"
+        "raincall_weave_02"
       ],
-      "faction": "throng",
-      "race": "troll",
-      "title": "Dry Bindings in the Rain",
-      "text": "The camp's sleeping shelters keep the raiders' linen cloth dry. Bring enough for Veko to wrap the smouldering cargo safely.",
+      "title": "Claws at the Loom",
+      "text": "Palm fibre knots itself tighter than gossip in a rainbound house. Bring me two Hooked Cat Claws from the Reed Jungle Lynxes hunting by day in the {name:cloudwood}; my weavers need them to comb it out. The claws may come inside, but the rest of the cat stays where you found it.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:hooked_cat_claw",
+          "count": 2,
+          "roles": [
+            "reed_jungle_lynx"
+          ],
+          "area": "kragmar_raincall_basin/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "raincall_weave_04",
+      "line": "weave",
+      "giver": "r15_troll_local",
+      "turnin": "r15_troll_local",
+      "min_level": 17,
+      "level": 18,
+      "requires": [
+        "raincall_weave_03"
+      ],
+      "title": "Our Tithe, Their Shirts",
+      "text": "I patch our capes while the tithe collectors strut about in fresh linen. Bring me three Linen Cloth from the Bandit Lookouts at the {name:bandit_camp} {dir_from_giver:bandit_camp}. Neshi wants their bows quiet; I want something for all the stitching their thieving has cost us.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_mobs:linen_cloth",
-          "count": 5
+          "count": 3,
+          "roles": [
+            "vigilant_bandit_archer"
+          ],
+          "area": "kragmar_raincall_basin/bandit_camp"
         }
       ],
       "rewards": {
-        "xp": 575,
-        "copper": 75,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "duration_min": 6
+    },
+    {
+      "id": "raincall_bounty_village",
+      "line": "bounty",
+      "giver": "r14_troll_steward",
+      "turnin": "r14_troll_steward",
+      "min_level": 17,
+      "level": 19,
+      "requires": [
+        "raincall_rains_04"
+      ],
+      "title": "Bounty: Claws Above the Gardens",
+      "text": "Reed Jungle Lynxes keep prowling the {name:highwood}, {zone_area:highwood}, by day, and our gardeners have enough to wrestle with. Kill six for this repeatable bounty. You can take it again twenty minutes after turning it in; I suspect the cats will keep their side of that arrangement.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_jungle_lynx"
+          ],
+          "count": 6,
+          "area": "kragmar_raincall_basin/highwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "raincall_bounty_outpost",
+      "line": "bounty",
+      "giver": "r14_troll_scout",
+      "turnin": "r14_troll_scout",
+      "min_level": 18,
+      "level": 19,
+      "requires": [
+        "raincall_watch_03"
+      ],
+      "title": "Bounty: Teeth on the Ropes",
+      "text": "Another rope chewed through, another scout walking in circles. Kill eight Kapok Gnawers after dark in the {name:highwood} for this repeatable bounty. It opens again twenty minutes after you turn it in; until the rats learn a different trade, I will keep paying.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mangy_rat"
+          ],
+          "count": 8,
+          "area": "kragmar_raincall_basin/highwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9
     }
   ]
 }

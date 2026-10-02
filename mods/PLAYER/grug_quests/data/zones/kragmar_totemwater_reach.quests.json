@@ -1,6 +1,6 @@
 {
   "zone": "kragmar_totemwater_reach",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Totemwater Reach reads its future in river knots, and the knots say something old is hungry.",
   "hubs": [
     {
       "id": "r20_anchor_047",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_047_host",
           "lines": [
-            "legacy"
+            "knots",
+            "tides"
           ]
         }
       ]
@@ -17,84 +18,252 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_047_01",
-      "line": "legacy",
+      "id": "totemwater_knots_01",
+      "line": "knots",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
-      "min_level": 21,
-      "level": 21,
+      "min_level": 20,
+      "level": 22,
       "requires": [],
-      "faction": "throng",
-      "title": "Rope Rack Timbers",
-      "text": "Totemwater's rope rack needs sound crosspieces before the next river crossing. Bring eight junglewood planks for the covered rack; the river path must stay open beside it. Existing or traded supplies are welcome.",
+      "title": "A Future Trampled Flat",
+      "text": "My reading knots speak of something old and hungry beneath the water, but I need fresh reeds to finish the telling. Kill six Reed Tapirs by day in the {name:jungle}, {zone_area:jungle}, where they trample the reeds I use. It is hard enough to read tomorrow without a tapir sitting on it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_tapir"
+          ],
+          "count": 6,
+          "area": "kragmar_totemwater_reach/jungle"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "totemwater_knots_02",
+      "line": "knots",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "totemwater_knots_01"
+      ],
+      "title": "Our Ancestors Are Not Cushions",
+      "text": "The carvers leave their totems in the {name:totemwood}, {zone_area:totemwood}, and the Reed Jungle Lynxes promptly curl up on them. Kill six lynxes there by day so the work can continue. An ancestor's face deserves better than a tail across the nose.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_jungle_lynx"
+          ],
+          "count": 6,
+          "area": "kragmar_totemwater_reach/totemwood"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "totemwater_knots_03",
+      "line": "knots",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 26,
+      "level": 27,
+      "requires": [
+        "totemwater_knots_02"
+      ],
+      "title": "Read by Restless Light",
+      "text": "The next knot will not speak clearly by firelight, and I do not care for what that usually means. Bring me two Bound Wisp Motes from the Wandering Wisps in the {name:wispfen} {dir_from_giver:wispfen} after dark. I will read again by wisp-light; you keep your feet on a path you trust.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:junglewood",
-          "count": 8
+          "item": "grug_mobs:bound_wisp_mote",
+          "count": 2,
+          "roles": [
+            "wandering_wisp"
+          ],
+          "area": "kragmar_totemwater_reach/wispfen"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 2,
         "items": []
-      }
+      },
+      "duration_min": 9
     },
     {
-      "id": "r20_anchor_047_02",
-      "line": "legacy",
+      "id": "totemwater_knots_04",
+      "line": "knots",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "totemwater_knots_03"
+      ],
+      "title": "The Name Beneath the Water",
+      "text": "I have the name at last: Crocodile Reed-Maw, waiting in its dark water {dir_from_giver:reed_maw_crocodile}. It is older than this post, and our fishers have begun to vanish between its jaws. Kill Reed-Maw before another boat comes home with nobody to tie it up.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_maw_crocodile"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "climax": true,
+      "duration_min": 12
+    },
+    {
+      "id": "totemwater_front_bannerbreak",
+      "line": "knots",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "totemwater_knots_04"
+      ],
+      "title": "The Knot Toward the Mesa",
+      "text": "For once, the knots show me a road instead of teeth. Go to Tornstandard Hold on Bannerbreak Mesa and speak with Yarra Standardmender, who holds the Throng's banners against the Accord. I cannot promise you gentle weather up there, but I would trust your hands with whatever the wind brings.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_044_host"
+        }
+      ],
+      "rewards": {
+        "weight": 0.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "totemwater_tides_01",
+      "line": "tides",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 24,
+      "level": 26,
+      "requires": [],
+      "title": "A Trap Full of Pincers",
+      "text": "I set traps for fish, yet the Barnacle Pinchers in the {name:shallows} {dir_from_giver:shallows} seem convinced everything I lower into the water belongs to them. Kill six by day and clear space for our traps. A reading on an empty stomach always seems to predict supper.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "armored_crab"
+          ],
+          "count": 6,
+          "area": "kragmar_totemwater_reach/shallows"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "totemwater_tides_optional_wisps",
+      "line": "tides",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
       "min_level": 21,
-      "level": 21,
+      "level": 23,
       "requires": [],
-      "faction": "throng",
-      "title": "Jaws at the River Path",
-      "text": "Crocodiles wait on Totemwater Reach's muddy banks where carriers leave the path. Defeat three and give the crossing crew room to work.",
+      "title": "Optional: Lights Over the Fish Traps",
+      "text": "After dark the Wandering Wisps drift through the {name:jungle} and lead my fishers off the path to the traps. Put out six of them. The knots say nothing about this one; I simply prefer my fishers to come home the way they left.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:reed_crocodile"
+          "roles": [
+            "wandering_wisp"
           ],
-          "zone": "kragmar_totemwater_reach",
-          "count": 3
+          "count": 6,
+          "area": "kragmar_totemwater_reach/jungle"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "optional": true,
+      "duration_min": 10
     },
     {
-      "id": "r20_anchor_047_03",
-      "line": "legacy",
+      "id": "totemwater_tides_02",
+      "line": "tides",
       "giver": "r20_anchor_047_host",
       "turnin": "r20_anchor_047_host",
-      "min_level": 23,
-      "level": 23,
+      "min_level": 26,
+      "level": 27,
       "requires": [
-        "r20_anchor_047_02"
+        "totemwater_tides_01"
       ],
-      "faction": "throng",
-      "title": "Mud Around the Marker",
-      "text": "With the banks clearer, the crew can see bog ooze collecting below the route marker. Break up four in Totemwater Reach's muddy ground before the next load comes through.",
+      "title": "Put the Shells to Work",
+      "text": "The Barnacle Pinchers have spent long enough meddling with my traps; now they can contribute something useful. Bring me two Layered Crab Shells from them in the {name:shallows} {dir_from_giver:shallows} by day, and I will make new lids. There is a pleasing turn in that knot.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:sullen_bog_ooze"
+          "type": "item",
+          "item": "grug_mobs:layered_crab_shell",
+          "count": 2,
+          "roles": [
+            "armored_crab"
           ],
-          "zone": "kragmar_totemwater_reach",
-          "count": 4
+          "area": "kragmar_totemwater_reach/shallows"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 2,
         "items": []
-      }
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "totemwater_tides_bounty",
+      "line": "tides",
+      "giver": "r20_anchor_047_host",
+      "turnin": "r20_anchor_047_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "totemwater_tides_02"
+      ],
+      "title": "Bounty: What the Tide Brings",
+      "text": "The tide lays Barnacle Pinchers across the {name:breakers} {dir_from_giver:breakers} as though scattering seeds. Kill six by day for this repeatable bounty. You can take it again twenty minutes after turning it in; no gift of foresight is needed to know I will still want them gone.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "armored_crab"
+          ],
+          "count": 6,
+          "area": "kragmar_totemwater_reach/breakers"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "duration_min": 9
     }
   ]
 }
