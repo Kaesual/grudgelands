@@ -79,7 +79,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:blightfang_wolf"
+            "grug_mobs:blightfang_wolf",
+            "grug_mobs:briarpack_wolf"
           ],
           "zone": "kragmar_ossuary_reach",
           "count": 4
@@ -108,7 +109,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:gravewood_treant"
+            "grug_mobs:gravewood_treant",
+            "grug_mobs:mourning_treant"
           ],
           "zone": "kragmar_ossuary_reach",
           "count": 3
@@ -159,7 +161,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:gravewood_treant"
+            "grug_mobs:gravewood_treant",
+            "grug_mobs:mourning_treant"
           ],
           "zone": "kragmar_ossuary_reach",
           "count": 3
@@ -188,7 +191,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:blightfang_wolf"
+            "grug_mobs:blightfang_wolf",
+            "grug_mobs:briarpack_wolf"
           ],
           "zone": "kragmar_ossuary_reach",
           "count": 4
@@ -239,7 +243,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:gravewood_treant"
+            "grug_mobs:gravewood_treant",
+            "grug_mobs:mourning_treant"
           ],
           "zone": "kragmar_ossuary_reach",
           "count": 3

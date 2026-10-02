@@ -310,7 +310,8 @@ do
 	local lc = m.cells[CORE.key(math.floor(l.x / 32), math.floor(l.z / 32))]
 	check(lc.road == best and l.level == 10, "leader on the cell farthest from roads, top level")
 end
--- No camp spot: reported, not fatal.
+-- No camp spot: reported, not fatal; the camp's leader still stands, in the
+-- camp's belt (Round 28 S2c: a named leader stands on every seed).
 do
 	local r = base_recipe()
 	-- A second camp that must keep 100 cells from the first finds no spot.
@@ -318,9 +319,11 @@ do
 	r.camps[2].id, r.camps[2].apart = "camp2", 100
 	r.leaders = {{role = "confused_bandit_chief", at = {camp = "camp2"}, respawn = 300}}
 	local m = CORE.build(DAWN, Q, CORE.parse_recipe(DAWN, r, CTX))
-	check(#m.camps == 1 and #m.problems == 2 and m.problems[1]:find("no valid camp cell for camp2", 1, true)
-		and m.problems[2]:find("no spot for leader", 1, true),
-		"no valid camp cell (and so no leader spot) is a reported problem")
+	local l = m.leaders[1]
+	check(#m.camps == 1 and #m.problems == 1 and m.problems[1]:find("no valid camp cell for camp2", 1, true),
+		"no valid camp cell is a reported problem")
+	check(l and l.fallback == "border" and l.region.belt == 3 and l.level == 10,
+		"the camp's leader falls back to its camp's belt")
 end
 
 -- The region at a point: its cell, else the nearest land cell around it.
@@ -488,7 +491,8 @@ env.core = {
 	get_us_time = function() return os.clock() * 1e6 end,
 	registered_entities = {},
 	registered_nodes = {["default:dirt_with_grass"] = {walkable = true},
-		["default:sand"] = {walkable = true}, air = {walkable = false}},
+		["default:sand"] = {walkable = true}, ["grug_nodes:blight_dirt"] = {walkable = true},
+		air = {walkable = false}},
 	get_item_group = function() return 0 end,
 	find_nodes_in_area_under_air = function(minp, maxp)
 		if GROUND_Y < minp.y or GROUND_Y > maxp.y then return {} end
@@ -501,6 +505,9 @@ env.core = {
 		return {}
 	end,
 	get_node = function(pos)
+		if pos.y <= GROUND_Y and G.blight and (G.blight == true or G.blight(pos.x, pos.z)) then
+			return {name = "grug_nodes:blight_dirt"}
+		end
 		if pos.y <= GROUND_Y then return {name = sand_at(pos.x, pos.z) and "default:sand" or "default:dirt_with_grass"} end
 		return {name = "air"}
 	end,
@@ -859,6 +866,75 @@ do
 	check(#spawned == 1, "no respawn before 300 s")
 	SR.leader_tick(G.now + 301, {PL})
 	check(#spawned == 2, "respawn after 300 s")
+	clear()
+end
+
+-- Blight ground (S2b): a zombie-family role or a leader set on blight dirt is
+-- sunproof, as the legacy blight ABM makes its zombies; by day a mob that
+-- burns spawns only where it is sunproof.
+do
+	clear()
+	check(SR.sunproof_on_blight({}, "braindead_zombie", "default:dirt_with_grass", false) == false,
+		"a zombie on grass keeps its daylight burn")
+	check(SR.sunproof_on_blight({}, "small_boar", "grug_nodes:blight_dirt", false) == false,
+		"a boar on blight is no zombie")
+	local z = {light_damage = 2}
+	check(SR.sunproof_on_blight(z, "braindead_zombie", "grug_nodes:blight_dirt", false) and
+		z.light_damage == 0, "a zombie sub-type on blight is sunproof")
+	local chief = {light_damage = 2}
+	check(SR.sunproof_on_blight(chief, "confused_bandit_chief", "grug_nodes:blight_dirt", true) and
+		chief.light_damage == 0, "any leader on blight is sunproof")
+	local def = env.core.registered_entities["grug_mobs:braindead_zombie"]
+	def.light_damage = 2
+	local strand = SR.get_area(DAWN, "strand")
+	local grass = {x = 300, y = GROUND_Y, z = -2700, node = "default:dirt_with_grass"}
+	local blight = {x = 300, y = GROUND_Y, z = -2700, node = "grug_nodes:blight_dirt"}
+	check(SR.spawn_mob(strand, "braindead_zombie", grass, "day") == nil and #spawned == 0,
+		"by day no burning zombie off blight")
+	local ent = SR.spawn_mob(strand, "braindead_zombie", blight, "day")
+	check(ent and ent.light_damage == 0, "by day a zombie on blight spawns sunproof")
+	ent = SR.spawn_mob(strand, "braindead_zombie", grass, "night")
+	check(ent and ent.light_damage == nil, "at night a zombie off blight spawns as before")
+	def.light_damage = nil
+	clear()
+	-- The leader tick: a leader whose spot is blight dirt survives the day.
+	local spot = M.leaders[1]
+	storage_data["leader_next:" .. spot.role] = 0
+	G.blight = true
+	SR.leader_tick(G.now + 1000, {player_at(spot.x + 40, spot.z)})
+	G.blight = nil
+	check(#spawned == 1 and spawned[1]._grug_leader and spawned[1].light_damage == 0,
+		"a leader spawned on blight dirt is sunproof")
+	spawned[1].object._removed = true
+	clear()
+	-- A zombie leader whose own column is not blight steps to the nearest
+	-- blight column within 16 nodes; any other leader keeps its spot.
+	local blight_east = function(x) return x >= spot.x + 8 end
+	G.blight = blight_east
+	storage_data["leader_next:" .. spot.role] = 0
+	SR.leader_tick(G.now + 2000, {player_at(spot.x - 40, spot.z)})
+	check(#spawned == 1 and spawned[1].object:get_pos().x == spot.x and spawned[1].light_damage == nil,
+		"a bandit leader keeps its spot off blight and its daylight burn")
+	spawned[1].object._removed = true
+	clear()
+	local saved_role = spot.role
+	spot.role = "mortuary_clerk_hush"
+	env.core.registered_entities["grug_mobs:mortuary_clerk_hush"] = {_grug_disposition = "aggressive"}
+	storage_data["leader_next:mortuary_clerk_hush"] = 0
+	SR.leader_tick(G.now + 3000, {player_at(spot.x - 40, spot.z)})
+	local hush = spawned[1]
+	check(hush and hush.object:get_pos().x == spot.x + 8 and hush.light_damage == 0,
+		"a zombie leader stands on the nearest blight column, sunproof")
+	if hush then hush.object._removed = true end
+	G.blight = function() return false end
+	storage_data["leader_next:mortuary_clerk_hush"] = 0
+	clear()
+	SR.leader_tick(G.now + 4000, {player_at(spot.x - 40, spot.z)})
+	check(#spawned == 1 and spawned[1].object:get_pos().x == spot.x and spawned[1].light_damage == nil,
+		"no blight in reach: the zombie leader keeps its spot")
+	spawned[1].object._removed = true
+	G.blight, spot.role = nil, saved_role
+	env.core.registered_entities["grug_mobs:mortuary_clerk_hush"] = nil
 	clear()
 end
 

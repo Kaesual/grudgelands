@@ -1115,7 +1115,10 @@ gate, protected surface).
 - **Trigger:** a zone without a recipe keeps its palette and the level field
   exactly as before. A zone with a recipe spawns its surface mobs only from
   its regions: its ABM rows keep only the recipe's critters (the Gull with
-  its beach host); shore crabs and every other surface row are refused there.
+  its beach host) and, in Gravesalt, Skyglass and both islands (the zones
+  whose palette had it), the Rift Spawn's surface row with its host ground
+  and night clock (the catalogue keeps its spawning, Round 28 S2c); shore crabs
+  and every other surface row are refused there.
   Unchanged everywhere: underground rows and their depth level, water rows
   and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
   guard posts, and the mapgen content. Today only Dawnmere Fields has a
@@ -1133,7 +1136,12 @@ gate, protected surface).
   natural light at noon must be at least 10 (no cave floor and no roofed
   room even under a lamp, while ground under a leaf canopy counts), a day
   pick needs light ≥ 10, and at night a hostile pick needs light ≤ 5, so
-  torch-lit ground stays safe. No per-mob row gate, domain or spawn check
+  torch-lit ground stays safe. **Blight ground** (Round 28 S2b): a
+  zombie-family role set on `grug_nodes:blight_dirt` is sunproof
+  (`light_damage = 0`, the legacy blight row's rule; one helper,
+  `grug_mobs.blight_sunproof`), and by day a role that burns in daylight
+  spawns only there, so a day roster may hold blight-ground zombies
+  (Stillgrave). No per-mob row gate, domain or spawn check
   applies to a region spawn (the recipe is the authority). Every region mob
   carries `_grug_area = "<zone_id>/<kind id>"` and `_grug_spawn_clock`
   (both persisted) and a level rolled uniformly in its role's range (the
@@ -1175,10 +1183,16 @@ gate, protected surface).
   follow the slot queue with dormant catch-up (world.md §4a). In a zone with
   a recipe the bandit camp fires stay scenery (so a recipe camp on a POI is
   its only population); guard posts keep spawning.
-- **Leaders (ruling 38)** at their rule-placed spot (a camp centre, or the
-  cell farthest from roads of the largest region of a kind; snapped to the
+- **Leaders (ruling 38)** at their rule-placed spot on every seed (a camp
+  centre, or the cell farthest from roads of the largest region of a kind,
+  with a fallback chain inside the belt and 32 nodes between leaders,
+  [spawn_regions.md](spawn_regions.md) step 8; snapped to the
   nearest standable column within 4 nodes), with the level at the top of
-  their region; `_grug_leader = true`, no area tag. Every leader sub-type is
+  their region; `_grug_leader = true`, no area tag. A zombie-family leader
+  stands on the nearest blight-dirt column within 16 nodes of its spot when
+  there is one (a cell is typed by its majority biome, so the spot's own
+  column may be another's), and any leader set on blight dirt is sunproof:
+  Mortuary-Clerk Hush survives the day (Round 28 S2b). Every leader sub-type is
   1.15× the base model's size (whatever the catalogue's `size`) with twice
   the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
   leader spawns when a player is within 48 nodes of its spot (inside the

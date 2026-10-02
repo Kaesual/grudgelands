@@ -79,7 +79,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:tapir"
+            "grug_mobs:tapir",
+            "grug_mobs:reed_tapir"
           ],
           "zone": "kragmar_whispering_reedlands",
           "count": 4
@@ -108,7 +109,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:wisp"
+            "grug_mobs:wisp",
+            "grug_mobs:wandering_wisp"
           ],
           "zone": "kragmar_whispering_reedlands",
           "count": 3
@@ -188,7 +190,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:wisp"
+            "grug_mobs:wisp",
+            "grug_mobs:wandering_wisp"
           ],
           "zone": "kragmar_whispering_reedlands",
           "count": 3

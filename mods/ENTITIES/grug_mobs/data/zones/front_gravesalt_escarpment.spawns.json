@@ -1,7 +1,65 @@
 {
   "zone": "front_gravesalt_escarpment",
-  "palette": {
-    "families": ["bog_witch", "forest", "rift_spawn", "war"],
-    "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
+  "recipe": {
+    "from": {"border": ["elandor_stormvault_heights", "front_broken_causeway", "kragmar_blackwind_rise"]},
+    "to": {"core": true},
+    "belts": [
+      {
+        "id": "l51_53", "share": 30, "levels": [51, 53],
+        "kinds": {
+          "open": {"id": "saltflats", "name": "Gravesalt Saltflats",
+            "day": [{"role": "salt_boring_weevil", "weight": 3}, {"role": "saltbound_husk", "weight": 1}],
+            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "brinemire", "name": "Gravesalt Brinemire",
+            "day": [{"role": "saltbound_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "saltbound_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "bonewood", "name": "Gravesalt Bonewood",
+            "day": [{"role": "saltpack_wolf", "weight": 3}, {"role": "salt_hide_bear", "weight": 1}],
+            "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "tomb_galleries", "name": "Gravesalt Tomb Galleries",
+            "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "salt_antler_stag", "weight": 1}],
+            "night": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l54_57", "share": 40, "levels": [54, 57],
+        "kinds": {
+          "open": {"id": "blight_terraces", "name": "Gravesalt Blight Terraces",
+            "day": [{"role": "salt_boring_weevil", "weight": 3}, {"role": "salt_antler_stag", "weight": 1}],
+            "night": [{"role": "saltbound_zombie", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "tomb_fen", "name": "Gravesalt Tomb Fen",
+            "day": [{"role": "saltbound_husk", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+            "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "tombwood", "name": "Gravesalt Tombwood",
+            "day": [{"role": "saltpack_wolf", "weight": 3}, {"role": "salt_hide_bear", "weight": 1}],
+            "night": [{"role": "salt_web_spider", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "saltroad_cliffs", "name": "Gravesalt Saltroad Cliffs",
+            "day": [{"role": "saltroad_deserter", "weight": 3}, {"role": "last_pay_archer", "weight": 1}],
+            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "saltroad_deserter", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l58_60", "share": 30, "levels": [58, 60],
+        "kinds": {
+          "open": {"id": "whitewall", "name": "Gravesalt Whitewall",
+            "day": [{"role": "last_watch_husk", "weight": 3}, {"role": "salt_boring_weevil", "weight": 1}],
+            "night": [{"role": "last_watch_zombie", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "mourning_mire", "name": "Gravesalt Mourning Mire",
+            "day": [{"role": "last_watch_husk", "weight": 3}, {"role": "watchful_carrion_crow", "weight": 1}],
+            "night": [{"role": "salt_hex_witch", "weight": 3}, {"role": "last_watch_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "ossuary_wood", "name": "Gravesalt Ossuary Wood",
+            "day": [{"role": "saltpack_wolf", "weight": 3}, {"role": "last_watch_husk", "weight": 1}],
+            "night": [{"role": "last_watch_skeleton_raider", "weight": 3}, {"role": "salt_web_spider", "weight": 1}], "density": "normal"},
+          "highland": {"id": "watch_heights", "name": "Gravesalt Watch Heights",
+            "day": [{"role": "last_pay_archer", "weight": 3}, {"role": "salt_hide_bear", "weight": 1}],
+            "night": [{"role": "last_pay_archer", "weight": 3}, {"role": "last_watch_skeleton_raider", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "leaders": [
+      {"role": "watch_captain_huskell", "at": {"kind": "ossuary_wood", "pick": "farthest_from_roads"}, "respawn": 300},
+      {"role": "salt_counter_witch", "at": {"kind": "mourning_mire", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": ["bone_weevil", "gull"]
   }
 }

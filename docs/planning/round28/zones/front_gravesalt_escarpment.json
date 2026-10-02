@@ -264,7 +264,7 @@
   "max": 59,
   "min": 51
  },
- "level_max": 59,
+ "level_max": 60,
  "level_min": 51,
  "level_rule": "Zone field (simple_map.lua zone_level_at): the range split in thirds, rising along z toward the front (or toward the zone middle for front zones); the start bands (L1 <= 100, L2 <= 150 nodes) override near start anchors.",
  "map": "maps/front_gravesalt_escarpment.png",

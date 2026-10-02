@@ -135,7 +135,7 @@ mobs:spawn({
 	-- entity is nil if core.add_entity failed.
 	on_spawn = function(ent)
 		if ent then
-			ent.light_damage = 0
+			grug_mobs.blight_sunproof(ent)
 		end
 	end,
 })

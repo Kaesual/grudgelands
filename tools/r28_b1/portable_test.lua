@@ -7,7 +7,9 @@
 -- 1. Fallback identity (ruling 34 trigger): the real spawn_policy.lua of
 --    BASE_COMMIT (default 7af1aaf2, the palettes as Lua tables, read with
 --    `git show`) and the current spawn_policy.lua + spawn_regions.lua (the
---    palettes as data/zones/*.spawns.json, every zone without a recipe) give the
+--    palettes as data, for a zone without a recipe; since Round 28 S2 every
+--    shipped zone has one, so the test installs Goldmead's last shipped
+--    palette as test-only data) give the
 --    same answer for every zone, every policy mob, several heights, biomes,
 --    levels and both clocks: spawn_policy_allows, spawn_clock_for,
 --    zone_density_cast, zone_clock_cast, zone_spawn_palette_allows and
@@ -16,8 +18,8 @@
 -- 2. Ruling 3 on ABM rows: road, bridge, village, start footprint and capital
 --    city refuse ordinary natural rows; camps and POIs do not; critters and
 --    NPC rows are never refused.
--- 3. The loader on the 38 shipped files: all zones, a palette in every
---    zone without a recipe, the recipe zone (Dawnmere) refuses its ABM rows
+-- 3. The loader on the 38 shipped files: all zones, each with a recipe and
+--    no palette, a recipe zone (Dawnmere) refuses its ABM rows
 --    but its critters, format errors fail loudly.
 -- 4. levels.lua: a region or leader level replaces the field; the field
 --    level comes from the gameplay level (grug_core.mob_level_at).
@@ -35,11 +37,9 @@ local MOBS = repo .. "/mods/ENTITIES/grug_mobs"
 local DATA = MOBS .. "/data/zones"
 
 -- The world's 38 zone ids, from the mapgen's own source; a data file per id.
--- Their level bands too: a recipe's belts lie inside its zone's band.
-local WORLD_ZONES, BANDS = {}, {}
+local WORLD_ZONES = {}
 for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
 	WORLD_ZONES[#WORLD_ZONES + 1] = row.id
-	BANDS[row.id] = {row.level_min, row.level_max}
 end
 table.sort(WORLD_ZONES)
 local function list_dir()
@@ -216,6 +216,17 @@ local ZONE_X = {} -- zone id -> x stripe origin
 for i, id in ipairs(zone_files) do ZONE_X[id] = i * 1000 end
 local BIOMES = {"grug_blight", "grug_beach", "grug_meadows", "grug_pine_hills"}
 
+-- Each zone's level band as grug_zones serves it (the mapgen source with the
+-- gameplay bands of zone_bands.lua), so the shipped recipes parse.
+local ZONE_BANDS = {}
+do
+	local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
+	for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
+		ZONE_BANDS[row.id] = zone_bands.apply({level_min = row.level_min,
+			level_max = row.level_max}, row.id)
+	end
+end
+
 local function stripe_world()
 	local world = {time = 0.5, protected = {},
 		anchors = {["elandor_highcourt/capital"] = {x = 0, y = 0, z = 0}}}
@@ -232,9 +243,9 @@ local function stripe_world()
 		hard_protection_kind_at = function(pos) return world.protected.town and world.protected.town(pos) or nil end,
 		anchor = function(zone, slot) return world.anchors and world.anchors[zone .. "/" .. slot] or nil end,
 		get = function(zone)
-			local band = BANDS[zone] or {1, 10}
+			local band = ZONE_BANDS[zone] or {level_min = 1, level_max = 10}
 			return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
-				level_min = band[1], level_max = band[2]}
+				level_min = band.level_min, level_max = band.level_max}
 		end,
 		pvp_rule_at = function() return "peaceful" end,
 		race_region_at = function() return "human" end,
@@ -278,16 +289,25 @@ for _, name in ipairs(mob_names) do
 	check(OLD.register_spawn_role(name, defs[name]) == NEW.register_spawn_role(name, defs[name]),
 		"hostile role " .. name)
 end
--- A zone with a spawn recipe (Lane S1) has no palette: it is compared on its
--- own in part 3. Every other zone answers exactly as before.
+-- A zone with a spawn recipe (Lanes S1, S2) has no palette: it is compared on
+-- its own in part 3. Every other zone answers exactly as before.
 local SR = NEW.spawn_regions
-local palette_zones, recipe_zones = {}, 0
+-- Since Round 28 S2 every shipped zone has a recipe, but a zone without one
+-- still runs on its palette. Parts 1 and 2 therefore install test-only data:
+-- Goldmead's last shipped palette (before its S2a recipe), compared with the
+-- baseline's Goldmead palette. Part 3 restores the shipped file.
+local PALETTE_ZONE = "elandor_goldmead_vale"
 for _, zone in ipairs(zone_files) do
-	if SR.zone_has_recipe(zone) then recipe_zones = recipe_zones + 1
-	else palette_zones[#palette_zones + 1] = zone end
+	check(SR.zone_has_recipe(zone), zone .. " ships a spawn recipe")
 end
-check(recipe_zones >= 1 and #palette_zones + recipe_zones == #zone_files,
-	"every zone without a recipe keeps its palette (" .. #palette_zones .. ")")
+SR.install_zone(PALETTE_ZONE, {zone = PALETTE_ZONE, palette = {
+	families = {"fox", "poacher", "settled", "wild_turkey"}, boar = "grug_mobs:boar"}})
+local palette_zones = {}
+for _, zone in ipairs(zone_files) do
+	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
+end
+check(#palette_zones == 1 and palette_zones[1] == PALETTE_ZONE,
+	"the test-only palette zone is the one zone without a recipe")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -338,11 +358,10 @@ print(("fallback identity: %d spawn_policy_allows decisions identical over %d zo
 -- 2. Ruling 3 on ABM rows
 -- ---------------------------------------------------------------------------
 do
-	local x0 = ZONE_X.kragmar_redtusk_savanna
+	local x0 = ZONE_X.elandor_goldmead_vale
 	new_world.time, old_world.time = 0.5, 0.5
 	local boar, rabbit, guard = "grug_mobs:boar", "grug_mobs:rabbit", "grug_mobs:guard_accord"
-	-- A day boar on open ground is allowed in a palette zone (Redtusk: palette
-	-- settled, the plain boar; Goldmead has a recipe since Round 28 S2a).
+	-- A day boar on open ground is allowed in the test palette zone (settled).
 	local probe = {x = x0 + 5, y = 10, z = 102}
 	defs[boar].clock = "day"
 	check(NEW.spawn_policy_allows(boar, probe) == OLD.spawn_policy_allows(boar, probe), "probe agrees")
@@ -400,6 +419,7 @@ end
 -- 3. The shipped files
 -- ---------------------------------------------------------------------------
 do
+	SR.install_zone(PALETTE_ZONE, json.parse(io.open(DATA .. "/" .. PALETTE_ZONE .. ".spawns.json"):read("*a")))
 	check(#SR.zone_ids() == 38, "loader installed 38 zones")
 	for _, zone in ipairs(SR.zone_ids()) do
 		local text = io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a")
@@ -427,6 +447,27 @@ do
 		"listed critter keeps its row")
 	check(NEW.spawn_policy_allows("grug_mobs:gull", {x = x0 + 5, y = 10, z = 102}) == false,
 		"unlisted critter refused")
+	-- Rift Spawn keeps its row (Round 28 S2c) in the recipe zones whose
+	-- palette carried it, at its clock; never in the others (Dawnmere).
+	local gx = ZONE_X.front_gravesalt_escarpment
+	new_world.time = 0.0
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == true,
+		"Rift Spawn keeps its row in Gravesalt at night")
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == false,
+		"no Rift Spawn in Dawnmere, whose palette never had it")
+	-- Ruling 3 still refuses it on a protected surface (memoised per
+	-- position: each case at its own height).
+	for step, kind in ipairs({"road", "bridge", "village"}) do
+		new_world.protected.feature = function() return kind end
+		check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10 + step, z = 102}) == false,
+			"no Rift Spawn on a " .. kind .. " in Gravesalt")
+	end
+	new_world.protected.feature = nil
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 20, z = 102}) == true,
+		"Rift Spawn beside the protected surface in Gravesalt")
+	new_world.time = 0.5
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = gx + 5, y = 10, z = 102}) == false,
+		"Rift Spawn keeps its night clock in Gravesalt")
 	check(NEW.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}) ==
 		OLD.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}),
 		"underground unchanged in a recipe zone")
@@ -434,16 +475,16 @@ do
 	local function refused(zone, data)
 		return not pcall(SR.install_zone, zone, data)
 	end
-	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna"}),
+	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale"}),
 		"a zone without a recipe needs its palette")
-	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna", palette = {families = {}},
+	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", palette = {families = {}},
 		areas = {}}), "the hand-area format is gone")
-	check(refused("kragmar_redtusk_savanna", {zone = "elandor_highcourt", palette = {families = {}}}),
+	check(refused("elandor_goldmead_vale", {zone = "elandor_highcourt", palette = {families = {}}}),
 		"zone mismatch")
-	check(refused("kragmar_redtusk_savanna", {zone = "kragmar_redtusk_savanna", recipe = {belts = {}}}),
+	check(refused("elandor_goldmead_vale", {zone = "elandor_goldmead_vale", recipe = {belts = {}}}),
 		"a broken recipe")
-	check(NEW.spawn_regions.fallback_palettes().kragmar_redtusk_savanna ~= nil,
-		"a refused install keeps the zone's palette")
+	check(SR.zone_has_recipe(PALETTE_ZONE),
+		"a refused install keeps the zone's recipe")
 	local palettes = upvalue(OLD.zone_density_cast, "ZONE_MOB_PALETTES")
 	check(#sorted_keys(palettes) == 38, "baseline had 38 palettes")
 end

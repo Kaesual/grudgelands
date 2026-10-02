@@ -114,11 +114,13 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 	make_formspec = function(_, _, content) return content end, get_page = function() return "" end,
 	pages = pages, pages_unordered = {}}
 
--- The zone records' level bands (wp40 simple map, as grug_zones serves them).
+-- The zone records' level bands (wp40 simple map with the gameplay bands of
+-- zone_bands.lua, as grug_zones serves them).
 local BANDS = {}
+local zone_bands = dofile("mods/CORE/grug_core/zone_bands.lua")
 local MAP_SOURCE = dofile("mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua")
 for _, row in ipairs(MAP_SOURCE.zones) do
-	BANDS[row.id] = {level_min = row.level_min, level_max = row.level_max}
+	BANDS[row.id] = zone_bands.apply({level_min = row.level_min, level_max = row.level_max}, row.id)
 end
 
 -- grug_mobs and grug_zones over `mobs_root`'s recipes and catalogue, parsed
@@ -135,7 +137,6 @@ local function install_world(mobs_root)
 		if data and data.recipe then
 			recipes[zone] = regions_core.parse_recipe(zone, data.recipe, {
 				band = {BANDS[zone].level_min, BANDS[zone].level_max},
-				-- The zone's camp POIs (a recipe camp may stand on one, Round 28 S2).
 				pois = function(id) return regions_core.zone_pois(MAP_SOURCE, id) end,
 				role_levels = function(role) return catalogue[role] and catalogue[role].levels end,
 				leader = function(role) return catalogue[role] ~= nil and catalogue[role].leader == true end,

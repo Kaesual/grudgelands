@@ -399,8 +399,10 @@ def write_stats(doc, path):
         lines.append("- Camp `%s` at (%d, %d): score %.2f, nearest road %.0f nodes, levels %s." % (
             c["id"], c["x"], c["z"], c["score"], c["road"], levels_text(c["levels"])))
     for l in doc["leaders"]:
-        lines.append("- Leader %s (`%s`) at (%d, %d), level %d, respawn %d s." % (
-            l["name"], l["role"], l["x"], l["z"], l["level"], l["respawn"]))
+        lines.append("- Leader %s (`%s`) at (%d, %d), level %d, respawn %d s.%s" % (
+            l["name"], l["role"], l["x"], l["z"], l["level"], l["respawn"],
+            " Its kind has no region on this seed: fallback to kind `%s` of the same belt." %
+            l["fallback"] if l.get("fallback") else ""))
     for p in st["problems"]:
         lines.append("- PROBLEM: %s" % p)
     for w in st.get("warnings") or []:

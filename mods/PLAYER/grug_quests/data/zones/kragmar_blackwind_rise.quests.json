@@ -69,7 +69,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:gravewood_treant"
+            "grug_mobs:gravewood_treant",
+            "grug_mobs:mourning_treant"
           ],
           "zone": "kragmar_blackwind_rise",
           "count": 3
@@ -149,7 +150,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:plaguehide_bear"
+            "grug_mobs:plaguehide_bear",
+            "grug_mobs:territorial_bear"
           ],
           "zone": "kragmar_blackwind_rise",
           "count": 3

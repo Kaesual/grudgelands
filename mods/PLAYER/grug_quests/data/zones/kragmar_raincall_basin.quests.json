@@ -64,7 +64,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:viper"
+            "grug_mobs:viper",
+            "grug_mobs:reed_fang_viper"
           ],
           "zone": "kragmar_raincall_basin",
           "count": 6
@@ -125,7 +126,8 @@
           "type": "kill",
           "mobs": [
             "grug_mobs:bandit",
-            "grug_mobs:bandit_archer"
+            "grug_mobs:bandit_archer",
+            "grug_mobs:quarrelsome_bandit"
           ],
           "zone": "kragmar_raincall_basin",
           "count": 4
@@ -182,7 +184,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:tapir"
+            "grug_mobs:tapir",
+            "grug_mobs:reed_tapir"
           ],
           "zone": "kragmar_raincall_basin",
           "count": 5
@@ -212,7 +215,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:viper"
+            "grug_mobs:viper",
+            "grug_mobs:reed_fang_viper"
           ],
           "zone": "kragmar_raincall_basin",
           "count": 4
