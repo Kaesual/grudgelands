@@ -302,7 +302,7 @@ Delivered in Round 29
 K (`f6652818`: boats as water mounts, the Shipwright, the Kraken retune),
 lane W with its mapgen part (`e3e10df5`: the waystone node, start pads,
 capital waystones, the shipwright socket, waystone travel and the map
-marker), the check of §4.4 in lane M-geo (`33ac05f9`: the wider
+marker), the check of §4 item 4 in lane M-geo (`33ac05f9`: the wider
 Battlegrounds and the middle road), the art in lane A (`7e696133`) and the
 two boat prices in E4 (Boat 1s10c, Improved Boat 7s). Coordinator rulings:
 a purchase is ownership only, the item is recovered from the Skills page;

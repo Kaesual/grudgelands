@@ -377,6 +377,7 @@ playtest of the front quests and bounties.
 **Noted 2026-10-02** ([completion](docs/planning/round29-plan.md#completion-2026-10-02));
 none blocks the fresh-world playtest.
 
+- **Riding tier purchase fixture:** no portable test buys riding tiers 1–4 at the shipped prices (the boats are covered; same code path). Add a loop to `tools/r29_b` or `tools/r29_e4` when that code is next touched (E4 review, 2026-10-02).
 - **Band-5 loot median smoothing** (user, 2026-10-02: prices kept for now).
   E1's band-5 median per kill lands above its target and band 4's below,
   so band 5's income rises ×3.6 over band 4 instead of ×2.5 and Expert

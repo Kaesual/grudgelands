@@ -345,7 +345,7 @@ On a fresh world (all of Round 29 needs one):
 3. **Contested 31–40:** each of the faction's three zones has quests at its
    outposts and capital; the front line opens toward 41.
 4. **Front bounty:** take a repeatable bounty at 41+, turn it in, see
-   "Repeatable again in N min.", take it again after the cooldown.
+   "Repeatable again in N min.", take it again after the cooldown (front bounties 20–30 min, island bounties 60 min).
 5. **Economy (economy plan §8):** buy and sell at a start vendor and a
    profession shop; removed goods are gone; sell a stack of T1 and of T4
    loot and compare with the gear prices; enchant at T2 and T4 with a
