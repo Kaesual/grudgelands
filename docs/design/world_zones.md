@@ -398,6 +398,17 @@ replaced; git history before this rewrite records that model.
   the six frontier zones use this, so the Battlegrounds form one continuous
   wavy band between the continents and no Elandor zone touches a Kragmar
   zone.
+- **Battlegrounds width (Round 29, the user 2026-10-02).** The four
+  Battlegrounds zones are 50 % larger in z than before Round 29: their power
+  weight sets their border with the six contested 31–40 zones at about
+  |z| ≈ 360 (formerly ≈ 240). The area comes equally from both factions'
+  contested zones; the map size, the x borders between the Battlegrounds
+  zones, the gameplay neighbours, the dragon islands, channels, boat paths
+  and landings are unchanged. The anchors in the strip the contested zones
+  gave up (outposts, frontier bandit camps, Ashenward's and Bannerbreak's
+  clash sites, rares) moved about 120 nodes toward their home side and stay
+  in their zones; Coalbrand Yard and Sunderstrap Camp also moved to
+  |x| = 96 so the middle road (§9.2) runs straight.
 - The warp is damped near every fixed anchor, so each anchor's footprint
   (start core, capital envelope, village, outpost, camp, mine, clash site,
   dragon arena) stays inside its own zone. If an anchor would still leave its
@@ -1096,6 +1107,13 @@ graph requirement may shape a zone, and nothing may require a graph to be
   one endpoint in each contested frontier zone: the outpost or clash site
   nearest the home side. Roads enter the contested zones but need not reach
   the Battlegrounds.
+- **The middle road (Round 29, the user 2026-10-02).** One primary road
+  crosses the Battlegrounds at the map's x-middle and joins the continents,
+  Highcourt to Gor Drazhak. It is routed after both faction networks; while
+  it routes, every cell more than 48 nodes off x = 0 costs extra (0.02 per
+  node and per node off), so it stays near the middle (it crosses z = 0
+  within about ±60 nodes and keeps within about ±140 on the tested seeds)
+  and still bends around terrain. It has no waypoint.
 - **Shape of the network.** A spanning tree over those endpoints plus a few
   loops where a loop is short and useful. Junctions are T or Y shaped with at
   most three or four branches; there are no star junctions.
