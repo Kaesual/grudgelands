@@ -214,6 +214,17 @@ local ZONE_X = {} -- zone id -> x stripe origin
 for i, id in ipairs(zone_files) do ZONE_X[id] = i * 1000 end
 local BIOMES = {"grug_blight", "grug_beach", "grug_meadows", "grug_pine_hills"}
 
+-- Each zone's level band as grug_zones serves it (the mapgen source with the
+-- gameplay bands of zone_bands.lua), so the shipped recipes parse.
+local ZONE_BANDS = {}
+do
+	local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
+	for _, row in ipairs(dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/source/simple_map.lua").zones) do
+		ZONE_BANDS[row.id] = zone_bands.apply({level_min = row.level_min,
+			level_max = row.level_max}, row.id)
+	end
+end
+
 local function stripe_world()
 	local world = {time = 0.5, protected = {},
 		anchors = {["elandor_highcourt/capital"] = {x = 0, y = 0, z = 0}}}
@@ -229,8 +240,11 @@ local function stripe_world()
 		end,
 		hard_protection_kind_at = function(pos) return world.protected.town and world.protected.town(pos) or nil end,
 		anchor = function(zone, slot) return world.anchors and world.anchors[zone .. "/" .. slot] or nil end,
-		get = function(zone) return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
-			level_min = 1, level_max = 10} end,
+		get = function(zone)
+			local band = ZONE_BANDS[zone] or {level_min = 1, level_max = 10}
+			return {macro_region = "elandor_mainland", hub = {x = 0, z = 0},
+				level_min = band.level_min, level_max = band.level_max}
+		end,
 		pvp_rule_at = function() return "peaceful" end,
 		race_region_at = function() return "human" end,
 	}
@@ -280,7 +294,9 @@ local palette_zones = {}
 for _, zone in ipairs(zone_files) do
 	if not SR.zone_has_recipe(zone) then palette_zones[#palette_zones + 1] = zone end
 end
-check(#palette_zones == 37, "37 zones keep their palette (" .. #palette_zones .. ")")
+-- Round 28 S2 adds recipes zone by zone: every zone has one or the other.
+check(#palette_zones < #zone_files, "some zone has a spawn recipe (" ..
+	(#zone_files - #palette_zones) .. " of " .. #zone_files .. ")")
 do
 	local old_ids = {}
 	for _, zone in ipairs(OLD.density_zone_ids()) do
@@ -397,7 +413,6 @@ do
 		local text = io.open(DATA .. "/" .. zone .. ".spawns.json"):read("*a")
 		local data = json.parse(text)
 		if SR.zone_has_recipe(zone) then
-			check(zone == "elandor_dawnmere_fields", "only Dawnmere has a recipe")
 			check(data.palette == nil and type(data.recipe) == "table", zone .. " recipe, no palette")
 		else
 			check(type(data.palette) == "table" and type(data.palette.families) == "table",
