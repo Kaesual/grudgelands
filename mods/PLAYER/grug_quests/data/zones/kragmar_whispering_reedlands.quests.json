@@ -50,7 +50,7 @@
       "level": 22,
       "requires": [],
       "title": "Do Not Follow Every Light",
-      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Wandering Wisps after dark in the {name:canopy} {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
+      "text": "Out here, a welcoming light can leave you waist-deep in water with someone demanding a toll. Kill six Wandering Wisps after dark in the {name:canopy}, {zone_area:canopy}. I cannot prove they work for the toll collectors, but the collectors certainly appreciate the business.",
       "objectives": [
         {
           "type": "kill",

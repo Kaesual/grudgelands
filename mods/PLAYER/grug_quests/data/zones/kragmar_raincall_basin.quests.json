@@ -59,7 +59,7 @@
         "kapok_departure"
       ],
       "title": "A Garden Is No Wallow",
-      "text": "Welcome to Raincall, where we catch the rain and the Reed Tapirs sit on what it grows. Kill eight tapirs by day in the {name:rainwood} {zone_area:rainwood} so our gardens can stand up again. Strangers have started demanding a rain tithe from the farms, too. I have tended this basin for years, and the clouds have never once sent a collector.",
+      "text": "Welcome to Raincall, where we catch the rain and the Reed Tapirs sit on what it grows. Kill eight tapirs by day in the {name:rainwood}, which grows {zone_area:rainwood}, so our gardens can stand up again. Strangers have started demanding a rain tithe from the farms, too. I have tended this basin for years, and the clouds have never once sent a collector.",
       "objectives": [
         {
           "type": "kill",
@@ -87,7 +87,7 @@
         "raincall_rains_01"
       ],
       "title": "Mind Where the Path Hisses",
-      "text": "A wet root trips you; a Reed-Fang Viper takes offence at your whole foot. Kill eight vipers after dark on the paths through the {name:rainwood} {zone_area:rainwood}. Their venom is quick, so mind where you step and keep something to drink close at hand.",
+      "text": "A wet root trips you; a Reed-Fang Viper takes offence at your whole foot. Kill eight vipers after dark on the paths through the {name:rainwood}. Their venom is quick, so mind where you step and keep something to drink close at hand.",
       "objectives": [
         {
           "type": "kill",
@@ -115,7 +115,7 @@
         "raincall_rains_02"
       ],
       "title": "The Rain Owes You Nothing",
-      "text": "Those rain-tithe men are Roadside Bandits, prowling the {name:rainwood} {zone_area:rainwood} after dark among the vipers. Kill six of them. They claim to collect for Vek, but Vek has yet to send us so much as a drizzle.",
+      "text": "Those rain-tithe men are Roadside Bandits, prowling the {name:rainwood} after dark among the vipers. Kill six of them. They claim to collect for Vek, but Vek has yet to send us so much as a drizzle.",
       "objectives": [
         {
           "type": "kill",
@@ -167,7 +167,7 @@
         "raincall_rains_04"
       ],
       "title": "A Trail with Claws",
-      "text": "I can follow a tithe collector through the {name:cloudwood} {zone_area:cloudwood}; doing it with Reed Jungle Lynxes following me is another matter. Kill eight lynxes there by day and give my scouts room to work. The collectors leave clumsy tracks, but I would prefer to read them without teeth in my shoulder.",
+      "text": "I can follow a tithe collector through the {name:cloudwood}, {zone_area:cloudwood}; doing it with Reed Jungle Lynxes following me is another matter. Kill eight lynxes there by day and give my scouts room to work. The collectors leave clumsy tracks, but I would prefer to read them without teeth in my shoulder.",
       "objectives": [
         {
           "type": "kill",
@@ -195,7 +195,7 @@
         "raincall_watch_01"
       ],
       "title": "Someone Ate the Trail",
-      "text": "We marked the trail with rope, and the Kapok Gnawers took that as an invitation to supper. Kill eight after dark in the {name:cloudwood} {zone_area:cloudwood}. I can teach a scout to find a trail in the rain; I cannot teach one to find it inside a rat.",
+      "text": "We marked the trail with rope, and the Kapok Gnawers took that as an invitation to supper. Kill eight after dark in the {name:cloudwood}. I can teach a scout to find a trail in the rain; I cannot teach one to find it inside a rat.",
       "objectives": [
         {
           "type": "kill",
@@ -304,7 +304,7 @@
         "raincall_tithe_01"
       ],
       "title": "News Too Good to Whisper",
-      "text": "Take word of Vek's fall to Nalo Pathdrum at the shrine in Kezamba. The capital ought to hear that Raincall has no need of a man to sell it rain. I will spread the news here; after all that listening to keys, I intend to enjoy my own voice.",
+      "text": "Take word of Vek's fall to Nalo Pathdrum at the shrine in Kezamba. The capital ought to hear that Raincall has no need of a man to sell it rain. I will spread the news here; I spent long enough tied up and quiet, and now I intend to be heard.",
       "objectives": [
         {
           "type": "talk",
@@ -328,7 +328,7 @@
         "kapok_departure"
       ],
       "title": "Capes Before the Downpour",
-      "text": "A rain cape with a hole is just a very personal waterfall. Bring me three Leather from the Reed Tapirs that roam the {name:rainwood} {zone_area:rainwood} by day. If Daro already has you clearing the gardens, let one muddy walk earn its keep twice.",
+      "text": "A rain cape with a hole is just a very personal waterfall. Bring me three Leather from the Reed Tapirs that roam the {name:rainwood} by day, {zone_area:rainwood}. If Daro already has you clearing the gardens, let one muddy walk earn its keep twice.",
       "objectives": [
         {
           "type": "item",
@@ -388,7 +388,7 @@
         "raincall_weave_02"
       ],
       "title": "Claws at the Loom",
-      "text": "Palm fibre knots itself tighter than gossip in a rainbound house. Bring me two Hooked Cat Claws from the Reed Jungle Lynxes hunting by day in the {name:cloudwood} {zone_area:cloudwood}; my weavers need them to comb it out. The claws may come inside, but the rest of the cat stays where you found it.",
+      "text": "Palm fibre knots itself tighter than gossip in a rainbound house. Bring me two Hooked Cat Claws from the Reed Jungle Lynxes hunting by day in the {name:cloudwood}; my weavers need them to comb it out. The claws may come inside, but the rest of the cat stays where you found it.",
       "objectives": [
         {
           "type": "item",
@@ -446,7 +446,7 @@
         "raincall_rains_04"
       ],
       "title": "Bounty: Claws Above the Gardens",
-      "text": "Reed Jungle Lynxes keep prowling the {name:highwood} {zone_area:highwood} by day, and our gardeners have enough to wrestle with. Kill six for this repeatable bounty. You can take it again twenty minutes after turning it in; I suspect the cats will keep their side of that arrangement.",
+      "text": "Reed Jungle Lynxes keep prowling the {name:highwood}, {zone_area:highwood}, by day, and our gardeners have enough to wrestle with. Kill six for this repeatable bounty. You can take it again twenty minutes after turning it in; I suspect the cats will keep their side of that arrangement.",
       "objectives": [
         {
           "type": "kill",
@@ -477,7 +477,7 @@
         "raincall_watch_03"
       ],
       "title": "Bounty: Teeth on the Ropes",
-      "text": "Another rope chewed through, another scout walking in circles. Kill eight Kapok Gnawers after dark in the {name:highwood} {zone_area:highwood} for this repeatable bounty. It opens again twenty minutes after you turn it in; until the rats learn a different trade, I will keep paying.",
+      "text": "Another rope chewed through, another scout walking in circles. Kill eight Kapok Gnawers after dark in the {name:highwood} for this repeatable bounty. It opens again twenty minutes after you turn it in; until the rats learn a different trade, I will keep paying.",
       "objectives": [
         {
           "type": "kill",

@@ -33,7 +33,7 @@
       "level": 21,
       "requires": [],
       "title": "The Spirits Left Footprints",
-      "text": "The cenote receives our prayers, but someone with boots is receiving the offerings. Kill six Toll Bandits in the {name:canopy} {zone_area:canopy} after dark, and mind the Reed-Fang Vipers sharing those paths. We shall see how generous the spirits seem when the thieves stop walking away with their gifts.",
+      "text": "The cenote receives our prayers, but someone with boots is receiving the offerings. Kill six Toll Bandits after dark in the {name:canopy}, which spreads {zone_area:canopy}, and mind the Reed-Fang Vipers sharing those paths. We shall see how generous the spirits seem when the thieves stop walking away with their gifts.",
       "objectives": [
         {
           "type": "kill",
@@ -62,7 +62,7 @@
         "kezamba_offerings_01"
       ],
       "title": "Tusks Between the Prayers",
-      "text": "Pilgrims have been dropping their offerings and fleeing Jungle Razorbacks on the shrine paths. Hunters are driving the beasts there on somebody's coin; this is no ill omen, just a cruel trick. Kill six Jungle Razorbacks by day in the {name:vinewood} {zone_area:vinewood} so our people can finish a prayer standing still.",
+      "text": "Pilgrims have been dropping their offerings and fleeing Jungle Razorbacks on the shrine paths. Hunters are driving the beasts there on somebody's coin; this is no ill omen, just a cruel trick. Kill six Jungle Razorbacks by day in the {name:vinewood}, {zone_area:vinewood}, so our people can finish a prayer standing still.",
       "objectives": [
         {
           "type": "kill",
@@ -193,7 +193,7 @@
       "level": 21,
       "requires": [],
       "title": "Smoke Cannot Fill a Belly",
-      "text": "Half of Kezamba follows its nose to my door, and I cannot feed it the smell. Bring me eight Raw Meat from the Reed Tapirs grazing by day in the {name:canopy} {zone_area:canopy}. The smokehouse needs something to smoke before those noses turn into complaints.",
+      "text": "Half of Kezamba follows its nose to my door, and I cannot feed it the smell. Bring me eight Raw Meat from the Reed Tapirs grazing by day in the {name:canopy}. The smokehouse needs something to smoke before those noses turn into complaints.",
       "objectives": [
         {
           "type": "item",
@@ -222,7 +222,7 @@
         "kezamba_smokehouse_01"
       ],
       "title": "Keep Supper Hanging",
-      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Jungle Razorbacks in the {name:vinewood} {zone_area:vinewood}. If Nalo has you hunting them by day already, remember that hungry people have prayers too.",
+      "text": "My smokehouse racks need new hooks, and I have quite enough to hold without hanging supper from my own tusks. Bring me two Gnarled Boar Tusks from the Jungle Razorbacks in the {name:vinewood}. If Nalo has you hunting them by day already, remember that hungry people have prayers too.",
       "objectives": [
         {
           "type": "item",
@@ -251,7 +251,7 @@
         "kezamba_smokehouse_02"
       ],
       "title": "Bounty: The Smoke Must Rise",
-      "text": "The fire settles down, a fresh queue forms, and back I go to feeding Kezamba. Kill six Jungle Razorbacks by day in the {name:vinewood} {zone_area:vinewood} for this repeatable bounty. You can take it again twenty minutes after turning it in; the city's appetite has no such pause.",
+      "text": "The fire settles down, a fresh queue forms, and back I go to feeding Kezamba. Kill six Jungle Razorbacks by day in the {name:vinewood} for this repeatable bounty. You can take it again twenty minutes after turning it in; the city's appetite has no such pause.",
       "objectives": [
         {
           "type": "kill",
@@ -282,7 +282,7 @@
         "kezamba_smokehouse_02"
       ],
       "title": "Optional: The Debt That Walks",
-      "text": "The Tithe Revenants wander the {name:wildwood} {zone_area:wildwood} at night, still trying to pay what they owed when they died. They have started knocking at the smokehouse shutters as if I kept the ledger. Kill six of them, and let the poor things rest with the account closed.",
+      "text": "The Tithe Revenants wander the {name:wildwood} at night, {zone_area:wildwood}, still trying to pay what they owed when they died. They have started knocking at the smokehouse shutters as if I kept the ledger. Kill six of them, and let the poor things rest with the account closed.",
       "objectives": [
         {
           "type": "kill",
