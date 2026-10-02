@@ -108,7 +108,7 @@
         "moonfall_stars_02"
       ],
       "title": "One Light, Properly Accounted For",
-      "text": "The Wandering Wisps of the {name:wisp_fen}, which lies {zone_area:wisp_fen}, keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
+      "text": "The Wandering Wisps of the {name:deepwood} keep drifting through my observations. Hunt them after dark, the only time they appear, and bring me one Bound Wisp Mote to calibrate the great lens. For once, one of those lights will show me something true.",
       "objectives": [
         {
           "type": "item",
@@ -117,7 +117,7 @@
           "roles": [
             "wandering_wisp"
           ],
-          "area": "elandor_moonfall_wood/wisp_fen"
+          "area": "elandor_moonfall_wood/deepwood"
         }
       ],
       "rewards": {
