@@ -1,6 +1,6 @@
 {
   "zone": "elandor_moonfall_wood",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "The Moonfall Observatory charts the stars over a wood that someone is quietly emptying with marked snares.",
   "hubs": [
     {
       "id": "r20_anchor_035",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_035_host",
           "lines": [
-            "legacy"
+            "stars",
+            "snares"
           ]
         }
       ]
@@ -17,84 +18,198 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_035_01",
-      "line": "legacy",
+      "id": "moonfall_stars_01",
+      "line": "stars",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_035_host",
       "min_level": 21,
-      "level": 21,
+      "level": 22,
       "requires": [],
-      "faction": "accord",
-      "title": "A Chart Table Repaired",
-      "text": "Moonfall's chart table rocks whenever the lookout marks a route. Bring eight oak planks for its frame; the observatory is a shelter for path-watchers, not a new magical instrument. Existing or traded supplies are welcome.",
+      "title": "Howling Under the Eaves",
+      "text": "Briarpack Wolves run the {name:eaves} {zone_area:eaves}, mostly after dark, and their howling spoils my measurements. Defeat five of them. They call the pack when hurt, so fight with open ground behind you.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briarpack_wolf"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/eaves"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "moonfall_snares_01",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [],
+      "title": "Snares Between the Sighting Posts",
+      "text": "Unlicensed Poachers slip through the {name:eaves} at night and string snares between my sighting posts. Stop four of them. Their snares carry a warden's mark, and no warden of ours gave it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "unlicensed_poacher"
+          ],
+          "count": 4,
+          "area": "elandor_moonfall_wood/eaves"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "moonfall_stars_02",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "moonfall_stars_01"
+      ],
+      "title": "Bears Before Breakfast",
+      "text": "Bramble Bears guard the {name:deepwood} {zone_area:deepwood} by day and do not share their berries. Drive off five so my apprentices can collect lens-moss again. A bear is patient; be more patient.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "territorial_bear"
+          ],
+          "count": 5,
+          "area": "elandor_moonfall_wood/deepwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "moonfall_stars_03",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_02"
+      ],
+      "title": "A Mote for the Great Lens",
+      "text": "The Wandering Wisps of the {name:wisp_fen} {zone_area:wisp_fen} glow brightly enough at night to blind a telescope. Bring me one Bound Wisp Mote and I will calibrate the great lens with it. The wisps drift only after dark.",
       "objectives": [
         {
           "type": "item",
-          "item": "default:wood",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_035_02",
-      "line": "legacy",
-      "giver": "r20_anchor_035_host",
-      "turnin": "r20_anchor_035_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "Fangs Beneath the Fallen Bough",
-      "text": "Wolves prowl Moonfall Wood's forest floor beneath the fallen boughs. Defeat four so the observers can check the lake paths without abandoning their charts.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:briarpack_wolf"
+          "item": "grug_mobs:bound_wisp_mote",
+          "count": 1,
+          "roles": [
+            "wandering_wisp"
           ],
-          "zone": "elandor_moonfall_wood",
-          "count": 4
+          "area": "elandor_moonfall_wood/wisp_fen"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "duration_min": 6
     },
     {
-      "id": "r20_anchor_035_03",
-      "line": "legacy",
+      "id": "moonfall_snares_02",
+      "line": "snares",
       "giver": "r20_anchor_035_host",
       "turnin": "r20_anchor_035_host",
-      "min_level": 23,
-      "level": 23,
+      "min_level": 24,
+      "level": 25,
       "requires": [
-        "r20_anchor_035_02"
+        "moonfall_snares_01"
       ],
-      "faction": "accord",
-      "title": "The Moonlit Snare Line",
-      "text": "The clear paths expose a second hazard: poachers return to the wood at night. Defeat four in Moonfall Wood before the next dawn survey follows their snare line.",
+      "title": "Posts the Poachers Broke",
+      "text": "The poachers kicked over three of my sighting posts to hang their snares. Bring me ten planks of any wood and I will raise them again before the next clear night. Saw them wherever you like; the stars are not in a hurry.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
-          ],
-          "zone": "elandor_moonfall_wood",
-          "count": 4
+          "type": "item",
+          "group": "wood",
+          "count": 10
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 1,
         "items": []
-      }
+      },
+      "duration_min": 5
+    },
+    {
+      "id": "moonfall_snares_03",
+      "line": "snares",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "moonfall_snares_02"
+      ],
+      "title": "The Snarewarden",
+      "text": "{name:snarewarden_bracken} puts the warden's mark on every snare in this wood and waits {dir_from_giver:snarewarden_bracken}, day and night. Defeat him and the marks mean nothing again. Vetch and Rusk answered to him; now he can answer to you.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "snarewarden_bracken"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "The track's last normal-tier leader.",
+      "duration_min": 10,
+      "climax": true
+    },
+    {
+      "id": "moonfall_stars_bounty",
+      "line": "stars",
+      "giver": "r20_anchor_035_host",
+      "turnin": "r20_anchor_035_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "moonfall_stars_03"
+      ],
+      "title": "Bounty: Webs in the Deepwood",
+      "text": "Briar-Web Spiders rebuild their webs in the {name:deepwood} every night. Kill six whenever you can, and the Observatory will pay each time.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 6,
+          "area": "elandor_moonfall_wood/deepwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 1500
+      },
+      "duration_min": 8
     }
   ]
 }

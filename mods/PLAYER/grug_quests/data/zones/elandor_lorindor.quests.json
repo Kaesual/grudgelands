@@ -1,6 +1,6 @@
 {
   "zone": "elandor_lorindor",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Lorindor's berry woods and pearl shore pay their tolls twice: to netters in the woods at night and to mirefolk who count pearls that were never theirs.",
   "hubs": [
     {
       "id": "r20_anchor_018",
@@ -9,7 +9,8 @@
         {
           "npc": "r20_anchor_018_host",
           "lines": [
-            "legacy"
+            "berries",
+            "journeys"
           ]
         }
       ]
@@ -21,7 +22,7 @@
         {
           "npc": "r20_anchor_034_host",
           "lines": [
-            "legacy"
+            "wardenry"
           ]
         }
       ]
@@ -33,7 +34,7 @@
         {
           "npc": "r20_anchor_063_host",
           "lines": [
-            "legacy"
+            "cutting"
           ]
         }
       ]
@@ -41,292 +42,309 @@
   ],
   "quests": [
     {
-      "id": "r20_anchor_018_01",
-      "line": "legacy",
+      "id": "lorindor_berries_01",
+      "line": "berries",
       "giver": "r20_anchor_018_host",
       "turnin": "r20_anchor_018_host",
       "min_level": 21,
-      "level": 21,
+      "level": 22,
       "requires": [],
-      "faction": "accord",
-      "title": "Stones Around the Roots",
-      "text": "Berrycourt's orchard crew needs a low stone rim to keep washed soil against the roots. Bring eight cobble blocks to Lorindor Berrycourt, leaving the tended trees and protected court intact. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:cobble",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_018_02",
-      "line": "legacy",
-      "giver": "r20_anchor_018_host",
-      "turnin": "r20_anchor_018_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "No Snares in Berrycourt",
-      "text": "At night, poachers work Lorindor's silver-leaf and forest margins beyond Berrycourt. Defeat four of them while the orchard crew rebuilds the root beds.",
+      "title": "Nets in the Berrywoods",
+      "text": "Unlicensed Poachers net the {name:berrywoods} {dir_of:r20_anchor_018:berrywoods} after dark and take the birds before the berries ripen. Defeat five of them. By day the woods belong to the stags again, which is how it should be.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
+          "roles": [
+            "unlicensed_poacher"
           ],
-          "zone": "elandor_lorindor",
-          "count": 4
+          "count": 5,
+          "area": "elandor_lorindor/berrywoods"
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "duration_min": 8
     },
     {
-      "id": "r20_anchor_018_03",
-      "line": "legacy",
+      "id": "lorindor_berries_02",
+      "line": "berries",
       "giver": "r20_anchor_018_host",
       "turnin": "r20_anchor_018_host",
-      "min_level": 23,
+      "min_level": 22,
       "level": 23,
       "requires": [
-        "r20_anchor_018_02"
+        "lorindor_berries_01"
       ],
-      "faction": "accord",
-      "title": "The Uninvited Lanterns",
-      "text": "The snares have gone, but pale lights still lead late pickers away from Lorindor's orchard paths. Disperse three wisps after dark around the damp woodland, then report back to Ilwen.",
+      "title": "The Fenhold Toll",
+      "text": "Toll Mirefolk at {name:fenhold} {dir_from_giver:fenhold} charge my carters a pearl for every crate, day and night. Defeat five of them. They rush to help each other, so pull from the edge of their camp.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:wisp"
+          "roles": [
+            "toll_mirefolk"
           ],
-          "zone": "elandor_lorindor",
-          "count": 3
+          "count": 5,
+          "area": "elandor_lorindor/fenhold"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "duration_min": 9
     },
     {
-      "id": "r20_anchor_034_01",
-      "line": "legacy",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "The Trough's New Kerb",
-      "text": "Petalbank's trough has lost the stone kerb that keeps washwater out of the berry baskets. Bring eight cobble blocks for its edge; the covered court must stay open to carriers. Existing or traded supplies are welcome.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "default:cobble",
-          "count": 8
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_034_02",
-      "line": "legacy",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "Wardens Without Arrows",
-      "text": "Poachers enter Lorindor's woodland at night and force Petalbank's wardens away from the gathering routes. Defeat four so the wardens can take their normal posts again.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
-          ],
-          "zone": "elandor_lorindor",
-          "count": 4
-        }
-      ],
-      "rewards": {
-        "xp": 820,
-        "copper": 70,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_anchor_034_03",
-      "line": "legacy",
-      "giver": "r20_anchor_034_host",
-      "turnin": "r20_anchor_034_host",
-      "min_level": 23,
-      "level": 23,
+      "id": "lorindor_journeys_01",
+      "line": "journeys",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 24,
+      "level": 25,
       "requires": [
-        "r20_anchor_034_02"
+        "lorindor_berries_02"
       ],
-      "faction": "accord",
-      "title": "Lanterns We Did Not Hang",
-      "text": "The wardens have rehung their own lamps, but other lights still move beyond them after dark. Disperse three wisps in Lorindor's damp woodland and report to Petalbank.",
+      "title": "Highcourt Keeps Ledgers Too",
+      "text": "Some of the toll pearls end up in Highcourt, where Mariel Waybook keeps the human capital's road accounts. Take her my tally and see whether her outskirts have the same trouble. The road beyond Lorindor's border leads to Highcourt.",
       "objectives": [
         {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:wisp"
-          ],
-          "zone": "elandor_lorindor",
-          "count": 3
+          "type": "talk",
+          "npc": "r20_human_capital_envoy"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 1,
         "items": []
-      }
+      },
+      "lesson": "Sister-zone offer (Highcourt).",
+      "duration_min": 8
     },
     {
-      "id": "r20_anchor_063_01",
-      "line": "legacy",
-      "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 21,
-      "level": 21,
-      "requires": [],
-      "faction": "accord",
-      "title": "A Gentle Edge",
-      "text": "Paleroot's cutters need a spare stone pick for work beside the orchard roots. Bring one to the braced shelter; you may craft it, buy it or use an existing spare. Existing or traded supplies are welcome.",
+      "id": "lorindor_journeys_02",
+      "line": "journeys",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_016_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [
+        "lorindor_berries_02"
+      ],
+      "title": "Half-Empty Crates at Whitebridge",
+      "text": "Merren Oakstamp at Whitebridge Market Close buys our berries and swears the crates arrive half empty. Carry my tally to her and help her find out where the rest went. It is a long road through the human lands, so a mount would not hurt.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_materials:pick_stone",
+          "type": "talk",
+          "npc": "r20_anchor_016_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer (Whitebridge Shire).",
+      "duration_min": 12
+    },
+    {
+      "id": "lorindor_berries_03",
+      "line": "berries",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "lorindor_berries_02"
+      ],
+      "title": "The Pearl-Counter",
+      "text": "The fenhold pearls all go to {name:pearl_counter_iss} at the {name:pearl_camp} {dir_from_giver:pearl_camp}, who counts them twice and pays nobody. Defeat four of the camp's Toll Mirefolk and then Iss, day or night. Count to one when you are done; that is how many tolls we owe.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_mirefolk"
+          ],
+          "count": 4,
+          "area": "elandor_lorindor/pearl_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "pearl_counter_iss"
+          ],
           "count": 1
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 12,
+      "climax": true
     },
     {
-      "id": "r20_anchor_063_02",
-      "line": "legacy",
-      "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 21,
-      "level": 21,
+      "id": "lorindor_wardenry_01",
+      "line": "wardenry",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 24,
+      "level": 25,
       "requires": [],
-      "faction": "accord",
-      "title": "The Survey Stakes Vanish",
-      "text": "Poachers cross Lorindor's woodland at night and disturb the survey stakes outside the cutting. Defeat four so the crew can recover its marked line in daylight.",
+      "title": "Lanterns Nobody Hung",
+      "text": "At night, Wandering Wisps drift through the {name:elderwood} {zone_area:elderwood} and lead travellers off the path. Put out five of them. By day the wood is calm, so plan your watch for the dark hours.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:unlicensed_poacher"
+          "roles": [
+            "wandering_wisp"
           ],
-          "zone": "elandor_lorindor",
+          "count": 5,
+          "area": "elandor_lorindor/elderwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "lorindor_cutting_01",
+      "line": "cutting",
+      "giver": "r20_anchor_063_host",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 24,
+      "level": 25,
+      "requires": [],
+      "title": "Steel for the Pale Roots",
+      "text": "Bring me four Steel Bars, iron alloyed with coal and smelted wherever suits you. The paleroot props in this cutting are older than the Accord, and I would like them to outlive it. The deeper seams ask for a better pick, so check yours.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:steel_bar",
           "count": 4
         }
       ],
       "rewards": {
-        "xp": 820,
-        "copper": 70,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "lesson": "Tier-3 alloy.",
+      "duration_min": 12
     },
     {
-      "id": "r20_anchor_063_03",
-      "line": "legacy",
+      "id": "lorindor_cutting_02",
+      "line": "cutting",
       "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 23,
-      "level": 23,
+      "turnin": "r20_anchor_061_host",
+      "min_level": 24,
+      "level": 25,
       "requires": [
-        "r20_anchor_063_02"
+        "lorindor_cutting_01"
       ],
-      "faction": "accord",
-      "title": "Light on the Cutting Marks",
-      "text": "The recovered line leads into damp ground where wisps gather after dark. Disperse three in Lorindor before another cutter mistakes them for work lamps.",
+      "title": "Stone Talk at Tarncut",
+      "text": "Kelda Screesort at Tarncut Mine in Frostbarrow Shelf props her tunnels with the same steel I use. Take her my measurements; dwarves trust numbers more than elves do, and she will have work for you. It is a long road to the dwarven heights.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_061_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer (Frostbarrow Shelf).",
+      "duration_min": 15
+    },
+    {
+      "id": "lorindor_berries_bounty",
+      "line": "berries",
+      "giver": "r20_anchor_018_host",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 22,
+      "level": 22,
+      "requires": [
+        "lorindor_berries_03"
+      ],
+      "title": "Bounty: Night Netters",
+      "text": "The poachers' nets come back to the {name:berrywoods} every night. Defeat six netters whenever you pass after dark, and Berrycourt will pay each time.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:wisp"
+          "roles": [
+            "unlicensed_poacher"
           ],
-          "zone": "elandor_lorindor",
-          "count": 3
+          "count": 6,
+          "area": "elandor_lorindor/berrywoods"
         }
       ],
       "rewards": {
-        "xp": 900,
-        "copper": 70,
+        "weight": 2,
         "items": []
-      }
+      },
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "duration_min": 7
     },
     {
-      "id": "r20_elf_journey_02",
-      "line": "legacy",
-      "giver": "r20_anchor_018_host",
-      "turnin": "r20_anchor_063_host",
-      "min_level": 24,
-      "level": 24,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Word for Saevin Rootscribe",
-      "text": "The settlement and its nearby cutters need a direct line for their next repair season. Travel to Paleroot Cutting in Lorindor and speak with Saevin Rootscribe. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Saevin Rootscribe there. No parcel, fighting errand or return trip is required.",
+      "id": "lorindor_wardenry_bounty",
+      "line": "wardenry",
+      "giver": "r20_anchor_034_host",
+      "turnin": "r20_anchor_034_host",
+      "min_level": 25,
+      "level": 25,
+      "requires": [
+        "lorindor_wardenry_01"
+      ],
+      "title": "Bounty: Lanterns in the Elderwood",
+      "text": "The wisps of the {name:elderwood} relight themselves every night. Put out six whenever you can, and the Wardenry will pay each time.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_063_host"
+          "type": "kill",
+          "roles": [
+            "wandering_wisp"
+          ],
+          "count": 6,
+          "area": "elandor_lorindor/elderwood"
         }
       ],
       "rewards": {
-        "xp": 705,
-        "copper": 50,
+        "weight": 2,
         "items": []
-      }
+      },
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "duration_min": 7
     },
     {
-      "id": "r20_elf_journey_03",
-      "line": "legacy",
+      "id": "lorindor_cutting_bounty",
+      "line": "cutting",
       "giver": "r20_anchor_063_host",
-      "turnin": "r20_anchor_036_host",
-      "min_level": 31,
-      "level": 31,
-      "requires": [],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Word for Faeris Rootbinder",
-      "text": "The next frontier post needs news from the safer roads before another loaded caravan attempts the ascent. Travel to Glassroot Gate in Glassroot Wilds and speak with Faeris Rootbinder. This is level 31–40 country; prepare your equipment before leaving the road. Complete the conversation with Faeris Rootbinder there. No parcel, fighting errand or return trip is required.",
+      "turnin": "r20_anchor_063_host",
+      "min_level": 25,
+      "level": 26,
+      "requires": [
+        "lorindor_cutting_02"
+      ],
+      "title": "Bounty: Steel for the Props",
+      "text": "Props wear out, and so do I. Bring me four Steel Bars whenever you have them, and the cutting will pay each time.",
       "objectives": [
         {
-          "type": "talk",
-          "npc": "r20_anchor_036_host"
+          "type": "item",
+          "item": "grug_materials:steel_bar",
+          "count": 4
         }
       ],
       "rewards": {
-        "xp": 915,
-        "copper": 50,
+        "weight": 1.5,
         "items": []
-      }
+      },
+      "repeatable": {
+        "cooldown": 2400
+      },
+      "duration_min": 10
     }
   ]
 }

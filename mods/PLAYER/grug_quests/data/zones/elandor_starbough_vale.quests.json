@@ -1,6 +1,6 @@
 {
   "zone": "elandor_starbough_vale",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Starbough's boughs are being emptied by snares: poachers trap what the vale raises and sell it to the bandits at the old camp.",
   "hubs": [
     {
       "id": "starbough_village",
@@ -9,13 +9,13 @@
         {
           "npc": "r14_elf_steward",
           "lines": [
-            "legacy"
+            "boughs"
           ]
         },
         {
           "npc": "r15_elf_local",
           "lines": [
-            "legacy"
+            "stores"
           ]
         }
       ]
@@ -27,7 +27,7 @@
         {
           "npc": "r14_elf_scout",
           "lines": [
-            "legacy"
+            "watch"
           ]
         }
       ]
@@ -39,7 +39,7 @@
         {
           "npc": "r14_elf_captive",
           "lines": [
-            "legacy"
+            "testimony"
           ]
         }
       ]
@@ -47,260 +47,514 @@
   ],
   "quests": [
     {
-      "id": "r14_elf_07_quiet_the_lower_boughs",
-      "line": "legacy",
+      "id": "starbough_boughs_01",
+      "line": "boughs",
       "giver": "r14_elf_steward",
       "turnin": "r14_elf_steward",
       "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_elf_06_axes_without_leave"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Quiet the Lower Boughs",
-      "text": "Poachers cut beside Starbough's lower boughs after nightfall. Defeat six in Starbough Vale so Ilyra can put the wardens back on their working paths.",
-      "objectives": [
-        {
-          "type": "kill",
-          "mobs": [
-            "grug_mobs:snaring_poacher"
-          ],
-          "zone": "elandor_starbough_vale",
-          "count": 6
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 50,
-        "items": []
-      }
-    },
-    {
-      "id": "r14_elf_08_watch_the_green_road",
-      "line": "legacy",
-      "giver": "r14_elf_scout",
-      "turnin": "r14_elf_scout",
-      "min_level": 11,
       "level": 11,
       "requires": [
-        "r14_elf_07_quiet_the_lower_boughs"
+        "silverleaf_departure"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Watch the Green Road",
-      "text": "Foxes scatter the scouts' trail signs. Clear the green road before Theren patrols it.",
+      "title": "Bracken in the Lower Boughs",
+      "text": "Bracken Foxes have grown bold in the {name:lower_boughs} {zone_area:lower_boughs}; drive off eight of them by day. Someone has been snaring their prey, so they come begging at our doors. I would rather they learned to hunt again.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:young_fox"
+          "roles": [
+            "young_fox"
           ],
-          "zone": "elandor_starbough_vale",
-          "count": 6
+          "count": 8,
+          "area": "elandor_starbough_vale/lower_boughs"
         }
       ],
       "rewards": {
-        "xp": 525,
-        "copper": 60,
+        "weight": 3.5,
         "items": []
-      }
+      },
+      "duration_min": 9
     },
     {
-      "id": "r14_elf_09_cinders_in_green_cloth",
-      "line": "legacy",
-      "giver": "r14_elf_scout",
-      "turnin": "r14_elf_captive",
-      "min_level": 12,
+      "id": "starbough_stores_01",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
+      "min_level": 10,
+      "level": 11,
+      "requires": [
+        "silverleaf_departure"
+      ],
+      "title": "Two Brushes",
+      "text": "Bring me two Brush Fox Tails from the Bracken Foxes in the {name:lower_boughs}. They make the best brushes for the bough-marks we paint on the old trees. Ilyra will send you there anyway; I am only saving you a walk.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:brush_fox_tail",
+          "count": 2,
+          "roles": [
+            "young_fox"
+          ],
+          "area": "elandor_starbough_vale/lower_boughs"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "duration_min": 4
+    },
+    {
+      "id": "starbough_boughs_02",
+      "line": "boughs",
+      "giver": "r14_elf_steward",
+      "turnin": "r14_elf_steward",
+      "min_level": 11,
       "level": 12,
       "requires": [
-        "r14_elf_08_watch_the_green_road"
+        "starbough_boughs_01"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Cinders in Green Cloth",
-      "text": "The bandits carry green cloth burned by a hooked-sun mark. Defeat them and speak with Nima inside the camp. Speak with the captive for compatible supply tasks before clearing the camp; the captive also accepts this combat report.",
+      "title": "Rats in the Granary Hollow",
+      "text": "At night, Granary Rats swarm the {name:lower_boughs} {zone_area:lower_boughs}. Clear eight before they find our winter stores. Pull them one at a time where you can; a squealing rat brings its cousins.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:bandit",
-            "grug_mobs:bandit_archer"
+          "roles": [
+            "granary_rat"
           ],
-          "zone": "elandor_starbough_vale",
+          "count": 8,
+          "area": "elandor_starbough_vale/lower_boughs"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 9
+    },
+    {
+      "id": "starbough_boughs_03",
+      "line": "boughs",
+      "giver": "r14_elf_steward",
+      "turnin": "r14_elf_steward",
+      "min_level": 12,
+      "level": 13,
+      "requires": [
+        "starbough_boughs_02"
+      ],
+      "title": "Snares on the Old Paths",
+      "text": "Snaring Poachers walk the {name:lower_boughs} after dark, setting wire where our deer drink. Stop five of them; they are fewer than the rats, so be patient. Every snare carries the same knot, and someone taught them that knot.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "snaring_poacher"
+          ],
+          "count": 5,
+          "area": "elandor_starbough_vale/lower_boughs"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "starbough_stores_02",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
+      "min_level": 12,
+      "level": 13,
+      "requires": [
+        "starbough_stores_01"
+      ],
+      "title": "Iron for the Bough-Bridges",
+      "text": "Bring me six Iron Bars and four Coal Lumps for the walkway braces. The vale's rock holds iron, but check which pick it asks for before you dig. Wood bends and forgives; iron bends only once.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:iron_bar",
+          "count": 6
+        },
+        {
+          "type": "item",
+          "item": "default:coal_lump",
           "count": 4
         }
       ],
       "rewards": {
-        "xp": 805,
-        "copper": 80,
+        "weight": 3,
         "items": []
-      }
+      },
+      "lesson": "Tier-2 ore and smelting.",
+      "duration_min": 12
     },
     {
-      "id": "r15_elf_local_01",
-      "line": "legacy",
-      "giver": "r15_elf_local",
-      "turnin": "r15_elf_local",
-      "min_level": 10,
-      "level": 10,
+      "id": "starbough_boughs_04",
+      "line": "boughs",
+      "giver": "r14_elf_steward",
+      "turnin": "r14_elf_scout",
+      "min_level": 13,
+      "level": 14,
       "requires": [
-        "r14_elf_06_axes_without_leave"
+        "starbough_boughs_03"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Leather for the Covered Walk",
-      "text": "Rain has loosened the lashings above the communal walk. Bring ordinary leather so the bindings can be replaced.",
+      "title": "Theren Has Seen the Knot",
+      "text": "Take the snare wire to Theren Farstep at Starbough Outpost; the vale road leads there. He watches the greenwood and may know whose knot this is. Tell him I said to stop sulking about his last report.",
       "objectives": [
         {
-          "type": "item",
-          "item": "mobs:leather",
-          "count": 2
+          "type": "talk",
+          "npc": "r14_elf_scout"
         }
       ],
       "rewards": {
-        "xp": 285,
-        "copper": 40,
+        "weight": 1,
         "items": []
-      }
+      },
+      "duration_min": 5
     },
     {
-      "id": "r15_elf_local_02",
-      "line": "legacy",
-      "giver": "r15_elf_local",
-      "turnin": "r15_elf_local",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r14_elf_06_axes_without_leave"
-      ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Linen at the Sapling Cuts",
-      "text": "Bring three ordinary linen cloth pieces from the local night poachers so Lethri can bind the damaged guards while Ilyra clears the lower boughs.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "grug_mobs:linen_cloth",
-          "count": 3
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 45,
-        "items": []
-      }
-    },
-    {
-      "id": "r15_elf_local_03",
-      "line": "legacy",
+      "id": "starbough_watch_01",
+      "line": "watch",
       "giver": "r14_elf_scout",
       "turnin": "r14_elf_scout",
-      "min_level": 11,
-      "level": 11,
+      "min_level": 14,
+      "level": 15,
       "requires": [
-        "r14_elf_07_quiet_the_lower_boughs"
+        "starbough_boughs_04"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "No Shadow on the Sightline",
-      "text": "After nightfall, poachers cross the lookout's open ground when the patrol turns. Clear the approach and restore the long view.",
+      "title": "Vixens on the Watch Path",
+      "text": "Thicket Vixens hunt the {name:greenwood} {zone_area:greenwood} by day, and they no longer flee from a patrol. Kill seven so my scouts can walk the path again. They start the fight, so keep your back to a tree.",
       "objectives": [
         {
           "type": "kill",
-          "mobs": [
-            "grug_mobs:snaring_poacher"
+          "roles": [
+            "rabid_fox"
           ],
-          "zone": "elandor_starbough_vale",
-          "count": 4
+          "count": 7,
+          "area": "elandor_starbough_vale/greenwood"
         }
       ],
       "rewards": {
-        "xp": 315,
-        "copper": 50,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r15_elf_local_04",
-      "line": "legacy",
+      "id": "starbough_watch_02",
+      "line": "watch",
       "giver": "r14_elf_scout",
       "turnin": "r14_elf_scout",
-      "min_level": 11,
-      "level": 11,
+      "min_level": 14,
+      "level": 15,
       "requires": [
-        "r14_elf_07_quiet_the_lower_boughs"
+        "starbough_boughs_04"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Fangs Beside the Trail Signs",
-      "text": "Bring two ordinary fox fangs from the Starbough road hunt. Theren uses them to explain the warning signs while the trail markers are reset; no second fox count is needed.",
+      "title": "Gnawers by Moonlight",
+      "text": "After nightfall, Burrow Gnawers dig under the {name:greenwood} and chew through every snare line, which would be helpful if they stopped there. Kill seven of them. Cairn Zombies wander the same ground at night, so do not linger.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_mobs:fang",
-          "count": 2
+          "type": "kill",
+          "roles": [
+            "mangy_rat"
+          ],
+          "count": 7,
+          "area": "elandor_starbough_vale/greenwood"
         }
       ],
       "rewards": {
-        "xp": 420,
-        "copper": 55,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 10
     },
     {
-      "id": "r15_elf_local_05",
-      "line": "legacy",
-      "giver": "r14_elf_captive",
-      "turnin": "r14_elf_captive",
-      "min_level": 12,
-      "level": 12,
+      "id": "starbough_watch_03",
+      "line": "watch",
+      "giver": "r14_elf_scout",
+      "turnin": "r14_elf_scout",
+      "min_level": 15,
+      "level": 16,
       "requires": [
-        "r14_elf_08_watch_the_green_road"
+        "starbough_watch_01",
+        "starbough_watch_02"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Knots from the Bough Road",
-      "text": "The stolen purses carry travel knots from the bough road. Recover two for the captive; their owners can then be traced through the wardens' records. Accept this request before the camp fight; ordinary carried or traded purses also count.",
+      "title": "Whose Knot",
+      "text": "The snares end at the {name:bandit_camp} {dir_from_giver:bandit_camp}, where Roadside Bandits buy what the poachers catch. Defeat eight of them, day or night. They hold one of ours there, Nima Fern, so do not burn the place down around her.",
       "objectives": [
         {
-          "type": "item",
-          "item": "grug_mobs:stolen_purse",
-          "count": 2
+          "type": "kill",
+          "roles": [
+            "quarrelsome_bandit"
+          ],
+          "count": 8,
+          "area": "elandor_starbough_vale/bandit_camp"
         }
       ],
       "rewards": {
-        "xp": 460,
-        "copper": 65,
+        "weight": 4,
         "items": []
-      }
+      },
+      "duration_min": 11
     },
     {
-      "id": "r15_elf_local_06",
-      "line": "legacy",
-      "giver": "r14_elf_captive",
-      "turnin": "r14_elf_captive",
-      "min_level": 12,
-      "level": 12,
+      "id": "starbough_stores_03",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
+      "min_level": 15,
+      "level": 16,
       "requires": [
-        "r14_elf_08_watch_the_green_road"
+        "starbough_stores_02"
       ],
-      "faction": "accord",
-      "race": "elf",
-      "title": "Bindings from the Worksite",
-      "text": "The cut trunks are bound with the raiders' linen cloth. Bring enough camp cloth for Nima to compare its knots with the poachers' work.",
+      "title": "Cloth for the Watched Trees",
+      "text": "Bring me three Linen Cloth; the bandits at the camp carry plenty they never wove. I will bind the marked trees with it so the poachers know which ones are watched. Cloth from the Cairn Zombies serves as well, if you can bear the smell.",
       "objectives": [
         {
           "type": "item",
           "item": "grug_mobs:linen_cloth",
-          "count": 5
+          "count": 3,
+          "roles": [
+            "quarrelsome_bandit"
+          ],
+          "area": "elandor_starbough_vale/bandit_camp"
         }
       ],
       "rewards": {
-        "xp": 575,
-        "copper": 75,
+        "weight": 2.5,
         "items": []
-      }
+      },
+      "duration_min": 4
+    },
+    {
+      "id": "starbough_watch_04",
+      "line": "watch",
+      "giver": "r14_elf_scout",
+      "turnin": "r14_elf_captive",
+      "min_level": 16,
+      "level": 16,
+      "requires": [
+        "starbough_watch_03"
+      ],
+      "title": "A Word with Nima",
+      "text": "Go into the {name:bandit_camp} and speak with Nima Fern. She has watched the bandits trade for weeks and knows who sells them the snares. Get her story out of their reach.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r14_elf_captive"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 4
+    },
+    {
+      "id": "starbough_testimony_01",
+      "line": "testimony",
+      "giver": "r14_elf_captive",
+      "turnin": "r14_elf_captive",
+      "min_level": 16,
+      "level": 17,
+      "requires": [
+        "starbough_watch_04"
+      ],
+      "title": "Lookouts First",
+      "text": "Before I tell you anything, the Bandit Lookouts in this camp need to stop looking. Defeat four of them; they shoot from the edges, so close in fast. Then we can talk without being counted.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "vigilant_bandit_archer"
+          ],
+          "count": 4,
+          "area": "elandor_starbough_vale/bandit_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "Archers at a camp's edge; close the distance.",
+      "duration_min": 8
+    },
+    {
+      "id": "starbough_testimony_02",
+      "line": "testimony",
+      "giver": "r14_elf_captive",
+      "turnin": "r14_elf_captive",
+      "min_level": 17,
+      "level": 18,
+      "requires": [
+        "starbough_testimony_01"
+      ],
+      "title": "The Snarekeeper's Ground",
+      "text": "The snares are sold by a man called Vetch, who works the {name:high_boughs} {zone_area:high_boughs}. Ridgeback Tuskers roam there by day and trample anyone who comes looking for him. Thin out eight of them and the way will be clear.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "bristling_boar"
+          ],
+          "count": 8,
+          "area": "elandor_starbough_vale/high_boughs"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "starbough_testimony_03",
+      "line": "testimony",
+      "giver": "r14_elf_captive",
+      "turnin": "r14_elf_captive",
+      "min_level": 18,
+      "level": 19,
+      "requires": [
+        "starbough_testimony_02"
+      ],
+      "title": "Vetch Keeps the Knots",
+      "text": "{name:snarekeeper_vetch} keeps his snares {dir_from_giver:snarekeeper_vetch}, day and night. Defeat him and the knot Ilyra found has no one left to tie it. He fights alone, which is the only fair thing about him.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "snarekeeper_vetch"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "A normal-tier named leader at a fixed spot.",
+      "duration_min": 10,
+      "climax": true
+    },
+    {
+      "id": "starbough_departure",
+      "line": "testimony",
+      "giver": "r14_elf_captive",
+      "turnin": "r20_elf_capital_envoy",
+      "min_level": 19,
+      "level": 19,
+      "requires": [
+        "starbough_testimony_03"
+      ],
+      "title": "Lethariel Should Hear This",
+      "text": "Vetch carried a tally stamped with Lethariel's bough-seal, and that seal was never his to use. Take it to Eriath Boughwarden in Lethariel; the vale road leads to the capital. I will find my own way home, slowly and with great dignity.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_elf_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1.5,
+        "items": []
+      },
+      "lesson": "Home to capital handoff.",
+      "duration_min": 8
+    },
+    {
+      "id": "starbough_stores_bounty",
+      "line": "stores",
+      "giver": "r15_elf_local",
+      "turnin": "r15_elf_local",
+      "min_level": 18,
+      "level": 19,
+      "requires": [
+        "starbough_stores_03"
+      ],
+      "title": "Bounty: Gnawers in the High Boughs",
+      "text": "Burrow Gnawers dig under the {name:high_boughs} again every night. Kill eight there whenever you pass, and I will pay each time. The trees do not keep count, but I do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "mangy_rat"
+          ],
+          "count": 8,
+          "area": "elandor_starbough_vale/high_boughs"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 1800
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "starbough_watch_bounty",
+      "line": "watch",
+      "giver": "r14_elf_scout",
+      "turnin": "r14_elf_scout",
+      "min_level": 15,
+      "level": 16,
+      "requires": [
+        "starbough_watch_04"
+      ],
+      "title": "Bounty: Vixens on the Path",
+      "text": "The Thicket Vixens of the {name:greenwood} come back faster than my scouts. Kill six by day and report to me; the offer stands as long as they do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "rabid_fox"
+          ],
+          "count": 6,
+          "area": "elandor_starbough_vale/greenwood"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "duration_min": 7
+    },
+    {
+      "id": "starbough_testimony_bounty",
+      "line": "testimony",
+      "giver": "r14_elf_captive",
+      "turnin": "r14_elf_captive",
+      "min_level": 16,
+      "level": 16,
+      "requires": [
+        "starbough_departure"
+      ],
+      "title": "Bounty: Roadside Toll",
+      "text": "Roadside Bandits keep drifting back to this camp. Defeat six of them whenever you are near, day or night, and I will make sure Starbough pays you for it.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "quarrelsome_bandit"
+          ],
+          "count": 6,
+          "area": "elandor_starbough_vale/bandit_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "duration_min": 7
     }
   ]
 }
