@@ -132,12 +132,11 @@ tail, eye, flesh, fur) and four from T3 (tooth, strap, talisman, flesh; the
 strap also covers Armor), and per family a mined or gathered input (bar,
 quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp).
 
-**Gap until the zone content lands.** The catalogue's sub-types spawn only
-from zone spawn recipes (Dawnmere Fields has one), which the Round 28 content lanes still have to
-write. Until then the stat loot comes only from the existing mobs whose role
-names a drop family (Boar tusks, Zombie flesh and teeth; biomes_mobs.md
-"Loot by band"), so only Strength, Critical chance and Maximum HP enchants
-can be made, none at T5: 245 of the 588 operations.
+**Sources.** The catalogue's sub-types spawn from the zone spawn recipes,
+which all 38 zones have since Round 28; every stat loot item of T1–T6 drops
+from at least one role a recipe places (measured 2026-10-02 from the
+recipes, the sub-type level ranges and the drop tables), so none of the 588
+operations lacks its stat loot.
 
 These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);

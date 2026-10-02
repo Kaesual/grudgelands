@@ -64,6 +64,17 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 28 delivered, 2026-10-02.** The 2026-09-30 playtest fixes (Track A),
+the questing and leveling framework (Track B: sub-types and loot by band,
+kill XP `25 + 5L` with its curve, per-zone quest data, self-contained
+professions), the catalogue with 89 icons and the naming rule, rule-based
+spawn regions for all 38 zones with the border rule, quest-log level ranges
+and zone names. Pushed up to `9dd85b6e`; the later lanes are local. Quest
+content per race track, the front and the islands moved to Round 29
+("Economy and travel", with the economy lanes, WP17 and a mapgen bundle).
+Next: fresh world and spawn playtest.
+[Plan, completion and playtest checklist](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02).
+
 **Round 27 delivered, 2026-09-30.** WP50: our own round minimap
 (`grug_map`) with quest-giver, service, home and party markers in place of
 the native minimap, the `grug_map_quality` setting (normal/high) for the Map
@@ -410,6 +421,34 @@ current state). It is **derived, never authoritative**:
     `catch_up = false` where possible.
   - In hot loops use `core.get_node_raw`/content IDs + VoxelManip instead
     of `get_node`.
+
+### Zone content (since Round 28)
+
+- **Mobs, loot, quests and enchant inputs are data**, one file per zone where
+  per-zone: `grug_mobs/data/zones/<zone>.spawns.json` (spawn recipe),
+  `grug_quests/data/zones/<zone>.quests.json` (and `.front.quests.json`),
+  `grug_mobs/data/{subtypes,items,drops,tints}.json`,
+  `grug_professions/data/enchants.json`. Tune by editing data, not code.
+- **Zone data holds rules, never coordinates:** maps differ per seed. Surface
+  spawns come from the recipe's regions built on the seed's own terrain
+  ([spawn_regions.md](docs/design/spawn_regions.md)); no hand-placed areas.
+  Gameplay level bands that differ from the mapgen's live in
+  `grug_core/zone_bands.lua`; the mapgen bands change only in a mapgen round.
+- **After a recipe change** run `tools/r28_regions/run.sh <zones>` (region
+  images and stats on several seeds, then `quest_targets.py`) and
+  `tools/r28_world/run.sh` (world view, level fit across borders; the border
+  rule is `tools/r28_world/border_rule.py`), and show the images when the
+  user decides on a distribution. Catalogue or quest design files:
+  `python3 tools/r28_design/validate.py`.
+- **Names:** signal words (Small, Large, Braindead …) only on start-zone
+  roles; every other sub-type has its own unique name; kill quests name the
+  exact sub-type and place (design frame §5,
+  `tools/r28_names/build_review.py --check`).
+- **Quest texts** name items, never their tooltip texts. Directions and
+  places that depend on the seed (regions, leader spots) appear only as
+  placeholders the code fills per seed
+  ([spawn_regions.md](docs/design/spawn_regions.md#directions)); never a
+  fixed compass word. Quest files that require each other change together.
 
 ## Task-specific implementation references
 

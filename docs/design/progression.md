@@ -239,8 +239,8 @@ carried over to the new unit.
 ## Current fixed quest reward table
 
 **Legacy values.** These fixed integers were sized against the pre-Round-28
-quadratic curve (interval `200L − 100`) and stay unchanged until the Round 28
-zone designs replace the quests (Ruling 32 weights). Against the new curve
+quadratic curve (interval `200L − 100`) and stay unchanged until new quest
+files with Ruling 32 weights replace the quests (moved to Round 29). Against the new curve
 they are mis-sized: a level-1 quest is 0.5–0.7 kill equivalents (6–8 % of
 the level), levels 3–5 are 2.5–3.6 KE (29–39 % of a level), and from level 10
 on every quest is 3.8–9.5 KE, 36–85 % of a whole level (the old design meant

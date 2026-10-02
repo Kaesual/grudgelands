@@ -133,7 +133,8 @@ B1–B7) settle the rest:
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
   WP44 target economy and broader item/loot scope remain separate.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
-  persistent same-faction parties and optional HUDs.
+  persistent same-faction parties and optional HUDs. Since Round 28 quests are
+  per-zone data with area, item-group and quest-drop objectives and repeatables.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
   Round 27, our own round minimap with the same markers; innkeeper home
   return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
@@ -153,23 +154,44 @@ B1–B7) settle the rest:
   service, home and party markers in place of the native one; the
   `grug_map_quality` setting (normal/high); readable relief. Next: short
   playtest.
+- [x] **Round 28 questing and leveling framework**
+  ([completion](docs/planning/round28-questing-leveling-plan.md#completion-2026-10-02)):
+  the 2026-09-30 playtest fixes (mob behaviour near roads, environmental
+  damage, knockback, sizes, LMB lock, message feed, class offhands, Scout
+  slots and quiver, Professions tab); data-driven sub-types and loot by band,
+  the kill-equivalent XP curve, quests as per-zone data, self-contained
+  professions; the catalogue (195 sub-types, 119 items, 89 icons) with the
+  naming rule; rule-based spawn regions for all 38 zones
+  ([spawn_regions.md](docs/design/spawn_regions.md)); The Broken Causeway
+  41–50 and Gravesalt/Skyglass 51–60; quest-log level ranges and zone
+  names. Next: fresh world and spawn playtest.
 
 ### Remaining work
 
+- [ ] **Round 29 "Economy and travel"** (agreed 2026-10-02, not yet
+  planned): new quest files per race track, the front and the islands on the
+  Round 28 framework (they replace the 240 legacy quests); the WP44 economy
+  lanes; WP17; a mapgen bundle (gem depth tiers, `apex_sockets` removal, the
+  Battlegrounds 50 % larger in z with one road across them, mapgen band
+  data for the Causeway and Gravesalt/Skyglass). Items:
+  [BACKLOG](BACKLOG.md#round-28-carry-overs-and-round-29).
 - [ ] **WP17 travel (V1):** boats with the Kraken retune, and visit-unlocked
   waypoints at every start and capital. Innkeeper return and the Claim Stone
-  travel home are already delivered.
+  travel home are already delivered. Planned for Round 29.
 - [ ] **WP41 (V1):** exact geographic PvP transaction and shared eligibility seam.
 - [ ] **WP9 (V1):** the level-41–60 main questline and the finale; Round 20's
-  240 quests reach level 40.
+  240 quests reach level 40. Round 29's front quests cover part of 41–60;
+  the main storyline and finale are reassessed after them.
 - [ ] **WP44 economy, a lighter pass:** price tables, 5% buy-back, the audit
   fixes, rescaled quest copper and a simple income estimate for respec and
   mount prices. It absorbs the price remainders of WP7, WP11, WP22, WP30 and
-  WP31. The running economy keeps its legacy curve and 25% buy-back until then.
+  WP31. The running economy keeps its legacy curve and 25% buy-back until then;
+  Round 28's loot prices (tier = copper) are placeholders. Planned for Round 29.
 - [ ] **WP5 / WP10 items and professions:** cultural/PvP finishes, masterwork
-  (an item-level-70 upgrade), the loot/demand audit, then cultural finishing
-  and helper services. Selected enchanting, ordinary gear, found-item loot and
-  seven profession catalogs already exist.
+  (an item-level-70 upgrade), the loot/demand audit (planned with Round 29's
+  price calibration), then cultural finishing and helper services. Selected
+  enchanting, ordinary gear, found-item loot, loot by band and seven
+  self-contained profession catalogs already exist.
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are
