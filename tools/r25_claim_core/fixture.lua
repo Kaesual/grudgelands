@@ -846,7 +846,7 @@ if seed ~= "none" then
 
 	-- hard_footprint_in is exact: it equals a column-by-column scan of the
 	-- hard protection over 7 x 7 rectangles walked outward from every start
-	-- town, capital, apex socket and functional column in eight directions,
+	-- town, capital and functional column in eight directions,
 	-- across the footprint's edge.
 	local landmark_columns = {}
 	for _, row in ipairs(W.roster.rows) do
@@ -856,12 +856,8 @@ if seed ~= "none" then
 	end
 	local town_centres = {}
 	for _, row in ipairs(source.hard_protection) do
-		if row.recipe_id == "hard_apex_socket_column_v1" then
-			landmark_columns[#landmark_columns + 1] = {x = row.center.x, z = row.center.z}
-		else
-			town_centres[#town_centres + 1] = {x = row.center.x, z = row.center.z,
-				reach = row.recipe_id == "hard_capital_city_v1" and 276 or 86}
-		end
+		town_centres[#town_centres + 1] = {x = row.center.x, z = row.center.z,
+			reach = row.recipe_id == "hard_capital_city_v1" and 276 or 86}
 	end
 	do
 		local function brute(min_x, min_z, max_x, max_z)

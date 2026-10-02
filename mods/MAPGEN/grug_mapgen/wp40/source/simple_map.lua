@@ -354,23 +354,6 @@ source.rare_patrol_offsets = {}
 for route = 1, 10 do
 	source.rare_patrol_offsets[route] = {point(-48,-24),point(16,40),point(56,-16)}
 end
-source.apex_sockets = {}
-local socket_offsets = {
-	{-80,-60},{-30,-80},{30,-80},{80,-60},{-90,0},{90,0},
-	{-80,60},{-30,80},{30,80},{80,60},{-45,0},{45,0},
-}
-local gem_species = {"citrine","garnet","jade","diamond","sapphire","ruby"}
-for _, anchor_index in ipairs({89,90}) do
-	local anchor = source.anchors[anchor_index]
-	for offset_index = 1, #socket_offsets do
-		local offset = socket_offsets[offset_index]
-		source.apex_sockets[#source.apex_sockets+1] = {
-			id=anchor.id..(":socket_%02d"):format(offset_index),anchor_id=anchor.id,
-			species=gem_species[math.floor((offset_index-1)/2)+1],
-			offset=point(offset[1],offset[2]),
-		}
-	end
-end
 
 source.relief_profiles = {
 	{id="wetland_delta",min_above_water=2,max_above_water=24,
@@ -461,14 +444,13 @@ source.anchor_profiles = {
 -- Vertically (Round 24 ruling 30) every hard footprint is protected from
 -- `depth_below_placement` nodes below its placement height upward, without
 -- an upper limit. The placement height is the final surface y at the
--- footprint's centre column (the anchor for a capital or start town, the
--- socket column itself for an apex socket); `height.lua` publishes it as
--- `surface_y` and the resulting `y_min` with each hard record.
+-- footprint's centre column (the anchor of the capital or start town);
+-- `height.lua` publishes it as `surface_y` and the resulting `y_min` with each
+-- hard record.
 source.protection_depth_below_placement = 100
 source.hard_protection_recipes = {
 	{id="hard_capital_city_v1",shape="capital_city_outline",footprint_policy_id="capital_city_outline_v1",bound_width=532,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
 	{id="hard_start_town_v1",shape="start_town_outline",footprint_policy_id="start_town_outline_v1",pad_width=128,band=12,bound_width=152,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
-	{id="hard_apex_socket_column_v1",shape="exact_column",footprint_policy_id="exact_column_v1",column_count=1,y_policy_id="placement_minus_depth_upward_to_world_top",depth_below_placement=source.protection_depth_below_placement,upward_unbounded=true},
 }
 
 source.hard_protection = {}
@@ -479,22 +461,6 @@ for anchor_index = 1, 12 do
 		recipe_id=anchor.slot_id == "capital" and
 			"hard_capital_city_v1" or "hard_start_town_v1",
 		center=point(anchor.position.x,anchor.position.z),active=true,
-		activation_owner="WP40",status="active",
-	}
-end
-local anchor_by_id = {}
-for anchor_index = 1, #source.anchors do
-	anchor_by_id[source.anchors[anchor_index].id] = source.anchors[anchor_index]
-end
-for socket_index = 1, #source.apex_sockets do
-	local socket = source.apex_sockets[socket_index]
-	local anchor = anchor_by_id[socket.anchor_id]
-	source.hard_protection[#source.hard_protection+1] = {
-		id="hard:"..socket.id,source_anchor_id=anchor.id,
-		socket_id=socket.id,resource_key=socket.species,
-		recipe_id="hard_apex_socket_column_v1",
-		center=point(anchor.position.x+socket.offset.x,
-			anchor.position.z+socket.offset.z),active=true,
 		activation_owner="WP40",status="active",
 	}
 end
@@ -549,14 +515,5 @@ for hard_index = 1, #source.hard_protection do
 		recipe_id="exclude_active_core_v1",source_id=hard.id,
 		coverage="exact_active_hard_footprint"})
 end
-
-source.region_resources = {
-	{race_region="dwarf",g1="garnet",g2="sapphire",cultural="runeslate",signature_wood="mountain_pine"},
-	{race_region="human",g1="citrine",g2="diamond",cultural="sunwax",signature_wood="oak"},
-	{race_region="elf",g1="jade",g2="sapphire",cultural="moonresin",signature_wood="silverwood"},
-	{race_region="undead",g1="citrine",g2="ruby",cultural="gravesalt",signature_wood="gravewood"},
-	{race_region="orc",g1="garnet",g2="diamond",cultural="red_ochre",signature_wood="spikethorn_acacia"},
-	{race_region="troll",g1="jade",g2="ruby",cultural="spirit_resin",signature_wood="kapok"},
-}
 
 return source

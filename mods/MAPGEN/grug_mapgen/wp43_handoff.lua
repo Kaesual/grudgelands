@@ -101,8 +101,7 @@ end
 
 local function project_density(density)
 	local result = {
-		g1 = copy_graph(density.g1),
-		g2 = copy_graph(density.g2),
+		gem = copy_graph(density.gem),
 		abyssal_crystal = copy_graph(density.abyssal_crystal),
 		deep_bands = {},
 	}
@@ -137,7 +136,6 @@ local PUBLIC_SYMBOL_TYPES = {
 	PROCESSED_MATERIALS = "table",
 	PROCESSED_BY_KEY = "table",
 	processed = "function",
-	GEM_GRADES = "table",
 	CULTURAL_MATERIALS = "table",
 	SIGNATURE_WOODS = "table",
 	RACE_REGIONS = "table",
@@ -177,18 +175,11 @@ function handoff.project(materials)
 		natural_ground_nodes = copy_array(materials.NATURAL_GROUND_NODES),
 		resources = copy_graph(materials.RESOURCES),
 		processed_materials = copy_graph(materials.PROCESSED_MATERIALS),
-		gem_grades = {},
 		cultural_materials = sorted_rows(materials.CULTURAL_MATERIALS),
 		signature_woods = sorted_rows(materials.SIGNATURE_WOODS),
 		race_regions = sorted_rows(materials.RACE_REGIONS),
 		density = project_density(materials.DENSITY),
 	}
-	for _, grade in ipairs(sorted_keys(materials.GEM_GRADES)) do
-		projection.gem_grades[#projection.gem_grades + 1] = {
-			grade = grade,
-			resources = copy_array(materials.GEM_GRADES[grade]),
-		}
-	end
 	return projection
 end
 

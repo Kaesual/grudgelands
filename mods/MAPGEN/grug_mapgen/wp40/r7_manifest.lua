@@ -486,7 +486,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.decoded_templates ~=
 				"172726bfb439774d50dded5d98c807712599b8a23a79669ce8e7ec63dabf17cb" or
 			frozen.wp43_projection ~=
-				"f1bba63f699c3fd0c6ed419b3172e9289023b3e1fbd83c887ea2d1956fedd864" or
+				"a47e73fe75fa8de8f5496713d677f0e91007aa1415f4c2af5fd31951accc62bf" or
 			frozen.cultural ~=
 				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
 			frozen.consumer_payload ~=
