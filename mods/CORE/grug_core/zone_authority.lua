@@ -414,8 +414,44 @@ function grug_core.surface_level_at(x, z)
 	return installed().compatibility.surface_level_at(x, z)
 end
 
+-- One level truth for gameplay (Round 28 Lane S1): a runtime overlay may
+-- replace the SURFACE level of a column (y >= 0), the level of a zone's spawn
+-- regions. The analytic field (grug_zones.mob_level_at and
+-- surface_mob_level_at) stays the mapgen's own and is never overlaid; the
+-- mapgen reads its private session and never calls these adapters. Below
+-- y = 0 the field's depth term applies unchanged.
+local level_overlay
+
+function grug_core.register_level_overlay(fn)
+	if level_overlay then
+		fail("a level overlay is registered already")
+	end
+	if type(fn) ~= "function" then
+		fail("level overlay must be a function (x, z) -> level or nil")
+	end
+	level_overlay = fn
+end
+
 function grug_core.mob_level_at(pos)
+	if level_overlay and pos.y >= 0 then
+		local level = level_overlay(pos.x, pos.z)
+		if level then
+			return level
+		end
+	end
 	return installed().compatibility.mob_level_at(pos)
+end
+
+-- The surface level of a column as gameplay sees it: the overlay's, else
+-- the zone field's.
+function grug_core.surface_mob_level_at(x, z)
+	if level_overlay then
+		local level = level_overlay(x, z)
+		if level then
+			return level
+		end
+	end
+	return installed().surface_mob_level_at(x, z)
 end
 
 function grug_core.guard_level_at(pos)

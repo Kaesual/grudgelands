@@ -3,8 +3,5 @@
   "palette": {
     "families": ["jungle", "rift_spawn", "war"],
     "lookalikes": {"cat": "grug_mobs:panther", "skeleton_archer": "grug_mobs:skeleton_raider", "spider": "grug_mobs:jungle_spider"}
-  },
-  "critters": [],
-  "areas": [],
-  "leaders": []
+  }
 }

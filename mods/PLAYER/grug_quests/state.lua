@@ -321,7 +321,8 @@ function Q.turn_in(player, id)
 end
 -- Does this mob count for a kill objective or quest drop? The entity name is
 -- the role; an area limit is matched by the area tag the mob spawned with
--- (`_grug_area`, B1), never by where it died. Leaders carry no area.
+-- (`_grug_area` = "<zone>/<kind or camp>", spawn_regions.lua), never by
+-- where it died. Leaders carry no area.
 local function mob_counts(target, mob, pos)
 	if target.area and mob._grug_area ~= target.area then return false end
 	if target.zone and grug_zones.id_at(pos.x, pos.z) ~= target.zone then return false end

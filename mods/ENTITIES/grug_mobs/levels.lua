@@ -216,12 +216,22 @@ grug_mobs.nearest_player_d2 = nearest_player_d2
 -- Applies the derived stats to the live entity. `keep_fraction` preserves
 -- the current HP percentage (tier promotion of a wounded mob); otherwise
 -- the mob ends up at full HP.
+-- The derived stats of a live mob: its level and tier, and a definition's
+-- HP factor on top (named leaders, subtypes.lua grug_mobs.LEADER_HP).
+local function derived_stats(self)
+	local hp, damage, xp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	local cfg = level_cfg[self.name]
+	if cfg and cfg.hp_scale then
+		hp = math.floor(hp * cfg.hp_scale + 0.5)
+	end
+	return hp, damage, xp
+end
+
 local function apply_stats(self, keep_fraction)
 	if not self.object then
 		return
 	end
-	local hp, damage, xp = grug_mobs.stats_for(
-		self._grug_level or 1, self._grug_tier)
+	local hp, damage, xp = derived_stats(self)
 	local fraction = 1
 	if keep_fraction then
 		local old_max = self.hp_max
@@ -341,9 +351,10 @@ local function resolve_level(self, cfg, tier)
 		return t.level
 	end
 	if self._grug_spawn_level then
-		-- Round 28 rulings 34 and 38: a spawn area or a named leader hands
-		-- the mob its fixed level before the first tick (spawn_areas.lua). It
-		-- replaces the level field, the def's floor and the source cap.
+		-- Round 28 rulings 34 and 38: a spawn region, a recipe camp or a
+		-- named leader hands the mob its level before the first tick
+		-- (spawn_regions.lua). It replaces the level field, the def's floor
+		-- and the source cap.
 		return math.max(1, self._grug_spawn_level)
 	end
 	if cfg.fixed then
@@ -358,7 +369,9 @@ local function resolve_level(self, cfg, tier)
 		if cfg.source == "guard" then
 			level = grug_zones.guard_level_at(pos)
 		else
-			level = grug_zones.mob_level_at(pos)
+			-- The gameplay level: a zone's spawn regions where it has a
+			-- recipe, else the zone field (grug_core level overlay).
+			level = grug_core.mob_level_at(pos)
 		end
 	end
 	-- The field has no value here (open water surface, ocean for guards):
@@ -382,6 +395,7 @@ function grug_mobs.register_level_cfg(name, def)
 		fixed = def._grug_fixed_level,
 		tier = tier,
 		xp_override = def._grug_xp_reward,
+		hp_scale = def._grug_hp_scale,
 		-- A sub-type's tier is authored data (subtypes.lua, Round 28 ruling
 		-- 35): no spawn roll a base family carries may promote it.
 		authored = def._grug_authored_tier == true,
@@ -423,7 +437,7 @@ end
 -- mob stays wounded across a reload.
 --
 local function reassert_max(self)
-	local hp, damage = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
+	local hp, damage = derived_stats(self)
 	-- Startup settings also apply after a current-world entity reactivation.
 	self.damage = damage
 	if self.hp_max == hp and self.hp_min == hp then
@@ -529,7 +543,7 @@ function grug_mobs.set_tier(ent, tier)
 end
 
 -- Round 28 rulings 34 and 38: give a live mob a new level, tier untouched
--- (spawn_areas.lua hands an area's or leader's fixed level). Before the
+-- (spawn_regions.lua hands a region's, camp's or leader's level). Before the
 -- first tick only the field is written and ensure_init applies it; a mob
 -- that already levelled (families with a composed look level during
 -- activation) gets its stats re-derived at the same wounded fraction, its

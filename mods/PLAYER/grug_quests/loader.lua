@@ -144,7 +144,8 @@ local function register_quests(files)
 	for _, id in ipairs(ids) do visit(id) end
 end
 
--- What validate.lua's world checks ask, from the spawn areas (B1), the
+-- What validate.lua's world checks ask, from the spawn recipes (an area a
+-- quest names is a kind or a camp of its zone's recipe, Lane S1), the
 -- sub-type catalogue (B2) and the registries.
 local function read_json(path)
 	local handle = io.open(path, "r")
@@ -155,7 +156,7 @@ local function read_json(path)
 end
 
 local function world_view()
-	local areas = grug_mobs.spawn_areas
+	local areas = grug_mobs.spawn_regions
 	local mobs_data = core.get_modpath("grug_mobs") .. "/data"
 	local catalogue = read_json(mobs_data .. "/subtypes.json")
 	if type(catalogue) == "table" and not catalogue[1] then catalogue = catalogue.subtypes end
@@ -182,11 +183,8 @@ local function world_view()
 		zone_areas = function(zone)
 			if zone_cache[zone] then return zone_cache[zone] end
 			local out = {}
-			if areas.zone_has_areas(zone) then
-				local data = read_json(mobs_data .. "/zones/" .. zone .. ".spawns.json")
-				for _, row in ipairs(type(data) == "table" and data.areas or {}) do
-					out[#out + 1] = type(row) == "table" and area(zone, row.id) or nil
-				end
+			for _, id in ipairs(areas.zone_area_ids(zone)) do
+				out[#out + 1] = area(zone, id)
 			end
 			zone_cache[zone] = out
 			return out

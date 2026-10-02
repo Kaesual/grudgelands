@@ -1,10 +1,77 @@
 {
   "zone": "elandor_dawnmere_fields",
-  "palette": {
-    "families": ["fox", "giant_rat", "settled", "wild_turkey"],
-    "boar": "grug_mobs:boar"
-  },
-  "critters": ["rabbit", "wild_turkey"],
-  "areas": [],
-  "leaders": []
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_goldmead_vale"},
+    "belts": [
+      {
+        "id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+        "kinds": {
+          "open": {"id": "home_fields", "name": "Dawnmere Home Fields",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l3_4", "share": 30, "levels": [3, 4],
+        "kinds": {
+          "open": {"id": "meadows", "name": "Dawnmere Meadows",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal"},
+          "shore": {"id": "strand", "name": "Dawnmere Strand",
+            "day": [{"role": "quiet_shore_crab", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "copse", "name": "Dawnmere Copse",
+            "day": [{"role": "small_boar", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "reedbeds", "name": "Dawnmere Reedbeds",
+            "day": "open",
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l5_7", "share": 30, "levels": [5, 7],
+        "kinds": {
+          "open": {"id": "pastures", "name": "Dawnmere Pastures",
+            "day": [{"role": "small_fox", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal"},
+          "shore": {"id": "tideflats", "name": "Dawnmere Tideflats",
+            "day": [{"role": "quiet_shore_crab", "weight": 3}, {"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "foxwood", "name": "Dawnmere Foxwood",
+            "day": [{"role": "small_fox", "weight": 1}],
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "marsh", "name": "Dawnmere Marsh",
+            "day": "open",
+            "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "sparse"}
+        }
+      },
+      {
+        "id": "l8_10", "share": 30, "levels": [8, 10],
+        "kinds": {
+          "open": {"id": "borderlands", "name": "Dawnmere Borderlands",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "monstrous_rat", "weight": 1}], "density": "normal"},
+          "shore": {"id": "wreck_coast", "name": "Dawnmere Wreck Coast",
+            "day": [{"role": "giant_crab", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "dense"},
+          "forest": {"id": "darkwood", "name": "Dawnmere Darkwood",
+            "day": [{"role": "aggressive_boar", "weight": 1}],
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "normal"},
+          "swamp": {"id": "fen", "name": "Dawnmere Fen",
+            "day": "open",
+            "night": [{"role": "drowned_zombie", "weight": 1}], "density": "sparse"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "bandit_camp", "name": "Dawnmere Bandit Camp", "belt": "l8_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "confused_bandit_chief", "at": {"camp": "bandit_camp"}, "respawn": 300}
+    ],
+    "critters": ["rabbit", "wild_turkey"]
+  }
 }

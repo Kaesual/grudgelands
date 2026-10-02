@@ -2,8 +2,5 @@
   "zone": "elandor_stormvault_heights",
   "palette": {
     "families": ["frost_stray", "goblin_raid", "ibex", "mountain", "snow_leopard"]
-  },
-  "critters": ["gull"],
-  "areas": [],
-  "leaders": []
+  }
 }

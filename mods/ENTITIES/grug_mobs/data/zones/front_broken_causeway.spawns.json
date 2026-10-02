@@ -3,8 +3,5 @@
   "palette": {
     "families": ["bog_witch", "war", "war_construct", "wisp"],
     "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider"}
-  },
-  "critters": ["gull"],
-  "areas": [],
-  "leaders": []
+  }
 }

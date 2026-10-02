@@ -15,6 +15,8 @@
 --             water_class_at, terrain_height_at),
 --   wp40      the fields base.lua reads from grug_mapgen.wp40
 --             (road_polylines, river_polylines, water_layout_text),
+--   planner_source  the planner column source (column_values_at), as
+--             grug_mapgen.wp40.planner_source,
 --   session, seconds = {capitals, world}.
 return function(repo, seed)
 	seed = tostring(seed)
@@ -127,6 +129,7 @@ return function(repo, seed)
 		road_polylines = roads.module.polylines(roads.module.deserialize(roads.cache.text)),
 	}
 	return {zones = zones, wp40 = wp40, session = session, source = source,
+		planner_source = planner_source,
 		height = planning_session, road_module = roads.module,
 		road_layout = roads.module.deserialize(roads.cache.text),
 		layouts = layouts, capital_shapes = protection_holder.shapes,
