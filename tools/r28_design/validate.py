@@ -1463,7 +1463,18 @@ def _mutations():
         d["recipe"]["from"] = {"anchor": ["start", "anchor_002"]}
 
     def from_anchor_and_border(d):
+        # A capital's entry (Round 28 W1): the city and a border, both sources.
         d["recipe"]["from"] = {"anchor": "start", "border": "elandor_goldmead_vale"}
+        d["recipe"]["to"] = {"core": True}
+
+    def from_anchor_and_exit_border(d):
+        d["recipe"]["from"] = {"anchor": "start", "border": "elandor_goldmead_vale"}
+
+    def from_anchor_and_unknown_border(d):
+        d["recipe"]["from"] = {"anchor": "start", "border": "elandor_nowhere"}
+
+    def from_empty(d):
+        d["recipe"]["from"] = {}
 
     def from_border_unknown(d):
         d["recipe"]["from"] = {"border": "elandor_nowhere"}
@@ -1613,7 +1624,10 @@ def _mutations():
         ("non-critter in critters", S, critter_list, "E-critter"),
         ("from by border, to the core", S, from_border_core, None),
         ("from a list of anchors", S, from_anchor_list, None),
-        ("from names an anchor and a border", S, from_anchor_and_border, "E-recipe"),
+        ("from names an anchor and a border (both sources)", S, from_anchor_and_border, None),
+        ("from anchor and border, the border is the exit", S, from_anchor_and_exit_border, "E-recipe-ref"),
+        ("from anchor and a border not in the atlas", S, from_anchor_and_unknown_border, "E-unknown-zone"),
+        ("from names neither an anchor nor a border", S, from_empty, "E-recipe"),
         ("from border zone not in the atlas", S, from_border_unknown, "E-unknown-zone"),
         ("entry border is the exit border", S, entry_is_exit, "E-recipe-ref"),
         ("to core not true", S, core_not_true, "E-recipe"),

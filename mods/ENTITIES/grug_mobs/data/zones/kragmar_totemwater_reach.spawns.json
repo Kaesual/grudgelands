@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_totemwater_reach",
   "recipe": {
-    "from": {"border": ["kragmar_kezamba", "kragmar_raincall_basin"]},
+    "from": {"border": ["kragmar_kapok_cradle", "kragmar_kezamba", "kragmar_raincall_basin"]},
     "to": {"border": "kragmar_thunderroot_wilds"},
     "belts": [
       {

@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_gor_drazhak",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "kragmar_redtusk_savanna"},
     "to": {"border": "kragmar_bannerbreak_mesa"},
     "belts": [
       {

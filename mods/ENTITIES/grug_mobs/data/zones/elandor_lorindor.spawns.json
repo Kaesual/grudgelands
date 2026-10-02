@@ -1,8 +1,8 @@
 {
   "zone": "elandor_lorindor",
   "recipe": {
-    "from": {"border": ["elandor_lethariel", "elandor_starbough_vale"]},
-    "to": {"border": ["elandor_glassroot_wilds", "elandor_ashenward_march"]},
+    "from": {"border": ["elandor_goldmead_vale", "elandor_highcourt", "elandor_lethariel", "elandor_starbough_vale"]},
+    "to": {"border": ["elandor_ashenward_march", "elandor_glassroot_wilds"]},
     "belts": [
       {
         "id": "l21_23", "share": 30, "levels": [21, 23],

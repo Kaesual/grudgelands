@@ -716,7 +716,7 @@ give it mixed silhouettes. Wisp blink destinations must have two open nodes.
 |-----|------|-------|--------------------|-------|---------------|
 | Goblin Raider / Slinger / Raider Hound | group raid, leashless; Slinger dogshoots the Golem stone; hound rushes | night | Copperfell, Frostbarrow, Stormvault, Speargrass, Bannerbreak | linen scrap; purse or arrows; hound meat | goblins goblin + gobdog, CC BY-SA 3.0 |
 | Snow Leopard | stalks (silent approach, pounce) | night | Frostbarrow, Stormvault, Wyrmglass | panther table | animalworld Snowleopard mesh and original skin, MIT |
-| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Broken Causeway, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
+| Wisp | flying melee; blinks up to 2.5 m toward a distant target every 4 s | night | Whitebridge, Ashenward, Lorindor, Moonfall, Glassroot, Mournfen, Whispering Reedlands, Totemwater | none | VoxeLibre vex, GPLv3 model / CC BY-SA 4.0 texture |
 | Ashen Treant / Gravewood Treant | roots aura: 30% slow inside 3 m, refreshed once/s | night | Ashenward / Ossuary and Blackwind | sticks; apple 1/4 | mobs_monster tree monster, WTFPL, two runtime tints |
 
 Bog Witch is deferred from this wave. The pinned VoxeLibre witch mesh has
@@ -842,7 +842,7 @@ rolls ride on WP5's item/enchantment tables.
 | Dustwing | Vulture | Bannerbreak Mesa | 38 |
 | Emerald Coil | Serpent | Stormscale Summit approach | 60 |
 | Ashmaw | Boar (plague) | Redtusk Savanna | 12 |
-| Captain Bonerattle (×2) | Skeleton Raider | The Broken Causeway (36) / The Shattered Line (46) | zone |
+| Captain Bonerattle (×2) | Skeleton Raider | The Broken Causeway / The Shattered Line (41–50: the spawn region's level at the spot) | zone |
 
 ## 4. Spawn parameter table
 

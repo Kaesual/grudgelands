@@ -68,11 +68,12 @@ per zone.
   faction**. The own capital and the own race's heartland zone are the
   natural first stops; travel quests lead on to the sister races' zones.
   Mounts (from level 15) make the longer routes reasonable.
-- **31–40, four zones:** the faction's three contested zones and The Broken
-  Causeway (shared by both factions). Each offers roughly 30–40 % of the
-  band; a player uses about three of them.
-- **41–60, shared front:** The Shattered Line (41–50), Gravesalt Escarpment
-  and The Skyglass Canopy (51–60; the user, 2026-10-02), for both factions. Quest givers sit in
+- **31–40, three zones:** the faction's three contested zones. Each offers
+  roughly 30–40 % of the band; a player uses all three (the user,
+  2026-10-02: The Broken Causeway moved to 41–50).
+- **41–60, shared front:** The Broken Causeway and The Shattered Line
+  (41–50), Gravesalt Escarpment and The Skyglass Canopy (51–60; the user,
+  2026-10-02), for both factions. Quest givers sit in
   the 31–40 outposts and the capitals (Ruling 43); each 31–40 outpost giver
   and one quest giver per capital reserve one of their two lines, named
   `front`, for the front lane; the front lane writes those quests into

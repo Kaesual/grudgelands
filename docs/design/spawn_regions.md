@@ -39,7 +39,7 @@ table order.
    28 ruling 2), and on protected ground; its distance to the nearest road.
 2. **Progress.** Graph distances over the land cells (eight neighbours, so a
    bay is no shortcut) from the recipe's sources (`d_from`: the cells of its
-   `from` anchors, or its land cells bordering the `from` zones) and to the
+   `from` anchors and its land cells bordering the `from` zones) and to the
    land cells bordering its `to` zones (`d_to`); progress = d_from ÷ (d_from
    + d_to): 0 at the entry, 1 at the exit. With `to` core, progress is the
    rank of d_from alone (d_from ÷ the largest d_from), so the cells farthest
@@ -162,12 +162,16 @@ mapgen.
 ```
 
 - `from`: `{"anchor": <slot or anchor id>}` (or a list: every anchor is a
-  source) or `{"border": <zone id or list>}`: the zone's land cells bordering
+  source), `{"border": <zone id or list>}`: the zone's land cells bordering
   those zones are the sources, so levels in a home zone rise from where the
-  player enters (Round 28 S2). `to`: `{"border": <zone id or list>}`, the
-  exit, or `{"core": true}`: the cells farthest from every source are the
-  top belt (front zones entered from both factions' sides, harder toward the
-  middle). An entry border cannot also be the exit. A recipe with exactly
+  player enters (Round 28 S2), or both, `{"anchor": …, "border": …}`: the
+  anchors' cells and the border cells are all sources (a capital zone: the
+  city and the border with its race's home zone, Round 28 W1). `to`:
+  `{"border": <zone id or list>}`, the exit, or `{"core": true}`: the cells
+  farthest from every source are the top belt (a zone with no higher
+  neighbour: Gravesalt Escarpment and The Skyglass Canopy, harder toward their
+  middle). Which borders are entry and exit follows the border rule below. An
+  entry border cannot also be the exit. A recipe with exactly
   one belt may omit `to` (islands: L60 throughout) and then also `from`.
 - `belts`: shares in percent adding up to 100; `levels` inside the zone's
   band; optional `max_from`; `kinds` keyed by type, `open` required.
@@ -197,6 +201,35 @@ mapgen.
   level is fixed (ruling 38) and the same on every seed: its camp's stated
   belt, or its kind's belt.
 - `critters`: ambient critters that keep their ABM rows in the zone.
+
+## Entry and exit borders (the border rule)
+
+Every recipe's `from` and `to` follow one rule per zone kind (the user,
+2026-10-02, Round 28 W1), so that the levels on both sides of a zone border
+fit wherever a player crosses it, not only along the zone's own main route.
+A border is low (`from`, where players come in), high (`to`, where they move
+on) or neutral (no condition):
+
+| Zone kind | Low (`from`) | High (`to`) | Neutral |
+|---|---|---|---|
+| Start 1–10 | the start town | the border to the race's own home zone (11–20) | borders to heartlands |
+| Home 11–20 | the border to its race's start zone | the borders to its race's capital zone and to every adjacent heartland | — |
+| Capital 20–30 | the capital city and the border to its race's home zone | the borders to contested zones | borders to heartlands |
+| Heartland 21–30 | every border to the faction's capital and home (11–20) zones, and to a start zone | the borders to contested zones (or a front zone) | other heartlands |
+| Contested 31–40 | every border to the faction's 20–30 zones | the borders to front zones | other contested zones |
+| Front 41–60 | every border to a lower-band neighbour | the borders to higher-band neighbours; none: the core | same-band fronts |
+| Dragon islands | one belt, no `from` / `to` | | |
+
+So The Broken Causeway and The Shattered Line (41–50) rise from their
+contested borders toward Gravesalt Escarpment and The Skyglass Canopy (51–60),
+which rise from their lower neighbours to their core; the Causeway | Shattered
+Line border is neutral. A start zone's border to a heartland is a forced gap
+(10 → 21): neutral on the start side, low on the heartland side, so a player
+crossing from the start zone meets the heartland's lowest levels. The rule
+names the neighbours of the zone atlas (seed 42); a contact another seed
+creates is neutral. `tools/r28_world/border_rule.py` derives every zone's
+`from` / `to` from the atlas (`--apply` writes them into the recipes) and
+`tools/r28_world/run.sh` draws the level fit across every border.
 
 ## Quests
 
@@ -259,3 +292,23 @@ prefix, first word only unless that word has three letters or fewer:
 once and renders every listed zone on it; up to eight processes (and
 renders) run at once. Three zones on two seeds take about 25 s. Dawnmere:
 `docs/planning/round28/regions/dawnmere/`.
+
+Kill quests per seed: `tools/r28_regions/quest_targets.py` (run by
+`run.sh` at its end) reads every quest file, the recipes and the region
+stats of each seed and lists every kill objective without an area whose
+targets are in its zone's recipe but form no region on some seed (the quest
+has no targets there; the run fails), apart from the accepted ones whose
+targets the recipe never spawns (the game's `W-recipe-target` warning).
+
+`tools/r28_world/run.sh [--seeds "SEED ..."] [--out ROOT] [--variants "A [B]"]
+[--before REF]` draws the whole mainland per seed (default 42, 7, 2026; ROOT
+`docs/planning/round28/world`): every land cell coloured by its region's
+level, each zone border coloured by the level fit across it (the gap between
+the two regions' level ranges: green ≤ 1, yellow 2–5, red > 5, magenta where
+the two zones' bands lie more than 5 apart), one image and stats file per
+variant (`<variant>_seed_<s>`: `current` or `final` for this tree's recipes,
+`proposed` for the copies `tools/r28_world/border_rule.py` writes by the
+border rule, `before` for the tree of a git commit), two variants side by
+side (`compare_seed_<s>`), and `border_rule.md` (every zone's `from` / `to`,
+as shipped and by the rule). Shipped today: `before_seed_<s>` (main
+`38e1da4b`, before the rule), `final_seed_<s>` and `compare_seed_<s>`.

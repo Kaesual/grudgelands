@@ -158,11 +158,11 @@ T3 uses `toll_bandit`/`toll_bandit_archer` and `debtbound_zombie`/
 ordinary L21–25 source of **both** families: L20 yields T2, and the later
 archer must not be the first talisman source. T4 uses `entrenched_bandit`/
 archer and `marching_zombie`/`unrelenting_zombie`, or matching husks.
-Causeway also has the pair, but cannot substitute for a missing race's
-contested supply in `W-loot-track`.
 
 **T5, both factions:** Shattered Line has `siege_deserter`/archer and
-`siege_husk`/`unburied_husk`. **T6, both factions:** each of Gravesalt and
+`siege_husk`/`unburied_husk`; The Broken Causeway (41–50 since Round 28 W1)
+has `causeway_brigand`/`causeway_aqueduct_bowman` and
+`causeway_mire_husk`/`causeway_ford_zombie`. **T6, both factions:** each of Gravesalt and
 Skyglass has `saltroad_deserter`/`last_pay_archer` and `saltbound_zombie`/
 `last_watch_zombie` on blight ground, or their sunproof husk counterparts.
 Each pair supplies straps/talismans and flesh/teeth
@@ -221,7 +221,7 @@ Mortuary Clerk Hush therefore requires actual blight dirt at his fixed spot.
 | Blackwind | Grave-Broker Mute (37) | Hollowbell Treant |
 | Bannerbreak | Provisioner Rattle (37) | Banner-Eater |
 | Thunderroot | Bottle-Keeper Zek (39) | Storm-Bottle Witch |
-| Broken Causeway | Toll-Taker Senn (39) | Last-Toll Construct |
+| Broken Causeway | Toll-Taker Senn (49) | Last-Toll Construct |
 | Shattered Line | Standard-Bearer Ninepins (48) | Engine Nine |
 | Gravesalt | Watch-Captain Huskell (58) | Salt-Counter Witch |
 | Skyglass | Paymaster Chirr (58) | Glass-Throat Serpent |

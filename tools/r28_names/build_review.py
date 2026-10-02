@@ -122,10 +122,9 @@ class Data:
             return [k for k in z if z[k]["role"] in ("capital zone", "home zone 21-30")
                     and z[k]["race_track"] == track]
         if band == 4:
-            return [k for k in z if z[k]["role"].startswith("contested") and z[k]["race_track"] == track] \
-                + ["front_broken_causeway"]
+            return [k for k in z if z[k]["role"].startswith("contested") and z[k]["race_track"] == track]
         if band == 5:
-            return ["front_shattered_line"]
+            return ["front_broken_causeway", "front_shattered_line"]
         return ["front_gravesalt_escarpment", "front_skyglass_canopy"]
 
 
@@ -430,7 +429,7 @@ def stat_section(d, icons, bi):
     h.append('<p class="note">A tick means a sub-type of that drop family lives at this band&rsquo;s levels in '
              'the track&rsquo;s zones for the band (%s). Hover a tick for the mobs.%s</p>' % (
                  {1: "start zone", 2: "home zone", 3: "own capital and heartlands",
-                  4: "own contested zone and The Broken Causeway", 5: "The Shattered Line",
+                  4: "own contested zone", 5: "The Broken Causeway and The Shattered Line",
                   6: "Gravesalt Escarpment and The Skyglass Canopy"}[bi],
                  "" if not missing else " <strong>%d gaps.</strong>" % missing))
     fi = ench.get("family_input", {})

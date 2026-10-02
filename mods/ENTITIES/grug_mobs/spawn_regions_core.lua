@@ -23,8 +23,8 @@
 --      lake water (bank), inside the 16-node road/town/village drift band
 --      and on protected ground, and its distance to the nearest road.
 --   2. Progress: graph distances over the land cells (8 neighbours) from the
---      recipe's `from` (anchors, or the land border with the zones the
---      player enters from) and to its `to`; progress = d_from / (d_from +
+--      recipe's `from` (anchors, the land border with the zones the player
+--      enters from, or both) and to its `to`; progress = d_from / (d_from +
 --      d_to), or with `to` core the rank of d_from alone (the cells farthest
 --      from every source are the top belt). Cells cut off over land take the
 --      progress of the nearest reachable cell.
@@ -251,8 +251,9 @@ function M.parse_recipe(zone_id, recipe, ctx)
 	local band = ctx.band or {1, 60}
 	local out = {zone = zone_id, belts = {}, kinds = {}, kind_by_id = {},
 		camps = {}, camp_by_id = {}, leaders = {}, critters = {}}
-	-- from / to (Round 28 S2): `from` names anchors of the zone or the zones
-	-- whose land border is the entry; `to` the exit border or the zone's
+	-- from / to (Round 28 S2): `from` names anchors of the zone, the zones
+	-- whose land border is the entry, or both (a capital: the city and the
+	-- home zone's border, Round 28 W1); `to` the exit border or the zone's
 	-- core. A one-belt recipe has no progression and may omit `to` (and then
 	-- `from`).
 	local one_belt = type(recipe.belts) == "table" and #recipe.belts == 1
@@ -276,29 +277,31 @@ function M.parse_recipe(zone_id, recipe, ctx)
 			"(only a one-belt recipe may omit it)")
 	end
 	if from == nil and to ~= nil then
-		fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>} or " ..
-			"{\"border\": <zone id or list>}")
+		fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>}, " ..
+			"{\"border\": <zone id or list>} or both")
 	end
 	if from ~= nil then
-		if type(from) ~= "table" or (from.anchor == nil) == (from.border == nil) then
-			fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>} or " ..
-				"{\"border\": <zone id or list>}")
+		if type(from) ~= "table" or (from.anchor == nil and from.border == nil) then
+			fail(where .. " from", "needs {\"anchor\": <slot or anchor id, or a list>}, " ..
+				"{\"border\": <zone id or list>} or both")
 		end
 		known_keys(from, {anchor = true, border = true}, where .. " from")
+		out.from = {}
 		if from.anchor ~= nil then
 			local list = type(from.anchor) == "string" and {from.anchor} or from.anchor
 			if type(list) ~= "table" or #list == 0 then
 				fail(where .. " from", "anchor is a slot or anchor id, or a list of them")
 			end
-			out.from = {anchors = {}}
+			out.from.anchors = {}
 			for i = 1, #list do
 				if type(list[i]) ~= "string" or list[i] == "" then
 					fail(where .. " from", "anchor is a slot or anchor id, or a list of them")
 				end
 				out.from.anchors[i] = list[i]
 			end
-		else
-			out.from = {border = zone_ids(from.border, where .. " from")}
+		end
+		if from.border ~= nil then
+			out.from.border = zone_ids(from.border, where .. " from")
 		end
 	end
 	if to ~= nil then
@@ -1067,22 +1070,35 @@ function M.build(zone_id, q, recipe)
 	for _, c in ipairs(order) do
 		c.d_from, c.d_to = huge, huge
 	end
-	-- Sources (d_from = 0): the cells of the `from` anchors, or the land
-	-- cells bordering the `from` zones (where the player enters).
+	-- Sources (d_from = 0): the cells of the `from` anchors and the land
+	-- cells bordering the `from` zones (where the player enters); a capital
+	-- names both. A cell that is both counts once.
 	local sources, from_text = {}, "the zone"
-	if recipe.from and recipe.from.border then
-		sources = border_cells(recipe.from.border)
-		from_text = "the border with " .. table.concat(recipe.from.border, ", ")
-		if #sources == 0 then
-			error("[grug_mobs] spawn regions " .. zone_id .. ": no land border with " ..
-				table.concat(recipe.from.border, ", ") .. " (from)", 0)
+	if recipe.from then
+		local texts, seen_src = {}, {}
+		local function add_source(c)
+			if not seen_src[c] then
+				seen_src[c] = true
+				sources[#sources + 1] = c
+			end
 		end
-	elseif recipe.from then
-		from_text = table.concat(recipe.from.anchors, ", ")
-		for _, a in ipairs(from_anchors) do
-			sources[#sources + 1] = cells[key(floor(a.x / CELL), floor(a.z / CELL))] or
-				nearest_cell(a.x, a.z)
+		if recipe.from.anchors then
+			texts[#texts + 1] = table.concat(recipe.from.anchors, ", ")
+			for _, a in ipairs(from_anchors) do
+				add_source(cells[key(floor(a.x / CELL), floor(a.z / CELL))] or
+					nearest_cell(a.x, a.z))
+			end
 		end
+		if recipe.from.border then
+			local list = border_cells(recipe.from.border)
+			if #list == 0 then
+				error("[grug_mobs] spawn regions " .. zone_id .. ": no land border with " ..
+					table.concat(recipe.from.border, ", ") .. " (from)", 0)
+			end
+			for _, c in ipairs(list) do add_source(c) end
+			texts[#texts + 1] = "the border with " .. table.concat(recipe.from.border, ", ")
+		end
+		from_text = table.concat(texts, " and ")
 	end
 	map.from_cell = sources[1]
 	map.from_cells = sources

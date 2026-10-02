@@ -1,8 +1,8 @@
 {
   "zone": "front_shattered_line",
   "recipe": {
-    "from": {"border": ["elandor_ashenward_march", "elandor_glassroot_wilds", "front_broken_causeway", "kragmar_bannerbreak_mesa", "kragmar_thunderroot_wilds"]},
-    "to": {"core": true},
+    "from": {"border": ["elandor_ashenward_march", "elandor_glassroot_wilds", "kragmar_bannerbreak_mesa", "kragmar_thunderroot_wilds"]},
+    "to": {"border": "front_skyglass_canopy"},
     "belts": [
       {
         "id": "l41_43", "share": 30, "levels": [41, 43],

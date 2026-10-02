@@ -1,7 +1,7 @@
 {
   "zone": "elandor_moonfall_wood",
   "recipe": {
-    "from": {"border": ["elandor_lethariel", "elandor_starbough_vale"]},
+    "from": {"border": ["elandor_lethariel", "elandor_silverleaf_glades", "elandor_starbough_vale"]},
     "to": {"border": "elandor_glassroot_wilds"},
     "belts": [
       {

@@ -1,7 +1,7 @@
 {
   "zone": "elandor_dur_brannoc",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "elandor_copperfell_foothills"},
     "to": {"border": "elandor_stormvault_heights"},
     "belts": [
       {

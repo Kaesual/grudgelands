@@ -2,7 +2,7 @@
   "zone": "elandor_copperfell_foothills",
   "recipe": {
     "from": {"border": "elandor_hearthpine_vale"},
-    "to": {"border": "elandor_dur_brannoc"},
+    "to": {"border": ["elandor_dur_brannoc", "elandor_frostbarrow_shelf", "elandor_whitebridge_shire"]},
     "belts": [
       {
         "id": "l11_13", "share": 30, "levels": [11, 13],

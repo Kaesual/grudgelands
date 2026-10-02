@@ -375,8 +375,8 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
     atlas's `camps`; None: unknown, a camp site's POI is not checked).
     Returns (parsed, errors): parsed is None when the recipe is not an
     object, else {"zone", "from", "to", "belts", "kinds", "camps",
-    "leaders", "critters"}; "from" is {"anchor": [ids]} or {"border":
-    [zones]} or None, "to" {"border": [zones]} or {"core": True} or None; a
+    "leaders", "critters"}; "from" is {"anchor": [ids]}, {"border":
+    [zones]}, both or None, "to" {"border": [zones]} or {"core": True} or None; a
     kind is {"id", "name", "unit": "kind", "type", "belt", "density",
     "rosters": {"day", "night"}, "inherits", "levels_by_role", "roles",
     "levels"}, a camp the same with "unit": "camp", one roster for both
@@ -480,8 +480,9 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
     out = {"zone": zone, "from": None, "to": None, "belts": [], "kinds": [], "camps": [],
            "leaders": [], "critters": []}
     ids = {}  # kind and camp ids -> unit
-    # from / to (Round 28 S2): `from` names anchors of the zone or the zones
-    # whose land border is the entry; `to` the exit border or the zone's
+    # from / to (Round 28 S2): `from` names anchors of the zone, the zones
+    # whose land border is the entry, or both (a capital: the city and the
+    # home zone's border, Round 28 W1); `to` the exit border or the zone's
     # core. A one-belt recipe may omit `to` (and then `from`).
     def zone_list(value, path):
         value = [value] if isinstance(value, str) else value
@@ -502,23 +503,24 @@ def parse_recipe(zone, recipe, band=None, role_levels=None, is_leader=None, pois
         err("E-recipe", "to", "needs {\"border\": <zone id or list>} or {\"core\": true} (only a one-belt "
             "recipe may omit it)")
     if src is None and dst is not None:
-        err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>} or {\"border\": <zone id "
-            "or list>}")
+        err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>}, {\"border\": <zone id "
+            "or list>} or both")
     if src is not None:
-        if not isinstance(src, dict) or ("anchor" in src) == ("border" in src):
-            err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>} or {\"border\": "
-                "<zone id or list>}")
+        if not isinstance(src, dict) or ("anchor" not in src and "border" not in src):
+            err("E-recipe", "from", "needs {\"anchor\": <slot or anchor id, or a list>}, {\"border\": "
+                "<zone id or list>} or both")
         else:
             known(src, ("anchor", "border"), "from")
+            out["from"] = {}
             if "anchor" in src:
                 anchors = [src["anchor"]] if isinstance(src["anchor"], str) else src["anchor"]
                 if not isinstance(anchors, list) or not anchors or \
                         not all(isinstance(a, str) and a for a in anchors):
                     err("E-recipe", "from.anchor", "anchor is a slot or anchor id, or a list of them")
                 else:
-                    out["from"] = {"anchor": list(anchors)}
-            else:
-                out["from"] = {"border": zone_list(src["border"], "from.border")}
+                    out["from"]["anchor"] = list(anchors)
+            if "border" in src:
+                out["from"]["border"] = zone_list(src["border"], "from.border")
     if dst is not None:
         if not isinstance(dst, dict) or ("border" in dst) == ("core" in dst):
             err("E-recipe", "to", "needs {\"border\": <zone id or list>} or {\"core\": true}")

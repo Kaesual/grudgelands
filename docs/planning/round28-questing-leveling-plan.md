@@ -621,7 +621,7 @@ faces the Battlegrounds toward +z, the ocean is behind toward −z):
 
 After C2 approval, in parallel: the five other race tracks (start, home
 zone, capital zone, 21–30 zones), the six 31–40 contested zones (one per
-race, Stormvault … Thunderroot), and the front: The Broken Causeway (31–40,
+race, Stormvault … Thunderroot), and the front: The Broken Causeway (41–50 since 2026-10-02,
 shared), the 41–60 zones and the islands (quests from 31–40 outposts and
 capitals plus bounties). Each lane delivers its zone files and its part of
 the leveling ledger; a final consistency pass checks names, items and

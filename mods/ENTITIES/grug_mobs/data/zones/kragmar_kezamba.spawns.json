@@ -1,7 +1,7 @@
 {
   "zone": "kragmar_kezamba",
   "recipe": {
-    "from": {"anchor": "capital"},
+    "from": {"anchor": "capital", "border": "kragmar_raincall_basin"},
     "to": {"border": "kragmar_thunderroot_wilds"},
     "belts": [
       {

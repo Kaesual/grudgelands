@@ -485,7 +485,7 @@
       35
     ],
     "drops": "zombie",
-    "notes": "Night in the six contested zones and Broken Causeway outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
+    "notes": "Night in the six contested zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "unrelenting_zombie",
@@ -500,7 +500,7 @@
       40
     ],
     "drops": "zombie",
-    "notes": "Night in the six contested zones and Broken Causeway outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
+    "notes": "Night in the six contested zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains."
   },
   {
     "role": "saltbound_zombie",
@@ -664,7 +664,7 @@
       35
     ],
     "drops": "zombie",
-    "notes": "Both clocks at sun-dried corpse caches in the six contested zones and Broken Causeway, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+    "notes": "Both clocks at sun-dried corpse caches in the six contested zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
   },
   {
     "role": "unrelenting_husk",
@@ -679,7 +679,112 @@
       40
     ],
     "drops": "zombie",
-    "notes": "Both clocks at sun-dried corpse caches in the six contested zones and Broken Causeway, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+    "notes": "Both clocks at sun-dried corpse caches in the six contested zones, mandatory where daylight stat supply lacks blight-ground zombies. The Orc track retains husks in its ordinary fields too. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+  },
+  {
+    "role": "causeway_mire_husk",
+    "family": "zombie",
+    "base": "grug_mobs:sun_dried_husk",
+    "display": "Mire-Cured Husk",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "zombie",
+    "notes": "Both clocks in The Broken Causeway (41-50): the daylight undead of its floodmeadows and reedmire, cured in peat instead of sun. Sunproof attacking husk base; same zombie loot, no zombie night-truce promise."
+  },
+  {
+    "role": "causeway_ford_zombie",
+    "family": "zombie",
+    "base": "grug_mobs:zombie",
+    "display": "Fordwater Zombie",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "zombie",
+    "notes": "Night in The Broken Causeway (41-50): fords, reedmire and drowned mire, the dead of the collapsed crossings. Burns in sunlight unless spawned on actual blight dirt; undead night truce remains."
+  },
+  {
+    "role": "causeway_toll_skeleton",
+    "family": "skeleton",
+    "base": "grug_mobs:skeleton_raider",
+    "display": "Tollroad Skeleton",
+    "size": 1.0,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "skeleton",
+    "notes": "Night on The Broken Causeway's meadows and dikes (41-50), still guarding the old royal road. Arrows; does not burn in sunlight. Existing attack, no new effect."
+  },
+  {
+    "role": "causeway_brigand",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit",
+    "display": "Causeway Brigand",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "outlaw",
+    "notes": "Day in The Broken Causeway's alderwood and at its toll camp (41-50). Existing race skin from the factory. Melee; introduce before the Aqueduct Bowman."
+  },
+  {
+    "role": "causeway_aqueduct_bowman",
+    "family": "outlaw",
+    "base": "grug_mobs:bandit_archer",
+    "display": "Aqueduct Bowman",
+    "size": 1.05,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "outlaw",
+    "notes": "Day in The Broken Causeway's woods and heights and at its toll camp (41-50), shooting from the aqueduct arches. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
+  },
+  {
+    "role": "causeway_sinkmire_viper",
+    "family": "poison_small",
+    "base": "grug_mobs:viper",
+    "display": "Sinkmire Viper",
+    "size": 1.15,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "venomous",
+    "notes": "Both clocks in The Broken Causeway's swamp and fords (41-50). Existing viper attack and poison, no new effect."
+  },
+  {
+    "role": "causeway_fenrunner_wolf",
+    "family": "wolf",
+    "base": "grug_mobs:wolf",
+    "display": "Fenrunner Wolf",
+    "size": 1.1,
+    "disposition": "aggressive",
+    "tier": "normal",
+    "levels": [
+      41,
+      50
+    ],
+    "drops": "canid",
+    "notes": "Night in The Broken Causeway's woods and on its dikes (41-50), hunting the marsh edges. Existing wolf attack, no new effect."
   },
   {
     "role": "siege_husk",
@@ -882,7 +987,7 @@
       35
     ],
     "drops": "outlaw",
-    "notes": "Clock both at camps/hideouts in the six contested zones and Broken Causeway; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
+    "notes": "Clock both at camps/hideouts in the six contested zones; optional night roamers elsewhere. Existing race skin from the factory. Melee; introduce before the band archer."
   },
   {
     "role": "entrenched_bandit_archer",
@@ -897,7 +1002,7 @@
       40
     ],
     "drops": "outlaw",
-    "notes": "Clock both at camps/hideouts in the six contested zones and Broken Causeway; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
+    "notes": "Clock both at camps/hideouts in the six contested zones; optional night roamers elsewhere. Existing race skin from the factory. Ranged arrows; keep visible approach and sightlines."
   },
   {
     "role": "siege_deserter",
@@ -1527,7 +1632,7 @@
       40
     ],
     "drops": "wisp",
-    "notes": "Night; Ashenward, Glassroot, Causeway. Blink; open air."
+    "notes": "Night; Ashenward, Glassroot. Blink; open air."
   },
   {
     "role": "rootbound_treant",
@@ -1954,7 +2059,7 @@
       40
     ],
     "drops": "skeleton",
-    "notes": "Night; Ashenward, Blackwind, Bannerbreak and Causeway. Arrows; does not burn in sunlight. Existing attack, no new effect."
+    "notes": "Night; Ashenward, Blackwind and Bannerbreak. Arrows; does not burn in sunlight. Existing attack, no new effect."
   },
   {
     "role": "rime_skeleton_stray",
@@ -2029,7 +2134,7 @@
       40
     ],
     "drops": "witch",
-    "notes": "Night; Thunderroot and Causeway. Homing bottle with existing poison/slow; not an ordinary dodgeable arrow."
+    "notes": "Night; Thunderroot. Homing bottle with existing poison/slow; not an ordinary dodgeable arrow."
   },
   {
     "role": "salt_hex_witch",
@@ -2145,8 +2250,8 @@
     "disposition": "aggressive",
     "tier": "elite",
     "levels": [
-      31,
-      40
+      41,
+      50
     ],
     "drops": "stone",
     "notes": "Both clocks; Broken Causeway. Optional ambient elite, cap 1. Preserve telegraph. Not a mandatory solo material source or ten-kill filler."
@@ -2717,8 +2822,8 @@
     "disposition": "aggressive",
     "tier": "elite",
     "levels": [
-      40,
-      40
+      50,
+      50
     ],
     "drops": "stone",
     "notes": "Unique fixed spot in front_broken_causeway. Respawn 300 s. Optional Group climax; the solo route budget must work without it. Both clocks at the fixed spot. Zone lane positions the spot and seeds its name/problem in the line opener; no scripted world change.",
@@ -2973,8 +3078,8 @@
     "disposition": "aggressive",
     "tier": "normal",
     "levels": [
-      39,
-      39
+      49,
+      49
     ],
     "drops": "outlaw",
     "notes": "Unique fixed spot in front_broken_causeway. Respawn 300 s. Solo normal-tier climax, available both clocks. Isolate the pull from helpers; no elite or random promotion prerequisite. Duplicate bridge tolls end at the collector who charges for both halves.",

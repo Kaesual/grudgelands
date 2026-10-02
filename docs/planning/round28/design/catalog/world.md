@@ -113,8 +113,9 @@ permitted route. No universal stat ingredient relies on the other faction, anoth
 | Start | Each of the six starts, T1 | Small/Aggressive Boar; Large/Aggressive Rat, optionally Monstrous Rat; Small/Monstrous Crab; Braindead Zombie, Sluggish Zombie, Monstrous Drowned Zombie **or** the three start husks; Confused Bandit |
 | Home | Each of the six home zones, T2 | Rooting Boar/Ridgeback Tusker; Granary Rat/Burrow Gnawer; Tidepool Crab/Reefclaw Snapper; Cairn Zombie/Pauper Shambler **or** Cairn Sun-Dried Husk/Pauper Mummy; Roadside Bandit/Bandit Lookout |
 | Capital | Each capital outskirts, level 20–30 | Toll Bandit/Toll Bandit Archer; Debtbound Zombie/Tithe Revenant, or Debtbound Sun-Dried Husk/Tithe Mummy in daytime caches |
-| Contested | Each of the six faction contested zones and Causeway, T4 | Entrenched Bandit/Archer; Marching Zombie/Trench Shambler, or Marching Sun-Dried Husk/Trench Mummy in daytime caches |
+| Contested | Each of the six faction contested zones, T4 | Entrenched Bandit/Archer; Marching Zombie/Trench Shambler, or Marching Sun-Dried Husk/Trench Mummy in daytime caches |
 | Siege | Shattered Line, T5 | Siege Deserter/Archer; Siege-Worn Sun-Dried Husk/Unburied Mummy |
+| Causeway | Broken Causeway, T5 (41–50, Round 28 W1) | Causeway Brigand/Aqueduct Bowman; Mire-Cured Husk by day, Fordwater Zombie at night |
 | Last watch | Gravesalt and Skyglass, T6 | Saltroad Deserter/Last-Pay Archer; Saltbound Zombie/Last Watchman on blight ground, or Saltbound Sun-Dried Husk/Last-Watch Mummy |
 
 The rat areas in the home zones, the capital outskirts populations, and
@@ -157,7 +158,7 @@ even though that capital participates in the 20–30 journey.
 
 | Shared zone | Local cast beyond its supply package | Solo / optional Group climax |
 |---|---|---|
-| Broken Causeway | Skeleton Raider, Bog Witch, wisp, crow, optional War Construct | Toll-Taker Senn, L39 normal / Last-Toll, L40 elite |
+| Broken Causeway (41–50) | Tollroad Skeleton, Sinkmire Viper, Fenrunner Wolf, crow, optional War Construct | Toll-Taker Senn, L49 normal / Last-Toll, L50 elite |
 | Shattered Line | Hyena, tiger, scorpion, vulture, crow, Skeleton Raider, optional mesa golem/War Construct | Standard-Bearer Ninepins, L48 normal / Engine Nine, L50 elite |
 | Gravesalt Escarpment | Blightfang wolf, gaunt stag, plaguehide bear, bonelurker spider, bone weevil, witch, skeleton, crow; optional Reef Lurker | Watch-Captain Huskell, L58 normal / Salt-Counter, L59 elite |
 | Skyglass Canopy | Ape, serpent, panther, jungle spider, skeleton, crow; optional Reef Lurker | Paymaster Chirr, L58 normal / Glass-Throat, L59 elite |
