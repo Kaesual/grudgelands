@@ -211,7 +211,7 @@ local function character_content(player, context)
 	local home_text = home_button_text(player)
 	context.grug_home_text = home_text
 	if home_text then
-		fs[#fs + 1] = ("button[2.75,6.25;5.2,0.7;grug_character_home;%s]"):format(esc(home_text))
+		fs[#fs + 1] = ("button[2.75,6.25;5.55,0.7;grug_character_home;%s]"):format(esc(home_text))
 	end
 
 	local class_id = grug_classes.get_class(player)
@@ -416,7 +416,7 @@ local effects_elapsed = 0
 core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed + dtime
 	if effects_elapsed < 1 then return end
-	effects_elapsed = 0
+	effects_elapsed = effects_elapsed % 1
 	for _, player in ipairs(core.get_connected_players()) do
 		local context = sfinv.contexts[player:get_player_name()]
 		if context and context.page == CHARACTER_PAGE then

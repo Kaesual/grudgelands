@@ -845,7 +845,7 @@ do
 	sfinv.contexts.kay = ctx
 	home_left, home_pending, has_home = 0, false, true
 	sfinv.set_player_inventory_formspec(kay, ctx)
-	local button = "button[2.75,6.25;5.2,0.7;grug_character_home;"
+	local button = "button[2.75,6.25;5.55,0.7;grug_character_home;"
 	check(kay.form:find(button .. "Return home: Inn (Ready)]", 1, true),
 		"K the Stats tab shows Return home: Inn (Ready)")
 	local function second() character_step(1.0) end
