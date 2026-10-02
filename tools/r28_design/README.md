@@ -60,8 +60,9 @@ reference, and `r28common.parse_recipe` mirrors it. In short:
   min_player_distance, apart, site?}`. Kind and camp ids are unique in the
   zone. `site`: `"generate"` (default) or `{"poi": "bandit" | "mirefolk",
   "name"?: <POI name>}`: on a camp POI of the zone (the atlas `camps`);
-  then `belt` is optional (the POI's belt per seed) and `apart` not
-  allowed.
+  `belt` stays required (exact quest levels; the renderer's stats name the
+  belt the POI lies in per seed and warn when it is more than one belt
+  away) and `apart` is not allowed.
 - `leaders`: `{role, at: {"camp": id} | {"kind": id, "pick":
   "farthest_from_roads"}, respawn}`; the role is marked `"leader": true`
   in the catalogue, placed once, and stands at the top of its belt's levels
@@ -130,8 +131,7 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   `W-critter-area` (a critter in a roster), `E-required` (no recipe and no
   palette), `E-recipe-poi` (a camp site's POI: not bandit or mirefolk, a
   type or name the zone lacks with `--atlas`, two of the type unnamed, two
-  camps on one POI), `E-leader-camp-belt` (a leader at a camp on a POI
-  without `belt`: a leader's level is fixed); `E-unknown-anchor` /
+  camps on one POI); `E-unknown-anchor` /
   `E-unknown-zone` / `W-border-neighbour` check every `from` anchor and
   every `from`/`to` border zone with `--atlas`.
 - Level fit is **containment** (`E-level-fit`): every level a kill target or

@@ -83,13 +83,13 @@ table order.
    recipe that breaks this at load; `validate.py` reports `E-recipe-cover`.
 7. **Camps.** Camps on a POI come first: the centre is the POI's anchor
    (fitted per seed), the camp's region the zone's land cells within the
-   camp radius (40 nodes, box distance to the cell), its belt the one the
-   POI's cell lies in unless the camp states `belt`. The roles' levels are
-   cut to that belt and the camp cover rule is checked there; a roster that
-   misses the belt is logged as a problem and the camp (with its region) is
-   then missing on that seed. The belt may differ per seed (Goldmead's
-   bandit camp lies in L14–16 on seed 42, in L17–20 on seed 7): state
-   `belt` where that matters. Then the generated camps: candidates are
+   camp radius (40 nodes, box distance to the cell), its belt and levels
+   the camp's stated `belt` (checked at load like any camp's, so the camp
+   stands on every seed and its quest levels are exact). The belt the POI's
+   cell lies in differs per seed (Goldmead's bandit camp lies in L14–16 on
+   seed 42, in L17–20 on seed 7); the renderer's stats name it per camp and
+   add a WARNING when it lies more than one belt from the stated one (the
+   game logs the same). Then the generated camps: candidates are
    cells of the camp's belt whose 3 × 3 block is land of the zone, outside
    other camps, unprotected, outside the drift band, at least 48 nodes from
    roads, mean slope ≤ 0.35, and at least `apart` cells from the other camps
@@ -159,17 +159,16 @@ the mapgen.
   world model (the anchors whose template is `bandit_home`,
   `bandit_frontier` or `mirefolk`; their names are the settlement roster's
   labels, and the zone atlas lists them under `camps`). `name` is needed
-  only where the zone has two POIs of the type. On a POI `belt` is optional
-  (the POI's belt per seed) and `apart` is not allowed. A type the zone
-  lacks, a guard post (`outpost`: guards, no mob camp) and two camps on one
-  POI are load errors. In a recipe zone the POI's camp fire is scenery
-  (camps.lua), so the recipe camp is the POI's only population; with the
-  quest areas the static levels of a camp without `belt` are its roles'
-  levels within the zone band.
+  only where the zone has two POIs of the type. Every camp states its
+  `belt`, a camp on a POI too (the coordinator, 2026-10-02: exact quest
+  levels, never missing on a seed); `apart` is not allowed on a POI. A type
+  the zone lacks, a guard post (`outpost`: guards, no mob camp) and two
+  camps on one POI are load errors. In a recipe zone the POI's camp fire is
+  scenery (camps.lua), so the recipe camp is the POI's only population.
 - `leaders`: a catalogue role marked `"leader": true`, `at` `{"camp": id}`
-  or `{"kind": id, "pick": "farthest_from_roads"}`, `respawn` seconds. A
-  leader's camp on a POI states its `belt`: a leader's level is fixed
-  (ruling 38) and the same on every seed.
+  or `{"kind": id, "pick": "farthest_from_roads"}`, `respawn` seconds. Its
+  level is fixed (ruling 38) and the same on every seed: its camp's stated
+  belt, or its kind's belt.
 - `critters`: ambient critters that keep their ABM rows in the zone.
 
 ## Quests

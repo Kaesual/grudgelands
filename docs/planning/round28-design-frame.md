@@ -394,13 +394,14 @@ regions for any seed. The build and the full format:
   instead (`"site": {"poi": "bandit" | "mirefolk", "name": <POI name>}`; the
   name only where the zone has two of the type; the zone atlas lists them
   under `camps`), so camps sit where the map shows tents and fires: centre
-  = the POI, its belt the one the POI lies in on that seed unless the camp
-  states `belt`, no `apart`. Guard posts are no mob camp. In a recipe zone
-  the POI's own fire is scenery, so the recipe camp is its only population.
+  = the POI, no `apart`, and it states its `belt` like every camp (exact
+  quest levels, never missing on a seed). The POI's own belt differs per
+  seed: the region stats name it and warn when it lies more than one belt
+  from the stated one. Guard posts are no mob camp. In a recipe zone the
+  POI's own fire is scenery, so the recipe camp is its only population.
 - **Leaders** (§2.4): a leader-flagged role `at` a camp's centre or
   `{"kind": id, "pick": "farthest_from_roads"}`; level = the top of their
-  region (a leader's camp on a POI states its `belt`, so the level is the
-  same on every seed); `respawn` (about 300 s). Every leader is 1.15× size with twice the
+  region, the same on every seed; `respawn` (about 300 s). Every leader is 1.15× size with twice the
   HP of its level and tier, whatever the catalogue `size` says.
 - `critters`: ambient critters that keep spawning in the zone.
 - **Quests** name an area as `<zone>/<kind or camp id>`; a mob remembers the

@@ -313,6 +313,9 @@ function SR.map(zone_id)
 	for _, problem in ipairs(built.problems) do
 		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. problem)
 	end
+	for _, warning in ipairs(built.warnings) do
+		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. warning)
+	end
 	return built
 end
 
