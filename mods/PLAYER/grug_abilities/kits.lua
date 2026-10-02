@@ -49,8 +49,8 @@ end
 -- A friendly skill needs a pointed ally ("friendly" ray reason); every other
 -- kind needs a ray "target" (a live hostile). Returns the target (or nil) and
 -- the structured ray. The casts below add Target Frame memory and diagnostics;
--- the crosshair overlay (crosshair.lua) reads it bare, 20 times a second, and
--- passes the eye position it already computed as `origin`.
+-- the crosshair overlay (crosshair.lua) reads it bare, about 7 times a second,
+-- and passes the eye position it already computed as `origin`.
 function grug_abilities.aimed_target(user, def, origin)
 	local ray = grug_core.combat_ray(user, grug_abilities.get_range(user, def),
 		origin and {origin = origin} or nil)

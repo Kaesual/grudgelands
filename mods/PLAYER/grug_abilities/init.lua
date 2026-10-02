@@ -2345,19 +2345,28 @@ local function weapon_clock_ready(player, selected)
 	return core.get_us_time() >= entry.next_due
 end
 
+-- The crosshair state overlay refreshes on its own, slower beat (Round 30,
+-- perf review #8): its rays are the costly part of this pass, while input
+-- and the weapon-ready ring stay on every pass.
+local CROSSHAIR_STEP = 0.15
+
 -- The contextual input owner drives the same authoritative swing transaction.
 local swing_step_acc = 0
+local crosshair_acc = 0
 core.register_globalstep(function(dtime)
 	swing_step_acc = swing_step_acc + dtime
+	crosshair_acc = crosshair_acc + dtime
 	if swing_step_acc < SWING_STEP then return end
 	swing_step_acc = 0
 	if not grug_abilities.input then return end
+	local crosshair_due = crosshair_acc >= CROSSHAIR_STEP
+	if crosshair_due then crosshair_acc = crosshair_acc % CROSSHAIR_STEP end
 	for _, player in ipairs(core.get_connected_players()) do
 		grug_abilities.input.step(player)
 		set_ready_reticle(player, weapon_clock_ready(player, selected_swing_def(player)))
 		-- Target/interaction crosshair state: one hand-reach ray, plus one
 		-- skill ray while a targeted skill is selected; packets only on change.
-		grug_abilities.crosshair.update(player)
+		if crosshair_due then grug_abilities.crosshair.update(player) end
 	end
 end)
 

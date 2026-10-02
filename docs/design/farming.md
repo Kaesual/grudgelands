@@ -14,7 +14,9 @@ recolored harvest icons. Reusing an appropriate seed silhouette is allowed.
 
 Every family has four logical stages at 200 seconds per advance. Growth runs
 only above wet crop soil; drying pauses exact partial progress and rewetting
-resumes it. Destructively harvesting stages 1–3 always returns exactly one seed
+resumes it. Crop soil checks for water within three nodes every 15 seconds
+while a growing crop stands on it and once a minute otherwise; planting and
+regrowth return it to the 15-second check at once. Destructively harvesting stages 1–3 always returns exactly one seed
 and no ingredient. Mature annual crops return one ingredient plus one seed and
 must be replanted. Yield is deterministic and remains one ingredient.
 

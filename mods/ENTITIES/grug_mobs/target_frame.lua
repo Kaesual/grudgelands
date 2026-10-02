@@ -59,6 +59,64 @@ local function relation_color(viewer_faction, target_faction)
 	return COLOR_RED
 end
 
+-- The frame's reading of one object on the ray: a live other player (the
+-- ObjectRef) or an initialized, living mob of ours (the luaentity), else nil.
+local function framable(player, ref)
+	if ref == player then
+		return nil
+	end
+	if ref:is_player() then
+		return ref:get_hp() > 0 and ref or nil
+	end
+	local ent = ref:get_luaentity()
+	-- _grug_level marks an initialized mob of ours (levels.lua).
+	if ent and ent._grug_level and (ent.health or 0) > 0 then
+		return ent
+	end
+	return nil
+end
+
+-- The answer from the crosshair's own ray (grug_abilities crosshair.lua,
+-- refreshed every 0.15 s), when it settles the frame's question (Round 30,
+-- perf review #8): `true, target` (target may be nil), or false when this
+-- frame needs a ray of its own. A skill ray reaching at least RANGE that ends
+-- empty, at a walkable node or beyond RANGE leaves nothing framable in
+-- reach, and one ending at a framable object within RANGE frames it; a
+-- walkable node within hand reach ends every ray along the line. A ray that
+-- stopped at anything else (an arrow, a dead mob, an NPC) could hide a
+-- target behind it, so the frame casts its own.
+local function crosshair_target(player)
+	local abilities = rawget(_G, "grug_abilities")
+	local crosshair = abilities and abilities.crosshair
+	local aim = crosshair and crosshair.recent_aim and
+		crosshair.recent_aim(player, INTERVAL * 1000000)
+	if not aim then
+		return false
+	end
+	if aim.blocked then
+		return true, nil
+	end
+	local ray = aim.ray
+	if type(ray.range) ~= "number" or ray.range < RANGE then
+		return false
+	end
+	if ray.reason == "empty" or ray.reason == "node" then
+		return true, nil
+	end
+	local pointed = ray.pointed
+	if type(ray.distance) ~= "number" or not pointed or pointed.type ~= "object" then
+		return false
+	end
+	if ray.distance > RANGE then
+		return true, nil
+	end
+	local target = framable(player, pointed.ref)
+	if target then
+		return true, target
+	end
+	return false
+end
+
 -- First framable thing on the player's look ray: one of our mobs (returns the
 -- luaentity) or another player (returns the ObjectRef — tell them apart with
 -- core.is_player, which is safe on a plain table). Walkable nodes block the
@@ -66,6 +124,10 @@ end
 -- in tall grass stays framable. Everything else on the ray (arrows, item
 -- drops, dead things) is skipped rather than blocking.
 local function looked_at_target(player)
+	local settled, target = crosshair_target(player)
+	if settled then
+		return target
+	end
 	local pos = player:get_pos()
 	if not pos then
 		return nil
@@ -80,18 +142,10 @@ local function looked_at_target(player)
 			if not def or def.walkable then
 				return nil
 			end
-		elseif pointed.type == "object" and pointed.ref ~= player then
-			local ref = pointed.ref
-			if ref:is_player() then
-				if ref:get_hp() > 0 then
-					return ref
-				end
-			else
-				local ent = ref:get_luaentity()
-				-- _grug_level marks an initialized mob of ours (levels.lua).
-				if ent and ent._grug_level and (ent.health or 0) > 0 then
-					return ent
-				end
+		elseif pointed.type == "object" then
+			target = framable(player, pointed.ref)
+			if target then
+				return target
 			end
 		end
 	end
