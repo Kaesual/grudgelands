@@ -69,7 +69,8 @@ are not nudged into travelling by owning a boat.
 - **A boat can be summoned only in water** (ruling 5): the player's feet are
   in a `group:water` node — normal or river water, source or flowing. Every
   water body works: rivers, lakes, bays, shelf, deep ocean, channels. There
-  are no docks.
+  are no docks; the only piers are the four island landings' (§7.1), and a
+  boat needs none.
 - The boat appears on the surface of that water column, centred on its water
   node, with the player seated in it. A column whose surface lies more than 16
   nodes above the player, or whose surface is closed (ice, a roof), refuses
@@ -151,3 +152,35 @@ are owned by `world.md` §2b. What matters for a boat:
   Improved Boat. Because the shelf follows the entire mainland perimeter, a
   low-level character may coast to a channel mouth and visit an island; the
   level-60 island itself is the gate.
+
+### 7.1 Island landings: pier and beach
+
+Decided by the user 2026-10-02 (Round 30 plan §3, first version by feel);
+built by the mapgen (`height.lua` the beach, `road_writer.lua` the pier).
+Each of the four boat landings (`source/simple_map.lua`
+`source.island_landings`) gets a wooden pier and a small sand beach, so a
+player can step ashore from a boat. No waystone, shipwright or NPC.
+
+- **Shore point:** the last land column on the boat line, walking from the
+  landing's fixed point toward the mainland until the first sea column. The
+  beach and the pier both start there, so they meet on every seed.
+- **Beach:** a sand crescent cut into the shore, 12 nodes either side of the
+  boat line along the coast and 11 nodes inland (measured as the distance to
+  the sea, so it follows the coast), its edge moved by noise. Its ground
+  rises from the water line (y 1) to y 3; an 8-node collar blends it into the
+  natural terrain. It is sand up to y 3 although the islands are mountain
+  land (the one exception to the near-water material rule,
+  `world_zones.md` §7.4). Natural river or lake columns and their banks keep
+  their ground.
+- **Pier:** plain planks of the island zone's wood (Wyrmglass pine,
+  Stormscale jungle wood; default planks for a zone without a race), 2 nodes
+  wide, the deck at y 2 (one node above the water), 10 nodes out over the
+  water toward the mainland and 2 back onto the beach's water line. At 10,
+  7, 4 and 1 nodes out a row of trunk posts stands on the floor: under the
+  deck up to the water surface, beside it up to the deck with a fence post
+  on top. A boat disembarks its rider onto the deck (§3).
+- The pier head stands in the shore water the terrain gives (2–4 nodes deep
+  on the checked seeds); the boat water of §7 and its nine-node floor
+  further out are unchanged, as are the channels and the boat paths.
+- Behind the beach the island rises as its natural terrain does (on most
+  seeds a steep mountain flank); the landing adds no path up the island.

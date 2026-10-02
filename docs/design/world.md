@@ -359,7 +359,7 @@ occupying a position (`world_zones.md` §7):
   hard-flight bands come from the same 2D distance field. Each channel carries
   two boat approaches, one northern and one southern, joining its
   Battlegrounds endpoint to two inward-shore island beaches at fixed landing
-  points. Both are usable by both factions; their north/south orientation only
+  points, each with a wooden pier ([boats.md](boats.md) §7.1). Both are usable by both factions; their north/south orientation only
   roughly equalizes travel from Kragmar and Elandor. They have no ordinary
   surface, guard or mob-level result.
 
