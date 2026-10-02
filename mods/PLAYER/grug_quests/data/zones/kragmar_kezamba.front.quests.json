@@ -1,0 +1,200 @@
+{
+  "zone": "kragmar_kezamba",
+  "quests": [
+    {
+      "id": "kz_front_01",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 50,
+      "level": 52,
+      "requires": [],
+      "title": "Apes Who Forgot to Share",
+      "text": "Past the Shattered Line the jungle grows glass: The Skyglass Canopy. Glass-Knuckle Jungle Apes rule the {name:front_skyglass_canopy/cloudwood} by day {zone_area:front_skyglass_canopy/cloudwood}. Kill five; the canopy spirits say the apes forgot whose fruit it was.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_knuckle_ape"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "kz_front_02",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 51,
+      "level": 53,
+      "requires": [],
+      "title": "A Sharp Beat for the Drum",
+      "text": "At night Glass-Shadow Panthers hunt the {name:front_skyglass_canopy/cloudwood} {zone_area:front_skyglass_canopy/cloudwood}. Kill four and bring two Glass Cat Claws for the shrine drum; the drum likes a sharp beat.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "count": 4,
+          "area": "front_skyglass_canopy/cloudwood"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_cat_claw",
+          "count": 2,
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "area": "front_skyglass_canopy/cloudwood"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "kz_front_03",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 53,
+      "level": 55,
+      "requires": [
+        "kz_front_01"
+      ],
+      "title": "Glass-Fang Serpents",
+      "text": "Glass-Fang Serpents coil through the {name:front_skyglass_canopy/rootways} by day {zone_area:front_skyglass_canopy/rootways}. Kill five and bring two Glass Venom. The shrine pays the canopy back for everything it takes, and venom is how the canopy wants it paid.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/rootways"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_venom",
+          "count": 2,
+          "roles": [
+            "glass_fang_serpent"
+          ],
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "kz_front_04",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "kz_front_02",
+        "kz_front_03"
+      ],
+      "title": "Paymaster Chirr",
+      "text": "Paymaster Chirr keeps the Last-Pay Archers loyal with promises from the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}. Kill four archers at the camp, then Chirr. A promise without a paymaster is just wind in the leaves.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_pay_archer"
+          ],
+          "count": 4,
+          "area": "front_skyglass_canopy/paymaster_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "paymaster_chirr"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6.5,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "kz_front_05",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 58,
+      "level": 60,
+      "requires": [
+        "kz_front_04"
+      ],
+      "title": "Group: Serpent Glass-Throat",
+      "text": "Serpent Glass-Throat coils deep in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. No single fighter swallows that one; bring a group, and the shrine sings for all of you.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_throat_serpent"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "kz_front_bounty",
+      "line": "front",
+      "giver": "r20_troll_capital_envoy",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 57,
+      "level": 58,
+      "requires": [
+        "kz_front_04"
+      ],
+      "title": "Bounty: High Canopy Panthers",
+      "text": "Glass-Shadow Panthers return to the {name:front_skyglass_canopy/high_canopy} every night {zone_area:front_skyglass_canopy/high_canopy}. Kill five and the shrine pays. Come back twenty minutes after you collect, and it pays again.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "glass_shadow_panther"
+          ],
+          "count": 5,
+          "area": "front_skyglass_canopy/high_canopy"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    }
+  ]
+}

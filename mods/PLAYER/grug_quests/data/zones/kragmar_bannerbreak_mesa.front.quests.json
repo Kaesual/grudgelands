@@ -1,0 +1,426 @@
+{
+  "zone": "kragmar_bannerbreak_mesa",
+  "quests": [
+    {
+      "id": "bb_front_ramp_01",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Husks on the Causeway",
+      "text": "The old Causeway runs from our ramp down into the floodwater, and Mire-Cured Husks walk the {name:front_broken_causeway/floodmeadows} by day {zone_area:front_broken_causeway/floodmeadows}. Break five of them. The Accord counts the same husks from their side; make sure our count is bigger.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_mire_husk"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/floodmeadows"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_02",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 41,
+      "level": 43,
+      "requires": [
+        "bb_front_ramp_01"
+      ],
+      "title": "The Fords After Dark",
+      "text": "When the sun goes down, Fordwater Zombies climb out of the {name:front_broken_causeway/reedmire} {zone_area:front_broken_causeway/reedmire}. Put five of them back under the water. They do not drown twice, but they do stop walking.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_ford_zombie"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/reedmire"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_03",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 43,
+      "level": 45,
+      "requires": [
+        "bb_front_ramp_01"
+      ],
+      "title": "Wolves of the Wraithwood",
+      "text": "Deeper in, Fenrunner Wolves hunt the {name:front_broken_causeway/wraithwood} at night {zone_area:front_broken_causeway/wraithwood}. Kill five. The deeper you go, the harder the Causeway bites back, so keep your axe close.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_fenrunner_wolf"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/wraithwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_ramp_04",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 46,
+      "level": 48,
+      "requires": [
+        "bb_front_ramp_02",
+        "bb_front_ramp_03"
+      ],
+      "title": "The Toll-Taker",
+      "text": "Every toll on the Causeway ends up in one purse: Toll-Taker Senn's, at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}. Kill four Aqueduct Bowmen at the camp and then Senn. The bowmen shoot from the walls, so get in close.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_aqueduct_bowman"
+          ],
+          "count": 4,
+          "area": "front_broken_causeway/toll_camp"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "toll_taker_senn"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "bb_front_ramp_05",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_040_host",
+      "min_level": 47,
+      "level": 48,
+      "requires": [
+        "bb_front_ramp_04"
+      ],
+      "title": "Hollowarch Station",
+      "text": "The Causeway gets worse the deeper it runs, and so does the work. Orrel Hollowstep at Hollowarch Station in Blackwind Rise watches the far end. Go and tell Orrel that Red Ramp sent you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_040_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 8
+    },
+    {
+      "id": "bb_front_ramp_bounty",
+      "line": "front",
+      "giver": "r20_anchor_043_host",
+      "turnin": "r20_anchor_043_host",
+      "min_level": 46,
+      "level": 47,
+      "requires": [
+        "bb_front_ramp_04"
+      ],
+      "title": "Bounty: Wraithwood Brigands",
+      "text": "Causeway Brigands keep coming back to the {name:front_broken_causeway/wraithwood} by day {zone_area:front_broken_causeway/wraithwood}; their kind never learns. Kill five and collect. The next bounty opens twenty minutes after you hand them in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "causeway_brigand"
+          ],
+          "count": 5,
+          "area": "front_broken_causeway/wraithwood"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_01",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Hyenas on the Approaches",
+      "text": "Warpack Hyenas run the {name:front_shattered_line/approaches} by day {zone_area:front_shattered_line/approaches} and steal from both armies. Kill five. Let the Accord feed the next pack.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/approaches"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_02",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Stingers on the Bluffs",
+      "text": "After dark the War-Stinger Scorpions climb the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs}. Kill five. One sting through a boot and a soldier limps for a week, and I need soldiers who march.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/bluffs"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "bb_front_torn_03",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 42,
+      "level": 44,
+      "requires": [
+        "bb_front_torn_01"
+      ],
+      "title": "Tigers in the Tallgrass",
+      "text": "Tallgrass Tigers hunt the {name:front_shattered_line/bluffs} by day {zone_area:front_shattered_line/bluffs}. Kill four and bring me two Siege Cat Claws. I sew them onto our standards, and the Accord hates looking at them.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 4,
+          "area": "front_shattered_line/bluffs"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:siege_cat_claw",
+          "count": 2,
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "area": "front_shattered_line/bluffs"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_04",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 45,
+      "level": 47,
+      "requires": [
+        "bb_front_torn_02"
+      ],
+      "title": "Venom on the Ramparts",
+      "text": "The {name:front_shattered_line/ramparts} crawl with War-Stinger Scorpions at night {zone_area:front_shattered_line/ramparts}. Kill five and bring two Scorch Venom; our archers put it to better use than the scorpions do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "war_stinger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/ramparts"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:scorch_venom",
+          "count": 2,
+          "roles": [
+            "war_stinger"
+          ],
+          "area": "front_shattered_line/ramparts"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_05",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 46,
+      "level": 48,
+      "requires": [
+        "bb_front_torn_03",
+        "bb_front_torn_04"
+      ],
+      "title": "Standard-Bearer Ninepins",
+      "text": "Standard-Bearer Ninepins keeps the dead raiders marching from the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Destroy four Siege Skeleton Raiders there at night, then knock Ninepins down for good. Leave his standard where it falls; it is cursed, and worse, it is ugly.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_skeleton_raider"
+          ],
+          "count": 4,
+          "area": "front_shattered_line/breach"
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "standard_bearer_ninepins"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "duration_min": 15,
+      "climax": true
+    },
+    {
+      "id": "bb_front_torn_06",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 48,
+      "level": 50,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Group: Engine Nine",
+      "text": "War Construct Engine Nine still grinds along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, stronger than any one fighter. Bring friends and break it; this is work for a group.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "siege_engine_nine"
+          ],
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 15,
+      "optional": true,
+      "group": true
+    },
+    {
+      "id": "bb_front_torn_07",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_troll_capital_envoy",
+      "min_level": 49,
+      "level": 50,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Word for Kezamba",
+      "text": "You have seen the worst of the Line. Past it lies The Skyglass Canopy, and Nalo Pathdrum in Kezamba sends fighters there. Go to Kezamba and tell Nalo that Tornstandard vouches for you.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_troll_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "bb_front_torn_bounty",
+      "line": "front",
+      "giver": "r20_anchor_044_host",
+      "turnin": "r20_anchor_044_host",
+      "min_level": 48,
+      "level": 49,
+      "requires": [
+        "bb_front_torn_05"
+      ],
+      "title": "Bounty: Siegecrest Tigers",
+      "text": "Tallgrass Tigers prowl the {name:front_shattered_line/siegecrest} by day {zone_area:front_shattered_line/siegecrest}, at the far end of the Line. Kill five and collect. The next bounty opens twenty minutes after you hand them in.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "reed_stalking_tiger"
+          ],
+          "count": 5,
+          "area": "front_shattered_line/siegecrest"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 1200
+      },
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 10
+    }
+  ]
+}

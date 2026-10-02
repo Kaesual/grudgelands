@@ -1,0 +1,102 @@
+{
+  "zone": "kragmar_gor_drazhak",
+  "quests": [
+    {
+      "id": "gd_front_01",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 41,
+      "level": 43,
+      "requires": [],
+      "title": "Venom for the Road Wardens",
+      "text": "The new road from Gor Drazhak runs straight through both front lines, and the road wardens need arrows that bite. Sinkmire Vipers lie in the {name:front_broken_causeway/reedmire} of the Causeway by day {zone_area:front_broken_causeway/reedmire}; bring me two Scorch Venom. The Accord dips its arrows too, so we dip faster.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:scorch_venom",
+          "count": 2,
+          "roles": [
+            "causeway_sinkmire_viper"
+          ],
+          "area": "front_broken_causeway/reedmire"
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "gd_front_02",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 43,
+      "level": 45,
+      "requires": [
+        "gd_front_01"
+      ],
+      "title": "Fangs for the Recruits",
+      "text": "On the other side of the road, Warpack Hyenas hunt the {name:front_shattered_line/trenches} of the Shattered Line by day {zone_area:front_shattered_line/trenches}. Kill four and bring two Siegepack Fangs. Every new recruit gets one; it is cheaper than a medal.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "count": 4,
+          "area": "front_shattered_line/trenches"
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:siegepack_fang",
+          "count": 2,
+          "roles": [
+            "warpack_hyena"
+          ],
+          "area": "front_shattered_line/trenches"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "gd_front_island",
+      "line": "front",
+      "giver": "r20_orc_capital_envoy",
+      "turnin": "r20_orc_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "gd_front_02"
+      ],
+      "title": "Bounty: The Wreck Shore",
+      "text": "Last-Watch Mummies wash up on the {name:front_stormscale_summit/wreck_shore} of Stormscale Summit by day {zone_area:front_stormscale_summit/wreck_shore}. Buy a boat from the Shipwright, sail across and lay eight of them down. The war chest pays in coin, again an hour after you collect.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_husk"
+          ],
+          "count": 8,
+          "area": "front_stormscale_summit/wreck_shore"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 3600
+      },
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "duration_min": 30,
+      "optional": true
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "zone": "kragmar_nhal_veyr",
+  "quests": [
+    {
+      "id": "nv_front_01",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 53,
+      "level": 55,
+      "requires": [],
+      "title": "Shrouds That Do Not Rot",
+      "text": "Glass-Web Jungle Spiders spin in the {name:front_skyglass_canopy/rootways} of The Skyglass Canopy at night {zone_area:front_skyglass_canopy/rootways}. Bring me two Glass Spider Silk. It does not rot, which makes it the only shroud worth registering.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:glass_spider_silk",
+          "count": 2,
+          "roles": [
+            "glass_web_spider"
+          ],
+          "area": "front_skyglass_canopy/rootways"
+        }
+      ],
+      "rewards": {
+        "weight": 3.5,
+        "items": []
+      },
+      "duration_min": 12
+    },
+    {
+      "id": "nv_front_02",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 55,
+      "level": 57,
+      "requires": [
+        "nv_front_01"
+      ],
+      "title": "The Last Watchmen",
+      "text": "Last Watchmen walk the {name:front_gravesalt_escarpment/whitewall} of Gravesalt Escarpment after dark {zone_area:front_gravesalt_escarpment/whitewall}, still keeping a post the register closed long ago. Lay five to rest, and I will finally write the date.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "last_watch_zombie"
+          ],
+          "count": 5,
+          "area": "front_gravesalt_escarpment/whitewall"
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "duration_min": 10
+    },
+    {
+      "id": "nv_front_island",
+      "line": "front",
+      "giver": "r20_undead_capital_envoy",
+      "turnin": "r20_undead_capital_envoy",
+      "min_level": 60,
+      "level": 60,
+      "requires": [
+        "nv_front_02"
+      ],
+      "title": "Bounty: Wyrmglass Strays",
+      "text": "Crown Frost Strays wander the {name:front_wyrmglass_crown/scree} of The Wyrmglass Crown at night {zone_area:front_wyrmglass_crown/scree}. Take a boat from the Shipwright across the channel and destroy eight. The register pays in coin, again an hour after you collect.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "crown_frost_stray"
+          ],
+          "count": 8,
+          "area": "front_wyrmglass_crown/scree"
+        }
+      ],
+      "repeatable": {
+        "cooldown": 3600
+      },
+      "rewards": {
+        "weight": 0,
+        "copper": 600,
+        "items": []
+      },
+      "duration_min": 30,
+      "optional": true
+    }
+  ]
+}
