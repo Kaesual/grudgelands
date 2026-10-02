@@ -15,9 +15,10 @@ Inputs:
   * kills       the band's kill equivalents (progression.md) times the XP
                 share quests do not pay as rewards or gathering: quest
                 kills, drop kills and free play, all at the band's level.
-  * loot        the band's median kill payout measured by lane E1
-                (tools/r29_e1/band_payout.sh: the real price module over
-                grug_mobs/data/drops.json, leader bonus rows left out).
+  * loot        the band's median kill payout measured by
+                tools/r29_e1/band_payout.sh (the real price module over
+                grug_mobs/data/drops.json, leader bonus rows left out; bands
+                4 and 5 smoothed in Round 30 lane E).
   * time        progression.md section 1, level 60 in about 10-20 played
                 hours: the midpoint, 15 h, split over the bands by their
                 kill equivalents.
@@ -54,7 +55,7 @@ import r28common as C  # noqa: E402
 import ledger as L  # noqa: E402
 
 ROUTES = ("dwarf", "orc")  # one per faction: Accord, Throng
-LOOT_PER_KILL = (4.3, 9.0, 16.7, 39.0, 147.6, 239.3)  # E1 median, bands 1-6
+LOOT_PER_KILL = (4.3, 9.0, 16.7, 43.6, 119.5, 239.3)  # band median, bands 1-6
 PACE_HOURS = 15.0
 POTIONS_PER_HOUR = 4
 POTION_PRICE = 8
@@ -183,7 +184,7 @@ def money(copper):
 def report(bands, mounts, respec, respec_targets):
     out = ["# Round 29 E4 income estimate", "",
            "Routes: %s (one per faction). Pace %.0f h to level 60 split by kill equivalents; "
-           "loot per kill = E1 band median; %d potions/h at %dc; repair %d weapon uses and %d armour "
+           "loot per kill = band median; %d potions/h at %dc; repair %d weapon uses and %d armour "
            "hits per kill on Uncommon gear." % (", ".join(ROUTES), PACE_HOURS, POTIONS_PER_HOUR,
                                                 POTION_PRICE, ACTIONS_PER_KILL, HITS_PER_KILL), "",
            "| Band | Minutes | Kills (%s) | Kills/h | Quest copper (%s) | Loot/kill | Loot | Repair | "
