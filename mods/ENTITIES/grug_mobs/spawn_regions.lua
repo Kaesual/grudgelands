@@ -782,25 +782,39 @@ local function leader_alive(role)
 	return false
 end
 
--- The highest standable node in the spot's column: any walkable node with
--- two air nodes above (a leader may stand on a camp's built floor).
-local function leader_ground(spot)
-	spot.terrain_y = spot.terrain_y or grug_zones.terrain_height_at(spot.x, spot.z)
-	local y0 = spot.terrain_y
+-- The highest standable node in a column: any walkable node with two air
+-- nodes above (a leader may stand on a camp's built floor).
+local function column_ground(x, z, y0)
 	for y = y0 + LEADER_REACH, y0 - LEADER_REACH, -1 do
-		local here = core.get_node_or_nil({x = spot.x, y = y, z = spot.z})
+		local here = core.get_node_or_nil({x = x, y = y, z = z})
 		if here and here.name ~= "air" and here.name ~= "ignore" and
 				core.get_item_group(here.name, "leaves") == 0 and
 				core.get_item_group(here.name, "tree") == 0 then
 			local def = core.registered_nodes[here.name]
 			if def and def.walkable then
-				local a1 = core.get_node_or_nil({x = spot.x, y = y + 1, z = spot.z})
-				local a2 = core.get_node_or_nil({x = spot.x, y = y + 2, z = spot.z})
+				local a1 = core.get_node_or_nil({x = x, y = y + 1, z = z})
+				local a2 = core.get_node_or_nil({x = x, y = y + 2, z = z})
 				if a1 and a2 and a1.name == "air" and a2.name == "air" then
-					return {x = spot.x, y = y + 1, z = spot.z}
+					return {x = x, y = y + 1, z = z}
 				end
 				return nil
 			end
+		end
+	end
+	return nil
+end
+
+-- The spot's own column, else the nearest standable one within a few nodes
+-- (a rule-placed spot may land on a tree trunk or a boulder).
+local SPOT_RINGS = {{0, 0}, {2, 0}, {-2, 0}, {0, 2}, {0, -2}, {2, 2}, {-2, 2}, {2, -2},
+	{-2, -2}, {4, 0}, {-4, 0}, {0, 4}, {0, -4}}
+local function leader_ground(spot)
+	spot.terrain_y = spot.terrain_y or grug_zones.terrain_height_at(spot.x, spot.z)
+	for i = 1, #SPOT_RINGS do
+		local pos = column_ground(spot.x + SPOT_RINGS[i][1], spot.z + SPOT_RINGS[i][2],
+			spot.terrain_y)
+		if pos then
+			return pos
 		end
 	end
 	return nil

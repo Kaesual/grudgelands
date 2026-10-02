@@ -208,41 +208,25 @@ local function play(Q)
 	check(ok, "play: " .. tostring(err))
 end
 
--- The load-time world checks against B1's real spawn areas: a probe area is
--- installed into Dawnmere's spawn record for the check and removed again.
+-- The load-time world checks against the shipped Dawnmere spawn recipe (Lane
+-- S1): an area a quest names is a kind or a camp of its zone's recipe.
 local function area_checks(Q)
-	local SA = grug_mobs.spawn_areas
-	local path = core.get_modpath("grug_mobs") .. "/data/zones/elandor_dawnmere_fields.spawns.json"
-	local handle = assert(io.open(path, "r"))
-	local original = core.parse_json(handle:read("*a"))
-	handle:close()
-	local probe = table.copy(original)
-	probe.areas = {
-		{id = "probe_field", anchor = "start", shape = {kind = "circle", r = 60},
-			hosts = {biomes = {"any"}}, clock = "both", levels = {1, 3},
-			species = {{role = "boar", weight = 1}}},
-		{id = "fallback", anchor = "zone", shape = {kind = "zone"}, hosts = {biomes = {"any"}},
-			clock = "both", levels = {1, 5}, species = {{role = "boar", weight = 1}}, fallback = true},
-	}
-	SA.install_zone("elandor_dawnmere_fields", probe)
 	local function file(level, role)
 		return {name = "elandor_dawnmere_fields.quests.json", zone = "elandor_dawnmere_fields", front = false,
 			data = {zone = "elandor_dawnmere_fields", quests = {{id = "probe_area", line = "hunt",
 				giver = "r14_human_elder", turnin = "r14_human_elder", min_level = 1, level = level,
-				title = "Probe Area", text = "Boars. In the probe field.",
+				title = "Probe Area", text = "Boars. In the home fields.",
 				objectives = {{type = "kill", roles = {role}, count = 1,
-					area = "elandor_dawnmere_fields/probe_field"}}, rewards = {weight = 1}}}}}
+					area = "elandor_dawnmere_fields/home_fields"}}, rewards = {weight = 1}}}}}
 	end
-	local ok, err = pcall(Q.validate_quest_data, {file(2, "boar")})
+	local ok, err = pcall(Q.validate_quest_data, {file(2, "small_boar")})
 	check(ok, "area objective within level 2 +-3 accepted: " .. tostring(err))
-	ok, err = pcall(Q.validate_quest_data, {file(9, "boar")})
-	check(not ok and tostring(err):find("quest probe_area: objective 1: boar is met at levels 1-3", 1, true)
+	ok, err = pcall(Q.validate_quest_data, {file(9, "small_boar")})
+	check(not ok and tostring(err):find("quest probe_area: objective 1: small_boar is met at levels 1-2", 1, true)
 		and tostring(err):find("E-level-fit", 1, true), "level outside the slack refused: " .. tostring(err))
-	ok, err = pcall(Q.validate_quest_data, {file(2, "fox")})
+	ok, err = pcall(Q.validate_quest_data, {file(2, "small_fox")})
 	check(not ok and tostring(err):find("E-role-not-in-area", 1, true), "role outside the area refused: " .. tostring(err))
 	log("area check example: " .. tostring(err):gsub("\n%s*", " | "))
-	SA.install_zone("elandor_dawnmere_fields", original)
-	check(not SA.zone_has_areas("elandor_dawnmere_fields"), "Dawnmere restored without areas")
 end
 
 local function run()
