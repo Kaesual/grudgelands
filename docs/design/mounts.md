@@ -48,9 +48,8 @@ leash; bound actors: leash and give-up distance).
   buying them is the point (§2 is a gold sink).
 - **Trainer dialogue (Round 28 ruling 19):** all four tiers are always
   listed, each with its state: **Owned**, a **Buy <price>** button,
-  greyed **Requires level N**, greyed **Learn <previous tier> first**, or
-  greyed **Price pending** while a tier has no valid price (only Buy is a
-  button). A purchase result shows in the flash line and in
+  greyed **Requires level N** or greyed **Learn <previous tier> first**
+  (only Buy is a button). A purchase result shows in the flash line and in
   the reopened dialogue, never in chat.
 
 ### 1.1 The four tiers
@@ -120,16 +119,17 @@ minutes.
 
 ## 2. Prices — the riding gold sink
 
-Each tier is bought once and remains permanent character state. Exact Gold
-prices are derived only after the revised per-tier net-income calibration; the
-old 1s/8s/30s/60s table is superseded.
+Each tier is bought once and remains permanent character state. Prices come
+from the per-bracket net-income estimate (`economy.md` §3, §4.2; Round 29 lane
+E4) and are rounded by `economy.md` §4.1; the old 1s/8s/30s/60s table is
+superseded.
 
-| Tier | Level | Target reliable net solo earning time |
-|---|---:|---:|
-| Apprentice — slow land mount | 15 | about 15 minutes |
-| Journeyman — fast land mount | 30 | about 45 minutes |
-| Expert — slow flying mount | 45 | about 2 hours |
-| Master — fast flying mount | 60 | about 5 hours |
+| Tier | Level | Target reliable net solo earning time | Price |
+|---|---:|---:|---:|
+| Apprentice — slow land mount | 15 | about 15 minutes | 1s10c |
+| Journeyman — fast land mount | 30 | about 45 minutes | 7s |
+| Expert — slow flying mount | 45 | about 2 hours | 1g63s |
+| Master — fast flying mount | 60 | about 5 hours | 7g33s |
 
 The measurement is after routine repairs and consumables and excludes rare
 jackpots or an assumed player market. The first mount is readily achievable;

@@ -120,7 +120,13 @@ precedence over preserving the exact mathematical ratio.
   and consumable costs and excludes rare jackpots, boss rewards and a
   functioning player market. Time-priced aspirational sinks derive their
   ledger amount from that tier rate rather than from a stale global copper
-  ratio; WP44 obtains the rate from a simple income estimate (D1).
+  ratio; WP44 obtains the rate from a simple income estimate (D1),
+  `tools/r29_e4/income.py`, recorded with its assumptions in the
+  [economy plan](../planning/economy-vendor-plan.md#e4-completion-2026-10-02):
+
+  | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
+  |---|---:|---:|---:|---:|---:|---:|
+  | Net solo income per hour | 1s77c | 4s35c | 9s18c | 22s61c | 81s70c | 1g46s68c |
 
 ## 4. Sinks
 
@@ -139,8 +145,10 @@ precedence over preserving the exact mathematical ratio.
   trainer and no NPC** (user ruling 4 of 2026-09-16, `skill_trees.md` §5,
   `progression.md` §2). The price is **five minutes of measured reliable net
   solo income** at the character's own bracket, rounded by §4.1's rule
-  (ruling 22), and **the first respec of a character is free**. This retires
-  "repeatable at the class trainer, rising with level".
+  (ruling 22), and **the first respec of a character is free**: **15c, 35c,
+  75c, 1s90c, 7s and 12s** for the brackets 1–10 to 51–60
+  (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
+  trainer, rising with level".
 - **Profession-replacement services:** allied passive helper NPCs perform
   supplied-material cultural finishes, weapon-counter operations and Warding
   Draught crafts when the relevant player crafter is absent. They never create
@@ -157,8 +165,8 @@ precedence over preserving the exact mathematical ratio.
 
 ### 4.1 Income-derived price rounding; housing has no price
 
-Every price derived from measured reliable net solo income (respec, mounts)
-rounds its copper result with the coarsest denomination in
+Every price derived from measured reliable net solo income (respec, mounts,
+boats) rounds its copper result with the coarsest denomination in
 `1s / 25c / 5c / 1c` whose nearest multiple stays within 5% of the target;
 exact midpoints round upward.
 
@@ -171,10 +179,22 @@ lump per 7 h 16 min of protection; activation pays the first 5 lumps at once
 (Round 26). A claim never grants private ore,
 purchased mining depth or a material unavailable in the ordinary world.
 
-### 4.2 Mount pacing
+### 4.2 Mount and boat prices
 
-Mount prices are derived after tier income is measured. The level-15,
-level-30, level-45 and level-60 mounts target approximately **15 minutes,
-45 minutes, 2 hours and 5 hours** of reliable level-appropriate net solo
-income respectively. This replaces the obsolete fixed 1s/8s/30s/60s table;
-the fast level-60 flying mount is a substantial but bounded farming goal.
+The level-15, level-30, level-45 and level-60 mounts cost approximately
+**15 minutes, 45 minutes, 2 hours and 5 hours** of reliable net solo income at
+their level's bracket (§3), rounded by §4.1. The Boat costs as much as
+Apprentice Riding and the Improved Boat as much as Journeyman Riding
+([boats.md](boats.md) §2). `grug_mounts.PRICES` holds them:
+
+| Purchase | Level | Income time | Price |
+|---|---:|---|---:|
+| Apprentice Riding | 15 | 15 min | 1s10c |
+| Journeyman Riding | 30 | 45 min | 7s |
+| Expert Riding | 45 | 2 h | 1g63s |
+| Master Riding | 60 | 5 h | 7g33s |
+| Boat | 15 | as Apprentice | 1s10c |
+| Improved Boat | 30 | as Journeyman | 7s |
+
+This replaces the obsolete fixed 1s/8s/30s/60s table; the fast level-60
+flying mount is a substantial but bounded farming goal.

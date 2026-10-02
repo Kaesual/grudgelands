@@ -146,7 +146,7 @@ def estimate():
         repair = kills * repair_per_kill(index)
         potions = hours * POTIONS_PER_HOUR * POTION_PRICE
         net = copper + loot - repair - potions
-        bands.append({"band": "%d-%d" % (band[0], band[1] if band[1] < 60 else 60),
+        bands.append({"band": "%d → %d" % (band[0], band[1]),
                       "routes": {r: routes[r][index] for r in ROUTES},
                       "hours": hours, "copper": copper, "kills": kills, "loot": loot,
                       "repair": repair, "potions": potions, "net": net, "per_hour": net / hours})

@@ -46,15 +46,15 @@ theft or pickup rules and no item/entity persistence.
   He is a passive, invulnerable service NPC; he sells the two boats and
   nothing else, and buys nothing.
 - **Boat from character level 15, Improved Boat from level 30 (requires the
-  Boat)** (ruling 3), each for a copper price set by the economy plan (lane
-  E4; references: the Apprentice and Journeyman Riding prices). No
-  materials, no recipe, nothing at character creation.
+  Boat)** (ruling 3). The Boat costs as much as Apprentice Riding (**1s10c**),
+  the Improved Boat as much as Journeyman Riding (**7s**) (`economy.md` §4.2,
+  Round 29 lane E4). No materials, no recipe, nothing at character
+  creation.
 - His dialogue uses the Riding Trainer format (`mounts.md` §1): two rows,
-  each **Owned**, a **Buy <price>** button, greyed **Requires level N**,
-  greyed **Learn Boat first** or greyed **Price pending** while a boat has no
-  price. A purchase result shows in the flash line and in the reopened
-  dialogue. Only characters of the capital's own faction are served (the same
-  check as the Riding Trainer).
+  each **Owned**, a **Buy <price>** button, greyed **Requires level N** or
+  greyed **Learn Boat first**. A purchase result shows in the flash line and
+  in the reopened dialogue. Only characters of the capital's own faction are
+  served (the same check as the Riding Trainer).
 - The former one-per-continent shipwright in a level-21–30 village is retired;
   the two village display hulls (Whitebridge Market Close, Whisperreed
   Landing) stay as plain scenery.

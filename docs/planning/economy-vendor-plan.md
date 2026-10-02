@@ -421,3 +421,73 @@ plan; nothing here is scheduled yet.
 - Outpost seed (Round 28 item 46): after the playtest. WP34, WP46, WP48
   and the small Round 26/27 carry-overs: only when a playtest asks for
   them.
+
+## E4 completion (2026-10-02)
+
+Round 29 lane E4 replaced the two placeholder tables with prices from a
+simple income estimate (§5). `python3 tools/r29_e4/income.py` prints the
+whole record below; `--check` fails when the shipped tables
+(`grug_mounts.PRICES` in `grug_mounts/catalog.lua`,
+`grug_classes.RESPEC_PRICES` in `grug_classes/talents_ui.lua`) differ from
+it. The placeholder names and the trainer's "Price pending" state are gone.
+
+### Inputs and assumptions
+
+- **Routes:** one per faction, the ledger's track routes
+  (`r28common.track_route`) for **Dwarf** (Accord) and **Orc** (Throng) over
+  the shipped quest files: one-time quests, no repeatables, no race perk.
+  Per band the two routes are averaged.
+- **Quest copper:** the game's rule (`grug_quests.quest_copper`, §4) per
+  quest, counted in the band of its reward level, as the ledger counts XP.
+- **Kills:** the band's kill equivalents (`progression.md`) times the share
+  of the band's XP that quests do not pay as rewards or gathering, i.e. quest
+  kills, drop kills and free play, all at band level.
+- **Loot per kill:** E1's band medians from `tools/r29_e1/band_payout.sh`
+  (re-run in this lane, unchanged): 4.3 / 9.0 / 16.7 / 39.0 / 147.6 /
+  239.3c. Leader bonus rows and rare jackpots are left out.
+- **Time:** `progression.md` §1, level 60 in about 10–20 played hours; the
+  midpoint **15 h** split over the bands by their kill equivalents. That is
+  about 38–47 kills per hour including quest walking and talking.
+- **Repair:** per kill 4 weapon uses and 3 armour hits on band-tier Uncommon
+  gear (quality ×3), 20 % of the Common slot price per lost lifetime
+  (`durability_repair.md`): 0.09c per kill at T1, 2.1c at T6.
+- **Potions:** 4 Weak Healing Potions per hour at 8c.
+- Left out: food (cooked or bought for a few copper), the human quest-XP
+  perk, a player market. The level-60 price uses the 51–60 leveling rate;
+  farming at the cap has no new quests but walks less.
+
+### Per-band income
+
+| Band | Minutes | Kills (Dwarf / Orc) | Quest copper (Dwarf / Orc) | Loot | Repair | Potions | Net | Net per hour |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 → 10 | 77 | 47 / 48 | 66 / 64 | 206c | 4c | 41c | 226c | 1s77c |
+| 10 → 20 | 111 | 73 / 68 | 229 / 250 | 633c | 11c | 59c | 803c | 4s35c |
+| 20 → 30 | 138 | 86 / 91 | 751 / 705 | 1,476c | 24c | 73c | 2,107c | 9s18c |
+| 30 → 40 | 165 | 104 / 108 | 2,228 / 2,224 | 4,126c | 58c | 88c | 6,207c | 22s61c |
+| 40 → 50 | 192 | 147 / 149 | 4,592 / 4,408 | 21,867c | 168c | 102c | 26,096c | 81s70c |
+| 50 → 60 | 219 | 166 / 177 | 14,360 / 11,380 | 41,056c | 365c | 117c | 53,444c | 1g46s68c |
+
+Loot is 65–85 % of gross income in every band. Band 5 rises ×3.6 over band 4
+(the ×2.5 axis expects ×2.5) because E1's band-5 median lands above its
+target and band 4's below. Ruling 6 for comparison: band 1 nets about two
+T1 Common vendor sets (105c each), band 6 about five and a half.
+
+### Prices
+
+A price uses the income of the bracket of the level it unlocks at
+(`ceil(level / 10)`, the same rule as respec), rounded by `economy.md`
+§4.1.
+
+| Price | Level | Income time | Target | Price |
+|---|---:|---|---:|---:|
+| Apprentice Riding | 15 | 15 min | 109c | 1s10c |
+| Journeyman Riding | 30 | 45 min | 689c | 7s |
+| Expert Riding | 45 | 2 h | 16,339c | 1g63s |
+| Master Riding | 60 | 5 h | 73,342c | 7g33s |
+| Boat | 15 | as Apprentice | 109c | 1s10c |
+| Improved Boat | 30 | as Journeyman | 689c | 7s |
+| Respec 1–10 / 11–20 / 21–30 | — | 5 min | 15 / 36 / 77c | 15c / 35c / 75c |
+| Respec 31–40 / 41–50 / 51–60 | — | 5 min | 188 / 681 / 1,222c | 1s90c / 7s / 12s |
+
+The Boat and the Improved Boat cost exactly as much as their references
+(travel plan ruling 3). The first respec stays free.

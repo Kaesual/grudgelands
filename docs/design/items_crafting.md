@@ -1995,7 +1995,8 @@ Goldsmith/build material.
   budgets rather than bypassing the ledger with direct money drops.
 - Reliable net solo income is measured after routine tier-appropriate repair
   and consumables, excluding rare jackpots, boss rewards and player trade.
-  Mount Gold targets derive from those measured tier rates.
+  Mount, boat and respec prices derive from those tier rates (`economy.md`
+  §3, §4).
 - Every mob drop and every gathered good has a positive payout from the loot
   formula of economy.md §2 (class value × tier factor); processed goods pay
   their cheapest recipe's inputs. Material values rise with tier, while player
@@ -2074,10 +2075,11 @@ retired. Housing has no money price, tiers, upgrades or additional stones
   blocks are refused. Inserted fuel cannot be taken out; picking the stone up
   returns only the whole unburnt lumps.
 
-Mounts at levels 15/30/45/60 target **15 minutes / 45 minutes / 2 hours /
-5 hours** of reliable tier-appropriate net solo income. Their copper prices
-are derived only after those rates are measured; the retired fixed
-1s/8s/30s/60s table is not a fallback.
+Mounts at levels 15/30/45/60 cost **15 minutes / 45 minutes / 2 hours /
+5 hours** of reliable tier-appropriate net solo income: **1s10c, 7s, 1g63s and
+7g33s**; the Boat costs 1s10c and the Improved Boat 7s, like the two land
+tiers (`economy.md` §4.2). The retired fixed 1s/8s/30s/60s table is not a
+fallback.
 
 ## 9. Bow and arrow item foundation
 
