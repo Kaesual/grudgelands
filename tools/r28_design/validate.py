@@ -494,7 +494,8 @@ class Validator:
             return
         band = info["levels"] if info is not None and info.get("levels") else None
         parsed, errors = C.parse_recipe(zone, data["recipe"], band, self.role_levels,
-                                        lambda role: (self.subtypes.get(role) or {}).get("leader") is True)
+                                        lambda role: (self.subtypes.get(role) or {}).get("leader") is True,
+                                        info["pois"] if info is not None else None)
         for err in errors:
             self.E(err.code, file, "recipe." + err.path if err.path != "recipe" else "recipe", err.msg)
         if parsed is None:
@@ -532,16 +533,19 @@ class Validator:
                 if other != zone and role in self.d.leaders(other):
                     self.E("E-duplicate", file, path, "leader %s is also placed by %s (a leader stands in one "
                            "zone)" % (role, other))
-        # The atlas: `from` names an anchor of the zone, `to` its neighbours.
+        # The atlas: `from` names anchors of the zone or its neighbours, `to`
+        # its neighbours.
         if info is None:
             return
-        anchor = (parsed["from"] or {}).get("anchor")
-        if anchor is not None and anchor not in info["anchor_refs"]:
-            refs = sorted(r for r in info["anchor_refs"] if not r.startswith("anchor_") and not r.startswith("r20_"))
-            self.E("E-unknown-anchor", file, "recipe.from.anchor", "anchor %r is not an anchor of %s (anchor id "
-                   "or slot; this zone has: %s)" % (anchor, zone, ", ".join(refs) or "none"))
-        for i, other in enumerate((parsed["to"] or {}).get("border") or []):
-            path = "recipe.to.border[%d]" % i
+        for anchor in (parsed["from"] or {}).get("anchor") or []:
+            if anchor not in info["anchor_refs"]:
+                refs = sorted(r for r in info["anchor_refs"] if not r.startswith("anchor_") and not r.startswith("r20_"))
+                self.E("E-unknown-anchor", file, "recipe.from.anchor", "anchor %r is not an anchor of %s (anchor "
+                       "id or slot; this zone has: %s)" % (anchor, zone, ", ".join(refs) or "none"))
+        borders = [("from", i, other) for i, other in enumerate((parsed["from"] or {}).get("border") or [])]
+        borders += [("to", i, other) for i, other in enumerate((parsed["to"] or {}).get("border") or [])]
+        for key, i, other in borders:
+            path = "recipe.%s.border[%d]" % (key, i)
             if other not in self.atlas.zones:
                 self.E("E-unknown-zone", file, path, "zone %r is not in the atlas" % other)
             elif other not in info["neighbours"]:
@@ -1421,6 +1425,37 @@ def _mutations():
     def critter_list(d):
         d["recipe"]["critters"].append("small_boar")
 
+    def from_border_core(d):
+        d["recipe"]["from"] = {"border": "elandor_goldmead_vale"}
+        d["recipe"]["to"] = {"core": True}
+
+    def from_anchor_list(d):
+        d["recipe"]["from"] = {"anchor": ["start", "anchor_002"]}
+
+    def from_anchor_and_border(d):
+        d["recipe"]["from"] = {"anchor": "start", "border": "elandor_goldmead_vale"}
+
+    def from_border_unknown(d):
+        d["recipe"]["from"] = {"border": "elandor_nowhere"}
+        d["recipe"]["to"] = {"core": True}
+
+    def entry_is_exit(d):
+        d["recipe"]["from"] = {"border": "elandor_goldmead_vale"}
+
+    def core_not_true(d):
+        d["recipe"]["to"] = {"core": 1}
+
+    def no_to_three_belts(d):
+        del d["recipe"]["to"]
+
+    def camp_on_missing_poi(d):
+        d["recipe"]["camps"][0]["site"] = {"poi": "bandit"}
+        del d["recipe"]["camps"][0]["apart"]
+
+    def camp_on_guard_post(d):
+        d["recipe"]["camps"][0]["site"] = {"poi": "guard post"}
+        del d["recipe"]["camps"][0]["apart"]
+
     def critter_in_roster(d):
         belt(d, "l3_5")["kinds"]["shore"]["day"] = [{"role": "rabbit", "weight": 1}]
 
@@ -1544,6 +1579,15 @@ def _mutations():
         ("border zone not in the atlas", S, unknown_border, "E-unknown-zone"),
         ("border zone not a neighbour (warning)", S, far_border, "W-border-neighbour"),
         ("non-critter in critters", S, critter_list, "E-critter"),
+        ("from by border, to the core", S, from_border_core, None),
+        ("from a list of anchors", S, from_anchor_list, None),
+        ("from names an anchor and a border", S, from_anchor_and_border, "E-recipe"),
+        ("from border zone not in the atlas", S, from_border_unknown, "E-unknown-zone"),
+        ("entry border is the exit border", S, entry_is_exit, "E-recipe-ref"),
+        ("to core not true", S, core_not_true, "E-recipe"),
+        ("three belts without to", S, no_to_three_belts, "E-recipe"),
+        ("camp on a POI type the zone lacks (atlas)", S, camp_on_missing_poi, "E-recipe-poi"),
+        ("camp on a guard post", S, camp_on_guard_post, "E-recipe-poi"),
         ("critter in a roster", S, critter_in_roster, "W-critter-area"),
         ("sub-type size", "catalog/subtypes.json", size, "E-size"),
         ("role collides with existing entity", "catalog/subtypes.json", collides, "E-role-collides"),
@@ -1695,6 +1739,31 @@ def _scenarios():
                                         "respawn": 300}]
         _save(spawns_file, spawns)
 
+    def goldmead_camps(camps, leaders=None, change=None):
+        """Goldmead's one-belt recipe with camps (its atlas: one bandit camp
+        POI, one guard post)."""
+        def setup(target):
+            data = goldmead_recipe(leaders or [])
+            data["recipe"]["camps"] = camps
+            if change:
+                change(data["recipe"])
+            _save(target / "zones" / "elandor_goldmead_vale.spawns.json", data)
+        return setup
+
+    def poi_camp(**fields):
+        row = {"id": "vale_bandits", "name": "Goldmead Bandits", "site": {"poi": "bandit"},
+               "roster": [{"role": "bandit", "weight": 1}], "slots": 5, "respawn": [30, 60],
+               "min_player_distance": 16}
+        row.update(fields)
+        return row
+
+    def no_from_to(recipe):
+        del recipe["from"]
+        del recipe["to"]
+
+    def no_from(recipe):
+        del recipe["from"]
+
     def palette_only(target):
         """A shipped file without a recipe: only today's palette."""
         _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
@@ -1783,6 +1852,24 @@ def _scenarios():
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, False, "E-duplicate"),
         ("a palette-only spawns file (shipped form)", palette_only, False, None),
+        ("camp on the zone's bandit POI, belt of the POI", goldmead_camps([poi_camp()]), False, None),
+        ("camp on a POI named by its name", goldmead_camps([poi_camp(
+            site={"poi": "bandit", "name": "Goldmead Bandit Camp"})]), False, None),
+        ("camp on a POI with a stated belt", goldmead_camps([poi_camp(belt="l11_20")]), False, None),
+        ("camp on a POI name the zone lacks", goldmead_camps([poi_camp(
+            site={"poi": "bandit", "name": "Nowhere Camp"})]), False, "E-recipe-poi"),
+        ("camp on the zone's guard post", goldmead_camps([poi_camp(site={"poi": "guard post"})]), False,
+         "E-recipe-poi"),
+        ("apart on a camp on a POI", goldmead_camps([poi_camp(apart=8)]), False, "E-recipe-key"),
+        ("two camps on one POI", goldmead_camps([poi_camp(), poi_camp(id="more_bandits")]), False,
+         "E-recipe-poi"),
+        ("generated camp without a belt", goldmead_camps([poi_camp(site="generate", apart=8)]), False,
+         "E-recipe-ref"),
+        ("leader at a camp on a POI without a belt", goldmead_camps([poi_camp()], [
+            {"role": "confused_bandit_chief", "at": {"camp": "vale_bandits"}, "respawn": 300}]), False,
+         "E-leader-camp-belt"),
+        ("one-belt recipe without from and to", goldmead_camps([], change=no_from_to), False, None),
+        ("to without from", goldmead_camps([], change=no_from), False, "E-recipe"),
         ("elite leader below level 31", zone_cat(elite_chief), False, "E-leader-tier"),
         ("zone catalogue adds a non-leader role", zone_cat(non_leader_role), False, "E-zone-catalog"),
         ("zone catalogue adds a non-quest item", zone_cat(non_quest_item), False, "E-zone-catalog"),

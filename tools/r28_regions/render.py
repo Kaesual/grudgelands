@@ -81,6 +81,25 @@ def levels_text(lv):
     return "L%d" % lv[0] if lv[0] == lv[1] else "L%d-%d" % (lv[0], lv[1])
 
 
+def entry_text(doc):
+    """Where the levels start: the `from` place, or the border it enters by."""
+    if doc.get("from"):
+        return doc["from"]["name"]
+    if doc.get("from_border"):
+        return "the %s border" % ", ".join(doc["from_border"])
+    return "?"
+
+
+def route_text(doc):
+    """"from Dawnmere to the elandor_goldmead_vale border", "... to the
+    zone's core", or "one belt" (a recipe without `to`)."""
+    if doc.get("to_core"):
+        return "from %s to the zone's core" % entry_text(doc)
+    if doc.get("to"):
+        return "from %s to the %s border" % (entry_text(doc), ", ".join(doc["to"]))
+    return "one belt"
+
+
 def roster_text(rows):
     total = sum(r["weight"] for r in rows)
     parts = []
@@ -244,10 +263,9 @@ def main():
     title = "%s: spawn regions, seed %s" % (doc["zone_name"], doc["seed"])
     d.text((LEFT, 10), title, font=f_big, fill=(0, 0, 0))
     st = doc["stats"]
-    sub = ("%d land cells (32 x 32 nodes), %d regions, from %s to the %s border; "
+    sub = ("%d land cells (32 x 32 nodes), %d regions, %s; "
            "thin lines: %s, thick: belts; labels: level range") % (
-        st["cells"], st["regions"], doc["from"]["name"] if doc.get("from") else "?",
-        ", ".join(doc.get("to", [])) or "next zone",
+        st["cells"], st["regions"], route_text(doc),
         "between kinds" if args.kind_borders else "regions")
     d.text((LEFT, 38), sub, font=f_med, fill=(60, 60, 60))
     # Scale bar (100 nodes).
@@ -263,7 +281,7 @@ def main():
     kind_share = {k["id"]: k for k in st["kinds"]}
     for b_index, b in enumerate(doc["belts"], start=1):
         sb = belt_share[b["id"]]
-        cap = ", at most %d nodes from %s" % (b["max_from"], doc["from"]["name"]) if b.get("max_from") else ""
+        cap = ", at most %d nodes from %s" % (b["max_from"], entry_text(doc)) if b.get("max_from") else ""
         d.text((x0, y), "Belt %s  %s  %.1f %% of land (planned %g %%%s)" % (
             b_index, levels_text(b["levels"]), 100 * sb["share"], b["share"], cap), font=f_bold, fill=(0, 0, 0))
         y += 18
@@ -285,8 +303,9 @@ def main():
         y += 6
     for c in doc["camps"]:
         draw_tent(d, x0 + 8, y + 8, 7)
+        name = "%s (on %s, belt %s)" % (c["name"], c["poi"], c["belt"]) if c.get("poi") else c["name"]
         d.text((x0 + 20, y), "%s: %s, %d slots, respawn %d-%d s" % (
-            c["name"], roster_text(c["roster"]), c["slots"], c["respawn"][0], c["respawn"][1]),
+            name, roster_text(c["roster"]), c["slots"], c["respawn"][0], c["respawn"][1]),
             font=f_med, fill=(0, 0, 0))
         y += 18
     for l in doc["leaders"]:
@@ -370,6 +389,11 @@ def write_stats(doc, path):
     lines.append("## Camps and leaders")
     lines.append("")
     for c in doc["camps"]:
+        if c.get("poi"):
+            lines.append("- Camp `%s` on the POI %s at (%d, %d): belt %s, nearest road %.0f nodes, "
+                         "levels %s." % (c["id"], c["poi"], c["x"], c["z"], c["belt"], c["road"],
+                                         levels_text(c["levels"])))
+            continue
         lines.append("- Camp `%s` at (%d, %d): score %.2f, nearest road %.0f nodes, levels %s." % (
             c["id"], c["x"], c["z"], c["score"], c["road"], levels_text(c["levels"])))
     for l in doc["leaders"]:
@@ -381,9 +405,10 @@ def write_stats(doc, path):
     lines.append("## Directions")
     lines.append("")
     giver = doc.get("giver")
-    lines.append("Reference place: %s at (%d, %d); quest giver: %s at (%d, %d)." % (
-        doc["from"]["name"], doc["from"]["x"], doc["from"]["z"],
-        giver["name"] if giver else "-", giver["x"] if giver else 0, giver["z"] if giver else 0))
+    ref = doc.get("from")
+    lines.append("Reference place: %s; quest giver: %s." % (
+        "%s at (%d, %d)" % (ref["name"], ref["x"], ref["z"]) if ref else "none (no `from` anchor)",
+        "%s at (%d, %d)" % (giver["name"], giver["x"], giver["z"]) if giver else "none (no start town)"))
     lines.append("")
     lines.append("| Target | Of the place | From the giver | Within the zone |")
     lines.append("|---|---|---|---|")
