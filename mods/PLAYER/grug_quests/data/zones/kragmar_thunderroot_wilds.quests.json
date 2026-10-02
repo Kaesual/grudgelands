@@ -22,11 +22,11 @@
       "line": "storm",
       "giver": "r20_anchor_048_host",
       "turnin": "r20_anchor_048_host",
-      "min_level": 30,
+      "min_level": 29,
       "level": 31,
       "requires": [],
       "title": "An Unhelpful Chorus",
-      "text": "The Treetop Jungle Apes in the {name:canopy}, {zone_area:canopy}, greet every scout with a chorus loud enough to guide an Accord patrol. Hunt them by day and kill four. I asked the spirits for silence; they sent more rain, which was thoughtful but unhelpful.",
+      "text": "The Treetop Jungle Apes in the {name:canopy}, which lies {zone_area:canopy}, greet every scout with a chorus loud enough to guide an Accord patrol. Hunt them by day and kill four. I asked the spirits for silence; they sent more rain, which was thoughtful but unhelpful.",
       "objectives": [
         {
           "type": "kill",
@@ -54,7 +54,7 @@
         "thunderroot_storm_01"
       ],
       "title": "Thunder Needs No Cork",
-      "text": "The Reed-Hex Bog Witches gather after dark in the {name:bogs}, {zone_area:bogs}, bottling thunder as though the sky were theirs to pickle. Kill four and bring me two Hex Bottle Shards; let us see whose storm they thought they could keep.",
+      "text": "The Reed-Hex Bog Witches gather after dark in the {name:bogs}, which lie {zone_area:bogs}, bottling thunder as though the sky were theirs to pickle. Kill four and bring me two Hex Bottle Shards; let us see whose storm they thought they could keep.",
       "objectives": [
         {
           "type": "kill",
@@ -115,7 +115,7 @@
         "thunderroot_storm_02"
       ],
       "title": "Messages Wrapped in Silk",
-      "text": "A message wrapped in silk sounds grand until you learn the messenger is still inside. Kill four Canopy-Web Jungle Spiders after dark in the {name:deepwood}, {zone_area:deepwood}. Our words must reach the other outposts before the spiders finish reading them.",
+      "text": "A message wrapped in silk sounds grand until you learn the messenger is still inside. Kill four Canopy-Web Jungle Spiders after dark in the {name:deepwood}, which lies {zone_area:deepwood}. Our words must reach the other outposts before the spiders finish reading them.",
       "objectives": [
         {
           "type": "kill",
@@ -143,7 +143,7 @@
         "thunderroot_storm_04"
       ],
       "title": "Bounty: The Chorus Returns",
-      "text": "The Treetop Jungle Apes have claimed the day's chorus in the {name:deepwood}, {zone_area:deepwood}; even the birds sound offended. Kill six there by day and return for your reward. Wait twenty minutes after collecting before taking this bounty again; that gives me time to remember what a bird sounds like.",
+      "text": "The Treetop Jungle Apes have claimed the day's chorus in the {name:deepwood}; even the birds sound offended. Kill six there by day and return for your reward. Wait twenty minutes after collecting before taking this bounty again; that gives me time to remember what a bird sounds like.",
       "objectives": [
         {
           "type": "kill",
@@ -173,7 +173,7 @@
       "level": 36,
       "requires": [],
       "title": "Listen for the Hiss",
-      "text": "The marsh speaks to those who listen, but lately our foragers hear nothing except hissing. Kill four Coiled Serpents basking by day in the {name:witchmire}, {zone_area:witchmire}. The spirits may teach patience; I would rather our foragers came home to learn it.",
+      "text": "The marsh speaks to those who listen, but lately our foragers hear nothing except hissing. Kill four Coiled Serpents basking by day in the {name:witchmire}, which lies {zone_area:witchmire}. The spirits may teach patience; I would rather our foragers came home to learn it.",
       "objectives": [
         {
           "type": "kill",
@@ -201,7 +201,7 @@
         "thunderroot_rainchar_01"
       ],
       "title": "A Debt at {name:rainchar_camp}",
-      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there. I can listen to an empty belly without asking the spirits what it means.",
+      "text": "The bandits at the {name:rainchar_camp} {dir_from_giver:rainchar_camp} sell our stolen supplies while Thunderstep's fighters make do with scraps. Kill four Entrenched Bandit Archers there. Hungry fighters hold no line, whatever the spirits promise.",
       "objectives": [
         {
           "type": "kill",
@@ -294,7 +294,7 @@
         "thunderroot_rainchar_03"
       ],
       "title": "Carry the Thunder",
-      "text": "You came through this jungle listening for danger; now the jungle knows your footsteps. Go to Yarra Standardmender at Tornstandard Hold on Bannerbreak Mesa, where she gathers fighters for the front. Carry our thunder with you, and leave room beside your own footprints for those who follow.",
+      "text": "You came through this jungle listening for danger; now the jungle knows your footsteps. Travel to Tornstandard Hold on Bannerbreak Mesa and report to Yarra Standardmender; she sends Throng fighters on to the front from there. Carry our thunder with you.",
       "objectives": [
         {
           "type": "talk",

@@ -35,11 +35,11 @@
       "line": "ramp",
       "giver": "r20_anchor_043_host",
       "turnin": "r20_anchor_043_host",
-      "min_level": 30,
+      "min_level": 29,
       "level": 31,
       "requires": [],
       "title": "The Last Laugh",
-      "text": "My crews haul siege timbers all day. The Warpack Hyenas laugh at them from the {name:badlands}, {zone_area:badlands}. Get out there in daylight and kill four. Anything with that much breath to spare can pull a rope or stop making noise.",
+      "text": "My crews haul siege timbers all day. The Warpack Hyenas laugh at them from the {name:badlands}, which lie {zone_area:badlands}. Get out there in daylight and kill four. Anything with that much breath to spare can pull a rope or stop making noise.",
       "objectives": [
         {
           "type": "kill",
@@ -128,7 +128,7 @@
         "bannerbreak_ramp_03"
       ],
       "title": "Bounty: Teeth After Dark",
-      "text": "Night wagons need an escort through the {name:warplains}, {zone_area:warplains}, and the Warpack Hyenas have volunteered to eat it. Kill six there after dark and bring yourself back for payment. You can take the bounty again twenty minutes after collecting; keeping wagon crews alive is money well spent.",
+      "text": "Night wagons need an escort through the {name:warplains}, which lie {zone_area:warplains}, and the Warpack Hyenas have volunteered to eat it. Kill six there after dark and bring yourself back for payment. You can take the bounty again twenty minutes after collecting; keeping wagon crews alive is money well spent.",
       "objectives": [
         {
           "type": "kill",
@@ -154,11 +154,11 @@
       "line": "standard",
       "giver": "r20_anchor_044_host",
       "turnin": "r20_anchor_044_host",
-      "min_level": 30,
+      "min_level": 29,
       "level": 31,
       "requires": [],
       "title": "Inspect Your Bedroll",
-      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, {zone_area:badlands}: kill four and bring me two Venom Sacs. My fighters have earned a night's sleep without armour.",
+      "text": "I can train a fighter to face the Accord, but nobody fights well with a scorpion in their trousers. Hunt the War-Stinger Scorpions after dark in the {name:badlands}, which lie {zone_area:badlands}. Kill four and bring me two Venom Sacs. My fighters have earned a night's sleep without armour.",
       "objectives": [
         {
           "type": "kill",
@@ -219,7 +219,7 @@
         "bannerbreak_standard_01"
       ],
       "title": "A Scout Is Worth More",
-      "text": "My scouts watch for Accord patrols; the Tallgrass Tigers have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
+      "text": "My scouts watch for Accord patrols; the Tallgrass Tigers have learned to watch my scouts. Kill four of those tigers by day in the {name:warplains}, which lie {zone_area:warplains}. It takes years to teach a fighter when to stay quiet. I will not spend those years feeding cats.",
       "objectives": [
         {
           "type": "kill",
@@ -247,7 +247,7 @@
         "bannerbreak_standard_03"
       ],
       "title": "A Soldier's Due",
-      "text": "The Trench Mummies still march through the {name:redcut_flats} after dark, {zone_area:redcut_flats}, wearing armour from a war that used them up. Kill four and end their watch. Whatever banner they followed, no soldier owes it an eternity.",
+      "text": "The {name:redcut_flats} lie {zone_area:redcut_flats}, and after dark the Trench Mummies still march there in armour from a war that used them up. Kill four and end their watch. Whatever banner they followed, no soldier owes it an eternity.",
       "objectives": [
         {
           "type": "kill",
