@@ -40,8 +40,15 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   - **Band smoothing (E):** band-4/5 loot medians 39.0 → 43.6c and 147.6 →
     119.5c; Expert Riding 1g37s, respec 31–40 2s and 41–50 6s
     ([economy.md](design/economy.md)).
-  - Final fresh-world engine check: at integration. Next: synchronize,
-    fresh world, the user's GUI test; then Round 31 PvP.
+  - **Final engine check PASS** (seed 42, 2026-10-03): cold boot stores
+    both caches (region hook 8.8 s, "listening" 40.0 s); the second boot
+    hits them (3.3 ms, "listening" 6.9 s, heap 71 MiB after GC); log free
+    of ERROR and craft warnings; four landings with pier and beach
+    (Stormscale south also has a natural walkable slope up); surface,
+    cave and bay spawns with at most one mob per merged trigger;
+    Dawnmere 13 NPCs, no duplicates after reloads; boxed-in target given
+    up and searches drop to 0, a target on a bottom slab is chased.
+    Next: the user's GUI test on a fresh world; then Round 31 PvP.
 
 - **Round 29 "Economy and travel" complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round29-plan.md#completion-2026-10-02)).

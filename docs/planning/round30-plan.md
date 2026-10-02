@@ -162,10 +162,11 @@ Every lane below is merged on local main (last lane P2, `b64709d7`); each
 was independently reviewed by Opus, and the coordinator ran the
 `tools/r2*_*` and `tools/r30_*` fixtures (LuaJIT),
 `tools/check_fresh_server.py` and a headless boot after every merge. Not
-pushed. The final fresh-world engine check (§6) runs at integration
-(worktree `r30-final`); its result goes into [STATUS](../STATUS.md).
-Next: synchronization, then the user's GUI test on a fresh world (checklist
-below).
+pushed. The final fresh-world engine check (§6) passed on seed 42
+(2026-10-03, details in [STATUS](../STATUS.md)); the only remaining boot
+warnings are the mod-storage backend notice of the headless launcher and
+the Dur Brannoc street-profile warning, both older than this round. Next:
+the user's GUI test on a fresh world (checklist below).
 
 ### Shipped, by lane
 
