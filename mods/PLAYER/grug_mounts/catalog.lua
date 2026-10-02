@@ -212,4 +212,3 @@ function grug_mounts.model_for(player, tier_id)
 	if tier.mode == "water" then return grug_mounts.MODELS[tier.key] end
 	return nil
 end
-
