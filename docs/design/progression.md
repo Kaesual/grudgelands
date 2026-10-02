@@ -248,11 +248,10 @@ on every quest is 3.8–9.5 KE, 36–85 % of a whole level (the old design meant
 L10–12 regional and local quests of one start town add 4,430 XP, which takes
 a player from level 10 to about level 14 by rewards alone.
 
-Rewards below are per quest, shared by the six racial variants except where a
-race's quest has its own target level: the Orc Starter 4 (the Husk patrol) is a
-level-5 quest (Round 24; the Husk spawns in Sunscar from level 4) and grants the
-level-5 reward, 180 XP. They are fixed catalog values before any applicable
-racial modifier; no runtime level scaling.
+Rewards below are per quest, shared by the racial variants that still ship
+the split older quests (the Orc track's designed quests replaced its variant in
+Round 29). They are fixed catalog values before any applicable racial
+modifier; no runtime level scaling.
 
 | Quest position / work | Intended level | XP |
 | --- | ---: | ---: |
