@@ -91,9 +91,10 @@ for zone in "${zones[@]}"; do
 done
 reap
 echo "images and stats written under $root (dumps in $work)"
-# Kill quests against the regions of these seeds (quest_targets.py): a target
-# in a recipe that forms no region on a seed fails the run; stats missing for
-# other zones or seeds (a partial run) skip the check.
+# Quest targets against the regions of these seeds (quest_targets.py): a
+# target (objective, quest drop, leader, placeholder) that forms no region or
+# leader spot on a seed fails the run; stats missing for other zones or seeds
+# (a partial run) skip the check.
 qt=0
 python3 "$here/quest_targets.py" --root "$root" --seeds "${seeds[*]}" > "$work/quest_targets.txt" || qt=$?
 case "$qt" in
