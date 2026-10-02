@@ -9,8 +9,8 @@
       "min_level": 55,
       "level": 56,
       "requires": [],
-      "title": "Glass Venom",
-      "text": "Glass-Fang Serpents coil in the {name:front_skyglass_canopy/rootways} {zone_area:front_skyglass_canopy/rootways} by day. Bring three Glass Venom; our healers thin it into a cure for the very bite it comes from. The canopy teaches patience, and so do serpents.",
+      "title": "The Healers Are Waiting",
+      "text": "Our healers have patients waiting and no Glass Venom left; I would spare them having to choose who waits longest. Bring me three portions from Glass-Fang Serpents in the {name:front_skyglass_canopy/rootways} {zone_area:front_skyglass_canopy/rootways} by day. Walk with care among those roots, so your return gives the healers one task fewer.",
       "objectives": [
         {
           "type": "item",
@@ -37,8 +37,8 @@
       "min_level": 55,
       "level": 56,
       "requires": [],
-      "title": "Webs in the Rootways",
-      "text": "At night Glass-Web Jungle Spiders spin across the {name:front_skyglass_canopy/rootways}, and nothing that walks there by day is safe. Kill six of them after dark. The roots will breathe again.",
+      "title": "Threads Across the Living Path",
+      "text": "Glass-Web Jungle Spiders draw their threads across the {name:front_skyglass_canopy/rootways} each night, until even familiar paths become snares. Kill six of them after dark. A forest must leave room for more than one kind of hunger.",
       "objectives": [
         {
           "type": "kill",
@@ -67,8 +67,8 @@
         "lethariel_front_01",
         "lethariel_front_02"
       ],
-      "title": "Apes of the High Canopy",
-      "text": "Glass-Knuckle Jungle Apes rule the {name:front_skyglass_canopy/high_canopy} {zone_area:front_skyglass_canopy/high_canopy} by day and throw whatever they find at whoever they see. Defeat six of them. Do not take it personally; they throw at each other too.",
+      "title": "A Disagreement in the Branches",
+      "text": "I sent a scout to listen to the {name:front_skyglass_canopy/high_canopy} {zone_area:front_skyglass_canopy/high_canopy}; the Glass-Knuckle Jungle Apes answered with a branch. Defeat six of them there by day so our watchers can return. Listening to the forest requires a little quiet, and preferably an unbroken head.",
       "objectives": [
         {
           "type": "kill",
@@ -96,8 +96,8 @@
       "requires": [
         "lethariel_front_03"
       ],
-      "title": "The Paymaster",
-      "text": "{name:paymaster_chirr} pays the Last-Pay Archers at the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}, in coin taken from the dead of both banners. Defeat five of his archers and then Chirr himself. The canopy keeps no ledger of debts, and neither shall he.",
+      "title": "The Price of Another War",
+      "text": "{name:paymaster_chirr} pays his Last-Pay Archers with coin stripped from the dead of both banners at the {name:front_skyglass_canopy/paymaster_camp} {dir_from_giver:front_skyglass_canopy/paymaster_camp}. Defeat five of those archers and the paymaster himself. We have watched this forest grow through enough wars; he will not purchase another beneath its branches.",
       "objectives": [
         {
           "type": "kill",
@@ -133,8 +133,8 @@
       "requires": [
         "lethariel_front_04"
       ],
-      "title": "Group: Serpent Glass-Throat",
-      "text": "{name:glass_throat_serpent} coils in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}, an elite serpent older than our oldest tree. Gather a group before you go. Some things in the canopy are best met in company.",
+      "title": "Group: Beneath the Waiting Coils",
+      "text": "The branches bend beneath {name:glass_throat_serpent} in the {name:front_skyglass_canopy/high_canopy} {dir_from_giver:glass_throat_serpent}. Gather a group and slay that elite serpent before it takes another of our watchers. There is wisdom in a solitary walk, but this is a task for companions who will watch one another's backs.",
       "objectives": [
         {
           "type": "kill",
@@ -163,8 +163,8 @@
       "requires": [
         "lethariel_front_04"
       ],
-      "title": "Bounty: High Canopy Panthers",
-      "text": "Glass-Shadow Panthers stalk the {name:front_skyglass_canopy/high_canopy} after dark. Bring down five of them at night, and I will reward you each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: Eyes Beyond the Lanterns",
+      "text": "When the lanterns are lit, Glass-Shadow Panthers begin their hunt in the {name:front_skyglass_canopy/high_canopy}. Bring down five there after dark, and I will pay a bounty so our watchers can make their rounds. You may accept the bounty again twenty-five minutes after each turn-in. The forest has time to spare; those walking home tonight do not.",
       "objectives": [
         {
           "type": "kill",

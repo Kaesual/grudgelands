@@ -9,8 +9,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Husks on the Floodmeadows",
-      "text": "Our supply carts cross the {name:front_broken_causeway/floodmeadows} {zone_area:front_broken_causeway/floodmeadows}, and by day Mire-Cured Husks crawl out of the mud to meet them. Put five of them back where they came from. Whoever else is shouting out there, the husks are nobody's allies.",
+      "title": "Bread Before Banners",
+      "text": "The officers can argue over banners once our drivers get the bread through. Kill five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows} {zone_area:front_broken_causeway/floodmeadows}; they keep dragging themselves out of the mud into the carts' path. I'd like to count returning drivers tonight, for a change.",
       "objectives": [
         {
           "type": "kill",
@@ -36,8 +36,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Skeletons on the Toll Road",
-      "text": "After dark Tollroad Skeletons march the {name:front_broken_causeway/floodmeadows} as if the old toll road still paid them. Break five of them at night. The carts leave at dawn, and I would like them to arrive with their drivers.",
+      "title": "The Night Shift Never Left",
+      "text": "Daylight gets the husks moving; night brings out the Tollroad Skeletons in the {name:front_broken_causeway/floodmeadows}. Kill five of those skeletons after dark, before our dawn carts set out. Nobody should have to pay a toll to a man who's outlived his pockets.",
       "objectives": [
         {
           "type": "kill",
@@ -66,8 +66,8 @@
         "cinderline_front_01",
         "cinderline_front_02"
       ],
-      "title": "The Old Battlefield",
-      "text": "Deeper in, the {name:front_broken_causeway/battlefield} {zone_area:front_broken_causeway/battlefield} is where the last war stopped and never quite ended. By day, defeat five of the Mire-Cured Husks and Causeway Brigands that pick over it. Bring back nothing that rattles.",
+      "title": "What the War Left Standing",
+      "text": "My father called that war finished, but the {name:front_broken_causeway/battlefield} {zone_area:front_broken_causeway/battlefield} seems to have missed the announcement. Go by day and defeat five enemies in all, counting either Mire-Cured Husks or Causeway Brigands. We still need a way through the ground they died fighting over.",
       "objectives": [
         {
           "type": "kill",
@@ -96,8 +96,8 @@
       "requires": [
         "cinderline_front_03"
       ],
-      "title": "Orders for Archshadow Post",
-      "text": "Take these orders to Alna Archsight at Archshadow Post in Stormvault Heights. The far end of the Causeway is hers to hold, and it grows nastier the closer it runs to Gravesalt. Tell her Cinderline still stands.",
+      "title": "Cinderline Still Stands",
+      "text": "Speak with Alna Archsight at Archshadow Post in Stormvault Heights and give her our report: Cinderline Watch still stands. She needs to hear what you've seen on The Broken Causeway before she sends more people into it. If she asks whether we're cheerful, tell her we're fed; she'll understand.",
       "objectives": [
         {
           "type": "talk",
@@ -119,8 +119,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Hyenas on the Approaches",
-      "text": "Warpack Hyenas run the {name:front_shattered_line/approaches} {zone_area:front_shattered_line/approaches} by day and laugh at our patrols. Bring down five of them. The hedge has held for a hundred years; it can hold against dogs.",
+      "title": "Nobody's Laughing Here",
+      "text": "Warpack Hyenas have learned that a tired patrol makes easier hunting than a fresh one. Bring down five by day on the {name:front_shattered_line/approaches} {zone_area:front_shattered_line/approaches}. I promised those sentries they'd get home, and I intend to keep it.",
       "objectives": [
         {
           "type": "kill",
@@ -148,8 +148,8 @@
       "requires": [
         "lasthedge_front_01"
       ],
-      "title": "Claws from the Bluffs",
-      "text": "Tallgrass Tigers stalk the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs} by day. Bring me three Siege Cat Claws; the fletchers swear nothing makes a better arrow notch. I swear nothing else bites a scout in half, so take care.",
+      "title": "The Fletchers' Bright Idea",
+      "text": "The fletchers have requested three Siege Cat Claws, very neatly written and without a single offer to fetch them. Hunt Tallgrass Tigers by day on the {name:front_shattered_line/bluffs} {zone_area:front_shattered_line/bluffs} and bring the claws to me. I'll see that your name goes on the delivery.",
       "objectives": [
         {
           "type": "item",
@@ -178,8 +178,8 @@
       "requires": [
         "lasthedge_front_02"
       ],
-      "title": "Stingers on the Ramparts",
-      "text": "After dark War-Stinger Scorpions swarm the {name:front_shattered_line/ramparts} {zone_area:front_shattered_line/ramparts}, and our sentries refuse to stand there. Kill five of them at night. I will tell the sentries it was easy.",
+      "title": "A Sentry Needs Somewhere to Stand",
+      "text": "My sentries will face an army, but they've asked for somewhere to put their feet. Kill five War-Stinger Scorpions after dark on the {name:front_shattered_line/ramparts} {zone_area:front_shattered_line/ramparts}. Seems a fair request from people who spend all night standing up for us.",
       "objectives": [
         {
           "type": "kill",
@@ -207,8 +207,8 @@
       "requires": [
         "lasthedge_front_03"
       ],
-      "title": "The Standard-Bearer",
-      "text": "{name:standard_bearer_ninepins} still carries his banner through the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}, and the Siege Skeleton Raiders rally to it every night. Break five of the raiders there after dark, then Ninepins himself. A banner with nobody under it is just a rag.",
+      "title": "Nobody Left to Rally",
+      "text": "Every night, Siege Skeleton Raiders gather beneath the banner of {name:standard_bearer_ninepins} at the {name:front_shattered_line/breach} {dir_from_giver:standard_bearer_ninepins}. Kill five of those raiders after dark and defeat their standard-bearer. Let the next thing our watch hears from that breach be the wind.",
       "objectives": [
         {
           "type": "kill",
@@ -244,8 +244,8 @@
       "requires": [
         "lasthedge_front_04"
       ],
-      "title": "Group: Engine Nine",
-      "text": "{name:siege_engine_nine} still grinds along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, an elite war construct nobody remembers building. Take a group and bring it down. Do not try this alone; I have run out of letters to write home.",
+      "title": "Group: An End to the Grinding",
+      "text": "I can hear {name:siege_engine_nine} grinding along the {name:front_shattered_line/siegecrest} {dir_from_giver:siege_engine_nine}, even when I close my eyes. Gather a group and destroy that elite war construct. Before you go, learn each other's names; I want everyone answering to them when you get back.",
       "objectives": [
         {
           "type": "kill",
@@ -274,8 +274,8 @@
       "requires": [
         "lasthedge_front_04"
       ],
-      "title": "Bounty: Siegecrest Tigers",
-      "text": "The biggest Tallgrass Tigers sleep on the {name:front_shattered_line/siegecrest} {zone_area:front_shattered_line/siegecrest}, right where I want a lookout. Bring down five of them by day and I will pay you again each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: Room for a Lookout",
+      "text": "The Tallgrass Tigers have picked the {name:front_shattered_line/siegecrest} {zone_area:front_shattered_line/siegecrest} for themselves, and I need it for a lookout. Bring down five there by day for a bounty. You can take the job again twenty-five minutes after each turn-in; apparently my sentries and the cats share a taste in views.",
       "objectives": [
         {
           "type": "kill",
@@ -306,8 +306,8 @@
       "requires": [
         "lasthedge_front_04"
       ],
-      "title": "Word for Splitbolt Station",
-      "text": "Carry word to Borin Splitbolt at Splitbolt Station in Stormvault Heights. Past the Causeway lies Gravesalt Escarpment, and Borin keeps asking for anyone who survived the Line. You qualify.",
+      "title": "A Recommendation with Mud on It",
+      "text": "Borin Splitbolt needs fighters for Gravesalt Escarpment, and I can think of one who's earned the recommendation. Speak with him at Splitbolt Station in Stormvault Heights and tell him what happened on The Shattered Line. Leave the mud on your boots; Borin trusts that more than a seal.",
       "objectives": [
         {
           "type": "talk",

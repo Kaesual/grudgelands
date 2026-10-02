@@ -9,8 +9,8 @@
       "min_level": 45,
       "level": 47,
       "requires": [],
-      "title": "Wraithwood Ambushers",
-      "text": "Causeway Brigands and Aqueduct Bowmen lie in wait in the {name:front_broken_causeway/wraithwood} {zone_area:front_broken_causeway/wraithwood}. Defeat five of them by day. Every arrow they lose is one less in a dwarf's beard.",
+      "title": "Bad Workmanship, Worse Company",
+      "text": "I'd welcome a proper look at the old masonry, if Causeway Brigands and Aqueduct Bowmen would let our surveyors near it. Go by day to the {name:front_broken_causeway/wraithwood} {zone_area:front_broken_causeway/wraithwood} and defeat five of those enemies in all. A dwarf should be able to criticise a crumbling arch in peace.",
       "objectives": [
         {
           "type": "kill",
@@ -39,8 +39,8 @@
       "requires": [
         "archshadow_front_01"
       ],
-      "title": "Bones of the Toll Fields",
-      "text": "Tollroad Skeletons walk the {name:front_broken_causeway/toll_fields} {zone_area:front_broken_causeway/toll_fields} every night. Bring me three Siege Bones from them. Our runesmiths want to know who raised them, and bones talk if you know how to ask.",
+      "title": "A Runesmith's Awkward Questions",
+      "text": "Our runesmiths reckon they can trace whoever put the Tollroad Skeletons back on their feet. Bring me three Siege Bones from those skeletons in the {name:front_broken_causeway/toll_fields} {zone_area:front_broken_causeway/toll_fields} after dark. I've given the smiths a bench of their own; their questions were spoiling everyone's supper.",
       "objectives": [
         {
           "type": "item",
@@ -69,8 +69,8 @@
       "requires": [
         "archshadow_front_02"
       ],
-      "title": "The Toll-Taker",
-      "text": "{name:toll_taker_senn} collects tolls at the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}, and the bones you brought say he raised the dead to collect for him. Defeat five of his Aqueduct Bowmen and then Senn. Nobody bills a dwarf twice.",
+      "title": "Collection Ends Here",
+      "text": "The runesmiths have a name: {name:toll_taker_senn}, working out of the {name:front_broken_causeway/toll_camp} {dir_from_giver:front_broken_causeway/toll_camp}. Seems he raised the dead to collect his tolls, which explains the service. Defeat him and five of his Aqueduct Bowmen; the next coin spent on that road ought to repair it.",
       "objectives": [
         {
           "type": "kill",
@@ -106,8 +106,8 @@
       "requires": [
         "archshadow_front_03"
       ],
-      "title": "Group: The Last-Toll Construct",
-      "text": "{name:last_toll_construct} stands in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct}, an elite war construct still guarding a toll nobody collects. Bring a group and break it. Alone you would only be another coin in its box.",
+      "title": "Group: No More Toll",
+      "text": "Whoever built {name:last_toll_construct} in the {name:front_broken_causeway/toll_fields} {dir_from_giver:last_toll_construct} did solid work and left miserable instructions. The elite war construct is still enforcing its toll. Gather a group and destroy it; we can admire the craftsmanship once it stops trying to flatten you.",
       "objectives": [
         {
           "type": "kill",
@@ -136,8 +136,8 @@
       "requires": [
         "archshadow_front_03"
       ],
-      "title": "Bounty: Gallows Wood Bowmen",
-      "text": "Senn is gone, but Aqueduct Bowmen still shoot from the {name:front_broken_causeway/gallows_wood} {zone_area:front_broken_causeway/gallows_wood} by day. Defeat five of them and I will pay each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: An Arrow Too Many",
+      "text": "Senn's Aqueduct Bowmen are still at work in the {name:front_broken_causeway/gallows_wood} {zone_area:front_broken_causeway/gallows_wood}, despite the change in management. Defeat five there by day for a bounty. I can pay for another five twenty-five minutes after each turn-in; I've a budget for clearing the road and every intention of spending it.",
       "objectives": [
         {
           "type": "kill",
@@ -168,8 +168,8 @@
       "requires": [
         "archshadow_front_03"
       ],
-      "title": "Orders for Splitbolt Station",
-      "text": "Take these orders to Borin Splitbolt at Splitbolt Station, along the heights. Gravesalt Escarpment starts where the Causeway ends, and Borin needs fighters who have seen worse than mud.",
+      "title": "Fit for Borin's Crew",
+      "text": "You've done work here that will hold, and Borin Splitbolt needs that sort of hand for Gravesalt Escarpment. Speak with him at Splitbolt Station in Stormvault Heights and pass on my report. He'll grumble that I should have sent you sooner; that's his welcome speech.",
       "objectives": [
         {
           "type": "talk",
@@ -191,8 +191,8 @@
       "min_level": 50,
       "level": 52,
       "requires": [],
-      "title": "Weevils in the Saltflats",
-      "text": "Salt-Boring Weevils chew through the {name:front_gravesalt_escarpment/saltflats} {zone_area:front_gravesalt_escarpment/saltflats} by day, and the ground falls in behind them. Kill six. A dwarf respects anything that tunnels, but not this much.",
+      "title": "No Shoring, No Sense",
+      "text": "Salt-Boring Weevils are tunnelling through the {name:front_gravesalt_escarpment/saltflats} {zone_area:front_gravesalt_escarpment/saltflats} without a thought for what stands above them. Kill six there by day before another stretch gives way. Even my worst apprentice knew to brace a tunnel, and he once shored up his own beard.",
       "objectives": [
         {
           "type": "kill",
@@ -218,8 +218,8 @@
       "min_level": 50,
       "level": 52,
       "requires": [],
-      "title": "Webs in the Bonewood",
-      "text": "At night Salt-Web Bonelurker Spiders string the {name:front_gravesalt_escarpment/bonewood} {zone_area:front_gravesalt_escarpment/bonewood} with webs as thick as rope. Kill six of them after dark. Burn the webs if you like; nobody will miss them.",
+      "title": "Rope with Opinions",
+      "text": "A line strung between trees ought to help a traveller find the path. In the {name:front_gravesalt_escarpment/bonewood} {zone_area:front_gravesalt_escarpment/bonewood}, it helps Salt-Web Bonelurker Spiders find supper. Kill six of those spiders after dark; I'd like our crews to finish a night shift under their own power.",
       "objectives": [
         {
           "type": "kill",
@@ -248,8 +248,8 @@
         "splitbolt_front_01",
         "splitbolt_front_02"
       ],
-      "title": "Salt Chitin",
-      "text": "Weevils grow bigger on the {name:front_gravesalt_escarpment/blight_terraces} {zone_area:front_gravesalt_escarpment/blight_terraces}, and their shells harder. Bring me three Salt Chitin from the Salt-Boring Weevils there by day. Mixed into mortar, it keeps the salt out of our walls.",
+      "title": "Something for the Mortar Crew",
+      "text": "The mortar crew has asked for Salt Chitin, and for once the request came without a lecture. Bring me three pieces from Salt-Boring Weevils on the {name:front_gravesalt_escarpment/blight_terraces} {zone_area:front_gravesalt_escarpment/blight_terraces} by day. I'll keep them busy arguing over the mixing trough until you're back.",
       "objectives": [
         {
           "type": "item",
@@ -278,8 +278,8 @@
       "requires": [
         "splitbolt_front_03"
       ],
-      "title": "The Hex Witches",
-      "text": "Salt-Hex Bog Witches gather in the {name:front_gravesalt_escarpment/tomb_fen} {zone_area:front_gravesalt_escarpment/tomb_fen} after dark, counting salt over the graves. Kill six of them at night. Whatever they are counting, I do not want it finished.",
+      "title": "Leave the Graves Out of It",
+      "text": "Salt-Hex Bog Witches gather after dark in the {name:front_gravesalt_escarpment/tomb_fen} {zone_area:front_gravesalt_escarpment/tomb_fen}, counting salt over the graves. Our ancestors earned their rest, and so did whoever lies there. Kill six of those witches at night before their muttering wakes something we have to bury twice.",
       "objectives": [
         {
           "type": "kill",
@@ -307,8 +307,8 @@
       "requires": [
         "splitbolt_front_04"
       ],
-      "title": "Last-Pay Archers",
-      "text": "Last-Pay Archers hold the {name:front_gravesalt_escarpment/saltroad_cliffs} {zone_area:front_gravesalt_escarpment/saltroad_cliffs} and shoot down at the salt road every night. Defeat five of them after dark. They were paid once, long ago; consider this their final wages.",
+      "title": "An Overdue Dismissal",
+      "text": "Last-Pay Archers still loose arrows from the {name:front_gravesalt_escarpment/saltroad_cliffs} {zone_area:front_gravesalt_escarpment/saltroad_cliffs} every night. Defeat five there after dark so our road crews can work. Their paymaster got his money's worth; everyone else has been paying for it ever since.",
       "objectives": [
         {
           "type": "kill",
@@ -336,8 +336,8 @@
       "requires": [
         "splitbolt_front_05"
       ],
-      "title": "Bounty: Tombwood Spiders",
-      "text": "Bonelurker Spiders breed in the {name:front_gravesalt_escarpment/tombwood} {zone_area:front_gravesalt_escarpment/tombwood} faster than we can count them. Kill five Salt-Web Bonelurker Spiders at night and I pay each time. The next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: Keep the Night Shift Moving",
+      "text": "My crews keep finding fresh webs in the {name:front_gravesalt_escarpment/tombwood} {zone_area:front_gravesalt_escarpment/tombwood}. Kill five Salt-Web Bonelurker Spiders there at night and collect a bounty. The job is available again twenty-five minutes after each turn-in. I'd sooner budget for you than keep replacing workers' boots with the workers still in them.",
       "objectives": [
         {
           "type": "kill",
@@ -368,8 +368,8 @@
       "requires": [
         "splitbolt_front_05"
       ],
-      "title": "A Letter for Lethariel",
-      "text": "Take this letter to Eriath Boughwarden in Lethariel. The elves watch The Skyglass Canopy at the far end of the front, and Eriath asked for someone who has walked Gravesalt and come back. Ride; it is a long way.",
+      "title": "Someone Who Came Back",
+      "text": "Eriath Boughwarden in Lethariel asked for someone who'd walked Gravesalt Escarpment and come back with their wits. Speak with him there and give him my account; his people are watching The Skyglass Canopy. I've put in a good word for you, though he'll take three graceful sentences to say whether he agrees.",
       "objectives": [
         {
           "type": "talk",

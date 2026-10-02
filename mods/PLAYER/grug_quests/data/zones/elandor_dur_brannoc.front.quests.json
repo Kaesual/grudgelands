@@ -9,8 +9,8 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "Surveying the Wyrmglass Crown",
-      "text": "The Wyrmglass Crown rises out of the sea {dir_from_giver:front_wyrmglass_crown/spires}, and no map of ours shows its {name:front_wyrmglass_crown/spires}. Take a boat; the Shipwright at our stables sells them. Defeat six Crown Crag Eagles on the spires by day, keep to the shelf and the channel, and leave the deep water to the Kraken.",
+      "title": "A Blank Space on the Clan's Map",
+      "text": "Our chart leaves the {name:front_wyrmglass_crown/spires} on the Wyrmglass Crown {dir_from_giver:front_wyrmglass_crown/spires} blank, which offends me as a dwarf and a keeper of records. Reach the island by boat; the Shipwright at our stables sells them. Keep to the shelf and the channel on the crossing, away from the Kraken's deep water. Kill six Crown Crag Eagles on those spires by day so a surveyor can look at the stone without being pecked for it.",
       "objectives": [
         {
           "type": "kill",
@@ -40,8 +40,8 @@
       "requires": [
         "durbrannoc_front_01"
       ],
-      "title": "Group: The Rime-Bell",
-      "text": "{name:rime_bell_warden} guards the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, an elite stone golem with a bell of rime for a heart. Take a full group, and a boat each. The clan pays well for the bell's silence.",
+      "title": "Group: Silence for the Clan",
+      "text": "There's an elite stone golem, {name:rime_bell_warden}, guarding the {name:front_wyrmglass_crown/spires} {dir_from_giver:rime_bell_warden}, and the clan wants its bell silenced. Gather a full group, take a boat each to the Wyrmglass Crown and destroy the golem. I've a payment ready and a space in the record for everyone who comes back.",
       "objectives": [
         {
           "type": "kill",
@@ -71,8 +71,8 @@
       "requires": [
         "durbrannoc_front_01"
       ],
-      "title": "Bounty: Rime Sinew",
-      "text": "Rimehorn Rams graze the {name:front_wyrmglass_crown/scree} on the Wyrmglass Crown by day, and their Rime Sinew makes the best bowstring a dwarf ever refused to use. Bring me four, and I pay each time. The next bounty opens an hour after you hand this one in.",
+      "title": "Bounty: The Clan's Standing Order",
+      "text": "The clan has placed another order for Rime Sinew, with an impressive number of signatures from dwarves staying home. Take a boat to the Wyrmglass Crown and hunt Rimehorn Rams by day on the {name:front_wyrmglass_crown/scree}. Bring me four Rime Sinew for payment. You can take this bounty again one hour after each turn-in; I'll keep the signatories busy finding your coin.",
       "objectives": [
         {
           "type": "item",

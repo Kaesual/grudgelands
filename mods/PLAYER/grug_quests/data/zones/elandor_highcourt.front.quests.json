@@ -9,8 +9,8 @@
       "min_level": 60,
       "level": 60,
       "requires": [],
-      "title": "The Wreck Shore",
-      "text": "The crown's charts end at Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water. Take a boat from the coast; the Shipwright at the stables sells one if you lack it. On the {name:front_stormscale_summit/wreck_shore}, defeat six Last Watchmen that walk the beach at night, and keep to the shelf and the channel, where the Kraken does not hunt.",
+      "title": "Beyond the Ink",
+      "text": "The crown's chart of Stormscale Summit, {dir_from_giver:front_stormscale_summit/wreck_shore} across the water, has more empty space than I'm comfortable signing. Take a boat from the coast; the Shipwright at the stables sells them. Follow the shelf and the channel to avoid the Kraken in deep water, then defeat six Last Watchmen on the {name:front_stormscale_summit/wreck_shore} after dark. I'd like the next expedition to find somewhere to land, and you to come home to your payment.",
       "objectives": [
         {
           "type": "kill",
@@ -40,8 +40,8 @@
       "requires": [
         "highcourt_front_01"
       ],
-      "title": "Group: The Last-Offering",
-      "text": "{name:last_offering_ape} rules the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, an elite ape that takes offerings and gives back bruises. Bring a full group. The crown pays for the story as much as for the deed.",
+      "title": "Group: An Audience Nobody Requested",
+      "text": "{name:last_offering_ape} receives visitors in the {name:front_stormscale_summit/thunderwood} {dir_from_giver:last_offering_ape}, and the survivors describe an appalling welcome. Take a full group by boat to Stormscale Summit and defeat that elite ape. For once, the crown is prepared to reward a complete failure of diplomacy.",
       "objectives": [
         {
           "type": "kill",
@@ -71,8 +71,8 @@
       "requires": [
         "highcourt_front_01"
       ],
-      "title": "Bounty: Silver Ape Hair",
-      "text": "Glass-Knuckle Jungle Apes roam the {name:front_stormscale_summit/thunderwood} on Stormscale Summit by day. Bring me four Silver Ape Hair and I pay each time; the court tailors cannot get enough. The next bounty opens an hour after you hand this one in.",
+      "title": "Bounty: Fashion at a Safe Distance",
+      "text": "The court tailors have discovered Silver Ape Hair, and their enthusiasm survives every description of the journey. Take a boat to Stormscale Summit and collect four tufts from Glass-Knuckle Jungle Apes in the {name:front_stormscale_summit/thunderwood} by day. Bring them to me for payment; I handle the purse so you needn't hear about hems. This bounty is available again one hour after each turn-in.",
       "objectives": [
         {
           "type": "item",
