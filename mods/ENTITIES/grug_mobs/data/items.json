@@ -56,7 +56,7 @@
     "tier": 2,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "description": "Three knots for three escapes. The fourth is still undecided.",
     "uses": [
       "quest"
     ],
@@ -95,7 +95,7 @@
     "tier": 3,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "description": "Marks only its own gang can read, stitched where a guard would not look.",
     "uses": [
       "enchant:int:t3",
       "enchant:max_mana_percent:t3",
@@ -152,7 +152,7 @@
     "tier": 4,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "description": "Worn through a whole campaign of robbery, and it shows.",
     "uses": [
       "enchant:int:t4",
       "enchant:max_mana_percent:t4",
@@ -166,7 +166,7 @@
     "tier": 4,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "description": "Doubled leather and rivets; it outlasted the blade it held.",
     "uses": [
       "enchant:dex:t4",
       "enchant:attack_speed_percent:t4",
@@ -209,7 +209,7 @@
     "tier": 5,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "description": "Every notch is a gate that opened for the wrong people.",
     "uses": [
       "enchant:int:t5",
       "enchant:max_mana_percent:t5",
@@ -223,7 +223,7 @@
     "tier": 5,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "description": "Bound tight for long nights on the walls.",
     "uses": [
       "enchant:dex:t5",
       "enchant:attack_speed_percent:t5",
@@ -266,7 +266,7 @@
     "tier": 6,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A thief's counted knots and lucky marks; intent bound into something small.",
+    "description": "The last wage of a band that never needed another.",
     "uses": [
       "enchant:int:t6",
       "enchant:max_mana_percent:t6",
@@ -280,7 +280,7 @@
     "tier": 6,
     "family": "outlaw",
     "kind": "signature",
-    "description": "A supple weapon binding that steadies a grip and reinforces a seam.",
+    "description": "A strap that has never slipped. Its owners cannot say the same.",
     "uses": [
       "enchant:dex:t6",
       "enchant:attack_speed_percent:t6",
@@ -311,7 +311,7 @@
     "tier": 2,
     "family": "boar",
     "kind": "signature",
-    "description": "Dense ivory shaped by rooting through obstinate ground.",
+    "description": "Grooved by years of digging; the ridges catch light and fingers.",
     "uses": [
       "enchant:str:t2",
       "enchant:crit_percent:t2",
@@ -325,7 +325,7 @@
     "tier": 3,
     "family": "boar",
     "kind": "signature",
-    "description": "Dense ivory shaped by rooting through obstinate ground.",
+    "description": "Twisted and scarred, from a boar that won most of its arguments.",
     "uses": [
       "quest"
     ],
@@ -365,7 +365,7 @@
     "tier": 2,
     "family": "rat",
     "kind": "signature",
-    "description": "A flexible length of stubborn sinew.",
+    "description": "Longer, tougher, and still twitching in spirit.",
     "uses": [
       "enchant:dex:t2",
       "enchant:attack_speed_percent:t2",
@@ -380,7 +380,7 @@
     "tier": 2,
     "family": "rat",
     "kind": "signature",
-    "description": "Tough padding. Wash before applying to anything respectable.",
+    "description": "Thick enough to stop a draught. Wash it twice.",
     "uses": [
       "enchant:armor_rating:t2",
       "quest"
@@ -419,7 +419,7 @@
     "tier": 2,
     "family": "crab",
     "kind": "signature",
-    "description": "A bright bead built to notice movement through shifting water.",
+    "description": "Clear as still water. It saw you first.",
     "uses": [
       "enchant:int:t2",
       "enchant:max_mana_percent:t2",
@@ -445,7 +445,7 @@
     "tier": 3,
     "family": "crab",
     "kind": "signature",
-    "description": "Overlapping armour grown without a single rivet.",
+    "description": "Plate over plate, each moult harder than the last.",
     "uses": [
       "quest"
     ],
@@ -457,7 +457,7 @@
     "tier": 4,
     "family": "crab",
     "kind": "signature",
-    "description": "Overlapping armour grown without a single rivet.",
+    "description": "Salt-scoured and storm-hardened; spray beads off it.",
     "uses": [
       "quest"
     ],
@@ -469,7 +469,7 @@
     "tier": 6,
     "family": "crab",
     "kind": "signature",
-    "description": "Overlapping armour grown without a single rivet.",
+    "description": "Black shell from crushing depths, heavy for its size.",
     "uses": [
       "quest"
     ],
@@ -493,7 +493,7 @@
     "tier": 2,
     "family": "fox",
     "kind": "signature",
-    "description": "Soft balance at the end of a very quick animal.",
+    "description": "A full russet brush that still wants to run.",
     "uses": [
       "quest"
     ],
@@ -505,7 +505,7 @@
     "tier": 3,
     "family": "fox",
     "kind": "signature",
-    "description": "Soft balance at the end of a very quick animal.",
+    "description": "Silver at the tip, from a fox old enough to be careful.",
     "uses": [
       "quest"
     ],
@@ -529,7 +529,7 @@
     "tier": 2,
     "family": "grazer",
     "kind": "signature",
-    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "description": "Thicker cord from a grazer that walked a long way.",
     "uses": [
       "quest"
     ],
@@ -541,7 +541,7 @@
     "tier": 3,
     "family": "grazer",
     "kind": "signature",
-    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "description": "Three tendons twisted into one; it hums when plucked.",
     "uses": [
       "quest"
     ],
@@ -553,7 +553,7 @@
     "tier": 4,
     "family": "grazer",
     "kind": "signature",
-    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "description": "Stiff as wire and nearly as strong.",
     "uses": [
       "quest"
     ],
@@ -565,7 +565,7 @@
     "tier": 6,
     "family": "grazer",
     "kind": "signature",
-    "description": "A strong, springy tendon from a sure-footed grazer.",
+    "description": "Frozen hard in the high cold; it bends only when warmed.",
     "uses": [
       "quest"
     ],
@@ -589,7 +589,7 @@
     "tier": 2,
     "family": "feline",
     "kind": "signature",
-    "description": "A curved hunting claw made for a precise strike.",
+    "description": "Hooked at the tip to hold what it catches.",
     "uses": [
       "quest"
     ],
@@ -601,7 +601,7 @@
     "tier": 3,
     "family": "feline",
     "kind": "signature",
-    "description": "A curved hunting claw made for a precise strike.",
+    "description": "Sharp along the inner curve; it cuts on the way out.",
     "uses": [
       "quest"
     ],
@@ -613,7 +613,7 @@
     "tier": 4,
     "family": "feline",
     "kind": "signature",
-    "description": "A curved hunting claw made for a precise strike.",
+    "description": "Fine-edged enough to shave with, if you are brave.",
     "uses": [
       "quest"
     ],
@@ -625,7 +625,7 @@
     "tier": 5,
     "family": "feline",
     "kind": "signature",
-    "description": "A curved hunting claw made for a precise strike.",
+    "description": "Chipped on stone and steel, and still sharp.",
     "uses": [
       "quest"
     ],
@@ -637,7 +637,7 @@
     "tier": 6,
     "family": "feline",
     "kind": "signature",
-    "description": "A curved hunting claw made for a precise strike.",
+    "description": "Translucent and keen as cut glass.",
     "uses": [
       "quest"
     ],
@@ -662,7 +662,7 @@
     "tier": 3,
     "family": "canid",
     "kind": "signature",
-    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "description": "Notched along its edge; it tears rather than cuts.",
     "uses": [
       "quest"
     ],
@@ -674,7 +674,7 @@
     "tier": 4,
     "family": "canid",
     "kind": "signature",
-    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "description": "From a pack that followed armies for the leftovers.",
     "uses": [
       "quest"
     ],
@@ -686,7 +686,7 @@
     "tier": 5,
     "family": "canid",
     "kind": "signature",
-    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "description": "Long and yellowed; this pack fed on sieges.",
     "uses": [
       "quest"
     ],
@@ -698,7 +698,7 @@
     "tier": 6,
     "family": "canid",
     "kind": "signature",
-    "description": "A pack hunter's fang, worn at the edge but sound at the root.",
+    "description": "Salt-white fang from the coast packs, hard as porcelain.",
     "uses": [
       "quest"
     ],
@@ -723,7 +723,7 @@
     "tier": 4,
     "family": "bear",
     "kind": "signature",
-    "description": "A heavy hook for making a point through armour.",
+    "description": "Nicked by old fights, and the winner of most.",
     "uses": [
       "quest"
     ],
@@ -735,7 +735,7 @@
     "tier": 6,
     "family": "bear",
     "kind": "signature",
-    "description": "A heavy hook for making a point through armour.",
+    "description": "Crusted with salt from a bear that fished the cold shores.",
     "uses": [
       "quest"
     ],
@@ -759,7 +759,7 @@
     "tier": 3,
     "family": "crocodile",
     "kind": "signature",
-    "description": "A squat tooth built for a grip that does not let go.",
+    "description": "Ridged and heavy; it held on longer than its owner.",
     "uses": [
       "quest"
     ],
@@ -771,7 +771,7 @@
     "tier": 2,
     "family": "ooze",
     "kind": "signature",
-    "description": "It remembers the shape of its container. Eventually.",
+    "description": "Runny and pale; it barely remembers any shape.",
     "uses": [
       "quest"
     ],
@@ -808,7 +808,7 @@
     "tier": 3,
     "family": "mirefolk",
     "kind": "signature",
-    "description": "A smooth bead sorted and carried by the reed-dwellers.",
+    "description": "A milky pearl the reed-dwellers part with only for something better.",
     "uses": [
       "quest"
     ],
@@ -832,7 +832,7 @@
     "tier": 3,
     "family": "wisp",
     "kind": "signature",
-    "description": "A small wandering light, finally persuaded to stay in a bottle.",
+    "description": "Tied down with a thread of its own light. It sulks.",
     "uses": [
       "quest"
     ],
@@ -844,7 +844,7 @@
     "tier": 4,
     "family": "wisp",
     "kind": "signature",
-    "description": "A small wandering light, finally persuaded to stay in a bottle.",
+    "description": "It flickers against the glass, looking for a way out.",
     "uses": [
       "quest"
     ],
@@ -868,7 +868,7 @@
     "tier": 4,
     "family": "treant",
     "kind": "signature",
-    "description": "A dark bead of resin that still smells of rain and old wood.",
+    "description": "Amber resin with a sharp smell; it stings the tongue.",
     "uses": [
       "quest"
     ],
@@ -892,7 +892,7 @@
     "tier": 4,
     "family": "weevil",
     "kind": "signature",
-    "description": "A stiff shell plate that once fitted something unpleasant.",
+    "description": "Stacked plates from an older, larger weevil.",
     "uses": [
       "quest"
     ],
@@ -904,7 +904,7 @@
     "tier": 6,
     "family": "weevil",
     "kind": "signature",
-    "description": "A stiff shell plate that once fitted something unpleasant.",
+    "description": "Bleached by the salt flats, light and hard.",
     "uses": [
       "quest"
     ],
@@ -928,7 +928,7 @@
     "tier": 6,
     "family": "ape",
     "kind": "signature",
-    "description": "A coarse knot of hair from a powerful climber.",
+    "description": "Silver-grey hair from an old troop leader.",
     "uses": [
       "quest"
     ],
@@ -940,7 +940,7 @@
     "tier": 1,
     "family": "venomous",
     "kind": "signature",
-    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "description": "A drop of weak venom. It stings; it does not kill.",
     "uses": [
       "quest"
     ],
@@ -952,7 +952,7 @@
     "tier": 2,
     "family": "venomous",
     "kind": "signature",
-    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "description": "Bitter-smelling venom that numbs the fingers.",
     "uses": [
       "quest"
     ],
@@ -964,7 +964,7 @@
     "tier": 3,
     "family": "venomous",
     "kind": "signature",
-    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "description": "Thick, dark venom; a drop goes a long way.",
     "uses": [
       "quest"
     ],
@@ -989,7 +989,7 @@
     "tier": 5,
     "family": "venomous",
     "kind": "signature",
-    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "description": "Venom that burns like a coal.",
     "uses": [
       "quest"
     ],
@@ -1001,7 +1001,7 @@
     "tier": 6,
     "family": "venomous",
     "kind": "signature",
-    "description": "A sealed drop of biting venom. The seal is the important part.",
+    "description": "Clear, glassy venom; it works before you notice.",
     "uses": [
       "quest"
     ],
@@ -1013,7 +1013,7 @@
     "tier": 3,
     "family": "spider",
     "kind": "signature",
-    "description": "A strong silken strand that clings to the unwary.",
+    "description": "Thick, sticky strands from a young web.",
     "uses": [
       "quest"
     ],
@@ -1021,16 +1021,16 @@
   },
   {
     "id": "grug_mobs:spider_silk",
-    "name": "Spider Silk",
+    "name": "Raw Silk",
     "tier": 4,
     "family": "spider",
     "kind": "generic",
-    "description": "A strong silken strand that clings to the unwary.",
+    "description": "Strong raw silk. Spiders spin it; outlaws carry it off in bales.",
     "uses": [
       "existing recipes",
       "quest"
     ],
-    "notes": "Existing item and icon reused; retain the registered name."
+    "notes": "Existing item and icon reused; shown as Raw Silk because T5/T6 outlaws drop it too."
   },
   {
     "id": "grug_mobs:glass_spider_silk",
@@ -1038,7 +1038,7 @@
     "tier": 6,
     "family": "spider",
     "kind": "signature",
-    "description": "A strong silken strand that clings to the unwary.",
+    "description": "Fine silk that shines like spun glass.",
     "uses": [
       "quest"
     ],
@@ -1062,7 +1062,7 @@
     "tier": 3,
     "family": "goblin",
     "kind": "signature",
-    "description": "Someone else's purse. The goblin was vague about whose.",
+    "description": "A purse with a good clasp. The goblin could not open it either.",
     "uses": [
       "quest"
     ],
@@ -1074,7 +1074,7 @@
     "tier": 4,
     "family": "goblin",
     "kind": "signature",
-    "description": "Someone else's purse. The goblin was vague about whose.",
+    "description": "A soldier's pay, lost somewhere along a campaign.",
     "uses": [
       "quest"
     ],
@@ -1098,7 +1098,7 @@
     "tier": 4,
     "family": "skeleton",
     "kind": "signature",
-    "description": "An old bone marked by a habit that outlived its owner.",
+    "description": "Worn smooth by marching long after its owner stopped.",
     "uses": [
       "quest"
     ],
@@ -1110,7 +1110,7 @@
     "tier": 5,
     "family": "skeleton",
     "kind": "signature",
-    "description": "An old bone marked by a habit that outlived its owner.",
+    "description": "Cracked and mended, from a skeleton that kept to its post.",
     "uses": [
       "quest"
     ],
@@ -1122,7 +1122,7 @@
     "tier": 6,
     "family": "skeleton",
     "kind": "signature",
-    "description": "An old bone marked by a habit that outlived its owner.",
+    "description": "It shifts in the pack when nobody is looking.",
     "uses": [
       "quest"
     ],
@@ -1146,7 +1146,7 @@
     "tier": 6,
     "family": "witch",
     "kind": "signature",
-    "description": "A thick glass splinter with a stubborn trace of hex.",
+    "description": "The last of a witch's bottles, still warm with the curse.",
     "uses": [
       "quest"
     ],
@@ -1158,7 +1158,7 @@
     "tier": 3,
     "family": "scavenger",
     "kind": "signature",
-    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "description": "A stiff feather with barbs that snag on cloth.",
     "uses": [
       "quest"
     ],
@@ -1170,7 +1170,7 @@
     "tier": 4,
     "family": "scavenger",
     "kind": "signature",
-    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "description": "Ragged from storm winds, and still flies true.",
     "uses": [
       "quest"
     ],
@@ -1182,7 +1182,7 @@
     "tier": 5,
     "family": "scavenger",
     "kind": "signature",
-    "description": "A stiff flight feather, built to catch the smallest change in the air.",
+    "description": "Grey with the soot of burning lands.",
     "uses": [
       "quest"
     ],
@@ -1207,7 +1207,7 @@
     "tier": 3,
     "family": "stone",
     "kind": "signature",
-    "description": "A fragment of the force that kept stone or machinery moving.",
+    "description": "A cracked shard of the force that moved the stone.",
     "uses": [
       "quest"
     ],
@@ -1219,7 +1219,7 @@
     "tier": 4,
     "family": "stone",
     "kind": "signature",
-    "description": "A fragment of the force that kept stone or machinery moving.",
+    "description": "Glowing veins still pulse through it, slower now.",
     "uses": [
       "quest"
     ],
@@ -1231,7 +1231,7 @@
     "tier": 5,
     "family": "stone",
     "kind": "signature",
-    "description": "A fragment of the force that kept stone or machinery moving.",
+    "description": "From a construct built for sieges; it still feels heavy with purpose.",
     "uses": [
       "quest"
     ],
@@ -1256,7 +1256,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "Fresh meat. Cook it before it decides otherwise.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1269,7 +1269,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A plain hide, ready for the tanner.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1282,7 +1282,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "Thin, supple leather for light work.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1295,7 +1295,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A torn strip of linen, good for thread and patches.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1308,7 +1308,7 @@
     "tier": 2,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A whole length of linen, plain and serviceable.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1321,7 +1321,7 @@
     "tier": 3,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "Thick leather that turns a blade, eventually.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1334,7 +1334,7 @@
     "tier": 3,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A dense weave for padding and robes.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1347,7 +1347,7 @@
     "tier": 4,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "Hide armoured in small scales; hard to cut, harder to sew.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1360,7 +1360,7 @@
     "tier": 5,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A dark, glossy pelt from a big cat.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1373,7 +1373,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A plain bone. Someone had more of them once.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1386,7 +1386,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "An ordinary feather, good for fletching.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1399,7 +1399,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "Spent arrows tied together; good for nothing but the trader.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1412,7 +1412,7 @@
     "tier": 1,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A straight stick.",
     "uses": [
       "existing recipes",
       "quest"
@@ -1425,7 +1425,7 @@
     "tier": 2,
     "family": "common",
     "kind": "generic",
-    "description": "Existing ordinary material; retain its present uses.",
+    "description": "A crisp apple.",
     "uses": [
       "existing recipes",
       "quest"
