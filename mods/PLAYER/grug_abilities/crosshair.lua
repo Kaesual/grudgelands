@@ -19,10 +19,11 @@
 --   (contextual input's food hold; the same frames tinted green, no full
 --   frame). Each owner hides it on every one of its end paths.
 --
--- Everything is refreshed from the existing 0.05 s pass (init.lua) and sends
--- a HUD packet only when the drawn texture changes. The weapon-ready ring
--- (init.lua) sits between the two: state overlay z 1, ready ring z 2,
--- progress ring (bow draw or eating) z 3.
+-- The state overlay is refreshed every 0.15 s from the 0.05 s input pass
+-- (init.lua; Round 30, perf review #8), the progress ring by its owners, and
+-- either sends a HUD packet only when the drawn texture changes. The
+-- weapon-ready ring (init.lua, still every pass) sits between the two: state
+-- overlay z 1, ready ring z 2, progress ring (bow draw or eating) z 3.
 --
 -- Integer scale. The engine draws the crosshair at floor(hud_scaling x display
 -- density) (src/client/hud.cpp drawCrosshair) but a Lua image element at the
@@ -91,11 +92,24 @@ return function(api)
 		}
 	end
 
+	-- player name -> the last skill ray: {eye, look, id, at, object}
+	local last_rays = {}
+	-- player name -> the last aim a refresh established: {at, ray} for a skill
+	-- ray, {at, blocked = true} when a walkable node within hand reach ends
+	-- every ray along the look line. Read by the Target Frame (recent_aim).
+	local aims = {}
+	-- An unchanged skill ray is cast again at least this often anyway, so a
+	-- mob that walks into a still crosshair is marked within the half second
+	-- the Target Frame has always taken to name it.
+	local UNCHANGED_RAY_US = 500000
+
 	function C.leave(player)
-		huds[player:get_player_name()] = nil
+		local name = player:get_player_name()
+		huds[name], last_rays[name], aims[name] = nil, nil, nil
 	end
 
 	C.skipped_skill_rays = 0 -- probe counter: skill rays proven unnecessary
+	C.unchanged_skill_rays = 0 -- probe counter: skill rays repeated from the last
 
 	-- The state this player's crosshair should show now: "hostile",
 	-- "friendly", "interact" or nil. A skill state takes precedence over the
@@ -106,29 +120,53 @@ return function(api)
 	-- so the skill's combat ray (which stops only at walkable nodes and
 	-- objects) would end there without a target and is skipped. Every other
 	-- first hit (object, non-walkable node such as a sign or grass, nothing)
-	-- still takes the skill ray.
+	-- still takes the skill ray, unless the same skill's last ray, from the
+	-- same eye position along the same look direction less than half a second
+	-- ago, hit no object: then it is taken as still empty (an idle player).
 	function C.state(player)
 		if player:get_hp() <= 0 then return nil end
 		local eye = grug_core.combat_eye_pos(player)
 		if not eye then return nil end
+		local name = player:get_player_name()
+		local now = core.get_us_time()
 		local input = grug_abilities.input
 		local interact, walled = false, false
 		if input then
 			interact, walled = input.aims_at_interactive(player, eye)
 		end
+		if walled then aims[name] = {at = now, blocked = true} end
 		local def = api.selected(player)
 		if def and (def.target_kind == "hostile" or def.target_kind == "friendly")
 				and grug_abilities.is_unlocked(player, def.id) then
+			local look = player:get_look_dir()
+			local last = last_rays[name]
 			if walled then
 				C.skipped_skill_rays = C.skipped_skill_rays + 1
-			elseif grug_abilities.aimed_target(player, def, eye) then
-				return def.target_kind
+			elseif last and last.id == def.id and not last.object and
+					now - last.at < UNCHANGED_RAY_US and
+					vector.equals(last.eye, eye) and vector.equals(last.look, look) then
+				C.unchanged_skill_rays = C.unchanged_skill_rays + 1
+			else
+				local target, ray = grug_abilities.aimed_target(player, def, eye)
+				last_rays[name] = {eye = eye, look = look, id = def.id, at = now,
+					object = ray.pointed ~= nil and ray.pointed.type == "object"}
+				aims[name] = {at = now, ray = ray}
+				if target then return def.target_kind end
 			end
 		end
 		return interact and "interact" or nil
 	end
 
-	-- The 0.05 s pass.
+	-- The aim the last refresh established for this player if it is at most
+	-- `max_age_us` old, else nil. Read-only; the Target Frame
+	-- (grug_mobs/target_frame.lua) uses it instead of a ray of its own.
+	function C.recent_aim(player, max_age_us)
+		local aim = aims[player:get_player_name()]
+		if aim and core.get_us_time() - aim.at <= max_age_us then return aim end
+		return nil
+	end
+
+	-- The 0.15 s refresh (init.lua).
 	function C.update(player)
 		local rec = huds[player:get_player_name()]
 		if not rec then return end

@@ -380,11 +380,15 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
 - A skill state takes precedence over interact. Self-target skills (Blink,
   Frost Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
   shows.
-- The state is refreshed in the shared 0.05 s input pass (one hand-reach ray
-  per player, plus one skill ray while a targeted skill is selected; the skill
-  ray is skipped when the hand ray's first hit is a walkable node, because a
-  combat ray along the same line would end there without a target) and sends
-  a HUD packet only when it changes. Its server-driven latency is accepted.
+- The state is refreshed every 0.15 s from the shared 0.05 s input pass,
+  whose input handling and weapon-ready ring stay on every pass (one
+  hand-reach ray per player, plus one skill ray while a targeted skill is
+  selected; the skill ray is skipped when the hand ray's first hit is a
+  walkable node, because a combat ray along the same line would end there
+  without a target, and for up to 0.5 s while the same skill looks from the
+  same eye position along the same direction and its last ray hit no object)
+  and sends a HUD packet only when it changes. Its server-driven latency is
+  accepted.
 - Layering, bottom to top: engine crosshair, state overlay (z 1), weapon-ready
   ring (z 2), progress ring (z 3). The progress ring is one element shared by
   the bow draw and eating: whichever shows it first owns it until it hides it,

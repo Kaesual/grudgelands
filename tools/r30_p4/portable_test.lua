@@ -21,6 +21,14 @@
 --      or when its observer set changes, never for an unobserved carrier
 --      whose set stays empty; removal still reports; the test seam
 --      manage_tag_carriers is a full pass.
+--   X  grug_abilities/crosshair.lua and grug_mobs/target_frame.lua: the
+--      skill ray is repeated from the last result (no ray) while the same
+--      skill looks from the same eye along the same direction and the last
+--      ray hit no object, for at most half a second; any change or an object hit
+--      casts again; recent_aim hands the Target Frame the last aim, which it
+--      uses instead of its own ray when that settles the frame (empty, node,
+--      beyond 20 m, a framable target, a wall within hand reach) and not
+--      otherwise (short skill range, non-framable object, stale aim).
 --   M  grug_mounts/entity.lua: flight_state and the flight-boundary sweep
 --      (warning_state) give exactly the answers of the former per-sample
 --      code (faction read per sample, grug_zones.at per sample) on a field
@@ -689,6 +697,168 @@ do
 	for i, n in ipairs(visits()) do if i ~= 3 and n ~= 1 then all = false end end
 	check(all, "T: manage_tag_carriers visits every carrier once")
 	_G.core, _G.grug_core = nil, nil
+end
+
+------------------------------------------------------------------------------
+-- X: crosshair skill-ray skip and the Target Frame's reuse of it (#8).
+------------------------------------------------------------------------------
+do
+	local now = 0
+	local joins, globalsteps = {}, {}
+	_G.vector = {
+		equals = function(a, b) return a.x == b.x and a.y == b.y and a.z == b.z end,
+		offset = function(v, x, y, z) return {x = v.x + x, y = v.y + y, z = v.z + z} end,
+		add = function(a, b) return {x = a.x + b.x, y = a.y + b.y, z = a.z + b.z} end,
+		multiply = function(v, f) return {x = v.x * f, y = v.y * f, z = v.z * f} end,
+	}
+	local raycasts = 0
+	local ray_hits = {}
+	_G.core = {
+		get_us_time = function() return now end,
+		register_on_joinplayer = function(fn) joins[#joins + 1] = fn end,
+		register_on_leaveplayer = noop,
+		register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end,
+		get_player_window_information = function() return nil end,
+		is_player = function(v) return type(v) == "table" and v.is_player ~= nil and v:is_player() end,
+		raycast = function()
+			raycasts = raycasts + 1
+			local i = 0
+			return function() i = i + 1; return ray_hits[i] end
+		end,
+		get_node = function() return {name = "stone"} end,
+		registered_nodes = {stone = {walkable = true}},
+	}
+	local eye = {x = 0, y = 1.5, z = 0}
+	local look = {x = 0, y = 0, z = 1}
+	local walled, rays = false, 0
+	local next_ray = {reason = "empty", status = "aim_miss", range = 30}
+	local def = {id = "fireball", target_kind = "hostile"}
+	_G.grug_core = {
+		combat_eye_pos = function() return {x = eye.x, y = eye.y, z = eye.z} end,
+		hud_layout = {image_element = function(_, d) return d end},
+	}
+	_G.grug_abilities = {
+		input = {aims_at_interactive = function() return false, walled end},
+		is_unlocked = function() return true end,
+		aimed_target = function()
+			rays = rays + 1
+			return next_ray.target, next_ray
+		end,
+	}
+	local C = dofile(repo .. "/mods/PLAYER/grug_abilities/crosshair.lua")({
+		selected = function() return def end,
+	})
+	grug_abilities.crosshair = C
+	local mage = {get_hp = function() return 20 end, get_player_name = function() return "mage" end,
+		get_look_dir = function() return {x = look.x, y = look.y, z = look.z} end,
+		get_pos = function() return {x = 0, y = 0, z = 0} end,
+		get_properties = function() return {eye_height = 1.5} end,
+		is_player = function() return true end,
+		hud_add = function() return 1 end, hud_change = noop}
+
+	-- The skill ray skip.
+	eq(C.state(mage), nil, "X: empty aim, no state")
+	eq(rays, 1, "X: first refresh casts the skill ray")
+	now = 150000
+	C.state(mage)
+	eq(rays, 1, "X: unchanged eye, look and skill: no second ray")
+	now = 400000
+	C.state(mage)
+	eq(rays, 1, "X: still none within half a second")
+	now = 500001
+	C.state(mage)
+	eq(rays, 2, "X: after half a second the ray is cast again")
+	look = {x = 0.1, y = 0, z = 0.995}
+	C.state(mage)
+	eq(rays, 3, "X: a turned look casts again")
+	eye = {x = 0.2, y = 1.5, z = 0}
+	C.state(mage)
+	eq(rays, 4, "X: a moved eye casts again")
+	def = {id = "smite", target_kind = "hostile"}
+	C.state(mage)
+	eq(rays, 5, "X: another skill casts again")
+	local mob = {name = "m", _grug_level = 5, health = 10}
+	local mob_ref = {is_player = function() return false end,
+		get_luaentity = function() return mob end}
+	next_ray = {reason = "hostile", status = "target", range = 30, distance = 12,
+		target = mob_ref, pointed = {type = "object", ref = mob_ref}}
+	-- A mob walks into a still crosshair: marked within half a second.
+	local since = now
+	now = since + 150000
+	eq(C.state(mage), nil, "X: a still crosshair repeats the empty ray for now")
+	eq(rays, 5, "X: no ray while unchanged")
+	now = since + 500001
+	eq(C.state(mage), "hostile", "X: within half a second the mob is marked")
+	eq(rays, 6, "X: the repeat ray found it")
+	now = now + 150000
+	eq(C.state(mage), "hostile", "X: still marked")
+	eq(rays, 7, "X: after an object hit every refresh casts again")
+	walled = true
+	C.state(mage)
+	eq(rays, 7, "X: a wall within hand reach skips the ray")
+	check(C.recent_aim(mage, 500000).blocked, "X: the wall is the recent aim")
+	walled = false
+
+	-- The Target Frame on top of recent_aim.
+	local frame_hud = {}
+	local viewer = {get_hp = function() return 20 end, get_player_name = function() return "mage" end,
+		get_look_dir = function() return {x = 0, y = 0, z = 1} end,
+		get_pos = function() return {x = 0, y = 0, z = 0} end,
+		get_properties = function() return {eye_height = 1.5} end,
+		is_player = function() return true end,
+		hud_add = function() return 7 end,
+		hud_change = function(_, _, key, value) frame_hud[key] = value end}
+	_G.grug_mobs = {tag_text = function(m) return "mob " .. m.name end}
+	_G.grug_xp = {get_level = function() return 5 end}
+	_G.grug_factions = {get_faction = function() return "accord" end,
+		display_name = function() return "The Accord" end}
+	local players = {viewer}
+	core.get_connected_players = function() return players end
+	dofile(repo .. "/mods/ENTITIES/grug_mobs/target_frame.lua")
+	joins[#joins](viewer)
+	local frame_step = globalsteps[#globalsteps]
+	local function frame(aim)
+		C.recent_aim = function() return aim end
+		raycasts = 0
+		frame_hud.text = nil
+		frame_step(0.5)
+		return frame_hud.text, raycasts
+	end
+	frame_hud.text = "x"
+	local text, casts = frame({at = 0, ray = {reason = "hostile", range = 30, distance = 12,
+		pointed = {type = "object", ref = mob_ref}}})
+	check(text == "mob m" and casts == 0, "X: a framable target on the crosshair ray, no own ray")
+	frame({at = 0, ray = {reason = "empty", range = 30}}) -- clears the text
+	text, casts = frame({at = 0, ray = {reason = "empty", range = 30}})
+	check(text == nil and casts == 0, "X: an empty crosshair ray settles the frame")
+	text, casts = frame({at = 0, ray = {reason = "node", range = 20, distance = 8}})
+	check(casts == 0, "X: a crosshair ray ending at a wall settles the frame")
+	text, casts = frame({at = 0, ray = {reason = "hostile", range = 40, distance = 25,
+		pointed = {type = "object", ref = mob_ref}}})
+	check(casts == 0, "X: an object beyond 20 m settles the frame (nothing framable)")
+	text, casts = frame({at = 0, blocked = true})
+	check(casts == 0, "X: a wall within hand reach settles the frame")
+	text, casts = frame({at = 0, ray = {reason = "empty", range = 12}})
+	eq(casts, 1, "X: a short skill ray needs the frame's own ray")
+	local arrow_ref = {is_player = function() return false end,
+		get_luaentity = function() return {name = "arrow"} end}
+	text, casts = frame({at = 0, ray = {reason = "object", range = 30, distance = 5,
+		pointed = {type = "object", ref = arrow_ref}}})
+	eq(casts, 1, "X: a non-framable object needs the frame's own ray")
+	text, casts = frame(nil)
+	eq(casts, 1, "X: no recent aim needs the frame's own ray")
+	ray_hits = {{type = "object", ref = mob_ref}}
+	text, casts = frame(nil)
+	check(text == "mob m" and casts == 1, "X: the own ray still frames as before")
+	ray_hits = {}
+
+	-- init.lua: the crosshair refresh has its own 0.15 s beat.
+	local init = assert(io.open(repo .. "/mods/PLAYER/grug_abilities/init.lua")):read("*a")
+	check(init:find("local CROSSHAIR_STEP = 0.15", 1, true) ~= nil and
+		init:find("if crosshair_due then grug_abilities.crosshair.update(player) end", 1, true) ~= nil,
+		"X: the crosshair refresh runs every 0.15 s, input and ready ring every pass")
+	_G.core, _G.grug_core, _G.grug_abilities, _G.vector = nil, nil, nil, nil
+	_G.grug_mobs, _G.grug_xp, _G.grug_factions = nil, nil, nil
 end
 
 ------------------------------------------------------------------------------
