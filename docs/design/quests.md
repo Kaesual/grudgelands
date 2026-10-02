@@ -132,10 +132,15 @@ minimum-level-aware local wildlife roster and remain locally achievable.
 
 - **Kill**: a list of roles (entity `grug_mobs:<role>`; a sub-type is its own
   role, so a quest meaning a whole family lists its roles) and a count,
-  optionally limited to one spawn area (`zone_id/area_id`). An area-limited
-  objective counts a kill only when the mob carries that area's tag (set when
-  it spawned from the area), never by where it died. A named leader stands at
-  a fixed spot without an area; its kill objective names no area. Critters
+  optionally limited to one area: a kind or a camp of the zone's spawn
+  recipe (`zone_id/kind_id`, [spawn_regions.md](spawn_regions.md)). An
+  area-limited objective counts a kill only when the mob carries that tag
+  (set when it spawned from a region of that kind or from that camp), never
+  by where it died. A named leader stands at a rule-placed spot without an
+  area; its kill objective names no area. In a zone with a spawn recipe only
+  the recipe's roles appear on the surface; a kill objective there whose
+  roles the recipe never spawns is reported as a load-time warning
+  (W-recipe-target). Critters
   are never kill targets (Ruling 29), nor rares (Ruling 38). The split older
   quests keep entity names (`mobs`) and an optional named-zone filter
   (`zone`, matched at the death position), and some of them ask for enemy

@@ -280,35 +280,31 @@ function grug_mobs.density_allows(name, pos, node_name, eligible)
 end
 
 --
--- Round 28 ruling 34: the same budget for spawn areas.
+-- Round 28 ruling 34, Lane S1: the same budget for spawn regions.
 --
--- In a zone whose data defines spawn areas the species eligible at a point
--- are the species of the areas that match it (spawn_areas.lua areas_at:
--- point, clock and host, overlaps adding their weights). The species-aware
--- refill keeps its shape, with the area weights in place of the row caps:
+-- In a zone with a spawn recipe the species at a point are the roster of
+-- its region for the clock (spawn_regions.lua; regions never overlap). The
+-- species-aware refill keeps its shape, with the roster weights in place of
+-- the row caps and the region's density class as its share of the budget:
 --
 --   * point budget P = the zone budget (density_budget, 15 by day and 23 by
---     night unless ZONE_DENSITY tunes the zone);
+--     night unless ZONE_DENSITY tunes the zone) x the density class factor
+--     (spawn_regions_core.lua DENSITY: sparse 0.5, normal 0.75, dense 1),
+--     rounded, at least 1: never above the zone budget;
 --   * the chosen species' share = P x w / W (rounded, at least 1), w its
---     summed weight at the point, W the summed weight of every species there;
+--     roster weight, W the roster's total;
 --   * below share / DENSITY_SCALE (rounded up) a species always refills, so
---     killing every fox of a boar/fox area brings foxes back, not boars;
---   * up to its share it spawns while fewer than P area mobs stand within
---     the counting radius; never above its share;
---   * an area's optional `cap`: at most that many of ITS mobs within the
---     radius, whatever the budget says.
--- Counted are the free area mobs of the areas active at the clock (an
--- `_grug_area` tag of a non-camp area whose clock is `both` or the current
--- one) within the same radius as above: like the clock casts above, day
--- animals still about at dusk do not block the night. Camp members, leaders,
--- rares and bosses have their own timers and are neither counted nor limited
--- here.
+--     killing every fox of a fox/boar roster brings foxes back, not boars;
+--   * up to its share it spawns while fewer than P region mobs stand within
+--     the counting radius; never above its share.
+-- Counted are the free region mobs spawned in the current clock (an
+-- `_grug_area` tag of a kind and `_grug_spawn_clock` = the clock) within the
+-- same radius as above: day animals still about at dusk do not block the
+-- night. Camp members, leaders, rares and bosses have their own timers and
+-- are neither counted nor limited here.
 
 -- Pure; the fixture drives it directly.
-function grug_mobs.area_density_decision(total, same, in_area, budget, share, cap)
-	if cap and in_area >= cap then
-		return false
-	end
+function grug_mobs.area_density_decision(total, same, budget, share)
 	if same < math.ceil(share / grug_mobs.DENSITY_SCALE) then
 		return true
 	end
@@ -318,37 +314,39 @@ function grug_mobs.area_density_decision(total, same, in_area, budget, share, ca
 	return total < budget
 end
 
--- `pos` is where the mob would stand, `area` the area it would carry, `name`
--- its entity, `weight` its summed weight at the point and `eligible_weight`
--- the point's total. Returns true to allow.
-function grug_mobs.area_density_allows(pos, zone_id, clock, area, name, weight,
-		eligible_weight)
+-- The point budget of a region of density class `density` at a clock.
+function grug_mobs.region_budget(zone_id, clock, density)
+	local factor = grug_mobs.spawn_regions.core.DENSITY[density] or 1
+	return math.max(1, math.floor(grug_mobs.density_budget(zone_id, clock) *
+		factor + 0.5))
+end
+
+-- `pos` is where the mob would stand, `kind` the region's kind, `name` its
+-- entity, `weight` its roster weight and `total_weight` the roster's total.
+-- Returns true to allow.
+function grug_mobs.region_density_allows(pos, zone_id, clock, kind, name, weight,
+		total_weight)
 	if not count_radius then
 		local range = tonumber(core.settings:get("active_block_range")) or 4
 		count_radius = range * 16 * 2
 	end
-	local budget = grug_mobs.density_budget(zone_id, clock)
-	local share = grug_mobs.density_share(budget, weight, eligible_weight)
-	local area_by_tag = grug_mobs.spawn_areas.area_by_tag
-	local total, same, in_area = 0, 0, 0
+	local budget = grug_mobs.region_budget(zone_id, clock, kind.density)
+	local share = grug_mobs.density_share(budget, weight, total_weight)
+	local by_tag = grug_mobs.spawn_regions.area_by_tag
+	local total, same = 0, 0
 	local objects = core.get_objects_inside_radius(pos, count_radius)
 	for i = 1, #objects do
 		local ent = objects[i]:get_luaentity()
 		local tag = ent and ent._grug_area
-		if tag and counted(ent) then
-			local tagged = area_by_tag(tag)
-			if not tagged or (not tagged.camp and
-					(tagged.clock == "both" or tagged.clock == clock)) then
+		if tag and ent._grug_spawn_clock == clock and counted(ent) then
+			local unit = by_tag(tag)
+			if not unit or not unit.is_camp then
 				total = total + 1
 				if ent.name == name then
 					same = same + 1
 				end
-				if tag == area.tag then
-					in_area = in_area + 1
-				end
 			end
 		end
 	end
-	return grug_mobs.area_density_decision(total, same, in_area, budget, share,
-		area.cap)
+	return grug_mobs.area_density_decision(total, same, budget, share)
 end

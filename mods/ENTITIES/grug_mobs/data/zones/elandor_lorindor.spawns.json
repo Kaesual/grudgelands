@@ -4,8 +4,5 @@
     "families": ["poacher", "wisp"],
     "exact_mobs": ["grug_mobs:stag"],
     "night_fallback": ["forest"]
-  },
-  "critters": [],
-  "areas": [],
-  "leaders": []
+  }
 }

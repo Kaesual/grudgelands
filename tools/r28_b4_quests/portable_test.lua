@@ -166,7 +166,7 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 	get_page = function() return "" end, set_page = function() end,
 	pages = pages, pages_unordered = {}}
 
--- grug_mobs seams (B1 spawn areas, B2 participant drop hook) as stubs over the
+-- grug_mobs seams (S1 spawn regions, B2 participant drop hook) as stubs over the
 -- fixture spawn files.
 local spawn_files = {}
 local function spawns(zone)
@@ -188,31 +188,47 @@ grug_mobs = {
 		local d = DISPOSITION[name:match("^grug_mobs:(.+)$") or name]
 		return d or nil
 	end,
-	spawn_areas = {
-		zone_has_areas = function(zone)
-			local data = spawns(zone)
-			return data ~= nil and #data.areas > 0
-		end,
-		get_area = function(zone, id)
-			for _, area in ipairs((spawns(zone) or {areas = {}}).areas) do
-				if area.id == id then return area end
+	-- The spawn_regions seams (Lane S1) over the fixture recipes, parsed by the
+	-- real spawn_regions_core.lua: an area is a kind or a camp.
+	spawn_regions = (function()
+		local regions_core = dofile("mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
+		local BANDS = {elandor_dawnmere_fields = {1, 10}, front_shattered_line = {41, 50}}
+		local parsed = {}
+		local function recipe(zone)
+			if parsed[zone] == nil then
+				local data = spawns(zone)
+				parsed[zone] = data and data.recipe and
+					regions_core.parse_recipe(zone, data.recipe, {band = BANDS[zone] or {1, 60}}) or false
 			end
-		end,
-		area_roles = function(zone, id)
-			local area = grug_mobs.spawn_areas.get_area(zone, id)
-			if not area then return nil end
+			return parsed[zone] or nil
+		end
+		local seams = {}
+		function seams.get_area(zone, id)
+			local r = recipe(zone)
+			return r and (r.kind_by_id[id] or r.camp_by_id[id]) or nil
+		end
+		function seams.area_roles(zone, id)
+			local unit = seams.get_area(zone, id)
+			if not unit then return nil end
 			local set = {}
-			for _, row in ipairs(area.species) do set[row.role] = true end
+			for role in pairs(unit.roles) do set[role] = true end
 			return set
-		end,
-		leader = function(role)
+		end
+		function seams.zone_area_ids(zone)
+			local r, out = recipe(zone), {}
+			for _, kind in ipairs(r and r.kinds or {}) do out[#out + 1] = kind.id end
+			for _, camp in ipairs(r and r.camps or {}) do out[#out + 1] = camp.id end
+			return out
+		end
+		function seams.leader(role)
 			for _, zone in ipairs({"elandor_dawnmere_fields", "front_shattered_line"}) do
-				for _, row in ipairs((spawns(zone) or {}).leaders or {}) do
+				for _, row in ipairs((recipe(zone) or {leaders = {}}).leaders) do
 					if row.role == role then return {zone = zone, level = row.level, respawn = row.respawn} end
 				end
 			end
-		end,
-	},
+		end
+		return seams
+	end)(),
 }
 for role in pairs(DISPOSITION) do
 	core.registered_entities["grug_mobs:" .. role] = {description = role:gsub("_", " "):gsub("(%a)([%w']*)",
@@ -280,11 +296,27 @@ local extra = 0
 for id in pairs(now.quests) do if not oracle.quests[id] then extra = extra + 1 end end
 eq(count, 240, "oracle holds 240 quests")
 eq(extra, 0, "no quest beyond the oracle")
-eq(#differing, 1, "exactly one quest differs (Ruling 29)")
-eq(differing[1], "r14_human_05_the_missing_flock", "the differing quest is the turkey hunt")
+-- Ruling 29 changed the turkey hunt; Lane S1 added Dawnmere's sub-types to
+-- its three kill quests (a zone with a spawn recipe spawns only those).
+table.sort(differing)
+eq(table.concat(differing, " "), "r14_human_01_boars_beyond_the_fence " ..
+	"r14_human_04_shapes_by_lanternlight r14_human_05_the_missing_flock",
+	"exactly the three Dawnmere kill quests differ (Ruling 29, Lane S1)")
+for id, mobs in pairs({
+	r14_human_01_boars_beyond_the_fence = {"grug_mobs:boar", "grug_mobs:small_boar"},
+	r14_human_04_shapes_by_lanternlight = {"grug_mobs:zombie", "grug_mobs:braindead_zombie",
+		"grug_mobs:sluggish_zombie"},
+}) do
+	local got, was = now.quests[id], deep_copy(oracle.quests[id])
+	eq(json.encode(got.objectives[1].mobs), json.encode(mobs), id .. ": base role plus sub-types")
+	eq(json.encode(was.objectives[1].mobs), json.encode({mobs[1]}), id .. ": the oracle had the base role")
+	was.objectives[1].mobs = got.objectives[1].mobs
+	eq(json.encode(got), json.encode(was), id .. ": nothing else changed")
+end
 local flock = now.quests.r14_human_05_the_missing_flock
 local before = deep_copy(oracle.quests.r14_human_05_the_missing_flock)
-eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:fox"]', "Ruling 29: foxes replace the wild turkey")
+eq(json.encode(flock.objectives[1].mobs), '["grug_mobs:fox","grug_mobs:small_fox"]',
+	"Ruling 29: foxes replace the wild turkey (Lane S1: and the Small Fox)")
 eq(before.objectives[1].mobs[1], "grug_mobs:wild_turkey", "the oracle had the critter target")
 before.objectives[1].mobs = flock.objectives[1].mobs
 before.description = before.description:gsub("^Wild turkeys", "Foxes")
@@ -628,6 +660,35 @@ local function quest_of(files, id)
 	for _, file in ipairs(files) do
 		for _, quest in ipairs(file.data.quests) do if quest.id == id then return quest, file end end
 	end
+end
+-- Lane S1: a kill objective in a recipe zone whose targets the recipe never
+-- spawns is a warning (W-recipe-target), not an error.
+do
+	local function about(warnings, id)
+		local n = 0
+		for _, w in ipairs(warnings) do
+			if w:find("quest " .. id .. ":", 1, true) and w:find("W-recipe-target", 1, true) then n = n + 1 end
+		end
+		return n
+	end
+	-- The fixture's legacy quest hunts a base role (grug_mobs:boar) in the
+	-- recipe zone: exactly the case the warning is for.
+	local _, warnings = V.world(deep_copy(base_files), loader_world)
+	eq(#warnings, 1, "fixture quests: one recipe-target warning")
+	eq(about(warnings, "fx_legacy"), 1, "the legacy base-role hunt is warned about")
+	local files = deep_copy(base_files)
+	quest_of(files, "fx_hunt_01").objectives[1] = {type = "kill", roles = {"boar"}, count = 3}
+	local errors
+	errors, warnings = V.world(files, loader_world)
+	eq(#errors, 0, "a base role only: no error")
+	eq(about(warnings, "fx_hunt_01"), 1, "a base role only: W-recipe-target")
+	quest_of(files, "fx_hunt_01").objectives[1].roles = {"boar", "small_boar"}
+	_, warnings = V.world(files, loader_world)
+	eq(about(warnings, "fx_hunt_01"), 0, "with the zone's sub-type: no warning")
+	quest_of(files, "fx_hunt_01").objectives[1].roles = {"confused_bandit_chief"}
+	quest_of(files, "fx_hunt_01").level = 9
+	_, warnings = V.world(files, loader_world)
+	eq(about(warnings, "fx_hunt_01"), 0, "the zone's leader counts as spawned")
 end
 local cases = {
 	{"critter as a kill target", "E-critter-target", "fx_hunt_01", function(f)

@@ -3,8 +3,5 @@
   "palette": {
     "families": ["giant_rat", "settled"],
     "boar": "grug_mobs:plague_boar"
-  },
-  "critters": ["hare"],
-  "areas": [],
-  "leaders": []
+  }
 }

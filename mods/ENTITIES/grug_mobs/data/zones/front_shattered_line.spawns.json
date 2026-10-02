@@ -3,8 +3,5 @@
   "palette": {
     "families": ["mountain", "scorpion", "speargrass_tiger", "sun_dried_husk", "war", "war_construct"],
     "lookalikes": {"skeleton_archer": "grug_mobs:skeleton_raider", "zombie": "grug_mobs:sun_dried_husk"}
-  },
-  "critters": [],
-  "areas": [],
-  "leaders": []
+  }
 }

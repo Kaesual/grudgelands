@@ -4,8 +4,5 @@
     "families": ["giant_rat", "plains_runner", "scorpion", "settled", "sun_dried_husk"],
     "boar": "grug_mobs:boar",
     "lookalikes": {"zombie": "grug_mobs:sun_dried_husk"}
-  },
-  "critters": ["hare"],
-  "areas": [],
-  "leaders": []
+  }
 }

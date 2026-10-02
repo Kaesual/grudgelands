@@ -4,10 +4,15 @@ formats of docs/planning/round28-design-frame.md section 4 and the limits of
 section 2.5, and cross-checks references between files.
 
 Reads the whole design directory (references cross files): catalog/*.json and
-zones/<zone>.spawns.json / zones/<zone>.quests.json. Existing items, mob
-entities and quest NPCs come from docs/planning/round28/items/existing.json;
-zone ids, anchors, NPCs, biomes and level bands from the zone atlas when one
-is given (--atlas); without it those checks are skipped with one warning.
+zones/<zone>.spawns.json / zones/<zone>.quests.json. A spawns file holds the
+zone's spawn RECIPE (rules, no coordinates; docs/design/spawn_regions.md),
+parsed like the game's spawn_regions_core.lua (r28common.parse_recipe); a
+quest's area (`zone_id/area_id`) is a kind or camp of that recipe, met at
+the union of its roles' levels, and a leader at its computed level.
+Existing items, mob entities and quest NPCs come from
+docs/planning/round28/items/existing.json; zone ids, anchors, neighbours,
+NPCs and level bands from the zone atlas when one is given (--atlas);
+without it those checks are skipped with one warning.
 
 Every finding has a code ([E-...] error, [W-...] warning), the file and the
 JSON path. Exit code 0 = no errors, 1 = errors (or warnings with --strict),
@@ -21,7 +26,6 @@ Usage:
 import argparse
 import copy
 import json
-import math
 import re
 import shutil
 import sys
@@ -39,7 +43,6 @@ MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2
 MAX_REAGENTS_PER_TIER = 2
 SIZE_RANGE = (0.75, 1.3)
-CAMP_RADIUS = (30, 45)
 
 SUBTYPE_KEYS = {"role", "family", "base", "display", "display_by_zone", "tint_by_zone", "size",
                 "disposition", "tier", "leader", "levels", "drops", "notes"}
@@ -48,10 +51,6 @@ ITEM_KEYS = {"id", "name", "tier", "family", "kind", "description", "uses", "ico
 ITEM_REQUIRED = ("id", "name", "tier", "kind", "description")
 ITEM_KINDS = ("signature", "generic", "reagent", "quest")
 REAGENT_KEYS = {"id", "name", "tier", "method", "inputs", "output_count", "uses", "notes"}
-AREA_KEYS = {"id", "anchor", "offset", "shape", "hosts", "clock", "levels", "species", "cap",
-             "camp", "fallback", "notes"}
-AREA_REQUIRED = ("id", "anchor", "shape", "hosts", "clock", "levels", "species")
-LEADER_KEYS = {"role", "anchor", "offset", "level", "respawn", "notes"}
 QUEST_KEYS = {"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
               "objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min",
               "optional", "climax", "group", "notes"}
@@ -63,17 +62,10 @@ LEGACY_OBJECTIVE_KEYS = ("mobs", "mob", "zone", "role")
 # guard kills). B4's mechanical split keeps them; only legacy kill objectives
 # (`mobs`) may name these two, a new design names mobs only.
 LEGACY_GUARD_TARGETS = ("guard_accord", "guard_throng")
-CLOCKS = ("day", "night", "both")
 DISPOSITIONS = ("neutral", "aggressive", "critter")
-SHAPES = ("circle", "ring", "band", "zone")
-FIXED_ANCHORS = ("start", "capital", "zone")
 FRONT_LINE = "front"
 FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
             "bow", "caster_weapon", "spellbook", "trinket")
-# An area or leader centre beyond the zone's land extent BOX by more than this
-# is an error (a sign or axis mistake); outside the approximate border
-# outline it is only a warning (that outline misjudges 5-17 % of real land).
-ZONE_MARGIN = 96
 
 
 class Findings:
@@ -451,11 +443,11 @@ class Validator:
             file = self.d.root / self.role_files[role]
             for other, data in self.d.spawns.items():
                 if other != zone and role in self.d.leaders(other):
-                    self.E("E-zone-leader", self.d.root / "zones" / ("%s.spawns.json" % other), "leaders",
+                    self.E("E-zone-leader", self.d.root / "zones" / ("%s.spawns.json" % other), "recipe.leaders",
                            "%s was added by %s's zone catalogue and is a leader of %s only" % (role, zone, zone))
             if role not in self.d.leaders(zone):
                 self.W("W-zone-leader", file, "subtypes[%s]" % role, "zone-added leader %s is not placed in "
-                       "zones/%s.spawns.json leaders" % (role, zone))
+                       "zones/%s.spawns.json recipe.leaders" % (role, zone))
 
     def drop_row(self, drop, file, path):
         if not isinstance(drop, dict):
@@ -470,217 +462,92 @@ class Validator:
 
     # -- zones -----------------------------------------------------------
     def spawns(self, zone, data):
+        """zones/<zone>.spawns.json: {"zone", "recipe", "palette"?, "notes"?}.
+        The recipe is parsed like the game (r28common.parse_recipe mirrors
+        spawn_regions_core.lua); its roles, critters, leaders and, with an
+        atlas, its band, `from` anchor and `to` borders are checked here."""
         file = self.d.root / "zones" / ("%s.spawns.json" % zone)
         if not isinstance(data, dict):
             self.E("E-type", file, "$", "spawns file must be an object")
             return
+        for key in data:
+            if key not in C.SPAWNS_FILE_KEYS:
+                self.E("E-recipe-key", file, "$", "unknown field %r (%s)" % (key, ", ".join(C.SPAWNS_FILE_KEYS)))
         if data.get("zone") != zone:
             self.E("E-zone-mismatch", file, "zone", "zone %r does not match the file name %s" % (data.get("zone"), zone))
         info = self.zone_info(zone)
         if self.atlas and info is None:
             self.E("E-unknown-zone", file, "zone", "zone %s is not in the atlas" % zone)
-        for i, role in enumerate(data.get("critters") or []):
-            if self.role_disposition(role) != "critter":
-                self.E("E-critter", file, "critters[%d]" % i, "%r is not a critter role" % role)
-        areas = data.get("areas")
-        if not isinstance(areas, list):
-            self.E("E-required", file, "areas", "'areas' must be a list (empty keeps today's palette)")
-            areas = []
-        seen = set()
-        fallbacks = 0
-        front = bool(info and info.get("role") in ("front", "island"))
-        for i, area in enumerate(areas):
-            path = "areas[%d]" % i
-            if not isinstance(area, dict):
-                self.E("E-type", file, path, "area must be an object")
-                continue
-            aid = area.get("id")
-            if isinstance(aid, str):
-                path = "areas[%s]" % aid
-            self.unknown_keys(area, AREA_KEYS, file, path)
-            self.required(area, AREA_REQUIRED, file, path)
-            if not isinstance(aid, str) or not C.SNAKE.match(aid):
-                self.E("E-id", file, path, "area id %r must be snake_case" % aid)
-            elif aid in seen:
-                self.E("E-duplicate", file, path, "duplicate area id %s" % aid)
-            seen.add(aid)
-            self.check_anchor(area.get("anchor"), zone, file, path + ".anchor")
-            self.check_offset(area.get("offset"), file, path)
-            self.check_shape(area.get("shape"), front, file, path + ".shape")
-            self.check_in_zone(zone, area.get("anchor"), area.get("offset"), area.get("shape"), file, path)
-            hosts = area.get("hosts")
-            if not isinstance(hosts, dict) or not isinstance(hosts.get("biomes"), list) or not hosts["biomes"]:
-                self.E("E-hosts", file, path + ".hosts", "hosts needs a non-empty 'biomes' list ('any' allowed)")
+        palette = data.get("palette")
+        if palette is not None:
+            if not isinstance(palette, dict):
+                self.E("E-type", file, "palette", "palette must be an object")
             else:
-                if "shore" in hosts and not isinstance(hosts["shore"], bool):
-                    self.E("E-hosts", file, path + ".hosts", "shore must be true or false")
-                if info is not None and info["biomes"]:
-                    for biome in hosts["biomes"]:
-                        if biome != "any" and C.biome_id(biome) not in info["biomes"]:
-                            self.E("E-unknown-biome", file, path + ".hosts", "biome %r is not a biome of %s (%s)"
-                                   % (biome, zone, ", ".join(sorted(info["biomes"]))))
-            if area.get("clock") not in CLOCKS:
-                self.E("E-enum", file, path + ".clock", "clock %r not in %s" % (area.get("clock"), CLOCKS))
-            levels = area.get("levels")
-            if not level_range(levels):
-                self.E("E-levels", file, path + ".levels", "levels must be [lo, hi] within 1..60")
-                levels = None
-            elif info is not None and info.get("levels"):
-                zlo, zhi = info["levels"]
-                if levels[0] < zlo or levels[1] > zhi:
-                    self.E("E-area-levels", file, path + ".levels", "levels %s outside the zone band %s"
-                           % (levels, info["levels"]))
-            species = area.get("species")
-            if not isinstance(species, list) or not species:
-                self.E("E-required", file, path + ".species", "species must be a non-empty list")
-                species = []
-            for j, sp in enumerate(species):
-                spath = "%s.species[%d]" % (path, j)
-                role = sp.get("role") if isinstance(sp, dict) else None
-                if not self.role_def(role)[0]:
-                    self.E("E-unknown-role", file, spath, "role %r is neither a sub-type nor an existing mob" % role)
-                    continue
-                if not is_num(sp.get("weight")) or sp["weight"] <= 0:
-                    self.E("E-type", file, spath, "weight must be a positive number")
-                if self.role_disposition(role) == "critter":
-                    self.W("W-critter-area", file, spath, "critter %s belongs in 'critters'" % role)
-                elif self.role_disposition(role) is None:
-                    self.E("E-not-a-mob", file, spath, "%s is an NPC or guard, not an ambient mob" % role)
-                rlevels = self.role_levels(role)
-                if levels and rlevels and (levels[0] < rlevels[0] or levels[1] > rlevels[1]):
-                    self.E("E-area-role-levels", file, spath, "area levels %s outside %s's levels %s"
-                           % (levels, role, rlevels))
-            if "cap" in area and not is_int(area["cap"], 1):
-                self.E("E-type", file, path + ".cap", "cap must be an integer >= 1")
-            if "camp" in area:
-                self.check_camp(area, file, path)
-            if area.get("fallback") is True:
-                fallbacks += 1
-            elif "fallback" in area and not isinstance(area["fallback"], bool):
-                self.E("E-type", file, path + ".fallback", "fallback must be true or false")
-        if areas and fallbacks != 1:
-            self.E("E-fallback", file, "areas", "a zone with areas needs exactly one fallback area (has %d)" % fallbacks)
-        for i, leader in enumerate(data.get("leaders") or []):
-            path = "leaders[%d]" % i
-            if not isinstance(leader, dict):
-                self.E("E-type", file, path, "leader must be an object")
-                continue
-            self.unknown_keys(leader, LEADER_KEYS, file, path)
-            self.required(leader, ("role", "anchor", "level", "respawn"), file, path)
-            role = leader.get("role")
+                for key in palette:
+                    if key not in C.PALETTE_KEYS:
+                        self.E("E-recipe-key", file, "palette", "unknown field %r (%s)"
+                               % (key, ", ".join(C.PALETTE_KEYS)))
+        if "recipe" not in data:
+            if palette is None:
+                self.E("E-required", file, "recipe", "a spawns file needs a recipe (a shipped file without one "
+                       "keeps its palette)")
+            return
+        band = info["levels"] if info is not None and info.get("levels") else None
+        parsed, errors = C.parse_recipe(zone, data["recipe"], band, self.role_levels,
+                                        lambda role: (self.subtypes.get(role) or {}).get("leader") is True)
+        for err in errors:
+            self.E(err.code, file, "recipe." + err.path if err.path != "recipe" else "recipe", err.msg)
+        if parsed is None:
+            return
+        # Roles exist and are ambient mobs.
+        for unit in parsed["kinds"] + parsed["camps"]:
+            path = "recipe.%s[%s]" % ("camps" if unit["unit"] == "camp" else "kinds", unit["id"])
+            for role in unit["roles"]:
+                source = self.role_def(role)[0]
+                disposition = self.role_disposition(role)
+                if not source:
+                    self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
+                elif disposition == "critter":
+                    self.W("W-critter-area", file, path, "critter %s belongs in 'critters'" % role)
+                elif disposition is None:
+                    self.E("E-not-a-mob", file, path, "%s is an NPC or guard, not an ambient mob" % role)
+        for i, role in enumerate(parsed["critters"]):
+            path = "recipe.critters[%d]" % i
+            if not self.role_def(role)[0]:
+                self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
+            elif self.role_disposition(role) != "critter":
+                self.E("E-critter", file, path, "%r is not a critter role" % role)
+        for leader in parsed["leaders"]:
+            role = leader["role"]
+            path = "recipe.leaders[%s]" % role
             source, rec = self.role_def(role)
             if not source:
                 self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
-            elif source == "subtype" and not rec.get("leader"):
-                self.W("W-leader-flag", file, path, "sub-type %s is not marked \"leader\": true" % role)
-            self.check_anchor(leader.get("anchor"), zone, file, path + ".anchor")
-            self.check_offset(leader.get("offset"), file, path)
-            self.check_in_zone(zone, leader.get("anchor"), leader.get("offset"), {"kind": "point"}, file, path)
-            level = leader.get("level")
-            if not is_int(level, 1, C.LEVEL_CAP):
-                self.E("E-levels", file, path, "level must be an integer 1..60")
-            else:
-                rlevels = self.role_levels(role)
-                if rlevels and not rlevels[0] <= level <= rlevels[1]:
-                    self.E("E-leader-level", file, path, "level %d outside %s's levels %s" % (level, role, rlevels))
-                if source == "subtype" and rec.get("tier") == "elite" and level < 31:
-                    self.E("E-leader-tier", file, path, "elite leaders only from level 31 (frame 2.4)")
-            if not is_int(leader.get("respawn"), 1):
-                self.E("E-type", file, path, "respawn must be seconds (integer >= 1)")
-
-    def check_in_zone(self, zone, anchor, offset, shape, file, path):
-        """Frame 4.6: anchor + offset (the centre of a circle or ring, a band's
-        origin, a leader spot) lies in the zone; most of the shape should too.
-        Error only beyond the zone's extent box by more than ZONE_MARGIN;
-        the approximate border outline gives warnings."""
-        if not self.atlas or not isinstance(shape, dict) or shape.get("kind") == "zone":
+                continue
+            if source == "subtype" and rec.get("tier") == "elite" and leader["level"] is not None \
+                    and leader["level"] < 31:
+                self.E("E-leader-tier", file, path, "elite leaders only from level 31 (frame 2.4); this one "
+                       "stands at level %d" % leader["level"])
+            for other in sorted(self.d.spawns):
+                if other != zone and role in self.d.leaders(other):
+                    self.E("E-duplicate", file, path, "leader %s is also placed by %s (a leader stands in one "
+                           "zone)" % (role, other))
+        # The atlas: `from` names an anchor of the zone, `to` its neighbours.
+        if info is None:
             return
-        base = self.atlas.position(zone, anchor) if isinstance(anchor, str) else None
-        if base is None:
-            return
-        if not (isinstance(offset, list) and len(offset) == 2 and all(is_int(v) for v in offset)):
-            offset = [0, 0]
-        cx, cz = base[0] + offset[0], base[1] + offset[1]
-        overshoot = self.atlas.box_overshoot(zone, cx, cz)
-        if overshoot > ZONE_MARGIN:
-            self.E("E-outside-zone", file, path, "centre (%d, %d) lies %d nodes beyond the extent of %s "
-                   "(sign or axis mistake?)" % (cx, cz, overshoot, zone))
-            return
-        near_anchor = any(abs(cx - ax) <= 24 and abs(cz - az) <= 24
-                          for ax, az in self.atlas.zones[zone]["anchor_pos"].values())
-        out = self.atlas.outside_by(zone, cx, cz)
-        if out > 0 and not near_anchor:
-            self.W("W-area-outside", file, path, "centre (%d, %d) lies about %d nodes outside the approximate "
-                   "outline of %s" % (cx, cz, out, zone))
-        kind = shape.get("kind")
-        samples = []
-        if kind == "band":
-            fwd, side = shape.get("forward"), shape.get("side")
-            if not (isinstance(fwd, list) and isinstance(side, list) and len(fwd) == 2 and len(side) == 2
-                    and all(is_num(v) for v in fwd + side)):
-                return
-            sign = self.atlas.zones[zone]["front_sign"]
-            for i in range(5):
-                for j in range(5):
-                    f = fwd[0] + (fwd[1] - fwd[0]) * i / 4.0
-                    sd = side[0] + (side[1] - side[0]) * j / 4.0
-                    samples.append((cx + sd, cz + sign * f))
-        elif kind == "circle" and is_num(shape.get("r")):
-            radii = [shape["r"] / 2.0, shape["r"]]
-            samples = [(cx + r * math.cos(math.pi * k / 4.0), cz + r * math.sin(math.pi * k / 4.0))
-                       for r in radii for k in range(8)]
-        elif kind == "ring" and isinstance(shape.get("r"), list) and len(shape["r"]) == 2 \
-                and all(is_num(v) for v in shape["r"]):
-            radii = [shape["r"][0], sum(shape["r"]) / 2.0, shape["r"][1]]
-            samples = [(cx + r * math.cos(math.pi * k / 4.0), cz + r * math.sin(math.pi * k / 4.0))
-                       for r in radii for k in range(8)]
-        if samples:
-            inside = sum(1 for pt in samples if self.atlas.outside_by(zone, *pt) <= 0)
-            if inside * 2 < len(samples):
-                self.W("W-area-outside", file, path, "most of the %s lies outside the approximate outline of %s "
-                       "(%d of %d sample points inside)" % (kind, zone, inside, len(samples)))
-
-    def check_offset(self, offset, file, path):
-        if offset is None:
-            return
-        if not (isinstance(offset, list) and len(offset) == 2 and all(is_int(v) for v in offset)):
-            self.E("E-offset", file, path + ".offset", "offset must be [x, z] integers (world axes)")
-
-    def check_shape(self, shape, front, file, path):
-        if not isinstance(shape, dict) or shape.get("kind") not in SHAPES:
-            self.E("E-shape", file, path, "shape needs kind %s" % "/".join(SHAPES))
-            return
-        kind = shape["kind"]
-        if kind == "circle" and not (is_num(shape.get("r")) and shape["r"] > 0):
-            self.E("E-shape", file, path, "circle needs r > 0")
-        elif kind == "ring":
-            r = shape.get("r")
-            if not (isinstance(r, list) and len(r) == 2 and all(is_num(v) for v in r) and 0 <= r[0] < r[1]):
-                self.E("E-shape", file, path, "ring needs r: [min, max] with 0 <= min < max")
-        elif kind == "band":
-            for key in ("forward", "side"):
-                v = shape.get(key)
-                if not (isinstance(v, list) and len(v) == 2 and all(is_num(x) for x in v) and v[0] < v[1]):
-                    self.E("E-shape", file, path, "band needs %s: [from, to] with from < to" % key)
-            if front:
-                self.E("E-band-front", file, path, "front zones and islands may not use band (no front axis)")
-
-    def check_camp(self, area, file, path):
-        camp = area["camp"]
-        if not isinstance(camp, dict):
-            self.E("E-camp", file, path + ".camp", "camp must be an object")
-            return
-        if not is_int(camp.get("slots"), 1):
-            self.E("E-camp", file, path + ".camp", "camp.slots must be an integer >= 1")
-        r = camp.get("respawn")
-        if not (isinstance(r, list) and len(r) == 2 and all(is_int(v, 1) for v in r) and r[0] <= r[1]):
-            self.E("E-camp", file, path + ".camp", "camp.respawn must be [min, max] seconds")
-        if not is_num(camp.get("min_player_distance")):
-            self.E("E-camp", file, path + ".camp", "camp.min_player_distance must be a number")
-        shape = area.get("shape") or {}
-        if shape.get("kind") == "circle" and is_num(shape.get("r")) and not CAMP_RADIUS[0] <= shape["r"] <= CAMP_RADIUS[1]:
-            self.W("W-camp-radius", file, path + ".shape", "camp radius %s; about 35-40 so two players do not "
-                   "block it" % shape["r"])
+        anchor = (parsed["from"] or {}).get("anchor")
+        if anchor is not None and anchor not in info["anchor_refs"]:
+            refs = sorted(r for r in info["anchor_refs"] if not r.startswith("anchor_") and not r.startswith("r20_"))
+            self.E("E-unknown-anchor", file, "recipe.from.anchor", "anchor %r is not an anchor of %s (anchor id "
+                   "or slot; this zone has: %s)" % (anchor, zone, ", ".join(refs) or "none"))
+        for i, other in enumerate((parsed["to"] or {}).get("border") or []):
+            path = "recipe.to.border[%d]" % i
+            if other not in self.atlas.zones:
+                self.E("E-unknown-zone", file, path, "zone %r is not in the atlas" % other)
+            elif other not in info["neighbours"]:
+                self.W("W-border-neighbour", file, path, "%s is not a neighbour of %s in the atlas (neighbours: "
+                       "%s); the game needs a land border with it" % (other, zone,
+                                                                      ", ".join(sorted(info["neighbours"])) or "none"))
 
     def quests(self, zone, data, all_areas, hub_givers):
         file = self.d.root / "zones" / ("%s.quests.json" % zone)
@@ -1031,7 +898,8 @@ class Validator:
                        % (what, target, info["faction"]))
 
     def area_roles(self, area):
-        return {sp.get("role") for sp in area.get("species") or [] if isinstance(sp, dict)}
+        """The roles a quest area (a recipe kind or camp) spawns, day and night."""
+        return set(area.get("roles") or [])
 
     def resolve_area(self, ref, zone, file, path, all_areas):
         if not isinstance(ref, str) or not ref:
@@ -1048,14 +916,16 @@ class Validator:
             return area
         if area is None:
             self.E("E-unknown-area", file, path, "area %s does not exist (zone %s has %s)" % (
-                ref, azone, ", ".join(sorted(all_areas.get(azone) or {})) or "no spawns file / no areas"))
+                ref, azone, ", ".join(sorted(all_areas.get(azone) or {})) or "no spawns recipe: no kinds or camps"))
         return area
 
     def target_levels(self, zone, role, area_ref, area, file, path, all_areas):
         """Level range a kill or quest-drop target is met at: a named leader
         (of this zone, else of any zone: leader roles are unique fixed spots)
-        has its fixed level and no area; an area its levels,
-        otherwise the zone's areas hosting the role, else the role's levels."""
+        has its fixed level and no area; an area (a kind or camp of the
+        recipe) its levels, the union over its roles (as the game's quest
+        validator), otherwise the zone's kinds and camps hosting the role,
+        else the role's levels."""
         found = self.d.find_leader(role, zone)
         if found is not None:
             leader_zone, leader = found
@@ -1126,13 +996,35 @@ class Validator:
             if self.target_role_ok(role, file, path, legacy_guard=legacy_guard):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
+        self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
+
+    def check_recipe_targets(self, zone, obj, roles, file, path, all_areas):
+        """A kill objective without an area in a zone with a spawn recipe,
+        none of whose targets the recipe spawns (a kind, a camp or a leader of
+        the zone): only the recipe's roles appear on that zone's surface. A
+        warning (the targets may live in another zone on purpose); the game's
+        quest loader logs the same (grug_quests/validate.lua)."""
+        if "area" in obj or not roles:
+            return
+        kill_zone = obj.get("zone") if isinstance(obj.get("zone"), str) else zone
+        areas = all_areas.get(kill_zone) or {}
+        if not areas:
+            return
+        spawned = set()
+        for unit in areas.values():
+            spawned |= set(unit.get("roles") or ())
+        spawned |= set(self.d.leaders(kill_zone))
+        bare = {r.split(":", 1)[1] if r.startswith("grug_mobs:") else r for r in roles if isinstance(r, str)}
+        if not bare & spawned:
+            self.W("W-recipe-target", file, path, "no kill target (%s) is spawned by %s's spawn recipe"
+                   % (", ".join(sorted(bare)), kill_zone))
 
     # -- driver ----------------------------------------------------------
     def run(self):
         for err in self.d.errors:
             self.E("E-json", err.split(":")[0], "$", err)
         if not self.atlas:
-            self.W("W-no-atlas", self.d.root, "$", "no zone atlas given (--atlas): zone, anchor, biome and "
+            self.W("W-no-atlas", self.d.root, "$", "no zone atlas given (--atlas): zone, anchor, border and "
                    "zone-band checks skipped; NPCs checked against today's quest registry only")
         self.catalogs()
         self.collect_new_givers()
@@ -1180,19 +1072,16 @@ class Validator:
                   5: ("front", "island"), 6: ("front", "island")}
 
     def zone_drops(self, zone, tier):
-        """Items a designed zone's areas drop in band `tier`; None when the
-        zone has no spawn areas yet (today's palette, not checked)."""
+        """Items a designed zone's kinds and camps drop in band `tier`; None
+        when the zone has no recipe yet (today's palette, not checked)."""
         areas = self.d.areas(zone)
         if not areas:
             return None
         out = set()
         for area in areas.values():
-            levels = area.get("levels")
-            if not level_range(levels):
-                continue
-            if tier not in range((levels[0] - 1) // 10 + 1, (levels[1] - 1) // 10 + 2):
-                continue
-            for role in self.area_roles(area):
+            for role, levels in sorted(area["levels_by_role"].items()):
+                if tier not in range((levels[0] - 1) // 10 + 1, (levels[1] - 1) // 10 + 2):
+                    continue
                 source, rec = self.role_def(role)
                 if source == "subtype":
                     family = self.drop_families.get(rec.get("drops")) or {}
@@ -1350,8 +1239,8 @@ def _mutations():
     def quest(data, qid):
         return next(q for q in data["quests"] if q["id"] == qid)
 
-    def area(data, aid):
-        return next(a for a in data["areas"] if a["id"] == aid)
+    def belt(data, bid):
+        return next(b for b in data["recipe"]["belts"] if b["id"] == bid)
 
     def add_giver(d):
         d["hubs"][0]["givers"].append({"npc": "r14_human_steward", "lines": ["extra"]})
@@ -1362,8 +1251,11 @@ def _mutations():
     def critter_target(d):
         quest(d, "sample_hunt_01")["objectives"][0] = {"type": "kill", "roles": ["wild_turkey"], "count": 5}
 
+    def base_role_only(d):
+        quest(d, "sample_hunt_01")["objectives"][0] = {"type": "kill", "roles": ["fox"], "count": 3}
+
     def wrong_area_role(d):
-        quest(d, "sample_hunt_02")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_fields_day"
+        quest(d, "sample_hunt_02")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_beach"
 
     def level_fit(d):
         quest(d, "sample_hunt_01")["level"] = 9
@@ -1409,23 +1301,128 @@ def _mutations():
     def line_not_giver(d):
         quest(d, "sample_kitchen_01")["line"] = "hunt"
 
-    def no_fallback(d):
-        area(d, "fallback")["fallback"] = False
+    def shares(d):
+        belt(d, "l9_10")["share"] = 25
 
-    def area_role_levels(d):
-        area(d, "home_fields_day")["levels"] = [1, 6]
+    def no_open(d):
+        kinds = belt(d, "l3_5")["kinds"]
+        kinds["forest"] = kinds.pop("open")
+        kinds["forest"]["day"] = [{"role": "small_boar", "weight": 1}]
 
-    def bad_shape(d):
-        area(d, "home_beach_night")["shape"] = {"kind": "ring", "r": [120, 20]}
+    def open_in_open(d):
+        belt(d, "l1_3")["kinds"]["open"]["night"] = "open"
 
-    def bad_biome(d):
-        area(d, "home_fields_night")["hosts"]["biomes"] = ["desert"]
+    def missing_night(d):
+        del belt(d, "l1_3")["kinds"]["open"]["night"]
+
+    def big_minor(d):
+        belt(d, "l3_5")["kinds"]["open"]["day"][1]["weight"] = 2
+
+    def three_roles(d):
+        belt(d, "l3_5")["kinds"]["open"]["day"].append({"role": "large_rat", "weight": 1})
+
+    def twice_role(d):
+        belt(d, "l3_5")["kinds"]["open"]["day"][1]["role"] = "small_boar"
+
+    def no_level_overlap(d):
+        belt(d, "l9_10")["kinds"]["open"]["day"] = [{"role": "small_boar", "weight": 1}]
+
+    def outside_band(d):
+        belt(d, "l9_10")["levels"] = [9, 12]
+
+    def cover_gap(d):
+        belt(d, "l3_5")["kinds"]["open"]["day"] = [{"role": "small_boar", "weight": 1}]
+
+    def camp_below_top(d):
+        d["recipe"]["camps"][0]["belt"] = "l3_5"
+        d["recipe"]["camps"][0]["roster"] = [{"role": "small_boar", "weight": 1}]
+
+    def last_belt_below_band(d):
+        belt(d, "l9_10")["levels"] = [9, 9]
+
+    def bad_belt_levels(d):
+        belt(d, "l9_10")["levels"] = [10, 9]
+
+    def unknown_role(d):
+        belt(d, "l1_3")["kinds"]["open"]["night"] = [{"role": "giant_squirrel", "weight": 1}]
+
+    def unknown_leader_role(d):
+        d["recipe"]["leaders"][0]["role"] = "nobody_chief"
+
+    def leader_flag(d):
+        d["recipe"]["leaders"][0]["role"] = "confused_bandit"
+
+    def leader_twice(d):
+        d["recipe"]["leaders"].append(dict(d["recipe"]["leaders"][0]))
+
+    def leader_camp_ref(d):
+        d["recipe"]["leaders"][0]["at"] = {"camp": "nowhere_camp"}
+
+    def leader_kind_ref(d):
+        d["recipe"]["leaders"][0]["at"] = {"kind": "nowhere_kind", "pick": "farthest_from_roads"}
+
+    def leader_kind_names_camp(d):
+        d["recipe"]["leaders"][0]["at"] = {"kind": "border_bandits", "pick": "farthest_from_roads"}
+
+    def leader_pick(d):
+        d["recipe"]["leaders"][0]["at"] = {"kind": "borderlands", "pick": "random"}
+
+    def leader_at_kind(d):
+        d["recipe"]["leaders"][0]["at"] = {"kind": "borderlands", "pick": "farthest_from_roads"}
+
+    def camp_belt_ref(d):
+        d["recipe"]["camps"][0]["belt"] = "l20"
+
+    def camp_numbers(d):
+        d["recipe"]["camps"][0]["respawn"] = [60, 30]
+
+    def duplicate_unit(d):
+        d["recipe"]["camps"][0]["id"] = "borderlands"
+
+    def duplicate_belt(d):
+        belt(d, "l3_5")["id"] = "l1_3"
+
+    def bad_density(d):
+        belt(d, "l1_3")["kinds"]["open"]["density"] = "crowded"
+
+    def bad_type(d):
+        belt(d, "l1_3")["kinds"]["desert"] = dict(belt(d, "l1_3")["kinds"]["open"], id="dunes", day="open")
+
+    def kind_key(d):
+        belt(d, "l1_3")["kinds"]["open"]["levels"] = [1, 3]
+
+    def file_key(d):
+        d["areas"] = []
+
+    def recipe_key(d):
+        d["recipe"]["fallback"] = True
+
+    def no_recipe(d):
+        del d["recipe"]
 
     def bad_anchor(d):
-        area(d, "home_fields_night")["anchor"] = "nowhere"
+        d["recipe"]["from"]["anchor"] = "nowhere"
+
+    def settlement_anchor(d):
+        d["recipe"]["from"]["anchor"] = "dawnmere"
+
+    def anchor_id(d):
+        d["recipe"]["from"]["anchor"] = "anchor_002"
+
+    def own_border(d):
+        d["recipe"]["to"]["border"] = "elandor_dawnmere_fields"
+
+    def unknown_border(d):
+        d["recipe"]["to"]["border"] = ["elandor_goldmead_vale", "elandor_nowhere"]
+
+    def far_border(d):
+        d["recipe"]["to"]["border"] = ["elandor_highcourt"]
 
     def critter_list(d):
-        d["critters"].append("small_boar")
+        d["recipe"]["critters"].append("small_boar")
+
+    def critter_in_roster(d):
+        belt(d, "l3_5")["kinds"]["shore"]["day"] = [{"role": "rabbit", "weight": 1}]
 
     def size(d):
         d[0]["size"] = 1.6
@@ -1464,21 +1461,6 @@ def _mutations():
             if q["turnin"] == "r20_human_start_cook":
                 q["turnin"] = "r14_human_scout"
 
-    def settlement_anchor_ok(d):
-        area(d, "home_fields_night")["anchor"] = "dawnmere"
-
-    def bandits_outside(d):
-        area(d, "border_bandits")["offset"] = [120, 560]
-
-    def leader_outside(d):
-        d["leaders"][0]["offset"] = [120, 560]
-
-    def band_origin_outside(d):
-        area(d, "home_fields_day")["offset"] = [0, 700]
-
-    def band_outside(d):
-        area(d, "home_fields_day")["shape"]["forward"] = [600, 900]
-
     def level_containment(d):
         quest(d, "sample_hunt_01")["level"] = 6
         quest(d, "sample_hunt_01")["min_level"] = 5
@@ -1507,6 +1489,7 @@ def _mutations():
         ("three givers in a hub", Q, add_giver, "E-givers"),
         ("three lines for a giver", Q, three_lines, "E-lines"),
         ("critter kill target", Q, critter_target, "E-critter-target"),
+        ("kill target the recipe zone never spawns", Q, base_role_only, "W-recipe-target"),
         ("target not in area", Q, wrong_area_role, "E-role-not-in-area"),
         ("target levels do not fit quest level", Q, level_fit, "E-level-fit"),
         ("bare area id not in own zone", Q, bare_cross, "E-unknown-area"),
@@ -1522,12 +1505,46 @@ def _mutations():
         ("prerequisite cycle", Q, cycle, "E-cycle"),
         ("talk with another objective", Q, talk_not_only, "E-talk-only"),
         ("line of another giver", Q, line_not_giver, "E-line"),
-        ("no fallback area", S, no_fallback, "E-fallback"),
-        ("area levels outside role levels", S, area_role_levels, "E-area-role-levels"),
-        ("bad ring", S, bad_shape, "E-shape"),
-        ("biome not in zone (atlas)", S, bad_biome, "E-unknown-biome"),
-        ("anchor not in zone (atlas)", S, bad_anchor, "E-unknown-anchor"),
+        ("belt shares do not add up to 100", S, shares, "E-recipe-shares"),
+        ("belt without kinds.open", S, no_open, "E-recipe-open"),
+        ("\"open\" in the open kind", S, open_in_open, "E-recipe-open"),
+        ("kind without a night roster", S, missing_night, "E-recipe-roster"),
+        ("minor role above 25 %", S, big_minor, "E-recipe-roster"),
+        ("three roles in a roster", S, three_roles, "E-recipe-roster"),
+        ("role twice in a roster", S, twice_role, "E-recipe-roster"),
+        ("role levels never meet the belt", S, no_level_overlap, "E-recipe-levels"),
+        ("belt levels leave the zone band (atlas)", S, outside_band, "E-recipe-levels"),
+        ("a kind's roster leaves part of its belt uncovered", S, cover_gap, "E-recipe-cover"),
+        ("a camp's roster stops below its belt's top", S, camp_below_top, "E-recipe-cover"),
+        ("the last belt ends below the zone band's top (atlas)", S, last_belt_below_band, "E-recipe-cover"),
+        ("belt levels not a range", S, bad_belt_levels, "E-recipe-levels"),
+        ("unknown roster role", S, unknown_role, "E-unknown-role"),
+        ("unknown leader role", S, unknown_leader_role, "E-unknown-role"),
+        ("leader role not flagged a leader", S, leader_flag, "E-leader-flag"),
+        ("leader placed twice", S, leader_twice, "E-duplicate"),
+        ("leader at an unknown camp", S, leader_camp_ref, "E-recipe-ref"),
+        ("leader at an unknown kind", S, leader_kind_ref, "E-recipe-ref"),
+        ("leader kind names a camp", S, leader_kind_names_camp, "E-recipe-ref"),
+        ("leader with an unknown pick", S, leader_pick, "E-recipe-ref"),
+        ("leader deep in a kind", S, leader_at_kind, None),
+        ("camp on an unknown belt", S, camp_belt_ref, "E-recipe-ref"),
+        ("camp respawn not [min, max]", S, camp_numbers, "E-recipe"),
+        ("camp id equals a kind id", S, duplicate_unit, "E-duplicate"),
+        ("belt id used twice", S, duplicate_belt, "E-duplicate"),
+        ("unknown density", S, bad_density, "E-enum"),
+        ("kinds key not a terrain type", S, bad_type, "E-recipe-key"),
+        ("unknown field in a kind", S, kind_key, "E-recipe-key"),
+        ("old area list in the file", S, file_key, "E-recipe-key"),
+        ("unknown field in the recipe", S, recipe_key, "E-recipe-key"),
+        ("no recipe and no palette", S, no_recipe, "E-required"),
+        ("from anchor not in zone (atlas)", S, bad_anchor, "E-unknown-anchor"),
+        ("from anchor by settlement key (the game takes id or slot)", S, settlement_anchor, "E-unknown-anchor"),
+        ("from anchor by anchor id", S, anchor_id, None),
+        ("border is the zone itself", S, own_border, "E-recipe-ref"),
+        ("border zone not in the atlas", S, unknown_border, "E-unknown-zone"),
+        ("border zone not a neighbour (warning)", S, far_border, "W-border-neighbour"),
         ("non-critter in critters", S, critter_list, "E-critter"),
+        ("critter in a roster", S, critter_in_roster, "W-critter-area"),
         ("sub-type size", "catalog/subtypes.json", size, "E-size"),
         ("role collides with existing entity", "catalog/subtypes.json", collides, "E-role-collides"),
         ("three signature items in a band", "catalog/drops.json", three_signatures, "E-signature-limit"),
@@ -1544,12 +1561,7 @@ def _mutations():
         ("kill area in another race's 11-20 zone", Q, other_race_area, "E-race-track"),
         ("travel into the other faction", Q, other_faction, "W-faction"),
         ("giver from another zone", Q, foreign_giver, "E-giver-zone"),
-        ("anchor by settlement key", S, settlement_anchor_ok, None),
         ("stat loot not dropped in the track", "catalog/drops.json", no_tusk, "W-loot-track"),
-        ("area centre outside the zone", S, bandits_outside, "E-outside-zone"),
-        ("leader outside the zone", S, leader_outside, "E-outside-zone"),
-        ("band reaching outside the outline (warning only)", S, band_outside, "W-area-outside"),
-        ("band origin beyond the zone's extent", S, band_origin_outside, "E-outside-zone"),
         ("target levels not contained in quest level ±3", Q, level_containment, "E-level-fit"),
         ("quest-drop source levels not contained", Q, drop_level, "E-level-fit"),
         ("kill objective on a leader, no area", Q, kill_leader, "!W-role-not-in-zone"),
@@ -1647,22 +1659,46 @@ def _scenarios():
             _save(target / Q_FILE, data)
         return setup
 
+    def goldmead_recipe(leaders):
+        """A one-belt Goldmead (band 11-20) recipe; its only belt runs to L20."""
+        return {"zone": "elandor_goldmead_vale", "recipe": {
+            "from": {"anchor": "village_1"}, "to": {"border": "elandor_highcourt"},
+            "belts": [{"id": "l11_20", "share": 100, "levels": [11, 20], "kinds": {
+                "open": {"id": "vale", "name": "Goldmead Vale", "day": [{"role": "boar", "weight": 1}],
+                         "night": [{"role": "bandit", "weight": 1}], "density": "normal"}}}],
+            "leaders": leaders}}
+
     def leader_elsewhere(target, move_catalogue=True):
-        """The bandit chief becomes Goldmead's leader; Dawnmere's quest drop
-        still names it (a zone-added role is usable from other zones)."""
+        """The bandit chief (levels 10-11) becomes Goldmead's leader at level
+        11; Dawnmere's quest drop still names it (a zone-added role is usable
+        from other zones)."""
         spawns_file = target / "zones" / "elandor_dawnmere_fields.spawns.json"
         spawns = _load(spawns_file)
-        leader = spawns.pop("leaders")[0]
+        leader = spawns["recipe"].pop("leaders")[0]
         _save(spawns_file, spawns)
-        leader.update(anchor="village_1", offset=[0, 0])
-        _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
-              {"zone": "elandor_goldmead_vale", "areas": [], "leaders": [leader]})
+        leader["at"] = {"kind": "vale", "pick": "farthest_from_roads"}
+        _save(target / "zones" / "elandor_goldmead_vale.spawns.json", goldmead_recipe([leader]))
+        cat = target / "zones" / "elandor_dawnmere_fields.catalog.json"
+        data = _load(cat)
+        data["subtypes"][0]["levels"] = [10, 11]
         if move_catalogue:
-            cat = target / "zones" / "elandor_dawnmere_fields.catalog.json"
-            data = _load(cat)
             _save(target / "zones" / "elandor_goldmead_vale.catalog.json",
                   {"subtypes": data.pop("subtypes"), "items": []})
-            _save(cat, data)
+        _save(cat, data)
+
+    def leader_in_two_zones(target):
+        """Goldmead places Dawnmere's chief too."""
+        leader_elsewhere(target, False)
+        spawns_file = target / "zones" / "elandor_dawnmere_fields.spawns.json"
+        spawns = _load(spawns_file)
+        spawns["recipe"]["leaders"] = [{"role": "confused_bandit_chief", "at": {"camp": "border_bandits"},
+                                        "respawn": 300}]
+        _save(spawns_file, spawns)
+
+    def palette_only(target):
+        """A shipped file without a recipe: only today's palette."""
+        _save(target / "zones" / "elandor_goldmead_vale.spawns.json",
+              {"zone": "elandor_goldmead_vale", "palette": {"families": ["fox", "poacher"], "boar": "grug_mobs:boar"}})
 
     def zone_cat(change):
         def setup(target):
@@ -1671,6 +1707,9 @@ def _scenarios():
             change(data)
             _save(path, data)
         return setup
+
+    def elite_chief(d):
+        d["subtypes"][0]["tier"] = "elite"
 
     def non_leader_role(d):
         d["subtypes"].append({"role": "dawnmere_scarecrow", "family": "bandit", "base": "grug_mobs:bandit",
@@ -1742,6 +1781,9 @@ def _scenarios():
         ("leader of another zone as a drop source", leader_elsewhere, False, "!W-role-not-in-zone"),
         ("zone-added leader placed in another zone", lambda t: leader_elsewhere(t, False), False,
          "E-zone-leader"),
+        ("leader role in two zones' recipes", leader_in_two_zones, False, "E-duplicate"),
+        ("a palette-only spawns file (shipped form)", palette_only, False, None),
+        ("elite leader below level 31", zone_cat(elite_chief), False, "E-leader-tier"),
         ("zone catalogue adds a non-leader role", zone_cat(non_leader_role), False, "E-zone-catalog"),
         ("zone catalogue adds a non-quest item", zone_cat(non_quest_item), False, "E-zone-catalog"),
         ("zone catalogue role collides with the global one", zone_cat(duplicate_role), False, "E-duplicate"),

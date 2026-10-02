@@ -9,7 +9,7 @@
     "tier": "normal",
     "levels": [
       1,
-      3
+      4
     ],
     "drops": "boar",
     "notes": "Day; all six starts. Charge retained. Neutral single pull; no group alert.",
@@ -32,7 +32,7 @@
     "tier": "normal",
     "levels": [
       5,
-      7
+      10
     ],
     "drops": "boar",
     "notes": "Day; all six starts. Charge retained. Hostile successor to the local neutral boar.",
@@ -147,7 +147,7 @@
     "tier": "normal",
     "levels": [
       1,
-      3
+      4
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection.",
@@ -197,7 +197,7 @@
     "tier": "normal",
     "levels": [
       7,
-      9
+      10
     ],
     "drops": "rat",
     "notes": "Night in open fields of the six start zones; required dry burrow/granary supply area uses clock both for daytime tails and fur. Outside town protection. Optional inland finale-area animal, not another required hunt.",
@@ -272,7 +272,7 @@
     "tier": "normal",
     "levels": [
       3,
-      5
+      6
     ],
     "drops": "crab",
     "notes": "Day; all six start coasts; shore:true only. Neutral single pull."
@@ -287,7 +287,7 @@
     "tier": "normal",
     "levels": [
       7,
-      9
+      10
     ],
     "drops": "crab",
     "notes": "Day; all six start coasts; shore:true only. Aggressive shore hunter."
@@ -407,7 +407,7 @@
     "tier": "normal",
     "levels": [
       7,
-      9
+      10
     ],
     "drops": "zombie",
     "notes": "Night in the six start zones outside the arid Orc track. Burns in sunlight unless spawned on actual blight dirt; a day/both source requires that host, otherwise use the matching sunproof husk. Undead night truce remains. Shore:true; walks, never swims."

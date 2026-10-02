@@ -15,10 +15,11 @@ content requirements remain explicitly separate from delivered behavior.
   win there.
 - Mob level comes from `grug_core.mob_level_at(pos)`: named-zone surface
   level plus the independent depth axis (`combat_stats.md` §3). Biome labels
-  never hand-set a mob's level. **Exception (Round 28 ruling 34):** in a
-  zone whose data defines spawn areas, a surface mob from an area takes a
-  fixed level from its area's range and a named leader its fixed level
-  (§4.2).
+  never hand-set a mob's level. **Exception (Round 28 ruling 34, Lane S1):**
+  in a zone with a spawn recipe, a surface mob takes a level in its role's
+  range of its spawn region and a named leader the top of its region (§4.2);
+  `grug_core.mob_level_at` returns the region's level there (the level
+  overlay, [spawn_regions.md](spawn_regions.md)).
 - Current spawn eligibility consumes `grug_zones.*` through the named-zone
   policy. Retired radial buckets have no compatibility path. Section 1 links
   the historical map evidence and the current geography/coverage authorities.
@@ -846,8 +847,8 @@ rolls ride on WP5's item/enchantment tables.
 ## 4. Spawn parameter table
 
 Mechanism: mobs_redo `mobs:spawn` plus the named-zone spawn policy. In a
-zone whose data defines spawn areas the surface rows other than the listed
-critters are refused and the areas of §4.2 spawn instead.
+zone with a spawn recipe the surface rows other than the recipe's critters
+are refused and the spawn regions of §4.2 spawn instead.
 Host nodes, authored zone palettes, regional identity and local level must all
 admit the family. The retired `_grug_spawn_zones` field is not a current gate. `min_height 0, max_height 600` (the flight
 ceiling) on all surface entries, since the natural terrain reaches past
@@ -956,7 +957,7 @@ is historical, not the runtime table; the shipped row values are in
 | **Ashen / Gravewood Treant** | forest litter / bone litter | 20 | 2600 | **3 each at night** (base 2 ×1.25, ceiling) | night | exact tint-specific routes |
 | Reef Lurker (elite crab) | sand within 6 nodes of sea-level water, y 0–20 | 30 | 1100 | 1 | any | level 45–60 (§3.1) |
 | Kraken Guard | ocean water surface, open sea only (own check) | 60 | 12000 | 1 | any | (outside continents) |
-| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 30–60 s (Round 28 ruling 37), dormant catch-up; in a zone with spawn areas a camp area (§4.2) replaces the fire | — | — | 3–5 per camp | — | camp pos |
+| Bandits / Mirefolk | **no ABM** — camp anchor with **respawn slots** (world.md §4a): max 3–5, one refill per 30–60 s (Round 28 ruling 37), dormant catch-up; in a zone with a spawn recipe a recipe camp (§4.2) replaces the fire | — | — | 3–5 per camp | — | camp pos |
 | Named rares | **no ABM** — scheduled spawner, 2–4 h respawn, broadcast | — | — | 1 | — | fixed routes |
 
 **The Bandit Archer costs no spawn budget** (2026-09-16). It has no row of its
@@ -1093,110 +1094,103 @@ registers them and remain the ambient cave life; the pulse is a second,
 independent source layered over them, and it is the only one that scales
 with depth.
 
-### 4.2 Spawn areas (Round 28 rulings 3, 34, 37, 38)
+### 4.2 Spawn regions (Round 28 rulings 3, 34, 37, 38; Lane S1)
 
-Zones are closed units with planned progression: several spawn areas per
-zone, each with fixed levels, replace the continuous level field for surface
-mobs. Implementation: `mods/ENTITIES/grug_mobs/spawn_areas.lua` (data,
-matching, ambient spawner, leaders), `camps.lua` (camp slots), `density.lua`
-(budget), `spawn_policy.lua` (ABM gate, protected surface).
+Zones are closed units with planned progression: spawn regions with fixed
+levels, built by rule from the terrain, replace the continuous level field
+for surface mobs. How the regions are built from a zone's recipe, and the
+recipe format: [spawn_regions.md](spawn_regions.md). Implementation:
+`mods/ENTITIES/grug_mobs/spawn_regions_core.lua` (the builder, shared with
+the offline renderer), `spawn_regions.lua` (data, spawner, leaders, seams),
+`camps.lua` (camp slots), `density.lua` (budget), `spawn_policy.lua` (ABM
+gate, protected surface).
 
-- **One data file per zone**, `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json`,
-  in the format of the [design frame §4.6](../planning/round28-design-frame.md#46-spawn-areas-zoneszone_idspawnsjson)
-  plus `palette`: the zone's named-zone palette of §4 / `world_zones.md` §8
-  as data (`families`, Lorindor's `exact_mobs` and `night_fallback`, the
-  zone's `boar` tint and its `lookalikes` per family). `critters` lists the
-  ambient critters, `areas` the spawn areas, `leaders` the named leaders.
-  A missing file means no palette and no areas. The palette is required
-  while `areas` is empty (the load fails otherwise, so a design file copied
-  over a shipped one cannot empty a zone) and may be dropped once areas
-  exist.
-- **Trigger:** a zone whose `areas` list is empty keeps its palette and the
-  level field exactly as before (every zone ships that way until its content
-  lane adds areas). A zone with areas spawns its surface mobs only from
-  them: its ABM rows keep only the listed critters (the Gull with its beach
-  host); shore crabs and every other surface row are refused there.
+- **One data file per zone**, `mods/ENTITIES/grug_mobs/data/zones/<zone_id>.spawns.json`:
+  either `palette` (the zone's named-zone palette of §4 /
+  `world_zones.md` §8 as data: `families`, Lorindor's `exact_mobs` and
+  `night_fallback`, the zone's `boar` tint and its `lookalikes` per family)
+  or `recipe` (belts, kinds, camps, leaders, critters). A missing file means
+  no palette and no recipe; a file without a recipe needs its palette (the
+  load fails otherwise).
+- **Trigger:** a zone without a recipe keeps its palette and the level field
+  exactly as before. A zone with a recipe spawns its surface mobs only from
+  its regions: its ABM rows keep only the recipe's critters (the Gull with
+  its beach host); shore crabs and every other surface row are refused there.
   Unchanged everywhere: underground rows and their depth level, water rows
   and swimmers (Kraken, Reed Angelfish), named rares, vendors, guards and
-  guard posts, and the mapgen content.
-- **Matching.** An area's centre is its anchor (atlas anchor id, settlement
-  key, slot such as `start`, `capital`, `village_1`, `rare_<name>`, or
-  `zone` = the zone hub) plus `offset` [x, z] in world axes. Shapes: `circle`
-  (r), `ring` (r = [min, max]), `band` (`forward` along the front axis,
-  positive toward the Battlegrounds: +z on Elandor, −z on Kragmar; `side`
-  along +x; not in front zones or on islands) and `zone`. Areas are clipped
-  to their zone. At a column, an area matches when the column lies in its
-  shape, its `clock` (`day`, `night`, `both`) is the current one, and its
-  hosts admit the column: `hosts.biomes` against the column's logical biome
-  (`any` admits all) and `shore: true` against the Shore Crab's host (dry
-  `default:sand` within 6 nodes of sea water). Overlapping areas add their
-  species weights; the zone's single `fallback` area applies only where no
-  other area matches column, clock and host. A camp area covers its ground
-  for that rule but spawns only through its slots.
+  guard posts, and the mapgen content. Today only Dawnmere Fields has a
+  recipe.
 - **Ambient spawner.** Once a second per player (the players spread over
   the second in four slices), one random column in the ring 24–64 nodes
-  around the player (24 = `mob_nospawn_range`) in a zone
-  with areas: the highest natural ground node with air above within ±48 of
-  the player (biome surfaces and their fertile and exposed variants; never
-  leaves, wood or water), the areas matching it, one (area, species) pick
-  weighted by the summed weights, then the gates below; the mob stands on
-  the ground node if its box fits. **Light** keeps the ABM rows' behaviour:
-  the spot's natural light at noon must be at least 10 (the day rows'
-  `min_light`; no cave floor and no roofed room even under a lamp, while
-  ground under a leaf canopy counts), a `day` area needs light ≥ 10, and at night a hostile
-  pick needs light ≤ 5, so torch-lit ground stays safe. No per-mob row gate, domain or spawn
-  check applies to an area spawn (the area is the authority), so the start
-  gates (`start_band`, Sunscar Husk, Silverleaf Poacher) end where areas
-  begin. Every area mob carries `_grug_area = "<zone_id>/<area_id>"`
-  (persisted) and a level rolled uniformly in the area's `levels`, handed
-  over right after the spawn (`grug_mobs.relevel`, `levels.lua`): a mob that
-  has not levelled yet takes it on its first tick instead of the level
-  field, the def floor and the cap; a mob that already levelled while
-  activating (families with a composed look, such as bandits) has its level,
-  stats and composed look (armour bracket) re-derived at once. The tier never changes, authored sub-type
-  tiers included. Its wander leash is the
+  around the player (24 = `mob_nospawn_range`) in a zone with a recipe: the
+  highest natural ground node with air above within ±48 of the player (biome
+  surfaces and their fertile and exposed variants; never leaves, wood or
+  water), the region there (spawn_regions.md), one role of its kind's roster
+  for the current clock (weighted), then the gates below; the mob stands on
+  the ground node if its box fits. Camp regions spawn only through their
+  slots. Crab roles keep the Shore Crab's host (dry `default:sand` within 6
+  nodes of sea water). **Light** keeps the ABM rows' behaviour: the spot's
+  natural light at noon must be at least 10 (no cave floor and no roofed
+  room even under a lamp, while ground under a leaf canopy counts), a day
+  pick needs light ≥ 10, and at night a hostile pick needs light ≤ 5, so
+  torch-lit ground stays safe. No per-mob row gate, domain or spawn check
+  applies to a region spawn (the recipe is the authority). Every region mob
+  carries `_grug_area = "<zone_id>/<kind id>"` and `_grug_spawn_clock`
+  (both persisted) and a level rolled uniformly in its role's range (the
+  belt's levels ∩ the role's catalogue levels), handed over right after the
+  spawn (`grug_mobs.relevel`, `levels.lua`): a mob that has not levelled yet
+  takes it on its first tick instead of the level field, the def floor and
+  the cap; a mob that already levelled while activating (families with a
+  composed look, such as bandits) has its level, stats and composed look
+  re-derived at once. The tier never changes. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
+- **Drift band.** No aggressive role spawns within 16 nodes of a road,
+  bridge, village, start town or capital city (the spot and two rings of
+  eight probes at 8 and 16 nodes, the same probe as the idle push of
+  ruling 2); neutral roles and critters may.
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row
-  or area — on a road corridor or bridge (half width + 1, ±5 vertical), a
+  or region — on a road corridor or bridge (half width + 1, ±5 vertical), a
   village's building core, a start town's footprint or a capital city
   (asked only in zones whose zone session publishes a `capital` anchor).
-  No margin beyond them; the idle push of ruling 2 handles the rest. Camps
-  and other POIs are not refused; critters may still appear in towns. An
-  active housing claim refuses hostile spawns as before.
-- **Density.** The §0 budget keeps its species-aware refill, evaluated over
-  the species eligible at the column (the matched areas' species and their
-  summed weights): point budget = the zone budget (15 by day, 23 by night,
-  × `ZONE_DENSITY`); a species' share = budget × its weight ÷ the summed
-  weight (rounded, at least 1); below share ÷ 1.5 (rounded up) a species
-  always refills, up to its share only while fewer than the budget of free
-  area mobs of the areas active at the clock (`both` or the current one, so
-  day animals still about at dusk do not block the night) stand within the
-  128-node counting radius, never above its share. An optional area `cap` limits that area's own mobs within the
-  radius. Camp members, leaders, rares and bosses are not counted.
-- **Camp areas (ruling 37)** — bandits, poachers and mirefolk around a
-  defined point, with or without a camp structure: `camp.slots` members,
-  each death refilled after a roll in `camp.respawn` (30–60 s), a spot at
-  least `camp.min_player_distance` (16) from every player, radius about
-  35–40 so two players do not block it. Members roam free under the normal
-  wander leash (no camp anchor, no 20-node roam cap) and carry the area tag
-  and level. The first look after a server start, once a player is within
-  64 nodes of the centre (so members already saved there are active and
-  counted), fills what is missing at once;
-  later refills follow the slot queue with dormant catch-up (world.md §4a).
-  A camp area with a day or night clock refills only in its clock. In a
-  zone with areas the bandit camp fires stay scenery (their bandits come
-  from a camp area at the bandit anchor); guard posts keep spawning.
-- **Leaders (ruling 38)** at a fixed spot (anchor + offset, snapped to the
-  standable surface; a centre or spot outside the zone is logged at load),
-  fixed level, normal or elite tier as the role is
-  registered; `_grug_leader = true`, no area tag. A leader spawns when a
-  player is within 96 nodes of its spot, none within 24, and its timer has
-  run out; it is
-  never saved with the map, so it exists only while its spot is loaded. A
-  kill starts its `respawn` (about 300 s, game time, mod storage); a leader
-  that vanished with its unloaded block returns on the next visit.
-- **Seams** for other systems: `grug_mobs.spawn_areas.zone_has_areas`,
-  `get_area`, `area_roles`, `leader(role)`.
+  Camps and other POIs are not refused; critters may still appear in towns.
+  An active housing claim refuses hostile spawns as before.
+- **Density.** The §0 budget keeps its species-aware refill over the
+  region's roster for the clock: point budget = the zone budget (15 by day,
+  23 by night, × `ZONE_DENSITY`) × the kind's density class (`sparse` 0.5,
+  `normal` 0.75, `dense` 1; rounded, never above the zone budget); a role's
+  share = budget × its weight ÷ the roster's weight (rounded, at least 1);
+  below share ÷ 1.5 (rounded up) a role always refills, up to its share only
+  while fewer than the budget of free region mobs spawned at the current
+  clock stand within the 128-node counting radius (day animals still about
+  at dusk do not block the night), never above its share. Camp members,
+  leaders, rares and bosses are not counted.
+- **Camps (ruling 37)** — bandits, poachers and mirefolk of a recipe camp at
+  the spot its region map picked by rule: `slots` members, each death
+  refilled after a roll in `respawn` (30–60 s), a spot within 40 nodes of the
+  camp centre and at least `min_player_distance` (16) from every player.
+  Members roam free under the normal wander leash and carry the camp's tag
+  and levels. The first look after a server start, once a player is within
+  64 nodes of the centre, fills what is missing at once; later refills
+  follow the slot queue with dormant catch-up (world.md §4a). In a zone with
+  a recipe the bandit camp fires stay scenery; guard posts keep spawning.
+- **Leaders (ruling 38)** at their rule-placed spot (a camp centre, or the
+  cell farthest from roads of the largest region of a kind; snapped to the
+  nearest standable column within 4 nodes), with the level at the top of
+  their region; `_grug_leader = true`, no area tag. Every leader sub-type is
+  1.15× the base model's size (whatever the catalogue's `size`) with twice
+  the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
+  leader spawns when a player is within 48 nodes of its spot (inside the
+  player's active blocks: `active_block_range` − 1 mapblocks, so the unsaved
+  leader is never dropped and re-added), none within 24, and its timer has
+  run out; it is never saved with the map. A kill
+  starts its `respawn` (300 s, game time, mod storage); a leader that
+  vanished with its unloaded block returns on the next visit.
+- **Seams** for other systems (`grug_mobs.spawn_regions`):
+  `zone_has_recipe`, `get_area(zone, id)` and `area_roles(zone, id)` (an
+  area a quest names is a kind or a camp), `zone_area_ids(zone)`,
+  `leader(role)` (zone, level, respawn), `leader_pos(role)`, `map(zone)`,
+  `region_at(x, z)`, `level_at(x, z)`, `describe(zone, target, mode, ref)` and
+  `direction(zone, target, from_pos)` (spawn_regions.md, Directions).
 
 ## 5. Per-race woods & build sets (LotT pattern)
 
@@ -1451,7 +1445,7 @@ sub-types burn like the Zombie).
   `tools/r28_names/build_review.py --check` enforces it on the data.
 - **Levels:** `levels` [lo, hi] clamps the level the mob gets at its first
   step (the floor is also the fallback where the level field has no value);
-  spawn areas narrow it further.
+  a spawn region's belt narrows it further (§4.2).
 - **Zone name and tint:** `display_by_zone` and `tint_by_zone` are read from
   the zone of the spawn position on the first activation; the zone is
   persisted with the mob. A tint id from `tints.json` is either a baked

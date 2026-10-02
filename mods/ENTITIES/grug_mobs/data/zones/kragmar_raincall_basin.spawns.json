@@ -3,8 +3,5 @@
   "palette": {
     "families": ["jungle_edge", "settled", "tapir", "viper"],
     "boar": "grug_mobs:jungle_boar"
-  },
-  "critters": ["hare", "parrot"],
-  "areas": [],
-  "leaders": []
+  }
 }

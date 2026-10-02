@@ -448,11 +448,11 @@ local function camp_tick(pos, elapsed)
 			core.pos_to_string(pos) .. " has unknown camp type '" .. id .. "'")
 		return IDLE_PERIOD
 	end
-	-- Round 28 ruling 34: in a zone whose data defines spawn areas, bandits
-	-- and mirefolk come from camp AREAS with the area's fixed levels; the
-	-- fire stays scenery there. Guard posts keep spawning everywhere.
+	-- Round 28 ruling 34: in a zone with a spawn recipe, bandits and mirefolk
+	-- come from the recipe's CAMPS with their levels; the fire stays scenery
+	-- there. Guard posts keep spawning everywhere.
 	if cfg.node == CAMP_FIRE_NODE and
-			grug_mobs.spawn_areas.zone_has_areas(grug_zones.id_at(pos.x, pos.z)) then
+			grug_mobs.spawn_regions.zone_has_recipe(grug_zones.id_at(pos.x, pos.z)) then
 		return IDLE_PERIOD
 	end
 	local now = core.get_gametime()
@@ -867,68 +867,82 @@ grug_mobs.register_camp_type("guard_throng", {
 	respawn_max = GUARD_RESPAWN_MAX,
 })
 
+
 --
--- Area camps (Round 28 ruling 37): bandits, poachers and mirefolk around a
--- defined point, from a spawn area with a `camp` block (spawn_areas.lua).
+-- Recipe camps (Round 28 ruling 37, Lane S1): bandits, poachers and
+-- mirefolk of a zone's spawn recipe, at the camp spot its region map picked
+-- by rule (spawn_regions_core.lua step 7).
 --
 -- The slot model above without a node: `slots` members, each death booked
--- into a refill queue whose due time advances by a roll in the area's
+-- into a refill queue whose due time advances by a roll in the camp's
 -- `respawn` [min, max] (30-60 s by the ruling). What differs from a fire:
 --   * members roam FREE under the normal wander leash (`_grug_home` = their
 --     own spawn point, radius 32): no `_grug_camp_pos`, no camp leash, no
---     roam cap. They carry the area tag, and the head count is by that tag;
---   * a spot keeps `min_player_distance` (16) from every player instead of
---     the ambient 24, and the area is sized (radius about 35-40) so two
---     players standing in it do not block it;
---   * levels and species come from the area (fixed range, weights);
---   * the state lives in memory, keyed by the area tag. The first look at a
+--     roam cap. They carry the camp's tag, and the head count is by that tag;
+--   * a spot lies within CAMP_RADIUS (40) of the camp centre and keeps
+--     `min_player_distance` (16) from every player instead of the ambient 24,
+--     so two players standing in the camp do not block it;
+--   * levels and species come from the camp (belt range x role range,
+--     roster weights);
+--   * the state lives in memory, keyed by the camp tag. The first look at a
 --     camp after a start (a player within 64 nodes, so saved members nearby
 --     are active and counted) fills what is missing at once, which is
 --     what a camp standing in the world should look like when a player walks
 --     up; after that the queue and its due time behave exactly like a fire's,
 --     the dormant catch-up included (due times lag `now` while nobody is
---     near, and the drain serves what the elapsed time earned);
---   * a camp area with a day or night clock only refills in its clock.
--- Ticked every five seconds by spawn_areas.lua's globalstep. The same known
--- blind spot as count_camp_mobs: a member in an unloaded block reads as dead,
--- so a camp may briefly hold one too many.
+--     near, and the drain serves what the elapsed time earned).
+-- Ticked every five seconds by spawn_regions.lua's globalstep, for the camps
+-- of the region maps built so far. The same known blind spot as
+-- count_camp_mobs: a member in an unloaded block reads as dead, so a camp may
+-- briefly hold one too many.
 --
 
-local AREA_CAMP_RANGE = PLAYER_RANGE
+local REGION_CAMP_RANGE = PLAYER_RANGE
 -- The first look after a start: within this of the centre the blocks of the
--- members a camp area may already hold (radius about 40) are active.
-local AREA_CAMP_FIRST = 64
-local area_camps = {} -- tag -> {queue, next_refill}
+-- members a camp may already hold (radius about 40) are active.
+local REGION_CAMP_FIRST = 64
+local region_camps = {} -- tag -> {queue, next_refill}
 
-local function area_camp_interval(camp)
+local function region_camp_interval(camp)
 	return math.random(camp.respawn[1], camp.respawn[2])
 end
 
-local function count_area_members(area, center)
+-- Where a camp's members may stand: within this of its centre; counted
+-- within this plus the wander leash and a margin.
+local function camp_radius()
+	return grug_mobs.spawn_regions.core.CAMP_RADIUS
+end
+
+local function count_region_members(camp, center)
 	local n = 0
-	local objs = core.get_objects_inside_radius(center, grug_mobs.spawn_areas.reach(area))
+	local objs = core.get_objects_inside_radius(center, camp_radius() + 48)
 	for i = 1, #objs do
 		local ent = objs[i]:get_luaentity()
-		if ent and ent._grug_area == area.tag and (ent.health or 0) > 0 then
+		if ent and ent._grug_area == camp.tag and (ent.health or 0) > 0 then
 			n = n + 1
 		end
 	end
 	return n
 end
 
--- One member onto a free spot of the area. True when a mob arrived.
-local function spawn_area_member(area, players, center_y)
-	local SA = grug_mobs.spawn_areas
+-- One member onto a free spot of the camp. True when a mob arrived.
+local function spawn_region_member(unit, zone_id, players, center_y, clock)
+	local SR = grug_mobs.spawn_regions
+	local camp = unit.camp
+	local r = camp_radius()
 	for _ = 1, SPOT_TRIES do
-		local x, z = SA.sample_xz(area)
-		if grug_zones.id_at(x, z) == area.zone then
-			local g = SA.ground_at(x, z, center_y, 32)
-			if g and g.y >= 0 and SA.hosts_ok(area, g) then
+		local angle = math.random() * 2 * math.pi
+		local dist = math.sqrt(math.random()) * r
+		local x = math.floor(unit.x + math.cos(angle) * dist + 0.5)
+		local z = math.floor(unit.z + math.sin(angle) * dist + 0.5)
+		if grug_zones.id_at(x, z) == zone_id then
+			local g = SR.ground_at(x, z, center_y, 32)
+			if g and g.y >= 0 then
 				local stand = {x = g.x, y = g.y + 1, z = g.z}
-				local _, role = SA.pick({area}, 1)
-				if SA.players_clear(stand, area.camp.min_player_distance, players) and
-						not SA.spawn_refused("grug_mobs:" .. role, stand) and
-						SA.spawn_area_mob(area, role, g) then
+				local role = SR.pick_role(camp.roster)
+				if SR.players_clear(stand, camp.min_player_distance, players) and
+						not SR.spawn_refused("grug_mobs:" .. role, stand) and
+						SR.spawn_mob(camp, role, g, clock) then
 					return true
 				end
 			end
@@ -937,42 +951,44 @@ local function spawn_area_member(area, players, center_y)
 	return false
 end
 
-function grug_mobs.area_camp_tick(now, players, clock)
-	local SA = grug_mobs.spawn_areas
-	local list = SA.camp_areas()
+function grug_mobs.region_camp_tick(now, players, clock)
+	local SR = grug_mobs.spawn_regions
+	local list = SR.camp_units()
 	for i = 1, #list do
-		local area = list[i]
-		if SA.player_near_xz(area.cx, area.cz, AREA_CAMP_RANGE, players) then
-			local camp = area.camp
-			local center_y = SA.center_y(area)
-			local living = count_area_members(area,
-				{x = area.cx, y = center_y, z = area.cz})
+		local unit = list[i]
+		local camp = unit.camp
+		if SR.player_near_xz(unit.x, unit.z, REGION_CAMP_RANGE, players) then
+			unit.center_y = unit.center_y or grug_zones.terrain_height_at(unit.x, unit.z)
+			local center_y = unit.center_y
+			local living = count_region_members(camp,
+				{x = unit.x, y = center_y, z = unit.z})
 			local missing = camp.slots - living
-			local st = area_camps[area.tag]
+			local st = region_camps[camp.tag]
 			if not st then
 				-- First look since the start, once a player is close enough that
 				-- the camp's own saved members are active and counted: the whole
 				-- deficit is due now.
-				if SA.player_near_xz(area.cx, area.cz, AREA_CAMP_FIRST, players) then
+				if SR.player_near_xz(unit.x, unit.z, REGION_CAMP_FIRST, players) then
 					st = {queue = math.max(missing, 0), next_refill = now, fill = true}
-					area_camps[area.tag] = st
+					region_camps[camp.tag] = st
 				end
 			elseif missing > st.queue then
 				if st.queue <= 0 then
-					st.next_refill = now + area_camp_interval(camp)
+					st.next_refill = now + region_camp_interval(camp)
 				end
 				st.queue = missing
 			elseif missing < st.queue then
 				st.queue = missing > 0 and missing or 0
 			end
-			if st and (area.clock == "both" or area.clock == clock) then
+			if st then
+				local zone_id = camp.tag:match("^([^/]+)/")
 				while st.queue > 0 and now >= st.next_refill do
-					if not spawn_area_member(area, players, center_y) then
+					if not spawn_region_member(unit, zone_id, players, center_y, clock) then
 						break
 					end
 					st.queue = st.queue - 1
 					if not st.fill then
-						st.next_refill = st.next_refill + area_camp_interval(camp)
+						st.next_refill = st.next_refill + region_camp_interval(camp)
 					end
 				end
 				if st.queue <= 0 then

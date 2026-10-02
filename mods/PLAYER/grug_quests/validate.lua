@@ -400,12 +400,35 @@ local function check_item(add, where, world, item, what)
 	if not world.item(item) then add(where, ("%s %s is not a registered item [E-unknown-item]"):format(what, item)) end
 end
 
--- Roles, areas, levels and items against the registries.
+-- A kill objective without an area in a zone with a spawn recipe, none of
+-- whose targets that recipe spawns (a kind, a camp or a leader of the zone):
+-- in such a zone only the recipe's roles appear on the surface (Lane S1), so
+-- the quest cannot be met there. A warning, not an error: the targets may
+-- live in another zone on purpose.
+local function check_recipe_targets(warn, where, world, zone, objective)
+	if objective.area then return end
+	local kill_zone = type(objective.zone) == "string" and objective.zone or zone
+	local areas = world.zone_areas(kill_zone)
+	if #areas == 0 then return end
+	for _, name in ipairs(V.target_names(objective)) do
+		local role = name:match("^grug_mobs:(.+)$") or name
+		local leader = world.leader(role)
+		if leader and leader.zone == kill_zone then return end
+		for _, area in ipairs(areas) do
+			if area.roles[role] then return end
+		end
+	end
+	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(kill_zone))
+end
+
+-- Roles, areas, levels and items against the registries. Returns the errors
+-- and the warnings.
 function V.world(files, world)
-	local errors = {}
+	local errors, warnings = {}, {}
 	for _, row in ipairs(each_quest(files)) do
 		local quest, zone = row.quest, row.file.zone
 		local add = reporter(errors, row.file)
+		local warn = reporter(warnings, row.file)
 		for index, objective in ipairs(quest.objectives) do
 			local where = ("%s: objective %d"):format(row.where, index)
 			if objective.type == "kill" then
@@ -414,6 +437,7 @@ function V.world(files, world)
 					check_target(add, where, world, zone, name, area, quest.level, "kill target",
 						objective.roles == nil)
 				end
+				check_recipe_targets(warn, where, world, zone, objective)
 			elseif objective.type == "item" then
 				if objective.item then
 					check_item(add, where, world, objective.item, "item")
@@ -434,5 +458,5 @@ function V.world(files, world)
 			check_item(add, row.where, world, item.item, "reward item")
 		end
 	end
-	return errors
+	return errors, warnings
 end

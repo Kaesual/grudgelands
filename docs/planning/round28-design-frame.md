@@ -158,12 +158,13 @@ respawn and waiting for the right clock separately.
 - Every stat loot input of a tier is obtainable in **every** race track's
   zones of that band (both factions).
 - Sub-type size factor 0.75–1.3 (elite tier 1.4 is separate).
-- Aggressive areas: idle aggressive mobs drift about their view range
-  (6–16 nodes) away from roads, towns and villages (Ruling 2); no area may
-  lie mostly inside that drift band.
-- In a zone with areas, shore mobs (crabs) spawn only through areas (use
-  `shore: true`); gulls stay ambient critters (`critters`). Underground and
-  water spawns are unchanged.
+- Idle aggressive mobs drift about their view range (6–16 nodes) away from
+  roads, towns and villages (Ruling 2); no aggressive role spawns inside
+  that 16-node drift band (spawn regions, §4.6).
+- In a zone with a spawn recipe, shore mobs (crabs) spawn only from its
+  regions (the `shore` kinds; crabs keep their sand host); gulls stay
+  ambient critters (`critters`). Underground and water spawns are
+  unchanged.
 - No mapgen, no new POIs, roads, mob models or skins. Underground spawns,
   water and swimmers, rares, vendors and guards keep today's rules; rares
   are never quest targets (Ruling 38).
@@ -229,11 +230,11 @@ Together C2 and C3 cover all 38 zones exactly once (ownership manifest in
   `critter` (white; never a kill target).
 - `tier`: `normal` (default) or `elite`. Named leaders are sub-types with
   `"leader": true` (normal tier in 1–30, §2.4).
-- `levels`: the widest range the role may appear at; areas narrow it.
+- `levels`: the widest range the role may appear at; spawn belts narrow it.
 - `tint_by_zone`: a tint id from `catalog/tints.json`, whose entries are
   `{"id", "texture"}` (an existing baked texture) or `{"id", "modifier"}`
   (a texture modifier such as `^[multiply:#a0b070`).
-- Day or night is decided only by the area's `clock`.
+- Day or night is decided only by the kind's `day` and `night` rosters (§4.6).
 
 ### 4.2 Items (`catalog/items.json`)
 
@@ -317,90 +318,85 @@ drops are rare and tier-matched (bronze in band 1, never iron). Leaders add
 
 `method`: `grid` or `furnace` (anyone can make them).
 
-### 4.6 Spawn areas (`zones/<zone_id>.spawns.json`)
+### 4.6 Spawn recipes (`zones/<zone_id>.spawns.json`)
+
+Revised by Round 28 Lane S1 (the user, 2026-10-02): hand-placed areas
+(circles, rings, bands, anchor + offset, a zone-wide fallback) are gone. The
+world differs per seed, so a zone's spawn data holds **rules, never
+coordinates**; the game builds the zone's spawn **regions** from them on the
+zone's own terrain, and `tools/r28_regions/run.sh` renders exactly those
+regions for any seed. The build and the full format:
+[docs/design/spawn_regions.md](../design/spawn_regions.md).
 
 ```json
 {
   "zone": "elandor_dawnmere_fields",
-  "critters": ["rabbit", "wild_turkey"],
-  "areas": [
-    {
-      "id": "home_fields_day",
-      "anchor": "start",
-      "offset": [0, 0],
-      "shape": {"kind": "band", "forward": [-400, 0], "side": [-250, 250]},
-      "hosts": {"biomes": ["any"], "shore": false},
-      "clock": "day",
-      "levels": [1, 3],
-      "species": [{"role": "small_boar", "weight": 3}],
-      "notes": "Behind the town toward the ocean."
-    },
-    {
-      "id": "border_bandits",
-      "anchor": "start",
-      "offset": [-160, 200],
-      "shape": {"kind": "circle", "r": 38},
-      "hosts": {"biomes": ["any"]},
-      "clock": "both",
-      "levels": [9, 10],
-      "species": [{"role": "confused_bandit", "weight": 1}],
-      "camp": {"slots": 6, "respawn": [30, 60], "min_player_distance": 16}
-    },
-    {
-      "id": "fallback",
-      "anchor": "zone",
-      "shape": {"kind": "zone"},
-      "hosts": {"biomes": ["any"]},
-      "clock": "both",
-      "levels": [3, 6],
-      "species": [{"role": "small_boar", "weight": 1}],
-      "fallback": true
-    }
-  ],
-  "leaders": [
-    {"role": "confused_bandit_chief", "anchor": "start", "offset": [-160, 200],
-     "level": 10, "respawn": 300}
-  ]
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_goldmead_vale"},
+    "belts": [
+      {"id": "l1_2", "share": 10, "levels": [1, 2], "max_from": 180,
+       "kinds": {"open": {"id": "home_fields", "name": "Dawnmere Home Fields",
+         "day": [{"role": "small_boar", "weight": 1}],
+         "night": [{"role": "large_rat", "weight": 1}], "density": "normal"}}},
+      {"id": "l5_7", "share": 30, "levels": [5, 7], "kinds": {
+         "open": {"id": "pastures", "name": "Dawnmere Pastures",
+           "day": [{"role": "small_fox", "weight": 3}, {"role": "aggressive_boar", "weight": 1}],
+           "night": [{"role": "rabid_rat", "weight": 1}], "density": "normal"},
+         "swamp": {"id": "marsh", "name": "Dawnmere Marsh", "day": "open",
+           "night": [{"role": "sluggish_zombie", "weight": 1}], "density": "sparse"}}}
+    ],
+    "camps": [{"id": "bandit_camp", "name": "Dawnmere Bandit Camp", "belt": "l8_10",
+      "roster": [{"role": "confused_bandit", "weight": 1}], "slots": 6,
+      "respawn": [30, 60], "min_player_distance": 16, "apart": 8}],
+    "leaders": [{"role": "confused_bandit_chief", "at": {"camp": "bandit_camp"},
+      "respawn": 300}],
+    "critters": ["rabbit", "wild_turkey"]
+  }
 }
 ```
 
-- **Trigger (Ruling 34):** a zone whose `areas` list is empty keeps today's
-  palette and level field. Track B writes every zone's file with empty
-  areas first; a design fills them.
-- `anchor`: an anchor id from the zone atlas (`anchor_015`), a settlement
-  key (`goldmead_village`), a slot (`village_1`, `outpost_1`, `clash_1`,
-  `rare_<name>`), `start`, `capital`, or `zone` (the zone hub). `offset` is
-  `[x, z]` in **world axes** (nodes), applied to the anchor; the result must
-  lie inside the zone (the validator checks it). A band is measured from the
-  offset point.
-- `shape`: `circle` (`r`), `ring` (`r`: [min, max]), `zone` (the whole
-  zone) or `band`. A band is measured from the anchor + offset point along the **front
-  axis** (`forward`, positive toward the Battlegrounds: +z on the Elandor
-  continent, −z on the Kragmar continent) and the side axis (`side`, +x).
-  Front zones and islands (around z = 0) may not use `band`.
-- Areas are **clipped to their zone**. Overlapping areas combine their
-  species (weights add). A `fallback` area applies at a point and time only
-  where no other area of the zone matches that point, clock and host; every
-  zone has one, so no land is empty at any hour.
-- `hosts.biomes`: biome ids from the atlas (badlands, badlands_east, beach,
-  blight, bone_forest, crags, crags_snowy, deep_forest, deep_jungle,
-  elf_forest, jungle_edge, jungle_fringe, meadows, pine_hills, savanna,
-  swamp) or `any`; `shore: true` restricts to land near water (beaches),
-  absent or false means no restriction.
-- `clock`: `day`, `night` or `both`. `levels`: fixed range inside the zone's
-  band and inside each role's `levels`. Every level of a kill or drop
-  target's area (or a leader's fixed level) must lie within the quest's
-  reward level ±3 (`LEVEL_SLACK`, containment; the same in the validator and
-  in Track B's load-time check). `cap` (optional): at most this many
-  of the area's mobs alive near a player.
-- `camp` (optional) turns the area into slot spawns (bandits, poachers,
-  mirefolk): `slots`, `respawn` [min, max] seconds, `min_player_distance`;
-  radius about 35–40 so two players do not block it.
-- `critters`: ambient critters that keep spawning in a zone with areas.
-- `leaders`: named leaders (§2.4), snapped to the surface at anchor +
-  offset; elite leaders only from 31.
-- Every mob remembers the id of the area it spawned from; area-limited kill
-  objectives credit by that tag, not by death position.
+- **Trigger (Ruling 34):** a zone without a recipe keeps today's palette
+  (`palette`) and level field. A zone with a recipe spawns its surface mobs
+  only from its regions.
+- **Progress:** `from` (an anchor slot or id of the zone) to `to` (the
+  neighbour zone, or zones, whose land border is the exit). Land cells are
+  ordered by their progress from 0 at `from` to 1 at the exit.
+- **Belts** cut the land by area share (shares add up to 100), each with its
+  `levels` inside the zone's band; an optional `max_from` (nodes from
+  `from`) keeps a belt near the start.
+- **Kinds** per belt and terrain type (`shore`, `bank`, `swamp`, `forest`,
+  `highland`, `open`; `open` required — a type without its own kind uses
+  it). A kind: `id` (unique in the zone), `name`, `day` and `night` rosters
+  (or `"open"`: the belt's open roster for that clock), `density` `sparse`,
+  `normal` or `dense`. A roster has one main role and at most one minor role
+  of at most 25 % of the weight; a role's levels in a region are the belt's
+  levels ∩ its catalogue `levels` (empty is a load error).
+- **Coverage** (the user, 2026-10-02). Why: every zone covers its whole band,
+  so the next zone starts at the next round level (a start zone runs 1–10,
+  the next zone 11–20, …). So each kind's roster covers its whole belt at
+  each clock (no gap, the belt's bottom to its top), a camp's roster has no
+  gap and reaches its belt's top, and the last belt ends at the top of the
+  zone's band. A recipe that breaks this does not load (`E-recipe-cover` in
+  `validate.py`).
+- **Camps** (bandits, poachers, mirefolk; Ruling 37) are placed by rule in
+  their `belt` (flat, unprotected, outside the drift band, 48+ nodes from
+  roads, forest edge or highland preferred, `apart` cells from other
+  camps): `roster`, `slots`, `respawn` [min, max] seconds (30–60),
+  `min_player_distance` (16); members stand within 40 nodes of the centre.
+- **Leaders** (§2.4): a leader-flagged role `at` a camp's centre or
+  `{"kind": id, "pick": "farthest_from_roads"}`; level = the top of their
+  region; `respawn` (about 300 s). Every leader is 1.15× size with twice the
+  HP of its level and tier, whatever the catalogue `size` says.
+- `critters`: ambient critters that keep spawning in the zone.
+- **Quests** name an area as `<zone>/<kind or camp id>`; a mob remembers the
+  kind or camp it spawned from, and area-limited objectives credit by that
+  tag, not by death position. Every level of a kill or drop target's kind
+  (or a leader's level) must lie within the quest's reward level ±3
+  (`LEVEL_SLACK`).
+- **Directions** for quest texts come from the regions of the seed
+  (`describe`: "southeast of Highcourt", "southeast from here", "in the
+  southeast of Dawnmere Fields"; spawn_regions.md).
 
 ### 4.7 Quests (`zones/<zone_id>.quests.json`)
 
@@ -431,7 +427,7 @@ drops are rare and tier-matched (bronze in band 1, never iron). Leaders add
       "text": "During the day, Small Boars have been stealing our crops south of Dawnmere. Drive them off before the harvest is gone.",
       "objectives": [
         {"type": "kill", "roles": ["small_boar"], "count": 8,
-         "area": "elandor_dawnmere_fields/home_fields_day"}
+         "area": "elandor_dawnmere_fields/home_fields"}
       ],
       "rewards": {"weight": 4, "copper": 10, "items": []},
       "lesson": "Yellow names are neutral: they only fight back.",
@@ -447,7 +443,7 @@ drops are rare and tier-matched (bronze in band 1, never iron). Leaders add
 - `requires`: quest ids, also across zones (Track B registers in dependency
   order).
 - Objectives: `kill` (`roles` list, `count`, optional `area` as
-  `zone_id/area_id`; a kill of a leader carries no area, the leader's fixed
+  `zone_id/kind_id` or `zone_id/camp_id` (§4.6); a kill of a leader carries no area, the leader's fixed
   spot and level apply, also from another zone); `item` (`item` or `group`, `count`); `talk` (`npc`;
   the only objective of its quest; credited on accept, Ruling 39).
 - `quest_drops` (optional list): `{"item", "roles", "area"?, "chance"}`;
@@ -502,7 +498,7 @@ reachability (E lanes measure it in the game).
   zombies spawned on blight dirt never burn). Rift Spawn bursts give no
   credit and cannot be kill targets.
 - Several palette entries have no host surface in their zone today (mob
-  catalogue §3); areas replace those palettes.
+  catalogue §3); spawn recipes replace those palettes.
 
 ## 5. Naming
 
