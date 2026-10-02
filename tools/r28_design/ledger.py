@@ -7,7 +7,10 @@ simulated player, and reports real XP (never summed KE) per band and per zone:
 
   * quest rewards      weight x M(quest level), rounded; --human adds 10 %
   * quest kills        kill objectives, count x M(min(mob level, player + 5))
-                       at the simulated player level (gray rule, tier mult.)
+                       at the simulated player level (gray rule, tier mult.);
+                       a kill area is a kind or camp of the zone's spawn
+                       recipe, where a role is met at its own levels (the
+                       belt's levels within the role's catalogue levels)
   * drop kills         kills behind item objectives for mob drops: quest-only
                        drops (catalog quest_drops) and family drops
                        (catalog/drops.json bands of the drop family: a sub-type's
@@ -100,15 +103,19 @@ class Ledger:
         found = self.design.find_leader(role, target_zone)
         if found and isinstance(found[1].get("level"), int):
             return (found[1]["level"], found[1]["level"])
+        # Areas are the recipe's kinds and camps; a role is met there at its
+        # own levels (the belt's levels within the role's).
         if area_ref:
             azone, aid = C.split_area_ref(area_ref, own_zone or zone)
             area = self.design.areas(azone).get(aid)
+            if area and area["levels_by_role"].get(role):
+                return tuple(area["levels_by_role"][role])
             if area and area.get("levels"):
                 return tuple(area["levels"])
             self.warn("area %s not found; using role levels" % area_ref)
-        # Areas of the zone that host the role.
-        ranges = [tuple(a["levels"]) for a in self.design.areas(zone).values()
-                  if a.get("levels") and any(s.get("role") == role for s in a.get("species") or [])]
+        # Kinds and camps of the zone that host the role.
+        ranges = [tuple(a["levels_by_role"][role]) for a in self.design.areas(zone).values()
+                  if role in a["levels_by_role"]]
         if ranges:
             return (min(r[0] for r in ranges), max(r[1] for r in ranges))
         sub = self.subtypes.get(role)
@@ -184,16 +191,14 @@ class Ledger:
         return out
 
     def drop_source(self, item, zone):
-        """Best (role, level range, yield per kill) in the zone's areas."""
+        """Best (role, level range, yield per kill) in the zone's kinds and
+        camps."""
         best = None
         for area in self.design.areas(zone).values():
-            if not area.get("levels"):
-                continue
-            for species in area.get("species") or []:
-                role = species.get("role")
-                yield_ = self.family_rows(role, tuple(area["levels"])).get(item, 0)
+            for role, levels in sorted(area["levels_by_role"].items()):
+                yield_ = self.family_rows(role, tuple(levels)).get(item, 0)
                 if yield_ > 0 and (best is None or yield_ > best[2]):
-                    best = (role, tuple(area["levels"]), yield_)
+                    best = (role, tuple(levels), yield_)
         return best
 
     # -- quests ---------------------------------------------------------
@@ -307,8 +312,7 @@ class Ledger:
         if not area_ref:
             return ""
         azone, aid = C.split_area_ref(area_ref, zone)
-        area = self.design.areas(azone).get(aid) or {}
-        return ", ".join("%s %s" % (s.get("role"), s.get("weight")) for s in area.get("species") or [])
+        return C.species_text(self.design.areas(azone).get(aid) or {})
 
     def item_objective(self, zone, q, obj, count, quest_drops, acc):
         qid = q.get("id")
@@ -592,6 +596,14 @@ def self_test():
           "atlas level ranges give the bands")
     # Leaders count at their fixed level; quests in the band of their level.
     check(solo.role_levels("confused_bandit_chief", "elandor_dawnmere_fields") == (10, 10), "leader level")
+    check(solo.role_levels("small_boar", "elandor_dawnmere_fields", "elandor_dawnmere_fields/meadows")
+          == (3, 3), "a role in a kind is met at the belt's levels within its own (3-5 x 1-3)")
+    check(solo.role_levels("small_boar", "elandor_dawnmere_fields") == (1, 3),
+          "without an area: the union over the kinds hosting the role")
+    check(solo.species_mix("elandor_dawnmere_fields", "elandor_dawnmere_fields/meadows")
+          == "day: small_boar 4, boar 1; night: braindead_zombie 1", "species mix per clock")
+    check(solo.species_mix("elandor_dawnmere_fields", "elandor_dawnmere_fields/border_bandits")
+          == "confused_bandit 1", "a camp's species mix")
     check("confused_bandit_chief" in solo.subtypes and "grug_mobs:crop_ledger" in solo.catalog_items,
           "zone catalogue roles and items merge into the catalogue")
     check(solo.role_levels("confused_bandit_chief", "elandor_goldmead_vale") == (10, 10),

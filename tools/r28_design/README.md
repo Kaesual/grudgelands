@@ -34,7 +34,42 @@ pgrep -f '^luanti.bin'                              # must not list a server of 
 `items_probe/grug_probe_r28_items` through `tools/luanti_headless.sh` and runs
 `items_catalog.py` on the dump.
 
-## 2. Validate a design: `validate.py`
+## 2. Spawns files: the spawn recipe
+
+`zones/<zone_id>.spawns.json` is `{"zone": id, "recipe": {...}, "notes"?}`
+(a shipped game file without a recipe carries only `palette`, today's
+spawn rule). The recipe holds rules, never coordinates; the game turns it
+into a region map for each world seed. Format and rules:
+`docs/design/spawn_regions.md`; the game's parser,
+`mods/ENTITIES/grug_mobs/spawn_regions_core.lua` (`parse_recipe`), is the
+reference, and `r28common.parse_recipe` mirrors it. In short:
+
+- `from: {"anchor": <slot or anchor id>}`, `to: {"border": <zone id or
+  list>}` (other zones only): progress runs from the anchor to that border.
+- `belts`: `{id, share, levels: [lo, hi], max_from?, kinds}`; shares add up
+  to 100; `kinds` keyed by terrain type (`shore`, `bank`, `swamp`,
+  `forest`, `highland`, `open`), `open` required (the parent of the others).
+- A kind: `{id, name, day, night, density}`; `day`/`night` is a roster (one
+  main role and at most one minor role of at most 25 % of the weight, as
+  `{role, weight}`) or `"open"` (the belt's open kind's roster; not in the
+  open kind itself); density `sparse`, `normal` or `dense`.
+- `camps`: `{id, name, belt, roster, slots, respawn: [a, b],
+  min_player_distance, apart}`. Kind and camp ids are unique in the zone.
+- `leaders`: `{role, at: {"camp": id} | {"kind": id, "pick":
+  "farthest_from_roads"}, respawn}`; the role is marked `"leader": true`
+  in the catalogue, placed once, and stands at the top of its belt's levels
+  within its own.
+- `critters`: a list of critter roles.
+- Levels: a role in a kind or camp is met at the belt's levels within the
+  role's catalogue levels (they must meet; an existing mob without a
+  catalogue row is unrestricted); a kind's or camp's levels are the union
+  over its roles.
+
+To see the regions a recipe gives on real worlds, render it:
+`tools/r28_regions/run.sh <zone_id> [out_dir] [seed ...]` (the game's own
+code over the analytic world, several seeds).
+
+## 3. Validate a design: `validate.py`
 
 ```sh
 python3 tools/r28_design/validate.py                         # whole design dir
@@ -43,11 +78,11 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
 ```
 
 - Checks every catalogue and zone file against the frame's formats
-  (required fields, id formats, enums, level ranges, shapes) and the
+  (required fields, id formats, enums, level ranges) and the
   references between them: roles exist (catalogue sub-type or existing mob),
   items exist (catalogue or `existing.json`, never curated out, never skill
   items), NPCs are quest NPCs (today's registry, plus the atlas), areas used by
-  quests exist and host the target, `quest_drops` pair with an item objective
+  quests (a kind or camp of the zone's recipe) exist and host the target, `quest_drops` pair with an item objective
   and a catalogue item of kind `quest`, prerequisites exist and have no cycle.
 - Zone catalogues: `zones/<zone_id>.catalog.json` = `{"subtypes": [...],
   "items": [...]}` in the formats of `catalog/subtypes.json` and
@@ -56,7 +91,7 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   (`E-duplicate`), and a zone-added role or item may be used from any zone's
   files. A zone catalogue adds only leader roles (`"leader": true`) and
   quest-only items (kind `quest`) (`E-zone-catalog`); a zone-added leader is
-  a leader of that zone only (`E-zone-leader` in another zone's `leaders`,
+  a leader of that zone only (`E-zone-leader` in another zone's recipe `leaders`,
   `W-zone-leader` when its own zone does not place it). Its drops come from
   its family's `leader_bonus` in `catalog/drops.json`.
 - Sub-type bases: a sub-type of a critter base stays a critter
@@ -69,18 +104,31 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   size 0.75–1.3, at most two signature items per family and band,
   tier-matched metal drops, enchant stat loot is a signature drop, enchant
   `family_input` keys are sword, dagger, greataxe, metal_armor, shield,
-  leather_armor, cloth_armor, bow, caster_weapon, spellbook, trinket; one
-  fallback area per zone with areas, elite leaders only from 31, no `band`
-  shape in front zones.
+  leather_armor, cloth_armor, bow, caster_weapon, spellbook, trinket; elite
+  leaders only from 31 (`E-leader-tier`).
+- Spawn recipes: every rule of section 2, as the game parses it. Codes:
+  `E-recipe` (structure), `E-recipe-key` (unknown field anywhere in the
+  file, e.g. an old `areas` list), `E-recipe-shares`, `E-recipe-open`
+  (missing `kinds.open`, `"open"` in the open kind), `E-recipe-roster`
+  (roster shape, minor role above 25 %, missing day/night),
+  `E-recipe-levels` (belt levels, a role that never meets its belt, belt
+  outside the zone band with `--atlas`), `E-recipe-ref` (unknown belt, camp
+  or kind, wrong `pick`, `to` naming the zone itself), `E-id`,
+  `E-duplicate` (ids, a leader placed twice or in two zones), `E-enum`
+  (density), `E-unknown-role`, `E-not-a-mob`, `E-leader-flag` (leader role
+  not `"leader": true`), `E-critter` (non-critter in `critters`),
+  `W-critter-area` (a critter in a roster), `E-required` (no recipe and no
+  palette).
 - Level fit is **containment** (`E-level-fit`): every level a kill target or
   quest-drop source is met at lies within the quest's reward `level` ±3.
-  "Met at" is the named leader's fixed level, else the referenced area's
-  levels, else the levels of all the zone's areas hosting the role, else the
-  role's levels.
+  "Met at" is the named leader's level, else the referenced kind's or camp's
+  levels (the union over its roles, as the game's quest validator), else the
+  union over the zone's kinds and camps hosting the role, else the role's
+  levels.
 - Leaders: a kill objective or quest drop on a leader role finds the leader
-  in the zone's `leaders`, else in any zone's (leader roles are unique fixed
-  spots), and uses its fixed level; it names no area (`E-leader-area`),
-  because leaders do not spawn from an area.
+  in the zone's recipe `leaders`, else in any zone's (leader roles are
+  unique), and uses its computed level; it names no area (`E-leader-area`),
+  because leaders do not spawn from a kind or camp.
 - Front files: `zones/<host>.front.quests.json` (`{"zone": host, "quests":
   [...]}`) are validated with the host zone. Their quests use the line
   `front`, which the host's `quests.json` must declare for that giver
@@ -100,25 +148,20 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
 - Reward items are `[{"item": id, "count": n}]`. A front file whose
   host `quests.json` does not exist yet is checked against the atlas only
   (`W-front-host-missing`).
-- Area references are `zone_id/area_id`; a bare id is accepted with a warning
-  only when it exists in the quest's own zone.
+- Area references are `zone_id/area_id`, the id of a kind or camp of that
+  zone's recipe; a bare id is accepted with a warning only when it exists in
+  the quest's own zone.
 - `--atlas DIR` (the zone atlas `docs/planning/round28/zones/`, or one
   `<zone_id>.json`) adds:
-  - zone ids exist; anchors resolve (anchor id such as `anchor_015`,
+  - zone ids exist; hub anchors resolve (anchor id such as `anchor_015`,
     settlement key such as `goldmead_village`, or slot such as `start`,
     `capital`, `village_1`, `outpost_1`, `clash_1`, `rare_*`; `zone` = the
-    zone hub); biomes are the zone's (with or without the `grug_` prefix;
-    `shore: true` = only near water, false or absent = no restriction); area
-    levels inside the zone's level range; no `band` shape in front zones and
-    islands;
-  - **in zone**: the centre (anchor + offset) of every circle, ring, band
-    origin and leader. `E-outside-zone` only when it lies more than 96 nodes
-    beyond the zone's land extent box (a sign or axis mistake). Outside the
-    approximate border outline (the extent box plus each border as the line
-    through its midpoint perpendicular to the two zones' hubs; it misjudges
-    5–17 % of real land in front zones) is `W-area-outside`, as is a circle,
-    ring or band mostly outside it. Points at an atlas anchor never warn. The
-    game clips areas to the real zone;
+    zone hub);
+  - recipes: belt levels inside the zone's level range (`E-recipe-levels`);
+    `from.anchor` is an anchor id or slot of the zone (the game takes no
+    settlement key; `E-unknown-anchor`); each `to.border` zone exists
+    (`E-unknown-zone`) and is an atlas neighbour (`W-border-neighbour`; the
+    game needs a land border reachable from the anchor);
   - quest NPCs are the atlas's quest-socket NPCs; a hub's givers stand in
     that zone (`E-giver-zone`) at the hub's anchor (`E-giver-hub`);
   - **Ruling 44** (`E-race-track`): no kill area, quest-drop area, travel
@@ -127,7 +170,7 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   - **stat loot per race track** (`W-loot-track`): every tier's stat loot
     drops in at least one designed zone of each race track's band (T1 start,
     T2 home, T3 capital and 21–30, T4 the race's contested zone, T5/T6 the
-    front). Zones without spawn areas are not checked (`W-loot-unchecked`
+    front). Zones without a spawn recipe are not checked (`W-loot-unchecked`
     names those tracks).
   Without `--atlas` these checks are skipped with one `W-no-atlas` warning.
 - `--legacy` allows the legacy-only fields of B4's mechanical split (`xp`,
@@ -142,7 +185,7 @@ python3 tools/r28_design/validate.py --zone elandor_dawnmere_fields --quiet
   `warning [W-code] …`. Exit 0 = no errors, 1 = errors (or warnings with
   `--strict`), 2 = unreadable files.
 
-## 3. Leveling ledger: `ledger.py`
+## 4. Leveling ledger: `ledger.py`
 
 ```sh
 python3 tools/r28_design/ledger.py \
@@ -166,8 +209,8 @@ python3 tools/r28_design/ledger.py \
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives
-  (`count × M(min(mob level, player level + 5))`, averaged over the area's
-  levels, gray rule, elite ×4), kills behind item requests for mob drops
+  (`count × M(min(mob level, player level + 5))`, averaged over the levels
+  the target role is met at in the kind or camp, gray rule, elite ×4), kills behind item requests for mob drops
   (quest-only drops: `count × chance`; family drops from `catalog/drops.json`
   by band for the drop family — a sub-type's `drops`, else an existing mob's
   own role — else today's entity drops; drops from earlier quest kills are used
@@ -180,7 +223,8 @@ python3 tools/r28_design/ledger.py \
   against the frame's targets (1→10: ≈90 % questing / ≈40 % rewards; 10→40:
   ≈80 % / ≈40 %; 40→60: ≈70 % / ≈35 %), ±10 points (`--tolerance`). Then per
   zone (level in/out, the `duration_min` sum) and per kill quest (area,
-  count, species mix, mob levels, player level, XP).
+  count, species mix per clock as `day: role weight; night: role weight`,
+  mob levels, player level, XP).
 - Solo and a two-player party (`--party solo|duo|both`, default both): the
   party shares kill credit and splits kill XP; quest XP is not split; every
   member needs their own requested items (ordinary drops go to one player,
@@ -193,41 +237,23 @@ python3 tools/r28_design/ledger.py \
 - Exit 0: the targets are rough guides for the solo route, the duo table is
   informational. `--strict` exits 1 when a band is flagged.
 
-## 4. Design overlay maps: `overlay.py`
+## 5. Design overlay maps: `overlay.py`
 
-Draws a design on top of the zone atlas maps
-(`docs/planning/round28/zones/maps/<zone>.png`, same pixel scale and axes)
-so zone designs can be approved visually. Needs numpy and Pillow (the atlas
-builder's dependencies), unlike the other tools.
+Draws a design's quest hubs and givers on the zone atlas maps
+(`docs/planning/round28/zones/maps/<zone>.png`). Needs numpy and Pillow
+(the atlas builder's dependencies), unlike the other tools.
 
 ```sh
-# optional, once: the atlas's world sample for geometry numbers (~30 s)
-mkdir -p /tmp/grid; for b in 0 1 2 3; do luajit tools/r28_zone_atlas/sample.lua "$PWD" 42 /tmp/grid 4 $b 4 & done; wait
-python3 tools/r28_design/overlay.py --design DIR --out /tmp/maps [--grid /tmp/grid] [--zone ZONE ...]
+python3 tools/r28_design/overlay.py --design DIR --out /tmp/maps [--zone ZONE ...]
 ```
 
 For every zone with a spawns or quests file it writes
-`<out>/<zone>.design.png`: each spawn area's shape (circle, ring, band; the
-`zone` shape and the fallback area hatched), coloured by clock (day yellow,
-night blue, both purple; the fill covers only the zone's own land, as the
-game clips areas to their zone), a label `<n> area_id L lo–hi: species`,
-camps as tents, leaders as skulls with name and level, the hubs' quest givers
-(`!`) with their lines, and a side panel listing everything. Anchors and the
-band axis resolve like `validate.py` and `spawn_areas.lua` (anchor id,
-settlement key, slot or `zone`, plus `offset`; `forward` along `front.axis`,
-`side` along +x).
-
-With `--grid` (sampler output of the seed the atlas was built with) each
-area also gets its share on the zone's own land, on water, in other zones
-and on protected ground (Round 28 ruling 3: start towns and capital cities,
-road corridors, village boxes) and the ground its hosts admit (biomes;
-`shore` as sand within 8 nodes of water at sea level, an approximation). The
-tool flags a circle centre off the zone's land or on protected ground, a
-non-shore shape mostly off the zone's land, a mostly protected area, a camp
-crossing a road corridor and an area its hosts admit nowhere, plus leaders
-off the zone's land and givers missing from the atlas (stdout and panel;
-guides, not rules). Without `--grid` the fill mask comes from the map's
-colours (approximate: neighbouring beaches and cities may be hatched too).
+`<out>/<zone>.design.png`: the quest givers (`!`) with their lines on the
+map, and a side panel with the recipe (belts, kinds with levels and
+species, camps, leaders with their computed level, critters, parse errors)
+and the hubs (givers missing from the atlas are flagged). Spawn regions
+are not drawn here: they exist only per seed, see
+`tools/r28_regions/run.sh`.
 
 ## Self-tests
 
@@ -238,18 +264,21 @@ python3 tools/r28_design/ledger.py --self-test
 
 They use `samples/valid/` (a small Dawnmere Fields design with catalogues,
 real zone and NPC ids; the bandit chief and the crop ledger come from its
-zone catalogue), `samples/existing_min.json`, `samples/mobs_min.json` and
+zone catalogue; its spawns file is a three-belt recipe with a bandit camp
+and the chief as its leader), `samples/existing_min.json`, `samples/mobs_min.json` and
 `samples/atlas/`
 (nine zone files of the seed-42 atlas, trimmed to the fields the tools
 read). The validator test checks that the valid sample gives only
-`W-loot-unchecked` (only Dawnmere is designed) and that 73 variants each give
-their expected finding (broken designs, plus allowed forms: a settlement-key
-anchor, a leader kill without area, a leader of another zone, a declared
+`W-loot-unchecked` (only Dawnmere is designed) and that 102 variants each give
+their expected finding (broken designs and recipes, plus allowed forms: a
+`from` anchor by anchor id, a leader deep in a kind, a palette-only spawns
+file, a leader kill without area, a leader of another zone, a declared
 front file, a capital front giver, both outpost givers declared, the
 single-NPC contested exemption, a new giver at a free socket, a zone-added
 leader used from another zone, a critter sub-type of a critter base, legacy kill
 objectives, a legacy enemy-guard kill). The ledger test checks the
 formulas against the plan's numbers (4.2k XP / 82 KE to level 10, about
 194k / 968 KE to 60), the solo/duo rules, atlas bands, leader levels,
-per-quest bands, `--lines` and `--start-level`. Both print one summary line
+per-quest bands, per-role levels in kinds, species mix, `--lines` and
+`--start-level`. Both print one summary line
 on PASS.

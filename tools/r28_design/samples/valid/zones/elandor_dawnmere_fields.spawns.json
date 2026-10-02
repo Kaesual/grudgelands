@@ -1,186 +1,46 @@
 {
   "zone": "elandor_dawnmere_fields",
-  "critters": [
-    "rabbit",
-    "wild_turkey"
-  ],
-  "areas": [
-    {
-      "id": "home_fields_day",
-      "anchor": "start",
-      "offset": [
-        0,
-        0
-      ],
-      "shape": {
-        "kind": "band",
-        "forward": [
-          -400,
-          0
-        ],
-        "side": [
-          -250,
-          250
-        ]
-      },
-      "hosts": {
-        "biomes": [
-          "any"
-        ],
-        "shore": false
-      },
-      "clock": "day",
-      "levels": [
-        1,
-        3
-      ],
-      "species": [
-        {
-          "role": "small_boar",
-          "weight": 3
+  "recipe": {
+    "from": {"anchor": "start"},
+    "to": {"border": "elandor_goldmead_vale"},
+    "belts": [
+      {
+        "id": "l1_3", "share": 40, "levels": [1, 3], "max_from": 400,
+        "kinds": {
+          "open": {"id": "home_fields", "name": "Dawnmere Home Fields",
+            "day": [{"role": "small_boar", "weight": 3}],
+            "night": [{"role": "large_rat", "weight": 1}], "density": "normal",
+            "notes": "Behind the town toward the ocean."}
         }
-      ],
-      "notes": "Behind the town toward the ocean."
-    },
-    {
-      "id": "home_fields_night",
-      "anchor": "start",
-      "offset": [
-        0,
-        0
-      ],
-      "shape": {
-        "kind": "band",
-        "forward": [
-          -400,
-          0
-        ],
-        "side": [
-          -250,
-          250
-        ]
       },
-      "hosts": {
-        "biomes": [
-          "meadows"
-        ]
-      },
-      "clock": "night",
-      "levels": [
-        1,
-        3
-      ],
-      "species": [
-        {
-          "role": "large_rat",
-          "weight": 1
+      {
+        "id": "l3_5", "share": 40, "levels": [3, 5],
+        "kinds": {
+          "open": {"id": "meadows", "name": "Dawnmere Meadows",
+            "day": [{"role": "small_boar", "weight": 4}, {"role": "boar", "weight": 1}],
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "normal"},
+          "shore": {"id": "home_beach", "name": "Dawnmere Beach",
+            "day": "open",
+            "night": [{"role": "braindead_zombie", "weight": 1}], "density": "dense"}
         }
-      ]
-    },
-    {
-      "id": "home_beach_night",
-      "anchor": "start",
-      "offset": [
-        0,
-        -380
-      ],
-      "shape": {
-        "kind": "ring",
-        "r": [
-          20,
-          120
-        ]
       },
-      "hosts": {
-        "biomes": [
-          "any"
-        ],
-        "shore": true
-      },
-      "clock": "night",
-      "levels": [
-        3,
-        5
-      ],
-      "species": [
-        {
-          "role": "braindead_zombie",
-          "weight": 1
+      {
+        "id": "l9_10", "share": 20, "levels": [9, 10],
+        "kinds": {
+          "open": {"id": "borderlands", "name": "Dawnmere Borderlands",
+            "day": [{"role": "confused_bandit", "weight": 1}],
+            "night": [{"role": "zombie", "weight": 1}], "density": "sparse"}
         }
-      ],
-      "cap": 6
-    },
-    {
-      "id": "border_bandits",
-      "anchor": "start",
-      "offset": [
-        -160,
-        200
-      ],
-      "shape": {
-        "kind": "circle",
-        "r": 38
-      },
-      "hosts": {
-        "biomes": [
-          "any"
-        ]
-      },
-      "clock": "both",
-      "levels": [
-        9,
-        10
-      ],
-      "species": [
-        {
-          "role": "confused_bandit",
-          "weight": 1
-        }
-      ],
-      "camp": {
-        "slots": 6,
-        "respawn": [
-          30,
-          60
-        ],
-        "min_player_distance": 16
       }
-    },
-    {
-      "id": "fallback",
-      "anchor": "zone",
-      "shape": {
-        "kind": "zone"
-      },
-      "hosts": {
-        "biomes": [
-          "any"
-        ]
-      },
-      "clock": "both",
-      "levels": [
-        1,
-        3
-      ],
-      "species": [
-        {
-          "role": "small_boar",
-          "weight": 1
-        }
-      ],
-      "fallback": true
-    }
-  ],
-  "leaders": [
-    {
-      "role": "confused_bandit_chief",
-      "anchor": "start",
-      "offset": [
-        -160,
-        200
-      ],
-      "level": 10,
-      "respawn": 300
-    }
-  ]
+    ],
+    "camps": [
+      {"id": "border_bandits", "name": "Dawnmere Bandit Camp", "belt": "l9_10",
+       "roster": [{"role": "confused_bandit", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "confused_bandit_chief", "at": {"camp": "border_bandits"}, "respawn": 300}
+    ],
+    "critters": ["rabbit", "wild_turkey"]
+  }
 }
