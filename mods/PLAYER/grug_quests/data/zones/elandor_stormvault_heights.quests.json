@@ -69,7 +69,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:frost_stray"
+            "grug_mobs:frost_stray",
+            "grug_mobs:rime_skeleton_stray"
           ],
           "zone": "elandor_stormvault_heights",
           "count": 4
@@ -149,7 +150,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:crag_eagle"
+            "grug_mobs:crag_eagle",
+            "grug_mobs:ridge_crag_eagle"
           ],
           "zone": "elandor_stormvault_heights",
           "count": 3

@@ -1,6 +1,65 @@
 {
   "zone": "elandor_frostbarrow_shelf",
-  "palette": {
-    "families": ["goblin_raid", "ibex", "mountain", "snow_leopard"]
+  "recipe": {
+    "from": {"border": ["elandor_dur_brannoc", "elandor_copperfell_foothills"]},
+    "to": {"border": "elandor_stormvault_heights"},
+    "belts": [
+      {
+        "id": "l21_23", "share": 30, "levels": [21, 23],
+        "kinds": {
+          "open": {"id": "tarn_meadows", "name": "Frostbarrow Tarn Meadows",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "surefoot_ibex", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 3}, {"role": "rubble_goblin_slinger", "weight": 1}], "density": "normal"},
+          "shore": {"id": "shingle", "name": "Frostbarrow Shingle",
+            "day": [{"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "forest": {"id": "pinewood", "name": "Frostbarrow Pinewood",
+            "day": [{"role": "surefoot_ibex", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 3}, {"role": "ore_thieving_goblin", "weight": 1}], "density": "normal"},
+          "highland": {"id": "crags", "name": "Frostbarrow Crags",
+            "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "shelf", "name": "Frostbarrow Shelf Fields",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 3}, {"role": "ore_guard_hound", "weight": 1}], "density": "normal"},
+          "shore": {"id": "icy_shore", "name": "Frostbarrow Icy Shore",
+            "day": [{"role": "armored_crab", "weight": 3}, {"role": "bank_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "forest": {"id": "snowpines", "name": "Frostbarrow Snowpines",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "highland": {"id": "eagle_crags", "name": "Frostbarrow Eagle Crags",
+            "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "high_shelf", "name": "Frostbarrow High Shelf",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "shore": {"id": "rime_shore", "name": "Frostbarrow Rime Shore",
+            "day": [{"role": "armored_crab", "weight": 1}],
+            "night": "open", "density": "dense"},
+          "forest": {"id": "rimewood", "name": "Frostbarrow Rimewood",
+            "day": [{"role": "hill_ram", "weight": 3}, {"role": "ridge_crag_eagle", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"},
+          "highland": {"id": "rime_crags", "name": "Frostbarrow Rime Crags",
+            "day": [{"role": "ridge_crag_eagle", "weight": 3}, {"role": "hill_ram", "weight": 1}],
+            "night": [{"role": "prowling_snow_leopard", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [],
+    "leaders": [
+      {"role": "powder_counter_nib", "at": {"kind": "rimewood", "pick": "farthest_from_roads"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }

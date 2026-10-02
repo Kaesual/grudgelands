@@ -64,7 +64,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:fox"
+            "grug_mobs:fox",
+            "grug_mobs:young_fox"
           ],
           "zone": "elandor_goldmead_vale",
           "count": 6
@@ -94,7 +95,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:poacher"
+            "grug_mobs:poacher",
+            "grug_mobs:snaring_poacher"
           ],
           "zone": "elandor_goldmead_vale",
           "count": 6
@@ -125,7 +127,8 @@
           "type": "kill",
           "mobs": [
             "grug_mobs:bandit",
-            "grug_mobs:bandit_archer"
+            "grug_mobs:bandit_archer",
+            "grug_mobs:quarrelsome_bandit"
           ],
           "zone": "elandor_goldmead_vale",
           "count": 4
@@ -236,7 +239,8 @@
         {
           "type": "kill",
           "mobs": [
-            "grug_mobs:fox"
+            "grug_mobs:fox",
+            "grug_mobs:young_fox"
           ],
           "zone": "elandor_goldmead_vale",
           "count": 5

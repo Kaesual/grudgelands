@@ -1,6 +1,66 @@
 {
   "zone": "elandor_highcourt",
-  "palette": {
-    "families": []
+  "recipe": {
+    "from": {"anchor": "capital"},
+    "to": {"border": "elandor_ashenward_march"},
+    "belts": [
+      {
+        "id": "l20_23", "share": 30, "levels": [20, 23],
+        "kinds": {
+          "open": {"id": "commons", "name": "Highcourt Commons",
+            "day": [{"role": "furrow_boar", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "riverside", "name": "Highcourt Riverside",
+            "day": "open",
+            "night": [{"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "kingswood", "name": "Highcourt Kingswood",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
+            "night": [{"role": "debtbound_zombie", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l24_27", "share": 40, "levels": [24, 27],
+        "kinds": {
+          "open": {"id": "orchards", "name": "Highcourt Orchards",
+            "day": [{"role": "redfang_fox", "weight": 3}, {"role": "orchard_fox", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "millstream", "name": "Highcourt Millstream",
+            "day": "open",
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "deer_park", "name": "Highcourt Deer Park",
+            "day": [{"role": "moss_antler_stag", "weight": 3}, {"role": "monstrous_boar", "weight": 1}],
+            "night": [{"role": "toll_bandit_archer", "weight": 3}, {"role": "toll_bandit", "weight": 1}], "density": "normal"},
+          "highland": {"id": "downs", "name": "Highcourt Downs",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "furrow_boar", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 3}, {"role": "debtbound_zombie", "weight": 1}], "density": "normal"}
+        }
+      },
+      {
+        "id": "l28_30", "share": 30, "levels": [28, 30],
+        "kinds": {
+          "open": {"id": "outer_fields", "name": "Highcourt Outer Fields",
+            "day": [{"role": "monstrous_boar", "weight": 3}, {"role": "redfang_fox", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"},
+          "bank": {"id": "marchbrook", "name": "Highcourt Marchbrook",
+            "day": "open",
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "sparse"},
+          "forest": {"id": "border_woods", "name": "Highcourt Border Woods",
+            "day": [{"role": "redfang_fox", "weight": 3}, {"role": "moss_antler_stag", "weight": 1}],
+            "night": [{"role": "toll_bandit_archer", "weight": 1}], "density": "normal"},
+          "highland": {"id": "ridges", "name": "Highcourt Ridges",
+            "day": [{"role": "monstrous_boar", "weight": 1}],
+            "night": [{"role": "stubborn_zombie", "weight": 1}], "density": "normal"}
+        }
+      }
+    ],
+    "camps": [
+      {"id": "toll_camp", "name": "Highcourt Toll Camp", "belt": "l28_30",
+       "roster": [{"role": "toll_bandit_archer", "weight": 1}],
+       "slots": 6, "respawn": [30, 60], "min_player_distance": 16, "apart": 8}
+    ],
+    "leaders": [
+      {"role": "tollmaster_penn", "at": {"camp": "toll_camp"}, "respawn": 300}
+    ],
+    "critters": []
   }
 }
