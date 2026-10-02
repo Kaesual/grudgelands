@@ -1011,9 +1011,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   invisible, non-pointable, non-physical, unsaved child entity. The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed
-  observer set for the per-viewer rule above. One central pass snapshots player
-  positions and manages every carrier once per second; unchanged observer sets
-  are not written. Carriers have no per-entity `on_step`: the central pass also
+  observer set for the per-viewer rule above. One central pass, spread over
+  eight steps of each second, snapshots player positions and manages every
+  carrier once per second; unchanged observer sets are not written. Carriers have no per-entity `on_step`: the central pass also
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
   cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
