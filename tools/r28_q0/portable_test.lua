@@ -427,6 +427,25 @@ for _, id in ipairs(ids) do
 	end
 end
 check(ranged_kills > 0 and ranged_kills <= kills, "shipped kill objectives get ranges")
+-- What the one-time computation costs at load (reported, not a target).
+do
+	local world, real = nil, Q.validate.world
+	Q.validate.world = function(f, w) world = w; return real(f, w) end
+	local t0 = os.clock()
+	Q.validate_quest_data()
+	local with_ranges = os.clock() - t0
+	Q.validate.world = real
+	t0 = os.clock()
+	for _ = 1, 100 do
+		for _, row in ipairs(Q.validate.each_quest(Q.quest_files)) do
+			for _, objective in ipairs(row.quest.objectives) do
+				Q.validate.objective_levels(world, row.file.zone, row.quest, objective)
+			end
+		end
+	end
+	print(("load: world checks + ranges %.1f ms; the ranges alone %.2f ms (LuaJIT, stubbed seams)")
+		:format(with_ranges * 1000, (os.clock() - t0) * 10))
+end
 print(("shipped: %d quests; kill objectives with a range %d/%d; item objectives with a range %d/%d")
 	:format(#ids, ranged_kills, kills, ranged_items, items))
 print(("HUD tracker lines over 38 characters: %d/%d today, %d/%d with the range added")
