@@ -1,0 +1,2834 @@
+{
+ "meta": {
+  "status": "Round 28 Lane N1 phase 1 proposal, 2026-10-02. Not applied to game data; role and item ids never change.",
+  "rules": [
+   "Signal words (size, age, strength, temperament, wits) appear only on start-zone roles (levels 1-10 in the six start zones) and on T1 items.",
+   "In the start zones the signal words form one ladder, the same in all six starts: see `ladder` (column by disposition/kind, rung by the role's first level).",
+   "Everywhere else each display name (default and every by_zone variant) belongs to exactly one role, avoids base-mob and rare names, and has at most three words (named leaders excepted).",
+   "Siblings (roles of one family that share a zone outside the start band) differ in more than their first word: \"Tidepool Crab\" and \"Reefclaw Snapper\", never \"Tidepool Crab\" and \"Reefclaw Crab\".",
+   "Disposition is shown by the yellow/red name tag, not by the name. Named leaders keep \"Title Name\"."
+  ],
+  "zones_note": "zones = where the catalogue notes and world.md cast tables place the role (capital-band outlaw and undead roles may also appear in selected heartlands). Areas are designed later by the zone lanes.",
+  "generator": "tools/r28_names/build_review.py validates this file and renders catalogue-review.html."
+ },
+ "signal_words": {
+  "size": [
+   "Small",
+   "Large",
+   "Giant",
+   "Monstrous"
+  ],
+  "age": [
+   "Young"
+  ],
+  "strength": [
+   "Armored",
+   "Unrelenting"
+  ],
+  "temperament": [
+   "Aggressive",
+   "Rabid",
+   "Irritable",
+   "Bristling",
+   "Quarrelsome",
+   "Vigilant",
+   "Watchful",
+   "Territorial",
+   "Sullen",
+   "Stubborn",
+   "Prowling",
+   "Stalking",
+   "Furtive",
+   "Quiet",
+   "Restless",
+   "Mourning",
+   "Moaning",
+   "Muttering"
+  ],
+  "wits": [
+   "Braindead",
+   "Befuddled",
+   "Confused",
+   "Muddled",
+   "Misguided",
+   "Sluggish"
+  ],
+  "condition": [
+   "Mangy"
+  ]
+ },
+ "not_signal": {
+  "note": "Words in the data that were checked and kept: they describe place, look, lore or an activity, not strength or temperament.",
+  "words": [
+   "Wandering",
+   "Marching",
+   "Entrenched",
+   "Snaring",
+   "Unlicensed",
+   "Coiled",
+   "Surefoot",
+   "Parched",
+   "Debtbound",
+   "Saltbound",
+   "Unburied",
+   "Siege-Worn",
+   "Toll",
+   "Bitter",
+   "Unquiet",
+   "Gritted",
+   "Clenched"
+  ]
+ },
+ "ladder": {
+  "note": "Rung = the role's first level. Columns: neutral = yellow animals; beast = red animals; undead = zombies and husks; outlaw = bandits, poachers and their chiefs.",
+  "columns": {
+   "neutral": {
+    "1": "Small",
+    "3": "Small",
+    "5": "Young"
+   },
+   "beast": {
+    "1": "Large",
+    "5": "Aggressive",
+    "7": "Monstrous"
+   },
+   "undead": {
+    "3": "Braindead",
+    "5": "Sluggish",
+    "7": "Monstrous"
+   },
+   "outlaw": {
+    "7": "Confused",
+    "9": "Confused",
+    "10": "Confused"
+   }
+  },
+  "retired": [
+   "Giant",
+   "Rabid",
+   "Irritable",
+   "Prowling",
+   "Furtive",
+   "Befuddled",
+   "Muddled",
+   "Misguided",
+   "Quiet"
+  ]
+ },
+ "roles": [
+  {
+   "role": "small_boar",
+   "current": "Small Boar",
+   "proposed": "Small Boar",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "kragmar_stillgrave_hollow": {
+     "current": "Small Plague Boar",
+     "proposed": "Small Plague Boar"
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Small Jungle Boar",
+     "proposed": "Small Jungle Boar"
+    }
+   }
+  },
+  {
+   "role": "aggressive_boar",
+   "current": "Aggressive Boar",
+   "proposed": "Aggressive Boar",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "kragmar_stillgrave_hollow": {
+     "current": "Aggressive Plague Boar",
+     "proposed": "Aggressive Plague Boar"
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Aggressive Jungle Boar",
+     "proposed": "Aggressive Jungle Boar"
+    }
+   }
+  },
+  {
+   "role": "young_boar",
+   "current": "Young Boar",
+   "proposed": "Rooting Boar",
+   "reason": "Signal word \"Young\" outside start; named for how it feeds.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ],
+   "by_zone": {
+    "kragmar_mournfen": {
+     "current": "Young Plague Boar",
+     "proposed": "Rooting Plague Boar",
+     "reason": "Follows the default name, plague skin kept."
+    },
+    "kragmar_raincall_basin": {
+     "current": "Young Jungle Boar",
+     "proposed": "Rooting Jungle Boar",
+     "reason": "Follows the default name, jungle skin kept."
+    }
+   }
+  },
+  {
+   "role": "bristling_boar",
+   "current": "Bristling Boar",
+   "proposed": "Ridgeback Tusker",
+   "reason": "Signal word \"Bristling\"; own noun so it is not \"<adjective> Boar\" beside the Rooting Boar.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ],
+   "by_zone": {
+    "kragmar_mournfen": {
+     "current": "Bristling Plague Boar",
+     "proposed": "Plague Tusker",
+     "reason": "Own noun beside Rooting Plague Boar."
+    },
+    "kragmar_raincall_basin": {
+     "current": "Bristling Jungle Boar",
+     "proposed": "Jungle Tusker",
+     "reason": "Own noun beside Rooting Jungle Boar."
+    }
+   }
+  },
+  {
+   "role": "furrow_boar",
+   "current": "Furrow Boar",
+   "proposed": "Furrow Boar",
+   "zones": [
+    "elandor_highcourt",
+    "elandor_whitebridge_shire",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ],
+   "by_zone": {
+    "kragmar_nhal_veyr": {
+     "current": "Furrow Plague Boar",
+     "proposed": "Furrow Plague Boar"
+    },
+    "kragmar_kezamba": {
+     "current": "Furrow Jungle Boar",
+     "proposed": "Furrow Jungle Boar"
+    }
+   }
+  },
+  {
+   "role": "monstrous_boar",
+   "current": "Monstrous Boar",
+   "proposed": "Razorback",
+   "reason": "Signal word \"Monstrous\"; own noun beside the Furrow Boar.",
+   "zones": [
+    "elandor_highcourt",
+    "elandor_whitebridge_shire",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ],
+   "by_zone": {
+    "kragmar_nhal_veyr": {
+     "current": "Monstrous Plague Boar",
+     "proposed": "Plague Razorback",
+     "reason": "Own noun beside Furrow Plague Boar."
+    },
+    "kragmar_kezamba": {
+     "current": "Monstrous Jungle Boar",
+     "proposed": "Jungle Razorback",
+     "reason": "Own noun beside Furrow Jungle Boar."
+    }
+   }
+  },
+  {
+   "role": "large_rat",
+   "current": "Large Rat",
+   "proposed": "Large Rat",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "kragmar_stillgrave_hollow": {
+     "current": "Large Grave Rat",
+     "proposed": "Large Grave Rat"
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Large Kapok Rat",
+     "proposed": "Large Kapok Rat"
+    },
+    "kragmar_sunscar_flats": {
+     "current": "Large Dust Rat",
+     "proposed": "Large Dust Rat"
+    }
+   }
+  },
+  {
+   "role": "rabid_rat",
+   "current": "Rabid Rat",
+   "proposed": "Aggressive Rat",
+   "reason": "Ladder: hostile beast at L5-7 is \"Aggressive\" in every start (Rabid retired).",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "kragmar_stillgrave_hollow": {
+     "current": "Rabid Grave Rat",
+     "proposed": "Aggressive Grave Rat",
+     "reason": "Ladder word, regional rat kept."
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Rabid Kapok Rat",
+     "proposed": "Aggressive Kapok Rat",
+     "reason": "Ladder word, regional rat kept."
+    },
+    "kragmar_sunscar_flats": {
+     "current": "Rabid Dust Rat",
+     "proposed": "Aggressive Dust Rat",
+     "reason": "Ladder word, regional rat kept."
+    }
+   }
+  },
+  {
+   "role": "monstrous_rat",
+   "current": "Monstrous Rat",
+   "proposed": "Monstrous Rat",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "kragmar_stillgrave_hollow": {
+     "current": "Monstrous Grave Rat",
+     "proposed": "Monstrous Grave Rat"
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Monstrous Kapok Rat",
+     "proposed": "Monstrous Kapok Rat"
+    },
+    "kragmar_sunscar_flats": {
+     "current": "Monstrous Dust Rat",
+     "proposed": "Monstrous Dust Rat"
+    }
+   }
+  },
+  {
+   "role": "granary_rat",
+   "current": "Granary Rat",
+   "proposed": "Granary Rat",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ],
+   "by_zone": {
+    "kragmar_mournfen": {
+     "current": "Granary Grave Rat",
+     "proposed": "Granary Grave Rat"
+    },
+    "kragmar_raincall_basin": {
+     "current": "Granary Kapok Rat",
+     "proposed": "Granary Kapok Rat"
+    },
+    "kragmar_redtusk_savanna": {
+     "current": "Granary Dust Rat",
+     "proposed": "Granary Dust Rat"
+    }
+   }
+  },
+  {
+   "role": "mangy_rat",
+   "current": "Mangy Rat",
+   "proposed": "Burrow Gnawer",
+   "reason": "Signal word \"Mangy\"; own noun beside the Granary Rat.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ],
+   "by_zone": {
+    "kragmar_mournfen": {
+     "current": "Mangy Grave Rat",
+     "proposed": "Grave Gnawer",
+     "reason": "Regional word kept, own noun."
+    },
+    "kragmar_raincall_basin": {
+     "current": "Mangy Kapok Rat",
+     "proposed": "Kapok Gnawer",
+     "reason": "Regional word kept, own noun."
+    },
+    "kragmar_redtusk_savanna": {
+     "current": "Mangy Dust Rat",
+     "proposed": "Dust Gnawer",
+     "reason": "Regional word kept, own noun."
+    }
+   }
+  },
+  {
+   "role": "quiet_shore_crab",
+   "current": "Shore Crab",
+   "proposed": "Small Crab",
+   "reason": "\"Shore Crab\" is the base mob's own name; ladder: neutral at L1-5 is \"Small\".",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "giant_crab",
+   "current": "Giant Crab",
+   "proposed": "Monstrous Crab",
+   "reason": "Ladder: hostile at L7-9 is \"Monstrous\" (Giant retired; \"Giant Rat\" is a base name).",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "tidepool_crab",
+   "current": "Tidepool Crab",
+   "proposed": "Tidepool Crab",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "reefclaw_crab",
+   "current": "Reefclaw Crab",
+   "proposed": "Reefclaw Snapper",
+   "reason": "Shares the home coasts with the Tidepool Crab; own noun instead of a second \"<adjective> Crab\".",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "bank_crab",
+   "current": "Bank Crab",
+   "proposed": "Bank Crab",
+   "zones": [
+    "elandor_frostbarrow_shelf",
+    "elandor_lorindor",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_ossuary_reach",
+    "kragmar_speargrass_reach",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "armored_crab",
+   "current": "Armored Crab",
+   "proposed": "Barnacle Pincher",
+   "reason": "Signal word \"Armored\"; own noun beside the Bank Crab.",
+   "zones": [
+    "elandor_frostbarrow_shelf",
+    "elandor_lorindor",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_ossuary_reach",
+    "kragmar_speargrass_reach",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "breakwater_crab",
+   "current": "Breakwater Crab",
+   "proposed": "Breakwater Crab",
+   "zones": [
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "braindead_zombie",
+   "current": "Braindead Zombie",
+   "proposed": "Braindead Zombie",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow"
+   ]
+  },
+  {
+   "role": "sluggish_zombie",
+   "current": "Sluggish Zombie",
+   "proposed": "Sluggish Zombie",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow"
+   ]
+  },
+  {
+   "role": "drowned_zombie",
+   "current": "Drowned Zombie",
+   "proposed": "Monstrous Drowned Zombie",
+   "reason": "Ladder: L7-9 rung carries \"Monstrous\"; \"Drowned\" keeps the shore lesson.",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow"
+   ]
+  },
+  {
+   "role": "moaning_zombie",
+   "current": "Moaning Zombie",
+   "proposed": "Cairn Zombie",
+   "reason": "Signal word \"Moaning\"; named for the roadside cairns it rises from.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin"
+   ]
+  },
+  {
+   "role": "muttering_zombie",
+   "current": "Muttering Zombie",
+   "proposed": "Pauper Shambler",
+   "reason": "Signal word \"Muttering\"; pauper graves, own noun beside the Cairn Zombie.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin"
+   ]
+  },
+  {
+   "role": "debtbound_zombie",
+   "current": "Debtbound Zombie",
+   "proposed": "Debtbound Zombie",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "stubborn_zombie",
+   "current": "Stubborn Zombie",
+   "proposed": "Tithe Revenant",
+   "reason": "Signal word \"Stubborn\"; the outskirts' debt theme, own noun beside the Debtbound Zombie.",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "marching_zombie",
+   "current": "Marching Zombie",
+   "proposed": "Marching Zombie",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "unrelenting_zombie",
+   "current": "Unrelenting Zombie",
+   "proposed": "Trench Shambler",
+   "reason": "Signal word \"Unrelenting\"; war trenches, own noun beside the Marching Zombie.",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "saltbound_zombie",
+   "current": "Saltbound Zombie",
+   "proposed": "Saltbound Zombie",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy"
+   ],
+   "by_zone": {
+    "front_skyglass_canopy": {
+     "current": "Saltbound Vinebound Zombie",
+     "proposed": "Vinebound Zombie",
+     "reason": "Was \"Saltbound Vinebound Zombie\": two place words stacked; the canopy form gets its own."
+    }
+   }
+  },
+  {
+   "role": "last_watch_zombie",
+   "current": "Last-Watch Zombie",
+   "proposed": "Last Watchman",
+   "reason": "Shares Gravesalt with the Saltbound Zombie; own noun instead of a second \"<adjective> Zombie\".",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy",
+    "front_stormscale_summit",
+    "front_wyrmglass_crown"
+   ],
+   "by_zone": {
+    "front_skyglass_canopy": {
+     "current": "Last-Watch Vinebound Zombie",
+     "proposed": "Overgrown Watchman",
+     "reason": "Was \"Last-Watch Vinebound Zombie\"; own name beside the Vinebound Zombie."
+    },
+    "front_stormscale_summit": {
+     "current": "Last-Watch Vinebound Zombie",
+     "proposed": "Overgrown Watchman",
+     "reason": "Same canopy form as on Skyglass."
+    }
+   }
+  },
+  {
+   "role": "befuddled_husk",
+   "current": "Befuddled Sun-Dried Husk",
+   "proposed": "Braindead Sun-Dried Husk",
+   "reason": "Ladder: undead at L3-5 is \"Braindead\" (Befuddled retired).",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "sluggish_husk",
+   "current": "Sluggish Sun-Dried Husk",
+   "proposed": "Sluggish Sun-Dried Husk",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "salt_caked_husk",
+   "current": "Salt-Caked Sun-Dried Husk",
+   "proposed": "Monstrous Salt-Caked Husk",
+   "reason": "Ladder: L7-9 rung carries \"Monstrous\"; three words, so Sun-Dried gives way to the shore look.",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "muttering_husk",
+   "current": "Muttering Sun-Dried Husk",
+   "proposed": "Cairn Sun-Dried Husk",
+   "reason": "Signal word \"Muttering\"; pairs with the Cairn Zombie of the same band.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "parched_husk",
+   "current": "Parched Sun-Dried Husk",
+   "proposed": "Pauper Mummy",
+   "reason": "Shares its caches with the Cairn husk; own noun, pairs with the Pauper Shambler.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "debtbound_husk",
+   "current": "Debtbound Sun-Dried Husk",
+   "proposed": "Debtbound Sun-Dried Husk",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_gor_drazhak",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "stubborn_husk",
+   "current": "Stubborn Sun-Dried Husk",
+   "proposed": "Tithe Mummy",
+   "reason": "Signal word \"Stubborn\"; pairs with the Tithe Revenant.",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_gor_drazhak",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "marching_husk",
+   "current": "Marching Sun-Dried Husk",
+   "proposed": "Marching Sun-Dried Husk",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "unrelenting_husk",
+   "current": "Unrelenting Sun-Dried Husk",
+   "proposed": "Trench Mummy",
+   "reason": "Signal word \"Unrelenting\"; pairs with the Trench Shambler.",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "siege_husk",
+   "current": "Siege-Worn Sun-Dried Husk",
+   "proposed": "Siege-Worn Sun-Dried Husk",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "unburied_husk",
+   "current": "Unburied Sun-Dried Husk",
+   "proposed": "Unburied Mummy",
+   "reason": "Shares Shattered Line caches with the Siege-Worn husk; own noun.",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "small_fox",
+   "current": "Small Fox",
+   "proposed": "Young Fox",
+   "reason": "Ladder: neutral at L5-7 is \"Young\", like Young Ibex/Tapir/Plains Runner/Gaunt Stag.",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades"
+   ]
+  },
+  {
+   "role": "young_fox",
+   "current": "Young Fox",
+   "proposed": "Bracken Fox",
+   "reason": "Signal word \"Young\" outside start; named for its cover.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale"
+   ]
+  },
+  {
+   "role": "rabid_fox",
+   "current": "Rabid Fox",
+   "proposed": "Thicket Vixen",
+   "reason": "Signal word \"Rabid\"; own noun beside the Bracken Fox.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale"
+   ]
+  },
+  {
+   "role": "orchard_fox",
+   "current": "Orchard Fox",
+   "proposed": "Orchard Fox",
+   "zones": [
+    "elandor_highcourt",
+    "elandor_lethariel"
+   ]
+  },
+  {
+   "role": "redfang_fox",
+   "current": "Redfang Fox",
+   "proposed": "Redfang Vixen",
+   "reason": "Shares the capital fields with the Orchard Fox; own noun instead of a second \"<adjective> Fox\".",
+   "zones": [
+    "elandor_highcourt",
+    "elandor_lethariel"
+   ]
+  },
+  {
+   "role": "confused_bandit",
+   "current": "Confused Bandit",
+   "proposed": "Confused Bandit",
+   "zones": [
+    "elandor_dawnmere_fields",
+    "elandor_hearthpine_vale",
+    "elandor_silverleaf_glades",
+    "kragmar_kapok_cradle",
+    "kragmar_stillgrave_hollow",
+    "kragmar_sunscar_flats"
+   ],
+   "by_zone": {
+    "elandor_hearthpine_vale": {
+     "current": "Confused Ore Thief",
+     "proposed": "Confused Ore Thief"
+    },
+    "elandor_dawnmere_fields": {
+     "current": "Confused Bandit",
+     "proposed": "Confused Bandit"
+    },
+    "elandor_silverleaf_glades": {
+     "current": "Confused Wood Thief",
+     "proposed": "Confused Wood Thief"
+    },
+    "kragmar_stillgrave_hollow": {
+     "current": "Confused Grave Robber",
+     "proposed": "Confused Grave Robber"
+    },
+    "kragmar_sunscar_flats": {
+     "current": "Confused Water Thief",
+     "proposed": "Confused Water Thief"
+    },
+    "kragmar_kapok_cradle": {
+     "current": "Confused Offering Thief",
+     "proposed": "Confused Offering Thief"
+    }
+   }
+  },
+  {
+   "role": "quarrelsome_bandit",
+   "current": "Quarrelsome Bandit",
+   "proposed": "Roadside Bandit",
+   "reason": "Signal word \"Quarrelsome\"; where the home-zone bandits work.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "vigilant_bandit_archer",
+   "current": "Vigilant Bandit Archer",
+   "proposed": "Bandit Lookout",
+   "reason": "Signal word \"Vigilant\"; a lookout is the archer's job, not its mood.",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale",
+    "kragmar_mournfen",
+    "kragmar_raincall_basin",
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "toll_bandit",
+   "current": "Toll Bandit",
+   "proposed": "Toll Bandit",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_gor_drazhak",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "toll_bandit_archer",
+   "current": "Toll Bandit Archer",
+   "proposed": "Toll Bandit Archer",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "kragmar_gor_drazhak",
+    "kragmar_kezamba",
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "entrenched_bandit",
+   "current": "Entrenched Bandit",
+   "proposed": "Entrenched Bandit",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "entrenched_bandit_archer",
+   "current": "Entrenched Bandit Archer",
+   "proposed": "Entrenched Bandit Archer",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_stormvault_heights",
+    "front_broken_causeway",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_blackwind_rise",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "siege_deserter",
+   "current": "Siege Deserter",
+   "proposed": "Siege Deserter",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "siege_deserter_archer",
+   "current": "Siege Deserter Archer",
+   "proposed": "Siege Deserter Archer",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "saltroad_deserter",
+   "current": "Saltroad Deserter",
+   "proposed": "Saltroad Deserter",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "last_pay_archer",
+   "current": "Last-Pay Archer",
+   "proposed": "Last-Pay Archer",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy",
+    "front_stormscale_summit",
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "furtive_poacher",
+   "current": "Furtive Poacher",
+   "proposed": "Confused Poacher",
+   "reason": "Ladder: start-zone outlaws are \"Confused\" (Furtive retired).",
+   "zones": [
+    "elandor_silverleaf_glades"
+   ]
+  },
+  {
+   "role": "snaring_poacher",
+   "current": "Snaring Poacher",
+   "proposed": "Snaring Poacher",
+   "zones": [
+    "elandor_goldmead_vale",
+    "elandor_starbough_vale"
+   ]
+  },
+  {
+   "role": "unlicensed_poacher",
+   "current": "Unlicensed Poacher",
+   "proposed": "Unlicensed Poacher",
+   "zones": [
+    "elandor_lethariel",
+    "elandor_lorindor",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire"
+   ]
+  },
+  {
+   "role": "wartrail_poacher",
+   "current": "Wartrail Poacher",
+   "proposed": "Wartrail Poacher",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds"
+   ]
+  },
+  {
+   "role": "young_ibex",
+   "current": "Young Ibex",
+   "proposed": "Young Ibex",
+   "zones": [
+    "elandor_hearthpine_vale"
+   ]
+  },
+  {
+   "role": "surefoot_ibex",
+   "current": "Surefoot Ibex",
+   "proposed": "Surefoot Ibex",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_dur_brannoc",
+    "elandor_frostbarrow_shelf"
+   ]
+  },
+  {
+   "role": "ridge_ibex",
+   "current": "Ridge Ibex",
+   "proposed": "Ridge Ibex",
+   "zones": [
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "young_plains_runner",
+   "current": "Young Plains Runner",
+   "proposed": "Young Plains Runner",
+   "zones": [
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "young_tapir",
+   "current": "Young Tapir",
+   "proposed": "Young Tapir",
+   "zones": [
+    "kragmar_kapok_cradle"
+   ]
+  },
+  {
+   "role": "reed_tapir",
+   "current": "Reed Tapir",
+   "proposed": "Reed Tapir",
+   "zones": [
+    "kragmar_kezamba",
+    "kragmar_raincall_basin",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "watchful_zebra",
+   "current": "Watchful Zebra",
+   "proposed": "Waterhole Zebra",
+   "reason": "Signal word \"Watchful\"; savanna ecology instead.",
+   "zones": [
+    "kragmar_gor_drazhak",
+    "kragmar_redtusk_savanna",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "hill_ram",
+   "current": "Hill Ram",
+   "proposed": "Hill Ram",
+   "zones": [
+    "elandor_dur_brannoc",
+    "elandor_frostbarrow_shelf"
+   ]
+  },
+  {
+   "role": "storm_ridge_ram",
+   "current": "Storm-Ridge Ram",
+   "proposed": "Storm-Ridge Ram",
+   "zones": [
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "rimehorn_ram",
+   "current": "Rimehorn Ram",
+   "proposed": "Rimehorn Ram",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "moss_antler_stag",
+   "current": "Moss-Antler Stag",
+   "proposed": "Moss-Antler Stag",
+   "zones": [
+    "elandor_highcourt",
+    "elandor_lethariel",
+    "elandor_lorindor",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_nhal_veyr",
+    "kragmar_ossuary_reach"
+   ],
+   "by_zone": {
+    "kragmar_nhal_veyr": {
+     "current": "Moss-Antler Gaunt Stag",
+     "proposed": "Moss-Antler Gaunt Stag"
+    },
+    "kragmar_ossuary_reach": {
+     "current": "Moss-Antler Gaunt Stag",
+     "proposed": "Moss-Antler Gaunt Stag"
+    }
+   }
+  },
+  {
+   "role": "watchful_stag",
+   "current": "Watchful Stag",
+   "proposed": "Greatwood Stag",
+   "reason": "Signal word \"Watchful\"; the old forests of Ashenward and Glassroot.",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "kragmar_blackwind_rise"
+   ],
+   "by_zone": {
+    "kragmar_blackwind_rise": {
+     "current": "Watchful Gaunt Stag",
+     "proposed": "Blackwind Gaunt Stag",
+     "reason": "Signal word \"Watchful\"; named for its zone."
+    }
+   }
+  },
+  {
+   "role": "salt_antler_stag",
+   "current": "Salt-Antler Gaunt Stag",
+   "proposed": "Salt-Antler Gaunt Stag",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "prowling_jungle_lynx",
+   "current": "Prowling Jungle Lynx",
+   "proposed": "Aggressive Jungle Lynx",
+   "reason": "Ladder: hostile beast at L5-7 is \"Aggressive\" (Prowling retired).",
+   "zones": [
+    "kragmar_kapok_cradle"
+   ]
+  },
+  {
+   "role": "reed_jungle_lynx",
+   "current": "Reed Jungle Lynx",
+   "proposed": "Reed Jungle Lynx",
+   "zones": [
+    "kragmar_kezamba",
+    "kragmar_raincall_basin",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "prowling_snow_leopard",
+   "current": "Prowling Snow Leopard",
+   "proposed": "Crag Snow Leopard",
+   "reason": "Signal word \"Prowling\"; mountain ecology instead.",
+   "zones": [
+    "elandor_frostbarrow_shelf",
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "rime_pelt_leopard",
+   "current": "Rime-Pelt Snow Leopard",
+   "proposed": "Rime-Pelt Snow Leopard",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "stalking_panther",
+   "current": "Stalking Panther",
+   "proposed": "Shade Panther",
+   "reason": "Signal word \"Stalking\"; a night cat of deep shade.",
+   "zones": [
+    "elandor_glassroot_wilds",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "glass_shadow_panther",
+   "current": "Glass-Shadow Panther",
+   "proposed": "Glass-Shadow Panther",
+   "zones": [
+    "front_skyglass_canopy",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "reed_stalking_tiger",
+   "current": "Reed-Stalking Speargrass Tiger",
+   "proposed": "Tallgrass Tiger",
+   "reason": "Signal word \"Stalking\" inside \"Reed-Stalking\"; shorter, savanna ecology.",
+   "zones": [
+    "front_shattered_line",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "dustpack_hyena",
+   "current": "Dustpack Hyena",
+   "proposed": "Dustpack Hyena",
+   "zones": [
+    "kragmar_gor_drazhak",
+    "kragmar_redtusk_savanna",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "warpack_hyena",
+   "current": "Warpack Hyena",
+   "proposed": "Warpack Hyena",
+   "zones": [
+    "front_shattered_line",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "briarpack_wolf",
+   "current": "Briarpack Wolf",
+   "proposed": "Briarpack Wolf",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_blackwind_rise",
+    "kragmar_ossuary_reach"
+   ],
+   "by_zone": {
+    "kragmar_ossuary_reach": {
+     "current": "Briarpack Blightfang Wolf",
+     "proposed": "Briarpack Blightfang Wolf"
+    },
+    "kragmar_blackwind_rise": {
+     "current": "Briarpack Blightfang Wolf",
+     "proposed": "Briarpack Blightfang Wolf"
+    }
+   }
+  },
+  {
+   "role": "saltpack_wolf",
+   "current": "Saltpack Blightfang Wolf",
+   "proposed": "Saltpack Blightfang Wolf",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "territorial_bear",
+   "current": "Territorial Bear",
+   "proposed": "Bramble Bear",
+   "reason": "Signal word \"Territorial\"; forest-edge ecology instead.",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_blackwind_rise",
+    "kragmar_ossuary_reach"
+   ],
+   "by_zone": {
+    "kragmar_ossuary_reach": {
+     "current": "Territorial Plaguehide Bear",
+     "proposed": "Bonewood Plaguehide Bear",
+     "reason": "Signal word \"Territorial\"; bone-forest form."
+    },
+    "kragmar_blackwind_rise": {
+     "current": "Territorial Plaguehide Bear",
+     "proposed": "Bonewood Plaguehide Bear",
+     "reason": "Same bone-forest form as in Ossuary Reach."
+    }
+   }
+  },
+  {
+   "role": "salt_hide_bear",
+   "current": "Salt-Hide Plaguehide Bear",
+   "proposed": "Salt-Hide Plaguehide Bear",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "reed_crocodile",
+   "current": "Reed Crocodile",
+   "proposed": "Reed Crocodile",
+   "zones": [
+    "kragmar_mournfen",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "sullen_bog_ooze",
+   "current": "Sullen Bog Ooze",
+   "proposed": "Bubbling Bog Ooze",
+   "reason": "Signal word \"Sullen\"; describes what you see instead.",
+   "zones": [
+    "kragmar_mournfen",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "reed_mirefolk",
+   "current": "Reed Mirefolk",
+   "proposed": "Reed Mirefolk",
+   "zones": [
+    "kragmar_mournfen"
+   ]
+  },
+  {
+   "role": "toll_mirefolk",
+   "current": "Toll Mirefolk",
+   "proposed": "Toll Mirefolk",
+   "zones": [
+    "elandor_lorindor",
+    "elandor_whitebridge_shire",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "wandering_wisp",
+   "current": "Wandering Wisp",
+   "proposed": "Wandering Wisp",
+   "zones": [
+    "elandor_lorindor",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire",
+    "kragmar_mournfen",
+    "kragmar_totemwater_reach",
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "battle_wisp",
+   "current": "Battle Wisp",
+   "proposed": "Battle Wisp",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_glassroot_wilds",
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "rootbound_treant",
+   "current": "Rootbound Ashen Treant",
+   "proposed": "Rootbound Ashen Treant",
+   "zones": [
+    "elandor_ashenward_march"
+   ]
+  },
+  {
+   "role": "mourning_treant",
+   "current": "Mourning Gravewood Treant",
+   "proposed": "Lichen Gravewood Treant",
+   "reason": "Signal word \"Mourning\" (a mood); describes its look instead.",
+   "zones": [
+    "kragmar_blackwind_rise",
+    "kragmar_ossuary_reach"
+   ]
+  },
+  {
+   "role": "marrow_weevil",
+   "current": "Marrow Weevil",
+   "proposed": "Marrow Weevil",
+   "zones": [
+    "kragmar_blackwind_rise",
+    "kragmar_ossuary_reach"
+   ]
+  },
+  {
+   "role": "salt_boring_weevil",
+   "current": "Salt-Boring Weevil",
+   "proposed": "Salt-Boring Weevil",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "territorial_ape",
+   "current": "Territorial Jungle Ape",
+   "proposed": "Treetop Jungle Ape",
+   "reason": "Signal word \"Territorial\"; the ape climbs.",
+   "zones": [
+    "elandor_glassroot_wilds",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "glass_knuckle_ape",
+   "current": "Glass-Knuckle Jungle Ape",
+   "proposed": "Glass-Knuckle Jungle Ape",
+   "zones": [
+    "front_skyglass_canopy",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "irritable_scorpion",
+   "current": "Irritable Scorpion",
+   "proposed": "Aggressive Scorpion",
+   "reason": "Ladder: hostile beast at L5-7 is \"Aggressive\" (Irritable retired).",
+   "zones": [
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "giant_scorpion",
+   "current": "Giant Scorpion",
+   "proposed": "Monstrous Scorpion",
+   "reason": "Ladder: hostile at L7-9 is \"Monstrous\".",
+   "zones": [
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "reed_viper",
+   "current": "Reed Viper",
+   "proposed": "Aggressive Viper",
+   "reason": "Ladder: hostile beast at L5-7 is \"Aggressive\"; the old name had no signal word.",
+   "zones": [
+    "kragmar_kapok_cradle"
+   ]
+  },
+  {
+   "role": "giant_viper",
+   "current": "Giant Viper",
+   "proposed": "Monstrous Viper",
+   "reason": "Ladder: hostile at L7-9 is \"Monstrous\".",
+   "zones": [
+    "kragmar_kapok_cradle"
+   ]
+  },
+  {
+   "role": "dust_stinger",
+   "current": "Dust-Stinger Scorpion",
+   "proposed": "Dust-Stinger Scorpion",
+   "zones": [
+    "kragmar_gor_drazhak",
+    "kragmar_redtusk_savanna",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "reed_fang_viper",
+   "current": "Reed-Fang Viper",
+   "proposed": "Reed-Fang Viper",
+   "zones": [
+    "kragmar_kezamba",
+    "kragmar_raincall_basin"
+   ]
+  },
+  {
+   "role": "war_stinger",
+   "current": "War-Stinger Scorpion",
+   "proposed": "War-Stinger Scorpion",
+   "zones": [
+    "front_shattered_line",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "coiled_serpent",
+   "current": "Coiled Serpent",
+   "proposed": "Coiled Serpent",
+   "zones": [
+    "elandor_glassroot_wilds",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "glass_fang_serpent",
+   "current": "Glass-Fang Serpent",
+   "proposed": "Glass-Fang Serpent",
+   "zones": [
+    "front_skyglass_canopy",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "briar_web_spider",
+   "current": "Briar-Web Spider",
+   "proposed": "Briar-Web Spider",
+   "zones": [
+    "elandor_ashenward_march",
+    "elandor_moonfall_wood",
+    "elandor_whitebridge_shire"
+   ]
+  },
+  {
+   "role": "grave_web_spider",
+   "current": "Grave-Web Bonelurker Spider",
+   "proposed": "Grave-Web Bonelurker Spider",
+   "zones": [
+    "kragmar_blackwind_rise",
+    "kragmar_ossuary_reach"
+   ]
+  },
+  {
+   "role": "canopy_web_spider",
+   "current": "Canopy-Web Jungle Spider",
+   "proposed": "Canopy-Web Jungle Spider",
+   "zones": [
+    "elandor_glassroot_wilds",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "salt_web_spider",
+   "current": "Salt-Web Bonelurker Spider",
+   "proposed": "Salt-Web Bonelurker Spider",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "glass_web_spider",
+   "current": "Glass-Web Jungle Spider",
+   "proposed": "Glass-Web Jungle Spider",
+   "zones": [
+    "front_skyglass_canopy",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "ore_thieving_goblin",
+   "current": "Ore-Thieving Goblin",
+   "proposed": "Ore-Thieving Goblin",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_dur_brannoc",
+    "elandor_frostbarrow_shelf",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "rubble_goblin_slinger",
+   "current": "Rubble Goblin Slinger",
+   "proposed": "Rubble Goblin Slinger",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_dur_brannoc",
+    "elandor_frostbarrow_shelf",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "ore_guard_hound",
+   "current": "Ore-Guard Hound",
+   "proposed": "Ore-Guard Hound",
+   "zones": [
+    "elandor_copperfell_foothills",
+    "elandor_dur_brannoc",
+    "elandor_frostbarrow_shelf",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "siege_goblin",
+   "current": "Siege Goblin",
+   "proposed": "Siege Goblin",
+   "zones": [
+    "elandor_stormvault_heights",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "siege_goblin_slinger",
+   "current": "Siege Goblin Slinger",
+   "proposed": "Siege Goblin Slinger",
+   "zones": [
+    "elandor_stormvault_heights",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "siege_goblin_hound",
+   "current": "Siege Goblin Hound",
+   "proposed": "Siege Goblin Hound",
+   "zones": [
+    "elandor_stormvault_heights",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "barrow_skeleton_archer",
+   "current": "Barrow Skeleton Archer",
+   "proposed": "Barrow Skeleton Archer",
+   "zones": [
+    "kragmar_ossuary_reach"
+   ]
+  },
+  {
+   "role": "march_skeleton_raider",
+   "current": "March Skeleton Raider",
+   "proposed": "March Skeleton Raider",
+   "zones": [
+    "elandor_ashenward_march",
+    "front_broken_causeway",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_blackwind_rise"
+   ]
+  },
+  {
+   "role": "rime_skeleton_stray",
+   "current": "Rime Skeleton Stray",
+   "proposed": "Rime Skeleton Stray",
+   "zones": [
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "siege_skeleton_raider",
+   "current": "Siege Skeleton Raider",
+   "proposed": "Siege Skeleton Raider",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "last_watch_skeleton_raider",
+   "current": "Last-Watch Skeleton Raider",
+   "proposed": "Last-Watch Skeleton Raider",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "crown_frost_stray",
+   "current": "Crown Frost Stray",
+   "proposed": "Crown Frost Stray",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "reed_hex_witch",
+   "current": "Reed-Hex Bog Witch",
+   "proposed": "Reed-Hex Bog Witch",
+   "zones": [
+    "front_broken_causeway",
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "salt_hex_witch",
+   "current": "Salt-Hex Bog Witch",
+   "proposed": "Salt-Hex Bog Witch",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "ridge_crag_eagle",
+   "current": "Ridge Crag Eagle",
+   "proposed": "Ridge Crag Eagle",
+   "zones": [
+    "elandor_frostbarrow_shelf",
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "dustwing_vulture",
+   "current": "Dustwing Vulture",
+   "proposed": "Mesa Vulture",
+   "reason": "\"Dustwing\" is the rare vulture's name; a kill quest must not be mistaken for the rare.",
+   "zones": [
+    "front_shattered_line",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "watchful_carrion_crow",
+   "current": "Watchful Carrion Crow",
+   "proposed": "Battlefield Crow",
+   "reason": "Signal word \"Watchful\"; it lives where the fighting is.",
+   "zones": [
+    "elandor_ashenward_march",
+    "front_broken_causeway",
+    "front_gravesalt_escarpment",
+    "front_shattered_line",
+    "front_skyglass_canopy",
+    "front_stormscale_summit",
+    "front_wyrmglass_crown",
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "crown_crag_eagle",
+   "current": "Crown Crag Eagle",
+   "proposed": "Crown Crag Eagle",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "seam_stone_golem",
+   "current": "Seam Stone Golem",
+   "proposed": "Seam Stone Golem",
+   "zones": [
+    "elandor_frostbarrow_shelf",
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "seam_mesa_golem",
+   "current": "Seam Mesa Golem",
+   "proposed": "Seam Mesa Golem",
+   "zones": [
+    "front_shattered_line",
+    "kragmar_bannerbreak_mesa",
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "causeway_construct",
+   "current": "Causeway War Construct",
+   "proposed": "Causeway War Construct",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "siege_war_construct",
+   "current": "Siege War Construct",
+   "proposed": "Siege War Construct",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "crown_stone_golem",
+   "current": "Crown Stone Golem",
+   "proposed": "Crown Stone Golem",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "salt_reef_lurker",
+   "current": "Salt Reef Lurker",
+   "proposed": "Salt Reef Lurker",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "muddled_ore_chief",
+   "current": "Muddled Ore Chief Bracket",
+   "proposed": "Confused Ore Chief Bracket",
+   "reason": "Ladder: start chiefs share their band's word \"Confused\" (Muddled retired).",
+   "zones": [
+    "elandor_hearthpine_vale"
+   ]
+  },
+  {
+   "role": "confused_bandit_chief",
+   "current": "Confused Bandit Chief Crumb",
+   "proposed": "Confused Bandit Chief Crumb",
+   "zones": [
+    "elandor_dawnmere_fields"
+   ]
+  },
+  {
+   "role": "misguided_poacher_chief",
+   "current": "Misguided Poacher Chief Twig",
+   "proposed": "Confused Poacher Chief Twig",
+   "reason": "Ladder: start chiefs share \"Confused\" (Misguided retired).",
+   "zones": [
+    "elandor_silverleaf_glades"
+   ]
+  },
+  {
+   "role": "grave_robber_chief",
+   "current": "Grave Robber Chief Borrow",
+   "proposed": "Confused Grave Robber Chief Borrow",
+   "reason": "Ladder: all six start chiefs carry \"Confused\".",
+   "zones": [
+    "kragmar_stillgrave_hollow"
+   ]
+  },
+  {
+   "role": "water_thief_chief",
+   "current": "Water Thief Chief Lastdrop",
+   "proposed": "Confused Water Thief Chief Lastdrop",
+   "reason": "Ladder: all six start chiefs carry \"Confused\".",
+   "zones": [
+    "kragmar_sunscar_flats"
+   ]
+  },
+  {
+   "role": "offering_thief_chief",
+   "current": "Offering Thief Chief Tangle",
+   "proposed": "Confused Offering Thief Chief Tangle",
+   "reason": "Ladder: all six start chiefs carry \"Confused\".",
+   "zones": [
+    "kragmar_kapok_cradle"
+   ]
+  },
+  {
+   "role": "foreman_nog",
+   "current": "Goblin Foreman Nog",
+   "proposed": "Goblin Foreman Nog",
+   "zones": [
+    "elandor_copperfell_foothills"
+   ]
+  },
+  {
+   "role": "requisitioner_hobb",
+   "current": "Bandit Requisitioner Hobb",
+   "proposed": "Bandit Requisitioner Hobb",
+   "zones": [
+    "elandor_goldmead_vale"
+   ]
+  },
+  {
+   "role": "snarekeeper_vetch",
+   "current": "Poacher Snarekeeper Vetch",
+   "proposed": "Poacher Snarekeeper Vetch",
+   "zones": [
+    "elandor_starbough_vale"
+   ]
+  },
+  {
+   "role": "reed_counter_silt",
+   "current": "Mirefolk Reed-Counter Silt",
+   "proposed": "Mirefolk Reed-Counter Silt",
+   "zones": [
+    "kragmar_mournfen"
+   ]
+  },
+  {
+   "role": "water_broker_korr",
+   "current": "Bandit Water-Broker Korr",
+   "proposed": "Bandit Water-Broker Korr",
+   "zones": [
+    "kragmar_redtusk_savanna"
+   ]
+  },
+  {
+   "role": "tithe_keeper_vek",
+   "current": "Bandit Tithe-Keeper Vek",
+   "proposed": "Bandit Tithe-Keeper Vek",
+   "zones": [
+    "kragmar_raincall_basin"
+   ]
+  },
+  {
+   "role": "ore_factor_brakk",
+   "current": "Goblin Ore-Factor Brakk",
+   "proposed": "Goblin Ore-Factor Brakk",
+   "zones": [
+    "elandor_dur_brannoc"
+   ]
+  },
+  {
+   "role": "tollmaster_penn",
+   "current": "Bandit Tollmaster Penn",
+   "proposed": "Bandit Tollmaster Penn",
+   "zones": [
+    "elandor_highcourt"
+   ]
+  },
+  {
+   "role": "bough_counter_rusk",
+   "current": "Poacher Bough-Counter Rusk",
+   "proposed": "Poacher Bough-Counter Rusk",
+   "zones": [
+    "elandor_lethariel"
+   ]
+  },
+  {
+   "role": "mortuary_clerk_hush",
+   "current": "Zombie Mortuary-Clerk Hush",
+   "proposed": "Zombie Mortuary-Clerk Hush",
+   "zones": [
+    "kragmar_nhal_veyr"
+   ]
+  },
+  {
+   "role": "ration_broker_garr",
+   "current": "Bandit Ration-Broker Garr",
+   "proposed": "Bandit Ration-Broker Garr",
+   "zones": [
+    "kragmar_gor_drazhak"
+   ]
+  },
+  {
+   "role": "offering_broker_takka",
+   "current": "Bandit Offering-Broker Takka",
+   "proposed": "Bandit Offering-Broker Takka",
+   "zones": [
+    "kragmar_kezamba"
+   ]
+  },
+  {
+   "role": "powder_counter_nib",
+   "current": "Goblin Powder-Counter Nib",
+   "proposed": "Goblin Powder-Counter Nib",
+   "zones": [
+    "elandor_frostbarrow_shelf"
+   ]
+  },
+  {
+   "role": "ferryman_murk",
+   "current": "Mirefolk Ferryman Murk",
+   "proposed": "Mirefolk Ferryman Murk",
+   "zones": [
+    "elandor_whitebridge_shire"
+   ]
+  },
+  {
+   "role": "pearl_counter_iss",
+   "current": "Mirefolk Pearl-Counter Iss",
+   "proposed": "Mirefolk Pearl-Counter Iss",
+   "zones": [
+    "elandor_lorindor"
+   ]
+  },
+  {
+   "role": "snarewarden_bracken",
+   "current": "Poacher Snarewarden Bracken",
+   "proposed": "Poacher Snarewarden Bracken",
+   "zones": [
+    "elandor_moonfall_wood"
+   ]
+  },
+  {
+   "role": "marrow_archivist",
+   "current": "Skeleton Marrow Archivist",
+   "proposed": "Skeleton Marrow Archivist",
+   "zones": [
+    "kragmar_ossuary_reach"
+   ]
+  },
+  {
+   "role": "banner_broker_rakk",
+   "current": "Goblin Banner-Broker Rakk",
+   "proposed": "Goblin Banner-Broker Rakk",
+   "zones": [
+    "kragmar_speargrass_reach"
+   ]
+  },
+  {
+   "role": "tollkeeper_ush",
+   "current": "Mirefolk Tollkeeper Ush",
+   "proposed": "Mirefolk Tollkeeper Ush",
+   "zones": [
+    "kragmar_whispering_reedlands"
+   ]
+  },
+  {
+   "role": "reed_maw_crocodile",
+   "current": "Crocodile Reed-Maw",
+   "proposed": "Crocodile Reed-Maw",
+   "zones": [
+    "kragmar_totemwater_reach"
+   ]
+  },
+  {
+   "role": "split_seam_warden",
+   "current": "Stone Golem Split-Seam",
+   "proposed": "Stone Golem Split-Seam",
+   "zones": [
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "red_receipt_marshal",
+   "current": "Poacher Marshal Red-Receipt",
+   "proposed": "Poacher Marshal Red-Receipt",
+   "zones": [
+    "elandor_ashenward_march"
+   ]
+  },
+  {
+   "role": "canopy_knuckle",
+   "current": "Jungle Ape Canopy-Knuckle",
+   "proposed": "Jungle Ape Canopy-Knuckle",
+   "zones": [
+    "elandor_glassroot_wilds"
+   ]
+  },
+  {
+   "role": "hollowbell_treant",
+   "current": "Gravewood Treant Hollowbell",
+   "proposed": "Gravewood Treant Hollowbell",
+   "zones": [
+    "kragmar_blackwind_rise"
+   ]
+  },
+  {
+   "role": "banner_eater",
+   "current": "Goblin Banner-Eater",
+   "proposed": "Goblin Banner-Eater",
+   "zones": [
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "storm_bottle_witch",
+   "current": "Bog Witch Storm-Bottle",
+   "proposed": "Bog Witch Storm-Bottle",
+   "zones": [
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "last_toll_construct",
+   "current": "War Construct Last-Toll",
+   "proposed": "War Construct Last-Toll",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "siege_engine_nine",
+   "current": "War Construct Engine Nine",
+   "proposed": "War Construct Engine Nine",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "salt_counter_witch",
+   "current": "Bog Witch Salt-Counter",
+   "proposed": "Bog Witch Salt-Counter",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "glass_throat_serpent",
+   "current": "Serpent Glass-Throat",
+   "proposed": "Serpent Glass-Throat",
+   "zones": [
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "rime_bell_warden",
+   "current": "Stone Golem Rime-Bell",
+   "proposed": "Stone Golem Rime-Bell",
+   "zones": [
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "last_offering_ape",
+   "current": "Jungle Ape Last-Offering",
+   "proposed": "Jungle Ape Last-Offering",
+   "zones": [
+    "front_stormscale_summit"
+   ]
+  },
+  {
+   "role": "saltbound_husk",
+   "current": "Saltbound Sun-Dried Husk",
+   "proposed": "Saltbound Sun-Dried Husk",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy"
+   ]
+  },
+  {
+   "role": "last_watch_husk",
+   "current": "Last-Watch Sun-Dried Husk",
+   "proposed": "Last-Watch Mummy",
+   "reason": "Shares caches with the Saltbound husk; own noun, pairs with the Last Watchman.",
+   "zones": [
+    "front_gravesalt_escarpment",
+    "front_skyglass_canopy",
+    "front_stormscale_summit",
+    "front_wyrmglass_crown"
+   ]
+  },
+  {
+   "role": "young_gaunt_stag",
+   "current": "Young Gaunt Stag",
+   "proposed": "Young Gaunt Stag",
+   "zones": [
+    "kragmar_stillgrave_hollow"
+   ]
+  },
+  {
+   "role": "basket_poacher_thorn",
+   "current": "Basket-Poacher Thorn",
+   "proposed": "Basket-Poacher Thorn",
+   "zones": [
+    "elandor_whitebridge_shire"
+   ]
+  },
+  {
+   "role": "quartermaster_scrip",
+   "current": "Quartermaster Scrip",
+   "proposed": "Quartermaster Scrip",
+   "zones": [
+    "elandor_ashenward_march"
+   ]
+  },
+  {
+   "role": "bolt_chewer",
+   "current": "Bolt-Chewer",
+   "proposed": "Bolt-Chewer",
+   "zones": [
+    "elandor_stormvault_heights"
+   ]
+  },
+  {
+   "role": "basket_biter",
+   "current": "Basket-Biter",
+   "proposed": "Basket-Biter",
+   "zones": [
+    "elandor_glassroot_wilds"
+   ]
+  },
+  {
+   "role": "grave_broker_mute",
+   "current": "Grave-Broker Mute",
+   "proposed": "Grave-Broker Mute",
+   "zones": [
+    "kragmar_blackwind_rise"
+   ]
+  },
+  {
+   "role": "provisioner_rattle",
+   "current": "Provisioner Rattle",
+   "proposed": "Provisioner Rattle",
+   "zones": [
+    "kragmar_bannerbreak_mesa"
+   ]
+  },
+  {
+   "role": "bottle_keeper_zek",
+   "current": "Bottle-Keeper Zek",
+   "proposed": "Bottle-Keeper Zek",
+   "zones": [
+    "kragmar_thunderroot_wilds"
+   ]
+  },
+  {
+   "role": "toll_taker_senn",
+   "current": "Toll-Taker Senn",
+   "proposed": "Toll-Taker Senn",
+   "zones": [
+    "front_broken_causeway"
+   ]
+  },
+  {
+   "role": "standard_bearer_ninepins",
+   "current": "Standard-Bearer Ninepins",
+   "proposed": "Standard-Bearer Ninepins",
+   "zones": [
+    "front_shattered_line"
+   ]
+  },
+  {
+   "role": "watch_captain_huskell",
+   "current": "Watch-Captain Huskell",
+   "proposed": "Watch-Captain Huskell",
+   "zones": [
+    "front_gravesalt_escarpment"
+   ]
+  },
+  {
+   "role": "paymaster_chirr",
+   "current": "Paymaster Chirr",
+   "proposed": "Paymaster Chirr",
+   "zones": [
+    "front_skyglass_canopy"
+   ]
+  }
+ ],
+ "items": [
+  {
+   "id": "grug_mobs:zombie_flesh",
+   "current": "Rotting Flesh",
+   "proposed": "Rotting Flesh"
+  },
+  {
+   "id": "grug_mobs:tattered_flesh",
+   "current": "Tattered Flesh",
+   "proposed": "Tattered Flesh"
+  },
+  {
+   "id": "grug_mobs:bandit_talisman",
+   "current": "Bandit Talisman",
+   "proposed": "Bandit Talisman"
+  },
+  {
+   "id": "grug_mobs:foul_flesh",
+   "current": "Foul Flesh",
+   "proposed": "Foul Flesh"
+  },
+  {
+   "id": "grug_mobs:knotted_talisman",
+   "current": "Knotted Talisman",
+   "proposed": "Knotted Talisman"
+  },
+  {
+   "id": "grug_mobs:pickled_flesh",
+   "current": "Pickled Flesh",
+   "proposed": "Pickled Flesh"
+  },
+  {
+   "id": "grug_mobs:stubborn_molar",
+   "current": "Stubborn Molar",
+   "proposed": "Hard-Set Molar",
+   "reason": "Signal word \"Stubborn\" on a T3 item; keeps the \"bite that holds\" idea."
+  },
+  {
+   "id": "grug_mobs:coded_talisman",
+   "current": "Coded Talisman",
+   "proposed": "Coded Talisman"
+  },
+  {
+   "id": "grug_mobs:balanced_weapon_strap",
+   "current": "Balanced Weapon Strap",
+   "proposed": "Balanced Weapon Strap"
+  },
+  {
+   "id": "grug_mobs:leathery_flesh",
+   "current": "Leathery Flesh",
+   "proposed": "Leathery Flesh"
+  },
+  {
+   "id": "grug_mobs:gritted_teeth",
+   "current": "Gritted Teeth",
+   "proposed": "Gritted Teeth"
+  },
+  {
+   "id": "grug_mobs:campaign_talisman",
+   "current": "Campaign Talisman",
+   "proposed": "Campaign Talisman"
+  },
+  {
+   "id": "grug_mobs:reinforced_weapon_strap",
+   "current": "Reinforced Weapon Strap",
+   "proposed": "Reinforced Weapon Strap"
+  },
+  {
+   "id": "grug_mobs:scorched_flesh",
+   "current": "Scorched Flesh",
+   "proposed": "Scorched Flesh"
+  },
+  {
+   "id": "grug_mobs:clenched_jaw",
+   "current": "Clenched Jaw",
+   "proposed": "Clenched Jaw"
+  },
+  {
+   "id": "grug_mobs:siege_talisman",
+   "current": "Siege Talisman",
+   "proposed": "Siege Talisman"
+  },
+  {
+   "id": "grug_mobs:siege_weapon_strap",
+   "current": "Siege Weapon Strap",
+   "proposed": "Siege Weapon Strap"
+  },
+  {
+   "id": "grug_mobs:salt_cured_flesh",
+   "current": "Salt-Cured Flesh",
+   "proposed": "Salt-Cured Flesh"
+  },
+  {
+   "id": "grug_mobs:last_laugh_dentures",
+   "current": "Last-Laugh Dentures",
+   "proposed": "Last-Laugh Dentures"
+  },
+  {
+   "id": "grug_mobs:last_pay_talisman",
+   "current": "Last-Pay Talisman",
+   "proposed": "Last-Pay Talisman"
+  },
+  {
+   "id": "grug_mobs:unbroken_weapon_strap",
+   "current": "Unbroken Weapon Strap",
+   "proposed": "Unbroken Weapon Strap"
+  },
+  {
+   "id": "grug_mobs:boar_tusk",
+   "current": "Boar Tusk",
+   "proposed": "Boar Tusk"
+  },
+  {
+   "id": "grug_mobs:ridged_boar_tusk",
+   "current": "Ridged Boar Tusk",
+   "proposed": "Ridged Boar Tusk"
+  },
+  {
+   "id": "grug_mobs:gnarled_boar_tusk",
+   "current": "Gnarled Boar Tusk",
+   "proposed": "Gnarled Boar Tusk"
+  },
+  {
+   "id": "grug_mobs:rat_tail",
+   "current": "Rat Tail",
+   "proposed": "Rat Tail"
+  },
+  {
+   "id": "grug_mobs:rat_fur_patch",
+   "current": "Rat Fur Patch",
+   "proposed": "Rat Fur Patch"
+  },
+  {
+   "id": "grug_mobs:sinewy_rat_tail",
+   "current": "Sinewy Rat Tail",
+   "proposed": "Sinewy Rat Tail"
+  },
+  {
+   "id": "grug_mobs:dense_rat_fur",
+   "current": "Dense Rat Fur",
+   "proposed": "Dense Rat Fur"
+  },
+  {
+   "id": "grug_mobs:crab_eye",
+   "current": "Crab Eye",
+   "proposed": "Crab Eye"
+  },
+  {
+   "id": "grug_mobs:crab_leg",
+   "current": "Crab Leg",
+   "proposed": "Crab Leg"
+  },
+  {
+   "id": "grug_mobs:clear_crab_eye",
+   "current": "Clear Crab Eye",
+   "proposed": "Clear Crab Eye"
+  },
+  {
+   "id": "grug_mobs:ridged_crab_shell",
+   "current": "Ridged Crab Shell",
+   "proposed": "Ridged Crab Shell"
+  },
+  {
+   "id": "grug_mobs:layered_crab_shell",
+   "current": "Layered Crab Shell",
+   "proposed": "Layered Crab Shell"
+  },
+  {
+   "id": "grug_mobs:storm_crab_shell",
+   "current": "Storm Crab Shell",
+   "proposed": "Storm Crab Shell"
+  },
+  {
+   "id": "grug_mobs:abyssal_crab_shell",
+   "current": "Abyssal Crab Shell",
+   "proposed": "Abyssal Crab Shell"
+  },
+  {
+   "id": "grug_mobs:fox_tail",
+   "current": "Fox Tail",
+   "proposed": "Fox Tail"
+  },
+  {
+   "id": "grug_mobs:brush_fox_tail",
+   "current": "Brush Fox Tail",
+   "proposed": "Brush Fox Tail"
+  },
+  {
+   "id": "grug_mobs:silver_tip_fox_tail",
+   "current": "Silver-Tip Fox Tail",
+   "proposed": "Silver-Tip Fox Tail"
+  },
+  {
+   "id": "grug_mobs:fine_sinew",
+   "current": "Fine Sinew",
+   "proposed": "Fine Sinew"
+  },
+  {
+   "id": "grug_mobs:tough_sinew",
+   "current": "Tough Sinew",
+   "proposed": "Tough Sinew"
+  },
+  {
+   "id": "grug_mobs:braided_sinew",
+   "current": "Braided Sinew",
+   "proposed": "Braided Sinew"
+  },
+  {
+   "id": "grug_mobs:ironbound_sinew",
+   "current": "Ironbound Sinew",
+   "proposed": "Ironbound Sinew"
+  },
+  {
+   "id": "grug_mobs:rime_sinew",
+   "current": "Rime Sinew",
+   "proposed": "Rime Sinew"
+  },
+  {
+   "id": "grug_mobs:raptor_claw",
+   "current": "Small Cat Claw",
+   "proposed": "Small Cat Claw"
+  },
+  {
+   "id": "grug_mobs:hooked_cat_claw",
+   "current": "Hooked Cat Claw",
+   "proposed": "Hooked Cat Claw"
+  },
+  {
+   "id": "grug_mobs:shearing_cat_claw",
+   "current": "Shearing Cat Claw",
+   "proposed": "Shearing Cat Claw"
+  },
+  {
+   "id": "grug_mobs:razor_cat_claw",
+   "current": "Razor Cat Claw",
+   "proposed": "Razor Cat Claw"
+  },
+  {
+   "id": "grug_mobs:siege_cat_claw",
+   "current": "Siege Cat Claw",
+   "proposed": "Siege Cat Claw"
+  },
+  {
+   "id": "grug_mobs:glass_cat_claw",
+   "current": "Glass Cat Claw",
+   "proposed": "Glass Cat Claw"
+  },
+  {
+   "id": "grug_mobs:fang",
+   "current": "Fang",
+   "proposed": "Fang"
+  },
+  {
+   "id": "grug_mobs:serrated_fang",
+   "current": "Serrated Fang",
+   "proposed": "Serrated Fang"
+  },
+  {
+   "id": "grug_mobs:warpack_fang",
+   "current": "Warpack Fang",
+   "proposed": "Warpack Fang"
+  },
+  {
+   "id": "grug_mobs:siegepack_fang",
+   "current": "Siegepack Fang",
+   "proposed": "Siegepack Fang"
+  },
+  {
+   "id": "grug_mobs:saltpack_fang",
+   "current": "Saltpack Fang",
+   "proposed": "Saltpack Fang"
+  },
+  {
+   "id": "grug_mobs:bear_claw",
+   "current": "Bear Claw",
+   "proposed": "Bear Claw"
+  },
+  {
+   "id": "grug_mobs:scarred_bear_claw",
+   "current": "Scarred Bear Claw",
+   "proposed": "Scarred Bear Claw"
+  },
+  {
+   "id": "grug_mobs:salt_bear_claw",
+   "current": "Salt Bear Claw",
+   "proposed": "Salt Bear Claw"
+  },
+  {
+   "id": "grug_mobs:blunt_croc_tooth",
+   "current": "Blunt Crocodile Tooth",
+   "proposed": "Blunt Crocodile Tooth"
+  },
+  {
+   "id": "grug_mobs:ridged_croc_tooth",
+   "current": "Ridged Crocodile Tooth",
+   "proposed": "Ridged Crocodile Tooth"
+  },
+  {
+   "id": "grug_mobs:thin_slime_gel",
+   "current": "Thin Slime Gel",
+   "proposed": "Thin Slime Gel"
+  },
+  {
+   "id": "grug_mobs:slime_gel",
+   "current": "Slime Gel",
+   "proposed": "Slime Gel"
+  },
+  {
+   "id": "grug_mobs:reed_pearl",
+   "current": "Reed Pearl",
+   "proposed": "Reed Pearl"
+  },
+  {
+   "id": "grug_mobs:clouded_reed_pearl",
+   "current": "Clouded Reed Pearl",
+   "proposed": "Clouded Reed Pearl"
+  },
+  {
+   "id": "grug_mobs:wisp_mote",
+   "current": "Wisp Mote",
+   "proposed": "Wisp Mote"
+  },
+  {
+   "id": "grug_mobs:bound_wisp_mote",
+   "current": "Bound Wisp Mote",
+   "proposed": "Bound Wisp Mote"
+  },
+  {
+   "id": "grug_mobs:restless_wisp_mote",
+   "current": "Restless Wisp Mote",
+   "proposed": "Flickering Wisp Mote",
+   "reason": "Signal word \"Restless\" (temperament) on a T4 item."
+  },
+  {
+   "id": "grug_mobs:mourning_resin",
+   "current": "Mourning Resin",
+   "proposed": "Gravewood Resin",
+   "reason": "Signal word \"Mourning\" on a T3 item; its only T3 source is the Gravewood Treant."
+  },
+  {
+   "id": "grug_mobs:bitter_resin",
+   "current": "Bitter Resin",
+   "proposed": "Bitter Resin"
+  },
+  {
+   "id": "grug_mobs:bone_chitin",
+   "current": "Bone Chitin",
+   "proposed": "Bone Chitin"
+  },
+  {
+   "id": "grug_mobs:layered_bone_chitin",
+   "current": "Layered Bone Chitin",
+   "proposed": "Layered Bone Chitin"
+  },
+  {
+   "id": "grug_mobs:salt_chitin",
+   "current": "Salt Chitin",
+   "proposed": "Salt Chitin"
+  },
+  {
+   "id": "grug_mobs:ape_hair",
+   "current": "Ape Hair",
+   "proposed": "Ape Hair"
+  },
+  {
+   "id": "grug_mobs:silver_ape_hair",
+   "current": "Silver Ape Hair",
+   "proposed": "Silver Ape Hair"
+  },
+  {
+   "id": "grug_mobs:mild_venom",
+   "current": "Mild Venom",
+   "proposed": "Mild Venom"
+  },
+  {
+   "id": "grug_mobs:bitter_venom",
+   "current": "Bitter Venom",
+   "proposed": "Bitter Venom"
+  },
+  {
+   "id": "grug_mobs:concentrated_venom",
+   "current": "Concentrated Venom",
+   "proposed": "Concentrated Venom"
+  },
+  {
+   "id": "grug_mobs:venom_sac",
+   "current": "Venom Sac",
+   "proposed": "Venom Sac"
+  },
+  {
+   "id": "grug_mobs:scorch_venom",
+   "current": "Scorch Venom",
+   "proposed": "Scorch Venom"
+  },
+  {
+   "id": "grug_mobs:glass_venom",
+   "current": "Glass Venom",
+   "proposed": "Glass Venom"
+  },
+  {
+   "id": "grug_mobs:coarse_spider_silk",
+   "current": "Coarse Spider Silk",
+   "proposed": "Coarse Spider Silk"
+  },
+  {
+   "id": "grug_mobs:spider_silk",
+   "current": "Spider Silk",
+   "proposed": "Spider Silk"
+  },
+  {
+   "id": "grug_mobs:glass_spider_silk",
+   "current": "Glass Spider Silk",
+   "proposed": "Glass Spider Silk"
+  },
+  {
+   "id": "grug_mobs:stolen_purse",
+   "current": "Stolen Purse",
+   "proposed": "Stolen Purse"
+  },
+  {
+   "id": "grug_mobs:clasped_purse",
+   "current": "Clasped Purse",
+   "proposed": "Clasped Purse"
+  },
+  {
+   "id": "grug_mobs:campaign_purse",
+   "current": "Campaign Purse",
+   "proposed": "Campaign Purse"
+  },
+  {
+   "id": "grug_mobs:etched_bone",
+   "current": "Etched Bone",
+   "proposed": "Etched Bone"
+  },
+  {
+   "id": "grug_mobs:marching_bone",
+   "current": "Marching Bone",
+   "proposed": "Marching Bone"
+  },
+  {
+   "id": "grug_mobs:siege_bone",
+   "current": "Siege Bone",
+   "proposed": "Siege Bone"
+  },
+  {
+   "id": "grug_mobs:unquiet_bone",
+   "current": "Unquiet Bone",
+   "proposed": "Unquiet Bone"
+  },
+  {
+   "id": "grug_mobs:hex_bottle_shard",
+   "current": "Hex Bottle Shard",
+   "proposed": "Hex Bottle Shard"
+  },
+  {
+   "id": "grug_mobs:last_hex_shard",
+   "current": "Last-Hex Shard",
+   "proposed": "Last-Hex Shard"
+  },
+  {
+   "id": "grug_mobs:barbed_feather",
+   "current": "Barbed Feather",
+   "proposed": "Barbed Feather"
+  },
+  {
+   "id": "grug_mobs:storm_feather",
+   "current": "Storm Feather",
+   "proposed": "Storm Feather"
+  },
+  {
+   "id": "grug_mobs:ash_feather",
+   "current": "Ash Feather",
+   "proposed": "Ash Feather"
+  },
+  {
+   "id": "grug_mobs:sharp_feather",
+   "current": "Sharp Feather",
+   "proposed": "Sharp Feather"
+  },
+  {
+   "id": "grug_mobs:chipped_core",
+   "current": "Chipped Core",
+   "proposed": "Chipped Core"
+  },
+  {
+   "id": "grug_mobs:veined_core",
+   "current": "Veined Core",
+   "proposed": "Veined Core"
+  },
+  {
+   "id": "grug_mobs:siege_core",
+   "current": "Siege Core",
+   "proposed": "Siege Core"
+  },
+  {
+   "id": "grug_mobs:stone_core",
+   "current": "Stone Core",
+   "proposed": "Stone Core"
+  },
+  {
+   "id": "mobs:meat_raw",
+   "current": "Raw Meat",
+   "proposed": "Raw Meat"
+  },
+  {
+   "id": "mobs:leather",
+   "current": "Leather",
+   "proposed": "Leather"
+  },
+  {
+   "id": "grug_mobs:light_leather",
+   "current": "Light Leather",
+   "proposed": "Light Leather"
+  },
+  {
+   "id": "grug_mobs:linen_scrap",
+   "current": "Linen Scrap",
+   "proposed": "Linen Scrap"
+  },
+  {
+   "id": "grug_mobs:linen_cloth",
+   "current": "Linen Cloth",
+   "proposed": "Linen Cloth"
+  },
+  {
+   "id": "grug_mobs:heavy_leather",
+   "current": "Heavy Leather",
+   "proposed": "Heavy Leather"
+  },
+  {
+   "id": "grug_mobs:heavy_cloth",
+   "current": "Heavy Cloth",
+   "proposed": "Heavy Cloth"
+  },
+  {
+   "id": "grug_mobs:scaled_hide",
+   "current": "Scaled Hide",
+   "proposed": "Scaled Hide"
+  },
+  {
+   "id": "grug_mobs:sleek_pelt",
+   "current": "Sleek Pelt",
+   "proposed": "Sleek Pelt"
+  },
+  {
+   "id": "grug_mobs:bone",
+   "current": "Bone",
+   "proposed": "Bone"
+  },
+  {
+   "id": "grug_mobs:feather",
+   "current": "Feather",
+   "proposed": "Feather"
+  },
+  {
+   "id": "grug_mobs:arrow",
+   "current": "Bundle of Arrows",
+   "proposed": "Bundle of Arrows"
+  },
+  {
+   "id": "default:stick",
+   "current": "Stick",
+   "proposed": "Stick"
+  },
+  {
+   "id": "default:apple",
+   "current": "Apple",
+   "proposed": "Apple"
+  },
+  {
+   "id": "grug_materials:quartz",
+   "current": "Quartz",
+   "proposed": "Quartz"
+  },
+  {
+   "id": "grug_mobs:layered_spider_web",
+   "current": "Layered Spider Web",
+   "proposed": "Layered Spider Web"
+  },
+  {
+   "id": "grug_mobs:salt_barbed_feather",
+   "current": "Salt-Barbed Feather",
+   "proposed": "Salt-Barbed Feather"
+  },
+  {
+   "id": "grug_mobs:venom_gland",
+   "current": "Venom Gland",
+   "proposed": "Venom Gland"
+  },
+  {
+   "id": "grug_mobs:croc_tooth",
+   "current": "Crocodile Tooth",
+   "proposed": "Crocodile Tooth"
+  },
+  {
+   "id": "grug_mobs:shiny_scale",
+   "current": "Shiny Scale",
+   "proposed": "Shiny Scale"
+  }
+ ]
+}
