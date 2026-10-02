@@ -407,7 +407,8 @@ do
 		end
 	end
 	_G.grug_zones = saved_zones
-	check(lone_ok and cases > 300, "every lone budgeted species stops at its species cap")
+	-- (A zone with a spawn recipe, Round 28 S1, has no palette and no cast.)
+	check(lone_ok and cases >= 280, "every lone budgeted species stops at its species cap")
 	-- The review's cases on the real world (full per-point eligibility).
 	local named = {
 		{"elandor_frostbarrow_shelf", "grug_mobs:stone_golem", "default:stone"},

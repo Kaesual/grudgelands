@@ -88,7 +88,8 @@ function math.round(x)
 	if x < 0 then return math.ceil(x - 0.5) end
 	return math.floor(x + 0.5)
 end
-_G.grug_core = {format_k = function(v) return tostring(v) end}
+_G.grug_core = {format_k = function(v) return tostring(v) end,
+	mob_level_at = function() return 10 end}
 _G.grug_zones = {mob_level_at = function() return 10 end,
 	guard_level_at = function() return 60 end}
 _G.grug_mobs = {}

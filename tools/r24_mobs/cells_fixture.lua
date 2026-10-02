@@ -79,7 +79,7 @@ _G.grug_xp = {mob_xp = function(level) return 25 + 5 * level end, LEVEL_OFFSET =
 _G.mobs = {spawn = function(_, def)
 	rows[#rows + 1] = grug_mobs.prepare_spawn_row(def)
 end}
--- Round 28: the palettes are data (spawn_areas.lua), loaded first.
+-- Round 28: the palettes are data (spawn_regions.lua), loaded first.
 dofile(repo .. "/tools/r28_b1/load_spawn_areas.lua")(repo)
 dofile(mobs_dir .. "spawn_policy.lua")
 dofile(mobs_dir .. "density.lua") -- Lane F: prepare_spawn_row's density hooks

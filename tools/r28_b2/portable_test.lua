@@ -195,6 +195,7 @@ local function new_world(modpath)
 		set_tag_carrier_text = function() end,
 		mono_time = function() return 100 end,
 		sync_tag_carrier_box = function() end,
+		mob_level_at = function() return w.field_level end,
 		get_player_faction = function(name) return w.factions and w.factions[name] end}
 	_G.grug_zones = {
 		mob_level_at = function() return w.field_level end,
@@ -373,8 +374,23 @@ for i = 1, 6 do
 end
 check(small.selectionbox.rotate == true, "rotated selection box stays rotated")
 local rat, large = R["grug_mobs:giant_rat"], R["grug_mobs:large_rat"]
-near(R["grug_mobs:rat_king_odo"].visual_size.x, rat.visual_size.x * 1.3, "rat king visual 1.3")
-near(R["grug_mobs:rat_king_odo"].collisionbox[5], rat.collisionbox[5] * 1.3, "rat king box top 1.3")
+-- A leader (Lane S1): the one leader size in place of the catalogue's 1.3,
+-- and twice the HP of its level and tier.
+check(grug_mobs.LEADER.size == 1.15 and grug_mobs.LEADER.hp == 2, "leader constants 1.15 x size, 2 x HP")
+near(R["grug_mobs:rat_king_odo"].visual_size.x, rat.visual_size.x * 1.15, "rat king visual: leader size")
+near(R["grug_mobs:rat_king_odo"].collisionbox[5], rat.collisionbox[5] * 1.15, "rat king box top: leader size")
+do
+	w.field_level = 10
+	local king = spawn(w, "grug_mobs:rat_king_odo")
+	grug_mobs.ensure_init(king)
+	local hp = grug_mobs.stats_for(king._grug_level, king._grug_tier)
+	check(king._grug_level == 10 and king.hp_max == 2 * hp, "leader HP x2 (" ..
+		tostring(king.hp_max) .. " vs " .. hp .. ")")
+	local plain = spawn(w, "grug_mobs:braindead_zombie")
+	grug_mobs.ensure_init(plain)
+	check(plain.hp_max == grug_mobs.stats_for(plain._grug_level, plain._grug_tier),
+		"a non-leader keeps the plain HP")
+end
 check(boar.visual_size.x == 1 and boar.collisionbox[5] == 0.86, "base boar unchanged")
 
 -- Elite tier on top of the size factor (A3's 1.4, boxes with it).

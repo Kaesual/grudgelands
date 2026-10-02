@@ -166,7 +166,7 @@ sfinv = {register_page = function(name, def) pages[name] = def end,
 	get_page = function() return "" end, set_page = function() end,
 	pages = pages, pages_unordered = {}}
 
--- grug_mobs seams (B1 spawn areas, B2 participant drop hook) as stubs over the
+-- grug_mobs seams (S1 spawn regions, B2 participant drop hook) as stubs over the
 -- fixture spawn files.
 local spawn_files = {}
 local function spawns(zone)
@@ -188,31 +188,47 @@ grug_mobs = {
 		local d = DISPOSITION[name:match("^grug_mobs:(.+)$") or name]
 		return d or nil
 	end,
-	spawn_areas = {
-		zone_has_areas = function(zone)
-			local data = spawns(zone)
-			return data ~= nil and #data.areas > 0
-		end,
-		get_area = function(zone, id)
-			for _, area in ipairs((spawns(zone) or {areas = {}}).areas) do
-				if area.id == id then return area end
+	-- The spawn_regions seams (Lane S1) over the fixture recipes, parsed by the
+	-- real spawn_regions_core.lua: an area is a kind or a camp.
+	spawn_regions = (function()
+		local regions_core = dofile("mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
+		local BANDS = {elandor_dawnmere_fields = {1, 10}, front_shattered_line = {41, 50}}
+		local parsed = {}
+		local function recipe(zone)
+			if parsed[zone] == nil then
+				local data = spawns(zone)
+				parsed[zone] = data and data.recipe and
+					regions_core.parse_recipe(zone, data.recipe, {band = BANDS[zone] or {1, 60}}) or false
 			end
-		end,
-		area_roles = function(zone, id)
-			local area = grug_mobs.spawn_areas.get_area(zone, id)
-			if not area then return nil end
+			return parsed[zone] or nil
+		end
+		local seams = {}
+		function seams.get_area(zone, id)
+			local r = recipe(zone)
+			return r and (r.kind_by_id[id] or r.camp_by_id[id]) or nil
+		end
+		function seams.area_roles(zone, id)
+			local unit = seams.get_area(zone, id)
+			if not unit then return nil end
 			local set = {}
-			for _, row in ipairs(area.species) do set[row.role] = true end
+			for role in pairs(unit.roles) do set[role] = true end
 			return set
-		end,
-		leader = function(role)
+		end
+		function seams.zone_area_ids(zone)
+			local r, out = recipe(zone), {}
+			for _, kind in ipairs(r and r.kinds or {}) do out[#out + 1] = kind.id end
+			for _, camp in ipairs(r and r.camps or {}) do out[#out + 1] = camp.id end
+			return out
+		end
+		function seams.leader(role)
 			for _, zone in ipairs({"elandor_dawnmere_fields", "front_shattered_line"}) do
-				for _, row in ipairs((spawns(zone) or {}).leaders or {}) do
+				for _, row in ipairs((recipe(zone) or {leaders = {}}).leaders) do
 					if row.role == role then return {zone = zone, level = row.level, respawn = row.respawn} end
 				end
 			end
-		end,
-	},
+		end
+		return seams
+	end)(),
 }
 for role in pairs(DISPOSITION) do
 	core.registered_entities["grug_mobs:" .. role] = {description = role:gsub("_", " "):gsub("(%a)([%w']*)",
