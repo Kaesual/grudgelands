@@ -14,8 +14,14 @@
 
 ## Waystone (Round 29)
 
-`grug_mapgen_waystone.png` (side) and `grug_mapgen_waystone_top.png` (top and
-bottom): original 16×16 RGBA pixel art (grey dressed stone with a blue rune)
-drawn from character grids by `tools/r29_w/render_textures.py` for
-Grudgelands, CC0-1.0. No third-party source images. First versions; the art
-lane may redraw them under the same names.
+Original art generated with OpenAI's built-in `image_gen.imagegen`; no
+third-party source images. Central texture crops are exported as 16×16 RGBA
+with nearest-neighbour sampling and palette reduction without dithering.
+The stone surfaces fill every pixel, with opaque alpha and no border, so they
+can repeat over the tall nodebox. The project dedicates any rights it holds
+in these originals to CC0-1.0.
+
+| File | Author | Source / design | Licence |
+|---|---|---|---|
+| `grug_mapgen_waystone.png` | GPT-6 Astra (Grudgelands) | Own work; weathered cool-grey stone with a faint carved blue rune | CC0-1.0 |
+| `grug_mapgen_waystone_top.png` | GPT-6 Astra (Grudgelands) | Own work; matching stone grain with a small blue inset glint, for top and bottom | CC0-1.0 |
