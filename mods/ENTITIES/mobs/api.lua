@@ -4405,11 +4405,12 @@ function mobs:add_mob(pos, def)
 
 	local ent = mob:get_luaentity()
 
+	-- GRUG PATCH (Round 29 P1): no smoke puff on a placed spawn. Every
+	-- surface mob comes through here since the Round 28 spawn regions, so
+	-- the puff popped up around a walking player (unrequested effect).
 	if not ent then
 --print("[mobs] entity not found " .. def.name)
 		return
-	else
-		effect(pos, 15, "mobs_tnt_smoke.png", 1, 2, 2, 15, 5)
 	end
 
 	-- use new texture if found
