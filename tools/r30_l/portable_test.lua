@@ -18,7 +18,8 @@
 --      is 2 wide at y 2 over every water column 1..10 out, in the zone's
 --      planks; every post row (10, 7, 4, 1 out) stands on the floor (no
 --      water left under a post), its side posts carry a fence at y 3; the
---      deck's land end reaches the beach's water line;
+--      deck's land end reaches the beach's water line; no pier column lies
+--      in the dragon channel;
 --   4. walking: from the pier head, stepping at most one node up or down
 --      between 4-neighbours over the deck and dry land (no swimming), the
 --      back of the beach (ground y 3) is reached.
@@ -186,11 +187,14 @@ for _, seed in ipairs(seeds) do
 		check(n_one == n_split and n_one > 0, "pier written, same in split boxes: " .. label)
 		local function node(x, y, z) return one[x .. "," .. y .. "," .. z] end
 		for a = 1, 10 do
-			for b = 0, 1 do
+			for b = -1, 2 do
 				local x, z = at(a, b)
-				if sea(x, z) then
+				if sea(x, z) and b >= 0 and b <= 1 then
 					check(node(x, 2, z) == wood[1], ("deck at %d out, %d across: %s"):format(a, b, label))
 				end
+				-- the dragon channel stays untouched (world_zones.md §7.4)
+				check(S.water_class_at(x, z) ~= "immutable_dragon_channel",
+					("pier column %d,%d outside the dragon channel: %s"):format(x, z, label))
 			end
 		end
 		for _, a in ipairs({10, 7, 4, 1}) do
