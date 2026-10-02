@@ -234,7 +234,7 @@ Death costs no XP (Round 18); dying never removes talent points.
   other respec number in the repo; `grug_money.take`
   (`mods/PLAYER/grug_money/init.lua:122`) is still the API it calls. The
   six bracket prices are WP44's income-derived `grug_classes.RESPEC_PRICES`
-  (15c, 35c, 75c, 1s90c, 7s, 12s; `economy.md` §4).
+  (15c, 35c, 75c, 2s, 6s, 12s; `economy.md` §4).
 - **There is no class change at all any more (ruling 20).** Not for players,
   and **not for admins**: "equipment would be a problem otherwise". The
   shipped `/class` registration (`grug_classes/selection.lua:594-595` — one
