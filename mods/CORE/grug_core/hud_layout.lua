@@ -147,6 +147,10 @@ layout.anchors = {
 	-- it while H >= 400 gui + 40 hud: 440 px at GUI scaling 1, 640 px at 1.5,
 	-- 840 px at 2 (HUD scaling 1). The old worst case (three quests of up to
 	-- four wrapped lines) was twelve lines.
+	-- The location line under the minimap (Round 28 M1, grug_map minimap.lua)
+	-- adds one line of about 20 GUI px plus a 4 HUD px gap below the bezel,
+	-- which is no lower than the box: ten tracked quests then clear it while
+	-- H >= 480 gui + 56 hud (536 px at GUI scaling 1, 776 px at 1.5).
 	quest_list = {
 		position = {x = 1, y = 0.5},
 		offset = {x = -20, y = 0},
@@ -360,6 +364,32 @@ function layout.feed_line_offset(slot, window)
 	return {x = layout.anchors.feed.offset.x,
 		y = layout.anchors.feed.offset.y - lift - line / 2 - (slot - 1) * line}
 end
+
+-- The zone entry banner (Round 28 M1, grug_map location.lua): the name of a
+-- zone, start town or capital city the player enters, top centre, at
+-- ZONE_BANNER_SIZE times the default font (HUD text sizes are fractional:
+-- the client multiplies the font size by size.x). The top centre already
+-- holds the target frame's one line (grug_mobs target_frame.lua: position
+-- {0.5, 0}, offset y TARGET_FRAME_Y, centred); the banner sits
+-- ZONE_BANNER_GAP HUD px below that line, clear of the level-up banner at
+-- 0.25 H and the flash line at 0.35 H.
+layout.TARGET_FRAME_Y = 40
+layout.ZONE_BANNER_SIZE = 2.5
+layout.ZONE_BANNER_GAP = 8
+
+-- The banner's centre as a HUD offset from the top centre. Its line and the
+-- target frame's are text, sized by GUI scaling, so both heights are
+-- converted to HUD units (as for the feed lines).
+function layout.zone_banner_offset(window)
+	local hud, gui = scales(window)
+	local target = math.ceil(layout.FEED_LINE * gui / hud)
+	local banner = math.ceil(layout.FEED_LINE * layout.ZONE_BANNER_SIZE * gui / hud)
+	return {x = 0, y = layout.TARGET_FRAME_Y + target / 2 + layout.ZONE_BANNER_GAP +
+		banner / 2}
+end
+
+layout.anchors.zone_banner = {position = {x = 0.5, y = 0},
+	offset = layout.zone_banner_offset(nil)}
 
 -- The minimap's box (grug_map, Round 27 ruling 6), in real screen pixels:
 -- the builtin minimap's square of MINIMAP_PERCENT of the window height, its

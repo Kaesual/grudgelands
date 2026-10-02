@@ -50,6 +50,9 @@ local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_hom
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
 local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
+-- The location line (Round 28 M1, location.lua): centred under the bezel,
+-- LOCATION_GAP HUD px below it, in the feed's calm notice colour.
+local LOCATION_GAP, LOCATION_COLOR = 4, 0xf0e6c8
 
 local base, view -- set by M.install
 local players = {}
@@ -137,6 +140,24 @@ local function exact(px, texture_px, frame)
 	return (px + 0.25) / (texture_px * frame.hud)
 end
 
+-- The location line: a text element placed by its top centre at screen
+-- pixel x/y; "" hides it. Like show(), only changes are sent.
+local function show_text(player, frame, element, text, x, y)
+	local changes = 0
+	if text ~= "" then
+		x, y = math.floor(x + 0.5), math.floor(y + 0.5)
+		if element.x ~= x or element.y ~= y then
+			player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
+			element.x, element.y, changes = x, y, changes + sent(8)
+		end
+	end
+	if element.text ~= text then
+		player:hud_change(element.id, "text", text)
+		element.text, changes = text, changes + sent(2 + #text)
+	end
+	return changes
+end
+
 local function remove(player, state)
 	if not state.hud then return end
 	for _, element in ipairs(state.hud.all) do player:hud_remove(element.id) end
@@ -154,7 +175,10 @@ local function create(player, state)
 	hud.player = {id = player:hud_add({type = "compass", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 0}, size = {x = 1, y = 1}, direction = 0,
 		text = "grug_map_heading_gold_00.png", z_index = Z.player}), x = 0, y = 0, size = 0}
-	hud.all = {hud.background, hud.map, hud.bezel, hud.player}
+	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
+		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
+		z_index = Z.bezel}), text = "", x = 0, y = 0}
+	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
 	end
@@ -264,6 +288,10 @@ local function update(player, state, slow)
 	changes = changes + show(player, frame, hud.bezel, BEZEL,
 		frame.center_x - frame.diameter / 2, frame.center_y - frame.diameter / 2,
 		exact(frame.diameter, BEZEL_PX, frame))
+	local location = grug_map.location
+	changes = changes + show_text(player, frame, hud.location,
+		location and location.text_of(player) or "", frame.center_x,
+		frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
 
 	local hud_px = frame.hud
 	local limit = frame.hole - ICON / 2 * hud_px
