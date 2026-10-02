@@ -11,7 +11,7 @@
      "rewards": {"weight": 4, "copper": 10}},
     {"id": "q0_base", "line": "hunt", "giver": "r20_anchor_014_host", "turnin": "r20_anchor_014_host",
      "min_level": 16, "level": 18, "title": "Old Boars", "text": "Boars of the vale.",
-     "objectives": [{"type": "kill", "mobs": ["grug_mobs:boar"], "count": 4}],
-     "rewards": {"xp": 300, "copper": 10}}
+     "objectives": [{"type": "kill", "roles": ["boar"], "count": 4}],
+     "rewards": {"weight": 4, "copper": 10}}
   ]
 }

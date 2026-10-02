@@ -20,7 +20,7 @@ JSON path. Exit code 0 = no errors, 1 = errors (or warnings with --strict),
 
 Usage:
   validate.py [--design DIR] [--game] [--existing FILE] [--atlas FILE_OR_DIR]
-              [--zone ZONE ...] [--legacy] [--strict] [--quiet]
+              [--zone ZONE ...] [--strict] [--quiet]
   validate.py --self-test
 """
 import argparse
@@ -56,12 +56,13 @@ QUEST_KEYS = {"id", "line", "giver", "turnin", "min_level", "level", "requires",
               "optional", "climax", "group", "notes"}
 QUEST_REQUIRED = ("id", "line", "giver", "turnin", "min_level", "level", "title", "text",
                   "objectives", "rewards")
-LEGACY_QUEST_KEYS = ("xp", "faction", "race")
-LEGACY_OBJECTIVE_KEYS = ("mobs", "mob", "zone", "role")
-# Today's contested-zone quests ask for enemy faction guards (the level-40
-# guard kills). B4's mechanical split keeps them; only legacy kill objectives
-# (`mobs`) may name these two, a new design names mobs only.
-LEGACY_GUARD_TARGETS = ("guard_accord", "guard_throng")
+# The fields of an objective, its rewards and a quest drop. A quest, an
+# objective, its rewards or a quest drop with any other field is an error
+# (E-unknown-key), as in the game's loader: a field nothing reads must not
+# sit in a file looking as if it did something.
+OBJECTIVE_KEYS = {"type", "count", "roles", "area", "item", "group", "npc"}
+REWARD_KEYS = {"weight", "copper", "items"}
+DROP_KEYS = {"item", "chance", "roles", "area"}
 DISPOSITIONS = ("neutral", "aggressive", "critter")
 FRONT_LINE = "front"
 FAMILIES = ("sword", "dagger", "greataxe", "metal_armor", "shield", "leather_armor", "cloth_armor",
@@ -153,11 +154,10 @@ def sentences(text):
 
 
 class Validator:
-    def __init__(self, design, existing, atlas=None, legacy=False, zones=None, mob_facts=None):
+    def __init__(self, design, existing, atlas=None, zones=None, mob_facts=None):
         self.d = design
         self.ex = existing or {}
         self.atlas = atlas
-        self.legacy = legacy
         self.only_zones = set(zones or [])
         self.f = Findings()
         self.subtypes = {}
@@ -190,10 +190,13 @@ class Validator:
     def W(self, code, where, path, msg):
         self.f.add("W", code, where, path, msg)
 
-    def unknown_keys(self, row, allowed, where, path):
+    def unknown_keys(self, row, allowed, where, path, error=False):
         for key in row:
             if key not in allowed:
-                self.W("W-unknown-key", where, path, "unknown field %r (typo?)" % key)
+                if error:
+                    self.E("E-unknown-key", where, path, "unknown field %r" % key)
+                else:
+                    self.W("W-unknown-key", where, path, "unknown field %r (typo?)" % key)
 
     def required(self, row, keys, where, path):
         ok = True
@@ -774,13 +777,8 @@ class Validator:
             self.quest(host, q, file, path, front_lines, all_areas)
 
     def quest(self, zone, q, file, path, giver_lines, all_areas):
-        allowed = set(QUEST_KEYS) | (set(LEGACY_QUEST_KEYS) if self.legacy else set())
-        self.unknown_keys(q, allowed, file, path)
-        for key in LEGACY_QUEST_KEYS:
-            if key in q and not self.legacy:
-                self.E("E-legacy", file, path, "%r is legacy-only (B4's split of today's quests)" % key)
-        required = QUEST_REQUIRED if not self.legacy else tuple(k for k in QUEST_REQUIRED if k != "rewards")
-        self.required(q, required, file, path)
+        self.unknown_keys(q, QUEST_KEYS, file, path, error=True)
+        self.required(q, QUEST_REQUIRED, file, path)
         qid = q.get("id")
         if not isinstance(qid, str) or not C.SNAKE.match(qid):
             self.E("E-id", file, path, "quest id %r must be snake_case" % qid)
@@ -827,6 +825,7 @@ class Validator:
             if not isinstance(obj, dict):
                 self.E("E-objective", file, opath, "objective must be an object")
                 continue
+            self.unknown_keys(obj, OBJECTIVE_KEYS, file, opath, error=True)
             kind = obj.get("type")
             if kind == "talk":
                 if len(objectives) != 1:
@@ -857,9 +856,6 @@ class Validator:
                     elif not row.get("objective"):
                         self.W("W-group", file, opath, "group %r is not a recommended item kind "
                                "(see items/existing.md, Item groups)" % group)
-                for key in LEGACY_OBJECTIVE_KEYS:
-                    if key in obj:
-                        self.W("W-unknown-key", file, opath, "unknown field %r on an item objective" % key)
                 if "roles" in obj or "area" in obj:
                     self.item_source(zone, obj, level, file, opath, all_areas)
             else:
@@ -871,6 +867,7 @@ class Validator:
             if not isinstance(drop, dict):
                 self.E("E-type", file, dpath, "quest drop must be an object")
                 continue
+            self.unknown_keys(drop, DROP_KEYS, file, dpath, error=True)
             item = drop.get("item")
             dropped.add(item)
             if (self.catalog_items.get(item) or {}).get("kind") != "quest":
@@ -900,12 +897,11 @@ class Validator:
             if not isinstance(rewards, dict):
                 self.E("E-rewards", file, path + ".rewards", "rewards must be an object")
             else:
-                if "xp" in rewards and not self.legacy:
-                    self.E("E-legacy", file, path + ".rewards", "fixed 'xp' is legacy-only; use 'weight'")
+                self.unknown_keys(rewards, REWARD_KEYS, file, path + ".rewards", error=True)
                 if "weight" in rewards:
                     if not is_num(rewards["weight"]) or rewards["weight"] < 0:
                         self.E("E-rewards", file, path + ".rewards", "weight must be a number >= 0 (KE)")
-                elif not self.legacy:
+                else:
                     self.E("E-required", file, path + ".rewards", "rewards need a 'weight' (KE at level)")
                 if "copper" in rewards and not is_int(rewards["copper"], 0):
                     self.E("E-rewards", file, path + ".rewards", "copper must be an integer >= 0")
@@ -1054,7 +1050,7 @@ class Validator:
                    "±%d (%d-%d)" % (role, levels[0], levels[1], level, LEVEL_SLACK,
                                     level - LEVEL_SLACK, level + LEVEL_SLACK))
 
-    def target_role_ok(self, role, file, path, what="kill target", legacy_guard=False):
+    def target_role_ok(self, role, file, path, what="kill target"):
         if not self.role_def(role)[0]:
             self.E("E-unknown-role", file, path, "role %r is neither a sub-type nor an existing mob" % role)
             return False
@@ -1062,8 +1058,6 @@ class Validator:
         if disposition == "critter":
             self.E("E-critter-target", file, path, "critter %s is never a %s (Ruling 29)" % (role, what))
             return False
-        if disposition is None and legacy_guard and role in LEGACY_GUARD_TARGETS:
-            return True
         if disposition is None:
             self.E("E-not-a-mob", file, path, "%s is an NPC or guard, not a %s" % (role, what))
             return False
@@ -1071,26 +1065,17 @@ class Validator:
 
     def kill_roles(self, obj, file, path):
         roles = obj.get("roles")
-        if self.legacy and roles is None and (obj.get("mobs") or obj.get("mob")):
-            # B4's mechanical split keeps today's entity names.
-            mobs = obj.get("mobs") or [obj.get("mob")]
-            return [m.split(":", 1)[1] if isinstance(m, str) and m.startswith("grug_mobs:") else m
-                    for m in mobs]
         if not isinstance(roles, list) or not roles:
             self.E("E-objective", file, path, "kill objective needs a non-empty 'roles' list")
             return []
         return roles
 
     def kill_objective(self, zone, q, obj, level, file, path, all_areas):
-        for key in LEGACY_OBJECTIVE_KEYS:
-            if key in obj and not self.legacy:
-                self.E("E-legacy", file, path, "%r on a kill objective is legacy-only; use 'roles'/'area'" % key)
         roles = self.kill_roles(obj, file, path)
         area_ref = obj.get("area")
         area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if "area" in obj else None
-        legacy_guard = self.legacy and obj.get("roles") is None
         for role in roles:
-            if self.target_role_ok(role, file, path, legacy_guard=legacy_guard):
+            if self.target_role_ok(role, file, path):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
         self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
@@ -1117,33 +1102,25 @@ class Validator:
         """A kill objective without an area in a zone with a spawn recipe,
         none of whose targets the recipe spawns (a kind or a camp of the
         zone) and none of which is a leader (of any zone: a leader stands at
-        its own spot, so a front file may name another zone's leader; with a
-        `zone` filter only the filter zone's leaders): only
+        its own spot, so a front file may name another zone's leader): only
         the recipe's roles appear on that zone's surface. A warning (the
         targets may live in another zone on purpose); the game's quest loader
         logs the same (grug_quests/validate.lua)."""
         if "area" in obj or not roles:
             return
-        kill_zone = obj.get("zone") if isinstance(obj.get("zone"), str) else zone
-        areas = all_areas.get(kill_zone) or {}
+        areas = all_areas.get(zone) or {}
         if not areas:
             return
         spawned = set()
         for unit in areas.values():
             spawned |= set(unit.get("roles") or ())
-        bare = {r.split(":", 1)[1] if r.startswith("grug_mobs:") else r for r in roles if isinstance(r, str)}
-        # A zone-filtered (legacy) objective counts only kills in that zone.
-        filtered = isinstance(obj.get("zone"), str)
+        bare = {r for r in roles if isinstance(r, str)}
         for r in bare:
-            found = self.d.find_leader(r)
-            if found and (not filtered or found[0] == kill_zone):
+            if self.d.find_leader(r):
                 spawned.add(r)
-        # Guards stand at their guard posts, never in a recipe's regions.
-        if bare & set(LEGACY_GUARD_TARGETS):
-            return
         if not bare & spawned:
             self.W("W-recipe-target", file, path, "no kill target (%s) is spawned by %s's spawn recipe"
-                   % (", ".join(sorted(bare)), kill_zone))
+                   % (", ".join(sorted(bare)), zone))
 
     # -- driver ----------------------------------------------------------
     def run(self):
@@ -1301,7 +1278,6 @@ def parse(argv):
                     help="read the zone files from the game (grug_mobs and grug_quests data/zones) "
                          "instead of the design's zones/; the catalogue stays the design's")
     ap.add_argument("--zone", action="append", help="check only these zones' files (all are still loaded)")
-    ap.add_argument("--legacy", action="store_true", help="allow legacy-only fields (B4's mechanical split)")
     ap.add_argument("--strict", action="store_true", help="warnings fail too")
     ap.add_argument("--quiet", action="store_true", help="print errors only")
     ap.add_argument("--self-test", action="store_true")
@@ -1316,12 +1292,12 @@ def load_mob_facts(path):
     return {row["entity"]: row for row in (data.get("mobs") or []) if isinstance(row, dict) and row.get("entity")}
 
 
-def validate(design_dir, existing_path, atlas_path=None, legacy=False, zones=None, mobs_path=C.DEFAULT_MOBS,
+def validate(design_dir, existing_path, atlas_path=None, zones=None, mobs_path=C.DEFAULT_MOBS,
              zone_dirs=None):
     design = C.Design(design_dir, zone_dirs)
     existing = C.load_existing(existing_path)
     atlas = C.Atlas(atlas_path) if atlas_path else None
-    return Validator(design, existing, atlas, legacy, zones, load_mob_facts(mobs_path)).run()
+    return Validator(design, existing, atlas, zones, load_mob_facts(mobs_path)).run()
 
 
 def main(argv):
@@ -1332,7 +1308,7 @@ def main(argv):
         print("validate: design directory %s not found" % args.design, file=sys.stderr)
         return 2
     try:
-        findings = validate(args.design, args.existing, args.atlas, args.legacy, args.zone, args.mobs,
+        findings = validate(args.design, args.existing, args.atlas, args.zone, args.mobs,
                             C.GAME_ZONE_DIRS if args.game else None)
     except C.LoadError as err:
         print("validate: %s" % err, file=sys.stderr)
@@ -1428,8 +1404,17 @@ def _mutations():
     def unknown_group(d):
         quest(d, "sample_tools_02")["objectives"][0]["group"] = "logs"
 
-    def legacy_xp(d):
+    def reward_xp(d):
         quest(d, "sample_tools_01")["rewards"]["xp"] = 50
+
+    def quest_faction(d):
+        quest(d, "sample_tools_01")["faction"] = "accord"
+
+    def kill_mobs(d):
+        quest(d, "sample_hunt_01")["objectives"][0]["mobs"] = ["grug_mobs:small_boar"]
+
+    def kill_zone_filter(d):
+        quest(d, "sample_hunt_01")["objectives"][0]["zone"] = "elandor_dawnmere_fields"
 
     def bad_requires(d):
         quest(d, "sample_hunt_02")["requires"] = ["sample_missing"]
@@ -1714,7 +1699,10 @@ def _mutations():
         ("curated-out item", Q, curated_item, "E-curated"),
         ("unknown NPC", Q, unknown_npc, "E-unknown-npc"),
         ("unknown item group", Q, unknown_group, "E-unknown-group"),
-        ("legacy xp field", Q, legacy_xp, "E-legacy"),
+        ("fixed reward xp", Q, reward_xp, "E-unknown-key"),
+        ("a faction gate on a quest", Q, quest_faction, "E-unknown-key"),
+        ("entity names on a kill objective", Q, kill_mobs, "E-unknown-key"),
+        ("a zone filter on a kill objective", Q, kill_zone_filter, "E-unknown-key"),
         ("unknown prerequisite", Q, bad_requires, "E-unknown-requires"),
         ("prerequisite cycle", Q, cycle, "E-cycle"),
         ("talk with another objective", Q, talk_not_only, "E-talk-only"),
@@ -1820,7 +1808,7 @@ def _simple_quest(qid, giver, line, level):
 
 
 def _scenarios():
-    """(name, setup(target_dir), legacy, expectation). Expectation: a code
+    """(name, setup(target_dir), expectation). Expectation: a code
     that must appear, None for "no error", or "!CODE" for "no error and no
     CODE"."""
     def front_file(target, line="front", giver=COOK, host="elandor_dawnmere_fields"):
@@ -1931,17 +1919,6 @@ def _scenarios():
                 q["objectives"].append({"type": "kill", "roles": ["confused_bandit_chief"], "count": 1})
         _save(target / Q_FILE, data)
 
-    def kill_leader_elsewhere_filtered(target):
-        """The same kill as a legacy objective with Dawnmere's zone filter:
-        only kills in Dawnmere count, so Goldmead's chief is not met there."""
-        leader_elsewhere(target)
-        data = _load(target / Q_FILE)
-        for q in data["quests"]:
-            if q["id"] == "sample_hunt_04":
-                q["objectives"].append({"type": "kill", "mobs": ["grug_mobs:confused_bandit_chief"],
-                                        "zone": "elandor_dawnmere_fields", "count": 1})
-        _save(target / Q_FILE, data)
-
     def goldmead_camps(camps, leaders=None, change=None):
         """Goldmead's one-belt recipe with camps (its atlas: one bandit camp
         POI, one guard post)."""
@@ -2010,82 +1987,66 @@ def _scenarios():
         data["quests"][0]["requires"] = ["sample_front_01"]
         _save(path, data)
 
-    def legacy_kill(target):
+    def guard_kill(target):
         data = _load(target / Q_FILE)
         for q in data["quests"]:
             if q["id"] == "sample_hunt_01":
-                q["objectives"] = [{"type": "kill", "mobs": ["grug_mobs:small_boar"], "zone": False, "count": 3}]
+                q["objectives"] = [{"type": "kill", "roles": ["guard_throng"], "count": 3}]
         _save(target / Q_FILE, data)
 
-    def guard_kill(field):
-        def setup(target):
-            data = _load(target / Q_FILE)
-            for q in data["quests"]:
-                if q["id"] == "sample_hunt_01":
-                    q["objectives"] = [{"type": "kill", field: ["grug_mobs:guard_throng" if field == "mobs"
-                                                                else "guard_throng"], "count": 3}]
-            _save(target / Q_FILE, data)
-        return setup
-
     return [
-        ("front file on a declared front line", front_ok, False, "!W-front-host-missing"),
-        ("front file quest on another line", front_wrong_line, False, "E-front-line"),
-        ("host quests.json uses line front", front_in_host, False, "E-front-line"),
-        ("front giver without a front line", front_undeclared, False, "E-front-line"),
-        ("front file before its host quests.json", front_host_missing, False, "W-front-host-missing"),
+        ("front file on a declared front line", front_ok, "!W-front-host-missing"),
+        ("front file quest on another line", front_wrong_line, "E-front-line"),
+        ("host quests.json uses line front", front_in_host, "E-front-line"),
+        ("front giver without a front line", front_undeclared, "E-front-line"),
+        ("front file before its host quests.json", front_host_missing, "W-front-host-missing"),
         ("outpost giver without a front line", contested("elandor_ashenward_march", "r20_anchor_031_host",
-                                                         ["watch"]), False, "E-front-reserve"),
+                                                         ["watch"]), "E-front-reserve"),
         ("single-NPC contested zone is exempt", contested("elandor_glassroot_wilds", "r20_anchor_036_host",
-                                                          ["watch", "roots"]), False, "!E-front-reserve"),
+                                                          ["watch", "roots"]), "!E-front-reserve"),
         ("capital without a front giver", contested("elandor_highcourt", "r20_human_capital_envoy", ["civic"],
-                                                    "capital", 22), False, "E-front-reserve"),
+                                                    "capital", 22), "E-front-reserve"),
         ("capital with a front giver", contested("elandor_highcourt", "r20_human_capital_envoy",
-                                                 ["civic", "front"], "capital", 22), False, "!E-front-reserve"),
+                                                 ["civic", "front"], "capital", 22), "!E-front-reserve"),
         ("both outpost givers declared with front", outposts([("outpost_1", "r20_anchor_031_host"),
                                                               ("outpost_2", "r20_anchor_032_host")]),
-         False, "!E-front-reserve"),
-        ("an outpost quest NPC not declared", outposts([("outpost_1", "r20_anchor_031_host")]), False,
+         "!E-front-reserve"),
+        ("an outpost quest NPC not declared", outposts([("outpost_1", "r20_anchor_031_host")]),
          "E-front-reserve"),
-        ("new giver at a free quest socket", new_giver("lore_shrine/lore_shrine_quest"), False, None),
-        ("new giver at an occupied socket", new_giver("chapel_quest"), False, "E-new-giver"),
+        ("new giver at a free quest socket", new_giver("lore_shrine/lore_shrine_quest"), None),
+        ("new giver at an occupied socket", new_giver("chapel_quest"), "E-new-giver"),
         ("new giver reusing a registered id", new_giver("lore_shrine/lore_shrine_quest",
-                                                        "r20_human_capital_envoy"), False, "E-new-giver"),
-        ("leader of another zone as a drop source", leader_elsewhere, False, "!W-role-not-in-zone"),
-        ("zone-added leader placed in another zone", lambda t: leader_elsewhere(t, False), False,
+                                                        "r20_human_capital_envoy"), "E-new-giver"),
+        ("leader of another zone as a drop source", leader_elsewhere, "!W-role-not-in-zone"),
+        ("zone-added leader placed in another zone", lambda t: leader_elsewhere(t, False),
          "E-zone-leader"),
-        ("leader role in two zones' recipes", leader_in_two_zones, False, "E-duplicate"),
-        ("kill of another zone's leader without an area", kill_leader_elsewhere, False, "!W-recipe-target"),
-        ("zone-filtered kill of another zone's leader", kill_leader_elsewhere_filtered, True, "W-recipe-target"),
-        ("a palette-only spawns file (shipped form)", palette_only, False, None),
-        ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), False, None),
+        ("leader role in two zones' recipes", leader_in_two_zones, "E-duplicate"),
+        ("kill of another zone's leader without an area", kill_leader_elsewhere, "!W-recipe-target"),
+        ("a palette-only spawns file (shipped form)", palette_only, None),
+        ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(
-            site={"poi": "bandit", "name": "Goldmead Bandit Camp"})]), False, None),
-        ("camp on a POI without a belt", goldmead_camps([poi_camp(belt=None)]), False, "E-recipe-ref"),
+            site={"poi": "bandit", "name": "Goldmead Bandit Camp"})]), None),
+        ("camp on a POI without a belt", goldmead_camps([poi_camp(belt=None)]), "E-recipe-ref"),
         ("camp on a POI whose roster never meets its stated belt", goldmead_camps([poi_camp(
-            roster=[{"role": "confused_bandit", "weight": 1}])]), False, "E-recipe-levels"),
+            roster=[{"role": "confused_bandit", "weight": 1}])]), "E-recipe-levels"),
         ("camp on a POI name the zone lacks", goldmead_camps([poi_camp(
-            site={"poi": "bandit", "name": "Nowhere Camp"})]), False, "E-recipe-poi"),
-        ("camp on the zone's guard post", goldmead_camps([poi_camp(site={"poi": "guard post"})]), False,
+            site={"poi": "bandit", "name": "Nowhere Camp"})]), "E-recipe-poi"),
+        ("camp on the zone's guard post", goldmead_camps([poi_camp(site={"poi": "guard post"})]),
          "E-recipe-poi"),
-        ("apart on a camp on a POI", goldmead_camps([poi_camp(apart=8)]), False, "E-recipe-key"),
-        ("two camps on one POI", goldmead_camps([poi_camp(), poi_camp(id="more_bandits")]), False,
+        ("apart on a camp on a POI", goldmead_camps([poi_camp(apart=8)]), "E-recipe-key"),
+        ("two camps on one POI", goldmead_camps([poi_camp(), poi_camp(id="more_bandits")]),
          "E-recipe-poi"),
         ("generated camp without a belt", goldmead_camps([poi_camp(site="generate", apart=8, belt=None)]),
-         False, "E-recipe-ref"),
-        ("one-belt recipe without from and to", goldmead_camps([], change=no_from_to), False, None),
-        ("to without from", goldmead_camps([], change=no_from), False, "E-recipe"),
-        ("elite leader below level 31", zone_cat(elite_chief), False, "E-leader-tier"),
-        ("zone catalogue adds a non-leader role", zone_cat(non_leader_role), False, "E-zone-catalog"),
-        ("zone catalogue adds a non-quest item", zone_cat(non_quest_item), False, "E-zone-catalog"),
-        ("zone catalogue role collides with the global one", zone_cat(duplicate_role), False, "E-duplicate"),
-        ("zone catalogue item collides with the global one", zone_cat(duplicate_item), False, "E-duplicate"),
-        ("prerequisite cycle in a front file", front_cycle, False, "E-cycle"),
-        ("legacy kill objective with mobs", legacy_kill, True, None),
-        ("legacy kill objective without --legacy", legacy_kill, False, "E-legacy"),
-        ("legacy enemy guard kill (split of today's quests)", guard_kill("mobs"), True, "!E-not-a-mob"),
-        ("legacy guard kill in a recipe zone: guards are no recipe spawn", guard_kill("mobs"), True,
-         "!W-recipe-target"),
-        ("guard as a designed kill role", guard_kill("roles"), True, "E-not-a-mob"),
+         "E-recipe-ref"),
+        ("one-belt recipe without from and to", goldmead_camps([], change=no_from_to), None),
+        ("to without from", goldmead_camps([], change=no_from), "E-recipe"),
+        ("elite leader below level 31", zone_cat(elite_chief), "E-leader-tier"),
+        ("zone catalogue adds a non-leader role", zone_cat(non_leader_role), "E-zone-catalog"),
+        ("zone catalogue adds a non-quest item", zone_cat(non_quest_item), "E-zone-catalog"),
+        ("zone catalogue role collides with the global one", zone_cat(duplicate_role), "E-duplicate"),
+        ("zone catalogue item collides with the global one", zone_cat(duplicate_item), "E-duplicate"),
+        ("prerequisite cycle in a front file", front_cycle, "E-cycle"),
+        ("guard as a designed kill role", guard_kill, "E-not-a-mob"),
     ]
 
 
@@ -2128,9 +2089,9 @@ def self_test():
     found, errors = scan_placeholders("{dir_of:highcourt:elandor_lorindor/woods} and {name:chief}, {x}")
     if [f[0] for f in found] != ["dir_of", "name"] or len(errors) != 1:
         failures.append("placeholder scan: %s %s" % (found, errors))
-    cases = [(name, rel, mutate, False, code) for name, rel, mutate, code in _mutations()]
-    cases += [(name, None, setup, legacy, code) for name, setup, legacy, code in _scenarios()]
-    for name, rel, change, legacy, code in cases:
+    cases = [(name, rel, mutate, code) for name, rel, mutate, code in _mutations()]
+    cases += [(name, None, setup, code) for name, setup, code in _scenarios()]
+    for name, rel, change, code in cases:
         tmp = Path(tempfile.mkdtemp(prefix="r28_validate_"))
         try:
             target = tmp / "design"
@@ -2141,7 +2102,7 @@ def self_test():
                 data = copy.deepcopy(_load(target / rel))
                 change(data)
                 _save(target / rel, data)
-            _expect(name, validate(target, existing, atlas, legacy, mobs_path=mobs), code, failures)
+            _expect(name, validate(target, existing, atlas, mobs_path=mobs), code, failures)
         finally:
             shutil.rmtree(tmp)
     if failures:

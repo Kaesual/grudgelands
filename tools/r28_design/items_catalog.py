@@ -277,7 +277,7 @@ def build(dump):
         "entities": entities,
         "quest_npcs": dict(sorted((dump.get("quest_npcs") or {}).items())),
         "legacy_quests": {qid: {"npc": q.get("npc"), "turnin": q.get("turnin_npc"),
-                                "min_level": q.get("min_level"), "xp": q.get("xp"),
+                                "min_level": q.get("min_level"),
                                 "title": q.get("title")}
                           for qid, q in sorted((dump.get("quests") or {}).items())},
     }

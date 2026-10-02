@@ -65,7 +65,7 @@ quest files and the front bounty baseline
   count for each relevant active quest. XP splitting itself stays unchanged.
 - Do not use `xp > 0` as the sole participation test: gray-level XP suppression
   must not accidentally hide the shared eligible participant event from quests.
-  Quest min-level/prerequisite/faction and target rules remain independent.
+  Quest min-level/prerequisite and target rules remain independent.
 - Abandoning a quest removes its counters, not ordinary player items. It may be
   accepted again if prerequisites still hold. Completed one-time quests remain
   completed and do not consume active-log slots; repeatables follow
@@ -81,9 +81,10 @@ quest files and the front bounty baseline
 - Repeated packets and repeated dialogue clicks must not duplicate rewards.
   Persist active/completed state and HUD preference across reconnect/restart.
 - Dependent quests remain hidden until every prerequisite has been turned in.
-  Acceptance or completed objectives alone do not reveal successors. Once race,
-  faction and prerequisite gates pass, a level-locked quest is visible with its
-  required level. Dialog, floating symbols and atlas use the same visibility.
+  Acceptance or completed objectives alone do not reveal successors. Once its
+  prerequisites pass, a level-locked quest is visible with its required level.
+  Quests carry no race or faction gate; where the giver stands decides who
+  reaches it. Dialog, floating symbols and atlas use the same visibility.
   NPCs with multiple quests offer a simple list; independent tasks can form
   bundles without a separate bundle engine.
 - Explain optional crafting through a side branch; do not force every player
@@ -139,12 +140,12 @@ levels after it, in the objective's own colour: "Defeat Small Boar × 8
 (level 1–4)", "Defeat Small Boar: 0/8 (level 1–4)", "(level 10)" for one
 level. Per role, first match: a leader's fixed level; in the objective's
 area that role's levels there (not the whole kind's); the role's levels in
-the kinds and camps of the kill zone's recipe (the zone filter's zone, else
-the quest's); its catalogue levels within the quest level ±3; a base mob
-(no catalogue row) in a zone without a recipe: the zone's level band within
-the quest level ±3 (a base mob adds nothing in a recipe zone). The
-objective shows the union over its roles. An item objective shows the range
-of its quest drops' roles and of its named source (below); plain gathering,
+the kinds and camps of the quest zone's recipe; its catalogue levels within
+the quest level ±3; a base mob (no catalogue row) in a zone without a recipe:
+the zone's level band within the quest level ±3 (a base mob adds nothing in a
+recipe zone). The objective shows the union over its roles. An item
+objective shows the range of its quest drops' roles and of its named source
+(below); plain gathering,
 crafting and travel objectives show none. The ranges are computed once at
 load. The HUD tracker keeps its compact line without a range: added, it
 would cut 22 of the 204 shipped tracker lines at the 38-character width
@@ -211,7 +212,12 @@ Quest content is data, one file per zone, read at load by
   and lines, and its quests (format: design frame §4.7: `giver`, `turnin`,
   `min_level`, reward `level`, `requires` across zones, `objectives`,
   `quest_drops`, `repeatable`, `rewards` with `weight`, optional `copper`
-  and `items`).
+  and `items`; the design notes `lesson`, `duration_min`, `optional`,
+  `climax`, `group` and `notes` are allowed and not read). Any other field
+  of a quest, an objective, its rewards or a quest drop stops the load
+  (`E-unknown-key`): fixed reward `xp`, `faction`/`race` gates and kill
+  objectives by entity names (`mobs`) or zone filter (`zone`) were retired
+  in Round 30.
 - `<zone_id>.front.quests.json`: front quests given by that zone's givers on
   the line `front`, which the zone's own file declares for that giver; the
   zone's own quests never use `front`.
