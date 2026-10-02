@@ -625,6 +625,15 @@ do
 	end}, {__index = loader_world})
 	_, warnings = V.world(files, elsewhere)
 	eq(about(warnings, "fx_hunt_01"), 0, "another zone's leader counts as spawned")
+	-- A legacy zone filter counts only kills in its zone: another zone's
+	-- leader is not met there.
+	local filtered = deep_copy(files)
+	quest_of(filtered, "fx_legacy").objectives[1] = {type = "kill", count = 1,
+		mobs = {"grug_mobs:confused_bandit_chief"}, zone = "elandor_dawnmere_fields"}
+	_, warnings = V.world(filtered, elsewhere)
+	eq(about(warnings, "fx_legacy"), 1, "a zone filter: another zone's leader still warns")
+	_, warnings = V.world(filtered, loader_world)
+	eq(about(warnings, "fx_legacy"), 0, "a zone filter: the filter zone's own leader counts")
 	-- A legacy guard hunt: guards stand at their posts, never in a recipe's
 	-- regions, so the recipe check skips them.
 	files = deep_copy(base_files)

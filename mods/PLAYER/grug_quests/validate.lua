@@ -437,7 +437,8 @@ end
 -- A kill objective without an area in a zone with a spawn recipe, none of
 -- whose targets that recipe spawns (a kind or a camp of the zone) and none
 -- of which is a leader (a leader of any zone counts: it stands at its own
--- rule-placed spot, so a front file may name another zone's leader): in such
+-- rule-placed spot, so a front file may name another zone's leader; with a
+-- `zone` filter only the filter zone's leaders): in such
 -- a zone only the recipe's roles appear on the surface (Lane S1), so the
 -- quest cannot be met there. A warning, not an error: the targets may live
 -- in another zone on purpose.
@@ -450,7 +451,9 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 		-- Guards stand at their guard posts, never in a recipe's regions.
 		if V.LEGACY_GUARDS[name] then return end
 		local role = name:match("^grug_mobs:(.+)$") or name
-		if world.leader(role) then return end
+		-- A zone-filtered (legacy) objective counts only kills in that zone.
+		local leader = world.leader(role)
+		if leader and (type(objective.zone) ~= "string" or leader.zone == kill_zone) then return end
 		for _, area in ipairs(areas) do
 			if area.roles[role] then return end
 		end
