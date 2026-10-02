@@ -54,6 +54,9 @@ local DEFAULT_P = {
 	SIDE0 = 0.35, K_SIDE = 4,
 	C_RIVER = 60, C_RIVER_W = 6, RIVER_PAD = 12, C_LAKE = 300,
 	K_PARALLEL = 0.5,
+	-- a pair step with an axis (the middle road): extra cost per node and per
+	-- node the cell lies more than AXIS_FREE off the line x = axis
+	AXIS_FREE = 48, K_AXIS = 0.02,
 	TURN_K = 6, SHARP_TURN = 40, TURN_MAX_DEG = 136, K_PLATFORM = 4, LOOP_LOOKBACK = 8,
 	-- avenue and lane: capital streets (`capital_planner.lua`)
 	HALF = {primary = 3.5, secondary = 2.5, trail = 1.5, avenue = 3.5, lane = 2.5},
@@ -1994,7 +1997,15 @@ local function new_module(P)
 		local order = opts.order
 		for _, step in ipairs(order) do
 			if step.op == "pair" then
+				if step.axis_x then
+					GUIDE = {}
+					for li = 1, NL do
+						local off = abs(cxz(KOF[li]) - step.axis_x) - P.AXIS_FREE
+						if off > 0 then GUIDE[li] = P.K_AXIS * off end
+					end
+				end
 				local r = route_pair(step.kind, node_by_id[step.a], node_by_id[step.b])
+				GUIDE = nil
 				if not r then stats.failed = (stats.failed or 0) + 1 end
 			elseif step.op == "join" then
 				local r = route_join(step.kind, node_by_id[step.a], step.budget,
@@ -2616,6 +2627,18 @@ local function new_module(P)
 			add("secondary", function(nd) return nd.kind == "village" end)
 			add("secondary", function(nd) return nd.kind == "contested" end)
 		end
+		-- The middle road (Round 29): one primary road across the Battlegrounds
+		-- joins the two continents, Highcourt to Gor Drazhak, after both
+		-- networks so it meets their capitals' free edges; its axis keeps it
+		-- near the map's x-middle.
+		local middle = {}
+		for _, c in ipairs(caps) do
+			local id = zone[c.zone].id
+			if id == "elandor_highcourt" or id == "kragmar_gor_drazhak" then middle[c.faction] = c.id end
+		end
+		assert(middle.elandor and middle.kragmar, "road inputs: middle road capitals missing")
+		order[#order + 1] = {op = "pair", kind = "primary", a = middle.elandor, b = middle.kragmar,
+			axis_x = 0}
 		local loops = {}
 		for i = 1, #nodes do
 			for j = i + 1, #nodes do
