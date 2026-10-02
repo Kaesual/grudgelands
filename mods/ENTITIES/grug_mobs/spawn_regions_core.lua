@@ -1251,11 +1251,12 @@ function M.build(zone_id, q, recipe)
 	local camps = {}
 	map.camps = camps
 	-- A camp unit: the parsed camp, its centre and cell, its belt and its
-	-- levels in that belt (what the camp spawns at).
+	-- levels in that belt (what the camp spawns at). It spawns in the camp's
+	-- stead (spawn_regions.lua spawn_mob: tag, rosters, levels_by_role).
 	local function new_camp(camp, cell, x, z, belt, levels)
 		local unit = {id = camp.id, camp = camp, cell = cell, x = x, z = z,
-			tag = camp.tag, belt = belt, levels_by_role = levels.levels_by_role,
-			levels = levels.levels}
+			tag = camp.tag, rosters = camp.rosters, is_camp = true, belt = belt,
+			levels_by_role = levels.levels_by_role, levels = levels.levels}
 		camps[#camps + 1] = unit
 		return unit
 	end

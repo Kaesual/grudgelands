@@ -328,7 +328,8 @@ check(unit and unit.belt.id == "low", "a camp on a POI takes the belt its cell l
 check_poi_camp(map, unit, 1, "inferred belt")
 check(unit.levels_by_role.lowling[1] == 11 and unit.levels_by_role.lowling[2] == 14 and
 	unit.levels[2] == 14 and unit.region.levels[2] == 14, "levels cut to the POI's belt")
-check(unit.tag == A .. "/bandits", "the unit carries the camp's tag")
+check(unit.tag == A .. "/bandits" and unit.is_camp and unit.rosters.day == unit.camp.roster,
+	"the unit spawns in the camp's stead (tag, rosters, is_camp)")
 check(CORE.stats(map).camps[1].poi == "Test Bandit Camp", "stats name the POI")
 -- A stated belt overrides the POI's.
 map = build(with_camps({bandit_camp({belt = "high"})}))
