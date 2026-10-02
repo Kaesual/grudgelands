@@ -1,7 +1,8 @@
 # Round 30 — Performance and clean-up: round plan
 
 Coordinator: Claude (Opus 5.5), 2026-10-02. Status: **approved by the user
-2026-10-02** (wave 1 go; §7 defaults accepted).
+2026-10-02** (wave 1 go; §7 defaults accepted); **complete locally**
+([Completion](#completion-2026-10-02)).
 
 This plan schedules agreed inputs; it does not repeat their findings:
 
@@ -154,3 +155,183 @@ landing by boat, pier and beach; new mount prices; second start is faster.
 2. **#4 give-up after 3 failed searches** against an unmoved target, as
    proposed.
 3. **Pier and beach as in §3** as the first version.
+
+## Completion (2026-10-02)
+
+Every lane below is merged on local main (last lane P2, `b64709d7`); each
+was independently reviewed by Opus, and the coordinator ran the
+`tools/r2*_*` and `tools/r30_*` fixtures (LuaJIT),
+`tools/check_fresh_server.py` and a headless boot after every merge. Not
+pushed. The final fresh-world engine check (§6) runs at integration
+(worktree `r30-final`); its result goes into [STATUS](../STATUS.md).
+Next: synchronization, then the user's GUI test on a fresh world (checklist
+below).
+
+### Shipped, by lane
+
+Numbers are each lane's own probe before and after, same seed and area
+(comparisons, never targets; 40 fake-player stand-ins where players count).
+
+- **E** (`17a6c398`): band-4 and band-5 loot medians moved toward the target
+  axis by loot rows only (four tier-matched T4 drops in band 4, Stone Core out
+  of band 5): band 4 39.0 → 43.6c (target 48c), band 5 147.6 → 119.5c
+  (target 120c). Prices recomputed by `income.py`: Expert Riding 1g63s →
+  1g37s, respec 31–40 1s90c → 2s, 41–50 7s → 6s; every other mount, boat
+  and respec price unchanged
+  ([economy plan, band smoothing](economy-vendor-plan.md#band-smoothing-round-30-2026-10-02)).
+- **P1** (`b03e839e`): a decoded quest-state cache per player and
+  `Q.marker_states` (one decode for all 78 givers, memoized for a second);
+  the quest tracker HUD skips unchanged journals and polls in five slots;
+  the Map tab compares a cheap signature at most every 2 s and sends only on
+  a change, with shared marker styles; the minimap hoists its window and
+  frame work to 0.5 s. Minimap 55.8 → 9.3 ms/s, quest HUD 17.1 → 6.5 ms/s,
+  Map tab 17.2 → 0.93 ms/s and 179 → 33 KB/s, quest-state
+  deserializations 874 → 0 per second.
+- **P1 follow-up** (`dc614162`): **Return home** moved from the Map tab to
+  the Character page's Stats tab (live m:ss countdown, re-sent once a second
+  only while the text changes); the dead faction/race gates and the kill
+  zone filter left `state.lua`.
+- **P1b** (`e92f4c27`): quest markers and NPC tags follow held objective
+  items (the tracker's 0.5 s poll) and level changes at once through
+  `grug_quests.markers_changed`: after an item pickup the NPC tag changes
+  within 1.5 s (0.75 s on average), after a level-up within 1 s.
+- **C** (`182dbb71`): the legacy quest fields are gone (fixed `xp`,
+  `faction`/`race` gates, `mobs`, `zone`; any unknown field stops the load,
+  `E-unknown-key`; `validate.py --legacy` removed); the stale fixtures
+  repaired (`tools/r24_density_xp/fixture.lua` deleted, its palette budget
+  applies to no zone); the riding-tier purchase fixture (`tools/r29_b`
+  section H); the 18 "No craft recipe known for output" boot warnings were
+  no-op `clear_craft` calls and are removed. **Dawnmere duplication found and
+  fixed:** `core.add_entity` stores the staticdata of that moment, so a start
+  NPC whose block was saved and unloaded before its next deactivation came
+  back twice; `start_npcs.lua` now passes `_grug_unplaced` in the staticdata
+  (module guide). Review fix: `bw_front_ashveil_05` points only at the Bog
+  Witch (0 missing targets on six seeds).
+- **L** (`8d1105cf`): a sand beach (crescent 24 × 11, y 1 → 3) and a
+  2-wide wooden pier (10 out, deck y 2, the island zone's wood) at all four
+  dragon-island landings ([boats.md §7.1](../design/boats.md#71-island-landings-pier-and-beach));
+  five seeds offline and the engine probe on seeds 42 and 20261002 pass. No
+  path up the island (ruling below).
+- **P3** (`e979c8ce`): the region maps' compact form and world-folder file
+  cache `grug_region_maps.txt` (`spawn_regions_cache.lua`), the Map tab's
+  zone grid in `grug_map_zone_grid.txt`, road-segment buckets in the region
+  builder, full collections after the heavy boot phases and a boot heap
+  log ([spawn_regions.md, Cache and memory](../design/spawn_regions.md#cache-and-memory)).
+  Warm boot 15.3 → 7.2 s, the region hook 8.78 s → 3.2 ms on a hit, Lua heap
+  127.6 → 70.5 MiB, peak memory of a first start 2.12 → 1.76 GB.
+- **P4** (`fd0f0338`): a crafting lookup index (200 → 5 µs per lookup in the
+  engine; 212k grids equal to the former scan), the crosshair state every
+  0.15 s with unchanged skill rays repeated for up to 0.25 s (20 → 14 ms/s
+  moving, 14 → 7.7 ms/s standing), the Target Frame reusing the crosshair's
+  aim (1.3 → 0.44 ms/s), the tag-carrier pass spread over eight slots with
+  callbacks only for observed carriers, the flight-border sweep 268 → 43 µs,
+  idle crop-soil checks once a minute (4× fewer timers) and a crop LBM that
+  skips standing plants, per-player tables cleared on leave.
+- **P2** (`b64709d7`): A* gets about 3 ms per server step, a no-path result
+  waits 1, 2, 4 s before the same search, the close-cover search looks within
+  8 nodes, and a mob gives up an unreachable target after three failed
+  searches ([combat_stats.md](../design/combat_stats.md)); the patrol nudge
+  shares the budget; a collision-box field replaces per-step
+  `get_properties()`; cached privilege checks; `mobs_can_hear = false`; the
+  `general_attack` eye-height bug fixed (a copy at position + 1); 56 of 88
+  spawn rows retired and the rest merged into three ABMs
+  (`spawn_abms.lua`, [biomes_mobs.md §4](../design/biomes_mobs.md#4-spawn-parameter-table)).
+  40 blocked chasers 6.83 → 0.68 ms per step (A* 4.69 → 0.007 ms per
+  step), garbage 7.75 → 4.93 MiB/s (150 idle mobs 7.82 → 4.49), ABMs 95 →
+  10, blocks scanned for ABMs 404 → 104 per second.
+- **D**: this section, the status files, the module guide and AGENTS.
+
+### Rulings made during the round
+
+- **Map tab every 2 s** (plan §1) stays. A home countdown made it resend
+  every 2 s, so **Return home moved to the Character page** (user,
+  2026-10-02: the live countdown is cheap in that small form); the Map tab
+  keeps the home marker.
+- **Quest markers** follow objective-item counts and level changes at once
+  (coordinator, P1b option (a)); a repeatable's cooldown ending still shows
+  with the next memo or 5 s refresh.
+- **Give-up (P2):** after 3 failed searches in a row against an unmoved
+  target, as approved. In the review round: **dragons and whelps never give
+  up** and only wait (a reset would restart the boss attempt with a full
+  heal); **kings only drop the target** (no heal, no royal reset;
+  coordinator); a **visible player** (across a fence or water) is never
+  searched for and never given up; a target in a **walkable node** (slab,
+  lower stair, snow) is searched for from the node above, and a search with
+  walkable ends never counts.
+- **One spawn row per merged trigger:** the merged ABMs pick at most one row
+  per node and trigger, so species do not clump and every row keeps its own
+  rate (review fix).
+- **Island landings:** pier and beach as §3, the pier head in the 2–4 nodes
+  of shore water the terrain gives (accepted). The trail attempt (road
+  router from the beach to the nearest island POI) was stopped: the router
+  cannot climb the 145–415 node island flanks. **Pier and beach only; the
+  dragon islands stay untamed, no mapgen paths or roads by design** (user,
+  2026-10-02, `boats.md` §7.1).
+- **Band-5 smoothing:** as above; the band-3 outliers (Crocodile Tooth,
+  Shiny Scale) stay, no T3 replacement exists.
+- **Boot collections kept:** the full GCs cost about 0.25–0.5 s of boot for
+  the lower peak memory.
+- **Tag carriers:** eight slots with a position snapshot per slot
+  (coordinator: keep).
+
+### Open items
+
+In the [BACKLOG](../../BACKLOG.md#round-30-carry-overs): the grug_mapgen
+warm-load proposal (#22: store `prepared_handover()` in the world-layout
+cache, warm load 4.6 → about 1.2 s, size M, risk medium), the cold-build
+heap (about 150 MiB from kept query caches), the cache keys that omit the
+mapgen data files and the engine version, the zone-grid encode assert, held
+objective counts uncapped, a turn-in reward error that skips `changed()`,
+band 6 at 0.80 of its target (Master Riding), the band-3 outliers, the
+empty strip on the Map tab where the button was, the dragon arena design
+iteration. Not reproduced and left to the GUI test: a player who keeps
+re-aggroing a mob from a closed house or other hidden spot gives it a full
+heal at each give-up (about every 7 s); P2's one-seed count run showed +55 % spawn attempts in a shallow
+cave, judged run noise (the merged dispatcher keeps every row's rate by
+construction).
+
+**King give-up behaviour (open question to the user):** kings now only drop
+an unreachable target (no heal, no encounter reset); the coordinator
+proposed heal-only without the encounter reset, to stop step-wise ranged
+kills from a hidden spot.
+
+### Playtest checklist
+
+On a fresh world (Round 30 changes the island landings and the caches):
+
+1. **Map tab:** the own arrow moves about every 2 s while the tab is open;
+   zoom, marker and minimap-switch clicks answer at once; note the empty
+   strip where the Return home button was.
+2. **Quest markers and NPC tags:** right after accepting a quest, after a
+   kill that completes an objective, after picking up the last objective
+   item (within about 1.5 s) and after a level-up, the givers' symbols on
+   the NPCs, the minimap and the Map tab change.
+3. **Return home** on the Character page (Stats tab), with a home set at
+   an innkeeper: destination and an
+   m:ss countdown that ticks each second, "Preparing arrival" during the
+   return, "Ready" afterwards; also in a 1280 × 720 window.
+4. **Giving up:**
+   - Hide from a chasing mob in a closed house or a walled-in hole: after
+     about 7 s the mob stops, walks home and is healed.
+   - Stand where the mob can see you but cannot reach you (across a fence or
+     water): it keeps you as its target and does not walk home.
+   - Stand on a slab, a stair or snow: the mob reaches you and attacks.
+   - Re-aggro a mob from a hidden spot: it gives up again and heals each
+     time (P2 note).
+   - The island dragons never give up.
+5. **Spawns:** surface, cave, ocean (Kraken, Reed Angelfish) and rift mobs
+   still appear as before; no clumps of one species on one spot.
+6. **Crafting:** a shift-click craft of a full stack works and does not
+   stall the server.
+7. **Crosshair:** the red tint appears about 0.3 s after a mob walks into a
+   still crosshair; the Target Frame follows the aim.
+8. **Flight warnings** near the ocean and the borders as before; **crops**
+   still grow, dry out and recover.
+9. **Island landings:** reach each dragon island by boat at both landings,
+   step onto the pier and the beach; the island itself is untamed (a climb).
+10. **Prices:** Expert Riding 1g37s; respec 31–40 2s, 41–50 6s.
+11. **Starts:** the second start of the same world is faster (about 7 s
+    instead of about 16 s); the log names the region maps read from the
+    world folder.
+12. **Dawnmere:** each start-town NPC stands there once, also after a
+    restart.

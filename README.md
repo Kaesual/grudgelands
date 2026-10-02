@@ -53,8 +53,15 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 30](docs/planning/round30-plan.md#completion-2026-10-02), "Performance
+and clean-up", is complete locally and awaits a playtest on a fresh world.
+Quest markers, the world map, the minimap, crafting and the crosshair cost
+the server much less, a second start of a world takes about half as long,
+and mobs give up a player they cannot reach and walk home. Return home now
+sits on the Character page, and each dragon island has a small beach and a
+wooden pier at its boat landings.
 [Round 29](docs/planning/round29-plan.md#completion-2026-10-02), "Economy and
-travel", is complete locally and awaits a playtest on a fresh world. New
+travel", is pushed and was tested on a fresh world. New
 quests take every people from its starting town to the war front, with
 directions that fit each world and repeatable bounties at the front and on
 the dragon islands. Vendors now buy loot and materials at prices set by tier,
@@ -125,11 +132,13 @@ canceled and 9 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 29](docs/planning/round29-plan.md#completion-2026-10-02)
-(the new quests, the economy pass WP44, boats and waystones WP17, and a mapgen
-bundle), independently reviewed and merged locally; Round 28 is the latest
-pushed state and Round 24 the latest accepted one.
+[Round 30](docs/planning/round30-plan.md#completion-2026-10-02)
+(the performance lanes from the
+[performance review](docs/research/perf-review-2026-10.md), the island
+landings and a clean-up), independently reviewed and merged locally; Round
+29 is the latest pushed state and Round 24 the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 30](docs/planning/round30-plan.md#playtest-checklist),
 [Round 29](docs/planning/round29-plan.md#playtest-checklist),
 [Round 28](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 [Round 27](docs/planning/round27-minimap-plan.md#playtest-checklist) and
@@ -137,19 +146,20 @@ pushed state and Round 24 the latest accepted one.
 playtests remain separate.
 
 **Ready for further work:** the first release still needs geographic PvP
-and the main story from level 41 to 60 with its finale. Next is Round 30, a
-performance round from the
-[performance review](docs/research/perf-review-2026-10.md): quest state and
-map updates, mob pathing, a cache for the spawn regions and fewer spawn
-checks. Crafting finishes and masterwork and the deep spawn pulse follow;
-the [roadmap](ROADMAP.md) records the V1 scope and order.
+and the main story from level 41 to 60 with its finale. Next is Round 31,
+geographic PvP with enemy-guard quests and small PvP points of interest,
+then Round 32, the main story from level 41 to 60. A design pass on the
+dragon arenas is also queued. Crafting finishes and masterwork and the deep
+spawn pulse follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 29 needs a fresh world. Quests cannot yet ask you to
+**Caveats:** Round 30 needs a fresh world. Quests cannot yet ask you to
 fight enemy guards or players. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
-deferred. Performance and first-release validation are still open. Optional
+deferred. A measured many-player performance pass and first-release validation
+are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round29-plan.md#playtest-checklist),
+the [latest playtest checklist](docs/planning/round30-plan.md#playtest-checklist),
+the [Round 29 checklist](docs/planning/round29-plan.md#playtest-checklist),
 the [Round 28 checklist](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 the [Round 27 checklist](docs/planning/round27-minimap-plan.md#playtest-checklist),
 the [Round 26 checklist](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)

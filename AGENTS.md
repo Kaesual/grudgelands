@@ -64,16 +64,29 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 29 complete locally, 2026-10-02 (not pushed).** "Economy and
-travel": 491 new quests on the Round 28 framework (one track per race, the
-contested 31–40 zones, the 41–60 front with repeatable and island bounties)
-replace the 240 legacy quests; WP44 (one price module, 5% buy-back,
+**Round 30 complete locally, 2026-10-02 (not pushed).** "Performance and
+clean-up" from the [performance review](docs/research/perf-review-2026-10.md):
+the quest-state cache and the Map tab at most every 2 s (P1, with Return home
+moved to the Character page and quest markers that follow held items and
+levels), the region-map file cache and boot memory (P3, a later start about
+7 s instead of about 16 s), mob pathing with a per-step A* budget and the
+give-up of unreachable targets, three merged spawn ABMs instead of 88 (P2),
+per-player ticks (P4: crafting index, crosshair, tag-carrier slots); a pier
+and a beach at the four dragon-island landings (L); the legacy quest fields
+removed, fixtures repaired and the Dawnmere NPC duplication fixed (C);
+band-4/5 loot smoothing with recomputed prices (E). Next: fresh world and
+GUI test, then Round 31 PvP.
+[Plan, completion and playtest checklist](docs/planning/round30-plan.md#completion-2026-10-02).
+
+**Round 29 complete and pushed, 2026-10-02** (tested by the user). "Economy
+and travel": 491 new quests on the Round 28 framework (one track per race,
+the contested 31–40 zones, the 41–60 front with repeatable and island
+bounties) replace the 240 legacy quests; WP44 (one price module, 5% buy-back,
 income-derived mount, boat and respec prices); WP17 (boats as water mounts
 with the Shipwright, waystones at every start and capital, the Kraken
 retune); a mapgen bundle (gems by depth, `apex_sockets` removed, mapgen band
-data, the Battlegrounds 50 % wider with a middle road); a read-only
-[performance review](docs/research/perf-review-2026-10.md) that becomes
-Round 30. Next: fresh world and GUI test.
+data, the Battlegrounds 50 % wider with a middle road); the read-only
+performance review that became Round 30.
 [Plan, completion and playtest checklist](docs/planning/round29-plan.md#completion-2026-10-02).
 
 **Round 28 complete and pushed, 2026-10-02.** The 2026-09-30 playtest fixes (Track A),
@@ -489,6 +502,33 @@ current state). It is **derived, never authoritative**:
   `w` waystones, `e1` prices and `band_payout.sh`, `e4` income, `mres`
   gems, `mgeo` bands and middle road, `q1` placeholders, `t`
   `quest_targets.py`, `p` playtest fixes).
+
+### Performance (since Round 30)
+
+- **Numbers are comparisons, never targets**; a lane re-runs its own probe
+  before and after on the same seed and area. The
+  [performance review](docs/research/perf-review-2026-10.md) holds the
+  probes' method; module seams are in the
+  [module guide](docs/technical/module-guide.md).
+- **World-folder caches** (the world layouts, D71; the region maps
+  `grug_region_maps.txt`; the Map tab's zone grid `grug_map_zone_grid.txt`)
+  share the key `grug_mapgen.wp40.world_key` plus a digest of their builders'
+  files. A new file a cached build reads must join its key; any failure
+  rebuilds, never stops the load.
+- **Mobs:** A* only inside the per-step budget (`mobs/grug_obstacle.lua`);
+  no `get_properties()` in per-step code (`self._grug_cbox`); spawn rows go
+  through the three merged spawn ABMs (`grug_mobs/spawn_abms.lua`), and a
+  surface row no zone keeps registers nothing.
+- **Quest state** is cached decoded per player: never write into a table
+  `load` returns; marker consumers read `grug_quests.marker_states` (the
+  Map tab compares its version, the NPC tags read it on the 1 Hz carrier
+  pass); only the minimap registers `register_on_markers_changed`.
+- Round 30 fixtures and probes live in `tools/r30_<lane>/` (`p1` quest state,
+  tracker, Map tab, minimap and Character page; `p2` pathing, give-up,
+  collision boxes, merged spawn ABMs; `p3` region-map cache incl. input
+  coverage and corruption cases, `run.sh`; `p4` crafting index with the
+  shipped recipe corpus, crosshair, carriers, flight sweep, farming; `l`
+  island landings, `engine.sh`; `c` start-NPC duplication).
 
 ## Task-specific implementation references
 

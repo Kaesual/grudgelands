@@ -390,7 +390,10 @@ final naming in items_crafting.md. All aggressive mobs:
 15-second incoming-damage clock plus target movement, then the run home;
 no distance give-up, no soft de-aggro), while camp members, guards, rares and
 other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
-leash. Idle, a free-roaming mob wanders within 32 nodes of its spawn point
+leash. Every one of them gives up a target it cannot reach after three
+failed path searches (Round 30, `combat_stats.md` "Unreachable targets are
+given up"; the dragons only wait, the kings only drop the target). Idle, a
+free-roaming mob wanders within 32 nodes of its spawn point
 and roams at a calm walk (Round 24); an idle aggressive one also probes
 every 4–5 seconds eight points on a ring at its view range and walks away
 from roads, bridges, villages, start towns and capital cities among them

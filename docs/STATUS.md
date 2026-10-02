@@ -2,10 +2,52 @@
 
 Updated 2026-10-02. This is the delivery pointer, not another game specification.
 
-- **Round 29 "Economy and travel" delivered locally** (2026-10-02,
+- **Round 30 "Performance and clean-up" delivered locally** (2026-10-02,
+  [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
+  Every lane is merged on local main (last lane P2, `b64709d7`), each
+  independently reviewed by Opus; not pushed. Numbers are each lane's
+  before/after comparison on its own probe, never targets.
+  - **Quest state and map UI (P1, P1b):** a decoded quest-state cache and one
+    marker pass for all givers (minimap 55.8 → 9.3 ms/s, quest HUD 17.1 →
+    6.5 ms/s at 40 stand-ins); the Map tab sends at most every 2 s and only
+    on a change (17.2 → 0.93 ms/s, 179 → 33 KB/s); **Return home** moved to
+    the Character page (user ruling); quest markers and NPC tags follow held
+    objective items and level-ups within about 1.5 s
+    ([world_map.md](design/world_map.md), [home_travel.md](design/home_travel.md)).
+  - **Region-map cache and boot memory (P3):** the region maps and the Map
+    tab's zone grid are read from the world folder on a later start (warm
+    boot 15.3 → 7.2 s), only the compact maps stay in memory (Lua heap
+    127.6 → 70.5 MiB), boot peak memory 2.12 → 1.76 GB
+    ([spawn_regions.md](design/spawn_regions.md#cache-and-memory)).
+  - **Mob pathing and spawning (P2):** A* inside about 3 ms per server step
+    with waits after a failed search, and **mobs give up a target they cannot
+    reach** after three failed searches (dragons only wait, kings only drop
+    the target; 40 blocked chasers 6.83 → 0.68 ms per step); no per-step
+    `get_properties()` (garbage 7.75 → 4.93 MiB/s); 56 of 88 spawn rows
+    retired and the rest in three merged ABMs (block scans 404 → 104 per
+    second); the `general_attack` eye-height bug fixed
+    ([combat_stats.md](design/combat_stats.md), [biomes_mobs.md](design/biomes_mobs.md) §4).
+  - **Per-player ticks (P4):** a crafting lookup index (200 → 5 µs), the
+    crosshair state every 0.15 s (14 → 7.7 ms/s standing), tag carriers in
+    eight slots, the flight-border sweep 268 → 43 µs, fewer crop-soil timers.
+  - **Island landings (L):** a sand beach and a wooden pier at each of the
+    four dragon-island landings; the islands get no paths or roads by design
+    ([boats.md](design/boats.md) §7.1).
+  - **Clean-up (C):** the legacy quest fields removed (unknown fields stop the
+    load), the stale fixtures repaired, the riding-tier purchase fixture, no
+    craft warnings at boot; the **Dawnmere NPC duplication** found and fixed
+    (start NPCs could come back twice after an early block unload).
+  - **Band smoothing (E):** band-4/5 loot medians 39.0 → 43.6c and 147.6 →
+    119.5c; Expert Riding 1g37s, respec 31–40 2s and 41–50 6s
+    ([economy.md](design/economy.md)).
+  - Final fresh-world engine check: at integration. Next: synchronize,
+    fresh world, the user's GUI test; then Round 31 PvP.
+
+- **Round 29 "Economy and travel" complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round29-plan.md#completion-2026-10-02)).
-  Every lane is merged on local main (last commit `2b40d5b5`, E4), each
-  independently reviewed by Opus; not pushed. The quest lanes were merged
+  Every lane is merged on main (last lane D, `e512bb5c`), each
+  independently reviewed by Opus; the user tested it on a fresh world and
+  pushed it. The quest lanes were merged
   together after the user approved a sample per track.
   - **Quests (Q1–Q9, T):** 491 quests in 42 zone files replace the 240
     legacy quests: one track per race from the start zone to its heartland
@@ -36,14 +78,12 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
     book's tiers (T6 shows 36 recipes).
   - **Performance review** (read-only):
     [perf-review-2026-10.md](research/perf-review-2026-10.md); its lanes
-    P1–P4 and the user's rulings are Round 30 in the
-    [BACKLOG](../BACKLOG.md#round-30--performance).
+    P1–P4 and the user's rulings became Round 30.
   - **Final engine check PASS** (seeds 42 and 20261002): middle road,
     Battlegrounds borders, bands, moved sites, channel, waystones and
     Shipwrights, gems by band, clean load. Finding: the dragon-island boat
-    landings are mostly a one-node shore strip below high cliffs
-    ([BACKLOG](../BACKLOG.md#round-29-carry-overs)).
-  - Next: synchronize, fresh world, the user's GUI test.
+    landings were mostly a one-node shore strip below high cliffs (piers
+    and beaches in Round 30).
 
 - **Round 28 complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round28-questing-leveling-plan.md#completion-2026-10-02)).
@@ -219,10 +259,11 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 29, which includes Rounds 20–28
-  and the 2026-09-28 playtest fixes. Round 24 is the latest accepted state;
-  the 2026-09-30 playtest with friends fed Round 28, the 2026-10-02 spawn
-  playtest Round 29. Fresh-world development
+- **Latest game:** local main carries Round 30, which includes Rounds 20–29
+  and the 2026-09-28 playtest fixes. Round 29 is the latest pushed state,
+  tested by the user on a fresh world (2026-10-02); Round 24 is the latest
+  formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
+  the 2026-10-02 spawn playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
   not a fresh certification of arbitrary later changes.
@@ -236,9 +277,13 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 29 checklist](planning/round29-plan.md#playtest-checklist)
+  The [Round 30 checklist](planning/round30-plan.md#playtest-checklist)
+  covers the Map tab rate, quest markers, Return home on the Character page,
+  mobs giving up, spawns, crafting, the crosshair, island landings, prices
+  and the faster second start; the
+  [Round 29 checklist](planning/round29-plan.md#playtest-checklist)
   covers quests, economy, gems, prices, the Battlegrounds, boats and
-  waystones, the
+  waystones (tested by the user 2026-10-02), the
   [Round 28 checklist](planning/round28-questing-leveling-plan.md#playtest-checklist)
   covers the spawn regions, fixes, slots, feed and zone names, the
   [Round 27 checklist](planning/round27-minimap-plan.md#playtest-checklist)
@@ -248,8 +293,8 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** Round 28 is pushed complete (2026-10-02),
-  including all of Round 27 and its glide fixes. Round 29 is local only.
+- **Remote observation:** Round 29 is pushed complete (`e512bb5c`,
+  2026-10-02), including Rounds 27 and 28. Round 30 is local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.
