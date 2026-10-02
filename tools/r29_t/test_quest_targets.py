@@ -75,7 +75,7 @@ def quest(qid, objectives, text="Go.", **extra):
 
 QUESTS = [
     quest("q_kind", [kill(["small_boar"], "elandor_alpha_fields/meadows")], "Boars {zone_area:meadows} by day."),
-    quest("q_bare_area", [kill(["large_rat"], "meadows")], "Rats after dark."),
+    quest("q_bare_area", [kill(["large_rat"], "meadows")], "Rats come out after nightfall; do your daytime work first."),
     quest("q_clock", [kill(["small_boar"], "meadows")], "Boars root there after dark."),
     quest("q_gap", [kill(["zombie"], "copse")]),
     quest("q_unknown", [kill(["small_boar"], "nowhere")]),

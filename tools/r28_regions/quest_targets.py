@@ -103,7 +103,7 @@ def read_stats(path):
 PLACEHOLDER = re.compile(r"\{(name|dir_from_giver|zone_area|dir_of):([a-z0-9_:/]+)\}")
 # The clock a quest text names (only when it names one clock).
 CLOCK_WORDS = {
-    "night": re.compile(r"\b(night|nights|nightly|after dark|dark hours|moonlight|nocturnal)\b", re.I),
+    "night": re.compile(r"\b(night|nights|nightly|nightfall|after dark|dark hours|sundown|after sunset|moonlight|nocturnal)\b", re.I),
     "day": re.compile(r"\b(by day|daylight|daytime|in the day|during the day|by daylight|sunlit hours)\b", re.I),
 }
 
