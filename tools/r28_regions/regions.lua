@@ -32,8 +32,6 @@ local world_seconds = os.clock() - t0
 local core = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
 local json = dofile(repo .. "/tools/r28_b1/json.lua")
 local S = W.session
--- The gameplay level bands grug_zones serves in the game (zone_bands.lua).
-local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
 
 local function read(path)
 	local f = assert(io.open(path, "rb"))
@@ -68,7 +66,7 @@ local function render_zone(zone)
 		return row.display_by_zone and row.display_by_zone[zone] or row.display
 	end
 
-	local record = zone_bands.apply(S.get(zone))
+	local record = S.get(zone)
 	local data = json.parse(read(repo .. "/mods/ENTITIES/grug_mobs/data/zones/" .. zone .. ".spawns.json"))
 	assert(data.recipe, zone .. " has no recipe")
 	local recipe = core.parse_recipe(zone, data.recipe, {

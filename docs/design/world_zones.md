@@ -88,23 +88,19 @@ in this file as of commit `082982da`.
   together. Inside a zone, the published `level_min..level_max` rises from
   the zone's home-facing side toward the faction front (Elandor toward +z,
   Kragmar toward -z), in three sub-ranges by cumulative integer thirds: 1–10
-  becomes 1–3 / 4–6 / 7–10, 11–20 becomes 11–13 / 14–16 / 17–20, 51–59
-  becomes 51–53 / 54–56 / 57–59, and 60 stays 60. How progress across the
+  becomes 1–3 / 4–6 / 7–10, 11–20 becomes 11–13 / 14–16 / 17–20, 51–60
+  becomes 51–53 / 54–56 / 57–60, and 60 stays 60. How progress across the
   zone is measured is an implementation choice, as long as the level never
   leaves the zone's range, never falls toward the front and rises gradually.
 - **Gravesalt Escarpment and The Skyglass Canopy play 51–60** (the user,
-  2026-10-02, Round 28 S2c: the level cap is reached in leveling zones). Their
-  zone records (`grug_zones.get` / `at`: map, quests, spawn regions) carry the
-  gameplay band from `grug_core/zone_bands.lua`; the analytic level field
-  above keeps the mapgen band 51–59 (51–53 / 54–56 / 57–59), because it places
-  plants, resources and P9G content and the generated world must not change.
-  In a zone with a spawn recipe the gameplay surface level is the region's
+  2026-10-02, Round 28 S2c: the level cap is reached in leveling zones) and
+  **The Broken Causeway plays 41–50** beside The Shattered Line (Round 28
+  W1). Round 29 moved these bands into the mapgen zone records
+  (`wp40/source/simple_map.lua`), so the zone records `grug_zones.get` /
+  `at` serve (map, quests, spawn regions) and the analytic level field that
+  places plants, resources and P9G content use one band. In a zone with a
+  spawn recipe the gameplay surface level is the region's
   ([spawn_regions.md](spawn_regions.md#one-level-truth)).
-- **The Broken Causeway plays 41–50** (the user, 2026-10-02, Round 28 W1),
-  beside The Shattered Line, through the same gameplay band. Until the mapgen
-  work of the next round its analytic level field, plants and resources stay
-  at the mapgen band 31–40 (31–33 / 34–36 / 37–40); its spawns, mob levels and
-  quests follow 41–50 already.
 - The Battlegrounds zones rise from both continent-facing sides toward the
   middle of the band. Wyrmglass and Stormscale are flat level 60. Capital
   zones use their published ranges but retain `civic_no_hostiles`.
@@ -987,7 +983,7 @@ and terrain rules without deriving political ownership from cultural origin.
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
 | `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
-| `front_broken_causeway` | The Broken Causeway | Human | 41–50 (mapgen field 31–40) | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, R:Captain Bonerattle** |
+| `front_broken_causeway` | The Broken Causeway | Human | 41–50 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, R:Captain Bonerattle** |
 | `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
 | `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
 | `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |

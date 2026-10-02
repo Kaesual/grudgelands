@@ -397,8 +397,7 @@ local function run_seed(seed)
 		log = function() end,
 	}
 	_G.grug_zones = nil
-	_G.grug_core = {get_player_faction = function(name) return factions[name] end,
-		zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")}
+	_G.grug_core = {get_player_faction = function(name) return factions[name] end}
 	assert(loadfile(repo .. "/mods/CORE/grug_core/zone_authority.lua"))()
 	assert(loadfile(repo .. "/mods/CORE/grug_core/protection.lua"))()
 	local payload = dofile(dir .. "/r7_consumer_payload.lua")(W.source, sha_hex)

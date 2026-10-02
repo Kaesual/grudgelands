@@ -36,7 +36,18 @@ local core = dofile(repo .. "/mods/ENTITIES/grug_mobs/spawn_regions_core.lua")
 -- --before builds an older commit's world with this file).
 local borders = dofile((arg[0]:match("^(.*)/[^/]*$") or ".") .. "/borders.lua")
 local json = dofile(repo .. "/tools/r28_b1/json.lua")
-local zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")
+-- An older tree (run.sh --before) may still carry Round 28's gameplay band
+-- override, which grug_zones served until the mapgen bands replaced it in
+-- Round 29.
+local zone_bands
+do
+	local path = repo .. "/mods/CORE/grug_core/zone_bands.lua"
+	local file = io.open(path)
+	if file then
+		file:close()
+		zone_bands = dofile(path)
+	end
+end
 local S = W.session
 local CELL, SUB = core.CELL, core.SUB
 
@@ -66,7 +77,8 @@ local q = core.queries({zones = S, column_values_at = W.planner_source.column_va
 -- The mainland zones, in source order.
 local zones, index = {}, {}
 for _, row in ipairs(W.source.zones) do
-	local record = zone_bands.apply(S.get(row.id))
+	local record = S.get(row.id)
+	if zone_bands then zone_bands.apply(record) end
 	if not record.macro_region:match("_island$") then
 		zones[#zones + 1] = {id = row.id, name = record.display_name, faction = record.faction,
 			race = record.race_region, band = {record.level_min, record.level_max}, cells = {}}

@@ -62,8 +62,7 @@ local sha_hex = function(bytes) return W.common.hex(W.sha(bytes)) end
 _G.core = {sha256 = sha_hex, is_protected = function() return false end,
 	check_player_privs = function() return false end, log = function() end}
 _G.grug_zones = nil
-_G.grug_core = {get_player_faction = function() return "accord" end,
-	zone_bands = dofile(repo .. "/mods/CORE/grug_core/zone_bands.lua")}
+_G.grug_core = {get_player_faction = function() return "accord" end}
 assert(loadfile(repo .. "/mods/CORE/grug_core/zone_authority.lua"))()
 grug_core.install_zone_authority(S, dofile(dir .. "/r7_consumer_payload.lua")(W.source,
 	sha_hex), W.protection)

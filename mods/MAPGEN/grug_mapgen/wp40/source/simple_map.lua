@@ -84,10 +84,10 @@ source.zones = {
 	zone(31,"kragmar_totemwater_reach","Totemwater Reach","troll","throng","throng_home","peaceful",21,30,"wetland_delta",2400,1500,{"grug_jungle_edge","grug_deep_jungle","grug_swamp"}),
 	zone(32,"kragmar_thunderroot_wilds","Thunderroot Wilds","troll",false,"contested_land","contested",31,40,"highland",1800,700,{"grug_deep_jungle","grug_badlands_east","grug_swamp"}),
 	zone(33,"front_wyrmglass_crown","The Wyrmglass Crown","dwarf",false,"contested_land","contested",60,60,"mountain",-3150,0,{"grug_crags","grug_crags_snowy","grug_beach"}),
-	zone(34,"front_gravesalt_escarpment","Gravesalt Escarpment","undead",false,"contested_land","contested",51,59,"highland",-2000,0,{"grug_bone_forest","grug_blight","grug_swamp","grug_beach"}),
-	zone(35,"front_broken_causeway","The Broken Causeway","human",false,"contested_land","contested",31,40,"wetland_delta",-750,0,{"grug_meadows","grug_deep_forest","grug_swamp"}),
+	zone(34,"front_gravesalt_escarpment","Gravesalt Escarpment","undead",false,"contested_land","contested",51,60,"highland",-2000,0,{"grug_bone_forest","grug_blight","grug_swamp","grug_beach"}),
+	zone(35,"front_broken_causeway","The Broken Causeway","human",false,"contested_land","contested",41,50,"wetland_delta",-750,0,{"grug_meadows","grug_deep_forest","grug_swamp"}),
 	zone(36,"front_shattered_line","The Shattered Line","orc",false,"contested_land","contested",41,50,"plateau",750,0,{"grug_badlands","grug_savanna","grug_swamp"}),
-	zone(37,"front_skyglass_canopy","The Skyglass Canopy","elf",false,"contested_land","contested",51,59,"highland",2000,0,{"grug_jungle_fringe","grug_deep_forest","grug_elf_forest"}),
+	zone(37,"front_skyglass_canopy","The Skyglass Canopy","elf",false,"contested_land","contested",51,60,"highland",2000,0,{"grug_jungle_fringe","grug_deep_forest","grug_elf_forest"}),
 	zone(38,"front_stormscale_summit","Stormscale Summit","troll",false,"contested_land","contested",60,60,"mountain",3150,0,{"grug_deep_jungle","grug_badlands_east","grug_swamp","grug_beach"}),
 }
 
