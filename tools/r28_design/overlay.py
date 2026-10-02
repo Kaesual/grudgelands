@@ -220,8 +220,15 @@ def panel_lines(zone, design, givers, problems):
         else:
             add("no recipe", (90, 90, 90))
     else:
-        borders = ", ".join((parsed["to"] or {}).get("border") or []) or "?"
-        add("from %s to the border with %s" % ((parsed["from"] or {}).get("anchor", "?"), borders))
+        frm, dst = parsed["from"] or {}, parsed["to"] or {}
+        entry = ", ".join(frm.get("anchor") or []) or (
+            "the border with %s" % ", ".join(frm["border"]) if frm.get("border") else "?")
+        if dst.get("core"):
+            add("from %s to the zone's core" % entry)
+        elif dst.get("border"):
+            add("from %s to the border with %s" % (entry, ", ".join(dst["border"])))
+        else:
+            add("one belt (no progression)")
         areas = design.areas(zone)
         for belt in parsed["belts"]:
             add("belt %s · %s%% · %s%s" % (belt["id"], belt["share"], short_levels(belt["levels"]),
@@ -232,9 +239,12 @@ def panel_lines(zone, design, givers, problems):
                                                kind["density"], C.species_text(area)), (60, 60, 60), indent=1)
         for camp in parsed["camps"]:
             area = areas[camp["id"]]
-            add("camp %s (%s) · belt %s · %s · %s slots: %s" % (camp["id"], camp["name"], camp["belt"],
-                                                               short_levels(area["levels"]), camp["slots"],
-                                                               C.species_text(area)))
+            site = camp.get("site")
+            where = " · on %s" % site["name"] if isinstance(site, dict) and site.get("name") else ""
+            belt = camp["belt"] or "of the POI (per seed)"
+            add("camp %s (%s)%s · belt %s · %s · %s slots: %s" % (camp["id"], camp["name"], where, belt,
+                                                                 short_levels(area["levels"]), camp["slots"],
+                                                                 C.species_text(area)))
         for role, leader in sorted(design.leaders(zone).items()):
             name = (sub.get(role) or {}).get("display") or role
             at = leader["at"] or {}
