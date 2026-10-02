@@ -114,3 +114,14 @@ atlas.register_marker_provider("home", function(player)
  end
  return result
 end)
+
+-- Discovered waystones of the player's own network (Round 29, WP17);
+-- undiscovered ones are not shown, and a marker never unlocks travel.
+atlas.register_marker_provider("waypoint", function(player)
+ local result = {}
+ for _, row in ipairs(grug_home.known_waypoints(player)) do
+  result[#result + 1] = {id=row.id, label=row.label .. " Waystone",
+   position=row.pos, kind="waypoint", texture="grug_map_waypoint.png"}
+ end
+ return result
+end)
