@@ -1,22 +1,23 @@
 {
   "zone": "elandor_dur_brannoc",
-  "notes": "Mechanical split of the pre-Round-28 quests (legacy fields, line 'legacy'); the zone's design replaces this file.",
+  "identity": "Dur Brannoc is safe behind its gates, but outside them the dead come to collect old debts, toll bandits tax the roads and a goblin ore-factor buys every stolen nugget.",
   "hubs": [
     {
       "id": "dur_brannoc",
       "anchor": "dur_brannoc",
       "givers": [
         {
-          "npc": "r20_dwarf_capital_cook",
+          "npc": "r20_dwarf_capital_envoy",
           "lines": [
-            "legacy"
+            "gate",
+            "front"
           ]
         },
         {
-          "npc": "r20_dwarf_capital_envoy",
+          "npc": "r20_dwarf_capital_cook",
           "lines": [
-            "legacy",
-            "front"
+            "provisions",
+            "dispatch"
           ]
         }
       ]
@@ -24,93 +25,68 @@
   ],
   "quests": [
     {
-      "id": "r20_dwarf_capital_cook",
-      "line": "legacy",
-      "giver": "r20_dwarf_capital_cook",
-      "turnin": "r20_dwarf_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Copperpan Supper",
-      "text": "Varda Copperpan has places at the table for late arrivals in Dur Brannoc. Bring five raw meat portions to the bakehouse cook. The meal is a shared provision task, not a Cooking qualification test.",
-      "objectives": [
-        {
-          "type": "item",
-          "item": "mobs:meat_raw",
-          "count": 5
-        }
-      ],
-      "rewards": {
-        "xp": 380,
-        "copper": 45,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_dwarf_capital_services",
-      "line": "legacy",
-      "giver": "r20_dwarf_capital_envoy",
-      "turnin": "r20_dwarf_capital_cook",
-      "min_level": 10,
-      "level": 10,
-      "requires": [
-        "r20_dwarf_capital_intro"
-      ],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "A Seat at Copperpan",
-      "text": "Dorrin recommends the terrace bakehouse before your next climb. Speak with Varda Copperpan at the cook's place beside the oven, then complete the introduction with her. The Cooking trainer has a separate role; you do not need to learn the profession.",
-      "objectives": [
-        {
-          "type": "talk",
-          "npc": "r20_dwarf_capital_cook"
-        }
-      ],
-      "rewards": {
-        "xp": 285,
-        "copper": 40,
-        "items": []
-      }
-    },
-    {
-      "id": "r20_dwarf_capital_stores",
-      "line": "legacy",
+      "id": "durbrannoc_gate_01",
+      "line": "gate",
       "giver": "r20_dwarf_capital_envoy",
       "turnin": "r20_dwarf_capital_envoy",
       "min_level": 20,
-      "level": 20,
+      "level": 21,
       "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Lamp Coal for the Gate Shift",
-      "text": "The gate shift keeps its lamp fuel apart from the smiths' metal stock. Bring eight coal lumps to Dorrin so the night watch can replenish that reserve without taking the bakehouse's fuel.",
+      "title": "Debts Beyond the Grave",
+      "text": "At night Debtbound Zombies walk the {name:pastures} {zone_area:pastures}, knocking on doors to collect debts the clerks wrote off long ago. Put eight of them to rest.",
       "objectives": [
         {
-          "type": "item",
-          "item": "default:coal_lump",
-          "count": 8
+          "type": "kill",
+          "roles": [
+            "debtbound_zombie"
+          ],
+          "count": 8,
+          "area": "elandor_dur_brannoc/pastures"
         }
       ],
       "rewards": {
-        "xp": 780,
-        "copper": 60,
+        "weight": 4,
         "items": []
-      }
+      },
+      "lesson": "Capital outskirts by night.",
+      "duration_min": 10
     },
     {
-      "id": "r20_dwarf_journey_01",
-      "line": "legacy",
-      "giver": "r20_dwarf_capital_envoy",
-      "turnin": "r20_anchor_014_host",
-      "min_level": 21,
+      "id": "durbrannoc_provisions_01",
+      "line": "provisions",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_dwarf_capital_cook",
+      "min_level": 20,
       "level": 21,
       "requires": [],
-      "faction": "accord",
-      "race": "dwarf",
-      "title": "Word for Edda Tarnmantle",
-      "text": "The capital keeps contact with the working settlements beyond its walls. Travel to Tarnwatch Fold in Frostbarrow Shelf and speak with Edda Tarnmantle. This is level 21–30 country; prepare your equipment before leaving the road. Complete the conversation with Edda Tarnmantle there. No parcel, fighting errand or return trip is required.",
+      "title": "Fish for the Pie Crust",
+      "text": "The bakehouse pies want fish this week, and the rivers and tarns outside the gates are full of Mire Carp. Bring me four; a rod and some patience will do.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_fishing:mire_carp",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Fishing as an errand at any hour; the catch follows the water's level band.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_dispatch_01",
+      "line": "dispatch",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_anchor_014_host",
+      "min_level": 21,
+      "level": 22,
+      "requires": [
+        "durbrannoc_gate_01"
+      ],
+      "title": "Bread for Tarnwatch Fold",
+      "text": "Edda Tarnmantle at Tarnwatch Fold on the Frostbarrow Shelf ordered bread and a strong pair of arms. The bread is on the cart; you are the arms.",
       "objectives": [
         {
           "type": "talk",
@@ -118,10 +94,262 @@
         }
       ],
       "rewards": {
-        "xp": 615,
-        "copper": 50,
+        "weight": 1,
         "items": []
+      },
+      "lesson": "Capital to own heartland handoff.",
+      "duration_min": 8
+    },
+    {
+      "id": "durbrannoc_dispatch_whitebridge",
+      "line": "dispatch",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_anchor_016_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "durbrannoc_dispatch_01"
+      ],
+      "title": "Letter for Merren Oakstamp",
+      "text": "Our friends need help too, and good bread travels. Take this letter to Merren Oakstamp at Whitebridge Market Close; they will have work for a dwarf who wants to see more of the Accord.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_016_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer: one of three other Accord 20-30 zones.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_dispatch_highcourt",
+      "line": "dispatch",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_human_capital_envoy",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "durbrannoc_dispatch_01"
+      ],
+      "title": "Letter for Mariel Waybook",
+      "text": "Our friends need help too, and good bread travels. Take this letter to Mariel Waybook at Highcourt; they will have work for a dwarf who wants to see more of the Accord.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_human_capital_envoy"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer: one of three other Accord 20-30 zones.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_dispatch_lorindor",
+      "line": "dispatch",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_anchor_018_host",
+      "min_level": 22,
+      "level": 23,
+      "requires": [
+        "durbrannoc_dispatch_01"
+      ],
+      "title": "Letter for Ilwen Petalmeasure",
+      "text": "Our friends need help too, and good bread travels. Take this letter to Ilwen Petalmeasure at Lorindor Berrycourt; they will have work for a dwarf who wants to see more of the Accord.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_018_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Sister-zone offer: one of three other Accord 20-30 zones.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_gate_02",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 23,
+      "level": 25,
+      "requires": [
+        "durbrannoc_gate_01"
+      ],
+      "title": "Tolls Nobody Granted",
+      "text": "Toll Bandits stop travellers in the {name:tollwood} {zone_area:tollwood} at night and collect a toll the king never signed. Defeat eight Toll Bandit Archers or Toll Bandits there.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "toll_bandit_archer",
+            "toll_bandit"
+          ],
+          "count": 8,
+          "area": "elandor_dur_brannoc/tollwood"
+        }
+      ],
+      "rewards": {
+        "weight": 4.5,
+        "items": []
+      },
+      "lesson": "Night outlaws in the forest belt; archers first.",
+      "duration_min": 11
+    },
+    {
+      "id": "durbrannoc_gate_03",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_dwarf_capital_envoy",
+      "min_level": 27,
+      "level": 29,
+      "requires": [
+        "durbrannoc_gate_02"
+      ],
+      "title": "The Ore-Factor's Books",
+      "text": "The tolls and the stolen ore all end at the {name:goblin_camp} {dir_from_giver:goblin_camp}, where Goblin Ore-Factor Brakk pays in Clasped Purses. Recover two purses from his goblins and close Brakk's account for good.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "ore_factor_brakk"
+          ],
+          "count": 1
+        },
+        {
+          "type": "item",
+          "item": "grug_mobs:clasped_purse",
+          "count": 2,
+          "roles": [
+            "ore_thieving_goblin",
+            "rubble_goblin_slinger"
+          ],
+          "area": "elandor_dur_brannoc/goblin_camp"
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "Goblin camp and a normal named leader; the line's first debt is settled.",
+      "duration_min": 14,
+      "climax": true
+    },
+    {
+      "id": "durbrannoc_provisions_bounty",
+      "line": "provisions",
+      "giver": "r20_dwarf_capital_cook",
+      "turnin": "r20_dwarf_capital_cook",
+      "min_level": 28,
+      "level": 29,
+      "requires": [
+        "durbrannoc_provisions_01"
+      ],
+      "title": "Bounty: Ram for the Ovens",
+      "text": "Repeatable bounty: the ovens are always hungry. Kill six Hill Rams on the {name:heights} by day and I pay for every batch; come back after twenty minutes for the next.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "hill_ram"
+          ],
+          "count": 6,
+          "area": "elandor_dur_brannoc/heights"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Optional repeatable hunt.",
+      "duration_min": 7,
+      "repeatable": {
+        "cooldown": 1200
       }
+    },
+    {
+      "id": "durbrannoc_gate_stormvault",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_anchor_027_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "durbrannoc_gate_03"
+      ],
+      "title": "Orders for Borin Splitbolt",
+      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Borin Splitbolt at Splitbolt Station; the contested lands are your work now.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_027_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Capital to contested zones handoff at 30.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_gate_ashenward",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_anchor_031_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "durbrannoc_gate_03"
+      ],
+      "title": "Orders for Toren Waterbarrel",
+      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Toren Waterbarrel at Cinderline Watch; the contested lands are your work now.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_031_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Capital to contested zones handoff at 30.",
+      "duration_min": 10
+    },
+    {
+      "id": "durbrannoc_gate_glassroot",
+      "line": "gate",
+      "giver": "r20_dwarf_capital_envoy",
+      "turnin": "r20_anchor_036_host",
+      "min_level": 29,
+      "level": 30,
+      "requires": [
+        "durbrannoc_gate_03"
+      ],
+      "title": "Orders for Faeris Rootbinder",
+      "text": "The Accord's line needs dwarves who can settle accounts. Take these orders to Faeris Rootbinder at Glassroot Gate; the contested lands are your work now.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r20_anchor_036_host"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Capital to contested zones handoff at 30.",
+      "duration_min": 10
     }
   ]
 }
