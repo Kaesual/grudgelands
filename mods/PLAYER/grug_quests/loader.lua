@@ -64,17 +64,20 @@ local function definition(file, quest)
 			area = V.area_ref(drop.area, file.zone)}
 	end
 	local rewards = quest.rewards
+	local copper = rewards.copper
+	if copper == nil and rewards.weight then copper = Q.quest_copper(quest.level, rewards.weight) end
 	local items = {}
 	for index, item in ipairs(rewards.items or {}) do
 		items[index] = item.item .. " " .. (item.count or 1)
 	end
 	return {
-		title = quest.title, description = quest.text, npc = quest.giver, turnin_npc = quest.turnin,
+		title = Q.fill_names(quest.title, file.zone), description = quest.text,
+		npc = quest.giver, turnin_npc = quest.turnin,
 		min_level = quest.min_level, level = quest.level, prerequisites = quest.requires or {},
 		faction = quest.faction, race = quest.race, objectives = objectives, quest_drops = drops,
 		repeatable = quest.repeatable and {cooldown = quest.repeatable.cooldown} or nil,
 		rewards = {weight = rewards.weight, xp = rewards.weight == nil and rewards.xp or nil,
-			copper = rewards.copper or 0, items = items},
+			copper = copper or 0, items = items},
 		zone = file.zone, line = quest.line, source = "zones/" .. file.name,
 	}
 end
@@ -198,6 +201,9 @@ local function world_view()
 		item = function(name)
 			return core.registered_items[name] ~= nil or core.registered_aliases[name] ~= nil
 		end,
+		-- Quest text placeholders (labels.lua): a target and a named place.
+		placeholder_target = Q.placeholder_target,
+		place = function(ref) return areas.place(ref) end,
 		group = function(name)
 			if not groups then
 				groups = {}

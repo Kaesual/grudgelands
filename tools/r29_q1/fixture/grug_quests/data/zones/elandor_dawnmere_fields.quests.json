@@ -1,0 +1,31 @@
+{
+  "zone": "elandor_dawnmere_fields",
+  "identity": "Fixture for tools/r29_q1/portable_test.lua: placeholders in titles and texts, and quest copper.",
+  "hubs": [
+    {"id": "dawnmere", "anchor": "start", "givers": [
+      {"npc": "r14_human_elder", "lines": ["hunt", "tools"]},
+      {"npc": "r20_human_start_cook", "lines": ["pantry"]}
+    ]}
+  ],
+  "quests": [
+    {"id": "q1_camp", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 8, "level": 9, "title": "Raid on the {name:bandit_camp}",
+     "text": "Bandits hold a camp {dir_from_giver:bandit_camp}. Drive them out.",
+     "objectives": [{"type": "kill", "roles": ["confused_bandit"], "count": 5, "area": "bandit_camp"}],
+     "rewards": {"weight": 4}},
+    {"id": "q1_chief", "line": "hunt", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 9, "level": 10, "requires": ["q1_camp"], "title": "{name:confused_bandit_chief}",
+     "text": "{dir_from_giver:confused_bandit_chief} stands {name:confused_bandit_chief}. The woods lie {zone_area:woods}, the borderlands {dir_of:highcourt:borderlands}.",
+     "objectives": [{"type": "kill", "roles": ["confused_bandit_chief"], "count": 1}],
+     "rewards": {"weight": 6, "copper": 7}},
+    {"id": "q1_lost", "line": "tools", "giver": "r14_human_elder", "turnin": "r14_human_elder",
+     "min_level": 1, "level": 2, "title": "Lost Fields",
+     "text": "Boars raid {zone_area:home_fields}. Look {dir_of:dawnmere:home_fields} as well.",
+     "objectives": [{"type": "kill", "roles": ["small_boar"], "count": 4, "area": "home_fields"}],
+     "rewards": {"weight": 2.25}},
+    {"id": "q1_stones", "line": "pantry", "giver": "r20_human_start_cook", "turnin": "r20_human_start_cook",
+     "min_level": 1, "level": 11, "title": "Stones", "text": "Bring stones. No direction here.",
+     "objectives": [{"type": "item", "item": "default:cobble", "count": 10}],
+     "rewards": {"weight": 2.5, "items": []}}
+  ]
+}

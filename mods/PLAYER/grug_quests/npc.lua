@@ -33,7 +33,7 @@ function Q.open_npc(player, entity, selected, notice)
 	selected = math.min(math.max(tonumber(selected) or 1, 1), #rows)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
-	local detail = def.description .. "\n\n"
+	local detail = Q.quest_text(def) .. "\n\n"
 	if def.repeatable then
 		detail = detail .. ("Repeatable (every %s)\n"):format(Q.cooldown_text(def.repeatable.cooldown))
 	end

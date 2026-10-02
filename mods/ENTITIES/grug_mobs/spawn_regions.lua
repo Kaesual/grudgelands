@@ -467,6 +467,9 @@ local function place(ref)
 	local a = grug_zones.anchor(row.zone_id, row.slot)
 	return a and {x = a.x, z = a.z, name = row.label} or nil
 end
+-- {x, z, name} of a named place (a settlement key or anchor id), or nil:
+-- the "of" reference, also for checking quest placeholders at load.
+SR.place = place
 
 function SR.describe(zone_id, target, mode, ref)
 	local map = SR.map(zone_id)
