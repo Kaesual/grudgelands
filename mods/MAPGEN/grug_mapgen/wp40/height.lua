@@ -655,6 +655,105 @@ local function height_factory(dependencies)
 		end
 
 		-----------------------------------------------------------------------
+		-- Island landing beaches (Round 30 lane L, boats.md §7). At each
+		-- dragon-island boat landing the shore point is the last land column
+		-- on the boat line, walking from the landing toward the mainland until
+		-- the first sea column (`road_writer.lua` walks the same line for the
+		-- pier). A sand crescent is cut into the shore there: a half ellipse
+		-- of LANDING_HALF nodes along the shore either side and LANDING_DEPTH
+		-- inland, measured as the 4-neighbour distance to the sea, so it
+		-- follows the coast. Its ground rises from the water line (y 1) to
+		-- y 3; a collar of LANDING_COLLAR nodes blends it into the natural
+		-- terrain. A noise moves the edge, so it never runs straight. Built
+		-- once per session and landing, on first use.
+		-----------------------------------------------------------------------
+		local LANDING_HALF, LANDING_DEPTH, LANDING_COLLAR = 12, 11, 8
+		local LANDING_JITTER, LANDING_WALK, LANDING_REACH = 0.1, 160, 40
+		local landing_sites = {}
+		do
+			local path_by_id = {}
+			for _, path in ipairs(source.boat_paths or {}) do path_by_id[path.id] = path end
+			for _, landing in ipairs(source.island_landings or {}) do
+				local line = path_by_id[landing.boat_path_id].centreline
+				local dx = line[#line - 1].x - line[#line].x
+				local dz = line[#line - 1].z - line[#line].z
+				-- the boat paths are axis-aligned: one unit step toward the mainland
+				local ux, uz = 0, 0
+				if abs(dx) >= abs(dz) then ux = dx > 0 and 1 or -1 else uz = dz > 0 and 1 or -1 end
+				local px, pz = landing.position.x, landing.position.z
+				local ex, ez = px + ux * LANDING_WALK, pz + uz * LANDING_WALK
+				landing_sites[#landing_sites + 1] = {id = landing.id, x = px, z = pz,
+					ux = ux, uz = uz,
+					-- every column the beach can reach, whatever the shore point
+					min_x = min(px, ex) - LANDING_REACH, max_x = max(px, ex) + LANDING_REACH,
+					min_z = min(pz, ez) - LANDING_REACH, max_z = max(pz, ez) + LANDING_REACH}
+			end
+		end
+		-- The shore point and the distance to the sea on a square of
+		-- LANDING_REACH round it (false: no sea on the walk).
+		local function landing_build(site)
+			local sx, sz
+			for k = 0, LANDING_WALK do
+				local x, z = site.x + k * site.ux, site.z + k * site.uz
+				if class_owner_at(x, z) ~= LAND then
+					if k > 0 then sx, sz = x - site.ux, z - site.uz end
+					break
+				end
+			end
+			if not sx then site.built = false return end
+			local n = 2 * LANDING_REACH + 1
+			local x0, z0 = sx - LANDING_REACH, sz - LANDING_REACH
+			local dist, queue, head = {}, {}, 1
+			for iz = 0, n - 1 do
+				for ix = 0, n - 1 do
+					if class_owner_at(x0 + ix, z0 + iz) ~= LAND then
+						dist[iz * n + ix + 1] = 0
+						queue[#queue + 1] = iz * n + ix
+					end
+				end
+			end
+			while head <= #queue do
+				local k = queue[head]
+				head = head + 1
+				local ix, iz = k % n, floor(k / n)
+				local d = dist[k + 1] + 1
+				if ix > 0 and not dist[k] then dist[k] = d queue[#queue + 1] = k - 1 end
+				if ix < n - 1 and not dist[k + 2] then dist[k + 2] = d queue[#queue + 1] = k + 1 end
+				if iz > 0 and not dist[k - n + 1] then dist[k - n + 1] = d queue[#queue + 1] = k - n end
+				if iz < n - 1 and not dist[k + n + 1] then dist[k + n + 1] = d queue[#queue + 1] = k + n end
+			end
+			site.sx, site.sz, site.x0, site.z0, site.n, site.dist = sx, sz, x0, z0, n, dist
+			site.built = true
+		end
+		-- The beach's pull on a land column: the beach y and its weight (1 on
+		-- the crescent, the blend weight in the collar), or nil.
+		local function landing_beach_at(x, z)
+			for index = 1, #landing_sites do
+				local site = landing_sites[index]
+				if x >= site.min_x and x <= site.max_x and z >= site.min_z and z <= site.max_z then
+					if site.built == nil then landing_build(site) end
+					local ix, iz = x - (site.x0 or x), z - (site.z0 or z)
+					if site.built and ix >= 0 and ix < site.n and iz >= 0 and iz < site.n then
+						local d = site.dist[iz * site.n + ix + 1]
+						if d and d > 0 then
+							-- along the shore: the axis across the boat line
+							local b = (x - site.sx) * -site.uz + (z - site.sz) * site.ux
+							local r = sqrt((b / LANDING_HALF) * (b / LANDING_HALF) +
+								(d / LANDING_DEPTH) * (d / LANDING_DEPTH)) *
+								(1 + LANDING_JITTER * poi_edge_noise(x / 12, z / 12))
+							local y = WATER_LEVEL + floor(2 * (min(d, LANDING_DEPTH) - 1) /
+								(LANDING_DEPTH - 1) + 0.5)
+							if r <= 1 then return y, 1 end
+							local edge = (r - 1) * LANDING_DEPTH
+							if edge < LANDING_COLLAR then return y, weight_at(edge, LANDING_COLLAR) end
+						end
+					end
+				end
+			end
+			return nil
+		end
+
+		-----------------------------------------------------------------------
 		-- Anchor fittings. Starts and capitals sit in the field's calm bowls
 		-- (damping keyed to the anchor), so their cores fit the cut/fill limits
 		-- of their profile. Every other anchor (a POI) takes its height from the
@@ -1035,6 +1134,16 @@ local function height_factory(dependencies)
 			if value ~= nil then
 				terrain_y, kind, feature_id = keep_trough(x, z, value, terrain_y),
 					"land_grade", fitting.id
+			end
+			-- An island landing beach; natural inland water and its banks keep
+			-- their ground (the grading reads neighbours: recompute first).
+			local beach_y, weight = landing_beach_at(x, z)
+			if beach_y then
+				natural_height_at(x, z)
+				local block, slot = column(x, z)
+				if not block.nwater[slot] and not block.nbank[slot] then
+					terrain_y = lerp_node(terrain_y, beach_y, weight)
+				end
 			end
 			return terrain_y, kind, feature_id
 		end
@@ -1641,6 +1750,11 @@ local function height_factory(dependencies)
 			coordinate(x, "coast query x") coordinate(z, "coast query z")
 			local owner = dry_owner_at(x, z)
 			if owner == nil then return nil end
+			-- An island landing beach is sand up to three nodes above the
+			-- water, mountain island or not.
+			if landing_beach_at(x, z) and final_values_at(x, z) <= WATER_LEVEL + 3 then
+				return "sand"
+			end
 			local material = bank_material(x, z, owner, WATER_LEVEL,
 				field.coast_signed(x, z))
 			if material == nil then
@@ -1998,6 +2112,20 @@ local function height_factory(dependencies)
 			if lower == nil then return nil end
 			return upper - lower <= WP.rapid_max and "rapid" or "fall", nil, upper,
 				lower, nil, nil
+		end
+		-- An island landing's shore point (the last land column on its boat
+		-- line, where the beach and the pier meet) and its unit step toward
+		-- the mainland, for tools: x, z, ux, uz; nil when the walk found no sea.
+		function session.island_landing_site(landing_id)
+			for index = 1, #landing_sites do
+				local site = landing_sites[index]
+				if site.id == landing_id then
+					if site.built == nil then landing_build(site) end
+					if not site.built then return nil end
+					return site.sx, site.sz, site.ux, site.uz
+				end
+			end
+			return nil
 		end
 		-- The natural (pre-fitting) surface, for tools and fit reports.
 		function session.natural_height_at(x, z)
