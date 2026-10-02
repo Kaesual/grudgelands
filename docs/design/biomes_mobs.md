@@ -834,12 +834,14 @@ The surface tables below are therefore history for every other family. The
 remaining rows run through three merged ABMs, one per node set: underground
 (stone and strata, y ≤ −40), water (Kraken, Reed Angelfish) and surface
 (`grug_mobs/spawn_abms.lua`). A merged ABM takes its rows' shortest interval
-and the largest chance that keeps every row's own rate; its dispatcher runs a
-row only on that row's nodes, in its y range, with its neighbours and with
-probability `C × I / (c × i)` (`c`, `i` the row's chance and interval, `C`,
-`I` the merged ABM's), so each row keeps its chance × interval rate,
-and everything after the trigger (light, clock, cap, players, policy) is the
-row's own unchanged code. The engine scanned an active block for some spawn
+`I`; its dispatcher picks at most one row per triggered node, by one roll
+against the cumulative probabilities `p = C × I / (c × i)` of the rows hosted
+on that node (`c`, `i` the row's chance and interval), with the merged chance
+`C` the largest that keeps the sum of `p` at most 1. So each row keeps its
+chance × interval rate, two species never spawn on one node in one trigger,
+and the picked row runs only in its own y range and with its neighbours;
+everything after the trigger (light, clock, cap, players, policy) is the
+row's own unchanged code, called as often as before. The engine scanned an active block for some spawn
 ABM nearly every second before (88 ABMs on independent timers); now three
 ABMs do it every 20–30 s.
 Host nodes, authored zone palettes, regional identity and local level must all

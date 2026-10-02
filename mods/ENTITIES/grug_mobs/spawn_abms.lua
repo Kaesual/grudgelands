@@ -15,18 +15,21 @@
 --     (stone and strata, y <= -40), "water" (water sources: Kraken, Reed
 --     Angelfish) and "surface" (the recipes' critters and the Rift Spawn's
 --     surface row). A merged ABM's nodes and neighbours are the union of its
---     rows', its y range their hull, its interval their shortest one, and its
---     chance the largest that still lets every row keep its own rate.
+--     rows', its y range their hull and its interval their shortest one.
 --
--- The dispatcher keeps each row's semantics: a triggered node runs a row only
--- when the node is one of the row's own nodes, lies in the row's y range and
--- has one of the row's own neighbours (checked only where the row's list is
--- narrower than the group's), and with the probability that turns the
--- merged trigger rate into the row's own: a row of chance c and interval i
--- fires per node with rate 1 / (c x i); the merged ABM triggers with rate
--- 1 / (C x I), so the row runs with p = C x I / (c x i) <= 1. Everything after
--- the trigger (the per-row light, height, cap, player and policy checks of
--- mobs_redo's spawn_action) is the row's own unchanged code.
+-- The dispatcher keeps each row's semantics and rate. A row of chance c and
+-- interval i fires per node with rate 1 / (c x i); the merged ABM triggers
+-- with rate 1 / (C x I), so the row must be picked with p = C x I / (c x i).
+-- A trigger picks at most ONE row, by one roll against the rows' cumulative
+-- p (several rows firing on one node at once would clump species on one
+-- spot), so C is the largest chance with sum(p) <= 1 over the group's rows.
+-- The picked row runs only when the node is one of its own nodes (the pick
+-- is among those), lies in its y range and has one of its own neighbours
+-- (checked only where its list is narrower than the group's); otherwise the
+-- trigger spawns nothing, exactly as the row's own ABM would have failed
+-- there. Everything after that (the per-row light, height, cap, player and
+-- policy checks of mobs_redo's spawn_action) is the row's own unchanged
+-- code, called as often as before the merge.
 --
 
 local random = math.random
@@ -129,8 +132,8 @@ local function same_set(a, b_seen, b_count)
 	return true
 end
 
--- Pure: the merged ABM's interval and chance and each row's probability `p`.
--- Exposed for the portable test.
+-- Pure: the merged ABM's interval and chance and each row's probability `p`
+-- (sum <= 1). Exposed for the portable test.
 function grug_mobs.merge_spawn_rates(rows)
 	local interval
 	for _, row in ipairs(rows) do
@@ -138,16 +141,14 @@ function grug_mobs.merge_spawn_rates(rows)
 			interval = row.interval
 		end
 	end
-	local chance
+	-- sum(p) = C x sum(I / (c x i)) <= 1
+	local rate = 0
 	for _, row in ipairs(rows) do
-		local fit = row.chance * row.interval / interval
-		if not chance or fit < chance then
-			chance = fit
-		end
+		rate = rate + interval / (row.chance * row.interval)
 	end
-	chance = math.max(1, math.floor(chance))
+	local chance = math.max(1, math.floor(1 / rate))
 	for _, row in ipairs(rows) do
-		row.p = math.min(1, chance * interval / (row.chance * row.interval))
+		row.p = chance * interval / (row.chance * row.interval)
 	end
 	return interval, chance
 end
@@ -204,16 +205,19 @@ local function register_group(group_name, group)
 		min_y = min_y, max_y = max_y,
 		action = function(pos, node, active_object_count, active_object_count_wider)
 			local list = rows_for(node.name)
-			local y = pos.y
+			local roll = random()
+			local cumulative = 0
 			for i = 1, #list do
 				local row = list[i]
-				if y >= row.min_y and y <= row.max_y
-						and (row.p >= 1 or random() < row.p)
-						and (not row.check_neighbors or
-							core.find_node_near(pos, 1, row.neighbors)) then
-					-- spawn_action moves its position: each row its own copy.
-					row.action({x = pos.x, y = y, z = pos.z}, node,
-						active_object_count, active_object_count_wider)
+				cumulative = cumulative + row.p
+				if roll < cumulative then
+					if pos.y >= row.min_y and pos.y <= row.max_y
+							and (not row.check_neighbors or
+								core.find_node_near(pos, 1, row.neighbors)) then
+						row.action(pos, node, active_object_count,
+							active_object_count_wider)
+					end
+					return
 				end
 			end
 		end,

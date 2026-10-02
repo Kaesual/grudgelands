@@ -10,7 +10,9 @@
 --    give-up grows to 8 s and stays there), the per-step A* time budget
 --    (direct claims while the step has time, the queue granted at the next
 --    step, the spare-budget test of the once-a-second nudge) and the
---    collision boxes (the mob field, the per-step player cache).
+--    collision boxes (the mob field, the per-step player cache), and the
+--    path ends (a target on a slab, stair or snow aimed at from above; an end
+--    still walkable is no search).
 -- B. general_attack, cut out of the vendored api.lua: the mob's eye stays at
 --    its own position + 1 for every candidate and its position is not moved.
 -- C. the privilege cache, cut out of api.lua: one lookup per player and
@@ -18,11 +20,16 @@
 -- D. spawn_abms.lua, the real file, on a fake engine: rows of one node set
 --    merge into one ABM whose trigger rate times each row's probability is
 --    the row's own rate; a row runs only on its own nodes, in its own y range
---    and with its own neighbours; a retired row registers nothing.
+--    and with its own neighbours; one roll picks at most one row per
+--    trigger, the probabilities adding up to at most 1; a retired row
+--    registers nothing.
 -- E. spawn_policy.lua, the real file: which rows stay (underground, Kraken /
 --    Angelfish, the recipes' critters, the Rift Spawn's surface row; a
 --    palette zone keeps all), and the Rift Spawn's surface row keeps its
 --    stated chance and cap.
+-- F. aggro.lua give_up_target: an ordinary mob runs the leash reset, a king
+--    or no-leash actor only drops the target, a given-up player is ignored
+--    until they move; the dragons only ever wait (api.lua).
 -- Prints "R30 P2 PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -94,6 +101,27 @@ do
 		table.concat(waits, ","))
 	check(O.give_up_after == 3 and O.close_searchdistance == 8,
 		"A4 give up after 3, close search box 8")
+end
+
+-- Path ends: a target on a slab, a stair or snow dust stands in a walkable
+-- node; the search aims at the node above. An end still walkable is no search.
+do
+	local solid = {}
+	local function at(x, y, z) return x .. "," .. y .. "," .. z end
+	local function walkable(p) return solid[at(p.x, p.y, p.z)] == true end
+	solid[at(5, 3, 5)] = true -- slab, stair step or snow dust under the player
+	local dest = {x = 5, y = 3, z = 5}
+	check(O.fit_path_ends({x = 0, y = 3, z = 0}, dest, walkable) and dest.y == 4,
+		"A8 a target in a walkable node: aimed one node up")
+	dest = {x = 6, y = 3, z = 5}
+	check(O.fit_path_ends({x = 0, y = 3, z = 0}, dest, walkable) and dest.y == 3,
+		"A8 an ordinary target stays")
+	solid[at(5, 4, 5)] = true -- a full block above too: a buried target
+	dest = {x = 5, y = 3, z = 5}
+	check(not O.fit_path_ends({x = 0, y = 3, z = 0}, dest, walkable),
+		"A8 a buried target: no search")
+	check(not O.fit_path_ends({x = 5, y = 4, z = 5}, {x = 9, y = 3, z = 9}, walkable),
+		"A8 a mob inside a walkable node: no search")
 end
 
 -- Time budget.
@@ -313,56 +341,83 @@ do
 	local water = by_label["grug_mobs water spawning"]
 	local surface = by_label["grug_mobs surface spawning"]
 	check(under and water and surface, "D one ABM per node set")
-	check(under.interval == 20 and under.chance == 2000 and under.catch_up == false,
-		"D underground interval 20, chance 2000: " .. under.chance)
+	-- C = floor(1 / sum(I / (c x i))): bat 1/2200, golem 20/(9000*30),
+	-- mite 1/2000 -> 1 / 0.0010286 = 972.
+	check(under.interval == 20 and under.chance == 972 and under.catch_up == false,
+		"D underground interval 20, chance 972: " .. under.chance)
 	check(under.min_y == -31000 and under.max_y == -40, "D underground y hull")
 	check(water.interval == 30 and water.min_y == -30 and water.max_y == 600,
 		"D water interval and y hull")
 	local nb = table.concat(water.neighbors, ",")
 	check(nb == "air,default:sand" or nb == "default:sand,air", "D water neighbours: " .. nb)
-	-- Rates: merged trigger rate x row probability = the row's own rate.
+	-- Rates: merged trigger rate x row probability = the row's own rate, and
+	-- the probabilities of one group add up to at most 1.
 	local D = grug_mobs.merge_spawn_rates
-	local rows = {{chance = 2200, interval = 20}, {chance = 9000, interval = 30},
-		{chance = 2000, interval = 20}}
-	local interval, chance = D(rows)
-	for _, r in ipairs(rows) do
-		local merged = r.p / (chance * interval)
-		local own = 1 / (r.chance * r.interval)
-		check(math.abs(merged - own) / own < 1e-9, "D rate kept for chance " .. r.chance)
-		check(r.p <= 1, "D probability at most 1")
+	for _, rows in ipairs({
+		{{chance = 2200, interval = 20}, {chance = 9000, interval = 30},
+			{chance = 2000, interval = 20}},
+		{{chance = 1600, interval = 20}, {chance = 1800, interval = 20},
+			{chance = 9000, interval = 30}, {chance = 2400, interval = 20},
+			{chance = 5000, interval = 30}, {chance = 2200, interval = 20}},
+		{{chance = 9231, interval = 60}, {chance = 4000, interval = 30}},
+	}) do
+		local interval, chance = D(rows)
+		local sum = 0
+		for _, r in ipairs(rows) do
+			local merged = r.p / (chance * interval)
+			local own = 1 / (r.chance * r.interval)
+			check(math.abs(merged - own) / own < 1e-9, "D rate kept for chance " .. r.chance)
+			sum = sum + r.p
+		end
+		check(sum <= 1 and sum > 0.99, "D probabilities add up to at most 1: " .. sum)
 	end
-	-- Dispatch: own nodes, own y range, own neighbours; every row gets its
-	-- own copy of the position.
-	seq[1], seq[2] = 0, 0
-	under.action({x = 1, y = -100, z = 2}, {name = "default:stone"}, 0, 0)
-	check(table.concat(ran, " ") == "bat@default:stone@-100 golem@default:stone@-100",
-		"D stone at -100: bat and golem, never the mite: " .. table.concat(ran, " "))
-	ran = {}
-	seq[1], seq[2], seq[3] = 0, 0, 0
-	under.action({x = 1, y = -800, z = 2}, {name = "grug_materials:t2_stone"}, 0, 0)
-	check(#ran == 3, "D stratum at -800 hosts all three: " .. table.concat(ran, " "))
-	ran = {}
-	seq[1], seq[2], seq[3] = 0.99, 0.99, 0.99
-	under.action({x = 1, y = -800, z = 2}, {name = "grug_materials:t2_stone"}, 0, 0)
-	check(table.concat(ran, " ") == "mite@grug_materials:t2_stone@-800",
-		"D only the p = 1 row runs on a high roll: " .. table.concat(ran, " "))
-	-- Neighbours: the angelfish needs sand, the kraken air.
-	ran = {}
-	seq[1], seq[2] = 0, 0
+	-- Dispatch: one roll picks at most one row by cumulative p among the rows
+	-- hosted on the node; the picked row runs only in its own y range and
+	-- with its own neighbours.
+	local P = {}
+	for _, spec in ipairs(abms) do P[spec.label] = spec end
+	local function run(spec, roll, pos, node_name)
+		ran = {}
+		seq[1] = roll
+		for i = #seq, 2, -1 do seq[i] = nil end
+		spec.action(pos, {name = node_name}, 0, 0)
+		return table.concat(ran, " ")
+	end
+	-- Underground p: bat 972/2200 = 0.442, golem 972*20/270000 = 0.072,
+	-- mite 0.486 (on strata only).
+	check(run(under, 0.0, {x = 1, y = -100, z = 2}, "default:stone") ==
+		"bat@default:stone@-100", "D low roll on stone: the bat")
+	check(run(under, 0.45, {x = 1, y = -100, z = 2}, "default:stone") ==
+		"golem@default:stone@-100", "D next band on stone: the golem")
+	check(run(under, 0.6, {x = 1, y = -100, z = 2}, "default:stone") == "",
+		"D past the stone rows' sum: nothing (the mite never on stone)")
+	check(run(under, 0.6, {x = 1, y = -800, z = 2}, "grug_materials:t2_stone") ==
+		"mite@grug_materials:t2_stone@-800", "D the mite on strata at -800")
+	check(run(under, 0.6, {x = 1, y = -100, z = 2}, "grug_materials:t2_stone") == "",
+		"D the picked mite above its y range: nothing, no other row")
+	-- At most one row per trigger over many rolls.
+	local most = 0
+	for k = 0, 99 do
+		local r = run(under, k / 100, {x = 1, y = -800, z = 2}, "grug_materials:t2_stone")
+		local n = 0
+		for _ in r:gmatch("%S+") do n = n + 1 end
+		if n > most then most = n end
+	end
+	check(most == 1, "D at most one row per trigger")
+	-- Neighbours: the angelfish needs sand, the kraken air. Water p:
+	-- kraken 0.178, angelfish 0.822 (C = 3287).
 	local near = {}
 	core.find_node_near = function(_, _, list)
 		for _, n in ipairs(list) do if near[n] then return {} end end
 	end
 	near = {air = true}
-	water.action({x = 0, y = 1, z = 0}, {name = "default:water_source"}, 0, 0)
-	check(table.concat(ran, " ") == "kraken@default:water_source@1",
-		"D water by air: the kraken only: " .. table.concat(ran, " "))
-	ran = {}
+	check(run(water, 0.1, {x = 0, y = 1, z = 0}, "default:water_source") ==
+		"kraken@default:water_source@1", "D water by air: the kraken")
+	check(run(water, 0.9, {x = 0, y = 1, z = 0}, "default:water_source") == "",
+		"D water by air, angelfish picked: nothing")
 	near = {["default:sand"] = true}
-	seq[1], seq[2] = 0, 0
-	water.action({x = 0, y = -5, z = 0}, {name = "default:water_source"}, 0, 0)
-	check(table.concat(ran, " ") == "angelfish@default:water_source@-5",
-		"D water by sand: the angelfish only: " .. table.concat(ran, " "))
+	check(run(water, 0.9, {x = 0, y = -5, z = 0}, "default:water_source") ==
+		"angelfish@default:water_source@-5", "D water by sand: the angelfish")
 	check(#surface.nodenames == 1, "D the retired row adds no node")
 	local errored = not pcall(row, "late", {"default:stone"}, {"air"}, 20, 100, -31000, -40)
 	check(errored, "D a row after the merge is an error")
@@ -424,6 +479,50 @@ do
 		"E Kraken keeps the Round 16 scaling: " .. kraken.chance)
 	check(G.zone_density_cast == nil and G.density_budgeted == nil,
 		"E the palette budget is gone")
+end
+
+-- ---------------------------------------------------------------------------
+-- F. aggro.lua give_up_target (cut out): who resets and who only drops
+-- ---------------------------------------------------------------------------
+do
+	local src = read("mods/ENTITIES/grug_mobs/aggro.lua")
+	local block = src:match("\n(local function node_of%(pos%).-\nfunction grug_mobs.gave_up_on%(self, player%).-\nend\n)")
+	check(block ~= nil, "F give_up_target block found")
+	local resets = 0
+	local env = {grug_mobs = {leash_reset = function() resets = resets + 1 end},
+		core = {is_player = function(o) return o.player == true end}}
+	local chunk = assert(loadstring(block))
+	setfenv(chunk, setmetatable(env, {__index = _G}))
+	chunk()
+	local G = env.grug_mobs
+	local function mob(fields)
+		local m = {stopped = 0, attack = {player = true,
+			get_pos = function() return {x = 1.2, y = 7, z = -3.6} end,
+			get_player_name = function() return "anna" end}}
+		function m:stop_attack() self.stopped = self.stopped + 1 end
+		for k, v in pairs(fields or {}) do m[k] = v end
+		return m
+	end
+	local plain = mob()
+	G.give_up_target(plain)
+	check(resets == 1 and plain.stopped == 0, "F an ordinary mob runs the leash reset")
+	local king = mob({_grug_royal_king = true, _grug_boss_id = "king:human"})
+	G.give_up_target(king)
+	check(resets == 1 and king.stopped == 1, "F a king only drops the target")
+	local royal = mob({_grug_no_leash = true})
+	G.give_up_target(royal)
+	check(resets == 1 and royal.stopped == 1, "F a no-leash actor only drops the target")
+	local player = {get_player_name = function() return "anna" end,
+		get_pos = function() return {x = 1.4, y = 7.2, z = -3.9} end}
+	check(G.gave_up_on(plain, player), "F the same node stays ignored")
+	player.get_pos = function() return {x = 2.6, y = 7, z = -3.6} end
+	check(not G.gave_up_on(plain, player) and plain.temp.grug_gave_up == nil,
+		"F a moved player is a target again")
+	-- The dragons never reach give_up_target: api.lua passes keep_flying as
+	-- the gate's no-give-up flag.
+	local api = read("mods/ENTITIES/mobs/api.lua")
+	check(api:find("self.attack, s, target_pos, self.keep_flying == true)", 1, true) ~= nil,
+		"F flying actors (dragons, whelps) only wait")
 end
 
 print("R30 P2 PORTABLE PASS checks=" .. checks)
