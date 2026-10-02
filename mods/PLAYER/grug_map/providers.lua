@@ -1,4 +1,7 @@
 local atlas = grug_map.atlas
+-- The King marker's text (Round 28 M1); pure, see location_view.lua.
+local king_label = dofile(core.get_modpath(core.get_current_modname()) ..
+	"/location_view.lua").king_label
 
 local function player_marker(player, kind)
 	local name = player:get_player_name()
@@ -44,8 +47,10 @@ core.register_on_mods_loaded(function()
 				label, texture = "Housing Steward", "grug_map_housing_steward.png"
 				kind = "steward"
 			elseif socket.role == "king" then
+				-- Round 28 M1: the King marker carries the city's display name.
 				local def = assert(core.registered_entities["grug_mobs:king_" .. settlement.race_id])
-				label, texture = def.description, "grug_mobs_item_fallen_crown.png"
+				label = king_label(def.description, settlement.display_name or settlement.key)
+				texture = "grug_mobs_item_fallen_crown.png"
 				kind = "boss"
 			end
 			if label and socket.spawn ~= false then
@@ -65,6 +70,18 @@ core.register_on_mods_loaded(function()
 	end
 	table.sort(givers, function(a, b) return a.id < b.id end)
 end)
+
+-- The positions of the services, kings, dragons and quest givers above, for
+-- the zone markers' placement (location.lua). Known once mods are loaded.
+function grug_map.static_marker_positions()
+	local result = {}
+	for _, list in ipairs({services, givers}) do
+		for _, row in ipairs(list) do
+			result[#result + 1] = {x = row.position.x, z = row.position.z}
+		end
+	end
+	return result
+end
 
 atlas.register_marker_provider("service", function() return services end)
 
