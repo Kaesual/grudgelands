@@ -241,7 +241,8 @@ local function render_zone(zone)
 	end
 	for _, l in ipairs(map.leaders) do
 		doc.leaders[#doc.leaders + 1] = {role = l.role, name = display(l.role), x = l.x,
-			z = l.z, level = l.level, respawn = l.respawn, phrases = phrases(l.role)}
+			z = l.z, level = l.level, respawn = l.respawn, phrases = phrases(l.role),
+			fallback = l.fallback}
 	end
 	for _, line in ipairs(W.wp40.road_polylines) do
 		local pts, inside = {}, false

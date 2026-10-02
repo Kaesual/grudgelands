@@ -435,6 +435,13 @@ do
 		"listed critter keeps its row")
 	check(NEW.spawn_policy_allows("grug_mobs:gull", {x = x0 + 5, y = 10, z = 102}) == false,
 		"unlisted critter refused")
+	-- Rift Spawn keeps its row in a recipe zone (Round 28 S2c), at its clock.
+	new_world.time = 0.0
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == true,
+		"Rift Spawn keeps its row in a recipe zone at night")
+	new_world.time = 0.5
+	check(NEW.spawn_policy_allows("grug_mobs:rift_spawn", {x = x0 + 5, y = 10, z = 102}) == false,
+		"Rift Spawn keeps its night clock in a recipe zone")
 	check(NEW.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}) ==
 		OLD.spawn_policy_allows("grug_mobs:zombie", {x = x0 + 5, y = -60, z = 102}),
 		"underground unchanged in a recipe zone")
