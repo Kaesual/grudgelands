@@ -64,8 +64,9 @@ precedence over preserving the exact mathematical ratio.
   **rounded up to the next copper**, and applies only to goods a vendor also
   sells (gear, supplies). Thus a T1 Common weapon returns 2c and a T6 Common
   weapon returns 1s25c. The same-race purchase discount never increases
-  buy-back; a 1–2c supply (thread, torch) is not sellable at all, because 5%
-  rounded up would equal its discounted price.
+  buy-back; a 1–2c supply (thread, torch, stick) is not sellable at all,
+  because 5% rounded up would equal its discounted price. Sticks are crafted
+  from free wood, so no mob drops them and fishing does not catch them.
 - **Loot and gathered goods** pay one formula, `max(1, round(class value ×
   tier factor))`, with tier factors **1 / 2.6 / 6.4 / 16 / 40 / 100** (the
   weapon axis ÷ 25c) and the class values below, tuned once so the median kill
@@ -76,7 +77,7 @@ precedence over preserving the exact mathematical ratio.
 
   | Class | T1 value | Members |
   |---|---:|---|
-  | Trash / food | 1c | raw meat, bone, feather, linen scrap, stolen purse, war trophy, raw fish, sticks, apples, rotting flesh, papyrus |
+  | Trash / food | 1c | raw meat, bone, feather, linen scrap, stolen purse, war trophy, raw fish, apples, rotting flesh, papyrus |
   | Raw material | 1c | ore lumps, coal, quartz, gold, silver, emberglass, abyssal crystal, herbs, gathered plants, band fish, cultural materials |
   | Generic material | 2c | leathers, cloth, teeth, hides, silk and other `generic` catalogue loot |
   | Signature loot | 7c | every `signature` item of the loot catalogue |

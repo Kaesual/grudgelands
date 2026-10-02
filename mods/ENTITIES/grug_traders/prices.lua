@@ -22,23 +22,23 @@ grug_traders.price_rules = rules
 --
 
 -- Trash / food. Stolen purses and war trophies join through their
--- grug_trash_loot group; papyrus is a fishing catch.
+-- grug_trash_loot group; papyrus is a fishing catch. Sticks are not here:
+-- four of them are crafted from two planks of free wood, so traders do not
+-- buy them (the bowyer's 2c is below the buy-back floor).
 local TRASH = {
 	["mobs:meat_raw"] = true, ["grug_mobs:bone"] = true,
 	["grug_mobs:feather"] = true, ["grug_mobs:linen_scrap"] = true,
-	["grug_mobs:raw_fish"] = true, ["default:stick"] = true,
-	["default:apple"] = true, ["grug_mobs:zombie_flesh"] = true,
-	["default:papyrus"] = true,
+	["grug_mobs:raw_fish"] = true, ["default:apple"] = true,
+	["grug_mobs:zombie_flesh"] = true, ["default:papyrus"] = true,
 }
-
--- The six gem species (ruling 8); every other mined resource is raw.
-local GEMS = {citrine = true, jade = true, garnet = true, sapphire = true,
-	ruby = true, diamond = true}
 
 -- Raw goods without a registry of their own: wild berries, and the
 -- emberglass shards crystal creatures drop.
 local GATHERED = {["default:blueberries"] = true,
 	["grug_materials:emberglass_shard"] = true}
+
+-- Tiers no registration carries: a shard is Emberglass, harvest tier 4.
+local TIERS = {["grug_materials:emberglass_shard"] = 4}
 
 -- Processed goods: the leather/bolt/wood/setting ladders and reagents, by
 -- group; bars come from grug_materials.PROCESSED_MATERIALS.
@@ -80,14 +80,15 @@ local function valid_tier(tier)
 	return nil
 end
 
--- An item's own tier, or nil: its `_grug_tier`, a mined resource's harvest
--- tier, a bar's tier, its catalogue tier, a grade group, else the ingredient
--- tier its profession declared. Used by the payout and the shelf rule.
+-- An item's own tier, or nil: its `_grug_tier` (or the TIERS table above), a
+-- mined resource's harvest tier, a bar's tier, its catalogue tier, a grade
+-- group, else the ingredient tier its profession declared. Used by the
+-- payout and the shelf rule.
 function grug_traders.item_tier(itemname)
 	load_registries()
 	local def = core.registered_items[itemname]
 	if not def then return nil end
-	local tier = valid_tier(def._grug_tier)
+	local tier = valid_tier(def._grug_tier) or TIERS[itemname]
 	if tier then return tier end
 	local resource = resources[itemname]
 	if resource then return valid_tier(resource.tier or resource.harvest_tier) end
@@ -113,7 +114,7 @@ local function class_of(itemname, gathered)
 	end
 	local resource = resources[itemname]
 	if resource then
-		return GEMS[resource.key] and "gem" or "raw"
+		return resource.gem and "gem" or "raw" -- ruling 8: six gem species
 	end
 	if gathered[itemname] or group(itemname, "grug_plant_item") or
 			group(itemname, "food_fish_raw") then
