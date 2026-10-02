@@ -144,6 +144,7 @@ local level_of = {}
 local granted_xp, quest_reward_calls = {}, {}
 grug_xp = {
 	get_level = function(player) return level_of[player:get_player_name()] or 1 end,
+	register_on_level_change = function() end,
 	quest_reward = function(level, weight)
 		quest_reward_calls[#quest_reward_calls + 1] = level .. "x" .. weight
 		return math.floor(weight * (25 + 5 * level) + 0.5)

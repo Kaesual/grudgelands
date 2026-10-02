@@ -1033,9 +1033,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   invisible, non-pointable, non-physical, unsaved child entity. The parent's
   nametag stays empty (non-players) or alpha-zero (players). The child carries
   the text, inherits the parent's nametag height, and uses the engine's managed
-  observer set for the per-viewer rule above. One central pass snapshots player
-  positions and manages every carrier once per second; unchanged observer sets
-  are not written. Carriers have no per-entity `on_step`: the central pass also
+  observer set for the per-viewer rule above. One central pass, spread over
+  eight steps of each second, snapshots player positions and manages every
+  carrier once per second; unchanged observer sets are not written. Carriers have no per-entity `on_step`: the central pass also
   removes an orphan, while explicit parent lifecycle hooks remove the ordinary
   cases immediately.
 - **Con colors are per viewer** and live in a **HUD target frame** (the
@@ -1044,7 +1044,10 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
   ranges so what you can frame is roughly what you can hit. The frame
-  also works on **players** (name + faction, faction-colored).
+  also works on **players** (name + faction, faction-colored). It refreshes
+  twice a second from the crosshair's own skill ray when that ray reaches
+  20 m and settles the question (nothing in reach, a wall, or a framable
+  target first), otherwise from a 20 m ray of its own.
   Relative to the viewer's level L (mobs):
 
 | Relation | Color | XP |

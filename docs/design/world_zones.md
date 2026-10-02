@@ -247,7 +247,9 @@ in this file as of commit `082982da`.
   connection. Both factions receive equivalent authored boat access.
 - Every dragon island is a contested level-60 mountain region with strong
   level-60 mountain creatures. Its silhouette culminates in a dragon mountain
-  or summit lair (no hoard chest, WP audit E11).
+  or summit lair (no hoard chest, WP audit E11). The islands are untamed:
+  no mapgen paths or roads lead up from the boat landings (user
+  2026-10-02, `boats.md` §7.1).
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
@@ -1797,6 +1799,11 @@ numeric-truncated seed.
 - One log line per boot names the result: `world layouts: cache hit` with
   the skipped build seconds, or `cache miss (<reason>)` with the build
   seconds and the stored size.
+- The key parts (seed, mapgen tree digest, settings, interpreter) are
+  published as `grug_mapgen.wp40.world_key` (nil without a key) for the
+  other world-folder caches: the region maps
+  ([spawn_regions.md](spawn_regions.md#cache-and-memory)) and the Map tab's
+  zone grid ([world_map.md](world_map.md)).
 - The full-world preparation identity (the "authority changed" guard) binds
   a digest of the three texts besides its source files, so it changes when
   a world's layouts or those sources change, whether the layouts were built

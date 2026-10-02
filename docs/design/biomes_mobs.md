@@ -1201,7 +1201,9 @@ gate, protected surface).
 - **Seams** for other systems (`grug_mobs.spawn_regions`):
   `zone_has_recipe`, `get_area(zone, id)` and `area_roles(zone, id)` (an
   area a quest names is a kind or a camp), `zone_area_ids(zone)`,
-  `leader(role)` (zone, level, respawn), `leader_pos(role)`, `map(zone)`,
+  `leader(role)` (zone, level, respawn), `leader_pos(role)`, `map(zone)` (the
+  compact form, spawn_regions.md "Cache and memory"; `full_map(zone)` builds
+  the full map for tools),
   `region_at(x, z)`, `level_at(x, z)`, `describe(zone, target, mode, ref)` and
   `direction(zone, target, from_pos)` (spawn_regions.md, Directions).
 

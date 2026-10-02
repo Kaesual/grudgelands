@@ -216,7 +216,8 @@ end
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end}
 grug_classes = {get_race = function() return "human" end}
-grug_xp = {get_level = function() return 60 end, quest_reward = function() return 0 end}
+grug_xp = {get_level = function() return 60 end, quest_reward = function() return 0 end,
+	register_on_level_change = function() end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end}
 grug_money = {}
 grug_quests = {}

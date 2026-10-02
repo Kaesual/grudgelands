@@ -52,6 +52,7 @@ M.DRIFT = 16          -- the road/town/village drift band (Round 28 ruling 2)
 M.CORRIDOR = 4        -- road centreline distance counted as protected ground
 M.SITE_HALF = 12      -- half side of a village/POI/camp core box
 M.ROAD_CAP = 128      -- road distances are measured up to this
+M.ROAD_BUCKET = 64    -- side of the road segment buckets (a speed-up only)
 -- Type thresholds (shares of a cell's land samples, heights in nodes).
 M.SHORE_SHARE = 0.25
 M.BANK_SHARE = 0.25
@@ -912,11 +913,35 @@ function M.build(zone_id, q, recipe)
 			sites[#sites + 1] = {x = a.x, z = a.z, village = slot:match("^village_%d+$") ~= nil}
 		end
 	end
+	-- The segments by bucket (ROAD_BUCKET nodes square): a bucket lists every
+	-- segment whose box, widened by the cap, meets it, so the bucket of a
+	-- column holds every segment closer than the cap (Round 30 P3; the
+	-- distances are those of a scan over all segments).
+	local BUCKET = M.ROAD_BUCKET
+	local buckets = {}
+	for s = 1, #segs do
+		local g = segs[s]
+		for bi = floor((math.min(g[1], g[3]) - cap) / BUCKET),
+				floor((math.max(g[1], g[3]) + cap) / BUCKET) do
+			for bj = floor((math.min(g[2], g[4]) - cap) / BUCKET),
+					floor((math.max(g[2], g[4]) + cap) / BUCKET) do
+				local k = key(bi, bj)
+				local list = buckets[k]
+				if not list then
+					list = {}
+					buckets[k] = list
+				end
+				list[#list + 1] = g
+			end
+		end
+	end
+	local NO_SEGMENTS = {}
 	-- Road distance of a column (capped).
 	local function road_dist(x, z)
 		local best = cap
-		for s = 1, #segs do
-			local g = segs[s]
+		local near = buckets[key(floor(x / BUCKET), floor(z / BUCKET))] or NO_SEGMENTS
+		for s = 1, #near do
+			local g = near[s]
 			if math.min(g[1], g[3]) - best <= x and math.max(g[1], g[3]) + best >= x and
 					math.min(g[2], g[4]) - best <= z and math.max(g[2], g[4]) + best >= z then
 				local d = seg_dist(x, z, g[1], g[2], g[3], g[4])

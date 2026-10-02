@@ -208,14 +208,18 @@ drawn from the base image above. The gliding version (approved in playtest,
   the bezel pointing toward them (16 directions) when they are outside it.
   Rim arrows fill 85 % of the bezel's band and are drawn above the "N".
 - **Updates:** the map, markers and party members are checked every server
-  step. Static markers are asked from their providers on joining, on every
-  quest change and every 5 s (each player in their own phase); party member
+  step. Static markers are asked from their providers on joining, whenever
+  the quest markers may have changed (`grug_quests.markers_changed`: a quest
+  change, held objective items as the quest tracker sees them every 0.5 s,
+  a level change) and every 5 s (each player in their own phase; a
+  repeatable's cooldown ending shows then); party member
   names are read again only on a party change and that 5 s refresh. The
   window size and the location line are read every 0.5 s (Round 30, perf
   review #12); a window change then resends every element's position. Only
   changed HUD values are sent; a standing player costs no packets. The quest
   givers' states come from one `grug_quests.marker_states` call per player
-  (one decoded quest state for all givers, memoized for a second).
+  (one decoded quest state for all givers, memoized for a second or until
+  `markers_changed`).
 - **Cost** (comparisons, not targets): `tools/r27_minimap/bench_glide.lua`
   (LuaJIT, no engine; one player, 0.09 s server steps, about ten markers in
   the window, two party members moving along) measures about 18 HUD packets
@@ -267,7 +271,11 @@ were in, and quest texts and level routes now name zones.
   one-level zone). Clicking selects it like any marker. Zone markers draw
   under every other marker. Each sits at the land cell of its zone farthest
   from the zone's border and coast on a 32-node grid (the pole of
-  inaccessibility), computed once at server start from the world authority.
+  inaccessibility), computed once at server start from the world authority
+  (a later start of the same world reads the 32-node zone grid from
+  `grug_map_zone_grid.txt`, keyed by `grug_mapgen.wp40.world_key`, the zone
+  queries' seam and the sampling code; the placement itself runs every
+  start).
   If another marker (service, king, dragon, quest giver, settlement,
   innkeeper) or a region name is too close, the marker takes the deepest
   cell of its zone that keeps 0.45 formspec units (zoom 1) from every other

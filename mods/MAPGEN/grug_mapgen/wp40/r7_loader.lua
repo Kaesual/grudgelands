@@ -42,6 +42,10 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 	local now = type(core_api.get_us_time) == "function" and function()
 		return core_api.get_us_time() / 1000000 end or os.clock
 	local layout_cache, cache_key, cached, cache_reason, cache_damaged
+	-- The same key parts, published for the other world-folder caches (the
+	-- region maps, grug_mobs/spawn_regions_cache.lua; the zone markers,
+	-- grug_map/location.lua), so the mapgen tree is digested once per start.
+	local world_key
 	local world_dir = type(core_api.get_worldpath) == "function" and
 		core_api.get_worldpath() or nil
 	if type(world_dir) == "string" and world_dir ~= "" and
@@ -66,8 +70,12 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		-- still stops the load when it is read.
 		local digest_ok, source_digest = pcall(layout_cache.source_digest, mapgen_modpath)
 		if digest_ok then
-			cache_key = layout_cache.key(seed, source_digest, table.concat(settings, ";"),
-				type(jit_table) == "table" and tostring(jit_table.version) or _VERSION)
+			world_key = {seed = seed, source = source_digest,
+				settings = table.concat(settings, ";"),
+				interpreter = type(jit_table) == "table" and tostring(jit_table.version) or
+					_VERSION}
+			cache_key = layout_cache.key(world_key.seed, world_key.source,
+				world_key.settings, world_key.interpreter)
 			-- A file that cannot even be read builds afresh like a damaged one.
 			local ok, result, reason, damaged = pcall(layout_cache.load, world_dir, cache_key)
 			if ok then
@@ -425,5 +433,9 @@ return function(core_api, mapgen_modpath, materials, gathering, core_owner)
 		road_polylines = runtime.road_polylines(), road_spots = road_spots,
 		-- The capital layouts of this world (capital planner; the text
 		-- `capital_planner.deserialize` reads), e.g. for the world map.
-		capital_layout_text = payload.capital_layout}
+		capital_layout_text = payload.capital_layout,
+		-- The world-layout cache's key parts {seed, source, settings,
+		-- interpreter} for the other world-folder caches; nil when this start
+		-- has no trustworthy key.
+		world_key = world_key}
 end

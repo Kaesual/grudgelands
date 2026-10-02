@@ -11,11 +11,12 @@
 --                camps, leaders, critters; docs/design/spawn_regions.md). A
 --                zone WITH a recipe spawns its surface mobs only from its
 --                regions; its ABM rows keep the recipe's critters.
--- A recipe holds no coordinate: the world differs per seed. On the first
--- need (a spawn attempt, a level or direction query) the zone's REGION MAP is
--- built from the analytic world (spawn_regions_core.lua, the same file the
--- offline renderer tools/r28_regions runs) and cached for the session; every
--- recipe zone's map is built once at server start (mods loaded).
+-- A recipe holds no coordinate: the world differs per seed. Every recipe
+-- zone's REGION MAP is built from the analytic world (spawn_regions_core.lua,
+-- the same file the offline renderer tools/r28_regions runs) once at server
+-- start (mods loaded) and kept in its compact form for the session
+-- (spawn_regions_cache.lua); a later start of the same world reads the maps
+-- back from the world folder instead of building them.
 --
 -- Spawning at a point uses the region there: the roster of the current clock,
 -- a level in the region's range for the role (belt range x role range), the
@@ -47,7 +48,10 @@ local zones = {} -- zone_id -> {id, palette, boar, lookalikes, recipe}
 local palette_by_zone, boar_by_zone, lookalikes_by_zone = {}, {}, {}
 local unit_by_tag = {} -- "zone/kind" or "zone/camp" -> kind or camp (recipe)
 local leader_by_role = {} -- role -> {zone, leader (parsed)}
-local maps = {} -- zone_id -> built map, or false after a failed build
+local maps = {} -- zone_id -> compact map, or false after a failed build
+-- Zones whose data came from their shipped file (load_all), the only ones the
+-- world-folder cache serves: a probe's install_zone data is not that file.
+local from_file = {}
 
 local function fail(where, message)
 	error("[grug_mobs] spawn data " .. where .. ": " .. message, 0)
@@ -70,6 +74,15 @@ local function read_file(path)
 	file:close()
 	return text
 end
+
+-- The compact form and the world-folder file (spawn_regions_cache.lua).
+local CACHE = dofile(MODPATH .. "/spawn_regions_cache.lua")({
+	sha256 = function(bytes) return core.sha256(bytes) end,
+	read = read_file,
+	write = function(path, bytes) return core.safe_file_write(path, bytes) end,
+	cell = CORE.CELL,
+})
+SR.cache = CACHE
 
 -- The sub-type catalogue's levels and leader flags (subtypes.lua registers
 -- the roles later; the recipe only needs these two facts at load).
@@ -237,6 +250,7 @@ function SR.install_zone(zone_id, data)
 	zones[zone_id] = {id = zone_id, palette = palette, boar = boar,
 		lookalikes = lookalikes, recipe = recipe}
 	maps[zone_id] = nil
+	from_file[zone_id] = nil
 	palette_by_zone[zone_id] = palette
 	boar_by_zone[zone_id] = boar
 	lookalikes_by_zone[zone_id] = lookalikes
@@ -257,6 +271,7 @@ local function load_all()
 				fail(name, "unreadable JSON: " .. tostring(err))
 			end
 			SR.install_zone(zone_id, data)
+			from_file[zone_id] = true
 		end
 	end
 end
@@ -284,8 +299,62 @@ SR.queries = queries
 
 SR.build_stats = {} -- zone_id -> {ms, cells, regions}
 
--- The zone's region map, built on first need; nil for a zone without a
--- recipe or whose build failed (logged once).
+-- The zone's FULL region map, built afresh (spawn_regions_core.build): every
+-- cell with its fields and every region's cells. The game keeps only the
+-- compact form (SR.map); this is for the tools that read cells. Nil and the
+-- reason for a zone without a recipe or when the build fails.
+function SR.full_map(zone_id)
+	local rec = zones[zone_id]
+	if not rec or not rec.recipe then
+		return nil, "no recipe"
+	end
+	local ok, built = pcall(CORE.build, zone_id, queries(), rec.recipe)
+	if not ok then
+		return nil, tostring(built)
+	end
+	return built
+end
+
+-- The start hook keeps every zone's payload until it has stored the file
+-- (then nil): zone_id -> payload.
+local payloads = {}
+
+-- Builds the zone's map and keeps its compact form. Returns the map, or nil
+-- after a failed build (logged once).
+local function build_map(zone_id, rec)
+	local t0 = core.get_us_time()
+	local ok, built, payload = pcall(function()
+		local full = CORE.build(zone_id, queries(), rec.recipe)
+		local compact = CACHE.compact(full)
+		local map = assert(CACHE.rehydrate(zone_id, compact, rec.recipe))
+		return {cells = #full.order, regions = #full.regions, camps = #full.camps,
+			leaders = #full.leaders, map = map}, compact
+	end)
+	local ms = (core.get_us_time() - t0) / 1000
+	if not ok then
+		maps[zone_id] = false
+		core.log("error", "[grug_mobs] spawn regions " .. zone_id ..
+			": the region map could not be built: " .. tostring(built))
+		return nil
+	end
+	local map = built.map
+	maps[zone_id] = map
+	if payloads then payloads[zone_id] = payload end
+	SR.build_stats[zone_id] = {ms = ms, cells = built.cells, regions = built.regions}
+	core.log("action", ("[grug_mobs] spawn regions %s: %d land cells, %d regions, " ..
+		"%d camps, %d leaders, built in %.0f ms"):format(zone_id,
+		built.cells, built.regions, built.camps, built.leaders, ms))
+	for _, problem in ipairs(map.problems) do
+		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. problem)
+	end
+	for _, warning in ipairs(map.warnings) do
+		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. warning)
+	end
+	return map
+end
+
+-- The zone's region map (compact form), built on first need; nil for a zone
+-- without a recipe or whose build failed (logged once).
 function SR.map(zone_id)
 	local map = maps[zone_id]
 	if map ~= nil then
@@ -295,29 +364,7 @@ function SR.map(zone_id)
 	if not rec or not rec.recipe then
 		return nil
 	end
-	local t0 = core.get_us_time()
-	local ok, built = pcall(function()
-		return CORE.build(zone_id, queries(), rec.recipe)
-	end)
-	local ms = (core.get_us_time() - t0) / 1000
-	if not ok then
-		maps[zone_id] = false
-		core.log("error", "[grug_mobs] spawn regions " .. zone_id ..
-			": the region map could not be built: " .. tostring(built))
-		return nil
-	end
-	maps[zone_id] = built
-	SR.build_stats[zone_id] = {ms = ms, cells = #built.order, regions = #built.regions}
-	core.log("action", ("[grug_mobs] spawn regions %s: %d land cells, %d regions, " ..
-		"%d camps, %d leaders, built in %.0f ms"):format(zone_id,
-		#built.order, #built.regions, #built.camps, #built.leaders, ms))
-	for _, problem in ipairs(built.problems) do
-		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. problem)
-	end
-	for _, warning in ipairs(built.warnings) do
-		core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. warning)
-	end
-	return built
+	return build_map(zone_id, rec)
 end
 
 -- The region at a world column and its zone (nil, zone without a region).
@@ -1041,6 +1088,164 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
+--
+-- The region maps at start and the world-folder cache (Round 30 P3)
+--
+
+-- What the builder reads besides the world (whose identity is the mapgen
+-- key) and a zone's recipe file (its own digest): the builder part of the
+-- cache key. The input-coverage test (tools/r30_p3) checks every file a
+-- build reads against this list.
+SR.BUILDER_FILES = {
+	{"grug_mobs", "spawn_regions_core.lua"},
+	{"grug_mobs", "spawn_regions.lua"},
+	{"grug_mobs", "spawn_regions_cache.lua"},
+	{"grug_mobs", "data/subtypes.json"},
+	{"grug_core", "zone_authority.lua"},
+}
+
+-- The cache key of this start and the world folder, or nil, nil and the
+-- reason: the world-layout cache's key parts (seed, mapgen tree digest,
+-- mapgen settings, interpreter: grug_mapgen.wp40.world_key) and a digest of
+-- the builder's files.
+local function cache_key()
+	local world_dir = type(core.get_worldpath) == "function" and core.get_worldpath()
+	if type(world_dir) ~= "string" or world_dir == "" then
+		return nil, nil, "no world folder"
+	end
+	local mapgen = rawget(_G, "grug_mapgen")
+	local world = type(mapgen) == "table" and type(mapgen.wp40) == "table" and
+		mapgen.wp40.world_key
+	if type(world) ~= "table" then
+		return nil, nil, "no world key from grug_mapgen"
+	end
+	local rows = {}
+	for _, file in ipairs(SR.BUILDER_FILES) do
+		local name = file[1] .. "/" .. file[2]
+		local bytes = read_file(core.get_modpath(file[1]) .. "/" .. file[2])
+		if not bytes then
+			return nil, nil, "cannot read " .. name
+		end
+		rows[#rows + 1] = {name, bytes}
+	end
+	return CACHE.key(world.seed, world.source, world.settings, world.interpreter,
+		CACHE.files_digest(rows)), world_dir
+end
+
+-- The digest of a zone's shipped recipe file (stored with its block).
+local function recipe_digest(zone_id)
+	local bytes = read_file(DATA_DIR .. "/" .. zone_id .. ".spawns.json")
+	return bytes and core.sha256(bytes) or nil
+end
+
+-- Every recipe zone's map: read back from the world-folder cache where the
+-- file matches this start's key and the zone's block matches its recipe
+-- file, built (SR.map) everywhere else. Anything built, or a file that holds
+-- other zones than this start, replaces the file atomically. A cache failure
+-- means a build and a warning (a damaged file) or an action line (a file of
+-- another key), never a stop.
+function SR.start_maps()
+	local t0, heap0 = core.get_us_time(), collectgarbage("count")
+	local ids = {}
+	for _, zone_id in ipairs(SR.zone_ids()) do
+		if zones[zone_id].recipe then ids[#ids + 1] = zone_id end
+	end
+	local key, world_dir, cached, reason, damaged, size
+	do
+		local ok, a, b, c = pcall(cache_key)
+		if not ok then
+			reason, damaged = "no cache key: " .. tostring(a), true
+		elseif not a then
+			reason = c
+		else
+			key, world_dir = a, b
+			local read_ok, d, e, f, g = pcall(CACHE.load, world_dir, key)
+			if read_ok then
+				cached, reason, damaged, size = d, e, f, g
+			else
+				reason, damaged = "unreadable: " .. tostring(d), true
+			end
+		end
+	end
+	local hits, built, failed, unfit, build_us = 0, 0, 0, 0, 0
+	local digests = {}
+	for _, zone_id in ipairs(ids) do
+		if key and from_file[zone_id] then digests[zone_id] = recipe_digest(zone_id) end
+		local entry = cached and cached[zone_id]
+		if maps[zone_id] == nil and entry and entry.digest == digests[zone_id] then
+			local ok, map, why = pcall(CACHE.rehydrate, zone_id, entry.payload,
+				zones[zone_id].recipe)
+			if ok and map then
+				maps[zone_id] = map
+				payloads[zone_id] = entry.payload
+				hits = hits + 1
+				SR.build_stats[zone_id] = {ms = 0, cells = map.cell_count,
+					regions = #map.regions, cached = true}
+				-- The log reads as after a build: the build's own findings.
+				for _, problem in ipairs(map.problems) do
+					core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. problem)
+				end
+				for _, warning in ipairs(map.warnings) do
+					core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": " .. warning)
+				end
+			else
+				unfit = unfit + 1
+				core.log("warning", "[grug_mobs] spawn regions " .. zone_id .. ": the cached " ..
+					"map does not fit the recipe, building afresh: " .. tostring(ok and why or map))
+			end
+		end
+		if maps[zone_id] == nil then
+			local b0 = core.get_us_time()
+			if build_map(zone_id, zones[zone_id]) then built = built + 1 else failed = failed + 1 end
+			build_us = build_us + core.get_us_time() - b0
+		end
+	end
+	-- The file holds every ready zone of a shipped recipe file, in id order.
+	local entries = {}
+	for _, zone_id in ipairs(ids) do
+		if maps[zone_id] and payloads[zone_id] and digests[zone_id] then
+			entries[#entries + 1] = {zone = zone_id, digest = digests[zone_id],
+				payload = payloads[zone_id]}
+		end
+	end
+	payloads = nil
+	local in_file = 0
+	for _ in pairs(cached or {}) do in_file = in_file + 1 end
+	local stored, store_error
+	if key and not (hits == #entries and in_file == hits) then
+		local ok, result, count = pcall(CACHE.store, world_dir, key, entries)
+		if ok and result then
+			stored, size = true, count
+		else
+			store_error = ok and CACHE.path(world_dir) or tostring(result)
+		end
+	end
+	local state
+	if not key then
+		state = "not cached (" .. tostring(reason) .. ")"
+	elseif not cached then
+		state = "cache miss (" .. tostring(reason) .. ")"
+	elseif hits == #ids then
+		state = "cache hit"
+	else
+		state = "cache partly current"
+	end
+	core.log((damaged or unfit > 0) and "warning" or "action", ("[grug_mobs] spawn regions: " ..
+		"%d region maps ready at start in %.1f ms (%d from %s, %d built in %.1f s, %d failed); " ..
+		"%s%s; Lua heap %.0f -> %.0f MiB"):format(#ids - failed,
+		(core.get_us_time() - t0) / 1000, hits, CACHE.FILE, built, build_us / 1000000, failed,
+		state, stored and (", stored " .. size .. " bytes") or
+			((size or 0) > 0 and (", file " .. size .. " bytes") or ""),
+		heap0 / 1024, collectgarbage("count") / 1024))
+	if store_error then
+		core.log("warning", "[grug_mobs] spawn regions: the region map cache could not be " ..
+			"written: " .. store_error)
+	end
+	-- A build pass leaves about 1 GiB of garbage: collected now, not on top
+	-- of what the boot allocates next (peak memory, Round 30 P3).
+	if built > 0 then collectgarbage("collect") end
+end
+
 -- Roles exist once every mob file has registered (sub-types included).
 core.register_on_mods_loaded(function()
 	ground_list()
@@ -1070,15 +1275,9 @@ core.register_on_mods_loaded(function()
 			end
 		end
 	end
-	-- Every recipe zone's region map is built here, once, before players
+	-- Every recipe zone's region map is ready here, once, before players
 	-- can join (the user, 2026-10-02): a build blocks the server for about
 	-- 0.3 s, so neither a player entering a zone nor a quest text's direction
-	-- ever builds one at runtime. SR.map stays the one builder (and caches).
-	local t0, heap0, built = core.get_us_time(), collectgarbage("count"), 0
-	for _, zone_id in ipairs(SR.zone_ids()) do
-		if zones[zone_id].recipe and SR.map(zone_id) then built = built + 1 end
-	end
-	core.log("action", ("[grug_mobs] spawn regions: %d region maps built at start in %.1f s, " ..
-		"Lua heap %.0f -> %.0f MiB"):format(built, (core.get_us_time() - t0) / 1000000,
-		heap0 / 1024, collectgarbage("count") / 1024))
+	-- ever builds one at runtime.
+	SR.start_maps()
 end)

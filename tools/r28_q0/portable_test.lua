@@ -106,7 +106,7 @@ vector = {distance = function() return 1 end}
 grug_core = {register_tag_visibility = function() end,
 	hud_layout = {side_text_width = function() return 38 end, QUEST_WRAP = 38, anchors = {quest_list = {}}}}
 dofile("mods/CORE/grug_core/item_names.lua")
-grug_xp = {get_level = function() return 60 end,
+grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
 	quest_reward = function(level, weight) return weight * 10 * level end}
 grug_money = {MAX = 1000000, format = function(copper) return copper .. " copper" end}
 grug_factions = {get_faction = function() return "accord" end}

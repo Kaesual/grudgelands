@@ -183,7 +183,9 @@ player can step ashore from a boat. No waystone, shipwright or NPC.
   on the checked seeds); the boat water of §7 and its nine-node floor
   further out are unchanged, as are the channels and the boat paths.
 - Behind the beach the island rises as its natural terrain does (on most
-  seeds a steep mountain flank, 150–450 nodes high). **No path up the island
-  is built** (user 2026-10-02: pier and beach only for now; a path goes to
-  the backlog). The road router cannot lay one: its trails from the beaches
-  to the island POIs lost their beach end or failed on the checked seeds.
+  seeds a steep mountain flank, 150–450 nodes high). **The dragon islands
+  get no mapgen paths or roads, by design** (user 2026-10-02): they are
+  untamed land, and the climb is part of reaching the dragon. The pier and
+  the beach are the only authored structures. (The road router could not
+  have laid a trail anyway: from the beaches to the island POIs its trails
+  lost their beach end or failed on the checked seeds.)

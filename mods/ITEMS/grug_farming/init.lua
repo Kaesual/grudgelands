@@ -10,6 +10,11 @@ dofile(core.get_modpath(core.get_current_modname()) .. "/bucket.lua")
 local SOIL_DRY = "grug_farming:soil"
 local SOIL_WET = "grug_farming:soil_wet"
 local SOIL_INTERVAL = 15
+-- Soil without a growing crop above re-checks its water only once a minute:
+-- village fields hold thousands of empty soil nodes, and their wet/dry look is
+-- all that check changes (Round 30, perf review #15). Soil under a growing crop
+-- keeps the 15 s check, so growth pauses and resumes exactly as before.
+local IDLE_SOIL_INTERVAL = 60
 local WATER_RADIUS = 3
 local STAGES = 4
 local STAGE_SECONDS = 200
@@ -38,6 +43,12 @@ local function growing_crop_at(pos)
 	return nil
 end
 
+-- The interval of this soil's next check: 15 s under a growing crop, else 60 s.
+local function soil_interval(pos)
+	return growing_crop_at({x = pos.x, y = pos.y + 1, z = pos.z}) and
+		SOIL_INTERVAL or IDLE_SOIL_INTERVAL
+end
+
 local function pause_crop_timer(pos)
 	if not growing_crop_at(pos) then return end
 	local timer = core.get_node_timer(pos)
@@ -57,7 +68,14 @@ end
 local function start_crop_timer(pos)
 	core.get_meta(pos):set_float(CROP_PROGRESS_META, 0)
 	local below = {x = pos.x, y = pos.y - 1, z = pos.z}
-	if core.get_node(below).name == SOIL_WET then
+	local soil = core.get_node(below).name
+	-- A crop that starts (planting, regrowth after a harvest) puts its soil
+	-- back on the 15 s check at once.
+	if (soil == SOIL_WET or soil == SOIL_DRY) and
+			core.get_node_timer(below):get_timeout() ~= SOIL_INTERVAL then
+		start_soil_timer(below)
+	end
+	if soil == SOIL_WET then
 		core.get_node_timer(pos):set(STAGE_SECONDS, 0)
 	else
 		core.get_node_timer(pos):stop()
@@ -80,8 +98,14 @@ local function soil_timer(pos)
 	return true
 end
 
+local function soil_on_timer(pos)
+	soil_timer(pos)
+	core.get_node_timer(pos):start(soil_interval(pos))
+	return false
+end
+
 grug_nodes.bind_crop_soil_callbacks({
- on_construct = start_soil_timer, on_timer = soil_timer,
+ on_construct = start_soil_timer, on_timer = soil_on_timer,
 })
 
 -- VoxelManip placement does not call on_construct. This idempotent current-
@@ -95,7 +119,7 @@ core.register_lbm({
 	run_at_every_load = true,
 	action = function(pos)
 		local timer = core.get_node_timer(pos)
-		if not timer:is_started() then timer:start(SOIL_INTERVAL) end
+		if not timer:is_started() then timer:start(soil_interval(pos)) end
 	end,
 })
 
@@ -435,7 +459,9 @@ end
 
 -- Voxel persistence normally restores the complete plant. This activation
 -- repairs only current-version helper geometry belonging to a loaded root; it
--- neither scans for orphans nor recognizes any historical format.
+-- neither scans for orphans nor recognizes any historical format. A plant
+-- whose helpers already stand is left alone: rewriting identical nodes would
+-- mark the block modified on every load (Round 30, perf review #16).
 core.register_lbm({
 	label = "Activate current cultivated crop geometry",
 	name = "grug_farming:activate_crop_geometry",
@@ -444,6 +470,7 @@ core.register_lbm({
 	action = function(pos, node)
 		local state = crop_by_node[node.name]
 		if not state or not state.crop.profile.heights then return end
+		if whole_crop_positions(pos, state) then return end
 		transition_crop(pos, state, state.stage,
 			core.get_meta(pos):get_string(CROP_PLANTER_META))
 	end,

@@ -472,6 +472,16 @@ Planned next (user, 2026-10-02): Round 31 PvP (WP41 with enemy-guard quest
 objectives and small PvP POIs from WP42, planned in its own design session),
 Round 32 the WP9 main storyline 41–60 and the finale.
 
+**Dragon arena design iteration** (user, 2026-10-02; next round, a small
+design step first): the ice dragon (Wyrmglass) stands on a square, rather
+plain terrace (the jungle dragon's arena is to be checked). The arena core
+(32 nodes, `simple_map.lua` POI kind `dragon`, `arena_terrace`) is already
+protected as a POI core (`grug_core.world_feature_at`; the dragon's own
+breath patches are exempt), so terrain can shape the fight: lava pits,
+spiked pillars, cover, height and similar hazards, per dragon. The islands
+themselves stay untamed: no mapgen paths or roads by design (user
+2026-10-02, `boats.md` §7.1).
+
 ### Round 26 capital wall follow-ups
 
 **Noted 2026-09-30** after the playtest fix `1ff541e4` (wall–gatehouse gaps
