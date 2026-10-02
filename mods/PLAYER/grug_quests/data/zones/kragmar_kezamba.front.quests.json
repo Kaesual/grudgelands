@@ -10,7 +10,7 @@
       "level": 52,
       "requires": [],
       "title": "The Fruit Has Other Owners",
-      "text": "The canopy spirits asked me to settle a quarrel over fruit; the Glass-Knuckle Jungle Apes settled their part by throwing it at my messengers. Kill five in the {name:front_skyglass_canopy/cloudwood} by day, {zone_area:front_skyglass_canopy/cloudwood}. A fistful of fruit is a poor argument, however loudly you make it.",
+      "text": "The canopy spirits asked me to settle a quarrel over fruit; the Glass-Knuckle Jungle Apes settled their part by throwing it at my messengers. Kill five by day in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}. A fistful of fruit is a poor argument, however loudly you make it.",
       "objectives": [
         {
           "type": "kill",
@@ -36,7 +36,7 @@
       "level": 53,
       "requires": [],
       "title": "Teach the Drum to Scratch",
-      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass-Shadow Panthers in the {name:front_skyglass_canopy/cloudwood} at night, {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Glass Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
+      "text": "Our shrine drum needs a voice that will make even the canopy spirits sit up. Kill four Glass-Shadow Panthers at night in the {name:front_skyglass_canopy/cloudwood}, which lies {zone_area:front_skyglass_canopy/cloudwood}, and bring me two Glass Cat Claws. I'll do the playing. You have the difficult part: asking the cats for an instrument.",
       "objectives": [
         {
           "type": "kill",
@@ -73,7 +73,7 @@
         "kz_front_01"
       ],
       "title": "The Canopy Names Its Price",
-      "text": "I asked the canopy spirits what the shrine owed them, and they answered with a hiss. Kill five Glass-Fang Serpents in the {name:front_skyglass_canopy/rootways} by day, {zone_area:front_skyglass_canopy/rootways}, and bring me two Glass Venom. Next time I bargain with a tree, remind me to settle the price before asking for favours.",
+      "text": "I asked the canopy spirits what the shrine owed them, and they answered with a hiss. Kill five Glass-Fang Serpents by day in the {name:front_skyglass_canopy/rootways}, which lie {zone_area:front_skyglass_canopy/rootways}, and bring me two Glass Venom. Next time I bargain with a tree, remind me to settle the price before asking for favours.",
       "objectives": [
         {
           "type": "kill",
@@ -176,7 +176,7 @@
         "kz_front_04"
       ],
       "title": "Bounty: Paws Between Drumbeats",
-      "text": "The spirits say the Glass-Shadow Panthers know how to step between our drumbeats, and I believe them. Kill five in the {name:front_skyglass_canopy/high_canopy} at night, {zone_area:front_skyglass_canopy/high_canopy}, and return for the shrine's reward. This bounty opens again twenty minutes after turn-in; I will try a different rhythm while you rest.",
+      "text": "The spirits say the Glass-Shadow Panthers know how to step between our drumbeats, and I believe them. Kill five at night in the {name:front_skyglass_canopy/high_canopy}, which lies {zone_area:front_skyglass_canopy/high_canopy}, and return for the shrine's reward. This bounty opens again twenty minutes after turn-in; I will try a different rhythm while you rest.",
       "objectives": [
         {
           "type": "kill",

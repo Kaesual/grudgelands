@@ -10,7 +10,7 @@
       "level": 49,
       "requires": [],
       "title": "No Names Left to Call",
-      "text": "Mud has taken the names from their coats, but the Mire-Cured Husks still report for duty. Lay five to rest in the {name:front_broken_causeway/toll_fields} by day, {zone_area:front_broken_causeway/toll_fields}. Accord or Throng, a body deserves better than another shift in that mud.",
+      "text": "Mud has taken the names from their coats, but the Mire-Cured Husks still report for duty. Lay five to rest by day in the {name:front_broken_causeway/toll_fields}, which lie {zone_area:front_broken_causeway/toll_fields}. Accord or Throng, a body deserves better than another shift in that mud.",
       "objectives": [
         {
           "type": "kill",
@@ -36,7 +36,7 @@
       "level": 49,
       "requires": [],
       "title": "A Fare for Nobody",
-      "text": "The Fordwater Zombies still hold out their hands for a fare, though I doubt any remember the crossing. Destroy five at the {name:front_broken_causeway/last_ford} after dark, {zone_area:front_broken_causeway/last_ford}. Keep your coins; I have tried paying, and the service is dreadful.",
+      "text": "The Fordwater Zombies still hold out their hands for a fare, though I doubt any remember the crossing. Destroy five after dark at the {name:front_broken_causeway/last_ford}, which lies {zone_area:front_broken_causeway/last_ford}. Keep your coins; I have tried paying, and the service is dreadful.",
       "objectives": [
         {
           "type": "kill",
@@ -91,7 +91,7 @@
       "level": 52,
       "requires": [],
       "title": "The Dead Are Not Rations",
-      "text": "I set the dead in order, and the Saltpack Blightfang Wolves scatter them again before the graves are ready. Kill five in the {name:front_gravesalt_escarpment/bonewood} by day, {zone_area:front_gravesalt_escarpment/bonewood}. There is only so much dignity I can retrieve from a muzzle.",
+      "text": "I set the dead in order, and the Saltpack Blightfang Wolves scatter them again before the graves are ready. Kill five by day in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}. There is only so much dignity I can retrieve from a muzzle.",
       "objectives": [
         {
           "type": "kill",
@@ -119,7 +119,7 @@
         "bw_front_hollow_04"
       ],
       "title": "The Owners Still Object",
-      "text": "Saltroad Deserters are stripping the {name:front_gravesalt_escarpment/tomb_galleries}, {zone_area:front_gravesalt_escarpment/tomb_galleries}, day and night. They call the tombs abandoned. Kill five of the robbers; some of us take a very long time to answer the door.",
+      "text": "Saltroad Deserters are stripping the {name:front_gravesalt_escarpment/tomb_galleries}, which lie {zone_area:front_gravesalt_escarpment/tomb_galleries}, day and night. They call the tombs abandoned. Kill five of the robbers; some of us take a very long time to answer the door.",
       "objectives": [
         {
           "type": "kill",
@@ -171,7 +171,7 @@
         "bw_front_hollow_05"
       ],
       "title": "Bounty: Premature Shrouds",
-      "text": "Salt-Web Bonelurker Spiders in the {name:front_gravesalt_escarpment/bonewood}, {zone_area:front_gravesalt_escarpment/bonewood}, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
+      "text": "Salt-Web Bonelurker Spiders in the {name:front_gravesalt_escarpment/bonewood}, which lies {zone_area:front_gravesalt_escarpment/bonewood}, begin their shrouding work after dark. They rarely wait for the occupant to stop objecting. Kill five there at night and return for payment; this bounty opens again twenty-five minutes after turn-in.",
       "objectives": [
         {
           "type": "kill",
@@ -200,7 +200,7 @@
       "level": 55,
       "requires": [],
       "title": "What the Salt Holds",
-      "text": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Sun-Dried Husks to rest in the {name:front_gravesalt_escarpment/tomb_fen} by day, {zone_area:front_gravesalt_escarpment/tomb_fen}. Preserving someone ought to mean more than keeping them upright.",
+      "text": "The salt has kept their bodies, but when I listen for their voices there is only the scrape of feet. Lay five Saltbound Sun-Dried Husks to rest by day in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}. Preserving someone ought to mean more than keeping them upright.",
       "objectives": [
         {
           "type": "kill",
@@ -226,7 +226,7 @@
       "level": 55,
       "requires": [],
       "title": "Let Me Have the Last Word",
-      "text": "The Salt-Hex Bog Witches have been whispering over the dead, and I dislike being talked over. Kill four in the {name:front_gravesalt_escarpment/tomb_fen} after dark, {zone_area:front_gravesalt_escarpment/tomb_fen}, and bring me two Last-Hex Shards. I will hear what they have to say before deciding how firmly to disagree.",
+      "text": "The Salt-Hex Bog Witches whisper hexes over the dead, and the dead cannot rest while they listen. Kill four after dark in the {name:front_gravesalt_escarpment/tomb_fen}, which lies {zone_area:front_gravesalt_escarpment/tomb_fen}, and bring me two Last-Hex Shards. I will read every hex carved into them, and then the dead can stop listening.",
       "objectives": [
         {
           "type": "kill",
@@ -257,13 +257,13 @@
       "line": "front",
       "giver": "r20_anchor_039_host",
       "turnin": "r20_anchor_039_host",
-      "min_level": 56,
+      "min_level": 57,
       "level": 58,
       "requires": [
         "bw_front_ashveil_01"
       ],
       "title": "Relief Long Overdue",
-      "text": "Nobody came to relieve the Last-Watch Mummies, so they gave their posts everything, even the years after death. Lay five to rest on the {name:front_gravesalt_escarpment/whitewall} by day, {zone_area:front_gravesalt_escarpment/whitewall}. Let them go with more respect than their commanders ever showed them.",
+      "text": "Nobody came to relieve the Last-Watch Mummies, so they gave their posts everything, even the years after death. Lay five to rest by day on the {name:front_gravesalt_escarpment/whitewall}, which lies {zone_area:front_gravesalt_escarpment/whitewall}. Let them go with more respect than their commanders ever showed them.",
       "objectives": [
         {
           "type": "kill",
@@ -328,7 +328,7 @@
         "bw_front_ashveil_04"
       ],
       "title": "Group: Nobody's Number",
-      "text": "Bog Witch Salt-Counter sits in her mire {dir_from_giver:salt_counter_witch}, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
+      "text": "Bog Witch Salt-Counter sits in the {name:front_gravesalt_escarpment/mourning_mire} {dir_from_giver:salt_counter_witch}, counting soldiers as though they were grains of salt. Gather a group and kill her; her power is more than one fighter can bear. I remember names, and I would prefer not to add yours to the list I mourn.",
       "objectives": [
         {
           "type": "kill",
@@ -357,7 +357,7 @@
         "bw_front_ashveil_04"
       ],
       "title": "Bounty: A Patient Listener",
-      "text": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Skeleton Raiders in the {name:front_gravesalt_escarpment/ossuary_wood} at night, {zone_area:front_gravesalt_escarpment/ossuary_wood}, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
+      "text": "Some of the dead need someone to hear them before they can be still. Destroy five Last-Watch Skeleton Raiders at night in the {name:front_gravesalt_escarpment/ossuary_wood}, which lies {zone_area:front_gravesalt_escarpment/ossuary_wood}, and bring me two Unquiet Bones. You may take this bounty again half an hour after turn-in; I can always make time to listen.",
       "objectives": [
         {
           "type": "kill",

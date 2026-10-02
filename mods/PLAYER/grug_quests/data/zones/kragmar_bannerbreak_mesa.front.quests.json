@@ -10,7 +10,7 @@
       "level": 42,
       "requires": [],
       "title": "Make the Mud Keep Them",
-      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks in the {name:front_broken_causeway/floodmeadows} by day, {zone_area:front_broken_causeway/floodmeadows}. The Accord can count footprints; give the Throng something worth counting.",
+      "text": "A road is for marching, and I will not have the dead setting our pace. Break five Mire-Cured Husks by day in the {name:front_broken_causeway/floodmeadows}, which lie {zone_area:front_broken_causeway/floodmeadows}. The Accord can count footprints; give the Throng something worth counting.",
       "objectives": [
         {
           "type": "kill",
@@ -38,7 +38,7 @@
         "bb_front_ramp_01"
       ],
       "title": "No Marching After Death",
-      "text": "Hear that sloshing after sundown? Fordwater Zombies are climbing through the {name:front_broken_causeway/reedmire}, {zone_area:front_broken_causeway/reedmire}, and every patrol has to fight for dry footing. Kill five there at night; I want boots coming home with soldiers still in them.",
+      "text": "Hear that sloshing after sundown? Fordwater Zombies are climbing through the {name:front_broken_causeway/reedmire}, which lies {zone_area:front_broken_causeway/reedmire}, and every patrol has to fight for dry footing. Kill five there at night; I want boots coming home with soldiers still in them.",
       "objectives": [
         {
           "type": "kill",
@@ -66,7 +66,7 @@
         "bb_front_ramp_01"
       ],
       "title": "Teeth in the Dark",
-      "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves in the {name:front_broken_causeway/wraithwood} at night, {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
+      "text": "Our scouts keep hearing paws where they ought to hear their own footsteps. Hunt down five Fenrunner Wolves at night in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}. Save the boasting for when you can see what is listening.",
       "objectives": [
         {
           "type": "kill",
@@ -155,7 +155,7 @@
         "bb_front_ramp_04"
       ],
       "title": "Bounty: Bad Career Choices",
-      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five in the {name:front_broken_causeway/wraithwood} by day, {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; apparently word travels slower than greed.",
+      "text": "Another lot of Causeway Brigands thinks robbing the Throng will pay. Kill five by day in the {name:front_broken_causeway/wraithwood}, which lies {zone_area:front_broken_causeway/wraithwood}, and come back for your reward. You can take this bounty again twenty minutes after turning it in; apparently word travels slower than greed.",
       "objectives": [
         {
           "type": "kill",
@@ -184,7 +184,7 @@
       "level": 42,
       "requires": [],
       "title": "Nobody Laughs at Supper",
-      "text": "Warpack Hyenas have found our supply trail, and now the laughing starts before supper. Kill five in the {name:front_shattered_line/approaches} by day, {zone_area:front_shattered_line/approaches}. I can mend a torn ration sack; I cannot sew the meat back into it.",
+      "text": "Warpack Hyenas have found our supply trail, and now the laughing starts before supper. Kill five by day in the {name:front_shattered_line/approaches}, which lie {zone_area:front_shattered_line/approaches}. I can mend a torn ration sack; I cannot sew the meat back into it.",
       "objectives": [
         {
           "type": "kill",
@@ -210,7 +210,7 @@
       "level": 42,
       "requires": [],
       "title": "Mind the Boots",
-      "text": "I patch enough holes in our soldiers without War-Stinger Scorpions punching fresh ones through their boots. Kill five on the {name:front_shattered_line/bluffs} after dark, {zone_area:front_shattered_line/bluffs}, and give the next patrol a fighting chance to march home.",
+      "text": "I patch enough holes in our soldiers without War-Stinger Scorpions punching fresh ones through their boots. Kill five after dark on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and give the next patrol a fighting chance to march home.",
       "objectives": [
         {
           "type": "kill",
@@ -238,7 +238,7 @@
         "bb_front_torn_01"
       ],
       "title": "A Standard with Claws",
-      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Tallgrass Tigers on the {name:front_shattered_line/bluffs} by day, {zone_area:front_shattered_line/bluffs}, and bring me two Siege Cat Claws. Let's give the Accord something new to stare at.",
+      "text": "This banner has survived arrows, rain, and a cook who mistook it for a towel. It deserves teeth of its own: kill four Tallgrass Tigers by day on the {name:front_shattered_line/bluffs}, which lie {zone_area:front_shattered_line/bluffs}, and bring me two Siege Cat Claws. Let's give the Accord something new to stare at.",
       "objectives": [
         {
           "type": "kill",
@@ -275,7 +275,7 @@
         "bb_front_torn_02"
       ],
       "title": "Stings for Our Side",
-      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl over the {name:front_shattered_line/ramparts} at night, {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Try to keep the stings out of our side of the war.",
+      "text": "The archers want venom, and for once their request comes with its own legs. War-Stinger Scorpions crawl at night over the {name:front_shattered_line/ramparts}, which lie {zone_area:front_shattered_line/ramparts}; kill five and bring me two Scorch Venom. Try to keep the stings out of our side of the war.",
       "objectives": [
         {
           "type": "kill",
@@ -402,7 +402,7 @@
         "bb_front_torn_05"
       ],
       "title": "Bounty: Stripes at the Front",
-      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them a nuisance to everybody. Kill five on the {name:front_shattered_line/siegecrest} by day, {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
+      "text": "Tallgrass Tigers care very little whose colours a soldier wears, which makes them a nuisance to everybody. Kill five by day on the {name:front_shattered_line/siegecrest}, which lies {zone_area:front_shattered_line/siegecrest}, and collect your reward from me. The bounty is available again twenty minutes after turn-in.",
       "objectives": [
         {
           "type": "kill",
