@@ -452,9 +452,25 @@ Lanes:
 Order: P1 and P3 in parallel, then P2 and P4; each lane re-runs its probe
 as a before/after comparison.
 
-Carry-over for Round 30 beside the performance lanes (mapgen, after the GUI
-playtest confirms it): a walkable beach or ramp at each dragon-island boat
-landing ([Round 29 carry-overs](#round-29-carry-overs)).
+Also in Round 30 beside the performance lanes (user, 2026-10-02):
+
+- **Island landings (mapgen):** each dragon-island boat landing gets a simple
+  wooden pier and a little beach, so a player can step ashore from a boat
+  ([Round 29 carry-overs](#round-29-carry-overs)). This narrows the travel
+  plan's "no docks" scope for these landings only.
+- **Clean-up after the quest rebuild:** drop the legacy quest fields the loader,
+  validator and `validate.py --legacy` still accept; repair the stale fixtures
+  `tools/r24_density_xp` and `tools/r25_spawn_guard`; add the riding-tier
+  purchase fixture; look at the 18 "No craft recipe known for output" boot
+  warnings (leathers, bolts, woods; `clear_craft` calls).
+- **Possible bugs** from the performance review: the Dawnmere NPC duplication
+  (seen once) and the mobs_redo `general_attack` eye height (with P2).
+- **Band-5 loot median smoothing** (Expert riding steep; prices recomputed with
+  `tools/r29_e4/income.py` afterwards).
+
+Planned next (user, 2026-10-02): Round 31 PvP (WP41 with enemy-guard quest
+objectives and small PvP POIs from WP42, planned in its own design session),
+Round 32 the WP9 main storyline 41–60 and the finale.
 
 ### Round 26 capital wall follow-ups
 
