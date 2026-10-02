@@ -25,8 +25,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "The Fringe Pack",
-      "text": "Briarpack Wolves run the {name:fringe} {zone_area:fringe} and grow bolder after dark. Kill five of them. A pack that loses its boldest learns caution, and caution is all the forest asks of it.",
+      "title": "Room for the Living",
+      "text": "Briarpack Wolves hunt the {name:fringe} {zone_area:fringe}, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
       "objectives": [
         {
           "type": "kill",
@@ -54,8 +54,8 @@
       "requires": [
         "glassroot_fringe_01"
       ],
-      "title": "Fangs for the Wardens",
-      "text": "Bring me three Warpack Fangs from the Briarpack Wolves of the {name:fringe}. The wardens wear them on their sleeves as a warning to the pack, and the pack, remarkably, reads it.",
+      "title": "A Warning Without Words",
+      "text": "Bring me three Warpack Fangs from the Briarpack Wolves of the {name:fringe} for our wardens' sleeves. The pack has learned what those trophies mean, and sometimes that is enough to keep a wolf among the trees. A warning understood saves us both a hunt.",
       "objectives": [
         {
           "type": "item",
@@ -84,8 +84,8 @@
       "requires": [
         "glassroot_fringe_01"
       ],
-      "title": "Word for Cinderline Watch",
-      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March carries water to the whole front. Go and help him keep it flowing, and let him point you on to the mountain. Tell him the gate sends its regards, and that his last barrel leaked.",
+      "title": "Regards, and a Leaking Barrel",
+      "text": "Speak with Toren Waterbarrel at Cinderline Watch in Ashenward March; his water carts keep much of the front alive. Carry our thanks, ask how you can help, and let him direct you onward to Stormvault Heights. Mention that his last barrel watered more roots than soldiers; I suspect the trees are his greatest admirers.",
       "objectives": [
         {
           "type": "talk",
@@ -107,8 +107,8 @@
       "min_level": 34,
       "level": 35,
       "requires": [],
-      "title": "Apes in the Tangle",
-      "text": "Treetop Jungle Apes rule the {name:tangle} {zone_area:tangle} by day and throw whatever they find at whoever they find. Drive back five of them. They are not wicked, merely loud, strong and very sure of themselves.",
+      "title": "An Unwelcome Rain of Branches",
+      "text": "By day, the Treetop Jungle Apes in the {name:tangle} {zone_area:tangle} greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
       "objectives": [
         {
           "type": "kill",
@@ -136,8 +136,8 @@
       "requires": [
         "glassroot_canopy_01"
       ],
-      "title": "Eyes in the Tangle",
-      "text": "When the apes sleep, Shade Panthers hunt the {name:tangle} and take whatever the apes left. Kill five of them at night. You will not see them first; make sure you hit them second.",
+      "title": "When the Branches Fall Silent",
+      "text": "The {name:tangle} grows quiet when the apes sleep, which is precisely when our least experienced wardens relax. Kill five Shade Panthers there at night before another patrol mistakes silence for safety. Watch the gaps between the roots; the forest has more than one way of keeping a secret.",
       "objectives": [
         {
           "type": "kill",
@@ -165,8 +165,8 @@
       "requires": [
         "glassroot_canopy_02"
       ],
-      "title": "Rootsnare's Archers",
-      "text": "Entrenched Bandit Archers hold {name:rootsnare} {dir_from_giver:rootsnare} and fell our glassroots for arrow shafts. Defeat five of them. Every shaft they cut is a tree we planted before you were born.",
+      "title": "Years Felled for Arrows",
+      "text": "I remember planting glassroots that the Entrenched Bandit Archers at {name:rootsnare} {dir_from_giver:rootsnare} now fell for arrow shafts. Defeat five of those archers and stop them cutting deeper into the grove. An afternoon with an axe has undone years of tending; I find I have very little patience left for their excuses.",
       "objectives": [
         {
           "type": "kill",
@@ -194,8 +194,8 @@
       "requires": [
         "glassroot_canopy_03"
       ],
-      "title": "{name:basket_biter}",
-      "text": "The archers' carriers vanish near the {name:serpent_pools}, and so does any basket left unattended. {name:basket_biter} coils {dir_from_giver:basket_biter}, in the pools. Kill the serpent, and the wilds will have one less mouth that swallows our work whole.",
+      "title": "No Picnic for {name:basket_biter}",
+      "text": "We have lost enough provisions near the {name:serpent_pools} to feed a patrol, and the carriers now refuse to go near the water. Kill {name:basket_biter}, the serpent lurking {dir_from_giver:basket_biter} in those pools. I would prefer our supplies to reach the front without first passing through a snake.",
       "objectives": [
         {
           "type": "kill",
@@ -223,8 +223,8 @@
       "requires": [
         "glassroot_canopy_04"
       ],
-      "title": "Group: The Canopy King",
-      "text": "Group quest. {name:canopy_knuckle} rules the {name:canopy} {dir_from_giver:canopy_knuckle} and has broken three warden bows across its knee. Bring a group and teach it humility. Alone, you would only be the fourth bow.",
+      "title": "Group: No More Broken Bows",
+      "text": "{name:canopy_knuckle} holds the {name:canopy} {dir_from_giver:canopy_knuckle}; three wardens have returned with their bows snapped across its knee. Gather a group and kill the ape before someone fails to return at all. Bows can be grown and bent anew, but I will not spend my wardens so carelessly.",
       "objectives": [
         {
           "type": "kill",
@@ -253,8 +253,8 @@
       "requires": [
         "glassroot_canopy_04"
       ],
-      "title": "Beyond the Wilds",
-      "text": "The wilds end at the front, and the front is not mine to tend. Nella Hedgeward at Last Hedge Redoubt in Ashenward March sends wardens and soldiers across the line. Go to her when you are ready; the roots will remember you.",
+      "title": "What We Keep Behind Us",
+      "text": "You have made room for life here, and that is worth remembering when the front seems to hold nothing else. Speak with Nella Hedgeward at Last Hedge Redoubt in Ashenward March when you are ready to serve beyond these woods. She sends our wardens and soldiers onward; I will keep a place for you beneath the boughs.",
       "objectives": [
         {
           "type": "talk",
@@ -278,8 +278,8 @@
       "requires": [
         "glassroot_canopy_03"
       ],
-      "title": "Bounty: Webs in the Canopy",
-      "text": "Repeatable bounty: Canopy-Web Jungle Spiders spin the {name:canopy} {zone_area:canopy} shut every night. Kill eight of them; the next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: Leave a Path Unspun",
+      "text": "Each night the Canopy-Web Jungle Spiders stitch the {name:canopy} {zone_area:canopy} shut again, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
       "objectives": [
         {
           "type": "kill",

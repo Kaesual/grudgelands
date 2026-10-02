@@ -38,8 +38,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Eagles on the Ascent",
-      "text": "Ridge Crag Eagles nest in the {name:eagle_crags} {zone_area:eagle_crags} and drop on anything that climbs by day, couriers included. Bring down five of them. An eagle in the air is a problem; an eagle on the ground is a meal.",
+      "title": "Postage and Talons",
+      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Ridge Crag Eagles by day in the {name:eagle_crags} {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
       "objectives": [
         {
           "type": "kill",
@@ -67,8 +67,8 @@
       "requires": [
         "stormvault_passes_01"
       ],
-      "title": "The Rime Watch",
-      "text": "When the eagles roost, Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and shoot at the watch fires. Break five of them at night. Same crags, different tenants; the mountain keeps two shifts.",
+      "title": "The Mountain's Night Shift",
+      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. I've kept this watch for years, and even I know when to lie down.",
       "objectives": [
         {
           "type": "kill",
@@ -96,8 +96,8 @@
       "requires": [
         "stormvault_passes_01"
       ],
-      "title": "A Pick for the Deep Rock",
-      "text": "Bring me four Silversteel Bars: steel and silver, worked together in the dual furnace. I will trade you a Silversteel Pickaxe for them, because tier four rock laughs at anything softer, and Emberglass sits in it. Smelt whenever it suits you; the mountain is not going anywhere.",
+      "title": "A Proper Introduction to Rock",
+      "text": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need the pick for tier four rock when you go looking for Emberglass.",
       "objectives": [
         {
           "type": "item",
@@ -127,8 +127,8 @@
       "requires": [
         "stormvault_passes_02"
       ],
-      "title": "Word for Cinderline Watch",
-      "text": "Toren Waterbarrel at Cinderline Watch in Ashenward March keeps the Accord's supply road and never has enough hands. Tell him the passes are open again. The heights alone will not make you a veteran; the March will help, and Toren knows the road to the Glassroot Wilds too.",
+      "title": "Good News Travels on Foot",
+      "text": "Tell Toren Waterbarrel at Cinderline Watch in Ashenward March that the passes are open again. He keeps the Accord supplied, which means every clear road earns him another wagon to worry about. Lend him a hand, then ask after Glassroot Wilds; this front takes mountain, march and forest to hold it.",
       "objectives": [
         {
           "type": "talk",
@@ -152,8 +152,8 @@
       "requires": [
         "stormvault_passes_02"
       ],
-      "title": "Up to Archshadow Post",
-      "text": "Alna Archsight holds Archshadow Post, higher up where the snow never leaves and the goblins build their engines. Report to her once you can handle the high crags. She counts arrows the way I count bolts.",
+      "title": "Alna Keeps Count",
+      "text": "Report to Alna Archsight at Archshadow Post when you're ready for harder ground. She keeps the sighting line trained on the front while goblins make off with our bolts. Mind your sums around her; she once found a missing crate by counting what the thieves dropped.",
       "objectives": [
         {
           "type": "talk",
@@ -177,8 +177,8 @@
       "requires": [
         "stormvault_passes_02"
       ],
-      "title": "Bounty: Strays in the Passes",
-      "text": "Repeatable bounty: the strays rise again every night. Break six Rime Skeleton Strays in the {name:passes} {zone_area:passes} after dark; the next bounty opens twenty minutes after you hand this one in.",
+      "title": "Bounty: Bones Off the Road",
+      "text": "Every night, Rime Skeleton Strays insist on holding the {name:passes} {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -207,8 +207,8 @@
       "min_level": 34,
       "level": 36,
       "requires": [],
-      "title": "Bolts for the Engine",
-      "text": "Siege Goblins hold the {name:goblin_camp} {dir_from_giver:goblin_camp} and build their engine out of our stolen bolts. Defeat six of them or their slingers. Keep moving; the slingers reward anyone who stands still.",
+      "title": "Some Assembly Stolen",
+      "text": "Our missing bolts are holding a goblin siege engine together, which is an insult to every smith who threaded them. Defeat six Siege Goblins or Siege Goblin Slingers at the {name:goblin_camp} {dir_from_giver:goblin_camp}. Watch the slingers while you work; they have a distressing knack for finding the gap in a helmet.",
       "objectives": [
         {
           "type": "kill",
@@ -237,8 +237,8 @@
       "requires": [
         "stormvault_sighting_01"
       ],
-      "title": "{name:bolt_chewer}",
-      "text": "{name:bolt_chewer} guards the goblins' bolt pile at the {name:goblin_camp} {dir_from_giver:bolt_chewer} and chews the iron off every bolt it brings home. Put the beast down. Without its teeth the siege crew will have to steal whole bolts again, and those we count.",
+      "title": "No More Bolts for {name:bolt_chewer}",
+      "text": "{name:bolt_chewer} guards the stolen hardware at the {name:goblin_camp} {dir_from_giver:bolt_chewer}, chewing through the stock between meals. Those bolts took a smith all morning; the beast doesn't even pause to admire the threads. Kill it before another crate ends up between its teeth.",
       "objectives": [
         {
           "type": "kill",
@@ -266,8 +266,8 @@
       "requires": [
         "stormvault_sighting_02"
       ],
-      "title": "Slatehook's Archers",
-      "text": "Entrenched Bandit Archers hold {name:slatehook} {dir_from_giver:slatehook}, close enough to the front to rob both armies and loyal to neither. Defeat five of them. Their cover is good, so get inside their range quickly.",
+      "title": "A Toll Paid in Arrows",
+      "text": "The Entrenched Bandit Archers at {name:slatehook} {dir_from_giver:slatehook} rob the Accord and the Throng with admirable fairness. Defeat five of them before they strip another supply train. Use what cover you can; I want a report, not a demonstration of their aim.",
       "objectives": [
         {
           "type": "kill",
@@ -295,8 +295,8 @@
       "requires": [
         "stormvault_sighting_01"
       ],
-      "title": "Glass for the Sighting Lenses",
-      "text": "The sighting line needs Emberglass for its lenses. Bring me two pieces from the tier four rock, deep below the passes, where a silversteel pick bites. The lenses see farther than any dwarf, and they never ask for ale.",
+      "title": "A Clearer View of Trouble",
+      "text": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Mine two pieces of Emberglass from tier four rock below the passes and bring them to me, taking a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
       "objectives": [
         {
           "type": "item",
@@ -321,8 +321,8 @@
       "requires": [
         "stormvault_sighting_03"
       ],
-      "title": "Group: The Split-Seam Golem",
-      "text": "Group quest. {name:split_seam_warden} walks the {name:stormcrags} {dir_from_giver:split_seam_warden}, cracked down the middle and still stronger than a squad. Bring a group and break it. Alone you will only learn how much a golem weighs.",
+      "title": "Group: A Crack Is Not a Weakness",
+      "text": "{name:split_seam_warden} roams the {name:stormcrags} {dir_from_giver:split_seam_warden}, with a crack wide enough to tempt any dwarf with a hammer. Don't mistake that seam for an easy job; this golem can flatten a squad. Bring a group and destroy it, and leave the single-handed masonry to the workshop.",
       "objectives": [
         {
           "type": "kill",
@@ -351,8 +351,8 @@
       "requires": [
         "stormvault_sighting_03"
       ],
-      "title": "Bounty: Shamblers in the Frost",
-      "text": "Repeatable bounty: Trench Shamblers keep marching out of the {name:frostfields} {zone_area:frostfields} at night. Put down eight of them; the next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: An Overdue Dismissal",
+      "text": "The Trench Shamblers in the {name:frostfields} {zone_area:frostfields} still march after dark, long past any reasonable end to their service. Put down eight of them so the living watch can hold its ground. You may take this bounty again twenty-five minutes after turning it in; I'll keep the pay ready.",
       "objectives": [
         {
           "type": "kill",

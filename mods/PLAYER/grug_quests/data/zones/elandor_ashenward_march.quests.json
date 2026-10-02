@@ -38,8 +38,8 @@
       "min_level": 30,
       "level": 31,
       "requires": [],
-      "title": "Short Rations",
-      "text": "Every third ration crate never reaches the line. Entrenched Bandits hold the {name:ration_camp} {dir_from_giver:ration_camp} and eat better than our soldiers. Defeat five of them and see whose seal is on their crates.",
+      "title": "Three Crates Out, Two Crates In",
+      "text": "Every third ration crate vanishes between the storehouse and the line, and my cooks are running out of ways to call hot water supper. Defeat five Entrenched Bandits at the {name:ration_camp} {dir_from_giver:ration_camp}, where our missing meals have found an appreciative audience. Someone is keeping those thieves very well supplied.",
       "objectives": [
         {
           "type": "kill",
@@ -67,8 +67,8 @@
       "requires": [
         "ashenward_rations_01"
       ],
-      "title": "Resin for the Barrels",
-      "text": "Rootbound Ashen Treants walk the {name:cinderwood} {zone_area:cinderwood} at night and smash my water carts. Fell five of them and bring back two lumps of Bitter Resin. It seals a barrel better than anything the quartermaster sells, and it costs nothing but nerve.",
+      "title": "The Trees Can Pay for That",
+      "text": "Rootbound Ashen Treants roam the {name:cinderwood} {zone_area:cinderwood} at night, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
       "objectives": [
         {
           "type": "kill",
@@ -105,8 +105,8 @@
       "requires": [
         "ashenward_rations_02"
       ],
-      "title": "{name:quartermaster_scrip}",
-      "text": "The crates carried a seal, and the seal belongs to {name:quartermaster_scrip}, who runs the {name:ration_camp} {dir_from_giver:quartermaster_scrip}. Defeat the quartermaster. The line can stop paying twice for its own bread.",
+      "title": "The Account of {name:quartermaster_scrip}",
+      "text": "Our own supply seal is on those stolen crates: {name:quartermaster_scrip} has been selling the line's supper out from under it. Find the quartermaster at the {name:ration_camp} {dir_from_giver:quartermaster_scrip} and defeat them. There are soldiers scraping empty bowls while that ledger balances beautifully.",
       "objectives": [
         {
           "type": "kill",
@@ -134,8 +134,8 @@
       "requires": [
         "ashenward_rations_03"
       ],
-      "title": "Word for Splitbolt Station",
-      "text": "Borin Splitbolt at Splitbolt Station in Stormvault Heights holds the passes for the whole Accord. Tell him the March road is clear again. He will have work, because the mountain always does. One of two roads I can offer you; take both if you have the time.",
+      "title": "Bread for the Mountain Watch",
+      "text": "Take word to Borin Splitbolt at Splitbolt Station in Stormvault Heights: the March road is clear and his supplies can move again. Ask what needs doing while you're there; Borin won't send a useful pair of hands home idle. Between his passes and Faeris's woods in Glassroot Wilds, there's work enough for both journeys.",
       "objectives": [
         {
           "type": "talk",
@@ -159,8 +159,8 @@
       "requires": [
         "ashenward_rations_03"
       ],
-      "title": "Word for Glassroot Gate",
-      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds sends us water and asks for little. Go and tell her the barrels are coming again. She has trouble in her woods and too few wardens to deal with it. One of two roads I can offer you; take both if you have the time.",
+      "title": "An Answer for Faeris",
+      "text": "Faeris Rootbinder at Glassroot Gate in Glassroot Wilds keeps sending water, even when all I send back is an apology. Tell her the barrels are coming again, and ask where she needs help. I've work to send you to in Stormvault Heights as well; the forest and the mountain are keeping this same army on its feet.",
       "objectives": [
         {
           "type": "talk",
@@ -184,8 +184,8 @@
       "requires": [
         "ashenward_rations_03"
       ],
-      "title": "Up to Last Hedge Redoubt",
-      "text": "Nella Hedgeward holds Last Hedge Redoubt, the last post before the front. Report to her once you can handle the woods up there. She has never once asked me for less trouble.",
+      "title": "One More Pair of Hands",
+      "text": "Nella Hedgeward at Last Hedge Redoubt keeps the last post before the front standing by sheer refusal to leave it. Report to her when you're ready for the harder fighting. Her last request was for timber, food and people who could think on their feet; I can at least send her you.",
       "objectives": [
         {
           "type": "talk",
@@ -209,8 +209,8 @@
       "requires": [
         "ashenward_rations_01"
       ],
-      "title": "Bounty: Raiders on the Ashfields",
-      "text": "Repeatable bounty: March Skeleton Raiders take the ration road across the {name:ashfields} {zone_area:ashfields} every night. Break six of them; the next bounty opens twenty minutes after you hand this one in.",
+      "title": "Bounty: No Rations for the Dead",
+      "text": "March Skeleton Raiders haunt the ration road through the {name:ashfields} {zone_area:ashfields} every night, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -239,8 +239,8 @@
       "min_level": 34,
       "level": 35,
       "requires": [],
-      "title": "Bears in the Hedgewood",
-      "text": "Bramble Bears own the {name:hedgewood} {zone_area:hedgewood} by day, and they have learned that supply wagons carry honey. Kill five of them. I would rather lose the honey than another driver.",
+      "title": "Honey Is Not Worth a Driver",
+      "text": "The Bramble Bears in the {name:hedgewood} {zone_area:hedgewood} have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill five of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
       "objectives": [
         {
           "type": "kill",
@@ -268,8 +268,8 @@
       "requires": [
         "ashenward_hedge_01"
       ],
-      "title": "Coalbrand's Archers",
-      "text": "Entrenched Bandit Archers hold {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} and shoot at anything wearing our colours. Defeat five of them. They are good shots and better cowards; rush them.",
+      "title": "A Uniform Is Not a Target",
+      "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Approach carefully; courage has its uses, but it doesn't stop an arrow.",
       "objectives": [
         {
           "type": "kill",
@@ -297,8 +297,8 @@
       "requires": [
         "ashenward_hedge_02"
       ],
-      "title": "Poachers on the Warpath",
-      "text": "Wartrail Poachers camp at the {name:poacher_camp} {dir_from_giver:poacher_camp} and sell the March's game back to our own cooks. Defeat five of them. Their marshal keeps receipts, and I would like to read them.",
+      "title": "The Price of an Empty Pot",
+      "text": "Wartrail Poachers at the {name:poacher_camp} {dir_from_giver:poacher_camp} take the March's game, then charge our cooks whatever desperation will bear. Defeat five of them and break their hold on the hunting grounds. Their marshal signs every sale, as though neat handwriting could make this honest.",
       "objectives": [
         {
           "type": "kill",
@@ -326,8 +326,8 @@
       "requires": [
         "ashenward_hedge_03"
       ],
-      "title": "Group: The Red Receipt",
-      "text": "Group quest. {name:red_receipt_marshal} signs every sale at the {name:poacher_camp} {dir_from_giver:red_receipt_marshal} in red ink and keeps the best guards in the March. Bring a group and end the trade. Alone, you would only become another receipt.",
+      "title": "Group: The Last Receipt",
+      "text": "{name:red_receipt_marshal} still runs the trade from the {name:poacher_camp} {dir_from_giver:red_receipt_marshal}, signing away our soldiers' supper in red ink. Gather a group and kill the marshal; a fighter that dangerous is no job for one exhausted hero. I want all of you back to share the meal when this is done.",
       "objectives": [
         {
           "type": "kill",
@@ -356,8 +356,8 @@
       "requires": [
         "ashenward_hedge_02"
       ],
-      "title": "Bounty: The Warfields at Night",
-      "text": "Repeatable bounty: Trench Shamblers march across the {name:warfields} {zone_area:warfields} every night as if the war still needed them. Put down eight of them; the next bounty opens twenty-five minutes after you hand this one in.",
+      "title": "Bounty: Let the Watch Come Home",
+      "text": "Trench Shamblers cross the {name:warfields} {zone_area:warfields} after dark, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
