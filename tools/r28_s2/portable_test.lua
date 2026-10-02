@@ -365,6 +365,40 @@ check(poi_unit and gen and math.max(math.abs(gen.cell.i - poi_unit.cell.i),
 	math.abs(gen.cell.j - poi_unit.cell.j)) >= 30, "a generated camp stays apart from a POI camp")
 check(gen.region.size == 9 and gen.score ~= nil and poi_unit.score == nil,
 	"the generated camp keeps its 3x3 block and score")
+-- Two close POIs (Round 28 S2 review): each camp keeps its POI's own cell,
+-- so both have a region; two POIs in one cell give a build problem, no crash.
+local function close_world(mx, mz)
+	local anchors = deep_copy(ANCHORS)
+	anchors[#anchors + 1] = {id = "anchor_005", slot = "mirefolk", template = "mirefolk", x = mx, z = mz}
+	local source = deep_copy(SOURCE)
+	source.anchors[#source.anchors + 1] = {id = "anchor_005", zone_numeric_id = 1,
+		slot_id = "mirefolk", template_id = "mirefolk"}
+	local zones = {}
+	for k, v in pairs(ZONES) do zones[k] = v end
+	zones.anchor = function(zone, slot)
+		if zone ~= A then return nil end
+		for _, a in ipairs(anchors) do
+			if a.slot == slot then return {x = a.x, y = 20, z = a.z, id = a.id} end
+		end
+		return nil
+	end
+	local q = CORE.queries({zones = zones, road_polylines = {}, source = source,
+		column_values_at = function() return "land" end})
+	local c = ctx()
+	c.pois = function(zone) return CORE.zone_pois(source, zone, {anchor_002 = "Test Bandit Camp",
+		anchor_003 = "Test Hideout", anchor_005 = "Test Fen"}) end
+	local rec = with_camps({bandit_camp(), bandit_camp({id = "fen", site = {poi = "mirefolk"}})})
+	return CORE.build(A, q, CORE.parse_recipe(A, rec, c))
+end
+map = close_world(420, -480) -- the next cell, inside the bandit camp's radius
+local bandits, fen = camp_unit(map, "bandits"), camp_unit(map, "fen")
+check(bandits and fen and fen.region and fen.region.size >= 1 and bandits.region.size >= 1 and
+	map.region_at(420, -480) == fen.region and map.region_at(400, -500) == bandits.region,
+	"two close POIs: each camp holds its POI's own cell")
+map = close_world(405, -505) -- the same cell
+check(camp_unit(map, "bandits") and not camp_unit(map, "fen") and #map.problems == 1 and
+	map.problems[1]:find("shares its cell with camp bandits", 1, true) ~= nil,
+	"two POIs in one cell: a build problem for the second (" .. tostring(map.problems[1]) .. ")")
 -- A leader at the POI camp.
 map = build(with_camps({bandit_camp()},
 	{{role = "chief", at = {camp = "bandits"}, respawn = 300}}))

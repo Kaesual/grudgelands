@@ -68,6 +68,7 @@ M.LLOYD_ROUNDS = 3
 M.CAMP_ROAD_MIN = 48
 M.CAMP_SLOPE = 0.35
 M.CAMP_RADIUS = 40    -- slot spots are drawn within this of the centre
+M.POI_MEMBER_RADIUS = 24 -- ... of a camp on a POI: near its tents (camps.lua)
 -- Camp POIs of the world model (the zone atlas's `camps`): the anchor
 -- template -> the POI type a recipe camp's site names. Guard posts are
 -- listed so a recipe naming one gets a clear error; they are no mob camp.
@@ -1226,7 +1227,11 @@ function M.build(zone_id, q, recipe)
 	-- anchor, the cells are the zone's land cells the camp radius reaches,
 	-- the belt the camp's own. The belt the POI's cell lies in on this seed
 	-- is kept (poi_belt); more than one belt away is a warning (the camp
-	-- then stands out from the levels round it).
+	-- then stands out from the levels round it). Each camp claims its POI's
+	-- own cell first (also a POI just off the zone's land: its nearest
+	-- cell), so two close POIs both keep a region; the cells round them go
+	-- to the camp first in recipe order.
+	local poi_units = {}
 	for _, camp in ipairs(recipe.camps) do
 		if camp.site ~= "generate" then
 			local a = anchor_by_ref[camp.site.anchor]
@@ -1234,6 +1239,9 @@ function M.build(zone_id, q, recipe)
 				nearest_cell(a.x, a.z))
 			if not cell then
 				problems[#problems + 1] = "no position for " .. camp.id .. " on " .. camp.site.name
+			elseif cell.camp then
+				problems[#problems + 1] = ("camp %s on %s shares its cell with camp %s"):format(
+					camp.id, camp.site.name, cell.camp.id)
 			else
 				local unit = new_camp(camp, cell, a.x, a.z)
 				unit.site = camp.site
@@ -1242,14 +1250,16 @@ function M.build(zone_id, q, recipe)
 					warnings[#warnings + 1] = ("camp %s on %s states belt %s, its POI lies in belt %s"):format(
 						camp.id, camp.site.name, camp.belt.id, unit.poi_belt.id)
 				end
-				for _, c in ipairs(order) do
-					if not c.camp and box_dist(a.x, a.z, c.i * CELL, c.j * CELL,
-							c.i * CELL + CELL, c.j * CELL + CELL) < M.CAMP_RADIUS then
-						c.camp = unit
-					end
-				end
-				-- A POI just off the zone's land keeps its nearest cell.
-				if not cell.camp then cell.camp = unit end
+				cell.camp = unit
+				poi_units[#poi_units + 1] = unit
+			end
+		end
+	end
+	for _, unit in ipairs(poi_units) do
+		for _, c in ipairs(order) do
+			if not c.camp and box_dist(unit.x, unit.z, c.i * CELL, c.j * CELL,
+					c.i * CELL + CELL, c.j * CELL + CELL) < M.CAMP_RADIUS then
+				c.camp = unit
 			end
 		end
 	end

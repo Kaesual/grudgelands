@@ -89,7 +89,12 @@ table order.
    cell lies in differs per seed (Goldmead's bandit camp lies in L14–16 on
    seed 42, in L17–20 on seed 7); the renderer's stats name it per camp and
    add a WARNING when it lies more than one belt from the stated one (the
-   game logs the same). Then the generated camps: candidates are
+   game logs the same). Each camp claims its POI's own cell before the
+   cells round it, so two close POIs both keep a region (two POIs in one
+   cell: the second is a build problem). The region keeps the 40-node
+   footprint (no ambient spawns there), but the members stand within 24
+   nodes of the POI, near its tents: a POI may lie close to a road or an
+   outpost. Then the generated camps: candidates are
    cells of the camp's belt whose 3 × 3 block is land of the zone, outside
    other camps, unprotected, outside the drift band, at least 48 nodes from
    roads, mean slope ≤ 0.35, and at least `apart` cells from the other camps
@@ -97,6 +102,8 @@ table order.
    cells, but not all round), 1 for highland in the block, then flatness
    and road distance; ties to the first cell in grid order. The 3 × 3 block
    is the camp's own region; members stand within 40 nodes of its centre.
+   An aggressive camp member, like an ambient spawn, never stands in the
+   drift band.
    No candidate is logged as a problem; the camp and its leader are then
    missing.
 8. **Leaders** stand at a camp centre, or on the cell farthest from roads in

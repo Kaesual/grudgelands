@@ -809,6 +809,30 @@ do
 	check(SR.attempt({x = unit.x - 24, y = GROUND_Y + 1, z = unit.z}, {player_at(unit.x - 24, unit.z)},
 		"day", 0, 0) == "camp", "camp ground spawns through its slots only")
 	clear()
+	-- Round 28 S2 review: a camp on a POI keeps its members within 24 nodes
+	-- of the POI, and an aggressive member never stands in the drift band.
+	-- The same unit, moved beside the road (x = 0) as a POI camp.
+	check(GM.disposition("grug_mobs:confused_bandit") == "aggressive", "camp members are aggressive")
+	local saved = {x = unit.x, z = unit.z, site = unit.site, center_y = unit.center_y}
+	unit.x, unit.z, unit.site, unit.center_y = 20, -2450, {name = "Test POI"}, nil
+	local PP = player_at(unit.x + 40, unit.z)
+	local t = G.now + 1000
+	for _ = 1, 40 do
+		t = t + 61
+		GM.region_camp_tick(t, {PP}, "day")
+	end
+	check(#spawned == 6, "the POI camp refills its six slots (" .. #spawned .. ")")
+	local drift_free, near = true, true
+	for _, m in ipairs(spawned) do
+		local p = m.object:get_pos()
+		local dx, dz = p.x - unit.x, p.z - unit.z
+		if dx * dx + dz * dz > 25 * 25 then near = false end -- spots are rounded to nodes
+		if SR.in_drift(p) then drift_free = false end
+	end
+	check(near, "POI camp members stand within 24 nodes of the POI")
+	check(drift_free, "no aggressive POI camp member in the drift band")
+	unit.x, unit.z, unit.site, unit.center_y = saved.x, saved.z, saved.site, saved.center_y
+	clear()
 end
 
 -- Leaders.

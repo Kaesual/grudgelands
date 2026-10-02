@@ -394,7 +394,9 @@ regions for any seed. The build and the full format:
   instead (`"site": {"poi": "bandit" | "mirefolk", "name": <POI name>}`; the
   name only where the zone has two of the type; the zone atlas lists them
   under `camps`), so camps sit where the map shows tents and fires: centre
-  = the POI, no `apart`, and it states its `belt` like every camp (exact
+  = the POI, members within 24 nodes of it (outside the drift band like
+  every aggressive camp member), no `apart`, and it states its `belt` like
+  every camp (exact
   quest levels, never missing on a seed). The POI's own belt differs per
   seed: the region stats name it and warn when it lies more than one belt
   from the stated one. Guard posts are no mob camp. In a recipe zone the
