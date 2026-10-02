@@ -162,6 +162,11 @@ the heartland) before the merge.
 
 ## 6. Open questions for the user
 
+**Answered 2026-10-02:** the user accepted all six recommendations
+(Q1 ≈ 15 / 14 / 7 / 8, Q2 Opus structure + Astra text pass, Q3 a sample
+per track, Q4 copper from weight, Q5 one bounty line per hub where it fits,
+Q6 reuse `r28-c2`). Scheduling: [round29-plan.md](round29-plan.md).
+
 - **Q1** Quest counts per zone: take the Human sizes (≈ 15 / 14 / 7 / 8) as
   the rough target for every track, or different?
 - **Q2** Texts: Opus structure + Astra text pass per track (recommended), or
