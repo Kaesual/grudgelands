@@ -22,12 +22,13 @@ Decided with the user on 2026-10-02 (Round 28 Lane S1); the runtime rules
 
 ## How a region map is built
 
-The game builds every recipe zone's map once at server start, before
+The game makes every recipe zone's map ready once at server start, before
 players can join (the user, 2026-10-02: a build blocks the server, so none
-happens while people play), and keeps it for the session; a build takes
-0.1–0.6 s per zone (about 9 s for all 38) and the maps add about 50 MiB to
-the Lua heap. Same seed and recipe, same map: no random numbers, no dependence on
-table order.
+happens while people play), and keeps its compact form for the session; a
+build takes 0.1–0.6 s per zone (about 9 s for all 38). A later start of the
+same world reads the maps from the world folder instead
+([Cache and memory](#cache-and-memory)). Same seed and recipe, same map: no
+random numbers, no dependence on table order.
 
 1. **Cells.** The zone on a grid of 32 × 32-node cells aligned to world
    multiples of 32, each sampled on a 4 × 4 sub-grid (8-node pitch; an 8 × 8
@@ -138,6 +139,57 @@ Unchanged by regions: underground and water spawns, the Rift Spawn's
 surface row (on its host ground at night, in the four zones whose palette
 had it: Gravesalt, Skyglass and both islands), rares, vendors, guards, the
 mapgen.
+
+## Cache and memory
+
+Round 30 P3 (the [performance review](../research/perf-review-2026-10.md)
+§3). *Why:* the builds took about 9.5 s of every start, and the built maps
+kept about 22 MiB of per-cell tables that nothing at runtime reads.
+
+- **Compact form.** After a build the game keeps only what the spawner,
+  camps, leaders, levels and directions read
+  (`mods/ENTITIES/grug_mobs/spawn_regions_cache.lua`): the zone's cell grid
+  as a byte string of region ids (two bytes per cell above 255 regions), the
+  regions (kind or camp, belt, centroid, size; level and level range from the
+  recipe), camps and leaders by region id, the zone frame and the build's
+  problems and warnings. `region_at` answers from the grid exactly as the
+  built map does (a cell's region, else the nearest zone land cell among the
+  eight around it). All 38 maps take under 0.2 MiB (the full maps about
+  22 MiB). The full map (every cell with its fields, every region's cells)
+  is `SR.full_map(zone)`, a fresh build for tools.
+- **File.** `<world>/grug_region_maps.txt` (`grug_region_maps_v1`): the key
+  lines, one block per zone (the SHA-256 of the zone's recipe file, then the
+  count line, the region, camp and leader rows with numbers as `%.17g`, the
+  problem and warning lines, the grid bytes), each framed by its length, and
+  a final SHA-256 over everything before it. The encoding is byte-stable: two
+  builds of the same world write the same bytes (about 110 KB).
+- **Key.** The format, the full world seed, the digest of the whole
+  `grug_mapgen` tree, the mapgen settings and the interpreter (the
+  [world-layout cache](world_zones.md#134-world-folder-layout-cache-round-22-d71)'s
+  key parts, published as `grug_mapgen.wp40.world_key`), and one digest of
+  the builder's files: `spawn_regions_core.lua`, `spawn_regions.lua`,
+  `spawn_regions_cache.lua`, `data/subtypes.json` and
+  `grug_core/zone_authority.lua`. A zone's block is used only when its
+  recipe digest matches the zone's file, so an edited recipe rebuilds only
+  its zone. A test (`tools/r30_p3`) wraps every file read of a build and
+  fails when one is not covered by the key.
+- **At start** (`SR.start_maps`): every zone whose block matches is read
+  back, and its stored problems and warnings are logged again, so the log
+  reads as after a build; every other zone is built. When anything was
+  built, or the file holds other zones, the whole file is replaced
+  atomically (`core.safe_file_write`). A missing file or one of another key
+  or format is an action line; a damaged file (truncated, a hash or length
+  that differs, a parse error) or a block that does not fit the recipe (an
+  unknown kind, camp or leader, a region id out of range, a grid of the
+  wrong length) is a warning; each rebuilds and never stops the load. A
+  zone whose build fails stays without a map, as before. One summary line
+  names the zones read and built, the time and the file size. Zones a probe
+  installs with `install_zone` are never read from or written to the file.
+- **Boot memory.** A full collection after grug_mapgen's construction, after
+  the map base and after a build pass keeps the boot's garbage from adding
+  up (peak memory on seed 12345: about 2.1 → 1.8 GB on a first start,
+  1.8 → 1.7 GB on a later one); grug_mapgen logs the heap after a full
+  collection at the first server step.
 
 ## The recipe
 

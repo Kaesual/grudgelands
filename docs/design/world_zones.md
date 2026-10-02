@@ -1794,6 +1794,11 @@ numeric-truncated seed.
 - One log line per boot names the result: `world layouts: cache hit` with
   the skipped build seconds, or `cache miss (<reason>)` with the build
   seconds and the stored size.
+- The key parts (seed, mapgen tree digest, settings, interpreter) are
+  published as `grug_mapgen.wp40.world_key` (nil without a key) for the
+  other world-folder caches: the region maps
+  ([spawn_regions.md](spawn_regions.md#cache-and-memory)) and the Map tab's
+  zone grid ([world_map.md](world_map.md)).
 - The full-world preparation identity (the "authority changed" guard) binds
   a digest of the three texts besides its source files, so it changes when
   a world's layouts or those sources change, whether the layouts were built
