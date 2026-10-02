@@ -68,7 +68,7 @@
         "ashenward_rations_01"
       ],
       "title": "The Trees Can Pay for That",
-      "text": "Rootbound Ashen Treants roam the {name:cinderwood} {zone_area:cinderwood} at night, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
+      "text": "At night, Rootbound Ashen Treants roam the {name:cinderwood}, which lies {zone_area:cinderwood}, and they've been knocking my water carts to pieces. Fell five and bring me two lumps of Bitter Resin from them for the barrel repairs. If the woods insist on joining this war, they can contribute to the supply bill.",
       "objectives": [
         {
           "type": "kill",
@@ -89,7 +89,7 @@
         }
       ],
       "rewards": {
-        "weight": 3.5,
+        "weight": 3,
         "items": []
       },
       "lesson": "Kill and drop request from the same outing.",
@@ -210,7 +210,7 @@
         "ashenward_rations_01"
       ],
       "title": "Bounty: No Rations for the Dead",
-      "text": "March Skeleton Raiders haunt the ration road through the {name:ashfields} {zone_area:ashfields} every night, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
+      "text": "Every night, March Skeleton Raiders haunt the ration road through the {name:ashfields}, which lie {zone_area:ashfields}, despite having no use for supper. Break six of them after dark and give my drivers a chance to deliver it. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -240,22 +240,51 @@
       "level": 35,
       "requires": [],
       "title": "Honey Is Not Worth a Driver",
-      "text": "The Bramble Bears in the {name:hedgewood} {zone_area:hedgewood} have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill five of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
+      "text": "The Bramble Bears in the {name:hedgewood}, which lies {zone_area:hedgewood}, have learned to follow our wagons by daylight. They're after the honey, but the drivers get the claws. Kill four of the bears; I can replace a jar, and I'm tired of writing letters about people I can't.",
       "objectives": [
         {
           "type": "kill",
           "roles": [
             "territorial_bear"
           ],
-          "count": 5,
+          "count": 4,
           "area": "elandor_ashenward_march/hedgewood"
         }
       ],
       "rewards": {
-        "weight": 3,
+        "weight": 2.5,
         "items": []
       },
       "lesson": "Heavy hitters by day in the middle belt.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_hedge_webs",
+      "line": "hedge",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r20_anchor_032_host",
+      "min_level": 35,
+      "level": 36,
+      "requires": [
+        "ashenward_hedge_01"
+      ],
+      "title": "Webs Across the Wagon Road",
+      "text": "With the bears thinned, Briar-Web Spiders take the {name:hedgewood} at night and string our wagon road shut, horses and all. Kill four of them after dark. Cut the drivers loose first if you find any; the spiders will wait, they always do.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "briar_web_spider"
+          ],
+          "count": 4,
+          "area": "elandor_ashenward_march/hedgewood"
+        }
+      ],
+      "rewards": {
+        "weight": 2.5,
+        "items": []
+      },
+      "lesson": "Same wood, night roster: the middle belt holds the hedge line between 34 and 37.",
       "duration_min": 10
     },
     {
@@ -266,7 +295,7 @@
       "min_level": 37,
       "level": 39,
       "requires": [
-        "ashenward_hedge_01"
+        "ashenward_hedge_webs"
       ],
       "title": "A Uniform Is Not a Target",
       "text": "Entrenched Bandit Archers at {name:coalbrand_yard} {dir_from_giver:coalbrand_yard} have taken to using our dispatch runners for target practice. Defeat five of them and give the runners room to breathe. Approach carefully; courage has its uses, but it doesn't stop an arrow.",
@@ -357,7 +386,7 @@
         "ashenward_hedge_02"
       ],
       "title": "Bounty: Let the Watch Come Home",
-      "text": "Trench Shamblers cross the {name:warfields} {zone_area:warfields} after dark, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
+      "text": "After dark, Trench Shamblers cross the {name:warfields}, which lie {zone_area:warfields}, and every returning patrol has to fight through them. Put down eight at night so I can count my soldiers through the gate instead of wondering. This bounty becomes available again twenty-five minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",

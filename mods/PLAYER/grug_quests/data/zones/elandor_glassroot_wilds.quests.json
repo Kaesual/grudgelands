@@ -26,7 +26,7 @@
       "level": 31,
       "requires": [],
       "title": "Room for the Living",
-      "text": "Briarpack Wolves hunt the {name:fringe} {zone_area:fringe}, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
+      "text": "Briarpack Wolves hunt the {name:fringe}, which lies {zone_area:fringe}, and after dark their howls press closer to our wardens. Kill five of them to ease the pressure on the paths. I have guarded these woods too long to mistake loving a creature for letting it eat my people.",
       "objectives": [
         {
           "type": "kill",
@@ -68,7 +68,7 @@
         }
       ],
       "rewards": {
-        "weight": 2.5,
+        "weight": 2,
         "items": []
       },
       "lesson": "Family drop request; the first hunt's kills count toward it.",
@@ -108,7 +108,7 @@
       "level": 35,
       "requires": [],
       "title": "An Unwelcome Rain of Branches",
-      "text": "By day, the Treetop Jungle Apes in the {name:tangle} {zone_area:tangle} greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
+      "text": "By day, the Treetop Jungle Apes in the {name:tangle}, which lies {zone_area:tangle}, greet our wardens with whatever comes loose overhead. Kill five of them so we can pass beneath the boughs again. I have tried patience; it did very little for the warden carrying our medicine.",
       "objectives": [
         {
           "type": "kill",
@@ -279,7 +279,7 @@
         "glassroot_canopy_03"
       ],
       "title": "Bounty: Leave a Path Unspun",
-      "text": "Each night the Canopy-Web Jungle Spiders stitch the {name:canopy} {zone_area:canopy} shut again, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
+      "text": "Each night the Canopy-Web Jungle Spiders stitch shut the {name:canopy}, which lies {zone_area:canopy}, with no regard for anyone's need to pass. Kill eight after dark so the wardens can make their rounds. You may repeat this bounty twenty-five minutes after turning it in; such diligent weavers will keep us occupied.",
       "objectives": [
         {
           "type": "kill",

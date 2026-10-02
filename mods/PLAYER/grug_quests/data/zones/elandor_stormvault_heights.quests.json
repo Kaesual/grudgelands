@@ -39,7 +39,7 @@
       "level": 31,
       "requires": [],
       "title": "Postage and Talons",
-      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Ridge Crag Eagles by day in the {name:eagle_crags} {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
+      "text": "A courier came back with half a dispatch and a very personal opinion of birds. Bring down five Ridge Crag Eagles by day in the {name:eagle_crags}, which lie {zone_area:eagle_crags}, so our orders reach the front with the bearers attached. The Accord can argue over the wording once it arrives.",
       "objectives": [
         {
           "type": "kill",
@@ -68,7 +68,7 @@
         "stormvault_passes_01"
       ],
       "title": "The Mountain's Night Shift",
-      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. I've kept this watch for years, and even I know when to lie down.",
+      "text": "The eagles clock off at dusk, but don't put your weapon away. Rime Skeleton Strays climb out of the snow in the {name:eagle_crags} and loose arrows at our watch fires; break five of them at night. The mountain works two shifts, and neither of them sleeps.",
       "objectives": [
         {
           "type": "kill",
@@ -97,7 +97,7 @@
         "stormvault_passes_01"
       ],
       "title": "A Proper Introduction to Rock",
-      "text": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need the pick for tier four rock when you go looking for Emberglass.",
+      "text": "Bring me four Silversteel Bars and I'll trade you a Silversteel Pickaxe. A dual furnace makes the bars from steel and silver; swearing at an ordinary furnace does not, though I've tested that thoroughly. You'll need it when you dig deep enough for Emberglass, where the rock turns too hard for steel.",
       "objectives": [
         {
           "type": "item",
@@ -106,7 +106,7 @@
         }
       ],
       "rewards": {
-        "weight": 2.5,
+        "weight": 2,
         "items": [
           {
             "item": "grug_materials:pick_silversteel",
@@ -178,7 +178,7 @@
         "stormvault_passes_02"
       ],
       "title": "Bounty: Bones Off the Road",
-      "text": "Every night, Rime Skeleton Strays insist on holding the {name:passes} {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
+      "text": "Every night, Rime Skeleton Strays insist on holding the {name:passes}, which lie {zone_area:passes}. Break six after dark; I want wagons rattling through there, not ribcages. This bounty is repeatable, twenty minutes after you turn it in.",
       "objectives": [
         {
           "type": "kill",
@@ -296,7 +296,7 @@
         "stormvault_sighting_01"
       ],
       "title": "A Clearer View of Trouble",
-      "text": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Mine two pieces of Emberglass from tier four rock below the passes and bring them to me, taking a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
+      "text": "The sighting line needs new lenses; at present I can spot trouble, but not which trouble. Dig deep below the passes, where the rock turns too hard for a steel pick, and bring me two pieces of Emberglass; take a Silversteel Pickaxe for the job. We'll give the watch a clear view before anyone mistakes a siege engine for a supply cart.",
       "objectives": [
         {
           "type": "item",
@@ -352,7 +352,7 @@
         "stormvault_sighting_03"
       ],
       "title": "Bounty: An Overdue Dismissal",
-      "text": "The Trench Shamblers in the {name:frostfields} {zone_area:frostfields} still march after dark, long past any reasonable end to their service. Put down eight of them so the living watch can hold its ground. You may take this bounty again twenty-five minutes after turning it in; I'll keep the pay ready.",
+      "text": "The Trench Shamblers in the {name:frostfields}, which lie {zone_area:frostfields}, still march after dark, long past any reasonable end to their service. Put down eight of them so the living watch can hold its ground. You may take this bounty again twenty-five minutes after turning it in; I'll keep the pay ready.",
       "objectives": [
         {
           "type": "kill",
