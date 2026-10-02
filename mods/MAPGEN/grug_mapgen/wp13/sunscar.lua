@@ -202,6 +202,10 @@ local function loader(directory)
 		})
 	end
 
+	-- The waypoint pad (Round 29, WP17): on the open flats north of the south lane, in front
+	-- of the tusk house's door, six nodes away.
+	local WAYPOINT = {x = -11, z = -16}
+
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
 	-- Anchor-relative like every other landmark, in a fixed authored order;
@@ -255,6 +259,10 @@ local function loader(directory)
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 3, y = 1,
 			z = 12, dir = {x = 0, z = 1}},
+		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
+		-- stands here, grug_home reads it.
+		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
+			z = WAYPOINT.z, dir = {x = 0, z = 1}},
 		--
 		-- SPARE IDLE SPOTS (playtest round 2, 2026-09-15). `spawn = false` is
 		-- what makes them wander TARGETS and never homes: the roster places one
@@ -708,6 +716,9 @@ local function loader(directory)
 				dressing.path_light(buf, palette, spot[1], spot[2])
 			end
 		end
+
+		-- 13b. The waypoint pad, before the flora so nothing grows on it.
+		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "sunscar")
 
 		-- 14. Dry flora on whatever open ground is left.
 		-- Density 6, not the 4 the wooded starts use: at 4 the sieve

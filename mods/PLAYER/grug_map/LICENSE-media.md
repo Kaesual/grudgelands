@@ -36,3 +36,10 @@ server generates it at start (`grug_map/base.lua`, `mask_png`).
 swallowtail pennant with a dark red band on a dark pole) drawn from a
 character grid by `tools/r28_m1/render_zone_icon.py` for Grudgelands,
 CC0-1.0. No third-party source images. A plain placeholder.
+
+# Waypoint marker (Round 29)
+
+`textures/grug_map_waypoint.png`: original 16×16 RGBA pixel art (a grey
+standing stone with a blue rune on a dark outline) drawn from a character grid
+by `tools/r29_w/render_textures.py` for Grudgelands, CC0-1.0. No third-party
+source images. A first version; the art lane may redraw it under the same name.

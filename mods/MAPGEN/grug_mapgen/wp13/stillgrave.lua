@@ -143,6 +143,10 @@ local function loader(directory)
 		{40, 46, 60, 60, 6},
 	}
 
+	-- The waypoint pad (Round 29, WP17): on the open blight between the west lane and the
+	-- hall, its cross reaching the lane; the warden's door is ten nodes away.
+	local WAYPOINT = {x = -14, z = 22}
+
 	-- NPC sockets: the named standing positions this settlement exports for
 	-- the runtime mods (docs/research/wp13-npc-sockets-contract.md section 2).
 	-- Anchor-relative like every other landmark, in a fixed authored order;
@@ -196,6 +200,10 @@ local function loader(directory)
 		-- turns it round to the street (start_npcs.lua `socket_face_yaw`).
 		{id = "hall_quest", role = "quest", tags = {"door"}, x = 2, y = 1,
 			z = 10, dir = {x = 0, z = 1}},
+		-- The travel waystone at the centre of the waypoint pad (WP17); nobody
+		-- stands here, grug_home reads it.
+		{id = "travel_waypoint", role = "waypoint", x = WAYPOINT.x, y = 1,
+			z = WAYPOINT.z, dir = {x = 0, z = 1}},
 		--
 		-- SPARE IDLE SPOTS (playtest round 2, 2026-09-15). `spawn = false` is
 		-- what makes them wander TARGETS and never homes: the roster places one
@@ -558,6 +566,9 @@ local function loader(directory)
 		end
 		assert(lamps == ROUTE_LAMPS, "wp13 stillgrave: " .. lamps ..
 			" route lamps stand, not " .. ROUTE_LAMPS)
+
+		-- 9b. The waypoint pad, before the bone piles so nothing grows on it.
+		dressing.waypoint_pad(buf, palette, WAYPOINT.x, WAYPOINT.z, "stillgrave")
 
 		-- 10. Bone piles and dead shrubs on whatever open blight is left:
 		-- thin over the basin, thicker where the ground is already turned.

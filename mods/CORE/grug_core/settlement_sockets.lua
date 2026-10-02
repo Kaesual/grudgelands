@@ -31,8 +31,8 @@
 
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	idle = true, quest = true, king = true, waypoint = true, work = true,
-	trainer = true, riding_trainer = true, mount_display = true,
-	gear_display = true, public_station = true}
+	trainer = true, riding_trainer = true, shipwright = true,
+	mount_display = true, gear_display = true, public_station = true}
 local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}

@@ -127,8 +127,8 @@ local function loader(directory)
 	-- The civic roof and the two handles, from this capital's own parts file.
 	local handles = elf.handles()
 
-	-- The travel plaza reserved for WP17: kerbed, lit from its own kerb and
-	-- empty of everything above its paving.
+	-- The travel plaza (WP17): kerbed, lit from its own kerb and empty of
+	-- everything above its paving but the waystone.
 	local PLAZA = {x1 = 18, z1 = -20, x2 = 32, z2 = -8}
 
 	-- The QUAY: the marble promenade along the mere's edge. It is authored as
@@ -484,7 +484,8 @@ local function loader(directory)
 			end
 		end
 
-		-- 4. The travel plaza: paving, two kerb rings and nothing inside it.
+		-- 4. The travel plaza: paving, two kerb rings and only the waystone
+		-- inside it.
 		pave(AVENUE, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2, 6)
 		dressing.inlay(buf, elf_palette, PLAZA.x1, PLAZA.z1, PLAZA.x2, PLAZA.z2)
 		dressing.inlay(buf, elf_palette, PLAZA.x1 + 3, PLAZA.z1 + 3,
@@ -501,6 +502,10 @@ local function loader(directory)
 				buf:put(pad_x + corner[1], 0, pad_z + corner[2], MARBLE)
 			end
 		end
+
+		-- The waystone (Round 29, WP17) stands at the pad's centre, in the
+		-- travel waypoint socket's cell; grug_home owns what it does.
+		dressing.waystone(buf, pad_x, pad_z)
 
 		-- 5. The plots.
 		for _, plot in ipairs(PLOTS) do
