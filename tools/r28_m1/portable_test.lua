@@ -19,7 +19,9 @@
 --   R  runtime: banner element on join, the join banner, 1.5 s display then
 --      hidden, the debounce through the real globalstep, text_of for the
 --      minimap line, zone markers through the atlas provider, HUD traffic
---      only on changes. The per-sample cost is measured by the engine probe
+--      only on changes, nothing during character creation; L layout: the
+--      flight-boundary warning between the zone and level-up banners. The
+--      per-sample cost is measured by the engine probe
 --      (tools/r28_m1/probe.sh), not on this fake world.
 -- Prints "R28 M1 PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
@@ -282,7 +284,9 @@ rawset(_G, "core", {
 	get_player_by_name = function(name) return players[name] end,
 	get_player_window_information = function() return nil end,
 })
+local STASIS = {}
 rawset(_G, "grug_core", {
+	player_in_creation_stasis = function(name) return STASIS[name] == true end,
 	FEED_COLOR = {notice = 0xf0e6c8},
 	zone_authority_installed = function() return true end,
 	settlement_socket_settlements = function()
@@ -412,6 +416,54 @@ do
 	for _, fn in ipairs(leaves) do fn(p) end
 	players.p1 = nil
 	check(M.text_of("p1") == "", "R leave clears the player")
+end
+
+-- Character creation: the player waits at the engine's spawn spot in
+-- stasis; nothing names it, and release shows the start town.
+do
+	STASIS.p2 = true
+	local p = new_player("p2", {x = 300, y = 10, z = -2600})
+	players.p2 = p
+	for _, fn in ipairs(joins) do fn(p) end
+	local banner
+	for id, def in pairs(p.huds) do
+		if def.type == "text" and def.position and def.position.y == 0 then banner = id end
+	end
+	step(3)
+	check(p.huds[banner].text == "" and M.text_of(p) == "",
+		"R creation stasis: no banner and no minimap line")
+	STASIS.p2 = nil
+	p.pos = {x = 10, y = 10, z = -2540}
+	step(1.1)
+	check(p.huds[banner].text == "Dawnmere" and M.text_of(p) == "Dawnmere",
+		"R after release the first sample shows the start town")
+	for _, fn in ipairs(leaves) do fn(p) end
+	players.p2 = nil
+end
+
+-- Layout: the flight-boundary warning sits below the zone banner and above
+-- the level-up banner (0.25 H, size 2) at 720p and the usual scalings.
+do
+	local layout = grug_core.hud_layout
+	for _, w in ipairs({{720, 1, 1}, {1080, 1, 1}, {1080, 1.5, 1.5}, {1440, 2, 2}}) do
+		local window = {size = {x = w[1] * 16 / 9, y = w[1]}, real_hud_scaling = w[2],
+			real_gui_scaling = w[3]}
+		local hud, gui = w[2], w[3]
+		local banner = layout.zone_banner_offset(window)
+		local banner_bottom = (banner.y + math.ceil(20 * 2.5 * gui / hud) / 2) * hud
+		local warning = layout.flight_warning_offset(window)
+		local line = math.ceil(20 * gui / hud) * hud
+		local top, bottom = warning.y * hud - line / 2, warning.y * hud + line / 2
+		local target_bottom = (layout.TARGET_FRAME_Y + math.ceil(20 * gui / hud) / 2) * hud
+		local banner_top = (banner.y - math.ceil(20 * 2.5 * gui / hud) / 2) * hud
+		check(banner_top > target_bottom, "L zone banner below the target frame at " .. w[1])
+		check(top > banner_bottom, "L flight warning below the zone banner at " .. w[1])
+		check(bottom < 0.25 * w[1] - 20 * gui, "L flight warning above the level-up banner at " ..
+			w[1] .. "p scale " .. w[2])
+	end
+	check(layout.anchors.flight_warning.position.y == 0 and
+		layout.anchors.flight_warning.offset.y == layout.flight_warning_offset(nil).y,
+		"L flight warning anchor")
 end
 
 if #failures > 0 then
