@@ -23,8 +23,8 @@
 -- band. Nothing is rasterised.
 -- A BOX is an inclusive x/y/z box: a settlement's building core from 10
 -- below its placement height to 10 above the highest node its blueprint
--- places; a Round 31 PvP fortress or camp's core grows by PVP_MARGIN nodes
--- on every side (pvp-plan ruling 22).
+-- places; a Round 31 PvP fortress's or camp's box grows by PVP_MARGIN nodes
+-- on every side in x and z (pvp-plan ruling 22).
 -- Both live in one 128-node candidate grid (`index128.compile_footprints`).
 -- A corridor registers its segments in runs of CHUNK consecutive segments,
 -- each run by the bounding box of its segments grown by the reach.

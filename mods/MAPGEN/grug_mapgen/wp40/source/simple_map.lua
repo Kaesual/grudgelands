@@ -469,8 +469,8 @@ source.anchor_profiles = {
 	-- is one node wider. The fortress's is 64, a flat 7-node field round its
 	-- 49-node walls: the road router keeps a circle of core / 2 + 10 nodes
 	-- round a POI core (road_layout.lua inputs), and with this core the
-	-- middle road, which bends round the fortress, passes its corner towers
-	-- at least 8 nodes off.
+	-- middle road, which bends round the fortress, keeps its surface 6 or
+	-- more nodes off the walls on the six tested seeds (with 50: down to 2).
 	{id="pvp_fortress",shape="gentle_grade",building_core_width=64,fitting_width=128,blend_width=192,force_native_dungeon=false},
 	{id="pvp_camp_low",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="pvp_camp_high",shape="gentle_grade",building_core_width=28,fitting_width=72,blend_width=120,force_native_dungeon=false},
