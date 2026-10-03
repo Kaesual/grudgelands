@@ -104,6 +104,8 @@ setmetatable(core, {__index = function(_, key)
 end})
 vector = {distance = function() return 1 end}
 grug_core = {register_tag_visibility = function() end,
+	-- grug_quests/npcs.lua: no PvP fortress is registered here (Round 31).
+	settlement_socket_anchor = function() return nil end,
 	hud_layout = {side_text_width = function() return 38 end, QUEST_WRAP = 38, anchors = {quest_list = {}}}}
 dofile("mods/CORE/grug_core/item_names.lua")
 grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,

@@ -101,6 +101,8 @@ vector = {distance = function() return 1 end}
 local SOCKETS = {dawnmere = {{id = "hall_quest", role = "quest", pos = {x = 0, y = 40, z = -2550}},
 	{id = "quest_cook", role = "quest", pos = {x = 120, y = 40, z = -2560}}}}
 grug_core = {register_tag_visibility = function() end,
+	-- grug_quests/npcs.lua: no PvP fortress is registered here (Round 31).
+	settlement_socket_anchor = function() return nil end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function(key) return deep_copy(SOCKETS[key] or {}) end}
 dofile("mods/CORE/grug_core/item_names.lua")
