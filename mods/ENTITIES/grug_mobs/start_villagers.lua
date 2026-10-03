@@ -423,6 +423,12 @@ end
 --
 local function install_nametag(self, text)
 	self._grug_tag_want = text
+	-- The entity's own name follows its tag (Round 31): `description` is what
+	-- every other reader of a mob's name takes (the infotext mobs_redo builds,
+	-- probes, the census), and it is a plain field, so it rides in
+	-- staticdata. Without it a titled quest giver -- a fortress's Warmaster --
+	-- still called itself its race's "Village Elder" everywhere but the tag.
+	self.description = text
 	grug_mobs.set_plain_tag(self, text)
 	self.update_tag = function(other)
 		other._grug_tag_want = text
