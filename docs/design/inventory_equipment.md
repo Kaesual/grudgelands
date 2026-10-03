@@ -411,12 +411,16 @@ them.
   "You dodge!" and "Dismount before attacking." (a mounted attack, at most
   once a second); and since Round 32 the personal notices: potion and food
   refusals (level, potion cooldown, full health, no mana pool, not
-  poisoned), the raw-weapon hint, mount notices (dismount
-  reason, flight-boundary warning, summon refusal), talent points earned or
+  poisoned), equip refusals (armor class, weapon level, hand slot,
+  two-handed rule), the class-change unequip notices, the starter-weapon
+  line at class choice, the raw-weapon hint, mount notices (dismount
+  reason, flight-boundary warning, summon refusal, a mount not bound to
+  this character), talent points earned or
   returned, and "Boss loot is waiting: free main inventory space, then
   rejoin." (queued boss loot is handed over at the next join). Each
   notice group keeps one keyed line that a repeat refreshes (`potion`,
-  `food`, `weapon_hint`, `mount`, `talents`, `boss_loot`, `combat:*`).
+  `food`, `equip:<reason>`, `class_change:*`, `starter:<slot>`,
+  `weapon_hint`, `mount`, `talents`, `boss_loot`, `combat:*`).
   Still in chat: death messages, rare sightings for the faction, the dragon
   arena's warnings, a boss's return warning and the one-time no-weapon hint
   (too long for the feed's 2.5 s).
