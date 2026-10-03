@@ -1156,14 +1156,17 @@ gate, protected surface).
   re-derived at once. The tier never changes. Its wander leash is the
   ordinary one: 32 nodes around its spawn point (`combat_stats.md`).
 - **Drift band.** No aggressive role spawns within 16 nodes of a road,
-  bridge, village, start town or capital city (the spot and two rings of
+  bridge, village, PvP fortress or war camp (Round 31), start town or
+  capital city (the spot and two rings of
   eight probes at 8 and 16 nodes, the same probe as the idle push of
   ruling 2); neutral roles and critters may.
 - **Protected surface (ruling 3).** No ambient non-critter spawn — ABM row
   or region — on a road corridor or bridge (half width + 1, ±5 vertical), a
-  village's building core, a start town's footprint or a capital city
+  village's building core, a Round 31 PvP fortress or war camp with its
+  10-node protection margin, a start town's footprint or a capital city
   (asked only in zones whose zone session publishes a `capital` anchor).
-  Camps and other POIs are not refused; critters may still appear in towns.
+  Bandit and Mirefolk camps and other POIs are not refused (their own mobs
+  spawn there); critters may still appear in towns.
   An active housing claim refuses hostile spawns as before.
 - **Density.** The §0 budget keeps its species-aware refill over the
   region's roster for the clock: point budget = the zone budget (15 by day,

@@ -504,8 +504,9 @@ visible:
   (`grug_mobs.noncombatant`); nothing narrows an attacker's `attack_npcs` on its
   behalf.
 - **PvP fortresses and camps** (Round 31, pvp-plan rulings 17–22): one
-  fortress per faction in its middle 31–40 zone on the middle road's axis
-  (Ashenward Bastion, Bannerbreak Warhold) and, in each of the four
+  fortress per faction in its middle 31–40 zone, on the Battlegrounds half
+  beside the middle road, which keeps its own course, with a trail from the
+  gate (Ashenward Bastion, Bannerbreak Warhold) and, in each of the four
   Battlegrounds zones, one lower and one higher camp per faction, 16 camps.
   Positions, spacing (at least 120 nodes between PvP POIs) and protection
   (the blueprint plus a 10-node margin): `world_zones.md` §16. Each fortress

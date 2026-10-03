@@ -16,9 +16,12 @@
 -- 4. WAYSTONE (fortress): the travel_waypoint socket holds
 --    grug_mapgen:waystone, grug_home lists it among the faction's seven
 --    known stones and never for the other faction;
--- 5. GATE: walking from 6 nodes outside the gate on walkable ground (steps
---    of at most one node, two nodes of headroom) reaches the anchor yard
---    (logged, a warning when not).
+-- 5. GATE: a fortress's gate trail starts in front of its gate (the node
+--    there is world feature "road") and the own faction alone sees its map
+--    icon; walking from the trail start (a camp: 6 nodes outside its gate)
+--    on walkable ground (steps of at most one node, two nodes of headroom)
+--    reaches the anchor yard (logged, a warning when not); a camp's map icon
+--    shows to both factions.
 -- Every POI's surroundings are written to the world folder as
 -- r31m_<key>.cells.tsv (x y z name param2, anchor-relative: the exposed
 -- ground and everything above it) and r31m_<key>.sockets.tsv for the
@@ -143,7 +146,7 @@ local function poi(row, done)
 			log(("%s: %d sockets standing, collar step up to %d nodes within 8 of the core")
 				:format(row.key, standing, step))
 			-- 3. protection
-			local kind = row.kind == "pvp_fortress" and "fortress" or "camp"
+			local kind = row.kind == "pvp_fortress" and "fortress" or "war_camp"
 			local open_sides = 0
 			for _, c in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
 				local p = {x = a.x + c[1] * (box + 10), y = a.y + 1, z = a.z + c[2] * (box + 10)}
@@ -180,9 +183,30 @@ local function poi(row, done)
 				log(("%s: waystone at %s, %d own stones"):format(row.key,
 					core.pos_to_string(waystone), #own))
 			end
-			-- 5. the gate approach
-			local gz = (row.faction == "accord") and -1 or 1
-			local sx, sz = a.x, a.z + gz * (box + 6)
+			-- 5. the gate approach: a fortress's gate faces the middle road's
+			-- axis, and its trail starts in front of it; a camp's gate faces its
+			-- own continent
+			local gx, gz = 0, (row.faction == "accord") and -1 or 1
+			if row.kind == "pvp_fortress" then gx, gz = a.x > 0 and -1 or 1, 0 end
+			local sx, sz = a.x + gx * (box + 6), a.z + gz * (box + 6)
+			if row.kind == "pvp_fortress" then
+				local tx, tz = a.x + gx * (core_half + 4), a.z
+				local ty = solid_top(tx, tz, y0, y1)
+				check(ty and grug_core.world_feature_at({x = tx, y = ty, z = tz}) == "road",
+					("%s: the gate trail starts at %d,%d (%s)"):format(row.key, tx, tz,
+						ty and node_at(tx, ty, tz).name or "-"))
+				sx, sz = tx, tz
+				-- the map: the own faction sees the fortress icon, the enemy not
+				local function sees(faction)
+					for _, m in ipairs(grug_map.atlas.collect_markers(fake_player(faction, ""),
+							{settlement = true})) do
+						if m.id == "settlement:" .. row.key then return true end
+					end
+					return false
+				end
+				local enemy = row.faction == "accord" and "throng" or "accord"
+				check(sees(row.faction) and not sees(enemy), row.key .. ": icon for its own faction only")
+			end
 			-- standing heights near `y`: walkable ground, two nodes of air
 			local function stand(x, z, y)
 				for _, h in ipairs({y, y + 1, y - 1}) do
@@ -215,6 +239,16 @@ local function poi(row, done)
 						end
 					end
 				end
+			end
+			if row.kind ~= "pvp_fortress" then
+				local seen = 0
+				for _, faction in ipairs({"accord", "throng"}) do
+					for _, m in ipairs(grug_map.atlas.collect_markers(fake_player(faction, ""),
+							{settlement = true})) do
+						if m.id == "settlement:" .. row.key then seen = seen + 1 end
+					end
+				end
+				check(seen == 2, row.key .. ": icon for both factions")
 			end
 			if reached then
 				log(("%s: the gate approach from %d,%d reaches the yard"):format(row.key, sx, sz))

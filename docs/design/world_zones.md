@@ -635,8 +635,8 @@ replaced; git history before this rewrite records that model.
   outpost, Mirefolk camp and clash site 16; mine 20; apex mine 32; dragon arena
   82, of which its round floor of radius 40 is sampled; rare
   route 12; the Round 31 PvP camps 24 (lower) and 28 (higher) and the PvP
-  fortress 64, a flat field round its 49-node walls; all in nodes), at least
-  one node above water. Only that core is flat (a
+  fortress 60, a flat apron of 5–6 nodes round its 49-node walls; all in
+  nodes), at least one node above water. Only that core is flat (a
   dragon arena's round floor swells gently by up to 2 nodes and its edge
   wanders 0–3 nodes beyond the radius, `world.md` §4b; its calm bowl keeps
   the former 32-node size, so the island around it is unchanged).
@@ -1133,8 +1133,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
   node and per node off), so it stays near the middle (it crosses z = 0
   within about ±60 nodes and keeps within about ±140 on the tested seeds)
   and still bends around terrain. It has no waypoint. The two PvP fortresses
-  (Round 31, §16) stand on its axis, so it bends round each of them and
-  passes its walls within about 6–35 nodes (six tested seeds).
+  (Round 31, §16) stand beside it, clear of every routing cell it uses on
+  the tested seeds, so it keeps its own course; a trail joins each
+  fortress gate to it.
 - **Shape of the network.** A spanning tree over those endpoints plus a few
   loops where a loop is short and useful. Junctions are T or Y shaped with at
   most three or four branches; there are no star junctions.
@@ -1219,6 +1220,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
   not already a road endpoint gets a trail (3 wide), routed like a road that
   may be a little steeper, joining the nearest road (D19, D67). A trail is
   never dropped for its cost or for a floating deck (D68).
+- A Round 31 PvP fortress gets one too, leaving through its gate: straight
+  out for 24 nodes beyond the core, then routed to the nearest road (the
+  middle road on every tested seed). Its gate faces the middle road's axis.
 
 ### 9.4 Offshore travel
 
@@ -1987,10 +1991,16 @@ players as hostile until the `grug_pvp` seam exists.
 17–22).** Anchors 101–118 (`source/simple_map.lua`, the rows of
 `r31_pvp_catalog.lua`), fixed on every seed like every anchor:
 
-- **Fortresses:** Ashenward Bastion (Accord) at (0, −928) in Ashenward March
-  and Bannerbreak Warhold (Throng) at (0, 952) in Bannerbreak Mesa, on the
-  middle road's axis (§9.2): the road bends round each, and the one gate
-  faces the own continent. Each has a waystone (`world.md` §6).
+- **Fortresses:** Ashenward Bastion (Accord) at (104, −496) in Ashenward
+  March and Bannerbreak Warhold (Throng) at (−80, 632) in Bannerbreak Mesa,
+  on the Battlegrounds half of their zone beside the middle road (§9.2).
+  **The road has priority** (user ruling after the first preview): no
+  routing cell the middle road uses lies within the router's reserve round
+  a fortress (core / 2 + 10), so the road keeps the course it has without
+  the fortress (checked against that course on the six seeds); its surface
+  passes 19–107 nodes from the walls (Bannerbreak 20–45, Ashenward 19–107).
+  The one gate faces the road's axis and a trail (§9.3) joins it to the
+  road. Each fortress has a waystone (`world.md` §6).
 - **Camps:** per Battlegrounds zone and faction one lower and one higher
   camp on the own faction's side of z = 0 (gate toward the own continent):
   the lower toward the own frontier, the higher toward the middle, where the
@@ -1999,19 +2009,31 @@ players as hostile until the `grug_pvp` seam exists.
 
   | Zone | Accord lower / higher | Throng lower / higher |
   |---|---|---|
-  | Gravesalt Escarpment | (−2144, −264) / (−1888, −72) | (−1520, 240) / (−1464, 24) |
+  | Gravesalt Escarpment | (−2144, −264) / (−1896, −80) | (−1520, 240) / (−1464, 24) |
   | The Broken Causeway | (−912, −360) / (−728, −64) | (−896, 368) / (−216, 40) |
   | The Shattered Line | (512, −288) / (944, −16) | (1216, 288) / (648, 48) |
   | The Skyglass Canopy | (2304, −256) / (2080, −56) | (2376, 304) / (2384, 40) |
 
 - **Spacing:** no two PvP POIs closer than 120 nodes (the nearest pair is
   223 apart); each fitting square keeps 16 nodes off every other anchor's,
-  and a camp 128 nodes off a boat path's mainland end. Checked offline on the
-  six quest-lane seeds by `tools/r31_m/spacing_check.lua` (zone field at full
-  warp, roads routed and off the POIs, cores in zone, dry and flat).
+  and a camp 128 nodes off a boat path's mainland end.
+- **Slope:** the positions were chosen on the six quest-lane seeds among
+  centres whose natural ground under the core varies by at most 40 nodes on
+  every seed (above 40 the terrain field lays a calm bowl, §7.5; up to it
+  the flat core is cut into the slope and the collar returns to the ground),
+  preferring the flattest. Checked offline by
+  `tools/r31_m/spacing_check.lua` (zone field at full warp, roads routed and
+  off the POIs, cores in zone, dry and flat, relief at most 40, the
+  fortress trail out of the gate).
 - **Protection:** the blueprint's cells plus 10 nodes on every side in x and
   z (from 10 below the placement height to 10 above the highest node), kind
-  `fortress` or `camp` (`world_protection.lua`).
+  `fortress` or `war_camp` (`world_protection.lua`, hint "Fortress –
+  protected" / "Camp – protected").
+- **Mobs:** no ambient hostile spawn on a fortress or war camp, and idle
+  free roamers are nudged away from them like from a village; a mob in
+  combat may follow its target in (`biomes_mobs.md`, `combat_stats.md`).
+- **Map:** a fortress is an icon only for its own faction; the war camps
+  show to everyone (`world_map.md`).
 - **No activation node:** unlike outposts (guard banner) and bandit camps
   (camp fire) the PvP POIs get no anchor node; their garrison stands on the
   blueprint's sockets.

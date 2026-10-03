@@ -6,8 +6,14 @@
 --
 --   1. anchors 101..118 are the catalogue's rows in order (zone, slot,
 --      template = kind, `layout_fixed`), each kind's fitting profile holds
---      its blueprint box, and the two fortresses stand on the middle road's
---      axis (x = 0), so their gate faces their own continent;
+--      its blueprint box (the fortress with an apron of at least 5 nodes),
+--      and each fortress stands on the Battlegrounds half of its zone, off
+--      the middle road's axis, its gate (`r7_settlement.pvp_gate_turns`)
+--      facing the axis;
+--   1b. the road layout's inputs (`road_layout.inputs`): a fortress is a
+--      trail node whose gate side is the same as the blueprint's turn, a
+--      PvP camp is none (the Battlegrounds have no trails), and every PvP
+--      POI reserves its round core area;
 --   2. `r7_settlement.pvp_profiles` binds all 18 to their anchors and the
 --      roster carries them once; on the source without anchors 101..118 the
 --      binding is refused (no "none bound" branch is left);
@@ -16,13 +22,19 @@
 --      frozen digest in `r7_manifest.lua` does not move), and the activation
 --      roster stays the 42 capitals, outposts and bandit camps (the PvP POIs
 --      carry no activation node) on a stub session;
---   4. world protection: the PvP slots answer "fortress" or "camp", a PvP
+--   4. world protection: the PvP slots answer "fortress" or "war_camp", a PvP
 --      box grows by PVP_MARGIN (10) on every side in x and z (y unchanged),
 --      every other slot's box is the blueprint's own; `kind_at` answers on
 --      the margin's last node and not one node beyond; the settlement cores
 --      outside starts and capitals are 106 (the count the claim scan names);
 --   5. the waystone rules: each faction's network is seven stones, the
---      fortress travels like a capital (known only when discovered).
+--      fortress travels like a capital (known only when discovered);
+--   6. the map's settlement icons (`grug_map/settlement_icons.lua`): the
+--      enemy's starts, capitals, villages, outposts and fortress are hidden,
+--      the war camps and every neutral place are seen by both factions and
+--      by a player without one only the neutral places and the camps; the
+--      mobs' rules (`spawn_policy.lua`, `roam_avoid.lua`) treat "fortress"
+--      and "war_camp" like a village, and a bandit "camp" not.
 -- Prints "R31 M PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -55,12 +67,38 @@ for i, row in ipairs(catalog.rows) do
 	check(-half <= box.min.x and box.max.x <= half - 1 and -half <= box.min.z and
 		box.max.z <= half - 1, row.key .. ": the core holds the blueprint box")
 	if row.kind == "pvp_fortress" then
-		check(a.position.x == 0, row.key .. ": on the middle road's axis")
-		check(settlement.pvp_gate_turns(row, a.position.x) == (row.faction == "accord" and 0 or 2),
-			row.key .. ": gate toward the own continent")
-		check((row.faction == "accord") == (a.position.z < 0), row.key .. ": own side")
+		local hub = zone_by_id[row.zone_id].hub
+		check(a.position.x ~= 0 and math.abs(a.position.z) < math.abs(hub.z) and
+			(a.position.z < 0) == (row.faction == "accord"), row.key .. ": Battlegrounds half")
+		check(settlement.pvp_gate_turns(row, a.position.x) == (a.position.x > 0 and 1 or 3),
+			row.key .. ": gate toward the middle road's axis")
+		check(half - box.max.x >= 5, row.key .. ": a flat apron round the walls")
 	else
 		check((row.faction == "accord") == (a.position.z < 0), row.key .. ": own side of z = 0")
+	end
+end
+
+-- 1b. the road layout's inputs
+local road_layout = dofile(dir .. "/road_layout.lua")
+local inputs = road_layout.inputs(source)
+local trail_of, reserve_of = {}, {}
+for _, n in ipairs(inputs.trail_nodes) do trail_of[n.id] = n end
+for _, r in ipairs(inputs.reserved) do reserve_of[r.id] = r end
+for i, row in ipairs(catalog.rows) do
+	local a = source.anchors[100 + i]
+	local n = trail_of[a.id]
+	local r = reserve_of[a.id]
+	check(r and r.round and r.half == prof[row.kind].building_core_width / 2 + 10,
+		row.key .. ": the router reserves the core")
+	if row.kind == "pvp_fortress" then
+		-- quarter turns about +y take the gate (local -z) to the world
+		local turns = settlement.pvp_gate_turns(row, a.position.x)
+		local gx, gz = ({{0, -1}, {-1, 0}, {0, 1}, {1, 0}})[turns + 1][1],
+			({{0, -1}, {-1, 0}, {0, 1}, {1, 0}})[turns + 1][2]
+		check(n and n.kind == "pvp_fortress" and n.gate_x == gx and n.gate_z == gz and
+			n.core == prof[row.kind].building_core_width, row.key .. ": a trail node out of the gate")
+	else
+		check(n == nil, row.key .. ": no trail")
 	end
 end
 
@@ -123,7 +161,8 @@ local wp = dofile(dir .. "/world_protection.lua")
 check(wp.PVP_MARGIN == 10, "ruling 22 margin")
 check(wp.settlement_kind("pvp_fortress") == "fortress", "fortress kind")
 for _, slot in ipairs({"pvp_accord_low", "pvp_accord_high", "pvp_throng_low", "pvp_throng_high"}) do
-	check(wp.settlement_kind(slot) == "camp" and wp.settlement_margin(slot) == 10, slot .. ": camp")
+	check(wp.settlement_kind(slot) == "war_camp" and wp.settlement_margin(slot) == 10,
+		slot .. ": war camp")
 end
 check(wp.settlement_kind("village_1") == "village" and wp.settlement_kind("bandit_1") == "camp" and
 	wp.settlement_kind("outpost_1") == "poi" and wp.settlement_kind("mine") == "poi",
@@ -144,14 +183,15 @@ check(boxes[1].kind == "fortress" and boxes[1].min_x == 1000 - 24 - 10 and
 	boxes[1].max_x == 1000 + 24 + 10 and boxes[1].min_z == -900 - 24 - 10 and
 	boxes[1].max_z == -900 + 24 + 10 and boxes[1].min_y == 50 - 10 and
 	boxes[1].max_y == 50 + 16 + 10, "fortress box: blueprint + 10 in x/z, y as ruling 16")
-check(boxes[2].kind == "camp" and boxes[2].max_x - boxes[2].min_x == 26 + 20, "camp box + 10")
+check(boxes[2].kind == "war_camp" and boxes[2].max_x - boxes[2].min_x == 26 + 20, "camp box + 10")
 check(boxes[3].kind == "poi" and boxes[3].min_x == -2010 and boxes[3].max_z == 509, "mine box unchanged")
 local index = wp.new(dofile(dir .. "/index128.lua"), {boxes = boxes})
 check(index.kind_at(1000 + 34, 51, -900) == "fortress" and index.kind_at(1000 + 35, 51, -900) == nil,
 	"fortress margin ends after 10")
 check(index.kind_at(1000, 50 + 26, -900 - 34) == "fortress" and index.kind_at(1000, 50 + 27, -900) == nil,
 	"fortress box top")
-check(index.kind_at(2000 - 23, 71, 40) == "camp" and index.kind_at(2000 - 24, 71, 40) == nil, "camp margin")
+check(index.kind_at(2000 - 23, 71, 40) == "war_camp" and index.kind_at(2000 - 24, 71, 40) == nil,
+	"camp margin")
 local cores = 0
 for _, p in ipairs(settlement.roster) do
 	if p.slot ~= "start" and p.slot ~= "capital" then cores = cores + 1 end
@@ -180,5 +220,37 @@ check(R.refusal({alive = true, faction = "accord", race = "human", set = {pvp_fo
 	"the enemy fortress is not on the path")
 local entries = R.entries(stones, "throng", {}, "orc", "pvp_fortress_throng")
 check(#entries == 7 and entries[7].state == "here", "the fortress in its own travel list")
+
+-- 6. the map icons and the mobs' rules
+local icons = dofile(repo .. "/mods/PLAYER/grug_map/settlement_icons.lua")
+local owned = {"start", "capital", "village_1", "outpost_1", "outpost_2", "pvp_fortress"}
+for _, slot in ipairs(owned) do
+	check(icons.visible(slot, "accord", "accord") and not icons.visible(slot, "accord", "throng") and
+		not icons.visible(slot, "throng", "") and not icons.visible(slot, "throng", nil),
+		slot .. ": own faction only")
+end
+for _, slot in ipairs({"pvp_accord_low", "pvp_throng_high", "bandit_1", "mine", "mirefolk",
+		"clash_2", "dragon", "apex_mine"}) do
+	check(icons.visible(slot, "accord", "throng") and icons.visible(slot, "throng", "accord") and
+		icons.visible(slot, nil, ""), slot .. ": seen by everyone")
+end
+-- the source's slots fall in the expected classes
+local classes = {}
+for _, a in ipairs(source.anchors) do
+	local c = icons.class(a.slot_id)
+	classes[c] = (classes[c] or 0) + 1
+end
+check(classes.start == 6 and classes.capital == 6 and classes.fortress == 2 and
+	classes.war_camp == 16 and classes.village == 12 and classes.outpost == 24,
+	"icon classes of the 118 anchors")
+local function read(path)
+	local f = assert(io.open(repo .. path, "rb")); local t = f:read("*a"); f:close(); return t
+end
+local policy = read("/mods/ENTITIES/grug_mobs/spawn_policy.lua")
+check(policy:find('kind == "fortress" or kind == "war_camp"', 1, true) ~= nil,
+	"no hostile spawn on a fortress or war camp")
+local push = read("/mods/ENTITIES/grug_mobs/roam_avoid.lua")
+check(push:find("fortress = true", 1, true) and push:find("war_camp = true", 1, true) and
+	not push:find("[%s{,]camp = true"), "the idle push keeps off fortresses and war camps only")
 
 print(("R31 M PORTABLE PASS checks=%d"):format(checks))
