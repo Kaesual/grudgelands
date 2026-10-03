@@ -471,7 +471,7 @@ local LEGEND_WORD = {str = "Str", dex = "Dex", int = "Int", max_hp_percent = "HP
 
 function grug_items.enchant_legend_formspec(x, y)
 	local out = {("label[%.2f,%.2f;%s]"):format(x, y,
-		core.formspec_escape("Colours: prefix = accent, suffix = fitting"))}
+		core.formspec_escape("Prefix / suffix colours"))}
 	for index, stat in ipairs(grug_gear.ENCHANT_ORDER) do
 		local column, row = (index - 1) % 3, math.floor((index - 1) / 3)
 		local cx, cy = x + column * 1.35, y + 0.3 + row * 0.36
