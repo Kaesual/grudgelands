@@ -114,10 +114,12 @@ grug_core.register_tag_visibility(function(parent, observers, removed)
 	if removed then clear_markers(parent); return end
 	local id = npc_id(parent:get_luaentity())
 	if not id then clear_markers(parent); return end
-	local partitions = {}
+	-- Ruling 13 (Round 31): the other faction never sees a quest marker here.
+	local faction, partitions = Q.registered_npcs[id].faction, {}
 	for name in pairs(observers) do
 		local player = core.get_player_by_name(name)
-		local state = player and Q.marker_states(player)[id]
+		local state = player and grug_factions.serves(faction, player) and
+			Q.marker_states(player)[id]
 		if state then partitions[state] = partitions[state] or {}; partitions[state][name] = true end
 	end
 	local children = markers[parent] or {}

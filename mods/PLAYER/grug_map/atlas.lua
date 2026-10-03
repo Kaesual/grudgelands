@@ -94,6 +94,7 @@ function M.collect_markers(player, only)
 			result[#result + 1] = {id = id, label = row.label,
 				detail = row.detail or row.label, kind = row.kind or "poi",
 				heading = row.heading, status = row.status, texture = row.texture,
+				faction = row.faction,
 				position = {x = row.position.x, y = row.position.y,
 					z = row.position.z}}
 		end

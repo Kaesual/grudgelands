@@ -129,7 +129,10 @@ rawset(_G, "core", {
 rawset(_G, "grug_core", {
 	zone_authority_installed = function() return false end,
 	settlement_socket_settlements = function() return {} end,
+	faction_ids = {"accord", "throng"},
+	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
 })
+rawset(_G, "grug_factions", {get_faction = function() return "accord" end})
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 local layout = grug_core.hud_layout
 
