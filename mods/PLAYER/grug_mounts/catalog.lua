@@ -59,7 +59,10 @@ local function horse(id, description, texture)
 	}
 end
 
--- The six race mounts (tier 2) get their shared box below.
+-- The tier-2 race mounts and the tier-3/4 flyers get their shared boxes
+-- below (TIER_BODIES). `display_box` is a model's own size, for the riderless
+-- capital displays and their name tags only (grug_mobs/capital_displays.lua);
+-- it never touches a ridden mount.
 grug_mounts.MODELS = {
 	t1_accord = horse("t1_accord", "Accord Courser",
 		"grug_mounts_horse_white.png^[multiply:#91b5ee"),
@@ -73,6 +76,7 @@ grug_mounts.MODELS = {
 		textures = {"grug_mobs_ibex.png^[multiply:#d8c49d"},
 		icon = "grug_mounts_icon_dwarf.png",
 		visual_size = {x = 1.45, y = 1.45},
+		display_box = {-0.58, -0.01, -0.58, 0.58, 1.45, 0.58},
 		attach_y = 8.5, eye_y = 3,
 		animation = {stand = {1, 100, 30}, move = {200, 300, 80}},
 	},
@@ -81,6 +85,7 @@ grug_mounts.MODELS = {
 		mesh = "grug_mobs_stag.b3d", textures = {"grug_mobs_stag.png"},
 		icon = "grug_mounts_icon_elf.png",
 		visual_size = {x = 8, y = 8},
+		display_box = {-0.55, -0.01, -0.55, 0.55, 1.8, 0.55},
 		-- Attachment offsets inherit parent scale: 1.9 * 8 / 10 = 1.52 nodes.
 		attach_y = 1.9, eye_y = 3,
 		animation = {stand = {1, 59, 10}, move = {100, 119, 40}},
@@ -91,6 +96,7 @@ grug_mounts.MODELS = {
 		textures = {"grug_mobs_boar.png^[multiply:#9a6047", blank},
 		icon = "grug_mounts_icon_orc.png",
 		visual_size = {x = 1.55, y = 1.55},
+		display_box = {-0.7, -0.01, -0.7, 0.7, 1.34, 0.7},
 		attach_y = 8.2, eye_y = 3,
 		animation = {stand = {1, 1, 25}, move = {1, 40, 90}},
 	},
@@ -100,6 +106,7 @@ grug_mounts.MODELS = {
 		textures = {"grug_mobs_wolf_blightfang.png^[multiply:#b3a6ca"},
 		icon = "grug_mounts_icon_undead.png",
 		visual_size = {x = 1.7, y = 1.7},
+		display_box = {-0.55, -0.01, -0.55, 0.55, 1.43, 0.55},
 		attach_y = 8.4, eye_y = 3,
 		animation = {stand = {1, 1, 25}, move = {1, 40, 100}},
 	},
@@ -109,6 +116,7 @@ grug_mounts.MODELS = {
 		textures = {"grug_mounts_tiger.png^[multiply:#d69a52"},
 		icon = "grug_mounts_icon_troll.png",
 		visual_size = {x = 1.45, y = 1.45},
+		display_box = {-0.68, -0.01, -0.68, 0.68, 1.38, 0.68},
 		attach_y = 8.2, eye_y = 3,
 		animation = {stand = {1, 100, 30}, move = {100, 200, 100}},
 	},
@@ -118,7 +126,7 @@ grug_mounts.MODELS = {
 		textures = repeated("grug_mobs_eagle.png^[multiply:#9eb9dc", 18),
 		icon = "grug_mounts_icon_expert_accord.png",
 		visual_size = {x = 3, y = 3},
-		collisionbox = {-0.9, -0.1, -0.9, 0.9, 1.5, 0.9},
+		display_box = {-0.9, -0.1, -0.9, 0.9, 1.5, 0.9},
 		attach_y = 6.2, eye_y = 3,
 		animation = {stand = {1, 100, 60}, move = {150, 250, 100}},
 	},
@@ -128,7 +136,7 @@ grug_mounts.MODELS = {
 		textures = repeated("grug_mobs_eagle.png^[multiply:#eee3b6", 18),
 		icon = "grug_mounts_icon_master_accord.png",
 		visual_size = {x = 4, y = 4},
-		collisionbox = {-1.15, -0.1, -1.15, 1.15, 1.9, 1.15},
+		display_box = {-1.15, -0.1, -1.15, 1.15, 1.9, 1.15},
 		attach_y = 6.4, eye_y = 3,
 		animation = {stand = {1, 100, 70}, move = {150, 250, 110}},
 	},
@@ -138,7 +146,7 @@ grug_mounts.MODELS = {
 		textures = {"grug_mobs_cave_bat.png^[multiply:#856f8e"},
 		icon = "grug_mounts_icon_expert_throng.png",
 		visual_size = {x = 3, y = 3},
-		collisionbox = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
+		display_box = {-0.85, -0.1, -0.85, 0.85, 1.55, 0.85},
 		attach_y = 6.4, eye_y = 3,
 		animation = {stand = {1, 40, 70}, move = {1, 40, 100}},
 	},
@@ -170,39 +178,59 @@ grug_mounts.MODELS = {
 		textures = {"grug_mobs_cave_bat.png^[multiply:#7d3549"},
 		icon = "grug_mounts_icon_master_throng.png",
 		visual_size = {x = 4.2, y = 4.2},
-		collisionbox = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
+		display_box = {-1.15, -0.1, -1.15, 1.15, 2.05, 1.15},
 		attach_y = 6.8, eye_y = 3,
 		animation = {stand = {1, 40, 75}, move = {1, 40, 110}},
 	},
 }
 
--- One body for every race's Journeyman mount (Round 31 ruling 8, fairness
--- like the equal player boxes): the six models keep their own look, size and
--- seat, but collide and are pointed at with the same boxes. The shared
--- collision box is the Courser's (tier 1), so a tier-2 mount passes exactly
--- where every tier-1 mount does: 1.4 wide and 1.6 high, through any opening
--- two nodes wide and two high, like each model's own box before.
+-- One body per riding tier (Round 31 ruling 8, fairness like the equal
+-- player boxes): every model a tier offers -- the six race mounts of tier 2,
+-- the two factions' flyers of tiers 3 and 4 -- keeps its own look, size and
+-- seat, but collides and is pointed at with the same boxes.
+--   * Tier 2 takes the Courser's collision box (tier 1), so it passes exactly
+--     where every tier-1 mount passes: openings two nodes wide and two high.
+--   * Tiers 3 and 4 share one flyer body, 1.8 wide and 1.65 high: the
+--     Expert flyers' size (they fitted two-by-two openings before and still
+--     do); the Master flyers (2.3 wide) shrink to it, so they now fit every
+--     opening an Expert flyer fits. Bottom -0.1 as before. Nothing else reads
+--     the size: the flight ceiling, the warning band, take-off and the
+--     dismount spot all work on the mount's position.
 grug_mounts.RACE_MOUNTS = {"human", "dwarf", "elf", "orc", "undead", "troll"}
-local race_seat_y = 0
-for _, race in ipairs(grug_mounts.RACE_MOUNTS) do
-	local model = grug_mounts.MODELS[race]
-	model.collisionbox = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7}
-	race_seat_y = math.max(race_seat_y, model.attach_y * model.visual_size.y / 10)
-end
+local LAND_BODY = {-0.7, -0.01, -0.7, 0.7, 1.59, 0.7}
+local FLYER_BODY = {-0.9, -0.1, -0.9, 0.9, 1.55, 0.9}
+local TIER_BODIES = {
+	{models = grug_mounts.RACE_MOUNTS, box = LAND_BODY},
+	{models = {"expert_accord", "expert_throng"}, box = FLYER_BODY},
+	{models = {"master_accord", "master_throng"}, box = FLYER_BODY},
+}
 
 -- Selection geometry is deliberately taller than collision geometry.  The
 -- mount remains the physical body, while its pointable box also covers an
--- ordinary full-height player rendered above the model-specific seat. The
--- race mounts take their highest seat (the stag's), so the shared box covers
--- every rider.
+-- ordinary full-height player rendered above the model-specific seat. A tier
+-- with one body takes its highest seat, so the shared box covers every rider.
 local RIDER_RENDER_HEIGHT = 1.8
 local RIDER_HALF_WIDTH = 0.6
-local race_mount = {}
-for _, race in ipairs(grug_mounts.RACE_MOUNTS) do race_mount[race] = true end
+local function seat_of(model)
+	return model.attach_y * model.visual_size.y / 10
+end
+local shared_seat = {}
+for _, model in pairs(grug_mounts.MODELS) do
+	model.display_box = model.display_box or table.copy(model.collisionbox)
+end
+for _, body in ipairs(TIER_BODIES) do
+	local seat_y = 0
+	for _, key in ipairs(body.models) do
+		seat_y = math.max(seat_y, seat_of(grug_mounts.MODELS[key]))
+	end
+	for _, key in ipairs(body.models) do
+		grug_mounts.MODELS[key].collisionbox = table.copy(body.box)
+		shared_seat[key] = seat_y
+	end
+end
 for key, model in pairs(grug_mounts.MODELS) do
 	local box = model.collisionbox
-	local seat_y = race_mount[key] and race_seat_y or
-		model.attach_y * model.visual_size.y / 10
+	local seat_y = shared_seat[key] or seat_of(model)
 	model.selectionbox = {
 		math.min(box[1], -RIDER_HALF_WIDTH), box[2],
 		math.min(box[3], -RIDER_HALF_WIDTH),

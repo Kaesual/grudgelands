@@ -6,10 +6,12 @@
 --      return is what makes try_cast spend nothing -- instead of falling back
 --      to the caster; aim at no ally (empty, a protected enemy) still casts
 --      on the caster; a flagged helper still supports the flagged ally.
---   M  grug_mounts/catalog.lua: every race's tier-2 mount has the same
---      collision and selection box (the Courser's collision box, the
---      selection box covering the highest race seat), tier 1 is equal for
---      both factions, and the visual sizes stay per race.
+--   M  grug_mounts/catalog.lua: within each riding tier every race and
+--      faction gets the same collision and selection box (tier 2 the
+--      Courser's collision box; tiers 3 and 4 one flyer body), each rider
+--      lies inside the selection box, every body passes two-by-two openings,
+--      the visual sizes and looks stay per race and faction, and the capital
+--      displays keep each model's own box (display_box) for their name tags.
 -- Usage (repo root): luajit tools/r31_p1b/portable_test.lua [REPO]
 local repo = arg[1] or "."
 
@@ -164,6 +166,11 @@ end
 -- M: equal mount boxes.
 ------------------------------------------------------------------------------
 do
+	table.copy = function(t)
+		local out = {}
+		for k, v in pairs(t) do out[k] = v end
+		return out
+	end
 	grug_core = {FLIGHT_CEILING = 600}
 	grug_mounts = {}
 	local race_of = {}
@@ -173,27 +180,50 @@ do
 	local M = grug_mounts.MODELS
 	local races = {human = "accord", dwarf = "accord", elf = "accord",
 		undead = "throng", orc = "throng", troll = "throng"}
-	local first, sizes = nil, {}
+	-- Every player kind: one per race, each with its faction.
+	local players = {}
 	for race, faction in pairs(races) do
 		local p = {faction = faction}
 		race_of[p] = race
-		local model = grug_mounts.model_for(p, 2)
-		check(model == M[race], "M: tier 2 of a " .. race .. " is its race model")
-		first = first or model
-		check(same_box(model.collisionbox, first.collisionbox), "M: " .. race .. " collision box equal")
-		check(same_box(model.selectionbox, first.selectionbox), "M: " .. race .. " selection box equal")
-		local seat = model.attach_y * model.visual_size.y / 10
-		check(model.selectionbox[5] >= seat + 1.8 - 1e-9, "M: the " .. race .. " rider is inside the selection box")
-		sizes[model.visual_size.x] = true
+		players[#players + 1] = {p = p, label = race .. "/" .. faction}
 	end
-	check(same_box(first.collisionbox, M.t1_accord.collisionbox), "M: tier 2 collides like the Courser")
-	check(same_box(M.t1_accord.collisionbox, M.t1_throng.collisionbox) and
-		same_box(M.t1_accord.selectionbox, M.t1_throng.selectionbox), "M: tier 1 equal for both factions")
+	for tier = 1, 4 do
+		local first = nil
+		for _, row in ipairs(players) do
+			local model = grug_mounts.model_for(row.p, tier)
+			local label = "M: tier " .. tier .. " " .. row.label
+			if check(model ~= nil, label .. " has a model") then
+				first = first or model
+				check(same_box(model.collisionbox, first.collisionbox), label .. " collision box equal")
+				check(same_box(model.selectionbox, first.selectionbox), label .. " selection box equal")
+				local seat = model.attach_y * model.visual_size.y / 10
+				check(model.selectionbox[5] >= seat + 1.8 - 1e-9, label .. " rider inside the selection box")
+			end
+		end
+		check(first.collisionbox[4] - first.collisionbox[1] < 2 and
+			first.collisionbox[5] - first.collisionbox[2] < 2,
+			"M: tier " .. tier .. " passes two-by-two openings")
+	end
+	check(same_box(M.human.collisionbox, M.t1_accord.collisionbox), "M: tier 2 collides like the Courser")
+	check(same_box(M.expert_accord.collisionbox, M.master_throng.collisionbox),
+		"M: tiers 3 and 4 share one flyer body")
+	local distinct = {}
+	for _, race in ipairs(grug_mounts.RACE_MOUNTS) do distinct[M[race].visual_size.x] = true end
 	local n = 0
-	for _ in pairs(sizes) do n = n + 1 end
-	check(n >= 5, "M: visual sizes stay per race (" .. n .. " distinct)")
-	check(first.collisionbox[4] - first.collisionbox[1] < 2 and
-		first.collisionbox[5] - first.collisionbox[2] < 2, "M: the box passes two-by-two openings")
+	for _ in pairs(distinct) do n = n + 1 end
+	check(n >= 5, "M: tier-2 visual sizes stay per race (" .. n .. " distinct)")
+	check(M.expert_accord.visual_size.x ~= M.master_throng.visual_size.x and
+		M.master_accord.visual_size.x ~= M.master_throng.visual_size.x,
+		"M: flyer visual sizes stay per tier and faction")
+	check(M.expert_accord.mesh ~= M.expert_throng.mesh, "M: flyers keep their faction look")
+	-- The riderless capital displays keep each model's own size (name tag
+	-- height): display_box, never the shared ridden body.
+	for key, top in pairs({human = 1.59, dwarf = 1.45, elf = 1.8, orc = 1.34,
+			undead = 1.43, troll = 1.38, t1_accord = 1.59, t1_throng = 1.59,
+			expert_accord = 1.5, expert_throng = 1.55, master_accord = 1.9,
+			master_throng = 2.05}) do
+		eq(M[key].display_box[5], top, "M: " .. key .. " display keeps its own height")
+	end
 end
 
 print(("%d checks, %d failures"):format(checks, failures))

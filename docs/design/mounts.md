@@ -182,10 +182,12 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   step height to clear the engine's strict collision comparison; taller
   obstacles and low ceilings continue to block them. Flying movement is
   unchanged.
-- Every race's Journeyman mount (tier 2) has the same collision box as the
-  Courser (1.4 wide, 1.6 high) and the same selection box, sized for the
-  highest race seat; look, size and seat stay per race (Round 31 ruling 8,
-  fairness).
+- Within each riding tier every race and faction has the same collision and
+  selection box (Round 31 ruling 8, fairness); look, size and seat stay per
+  race and faction. Tiers 1 and 2 use the Courser's box (1.4 wide, 1.6
+  high); the Expert and Master flyers share one flyer body (1.8 wide, 1.65
+  high), so every riding mount passes openings two nodes wide and high. Each
+  tier's selection box is sized for its highest seat.
 - While mounted, the status icon row (`inventory_equipment.md` §5) shows a
   land, flight or boat icon with an empty caption (no countdown); the tier
   name and speed bonus (for example "+60% speed") appear on the Character
