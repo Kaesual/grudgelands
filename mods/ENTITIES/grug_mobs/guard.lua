@@ -285,15 +285,23 @@ grug_mobs.register_mob("grug_mobs:guard_throng",
 -- coordinator defaults). The guard chassis -- it holds its socket like a
 -- post guard, attacks enemy players everywhere, never fights guards and drops
 -- war trophies only to an enemy player's kill -- under its own entity name, so
--- a quest can name "the captain" apart from his guards. Its name comes from
--- data/pvp_names.json per camp and race and is written at placement
--- (start_npcs.lua); the level, the elite tier and the camp's race too.
+-- a quest can name "the captain" apart from his guards. No elite: a named
+-- leader like the start zones' bandit leaders (user ruling), grug_mobs.LEADER's
+-- size and HP factor on the normal tier, in the definition, so both hold on
+-- every activation. Its name comes from data/pvp_names.json per camp and race
+-- and is written at placement (start_npcs.lua); the level and the camp's race
+-- too.
 local garrison = grug_mobs.pvp_garrison
 for _, faction in ipairs({"accord", "throng"}) do
 	local name = garrison.captain_entity(faction)
-	grug_mobs.register_mob(name, guard_def(faction,
+	local def = guard_def(faction,
 		(faction == "accord" and "Accord" or "Throng") .. " Captain",
-		"grug_mobs_guard_" .. faction .. ".png"))
+		"grug_mobs_guard_" .. faction .. ".png")
+	local size = grug_mobs.LEADER.size
+	def.visual_size = {x = def.visual_size.x * size, y = def.visual_size.y * size}
+	for index = 1, 6 do def.collisionbox[index] = def.collisionbox[index] * size end
+	def._grug_hp_scale = grug_mobs.LEADER.hp
+	grug_mobs.register_mob(name, def)
 	-- mobs_redo copies a whitelist of definition fields, so grug_pvp's NPC
 	-- counter reads its kind off the registered prototype.
 	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)

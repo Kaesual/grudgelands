@@ -33,7 +33,7 @@ end
 
 -- P2: the constant (the one place for both factors).
 do
-	local src = read("mods/ENTITIES/grug_mobs/subtypes.lua")
+	local src = read("mods/ENTITIES/grug_mobs/levels.lua")
 	check(src:find("grug_mobs.LEADER = {size = 1.15, hp = 1.5}", 1, true) ~= nil,
 		"P2: grug_mobs.LEADER = {size = 1.15, hp = 1.5}")
 end
