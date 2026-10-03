@@ -35,19 +35,23 @@ local function instant_potion_amount(player, maximum)
 	return math.max(1, math.floor(amount + 0.5))
 end
 
+-- Refusals go to the message feed (grug_core/feed.lua), never to chat; one
+-- keyed line that a repeated click refreshes.
+local function refuse(player, text)
+	grug_core.feed(player, "notice", text, "potion")
+end
+
 local function player_ready(itemstack, player)
 	if not player or not player.is_player or not player:is_player() or
 			player:get_hp() <= 0 then return false end
 	local allowed, required = grug_core.can_use_item_level(player, itemstack)
 	if not allowed then
-		core.chat_send_player(player:get_player_name(),
-			"Requires level " .. required .. ".")
+		refuse(player, "Requires level " .. required .. ".")
 		return false
 	end
 	local left = grug_traders.potion_cooldown_left(player)
 	if left > 0 then
-		core.chat_send_player(player:get_player_name(),
-			"You cannot drink another potion for " .. left .. " s.")
+		refuse(player, "You cannot drink another potion for " .. left .. " s.")
 		return false
 	end
 	return true
@@ -59,8 +63,7 @@ local function potion_use(kind, cooldown)
 		if kind == "health" then
 			local maximum = grug_classes.get_max_hp(player)
 			if player:get_hp() >= maximum then
-				core.chat_send_player(player:get_player_name(),
-					"You are already at full health.")
+				refuse(player, "You are already at full health.")
 				return
 			end
 			local amount = instant_potion_amount(player, maximum)
@@ -68,8 +71,7 @@ local function potion_use(kind, cooldown)
 		else
 			local maximum = grug_classes.get_max_mana(player)
 			if maximum <= 0 then
-				core.chat_send_player(player:get_player_name(),
-					"Mana potions have no effect without a mana pool.")
+				refuse(player, "Mana potions have no effect without a mana pool.")
 				return
 			end
 			-- Deliberately consume at full mana: the ruling removes the
@@ -93,7 +95,7 @@ local function utility_use(kind, duration)
 		if kind == "antivenom" then
 			accepted = grug_mobs.clear_poison(player)
 			if not accepted then
-				core.chat_send_player(player:get_player_name(), "You are not poisoned.")
+				refuse(player, "You are not poisoned.")
 				return
 			end
 		elseif kind == "swiftness" then
@@ -149,8 +151,7 @@ local function elixir_use(definition)
 				player:get_hp() <= 0 then return end
 		local allowed, required = grug_core.can_use_item_level(player, itemstack)
 		if not allowed then
-			core.chat_send_player(player:get_player_name(),
-				"Requires level " .. required .. ".")
+			refuse(player, "Requires level " .. required .. ".")
 			return
 		end
 		local pieces = equipment_bonus(player)

@@ -184,6 +184,7 @@ end
 player_api = {player_attached = {}, set_animation = function() end}
 local combat = {}
 local statuses = {}
+local feed_lines = {}
 grug_core = {
 	FLIGHT_CEILING = 600,
 	FLASH_COLOR = {error = 1, notice = 2},
@@ -192,6 +193,12 @@ grug_core = {
 	clear_status = function(player) statuses[player:get_player_name()] = nil end,
 	flash = function() end,
 	hud_layout = {anchors = {flight_warning = {}}, flight_warning_offset = function() return {} end},
+	-- Mount notices go to the message feed (Round 32 F3); recorded like chat.
+	feed = function(player, kind, text, key)
+		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
+			text = text, key = key}
+		return true
+	end,
 }
 local water_class = "deep_ocean"
 grug_zones = {
@@ -243,6 +250,7 @@ local function controller_of(player)
 	return record and record.object:get_luaentity()
 end
 local function last_chat() return chat[#chat] and chat[#chat].text end
+local function last_feed() return feed_lines[#feed_lines] and feed_lines[#feed_lines].text end
 local function clear_world() for k in pairs(world) do world[k] = nil end end
 -- A pond: water at y = -3..0 over x, z in [-3, 3], dirt banks at y = 0 around
 -- it and dirt below; the surface node is y = 0, its top y = 0.5.
@@ -272,6 +280,20 @@ local boat_item = registered_items["grug_mounts:boat"]
 check(boat_item and boat_item.stack_max == 1 and boat_item.groups.grug_bound_skill == 1 and
 	boat_item._grug_mount_tier == 5, "boat item: bound skill, one per stack")
 eq(boat_item.on_drop().name, "", "dropping deletes the boat item")
+-- Somebody else's boat item: refused with a keyed feed line, never chat
+-- (Round 32 F3).
+do
+	local foreign = {get_name = function() return "grug_mounts:boat" end,
+		get_meta = function() return {get_string = function() return "somebody_else" end} end}
+	local fed, chatted = #feed_lines, #chat
+	local user = {is_player = function() return true end,
+		get_player_name = function() return "stranger" end}
+	eq(boat_item.on_use(foreign, user), foreign, "a foreign boat item is kept")
+	check(#feed_lines == fed + 1 and
+		feed_lines[#feed_lines].text == "That mount is not bound to this character." and
+		feed_lines[#feed_lines].key == "mount", "not-bound refusal is a mount feed line")
+	eq(#chat, chatted, "not-bound refusal: nothing in chat")
+end
 check(registered_items["grug_mounts:improved_boat"].inventory_image ==
 	"grug_mounts_icon_improved_boat.png", "improved boat icon name")
 
@@ -372,7 +394,9 @@ eq(boat.object.acceleration.y, -9.81, "off the water the boat falls")
 step(boat, 0.5)
 check(not grug_mounts.is_mounted(ada), "removed by the water-contact check")
 check(not boat.object:is_valid(), "the boat entity is gone")
-eq(last_chat(), "Your boat left the water.", "water-contact message")
+eq(last_feed(), "Your boat left the water.", "water-contact message in the feed")
+eq(feed_lines[#feed_lines].key, "mount", "mount notices share one keyed feed line")
+eq(#chat, 0, "mount notices never go to chat")
 check(grug_mounts.boat_touches_water({x = 0, y = 0.5, z = 0}), "surface boat touches water (node below)")
 check(not grug_mounts.boat_touches_water({x = 5, y = 1, z = 0}), "bank position touches no water")
 

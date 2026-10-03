@@ -199,8 +199,9 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	end
 	if object and object:is_valid() then object:remove() end
 	if record.visual and record.visual:is_valid() then record.visual:remove() end
+	-- Mount notices go to the message feed (never chat), one keyed line.
 	if reason and reason ~= "manual" then
-		core.chat_send_player(name, reason)
+		grug_core.feed(player, "notice", reason, "mount")
 	end
 	return true
 end
@@ -296,7 +297,7 @@ local function update_warning(player, record, kind)
 		player:hud_change(record.hud_id, "text", text)
 	end
 	if record.warning_kind ~= kind then
-		core.chat_send_player(player:get_player_name(), text .. ". Crossing dismounts immediately.")
+		grug_core.feed(player, "notice", text .. ". Crossing dismounts immediately.", "mount")
 	end
 	record.warning_kind = kind
 end
@@ -684,7 +685,7 @@ function grug_mounts.toggle(player, tier_id)
 		if record then grug_mounts.dismount(player, nil, true) end
 		ok, message = grug_mounts.spawn_entity(player, tier_id, pos)
 	end
-	if not ok and message then core.chat_send_player(name, message) end
+	if not ok and message then grug_core.feed(player, "notice", message, "mount") end
 	return ok, message
 end
 

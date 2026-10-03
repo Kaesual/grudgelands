@@ -28,9 +28,10 @@ end
 ------------------------------------------------------------------------------
 -- Engine surface.
 ------------------------------------------------------------------------------
-local callbacks = {allow = {}, action = {}, pickup = {}, class_chosen = {},
+local callbacks = {allow = {}, globalstep = {}, action = {}, pickup = {}, class_chosen = {},
 	join = {}, mods_loaded = {}}
 local chat, logs, dropped = {}, {}, {}
+local connected = {}
 core = {
 	registered_items = {},
 	get_item_group = function(name, group)
@@ -48,7 +49,8 @@ core = {
 	log = function(level, text) logs[#logs + 1] = level .. ": " .. text end,
 	add_item = function(_, stack) dropped[#dropped + 1] = stack end,
 	get_us_time = function() return 0 end,
-	get_connected_players = function() return {} end,
+	get_connected_players = function() return connected end,
+	register_globalstep = function(f) table.insert(callbacks.globalstep, f) end,
 	after = function() end,
 	formspec_escape = function(text) return text end,
 }
@@ -189,8 +191,14 @@ end
 -- Mod surface.
 ------------------------------------------------------------------------------
 local equipment_changes = 0
+local mono, feed_lines = 0, {}
 grug_core = {
-	mono_time = function() return 0 end,
+	mono_time = function() return mono end,
+	feed = function(player, kind, text, key)
+		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
+			text = text, key = key}
+		return true
+	end,
 	notify_equipment_change = function() equipment_changes = equipment_changes + 1 end,
 	equipment_is_broken = function(stack) return stack:get_wear() >= 65535 end,
 	can_use_item_level = function(player, stack)
@@ -417,15 +425,21 @@ do
 	-- Wrong slot: refused with a hint that names the right slot.
 	local sc = new_player("s2", "scout", 30)
 	join(sc)
-	local before = #chat
+	-- Refusals are message-feed lines keyed by their reason, never chat
+	-- (Round 32 F3).
+	local before, chat_before = #feed_lines, #chat
 	check(not equip(sc, "grug_gear:sword_bronze", W), "scout cannot put sword in Ranged")
-	check(#chat == before + 1 and chat[#chat]:find("Melee slot", 1, true) ~= nil,
-		"refusal names the Melee slot")
+	local line = feed_lines[#feed_lines]
+	check(#feed_lines == before + 1 and line.text:find("Melee slot", 1, true) ~= nil and
+		line.kind == "notice" and line.key:find("^equip:") ~= nil,
+		"refusal names the Melee slot in a keyed feed line")
 	-- Level gate applies to the Melee slot too.
 	local low = new_player("s3", "scout", 5)
 	join(low)
 	check(not equip(low, "grug_gear:dagger_steel", O), "level gate on Melee slot")
-	check(chat[#chat]:find("Melee slot", 1, true) ~= nil, "level refusal names the slot")
+	check(feed_lines[#feed_lines].text:find("Melee slot", 1, true) ~= nil,
+		"level refusal names the slot")
+	eq(#chat, chat_before, "equip refusals: nothing in chat")
 	-- Broken melee weapon: bare hand.
 	local broken = new_player("s4", "scout", 30)
 	join(broken)
@@ -445,10 +459,14 @@ do
 		"warrior melee weapon is the Weapon slot")
 	check(not equip(warrior, "grug_gear:greataxe_bronze", W),
 		"greataxe refused while a shield is held")
+	check(feed_lines[#feed_lines].text:find("is two-handed: take", 1, true) ~= nil,
+		"two-handed refusal (incoming) is one short feed line: " .. feed_lines[#feed_lines].text)
 	local mage = new_player("m1", "mage", 30)
 	join(mage)
 	check(equip(mage, "grug_gear:staff_bronze", W), "mage staff")
 	check(not equip(mage, "grug_gear:spellbook_bronze", O), "staff is two-handed")
+	check(feed_lines[#feed_lines].text:find("is two-handed: equip a one-handed weapon", 1, true) ~= nil,
+		"two-handed refusal (held) is one short feed line: " .. feed_lines[#feed_lines].text)
 	check(equip(mage, "grug_gear:wand_bronze", W), "mage swaps to a wand")
 	eq(mage.inv:get_stack("main", 1):get_name(), "grug_gear:staff_bronze",
 		"the staff swapped back to main")
@@ -470,7 +488,19 @@ do
 	local s = new_player("q1", nil, 1)
 	join(s)
 	eq(s.inv:get_size(Q), 5, "quiver list has five hidden stacks")
+	local fed, chat_before = #feed_lines, #chat
 	choose_class(s, "scout")
+	-- One feed line per starter item, keyed per slot, never chat (Round 32 F3).
+	local starter_lines = 0
+	for index = fed + 1, #feed_lines do
+		local line = feed_lines[index]
+		if line.key and line.key:find("^starter:") and
+				line.text:find(" is equipped in the ", 1, true) then
+			starter_lines = starter_lines + 1
+		end
+	end
+	eq(starter_lines, 2, "starter bow and sword each report their slot in the feed")
+	eq(#chat, chat_before, "starter grant: nothing in chat")
 	eq(s.inv:get_stack(W, 1):get_name(), "grug_gear:bow_bronze", "starter bow in Ranged")
 	eq(s.inv:get_stack(O, 1):get_name(), "grug_gear:sword_bronze", "starter sword in Melee")
 	eq(quiver_counts(s), "100,100,0,0,0", "starter arrows in the quiver")
@@ -594,6 +624,40 @@ do
 	join(m)
 	choose_class(m, "mage")
 	eq(m.inv:get_stack(W, 1):get_name(), "grug_gear:staff_bronze", "mage starter staff")
+end
+
+-- The raw-weapon hint (a weapon swung from the hotbar): one message-feed
+-- line on a fresh press, none in chat, at most once per 3 s (Round 32 F3).
+do
+	local p = new_player("raw", "warrior", 30)
+	join(p)
+	local dig = false
+	function p:get_player_control() return {dig = dig} end
+	function p:get_wielded_item() return ItemStack("grug_gear:sword_steel") end
+	connected = {p}
+	local chat_before = #chat
+	local function step(pressed)
+		dig = pressed
+		for _, f in ipairs(callbacks.globalstep) do f(0.1) end
+	end
+	feed_lines = {}
+	mono = 100
+	step(true)
+	eq(#feed_lines, 1, "raw weapon press: one feed line")
+	check(feed_lines[1] and feed_lines[1].text:find("hand slots", 1, true) and
+		feed_lines[1].kind == "notice" and feed_lines[1].key == "weapon_hint" and
+		#feed_lines[1].text <= 66, "raw weapon hint: one short keyed notice line")
+	step(true)
+	step(false)
+	mono = 101
+	step(true)
+	eq(#feed_lines, 1, "raw weapon hint: no repeat within 3 s")
+	step(false)
+	mono = 104
+	step(true)
+	eq(#feed_lines, 2, "raw weapon hint: a fresh press after 3 s repeats it")
+	eq(#chat, chat_before, "raw weapon hint: nothing in chat")
+	connected = {}
 end
 
 -- Startup audit: every class has rules and an accepted starter kit.

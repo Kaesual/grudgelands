@@ -151,8 +151,11 @@ local function give_or_queue(player, stack)
 	local pending = core.deserialize(meta:get_string(pending_key())) or {}
 	pending[#pending + 1] = leftover:to_string()
 	meta:set_string(pending_key(), core.serialize(pending))
-	core.chat_send_player(player:get_player_name(),
-		"Boss loot is waiting for free inventory space.")
+	-- Online here (the kill loop takes players by name); one keyed feed
+	-- line however many stacks are queued, never chat. The queue is handed
+	-- over only at the next join, into `main` (bags do not count).
+	grug_core.feed(player, "notice",
+		"Boss loot is waiting: free main inventory space, then rejoin.", "boss_loot")
 end
 
 local boss_reward_hooks = {}

@@ -1171,9 +1171,8 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 		end
 		if spent > 0 then
 			grug_classes.respec(player)
-			core.chat_send_player(player:get_player_name(), core.colorize(
-				"#ffd100", "Your level dropped: all " .. spent ..
-				" talent points were returned."))
+			grug_core.feed(player, "quest", "Your level dropped: all " .. spent ..
+				" talent points were returned.", "talents")
 		end
 		return
 	end
@@ -1184,9 +1183,9 @@ function grug_classes.on_level_change_talents(player, old_level, new_level)
 	if math.floor(new_level / per) > math.floor(old_level / per) then
 		local left = grug_classes.talent_points_available(player)
 		if left > 0 then
-			core.chat_send_player(player:get_player_name(), core.colorize("#7ae08a",
-				"Talent point earned - " .. left ..
-				" to spend. Open Inventory > Talents."))
+			-- In the message feed beside the level-up's XP line, never chat.
+			grug_core.feed(player, "quest", "Talent point earned - " .. left ..
+				" to spend. Open Inventory > Talents.", "talents")
 		end
 	end
 end

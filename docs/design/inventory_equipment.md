@@ -127,7 +127,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     `grug_inventory.equipment_changed`, so the ability skins and the visible
     weapon follow exactly as they do for a manual equip. It obeys the
     two-handed rule below rather than bypassing it, and falls back to `main`
-    (with a chat line saying so) if the slot cannot take the item. The starter
+    (with a message-feed line saying so) if the slot cannot take the item. The starter
     torch stays in `main`; torches are not offhand items (no carried light,
     `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
@@ -142,7 +142,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **No migration**: weapons stay valid `main` items and nothing of a
     character's is moved behind its back. A character that owns a
     slot-eligible weapon, has finished character creation and has the slot
-    empty gets a **one-time chat hint** instead. Since the starter grant above
+    empty gets a **one-time chat hint** instead (kept in chat: it is too
+    long to read in the message feed). Since the starter grant above
     fills the slot at class choice, a fresh character never sees that hint;
     it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
@@ -158,7 +159,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     an occupied offhand, and an occupied two-handed hand refuses anything
     into the other slot.
   - Enforced in the **same `allow_put`** as the armor rank,
-    as a **refusal with a chat message that says why** (throttled — the
+    as a **refusal with a message-feed line that says why** (throttled — the
     allow callback fires repeatedly while a stack is dragged) — never by
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
@@ -213,7 +214,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Weapon level requirement is implemented here:** the same `allow_put`
   filter reads a weapon's generated `_grug_ilvl` (or `_grug_req_level`)
   directly in either hand slot, rejects it when that value exceeds the
-  character's level, and says so in chat, naming the slot
+  character's level, and says so in the message feed, naming the slot
   (`grug_inventory/equipment.lua`). Items without a positive level, shields,
   spellbooks and the armor slots are unrestricted. Rejecting
   the equip is deliberate — letting the item sit in the slot without effect
@@ -233,7 +234,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     rating-based mitigation and leather's avoidance pool, not between wearing
     and not wearing.
   - Enforced in the **same group-filtered `allow_put`** as the rest of
-    the slot rules, with a throttled chat refusal (the allow callback
+    the slot rules, with a throttled message-feed refusal (the allow callback
     fires repeatedly while a stack is dragged).
   - A **class change unequips** every piece above the new rank back
     into the main inventory — the filter can only ever refuse an equip,
@@ -396,7 +397,9 @@ them.
 - **Lines:** at most 3, newest at the bottom; each lives 2.5 s and is drawn
   at 45 % brightness for its last 0.5 s (HUD text has no alpha fade on every
   client). Colours by kind: loot white, XP purple (`#aa66ff`), quest yellow
-  (`#ffe080`), fishing light blue, combat notices grey (`#aaaaaa`).
+  (`#ffe080`, also talent points), fishing light blue, combat notices grey
+  (`#aaaaaa`), other notices and refusals the neutral notice colour
+  (`#f0e6c8`).
 - **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
   one summed into the same line; items picked up off the ground (mob drops,
   dropped items) and boss loot entering the inventory as "+3 Light Leather",
@@ -407,7 +410,21 @@ them.
   tracker line (38 characters, "..."); fishing catches as
   "Caught <fish> (+N XP)" (junk: "Caught <item>"); combat notices
   "You dodge!" and "Dismount before attacking." (a mounted attack, at most
-  once a second), each one keyed line that a repeat refreshes (Round 32).
+  once a second); and since Round 32 the personal notices: potion and food
+  refusals (level, potion cooldown, full health, no mana pool, not
+  poisoned), equip refusals (armor class, weapon level, hand slot,
+  two-handed rule), the class-change unequip notices, the starter-weapon
+  line at class choice, the raw-weapon hint, mount notices (dismount
+  reason, flight-boundary warning, summon refusal, a mount not bound to
+  this character), talent points earned or
+  returned, and "Boss loot is waiting: free main inventory space, then
+  rejoin." (queued boss loot is handed over at the next join). Each
+  notice group keeps one keyed line that a repeat refreshes (`potion`,
+  `food`, `equip:<reason>`, `class_change:*`, `starter:<slot>`,
+  `weapon_hint`, `mount`, `talents`, `boss_loot`, `combat:*`).
+  Still in chat: death messages, rare sightings for the faction, the dragon
+  arena's warnings, a boss's return warning and the one-time no-weapon hint
+  (too long for the feed's 2.5 s).
 - **Level-up** is a separate large centre announcement ("Reached level N!",
   double font size, 3 s), not a feed line.
 - **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
