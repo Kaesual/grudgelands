@@ -2,9 +2,10 @@
 -- no engine calls, so tools/r29_w/portable_test.lua runs them as they ship.
 --
 -- A row is one waystone: {id, label, faction, race, start, pos}. `start` is
--- true for the six starts; the others are the six capitals. A faction's
--- network is its own six rows. Discovery is per character: the stored list
--- plus the character's own start, which counts as discovered from creation.
+-- true for the six starts; the others are the six capitals and the two PvP
+-- fortresses (Round 31). A faction's network is its own seven rows.
+-- Discovery is per character: the stored list plus the character's own
+-- start, which counts as discovered from creation.
 
 local M = {}
 
