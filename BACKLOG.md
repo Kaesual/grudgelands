@@ -557,6 +557,28 @@ Map tab strip and the crosshair timing wait for the GUI test.
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).
 
+### Seed-dependent POI placement (user, 2026-10-03; next round)
+
+Today every one of the 118 anchors has fixed coordinates in
+`grug_mapgen/wp40/source/simple_map.lua` (`layout_fixed` / `authored_fixed`,
+"frozen layout"); the world plan builds on them in a fixed order (core
+flattening, road routing, protection, region-map cache, quest targets).
+The user wants, from the next round:
+
+- **Start towns and capitals stay fixed.**
+- **POIs, camps (bandit, Mirefolk, PvP war camps), outposts, mines and the
+  two PvP fortresses are placed per seed**, once at the first world build,
+  as well fitted to the terrain as possible and by each kind's rules (for
+  the fortresses: dry, flat, near the Battlegrounds and the middle road).
+- Shape: run the placement pick that lane M built offline
+  (`tools/r31_m/candidates.lua`, `pick.lua`, `spacing_check.lua`) on the
+  natural terrain before flattening and road routing; identical in the main
+  and emerge environments; spacing and zone/level-band rules checked
+  online; the result stored in the world-layout cache. Quest texts already
+  use placeholders, so positions may change per world.
+- Risk: it reorders the world plan; frozen pins, quest-target checks on six
+  seeds and the region-map cache must follow.
+
 ### Enchantment and item-level revision (user, 2026-10-03; a later round)
 
 The user plans to rework enchantments; item level should then make boss
