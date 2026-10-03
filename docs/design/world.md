@@ -753,7 +753,7 @@ separate travel feature, part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
 WP17).
 
-**Waypoint network** (Diablo/PoE model, decided 2026-08-06; built in Round 29,
+**Waypoint network** (the classic action-RPG model, decided 2026-08-06; built in Round 29,
 [travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
 - Waypoints: every race starting settlement, every capital and, since

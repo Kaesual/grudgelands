@@ -119,10 +119,10 @@ user's 2026-09-29 decisions
 B1–B7) settle the rest:
 
 - **In V1:** WP17 boats (the only access to the dragon islands and their
-  camps) and waypoints at every start and capital (no zone hubs, no
+  camps) and waypoints at every start, capital and PvP fortress (no zone hubs, no
   `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale.
-- **After V1:** WP42's scripted NPC battles on the war front. Small PvP POIs
-  (forts and camps with NPCs) may come in V1, and WP42 may ship before WP41.
+- **After V1:** WP42's scripted NPC battles on the war front. The small PvP
+  POIs shipped in V1 (Round 31).
 - **Not V1:** the walkable Nether, the first expansion (V2).
 
 ## Phase 1 — Playable core and world foundation

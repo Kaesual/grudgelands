@@ -49,7 +49,7 @@ Updated 2026-10-03. This is the delivery pointer, not another game specification
     `tools/run_fixtures.sh` (63 fixtures pass); Heal, Shield, Mend and Ice
     Nova replace another game's spell names; neutral wording instead of a
     commercial MMO's terms; captain and General names by GPT-6 Astra.
-  - Final engine check: (coordinator fills in)
+  - Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
   - Next: the user's two-client GUI test on a fresh world (the Round 30
     test is still open and can share it); the decision on seed-dependent
     POI placement; then Round 32, WP9.

@@ -138,7 +138,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP38 | Held melee timing and settlement | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP39 | Crosshair-authoritative combat | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP40 | Named-zone world foundation | Development delivery accepted; first-public-release gates remain open. | — |
-| WP41 | [Geographic PvP transaction](docs/planning/work-package-scopes.md#wp41) | **V1.** Delivered in Round 31 ([completion](docs/planning/round31-plan.md#completion-2026-10-03), rules [pvp.md](docs/design/pvp.md)): a per-player flag (location, button, contact) instead of the old transaction; the PvP tab, icons, banner and target frame; the NPC faction filter; PvP from depth T4. GUI acceptance pending; the engineering brief is historical. | WP39 ✅, WP40 ✅ |
+| WP41 | [Geographic PvP](docs/planning/work-package-scopes.md#wp41) | **V1.** Delivered in Round 31 ([completion](docs/planning/round31-plan.md#completion-2026-10-03), rules [pvp.md](docs/design/pvp.md)): a per-player flag (location, button, contact) instead of the old transaction; the PvP tab, icons, banner and target frame; the NPC faction filter; PvP from depth T4. GUI acceptance pending; the engineering brief is historical. | WP39 ✅, WP40 ✅ |
 | WP42 | [Bounded war-front encounters](docs/planning/work-package-scopes.md#wp42) | **After V1** (scripted battles). The PvP-POI part shipped in Round 31: two fortresses and 16 Battlegrounds war camps with garrisons and quests ([pvp.md](docs/design/pvp.md) §6). Clash anchors and art delivered; no war-unit runtime. | WP13 ✅, WP40 ✅ |
 | WP43 | Canonical material/depth registry | Delivered; Round 24 replaces pick depth bounds and shatter with tier rock and engine-native gating (rulings 1–8). Current rules: topic design. | — |
 | WP44 | [Economy rebase, lighter pass](docs/planning/work-package-scopes.md#wp44) | Delivered in Round 29 ([lane status](docs/planning/economy-vendor-plan.md#lane-status-round-29-2026-10-02)): one price module for every payout, 5% buy-back on vendor goods, the vendor rule and shelves, the audit fixes, quest copper from weight, repair at claim stations (D7), mount, boat and respec prices from a simple income estimate (D1, D2); gems by depth. The user's Round 29 test passed; Round 30 smooths the band-4/5 loot medians and recomputes Expert Riding and two respec prices. | WP7 ✅, WP43 ✅ |
@@ -612,17 +612,15 @@ none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
 
 - **Quest XP share above 100 % in several bands** (human 30→40 134 %,
   50→60 119 %; orc 30→40 120 %; `ledger.py --game --track <race> --repeat 2`,
-  solo): a ledger/balance pass in a later round. The human 50→60 overshoot
+  solo): whether a ledger/balance pass follows is the user's call. The human 50→60 overshoot
   predates Round 31 (103 %); most of the PvP raids' share is their targets'
   kill XP, not the reward weights (lowered to 3/4 by the user's option (b)).
 - **First-start heap:** after Lane C a first start still holds about 45 MiB
   more Lua heap at the first step than a later start (110 against 65 MiB);
   it is grug_mapgen's first-start load, not caches (a possible later item;
   the #22 warm-load proposal above stays the user's call).
-- **Tab order** (pre-existing): Quests and Group land behind Map in the
-  engine (their hooks place each page after its predecessor as it stands
-  then; Map has no ordering hook); the order ends …, Quests, Group, PvP,
-  Map. Check in the GUI test whether to change it.
+- **Tab order:** the engine order ends …, Quests, Group, PvP, Map (Map has
+  no ordering hook); check in the GUI test.
 - **Mounts:** the tier-3/4 flyers share one selection box per tier, sized
   for the highest seat (taller than a smaller race's flyer); the riderless
   capital displays keep each model's own box (`display_box`) — check their

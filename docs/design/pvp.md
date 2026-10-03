@@ -105,7 +105,7 @@ eligibility and flag".
   (quest targets) and neutral places stay visible to everyone; the terrain
   map itself is the same for both factions ([world_map.md](world_map.md)).
 - Enemy guards drop War Trophies and heavy cloth only to an enemy player's
-  kill ([combat_stats.md](combat_stats.md) §3).
+  kill (`grug_mobs/guard.lua`).
 
 ## 5. Interface
 
@@ -189,8 +189,9 @@ combat may follow its target in).
   the world seed and the anchor number) and builds in that race's signature
   materials; its garrison is of that race.
 - **Levels** from the zone's range: lower camp the bottom three levels,
-  higher camp the top three (The Broken Causeway 41–43 and 48–50, the
-  51–60 zones 51–53 and 58–60).
+  higher camp the top three (the 41–50 zones, The Broken Causeway and The
+  Shattered Line: 41–43 and 48–50; the 51–60 zones, Gravesalt Escarpment
+  and The Skyglass Canopy: 51–53 and 58–60).
 - **Garrison:** 4 (lower) or 5 (higher) faction guards at the camp's levels,
   never elite, respawning after 100–140 s; one **named captain** at the
   band's top level, a normal-tier leader with the start-zone leaders'

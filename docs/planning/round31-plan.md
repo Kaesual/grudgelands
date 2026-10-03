@@ -342,7 +342,7 @@ coordinator ran the portable fixtures after the merges
 still open and can share the fresh world of this round's test. After
 `699a2002` the user settled the quest-share question (option (b), see Q).
 
-Final engine check: (coordinator fills in)
+Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
 
 ### Shipped, by lane
 
@@ -404,7 +404,7 @@ Numbers are each lane's own probe before and after, same seed and area
   ([character_visuals.md](../design/character_visuals.md) §1).
 - **B enchant colours** (stage 1 and the second design round, stage 2
   `ceb7a2c0`, review notes `a25acde3`): nine stat colours
-  (`grug_gear/enchant_colors.lua`, apart also for red-green colour
+  (`grug_gear/enchant_colors.lua`, distinct also for red-green colour
   blindness), 185 generated two-group masks as thin stripes (about 7 % of
   an icon and 4 % of a worn overlay per group, round 1: 17 % and 12 %), laid
   over at 50 % (opacity 128); the colours on the inventory icon, the held
@@ -446,7 +446,8 @@ Numbers are each lane's own probe before and after, same seed and area
   Battlegrounds half of their zone, dry and flat (relief at most 33 and 24
   on six seeds), 51–134 and 20–45 nodes off the middle road, which keeps
   its course on all six seeds (maximum deviation 0), with a gate trail;
-  the 16 camps per zone and faction (nearest PvP pair 223 nodes, at least
+  the 16 camps (one lower and one higher per Battlegrounds zone and
+  faction; nearest PvP pair 223 nodes, at least
   120); protection + 10 nodes (`fortress`, `war_camp`); no hostile ambient
   spawns and roamers nudged away; seven waystones per faction; settlement
   icons per viewer faction (`grug_map/settlement_icons.lua`). Lane M first
@@ -531,8 +532,9 @@ item-level revision; the quest XP share above 100 % in several bands; the
 remaining first-start heap (about 45 MiB above a later start, the
 grug_mapgen first-start load, not caches); the grug_mapgen warm-load
 proposal (#22, still the user's call). For the GUI test (notes, not
-reproduced as faults): the tab order (Quests and Group sit behind Map;
-pre-existing, the Map tab has no ordering hook), 10 survival tabs at
+reproduced as faults): the tab order (the engine order ends …, Quests,
+Group, PvP, Map; Map has no ordering hook; check in the GUI test), 10
+survival tabs at
 1280 × 720, the flight warning's 4 px headroom at 720p and GUI scale 1,
 the per-tier selection box of the tier-3/4 flyers (sized for the highest
 seat), the capital mount displays' boxes and name tags, Dragon Rime on
@@ -548,13 +550,16 @@ warning of the M probe was a probe artefact (the path is open).
 Two Flatpak clients on one local server and a **fresh world** (Round 31
 changes the mapgen: PvP POIs, dragon arenas, roads): one Accord and one
 Throng character at level 40+ and one low-level character. Helpers:
-`/xp give`, `/teleport`, `/pvpstate` (privilege `server`).
+`/xp give`, `/teleport`, `/pvpstate` (privilege `server`). Teleport
+targets (x, z): Ashenward Bastion (136, −488), Bannerbreak Warhold
+(−80, 632), the Wyrmglass dragon (−3260, −40), the Stormscale dragon
+(3260, −40).
 
 PvP (pvp-plan §9 as built):
 
 1. **Own peaceful zone, both unflagged:** the enemy is no target (neutral
    crosshair; target frame grey with "(protected)"); Ice Nova next to them
-   does nothing to them; nothing is paid.
+   does nothing to them (the nova itself costs its mana as usual).
 2. **"Flag me for PvP"** on the PvP tab: the "PvP flagged" icon counts down
    from 60 s, the tab shows "Flagged for N s"; still no hits until the
    other is flagged too; both flagged → the frame turns red, hits land.
@@ -567,8 +572,9 @@ PvP (pvp-plan §9 as built):
    and cannot hit you.
 5. **Healer:** an unflagged priest aiming Heal, Shield or Mend at a flagged
    friend gets "You must be flagged for PvP to support a flagged ally.",
-   no mana spent, no self-heal; after the button the cast works and keeps
-   the priest flagged by contact.
+   no mana spent, no self-heal; after the button the cast works; a heal on
+   a friend in PvP combat (10 s after a PvP hit) also counts as contact
+   for the priest.
 6. **PvP combat:** after a PvP hit no mount, no eating, no travel home and
    no waystone for 10 s; the PvP tab shows the combat line.
 7. **Logout death:** log out during a fight; the other sees the kill and
