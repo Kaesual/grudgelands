@@ -64,14 +64,25 @@ quest givers, trainers, Housing Stewards and innkeepers, plus every king
 (the enemy's too) and both dragons; a character without a faction yet sees
 only the kings and dragons. Both factions can have markers in one zone
 (a spy in a contested zone), each seen only by its own side. The base,
-the region names, settlements, camps and zone markers stay complete for
-everyone. The service and quest-giver lists are split per viewer faction
+the region names, roads and zone markers stay complete for everyone.
+
+**Settlement icons by faction** (Round 31, the user's ruling after the
+lane-M preview): the terrain map is the same for both factions, only the
+icons differ. A faction's starts, capitals, villages, outposts and PvP
+fortress show only to that faction; the Battlegrounds war camps (quest
+targets) and every neutral place (bandit and Mirefolk camps, mines, clash
+sites, dragon arenas) show to everyone; the kings and dragons stay visible
+as NPC markers. A settlement's class comes from its anchor slot, carried in
+the settlement registry; the rule and its one list of hidden classes live
+in `grug_map/settlement_icons.lua` (`HIDDEN`), and the Map tab keeps one
+list per viewer faction, built once. The minimap shows no settlement icons. The service and quest-giver lists are split per viewer faction
 once at server start, so a marker build only picks the own list, in the
 Map tab and the minimap alike; the quest givers' states still come from
 one `grug_quests.marker_states` call.
 
 Round 29 (WP17): every **discovered** waystone of the player's own network
-(three starts, three capitals; [world.md](world.md) §6) is a marker of kind
+(three starts, three capitals and, since Round 31, the faction's PvP
+fortress; [world.md](world.md) §6) is a marker of kind
 `waypoint` at the stone, labelled "<settlement> Waystone", with the icon
 `grug_map_waypoint.png` (a grey standing stone with a blue rune, by GPT-6
 Astra). Undiscovered and enemy waystones are not shown. The provider is

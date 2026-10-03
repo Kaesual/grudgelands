@@ -9,7 +9,8 @@
 -- functional-anchor overlay, main's preparation of every POI, village and
 -- camp blueprint (`r7_settlement.prepare`, as `r7_runtime.lua` does), and
 -- the world protection exactly as `r7_loader.lua` builds it. Returns
---   session (the overlay-wrapped zones session), planner_source, source,
+--   session (the overlay-wrapped zones session), height (the height session:
+--   natural_height_at), planner_source, source,
 --   roads (the road module), road_text, layout (deserialized), built (the
 --   layout as routed, with its stats and road ends), sampler
 --   (the road sampler on that text), rows (settlement rows for the boxes),
@@ -55,13 +56,26 @@ return function(repo, seed)
 			start_grounds[profile.anchor_id] = {ground = TWIN[ground] or ground}
 		end
 	end
+	-- the height session itself is kept for the tools that ask the natural
+	-- (pre-fitting) ground (`natural_height_at`)
+	local held = {}
 	local function height_factory(deps)
 		local bound = {}
 		for k, v in pairs(deps) do bound[k] = v end
 		bound.water = water
 		bound.roads = roads
 		bound.start_grounds = start_grounds
-		return hf(bound)
+		local module = hf(bound)
+		local new_runtime = module.new_runtime
+		if type(new_runtime) == "function" then
+			module.new_runtime = function(...)
+				local session = new_runtime(...)
+				held.height = session
+				return session
+			end
+			module.new = module.new_runtime
+		end
+		return module
 	end
 	local index128 = dofile(dir .. "/index128.lua")
 	local t0 = os.clock()
@@ -109,7 +123,7 @@ return function(repo, seed)
 	collectgarbage() collectgarbage()
 	local memory_after = collectgarbage("count")
 	local layout = roads.module.deserialize(road_text)
-	return {session = session, raw_session = raw_session,
+	return {session = session, raw_session = raw_session, height = held.height,
 		planner_source = planner_source, source = source, roster = roster,
 		roads = roads.module, road_text = road_text, layout = layout,
 		built = roads.cache.layout,

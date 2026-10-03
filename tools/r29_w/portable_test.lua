@@ -9,8 +9,8 @@
 --    target, not yet visited, combat, a trip already pending).
 -- B. The shipped grug_home (init, travel, waypoints) on a fake engine:
 --    proximity discovery once a second with one message, enemy stones never
---    unlocked, right-click on an own stone discovers it and lists the six
---    own stones (here / Travel / Not yet visited), right-click on an enemy
+--    unlocked, right-click on an own stone discovers it and lists the seven
+--    own stones (Round 31: the fortress is the seventh) (here / Travel / Not yet visited), right-click on an enemy
 --    stone answers with a line only; travel refused in combat, to an
 --    unvisited stone and to an enemy stone; a trip emerges, dismounts and
 --    arrives beside the destination stone (the next free side when the
@@ -164,6 +164,15 @@ for i, location in ipairs(LOCATIONS) do
  STONE[location.id] = vnew(anchor.x + 40, 101, 0)
  cells[key(STONE[location.id])] = "grug_mapgen:waystone"
 end
+-- The two PvP fortresses (Round 31, the seventh stone of each network).
+for i, fortress in ipairs({{"pvp_fortress_accord", "human", "Ashenward Bastion"},
+  {"pvp_fortress_throng", "orc", "Bannerbreak Warhold"}}) do
+ local anchor = {x=(#LOCATIONS + i) * 1000, y=100, z=0}
+ grug_core.register_settlement_sockets(fortress[1], fortress[2], anchor,
+  {{id="travel_waypoint", role="waypoint", x=40, y=1, z=0, dir={x=0, z=1}}}, fortress[3])
+ STONE[fortress[1]] = vnew(anchor.x + 40, 101, 0)
+ cells[key(STONE[fortress[1]])] = "grug_mapgen:waystone"
+end
 rawset(_G, "grug_mobs", {register_start_socket_role=function() end})
 rawset(_G, "grug_mounts", {dismount=function() dismounts = dismounts + 1 end})
 rawset(_G, "grug_factions", {get_faction=function(p) return p:get_meta():get_string("faction") end,
@@ -222,7 +231,7 @@ formspec = nil
 home.use_waystone(player, STONE.sunscar)
 check(formspec == nil and last_chat() == "<Waystone> I serve only The Throng." and
  known() == "highcourt", "B enemy stone inert")
--- Right-click on an own stone: discovered, list of six.
+-- Right-click on an own stone: discovered, list of seven.
 player.pos = vnew(STONE.lethariel.x + 2, 101, 0)
 home.use_waystone(player, STONE.lethariel)
 check(known() == "highcourt lethariel", "B right-click discovers")
@@ -231,7 +240,7 @@ check(formspec and formspec:find("Lethariel Waystone", 1, true) and
  formspec:find("go_highcourt", 1, true) and not formspec:find("go_lethariel", 1, true) and
  not formspec:find("go_sunscar", 1, true), "B list: here, own start, discovered capital")
 local _, unknown = formspec:gsub("Not yet visited", "")
-check(unknown == 3, "B list: three not yet visited")
+check(unknown == 4, "B list: four not yet visited (with the fortress)")
 
 -- Refusals.
 player.combat = true; fields({go_highcourt="Travel"})

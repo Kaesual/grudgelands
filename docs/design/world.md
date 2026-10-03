@@ -503,6 +503,14 @@ visible:
   factions. A new civilian family declares itself non-combatant
   (`grug_mobs.noncombatant`); nothing narrows an attacker's `attack_npcs` on its
   behalf.
+- **PvP fortresses and camps** (Round 31, pvp-plan rulings 17–22): one
+  fortress per faction in its middle 31–40 zone, on the Battlegrounds half
+  beside the middle road, which keeps its own course, with a trail from the
+  gate (Ashenward Bastion, Bannerbreak Warhold) and, in each of the four
+  Battlegrounds zones, one lower and one higher camp per faction, 16 camps.
+  Positions, spacing (at least 120 nodes between PvP POIs) and protection
+  (the blueprint plus a 10-node margin): `world_zones.md` §16. Each fortress
+  has a waystone (§6).
 - War-front squads use fixed population caps, place-bound respawn slots and
   fixed clash points. Their fights are ambient life only and do not capture a
   zone or move the faction boundary in the MVP (`world_zones.md` §5).
@@ -739,18 +747,19 @@ WP17).
 **Waypoint network** (Diablo/PoE model, decided 2026-08-06; built in Round 29,
 [travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
-- Waypoints: every race starting settlement and every capital, and no others
+- Waypoints: every race starting settlement, every capital and, since
+  Round 31, each faction's PvP fortress (pvp-plan ruling 18), and no others
   (no zone-hub waypoints; user decision 2026-09-29). Each is a **waystone**
   node (`grug_mapgen:waystone`) the mapgen places at the centre of the
   settlement's waypoint pad, in the cell of its `travel_waypoint` socket
   ([settlements.md](settlements.md#waypoint-pads)). A faction's network is its
-  three starts and three capitals, six waystones.
+  three starts, three capitals and its fortress, seven waystones.
 - **Unlocked by visiting, per character** (player meta
   `grug_home:waypoints`): standing within 8 nodes horizontally (and 8 up or
   down) of an own-faction waystone, checked once a second, or right-clicking
   it, discovers it with one flash and chat line "Waypoint discovered: <name>".
   The character's own start counts as discovered from creation.
-- **Right-click** opens the list of the six own-faction waypoints: "You are
+- **Right-click** opens the list of the seven own-faction waypoints: "You are
   here", **Travel** (discovered) or a greyed "Not yet visited".
 - **Travel** works **only while standing at a waystone** (within the same
   reach), waystone to waystone: instant, free, no cooldown, alive and out of

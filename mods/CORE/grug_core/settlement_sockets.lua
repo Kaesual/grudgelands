@@ -232,8 +232,11 @@ end
 
 -- `anchor` is the settlement's published anchor, `sockets` its blueprint's
 -- authored array. Both are read, never kept: the caller may reuse its table.
+-- `slot` (optional) is the settlement's anchor slot ("start", "capital",
+-- "village_1", "pvp_fortress", ...), which the map reads to tell a town from
+-- a camp (Round 31).
 function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
-		sockets, display_name)
+		sockets, display_name, slot)
 	if type(settlement_key) ~= "string" or settlement_key == "" then
 		fail("settlement key differs")
 	end
@@ -251,6 +254,9 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	if display_name ~= nil and (type(display_name) ~= "string" or display_name == "") then
 		fail(settlement_key .. ": display name differs")
 	end
+	if slot ~= nil and (type(slot) ~= "string" or slot == "") then
+		fail(settlement_key .. ": slot differs")
+	end
 	local compiled, seen = {}, {}
 	for index = 1, #sockets do
 		compiled[index] = compile(settlement_key, anchor, sockets[index], seen)
@@ -258,6 +264,7 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	local record = {
 		key = settlement_key,
 		display_name = display_name,
+		slot = slot,
 		race_id = race_id,
 		anchor = {x = anchor.x, y = anchor.y, z = anchor.z},
 		sockets = compiled,
@@ -278,7 +285,7 @@ function grug_core.register_settlement_sockets(settlement_key, race_id, anchor,
 	return #compiled
 end
 
--- Every registered settlement, in registration order, as copies: key, race
+-- Every registered settlement, in registration order, as copies: key, slot, race
 -- and the anchor its sockets were compiled against. This is how a consumer
 -- walks the registry without restating the start roster, and how it can
 -- cross-check the anchor against the one the rest of grug_core publishes.
@@ -287,7 +294,7 @@ function grug_core.settlement_socket_settlements()
 	for index = 1, #order do
 		local record = order[index]
 		result[index] = {key = record.key, display_name = record.display_name,
-			race_id = record.race_id,
+			slot = record.slot, race_id = record.race_id,
 			anchor = {x = record.anchor.x, y = record.anchor.y,
 				z = record.anchor.z}}
 	end

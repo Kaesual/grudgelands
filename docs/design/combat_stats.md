@@ -1238,10 +1238,11 @@ walking: no target, not following, not evading) free-roaming mob with the
 **aggressive** disposition probes every 4–5 seconds of the leash slot (the
 period picked per mob and probe, the first probe of an activation at a random
 slot) eight points on a horizontal ring of radius equal to its `view_range`,
-at its own height. A point hits on a road, bridge or village
+at its own height. A point hits on a road, bridge, village or (Round 31) PvP
+fortress or war camp with its protection margin
 (`grug_core.world_feature_at`) or in a start town or capital city
-(`grug_zones.hard_protection_kind_at` "town"). POIs (including outposts and
-hostile camps) do not push. With any hit the mob walks along a free ring
+(`grug_zones.hard_protection_kind_at` "town"). Other POIs (including
+outposts and hostile camps) do not push. With any hit the mob walks along a free ring
 direction, never toward a hit: the free direction closest to the opposite of
 the hits' mean direction (when the hits cancel, as for a mob standing on a
 straight road or a crossroads, the free direction with the most free

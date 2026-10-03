@@ -63,6 +63,8 @@ local DEFAULT_P = {
 	JUNCTION_GAP = 64, END_GAP = 24, RING_GAP = 160, JOIN_MAXCOS = 0.8,
 	JOIN_FLAT_REACH = 8, JOIN_OFF = 2.5, EDGE_EVERY = 2,
 	START_GATE = 64, START_STRETCH = 32,
+	-- a gated POI's trail leaves straight for this many nodes beyond its core
+	GATE_STRETCH = 24,
 	WIGGLE = 14, WIGGLE_PERIOD = 220, WIGGLE_TAPER = 64, WIGGLE_RMIN = 30,
 	WIGGLE_S0 = 0.12, WIGGLE_S1 = 0.3, WIGGLE_ENV = 40, SMOOTH = 5, SMOOTH_MAXTURN = 0.8,
 	LOOPS = 4, LOOP_RATIO = 1.3, K_ONROAD = 3, LOOP_END_FREE = 80, LOOP_REACH = 1100,
@@ -1610,6 +1612,21 @@ local function new_module(P)
 				local k = cell_of(ox, oz)
 				local d = nd.gate_dir > 0 and 5 or 13
 				return {{LI[k], d, 0}}, {{gx, gz}, {ox, oz}}
+			elseif nd.gate_x then
+				-- a gated POI (a PvP fortress): out of the gate, straight for
+				-- GATE_STRETCH nodes beyond the core edge, then routed; the core
+				-- end is trimmed at the edge like any POI end
+				local edge = nd.core / 2
+				local ox = nd.x + nd.gate_x * (edge + P.GATE_STRETCH)
+				local oz = nd.z + nd.gate_z * (edge + P.GATE_STRETCH)
+				local k = cell_of(ox, oz)
+				local d = nd.gate_x > 0 and 1 or nd.gate_x < 0 and 9 or nd.gate_z > 0 and 5 or 13
+				if k and LI[k] then
+					return {{LI[k], d, 0}}, {{nd.x + nd.gate_x * edge, nd.z + nd.gate_z * edge}, {ox, oz}}
+				end
+				-- no land cell before the gate: leave from the centre as any POI
+				k = cell_of(nd.x, nd.z)
+				return {{LI[k], nil, 0}}, nil
 			else
 				local k = cell_of(nd.x, nd.z)
 				return {{LI[k], nil, 0}}, nil
@@ -2599,10 +2616,20 @@ local function new_module(P)
 			local t = a.template_id
 			local fac = faction(a.zone_numeric_id)
 			if not used[a.id] and fac ~= "front" and (t == "outpost" or t == "mine" or
-					t == "bandit_home" or t == "bandit_frontier" or t == "mirefolk") then
+					t == "bandit_home" or t == "bandit_frontier" or t == "mirefolk" or
+					t == "pvp_fortress") then
 				local x, z, core_y = pos(a)
-				trail_nodes[#trail_nodes + 1] = {id = a.id, kind = t, x = x, z = z, y = core_y,
+				local node = {id = a.id, kind = t, x = x, z = z, y = core_y,
 					core = prof[t].building_core_width, faction = fac, zone = a.zone_numeric_id}
+				-- A Round 31 PvP fortress's trail leaves through its one gate,
+				-- which faces the middle road's axis x = 0 (toward the own
+				-- continent on the axis itself; `r7_settlement.pvp_gate_turns`).
+				if t == "pvp_fortress" then
+					if x > 0 then node.gate_x, node.gate_z = -1, 0
+					elseif x < 0 then node.gate_x, node.gate_z = 1, 0
+					else node.gate_x, node.gate_z = 0, fac == "elandor" and -1 or 1 end
+				end
+				trail_nodes[#trail_nodes + 1] = node
 			end
 		end
 		table.sort(trail_nodes, function(a, b) return a.id < b.id end)

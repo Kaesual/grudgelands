@@ -1,7 +1,9 @@
 -- Round 29 waystones (WP17, docs/design/world.md section 6): one waystone at
 -- the centre of every start's and capital's waypoint pad, placed by the
--- mapgen (`grug_mapgen:waystone`, whose right-click lands here). A faction's
--- network is its three starts and three capitals. Standing within reach of
+-- mapgen (`grug_mapgen:waystone`, whose right-click lands here), and since
+-- Round 31 one on the waypoint pad of each faction's PvP fortress (pvp-plan
+-- ruling 18). A faction's network is its three starts, three capitals and
+-- its fortress: seven stones. Standing within reach of
 -- an own-faction stone, or right-clicking it, discovers it for the
 -- character; the own start counts as discovered from creation. From a stone
 -- a player travels to any discovered stone of the network: instant, free,
@@ -12,26 +14,43 @@ local rules = dofile(path .. "/waypoints_core.lua")
 local KEY = "grug_home:waypoints"
 local SIDES = {{x=1,z=0},{x=-1,z=0},{x=0,z=1},{x=0,z=-1}}
 
--- The registry: the `travel_waypoint` socket of every home location, which
--- is the cell the mapgen wrote the waystone into. Built at load like the
--- innkeeper homes; a location without one is a broken blueprint.
+-- The registry: the `travel_waypoint` socket of every home location and of
+-- both fortresses, which is the cell the mapgen wrote the waystone into.
+-- Built at load like the innkeeper homes; a settlement without one is a
+-- broken blueprint. A fortress has no innkeeper, so it is no home location:
+-- its label and seat race come from the settlement registry by its key
+-- (`r31_pvp_catalog.lua`).
+local FORTRESSES = {{key="pvp_fortress_accord", faction="accord"},
+ {key="pvp_fortress_throng", faction="throng"}}
 local rows, by_id, by_cell = {}, {}, {}
 local function cell_key(pos)
  return pos.x .. "," .. pos.y .. "," .. pos.z
 end
-for index, location in ipairs(grug_home.locations()) do
+local function add_row(id, label, faction, race, start)
  local socket
- for _, entry in ipairs(grug_core.settlement_sockets_at(location.id)) do
+ for _, entry in ipairs(grug_core.settlement_sockets_at(id)) do
   if entry.id == "travel_waypoint" and entry.role == "waypoint" then socket = entry end
  end
  if not socket then
-  error("[grug_home] waystone socket missing: " .. location.id, 0)
+  error("[grug_home] waystone socket missing: " .. id, 0)
  end
- local row = {id=location.id, label=location.label, faction=location.faction,
-  race=location.race, start=index <= 6, pos=socket.pos, side=socket.arrival}
+ -- A socket without its own arrival side (the starts, the fortresses)
+ -- arrives on +x first (arrival_at below).
+ local row = {id=id, label=label, faction=faction, race=race, start=start,
+  pos=socket.pos, side=socket.arrival}
  rows[#rows + 1] = row
  by_id[row.id] = row
  by_cell[cell_key(row.pos)] = row
+end
+for index, location in ipairs(grug_home.locations()) do
+ add_row(location.id, location.label, location.faction, location.race, index <= 6)
+end
+local settlements = {}
+for _, row in ipairs(grug_core.settlement_socket_settlements()) do settlements[row.key] = row end
+for _, fortress in ipairs(FORTRESSES) do
+ local row = settlements[fortress.key]
+ if not row then error("[grug_home] fortress missing: " .. fortress.key, 0) end
+ add_row(fortress.key, row.display_name or fortress.key, fortress.faction, row.race_id, false)
 end
 
 local function known_set(player)

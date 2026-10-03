@@ -634,7 +634,9 @@ replaced; git history before this rewrite records that model.
   bandit camp (`bandit_frontier`, user decision 2026-09-29, WP audit E1),
   outpost, Mirefolk camp and clash site 16; mine 20; apex mine 32; dragon arena
   82, of which its round floor of radius 40 is sampled; rare
-  route 12 nodes), at least one node above water. Only that core is flat (a
+  route 12; the Round 31 PvP camps 24 (lower) and 28 (higher) and the PvP
+  fortress 60, a flat apron of 5–6 nodes round its 49-node walls; all in
+  nodes), at least one node above water. Only that core is flat (a
   dragon arena's round floor swells gently by up to 2 nodes and its edge
   wanders 0–3 nodes beyond the radius, `world.md` §4b; its calm bowl keeps
   the former 32-node size, so the island around it is unchanged).
@@ -944,7 +946,9 @@ POI abbreviations:
 - **W** = a fixed Mirefolk wetland camp;
 - **K×n** = n dedicated war-front clash anchors;
 - **D/M6** = dragon lair plus the apex mining camp;
-- **R:name** = the migrated named-rare route.
+- **R:name** = the migrated named-rare route;
+- **F** = the faction's PvP fortress, **P×4** = four PvP camps (per faction
+  one lower and one higher; Round 31, §16).
 
 Peaceful §8.1 zones use `territory_rule = "accord_home"` and peaceful §8.2
 zones use `territory_rule = "throng_home"`. Every level-31–60 ordinary
@@ -968,7 +972,7 @@ or rights (§7.1).
 | `elandor_goldmead_vale` | Goldmead Vale | Human | 11–20 peaceful | meadows 65 / deep forest 20 / swamp 15 | River mills, orchards and old farm roads; settled mobs, day Fox/Wild Turkey, sunleaf; night Poacher; **V, O, B, R:Grimtusk** |
 | `elandor_highcourt` | Highcourt | Human | capital, civic L20–30 profile, peaceful | meadows 80 / deep forest 20 | Brick-and-white-stone city on a river fork; no ambient hostiles; **C** |
 | `elandor_whitebridge_shire` | Whitebridge Shire | Human | 21–30 peaceful | meadows 50 / deep forest 35 / swamp 15 | Old arched bridge, oak copses and market villages; settled/forest mobs, marshbloom; night Poacher/Wisp; **V, O, M, W** |
-| `elandor_ashenward_march` | Ashenward March | Human | 31–40 **contested** | deep forest 50 / meadows 30 / swamp 20 | Burned woodland, trenches and the first active frontier; forest/war mobs; night Poacher/Wisp/Ashen Treant; **O×2, B, K×2, R:Old Whitefang** |
+| `elandor_ashenward_march` | Ashenward March | Human | 31–40 **contested** | deep forest 50 / meadows 30 / swamp 20 | Burned woodland, trenches and the first active frontier; forest/war mobs; night Poacher/Wisp/Ashen Treant; **O×2, B, K×2, F, R:Old Whitefang** |
 | `elandor_silverleaf_glades` | Silverleaf Glades | Elf | 1–10 peaceful | elf forest 95 / deep forest 5 | Pale trees, clear streams and circular glades; settled mobs; day Song Bird and band-2 Fox, night Giant Rat and band-3 Poacher; **S** |
 | `elandor_starbough_vale` | Starbough Vale | Elf | 11–20 peaceful | elf forest 80 / deep forest 20 | Terraced silverwood slopes and early canopy paths; settled mobs, day Fox, sunleaf; night Poacher; **V, O, B** |
 | `elandor_lethariel` | Lethariel | Elf | capital, civic L20–30 profile, peaceful | elf forest 90 / deep forest 10 | Treehouse crown around a lake and white-marble roots; no ambient hostiles; **C** |
@@ -989,7 +993,7 @@ or rights (§7.1).
 | `kragmar_redtusk_savanna` | Redtusk Savanna | Orc | 11–20 peaceful | savanna 75 / badlands 25 | Red gullies, acacia wells and hunting roads; settled/savanna mobs, sunleaf; night Scorpion and Sun-Dried Husk; **V, O, B, R:Ashmaw** |
 | `kragmar_gor_drazhak` | Gor Drazhak | Orc | capital, civic L20–30 profile, peaceful | savanna 60 / badlands 40 | Adobe-and-basalt fortress at a mesa crossroads; no ambient hostiles; **C** |
 | `kragmar_speargrass_reach` | Speargrass Reach | Orc | 21–30 peaceful | savanna 55 / badlands 40 / swamp 5 | Tall cutting grass, dry rivers and hunting stones; savanna/mountain mobs; day Speargrass Tiger; night Scorpion/Goblin Raid; **V, O, M** |
-| `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, R:Dustwing** |
+| `kragmar_bannerbreak_mesa` | Bannerbreak Mesa | Orc | 31–40 **contested** | badlands 70 / savanna 25 / swamp 5 | Wind-torn standards, red trenches and siege ramps; mountain/war mobs, night Scorpion/Goblin Raid, dragonweed; **O×2, B, K×2, F, R:Dustwing** |
 | `kragmar_kapok_cradle` | Kapok Cradle | Troll | 1–10 peaceful | jungle edge 90 / swamp 10 | Sheltered jungle basin beneath one giant kapok; settled/jungle-edge mobs; day band-2 Tapir, Viper and Jungle Lynx, night Giant Rat and band-2 Viper; **S** |
 | `kragmar_raincall_basin` | Raincall Basin | Troll | 11–20 peaceful | jungle edge 65 / deep jungle 15 / swamp 20 | Monsoon pools on stepped slopes; settled/jungle-edge mobs, day Tapir, night Viper, sunleaf; **V, O, B** |
 | `kragmar_kezamba` | Kezamba | Troll | capital, civic L20–30 profile, peaceful | jungle edge 75 / deep jungle 20 / swamp 5 | Stilt-and-stone city around a stepped cenote; no ambient hostiles; **C** |
@@ -1008,10 +1012,10 @@ and terrain rules without deriving political ownership from cultural origin.
 | Stable id | Display name | Race region | Level | Biome roll weights | Identity, content and reserved POIs |
 |---|---|---|---|---|---|
 | `front_wyrmglass_crown` | The Wyrmglass Crown | Dwarf | 60 | crags 55 / snowy crags 30 / beach 15 | Offshore ring-mountain island, crystalline fault terraces and dragon hoard; mountain/war mobs; night Frost Stray/Snow Leopard/Rift Spawn; **D/M6, K×1** |
-| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2** |
-| `front_broken_causeway` | The Broken Causeway | Human | 41–50 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, R:Captain Bonerattle** |
-| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, R:Captain Bonerattle** |
-| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, R:Silkfang** |
+| `front_gravesalt_escarpment` | Gravesalt Escarpment | Undead | 51–60 | bone forest 55 / blight 15 / swamp 15 / beach 15 | White salt cliffs cut with tomb galleries and a coastal war road; forest/war mobs; night Bog Witch/Rift Spawn; stormkelp; **K×2, P×4** |
+| `front_broken_causeway` | The Broken Causeway | Human | 41–50 | meadows 40 / deep forest 25 / swamp 35 | Collapsed royal road over marsh and river, with remnants of a raised causeway, fords and an aqueduct; war mobs; 24 h War Construct; night Tollroad Skeleton/Fordwater Zombie; **K×3, P×4, R:Captain Bonerattle** |
+| `front_shattered_line` | The Shattered Line | Orc | 41–50 | badlands 65 / savanna 20 / swamp 15 | Main battlefield of breached walls, western trenches, eastern siege ramp and burned no-man's-land; mountain/war mobs; day Speargrass Tiger; 24 h War Construct; night Scorpion and Sun-Dried Husk; **K×3, P×4, R:Captain Bonerattle** |
+| `front_skyglass_canopy` | The Skyglass Canopy | Elf | 51–60 | jungle fringe 60 / deep forest 25 / elf forest 15 | Cloud forest above pale escarpments, hanging roots and two high approaches; high-jungle/war mobs, crimson lotus; **K×2, P×4, R:Silkfang** |
 | `front_stormscale_summit` | Stormscale Summit | Troll | 60 | deep jungle 50 / east badlands 20 / swamp 15 / beach 15 | Offshore jungle-clad volcanic island, thunder terraces and dragon hoard; high-jungle/war mobs; night Bog Witch/Rift Spawn; stormkelp; **D/M6, K×1, R:Emerald Coil** |
 
 The identity column is flavour. Routes, trenches, siege ramps, galleries and
@@ -1128,7 +1132,10 @@ graph requirement may shape a zone, and nothing may require a graph to be
   it routes, every cell more than 48 nodes off x = 0 costs extra (0.02 per
   node and per node off), so it stays near the middle (it crosses z = 0
   within about ±60 nodes and keeps within about ±140 on the tested seeds)
-  and still bends around terrain. It has no waypoint.
+  and still bends around terrain. It has no waypoint. The two PvP fortresses
+  (Round 31, §16) stand beside it, clear of every routing cell it uses on
+  the tested seeds, so it keeps its own course; a trail joins each
+  fortress gate to it.
 - **Shape of the network.** A spanning tree over those endpoints plus a few
   loops where a loop is short and useful. Junctions are T or Y shaped with at
   most three or four branches; there are no star junctions.
@@ -1213,6 +1220,9 @@ graph requirement may shape a zone, and nothing may require a graph to be
   not already a road endpoint gets a trail (3 wide), routed like a road that
   may be a little steeper, joining the nearest road (D19, D67). A trail is
   never dropped for its cost or for a floating deck (D68).
+- A Round 31 PvP fortress gets one too, leaving through its gate: straight
+  out for 24 nodes beyond the core, then routed to the nearest road (the
+  middle road on every tested seed). Its gate faces the middle road's axis.
 
 ### 9.4 Offshore travel
 
@@ -1976,6 +1986,57 @@ Scope (user decision 2026-09-29, WP audit B5/B6): the scripted NPC battles
 below come after V1. Small PvP POIs — forts and camps with NPCs — may come in
 V1. WP42 may ship before WP41, with war units treating today's enemy-faction
 players as hostile until the `grug_pvp` seam exists.
+
+**V1 PvP POIs (Round 31, [pvp-plan](../planning/pvp-plan.md) rulings
+17–22).** Anchors 101–118 (`source/simple_map.lua`, the rows of
+`r31_pvp_catalog.lua`), fixed on every seed like every anchor:
+
+- **Fortresses:** Ashenward Bastion (Accord) at (104, −496) in Ashenward
+  March and Bannerbreak Warhold (Throng) at (−80, 632) in Bannerbreak Mesa,
+  on the Battlegrounds half of their zone beside the middle road (§9.2).
+  **The road has priority** (user ruling after the first preview): no
+  routing cell the middle road uses lies within the router's reserve round
+  a fortress (core / 2 + 10), so the road keeps the course it has without
+  the fortress (checked against that course on the six seeds); its surface
+  passes 19–107 nodes from the walls (Bannerbreak 20–45, Ashenward 19–107).
+  The one gate faces the road's axis and a trail (§9.3) joins it to the
+  road. Each fortress has a waystone (`world.md` §6).
+- **Camps:** per Battlegrounds zone and faction one lower and one higher
+  camp on the own faction's side of z = 0 (gate toward the own continent):
+  the lower toward the own frontier, the higher toward the middle, where the
+  zone's level field (§2, rising from both edges to the middle) gives
+  roughly the camp's band (the band ±1 on the six tested seeds).
+
+  | Zone | Accord lower / higher | Throng lower / higher |
+  |---|---|---|
+  | Gravesalt Escarpment | (−2144, −264) / (−1896, −80) | (−1520, 240) / (−1464, 24) |
+  | The Broken Causeway | (−912, −360) / (−728, −64) | (−896, 368) / (−216, 40) |
+  | The Shattered Line | (512, −288) / (944, −16) | (1216, 288) / (648, 48) |
+  | The Skyglass Canopy | (2304, −256) / (2080, −56) | (2376, 304) / (2384, 40) |
+
+- **Spacing:** no two PvP POIs closer than 120 nodes (the nearest pair is
+  223 apart); each fitting square keeps 16 nodes off every other anchor's,
+  and a camp 128 nodes off a boat path's mainland end.
+- **Slope:** the positions were chosen on the six quest-lane seeds among
+  centres whose natural ground under the core varies by at most 40 nodes on
+  every seed (above 40 the terrain field lays a calm bowl, §7.5; up to it
+  the flat core is cut into the slope and the collar returns to the ground),
+  preferring the flattest. Checked offline by
+  `tools/r31_m/spacing_check.lua` (zone field at full warp, roads routed and
+  off the POIs, cores in zone, dry and flat, relief at most 40, the
+  fortress trail out of the gate).
+- **Protection:** the blueprint's cells plus 10 nodes on every side in x and
+  z (from 10 below the placement height to 10 above the highest node), kind
+  `fortress` or `war_camp` (`world_protection.lua`, hint "Fortress –
+  protected" / "Camp – protected").
+- **Mobs:** no ambient hostile spawn on a fortress or war camp, and idle
+  free roamers are nudged away from them like from a village; a mob in
+  combat may follow its target in (`biomes_mobs.md`, `combat_stats.md`).
+- **Map:** a fortress is an icon only for its own faction; the war camps
+  show to everyone (`world_map.md`).
+- **No activation node:** unlike outposts (guard banner) and bandit camps
+  (camp fire) the PvP POIs get no anchor node; their garrison stands on the
+  blueprint's sockets.
 
 - Twelve zones are contested. Eight of them carry the current war-activity
   budget: Ashenward March, Bannerbreak Mesa and all six §8.3 zones. Their §8

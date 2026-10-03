@@ -77,17 +77,38 @@ local function humanize(key)
 	return text
 end
 
-atlas.register_marker_provider("settlement", function()
-	local rows = grug_core.settlement_socket_settlements()
-	local result = {}
-	for index = 1, #rows do
-		local row = rows[index]
-		local label = row.display_name or LABELS[row.key] or humanize(row.key)
-		result[index] = {id = row.key, label = label, position = row.anchor,
-			kind = row.key:find("bandit_camp", 1, true) and "hostile" or "settlement",
-			detail = label}
+-- Settlement icons per viewer faction (Round 31): settlement_icons.lua
+-- holds the rule and the one list of hidden classes.
+local icons = dofile(core.get_modpath("grug_map") .. "/settlement_icons.lua")
+
+-- The marker lists per viewer faction ("" for a player without one), built
+-- once on first use: the registry is complete before any player opens the map.
+local settlements_for
+local function build_settlement_markers()
+	local faction_of_race = {}
+	for _, identity in ipairs(grug_core.start_identities()) do
+		faction_of_race[identity.race_id] = identity.faction_id
 	end
-	return result
+	local rows = grug_core.settlement_socket_settlements()
+	settlements_for = {}
+	for _, viewer in ipairs({"", unpack(grug_core.faction_ids)}) do
+		local list = {}
+		for index = 1, #rows do
+			local row = rows[index]
+			local owner = faction_of_race[row.race_id]
+			if icons.visible(row.slot, owner, viewer) then
+				local label = row.display_name or LABELS[row.key] or humanize(row.key)
+				list[#list + 1] = {id = row.key, label = label, position = row.anchor,
+					kind = row.key:find("bandit_camp", 1, true) and "hostile" or "settlement",
+					detail = label}
+			end
+		end
+		settlements_for[viewer] = list
+	end
+end
+atlas.register_marker_provider("settlement", function(player)
+	if not settlements_for then build_settlement_markers() end
+	return settlements_for[player and grug_factions.get_faction(player) or ""] or {}
 end)
 
 function grug_map.register_marker_provider(name, callback)
@@ -139,7 +160,8 @@ local function signature(player, context)
 	local home = grug_home.get(player)
 	parts[#parts + 1] = home and home.id or ""
 	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
-	-- The faction picks the NPC markers (Round 31, ruling 13).
+	-- The faction picks the NPC markers (Round 31, ruling 13) and the
+	-- settlement icons.
 	parts[#parts + 1] = grug_factions.get_faction(player) or ""
 	return table.concat(parts, "|")
 end
