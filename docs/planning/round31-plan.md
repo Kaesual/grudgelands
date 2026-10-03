@@ -279,10 +279,13 @@ need no GUI check.
     kings, both dragons and the enemy Battlegrounds camps (quest targets)
     stay visible; a fortress cut into a slope is fine within
     limits, and placement checks the relief.
-13. **Skill names** (user): the three priest skills that carry another
-    game's exact names (Flash Heal, Power Word: Shield, Renew) are renamed;
+13. **Skill names** (user): skills that carry another game's exact names
+    are renamed — Flash Heal → Heal, Power Word: Shield → Shield, Frost Nova
+    → Ice Nova, Renew → Mend (coordinator default); Smite stays for now;
     generic words such as "Sprint" or "Heal" are fine even where other games
     use them too.
+14. **General's drops** (user): the normal PvP drops plus a raised chance of
+    an enchanted high-level item.
 
 ## 7. Orchestration notes (for the coordinator)
 
