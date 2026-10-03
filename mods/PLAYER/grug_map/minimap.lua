@@ -1,5 +1,5 @@
 -- Our own minimap (Round 27, WP50; docs/design/world_map.md). It replaces
--- Luanti's native minimap: a round, north-up HUD window of about 900 nodes
+-- Luanti's native minimap: a round, north-up HUD window of about 440 nodes
 -- of the pre-rendered world map, top right in the native minimap's box
 -- (grug_core.hud_layout.minimap_box), with the player's arrow, party
 -- members (rim arrows when outside), quest givers with their state, the
@@ -62,7 +62,8 @@ local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5,
 	waypoint = 6}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
 -- The location line (Round 28 M1, location.lua): centred under the bezel,
--- LOCATION_GAP HUD px below it, in the feed's calm notice colour.
+-- LOCATION_GAP HUD px below it, in its territory status's colour (Round 32,
+-- location.lua), else the feed's calm notice colour.
 local LOCATION_GAP, LOCATION_COLOR = 4, 0xf0e6c8
 
 local base, view -- set by M.install
@@ -152,14 +153,18 @@ local function exact(px, texture_px, frame)
 end
 
 -- The location line: a text element placed by its top centre at screen
--- pixel x/y; "" hides it. Like show(), only changes are sent.
-local function show_text(player, frame, element, text, x, y)
+-- pixel x/y in `color`; "" hides it. Like show(), only changes are sent.
+local function show_text(player, frame, element, text, color, x, y)
 	local changes = 0
 	if text ~= "" then
 		x, y = math.floor(x + 0.5), math.floor(y + 0.5)
 		if element.x ~= x or element.y ~= y then
 			player:hud_change(element.id, "position", {x = x / frame.width, y = y / frame.height})
 			element.x, element.y, changes = x, y, changes + sent(8)
+		end
+		if element.color ~= color then
+			player:hud_change(element.id, "number", color)
+			element.color, changes = color, changes + sent(4)
 		end
 	end
 	if element.text ~= text then
@@ -194,7 +199,7 @@ local function create(player, state)
 		text = "grug_map_heading_gold_00.png", z_index = Z.player}), x = 0, y = 0, size = 0}
 	hud.location = {id = player:hud_add({type = "text", position = {x = 0, y = 0},
 		alignment = {x = 0, y = 1}, text = "", number = LOCATION_COLOR,
-		z_index = Z.bezel}), text = "", x = 0, y = 0}
+		z_index = Z.bezel}), text = "", color = LOCATION_COLOR, x = 0, y = 0}
 	hud.all = {hud.background, hud.map, hud.bezel, hud.player, hud.location}
 	for _, list in ipairs({hud.markers, hud.party}) do
 		for _, element in ipairs(list) do hud.all[#hud.all + 1] = element end
@@ -284,9 +289,10 @@ local function update_window(player, state)
 	end
 	local frame = state.frame
 	local location = grug_map.location
-	return changes + show_text(player, frame, hud.location,
-		location and location.text_of(player) or "", frame.center_x,
-		frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
+	local text, color = "", nil
+	if location then text, color = location.text_of(player) end
+	return changes + show_text(player, frame, hud.location, text, color or LOCATION_COLOR,
+		frame.center_x, frame.center_y + frame.diameter / 2 + LOCATION_GAP * frame.hud)
 end
 
 -- `window` asks for the window and location check (every WINDOW seconds).

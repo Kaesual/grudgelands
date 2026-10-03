@@ -17,22 +17,37 @@ function R.new_record()
 	return {loc = false, button_until = 0, contact_at = 0}
 end
 
--- The location flag after one sample (rulings 2 and 3). `pvp_rule` and
--- `faction_here` are grug_zones' answers for the position: contested ground
--- (the 31-60 zones, the islands, land at y <= -501) and enemy territory flag;
--- own peaceful territory clears; deep ocean and dragon channels (nil rule)
--- keep the previous value.
-function R.location(previous, pvp_rule, faction_here, own_faction)
+-- The territory at a position for a player of `own_faction` (rulings 2 and
+-- 3; since Round 32 also the zone banner's status, grug_map location.lua).
+-- `pvp_rule` and `faction_here` are grug_zones' answers for the position:
+-- "contested" on contested ground (the 31-60 zones, the islands, land at
+-- y <= -501), "enemy" in the other faction's peaceful territory, "friendly"
+-- in the own; nil in deep ocean and the dragon channels (nil rule) and for a
+-- player without a faction.
+function R.territory(pvp_rule, faction_here, own_faction)
+	if not own_faction then
+		return nil
+	end
 	if pvp_rule == "contested" then
 		return "contested"
 	end
 	if pvp_rule == "peaceful" then
-		if faction_here and own_faction and faction_here ~= own_faction then
+		if faction_here and faction_here ~= own_faction then
 			return "enemy"
 		end
-		return false
+		return "friendly"
 	end
-	return previous
+	return nil
+end
+
+-- The location flag after one sample: contested ground and enemy territory
+-- flag, own peaceful territory clears, no territory keeps the previous value.
+function R.location(previous, pvp_rule, faction_here, own_faction)
+	local territory = R.territory(pvp_rule, faction_here, own_faction)
+	if territory == nil then
+		return previous
+	end
+	return territory ~= "friendly" and territory or false
 end
 
 function R.flagged(rec, now)
