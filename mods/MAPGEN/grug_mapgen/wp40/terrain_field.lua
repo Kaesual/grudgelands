@@ -913,7 +913,10 @@ return function(data)
 		end
 		for _, a in ipairs(opts.anchors or {}) do
 			local profile = profile_by_id[a.template_id]
-			local core = profile and profile.building_core_width
+			-- A dragon arena keeps the bowl of its former 32-node core
+			-- (`bowl_core_width`, Round 31 DA2): the bigger round floor is the
+			-- fitting's, and the island around it stays as untamed as before.
+			local core = profile and (profile.bowl_core_width or profile.building_core_width)
 			if core and a.slot_id ~= "start" and a.slot_id ~= "capital" then
 				local ax, az, half = a.position.x, a.position.z, core / 2
 				local lo, hi = math.huge, -math.huge

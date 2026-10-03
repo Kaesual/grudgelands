@@ -430,7 +430,11 @@ source.anchor_profiles = {
 	{id="mine",shape="gentle_grade",building_core_width=20,fitting_width=80,blend_width=128,force_native_dungeon=false},
 	{id="mirefolk",shape="shallow_marsh_island",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="clash",shape="battlefield_grade",building_core_width=16,fitting_width=64,blend_width=112,force_native_dungeon=false},
-	{id="dragon",shape="arena_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
+	-- A dragon arena (Round 31 DA2): a round floor of `arena_radius` nodes
+	-- around the anchor (the dragon's leash, height.lua and arena_writer.lua);
+	-- the building core is the square that holds it with its rim stones
+	-- (protection, vegetation); the calm bowl keeps the former 32-node size.
+	{id="dragon",shape="arena_terrace",building_core_width=82,arena_radius=40,bowl_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,force_native_dungeon=false},
 	-- Round 31 PvP POIs (r31_pvp_catalog.lua): each core is one node wider

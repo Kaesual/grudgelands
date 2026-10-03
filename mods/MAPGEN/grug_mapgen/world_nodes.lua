@@ -88,4 +88,77 @@ return function(engine, directory, nodes, gathering)
   selection_box={type="fixed",fixed={-7/16,-0.5,-7/16,7/16,-15/32,7/16}},
   drop="",
  })
+
+ -- Dragon arena hazards (Round 31 DA2, wp40/arena_layout.lua): written by the
+ -- arena writer, so they exist before the mapgen content is resolved. None
+ -- can be dug or blown up (the arena is protected as well). grug_mobs deals
+ -- their damage and breaks the ice (boss_dragons.lua); textures are tinted
+ -- default textures.
+ local arena=dofile(directory.."/wp40/arena_layout.lua").NODES
+ local REFREEZE=20
+ local function hazard(name, def)
+  def.groups=def.groups or {}
+  def.groups.not_in_creative_inventory=1
+  def.groups.grug_arena_hazard=1
+  def.diggable=false
+  def.is_ground_content=false
+  def.drop=""
+  def.on_blast=function() end
+  engine.register_node(name, def)
+ end
+ hazard(arena.thin_ice, {
+  description="Thin Ice",
+  drawtype="glasslike",
+  tiles={"default_ice.png^[colorize:#eafcff:120^[opacity:210"},
+  use_texture_alpha="blend",
+  paramtype="light",
+  sunlight_propagates=true,
+  sounds=default.node_sound_glass_defaults(),
+ })
+ -- Broken ice: a node to wade in (not a liquid, so it never flows), slowed
+ -- like water; it freezes back once nobody stands in it.
+ hazard(arena.ice_water, {
+  description="Ice Water",
+  drawtype="glasslike",
+  tiles={"default_water.png^[colorize:#bdf2ff:110^[opacity:170"},
+  use_texture_alpha="blend",
+  paramtype="light",
+  sunlight_propagates=true,
+  walkable=false,
+  pointable=false,
+  buildable_to=false,
+  move_resistance=3,
+  liquid_move_physics=true,
+  post_effect_color={a=90,r=150,g=220,b=245},
+  on_construct=function(pos) engine.get_node_timer(pos):start(REFREEZE) end,
+  on_timer=function(pos)
+   for _,object in ipairs(engine.get_objects_inside_radius(pos,1.2)) do
+    if object:is_player() then return true end
+   end
+   engine.set_node(pos,{name=arena.thin_ice})
+   return false
+  end,
+ })
+ hazard(arena.frost_stone, {
+  description="Frost Stone",
+  tiles={"default_stone.png^[colorize:#a9c7e3:150"},
+  sounds=default.node_sound_stone_defaults(),
+ })
+ -- An ember fissure: a glowing bed sunk a little below the floor that a
+ -- player steps into.
+ hazard(arena.ember, {
+  description="Ember Fissure",
+  drawtype="nodebox",
+  tiles={"default_lava.png^[colorize:#ff6a10:70"},
+  paramtype="light",
+  light_source=9,
+  walkable=false,
+  pointable=false,
+  node_box={type="fixed",fixed={-0.5,-0.5,-0.5,0.5,0.1,0.5}},
+ })
+ hazard(arena.basalt, {
+  description="Basalt",
+  tiles={"default_stone.png^[colorize:#2a2626:190"},
+  sounds=default.node_sound_stone_defaults(),
+ })
 end
