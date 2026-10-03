@@ -483,9 +483,9 @@ end
 -- What protects a position for every player whatever the faction (Round 25
 -- rulings 15-17, Round 28 ruling 1): "road", "bridge" (a road corridor, the
 -- road's half width plus 1 node beside it and +-5 around its surface),
--- "village", "camp" or "poi" (a settlement's building core, 10 below its
--- placement height to 10 above its highest node); nil elsewhere and before
--- installation.
+-- "village", "camp", "fortress" or "poi" (a settlement's building core, 10
+-- below its placement height to 10 above its highest node; a Round 31 PvP
+-- fortress or camp 10 nodes wider); nil elsewhere and before installation.
 function grug_core.world_feature_at(pos)
 	if not world_feature_kind_at or type(pos) ~= "table" or
 			type(pos.x) ~= "number" or type(pos.y) ~= "number" or
@@ -500,7 +500,7 @@ end
 -- of the first POI, village or camp core whose x/z rectangle, widened by
 -- `margin` nodes, meets the inclusive x/z rectangle; false when none does.
 -- x/z only (the cores' y extent does not matter to a claim), one scan of the
--- 88 cores. Fails closed (true) before installation. Towns, capitals and
+-- 106 cores. Fails closed (true) before installation. Towns, capitals and
 -- landmarks are not in it: they are the zone session's hard footprints
 -- (grug_zones.hard_protection_kind_at / territory_rule_at "hard_protected").
 function grug_core.world_feature_boxes_in(min_x, min_z, max_x, max_z, margin)

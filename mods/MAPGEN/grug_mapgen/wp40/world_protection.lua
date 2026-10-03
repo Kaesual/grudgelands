@@ -8,7 +8,8 @@
 --   local corridors = wp.road_corridors(road_module, road_layout_text)
 --   local boxes = wp.settlement_boxes(rows)
 --   local index = wp.new(index128, {corridors = corridors, boxes = boxes})
---   index.kind_at(x, y, z) -> "road", "bridge", "village", "camp", "poi" or nil
+--   index.kind_at(x, y, z) -> "road", "bridge", "village", "camp", "fortress",
+--       "poi" or nil
 --
 -- A CORRIDOR is a polyline with a surface profile: a road today, a waypoint
 -- path later. A column is inside it when its distance to the centreline (its
@@ -22,7 +23,8 @@
 -- band. Nothing is rasterised.
 -- A BOX is an inclusive x/y/z box: a settlement's building core from 10
 -- below its placement height to 10 above the highest node its blueprint
--- places.
+-- places; a Round 31 PvP fortress or camp's core grows by PVP_MARGIN nodes
+-- on every side (pvp-plan ruling 22).
 -- Both live in one 128-node candidate grid (`index128.compile_footprints`).
 -- A corridor registers its segments in runs of CHUNK consecutive segments,
 -- each run by the bounding box of its segments grown by the reach.
@@ -39,6 +41,9 @@ M.ROAD_VERTICAL = 5
 -- Ruling 16: 10 below the placement height, 10 above the highest node.
 M.BOX_BELOW = 10
 M.BOX_ABOVE = 10
+-- Round 31 pvp-plan ruling 22: a PvP fortress or camp is protected about
+-- 10 m beyond its blueprint's cells (x and z; y keeps the two above).
+M.PVP_MARGIN = 10
 -- Segments per registered run.
 M.CHUNK = 16
 -- The world's query bounds (`zones.lua` and `height.lua` MIN_X .. MAX_Z).
@@ -73,12 +78,20 @@ local function surface_node(r0, r1, u)
 end
 M.surface_node = surface_node
 
--- The hint category of a settlement roster slot (`r7_settlement.lua`).
+-- The hint category of a settlement roster slot (`r7_settlement.lua`; the
+-- PvP slots are `r31_pvp_catalog.lua`'s).
 function M.settlement_kind(slot)
 	if type(slot) ~= "string" then fail("settlement slot differs") end
 	if slot:match("^village_%d+$") then return "village" end
 	if slot:match("^bandit_%d+$") or slot == "mirefolk" then return "camp" end
+	if slot == "pvp_fortress" then return "fortress" end
+	if slot:match("^pvp_%a+_%a+$") then return "camp" end
 	return "poi"
+end
+
+-- The extra x/z margin of a slot's box (ruling 22 for the PvP POIs).
+function M.settlement_margin(slot)
+	return type(slot) == "string" and slot:match("^pvp_") and M.PVP_MARGIN or 0
 end
 
 -- Every road of a serialized layout (network roads, trails, capital streets
@@ -108,7 +121,8 @@ end
 -- Settlement building cores. `rows`: {key, slot, anchor = {x, y, z},
 -- bounds = {min = {x, y, z}, max = {x, y, z}}} with the blueprint's own cell
 -- bounds, anchor-relative (local y = 0 lands on the anchor's placement
--- height). Starts and capitals are skipped: their towns are hard-protected.
+-- height), a PvP POI's grown by its margin. Starts and capitals are skipped:
+-- their towns are hard-protected.
 function M.settlement_boxes(rows)
 	if type(rows) ~= "table" then fail("settlement rows differ") end
 	local out = {}
@@ -122,11 +136,12 @@ function M.settlement_boxes(rows)
 			end
 			local ax, ay, az = integer(a.x, "anchor x"), integer(a.y, "anchor y"),
 				integer(a.z, "anchor z")
+			local margin = M.settlement_margin(row.slot)
 			out[#out + 1] = {id = tostring(row.key), kind = M.settlement_kind(row.slot),
-				min_x = ax + integer(b.min.x, "bounds min x"),
-				max_x = ax + integer(b.max.x, "bounds max x"),
-				min_z = az + integer(b.min.z, "bounds min z"),
-				max_z = az + integer(b.max.z, "bounds max z"),
+				min_x = ax + integer(b.min.x, "bounds min x") - margin,
+				max_x = ax + integer(b.max.x, "bounds max x") + margin,
+				min_z = az + integer(b.min.z, "bounds min z") - margin,
+				max_z = az + integer(b.max.z, "bounds max z") + margin,
 				min_y = ay + min(0, integer(b.min.y, "bounds min y")) - M.BOX_BELOW,
 				max_y = ay + integer(b.max.y, "bounds max y") + M.BOX_ABOVE}
 		end
@@ -323,7 +338,7 @@ function M.new(index128, definition)
 	-- Claim placement (Round 25 ruling 27): the first settlement core whose
 	-- x/z rectangle, widened by `margin` nodes on every side, meets the
 	-- inclusive rectangle min_x..max_x, min_z..max_z; its kind and id, or nil.
-	-- x/z only, a scan of the settlement cores (88).
+	-- x/z only, a scan of the settlement cores (106).
 	local function boxes_in(min_x, min_z, max_x, max_z, margin)
 		margin = margin or 0
 		for index = 1, #box_list do

@@ -166,6 +166,7 @@ local PROTECTION_HINTS = {
 	bridge = "Bridge – protected",
 	village = "Village – protected",
 	camp = "Camp – protected",
+	fortress = "Fortress – protected",
 	poi = "Point of interest – protected",
 	accord_home = "Accord home territory – protected",
 	throng_home = "Throng home territory – protected",
