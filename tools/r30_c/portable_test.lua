@@ -166,6 +166,8 @@ grug_mobs = {
 	},
 	place_on_ground = function() end,
 	face_yaw = function(entity, yaw) entity._grug_face = yaw end,
+	-- grug_mobs/init.lua's recompose of a family's look (Round 31 A).
+	refresh_visual = function() end,
 }
 -- The quest shell claims in after_activate (start_villagers.lua); the guard
 -- claims on its first tick when it carries a key (guard.lua); a villager

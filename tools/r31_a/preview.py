@@ -15,7 +15,6 @@ tools/wp13/gen_character_visuals.py.
 """
 import base64
 import colorsys
-import glob
 import io
 import os
 import random
@@ -63,11 +62,8 @@ FEATURE_TITLE = {"human": "Bart", "dwarf": "Bart", "elf": "Ohren / Zeichnung",
 COUNTS = {"human": (4, 6, 4, 3, 3), "dwarf": (3, 5, 3, 3, 4),
           "elf": (3, 5, 4, 3, 3), "orc": (3, 4, 4, 3, 4),
           "troll": (3, 5, 4, 3, 3), "undead": (3, 4, 3, 3, 3)}
-HELMETS_SHOWN = [("Stoff", "grug_visuals_cloth_head_silk.png"),
-                 ("Leder", "grug_visuals_leather_head_scaled.png"),
-                 ("Metall", "grug_visuals_metal_head_steel.png")]
-GUARD_TIERS = ["bronze", "iron", "steel", "silversteel", "embersteel",
-               "abyssal_steel"]
+HELMETS_SHOWN = [("Stoff", "cloth", 5), ("Leder", "leather", 4),
+                 ("Metall", "metal", 3)]
 
 
 # --------------------------------------------------------------------------
@@ -235,22 +231,16 @@ def pic(img, scale, alt):
 # --------------------------------------------------------------------------
 # Requests to the Lua side.
 # --------------------------------------------------------------------------
-def helmet_string(name):
-    if "silversteel" in name and "metal" in name:
-        return name + "^[hsl:0:-90:5"
-    return name
-
-
 def ask(requests):
-    """requests: list of (label, race, look-or-"R"+seed, helmet, overlays)."""
+    """requests: list of (label, race, look, armour, royal); look is a list of
+    five indices, "S<seed>" or "K" (the king's look), armour "-" or
+    "<line>:<bracket>[:nohead]"."""
     lines = []
-    for label, race, look, helmet, overlays in requests:
-        if isinstance(look, str):
-            fields = ["R", look[1:], "-", "-", "-"]
-        else:
-            fields = [str(v) for v in look]
-        lines.append("\t".join([label, race] + fields + [
-            helmet or "-", ",".join(overlays) if overlays else "-"]))
+    for label, race, look, armour, royal in requests:
+        if not isinstance(look, str):
+            look = ",".join(str(v) for v in look)
+        lines.append("\t".join([label, race, look, armour or "-",
+                                 royal or "-"]))
     out = subprocess.run(["luajit", "tools/r31_a/look_strings.lua", "."],
                          input="\n".join(lines) + "\n", capture_output=True,
                          text=True, check=True).stdout
@@ -278,11 +268,16 @@ def colours():
     return table
 
 
+# The 18 helmets: three lines, six material tiers (grug_gear.MATERIALS).
+TIERS = {"cloth": ["patch", "woven", "heavy", "silkweave", "silk", "stormweave"],
+         "leather": ["light", "cured", "heavy", "scaled", "sleek", "nightscale"],
+         "metal": ["bronze", "iron", "steel", "silversteel", "embersteel",
+                   "abyssal_steel"]}
+
+
 def all_helmets():
-    names = sorted(os.path.basename(p) for p in
-                   glob.glob(os.path.join(TEX, "grug_visuals_*_head_*.png")))
-    order = {"cloth": 0, "leather": 1, "metal": 2}
-    return sorted(names, key=lambda n: (order[n.split("_")[2]], n))
+    return [(line, bracket + 1, TIERS[line][bracket])
+            for line in ("cloth", "leather", "metal") for bracket in range(6)]
 
 
 # --------------------------------------------------------------------------
@@ -290,10 +285,10 @@ def all_helmets():
 # --------------------------------------------------------------------------
 CSS = """
 :root { --bg: #f6f4ef; --fg: #24221e; --muted: #6b665c; --card: #ffffff;
-  --line: #ddd8cc; --doll: #4a4d55; --accent: #8a4b14; }
+  --line: #ddd8cc; --doll: #c9d3de; --accent: #8a4b14; }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #1b1c1f; --fg: #e8e5de; --muted: #a39d90; --card: #26282c;
-    --line: #3a3c42; --doll: #3a3d44; --accent: #e0a060; } }
+    --line: #3a3c42; --doll: #9aa5b3; --accent: #e0a060; } }
 body { background: var(--bg); color: var(--fg); margin: 0;
   font: 15px/1.45 system-ui, sans-serif; }
 main { max-width: 1100px; margin: 0 auto; padding: 16px; }
@@ -325,6 +320,30 @@ def cell(img, scale, title, sub="", swatch=None):
             % (pic(img, scale, title), title, sw, sub))
 
 
+def back_side(skin_img, bg):
+    """Back and right-side paper dolls of a skin, on a solid `bg`."""
+    out = Image.new("RGBA", (16 + 2 + 8, 32), bg)
+    out.alpha_composite(doll(skin_img, "back"), (0, 0))
+    out.alpha_composite(doll(skin_img, "side"), (18, 0))
+    return out
+
+
+def holes(skin_img):
+    """The same crops as a map: magenta where the head would be see-through."""
+    out = Image.new("RGBA", (17, 8), (0, 0, 0, 0))
+    for index, side in enumerate(("back", "right")):
+        part = Image.new("RGBA", (8, 8), (0, 0, 0, 0))
+        part.alpha_composite(crop(skin_img, HEAD[side], 8, 8))
+        part.alpha_composite(crop(skin_img, HAT[side], 8, 8))
+        px = part.load()
+        for j in range(8):
+            for i in range(8):
+                ok = px[i, j][3] == 255
+                out.putpixel((index * 9 + i, j),
+                             (60, 160, 80, 255) if ok else (255, 0, 255, 255))
+    return out
+
+
 def main():
     out_path = sys.argv[1]
     cols = colours()
@@ -342,83 +361,96 @@ def main():
                 look[cat] = k
                 reqs.append(("%s-%d-%d" % (race, cat, k), race, look, None,
                              None))
-        for name, helmet in HELMETS_SHOWN:
+        for name, line, bracket in HELMETS_SHOWN:
             reqs.append(("%s-helm-%s" % (race, name), race, [1, 1, 1, 1, 1],
-                         helmet, None))
+                         "%s:%d" % (line, bracket), None))
     window_races = [("human", [1, 3, 1, 1, 2]), ("dwarf", [2, 1, 1, 1, 1]),
                     ("troll", [1, 1, 1, 1, 3])]
     for race, look in window_races:
         reqs.append(("win-%s-plain" % race, race, look, None, None))
-        for helmet in helmets:
-            reqs.append(("win-%s-%s" % (race, helmet), race, look,
-                         helmet_string(helmet), None))
+        for line, bracket, tier in helmets:
+            reqs.append(("win-%s-%s-%d" % (race, line, bracket), race, look,
+                         "%s:%d" % (line, bracket), None))
     steps_look = [2, 1, 1, 1, 3]
-    steps_armor = ["grug_visuals_metal_chest_steel.png",
-                   "grug_visuals_metal_legs_steel.png",
-                   "grug_visuals_metal_feet_steel.png"]
-    reqs.append(("steps-nohelm", "dwarf", steps_look, None, steps_armor))
-    reqs.append(("steps-helm", "dwarf", steps_look,
-                 "grug_visuals_metal_head_steel.png", steps_armor))
+    reqs.append(("steps-nohelm", "dwarf", steps_look, "metal:3:nohead", None))
+    reqs.append(("steps-helm", "dwarf", steps_look, "metal:3", None))
     rng = random.Random(31)
     npc = {}
     for faction, races in FACTIONS:
         for race in races:
             for k in range(8):
                 label = "town-%s-%s-%d" % (faction, race, k)
-                reqs.append((label, race, "R%d" % rng.randrange(1, 10 ** 6),
-                             None, None))
-                npc.setdefault(("town", faction), []).append((label, race))
+                armour = None
+                if k >= 6:
+                    armour = "metal:%d" % rng.randrange(1, 7)
+                reqs.append((label, race, "S%d" % rng.randrange(1, 2 ** 31 - 1),
+                             armour, None))
+                npc.setdefault(("town", faction), []).append(
+                    (label, race, armour is not None))
         for k in range(24):
             race = races[rng.randrange(len(races))]
-            tier = GUARD_TIERS[rng.randrange(len(GUARD_TIERS))]
-            armor = ["grug_visuals_metal_%s_%s.png" % (slot, tier)
-                     for slot in ("chest", "legs", "feet")]
-            if tier == "silversteel":
-                armor = ["(%s^[hsl:0:-90:5)" % a for a in armor]
             label = "guard-%s-%d" % (faction, k)
-            reqs.append((label, race, "R%d" % rng.randrange(1, 10 ** 6),
-                         helmet_string("grug_visuals_metal_head_%s.png" % tier),
-                         armor))
-            npc.setdefault(("guard", faction), []).append((label, race))
+            reqs.append((label, race, "S%d" % rng.randrange(1, 2 ** 31 - 1),
+                         "metal:%d" % rng.randrange(1, 7), None))
+            npc.setdefault(("guard", faction), []).append((label, race, True))
+    for race in RACES:
+        reqs.append(("king-%s" % race, race, "K", None, "king"))
+        for k in range(3):
+            reqs.append(("royal-%s-%d" % (race, k), race,
+                         "S%d" % rng.randrange(1, 2 ** 31 - 1), None, "guard"))
+    for line, bracket, tier in helmets:
+        reqs.append(("check-%s-%d" % (line, bracket), "human", [1, 1, 1, 1, 1],
+                     "%s:%d" % (line, bracket), None))
     got = ask(reqs)
 
     def skin(label):
         return render(got[label][0])
 
-    # ---- header and decisions ------------------------------------------
-    add("<title>Charakter-Aussehen Vorschau</title>")
+    # ---- header -------------------------------------------------------------
+    add("<title>Charakter-Aussehen Stufe 2</title>")
     add("<style>%s</style>" % CSS)
     add("<main>")
-    add("<h1>Charakter-Aussehen: Ebenen und Optionen</h1>")
-    add('<p class="muted">Runde 31, Lane A, Stufe 1. Jedes Bild ist der echte '
-        'Textur-String aus <code>grug_visuals/looks.lua</code>, mit den '
-        'Engine-Modifikatoren nachgerechnet (vorne · hinten · rechte Seite). '
-        'Noch nichts davon ist im Spiel aktiv.</p>')
-    add('<h2>Zu entscheiden</h2><ol class="decide">')
-    add("<li><b>Hauttöne</b> je Volk (Abschnitt 3, Zeile „Hautton“): passen "
-        "Anzahl und Spannweite? Sind Orks grün genug, Trolle blaugrau genug?</li>")
-    add("<li><b>Haarfarben und Frisuren</b>: wirkt eine Option schwach oder zu "
-        "ähnlich (z. B. Ork-Irokese gegen Troll-Kamm, Zwerg „Voll“ gegen "
-        "„Zopf“)? Nennen Sie Volk + Kategorie + Nummer.</li>")
-    add("<li><b>Merkmal unteres Gesicht</b>: Mensch hat nur Stoppeln / Bart / "
-        "Schnurrbart, also <b>kein glattrasiertes Gesicht</b>. Soll eine "
-        "vierte Option „glattrasiert“ dazu?</li>")
-    add("<li><b>Elfen</b>: „Ohrform oder Gesichtszeichnung“ ist als 1 spitze "
-        "Ohren, 2 lange Ohren, 3 spitze Ohren + Zeichnung umgesetzt. Ohren "
-        "sind in jeder Option dabei. So lassen?</li>")
-    add("<li><b>Helm-Fenster</b> (Abschnitt 2): ein gemeinsames Fenster "
-        "(Augen bis Kinn) wird aus jedem Helm geschnitten; Bart, Hauer und "
-        "Elfenohren liegen über dem Helm, die Frisur verschwindet ganz. "
-        "Passt das, auch bei Helmen mit Nasenschutz (der wird im Fenster "
-        "abgeschnitten)?</li>")
-    add("<li><b>Zwergenbärte</b> reichen auf die Brust und liegen dort über der "
-        "Rüstung. Gewollt?</li>")
-    add("<li><b>NPC-Vielfalt</b> (Abschnitt 4): reicht die Zufallsmischung, "
-        "oder sollen Wachen z. B. keine auffälligen Optionen "
-        "(Kriegsbemalung, Nähte) würfeln?</li>")
+    add("<h1>Charakter-Aussehen: Stufe 2</h1>")
+    add('<p class="muted">Runde 31, Lane A. Die Ebenen aus Stufe 1 sind '
+        "freigegeben und jetzt im Spiel verdrahtet. Jedes Bild ist der echte "
+        "Textur-String aus <code>grug_visuals.compose</code>, mit den "
+        "Engine-Modifikatoren nachgerechnet (vorne · hinten · rechte "
+        "Seite).</p>")
+    add('<h2>Neu in Stufe 2</h2><ol class="decide">')
+    add("<li><b>Hinterkopf mit Helm</b> (Abschnitt 0): keine Lücke im Skin. "
+        "Das dunkle Kettengeflecht der Metallhelme sah auf dem dunklen "
+        "Vorschau-Hintergrund wie durchsichtig aus; der Hintergrund ist jetzt "
+        "hell.</li>")
+    add("<li><b>Erstellungsdialog</b> nach der Klassenwahl: ◀/▶ je Kategorie, "
+        "Zufall, drehende Vorschau, einmaliges Bestätigen.</li>")
+    add("<li><b>NPCs</b> würfeln ihr Aussehen einmal und behalten es; Wachen "
+        "haben das Volk ihrer Siedlung, Könige ein festes Aussehen mit Krone "
+        "und Wappenrock, Königswachen den Wappenrock (Abschnitt 4).</li>")
     add("</ol>")
 
-    # ---- 1. layer order ---------------------------------------------------
+    # ---- 0. the head check ----------------------------------------------------
+    add("<h2>0. Prüfung: Hinterkopf und Seite mit Helm</h2>")
+    add("<p>Mensch mit jedem Metall- und zwei Lederhelmen, von hinten und von "
+        "rechts. Links auf dem alten dunklen Vorschau-Hintergrund (vorher), "
+        "rechts auf dem neuen hellen (nachher), darunter die Karte jedes "
+        "Kopfpixels von hinten und rechts: grün = deckend, magenta = "
+        "durchsichtig. Kein Pixel ist durchsichtig: unter dem Helm liegt "
+        "immer die Haut. Was durchsichtig wirkte, ist das dunkle Kettengeflecht "
+        "unten am Helm (z. B. Stahl), fast so dunkel wie der alte "
+        "Hintergrund.</p>")
+    cells = []
+    for line, bracket, tier in helmets:
+        if line == "cloth" or (line == "leather" and bracket not in (1, 6)):
+            continue
+        img = skin("check-%s-%d" % (line, bracket))
+        stack = Image.new("RGBA", (26 * 2 + 3, 32 + 2 + 8), (0, 0, 0, 0))
+        stack.alpha_composite(back_side(img, (74, 77, 85, 255)), (0, 0))
+        stack.alpha_composite(back_side(img, (201, 211, 222, 255)), (29, 0))
+        stack.alpha_composite(holes(img), (0, 34))
+        cells.append(cell(stack, 4, "%s %s" % (line, tier)))
+    add('<div class="grid">%s</div>' % "".join(cells))
+
+    # ---- 1. layer order -------------------------------------------------------
     add("<h2>1. Ebenenreihenfolge</h2>")
     add("<p>Haut → Augen → Frisur → (Rüstung am Körper) → Helm mit Fenster → "
         "Merkmal. Beispiel Zwerg, Vollbart, Stahlrüstung.</p>")
@@ -439,34 +471,32 @@ def main():
             % ("Ohne Helm" if label == "steps-nohelm" else "Mit Helm",
                "".join(cells)))
 
-    # ---- 2. face window -----------------------------------------------------
-    add("<h2>2. Helm-Fenster an allen vorhandenen Helmen</h2>")
-    add("<p>Eine Maske für alle Helme (Stoff, Leder, Metall, je sechs Stufen; "
-        "kein Helm neu gemalt). Gesicht von vorn, links jeweils der Helm "
-        "heute (Frisur darunter, Merkmal verdeckt), rechts mit Fenster und "
-        "neuer Reihenfolge.</p>")
+    # ---- 2. face window ---------------------------------------------------------
+    add("<h2>2. Helm-Fenster an allen Helmen</h2>")
+    add("<p>Gesicht von vorn, links der Helm einfach darübergelegt (Frisur "
+        "darunter, Merkmal verdeckt), rechts wie das Spiel ihn jetzt "
+        "zusammensetzt.</p>")
     for race, look in window_races:
         fname = FEATURE_DE[race][look[4] - 1]
         add("<h3>%s, %s</h3>" % (RACE_DE[race], fname))
         cells = []
-        for helmet in helmets:
-            base = render(got["win-%s-%s" % (race, helmet)][0])
-            plain = load(helmet)
-            if "silversteel" in helmet and "metal" in helmet:
-                plain = render(helmet_string(helmet))
-            before = blit(render(got["win-%s-plain" % race][0]), plain)
+        for line, bracket, tier in helmets:
+            base = render(got["win-%s-%s-%d" % (race, line, bracket)][0])
+            helmet = "grug_visuals_%s_head_%s.png" % (line, tier)
+            if tier == "silversteel":
+                helmet += "^[hsl:0:-90:5"
+            before = blit(render(got["win-%s-plain" % race][0]),
+                          render(helmet))
             pair = Image.new("RGBA", (8 * 2 + 1, 8), (0, 0, 0, 0))
             pair.alpha_composite(face(before), (0, 0))
             pair.alpha_composite(face(base), (9, 0))
-            label = helmet[len("grug_visuals_"):-4].replace("_head", "")
-            cells.append(cell(pair, 7, label))
+            cells.append(cell(pair, 7, "%s %s" % (line, tier)))
         add('<div class="grid">%s</div>' % "".join(cells))
 
     # ---- 3. races -----------------------------------------------------------
     add("<h2>3. Optionen je Volk</h2>")
     add('<p class="muted">In jeder Zeile ändert sich nur eine Kategorie, alle '
-        "anderen stehen auf Option 1. Nummern zum Nennen: z. B. „Troll Frisur "
-        "3“.</p>")
+        "anderen stehen auf Option 1.</p>")
     cat_names = ["Hautton", "Haarfarbe", "Frisur", "Augen", None]
     for race in RACES:
         counts = COUNTS[race]
@@ -501,25 +531,37 @@ def main():
             add('<p class="muted">%s (%d)</p><div class="grid">%s</div>'
                 % (title, n, "".join(cells)))
         cells = [cell(triple(skin("%s-helm-%s" % (race, name))), 4,
-                      "mit Helm: " + name) for name, _ in HELMETS_SHOWN]
+                      "mit Helm: " + name) for name, _, _ in HELMETS_SHOWN]
         add('<p class="muted">Mit Helm (Option 1 überall)</p>'
             '<div class="grid">%s</div>' % "".join(cells))
 
-    # ---- 4. NPC grids -------------------------------------------------------
-    add("<h2>4. Zufällige NPC-Looks</h2>")
-    add("<p>Gewürfelt mit <code>grug_visuals.roll_look</code> (jede Kategorie "
-        "gleich wahrscheinlich). Stadt-NPCs bleiben im Volk ihrer Siedlung, "
-        "Festungswachen würfeln ein Volk ihrer Fraktion. Die Wachen tragen "
-        "Metall in zufälliger Stufe (nur zur Anschauung).</p>")
+    # ---- 4. NPCs --------------------------------------------------------------
+    add("<h2>4. NPCs</h2>")
+    add("<p>Jeder NPC würfelt einmal eine Zahl und behält sie; sein Aussehen "
+        "folgt daraus (<code>grug_visuals.npc_look</code>). Stadt-NPCs und "
+        "Wachen haben das Volk ihrer Siedlung (die letzten zwei je Volk hier "
+        "als Wachen in Metall), Festungswachen ein gewürfeltes Volk ihrer "
+        "Fraktion.</p>")
     for faction, races in FACTIONS:
-        for kind, title in (("town", "Stadt-NPCs (je 8 pro Volk)"),
+        for kind, title in (("town", "Siedlungen (je 8 pro Volk)"),
                             ("guard", "Festungswachen (gemischt)")):
             cells = []
-            for label, race in npc[(kind, faction)]:
+            for label, race, armed in npc[(kind, faction)]:
                 img = doll(skin(label), "front")
-                cells.append(cell(img, 3, RACE_DE[race]))
+                cells.append(cell(img, 3, RACE_DE[race] +
+                                  (" (Wache)" if armed and kind == "town"
+                                   else "")))
             add("<h3>%s: %s</h3><div class=\"grid\">%s</div>"
                 % (faction, title, "".join(cells)))
+    add("<h3>Könige und Königswachen</h3>")
+    cells = []
+    for race in RACES:
+        cells.append(cell(triple(skin("king-%s" % race)), 3,
+                          "König " + RACE_DE[race]))
+        for k in range(3):
+            cells.append(cell(doll(skin("royal-%s-%d" % (race, k)), "front"),
+                              3, "Wache"))
+    add('<div class="grid">%s</div>' % "".join(cells))
 
     # ---- 5. technical -------------------------------------------------------
     add("<h2>5. Technik</h2>")
