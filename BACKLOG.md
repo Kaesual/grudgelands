@@ -557,6 +557,25 @@ Map tab strip and the crosshair timing wait for the GUI test.
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).
 
+### Enchantment and item-level revision (user, 2026-10-03; a later round)
+
+The user plans to rework enchantments; item level should then make boss
+drops clearly stronger. How it works today (`grug_gear/init.lua`,
+`grug_quality/init.lua`):
+
+- Vendor and starter gear carries the bracket item level (3, 10, 20, 30, 40,
+  50). Dropped gear stores its own level per stack (`grug_ilvl`): the mob's
+  level capped at 60, the General 65, kings 70, dragons 75.
+- Item level scales weapon damage linearly (one-hand about 4 + 0.35 × ilvl:
+  22 at 50, 29 at 70), the armour value linearly per material, and the
+  weapon level requirement (`min(ilvl, 60)`).
+- Affix values come from only four item-level bands (≤ 15, ≤ 30, ≤ 45,
+  ≤ 75), so an item level 46 piece rolls the same range as a dragon drop;
+  bosses differ only through their better roll window.
+- Idea: scale affix values with item level (linear or finer bands) so king
+  and dragon drops carry noticeably stronger enchantments; part of the
+  enchantment rework, with a balance pass over all nine stats.
+
 ### Round 26 capital wall follow-ups
 
 **Noted 2026-09-30** after the playtest fix `1ff541e4` (wall–gatehouse gaps
