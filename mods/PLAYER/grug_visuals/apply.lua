@@ -474,10 +474,28 @@ function grug_visuals.settlement_race(key)
 	return settlement_races[key]
 end
 
-function grug_visuals.npc_race(entity, faction, random)
-	local race = grug_visuals.settlement_race(entity._grug_start)
-	if race and grug_visuals.RACES[race] ~= nil then
-		return race
+--
+-- THE CONTRACT for anybody who places faction NPCs (lane G's fortress and
+-- camp garrisons):
+--   grug_visuals.npc_race(entity, faction[, opts]) -> race id
+--     opts.mixed (or the entity field `_grug_mixed_race = true`, set in the
+--       staticdata handed to add_entity or before the NPC's first draw):
+--       ignore the settlement race and roll a race of `faction`, once --
+--       pvp-plan §6's fortress guards, who stand in a settlement registered
+--       under their side's seat race but are of any race of their faction;
+--     opts.random: math.random's contract, for a fixture.
+--   grug_visuals.npc_look(entity, race) -> look, rolled once.
+-- Both rolls are kept in plain entity fields (`_grug_visual_race`,
+-- `_grug_look_seed`), so they survive in staticdata.
+--
+function grug_visuals.npc_race(entity, faction, opts)
+	opts = opts or {}
+	local race
+	if not (opts.mixed or entity._grug_mixed_race) then
+		race = grug_visuals.settlement_race(entity._grug_start)
+		if race and grug_visuals.RACES[race] ~= nil then
+			return race
+		end
 	end
 	race = entity._grug_visual_race
 	if type(race) == "string" and grug_visuals.RACES[race] ~= nil then
@@ -487,7 +505,7 @@ function grug_visuals.npc_race(entity, faction, random)
 	if not races or #races == 0 then
 		return grug_visuals.FALLBACK_RACE
 	end
-	race = races[(random or math.random)(#races)]
+	race = races[(opts.random or math.random)(#races)]
 	entity._grug_visual_race = race
 	return race
 end

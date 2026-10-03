@@ -299,11 +299,23 @@ eq(grug_visuals.look_string(grug_visuals.npc_look(npc, "troll")),
 eq(grug_visuals.npc_race({_grug_start = "start_dwarf"}, "accord"), "dwarf", "settlement race")
 eq(grug_visuals.npc_race({_grug_start = "capital_troll"}, "throng"), "troll", "capital race")
 local outpost = {}
-local race = grug_visuals.npc_race(outpost, "throng", function(count) return count end)
+local race = grug_visuals.npc_race(outpost, "throng", {random = function(count) return count end})
 eq(race, "undead", "faction roll")
 eq(outpost._grug_visual_race, "undead", "faction roll kept")
-eq(grug_visuals.npc_race(outpost, "throng", function() error("rolled twice") end), "undead",
-	"faction roll not repeated")
+eq(grug_visuals.npc_race(outpost, "throng", {random = function() error("rolled twice") end}),
+	"undead", "faction roll not repeated")
+-- Mixed garrisons (pvp-plan §6): a fortress guard in a settlement registered
+-- under the seat race still rolls a race of its faction, by option or field.
+local fortress = {_grug_start = "capital_troll"}
+eq(grug_visuals.npc_race(fortress, "throng", {mixed = true,
+	random = function() return 1 end}), "orc", "mixed: faction roll inside a settlement")
+eq(grug_visuals.npc_race(fortress, "throng", {mixed = true,
+	random = function() error("rolled twice") end}), "orc", "mixed: roll kept")
+local flagged = {_grug_start = "capital_troll", _grug_mixed_race = true}
+eq(grug_visuals.npc_race(flagged, "throng", {random = function() return 3 end}), "undead",
+	"mixed by entity field")
+eq(grug_visuals.npc_race({_grug_start = "capital_troll", _grug_visual_race = "orc"}, "throng"),
+	"troll", "without mixed the settlement race wins over an early roll")
 
 ------------------------------------------------------------------------------
 -- D. Layer order.

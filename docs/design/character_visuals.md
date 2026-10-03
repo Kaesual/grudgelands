@@ -70,7 +70,11 @@ option in every category.
 **NPCs** roll their look once, the first time they are drawn, and keep it with
 the entity. Town and capital NPCs and their guards are of their settlement's
 race; any other faction NPC (an outpost or fortress guard, a Quartermaster
-outside a settlement) rolls one race of its faction and keeps it. Every option
+outside a settlement) rolls one race of its faction and keeps it. A
+garrison that is mixed by design — a PvP fortress's guards, registered under
+their side's seat race — rolls a race of its faction even inside that
+settlement: its placer marks it (`grug_visuals.npc_race` with
+`{mixed = true}`, or the entity field `_grug_mixed_race`). Every option
 may be rolled. Royal guards are of their king's race with their own rolled
 look and the royal tabard; a king has one fixed look with the tabard and a
 crown, in his people's royal colours.
