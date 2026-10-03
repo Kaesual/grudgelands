@@ -144,6 +144,8 @@ local nodes = {}
 local function nkey(p) return p.x .. "," .. p.y .. "," .. p.z end
 local function round(v) return math.floor(v + 0.5) end
 local players, globalsteps, defs = {}, {}, {}
+local leave_callbacks, die_callbacks, hp_callbacks = {}, {}, {}
+local heal_callbacks, absorb_callbacks = {}, {}
 local set_nodes = {}
 local Player = {}
 Player.__index = Player
@@ -153,6 +155,8 @@ function Player:set_hp(hp, reason) self.hp = hp; self.reasons[#self.reasons + 1]
 function Player:get_player_name() return self.name end
 function Player:is_player() return true end
 function Player:get_luaentity() return nil end
+function Player:add_velocity() end
+function Player:punch() end
 local function new_player(name, pos)
 	local p = setmetatable({name = name, pos = pos, hp = 5000, reasons = {}}, Player)
 	players[#players + 1] = p
@@ -165,8 +169,11 @@ core = {
 	end,
 	register_node = function() end,
 	register_globalstep = function(fn) globalsteps[#globalsteps + 1] = fn end,
-	register_on_leaveplayer = function() end,
+	register_on_leaveplayer = function(fn) leave_callbacks[#leave_callbacks + 1] = fn end,
+	register_on_dieplayer = function(fn) die_callbacks[#die_callbacks + 1] = fn end,
+	register_on_player_hpchange = function(fn) hp_callbacks[#hp_callbacks + 1] = fn end,
 	get_connected_players = function() return players end,
+	colorize = function(_, t) return t end,
 	is_player = function(o) return type(o) == "table" and getmetatable(o) == Player end,
 	get_objects_inside_radius = function(pos, r)
 		local out = {}
@@ -193,6 +200,9 @@ mobs = {has_priv = function() return false end}
 local statuses, slows, combat_marks = {}, {}, 0
 local disengaged = {}
 grug_core = {
+	register_on_effective_heal = function(fn) heal_callbacks[#heal_callbacks + 1] = fn end,
+	register_on_effective_absorb = function(fn) absorb_callbacks[#absorb_callbacks + 1] = fn end,
+	clear_status = function() end,
 	disengage_target = function(mob, player)
 		disengaged[#disengaged + 1] = player.name
 		if mob.temp.grug_engaged then mob.temp.grug_engaged[player.name] = nil end
@@ -349,6 +359,69 @@ do
 	check(whelp._grug_target_veto and whelp._grug_target_veto(whelp, away) == true and
 		whelp._grug_target_veto(whelp, high) == false, "C7 whelps veto outside players")
 	check(wdef.do_punch(whelp, away) == true, "C7 a whelp cannot be hit from outside")
+end
+
+-- C8 the dragon's wrath (user ruling): fight participants outside the arena
+do
+	local fights = grug_mobs.dragon_fights
+	local id = "dragon:wyrmglass"
+	dragon._grug_boss_id = id
+	dragon.temp.grug_dragon.engaged = false
+	grug_mobs.end_dragon_fight(id)
+	local tank = new_player("tank", {x = ARENA.x + 5, y = ARENA.y, z = ARENA.z})
+	local healer = new_player("medic", {x = ARENA.x + 50, y = ARENA.y, z = ARENA.z})
+	local bystander = new_player("bystander", {x = ARENA.x + 55, y = ARENA.y, z = ARENA.z})
+	players = {tank, healer, bystander}
+	dragon.object.pos = {x = ARENA.x, y = ARENA.y, z = ARENA.z}
+	dragon.attack = tank
+	tick(0.1)
+	check(fights[id] and fights[id].tank, "C8 the targeted tank takes part")
+	for _, fn in ipairs(heal_callbacks) do fn(healer, tank, 50) end
+	check(fights[id].medic ~= nil, "C8 a healer outside healing a participant takes part")
+	for _, fn in ipairs(heal_callbacks) do fn(bystander, bystander, 50) end
+	check(fights[id].bystander == nil, "C8 healing oneself outside the fight is not taking part")
+	local function second() for _ = 1, 10 do tick(0.1) end end
+	local hp0, thp0 = healer.hp, tank.hp
+	second()
+	check(healer.hp == hp0 - 500, "C8 the healer outside takes 500 per second")
+	local r = healer.reasons[#healer.reasons]
+	check(r.type == "set_hp" and r.custom_type == "grug_mobs:dragon_wrath",
+		"C8 set_hp with the wrath reason, never a punch")
+	check(tank.hp == thp0 and bystander.hp == 5000, "C8 no wrath inside or for bystanders")
+	healer.pos = {x = ARENA.x + 10, y = ARENA.y, z = ARENA.z}
+	local hp1 = healer.hp
+	second()
+	check(healer.hp == hp1, "C8 stepping back in stops the wrath")
+	healer.pos = {x = ARENA.x + 50, y = ARENA.y, z = ARENA.z}
+	second()
+	check(healer.hp == hp1 - 500, "C8 out again: the wrath again")
+	-- hit by the dragon: taking part
+	for _, fn in ipairs(hp_callbacks) do
+		fn(bystander, -100, {type = "punch", object = {get_luaentity = function() return dragon end}})
+	end
+	check(fights[id].bystander ~= nil, "C8 a player hit by the dragon takes part")
+	-- logout and death drop one player
+	for _, fn in ipairs(leave_callbacks) do fn(bystander) end
+	check(fights[id].bystander == nil, "C8 a logout drops the player")
+	-- everyone leaves: the reset ends the fight for all, no further wrath
+	tank.pos = {x = ARENA.x + 60, y = ARENA.y, z = ARENA.z}
+	local hp2, thp2 = healer.hp, tank.hp
+	local resets_before = resets
+	second()
+	check(resets == resets_before + 1 and fights[id] == nil, "C8 the reset clears every flag")
+	check(healer.hp == hp2 and tank.hp == thp2, "C8 no wrath in the resetting second")
+	second()
+	check(healer.hp == hp2 and tank.hp == thp2, "C8 no wrath after the reset")
+	-- a new fight, then the dragon dies: every flag ends
+	tank.pos = {x = ARENA.x + 5, y = ARENA.y, z = ARENA.z}
+	dragon.attack = tank
+	tick(0.1)
+	for _, fn in ipairs(heal_callbacks) do fn(healer, tank, 50) end
+	check(fights[id] and fights[id].medic, "C8 a new fight")
+	for _, fn in ipairs(die_callbacks) do fn(tank) end
+	check(fights[id].tank == nil and fights[id].medic, "C8 a participant's death drops only them")
+	def.on_die(dragon)
+	check(fights[id] == nil, "C8 the dragon's death clears every flag")
 end
 
 -- ---------------------------------------------------------------------------

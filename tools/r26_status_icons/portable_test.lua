@@ -143,7 +143,7 @@ local EXPECTED_KIND = {
 	talent_whitehot = "buff", talent_turn_aside = "buff",
 	talent_last_word = "buff", talent_untouchable = "buff",
 	poisoned = "debuff", slowed = "debuff", rooted = "debuff",
-	stunned = "debuff", scorched = "debuff",
+	stunned = "debuff", scorched = "debuff", dragon_wrath = "debuff",
 	in_combat = "neutral", pvp_tagged = "neutral", pvp_contested = "neutral",
 }
 
@@ -250,7 +250,7 @@ check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(
 	"poison chains stop on death")
 for _, expected in ipairs({"food", "elixir", "alchemy_swiftness",
 		"alchemy_cave", "mount", "scout_sprint", "sidestep", "renew", "shield",
-		"poisoned", "scorched", "stunned", "rooted", "slowed", "move_immune",
+		"poisoned", "scorched", "dragon_wrath", "stunned", "rooted", "slowed", "move_immune",
 		"talent_turn_aside", "talent_unbroken", "talent_ruination",
 		"talent_whitehot", "talent_last_word", "talent_untouchable"}) do
 	check(set_ids[expected] ~= nil, "status " .. expected .. " is set somewhere")

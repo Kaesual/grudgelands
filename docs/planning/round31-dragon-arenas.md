@@ -71,6 +71,17 @@ relief is already −53..+21 nodes on the checked seeds.
   attempt. Stepping out and back in only gives the dragon its health back.
   Dragons now carry `_grug_no_leash` (no drag or contact leash), and the
   evade run skips the dragons (they fly home). Its flight stays 4 nodes inside the edge.
+- **The dragon's wrath** (user ruling 2026-10-03, the outside-healer
+  question): fight participants are kept per dragon (a small table keyed by
+  boss id). Taking part = being targeted or hit by the dragon, its whelps or
+  their breath (an hp-change hook), damaging them from inside, or an
+  effective heal or shield on a participant (the `register_on_effective_heal`
+  / `_absorb` hooks). The 1 s arena tick deals 500 per second through
+  `set_hp` to every participant outside the arena (a chat warning on
+  leaving, the "Dragon's Wrath" status, its own death message). The reset
+  and the dragon's death end every flag at once; a participant's death or
+  logout drops only them; a dragon that activates without a fight state ends
+  any stale fight.
 - The Round 30 pathing rule is unchanged (dragons never give up, they only
   wait); the arena rule is what ends a fight.
 
@@ -98,14 +109,16 @@ dragon's breath patches stay possible there, as before.
 
 ### 0.6 Checks
 
-- `tools/r31_da2/portable_test.lua` (7423 checks): layout, rules, and the
+- `tools/r31_da2/portable_test.lua` (7439 checks): layout, rules, and the
   real `boss_dragons.lua` on a fake engine (high player targeted, outside
   player vetoed and harmless, one reset when the last hostile leaves with
   full health and cleared enrage, the flight home and landing, a clean
   re-pull, 250/350 per second through set_hp, the slow, ice breaking, the
   threat prune, the whelps' veto; the real `combat.lua` refusing threat,
   heal threat, taunt and a forced switch to a vetoed player; the evade skip
-  limited to dragons).
+  limited to dragons; the wrath: a healer outside joins and takes 500 per
+  second, stepping in stops it, a hit joins, logout and death drop one
+  player, the reset and the dragon's death clear all).
 - `tools/run_fixtures.sh`: all pass (`tools/r24_density_xp/roster.lua`'s
   stub now maps `grug_mapgen` for the arena layout file).
 - Engine: headless boots on seeds 42 and 1234 (about 1 min each) with a
@@ -121,6 +134,9 @@ dragon's breath patches stay possible there, as before.
 3. Stand on a frost terrace or high ground inside: the dragon still attacks.
 4. Wyrmglass: stand still on thin ice (breaks, ice water hurts and slows,
    refreezes); Stormscale: step into an ember fissure (350/s), jump a trunk.
+5. During a fight, step outside the rim (or heal the group from outside):
+   warning, "Dragon's Wrath" status, 500 per second until you return; it
+   stops for everyone when the dragon dies or resets.
 
 # Proposal (lane DA, superseded by §0)
 

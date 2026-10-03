@@ -242,7 +242,8 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   ember fissures **350** damage per second, a fixed amount (not a pool
   share) dealt as node damage once a second; ice water also slows. Armor
   never reduces it and it is never PvP contact; the absorb shield soaks it
-  like dragon scorch.
+  like dragon scorch. The dragon's wrath (500 per second to a fight
+  participant outside the arena, `world.md` §4b) takes the same path.
 - Fall damage is the pool conversion in §2 above
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is

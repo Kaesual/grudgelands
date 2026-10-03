@@ -39,6 +39,105 @@ local function arena_of(self)
 	return self and arena_by_id(self._grug_boss_id or self._grug_boss_summon)
 end
 
+-- Fight participants (user ruling 2026-10-03): per dragon (boss id) the
+-- names of the players taking part in the running fight: who damages the
+-- dragon or its whelps, who is targeted or hit by them, and who heals or
+-- shields a participant. While the fight runs, a participant outside the
+-- arena takes the dragon's wrath (WRATH_DPS, the 1 s arena tick). The fight
+-- and every flag end together: the dragon's death or its reset. A
+-- participant's death or logout drops only that player.
+local fights = {}
+grug_mobs.dragon_fights = fights
+local function join_fight(boss_id, player)
+	if not boss_id or not core.is_player(player) or not arena_by_id(boss_id) then return end
+	local fight = fights[boss_id]
+	if not fight then fight = {}; fights[boss_id] = fight end
+	fight[player:get_player_name()] = fight[player:get_player_name()] or {warned = false}
+end
+local function end_fight(boss_id)
+	local fight = fights[boss_id]
+	fights[boss_id] = nil
+	if not fight then return end
+	for name in pairs(fight) do
+		local player = core.get_player_by_name(name)
+		if player and grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+	end
+end
+grug_mobs.end_dragon_fight = end_fight
+local function boss_of_entity(ent)
+	if not ent then return nil end
+	if ent._grug_boss_id or ent._grug_boss_summon then
+		return ent._grug_boss_id or ent._grug_boss_summon
+	end
+	local source = ent._grug_source
+	local owner = source and source.get_luaentity and source:get_luaentity()
+	return owner and (owner._grug_boss_id or owner._grug_boss_summon) or nil
+end
+-- The boss id of a fight the player takes part in, or nil.
+local function fight_of(player)
+	local name = core.is_player(player) and player:get_player_name()
+	if not name then return nil end
+	for boss_id, fight in pairs(fights) do
+		if fight[name] then return boss_id end
+	end
+	return nil
+end
+-- Hit by the dragon, a whelp or their breath: taking part.
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change < 0 and reason and reason.type == "punch" and reason.object and
+			reason.object.get_luaentity then
+		join_fight(boss_of_entity(reason.object:get_luaentity()), player)
+	end
+end, false)
+-- Healing or shielding a participant: taking part.
+local function supported(source, target)
+	local boss_id = fight_of(target)
+	if boss_id and source ~= target then join_fight(boss_id, source) end
+end
+grug_core.register_on_effective_heal(function(healer, target) supported(healer, target) end)
+grug_core.register_on_effective_absorb(function(source, target) supported(source, target) end)
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	for _, fight in pairs(fights) do fight[name] = nil end
+end)
+core.register_on_dieplayer(function(player)
+	local name = player:get_player_name()
+	for _, fight in pairs(fights) do fight[name] = nil end
+	if grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+end)
+
+-- The 1 s wrath tick of one dragon: participants outside the arena take
+-- WRATH_DPS through set_hp (armour never reduces it, never PvP contact).
+local function wrath_tick(boss_id, arena)
+	local fight = fights[boss_id]
+	if not fight then return end
+	for name, entry in pairs(fight) do
+		local player = core.get_player_by_name(name)
+		if not player or player:get_hp() <= 0 then
+			fight[name] = nil
+		elseif arena_rules.inside(arena, player:get_pos()) then
+			entry.warned = false
+			if grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+		else
+			if not entry.warned then
+				entry.warned = true
+				core.chat_send_player(name, core.colorize and core.colorize("#ff5a3c",
+					"You left the dragon's arena during the fight: its wrath burns you until " ..
+					"you return (" .. arena_rules.WRATH_DPS .. " damage per second).") or
+					"You left the dragon's arena during the fight.")
+			end
+			grug_core.set_status(player, "dragon_wrath", {
+				label = "Dragon's Wrath: return to the arena",
+				duration = 1.5,
+			})
+			grug_core.mark_in_combat(player)
+			player:set_hp(math.max(0, player:get_hp() - arena_rules.WRATH_DPS), {
+				type = "set_hp", custom_type = "grug_mobs:dragon_wrath",
+			})
+		end
+	end
+end
+
 local RIME = "grug_mobs:dragon_rime"
 local SCORCH = "grug_mobs:dragon_scorch"
 local EFFECT_DURATION = {rime = 8, scorch = 6}
@@ -772,6 +871,7 @@ end
 -- (threat, loot tag, the boss attempt with its whelps and enrage, full
 -- health), then the flight back to the spawn point.
 local function reset_fight(self, state)
+	end_fight(self._grug_boss_id)
 	grug_mobs.leash_reset(self)
 	state.engaged = false
 	state.action = nil
@@ -786,6 +886,8 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		state = {mode = self.fly and "air" or "ground", primary = 2,
 			gust = TUNING.gust_cooldown}
 		self.temp.grug_dragon = state
+		-- A dragon (re)activating starts without a fight: a stale one ends.
+		end_fight(self._grug_boss_id)
 	end
 	local arena = arena_of(self)
 	self._grug_chase_range = arena and 2 * arena.radius + 4 or TUNING.leash + 4
@@ -802,6 +904,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 				reset_fight(self, state)
 				return false
 			end
+			if state.engaged then wrath_tick(self._grug_boss_id, arena) end
 		end
 	end
 	if self._grug_enraged then self.object:set_properties({glow = 8}) end
@@ -840,6 +943,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 	state.perch = 0
 	state.rest_destination = nil
 	state.engaged = true
+	join_fight(self._grug_boss_id, target)
 	-- Its flight stays inside the arena (4 nodes from the edge).
 	local function above_target()
 		local above = {x = target_pos.x, y = target_pos.y + 6, z = target_pos.z}
@@ -941,6 +1045,7 @@ local function arena_punch(self, hitter)
 	if not arena_rules.inside(arena, hitter:get_pos()) then return true end
 	local state = self.temp and self.temp.grug_dragon
 	if state then state.engaged = true end
+	join_fight(self._grug_boss_id or self._grug_boss_summon, hitter)
 end
 
 local function whelp_def(opts)
@@ -999,6 +1104,7 @@ local function dragon_def(id, opts, callbacks)
 			return dragon_tick(self, dtime, moveresult, opts)
 		end,
 		on_die = function(self)
+			end_fight("dragon:" .. id)
 			remove_whelps(self)
 			callbacks.settle("dragon:" .. id, self, nil)
 			callbacks.storage:set_string("boss:dragon:" .. id .. ":alive", "")

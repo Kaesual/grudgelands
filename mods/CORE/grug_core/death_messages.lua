@@ -19,6 +19,11 @@ local TEMPLATES = {
 		"%s went through the ice.",
 		"%s found the dragon's water too cold.",
 	},
+	-- leaving a dragon's arena during its fight (grug_mobs boss_dragons.lua)
+	wrath = {
+		"%s fled the dragon's wrath and burned for it.",
+		"%s left the dragon's fight and paid for it.",
+	},
 	suffocation = {
 		"%s suffocated where no one should fit.",
 		"%s was suffocated by solid ground.",
@@ -112,6 +117,8 @@ function grug_core.death_message(player_name, reason)
 		category = "suffocation"
 	elseif reason and reason.custom_type == "grug_mobs:ice_water" then
 		category = "cold"
+	elseif reason and reason.custom_type == "grug_mobs:dragon_wrath" then
+		category = "wrath"
 	elseif reason and reason.custom_type == grug_core.LOGOUT_DEATH_CUSTOM_TYPE then
 		category = "fled"
 	elseif reason_type == "fall" then

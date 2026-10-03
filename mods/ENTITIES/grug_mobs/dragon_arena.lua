@@ -19,6 +19,9 @@ M.BELOW, M.ABOVE = 10, 24
 M.ICE_WATER_DPS, M.EMBER_DPS = 250, 350
 M.ICE_SLOW_FACTOR, M.ICE_SLOW_TIME = 0.6, 0.5
 M.ICE_BREAK_TIME = 1.5
+-- The dragon's wrath (user ruling 2026-10-03): damage per second to a fight
+-- participant who stands outside the arena while the fight runs.
+M.WRATH_DPS = 500
 
 -- `arena` = {x, y, z, radius}: the spawn point (y the floor + 1) and radius.
 function M.inside(arena, pos)
