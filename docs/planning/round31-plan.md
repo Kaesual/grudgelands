@@ -295,6 +295,9 @@ need no GUI check.
     protected from enemy players like the surface (no mining, no combat),
     own-faction players are flagged by depth only from T4, and from T4 down
     every player may dig and place blocks.
+16. **Camp captains and camp quests** (user): a camp captain is not an
+    elite; it gets the start-zone bandit leaders' mechanic (1.15× size, 1.5×
+    HP) on a normal-tier body, and the camp raid quests are solo quests.
 
 ## 7. Orchestration notes (for the coordinator)
 
