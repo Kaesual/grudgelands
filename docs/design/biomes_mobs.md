@@ -392,7 +392,8 @@ no distance give-up, no soft de-aggro), while camp members, guards, rares and
 other bound actors keep the 25 m soft de-aggro, the 45 m give-up and their
 leash. Every one of them gives up a target it cannot reach after three
 failed path searches (Round 30, `combat_stats.md` "Unreachable targets are
-given up"; the dragons only wait, the kings only drop the target). Idle, a
+given up"; the dragons only wait and their arena edge ends the fight, the
+kings only drop the target). Idle, a
 free-roaming mob wanders within 32 nodes of its spawn point
 and roams at a calm walk (Round 24); an idle aggressive one also probes
 every 4–5 seconds eight points on a ring at its view range and walks away
@@ -717,7 +718,7 @@ spawn row or palette membership.
 
 | Boss family | Clock | Location / level | Encounter | Visual source |
 |-------------|-------|------------------|-----------|---------------|
-| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three-perch arena; 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
+| Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three perches in a round arena of radius 40 that is its leash (`world.md` §4b); 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
 

@@ -632,8 +632,12 @@ replaced; git history before this rewrite records that model.
   x/z, and its height comes from the terrain: the lower median of the natural
   ground under its building core (village and home bandit camp 24; frontier
   bandit camp (`bandit_frontier`, user decision 2026-09-29, WP audit E1),
-  outpost, Mirefolk camp and clash site 16; mine 20; dragon and apex mine 32; rare
-  route 12 nodes), at least one node above water. Only that core is flat.
+  outpost, Mirefolk camp and clash site 16; mine 20; apex mine 32; dragon arena
+  82, of which its round floor of radius 40 is sampled; rare
+  route 12 nodes), at least one node above water. Only that core is flat (a
+  dragon arena's round floor swells gently by up to 2 nodes and its edge
+  wanders 0–3 nodes beyond the radius, `world.md` §4b; its calm bowl keeps
+  the former 32-node size, so the island around it is unchanged).
   A short collar follows the core's outline with round corners and a
   noise-varied width and returns to natural terrain: about 6 nodes on level
   ground, longer where the core's edge stands higher or lower than the

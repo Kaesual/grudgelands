@@ -238,6 +238,11 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   deals the per-second tick instead, under the engine's own conditions (head
   node with `drowning > 0`, zero breath, not immortal, the `drowning` player
   flag on). Lava also has `drowning`, so a submerged head in lava takes both.
+- **Dragon arena hazards** (Round 31, `world.md` §4b): ice water **250** and
+  ember fissures **350** damage per second, a fixed amount (not a pool
+  share) dealt as node damage once a second; ice water also slows. Armor
+  never reduces it and it is never PvP contact; the absorb shield soaks it
+  like dragon scorch.
 - Fall damage is the pool conversion in §2 above
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
@@ -865,8 +870,8 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   are still walkable is not run and never counts. Guards and rares follow the
   rule; the kings, like the bespoke no-leash actors (Kraken, royal guards),
   only drop the target (no heal, no royal encounter reset); the dragons and
-  their whelps never give up and only wait, since a reset would restart the
-  boss attempt with a full heal. The patrol path nudge shares the budget and
+  their whelps never give up and only wait: their arena edge ends the fight
+  instead (`world.md` §4b, Round 31). The patrol path nudge shares the budget and
   the waits (1, 2, 4, 8 s, then 8 s) but never gives anything up
   (`mobs/grug_obstacle.lua`, `mobs/api.lua` `smart_mobs`,
   `grug_mobs/aggro.lua` `give_up_target`). The contact run retains its existing `at_cliff` guard
