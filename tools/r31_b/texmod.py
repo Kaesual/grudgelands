@@ -17,9 +17,20 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[2]
 TEXTURE_DIRS = sorted(ROOT.glob("mods/*/*/textures"))
 _files = {}
+_variant = {}
+
+
+def use_variant(files):
+    """Render later strings with these in-memory images (name -> RGBA array)
+    in place of the shipped files of the same name: the preview's mask
+    variants. None or {} returns to the shipped files."""
+    _variant.clear()
+    _variant.update(files or {})
 
 
 def load_file(name):
+    if name in _variant:
+        return _variant[name].copy()
     if name not in _files:
         for directory in TEXTURE_DIRS:
             path = directory / name

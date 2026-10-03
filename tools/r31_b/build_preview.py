@@ -6,7 +6,11 @@ Every gear picture is rendered from the texture strings that
 grug_gear.enchant_image builds (tools/r31_b/portable_test.lua in `emit`
 mode), through texmod.py's model of the engine's texture modifiers.
 
-    python3 tools/r31_b/build_preview.py OUT.html
+    python3 tools/r31_b/build_preview.py OUT.html [OLD_REV]
+
+Design round 2 (round31-plan.md §6 item 7): the page compares the shipped
+masks at 50 % with the round-1 masks at full strength (read from git at
+OLD_REV, if given) and with a smaller variant generated in memory.
 """
 import base64
 import io
@@ -21,6 +25,7 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import colorsci  # noqa: E402
+import gen_enchant_masks  # noqa: E402
 import texmod  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -72,15 +77,13 @@ def all_pairs():
     pairs = {("-", "-")}
     for pool in POOLS.values():
         pairs.update(sample_pairs(pool))
-    pairs.update(DOLL_PAIRS)
-    pairs.update(INTENSITY_PAIRS)
+    pairs.update(d[3] for d in DOLLS)
+    pairs.update(c[1] for c in COMPARE)
     pairs.update((s, "-") for s in STATS)
     pairs.update(("-", s) for s in STATS)
     return sorted(pairs)
 
 
-DOLL_PAIRS = [("str", "armor_rating"), ("dex", "dodge_percent"), ("int", "max_mana_percent")]
-INTENSITY_PAIRS = [("str", "crit_percent"), ("dodge_percent", "max_mana_percent")]
 
 
 def emit(opacity, pairs):
@@ -192,49 +195,182 @@ code{font-size:.85em;word-break:break-all}
 """
 
 
+def old_masks(rev):
+    """The round-1 masks, read from git at `rev`."""
+    out = {}
+    for directory, stem, _ in gen_enchant_masks.sources():
+        path = (directory / (stem + "_ench.png")).relative_to(ROOT)
+        data = subprocess.run(["git", "-C", str(ROOT), "show", "%s:%s" % (rev, path)],
+                              check=True, capture_output=True).stdout
+        out[stem + "_ench.png"] = np.array(Image.open(io.BytesIO(data)).convert("RGBA"),
+                                           dtype=np.int64)
+    return out
+
+
+def scaled_masks(scale):
+    """Masks of the smaller variant, generated in memory."""
+    out = {}
+    for directory, stem, kind in gen_enchant_masks.sources():
+        result = gen_enchant_masks.split(directory, stem, kind, scale)
+        mask = gen_enchant_masks.render(directory, stem, result)
+        out[stem + "_ench.png"] = np.array(mask.convert("RGBA"), dtype=np.int64)
+    return out
+
+
+SMALLER = 0.6
+DOLLS = [("human", "metal", 6, ("str", "armor_rating"), "Mensch, Abyssstahl: Heavy … of the Tortoise"),
+         ("orc", "metal", 3, ("max_hp_percent", "str"), "Ork, Stahl: Stout … of the Bear"),
+         ("elf", "leather", 4, ("dex", "dodge_percent"), "Elf, Schuppenleder: Quick … of the Cat"),
+         ("dwarf", "cloth", 5, ("int", "max_mana_percent"), "Zwerg, Seide: Clever … of the Raven"),
+         ("troll", "leather", 2, ("crit_percent", "max_hp_percent"), "Troll, gegerbtes Leder: Lucky … of the Ox"),
+         ("undead", "cloth", 3, ("max_mana_percent", "crit_percent"), "Untoter, schwerer Stoff: Attuned … of the Eagle")]
+COMPARE = [("grug_gear:chest_metal_iron", ("str", "armor_rating")),
+           ("grug_gear:legs_metal_iron", ("str", "armor_rating")),
+           ("grug_gear:chest_metal_steel", ("max_hp_percent", "str")),
+           ("grug_gear:legs_metal_steel", ("max_hp_percent", "str")),
+           ("grug_gear:chest_metal_abyssal_steel", ("armor_rating", "max_hp_percent")),
+           ("grug_gear:legs_metal_abyssal_steel", ("armor_rating", "max_hp_percent")),
+           ("grug_gear:chest_leather_cured", ("dex", "dodge_percent")),
+           ("grug_gear:legs_leather_cured", ("dex", "dodge_percent")),
+           ("grug_gear:chest_leather_scaled", ("crit_percent", "max_mana_percent")),
+           ("grug_gear:legs_leather_scaled", ("crit_percent", "max_mana_percent")),
+           ("grug_gear:chest_cloth_heavy", ("int", "max_mana_percent")),
+           ("grug_gear:legs_cloth_heavy", ("int", "max_mana_percent")),
+           ("grug_gear:chest_cloth_silk", ("max_mana_percent", "crit_percent")),
+           ("grug_gear:legs_cloth_silk", ("max_mana_percent", "crit_percent")),
+           ("grug_gear:sword_steel", ("str", "crit_percent")),
+           ("grug_gear:greataxe_iron", ("attack_speed_percent", "max_hp_percent")),
+           ("grug_gear:staff_bronze", ("int", "max_mana_percent")),
+           ("grug_gear:bow_iron", ("dex", "attack_speed_percent")),
+           ("grug_gear:shield_bronze", ("str", "armor_rating")),
+           ("grug_gear:dagger_embersteel", ("dex", "crit_percent"))]
+
+
+def doll_pair(race, line, bracket, pair, worn):
+    """Front and back of the plain set and of the enchanted set."""
+    plain, _ = body(race, line, bracket, ("-", "-"), worn)
+    enchanted, _ = body(race, line, bracket, pair, worn)
+    return doll(plain), doll(enchanted)
+
+
+def strip(images, gap=6):
+    width = sum(i.width for i in images) + gap * (len(images) - 1)
+    out = Image.new("RGBA", (width, max(i.height for i in images)), (0, 0, 0, 0))
+    x = 0
+    for image in images:
+        out.alpha_composite(image, (x, 0))
+        x += image.width + gap
+    return out
+
+
 def main():
     out_path = Path(sys.argv[1])
+    old_rev = sys.argv[2] if len(sys.argv) > 2 else None
     pairs = all_pairs()
-    items, worn = emit(255, pairs)
-    html = ["<title>Verzauberungsfarben Vorschau</title>", "<style>" + CSS + "</style>"]
+    opacity = int(re.search(r"ENCHANT_OPACITY = (\d+)", COLORS_LUA).group(1))
+    items, worn = emit(opacity, pairs)
+    variants = [("N", "Neu (Vorschlag)", {}, items, worn),
+                ("K", "Kleiner", scaled_masks(SMALLER), items, worn)]
+    if old_rev:
+        old_items, old_worn = emit(255, pairs)
+        variants.insert(0, ("A", "Alt (Runde 1, volle Farbe)", old_masks(old_rev),
+                            old_items, old_worn))
+
+    def render_in(variant, text):
+        texmod.use_variant(variant[2])
+        try:
+            return texmod.render(text)
+        finally:
+            texmod.use_variant(None)
+
+    html = ["<title>Verzauberungsfarben Runde 2</title>", "<style>" + CSS + "</style>"]
     add = html.append
-    add("<h1>Verzauberungsfarben an Waffen und Rüstung</h1>")
-    add("<p class='muted'>Runde 31, Lane B, Stufe 1: nur Bilder, noch nichts im Spiel. "
-        "Alle Bilder sind mit genau den Textur-Modifikatoren gerendert, die das Spiel "
-        "später benutzt.</p>")
+    add("<h1>Verzauberungsfarben, zweite Runde</h1>")
+    add("<p class='muted'>Runde 31, Lane B, Stufe 1, zweiter Entwurf nach deiner Rückmeldung "
+        "(„zu bunt gepixelt“): kleinere, ruhige Akzente statt gefärbter Flächen, 50 % Stärke. "
+        "Noch nichts im Spiel; alle Bilder mit genau den Textur-Modifikatoren gerendert, die "
+        "das Spiel später benutzt.</p>")
 
-    # --- decisions -----------------------------------------------------------------
+    # --- decisions -------------------------------------------------------------------
     add("<div class='card decide'><h2 style='margin-top:0'>Was du entscheiden sollst</h2><ol>"
-        "<li><b>Die neun Farben</b> (Abschnitt A): passt jede, oder welche Nummer (1–9) "
-        "soll anders werden? Besonders <b>9 Weiß</b> (Rüstungswert): auf hellem Stahl kaum "
-        "zu sehen.</li>"
-        "<li><b>Stärke</b> (Abschnitt C): <b>I</b> volle Farbe (Vorschlag, alle Bilder), "
-        "<b>II</b> 75 % oder <b>III</b> 50 % (Material scheint durch).</li>"
-        "<li><b>Welche Pixel</b>: Präfix färbt die <b>Glanzlichter</b> (Gruppe A), Suffix "
-        "die <b>Beschläge</b> (Griff, Riemen, Saum; Gruppe B). Passt das, oder bei welchen "
-        "Gegenständen soll es anders sein?</li>"
-        "<li><b>Schwache Gegenstände</b> (Abschnitt F): Stoffkapuze <i>Woven Hood</i> "
-        "(nur 16 Pixel), die dünnen Stoffschuhe, Sturmgewebe-Brust am Körper (nur ein "
-        "Medaillon). Reicht das, oder brauchen sie neue Grafik (eigene Runde)?</li>"
-        "<li><b>Körper</b> (Abschnitt D): Farben am getragenen Set so in Ordnung?</li>"
+        "<li><b>Variante</b> (Abschnitte 1 und 2): <b>N</b> „Neu“ (Vorschlag) oder "
+        "<b>K</b> „Kleiner“? <b>A</b> „Alt“ steht nur zum Vergleich daneben.</li>"
+        "<li><b>Gegenstände</b>, bei denen der Akzent noch stört oder zu schwach ist: "
+        "bitte mit Nummer aus Abschnitt 5 (E1–E20) nennen.</li>"
+        "<li><b>Die neun Farben</b> (Abschnitt 3, unverändert): bleiben sie so?</li>"
+        "<li><b>Schwache Grafiken</b> (Abschnitt 6): reicht es, oder eine eigene Kunstrunde?</li>"
         "</ol></div>")
+    add("<div class='card'><b>Was sich geändert hat:</b> Eine Gruppe ist jetzt ein schmaler "
+        "Streifen: nur zusammenhängende Läufe aus mindestens zwei Pixeln, eine gefärbte Fläche "
+        "behält nur ihren Rand, einzelne verstreute Pixel nie. Präfix (A) = ein Glanzlicht- "
+        "oder Kantenstreifen, Suffix (B) = ein Beschlag (Griffwicklung, Riemen, Saum, Rand). "
+        "Je Gruppe höchstens etwa 7 % des Inventarbilds und 4 % der Körperüberlagerung "
+        "(Runde 1: 14–25 % bzw. 10–18 %); <b>K</b> nimmt davon 60 %. Die Farbe liegt mit "
+        "50 % über dem Material.</div>")
 
-    # --- A: colour table -----------------------------------------------------------
-    add("<h2>A. Die neun Farben</h2>")
-    add("<p>Jeder Wert hat eine feste Farbe: das <b>Präfix</b> färbt Gruppe A, das "
-        "<b>Suffix</b> Gruppe B. Die Spalten rechts zeigen, wie Menschen mit Rot-Grün-Schwäche "
-        "(Deuteranopie, Protanopie) und Blau-Gelb-Schwäche (Tritanopie) die Farbe sehen "
-        "(Simulation nach Machado 2009).</p><div class='scroll'><table><tr><th>#</th>"
-        "<th>Wert</th><th>Präfix / Suffix</th><th>Farbe</th><th>normal</th><th>Deuteranopie</th>"
-        "<th>Protanopie</th><th>Tritanopie</th></tr>")
+    # --- 1: body -----------------------------------------------------------------------
+    names = [v[0] for v in variants]
+    add("<h2>1. Am Körper: %s</h2>" % " / ".join(names))
+    add("<p>Je Figur von links: unverzaubert, dann %s, jeweils vorne und hinten. Aktuelle "
+        "Haut (Lane As neue Ebenen sind noch nicht dabei).</p>" %
+        ", ".join("<b>%s</b> %s" % (v[0], v[1]) for v in variants))
+    add("<div class='row'>")
+    for race, line, bracket, pair, title in DOLLS:
+        shown = None
+        images = []
+        for variant in variants:
+            texmod.use_variant(variant[2])
+            try:
+                plain, enchanted = doll_pair(race, line, bracket, pair, variant[4])
+            finally:
+                texmod.use_variant(None)
+            if shown is None:
+                shown = plain
+                images.append(plain)
+            images.append(enchanted)
+        picture = strip(images)
+        add("<figure style='margin:0'><div class='tile'><img src='%s' alt='%s' width='%d'>"
+            "</div><figcaption class='muted'>%s<br>unverzaubert · %s</figcaption></figure>" % (
+                data_uri(scaled(picture, 5)), title, picture.width * 5, title,
+                " · ".join(names)))
+    add("</div>")
+
+    # --- 2: inventory -----------------------------------------------------------------
+    add("<h2>2. Im Inventar: unverzaubert / %s</h2>" % " / ".join(names))
+    add("<p>Spalten: unverzaubert, dann die Varianten. Zeilen: Brust und Beine je Material, "
+        "dann sechs Waffen und ein Schild. Links etwa Inventargröße, rechts groß.</p>")
+    cells, captions = [], []
+    for name, pair in COMPARE:
+        cells.append(texmod.render(items[(name, ("-", "-"))]))
+        for variant in variants:
+            cells.append(render_in(variant, variant[3][(name, pair)]))
+        base = name.split(":")[1].replace("_", " ")
+        captions.append(display_name(base, pair))
+    cols = 1 + len(variants)
+    half = (len(COMPARE) + 1) // 2
+    for part in (slice(0, half), slice(half, len(COMPARE))):
+        sub = cells[part.start * cols:part.stop * cols]
+        add("<div class='row'><div class='tile'><img src='%s' alt='Inventar klein'></div>"
+            "<div class='tile scroll'><img src='%s' alt='Inventar groß'></div></div>" % (
+                data_uri(grid(sub, cols, 3, pad=6)), data_uri(grid(sub, cols, 7, pad=8))))
+        add("<p class='muted'>Zeilen: %s</p>" % "; ".join(
+            "%d %s" % (i + 1 + part.start, c) for i, c in enumerate(captions[part])))
+
+    # --- 3: colour table ----------------------------------------------------------------
+    add("<h2>3. Die neun Farben (unverändert)</h2>")
+    add("<p>Präfix färbt Gruppe A, Suffix Gruppe B. Rechts die Simulation für Rot-Grün-Schwäche "
+        "(Deuteranopie, Protanopie) und Blau-Gelb-Schwäche (Tritanopie), nach Machado 2009.</p>"
+        "<div class='scroll'><table><tr><th>#</th><th>Wert</th><th>Präfix / Suffix</th>"
+        "<th>Farbe</th><th>normal</th><th>Deuteranopie</th><th>Protanopie</th>"
+        "<th>Tritanopie</th></tr>")
     for i, stat in enumerate(STATS, 1):
         rgb = colorsci.hex2rgb(COLORS[stat])
-        cells = "".join("<td><span class='sw' style='background:%s'></span></td>" %
-                        colorsci.rgb2hex(colorsci.cvd(rgb, k))
-                        for k in ("normal", "deutan", "protan", "tritan"))
+        swatches = "".join("<td><span class='sw' style='background:%s'></span></td>" %
+                           colorsci.rgb2hex(colorsci.cvd(rgb, k))
+                           for k in ("normal", "deutan", "protan", "tritan"))
         add("<tr><td>%d</td><td>%s</td><td>%s / %s</td><td>%s <code>%s</code></td>%s</tr>" % (
             i, GERMAN[stat], AFFIX[stat][0], AFFIX[stat][1], COLOR_WORD[stat],
-            COLORS[stat], cells))
+            COLORS[stat], swatches))
     add("</table></div>")
     worst = {}
     for kind in ("normal", "deutan", "protan", "tritan"):
@@ -246,123 +382,78 @@ def main():
             if best is None or d < best[0]:
                 best = (d, a, b)
         worst[kind] = best
-    add("<p class='muted'>Kleinster Farbabstand (CIEDE2000, volle und 70-%-Helligkeit): " +
+    add("<p class='muted'>Kleinster Farbabstand (CIEDE2000): " +
         "; ".join("%s %.0f (%s/%s)" % ({"normal": "normal", "deutan": "Deuteranopie",
                                         "protan": "Protanopie", "tritan": "Tritanopie"}[k],
                                        v[0], GERMAN[v[1]], GERMAN[v[2]])
                   for k, v in worst.items()) +
-        ". Ab etwa 10 sind zwei Farben nebeneinander klar unterscheidbar. Ziel war "
-        "normal und Rot-Grün-Schwäche; bei der sehr seltenen Tritanopie liegen 2 und 5 "
-        "nah beieinander.</p>")
-
-    # Every colour on three items, as prefix (A) and as suffix (B).
+        ". Ab etwa 10 klar unterscheidbar; Ziel waren normal und Rot-Grün-Schwäche (die sehr "
+        "seltene Tritanopie bringt 2 und 5 nah zusammen).</p>")
     probe = ["grug_gear:sword_steel", "grug_gear:chest_leather_cured",
              "grug_gear:chest_metal_abyssal_steel", "grug_gear:staff_bronze"]
-    add("<h3>Jede Farbe an vier Gegenständen</h3><p class='muted'>Je Farbe zwei Spalten: "
-        "links als Präfix (Glanzlichter), rechts als Suffix (Beschläge). Zeilen: Stahlschwert, "
-        "Leder-Brust, Abyssstahl-Brust, Bronzestab.</p>")
+    add("<h3>Jede Farbe an vier Gegenständen (Variante N)</h3><p class='muted'>Je Farbe zwei "
+        "Spalten: links als Präfix (A), rechts als Suffix (B); Spaltenpaare = Farbnummern "
+        "1–9. Zeilen: Stahlschwert, Leder-Brust, Abyssstahl-Brust, Bronzestab.</p>")
     cells = []
     for name in probe:
         for stat in STATS:
             cells.append(texmod.render(items[(name, (stat, "-"))]))
             cells.append(texmod.render(items[(name, ("-", stat))]))
-    sheet = grid(cells, 18, 4, pad=2)
-    add("<div class='tile scroll'><img src='%s' alt='Farben an Gegenständen'></div>" % data_uri(sheet))
-    add("<p class='muted'>Nummern der Spaltenpaare = Farbnummern 1–9 der Tabelle.</p>")
-    add("<h3>Dieselben Gegenstände mit Rot-Grün-Schwäche</h3>")
+    sheet = grid(cells, 18, 5, pad=3)
+    add("<div class='tile scroll'><img src='%s' alt='Farben an Gegenständen'></div>" %
+        data_uri(sheet))
     arr = np.array(sheet)
     for kind, title in (("deutan", "Deuteranopie"), ("protan", "Protanopie")):
         sim = arr.copy()
         sim[..., :3] = colorsci.cvd_image(arr[..., :3], kind)
-        add("<p class='muted'>%s</p><div class='tile scroll'><img src='%s' alt='%s'></div>" % (
-            title, data_uri(Image.fromarray(sim, "RGBA")), title))
+        add("<p class='muted'>Dasselbe mit %s</p><div class='tile scroll'><img src='%s' "
+            "alt='%s'></div>" % (title, data_uri(Image.fromarray(sim, "RGBA")), title))
 
-    # --- B: technique ----------------------------------------------------------------
-    add("<h2>B. Technik (kurz)</h2><div class='card'>")
-    add("<p>Jede Textur bekommt eine Maskendatei <code>&lt;textur&gt;_ench.png</code> "
-        "(doppelt so hoch: oben Gruppe A, unten Gruppe B, Graustufen = Schattierung). "
-        "Das Spiel hängt nur bei Verzauberung an das Bild an:</p>")
-    example = items[("grug_gear:sword_steel", ("str", "crit_percent"))]
-    add("<p><code>%s</code></p>" % example)
-    add("<p>Ohne Verzauberung bleibt das Bild Byte für Byte gleich. Masken wurden "
-        "automatisch aus den Farbgruppen jeder Textur abgeleitet (185 Dateien, 33 KB).</p></div>")
+    # --- 4: technique -------------------------------------------------------------------
+    add("<h2>4. Technik (kurz)</h2><div class='card'>")
+    add("<p>Je Textur eine Maskendatei <code>&lt;textur&gt;_ench.png</code> (oben Gruppe A, "
+        "unten Gruppe B). Das Spiel hängt nur bei Verzauberung etwas an das Bild an:</p>")
+    add("<p><code>%s</code></p>" % items[("grug_gear:sword_steel", ("str", "crit_percent"))])
+    add("<p>Ohne Verzauberung bleibt das Bild Byte für Byte gleich. Die Masken leitet ein "
+        "Skript aus den Farbgruppen jeder Textur ab, ohne Handarbeit (185 Dateien).</p></div>")
 
-    # --- C: intensity --------------------------------------------------------------
-    add("<h2>C. Stärke der Farbe</h2><p>Zeilen: <b>I</b> volle Farbe, <b>II</b> 75 %, "
-        "<b>III</b> 50 %. Spalten: Stahlschwert, Glutstahl-Dolch, Leder-Brust, Stahl-Helm, "
-        "Bronzeschild, Silberstahl-Beine.</p>")
-    show = ["grug_gear:sword_steel", "grug_gear:dagger_embersteel", "grug_gear:chest_leather_cured",
-            "grug_gear:head_metal_steel", "grug_gear:shield_bronze", "grug_gear:legs_metal_silversteel"]
-    cells = []
-    for opacity in (255, 191, 128):
-        its, _ = emit(opacity, INTENSITY_PAIRS)
-        for name in show:
-            for pair in INTENSITY_PAIRS:
-                cells.append(texmod.render(its[(name, pair)]))
-    add("<div class='tile scroll'><img src='%s' alt='Stärke'></div>" %
-        data_uri(grid(cells, len(show) * 2, 6, pad=4)))
-    add("<p class='muted'>Je Gegenstand zwei Beispiele: <i>Heavy … of the Eagle</i> "
-        "(Tiefrot/Gelb) und <i>Elusive … of the Raven</i> (Lavendel/Himmelblau).</p>")
-
-    # --- D: paper dolls --------------------------------------------------------------
-    add("<h2>D. Am Körper</h2><p>Aktuelle Haut (die neuen Ebenen aus Lane A sind noch nicht "
-        "dabei), vorne und hinten, jeweils unverzaubert und mit einem ganz verzauberten Set "
-        "(alle vier Teile dieselben zwei Farben).</p>")
-    dolls = [("human", "metal", 6, ("str", "armor_rating"), "Mensch, Abyssstahl: Heavy … of the Tortoise"),
-             ("orc", "metal", 3, ("str", "armor_rating"), "Ork, Stahl: Heavy … of the Tortoise"),
-             ("elf", "leather", 4, ("dex", "dodge_percent"), "Elf, Schuppenleder: Quick … of the Cat"),
-             ("dwarf", "cloth", 5, ("int", "max_mana_percent"), "Zwerg, Seide: Clever … of the Raven"),
-             ("undead", "cloth", 3, ("int", "max_mana_percent"), "Untoter, schwerer Stoff: Clever … of the Raven"),
-             ("troll", "leather", 2, ("dex", "dodge_percent"), "Troll, gegerbtes Leder: Quick … of the Cat")]
-    add("<div class='row'>")
-    for race, line, bracket, pair, title in dolls:
-        plain, _ = body(race, line, bracket, ("-", "-"), worn)
-        enchanted, _ = body(race, line, bracket, pair, worn)
-        both = Image.new("RGBA", (34 * 2 + 6, 32), (0, 0, 0, 0))
-        both.alpha_composite(doll(plain), (0, 0))
-        both.alpha_composite(doll(enchanted), (40, 0))
-        add("<figure style='margin:0'><div class='tile'><img src='%s' alt='%s' width='%d'>"
-            "</div><figcaption class='muted'>%s<br>links unverzaubert, rechts verzaubert"
-            "</figcaption></figure>" % (data_uri(scaled(both, 6)), title, 74 * 6, title))
-    add("</div>")
-
-    # --- E: every item -----------------------------------------------------------------
-    add("<h2>E. Alle Gegenstände</h2><p>Je Familie: Spalten = die sechs Stufen "
-        "(Bronze … Abyssstahl bzw. die sechs Stoff-/Ledergrade), Zeilen = unverzaubert und "
-        "drei Beispiele aus den Werten, die diese Familie wirklich bekommen kann. Links etwa "
-        "Inventargröße, darunter groß.</p>")
+    # --- 5: every item ------------------------------------------------------------------
+    add("<h2>5. Alle Gegenstände (Variante N)</h2><p>Spalten = die sechs Stufen, Zeilen = "
+        "unverzaubert und drei Beispiele aus den Werten der Familie. Links etwa "
+        "Inventargröße, rechts groß.</p>")
     groups = []
     for title, key, pool in FAMILIES:
         groups.append((title, item_names(key), POOLS[pool]))
     for line in ("metal", "leather", "cloth"):
         for slot in ("head", "chest", "legs", "feet"):
-            names = ["grug_gear:%s_%s_%s" % (slot, line, g) for g in GRADES[line]]
-            groups.append(("%s: %s" % (LINE_DE[line], SLOT_DE[slot]), names,
+            names_ = ["grug_gear:%s_%s_%s" % (slot, line, g) for g in GRADES[line]]
+            groups.append(("%s: %s" % (LINE_DE[line], SLOT_DE[slot]), names_,
                            POOLS[line + "_armor"]))
-    for title, names, pool in groups:
+    for number, (title, names_, pool) in enumerate(groups, 1):
         rows = [("-", "-")] + sample_pairs(pool)
-        cells = [texmod.render(items[(name, pair)]) for pair in rows for name in names]
+        cells = [texmod.render(items[(name, pair)]) for pair in rows for name in names_]
         labels = ", ".join(display_name("…", p) for p in rows[1:])
-        add("<h3>%s</h3><p class='muted'>Beispiele: %s</p>" % (title, labels))
+        add("<h3>E%d %s</h3><p class='muted'>Beispiele: %s</p>" % (number, title, labels))
         add("<div class='row'><div class='tile'><img src='%s' alt='%s klein'></div>"
             "<div class='tile scroll'><img src='%s' alt='%s groß'></div></div>" % (
-                data_uri(grid(cells, 6, 3, pad=6)), title, data_uri(grid(cells, 6, 7, pad=8)), title))
+                data_uri(grid(cells, 6, 3, pad=6)), title,
+                data_uri(grid(cells, 6, 6, pad=8)), title))
 
-    # --- F: weak items ---------------------------------------------------------------
-    add("<h2>F. Auffällig und schwach</h2><div class='card'><ul>"
-        "<li><b>Automatisch nicht teilbar, per Tabelle festgelegt</b> (keine neue Grafik): "
-        "die sechs Streitäxte (A = Glanzlicht der Klinge, B = Schaft und Klingenrand), der "
-        "Glutstahl-Schild, die Lederbeine und -schuhe der Stufe 1 (Light), die Stoffkapuze "
-        "der Stufe 2.</li>"
-        "<li><b>Stoffkapuze <i>Woven Hood</i></b>: das Inventarbild ist nur ein 16-Pixel-"
-        "Streifen; jede Gruppe hat 4 Pixel.</li>"
-        "<li><b>Stoffschuhe</b>: flache Streifen von 3–4 Pixeln Höhe; die Farbe ist sichtbar, "
-        "aber klein.</li>"
-        "<li><b>Sturmgewebe-Brust (Stoff 6) am Körper</b>: die Überlagerung ist nur ein "
-        "kleines Medaillon, die Farbe fällt am Körper kaum auf.</li>"
-        "<li><b>Weiß (Rüstungswert)</b> verschwindet auf hellem Stahl/Silberstahl, "
-        "<b>Tiefrot</b> und <b>Indigo</b> sind auf Abyssstahl und Nachtschuppe dunkel.</li>"
-        "</ul></div>")
+    # --- 6: weak items ------------------------------------------------------------------
+    add("<h2>6. Grenzen der automatischen Masken</h2><div class='card'><ul>"
+        "<li>Alle 185 Texturen teilt die neue Regel automatisch; keine Ausnahme-Tabelle "
+        "mehr nötig.</li>"
+        "<li><b>Stoffkapuze <i>Woven Hood</i></b> (Inventarbild nur ein 16-Pixel-Streifen) "
+        "und die flachen <b>Stoffschuhe</b>: der Akzent ist nur 4 Pixel lang.</li>"
+        "<li><b>Sturmgewebe-Brust (Stoff 6) am Körper</b>: nur ein kleines Medaillon, der "
+        "Akzent fällt kaum auf.</li>"
+        "<li>Auf <b>Kettenhemden</b> (Stahl) und verrauschtem <b>Stoff</b> findet die Regel "
+        "nur kurze Stücke; der Akzent sitzt dort, wo die Grafik eine hellste Kante hat, "
+        "nicht immer an der „schönsten“ Stelle. Genau gesetzte Streifen (z. B. ein "
+        "Gürtel, eine Klingenkante) bräuchten eine kleine Kunstrunde: je Textur zwei "
+        "handgemalte Masken.</li>"
+        "<li><b>Weiß</b> (Rüstungswert) ist auf hellem Stahl schwach, <b>Tiefrot</b> und "
+        "<b>Indigo</b> auf Abyssstahl.</li></ul></div>")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(html), encoding="utf-8")
     print("wrote %s (%d bytes)" % (out_path, out_path.stat().st_size))

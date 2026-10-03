@@ -26,9 +26,10 @@ grug_gear.ENCHANT_COLORS = {
 	armor_rating = "#ffffff",         -- armor rating: white
 }
 
--- 255 replaces a group's pixels with the shaded stat colour; lower values let
--- the material show through.
-grug_gear.ENCHANT_OPACITY = 255
+-- How strongly a group takes the shaded stat colour: 255 replaces the pixels,
+-- 128 (the user's ruling, round31-plan.md §6 item 7) lays it over at 50 %,
+-- so the material shows through.
+grug_gear.ENCHANT_OPACITY = 128
 
 -- One coloured group: the mask frame, shaded by the stat colour.
 local function layer(mask, frame, color)

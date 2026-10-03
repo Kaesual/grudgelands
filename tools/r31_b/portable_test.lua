@@ -164,6 +164,13 @@ end
 -- B. The modifier: unchanged without an affix, one layer per affix.
 ------------------------------------------------------------------------------
 check(#items == 120, "120 enchantable gear items (got " .. #items .. ")")
+-- One expected layer, written out independently of enchant_colors.lua.
+local function layer(mask, frame, color)
+	return "^(" .. mask .. "^[verticalframe:2:" .. frame .. "^[multiply:" .. color ..
+		(grug_gear.ENCHANT_OPACITY < 255 and ("^[opacity:" .. grug_gear.ENCHANT_OPACITY) or "") ..
+		")"
+end
+check(grug_gear.ENCHANT_OPACITY == 128, "default strength 50 % (ruling 7)")
 local longest_item, longest_item_name = 0, nil
 for _, name in ipairs(items) do
 	local image = registered[name].inventory_image
@@ -175,13 +182,12 @@ for _, name in ipairs(items) do
 	local mask = stem_of(image) .. "_ench.png"
 	local both = enchant_image(image, "str", "crit_percent")
 	check(both:sub(1, #image) == image, name .. ": layers come after the image")
-	check(both == image .. "^(" .. mask .. "^[verticalframe:2:0^[multiply:" .. COLORS.str ..
-		")^(" .. mask .. "^[verticalframe:2:1^[multiply:" .. COLORS.crit_percent .. ")",
+	check(both == image .. layer(mask, 0, COLORS.str) .. layer(mask, 1, COLORS.crit_percent),
 		name .. ": prefix frame 0, suffix frame 1")
-	check(enchant_image(image, "dex", nil) == image .. "^(" .. mask ..
-		"^[verticalframe:2:0^[multiply:" .. COLORS.dex .. ")", name .. ": prefix only")
-	check(enchant_image(image, nil, "int") == image .. "^(" .. mask ..
-		"^[verticalframe:2:1^[multiply:" .. COLORS.int .. ")", name .. ": suffix only")
+	check(enchant_image(image, "dex", nil) == image .. layer(mask, 0, COLORS.dex),
+		name .. ": prefix only")
+	check(enchant_image(image, nil, "int") == image .. layer(mask, 1, COLORS.int),
+		name .. ": suffix only")
 	check(not both:find(",", 1, true), name .. ": no comma in the modifier")
 	-- C. The mask ships beside the item texture.
 	check(file_exists(ROOT .. "/mods/ITEMS/grug_gear/textures/" .. mask), name .. ": " .. mask)
