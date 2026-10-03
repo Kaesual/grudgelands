@@ -35,7 +35,11 @@ return function(repo)
 
 	local rows, defs = {}, {}
 	local core_stub = permissive({
-		get_modpath = function() return dir end,
+		-- grug_mobs reads one mapgen file (boss_dragons.lua: arena_layout.lua)
+		get_modpath = function(mod)
+			if mod == "grug_mapgen" then return repo .. "/mods/MAPGEN/grug_mapgen" end
+			return dir
+		end,
 		get_current_modname = function() return "grug_mobs" end,
 		registered_entities = setmetatable({}, {__index = function() return stub end}),
 		registered_items = {}, registered_nodes = {},

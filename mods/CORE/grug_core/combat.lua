@@ -649,9 +649,18 @@ end
 -- Is this threat entry a legal target right now? Connected, alive and inside
 -- the mob's threat reality (40 m ~ the leash radius, so a stale entry from
 -- across the map can never yank a mob around). Returns the ObjectRef.
+-- A mob's own acquisition veto (grug_mobs init.lua `_grug_target_veto`: a
+-- dragon ignores players outside its arena) also rules out threat, taunt and
+-- forced switches, so none of them can hand such a player back.
+local function vetoed(mob_ent, player)
+	return mob_ent._grug_target_veto ~= nil and
+		mob_ent._grug_target_veto(mob_ent, player) == true
+end
+
 local function valid_target(mob_ent, name)
 	local player = core.get_player_by_name(name)
-	if not player or not player:is_player() or player:get_hp() <= 0 then
+	if not player or not player:is_player() or player:get_hp() <= 0 or
+			vetoed(mob_ent, player) then
 		return nil
 	end
 	local mpos = mob_ent.object and mob_ent.object:get_pos()
@@ -842,7 +851,7 @@ function grug_core.add_threat(mob_ent, player, amount)
 			or (mob_ent.temp and mob_ent.temp.grug_evading) then
 		return
 	end
-	if not player or not core.is_player(player) then
+	if not player or not core.is_player(player) or vetoed(mob_ent, player) then
 		return
 	end
 	local threat = threat_table(mob_ent)
@@ -905,7 +914,7 @@ end
 function grug_core.taunt(mob_ent, player)
 	if not mob_ent or not mob_ent.object or not player or
 			not core.is_player(player) or
-			(mob_ent.temp and mob_ent.temp.grug_evading) then
+			(mob_ent.temp and mob_ent.temp.grug_evading) or vetoed(mob_ent, player) then
 		return false
 	end
 	local threat = threat_table(mob_ent)

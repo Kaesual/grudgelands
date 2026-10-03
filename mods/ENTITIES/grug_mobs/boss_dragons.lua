@@ -28,6 +28,128 @@ local TUNING = {
 }
 grug_mobs.DRAGON_TUNING = TUNING
 
+-- The arena (Round 31 DA2): the rules, the hazard nodes the mapgen wrote, and
+-- each dragon's arena by boss id (bosses.lua installs the lookup).
+local arena_rules = dofile(core.get_modpath("grug_mobs") .. "/dragon_arena.lua")
+local ARENA_NODES = dofile(core.get_modpath("grug_mapgen") ..
+	"/wp40/arena_layout.lua").NODES
+grug_mobs.dragon_arena_rules = arena_rules
+local arena_by_id = function() return nil end
+local function arena_of(self)
+	return self and arena_by_id(self._grug_boss_id or self._grug_boss_summon)
+end
+
+-- Fight participants (user ruling 2026-10-03): per dragon (boss id) the
+-- names of the players taking part in the running fight: who damages the
+-- dragon or its whelps, who is targeted or hit by them, and who heals or
+-- shields a participant. While the fight runs, a participant outside the
+-- arena takes the dragon's wrath (WRATH_DPS, the 1 s arena tick). The fight
+-- and every flag end together: the dragon's death or its reset. A
+-- participant's death or logout drops only that player.
+local fights = {}
+grug_mobs.dragon_fights = fights
+local function join_fight(boss_id, player)
+	if not boss_id or not core.is_player(player) or not arena_by_id(boss_id) then return end
+	local fight = fights[boss_id]
+	if not fight then fight = {}; fights[boss_id] = fight end
+	fight[player:get_player_name()] = fight[player:get_player_name()] or {warned = false}
+end
+local function end_fight(boss_id)
+	local fight = fights[boss_id]
+	fights[boss_id] = nil
+	if not fight then return end
+	for name in pairs(fight) do
+		local player = core.get_player_by_name(name)
+		if player and grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+	end
+end
+grug_mobs.end_dragon_fight = end_fight
+local function boss_of_entity(ent)
+	if not ent then return nil end
+	if ent._grug_boss_id or ent._grug_boss_summon then
+		return ent._grug_boss_id or ent._grug_boss_summon
+	end
+	local source = ent._grug_source
+	local owner = source and source.get_luaentity and source:get_luaentity()
+	return owner and (owner._grug_boss_id or owner._grug_boss_summon) or nil
+end
+-- The boss id of a fight the player takes part in, or nil.
+local function fight_of(player)
+	local name = core.is_player(player) and player:get_player_name()
+	if not name then return nil end
+	for boss_id, fight in pairs(fights) do
+		if fight[name] then return boss_id end
+	end
+	return nil
+end
+-- Hit by the dragon, a whelp or their breath inside the arena: taking part
+-- (a dive, lightning or breath splash just beyond the rim flags nobody).
+core.register_on_player_hpchange(function(player, hp_change, reason)
+	if hp_change < 0 and reason and reason.type == "punch" and reason.object and
+			reason.object.get_luaentity then
+		local boss_id = boss_of_entity(reason.object:get_luaentity())
+		local arena = boss_id and arena_by_id(boss_id)
+		if arena and arena_rules.inside(arena, player:get_pos()) then
+			join_fight(boss_id, player)
+		end
+	end
+end, false)
+-- Healing or shielding a participant: taking part, when the supporter is
+-- near the arena (its radius + SUPPORT_REACH from the centre), so a fleeing
+-- participant healed far away in a town flags no town healer.
+local function supported(source, target)
+	local boss_id = fight_of(target)
+	if not boss_id or source == target or not core.is_player(source) then return end
+	local arena = arena_by_id(boss_id)
+	local pos = source:get_pos()
+	if arena and pos and arena_rules.near(arena, pos) then join_fight(boss_id, source) end
+end
+grug_core.register_on_effective_heal(function(healer, target) supported(healer, target) end)
+grug_core.register_on_effective_absorb(function(source, target) supported(source, target) end)
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	for _, fight in pairs(fights) do fight[name] = nil end
+end)
+core.register_on_dieplayer(function(player)
+	local name = player:get_player_name()
+	for _, fight in pairs(fights) do fight[name] = nil end
+	if grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+end)
+
+-- The 1 s wrath tick of one dragon: participants outside the arena take
+-- WRATH_DPS through set_hp (armour never reduces it, never PvP contact).
+local function wrath_tick(boss_id, arena)
+	local fight = fights[boss_id]
+	if not fight then return end
+	for name, entry in pairs(fight) do
+		local player = core.get_player_by_name(name)
+		if not player or player:get_hp() <= 0 then
+			fight[name] = nil
+		elseif arena_rules.inside(arena, player:get_pos()) then
+			entry.warned = false
+			if grug_core.clear_status then grug_core.clear_status(player, "dragon_wrath") end
+		else
+			if not entry.warned then
+				entry.warned = true
+				core.chat_send_player(name, core.colorize and core.colorize("#ff5a3c",
+					"You left the dragon's arena during the fight: its wrath burns you until " ..
+					"you return (" .. arena_rules.WRATH_DPS .. " damage per second).") or
+					"You left the dragon's arena during the fight.")
+			end
+			grug_core.set_status(player, "dragon_wrath", {
+				label = "Dragon's Wrath: return to the arena",
+				duration = 1.5,
+			})
+			grug_core.mark_in_combat(player)
+			-- grug_core.bypasses_absorb: no shield soaks the wrath.
+			player:set_hp(math.max(0, player:get_hp() - arena_rules.WRATH_DPS), {
+				type = "set_hp", custom_type = grug_core.DRAGON_WRATH_CUSTOM_TYPE or
+					"grug_mobs:dragon_wrath",
+			})
+		end
+	end
+end
+
 local RIME = "grug_mobs:dragon_rime"
 local SCORCH = "grug_mobs:dragon_scorch"
 local EFFECT_DURATION = {rime = 8, scorch = 6}
@@ -145,6 +267,7 @@ grug_mobs.place_dragon_ground_effect = place_ground_effect
 
 local effect_clock = 0
 local scorch_clock = 0
+local ice_standing = {}
 local function effect_node_at_feet(pos)
 	local feet = vector.round(pos)
 	local node = core.get_node_or_nil(feet)
@@ -154,6 +277,10 @@ local function effect_node_at_feet(pos)
 	end
 	return node
 end
+
+core.register_on_leaveplayer(function(player)
+	ice_standing[player:get_player_name()] = nil
+end)
 
 core.register_globalstep(function(dtime)
 	effect_clock = effect_clock + dtime
@@ -165,9 +292,54 @@ core.register_globalstep(function(dtime)
 	if do_scorch then scorch_clock = 0 end
 	for _, player in ipairs(core.get_connected_players()) do
 		local pos = player:get_pos()
+		local pname = player:get_player_name()
 		if pos and player:get_hp() > 0 then
 			local node = effect_node_at_feet(pos)
-			if node and node.name == RIME then
+			-- Arena hazards (Round 31 DA2): thin ice breaks under a player who
+			-- stands on it; ice water and ember fissures hurt once a second,
+			-- a fixed amount armour does not reduce (set_hp, never a punch,
+			-- so never PvP contact either).
+			local ice_key
+			if node and node.name == ARENA_NODES.thin_ice then
+				local feet = vector.round(pos)
+				local below = core.get_node_or_nil({x = feet.x, y = feet.y - 1, z = feet.z})
+				local at = (below and below.name == ARENA_NODES.thin_ice) and
+					{x = feet.x, y = feet.y - 1, z = feet.z} or feet
+				ice_key = core.hash_node_position(at)
+				local entry, breaks = arena_rules.ice_step(ice_standing[pname], ice_key, 0.25)
+				ice_standing[pname] = entry
+				if breaks then
+					for _, d in ipairs({{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
+						local p = {x = at.x + d[1], y = at.y, z = at.z + d[2]}
+						local n = core.get_node_or_nil(p)
+						if n and n.name == ARENA_NODES.thin_ice then
+							core.set_node(p, {name = ARENA_NODES.ice_water})
+						end
+					end
+					core.sound_play("default_break_glass", {pos = at, gain = 0.6,
+						max_hear_distance = 24}, true)
+				end
+			end
+			if not ice_key then ice_standing[pname] = nil end
+			local dps, slows = arena_rules.hazard(ARENA_NODES, node and node.name)
+			if dps then
+				if slows then
+					grug_mobs.slow_player(player, arena_rules.ICE_SLOW_TIME,
+						arena_rules.ICE_SLOW_FACTOR)
+				end
+				if do_scorch then
+					grug_core.mark_in_combat(player)
+					if not slows then
+						grug_core.set_status(player, "scorched", {
+							label = "Ember Fissure", duration = 1.5,
+						})
+					end
+					player:set_hp(math.max(0, player:get_hp() - dps), {
+						type = "node_damage", node = node.name,
+						custom_type = slows and "grug_mobs:ice_water" or nil,
+					})
+				end
+			elseif node and node.name == RIME then
 				grug_mobs.slow_player(player, 0.5, 0.6)
 			elseif do_scorch and node and node.name == SCORCH then
 				grug_core.mark_in_combat(player)
@@ -260,8 +432,29 @@ local function valid_target(self, target)
 	local target_pos = target_position(target)
 	if not pos or not target_pos or not hostile_player(target) then return nil end
 	local dist, horizontal, vertical = distance(pos, target_pos)
-	if dist > TUNING.view or vertical > TUNING.vertical_tolerance then return nil end
+	local arena = arena_of(self)
+	if arena then
+		-- The arena is the leash (Round 31 DA2): inside it a player is a
+		-- target at any height and distance, outside it never.
+		if not arena_rules.inside(arena, target_pos) then return nil end
+	elseif dist > TUNING.view or vertical > TUNING.vertical_tolerance then
+		return nil
+	end
 	return target_pos, horizontal
+end
+
+-- Hostile living players inside the arena.
+local function hostiles_inside(arena)
+	local count = 0
+	local centre = {x = arena.x, y = arena.y, z = arena.z}
+	for _, object in ipairs(core.get_objects_inside_radius(centre,
+			arena.radius + arena_rules.ABOVE)) do
+		if core.is_player(object) and hostile_player(object) and
+				arena_rules.inside(arena, object:get_pos()) then
+			count = count + 1
+		end
+	end
+	return count
 end
 
 local function hostile_players(pos, radius)
@@ -653,6 +846,51 @@ local function perch_tick(self, state, dtime, moveresult)
 	return false
 end
 
+-- Acquisition veto (grug_mobs init.lua): players outside the arena.
+local function arena_veto(self, player)
+	local arena = arena_of(self)
+	return arena ~= nil and not arena_rules.inside(arena, player:get_pos())
+end
+
+-- Forget every player outside the arena (Round 31 DA2): their threat and
+-- their engagement, so no threat switch, heal threat or taunt from outside
+-- can hand one back (grug_core combat.lua also honours the veto).
+local function prune_outside(self, arena)
+	local temp = self.temp
+	local threat = temp and temp.grug_threat
+	if threat then
+		for name in pairs(threat) do
+			local player = core.get_player_by_name(name)
+			if not player or not arena_rules.inside(arena, player:get_pos()) then
+				threat[name] = nil
+			end
+		end
+	end
+	local edges = temp and temp.grug_engaged
+	if edges then
+		local outside = {}
+		for name in pairs(edges) do
+			local player = core.get_player_by_name(name)
+			if player and not arena_rules.inside(arena, player:get_pos()) then
+				outside[#outside + 1] = player
+			end
+		end
+		for index = 1, #outside do grug_core.disengage_target(self, outside[index]) end
+	end
+end
+
+-- The arena reset (Round 31 DA2): the encounter reset every leashed mob gets
+-- (threat, loot tag, the boss attempt with its whelps and enrage, full
+-- health), then the flight back to the spawn point.
+local function reset_fight(self, state)
+	end_fight(self._grug_boss_id)
+	grug_mobs.leash_reset(self)
+	state.engaged = false
+	state.action = nil
+	state.mode = "returning"
+	set_flight(self, true)
+end
+
 local function dragon_tick(self, dtime, moveresult, opts)
 	self.temp = self.temp or {}
 	local state = self.temp.grug_dragon
@@ -660,8 +898,27 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		state = {mode = self.fly and "air" or "ground", primary = 2,
 			gust = TUNING.gust_cooldown}
 		self.temp.grug_dragon = state
+		-- A dragon (re)activating starts without a fight: a stale one ends.
+		end_fight(self._grug_boss_id)
 	end
-	self._grug_chase_range = TUNING.leash + 4
+	local arena = arena_of(self)
+	self._grug_chase_range = arena and 2 * arena.radius + 4 or TUNING.leash + 4
+	if arena then
+		self._grug_target_veto = arena_veto
+		-- Once a second: an engaged dragon with no hostile player left in its
+		-- arena ends the fight.
+		state.arena_clock = (state.arena_clock or 0) + dtime
+		if state.arena_clock >= 1 then
+			state.arena_clock = 0
+			prune_outside(self, arena)
+			if state.engaged and arena_rules.should_reset(state.engaged,
+					hostiles_inside(arena)) then
+				reset_fight(self, state)
+				return false
+			end
+			if state.engaged then wrath_tick(self._grug_boss_id, arena) end
+		end
+	end
 	if self._grug_enraged then self.object:set_properties({glow = 8}) end
 	enrage(self, state, opts)
 	state.primary = math.max(0, (state.primary or 0) - dtime)
@@ -672,6 +929,17 @@ local function dragon_tick(self, dtime, moveresult, opts)
 	local target_pos, horizontal = valid_target(self, target)
 	if not target_pos then
 		if target and self.stop_attack then self:stop_attack() end
+		if state.mode == "returning" and arena then
+			-- Back to the spawn point, then land there.
+			local _, home_horizontal = distance(self.object:get_pos(), arena)
+			if home_horizontal > 2 then
+				set_flight(self, true)
+				steer(self, {x = arena.x, y = arena.y + 6, z = arena.z},
+					TUNING.fly, TUNING.run)
+				return false
+			end
+			state.mode = "landing"
+		end
 		if state.mode ~= "ground" then
 			set_flight(self, false)
 			if grounded(self, moveresult) then
@@ -686,6 +954,13 @@ local function dragon_tick(self, dtime, moveresult, opts)
 	end
 	state.perch = 0
 	state.rest_destination = nil
+	state.engaged = true
+	join_fight(self._grug_boss_id, target)
+	-- Its flight stays inside the arena (4 nodes from the edge).
+	local function above_target()
+		local above = {x = target_pos.x, y = target_pos.y + 6, z = target_pos.z}
+		return arena and arena_rules.clamp(arena, above, 4) or above
+	end
 	if state.gust <= 0 then
 		gust(self)
 		state.gust = cooldown(self, TUNING.gust_cooldown)
@@ -710,8 +985,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 			set_flight(self, true)
 			burst(pos, 48, "default_item_smoke.png^[colorize:#d8eef4:130", 3,
 				4, 3, 0.4)
-			steer(self, {x = target_pos.x, y = target_pos.y + 6,
-				z = target_pos.z}, TUNING.fly, TUNING.run)
+			steer(self, above_target(), TUNING.fly, TUNING.run)
 			return false
 		end
 		if state.primary <= 0 then
@@ -730,8 +1004,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		set_flight(self, false)
 		return false
 	end
-	steer(self, {x = target_pos.x, y = target_pos.y + 6, z = target_pos.z},
-		TUNING.fly, TUNING.run)
+	steer(self, above_target(), TUNING.fly, TUNING.run)
 	return false
 end
 
@@ -742,8 +1015,12 @@ local function whelp_tick(self, dtime, moveresult)
 		state = {mode = self.fly and "air" or "ground"}
 		self.temp.grug_whelp = state
 	end
+	local arena = arena_of(self)
+	if arena then self._grug_target_veto = arena_veto end
 	local target_pos, horizontal = valid_target(self, self.attack)
 	if not target_pos then
+		-- A target outside the boss's arena (or gone) is dropped.
+		if self.attack and self.stop_attack then self:stop_attack() end
 		if state.mode ~= "ground" then
 			state.mode = "landing"
 			set_flight(self, false)
@@ -772,6 +1049,17 @@ local function whelp_tick(self, dtime, moveresult)
 	end
 end
 
+-- A player outside the arena cannot hurt the dragon or its whelps (any truthy
+-- return cancels the punch, grug_mobs init.lua); a hit from inside engages it.
+local function arena_punch(self, hitter)
+	local arena = arena_of(self)
+	if not arena or not hitter or not core.is_player(hitter) then return end
+	if not arena_rules.inside(arena, hitter:get_pos()) then return true end
+	local state = self.temp and self.temp.grug_dragon
+	if state then state.engaged = true end
+	join_fight(self._grug_boss_id or self._grug_boss_summon, hitter)
+end
+
 local function whelp_def(opts)
 	return {
 		description = opts.description .. " Whelp",
@@ -791,6 +1079,7 @@ local function whelp_def(opts)
 		animation = opts.animation,
 		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
 		do_custom = whelp_tick,
+		do_punch = arena_punch,
 	}
 end
 
@@ -800,7 +1089,9 @@ local function dragon_def(id, opts, callbacks)
 		clock = "any", type = "monster",
 		_grug_fixed_level = 70, _grug_tier = "boss",
 		_grug_no_far_despawn = true,
-		_grug_leash_range = TUNING.leash,
+		-- No distance or contact leash: the arena edge ends the fight
+		-- (dragon_tick, Round 31 DA2).
+		_grug_no_leash = true,
 		attack_type = "dogfight", attack_players = true,
 		attack_monsters = false, attack_animals = false, attack_npcs = false,
 		pathfinding = 1, reach = 6, group_attack = false,
@@ -815,6 +1106,7 @@ local function dragon_def(id, opts, callbacks)
 		makes_footstep_sound = true, fall_damage = false,
 		animation = opts.animation,
 		drops = {}, water_damage = 0, lava_damage = 0, light_damage = 0,
+		do_punch = arena_punch,
 		after_activate = function(self)
 			self._grug_boss_id = "dragon:" .. id
 			callbacks.storage:set_string("boss:dragon:" .. id .. ":alive", "1")
@@ -824,6 +1116,7 @@ local function dragon_def(id, opts, callbacks)
 			return dragon_tick(self, dtime, moveresult, opts)
 		end,
 		on_die = function(self)
+			end_fight("dragon:" .. id)
 			remove_whelps(self)
 			callbacks.settle("dragon:" .. id, self, nil)
 			callbacks.storage:set_string("boss:dragon:" .. id .. ":alive", "")
@@ -835,6 +1128,7 @@ local function dragon_def(id, opts, callbacks)
 end
 
 function grug_mobs.register_dragon_bosses(callbacks)
+	arena_by_id = callbacks.arena
 	hostile_player = function(player)
 		return player and core.is_player(player) and player:get_hp() > 0 and
 			not mobs.has_priv(player:get_player_name(), "peaceful_player") and

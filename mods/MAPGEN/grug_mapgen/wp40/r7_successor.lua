@@ -15,11 +15,15 @@
 
 -- `road_writer` (optional, Round 22 Phase 4) dresses the road columns first,
 -- before P9G, world content, anchors and settlements (`road_writer.lua`).
+-- `arena_writer` (optional, Round 31 DA2) dresses the dragon arenas last,
+-- after the settlements (`arena_writer.lua`).
 return function(p9g_config, anchor_config, settlement_configs, roster_keys, world_config,
-		road_writer)
+		road_writer, arena_writer)
 	local function fail(message) error("WP40 R7 successor: " .. message, 0) end
 	if (road_writer ~= nil and (type(road_writer) ~= "table" or
 			type(road_writer.dress) ~= "function")) or
+			(arena_writer ~= nil and (type(arena_writer) ~= "table" or
+			type(arena_writer.dress) ~= "function")) or
 			type(p9g_config) ~= "table" or type(p9g_config.new) ~= "function" or
 			type(anchor_config) ~= "table" or type(anchor_config.new) ~= "function" or
 			type(settlement_configs) ~= "table" or #settlement_configs < 1 or
@@ -109,6 +113,7 @@ return function(p9g_config, anchor_config, settlement_configs, roster_keys, worl
 			for index = 1, #settlements do
 				ledger[settlements[index].key] = settlements[index]:settle(context)
 			end
+			if arena_writer then arena_writer.dress(context) end
 			return ledger
 		end
 		function tail.metrics(self)

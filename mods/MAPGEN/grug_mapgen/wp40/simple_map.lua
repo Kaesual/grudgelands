@@ -466,6 +466,12 @@ return function(zone_field)
 						shape.vegetation_width = profile.building_core_width +
 							2 * POI_VEGETATION_MARGIN
 					end
+					-- A dragon arena is round (Round 31 DA2): vegetation stops at
+					-- its floor's widest edge (radius + 3) plus one node, not at
+					-- a square.
+					if profile.arena_radius then
+						shape.vegetation_radius = profile.arena_radius + 4
+					end
 				elseif recipe == "exclude_planned_water_v1" and bay_by_id[exclusion.source_id] then
 					local b = centreline_bounds(record)
 					shape.kind = "bay"
@@ -575,6 +581,11 @@ return function(zone_field)
 						-- Island/channel coast claims do not occupy their dry interior.
 					elseif shape.anchor_blend and purpose == "vegetation" then
 						-- Skipped: the remaining shapes in this bucket still answer.
+					elseif purpose == "vegetation" and shape.vegetation_radius and
+							(x - shape.center.x) * (x - shape.center.x) +
+							(z - shape.center.z) * (z - shape.center.z) >
+							shape.vegetation_radius * shape.vegetation_radius then
+						-- Skipped: outside a dragon arena's round floor.
 					elseif purpose == "vegetation" and shape.vegetation_width and
 							not in_centered_half_open_square(x, z, shape.center,
 								shape.vegetation_width, 0) then

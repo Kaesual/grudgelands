@@ -108,6 +108,9 @@ icons.STATUS = {
 	rooted = def("debuff", "Rooted", "Cannot move", art("rooted")),
 	stunned = def("debuff", "Stunned", "Cannot act or move", art("stunned")),
 	scorched = def("debuff", "Scorched", "Burning ground", art("scorched")),
+	-- A dragon fight's participant outside its arena (grug_mobs boss_dragons.lua).
+	dragon_wrath = def("debuff", "Dragon's Wrath", "Return to the dragon's arena",
+		art("scorched")),
 
 	-- Neither buff nor debuff. in_combat is drawn next to the health bar by
 	-- combat_hud.lua, not on the status row (ruling 19). The PvP flag

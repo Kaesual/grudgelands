@@ -483,7 +483,7 @@ grug_abilities.register_ability({
 		-- Threat part (combat_stats.md §4): sets the taunter to top×1.1 and
 		-- suppresses hysteresis target switches for 3 s.
 		if not grug_core.taunt(ent, user) then
-			return false, "That target is evading."
+			return false, "That target cannot be taunted now."
 		end
 		ent:do_attack(user, true)
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#e07b39", 6)

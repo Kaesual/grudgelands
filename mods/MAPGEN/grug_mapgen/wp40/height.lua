@@ -91,6 +91,13 @@ local function height_factory(dependencies)
 	-- POI collar (plan D33): shortest and longest collar in nodes, and how far
 	-- a smooth noise stretches or shrinks it around the core (share).
 	local POI_BLEND_MIN, POI_BLEND_MAX, POI_EDGE_JITTER = 6, 28, 0.25
+	-- Dragon arena (Round 31 DA2, a profile with `arena_radius`): a round
+	-- floor whose edge wanders outward by 0..ARENA_EDGE nodes beyond the
+	-- radius (the leash) and which swells gently 0..ARENA_SWELL nodes below
+	-- the reference over about ARENA_SWELL_PERIOD nodes, never above it (so
+	-- the POI blueprint's air above the reference never cuts it) and level
+	-- round the spawn; the POI collar follows that edge.
+	local ARENA_EDGE, ARENA_SWELL, ARENA_SWELL_PERIOD, ARENA_SPAWN = 3, 2, 36, 4
 	-- Capital collar (plan D70, capital planner): the flat civic core, then a
 	-- collar of the profile's `capital_collar` width that follows the core
 	-- with the POI collar's noisy edge; no square terraces and no square
@@ -258,6 +265,20 @@ local function height_factory(dependencies)
 		local edge_noise = terrain_field.simplex(full_seed_string, "start_edge")
 		local ground_noise = terrain_field.simplex(full_seed_string, "start_ground")
 		local poi_edge_noise = terrain_field.simplex(full_seed_string, "poi_edge")
+		local arena_noise = terrain_field.simplex(full_seed_string, "arena_floor")
+		-- A dragon arena's floor edge (distance from the anchor) and its swell
+		-- below the reference at (x, z): smooth, integer swell.
+		local function arena_edge_radius(radius, x, z)
+			return radius + ARENA_EDGE * 0.5 * (1 + arena_noise(x / 24 + 17.3, z / 24 - 5.1))
+		end
+		-- The swell is 0 within ARENA_SPAWN nodes of the anchor (the spawn
+		-- stands on the anchor height) and grows to full over the next 8.
+		local function arena_swell(x, z, dx, dz)
+			local r = sqrt(dx * dx + dz * dz)
+			local grow = clamp((r - ARENA_SPAWN) / 8, 0, 1)
+			return floor(grow * ARENA_SWELL * 0.5 * (1 + arena_noise(x / ARENA_SWELL_PERIOD - 41.7,
+				z / ARENA_SWELL_PERIOD + 23.9)) + 0.5)
+		end
 
 		-----------------------------------------------------------------------
 		-- Inland water layout (plan D38): built once from the natural field in
@@ -831,15 +852,20 @@ local function height_factory(dependencies)
 				-- lower median of the natural ground under it, and only the
 				-- building core is flat.
 				local core_half = profile.building_core_width / 2
+				local arena = profile.arena_radius
 				local natural_values = {}
 				local water_lower
 				for z = selected.z - core_half, selected.z + core_half - 1 do
 					for x = selected.x - core_half, selected.x + core_half - 1 do
-						local class, owner = class_owner_at(x, z)
-						if owner == zone and class == LAND then
-							natural_values[#natural_values + 1] = natural_height_at(x, z)
-						elseif owner == zone and class == BAY then
-							water_lower = WATER_LEVEL + 1
+						local dx, dz = x - selected.x, z - selected.z
+						-- a dragon arena samples only its round floor
+						if not arena or dx * dx + dz * dz <= arena * arena then
+							local class, owner = class_owner_at(x, z)
+							if owner == zone and class == LAND then
+								natural_values[#natural_values + 1] = natural_height_at(x, z)
+							elseif owner == zone and class == BAY then
+								water_lower = WATER_LEVEL + 1
+							end
 						end
 					end
 				end
@@ -849,18 +875,31 @@ local function height_factory(dependencies)
 				-- The step at the core's edge sets the collar: short on level
 				-- ground, longer on a slope, never beyond POI_BLEND_MAX.
 				local step = 0
-				for offset = -core_half - 1, core_half do
-					local ring = {
-						{selected.x + offset, selected.z - core_half - 1},
-						{selected.x + offset, selected.z + core_half},
-						{selected.x - core_half - 1, selected.z + offset},
-						{selected.x + core_half, selected.z + offset}}
-					for side = 1, 4 do
-						local x, z = ring[side][1], ring[side][2]
-						local class, owner = class_owner_at(x, z)
-						if owner == zone and class == LAND then
-							step = max(step, abs(natural_height_at(x, z) - reference))
-						end
+				local ring = {}
+				if arena then
+					-- just outside the round floor's widest edge
+					-- (integer points, no trigonometry: sqrt is exact everywhere)
+					local r = arena + ARENA_EDGE + 1
+					for d = -r, r do
+						local e = floor(sqrt(r * r - d * d) + 0.5)
+						ring[#ring + 1] = {selected.x + d, selected.z + e}
+						ring[#ring + 1] = {selected.x + d, selected.z - e}
+						ring[#ring + 1] = {selected.x + e, selected.z + d}
+						ring[#ring + 1] = {selected.x - e, selected.z + d}
+					end
+				else
+					for offset = -core_half - 1, core_half do
+						ring[#ring + 1] = {selected.x + offset, selected.z - core_half - 1}
+						ring[#ring + 1] = {selected.x + offset, selected.z + core_half}
+						ring[#ring + 1] = {selected.x - core_half - 1, selected.z + offset}
+						ring[#ring + 1] = {selected.x + core_half, selected.z + offset}
+					end
+				end
+				for index = 1, #ring do
+					local x, z = ring[index][1], ring[index][2]
+					local class, owner = class_owner_at(x, z)
+					if owner == zone and class == LAND then
+						step = max(step, abs(natural_height_at(x, z) - reference))
 					end
 				end
 				fitting.reference_y = reference
@@ -870,7 +909,8 @@ local function height_factory(dependencies)
 			local class = is_start and "start" or is_capital and "capital" or "selected"
 			local envelope_half = profile.blend_width / 2
 			if fitting.blend then
-				envelope_half = profile.building_core_width / 2 +
+				envelope_half = (profile.arena_radius and
+					profile.arena_radius + ARENA_EDGE or profile.building_core_width / 2) +
 					ceil(fitting.blend / (1 - POI_EDGE_JITTER)) + 1
 			elseif is_capital then
 				local collar = profile.capital_collar
@@ -1003,6 +1043,21 @@ local function height_factory(dependencies)
 					in_half_open_square(x, z, fitting.center,
 						profile.building_core_width) then
 				return max(fitting.reference_y, WATER_LEVEL + 1), 1, true
+			elseif class == LAND and fitting.blend and profile.arena_radius then
+				-- A dragon arena: the round, gently swelling floor, then the
+				-- collar from its wandering edge toward the swell at the edge.
+				local dx, dz = x - fitting.center.x, z - fitting.center.z
+				local outside = sqrt(dx * dx + dz * dz) -
+					arena_edge_radius(profile.arena_radius, x, z)
+				local target = fitting.reference_y - arena_swell(x, z, dx, dz)
+				if outside <= 0 then return target, 1, false end
+				local blend = fitting.blend
+				local edge = outside * (1 + POI_EDGE_JITTER *
+					poi_edge_noise(x / 40, z / 40))
+				if edge < blend then
+					local weight = weight_at(edge, blend)
+					return lerp_node(incoming, target, weight), weight, false
+				end
 			elseif class == LAND and fitting.blend then
 				-- A POI: the flat building core, then a collar that
 				-- follows the core's outline (true distance, so round

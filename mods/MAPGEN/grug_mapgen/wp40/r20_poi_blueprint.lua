@@ -48,8 +48,20 @@ return function(options, profile)
 	local function fill(x1,y1,z1,x2,y2,z2,name,param2)
 		for z=z1,z2 do for y=y1,y2 do for x=x1,x2 do put(x,y,z,name,param2) end end end
 	end
-	fill(lo,0,lo,hi,0,hi,p.ground)
-	fill(lo,1,lo,hi,spec.height,hi,"air")
+	if spec.kind=="dragon" then
+		-- A dragon arena keeps its own ground (Round 31 DA2): the terrain
+		-- shapes its round floor, never above the anchor height (height.lua),
+		-- and arena_writer.lua dresses it. The blueprint only sets the spawn
+		-- stone under the dragon (the anchor's solid support), clears the air
+		-- above it, and puts one air cell high above each end of the axes so
+		-- its bounds are the whole arena square the world protection reads.
+		put(0,0,0,p.stone)
+		fill(-2,1,-2,2,3,2,"air")
+		for _,c in ipairs({{lo,0},{hi,0},{0,lo},{0,hi}}) do put(c[1],spec.height,c[2],"air") end
+	else
+		fill(lo,0,lo,hi,0,hi,p.ground)
+		fill(lo,1,lo,hi,spec.height,hi,"air")
+	end
 	local footprints={}
 	local function house(b,index)
 		local cx,cz,w,d,h,turn,form=unpack(b)

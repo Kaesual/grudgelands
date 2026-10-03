@@ -252,7 +252,11 @@ function grug_mobs.leash_reset(self)
 	-- function at all — they can never evade, unchanged for them.
 	local home = self._grug_home
 	local pos = self.object and self.object:get_pos()
-	if home and pos and not self._grug_patrol_route then
+	-- A dragon reset at its arena edge (boss_dragons.lua) owns its own way
+	-- home, a flight.
+	local dragon = type(self._grug_boss_id) == "string" and
+		self._grug_boss_id:find("^dragon:") ~= nil
+	if home and pos and not self._grug_patrol_route and not dragon then
 		local range = grug_mobs.damage_pursuit(self) and 4
 			or self._grug_leash_range or grug_mobs.LEASH_RANGE
 		local dx, dz = pos.x - home.x, pos.z - home.z

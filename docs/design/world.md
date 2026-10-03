@@ -574,9 +574,49 @@ each has a **distinct skill set** so it threatens in its own way.
 
 A dragon may begin or finish a hostile skill only while it has a valid living
 hostile target. Peaceful players are excluded from acquisition; losing the
-target cancels the active wind-up/action. Encounter leash and reset remain a
-separate arena rule. Periodic scorch damage counts as combat damage for the
-ordinary five-second combat window.
+target cancels the active wind-up/action. Periodic scorch damage counts as
+combat damage for the ordinary five-second combat window.
+
+**Dragon arenas** (Round 31, user ruling `round31-plan.md` §6 item 11):
+
+- Each dragon fights in a round arena of **radius 40** around its spawn
+  point, on the island's own ground: a gently swelling floor (0–2 nodes)
+  whose outer edge wanders 0–3 nodes beyond the radius; sparse rim stones
+  (stone on Wyrmglass, mossy cobble on Stormscale) mark the radius. The
+  arena's square (82 × 82, from 10 below to 22 above the floor) is a
+  protected POI core; the dragon's own breath patches stay possible in it.
+- **The arena edge is the leash.** A hostile player inside the arena (within
+  the radius, 10 below to 24 above the floor) is a target at any height and
+  distance; a player outside it is never acquired or targeted (nor by the
+  whelps), holds no threat or engagement on the dragon (dropped once a
+  second), cannot taunt it or hand it over through heal threat, and a punch,
+  shot or ability from outside does not hurt the dragon or its whelps. When
+  an engaged dragon has no hostile living player left inside its arena, the
+  fight ends: the encounter resets (participation, whelps, enrage, full
+  health) and the dragon flies back to its spawn point and lands. A re-pull
+  is a fresh attempt. There is no distance or contact leash for dragons.
+- **The dragon's wrath** (user ruling 2026-10-03): a player who takes part in
+  the fight (damages the dragon or its whelps, is targeted by them or hit by
+  them inside the arena, or heals or shields a participant from within the
+  arena radius + 15 nodes of its centre) is flagged for that fight. While the
+  fight runs, a flagged player outside the arena takes **500 damage per
+  second** (armour never reduces it, no shield soaks it, never PvP contact), with a
+  chat warning on leaving, a "Dragon's Wrath" status and its own death
+  message. The flags end together, at once, when the dragon dies or resets;
+  a participant's death or logout drops only that player.
+- **Wyrmglass hazards:** patches of thin ice flush with the floor that break
+  into ice water when a player stands on one node for 1.5 s (the node and its
+  four neighbours) and freeze again 20 s after nobody stands in them; ice
+  water deals **250 damage per second** and slows. Three flat frost-stone
+  terraces one and two nodes high, clearly distinct from the ice.
+- **Stormscale hazards:** six glowing ember fissures one node deep and one or
+  two wide, framed by basalt, dealing **350 damage per second**, no slow; five
+  fallen trunks one node high (players jump over them, the wyvern walks or
+  flies over them; not cover).
+- Hazard damage is a fixed amount per second through `set_hp` (node damage),
+  so armour does not reduce it and it is never PvP contact; the absorb
+  shield still soaks it, as it soaks dragon scorch. No hazard lies within 9
+  nodes of the spawn, within 4.6 of a perch or within 4 of the edge.
 
 - The old stage-one rule **one dragon per continent is retired**. The world
   gets two offshore overworld dragons, one beyond each Battlegrounds endpoint,
