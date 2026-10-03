@@ -506,7 +506,7 @@
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 3,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
@@ -543,7 +543,7 @@
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 3,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
@@ -578,7 +578,7 @@
         }
       ],
       "rewards": {
-        "weight": 6,
+        "weight": 4,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
@@ -615,7 +615,7 @@
         }
       ],
       "rewards": {
-        "weight": 6,
+        "weight": 4,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
@@ -650,7 +650,7 @@
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 3,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
@@ -687,7 +687,7 @@
         }
       ],
       "rewards": {
-        "weight": 5,
+        "weight": 3,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
@@ -722,7 +722,7 @@
         }
       ],
       "rewards": {
-        "weight": 6,
+        "weight": 4,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
@@ -759,7 +759,7 @@
         }
       ],
       "rewards": {
-        "weight": 6,
+        "weight": 4,
         "items": []
       },
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
