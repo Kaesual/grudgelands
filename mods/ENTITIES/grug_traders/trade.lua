@@ -315,6 +315,12 @@ function grug_traders.open(clicker, vendor_name, pos, faction)
 		return
 	end
 	local vendor = grug_traders.get_vendor(vendor_name)
+	-- The other faction gets the shared refusal line, at most once every two
+	-- seconds (Round 31, ruling 13); can_trade re-checks every action.
+	if vendor and not grug_factions.serves(faction, clicker) then
+		grug_factions.refuse(clicker, vendor.nametag, faction)
+		return
+	end
 	local ok, message = grug_traders.can_trade(clicker, vendor, faction)
 	if not ok then
 		core.chat_send_player(clicker:get_player_name(), message)

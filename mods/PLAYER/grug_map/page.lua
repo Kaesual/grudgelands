@@ -115,7 +115,8 @@ end
 -- selection, the location label, the minimap switch, each arrow's grid
 -- place and heading frame, the quest markers' version
 -- (grug_quests.marker_states), the home (which innkeeper or Claim Stone is
--- marked as home) and the discovered waystones. Every other marker and label
+-- marked as home), the discovered waystones and the faction (which NPC
+-- markers the player sees, Round 31). Every other marker and label
 -- is fixed for the server's run; scroll values are transport state (see
 -- page_content).
 local function signature(player, context)
@@ -138,6 +139,8 @@ local function signature(player, context)
 	local home = grug_home.get(player)
 	parts[#parts + 1] = home and home.id or ""
 	for _, row in ipairs(grug_home.known_waypoints(player)) do parts[#parts + 1] = row.id end
+	-- The faction picks the NPC markers (Round 31, ruling 13).
+	parts[#parts + 1] = grug_factions.get_faction(player) or ""
 	return table.concat(parts, "|")
 end
 

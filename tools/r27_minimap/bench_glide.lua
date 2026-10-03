@@ -100,7 +100,8 @@ rawset(_G, "grug_core", {settlement_socket_settlements = function()
 	-- Round 31 (faction filter): the viewer's faction picks the markers.
 	faction_ids = {"accord", "throng"},
 	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end})
-rawset(_G, "grug_factions", {get_faction = function() return "accord" end})
+rawset(_G, "grug_factions", {get_faction = function() return "accord" end,
+	register_on_faction_chosen = function() end})
 dofile(tree .. "/mods/CORE/grug_core/hud_layout.lua")
 local npcs = {}
 for i, socket in ipairs(sockets) do

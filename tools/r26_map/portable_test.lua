@@ -62,7 +62,8 @@ rawset(_G, "grug_core", {
 	faction_ids = {"accord", "throng"},
 	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
 })
-rawset(_G, "grug_factions", {get_faction = function() return "accord" end})
+rawset(_G, "grug_factions", {get_faction = function() return "accord" end,
+	register_on_faction_chosen = function() end})
 rawset(_G, "grug_jobs", {PROFESSIONS = {tailor = {name = "Tailor"}}})
 rawset(_G, "grug_mobs", {dragon_map_markers = function() return {} end})
 rawset(_G, "grug_quests", {registered_npcs = {}, marker_states = function() return {}, 1 end})

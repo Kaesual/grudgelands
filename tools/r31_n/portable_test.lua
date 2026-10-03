@@ -4,7 +4,7 @@
 --   luajit tools/r31_n/portable_test.lua [repo]
 --
 -- Loads the REAL grug_factions/service.lua, grug_mobs/start_villagers.lua,
--- grug_traders/vendors.lua, grug_quests registry/state/labels/npc and
+-- grug_traders/vendors.lua and trade.lua, grug_quests registry/state/labels/npc and
 -- grug_map atlas/providers on a fake engine. Checks:
 --   S  the service refusal table: every villager service role (innkeeper,
 --      Riding Trainer, Shipwright, Housing Steward, profession trainer), the
@@ -181,6 +181,7 @@ dofile(repo .. "/mods/ENTITIES/grug_mobs/start_villagers.lua")
 
 grug_traders = {PROFESSION_BRACKETS = {}}
 dofile(repo .. "/mods/ENTITIES/grug_traders/vendors.lua")
+dofile(repo .. "/mods/ENTITIES/grug_traders/trade.lua")
 
 grug_inventory = {BAG_COUNT = 0}
 grug_xp = {get_level = function() return 10 end, quest_reward = function() return 10 end,
@@ -328,6 +329,18 @@ check(not ok and message == "<Butcher> I serve only The Accord.",
 	"S profession vendor refuses the enemy: " .. tostring(message))
 check(trade("grug_traders:vendor_butcher", org, nil),
 	"S a profession vendor outside a settlement has no faction and serves everyone")
+do -- The vendor's right-click: the shared line, once per two seconds.
+	local def = mob_defs["grug_traders:vendor_general_accord"]
+	local self = {object = {get_pos = function() return {x = 0, y = 10, z = 0} end}}
+	us = us + 3000000
+	local before = #chat
+	for _ = 1, 5 do def.on_rightclick(self, org) end
+	eq(#chat - before, 1, "S five quick clicks at an enemy vendor say the refusal once")
+	eq(said(), "org: <Accord Quartermaster> I serve only The Accord.", "S the vendor's line")
+	us = us + 2100000
+	def.on_rightclick(self, org)
+	eq(#chat - before, 2, "S ...and again after two seconds")
+end
 
 -- ---------------------------------------------------------------------------
 -- G: guards, royal guards and kings give no quests
