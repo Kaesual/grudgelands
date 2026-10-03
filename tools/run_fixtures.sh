@@ -4,8 +4,8 @@
 # repository path as its argument, a few in parallel under idle scheduling.
 #   tools/run_fixtures.sh [NAME ...]   (NAME: a tools/ folder, e.g. r30_p1;
 #                                       default every fixture)
-#   JOBS=<n> parallel processes (default 4; tools/r30_p3 runs two seeds, so
-#   it counts twice).
+#   JOBS=<n> parallel fixtures (default 4; tools/r30_p3 takes one slot but
+#   runs its two seeds side by side, so one more process at most).
 # Special cases: a fixture.lua next to a micro.lua returns a function and runs
 # through micro.lua; tools/r30_p3 takes seeds and a scratch world, so it runs
 # through its run.sh (seeds 12345 and 42). Prints one line per fixture and a
