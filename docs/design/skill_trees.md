@@ -41,8 +41,8 @@ commit (§5.3).
   adding many new ones." **Ruling 3 widens this**: new skills now come from
   keystones as well as capstones, and ruling 4 makes the tree their *only*
   source.
-- `classes.md` §5 (`:459`): "Renew *(talent)* … Unlocked via the Holy tree
-  (WP11)." Still true; Renew is the Mercy tree's first keystone (§2.5).
+- `classes.md` §5 (`:459`): "Mend *(talent)* … Unlocked via the Holy tree
+  (WP11)." Still true; Mend is the Mercy tree's first keystone (§2.5).
 - `economy.md` §4 and `items_crafting.md` §8.3 now implement ruling 4's
   decided location: respec is performed in the talent UI, with no class
   trainer or NPC. The older trainer sentence survives only in labelled
@@ -316,7 +316,7 @@ rank at level 12 adds 3 HP after rounding, matching the former flat first rank.
 class starts with Strike plus three, and it says the skill "may return later
 through a keystone". It does: **Hamstring is Ruin's new-skill keystone**, the
 second of the two in this design that are already registered in code
-(`kits.lua:403`, gated the way Renew is at `:812`). That makes Broadstroke a
+(`kits.lua:403`, gated the way Mend is at `:812`). That makes Broadstroke a
 replacement rather than a registration, and it re-cuts the Lash chain so that
 nothing below tier 3 modifies a skill the player may not have yet.
 
@@ -375,10 +375,10 @@ besides its capstone — see §2.9's note on the bounded pass.
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Deep Chill** | Frost | 1 | 5 | — | Frost Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:581-598` | `frost_nova_root_add` |
-| 2 | **Hoarfrost** | Frost | 2 | 4 | — | Frost Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:583-598` | `frost_nova_slow_add` |
-| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Frost Nova** | Frost Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `frost_nova_ranged` |
-| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Frost Nova adds `5 + floor(spell power / 2)` to its quarter-Fireball baseline before spell scaling, once per accepted hit | `kits.lua:581-598` | `control_damage_add` |
+| 1 | **Deep Chill** | Frost | 1 | 5 | — | Ice Nova root 4 s → 4.2 / 4.4 / 4.6 / 4.8 / 5.0 s | `kits.lua:581-598` | `ice_nova_root_add` |
+| 2 | **Hoarfrost** | Frost | 2 | 4 | — | Ice Nova follow-up slow 3 s → 4 / 5 / 6 / 7 s (the 50 % stays) | `kits.lua:583-598` | `ice_nova_slow_add` |
+| 3 | **Frostbind** *(keystone)* | Frost | 3 | 3 | **replaces Ice Nova** | Ice Nova stops being self-centred: it is cast at the pointed hostile up to 20 m away and roots everything within 3 / 4 / 5 m **of the target**. Same key, same 10% base-mana cost, same 12 s cooldown — a control tool instead of a panic button | `kits.lua` (the cast body and its radius origin) | `ice_nova_ranged` |
+| 4 | **Rimebite** *(capstone)* | Frost | 4 | **1** | **effect** | Ice Nova adds `5 + floor(spell power / 2)` to its quarter-Fireball baseline before spell scaling, once per accepted hit | `kits.lua:581-598` | `control_damage_add` |
 | 5 | **Cold Focus** | Ward | 1 | 5 | — | in-combat mana regeneration ×1.2 / ×1.4 / ×1.6 / ×1.8 / ×2.0 (the base rate is `max(0.25 × (1 + 0.15 × level), 0.0025 × maximum mana)` mana/s, combat_stats.md §5) | `grug_abilities/init.lua` mana-regeneration ticker | `combat_mana_regen_add` |
 | 6 | **Quick Step** | Ward | 2 | 4 | — | Blink cooldown 15 s → 13.5 / 12 / 10.5 / 9 s | `grug_abilities/init.lua:1566-1567` — **not** the registration constant | `blink_cooldown_sub` |
 | 7 | **Glacial Ward** *(keystone)* | Ward | 3 | 3 | **new skill** | cast, 10% base mana, 30 s cooldown, self; absorbs 10% / 15% / 20% of the class-neutral base pool plus the spell-power percentage for 10 s | new; `grug_core.add_absorb` | — |
@@ -386,22 +386,22 @@ besides its capstone — see §2.9's note on the bounded pass.
 
 Rime also takes no rule-breaker besides its capstone, and its capstone does
 not break one either — Rimebite is simply a strong effect. Same absorb caveat
-as §2.1: Glacial Ward and Power Word: Shield no longer overwrite each other — ruling 23, §3.11.
+as §2.1: Glacial Ward and Shield no longer overwrite each other — ruling 23, §3.11.
 
 ### 2.5 Priest — Mercy
 
 | # | Talent | Chain | Tier | Ranks | Kind | Effect | Modifies | Key |
 |---|---|---|---|---|---|---|---|---|
-| 1 | **Gentle Hand** | Balm | 1 | 5 | — | Flash Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `flash_heal_add` |
+| 1 | **Gentle Hand** | Balm | 1 | 5 | — | Heal's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `heal_add` |
 | 2 | **Quiet Steps** | Balm | 2 | 4 | — | heal threat factor 0.5 → 0.45 / 0.40 / 0.35 / 0.30 (`combat_stats.md` §4) | `grug_core/combat.lua:355`, read inside `add_heal_threat` at `:518-535` | `heal_threat_factor_sub` |
-| 3 | **Renew** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool plus spell-power percentage every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `renew_tick_add` |
-| 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Flash Heal** | Flash Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua` plus its radius loop | `flash_heal_splash` |
-| 5 | **Warding Faith** | Aegis | 1 | 5 | — | Power Word: Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `shield_absorb_add` |
+| 3 | **Mend** *(keystone)* | Balm | 3 | 3 | **new skill** *(already registered)* | the shipped ability, granted at rank 1 exactly as `classes.md` §5 specifies (6% base mana, 8 s cooldown, 8% of the base pool plus spell-power percentage every 3 s for 12 s); ranks 2 and 3 raise the tick to 9% and 10% | `kits.lua`; the grant gate is `talent_gated = true` | `mend_tick_add` |
+| 4 | **Hearten** *(capstone)* | Balm | 4 | **1** | **replaces Heal** | Heal also heals every **other** ally within 8 m for **65 %** of the amount. Same key, same 8% base-mana cost, same 4 s cooldown — the Priest's group heal, without a group-heal button | `kits.lua` plus its radius loop | `heal_splash` |
+| 5 | **Warding Faith** | Aegis | 1 | 5 | — | Shield's 25% base-pool share gains +1 / 2 / 3 / 4 / 5 percentage points | `kits.lua` | `shield_absorb_add` |
 | 6 | **Deep Reserve** | Aegis | 2 | 4 | — | max mana +3 / 6 / 9 / 12 % | `grug_classes/stats.lua:67-105` | `max_mana_percent_add` |
-| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Power Word: Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | `kits.lua:764-803` and `grug_classes/stats.lua:128-140` | `dodge_chance_window` |
-| 8 | **Second Skin** | Aegis | 4 | 3 | — | Power Word: Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:795-799` | `shield_duration_add` |
+| 7 | **Turn Aside** *(keystone)* | Aegis | 3 | 3 | **replaces Shield** | while the shield holds (at most its 15 s), its target's dodge chance is +10 / 15 / 20 percentage points, **inside** the 30 % cap. Same key, same cost — the shield now buys avoidance as well as absorption | `kits.lua:764-803` and `grug_classes/stats.lua:128-140` | `dodge_chance_window` |
+| 8 | **Second Skin** | Aegis | 4 | 3 | — | Shield lasts 15 s → 18 / 21 / 24 s | `kits.lua:795-799` | `shield_duration_add` |
 
-Renew is Mercy's **keystone**, and it is the one new-skill keystone in the
+Mend is Mercy's **keystone**, and it is the one new-skill keystone in the
 whole design that is **already registered**. `progression.md` §2 called it
 "the Priest Holy capstone"; ruling 3 re-cut what a capstone is, and the
 correction is in `progression.md`'s own commit (§5.3). `classes.md:464`'s
@@ -486,8 +486,8 @@ burst that would kill it, built from the dodge stat the game already rolls.
 | …replacements | — | — | **2** (Hearten, Longshot) |
 
 **New-skill keystones: 8 across all four classes**, one per tree — Hold
-Ground, Hamstring, Cinderfall, Glacial Ward, Renew, Word of Ruin, Pinning
-Shot, Opening. **Four of those are registered in code**: Renew
+Ground, Hamstring, Cinderfall, Glacial Ward, Mend, Word of Ruin, Pinning
+Shot, Opening. **Four of those are registered in code**: Mend
 (`kits.lua:651-677`, already `talent_gated`), Hamstring
 (`kits.lua:350-377`) and Round 11's Pinning Shot and Opening. So:
 
@@ -530,7 +530,7 @@ inventing breaks: every rule-breaker is a rule the KAT then has to prove is
 broken *only* under its own conditions.
 
 Effect keys, counted from the Key column of §§2.1-2.8: **58 key cells, 51
-distinct** (6 rows carry no key — the eight new-skill keystones minus Renew
+distinct** (6 rows carry no key — the eight new-skill keystones minus Mend
 and Hamstring, whose rank scaling each has one). **Three** keys are shared
 across classes:
 `crit_chance_add` (all four), `max_mana_percent_add` (Mage, Priest, Scout) and
@@ -548,9 +548,9 @@ survive rulings 2 and 3 in any reading: a tree of 8 talents carries 5 numeric,
 **The decided ability tables become *base* values.** `classes.md` §§3-5 state
 their numbers flatly: Mighty Blow is "exactly floor(weapon damage × 1.5)"
 (`classes.md:425`), Hamstring charges 6 s and slows for 5 s (`:421`), Taunt
-runs 8 s (`:422`), Frost Nova roots 4 s then slows 3 s (`:441`), Blink
-  teleports 10 m (`:442`), Smite has a 2 s cooldown (`:456`), Flash Heal uses
-  25% of the base pool, Power Word: Shield lasts 15 s (`:458`), and
+runs 8 s (`:422`), Ice Nova roots 4 s then slows 3 s (`:441`), Blink
+  teleports 10 m (`:442`), Smite has a 2 s cooldown (`:456`), Heal uses
+  25% of the base pool, Shield lasts 15 s (`:458`), and
 the 2026-08-06 kit-tuning note reasons from "+12 rage per auto-hit" (`:413`,
 `:425`). **Eighteen talents re-tune exactly these numbers.** Nothing forbids
 it — improving existing buttons is what `classes.md:59-61` says talents are
@@ -675,21 +675,18 @@ so each name carries a confidence label rather than a verdict, and "low" means
 - **A question for the user, not an automatic rename.** Under ruling 21 this
   is the one naming item that is about the *picture* rather than a word: the
   Priest's **Sharpened Word / Swift Word / Word of Ruin / Last Word** extend a
-  well-known MMO's Priest *"Power Word:" / "Shadow Word:" / "Holy Word:"*
-  family — four new talents, on the Priest, in that exact vocabulary — and
-  **Twin Shot** plus Snare Shot extend the ranged-pet class's *"…Shot"* family
-  on the bow class. The shipped `Power Word: Shield` is pre-existing and
-  ruling 5 does not reopen it. Clean replacements if the user wants them:
-  **Whetted Verse**, **Quick Verse**, **Verse of Ruin**, **Final Verse**;
-  **Twinned Arrow**.
+  well-known MMO's Priest *"… Word:"* spell family — four new talents, on
+  the Priest, in that exact vocabulary — and **Twin Shot** plus Snare Shot
+  extend the ranged-pet class's *"…Shot"* family on the bow class. Clean
+  replacements if the user wants them: **Whetted Verse**, **Quick Verse**,
+  **Verse of Ruin**, **Final Verse**; **Twinned Arrow**.
 - **Deliberately kept by ruling 5 (tree names):** Ruin, Rime, Reckoning.
-- **Renew and Hamstring keep their names**, and are the two talents that are
-  also shipped abilities (§2.5, §2.2). They belong to the pre-existing group
-  with the nine shipped ability names — Power Word: Shield, Frost Nova, Flash
-  Heal, Blink, Hamstring, Charge, Smite, Taunt, Renew — which ruling 5 does
-  not reopen and which ruling 21's "single words are not protected" settles
-  for all but *Power Word: Shield*, the one that is a phrase rather than a
-  word.
+- **Shipped ability names (Round 31 user ruling):** the shipped skills that
+  carried that MMO's exact names were renamed — the Priest's **Heal**,
+  **Shield** and **Mend** and the Mage's **Ice Nova**. Generic words (Blink,
+  Hamstring, Charge, Smite, Taunt, Fireball, Sprint) stay, as ruling 21's
+  "single words are not protected" already said. Mend and Hamstring are the
+  two talents that are also shipped abilities (§2.5, §2.2).
 - **The audit covers all 64 talents**: 54 low-risk, 8 medium (the table
   above, which also carries the Scout's two base-kit names), and these two
   shipped names. A script over §§2.1-2.8 checks that every name in a table
@@ -883,7 +880,7 @@ capstones) is **not** a registration and touches none of the above. The
 shipped ability keeps its id, its key, its icon and its registration; the
 talent is a read inside its own `cast` or `proc_swing` body, exactly like
 every numeric talent in §2 — Bellow is a radius the Taunt body reads, Hearten
-is a loop the Flash Heal body runs, Frostbind is where Frost Nova takes its
+is a loop the Heal body runs, Frostbind is where Ice Nova takes its
 origin from. That is why ruling 13 is cheaper as well as kinder to the
 hotbar: of the **twenty-four** keystones and capstones, **sixteen** — the ten
 replacements and the six effects — cost zero new registrations, zero new
@@ -904,7 +901,7 @@ item: the next cast reads the current talent rank.
 |---|---|---|---|
 | Warrior | Strike + 3 — Charge (`kits.lua:291`), Mighty Blow (`:321`), Taunt (`:380`); **Hamstring leaves the base kit with ruling 19** and returns as Ruin's keystone | 2 (Hold Ground, Hamstring) | **6 of 8** |
 | Mage | Strike + 3 (`classes.md:445-447`) | 2 (Cinderfall, Glacial Ward) | 6 of 8 |
-| Priest | Strike + 3 (`classes.md:461-463`) | 2 (Renew, Word of Ruin) | 6 of 8 |
+| Priest | Strike + 3 (`classes.md:461-463`) | 2 (Mend, Word of Ruin) | 6 of 8 |
 | Scout | Strike + 4 ([scout.md](scout.md) §2) | 2 (Pinning Shot, Opening) | **7 of 8** |
 
 Two keys stay free in the original three classes; Scout keeps at least one
@@ -1124,7 +1121,7 @@ awkward kind for an aggregator:
   exists to end**, and one the aggregator does not fix unless this writer
   migrates too.
 
-**It is an aggregator for speed and jump.** Frost Nova uses the hard-root flag
+**It is an aggregator for speed and jump.** Ice Nova uses the hard-root flag
 (logical speed 0, jump 0), followed by its independent 50% slow. The shared
 physics writer zeros locomotion targets with native braking enabled, so an
 already moving player stops; airborne falling and gravity remain active. Movement immunity
@@ -1232,7 +1229,7 @@ absorbs stack as **named contributions with independent durations**, one
 aggregator, no replacement.
 
 ```lua
-grug_core.add_absorb(target, "power_word_shield", amount, 15)
+grug_core.add_absorb(target, "shield_spell", amount, 15)
 grug_core.add_absorb(target, "hold_ground", amount, 8)
 grug_core.get_absorb(target)        -- unchanged signature: the total
 ```
@@ -1281,7 +1278,7 @@ landed.
 |---|---|---|---|
 | **X1 — the model** | `talents.lua`: registry, the 48 talent registrations of the three shipped classes (data only, no consumer), points, the two gate kinds, spend/respec rules, persistence with the validating read path, the window table of §3.2, `get_talent_bonus` / `talent_rank`, the `on_talents_changed` callback, and the whole KAT of §3.7 except group 5's consumer half. Ships with **zero gameplay effect** — every talent is inert. | — | M |
 | **X2 — the numeric consumers** | The **30** talents of the three shipped classes that are neither keystone nor capstone, at the sites of the §3.8 table. **Twenty-five are a one-line read where the table says; five hook the three central per-player seams of §3.2** (Grudge, Quick Step, Swift Word and Onset on `arm_cooldown`; Far Cast on the spawn call and `get_range`), and each of those needs its own no-talent regression case (KAT group 8). Completes KAT groups 5 and 6. Touches shared files, so it is one lane and not split by class. | X1 | M |
-| **X3 — keystones and capstones (implemented Round 12)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Renew (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the shared entitlement predicate and manual Skills recovery rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, Round 12 preserves that implementation alongside Scout. The Crit override, named absorbs and Hold Ground immunity use the shared §3 seams. The bounded native X3 probe covers each ability/replacement and lifecycle. | X1, §3.9 for one talent | L |
+| **X3 — keystones and capstones (implemented Round 12)** | **Four** new ability registrations (Hold Ground, Cinderfall, Glacial Ward, Word of Ruin); the `talent_gated` flag on the **two shipped abilities that become keystones**, Mend (already flagged) and Hamstring (`kits.lua:350`, ruling 19), plus their rank scaling; the shared entitlement predicate and manual Skills recovery rule of §3.4; **seven replacements** written inside the shipped abilities' own bodies (Bellow, Broadstroke, Brand, Frostbind, Turn Aside, Recompense, Hearten) and the rule-breaking finisher Tendon Cut; the remaining capstone effects and cap-override paths. Round 11 already delivered Ironbound and Unbroken's armor-rating multiplier/window, Round 12 preserves that implementation alongside Scout. The Crit override, named absorbs and Hold Ground immunity use the shared §3 seams. The bounded native X3 probe covers each ability/replacement and lifecycle. | X1, §3.9 for one talent | L |
 | **X4 — UI, level-up and respec (implemented 2026-09-17)** | The sfinv Talents page of §3.5, the two `mod.conf` edges, the level-up chat line with its `old_level ~= nil` guard, the respec transaction against `grug_money.take`, the price of ruling 22 (§1.4), and the raw-vs-effective display `combat_stats.md:104-108` requires — including the **raised cap** while a rule-breaker runs. The six price values are WP44's income-derived `RESPEC_PRICES` (Round 29 lane E4). | X1 | M |
 
 X3 is the only lane that owes a runtime test on a headless server; X1, X2 and
@@ -1520,7 +1517,7 @@ checkout. Line numbers elsewhere in this file are branch-relative.
 |---|---|
 | 1 | `progression.md main:28` "**1 talent point every 3 levels** (20 points total at 60)" **and** `combat_stats.md main:14` "the class skill tree (**1 skill point per level**)". Revision 1's open decision about which one won is closed: **neither**. |
 | 2 | `progression.md main:29-30` "talent trees hold 2 trees × 5 talents × 3 ranks = 30 ranks per class — you can fill two thirds: real choices, no full clear (WP11)" and `BACKLOG.md main:34`'s repetition of it |
-| 3 | `progression.md main:31-35` "**9 of 10 talents are numeric modifiers** (cheap to build, easy to balance); **exactly one capstone per tree**, unlocked at 8+ points in that tree, and **every capstone is a NEW active 'main skill'** … (e.g. Priest Holy capstone: Renew; further capstones designed with WP11)" |
+| 3 | `progression.md main:31-35` "**9 of 10 talents are numeric modifiers** (cheap to build, easy to balance); **exactly one capstone per tree**, unlocked at 8+ points in that tree, and **every capstone is a NEW active 'main skill'** … (e.g. Priest Holy capstone: Mend; further capstones designed with WP11)" |
 | 4 | `progression.md main:36-37` "**Respec at the class trainer for gold**, price rising with level — repeatable per-character gold sink and the class trainer's purpose", together with the former matching text in `economy.md`, `items_crafting.md` and `world.md`. All living sections now state the no-trainer rule. |
 | 5 | revision 1's naming open decision, for talents |
 | 7 | `classes.md main:466-470` "**Poison → arrives with the Rogue in Phase 2** (noted 2026-08-08). Poison is intended as the **Rogue's signature damage type** … and the Rogue is the Phase 2 class" — the Phase-2 Rogue is **superseded by the Scout**, and with it the poison plan. The bullet is now `classes.md:475-487` on this branch and quotes its own retired text. |
@@ -1580,7 +1577,7 @@ are listed so that the merge does not leave the repo contradicting itself.
 | 1 | Amend `mounts.md` §3.1's pillar paragraph and `combat_stats.md` §3 to say the 4.4 > 4.0 inequality holds **except** for named, long-cooldown skills, of which Sprint is the first at **+50 % for 10 s every 300 s**; the Swiftness Draught's +8 % stays as it is | rulings 10 and 29 decided it; neither file is this lane's |
 | 2 | Implement the remaining Mage crit-cap override without replacing Round 11's delivered Unbroken armor path or Scout dodge-cap override | the common cap rule is decided and documented; the remaining consumer belongs to X3 |
 | 4 | Correct the five shipped comments that assume a class change (`grug_inventory/equipment.lua:57`, `:501`, `:579`, `grug_core/combat.lua:110`, `grug_abilities/init.lua:1775-1776`) and remove the `/class` registration at `grug_classes/selection.lua:594-595` — **not** the `:554-592` helper, which `/race` still needs | ruling 20 decided it; it is code, and this lane is docs-only (§3.10 lists the sites) |
-| 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Renew row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
+| 5 | Rename the two remaining "Holy tree" mentions to Mercy — the Mend row at `classes.md:464` and the comment at `mods/PLAYER/grug_abilities/kits.lua:650` | bookkeeping after ruling 5's tree names; one is code |
 | 7 | Fix three drifted citations **into** `mods/ENTITIES/mobs/api.lua`, held by three other files: `mounts.md:165` points at api.lua 2525-2526 where the line is **2531**, and the comments at `grug_mobs/golem.lua:67` and `grug_mobs/skeleton_archer.lua:65` both point at api.lua 2249 where the line is **2366** | found while writing `docs/research/mob-pressure-task-card.md`, which carries them; two are code comments |
 | 8 | **Re-tune Warrior rage** (ruling 25): swing **12 → 8** at all five `add_rage` sites (`grug_abilities/init.lua:939`, `:950`, `:966`, `:1915`, `:2099`), hit taken **4 → 3** (`:2109-2110`), and a **5 rage/s out-of-combat decay** on the existing `grug_core.in_combat` window (read at `:2201`). `classes.md` §3's table and its "+12 rage per auto-hit" tuning note (`:418`, `:430`) move with it. **Fallback if (b) overshoots**: leave the income alone and raise the prices instead — Mighty Blow 25 → 35, Hamstring 10 → 15 | it is `classes.md` §3 tuning plus code, for the WP11 / mob-pressure round; WP11's talents must then be re-checked against whichever number lands, because Stoke, Heavy Hand and Broadstroke all assume rage is a limiter |
 | 9 | **Delivered in Round 11:** the ranged damage term from ruling 28, `weapon damage + floor(Dex/10)`, published as `grug_classes.get_ranged_bonus` beside `get_melee_bonus` | implemented with the Scout consumer |

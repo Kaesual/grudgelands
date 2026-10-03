@@ -138,7 +138,7 @@ local EXPECTED_KIND = {
 	food = "buff", elixir = "buff", alchemy_swiftness = "buff",
 	alchemy_cave = "buff", warding_draught = "buff", mount = "buff",
 	move_immune = "buff", scout_sprint = "buff", sidestep = "buff",
-	renew = "buff", shield = "buff",
+	mend = "buff", shield = "buff",
 	talent_unbroken = "buff", talent_ruination = "buff",
 	talent_whitehot = "buff", talent_turn_aside = "buff",
 	talent_last_word = "buff", talent_untouchable = "buff",
@@ -249,7 +249,7 @@ check(read_file("mods/ENTITIES/grug_mobs/verbs.lua"):find(
 	"core.register_on_dieplayer(cancel_poison)", 1, true) ~= nil,
 	"poison chains stop on death")
 for _, expected in ipairs({"food", "elixir", "alchemy_swiftness",
-		"alchemy_cave", "mount", "scout_sprint", "sidestep", "renew", "shield",
+		"alchemy_cave", "mount", "scout_sprint", "sidestep", "mend", "shield",
 		"poisoned", "scorched", "dragon_wrath", "stunned", "rooted", "slowed", "move_immune",
 		"talent_turn_aside", "talent_unbroken", "talent_ruination",
 		"talent_whitehot", "talent_last_word", "talent_untouchable"}) do

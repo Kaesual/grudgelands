@@ -307,7 +307,7 @@ across all six tier palettes and the established diagonal convention: grip at
 approximately `(3.4, 12.6)` in 16x16 sprite coordinates, business end toward
 the upper right. Accepted swords, one-handed axes and armor are unchanged.
 
-### Frost Nova feedback
+### Ice Nova feedback
 
 While a target remains under Nova's actual root, emit a few small pale-blue
 crystal particles around its lower body, scaled simply to the live collision

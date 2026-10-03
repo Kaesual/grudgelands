@@ -1,6 +1,6 @@
 -- Round 31 Lane P1b portable test (docs/planning/round31-plan.md §6 rulings
 -- 8 and 9). Loads the REAL files under small stubs:
---   H  grug_abilities/kits.lua: Flash Heal, Power Word: Shield and Renew
+--   H  grug_abilities/kits.lua: Heal, Shield and Mend
 --      aimed at an ally the PvP flag rules out (an unflagged helper, a
 --      flagged ally) refuse with a reason and touch nobody -- a false cast
 --      return is what makes try_cast spend nothing -- instead of falling back
@@ -91,7 +91,8 @@ do
 		get_talent_bonus = function() return 0 end,
 		get_spell_power_bonus = function() return 0 end,
 		talent_rank = function() return 0 end,
-		registered_talents = {},
+		-- kits.lua reads Mend's display name from its talent keystone.
+		registered_talents = {mend = {name = "Mend"}},
 	}
 	grug_projectiles = {register = function() end}
 	local abilities = {}
@@ -106,8 +107,9 @@ do
 		end,
 	}
 	dofile(repo .. "/mods/PLAYER/grug_abilities/kits.lua")
-	local ids = {"flash_heal", "power_word_shield", "renew"}
+	local ids = {"heal", "shield_spell", "mend"}
 	for _, id in ipairs(ids) do check(abilities[id] ~= nil, "H: " .. id .. " registered") end
+	eq(abilities.mend.name, "Mend", "H: Mend takes its display name from the talent keystone")
 
 	local function cast(id, user)
 		heals, absorbs, contacts = {}, {}, {}
@@ -136,24 +138,24 @@ do
 		local ok = cast(id, healer)
 		check(ok, "H: " .. id .. " with no ally aimed casts")
 	end
-	cast("flash_heal", healer)
-	eq(heals[1], "healer", "H: Flash Heal with no ally aimed heals the caster")
-	cast("power_word_shield", healer)
+	cast("heal", healer)
+	eq(heals[1], "healer", "H: Heal with no ally aimed heals the caster")
+	cast("shield_spell", healer)
 	eq(absorbs[1], "healer", "H: the shield with no ally aimed shields the caster")
 	-- Aim at a protected enemy: not an ally, so the caster as before.
 	ray = {status = "aim_miss", reason = "protected", target = enemy}
-	check(cast("flash_heal", healer) and heals[1] == "healer",
+	check(cast("heal", healer) and heals[1] == "healer",
 		"H: an enemy in the crosshair still resolves to the caster")
 	-- Aim at an unflagged ally: supported.
 	local calm = player("calm", "accord", false)
 	ray = {status = "aim_miss", reason = "friendly", target = calm}
-	check(cast("flash_heal", healer) and heals[1] == "calm", "H: an unflagged ally is healed")
+	check(cast("heal", healer) and heals[1] == "calm", "H: an unflagged ally is healed")
 	-- A flagged helper supports the flagged ally and reports the contact.
 	healer.flagged = true
 	ray = {status = "aim_miss", reason = "friendly", target = ally}
-	check(cast("flash_heal", healer) and heals[1] == "ally", "H: a flagged helper heals the flagged ally")
+	check(cast("heal", healer) and heals[1] == "ally", "H: a flagged helper heals the flagged ally")
 	eq(contacts[1], "healer>ally", "H: the heal reports support contact")
-	check(cast("power_word_shield", healer) and absorbs[1] == "ally", "H: a flagged helper shields the flagged ally")
+	check(cast("shield_spell", healer) and absorbs[1] == "ally", "H: a flagged helper shields the flagged ally")
 	-- A dead ally in the crosshair is no refusal (the existing rule decides).
 	healer.flagged = false
 	ally.hp = 0

@@ -378,7 +378,7 @@ function mobs:spawn_abm_check(pos, node, name)
 end
 
 --
--- Root/slow support (Frost Nova, Hamstring): scales walk/run velocity,
+-- Root/slow support (Ice Nova, Hamstring): scales walk/run velocity,
 -- restored by a countdown that ticks in do_custom. Deliberately NOT a
 -- core.after timer: mobs_redo persists all plain entity fields in
 -- staticdata, so a lost timer (relog/restart inside the effect window)

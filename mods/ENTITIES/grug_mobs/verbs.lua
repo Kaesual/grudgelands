@@ -201,7 +201,7 @@ end
 -- modifier (combat.lua:442ff):
 --   * the dodge roll only fires for reason.type == "punch" — a DoT tick
 --     must not be dodgeable, so set_hp is exactly right;
---   * absorb shields soak EVERY source, so a Power Word: Shield does eat
+--   * absorb shields soak EVERY source, so a priest's Shield does eat
 --     poison ticks. Intended (that is what a shield is for);
 --   * armor groups are bypassed entirely — poison ignores armor by design.
 -- A tick does NOT mark the victim in combat (combat_stats §5 "Combat state"):

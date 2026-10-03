@@ -28,6 +28,10 @@ filter from the generated originals. No recoloring or compositing was applied
 to the new art. Full per-file IDs, source output paths, exact prompts and
 final SHA-256 hashes: `tools/r18_art/manifest.json` at the repository root.
 Design rationale and reference inspection: `docs/research/round18-art-report.md`.
+Round 31 renamed four skills; their files are unchanged renamed copies
+(same SHA-256), listed in the manifest under the new id with `renamed_from`:
+`grug_abilities_skill_heal.png`, `_shield_spell.png`, `_mend.png` and
+`_ice_nova.png`.
 
 ## Bow draw stages — CC BY-SA 4.0
 

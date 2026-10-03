@@ -1706,8 +1706,8 @@ function grug_core.get_absorb(player)
 	return total
 end
 
--- Turn Aside's dodge rides on the shield that carries it (kits.lua Power Word:
--- Shield), so its status icon lives exactly as long as a live absorb entry
+-- Turn Aside's dodge rides on the shield that carries it (kits.lua Shield),
+-- so its status icon lives exactly as long as a live absorb entry
 -- still holds a dodge modifier: consumed, expired and respec-cleared shields
 -- all end it (Round 26 ruling 18).
 if grug_core.register_status_source then

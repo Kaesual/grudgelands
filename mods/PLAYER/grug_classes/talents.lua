@@ -64,12 +64,12 @@ local EFFECT_KEYS = {
 	mighty_blow_multiplier_add = "grug_abilities/kits.lua Mighty Blow",
 	fireball_damage_add = "grug_abilities/kits.lua Fireball",
 	fireball_range_add = "grug_abilities/kits.lua spawn, init.lua get_range",
-	frost_nova_root_add = "grug_abilities/kits.lua Frost Nova",
-	frost_nova_slow_add = "grug_abilities/kits.lua Frost Nova",
+	ice_nova_root_add = "grug_abilities/kits.lua Ice Nova",
+	ice_nova_slow_add = "grug_abilities/kits.lua Ice Nova",
 	blink_distance_add = "grug_abilities/kits.lua Blink",
-	flash_heal_add = "grug_abilities/kits.lua Flash Heal",
-	shield_absorb_add = "grug_abilities/kits.lua Power Word: Shield",
-	shield_duration_add = "grug_abilities/kits.lua Power Word: Shield",
+	heal_add = "grug_abilities/kits.lua Heal",
+	shield_absorb_add = "grug_abilities/kits.lua Shield",
+	shield_duration_add = "grug_abilities/kits.lua Shield",
 	smite_damage_add = "grug_abilities/kits.lua Smite",
 	smite_damage_while_shielded_add = "grug_abilities/kits.lua Smite",
 	combat_mana_regen_add = "grug_abilities/init.lua in-combat mana regen",
@@ -87,11 +87,11 @@ local EFFECT_KEYS = {
 	whitehot_window = "X3",
 	cinderfall_damage = "X3",
 	cinderfall_radius_add = "X3",
-	frost_nova_ranged = "X3",
+	ice_nova_ranged = "X3",
 	control_damage_add = "X3",
 	glacial_ward_absorb = "X3",
-	renew_tick_add = "X3",
-	flash_heal_splash = "X3",
+	mend_tick_add = "X3",
+	heal_splash = "X3",
 	dodge_chance_window = "X3",
 	word_of_ruin_damage = "X3",
 	drain_ratio_override = "X3",
@@ -529,28 +529,28 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "deep_chill", tree = "rime", chain = "frost", tier = 1,
 	name = "Deep Chill",
-	description = "Frost Nova's root 4 s becomes 4.2 / 4.4 / 4.6 / 4.8 / 5 s.",
-	effects = {frost_nova_root_add = {0.2, 0.4, 0.6, 0.8, 1.0}},
+	description = "Ice Nova's root 4 s becomes 4.2 / 4.4 / 4.6 / 4.8 / 5 s.",
+	effects = {ice_nova_root_add = {0.2, 0.4, 0.6, 0.8, 1.0}},
 })
 grug_classes.register_talent({
 	id = "hoarfrost", tree = "rime", chain = "frost", tier = 2,
 	name = "Hoarfrost",
-	description = "Frost Nova's follow-up slow 3 s becomes 4 / 5 / 6 / 7 s.",
-	effects = {frost_nova_slow_add = {1, 2, 3, 4}},
+	description = "Ice Nova's follow-up slow 3 s becomes 4 / 5 / 6 / 7 s.",
+	effects = {ice_nova_slow_add = {1, 2, 3, 4}},
 })
 grug_classes.register_talent({
 	id = "frostbind", tree = "rime", chain = "frost", tier = 3,
-	keystone = true, replaces = "frost_nova",
+	keystone = true, replaces = "ice_nova",
 	name = "Frostbind",
-	description = "Frost Nova is cast at the pointed hostile up to 20 m " ..
+	description = "Ice Nova is cast at the pointed hostile up to 20 m " ..
 		"away and roots everything within 3 / 4 / 5 m of the target.",
-	effects = {frost_nova_ranged = {3, 4, 5}},
+	effects = {ice_nova_ranged = {3, 4, 5}},
 })
 grug_classes.register_talent({
 	id = "rimebite", tree = "rime", chain = "frost", tier = 4,
 	capstone = true,
 	name = "Rimebite",
-	description = "Every root Frost Nova applies also deals " ..
+	description = "Every root Ice Nova applies also deals " ..
 		"5 + floor(spell power / 2) on application.",
 	effects = {control_damage_add = {5}},
 })
@@ -592,8 +592,8 @@ grug_classes.register_tree({
 grug_classes.register_talent({
 	id = "gentle_hand", tree = "mercy", chain = "balm", tier = 1,
 	name = "Gentle Hand",
-	description = "Flash Heal gains +1 base-pool percentage point per rank.",
-	effects = {flash_heal_add = {1, 2, 3, 4, 5}},
+	description = "Heal gains +1 base-pool percentage point per rank.",
+	effects = {heal_add = {1, 2, 3, 4, 5}},
 })
 grug_classes.register_talent({
 	id = "quiet_steps", tree = "mercy", chain = "balm", tier = 2,
@@ -602,26 +602,27 @@ grug_classes.register_talent({
 	effects = {heal_threat_factor_sub = {0.05, 0.1, 0.15, 0.2}},
 })
 grug_classes.register_talent({
-	id = "renew", tree = "mercy", chain = "balm", tier = 3,
-	keystone = true, ability = "renew",
-	name = "Renew",
+	id = "mend", tree = "mercy", chain = "balm", tier = 3,
+	keystone = true, ability = "mend",
+	-- The skill's only display name: kits.lua's Mend ability reads it.
+	name = "Mend",
 	description = "New skill: 6% base mana, 8 s cooldown, healing 8% " ..
 		"of the base pool every 3 s for 12 s. Ranks 2 and 3 raise the " ..
 		"tick to 9% and 10%.",
-	effects = {renew_tick_add = {0, 1, 2}},
+	effects = {mend_tick_add = {0, 1, 2}},
 })
 grug_classes.register_talent({
 	id = "hearten", tree = "mercy", chain = "balm", tier = 4,
-	capstone = true, replaces = "flash_heal",
+	capstone = true, replaces = "heal",
 	name = "Hearten",
-	description = "Flash Heal also heals every other ally within 8 m for " ..
+	description = "Heal also heals every other ally within 8 m for " ..
 		"65% of the amount.",
-	effects = {flash_heal_splash = {65}},
+	effects = {heal_splash = {65}},
 })
 grug_classes.register_talent({
 	id = "warding_faith", tree = "mercy", chain = "aegis", tier = 1,
 	name = "Warding Faith",
-	description = "Power Word: Shield gains +1 base-pool percentage point per rank.",
+	description = "The Shield spell gains +1 base-pool percentage point per rank.",
 	effects = {shield_absorb_add = {1, 2, 3, 4, 5}},
 })
 grug_classes.register_talent({
@@ -632,7 +633,7 @@ grug_classes.register_talent({
 })
 grug_classes.register_talent({
 	id = "turn_aside", tree = "mercy", chain = "aegis", tier = 3,
-	keystone = true, replaces = "power_word_shield", window = true,
+	keystone = true, replaces = "shield_spell", window = true,
 	name = "Turn Aside",
 	description = "While the shield holds, its target's dodge chance is " ..
 		"+10 / 15 / 20 percentage points, inside the 30% cap.",
@@ -641,7 +642,7 @@ grug_classes.register_talent({
 grug_classes.register_talent({
 	id = "second_skin", tree = "mercy", chain = "aegis", tier = 4,
 	name = "Second Skin",
-	description = "Power Word: Shield lasts 15 s -> 18 / 21 / 24 s.",
+	description = "The Shield spell lasts 15 s -> 18 / 21 / 24 s.",
 	effects = {shield_duration_add = {3, 6, 9}},
 })
 

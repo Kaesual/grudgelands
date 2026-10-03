@@ -203,7 +203,7 @@ local scenarios = {
 		casts = 1, swings = 0},
 	{label = "smite_native_punch", class = "priest", ability = "smite",
 		distance = 3, casts = 1, swings = 0, native = true},
-	{label = "frost_nova", class = "mage", ability = "frost_nova", distance = 3,
+	{label = "ice_nova", class = "mage", ability = "ice_nova", distance = 3,
 		casts = 1, swings = 0},
 	{label = "charge", class = "warrior", ability = "charge", distance = 8,
 		casts = 1, swings = 0, rage = 15},

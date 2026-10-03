@@ -84,7 +84,9 @@ icons.STATUS = {
 	-- Ability buffs reuse their Round-18 skill icon (user decision).
 	scout_sprint = def("buff", "Sprint", "+50% movement speed", skill("sprint")),
 	sidestep = def("buff", "Sidestep", "+15 dodge chance", skill("sidestep")),
-	renew = def("buff", "Renew", "Heals every 3 s", skill("renew")),
+	-- Mend's set_status passes the skill's display name as the label, so
+	-- this default stays generic (the name lives on the talent keystone).
+	mend = def("buff", "Heal over time", "Heals every 3 s", skill("mend")),
 	-- One generic shield for every absorb source (user decision).
 	shield = def("buff", "Shield", "Absorbs damage", art("shield")),
 

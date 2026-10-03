@@ -14,7 +14,7 @@ Attribute/derived-stat formulas: `combat_stats.md` §1/§2; threat values:
 [skill_trees.md](skill_trees.md) carries
 two trees per class derived from the kits below, the talents that improve
 their numbers, and the keystones and capstones that add new main skills —
-Renew among them, as §5 already decided. A **fourth class, the Scout**
+Mend among them, as §5 already decided. A **fourth class, the Scout**
 ([scout.md](scout.md)): leather armour, a bow and a blade. The Scout carries
 its bow in the Weapon slot, shown as "Ranged", and its sword or dagger in the
 offhand, shown as "Melee" (Round 28 ruling 25): bow skills read Ranged,
@@ -80,8 +80,8 @@ Core principles:
   members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the
   cast on its user. Strike, Charge, Mighty Blow, Hamstring, Taunt, Fireball and
-  Smite are hostile; Frost Nova and Blink are self; Flash Heal, Power Word:
-  Shield and Renew are friendly. A friendly skill's documented self fallback
+  Smite are hostile; Ice Nova and Blink are self; Heal, Shield and Mend
+  are friendly. A friendly skill's documented self fallback
   remains part of that skill, not a fourth target kind.
 - Three to four abilities per class in the MVP; **new active "main
   skills" come from talent capstones** (WP11, progression.md) — talents
@@ -123,7 +123,7 @@ Core principles:
 - Mana costs are rounded percentages of the caster's unmodified base pool,
   minimum 1. Full-pool cast counts at L1/L60 are: 5% = **26/19**, 6% =
   **13/16**, 8% = **13/12**, and 10% = **8/9**. Pool enchants and talents do
-  not increase costs. Flash Heal therefore supplies at least 12 casts at
+  not increase costs. Heal therefore supplies at least 12 casts at
   either endpoint; four untalented 25% casts equal one neutral health pool
   before spell power, leaving capacity for a normal fight and another.
 - **HUD: one thin bar per resource, directly above the hotbar slots**
@@ -266,7 +266,7 @@ weapon changes start a full interval; lag never replays missed attacks.
 
 Combat and healing actions repeat against appropriate aimed targets. Movement
 utilities such as Blink and Sprint activate once per physical press, even if
-cooldown expires during the hold; Frost Nova remains a combat action. In empty
+cooldown expires during the hold; Ice Nova remains a combat action. In empty
 space self/support actions fire only once per press.
 
 A melee attempt uses a single-use authoritative transaction for the current
@@ -380,7 +380,7 @@ overlay: the same crosshair image tinted, drawn over the engine crosshair
   This applies with any wielded item, and uses contextual input's own
   classification.
 - A skill state takes precedence over interact. Self-target skills (Blink,
-  Frost Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
+  Ice Nova, Sprint, ...) have no skill state. Otherwise the plain crosshair
   shows.
 - The state is refreshed every 0.15 s from the shared 0.05 s input pass,
   whose input handling and weapon-ready ring stay on every pass (one
@@ -545,7 +545,7 @@ Mighty Blow is the design working, not a bug.
 |---------|------|----------|--------|
 | Charge | — (generates 15 rage) | cast, 10 s | Dash to the currently pointed enemy up to 12 m away, 3 damage and, on an accepted hit, a 1.5 s stun. Kings and dragons are stun-immune. Teleport movement is retained; no enemy-memory fallback. Destination below. |
 | Mighty Blow | 25 rage | **swing**, no charge | On a completed landed swing with enough rage, the total is exactly floor(weapon damage × 1.5) + melee bonus instead of the plain hit. Its delta is folded into that native punch before its one crit/mitigation/dodge path — never a second punch. The rage dump. |
-| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Renew has been since WP19. |
+| Hamstring | 10 rage | **swing**, 6 s charge | The swing lands as usual; on a charged proc it also applies a 50% slow for 5 s. **Not in the base kit since ruling 19** (2026-09-16): every class starts with Strike plus three, and Hamstring returns as the Ruin tree's keystone (`skill_trees.md` §2.2). It stays registered and talent-gated, exactly as Mend has been since WP19. |
 | Taunt | free | cast, 8 s | Currently pointed mob (8 m) is forced onto the Warrior for 3 s; no enemy-memory fallback; threat set to top×1.1 (combat_stats §4; threat part + force duration land with WP6). |
 
 **Charge destination** (Round 28 ruling 12). The preferred spot is 1.3 m in
@@ -590,13 +590,13 @@ Ranged damage; fragile, keeps enemies away.
 
 Kit tuning decided 2026-08-06 (implementation: WP19): Fireball pays with
 mana plus a 1 s cadence instead of a talent-visible cooldown (the former fixed
-5 mana against a 240+ pool was free), Frost
+5 mana against a 240+ pool was free), Ice
 Nova became the rotation pivot — kiting IS the Mage fantasy here.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Fireball | 6% base mana | **1 s cast interval** (server cadence, no cooldown bar) | Targeted homing projectile, nominal 20 m/s and initial range 20 m; current aim/LOS required at release. Baseline weapon + spell power through the damage fit at impact. No target or input inside the interval costs nothing; at most eight shots per owner/session may be active. |
-| Frost Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
+| Ice Nova | 10% base mana | 12 s | Deals one quarter of (level-baseline weapon damage + spell power), then roots accepted hostile hits within 5 m for 4 s, followed by 50% slow for 3 s. Spell damage scaling applies once. Players use the hard-root movement flag; rooted targets may still attack. Small crystal particles persist only while the Nova root is active. |
 | Blink | 8% base mana | 15 s | Teleport up to 10 m in look direction, never through walls. Escape valve. Targeting below. |
 
 **Blink targeting** (playtest ruling, 2026-09-28). The look ray runs from the
@@ -629,18 +629,24 @@ torches, liquids) do not.
 
 Healer/support with a solo damage tool.
 
-Kit tuning decided 2026-08-06 (implementation: WP19): **Power Word:
-Shield replaces Renew** in the base kit (an absorb plays differently
-from a second heal and makes the Priest useful BEFORE damage lands; our
-central hp-change modifier makes absorbs nearly free to build). Renew
-moves into the talent tree.
+Kit tuning decided 2026-08-06 (implementation: WP19): **Shield replaces
+Mend** in the base kit (an absorb plays differently from a second heal and
+makes the Priest useful BEFORE damage lands; our central hp-change modifier
+makes absorbs nearly free to build). Mend moves into the talent tree.
+
+Skill names (Round 31 user ruling): skills that carried another game's exact
+names were renamed — the Priest's Heal, Shield and Mend and the Mage's Ice
+Nova (§4). Generic words such as Smite, Blink or Sprint stay. The Shield
+spell is an absorb on a player; its tooltip says so, which keeps it apart from
+the offhand shield items. Mend's display name lives on its Mercy keystone
+(`grug_classes/talents.lua`), which the ability reads.
 
 | Ability | Cost | Cooldown | Effect |
 |---------|------|----------|--------|
 | Smite | 5% base mana | 2 s | Current-crosshair 20 m hit with no enemy-memory fallback: 1.5 × (baseline weapon + spell power), then the damage fit. Solo viability. |
-| Flash Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
-| Power Word: Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
-| Renew *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
+| Heal | 8% base mana | 4 s | Heals 25% of the class-neutral base pool, with spell power as a percentage bonus. Resolves currently pointed valid ally (15 m) → self. Threat: 0.5× effective healing (WP6). |
+| Shield | 8% base mana | 10 s | Resolves currently pointed valid ally → self; soaks 25% of the class-neutral base pool plus the spell-power percentage for 15 s or until consumed. |
+| Mend *(talent)* | 6% base mana | 8 s | Resolves currently pointed valid ally → self; heals 8% of the class-neutral base pool plus the spell-power percentage every 3 s for 12 s. Unlocked via the Mercy tree (WP11). |
 
 ## 6. Explicitly deferred
 
@@ -649,7 +655,7 @@ moves into the talent tree.
   item shows the equipped weapon plus its own color — §2c.)
 - Warrior shield abilities → after WP14 (offhand/shields).
 - Buffs/auras (e.g. Battle Shout) → with skill trees
-  (WP11) or later. (Power Word: Shield moved into the base kit with the
+  (WP11) or later. (Shield moved into the base kit with the
   WP19 kit tuning, §5.) Party frames are implemented under the separate
   [party contract](parties.md).
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
