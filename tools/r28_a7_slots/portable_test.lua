@@ -28,9 +28,10 @@ end
 ------------------------------------------------------------------------------
 -- Engine surface.
 ------------------------------------------------------------------------------
-local callbacks = {allow = {}, action = {}, pickup = {}, class_chosen = {},
+local callbacks = {allow = {}, globalstep = {}, action = {}, pickup = {}, class_chosen = {},
 	join = {}, mods_loaded = {}}
 local chat, logs, dropped = {}, {}, {}
+local connected = {}
 core = {
 	registered_items = {},
 	get_item_group = function(name, group)
@@ -48,7 +49,8 @@ core = {
 	log = function(level, text) logs[#logs + 1] = level .. ": " .. text end,
 	add_item = function(_, stack) dropped[#dropped + 1] = stack end,
 	get_us_time = function() return 0 end,
-	get_connected_players = function() return {} end,
+	get_connected_players = function() return connected end,
+	register_globalstep = function(f) table.insert(callbacks.globalstep, f) end,
 	after = function() end,
 	formspec_escape = function(text) return text end,
 }
@@ -189,8 +191,14 @@ end
 -- Mod surface.
 ------------------------------------------------------------------------------
 local equipment_changes = 0
+local mono, feed_lines = 0, {}
 grug_core = {
-	mono_time = function() return 0 end,
+	mono_time = function() return mono end,
+	feed = function(player, kind, text, key)
+		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
+			text = text, key = key}
+		return true
+	end,
 	notify_equipment_change = function() equipment_changes = equipment_changes + 1 end,
 	equipment_is_broken = function(stack) return stack:get_wear() >= 65535 end,
 	can_use_item_level = function(player, stack)
@@ -594,6 +602,40 @@ do
 	join(m)
 	choose_class(m, "mage")
 	eq(m.inv:get_stack(W, 1):get_name(), "grug_gear:staff_bronze", "mage starter staff")
+end
+
+-- The raw-weapon hint (a weapon swung from the hotbar): two message-feed
+-- lines on a fresh press, none in chat, at most once per 3 s (Round 32 F3).
+do
+	local p = new_player("raw", "warrior", 30)
+	join(p)
+	local dig = false
+	function p:get_player_control() return {dig = dig} end
+	function p:get_wielded_item() return ItemStack("grug_gear:sword_steel") end
+	connected = {p}
+	local chat_before = #chat
+	local function step(pressed)
+		dig = pressed
+		for _, f in ipairs(callbacks.globalstep) do f(0.1) end
+	end
+	feed_lines = {}
+	mono = 100
+	step(true)
+	eq(#feed_lines, 2, "raw weapon press: two feed lines")
+	check(feed_lines[1] and feed_lines[1].text:find("hand slots", 1, true) and
+		feed_lines[1].kind == "notice" and feed_lines[2].key ~= feed_lines[1].key,
+		"raw weapon hint: notice lines with their own keys")
+	step(true)
+	step(false)
+	mono = 101
+	step(true)
+	eq(#feed_lines, 2, "raw weapon hint: no repeat within 3 s")
+	step(false)
+	mono = 104
+	step(true)
+	eq(#feed_lines, 4, "raw weapon hint: a fresh press after 3 s repeats it")
+	eq(#chat, chat_before, "raw weapon hint: nothing in chat")
+	connected = {}
 end
 
 -- Startup audit: every class has rules and an accepted starter kit.
