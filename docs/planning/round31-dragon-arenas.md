@@ -1,10 +1,118 @@
-# Round 31 — Dragon arenas: design proposal (lane DA)
+# Round 31 — Dragon arenas: proposal and what was built (lanes DA, DA2)
 
-Lane DA, 2026-10-03. Status: **proposal, waiting for the user's choice**
-(round plan §2.3/§2.4). Nothing here is decided; nothing in the game changes
-until the user picks options. The pictures are on the lane's preview page
-(`~/projects/grudgelands-orchestration/r31/previews/da/index.html`, outside
-the repository); this document carries the reasoning.
+Lane DA wrote the proposal (§1–§6 below, 2026-10-03). The user then
+redesigned the arenas (`round31-plan.md` §6 item 11); lane DA2 built that
+design. **§0 is what the game does now**; the proposal stays below as the
+record of the reasoning (its option list is superseded by §0).
+
+## 0. Built (lane DA2)
+
+### 0.1 Size: radius 40
+
+The arena is a round floor of **radius 40** (82 × 82 protected square).
+*Why:* the edge is the leash, so the arena must hold the whole fight: ranged
+players reach 20–25 nodes and must be able to stand clear of the dive (radius
+7) and the 12-node breath range while the dragon is near the centre; 40 also
+replaces the former 64-node drag leash with something visible. Bigger does
+not fit the islands: the apex camp lies 134 nodes from each dragon (its
+fitting reaches 44 from its centre), the sea at least 113 (seeds 42 and
+1234), and the arena's collar adds up to 28 beyond the floor's edge, so a
+radius above about 60 would meet the camp; within radius 40 the natural
+relief is already −53..+21 nodes on the checked seeds.
+
+### 0.2 Mapgen
+
+- `source/simple_map.lua`: the `dragon` profile gets `building_core_width`
+  82, `arena_radius` 40 and `bowl_core_width` 32; catalog rows 87/88 are 82
+  wide and carry no props.
+- `height.lua`: a dragon fitting samples its reference (the lower median)
+  over the round floor only and grades a round floor: level within 4 nodes
+  of the spawn, swelling gently 0–2 nodes below the reference over about 36
+  nodes, its edge wandering 0–3 nodes beyond the radius (a noise), then the
+  usual POI collar (6–28 nodes) from that edge. Never rough: floor heights
+  stay within −2..0 of the anchor on both arenas and both seeds.
+- `terrain_field.lua`: the calm bowl keeps the former 32-node size
+  (`bowl_core_width`). *Why:* with the 82-node core the bowl grew and
+  flattened the island far beyond the arena (up to 100 nodes of change
+  beyond radius 100 in a first run); now terrain beyond radius 72 is
+  unchanged (at most 3 nodes) and the islands stay untamed, no paths.
+- `r20_poi_blueprint.lua`: the dragon blueprint keeps the local ground: only
+  the spawn stone under the dragon (the anchor's required solid support),
+  the spawn's air and four high air cells that make its bounds the whole
+  82-node square, which the world protection reads.
+- `arena_layout.lua` (pure, shared with grug_mobs and the fixture) and
+  `arena_writer.lua` (the last pass of the R7 successor, after the
+  settlements): the hazards follow the floor's height. Rim stones (stone on
+  Wyrmglass, mossy cobble on Stormscale; about one in five ring columns, a
+  third of them two high) mark the radius. Hazard nodes are registered in
+  `world_nodes.lua`, tinted default textures, not diggable.
+
+### 0.3 The arena is the leash (`grug_mobs/boss_dragons.lua`, `dragon_arena.lua`)
+
+- Inside = within the radius horizontally and from 10 below to 24 above the
+  spawn floor (the protected box plus a player's height). A hostile player
+  inside is a target at any height or distance (this is the proposal's height
+  fix); one outside is vetoed at acquisition (`_grug_target_veto`, a new hook
+  in the `init.lua` acquisition veto) and dropped as a target.
+- A punch, shot or ability from a player outside is cancelled in `do_punch`
+  (dragon and whelps), so nobody can hurt the dragon without being
+  targetable. A hit from inside engages it.
+- Once a second an engaged dragon counts hostile living players inside; at
+  zero it resets: the ordinary encounter reset (`leash_reset`: threat, loot
+  tag, `boss_leash_reset` with whelps, enrage and participation, full
+  health), then it flies to 6 above its spawn and lands. A re-pull is a fresh
+  attempt. Stepping out and back in only gives the dragon its health back.
+  Dragons now carry `_grug_no_leash` (no drag or contact leash), and the
+  evade run skips no-leash actors. Its flight stays 4 nodes inside the edge.
+- The Round 30 pathing rule is unchanged (dragons never give up, they only
+  wait); the arena rule is what ends a fight.
+
+### 0.4 Hazards
+
+| Arena | Hazard | Rule |
+|---|---|---|
+| Wyrmglass | breaking ice | 7 patches of thin ice flush with the floor; a player standing 1.5 s on one node breaks it and its four neighbours into ice water (1 deep); it freezes again 20 s after nobody stands in it |
+| Wyrmglass | ice water | 250 damage per second, slowed (0.6, refreshed while inside) |
+| Wyrmglass | frost terraces | 3 flat frost-stone terraces, 1 and 2 nodes high, opaque blue-grey (the ice is pale and translucent) |
+| Stormscale | ember fissures | 6 jagged fissures, 1–2 wide, 1 deep, glowing, basalt rim; 350 damage per second, no slow |
+| Stormscale | fallen trunks | 5 jungle trunks, 1 node high, 7–8 long; players jump over, the wyvern walks over |
+
+Damage goes through `set_hp` with a node-damage reason once a second (the
+dragon scorch's path): armour does not reduce it, it is never PvP contact,
+the absorb shield soaks it. Ice water deaths get their own death message.
+No ice pillars and no cover, as ruled. No hazard within 9 of the spawn, 4.6
+of a perch or 4 of the edge (fixture).
+
+### 0.5 Protection
+
+The whole 82 × 82 square is the dragon's POI core (y 10 below to 22 above
+the anchor), measured in the engine: `poi` at ±40, nothing at +41. The
+dragon's breath patches stay possible there, as before.
+
+### 0.6 Checks
+
+- `tools/r31_da2/portable_test.lua` (7407 checks): layout, rules, and the
+  real `boss_dragons.lua` on a fake engine (high player targeted, outside
+  player vetoed and harmless, one reset when the last hostile leaves with
+  full health and cleared enrage, the flight home and landing, a clean
+  re-pull, 250/350 per second through set_hp, the slow, ice breaking).
+- `tools/run_fixtures.sh`: all 56 pass (`tools/r24_density_xp/roster.lua`'s
+  stub now maps `grug_mapgen` for the arena layout file).
+- Engine: headless boots on seeds 42 and 1234 (about 1 min each) with a
+  probe that dumped both arenas; arena floor −2..0, hazards and rim stones
+  present, protection as above. A live fight needs a GUI client (the dragon
+  only acts in an active block): see the user test below.
+
+### 0.7 User GUI test
+
+1. Each arena: round, on local ground, rim stones visible at the edge.
+2. Pull the dragon, step outside the rim: it stops attacking, heals and
+   flies back to its spawn; shooting it from outside does nothing.
+3. Stand on a frost terrace or high ground inside: the dragon still attacks.
+4. Wyrmglass: stand still on thin ice (breaks, ice water hurts and slows,
+   refreezes); Stormscale: step into an ember fissure (350/s), jump a trunk.
+
+# Proposal (lane DA, superseded by §0)
 
 ## 1. How the pictures were made
 
