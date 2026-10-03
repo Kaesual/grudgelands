@@ -396,7 +396,7 @@ has(before.log_q0_camp, "Defeat Confused Bandit: 0/5 (level 9" .. DASH .. "10)\n
 	DASH .. "10)", "quest log: camp kill and quest-drop item")
 has(before.log_q0_leader, "Defeat Confused Bandit Chief: 0/1 (level 10)", "quest log: one level")
 has(before.log_q0_tusks, "Bring Boar Tusk: 0/4 (level 1" .. DASH .. "4)", "quest log: item naming its source")
-has(before.log_q0_plain, "Bring Cobblestone: 0/10\nBring Any Tree: 0/5]", "quest log: items without a range")
+has(before.log_q0_plain, "Bring Cobblestone: 0/10\nBring Any Tree: 0/5\n\nRewards:", "quest log: items without a range")
 has(before.dialogue_kind, "Defeat Small Boar × 8 (level 1" .. DASH .. "4)\n", "active quest's dialogue: kill range")
 eq(before.hud_q0_area_kind, "0/8 Defeat Small Boar", "HUD tracker line unchanged (no range)")
 eq(before.hud_q0_camp, "Confused Bandit 0/5, Ledger Page 0/3", "compact HUD line unchanged (no range)")
