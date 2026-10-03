@@ -261,8 +261,8 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   of `d` nodes (after the floor's `fall_damage_add_percent`). The per-mob
   definition values (`light_damage`, `lava_damage`, `fire_damage`,
   `water_damage`, `suffocation`, `fall_damage`) are only on/off switches.
-  **Elite and rare** tiers take **half**; the **boss tier (dragons) and the
-  kings are immune**. Other `damage_per_second` nodes and `air_damage` keep
+  **Elite and rare** tiers take **half**; the **boss tier (dragons), the
+  kings and the PvP fortress Generals are immune**. Other `damage_per_second` nodes and `air_damage` keep
   mobs_redo's flat amounts. *Why:* flat amounts made high-level mobs nearly
   immortal (an L30 zombie, 764 HP, needed 6.4 minutes in the sun; now 20 s).
   Implementation: `grug_mobs/env_damage.lua`, called from `mobs/api.lua`

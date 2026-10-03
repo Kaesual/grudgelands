@@ -486,7 +486,10 @@ visible:
   inside the shallow hard volume remain exactly 60. The fixed level-65 king is
   separate from both resolvers.
   A guard at level ≥ 60 is automatically an elite (scale/tint/telegraph,
-  `combat_stats.md` §3).
+  `combat_stats.md` §3). A Round 31 PvP garrison sets level and tier at
+  placement instead: fortress guards level 60 elite, a Battlegrounds camp's
+  guards a level of the camp's three-level band and never elite, its captain
+  an elite at the band's top (`grug_mobs/pvp_garrison.lua`).
 - Each named zone reserves its required outposts, patrols and special camps
   explicitly. The old fixed minimum of 24 ring outposts is not a target
   budget; the complete zone catalog must replace it with equivalent faction
@@ -542,7 +545,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   all four guards always path toward it, its evade/teleport relocates the group,
   and its death makes survivors retreat/despawn. The entire five-NPC encounter
   returns together after the persistent 15-minute respawn; royal guard slots
-  never refill independently (`world_zones.md` §12).
+  never refill independently (`world_zones.md` §12). A PvP fortress's General
+  and his two bodyguards (Round 31) are the same encounter on the same rules.
 - **Respawn slots**: every anchor has a configured **maximum population**
   and refills toward it one NPC at a time. Each refill takes a
   **configurable interval** (either an exact duration or a min–max
@@ -553,7 +557,9 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   biomes_mobs.md §4; the recipe camps of biomes_mobs.md §4.2 use the same
   slot model without a node),
   guard posts **180–360 s** — clearing an outpost buys a while of open
-  road. A **freshly generated** anchor owes its full garrison from the
+  road; a PvP fortress's guards keep that rhythm, a Battlegrounds camp's
+  guards return after **100–140 s** and its captain after **270–330 s**
+  (Round 31 coordinator defaults, rough values for the playtest). A **freshly generated** anchor owes its full garrison from the
   moment it exists, so a camp nobody has visited yet is manned when the
   first player walks up.
 - **Dormant catch-up** (the Luanti reality: no timers tick in unloaded

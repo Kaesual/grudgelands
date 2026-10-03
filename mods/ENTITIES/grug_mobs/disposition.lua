@@ -54,13 +54,23 @@ function grug_mobs.register_disposition(name, disposition)
 	classify(disposition, {name:match("^grug_mobs:(.+)$") or name})
 end
 
+-- Guards, royal guards and the Round 31 captains and General's bodyguards
+-- are DISPLAY's guard role, independent of ambient creature disposition.
+-- Peaceful settlement residents bypass this wrapper.
+local function guard_role(name)
+	return name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
+		or name == "grug_mobs:land_guard"
+		or name:match("^grug_mobs:royal_guard_") ~= nil
+		or name:match("^grug_mobs:captain_") ~= nil
+		or name:match("^grug_mobs:bodyguard_") ~= nil
+end
+
 local function role_disposition(name)
-	if name:match("^grug_mobs:king_") then return "aggressive" end
-	-- Guards and royal guards are DISPLAY's guard role, independent of ambient
-	-- creature disposition. Peaceful settlement residents bypass this wrapper.
-	if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
-			or name == "grug_mobs:land_guard"
-			or name:match("^grug_mobs:royal_guard_") then
+	-- A fortress General is a king without a crown (Round 31).
+	if name:match("^grug_mobs:king_") or name:match("^grug_mobs:general_") then
+		return "aggressive"
+	end
+	if guard_role(name) then
 		return nil
 	end
 	return DISPOSITIONS[name]
@@ -84,9 +94,7 @@ end
 function grug_mobs.apply_disposition(name, def)
 	local disposition = role_disposition(name)
 	if not disposition then
-		if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
-				or name == "grug_mobs:land_guard"
-				or name:match("^grug_mobs:royal_guard_") then
+		if guard_role(name) then
 			return nil
 		end
 		error("[grug_mobs] missing fixed disposition for " .. name)

@@ -19,18 +19,21 @@ grug_mobs.ENV_DAMAGE_PERCENT = {
 }
 
 local KING_PREFIX = "grug_mobs:king_"
+-- A fortress General is the king chassis without a crown (Round 31).
+local GENERAL_PREFIX = "grug_mobs:general_"
 
--- 0 = immune, 0.5 = half, 1 = full. Bosses (the boss tier: the dragons) and
--- the kings are immune. A king is an elite-tier actor (bosses.lua king_def),
--- so the tier alone cannot tell him from his royal guards; his registered
--- name is the static marker bosses.lua itself tests (royal_guard_tick).
+-- 0 = immune, 0.5 = half, 1 = full. Bosses (the boss tier: the dragons), the
+-- kings and the fortress Generals are immune. A king or General is an
+-- elite-tier actor (bosses.lua king_def), so the tier alone cannot tell him
+-- from his guards; his registered name is the static marker.
 -- Elite and rare tiers take half. Positive tests only: a tier added later is
 -- full damage until someone decides otherwise.
 function grug_mobs.env_damage_scale(tier, name)
 	if tier == "boss" then
 		return 0
 	end
-	if type(name) == "string" and name:sub(1, #KING_PREFIX) == KING_PREFIX then
+	if type(name) == "string" and (name:sub(1, #KING_PREFIX) == KING_PREFIX or
+			name:sub(1, #GENERAL_PREFIX) == GENERAL_PREFIX) then
 		return 0
 	end
 	if tier == "elite" or tier == "rare" then

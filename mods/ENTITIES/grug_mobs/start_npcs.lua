@@ -21,6 +21,18 @@
 --   king          one race king plus the four royal hall guards
 --   waypoint      nothing; the `travel_waypoint` socket is the cell of the
 --                 pad's waystone, which grug_home/waypoints.lua reads
+--   general       a fortress General; `bodyguard` his two guards, `captain`
+--                 a camp's named captain (Round 31, below)
+--
+-- THE ROUND 31 PvP POIs (pvp-plan rulings 17-20): a faction fortress and the
+-- sixteen Battlegrounds camps register like any settlement, under the keys of
+-- lane S's catalogue, and this engine serves them like a capital (placed when
+-- their area is loaded). What stands on a garrison socket -- entity, level,
+-- tier, respawn, name, look and quest area -- is decided by
+-- `pvp_garrison.lua`; the quest givers, the Quartermaster and the waystone
+-- keep the ordinary resolvers. A guard or captain is an ordinary respawn slot
+-- with its own interval; the General and his bodyguards are one royal group
+-- exactly like a king's (`royal_*` at the bottom of this file).
 --
 -- IT SERVES EVERY REGISTERED SETTLEMENT, not only the six starts. A capital
 -- registers under its own key when its core lands, and three things about a
@@ -155,6 +167,7 @@
 --
 
 local storage = grug_mobs.storage
+local garrison = grug_mobs.pvp_garrison
 
 -- The placement retry heartbeat.
 local PLACE_INTERVAL = 5
@@ -319,7 +332,8 @@ local by_key = {}
 local FAMILY = {guard_post = "guards", guard_patrol = "guards",
 	idle = "flair", work = "flair", trainer = "flair", innkeeper = "flair",
 	housing_manager = "flair", vendor = "vendor",
-	quest = "quest", king = "royal"}
+	quest = "quest", king = "royal",
+	general = "royal", bodyguard = "royal", captain = "guards"}
 local FAMILY_ORDER = {"guards", "flair", "vendor", "quest", "royal"}
 
 local ROYAL_GUARD_SOCKET = {
@@ -578,6 +592,10 @@ local function settlement_kind(record, faction_id, sockets)
 	if same(grug_core.capital_anchor(faction_id, record.race_id)) then
 		return "capital"
 	end
+	-- Round 31: a PvP fortress or camp is a catalogue key, registered under
+	-- that key with the anchor its row is bound to.
+	local pvp = garrison.settlement_kind(record.key)
+	if pvp then return pvp end
 	-- Round 14's bounded POIs are identified by their strict quest socket,
 	-- which is already the story/map integration authority. This avoids
 	-- restating either coordinates or settlement-key naming conventions here.
@@ -620,12 +638,22 @@ local function build_rows()
 		elseif not kind then
 			core.log("error", "[grug_mobs] settlement npcs: " .. record.key ..
 				" socket anchor " .. core.pos_to_string(record.anchor) ..
-				" is not a published start, capital or Round 14 POI of " ..
-				record.race_id)
-
+				" is not a published start, capital, Round 14 POI or Round 31 " ..
+				"PvP POI of " .. record.race_id)
+		elseif (kind == "pvp_fortress" or kind == "pvp_camp") and
+				garrison.poi(record.key).faction ~= faction_id then
+			core.log("error", "[grug_mobs] settlement npcs: " .. record.key ..
+				" registered as " .. record.race_id .. ", not a race of " ..
+				garrison.poi(record.key).faction)
 		else
 			local settlement = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor}
+			-- A camp's level band is its zone's (pvp_garrison.lua).
+			local band
+			if kind == "pvp_camp" then
+				local zone = grug_zones.get(garrison.poi(record.key).zone_id)
+				band = {zone.level_min, zone.level_max}
+			end
 			local row = {race_id = record.race_id, faction_id = faction_id,
 				key = record.key, kind = kind, anchor = record.anchor,
 				slots = {}, by_socket = {}, pending = 0, idle_groups = {},
@@ -732,21 +760,35 @@ local function build_rows()
 			end
 			for _, socket in ipairs(sockets) do
 				local resolver = resolvers[socket.role]
+				-- A PvP POI's garrison post (Round 31) names its own NPC.
+				local spec = garrison.slot(record.key, record.race_id, socket, band)
 				-- A patrol loop carries ONE guard, booked on its first
 				-- waypoint; the rest of the loop is route data. A SPARE socket
 				-- carries nobody at all (`spawn = false`): it is a destination
 				-- the amble may use and never a home, so the roster -- and with
 				-- it every marker, the hard cap and every census -- counts only
 				-- the sockets something is actually placed on.
-				local carries = resolver ~= nil and socket.spawn ~= false and
+				local carries = (resolver ~= nil or spec ~= nil) and
+					socket.spawn ~= false and
 					(socket.role ~= "guard_patrol" or socket.order == 1)
 				if carries then
-					local entity
-					if kind == "capital" and socket.role == "guard_post" and
+					-- A royal group: a capital's king and his four throne
+					-- guards, a fortress General and his two bodyguards.
+					local entity, royal, leader, boss_id
+					if spec then
+						entity = spec.entity
+						royal, leader = spec.royal == true, spec.leader == true
+						boss_id = royal and ("general:" .. faction_id) or nil
+					elseif kind == "capital" and socket.role == "guard_post" and
 							ROYAL_GUARD_SOCKET[socket.id] then
 						entity = "grug_mobs:royal_guard_" .. record.race_id
+						royal, boss_id = true, "king:" .. record.race_id
 					else
 						entity = resolver(socket, settlement)
+						if socket.role == "king" then
+							royal, leader = true, true
+							boss_id = "king:" .. record.race_id
+						end
 					end
 					if type(entity) ~= "string" or
 							not core.registered_entities[entity] then
@@ -772,6 +814,14 @@ local function build_rows()
 							idle_index = spot_index[socket.id],
 							placed = storage:get_string(
 								placed_key(record.key, socket.id)) == "1",
+							royal = royal == true, leader = leader == true,
+							boss_id = boss_id,
+							-- The PvP garrison of this socket, and the interval
+							-- of its respawn slot (world.md §4a; a royal group
+							-- books its own return).
+							garrison = spec,
+							respawn = spec and spec.respawn or
+								{RESPAWN_MIN, RESPAWN_MAX},
 						}
 						if not slot.placed then
 							local due = tonumber(storage:get_string(
@@ -1094,6 +1144,34 @@ function grug_mobs.install_profession_trainer(entity, slot)
 	entity._grug_walker = false
 end
 
+--
+-- A PvP POI's garrison NPC (Round 31, pvp_garrison.lua): level, tier, name and
+-- the quest area, written once at placement. Plain fields, so all of it rides
+-- in staticdata. Its look is grug_visuals' NPC roll (the settlement's race, or
+-- a mixed garrison's faction race, `_grug_mixed_race` in `place`).
+--
+local function install_garrison(entity, spec)
+	-- The quest credit's area (grug_quests matches a kill objective's `area`
+	-- against the tag a mob carries): "<zone>/<settlement key>".
+	entity._grug_area = spec.area
+	if spec.name then
+		-- What the nametag and the target frame print (levels.lua tag_text).
+		entity.description = spec.name
+	end
+	-- The tier is the garrison's own decision: a level-60 camp guard is no
+	-- elite city watch, so guard.lua's one-time promotion is settled here.
+	entity._grug_elite_checked = true
+	if spec.tier == "elite" then
+		grug_mobs.set_tier(entity, "elite")
+	end
+	if spec.level_min then
+		grug_mobs.relevel(entity, math.random(spec.level_min, spec.level_max))
+	end
+	if entity.update_tag then
+		entity:update_tag()
+	end
+end
+
 -- Every field installed here is a plain number, string or flat table, so it
 -- survives unload/reload inside the mob's staticdata (AGENTS.md's WP6 rule:
 -- never an ObjectRef, never a function).
@@ -1133,11 +1211,12 @@ local function install(entity, row, slot)
 	-- engine probe's census and by anything that has an ObjectRef and wants to
 	-- know what the NPC is for without a second lookup into this file's rows.
 	entity._grug_socket_role = slot.role
-	if slot.role == "king" or slot.entity:find("grug_mobs:royal_guard_", 1, true) then
-		entity._grug_boss_id = "king:" .. row.race_id
-		entity._grug_royal_race = row.race_id
+	if slot.boss_id then
+		-- The encounter a royal group shares (bosses.lua); the ticks re-assert
+		-- it, this covers the time before the first tick.
+		entity._grug_boss_id = slot.boss_id
 	end
-	if slot.role == "guard_post" then
+	if slot.role == "guard_post" or slot.role == "captain" then
 		-- `_grug_home` is where aggro.lua's evade runs a guard back to after a
 		-- chase; the post fields are what guard.lua's tick holds it at while
 		-- idle. Deliberately NO `_grug_camp_pos`: that field switches on
@@ -1148,7 +1227,7 @@ local function install(entity, row, slot)
 		-- mod (aggro.lua's evade and its roam cap): a guard standing on the
 		-- step above its post is not off it. The full position lives in
 		-- `_grug_home`.
-		if not slot.entity:find("grug_mobs:royal_guard_", 1, true) then
+		if not slot.royal then
 			entity._grug_post_x = slot.pos.x
 			entity._grug_post_z = slot.pos.z
 			entity._grug_post_yaw = slot.yaw
@@ -1206,7 +1285,7 @@ local function install(entity, row, slot)
 		-- line it has.
 		--
 		entity._grug_idle_tag = slot.tag or slot.activity
-	elseif slot.role == "king" then
+	elseif slot.role == "king" or slot.role == "general" or slot.role == "bodyguard" then
 		entity._grug_home = {x = slot.pos.x, y = slot.pos.y, z = slot.pos.z}
 	elseif slot.role == "mount_display" or slot.role == "gear_display" then
 		entity._grug_display_race = row.race_id
@@ -1228,6 +1307,9 @@ local function install(entity, row, slot)
 	elseif slot.role == "trainer" then
 		grug_mobs.install_profession_trainer(entity, slot)
 	end
+	if slot.garrison then
+		install_garrison(entity, slot.garrison)
+	end
 end
 
 local function place(row, slot)
@@ -1236,8 +1318,13 @@ local function place(row, slot)
 	-- A capital display is a plain entity that reads only its own saved
 	-- fields and removes an incomplete copy itself (capital_displays.lua).
 	local def = core.registered_entities[slot.entity]
+	-- A mixed garrison (a PvP fortress's guards and bodyguards) is marked
+	-- before its first draw, so grug_visuals.npc_race rolls a race of its
+	-- faction instead of drawing the settlement's seat race (lane A's
+	-- contract).
 	local staticdata = not (def and def._grug_capital_display) and
-		core.serialize({_grug_unplaced = true, _grug_start = row.key}) or nil
+		core.serialize({_grug_unplaced = true, _grug_start = row.key,
+			_grug_mixed_race = slot.garrison and slot.garrison.mixed or nil}) or nil
 	placing = true
 	local object = core.add_entity(slot.pos, slot.entity, staticdata)
 	placing = false
@@ -1592,19 +1679,19 @@ function grug_mobs.start_guard_died(self)
 	local slot = row and row.by_socket[self._grug_socket]
 	if not slot or not slot.placed then return end
 	mark_free(row, slot,
-		core.get_gametime() + math.random(RESPAWN_MIN, RESPAWN_MAX))
+		core.get_gametime() + math.random(slot.respawn[1], slot.respawn[2]))
 	core.log("action", "[grug_mobs] start npcs " .. row.key .. ": socket " ..
 		slot.id .. " lost its guard, refill due at " .. slot.due)
 end
 
 local ROYAL_HOLD = 2147483647
 
+-- A king and his throne guards, a General and his bodyguards (`slot.royal`).
 local function royal_slots(row)
 	local result = {}
 	for index = 1, #row.slots do
 		local slot = row.slots[index]
-		if slot.role == "king" or
-				slot.entity:find("grug_mobs:royal_guard_", 1, true) then
+		if slot.royal then
 			result[#result + 1] = slot
 		end
 	end
@@ -1625,7 +1712,7 @@ function grug_mobs.royal_encounter_reset(self)
 	if not row then return end
 	local claims = claims_of(row.key)
 	for _, slot in ipairs(royal_slots(row)) do
-		if slot.role ~= "king" then
+		if not slot.leader then
 			local holder = claims[slot.id]
 			if holder and holder.object then holder.object:remove() end
 			claims[slot.id] = nil
@@ -1647,7 +1734,7 @@ function grug_mobs.royal_king_died(self)
 	local claims = claims_of(row.key)
 	for _, slot in ipairs(royal_slots(row)) do
 		local holder = claims[slot.id]
-		if slot.role ~= "king" and holder and holder.object then
+		if not slot.leader and holder and holder.object then
 			holder.object:remove()
 		end
 		claims[slot.id] = nil

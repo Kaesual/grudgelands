@@ -77,7 +77,9 @@ settlement: its placer marks it (`grug_visuals.npc_race` with
 `{mixed = true}`, or the entity field `_grug_mixed_race`). Every option
 may be rolled. Royal guards are of their king's race with their own rolled
 look and the royal tabard; a king has one fixed look with the tabard and a
-crown, in his people's royal colours.
+crown, in his people's royal colours. A PvP fortress's General (Round 31)
+has one fixed look of his fortress's seat race with that race's royal tabard
+and no crown; his bodyguards are a mixed garrison in guard armour.
 
 ## 2. Stature is visual only
 

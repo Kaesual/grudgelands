@@ -1,5 +1,7 @@
 -- Round 8 apex encounters: the two fixed island dragons and one royal group
 -- on each capital's authored throne sockets.  None has an ambient spawn row.
+-- Round 31 adds the two fortress Generals (pvp-plan ruling 17): the king
+-- chassis without a crown, with two bodyguards on the royal guards' rules.
 
 local storage = core.get_mod_storage()
 local RESPAWN_DRAGON = 30 * 60
@@ -32,6 +34,12 @@ local RACES = {
 		kit = "regrowth", weapon = "staff",
 		colors = {prefix = "max_hp_percent", suffix = "max_mana_percent"}},
 }
+
+-- The fortress Generals: per faction its seat race, the race its fortress
+-- registers as (lane S's catalogue, read through pvp_garrison.lua), whose
+-- king's chassis and kit the General fights with. Their names come from
+-- data/pvp_names.json (pvp_garrison.lua).
+local GENERALS = grug_mobs.pvp_garrison.catalog.SEAT_RACE
 
 local DRAGONS = {
 	wyrmglass = {
@@ -67,7 +75,9 @@ end
 
 local function boss_faction(id)
 	local race = id and id:match("^king:(.+)$")
-	return race and RACES[race] and RACES[race].faction or nil
+	if race then return RACES[race] and RACES[race].faction or nil end
+	local faction = id and id:match("^general:(.+)$")
+	return faction and GENERALS[faction] and faction or nil
 end
 
 local function participant(id, player)
@@ -343,7 +353,8 @@ local function royal_signature(self, race, target, start_health)
 			{x = -3, z = 5}, {x = 3, z = 5}}
 		local guard_index = 0
 		for _, ent in ipairs(royal_objects(self._grug_boss_id, 50, pos)) do
-			if ent.name:find("grug_mobs:royal_guard_", 1, true) then
+			-- The retinue: every member of the encounter but its leader.
+			if not ent._grug_royal_king then
 				guard_index = guard_index + 1
 				ent.health = math.min(ent.hp_max or ent.health,
 					ent.health + math.floor((ent.hp_max or ent.health) * 0.2))
@@ -376,8 +387,9 @@ local function royal_signature(self, race, target, start_health)
 	end
 end
 
-local function king_tick(self, dtime, race)
-	self._grug_boss_id = "king:" .. race
+-- `boss_id` is a General's encounter (Round 31); a king's is his race's.
+local function king_tick(self, dtime, race, boss_id)
+	self._grug_boss_id = boss_id or ("king:" .. race)
 	self._grug_royal_race = race
 	self._grug_royal_king = true
 	self.temp = self.temp or {}
@@ -502,8 +514,8 @@ local function royal_guard_drop_attack(self)
 	end
 end
 
-local function royal_guard_tick(base_tick, self, dtime)
-	self._grug_boss_id = "king:" .. self._grug_royal_race
+local function royal_guard_tick(base_tick, self, dtime, boss_id)
+	self._grug_boss_id = boss_id or ("king:" .. self._grug_royal_race)
 	local result = royal_guard_base_tick(base_tick, self, dtime)
 	if result == false then return false end
 	if not self.object then return end
@@ -523,7 +535,8 @@ local function royal_guard_tick(base_tick, self, dtime)
 	self.temp.grug_royal_follow = 0
 	local pos = self.object:get_pos()
 	for _, ent in ipairs(royal_objects(self._grug_boss_id, 80, pos)) do
-		if ent.name:find("grug_mobs:king_", 1, true) then
+		-- The encounter's leader: a king or a General.
+		if ent._grug_royal_king then
 			local king_pos = ent.object:get_pos()
 			self._grug_home = {x = king_pos.x, y = king_pos.y, z = king_pos.z}
 			local dx, dz = king_pos.x - pos.x, king_pos.z - pos.z
@@ -590,6 +603,63 @@ for race, row in pairs(RACES) do
 	end
 	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
 	grug_mobs.register_mob("grug_mobs:royal_guard_" .. race_id, guard)
+end
+
+-- Round 31: the two fortress Generals (pvp-plan ruling 17; "Generals respawn
+-- like kings", the coordinator defaults). His seat race's king's chassis and
+-- kit -- level 65 elite, the tallest figure of his keep -- and, like a king,
+-- one fixed look of his seat race, but in the royal guards' tabard: no crown.
+-- No Fallen Crown either: he drops what a guard drops (war trophies, only to
+-- an enemy player's kill) and keeps no reward ledger. His two bodyguards
+-- follow him like royal guards, in the guard look of any race of their
+-- faction (a mixed garrison, start_npcs.lua). start_npcs.lua's royal path
+-- books the group's return. `_grug_royal_race` marks the group as a royal
+-- encounter (boss_leash_reset); for a General it is his seat race.
+local GENERAL_LOOKS = {
+	accord = {tone = 3, hair = 2, style = 1, eyes = 2, feature = 2},
+	throng = {tone = 1, hair = 1, style = 1, eyes = 3, feature = 3},
+}
+local garrison = grug_mobs.pvp_garrison
+for faction, race in pairs(GENERALS) do
+	local faction_id, race_id = faction, race
+	local boss_id = "general:" .. faction_id
+	local texture = "grug_mobs_guard_" .. faction_id .. ".png"
+	local name = garrison.general_entity(faction_id)
+	local general = king_def(race_id, RACES[race_id])
+	general.description = garrison.general_name(faction_id)
+	general._grug_visual = function(self)
+		return {race = race_id, look = GENERAL_LOOKS[faction_id], royal = "guard",
+			level = self._grug_level, weapon_family = RACES[race_id].weapon,
+			-- His seat king's fixed weapon colours (visual only, lane B).
+			weapon_colors = RACES[race_id].colors}
+	end
+	-- A fresh copy of the guard's PvP-only loot (guard.lua).
+	general.drops = grug_mobs.guard_definition(faction_id, "", texture).drops
+	general.do_custom = function(self, dtime)
+		return king_tick(self, dtime, race_id, boss_id)
+	end
+	general.on_die = function(self)
+		grug_mobs.boss_attempt_reset(boss_id)
+		grug_mobs.royal_king_died(self)
+	end
+	grug_mobs.register_mob(name, general)
+	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
+
+	local bodyguard = garrison.bodyguard_entity(faction_id)
+	local guard = grug_mobs.guard_definition(faction_id,
+		(faction_id == "accord" and "Accord" or "Throng") .. " Bodyguard", texture)
+	local base_tick = guard.do_custom
+	guard._grug_fixed_level = 60
+	guard._grug_tier = "elite"
+	guard._grug_no_leash = true
+	guard._grug_leash_range = nil
+	guard.do_custom = function(self, dtime)
+		self._grug_royal_race = self._grug_royal_race or race_id
+		return royal_guard_tick(base_tick, self, dtime, boss_id)
+	end
+	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
+	grug_mobs.register_mob(bodyguard, guard)
+	core.registered_entities[bodyguard]._grug_pvp_kind = garrison.pvp_kind(bodyguard)
 end
 
 -- Static authored navigation locations; no live entity or respawn information.

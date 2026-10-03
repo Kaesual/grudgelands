@@ -1588,6 +1588,11 @@ involved. The two systems never meet.
 | Elite (armor 80) | 20% | 3% | elite |
 | Named rare (armor 70) | 100% | 25% | rare |
 | Apex boss / race King | — | 100% | boss |
+| PvP fortress General (Round 31; item level = his level, 65) | 60% | 25% | rare |
+
+The General has no reward ledger: his roll drops on the kill, like any mob
+gear, and only an enemy player's kill drops it (with his war trophies); his
+bodyguards, like royal guards, drop no gear.
 
 Found enchantments do not imply a separate refined state.
 

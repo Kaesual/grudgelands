@@ -84,3 +84,19 @@ for _, row in ipairs({
 }) do
 	Q.register_npc(row[1], {settlement = row[2], socket = row[3], title = row[4]})
 end
+
+-- Round 31: the three quest givers of each PvP fortress (pvp-plan ruling 17;
+-- the sockets are r31_pvp_poi_blueprint.lua's). Their records only, by role
+-- title; the quests are lane Q's. A fortress registers its sockets once lane
+-- M has bound its anchor (r7_settlement.pvp_profiles binds every PvP POI or
+-- none), so the records follow the registry.
+for _, faction in ipairs({"accord", "throng"}) do
+	local key = "pvp_fortress_" .. faction
+	if grug_core.settlement_socket_anchor(key) then
+		for _, row in ipairs({{"warmaster", "Warmaster"}, {"drillmaster", "Drillmaster"},
+				{"outrider", "Outrider"}}) do
+			Q.register_npc("r31_" .. faction .. "_" .. row[1],
+				{settlement = key, socket = "quest_" .. row[1], title = row[2]})
+		end
+	end
+end

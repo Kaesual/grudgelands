@@ -169,6 +169,15 @@ grug_mobs = {
 	-- grug_mobs/init.lua's recompose of a family's look (Round 31 A).
 	refresh_visual = function() end,
 }
+-- start_npcs.lua asks the Round 31 PvP garrison rules about every socket (a
+-- start's sockets are no garrison posts).
+do
+	local handle = assert(io.open(ROOT .. "/mods/ENTITIES/grug_mobs/data/pvp_names.json", "rb"))
+	local names = dofile(ROOT .. "/tools/r28_b1/json.lua").parse(handle:read("*a"))
+	handle:close()
+	grug_mobs.pvp_garrison = dofile(ROOT .. "/mods/ENTITIES/grug_mobs/pvp_garrison.lua").new(
+		dofile(ROOT .. "/mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names)
+end
 -- The quest shell claims in after_activate (start_villagers.lua); the guard
 -- claims on its first tick when it carries a key (guard.lua); a villager
 -- claims on its first tick (start_villagers.lua amble/work tick).

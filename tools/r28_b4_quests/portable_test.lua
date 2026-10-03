@@ -133,6 +133,8 @@ end}
 ------------------------------------------------------------------------------
 local ESC = string.char(27)
 grug_core = {register_tag_visibility = function() end,
+	-- grug_quests/npcs.lua: no PvP fortress is registered here (Round 31).
+	settlement_socket_anchor = function() return nil end,
 	hud_layout = {side_text_width = function() return 400 end, QUEST_WRAP = 400,
 		anchors = {quest_list = {}}},
 	feed_item = function(player, stack, count)
