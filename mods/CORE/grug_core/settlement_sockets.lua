@@ -32,7 +32,10 @@
 local ROLES = {guard_post = true, guard_patrol = true, vendor = true,
 	idle = true, quest = true, king = true, waypoint = true, work = true,
 	trainer = true, riding_trainer = true, shipwright = true,
-	mount_display = true, gear_display = true, public_station = true}
+	mount_display = true, gear_display = true, public_station = true,
+	-- Round 31 PvP POIs: the fortress General and his two bodyguards, a
+	-- camp's captain (pvp-plan ruling 17, r31_pvp_poi_blueprint.lua).
+	general = true, bodyguard = true, captain = true}
 local TRAINER_PROFESSIONS = {weaponsmith = true, armorsmith = true, alchemist = true,
 	tailor = true, leatherworker = true, woodcarver = true, goldsmith = true,
 	cooking = true}

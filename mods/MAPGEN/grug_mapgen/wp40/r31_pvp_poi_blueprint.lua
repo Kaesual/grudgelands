@@ -6,16 +6,20 @@
 -- `profile.art` names the composition:
 --   kind     "pvp_fortress" | "pvp_camp_low" | "pvp_camp_high"
 --   faction  "accord" | "throng"
---   race     camps only: one race of that faction (its materials); the
---            fortress always builds in its faction's stone
+--   race     camps only, optional: one race of that faction (its
+--            materials); without it the camp rolls its race from the world
+--            seed and its anchor number (`r31_pvp_catalog.camp_race`). The
+--            fortress always builds in its faction's stone and is registered
+--            as the faction's seat race.
 --   turns    quarter turns about +Y (local +z to world +x per turn, as
 --            `wp13/parts.lua`); at 0 the one gate faces local -z
 --
 -- Every composition is square and centred on the anchor (-r..r), so a turn
 -- keeps its bounds. The anchor column stays open: solid support at (0,0,0)
 -- and a clear 5x5x3 yard round the root, where the R7 writer puts the anchor
--- node. Sockets are landmarks, never cells (role list in the lane S report
--- and at the bottom of this file).
+-- node. Sockets are landmarks, never cells (role list at the bottom of this
+-- file); `landmarks.race` and `landmarks.faction` name what the settlement
+-- registers as.
 -- Plain Lua 5.1, no globals.
 local module_info = debug and debug.getinfo and debug.getinfo(1, "S")
 local module_dir = type(module_info)=="table" and type(module_info.source)=="string" and
@@ -23,6 +27,7 @@ local module_dir = type(module_info)=="table" and type(module_info.source)=="str
 if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapgen").."/wp40" end
 local parts = dofile(module_dir.."/../wp13/parts.lua")
 local rot = dofile(module_dir.."/../wp13/plot_approach.lua").rot
+local catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
 
 local SIZE = {pvp_fortress={r=24,h=16}, pvp_camp_low={r=11,h=9}, pvp_camp_high={r=13,h=9}}
 local FACTION_OF = {dwarf="accord",human="accord",elf="accord",undead="throng",orc="throng",troll="throng"}
@@ -72,6 +77,11 @@ return function(options, profile)
 	local turns = art.turns or 0
 	assert(turns%1==0 and turns>=0 and turns<=3, "Round 31 PvP turns differ")
 	local r, height = size.r, size.h
+	local race = catalog.SEAT_RACE[art.faction]
+	if art.kind~="pvp_fortress" then
+		race = art.race or catalog.camp_race(assert(options and options.full_seed,
+			"Round 31 PvP camp needs the world seed"), profile.numeric_id, art.faction)
+	end
 	local by_pos, structures, sockets = {}, {}, {}
 	local function key(x,y,z) return ((z+r)*(height+1)+y)*(2*r+1)+x+r end
 	local function put(x,y,z,name,param2)
@@ -261,14 +271,14 @@ return function(options, profile)
 		-- Sockets. Gate guards stand in the passage facing out; ten inner
 		-- posts; the General with two bodyguards in the keep; three quest
 		-- givers; the Quartermaster behind the counter; the waystone.
-		socket("gate_west","guard_post",-2,-r+3,0,-1,{group="gate"})
-		socket("gate_east","guard_post",2,-r+3,0,-1,{group="gate"})
+		socket("gate_west","guard_post",-2,-r+3,0,-1,{tags={"gate"}})
+		socket("gate_east","guard_post",2,-r+3,0,-1,{tags={"gate"}})
 		local posts={{"keep_door_west",-3,10,0,-1},{"keep_door_east",3,10,0,-1},
 			{"yard_west",-8,-4,0,-1},{"yard_east",8,-4,0,-1},
 			{"gate_inner_west",-5,-18,0,-1},{"gate_inner_east",5,-18,0,-1},
 			{"corner_southwest",-19,-19,1,0},{"corner_southeast",19,-19,-1,0},
 			{"corner_northwest",-19,19,1,0},{"corner_northeast",19,19,-1,0}}
-		for _,q in ipairs(posts) do socket(q[1],"guard_post",q[2],q[3],q[4],q[5],{group="inner"}) end
+		for _,q in ipairs(posts) do socket(q[1],"guard_post",q[2],q[3],q[4],q[5],{tags={"inner"}}) end
 		socket("general","general",0,17,0,-1)
 		socket("bodyguard_west","bodyguard",-2,16,0,-1)
 		socket("bodyguard_east","bodyguard",2,16,0,-1)
@@ -278,8 +288,8 @@ return function(options, profile)
 		socket("vendor_quartermaster","vendor",19,0,-1,0,{kind="general"})
 		socket("travel_waypoint","waypoint",12,-12,0,1)
 	else
-		local c=assert(CAMP[art.race], "Round 31 PvP camp race differs")
-		assert(FACTION_OF[art.race]==art.faction, "Round 31 PvP camp race is not of its faction")
+		local c=assert(CAMP[race], "Round 31 PvP camp race differs")
+		assert(FACTION_OF[race]==art.faction, "Round 31 PvP camp race is not of its faction")
 		local high=art.kind=="pvp_camp_high"
 		fill(-r,0,-r,r,0,r,c.ground)
 		fill(-r,1,-r,r,height,r,"air")
@@ -362,16 +372,16 @@ return function(options, profile)
 			end
 			-- Straw targets: a drill line inside the palisade.
 			for _,x in ipairs({-4,-2}) do put(x,1,nz+2,c.post); put(x,2,nz+2,"grug_decor:cottages_straw_bale") end
-			socket("gate_west","guard_post",-2,-r+2,0,-1,{group="gate"})
-			socket("gate_east","guard_post",2,-r+2,0,-1,{group="gate"})
-			socket("tower_west","guard_post",-10,-7,0,-1,{group="camp"})
-			socket("tower_east","guard_post",10,-7,0,-1,{group="camp"})
-			socket("yard_west","guard_post",-5,captain_z,0,-1,{group="camp"})
+			socket("gate_west","guard_post",-2,-r+2,0,-1,{tags={"gate"}})
+			socket("gate_east","guard_post",2,-r+2,0,-1,{tags={"gate"}})
+			socket("tower_west","guard_post",-10,-7,0,-1,{tags={"camp"}})
+			socket("tower_east","guard_post",10,-7,0,-1,{tags={"camp"}})
+			socket("yard_west","guard_post",-5,captain_z,0,-1,{tags={"camp"}})
 		else
-			socket("gate_west","guard_post",-2,-r+2,0,-1,{group="gate"})
-			socket("gate_east","guard_post",2,-r+2,0,-1,{group="gate"})
-			socket("yard_west","guard_post",-4,captain_z,0,-1,{group="camp"})
-			socket("yard_east","guard_post",4,captain_z,0,-1,{group="camp"})
+			socket("gate_west","guard_post",-2,-r+2,0,-1,{tags={"gate"}})
+			socket("gate_east","guard_post",2,-r+2,0,-1,{tags={"gate"}})
+			socket("yard_west","guard_post",-4,captain_z,0,-1,{tags={"camp"}})
+			socket("yard_east","guard_post",4,captain_z,0,-1,{tags={"camp"}})
 		end
 		socket("captain","captain",0,captain_z,0,-1)
 	end
@@ -413,13 +423,15 @@ return function(options, profile)
 	end)
 	return {schema=profile.blueprint_schema,palette=palette,cells=cells,
 		bounds={min={x=-r,y=0,z=-r},max={x=r,y=height,z=r}},clear_to=height,
-		landmarks={structures=structures,sockets=sockets,arrival={x=0,y=1,z=0}}}
+		landmarks={structures=structures,sockets=sockets,arrival={x=0,y=1,z=0},
+			race=race,faction=art.faction}}
 end
 
 -- Socket roles (lanes M and G):
---   guard_post  one guard at an authored post; `group` "gate" (the fortress's
---               two gate guards, a camp's two gate guards), "inner" (fortress
---               elites inside the wall) or "camp" (the rest of a camp garrison)
+--   guard_post  one guard at an authored post; its one tag says which: "gate"
+--               (the two gate guards of the fortress and of a camp), "inner"
+--               (fortress elites inside the wall) or "camp" (the rest of a
+--               camp garrison)
 --   general     the fortress General (level-65 elite, king chassis)
 --   bodyguard   the General's two level-60 elite bodyguards
 --   captain     the camp's named captain
