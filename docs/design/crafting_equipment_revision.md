@@ -93,6 +93,10 @@ to a higher-tier target. Qualification and progress use the enchant recipe's
 tier, not target tier; suffix application has no separate level-16 mastery gate.
 Names and family pools retain the nine existing stat-specific prefix/suffix pairs.
 Found-item random value windows remain distinct from fixed crafted enchants.
+Each stat has a fixed colour that the enchanted item shows as a small accent
+(prefix) and fitting (suffix) on its icon, in hand and on the body; every
+enchanting station shows the legend of the nine colours
+([character_visuals.md](character_visuals.md) §5a, Round 31).
 
 | Bonus | T1 | T2 | T3 | T4 | T5 | T6 |
 |---|---:|---:|---:|---:|---:|---:|

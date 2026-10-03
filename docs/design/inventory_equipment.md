@@ -286,7 +286,11 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
   Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
   transactional in-place operations on one concrete stack and preserve its
-  metadata and wear. Other profession recipes retain their explicit grid,
+  metadata and wear. An enchanted weapon, offhand or armour piece shows its
+  prefix and suffix colours (character_visuals.md §5a) on its own inventory
+  image, which also draws it in hand and when dropped and is rebuilt whenever
+  its affixes change; a plain stack carries no image of its own. Each
+  enchanting station shows the colour legend. Other profession recipes retain their explicit grid,
   furnace, dual-furnace or brewing-stand route.
 - Authored capital/POI stations are personal workspaces keyed by player and
   physical station. Player-placed stations share node inventories; inside an
