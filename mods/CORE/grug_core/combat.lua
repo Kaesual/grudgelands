@@ -30,6 +30,8 @@ end
 -- reverse dependency on grug_mounts.  The rider marker is live runtime state:
 -- an arbitrary attachment, a stale object or somebody else's mount is not a
 -- mounted player.
+-- Combat notices (this refusal, "You dodge!") go to the message feed in grey,
+-- never to chat; each keeps one keyed line that a repeat refreshes.
 local mounted_refusal_notice = {}
 
 function grug_core.player_has_live_mount(player)
@@ -49,7 +51,7 @@ function grug_core.refuse_mounted_attack(player)
 	local now = core.get_us_time()
 	local notice = mounted_refusal_notice[name]
 	if not notice or notice.object ~= object or now - notice.at >= 1000000 then
-		core.chat_send_player(name, "Dismount before attacking.")
+		grug_core.feed(player, "combat", "Dismount before attacking.", "combat:mounted")
 		mounted_refusal_notice[name] = {object = object, at = now}
 	end
 	return true
@@ -1440,8 +1442,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		-- and the threat report reflect what actually landed; the central
 		-- modifier skips the roll while in_ability_punch is set.
 		if math.random() < grug_core.get_dodge_chance(target) then
-			core.chat_send_player(target:get_player_name(),
-				core.colorize("#aaaaaa", "You dodge!"))
+			grug_core.feed(target, "combat", "You dodge!", "combat:dodge")
 			grug_core.mark_in_combat(attacker)
 			grug_core.mark_player_hit(target, attacker)
 			return 0
@@ -1774,8 +1775,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		-- Ability punches pre-roll dodge in deal_ability_damage.
 		if not grug_core.in_ability_punch and
 				math.random() < grug_core.get_dodge_chance(player) then
-			core.chat_send_player(player:get_player_name(),
-				core.colorize("#aaaaaa", "You dodge!"))
+			grug_core.feed(player, "combat", "You dodge!", "combat:dodge")
 			return 0
 		end
 	end

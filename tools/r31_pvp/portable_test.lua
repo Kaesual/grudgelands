@@ -10,7 +10,8 @@
 --      shared combat timer for 10 s (a later 5 s mark does not shorten it),
 --      support contact only on a player in PvP combat;
 --   H  the hp-change seam: a landed enemy player hit (HP or absorb) is
---      contact, a dodge, a mob hit or an own-faction pair is not;
+--      contact, a dodge, a mob hit or an own-faction pair is not; a dodge
+--      and a mounted-attack refusal post a combat feed line (Round 32 F3);
 --   T  the can_harm / can_support table;
 --   G  the gate at impact: deal_ability_damage punches nobody unless both
 --      enemy players are flagged; the crosshair ray classifies an unflagged
@@ -160,6 +161,14 @@ local modifier = hp_modifiers[1]
 function grug_core.player_in_creation_stasis() return false end
 -- Armor is not under test: the damage the gate lets through lands whole.
 function grug_core.apply_player_armor(_, damage) return damage end
+-- The message feed (feed.lua, tested in tools/r28_a6_ui): combat notices go
+-- there, never to chat (Round 32 F3).
+local feed_lines = {}
+function grug_core.feed(player, kind, text, key)
+	feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
+		text = text, key = key}
+	return true
+end
 
 grug_factions = {}
 function grug_factions.get_faction(p) return p.faction end
@@ -419,9 +428,34 @@ do
 	set(a, true); set(t, true); tick()
 	grug_core.get_dodge_chance = function() return 1 end
 	local before = state(t).pvp_combat
+	feed_lines = {}
 	eq(modifier(t, -5, {type = "punch", object = a}), 0, "H: a dodged hit loses nothing")
 	eq(state(t).pvp_combat, before, "H: a dodge is no contact")
+	eq(#feed_lines, 1, "H: a dodge posts one feed line")
+	check(feed_lines[1] and feed_lines[1].name == t:get_player_name() and
+		feed_lines[1].kind == "combat" and feed_lines[1].text == "You dodge!",
+		"H: the dodger reads \"You dodge!\" in the combat feed colour")
+	local hp_before = t.hp
+	feed_lines = {}
+	eq(grug_core.deal_ability_damage(a, t, 10), 0, "H: a dodged cast deals nothing")
+	eq(t.hp, hp_before, "H: a dodged cast costs no HP")
+	check(#feed_lines == 1 and feed_lines[1].text == "You dodge!" and
+		feed_lines[1].kind == "combat", "H: a dodged cast posts the same feed line")
 	grug_core.get_dodge_chance = function() return 0 end
+	-- A mounted attack is refused with a feed line, at most once a second.
+	local rider = {get_player_name = function() return "rider" end}
+	local mount = {is_valid = function() return true end,
+		get_luaentity = function() return {_grug_rider = rider} end}
+	rider.get_attach = function() return mount end
+	feed_lines = {}
+	check(grug_core.refuse_mounted_attack(rider), "H: a mounted attack is refused")
+	check(grug_core.refuse_mounted_attack(rider), "H: a repeat is refused too")
+	check(#feed_lines == 1 and feed_lines[1].kind == "combat" and
+		feed_lines[1].text == "Dismount before attacking.",
+		"H: the refusal is one combat feed line within a second")
+	advance(1)
+	grug_core.refuse_mounted_attack(rider)
+	eq(#feed_lines, 2, "H: the refusal repeats after a second")
 	grug_core.add_absorb(t, "test", 50, 30, h)
 	eq(modifier(t, -5, {type = "punch", object = a,
 		custom_type = grug_core.ARMOR_APPLIED_CUSTOM_TYPE}), 0, "H: fully absorbed")

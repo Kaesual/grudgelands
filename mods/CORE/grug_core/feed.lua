@@ -10,7 +10,7 @@
 --
 --   grug_core.feed(player, kind, text, key)
 --     One line. `kind` picks the colour (grug_core.FEED_COLOR: "xp", "loot",
---     "quest", "fish"; anything else is the neutral notice colour). `key` is
+--     "quest", "fish", "combat"; anything else is the neutral notice colour). `key` is
 --     optional: a new line with the key of a line still shown REPLACES that
 --     line (one line per quest: key "quest:<id>").
 --   grug_core.feed_xp(player, amount)
@@ -47,6 +47,8 @@ grug_core.FEED_COLOR = {
 	loot = 0xffffff,
 	quest = 0xffe080,
 	fish = 0x8fd9f2,
+	-- Combat notices ("You dodge!", "Dismount before attacking.").
+	combat = 0xaaaaaa,
 	notice = 0xf0e6c8,
 }
 

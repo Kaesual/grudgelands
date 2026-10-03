@@ -228,7 +228,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 - Mounting is refused while `grug_core.in_combat(player)` reports the active
   five-second combat window.
 - A mounted player cannot use abilities, casts or combat swings. They must
-  dismount before attacking.
+  dismount before attacking; the refusal is a grey message-feed line
+  ("Dismount before attacking."), not a chat line.
 - The entity is invulnerable, carries no drops and never persists in static
   data. A punch aimed at the attached entity is transferred to the rider and
   then dismounts them; direct player damage dismounts through a player

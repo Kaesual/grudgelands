@@ -247,6 +247,7 @@ local C = grug_core.FEED_COLOR
 check(grug_core.feed(alice, "quest", "Small Boar 3/10", "quest:a"), "feed returns true")
 eq(line_text(alice, 1), "Small Boar 3/10", "single line at the bottom")
 eq(line_color(alice, 1), C.quest, "quest colour")
+eq(C.combat, 0xaaaaaa, "combat notices are grey")
 eq(line_text(alice, 2), "", "upper slot empty")
 advance(0.2)
 grug_core.feed(alice, "loot", "+1 Bone")

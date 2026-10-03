@@ -1104,8 +1104,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   coordinate mode deliberately. Map retains the shared legacy outer window and
   uses real coordinates only inside its content. 3D preview: `model[]` element.
   Skill tree = formspec with an `image_button` grid.
-  Gains (XP, loot, quest progress, catches) go to the message feed above the
-  bars, never to chat: `grug_core.feed(player, kind, text, key)`,
+  Gains (XP, loot, quest progress, catches) and combat notices (dodge,
+  mounted-attack refusal) go to the message feed above the bars, never to
+  chat: `grug_core.feed(player, kind, text, key)`,
   `feed_xp`, `feed_item` (`grug_core/feed.lua`, Round 28 ruling 20).
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following

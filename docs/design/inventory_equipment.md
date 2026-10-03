@@ -383,8 +383,8 @@ the Round 19 top-centre text list:
 
 ## Message feed and level-up banner (Round 28 ruling 20)
 
-Gains the player just earned appear near their own bars instead of in chat
-(the top-left chat was easy to miss). There is **no chat copy** of any of
+Gains the player just earned and short combat notices appear near their own
+bars instead of in chat (the top-left chat was easy to miss). There is **no chat copy** of any of
 them.
 
 - **Place:** bottom centre, stacked upwards from 6 HUD units above the status
@@ -395,7 +395,7 @@ them.
 - **Lines:** at most 3, newest at the bottom; each lives 2.5 s and is drawn
   at 45 % brightness for its last 0.5 s (HUD text has no alpha fade on every
   client). Colours by kind: loot white, XP purple (`#aa66ff`), quest yellow
-  (`#ffe080`), fishing light blue.
+  (`#ffe080`), fishing light blue, combat notices grey (`#aaaaaa`).
 - **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
   one summed into the same line; items picked up off the ground (mob drops,
   dropped items) and boss loot entering the inventory as "+3 Light Leather",
@@ -404,7 +404,9 @@ them.
   quest, every objective as "<name> n/m" joined by ", " ("Small Boar 3/10"),
   a quest's newer line replacing its own older one, cut to the widest
   tracker line (38 characters, "..."); fishing catches as
-  "Caught <fish> (+N XP)" (junk: "Caught <item>").
+  "Caught <fish> (+N XP)" (junk: "Caught <item>"); combat notices
+  "You dodge!" and "Dismount before attacking." (a mounted attack, at most
+  once a second), each one keyed line that a repeat refreshes (Round 32).
 - **Level-up** is a separate large centre announcement ("Reached level N!",
   double font size, 3 s), not a feed line.
 - **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
