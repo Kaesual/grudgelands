@@ -5,8 +5,7 @@ local function use_mount(itemstack, user)
 	local bound_owner = itemstack:get_meta():get_string("grug_mounts:owner")
 	if bound_owner ~= user:get_player_name() or not tier_id or
 			not grug_mounts.owns_tier(user, tier_id) then
-		core.chat_send_player(user:get_player_name(),
-			"That mount is not bound to this character.")
+		grug_core.feed(user, "notice", "That mount is not bound to this character.", "mount")
 		return itemstack
 	end
 	grug_mounts.toggle(user, tier_id)

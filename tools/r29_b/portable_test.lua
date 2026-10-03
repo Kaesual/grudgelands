@@ -280,6 +280,20 @@ local boat_item = registered_items["grug_mounts:boat"]
 check(boat_item and boat_item.stack_max == 1 and boat_item.groups.grug_bound_skill == 1 and
 	boat_item._grug_mount_tier == 5, "boat item: bound skill, one per stack")
 eq(boat_item.on_drop().name, "", "dropping deletes the boat item")
+-- Somebody else's boat item: refused with a keyed feed line, never chat
+-- (Round 32 F3).
+do
+	local foreign = {get_name = function() return "grug_mounts:boat" end,
+		get_meta = function() return {get_string = function() return "somebody_else" end} end}
+	local fed, chatted = #feed_lines, #chat
+	local user = {is_player = function() return true end,
+		get_player_name = function() return "stranger" end}
+	eq(boat_item.on_use(foreign, user), foreign, "a foreign boat item is kept")
+	check(#feed_lines == fed + 1 and
+		feed_lines[#feed_lines].text == "That mount is not bound to this character." and
+		feed_lines[#feed_lines].key == "mount", "not-bound refusal is a mount feed line")
+	eq(#chat, chatted, "not-bound refusal: nothing in chat")
+end
 check(registered_items["grug_mounts:improved_boat"].inventory_image ==
 	"grug_mounts_icon_improved_boat.png", "improved boat icon name")
 
