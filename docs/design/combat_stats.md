@@ -406,26 +406,32 @@ ray. Aim gaps may delay a ready swing but never bank more than one. Ordinary
 tools and fists provide no parallel player-damage path. Contextual input does
 not alter the melee damage tables.
 
-### PvP eligibility and tag
+### PvP eligibility and flag
 
-All player-damage paths call the central geographic/tag rule from
-`world_zones.md` §4. Contested-zone entry tags automatically; peaceful-zone
-players remain immune to unprovoked enemy-player damage. A voluntary hostile
-action tags its user before eligibility/damage resolution. Safe→safe blocks
-that first effect while tagging the attacker; safe→tagged may land after
-tagging; tagged→safe blocks; tagged→tagged may land. Outside contested zones
-the tag clears 60 seconds after the last qualifying effective HP/absorb damage
-or support contact; misses and zero effects do not refresh it. Contested entry
-forces the tag, leaving starts a full 60-second tail, and death clears it
-immediately. Melee, casts, area effects, projectiles and support may not diverge
-from `world_zones.md` §15. This is target design for WP41; the shipped callbacks
-currently gate only by faction and global `enable_pvp`.
+Geographic PvP (Round 31, `grug_pvp`; rulings in
+[pvp-plan.md](../planning/pvp-plan.md) §2). Two enemy players can harm each
+other only while **both are flagged**; no attack, heal or area effect changes
+anyone's flag. A player is flagged while standing in contested ground (the
+31–60 zones, both islands, every land column at **y = −701 and below**) or in
+enemy territory, for **60 s** after pressing "Flag me for PvP", and for
+**60 s** after the last PvP contact. Only the own faction's peaceful territory
+clears the location flag, once those timers have run out; deep ocean and the
+dragon channels keep the last value. Death clears all three.
 
-Every non-ocean land position at **y = −701 and below** is contested even when
-its surface zone is peaceful. Crossing down forces the tag; returning above
-the boundary starts the same full 60-second peaceful-zone tail as leaving any
-other contested area. Deep ocean and immutable dragon channels remain outside
-the editable land rule.
+- The gate sits in `valid_target` (swings, casts, area effects, projectile
+  launch), in the crosshair ray (an unflagged enemy is a blocker with a
+  neutral crosshair, reason `protected`) and at impact (`deal_ability_damage`
+  and the swing punch). Nothing is paid for a refused target.
+- Support is one-way: an unflagged helper cannot heal, shield or Renew a
+  flagged ally (Flash Heal's splash included); a flagged helper may support
+  anyone of the own faction.
+- **PvP contact** is hostile player damage that lands (HP lost or absorb
+  consumed) for dealer and receiver, and effective support cast on an ally in
+  PvP combat for the helper (effects over time count at application only).
+  Fighting NPCs is never PvP contact.
+- Leaving the game in PvP combat (contact within 10 s) is death: the enemy
+  players who landed damage in the last 15 s get the kill at once, and the
+  character starts dead at the next join. A server shutdown is not a logout.
 
 ## 3. Mobs
 
@@ -913,7 +919,8 @@ mounting and travel home. Decided 2026-09-28 (user
 playtest rulings); owned by `grug_core` (`in_combat`).
 
 - A player is **in combat** while at least one live mob is **engaged** with
-  them, or while the **5-second timer** (`COMBAT_TIMEOUT`) runs.
+  them, or while the timer runs (**5 s**, `COMBAT_TIMEOUT`; **10 s** after
+  PvP contact).
 - **Engagement (mob combat).** A mob is engaged with a player from the first
   hit between them in either direction (a landed or dodged hit of the mob or
   its projectile, or an accepted player hit on it) and whenever the player
@@ -943,7 +950,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
 - **The timer (fallback)** covers every hit that involves no tracked mob:
   PvP hits (dealt, received or dodged) and damage from other sources such as
   scorched ground. Such a hit keeps the player in combat for 5 s even with no
-  mob engaged. Mob hits never arm the timer.
+  mob engaged. **PvP contact** (§2 "PvP eligibility and flag") keeps both
+  sides in combat for **10 s** (`PVP_COMBAT_TIMEOUT`); a later 5 s mark never
+  shortens a running timer. Mob hits never arm the timer.
 - **Death** clears both engagement and the timer at once. A dead player cannot
   be put back into combat by the killing blow's own bookkeeping, and the
   respawned player starts out of combat. Mobs keep their old threat entries,

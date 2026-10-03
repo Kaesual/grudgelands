@@ -97,6 +97,13 @@ local function classify_object(player, origin, range, pointed)
 		result.alive = target:get_hp() > 0
 		result.relation = target == player and "self"
 			or player_relation(player, target)
+		-- An enemy player either of the pair is not flagged for (pvp-plan
+		-- ruling 5) is no target: a blocker with a neutral crosshair, like a
+		-- service NPC. The gate is grug_pvp's (combat.lua, the PvP seam).
+		if result.relation == "hostile" and grug_core.pvp_can_harm and
+				not grug_core.pvp_can_harm(player, target) then
+			result.relation = "protected"
+		end
 	elseif target:get_luaentity() then
 		local ent = target:get_luaentity()
 		if ent._cmi_is_mob then
@@ -113,6 +120,8 @@ local function classify_object(player, origin, range, pointed)
 		result.reason = "dead"
 	elseif result.relation == "friendly" then
 		result.reason = "friendly"
+	elseif result.relation == "protected" then
+		result.reason = "protected"
 	elseif result.relation == "hostile" and result.alive then
 		result.status = "target"
 		result.reason = "hostile"
@@ -147,8 +156,9 @@ end
 
 -- Returns one structured result:
 --   status = "target" | "aim_miss"
---   reason = hostile | friendly | dead | object | node | empty |
+--   reason = hostile | friendly | protected | dead | object | node | empty |
 --            out_of_range | invalid
+-- (`protected`: an enemy player outside PvP, relation "protected" too)
 -- plus origin/destination/range/direction and the exact pointed/target/blocker.
 function grug_core.combat_ray(player, range, opts)
 	opts = opts or {}

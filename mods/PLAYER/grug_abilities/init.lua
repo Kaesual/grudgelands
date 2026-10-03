@@ -234,6 +234,9 @@ end
 -- later touch: Frost Nova is self-targeted even though its effect visits
 -- nearby hostiles. Friendly targeting remains player-only by design; guards
 -- and civic NPCs are not party members and cannot receive player heals.
+-- Players are gated by the PvP flag (pvp-plan rulings 1, 5, 6): an enemy only
+-- while both are flagged, an ally not when the ally is flagged and the user
+-- is not.
 function grug_abilities.valid_target(user, obj, target_kind)
 	if target_kind == "self" then
 		return obj == user and user:get_hp() > 0
@@ -244,12 +247,14 @@ function grug_abilities.valid_target(user, obj, target_kind)
 	if target_kind == "friendly" then
 		return obj:is_player() and obj:get_hp() > 0
 			and grug_factions.same_faction(user, obj)
+			and grug_pvp.can_support(user, obj)
 	end
 	if target_kind ~= "hostile" then
 		return false
 	end
 	if obj:is_player() then
 		return obj:get_hp() > 0 and grug_factions.hostile(user, obj)
+			and grug_pvp.can_harm(user, obj)
 	end
 	local ent = obj:get_luaentity()
 	if not ent or not ent._cmi_is_mob or (ent.health or 0) <= 0 then
@@ -2197,6 +2202,12 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		-- (grug_factions/init.lua:87-91), so two factionless players are
 		-- neutral, not hostile.
 		return
+	end
+	-- Impact re-check (pvp-plan ruling 5): the swing chose a flagged pair, but
+	-- nothing may land once either side lost the flag. Nothing is paid: the
+	-- proc context is prepared only below.
+	if not grug_pvp.can_harm(hitter, player) then
+		return true
 	end
 	if not authoritative_token then
 		-- Move the shared ability clock before the proportional tool/fist

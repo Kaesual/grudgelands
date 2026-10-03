@@ -813,14 +813,20 @@ grug_abilities.register_ability({
 		-- Gentle Hand (skill_trees.md §2.5); Hearten's splash is lane X3's.
 		local amount = def.values(user).heal
 		local action_id = {}
-		grug_core.heal_player(user, target, amount,
-			{action_id = action_id})
+		-- Effective support on a player in PvP combat is PvP contact for the
+		-- healer (pvp-plan ruling 7b); valid_target already refused a flagged
+		-- ally to an unflagged healer, the splash included (ruling 6).
+		if grug_core.heal_player(user, target, amount,
+				{action_id = action_id}) > 0 then
+			grug_pvp.support_contact(user, target)
+		end
 		local splash = grug_classes.get_talent_bonus(user, "flash_heal_splash")
 		if splash > 0 then
 			for _, obj in ipairs(core.get_objects_inside_radius(target:get_pos(), 8)) do
-				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") then
-					grug_core.heal_player(user, obj,
-						math.floor(amount * splash / 100), {action_id = action_id})
+				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") and
+						grug_core.heal_player(user, obj, math.floor(amount * splash / 100),
+							{action_id = action_id}) > 0 then
+					grug_pvp.support_contact(user, obj)
 				end
 			end
 		end
@@ -868,9 +874,12 @@ grug_abilities.register_ability({
 		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
-		grug_core.add_absorb(target, "power_word_shield", def.values(user).absorb,
-			15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {},
-			{dodge_percent = talent_rank_value(user, "turn_aside", "dodge_chance_window", 0)})
+		if grug_core.add_absorb(target, "power_word_shield", def.values(user).absorb,
+				15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {},
+				{dodge_percent = talent_rank_value(user, "turn_aside", "dodge_chance_window", 0)})
+				> 0 then
+			grug_pvp.support_contact(user, target)
+		end
 		burst(target:get_pos(), "default_item_smoke.png^[multiply:#ffe9a0", 8)
 		return true
 	end,
@@ -927,6 +936,8 @@ grug_abilities.register_ability({
 				kind = "buff",
 			})
 		end
+		-- The cast is the application; the ticks are never contact (ruling 7b).
+		grug_pvp.support_contact(user, target)
 		burst(target:get_pos(), "mobs_heart_particle.png", 5)
 		return true
 	end,
