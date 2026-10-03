@@ -333,11 +333,12 @@ need no GUI check.
 
 ## Completion (2026-10-03)
 
-Every lane below is merged on local main (last lane Q, `699a2002`); each
-was independently reviewed by Opus (the Astra names by GPT-6.1 Sol), and
-the coordinator ran the portable fixtures (`tools/run_fixtures.sh`, 63 of
-63 on `699a2002`), `tools/check_fresh_server.py` and a headless boot after
-the merges. Not pushed. Lane F did not run: the user's Round 30 GUI test is
+Every lane below is merged on local main (last lane Q, `699a2002`). Each
+lane was independently reviewed by Opus (the Astra names by GPT-6.1 Sol),
+except the two small follow-ups M2 (a coordinate and tool change) and G2,
+which the coordinator checked, and the user's wording clean-up; the
+coordinator ran the portable fixtures after the merges
+(`tools/run_fixtures.sh`, 63 of 63 on `699a2002`). Not pushed. Lane F did not run: the user's Round 30 GUI test is
 still open and can share the fresh world of this round's test. After
 `699a2002` the user settled the quest-share question (option (b), see Q).
 

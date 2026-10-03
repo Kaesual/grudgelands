@@ -72,8 +72,8 @@ in this file as of commit `082982da`.
   4. contested faction-front approaches and shared-front regions: levels
      **31–40**, **41–50**, **51–60** and the level-**60** endpoint summits.
 - No level-1–30 zone is contested. Level-21–30 heartland may show military
-  preparation and lead toward the front, but remains peaceful under the
-  voluntary-tag rules of §4.
+  preparation and lead toward the front, but remains peaceful (§4,
+  [pvp.md](pvp.md)).
 - **Every level-31–60 ordinary zone is contested**, including all six faction
   frontier approaches, all four Battlegrounds zones and both dragon islands.
   Capitals remain the peaceful civic exception described in §3.

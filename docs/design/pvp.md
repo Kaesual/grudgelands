@@ -17,7 +17,7 @@ eligibility and flag".
 
 | Ground | `pvp_rule_at` | Effect on the location flag |
 |---|---|---|
-| Level-1–30 zones and the six capitals of a faction (its territory) | peaceful | own faction: clears it; the other faction: flags it ("Enemy Territory") |
+| A faction's level-1–30 zones and its three capitals (its territory) | peaceful | own faction: clears it; the other faction: flags it ("Enemy Territory") |
 | Every level-31–60 zone (the six contested approaches, the four Battlegrounds zones, Ashenward March and Bannerbreak Mesa included) and both dragon islands | contested | flags it ("Contested Territory") |
 | Every non-ocean land column at **y = −501 and below** (depth tier T4 and deeper), under any surface zone | contested | flags it |
 | Deep ocean and the dragon channels | neither | keeps the last value |

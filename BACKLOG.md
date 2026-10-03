@@ -580,8 +580,9 @@ files and the engine version stay as noted.
 **Delivered locally 2026-10-03**
 ([completion](docs/planning/round31-plan.md#completion-2026-10-03), plan
 [round31-plan.md](docs/planning/round31-plan.md) with
-[pvp-plan.md](docs/planning/pvp-plan.md)); every lane independently reviewed
-by Opus, the rules as built in [pvp.md](docs/design/pvp.md):
+[pvp-plan.md](docs/planning/pvp-plan.md)); every code lane independently
+reviewed by Opus (the small follow-ups M2 and G2 checked by the coordinator),
+the rules as built in [pvp.md](docs/design/pvp.md):
 
 - **WP41 geographic PvP delivered** (P1, P2, P1b, P1c): `grug_pvp` with the
   per-player flag, one-way support, 10 s PvP combat, logout death and kill

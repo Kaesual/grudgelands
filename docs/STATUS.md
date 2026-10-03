@@ -5,7 +5,8 @@ Updated 2026-10-03. This is the delivery pointer, not another game specification
 - **Round 31 "PvP, appearance and clean-up" delivered locally** (2026-10-03,
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
   Every lane is merged on local main (last lane Q, `699a2002`), each
-  independently reviewed by Opus; not pushed. WP41 delivered and WP42's
+  independently reviewed by Opus except the small follow-ups M2 and G2
+  (checked by the coordinator); not pushed. WP41 delivered and WP42's
   PvP-POI part; rules in [pvp.md](design/pvp.md). A fresh world is required.
   - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
     flagged enemy players; the flag comes from contested ground or enemy
