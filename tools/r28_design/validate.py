@@ -1120,6 +1120,64 @@ class Validator:
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
         self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
+        for role in roles:
+            if isinstance(role, str) and not (area is not None and area.get("garrison")):
+                self.check_shown_name(zone, role, area_ref, file, path, all_areas)
+
+    def shown_name(self, zone, role, area_ref):
+        """(name, zone) a kill objective's label gives a sub-type (the game's
+        grug_quests labels.lua, Q.target_zones): its display in a named
+        leader's zone, else in the area's zone, else in the quest's zone."""
+        rec = self.subtypes.get(role) or {}
+        found = self.d.find_leader(role, zone)
+        if found is not None:
+            label_zone = found[0]
+        elif isinstance(area_ref, str) and area_ref:
+            label_zone = C.split_area_ref(area_ref, zone)[0]
+        else:
+            label_zone = zone
+        return (rec.get("display_by_zone") or {}).get(label_zone, rec.get("display")), label_zone
+
+    def check_shown_name(self, zone, role, area_ref, file, path, all_areas):
+        """Round 32: a kill target is shown as the player sees the mob where
+        the objective's targets are met (its zone display name, set at spawn
+        by grug_mobs' apply_zone_variant): a leader in its zone, an area's
+        roles in the area's zone, otherwise the quest zone's kinds and camps,
+        else every zone whose recipe spawns the role."""
+        rec = self.subtypes.get(role)
+        if rec is None:
+            return
+        shown, label_zone = self.shown_name(zone, role, area_ref)
+        if self.d.find_leader(role, zone) is not None or (isinstance(area_ref, str) and area_ref):
+            met = [label_zone]
+        else:
+            def hosts(z):
+                return any(role in self.area_roles(a) for a in (all_areas.get(z) or {}).values())
+            met = [zone] if hosts(zone) else sorted(z for z in all_areas if hosts(z))
+        by_zone = rec.get("display_by_zone") or {}
+        for z in met:
+            seen = by_zone.get(z, rec.get("display"))
+            if seen != shown:
+                self.E("E-label-name", file, path, "%s is shown as %r but met as %r in %s; name an area "
+                       "of that zone" % (role, shown, seen, z))
+
+    def role_drops(self, role, levels):
+        """Items a role drops while met at `levels` (lo, hi): its family's
+        bands over those levels and its leader bonus, or an existing mob's
+        drops; None when unknown."""
+        source, rec = self.role_def(role)
+        if source == "subtype":
+            family = self.drop_families.get(rec.get("drops")) or {}
+            lo, hi = levels or rec.get("levels") or (1, 60)
+            rows = []
+            for tier in range((lo - 1) // 10 + 1, (hi - 1) // 10 + 2):
+                rows += (family.get("bands") or {}).get(str(tier)) or []
+            rows += family.get("leader_bonus") or []
+        elif source == "existing":
+            rows = rec.get("drops") or []
+        else:
+            return None
+        return {row.get("item") for row in rows if isinstance(row, dict)}
 
     def item_source(self, zone, q, obj, level, file, path, all_areas):
         """An item objective's optional source (Lane Q0): the roles that drop
@@ -1134,12 +1192,21 @@ class Validator:
             return
         area_ref = obj.get("area")
         area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if area_ref else None
+        item, dropped, known = obj.get("item"), False, False
         for role in roles:
             if area is not None and area.get("garrison"):
                 self.garrison_target(q, role, area_ref, area, level, file, path)
             elif self.target_role_ok(role, file, path, "item source"):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
+                drops = self.role_drops(role, levels)
+                if drops is not None:
+                    known, dropped = True, dropped or item in drops
+        # Round 32: the objective shows the item's own name, so its named
+        # source must really drop that item where it is met.
+        if isinstance(item, str) and known and not dropped:
+            self.E("E-item-source-drop", file, path, "%s is not dropped by its source (%s) at the levels "
+                   "it is met at" % (item, ", ".join(str(r) for r in roles)))
 
     def check_recipe_targets(self, zone, obj, roles, file, path, all_areas):
         """A kill objective without an area in a zone with a spawn recipe,
@@ -1419,6 +1486,14 @@ def _mutations():
     def item_source_area(d):
         quest(d, "sample_pantry_01")["objectives"][0].update(
             {"roles": ["large_rat"], "area": "elandor_dawnmere_fields/home_beach"})
+
+    def item_source_no_drop(d):
+        quest(d, "sample_pantry_01")["objectives"][0].update(
+            {"roles": ["small_boar"], "area": "elandor_dawnmere_fields/home_fields"})
+
+    def item_source_drops(d):
+        quest(d, "sample_pantry_01")["objectives"][0].update(
+            {"roles": ["large_rat"], "area": "elandor_dawnmere_fields/home_fields"})
 
     def item_source_no_roles(d):
         quest(d, "sample_pantry_01")["objectives"][0]["area"] = "elandor_dawnmere_fields/home_fields"
@@ -1735,6 +1810,8 @@ def _mutations():
         ("target levels do not fit quest level", Q, level_fit, "E-level-fit"),
         ("item source not in its area", Q, item_source_area, "E-role-not-in-area"),
         ("item source area without roles", Q, item_source_no_roles, "E-area"),
+        ("item source that never drops the item", Q, item_source_no_drop, "E-item-source-drop"),
+        ("item source that drops the item", Q, item_source_drops, None),
         ("bare area id not in own zone", Q, bare_cross, "E-unknown-area"),
         ("cross-zone area missing", Q, missing_area, "E-unknown-area"),
         ("quest drop without item objective", Q, unpaired_drop, "E-quest-drop-pair"),
@@ -2024,6 +2101,26 @@ def _scenarios():
         d["items"].append(dup)
 
 
+    def label_elsewhere(target):
+        """Round 32: a sub-type with a Goldmead display name, spawned only in
+        Goldmead; Dawnmere's hunt names it without an area, so its label
+        would read the Dawnmere name. (The shipped quests show the passing
+        case: a zone display name met in the objective's own zone or area.)"""
+        cat = target / "catalog" / "subtypes.json"
+        data = _load(cat)
+        data.append({"role": "odd_role", "family": "boar", "base": "grug_mobs:boar", "display": "Odd",
+                     "display_by_zone": {"elandor_goldmead_vale": "Odd Vale Beast"}, "size": 1.0,
+                     "disposition": "neutral", "levels": [11, 20], "drops": "boar"})
+        _save(cat, data)
+        recipe = goldmead_recipe([])
+        recipe["recipe"]["belts"][0]["kinds"]["open"]["day"] = [{"role": "odd_role", "weight": 1}]
+        _save(target / "zones" / "elandor_goldmead_vale.spawns.json", recipe)
+        data = _load(target / Q_FILE)
+        for q in data["quests"]:
+            if q["id"] == "sample_hunt_01":
+                q["objectives"] = [{"type": "kill", "roles": ["odd_role"], "count": 3}]
+        _save(target / Q_FILE, data)
+
     def front_cycle(target):
         front_ok(target)
         path = target / "zones" / "elandor_dawnmere_fields.front.quests.json"
@@ -2066,6 +2163,7 @@ def _scenarios():
          "E-zone-leader"),
         ("leader role in two zones' recipes", leader_in_two_zones, "E-duplicate"),
         ("kill of another zone's leader without an area", kill_leader_elsewhere, "!W-recipe-target"),
+        ("label of a mob met only in another zone", label_elsewhere, "E-label-name"),
         ("a palette-only spawns file (shipped form)", palette_only, None),
         ("camp on the zone's bandit POI", goldmead_camps([poi_camp()]), None),
         ("camp on a POI named by its name", goldmead_camps([poi_camp(
