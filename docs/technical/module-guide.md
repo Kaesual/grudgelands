@@ -741,10 +741,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `marker_states` version in its signature; the NPC tags, read on the 1 Hz
   carrier pass. `Q.markers_changed` fires on a
   quest change, a held objective-item change (the tracker's `Q.journal_key`
-  poll, `hud.lua`, five 0.1 s slots) and a level change (fixture
-  `tools/r30_p1`). Unknown quest fields stop the load (`E-unknown-key`,
-  Round 30). The catalog requires only V1 overworld content; the Nether is
-  reserved for the first expansion. Quest item labels use concise names rather
+  poll, `hud.lua`, five 0.1 s slots; counts capped at what one quest takes,
+  Round 31) and a level change (fixtures `tools/r30_p1`, `tools/r31_c`).
+  Unknown quest fields stop the load (`E-unknown-key`, Round 30). The
+  catalog requires only V1 overworld content; the Nether is reserved for the
+  first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
 - **Parties (Round 14):** `grug_parties` persists groups of 2–10 same-faction
   members and their leader in mod storage. Offline membership/leadership lasts
