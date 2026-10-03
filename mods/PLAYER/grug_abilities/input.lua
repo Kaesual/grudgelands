@@ -115,7 +115,7 @@ return function(api)
 	end
 	local function end_mode(player, s)
 		if s.mode == "combat" then hold_range(player, "combat", false) end
-		s.mode, s.mode_at, s.foe = nil, nil, nil
+		s.mode, s.mode_at, s.foe, s.ally = nil, nil, nil, nil
 	end
 	-- Drop every pending action of the previous item or press.
 	local function reset(player, s)
@@ -216,9 +216,10 @@ return function(api)
 		local ent = ref:get_luaentity()
 		return not (ent and ent.temp and ent.temp.grug_evading)
 	end
-	-- The fightable hostile the crosshair finds within `reach`, or nil. `hit` is the step's hand ray, which reaches at
-	-- least as far: a walkable node first (or nothing) hides every actor, so
-	-- the combat ray runs only behind plants, loot and actors.
+	-- The fightable hostile the crosshair finds within `reach`, or nil. `hit`
+	-- is the step's hand ray, which reaches at least as far: a walkable node
+	-- first (or nothing) hides every actor, so the combat ray runs only behind
+	-- plants, loot and actors.
 	local function hostile_ahead(player, reach, hit)
 		if not hit then return nil end
 		if hit.type == "node" then
@@ -354,14 +355,17 @@ return function(api)
 				return
 			end
 			if Q.valid_target(player, hit.ref, "hostile") then
-				-- Gather never attacks (a passing neutral mob is not pulled); a
-				-- hostile that should be fought has made the hold combat.
+				-- Gather never attacks: a hostile to fight has made the hold combat
+				-- (unless it is out of reach or a support skill is selected).
 				if s.mode == "gather" then return end
 				if def.kind == "swing" then
 					local refusal = api.swing_refusal(player, def)
 					if refusal and fresh then report(player, s, refusal) end
 					api.swing(player, refusal and Q.registered.strike or def)
-				elseif not cast(player, def, s, hit, fresh) then
+				-- A self or support skill fires once per fresh press; held, the
+				-- hold strikes.
+				elseif (support(def) and not def.offensive and not fresh) or
+						not cast(player, def, s, hit, fresh) then
 					api.swing(player, Q.registered.strike)
 				end
 				return
@@ -408,6 +412,8 @@ return function(api)
 	local function step(player, press)
 		local s, controls = state(player), player:get_player_control()
 		local down, right = controls.dig == true or press == true, controls.place == true
+		-- An ally belongs to the press that began on it.
+		if not down then s.ally = nil end
 		-- LMB released: the hold's mode ends (after the grace, see MODE_GRACE_US).
 		if not down and s.mode and core.get_us_time() - s.mode_at >= MODE_GRACE_US then
 			end_mode(player, s)

@@ -14,8 +14,9 @@
 --      protected player, an NPC, an ally or a hostile out of reach), and only
 --      while an attacking skill is selected; Ward, Blink and Heal never fire
 --      from a hold on their own (a mob or an ally walking in, a later air
---      step), a fresh press on an ally heals it and keeps healing that ally
---      only; combat hits whatever hostile is in the crosshair, never digs
+--      step, an ally after its own press ended, a refused ally while held,
+--      a hostile while held), a fresh press on an ally heals it and keeps
+--      healing that ally only; combat hits whatever hostile is in the crosshair, never digs
 --      beside a living foe, and the last hostile it aimed at is its foe; the
 --      foe dead, despawned, no longer fightable (a PvP flag dropped, a mob
 --      evading after a leash reset) or fled beyond 2 x reach returns it to
@@ -106,6 +107,8 @@ function ally:get_hp() return 20 end
 function ally:get_luaentity() return nil end
 local ally2 = {kind = "ally"}
 for k, v in pairs(ally) do if type(v) == "function" then ally2[k] = v end end
+local refused = {kind = "refused"}
+for k, v in pairs(ally) do if type(v) == "function" then refused[k] = v end end
 local drop = {kind = "drop"}
 function drop:get_pos() return vector.new(0, 1, 1) end
 function drop:is_player() return false end
@@ -233,7 +236,8 @@ grug_abilities = {
 		if kind == "friendly" then return ref.kind == "ally" end
 		return kind == "hostile" and hostile(ref)
 	end,
-	support_refused = function() return false end,
+	-- An ally the PvP flag forbids supporting (Round 31 ruling 9).
+	support_refused = function(_, ref) return ref.kind == "refused" end,
 	flash = function() end,
 	cancel_bow_draw = function() end,
 	start_bow_draw = function() return true end,
@@ -561,6 +565,52 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	aim(at(ally2), NODE)
 	hold(3)
 	check(#casts == 4, "G11 no retarget to another ally mid-hold")
+	release()
+	-- The ally belongs to its own press: after a release, a new gather hold
+	-- (a fresh one, and one begun while RMB was held, which is never fresh)
+	-- does not heal it when it walks in.
+	select("heal")
+	aim(at(ally), NODE)
+	press()
+	release()
+	casts = {}
+	aim(NODE)
+	press()
+	aim(at(ally), NODE)
+	hold(3)
+	check(#casts == 0, "G11 a new press on a node: the earlier ally is not healed")
+	release()
+	aim(at(ally), NODE)
+	press()
+	release()
+	casts = {}
+	aim(NODE)
+	controls.place = true
+	step()
+	controls.dig = true -- LMB pressed while RMB is held
+	step()
+	controls.place = false
+	step()
+	aim(at(ally), NODE)
+	hold(3)
+	check(#casts == 0, "G11 an LMB press begun under RMB: the earlier ally is not healed")
+	release()
+	-- An ally PvP forbids supporting: the refusal on the fresh press only.
+	casts = {}
+	aim(at(refused), NODE)
+	press()
+	hold(4)
+	check(#casts == 1, "G11 a refused ally: one refused cast on the fresh press, none held (" ..
+		#casts .. ")")
+	release()
+	-- A self skill pressed at a hostile fires once; held, the hold strikes.
+	select("ward")
+	aim(at(new_mob("r")), NODE)
+	press()
+	hold(4)
+	check(#casts == 1 and #swings == 4 and range0(),
+		"G11 Ward at a hostile: one cast, then Strike while held (casts " .. #casts .. ", swings " ..
+		#swings .. ")")
 	release()
 	select("blink")
 	aim() -- a key-down on air still casts the self skill once

@@ -202,10 +202,12 @@ differs:
   pointing, so the refused dig keeps the protection hint and, where
   diggable, the client's cracks; a short tap there still casts a selected
   self/support skill (Blink in a town, the same 200 ms window as below), a
-  hold only earns the hint. A self or support skill never fires from a hold
-  on its own: it needs a fresh press at its target (air for a self skill,
-  an ally for a heal); a press that began on an ally keeps healing that
-  ally while held, never another one that walks into the crosshair.
+  hold only earns the hint. A self or support skill fires once per fresh
+  press at its target (air or a hostile for a self skill, an ally for a
+  heal) and never from a hold on its own. The only repeat while held: a
+  support cast a fresh press began on an ally repeats on that same ally,
+  never on another one that walks into the crosshair, and never after that
+  press ends.
 - **Gather becomes combat** as soon as a hostile combat accepts is in the
   crosshair and within that reach: any mob it may attack, a neutral mob or
   critter too (the user, 2026-10-03), and a player only where
@@ -253,8 +255,10 @@ intervening objects (dropped items excepted) matter.
 - **Hostile:** use the selected applicable ready skill immediately. If it is
   unavailable (including cooldown, resources or applicability), use ordinary
   melee Strike when in range. Holding repeats at the appropriate clocks;
-  once the selected skill is ready it takes precedence again. An applicable
-  heal here targets self, never the hostile or a remembered ally.
+  once the selected skill is ready it takes precedence again. A selected
+  self or support skill fires only on the fresh press (an applicable heal
+  here targets self, never the hostile or a remembered ally); held, the
+  hold strikes.
 - **Friendly player:** use an applicable heal/support action on the eligible
   ally a fresh press aims at, repeated while held on that ally. No Strike
   fallback or attack through that ally.
