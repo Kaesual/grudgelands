@@ -125,7 +125,12 @@ open, the arrows and markers are brought up to date at most every 2 seconds
 signature (zoom, selection, location label, minimap switch, each arrow's place
 on a 0.02-unit grid and heading frame, the quest markers' version, which
 location is the home, the discovered waystones) is compared, and the form is built
-and sent only when it changed. Zoom, marker and switch clicks still answer at
+and sent only when it changed. Since Round 32 (perf review R1) the poll runs
+every 0.1 s and reads at most 8 signatures and builds at most 2 forms per pass;
+viewers that are due wait longest-first, so each keeps its own phase and many
+open tabs never rebuild in the same server step. The interval stays 2 seconds
+while fewer than about 40 viewers' maps change at once; beyond that the queue
+stretches it. Zoom, marker and switch clicks still answer at
 once. Arrows are drawn on that grid, so a move inside one grid cell sends
 nothing. Markers of one look share one `style[]`. While scroll changes
 continue, defer a live rebuild until a short 0.5-second quiet interval;
