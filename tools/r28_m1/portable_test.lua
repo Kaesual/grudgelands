@@ -380,7 +380,10 @@ do
 	for _, fn in ipairs(joins) do fn(p) end
 	local banner
 	for id, def in pairs(p.huds) do
-		if def.type == "text" and def.position and def.position.y == 0 then banner = id end
+		-- The banner, not its PvP subtitle (Round 31) on the same anchor.
+		if def.type == "text" and def.position and def.position.y == 0 and def.size then
+			banner = id
+		end
 	end
 	check(banner and p.huds[banner].size.x == 2.5 and p.huds[banner].style == 1,
 		"R banner element added on join at 2.5x, bold, top centre")
@@ -431,7 +434,10 @@ do
 	for _, fn in ipairs(joins) do fn(p) end
 	local banner
 	for id, def in pairs(p.huds) do
-		if def.type == "text" and def.position and def.position.y == 0 then banner = id end
+		-- The banner, not its PvP subtitle (Round 31) on the same anchor.
+		if def.type == "text" and def.position and def.position.y == 0 and def.size then
+			banner = id
+		end
 	end
 	step(3)
 	check(p.huds[banner].text == "" and M.text_of(p) == "",

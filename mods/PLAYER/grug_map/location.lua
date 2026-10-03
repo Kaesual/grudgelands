@@ -8,7 +8,9 @@
 --     camps and POIs keep the zone's name;
 --   * the line under the minimap shows it (minimap.lua reads text_of);
 --   * the entry banner shows a new location top centre for DISPLAY seconds,
---     debounced (location_view.lua);
+--     debounced (location_view.lua), with the PvP subtitle under it while
+--     the location flags the player (Round 31; grug_pvp.state's reason, read
+--     at each sample: no zone query of its own);
 --   * the Map tab gets one marker per zone with its name and level band in
 --     the tooltip, placed once at startup from the analytic world (whose
 --     zone grid a later start reads from the world folder).
@@ -35,6 +37,8 @@ local ZONE_TEXTURE = "grug_map_zone.png"
 local GAP_UNITS = 0.45
 local TICK = 0.1
 local COLOR = grug_core.FEED_COLOR.notice
+-- The target frame's enemy red: PvP is on here.
+local SUBTITLE_COLOR = 0xff5555
 
 -- Comparison figures for the report: samples and their summed cost.
 M.stats = {samples = 0, us = 0}
@@ -249,7 +253,8 @@ atlas.register_marker_provider("zone", function() return zone_markers end)
 -- Per-player location and the entry banner
 -- ---------------------------------------------------------------------------
 
--- player name -> {state, text, next_sample, banner, offset_y}
+-- player name -> {state, text, next_sample, banner, subtitle, offset_y,
+-- shown_text, shown_sub}
 local players = {}
 -- player name -> true while a banner display runs
 local busy = {}
@@ -274,14 +279,36 @@ local function sample(player, rec)
 	return text ~= "" and text or nil
 end
 
+-- The PvP subtitle for the player's flag now, or nil. grug_pvp does not
+-- depend on this mod (nor this one on it), so it is read at sample time.
+local function subtitle(player)
+	local pvp = rawget(_G, "grug_pvp")
+	return pvp and L.subtitle(pvp.state(player).reason) or nil
+end
+
+-- Name and subtitle; only what changed is sent.
+local function show(player, rec, text, sub)
+	if text ~= rec.shown_text then
+		rec.shown_text = text
+		player:hud_change(rec.banner, "text", text)
+	end
+	sub = sub or ""
+	if sub ~= rec.shown_sub then
+		rec.shown_sub = sub
+		player:hud_change(rec.subtitle, "text", sub)
+	end
+end
+
 local function display(player, rec, text)
 	local name = player:get_player_name()
-	local offset = layout.zone_banner_offset(core.get_player_window_information(name))
+	local window = core.get_player_window_information(name)
+	local offset = layout.zone_banner_offset(window)
 	if rec.offset_y ~= offset.y then
 		rec.offset_y = offset.y
 		player:hud_change(rec.banner, "offset", offset)
+		player:hud_change(rec.subtitle, "offset", layout.zone_subtitle_offset(window))
 	end
-	player:hud_change(rec.banner, "text", text)
+	show(player, rec, text, rec.state.sub)
 	busy[name] = true
 end
 
@@ -293,9 +320,11 @@ core.register_on_joinplayer(function(player)
 	local anchor = layout.anchors.zone_banner
 	players[player:get_player_name()] = {state = L.new_state(), text = "",
 		next_sample = now_seconds() + (joined * JOIN_PHASE) % L.SAMPLE,
-		offset_y = anchor.offset.y,
+		offset_y = anchor.offset.y, shown_text = "", shown_sub = "",
 		banner = player:hud_add(layout.text_element("zone_banner", {number = COLOR,
-			text = "", size = {x = layout.ZONE_BANNER_SIZE}, style = 1, z_index = 2}))}
+			text = "", size = {x = layout.ZONE_BANNER_SIZE}, style = 1, z_index = 2})),
+		subtitle = player:hud_add(layout.text_element("zone_subtitle",
+			{number = SUBTITLE_COLOR, text = "", style = 1, z_index = 2}))}
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -320,7 +349,7 @@ core.register_globalstep(function(dtime)
 			-- A late step does not make up for missed samples.
 			local next_sample = rec.next_sample + L.SAMPLE
 			rec.next_sample = next_sample > now and next_sample or now + L.SAMPLE
-			local text = L.sample(rec.state, sample(player, rec), now)
+			local text = L.sample(rec.state, sample(player, rec), now, subtitle(player))
 			if text then display(player, rec, text) end
 		end
 	end
@@ -331,13 +360,25 @@ core.register_globalstep(function(dtime)
 			busy[name] = nil
 		elseif now >= rec.state.busy_until then
 			-- A fresh sample decides: the player may have come back already.
-			local result = L.expire(rec.state, sample(player, rec), now)
+			local result = L.expire(rec.state, sample(player, rec), now, subtitle(player))
 			if result then
 				display(player, rec, result)
 			else
-				player:hud_change(rec.banner, "text", "")
+				show(player, rec, "", nil)
 				busy[name] = nil
 			end
 		end
 	end
+end)
+
+-- A flag change samples the player on the next step instead of within the
+-- second, so the subtitle joins the name of a zone just entered while it
+-- still shows.
+core.register_on_mods_loaded(function()
+	local pvp = rawget(_G, "grug_pvp")
+	if not pvp then return end
+	pvp.register_on_change(function(player)
+		local rec = players[player:get_player_name()]
+		if rec then rec.next_sample = math.min(rec.next_sample, now_seconds()) end
+	end)
 end)

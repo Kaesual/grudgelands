@@ -391,17 +391,32 @@ end
 layout.anchors.zone_banner = {position = {x = 0.5, y = 0},
 	offset = layout.zone_banner_offset(nil)}
 
--- The mount's flight-boundary warning (grug_mounts entity.lua): one default
--- line, ZONE_BANNER_GAP below the zone banner's bottom, so both can show at
--- once. At scale 1 it spans about 116-136 HUD px from the top; the level-up
--- banner (size 2, centred at 0.25 H) starts about 20 GUI px above 0.25 H, so
--- the two clear while H >= 4 x (136 hud + 20 gui): 624 px at scale 1.
-function layout.flight_warning_offset(window)
+-- The banner's PvP subtitle (Round 31, grug_map location.lua: "Contested
+-- Territory — PvP enabled"): one default line, ZONE_SUBTITLE_GAP below the
+-- zone banner's bottom.
+layout.ZONE_SUBTITLE_GAP = 4
+
+function layout.zone_subtitle_offset(window)
 	local hud, gui = scales(window)
 	local banner = layout.zone_banner_offset(window)
 	local banner_h = math.ceil(layout.FEED_LINE * layout.ZONE_BANNER_SIZE * gui / hud)
 	local line = math.ceil(layout.FEED_LINE * gui / hud)
-	return {x = 0, y = banner.y + banner_h / 2 + layout.ZONE_BANNER_GAP + line / 2}
+	return {x = 0, y = banner.y + banner_h / 2 + layout.ZONE_SUBTITLE_GAP + line / 2}
+end
+
+layout.anchors.zone_subtitle = {position = {x = 0.5, y = 0},
+	offset = layout.zone_subtitle_offset(nil)}
+
+-- The mount's flight-boundary warning (grug_mounts entity.lua): one default
+-- line, ZONE_SUBTITLE_GAP below the subtitle's line, so all three can show at
+-- once. At scale 1 it spans about 136-156 HUD px from the top; the level-up
+-- banner (size 2, centred at 0.25 H) starts about 20 GUI px above 0.25 H, so
+-- the two clear while H >= 4 x (156 hud + 20 gui): 704 px at scale 1.
+function layout.flight_warning_offset(window)
+	local hud, gui = scales(window)
+	local subtitle = layout.zone_subtitle_offset(window)
+	local line = math.ceil(layout.FEED_LINE * gui / hud)
+	return {x = 0, y = subtitle.y + line + layout.ZONE_SUBTITLE_GAP}
 end
 
 layout.anchors.flight_warning = {position = {x = 0.5, y = 0},
