@@ -202,7 +202,7 @@ local EXPECTED_KIND = {village = "village", outpost = "poi", bandit_home = "camp
 	bandit_frontier = "camp", mine = "poi", mirefolk = "camp", clash = "poi",
 	dragon = "poi", apex_mine = "poi", rare_route = "poi",
 	-- Round 31 PvP POIs (pvp-plan ruling 22: 10 nodes of margin)
-	pvp_fortress = "fortress", pvp_camp_low = "camp", pvp_camp_high = "camp"}
+	pvp_fortress = "fortress", pvp_camp_low = "war_camp", pvp_camp_high = "war_camp"}
 
 -- Deterministic pseudo-random numbers (no math.random state shared).
 local function rng(seed_value)
@@ -315,10 +315,11 @@ local function run_seed(seed)
 			agree(p[1], p[2], p[3], row.key .. " face out (full index)")
 		end
 	end
-	print(("  boxes: %d village, %d camp, %d poi, %d fortress"):format(by_kind.village or 0,
-		by_kind.camp or 0, by_kind.poi or 0, by_kind.fortress or 0))
-	check(by_kind.village == 12 and by_kind.camp == 32 and by_kind.poi == 60 and
-		by_kind.fortress == 2, "box categories")
+	print(("  boxes: %d village, %d camp, %d poi, %d fortress, %d war camp"):format(
+		by_kind.village or 0, by_kind.camp or 0, by_kind.poi or 0, by_kind.fortress or 0,
+		by_kind.war_camp or 0))
+	check(by_kind.village == 12 and by_kind.camp == 16 and by_kind.poi == 60 and
+		by_kind.fortress == 2 and by_kind.war_camp == 16, "box categories")
 
 	-- b. Candidate grid against the oracle.
 	local random = rng(tonumber(seed:sub(-9)) or 1)
@@ -480,7 +481,8 @@ local function run_seed(seed)
 			per_kind[b.kind] = true
 			local p = {x = b.min_x, y = b.max_y, z = b.max_z}
 			local text = ({village = "Village – protected", camp = "Camp – protected",
-				poi = "Point of interest – protected", fortress = "Fortress – protected"})[b.kind]
+				poi = "Point of interest – protected", fortress = "Fortress – protected",
+				war_camp = "Camp – protected"})[b.kind]
 			for _, name in ipairs({"a", "t"}) do
 				check(core.is_protected(p, name), W.rows[index].key .. " protected for " .. name)
 				local got = hint(p, name)

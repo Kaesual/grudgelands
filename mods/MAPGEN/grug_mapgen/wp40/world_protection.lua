@@ -9,7 +9,7 @@
 --   local boxes = wp.settlement_boxes(rows)
 --   local index = wp.new(index128, {corridors = corridors, boxes = boxes})
 --   index.kind_at(x, y, z) -> "road", "bridge", "village", "camp", "fortress",
---       "poi" or nil
+--       "war_camp", "poi" or nil
 --
 -- A CORRIDOR is a polyline with a surface profile: a road today, a waypoint
 -- path later. A column is inside it when its distance to the centreline (its
@@ -84,8 +84,11 @@ function M.settlement_kind(slot)
 	if type(slot) ~= "string" then fail("settlement slot differs") end
 	if slot:match("^village_%d+$") then return "village" end
 	if slot:match("^bandit_%d+$") or slot == "mirefolk" then return "camp" end
+	-- the PvP POIs: no hostile spawns and the idle push like a village
+	-- (Round 31, user ruling after the lane-M preview), so a kind of their
+	-- own beside the bandit and Mirefolk camps, whose mobs spawn on them
 	if slot == "pvp_fortress" then return "fortress" end
-	if slot:match("^pvp_%a+_%a+$") then return "camp" end
+	if slot:match("^pvp_%a+_%a+$") then return "war_camp" end
 	return "poi"
 end
 

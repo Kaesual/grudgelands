@@ -11,12 +11,14 @@
 --
 -- The probe: every PROBE_TICKS (4 or 5, picked per mob) of the one-second
 -- leash slot, eight points on a horizontal ring of radius `view_range` around
--- the mob, at the mob's own height. A point hits on a road, bridge or village
--- (grug_core.world_feature_at, the world protection's analytic corridors and
--- core boxes) or on a start town or capital city (grug_zones
--- hard_protection_kind_at "town"). POIs (including outposts and hostile
--- camps: world_feature_at "poi" and "camp") do not push; the list is the
--- ruling's, literally. With any hit the mob walks along the free ring
+-- the mob, at the mob's own height. A point hits on a road, bridge, village
+-- or (Round 31) PvP fortress or war camp (grug_core.world_feature_at, the
+-- world protection's analytic corridors and core boxes) or on a start town
+-- or capital city (grug_zones hard_protection_kind_at "town"). Other POIs
+-- (including outposts and hostile camps: world_feature_at "poi" and "camp")
+-- do not push; the list is the rulings', literally. A mob in combat is not
+-- pushed (only an idle free roamer is asked), so it may chase a target
+-- into any of them. With any hit the mob walks along the free ring
 -- direction closest to the opposite of the hits' mean direction (all hit:
 -- toward home), with the wander leash's own nudge (patrol.lua walk_toward).
 --
@@ -42,9 +44,10 @@ for index = 1, PROBES do
 end
 grug_mobs.ROAM_AVOID_DIRS = DIRS
 
--- world_feature_at kinds that push; "camp" and "poi" (outposts included) do
--- not.
-local PUSH_FEATURE = {road = true, bridge = true, village = true}
+-- world_feature_at kinds that push (Round 31: the PvP fortresses and war
+-- camps like a village); "camp" and "poi" (outposts included) do not.
+local PUSH_FEATURE = {road = true, bridge = true, village = true, fortress = true,
+	war_camp = true}
 
 -- Whether one probe point lies on ground the push keeps mobs away from.
 function grug_mobs.roam_avoid_hit(pos)
