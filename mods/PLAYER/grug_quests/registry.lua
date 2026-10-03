@@ -98,6 +98,21 @@ end
 function grug_quests.is_travel(def)
 	return #def.objectives == 1 and def.objectives[1].type == "talk"
 end
+-- Ruling 13 (Round 31): a quest NPC serves only its faction, the faction of
+-- its own race (a new giver may name one, loader.lua) or else of its
+-- settlement's race, the race its quest shell is drawn as (grug_mobs
+-- start_npcs.lua). Resolved once mods are loaded, when every settlement is
+-- registered; an NPC whose race has no faction serves everyone.
+function grug_quests.resolve_npc_factions()
+	local race_of = {}
+	for _, record in ipairs(grug_core.settlement_socket_settlements()) do
+		race_of[record.key] = record.race_id
+	end
+	for _, npc in pairs(npcs) do
+		local race = grug_classes.registered_races[npc.race or race_of[npc.settlement]]
+		npc.faction = race and race.faction or nil
+	end
+end
 function grug_quests.validate_registry()
 	local visiting, done = {}, {}
 	local function visit(id)
@@ -124,6 +139,10 @@ function grug_quests.validate_registry()
 	for id, def in pairs(quests) do
 		visit(id)
 		assert(npcs[def.npc] and npcs[def.turnin_npc], "Unknown quest NPC: " .. id)
+		-- A quest never sends a player to an NPC that will not serve them (a
+		-- conversation's NPC is the turn-in NPC, register_quest).
+		assert(npcs[def.turnin_npc].faction == npcs[def.npc].faction,
+			"Quest turn-in NPC of another faction: " .. id)
 		for _, objective in ipairs(def.objectives) do
 			if objective.type == "item" then
 				assert(not objective.item or core.registered_items[objective.item], "Unknown quest item: " .. id)

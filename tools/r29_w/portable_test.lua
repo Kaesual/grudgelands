@@ -166,7 +166,11 @@ for i, location in ipairs(LOCATIONS) do
 end
 rawset(_G, "grug_mobs", {register_start_socket_role=function() end})
 rawset(_G, "grug_mounts", {dismount=function() dismounts = dismounts + 1 end})
-rawset(_G, "grug_factions", {get_faction=function(p) return p:get_meta():get_string("faction") end})
+rawset(_G, "grug_factions", {get_faction=function(p) return p:get_meta():get_string("faction") end,
+ display_name=function(id) return "The " .. id:sub(1, 1):upper() .. id:sub(2) end})
+-- The shared refusal line (Round 31, ruling 13) on the fake faction table.
+core.get_us_time = function() return 0 end
+dofile(repo .. "/mods/PLAYER/grug_factions/service.lua")
 local data = {faction="accord"}
 local meta = {get_string=function(_, k) return data[k] or "" end,
  set_string=function(_, k, v) data[k] = v end}
@@ -216,7 +220,7 @@ check(known() == "highcourt", "B outside the reach")
 -- Right-click on an enemy stone: a line, no list, nothing unlocked.
 formspec = nil
 home.use_waystone(player, STONE.sunscar)
-check(formspec == nil and last_chat() == "This waystone does not answer you." and
+check(formspec == nil and last_chat() == "<Waystone> I serve only The Throng." and
  known() == "highcourt", "B enemy stone inert")
 -- Right-click on an own stone: discovered, list of six.
 player.pos = vnew(STONE.lethariel.x + 2, 101, 0)

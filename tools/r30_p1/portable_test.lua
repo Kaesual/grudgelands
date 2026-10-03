@@ -272,12 +272,19 @@ grug_core = {
 	end,
 	settlement_sockets_at = function(key) return key == "s" and sockets or {} end,
 	zone_authority_installed = function() return false end,
+	faction_ids = {"accord", "throng"},
+	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
 }
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
 	UI = {width = 10.4, height = 11.1}}
-grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
+local faction_chosen = {}
+grug_factions = {get_faction = function() return faction end, same_faction = function() return false end,
+	register_on_faction_chosen = function(fn) faction_chosen[#faction_chosen + 1] = fn end,
+	display_name = function(id) return "The " .. id end}
+-- Round 31: which NPCs serve whom (the real rule on the fake faction table).
+dofile(repo .. "/mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 local level_changes = {}
 grug_xp = {get_level = function() return level end, add_xp = function() end,
@@ -873,6 +880,15 @@ do
 	mate.yaw = math.pi
 	page_steps(2)
 	eq(walker.sends, 1, "P a party member turning is sent")
+	-- Round 31 (ruling 13): a faction change picks other NPC markers, so
+	-- the next poll sends the form.
+	page_steps(4)
+	walker.sends = 0
+	faction = "throng"
+	page_steps(2)
+	eq(walker.sends, 1, "P a faction change is sent on the next poll")
+	faction = "accord"
+	page_steps(2)
 end
 
 -- ---------------------------------------------------------------------------
@@ -1007,6 +1023,15 @@ do
 	minimap_step(0.09)
 	eq(asked.walker, 1, "W a level-up re-asks the static markers on the next step")
 	level = 1
+	-- Round 31 (ruling 13): a faction change (creation or admin) re-asks them.
+	minimap_step(0.09)
+	asked = {}
+	faction = "throng"
+	for _, fn in ipairs(faction_chosen) do fn(walker, "throng") end
+	minimap_step(0.09)
+	eq(asked.walker, 1, "W a faction change re-asks the static markers on the next step")
+	eq(asked.mate, nil, "W ...for that player only")
+	faction = "accord"
 	atlas.collect_markers = real
 end
 

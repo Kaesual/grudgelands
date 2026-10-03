@@ -477,6 +477,12 @@ grug_quests.register_on_markers_changed(function(player)
 	local state = player and players[player:get_player_name()]
 	if state then state.static = nil end
 end)
+-- A new faction (creation or an admin change) shows other NPC markers
+-- (Round 31, ruling 13): ask the providers again on the next step.
+grug_factions.register_on_faction_chosen(function(player)
+	local state = players[player:get_player_name()]
+	if state then state.static = nil end
+end)
 
 core.register_globalstep(function(dtime)
 	if not view then return end

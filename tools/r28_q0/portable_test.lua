@@ -109,7 +109,10 @@ dofile("mods/CORE/grug_core/item_names.lua")
 grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
 	quest_reward = function(level, weight) return weight * 10 * level end}
 grug_money = {MAX = 1000000, format = function(copper) return copper .. " copper" end}
-grug_factions = {get_faction = function() return "accord" end}
+grug_factions = {get_faction = function() return "accord" end,
+	display_name = function(id) return "The " .. id end}
+-- Round 31: which NPCs serve whom (the real rule on the fake faction table).
+dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 sfinv = {register_page = function(name, def) pages[name] = def end,

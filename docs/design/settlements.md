@@ -120,6 +120,17 @@ Decided 2026-09-14.
 - Guards attack enemy-faction players everywhere, in starts as at outposts
   and capitals; the faction veto stays the one rule. They ignore own-faction
   and factionless players and fight hostile mobs.
+- **The NPC's faction decides whom it serves, not the place** (Round 31,
+  PvP ruling 13). An NPC's faction is that of its race (a quest giver added
+  by a zone quest file may name its own race; a profession vendor takes its
+  settlement's race). Quest givers, vendors, profession and Riding trainers,
+  the Shipwright, innkeepers, Housing Stewards and waystones serve only
+  their own faction; the other faction, and a character without a faction
+  yet, get one line, "<NPC> I serve only The Accord." (the Throng's
+  likewise), at most once every two seconds. Plain residents are no service
+  and still answer anyone with their flavour line. Every settlement NPC has
+  a faction, so no NPC serves both. Guards, royal guards and kings give no
+  quests: quest givers stand only on `quest` sockets.
 - Blueprints export named sockets (guard post, patrol loop, vendor, idle,
   work, quest, king, waypoint) that runtime mods read through one registry,
   see [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
@@ -521,7 +532,7 @@ want lived-in settlements without paying for it in server load"):
   armourer, tanner and embalmer. Each has a shelf of its trade's supplies and
   T1 basics (the vendor supply rule of [professions.md](professions.md) §4;
   shelves in the [economy plan](../planning/economy-vendor-plan.md) §2.3) and
-  serves everybody (no faction and no race restriction, and therefore no
+  serves its settlement's faction (no race restriction, and therefore no
   kinship discount); only the smith and the armourer also sell the equipment
   ladder, the bowyer and the tanner its bows and leather armour.
   The six starts keep their single race vendor.
@@ -593,7 +604,8 @@ resident of that capital's tailor service plot:
 | Gor Drazhak | `warren_weaver` |
 | Kezamba | `shore_tailor` |
 
-It serves only its capital's faction and shows a "+" marker on the map.
+It serves only its capital's faction and shows a "+" marker on that
+faction's map.
 
 ## Round 20 authored regional places
 

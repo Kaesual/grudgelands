@@ -56,6 +56,9 @@ function grug_factions.display_name(id)
 	return def and ("The " .. def.name) or nil
 end
 
+-- Which NPCs serve whom, and the refusal line (ruling 13, Round 31).
+dofile(core.get_modpath("grug_factions") .. "/service.lua")
+
 --
 -- Player nametags use the same per-viewer 25/30 m carrier as mob tags
 -- (combat_stats.md section 6). The player's own global tag stays alpha-zero;

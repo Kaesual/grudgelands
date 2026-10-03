@@ -443,7 +443,8 @@ do
    at_stone = marker.position.x == stone_pos.x and marker.position.z == stone_pos.z
   end
  end
- check(count == 13 and homes == 1 and at_stone, "M one home marker at the stone")
+ -- Round 31 (ruling 13): the six own-faction innkeepers and the stone.
+ check(count == 7 and homes == 1 and at_stone, "M one home marker at the stone")
 end
 local page
 rawset(_G, "sfinv", {register_page=function(_, p) page = p end,

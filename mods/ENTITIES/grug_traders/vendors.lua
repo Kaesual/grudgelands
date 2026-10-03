@@ -93,21 +93,16 @@ end
 -- Returns ok, message. The message is what the player is told when refused.
 --
 
-function grug_traders.can_trade(player, vendor)
+-- `faction` is the faction this vendor serves (grug_traders.vendor_faction):
+-- ruling 13 (Round 31), every vendor serves only its own faction.
+function grug_traders.can_trade(player, vendor, faction)
 	if not player or not player:is_player() or not vendor then
 		return false, "This vendor is not open for business."
 	end
-	if vendor.faction then
-		-- General vendor: refuses the OPPOSING faction. A factionless player
-		-- (a brand-new character still in character creation) is not an enemy
-		-- and is served — the same reasoning grug_mobs' guard faction veto
-		-- uses for factionless players.
-		local pf = grug_factions.get_faction(player)
-		if pf and pf ~= vendor.faction then
-			return false, "The " .. vendor.nametag .. " does not trade with " ..
-				(grug_factions.display_name(pf) or "outsiders") .. "."
-		end
-	elseif vendor.race then
+	if not grug_factions.serves(faction, player) then
+		return false, grug_factions.refusal(vendor.nametag, faction)
+	end
+	if vendor.race then
 		-- Race vendor: THE race-exclusive vendor perk of world.md §7.
 		local pr = grug_classes.get_race(player)
 		if pr ~= vendor.race then
@@ -117,6 +112,16 @@ function grug_traders.can_trade(player, vendor)
 		end
 	end
 	return true
+end
+
+-- The faction a vendor serves: a Quartermaster's own, a race vendor's race's,
+-- and a profession vendor's that of the settlement it stands in (its key,
+-- `_grug_start`); nil only for a profession vendor outside a settlement.
+local race_of_settlement = {}
+function grug_traders.vendor_faction(vendor, settlement_key)
+	local race = grug_classes.registered_races[vendor.race or
+		race_of_settlement[settlement_key or ""] or ""]
+	return vendor.faction or (race and race.faction) or nil
 end
 
 -- Same-race discount (world.md §7, 10% — grug_traders.RACE_DISCOUNT). Only a
@@ -189,9 +194,9 @@ local VENDOR_FACTION_RACE = {accord = "human", throng = "orc"}
 -- the placement engine wrote on the entity is what answers, through the socket
 -- registry, which is the only authority on which race a settlement belongs to.
 -- Built once at mods_loaded, because the registry is filled by grug_mapgen at
--- load and a capital adds to it later.
+-- load and a capital adds to it later (the table is declared above, beside
+-- grug_traders.vendor_faction, which reads it too).
 --
-local race_of_settlement = {}
 
 local function settlement_race(entity)
 	local key = entity and entity._grug_start
@@ -342,7 +347,8 @@ local function vendor_def(vendor, texture)
 		end,
 
 		on_rightclick = function(self, clicker)
-			grug_traders.open(clicker, vendor.name, self.object:get_pos())
+			grug_traders.open(clicker, vendor.name, self.object:get_pos(),
+				grug_traders.vendor_faction(vendor, self._grug_start))
 		end,
 	}
 end

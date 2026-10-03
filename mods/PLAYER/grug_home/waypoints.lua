@@ -97,14 +97,15 @@ local function form(player, origin)
 end
 
 -- Right-click on a waystone (grug_mapgen's node). Discovers an own-faction
--- stone and opens its travel list; an enemy stone only answers with a line.
+-- stone and opens its travel list; an enemy stone only answers with the
+-- refusal line every service of the other faction gives (Round 31).
 function grug_home.use_waystone(player, pos)
  local row = by_cell[cell_key(vector.round(pos))]
  local name = player:get_player_name()
  if not row then return end
  if player:get_hp() <= 0 then return end
- if row.faction ~= grug_factions.get_faction(player) then
-  core.chat_send_player(name, "This waystone does not answer you.")
+ if not grug_factions.serves(row.faction, player) then
+  grug_factions.refuse(player, "Waystone", row.faction)
   return
  end
  local set = known_set(player)
