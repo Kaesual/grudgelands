@@ -5,8 +5,8 @@ rebase 2026-08-25; Battlegrounds naming/protection amendment 2026-08-27; R6
 surface/resource decisions 2026-08-29, with later approved playtest revisions
 folded into the relevant sections. This is the current named-zone authority;
 the old radial "safe core + war coast" layout is retired. Catalog requirements
-for unimplemented housing, PvP, war-front and encounter work remain binding
-future scope. Delivery history is tracked separately in BACKLOG and the WP40
+for unimplemented war-front and encounter work remain binding future scope
+(housing shipped in Round 25, PvP in Round 31). Delivery history is tracked separately in BACKLOG and the WP40
 completion record.
 
 **Round 22 rewrite (2026-09-25):** §7 (world model), §8.4 (landmarks), §9
@@ -72,8 +72,8 @@ in this file as of commit `082982da`.
   4. contested faction-front approaches and shared-front regions: levels
      **31–40**, **41–50**, **51–60** and the level-**60** endpoint summits.
 - No level-1–30 zone is contested. Level-21–30 heartland may show military
-  preparation and lead toward the front, but remains peaceful under the
-  voluntary-tag rules of §4.
+  preparation and lead toward the front, but remains peaceful (§4,
+  [pvp.md](pvp.md)).
 - **Every level-31–60 ordinary zone is contested**, including all six faction
   frontier approaches, all four Battlegrounds zones and both dragon islands.
   Capitals remain the peaceful civic exception described in §3.
@@ -168,7 +168,8 @@ in this file as of commit `082982da`.
   Every capital has its own named city zone in the central part of its
   continent.
 - A capital zone is a peaceful, safe civic hub with **no hostile ambient
-  enemies** and no automatic PvP tag. Its guards and important faction NPCs
+  enemies**; it is peaceful, so its own faction is never flagged there by
+  location (an enemy visitor is, [pvp.md](pvp.md) §1). Its guards and important faction NPCs
   are level 60. The city itself is not a level-60 hostile leveling area.
 - Each race has its own king, for **six kings total**. The race's capital is
   that king's seat. Housing is not a royal grant: the Housing Steward in
@@ -187,41 +188,22 @@ in this file as of commit `082982da`.
   Their exact level-60 guard rule and absence of ambient hostiles remain
   separate civic policy; no 20/25/30 gate/core progression profile exists.
 
-## 4. PvP zones and voluntary flagging
+## 4. PvP zones
 
-> **Superseded (Round 31):** the shipped rule is geographic PvP with a
-> per-player flag ([pvp-plan.md](../planning/pvp-plan.md) §2,
-> [combat_stats.md](combat_stats.md) "PvP eligibility and flag"); the
-> automatic tag by attacks and the transaction below no longer apply.
+Geography only; the PvP rules (flag, combat, interface, the PvP POIs) are in
+[pvp.md](pvp.md) (Round 31, WP41).
 
-- PvP state is explicit per player. A player is either **safe** or
-  **PvP-tagged**.
-- Entering a contested zone applies the PvP tag automatically. Leaving the
-  zone does not remove it early.
-- Entering y = −501 or below on any non-ocean land column applies the same
-  automatic tag. Returning above that boundary under a peaceful surface zone
-  starts the ordinary full safe-zone tail; it never clears the tag early.
-- In a peaceful zone, an untagged player cannot receive unprovoked damage from
-  an enemy player and cannot be selected as a valid hostile PvP damage target.
-- An untagged player who voluntarily uses a hostile action against an enemy
-  player is tagged before PvP eligibility and damage are resolved. They are
-  then attackable by every enemy player, including in peaceful zones. If both
-  players were safe, that first hostile effect is blocked and the target stays
-  safe; §15.1's four-row transaction is authoritative.
-- A tagged player may attack tagged enemies but may not use their own tag to
-  initiate damage against an untagged player in a peaceful zone.
-- Outside a contested zone, the tag expires **60 seconds after the last
-  qualifying PvP contact**. Accepted hostile damage that lowers HP or consumes
-  absorb refreshes both participants; effective support of a tagged ally
-  refreshes helper and target. Misses, dodge, immunity, refusal and zero-effect
-  damage/support do not refresh it. A contested zone keeps the tag forced;
-  leaving it starts at least one full 60-second safe-zone tail even if no
-  qualifying contact happened inside.
-- Player death clears the tag immediately. The safe outer starting zones plus
-  death cleanup make repeated spawn ganking impossible by rule.
-- Melee, targeted skills, area effects and projectiles all use one central
-  PvP-eligibility rule; no combat path may implement its own geographic
-  exception.
+- Every level-1–30 zone and every capital is **peaceful**; every ordinary
+  level-31–60 zone (the six contested approaches and the four Battlegrounds
+  zones) and both dragon islands are **contested** (`pvp_rule_at`).
+- Every non-ocean land column at **y = −501 and below** (depth tier T4 and
+  deeper) is contested beneath any surface zone; T1–T3 under peaceful land
+  stay peaceful (Round 31; it was −701).
+- Deep ocean and the immutable dragon channels are neither peaceful nor
+  contested; crossing them keeps a player's location flag as it was.
+- A faction's start, home and capital zones are its territory
+  (`faction_at`); for the other faction they are enemy territory, which
+  flags a visitor ([pvp.md](pvp.md) §1).
 
 ## 5. War-front life
 
@@ -259,6 +241,9 @@ in this file as of commit `082982da`.
 - An overworld dragon is therefore always a PvP world boss. Reaching and
   fighting it exposes both factions to each other; it is never a private
   home-continent boss.
+- Each dragon fights in a round arena of radius 40 on the island's own
+  ground whose edge is its leash, with hazards per dragon (Round 31,
+  [world.md](world.md) §4b).
 - The fixed `dragon` anchors are the encounter authority: the Wyrmglass Ice
   Dragon stands at **(-3260, -40)** and the Stormscale Jungle Wyvern at
   **(+3260, -40)**. Each is a clock-independent fixed-level-60 boss with three
@@ -1136,7 +1121,8 @@ graph requirement may shape a zone, and nothing may require a graph to be
   and still bends around terrain. It has no waypoint. The two PvP fortresses
   (Round 31, §16) stand beside it, clear of every routing cell it uses on
   the tested seeds, so it keeps its own course; a trail joins each
-  fortress gate to it.
+  fortress gate to it. Other secondary roads and trails may re-route round
+  the PvP POIs (0–6 per seed, §16).
 - **Shape of the network.** A spanning tree over those endpoints plus a few
   loops where a loop is short and useful. Junctions are T or Y shaped with at
   most three or four branches; there are no star junctions.
@@ -1867,126 +1853,22 @@ population counts and identity strings. During mapgen development PUC Lua is
 ignored completely; at most one optional crash smoke test under PUC runs once
 the mapgen is finished.
 
-## 15. Exact PvP eligibility contract (WP41)
+## 15. PvP eligibility (WP41)
 
-> **Superseded (Round 31):** the shipped rule is geographic PvP with a
-> per-player flag ([pvp-plan.md](../planning/pvp-plan.md) §2,
-> [combat_stats.md](combat_stats.md) "PvP eligibility and flag"); the
-> automatic tag by attacks and the transaction below no longer apply.
-
-WP41 is part of V1 (user decision 2026-09-29,
-[WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B4).
-
-### 15.1 Peaceful-zone transaction
-
-“Hostile attempt” means a server-validated contact with an enemy player or a
-protected enemy-faction combatant/object. Clicking air, missing the
-authoritative ray, a filtered ally or an invalid/out-of-range target does not
-tag anybody.
-
-| Attacker before | Player target before | Peaceful-zone result |
-|---|---|---|
-| safe | safe | attacker becomes tagged; this first effect is blocked and target stays safe |
-| safe | tagged | attacker becomes tagged before resolution; effect may land |
-| tagged | safe | effect is blocked; target stays safe |
-| tagged | tagged | effect may land |
-
-- A valid blocked swing consumes its weapon cadence as a combat miss but pays
-  no landed-hit proc, rage or on-hit effect. A launched cast/projectile keeps
-  its ordinary launch cost; target-dependent settlement effects do not run.
-- Entering or already standing in contested ground forces both enemy players
-  tagged before the same table is evaluated. Contested ground includes every
-  non-ocean land position at y = −701 and below, regardless of the surface
-  zone's peaceful status.
-- Deep-ocean and immutable dragon-channel columns — the geography class that
-  is neither peaceful nor contested — use the same four-row table above and
-  never force the tag (decided 2026-08-13). Only contested ground forces it;
-  the contested islands and shores force it on arrival as usual, so a boat
-  approach is not a forced-PvP corridor while voluntary flagging still works
-  everywhere.
-- A hostile action against an enemy capital/outpost guard, war-front unit or
-  protected faction combat object tags the player before PvE/NPC damage is
-  resolved. Ordinary hostile creatures do not affect PvP state.
-
-### 15.2 Support and timer refresh
-
-- A heal that restores HP, a shield that adds absorb, a cleanse that removes a
-  harmful PvP effect, or a combat-relevant buff applied to a tagged ally tags
-  the helper and refreshes both players. A failed, rejected or zero-effect
-  support action does neither.
-- Effective periodic support ticks repeat that contact while their source is
-  online and attributable. Merely standing near a tagged player has no effect.
-- PvP damage refreshes both participants only when accepted damage lowers HP
-  or consumes at least one point of absorb. Miss, dodge, immunity, eligibility
-  refusal and zero post-mitigation damage do not refresh the timer.
-- Combat with a protected enemy-faction combatant refreshes the involved
-  player's timer on the same HP/absorb rule. NPCs themselves have no player tag.
-- Outside contested ground, the displayed expiry is 60 seconds after the last
-  qualifying hostile/support contact. Leaving contested ground sets it to at
-  least `now + 60` even if no fight occurred.
-
-### 15.3 AoE, projectiles and boundaries
-
-- Eligibility is resolved at the instant each target would receive an effect,
-  using both current positions, current zone lookups and a snapshot of player
-  states for that resolution. The launch zone does not grant future damage.
-- Direct projectiles use their owner as attacker. Collision with a safe enemy
-  in peaceful ground tags the owner but does not damage that first safe target.
-- A one-shot AoE snapshots all targets before tagging its owner, tags the owner
-  once if it made a valid hostile contact, then resolves every target from the
-  same snapshot so iteration order cannot change who is protected.
-- A persistent area remembers the targets eligible at creation. A safe enemy
-  who deliberately walks into an already active field is ignored and cannot
-  force the remote owner into PvP. Newly entering tagged enemies may be
-  affected if the owner is tagged; each real HP/absorb result refreshes normally.
-- The central eligibility function rechecks zone state synchronously, so a
-  high-speed crossing or teleport cannot fit between the movement poll and a
-  combat callback.
-
-### 15.4 Lifecycle, visibility and enemy visitors
-
-- PvP expiry is stored as an absolute timestamp in player meta. Disconnect
-  never clears it; offline wall time counts down. Reconnecting in a contested
-  zone forces the tag again.
-- Death clears the tag and every attributable hostile player DoT/field that
-  could immediately re-tag the respawned character. Respawning inside
-  contested ground would force it again, although the MVP respawns are safe.
-- HUD: tagged players see a crossed-swords status and `PvP 0:SS`; forced
-  contested state reads `PvP — CONTESTED`. Entry shows the zone title plus
-  “Contested Territory — PvP enabled” for 2.5 seconds. The Target Frame shows
-  a sword for tagged enemies and a shield for protected safe enemies.
-- Enemy visitors may physically traverse peaceful territory and fight ordinary
-  creatures. Faction guards still acquire them; PvP safety protects only from
-  enemy players. Enemy vendors, kings, quest objects, protected storage,
-  waypoint unlock/use and faction POIs refuse interaction.
-- Essential service NPCs are passive and invulnerable. Kings and royal guards
-  are damageable combatants; a valid hostile action against either tags the
-  visitor before damage resolves, just like an attack on another damageable
-  enemy guard, which lets defending players join.
-
-### 15.5 WP41 public seam and acceptance
-
-- One `grug_pvp` service owns `state(player)`, `tag(player, reason)`,
-  `hostile_attempt(attacker, target, context)`,
-  `support_contact(helper, target, context)` and
-  `damage_committed(attacker, target, hp_loss, absorb_loss)`. The precise
-  return record is implementation-owned, but it must distinguish blocked,
-  combat-miss and damage-eligible outcomes.
-- Ordinary tools/fists, authoritative swings, hostile casts, AoE,
-  `grug_projectiles`, guards and later effects call this seam. No caller
-  reads player meta or zone PvP flags directly.
-- Automated coverage crosses the four-row table with peaceful/contested,
-  ordinary melee, ability swing, targeted cast, projectile and AoE; it also
-  covers full absorb, dodge, support, boundary crossing, death and reconnect.
-  Existing WP39 exact-once, cadence, rage, proc and projectile tests remain
-  green.
+Delivered in Round 31 as geographic PvP with a per-player flag:
+[pvp.md](pvp.md). The former contract of this section (the four-row
+peaceful transaction, tagging by attack, AoE snapshots, synchronous zone
+checks per hit, the forced safe-zone tail) is retired
+([pvp-plan.md](../planning/pvp-plan.md) §3); the text is in this file as of
+commit `699a2002`. The geography it reads is §4 and §13.2 (`pvp_rule_at`,
+`faction_at`).
 
 ## 16. Bounded war-front life (WP42)
 
 Scope (user decision 2026-09-29, WP audit B5/B6): the scripted NPC battles
-below come after V1. Small PvP POIs — forts and camps with NPCs — may come in
-V1. WP42 may ship before WP41, with war units treating today's enemy-faction
-players as hostile until the `grug_pvp` seam exists.
+below come after V1. The small PvP POIs — a fortress per faction and the
+Battlegrounds camps — shipped in V1 (Round 31); their garrisons, services
+and quests are in [pvp.md](pvp.md) §6–§7.
 
 **V1 PvP POIs (Round 31, [pvp-plan](../planning/pvp-plan.md) rulings
 17–22).** Anchors 101–118 (`source/simple_map.lua`, the rows of
@@ -2008,6 +1890,9 @@ players as hostile until the `grug_pvp` seam exists.
   a fortress (core / 2 + 10), so the road keeps the course it has without
   the fortress (checked against that course on the six seeds); its surface
   passes 20–134 nodes from the walls (Bannerbreak 20–45, Ashenward 51–134).
+  The rest of the network is routed round the PvP POIs' reserves too, so
+  several secondary roads and trails take a different course than without
+  them: 0–6 per seed on the six tested seeds.
   The one gate faces the road's axis and a trail (§9.3) joins it to the
   road. Each fortress has a waystone (`world.md` §6).
 - **Camps:** per Battlegrounds zone and faction one lower and one higher

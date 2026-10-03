@@ -357,7 +357,7 @@ conflicts if version 1 had stealth (§8).
 | **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
 | **Combat stat consumers** | the ranged damage term, Scout dodge consumer and shared cap overrides are delivered | `combat_stats.md` §2; `skill_trees.md` §3.2 |
-| **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the existing tag rules | `combat_stats.md:270-289` |
+| **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the PvP flag rules | [pvp.md](pvp.md) |
 | **`grug_visuals`, `grug_mobs` AI, nametags** | **nothing** — every one of those was an invisibility dependency (§8) | — |
 
 ### 7.2 The lane cut
@@ -607,10 +607,10 @@ KAT case that proves a vetoed candidate is removed rather than skipped.
 
 #### 8.2.5 PvP: invisibility has no rule at all — **needs a rule**
 
-`combat_stats.md:270-289` and `world_zones.md` §4/§15 define PvP eligibility
-and the tag: a voluntary hostile action tags its user before eligibility
-resolution, and the tag clears 60 s after the last qualifying damage. The
-mobs_redo hook is a *mob* system; it says nothing about players seeing each
+Since Round 31 PvP uses a per-player flag that no action changes
+([pvp.md](pvp.md)), so question 2 below is answered: stealth flags nobody.
+Question 1 stays with stealth. (Written against the earlier tag rule, where
+a voluntary hostile action tagged its user.) The mobs_redo hook is a *mob* system; it says nothing about players seeing each
 other. Two questions no decided file answers:
 
 1. Is a stealthed Scout invisible to **enemy players**? If yes, the same

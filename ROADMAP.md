@@ -23,12 +23,15 @@ Earlier delivery narratives are preserved in the
   peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
   zone is contested. At y = −501 and below, every non-ocean land column is
   contested independently of its surface zone.
-- **PvP uses one exact transaction.** A safe player who initiates a valid
-  hostile action becomes tagged before resolution; safe→safe is blocked,
-  safe→tagged may land, tagged→safe is blocked and tagged→tagged may land.
-  Effective PvP damage or support refreshes the 60-second tail, contested
-  ground forces the tag, reconnect preserves it and death clears it. Melee,
-  casts, AoE, projectiles and support all use the same seam.
+- **PvP is a simple per-player flag** (delivered in Round 31,
+  [pvp.md](docs/design/pvp.md)). Two enemy players can harm each other only
+  while both are flagged. Contested ground and enemy territory flag by
+  location, a button and PvP contact flag for 60 s, only own peaceful land
+  clears the flag and death clears it; no attack or heal ever changes it.
+  Support is one-way, PvP combat lasts 10 s and a logout in PvP combat is
+  death. PvE combat does not notice PvP. Each faction holds a fortress at
+  the front, and 16 Battlegrounds war camps are the targets of PvP quests
+  (players are never quest targets).
 - **Controlled destructibility keeps the world playable.** Peaceful home
   terrain is editable by its faction; peaceful enemy land is not. Ordinary
   contested land, including the Battlegrounds at every depth, is editable by
@@ -48,7 +51,8 @@ Earlier delivery narratives are preserved in the
   pursuit while it stands in open water and leashes normally everywhere else.
 - **Two equivalent apex destinations.** The Wyrmglass Crown and Stormscale
   Summit are contested offshore dragon islands, each with a dragon lair and an
-  apex camp, reached by boat. Each boat landing has a small beach and a wooden
+  apex camp, reached by boat. Each dragon fights in a round arena whose edge
+  is its leash, with hazards of its own (Round 31). Each boat landing has a small beach and a wooden
   pier (Round 30); beyond them the islands stay untamed, without paths or
   roads, so the climb is part of reaching the dragon. Minerals never regrow
   anywhere, camps included.
@@ -85,7 +89,8 @@ Earlier delivery narratives are preserved in the
 - **Travel has separate systems.** Delivered innkeeper home return binds one of
   twelve faction-compatible homes, returns instantly outside combat on a personal
   30-minute cooldown and owns death respawn. Visit-unlocked waystones
-  connect every start and every capital of a faction (Round 29). Since Round 25 the player's own Claim Stone can
+  connect every start, every capital and the PvP fortress of a faction
+  (Rounds 29 and 31). Since Round 25 the player's own Claim Stone can
   replace the innkeeper as travel-home target; respawn stays at the
   innkeeper. Universal riding unlocks at
   levels 15/30/45/60 with land speeds 6.4/8 and flight speeds 8/12 nodes per
@@ -101,9 +106,9 @@ Earlier delivery narratives are preserved in the
   it in parallel without becoming allies.
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. WP41's exact PvP transaction and the WP9 story from level 41
-remain unfinished; WP17 boats/waypoints and the WP44 economy are delivered
-(Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
+running code. The WP9 story from level 41 remains unfinished; WP41 PvP and
+the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
+boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
 
 ## V1 scope
 
@@ -114,10 +119,10 @@ user's 2026-09-29 decisions
 B1–B7) settle the rest:
 
 - **In V1:** WP17 boats (the only access to the dragon islands and their
-  camps) and waypoints at every start and capital (no zone hubs, no
+  camps) and waypoints at every start, capital and PvP fortress (no zone hubs, no
   `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale.
-- **After V1:** WP42's scripted NPC battles on the war front. Small PvP POIs
-  (forts and camps with NPCs) may come in V1, and WP42 may ship before WP41.
+- **After V1:** WP42's scripted NPC battles on the war front. The small PvP
+  POIs shipped in V1 (Round 31).
 - **Not V1:** the walkable Nether, the first expansion (V2).
 
 ## Phase 1 — Playable core and world foundation
@@ -140,7 +145,8 @@ B1–B7) settle the rest:
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs. Since Round 28 quests are
   per-zone data with area, item-group and quest-drop objectives and repeatables;
-  Round 29 replaces the catalog with 491 quests up to the front at 60.
+  Round 29 replaces the catalog with 491 quests up to the front at 60;
+  Round 31 adds 24 PvP fortress quests with garrison objectives.
 - [x] World atlas with zoom/scroll, self/party/quest/service markers and, since
   Round 27, our own round minimap with the same markers; innkeeper home
   return and respawn; riding/flight (WP31) and farming (WP32, GUI acceptance
@@ -201,19 +207,30 @@ B1–B7) settle the rest:
   fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
   smoothing with recomputed prices. Local, not pushed. Next: fresh world and
   GUI test.
+- [x] **Round 31 "PvP, appearance and clean-up"**
+  ([completion](docs/planning/round31-plan.md#completion-2026-10-03)):
+  **WP41 geographic PvP** (the per-player flag, the PvP tab, icons, banner
+  and target frame, the NPC faction filter for services and map markers,
+  PvP from depth tier T4); **WP42's PvP-POI part** (a fortress per faction
+  with a General, a waystone and quests, 16 Battlegrounds war camps with
+  named captains, 24 fortress quests from level 40); the **appearance
+  package** (character looks chosen at creation, NPC look rolls, helmet
+  face window, equal hitboxes, enchant colours on gear); the **dragon
+  arenas** redesigned (round leash arenas, ice and ember hazards, the
+  dragon's wrath); the Round 30 clean-up items and a fixture runner. Local,
+  not pushed. Next: fresh world and the two-client GUI test.
 
 ### Remaining work
 
-- [ ] **WP41 (V1), Round 31:** exact geographic PvP transaction and shared
-  eligibility seam, with enemy-guard quest objectives and small PvP POIs
-  (planned in its own design session).
-- [ ] **Dragon arenas** (next round, a small design step first): terrain that
-  shapes each dragon fight inside the protected arena core
-  ([BACKLOG](BACKLOG.md#round-30--performance)).
+- [ ] **Seed-dependent POI placement** (decision before the next round):
+  whether POIs, camps, outposts, mines and the PvP fortresses are placed per
+  world instead of at fixed positions
+  ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-decide-before-the-next-round)).
 - [ ] **WP9 (V1), Round 32:** the level-41–60 main questline and the finale. Round 29's
   front quests and bounties carry the 41–60 leveling; the main storyline and
   the finale are reassessed on top of them.
-- [ ] **WP5 / WP10 items and professions:** cultural/PvP finishes, masterwork
+- [ ] **WP5 / WP10 items and professions:** an enchantment and item-level
+  revision (stronger boss drops), cultural/PvP finishes, masterwork
   (an item-level-70 upgrade), then cultural finishing and helper services.
   Selected enchanting, ordinary gear, found-item loot, loot by band, seven
   self-contained profession catalogs and the loot/demand audit (Round 29's

@@ -1,7 +1,13 @@
 # Round 31 — Geographic PvP plan (WP41, WP42 PvP POIs)
 
-Status: **plan, not started.** Written 2026-10-03 from the design session
-with the user. Implementation is Round 31, orchestrated by the coordinator
+Status: **delivered in Round 31** (2026-10-03, local main
+`699a2002`; [completion](round31-plan.md#completion-2026-10-03)). The rules
+as built are [pvp.md](../design/pvp.md); the user changed some rulings during
+the round ([round31-plan.md](round31-plan.md) §6 items 8–16: a refused
+support cast costs nothing, equal mount boxes, the fortress spots and their
+gate trails, enemy settlement icons hidden, the General's drops, PvP in the
+depths from T4, camp captains as leaders and solo camp raids). Written
+2026-10-03 from the design session with the user. Implementation is Round 31, orchestrated by the coordinator
 session; this file is its PvP part. Other Round 31 items (the
 [clean-up lane](../../BACKLOG.md#round-30-carry-overs), the dragon arena
 iteration, the NPC appearance package of §6) are coordinated alongside.
@@ -175,7 +181,8 @@ not notice PvP at all.
 - **Fortress vendors:** one Quartermaster (supplies and consumables shelf).
 - **Camp garrison:** lower camp 4 guards + captain, higher camp 5 guards +
   captain; camp guards use the camp's race; the captain is an elite at the
-  camp's top level. Respawn about 2 min for guards and 5 min for captains
+  camp's top level (changed: a normal-tier leader with 1.15 × size and
+  1.5 × HP, round31-plan §6 item 16). Respawn about 2 min for guards and 5 min for captains
   (place-bound slots, `world.md` §4a). Rough values, tuned in the playtest.
 - **Generals** respawn like kings.
 - Each PvP-POI quest counts in the front ledger (`ledger.py`); the lane

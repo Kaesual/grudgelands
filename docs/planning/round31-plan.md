@@ -1,7 +1,8 @@
 # Round 31 — PvP, appearance and clean-up: round plan
 
-Coordinator: Claude (Opus 5.5), 2026-10-03. Status: **approved by the user
-2026-10-03** (wave 1 go; decisions in §6).
+Coordinator: Claude (Opus 5.5), 2026-10-03. Status: **complete locally
+2026-10-03** ([completion and GUI checklist](#completion-2026-10-03)); approved
+by the user 2026-10-03 (wave 1 go; decisions in §6).
 
 This plan schedules agreed inputs; it does not repeat their rulings:
 
@@ -329,3 +330,315 @@ need no GUI check.
   argument until C's runner lands; `tools/r30_p3/run.sh` takes seeds.
 - **Final:** one fresh-world engine check (~15 min), D, sync with
   `tools/sync_to_luanti.sh`, the user's two-client GUI test; the user pushes.
+
+## Completion (2026-10-03)
+
+Every lane below is merged on local main (last lane Q, `699a2002`). Each
+lane was independently reviewed by Opus (the Astra names by GPT-6.1 Sol),
+except the two small follow-ups M2 (a coordinate and tool change) and G2,
+which the coordinator checked, and the user's wording clean-up; the
+coordinator ran the portable fixtures after the merges
+(`tools/run_fixtures.sh`, 63 of 63 on `699a2002`). Not pushed. Lane F did not run: the user's Round 30 GUI test is
+still open and can share the fresh world of this round's test. After
+`699a2002` the user settled the quest-share question (option (b), see Q).
+
+Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
+
+### Shipped, by lane
+
+Numbers are each lane's own probe before and after, same seed and area
+(comparisons, never targets).
+
+- **P1 PvP core** (merge `fb7f50fc`): the new mod `grug_pvp` with the
+  pvp-plan §4 API plus `register_on_change` and `count_npc_kill`; the
+  location flag sampled once a second (sticky over ocean), the 60 s button
+  and contact flags, 10 s PvP combat through a per-call combat-timer
+  duration, death clear, logout death with kill credit and its death
+  message, the ruling-16 counters and `/pvpstate`. Contact is detected in
+  one place, the hp-change modifier (so absorbed hits count too); the gate
+  sits in `valid_target`, the swing handler, the impact re-check of
+  `deal_ability_damage` and the crosshair ray (reason `protected`).
+  **PvE combat unchanged** (medians, engine micro run): `valid_target`
+  against a mob 0.123 → 0.117 µs, the crosshair ray onto a mob 8.03 →
+  8.18 µs, a mob's hit through the hp-change chain 16.5 → 16.9 µs,
+  `in_combat` 0.049 → 0.050 µs, all within noise; an enemy player's hit
+  16.1 → 19.0 µs. **Location tick:** 53 µs per tick for 50 fake players
+  (1.06 µs each), 74.5 µs for 100, once a second
+  ([pvp.md](../design/pvp.md)).
+- **P2 PvP UI** (`b1e651f8`): the PvP tab right after Group (button, state
+  with reason and seconds, PvP combat line, the seven counters; re-sent
+  once a second only while its text changes), the status icons
+  `pvp_contested` and `pvp_tagged` with countdown, the zone banner's red
+  subtitle "Contested Territory — PvP enabled" / "Enemy Territory — PvP
+  enabled" (the flight warning moves one line down), the target frame's
+  "(flagged)" / "(protected)", red only while both can fight.
+- **N faction filter** (`f53411a1`): `grug_factions/service.lua` — quest
+  givers, vendors (profession vendors take their settlement's faction),
+  trainers, the Shipwright, innkeepers, Housing Stewards and waystones
+  serve only their own faction, with one refusal line at most every 2 s;
+  map and minimap NPC markers per viewer faction (every king and both
+  dragons stay), service and quest lists split per faction once at load;
+  a faction change refreshes both maps.
+- **C clean-up** (`6176efc4`): the world session's query caches dropped at
+  the first server step (seed 12345, Lua heap at the first step: first
+  start **149 → 110 MiB**, later start 71 → 65 MiB; region maps and zone
+  grid identical); held objective counts capped at what one quest takes;
+  `changed()` after a failed turn-in reward; the zone-grid encode failure
+  inside the pcall (more than 255 zones: used, not stored);
+  `tools/run_fixtures.sh` runs every portable fixture (52 at the time, 63
+  at the end of the round), and `r23_renewal`/`r23_tree_line` now exit 1 on
+  failure.
+- **A character looks** (stage 1 art, stage 2 `c8f1d45f`): 84 generator
+  layer files (14.9 KB, CC0) on the `mcl_skins` technique — skin tone,
+  eyes, hairstyle, lower-face feature per race (counts as §2.1.2); the
+  composition order with the shared helmet face window; the look step of
+  character creation (◀/▶ per category, random, rotating preview, one
+  confirm, stored for good); NPCs roll a look once (settlement race, or a
+  race of the faction; mixed garrisons by `npc_race{mixed = true}`); royal
+  guards in the tabard, kings a fixed look with tabard and crown; the
+  painted race and royal skins removed; every armour piece in its own
+  parentheses, which fixes the Silversteel `^[hsl` reaching the skin. The
+  head that looked transparent under metal helmets in the stage-1 preview
+  was dark chain mail on the dark preview background; every head pixel of
+  the composed skin is opaque. Equal collision and selection boxes for every race (fixture)
+  ([character_visuals.md](../design/character_visuals.md) §1).
+- **B enchant colours** (stage 1 and the second design round, stage 2
+  `ceb7a2c0`, review notes `a25acde3`): nine stat colours
+  (`grug_gear/enchant_colors.lua`, distinct also for red-green colour
+  blindness), 185 generated two-group masks as thin stripes (about 7 % of
+  an icon and 4 % of a worn overlay per group, round 1: 17 % and 12 %), laid
+  over at 50 % (opacity 128); the colours on the inventory icon, the held
+  and dropped item (per-stack `inventory_image`, removed for a plain
+  stack), the worn armour (a helmet's cut by the face window) and the six
+  kings' weapons; a 3 × 3 legend at every enchanting station
+  ([character_visuals.md](../design/character_visuals.md) §5a).
+- **S PvP structures** (`aff55ae8`): the fortress blueprint (49 × 49,
+  curtain wall, one gate, keep, barracks, store, armoury, drill yard,
+  waystone pad) and the two camp layouts (23 × 23, 27 × 27) in all six race
+  palettes; the catalogue `r31_pvp_catalog.lua` (2 fortresses, 16 camps,
+  camp bands, the per-world camp race through SHA-256: 18 layouts over 18
+  seeds after the review fix); fitting profiles; the roles general,
+  bodyguard and captain.
+- **P1b** (`8c8be805`): a support cast the flag rules out is refused and
+  costs nothing (ruling 9); every tier-2 mount uses the Courser's collision
+  box and one selection box; tiers 3 and 4 share one flyer body (1.8 wide,
+  1.65 high) per tier; riderless capital displays keep each model's own box
+  ([mounts.md](../design/mounts.md)).
+- **Names** (`8c289878`): 2 Generals and 48 captain names by GPT-6 Astra
+  (`docs/planning/round31/pvp-names.json`), reviewed by GPT-6.1 Sol.
+- **Neutral wording** (`a2b5e246`): references to a commercial MMO and its
+  publisher removed from docs and metadata; no game name changed.
+- **DA2 dragon arenas** (`d3fda6c1`, proposal in
+  [round31-dragon-arenas.md](round31-dragon-arenas.md)): round arenas of
+  radius 40 (82 × 82 protected) on local ground with a gently swelling
+  floor and rim stones; the edge is the leash (a player inside is a target
+  at any height, one outside is vetoed, cannot hurt the dragon or hold its
+  threat); a fight without a hostile inside resets, heals and flies home;
+  Wyrmglass breaking ice (ice water 250/s and a slow) and frost terraces,
+  Stormscale ember fissures (350/s) and one-high trunks; the dragon's wrath
+  (500/s to participants outside, bypasses absorb). Fixture 7446 checks
+  ([world.md](../design/world.md) §4b).
+- **Skill names** (`d9cbc018`, plans `61db78e4`): Heal, Shield, Mend and Ice
+  Nova (ids `heal`, `shield_spell`, `mend`, `ice_nova`) replace another
+  game's spell names; Smite stays.
+- **M PvP placement** (`36e21da9`, re-pick M2 `61b669bd`): anchors 101–118;
+  Ashenward Bastion (136, −488) and Bannerbreak Warhold (−80, 632) on the
+  Battlegrounds half of their zone, dry and flat (relief at most 33 and 24
+  on six seeds), 51–134 and 20–45 nodes off the middle road, which keeps
+  its course on all six seeds (maximum deviation 0), with a gate trail;
+  the 16 camps (one lower and one higher per Battlegrounds zone and
+  faction; nearest PvP pair 223 nodes, at least
+  120); protection + 10 nodes (`fortress`, `war_camp`); no hostile ambient
+  spawns and roamers nudged away; seven waystones per faction; settlement
+  icons per viewer faction (`grug_map/settlement_icons.lua`). Lane M first
+  reported one rerouted outpost trail; the review found that several
+  secondary roads and trails take another course per seed (0–6 on the six
+  seeds); the docs say so ([world_zones.md](../design/world_zones.md) §16).
+- **G garrisons** (`0160cde6`, G2 `92834cfe`): `grug_mobs/pvp_garrison.lua`
+  (pure rules over the catalogue and the names); fortress 12 guards
+  (2 gate, 10 inner) level-60 elite of mixed races, the General (level-65
+  elite, king chassis without crown, his seat king's weapon colours) with
+  2 bodyguards; camps 4/5 guards in the band and the named captain, after
+  the user's ruling a normal-tier leader (1.15 × size, 1.5 × HP); respawn
+  fortress guards 3–6 min, camp guards 100–140 s, captains 270–330 s, the
+  General's group like a king's; kill counting for the PvP tab; the
+  General's gear roll on an enemy player's kill (item level 65, 60 %
+  uncommon, 25 % rare).
+- **P1c** (`f01021fe`, notes `81265c06`): `CONTESTED_DEPTH_Y = −501` for PvP
+  and for digging/building by either faction (was −701).
+- **Q fortress quests** (`699a2002`, texts by GPT-6 Astra): 12 quests per
+  faction from level 40 — 8 solo camp raids (guards and captain within the
+  camp's area), 3 ordinary fortress quests, 1 entry quest from an outpost;
+  garrison kill objectives with the enemy-faction check
+  (`E-garrison-faction`), PvP POIs as placeholder targets; 0 missing targets
+  on six seeds; 515 quests in total. **Quest-share ledger** (`ledger.py
+  --game --track <race> --repeat 2`, solo questing share, target in
+  brackets): before Q human 40→50 77 % (70), 50→60 103 % (70), orc 74 %,
+  85 %; with Q human 108 %, 123 %, orc 102 %, 104 %. **User ruling
+  (option b):** the raids' reward weights 5 (picket) / 6 (war camp) → 3 /
+  4 (`8a2610c5`); then human 30→40 134 %
+  (80), 40→50 104 %, 50→60 119 %; orc 30→40 120 %, 40→50 98 %, 50→60
+  101 %. Most of the rest is the raid targets' kill XP, not the reward
+  weights; the human 50→60 overshoot predates the round (103 %).
+- **D**: this section, [pvp.md](../design/pvp.md), the pvp-plan docs lane,
+  the status files, the module guide and AGENTS.
+
+### Rulings made during the round
+
+§6 holds them in full; in short:
+
+1. Wave 1 go (P1, P2, N, C, A1, B1, S1, DA proposal).
+2. pvp-plan coordinator defaults accepted (no innkeeper in the fortress,
+   one Quartermaster, camp garrisons 4/5 + captain, respawn about 2/5 min,
+   Generals like kings, POI quests in the ledger).
+3. Previews before building; a package that grows too big is split with
+   the user.
+4. Customization covers body features only.
+5. Character layers approved; the transparent-head check (no gap: dark
+   chain mail on a dark preview background).
+6. Fortress and camps approved, fortress 49 × 49.
+7. Enchant colours: accents, never a redesign; round 2 approved (thin
+   stripes, 50 %, colours unchanged, no art pass).
+8. Equal mount boxes for tier 2, and per tier for the flyers of tiers 3/4.
+9. A refused support cast does nothing and costs nothing.
+10. An enemy who cannot be fought shows grey in the target frame.
+11. Dragon arenas redesigned (local ground, bigger arena = leash, reset heal
+    and fly home, ice water 250/s + slow, frost terraces, no pillars, ember
+    fissures 350/s, trunks one high; height fix and whole-arena protection;
+    the dragon's wrath 500/s for participants outside).
+12. PvP POI placement: fortresses on the Battlegrounds side, the road has
+    priority, a side road to the gate; no hostile spawns in fortresses and
+    camps; enemy settlement and POI icons hidden (kings, dragons, enemy
+    war camps stay); a fortress in a slope within limits.
+13. Skill renames: Heal, Shield, Mend, Ice Nova; Smite stays.
+14. The General's drops: PvP drops plus a raised chance of an enchanted
+    high-level item.
+15. Fortress spot before road distance; PvP and building rights in the
+    depths from T4 (y ≤ −501), T1–T3 under peaceful land protected.
+16. Camp captains are leaders, not elites; camp raids are solo quests.
+
+After `699a2002` (user): option (b) for the quest share — raid weights 3/4.
+Coordinator defaults noted to the user: a healer joins a dragon fight only
+within the arena radius + 15; the wrath bypasses absorb; unflagged enemies
+block the crosshair ray like friendly players; kill credit only to online
+attackers. Fixed positions for the PvP POIs this round; seed-dependent
+placement is an open decision before the next round (BACKLOG).
+
+### Open items
+
+In the [BACKLOG](../../BACKLOG.md#round-31-carry-overs): seed-dependent POI
+placement (a decision before the next round); the enchantment and
+item-level revision; the quest XP share above 100 % in several bands; the
+remaining first-start heap (about 45 MiB above a later start, the
+grug_mapgen first-start load, not caches); the grug_mapgen warm-load
+proposal (#22, still the user's call). For the GUI test (notes, not
+reproduced as faults): the tab order (the engine order ends …, Quests,
+Group, PvP, Map; Map has no ordering hook; check in the GUI test), 10
+survival tabs at
+1280 × 720, the flight warning's 4 px headroom at 720p and GUI scale 1,
+the per-tier selection box of the tier-3/4 flyers (sized for the highest
+seat), the capital mount displays' boxes and name tags, Dragon Rime on
+thin ice, the refreeze radius of broken ice, a breath splash just outside
+the rim (damage without a fight flag), Mend ticks after the helper's flag
+ends (allowed by ruling 6), a profession vendor outside a settlement would
+serve everyone (none exists). The enchant masks keep their source
+texture's licence (CC BY-SA derivatives, not CC0). The seed-42 gate-walk
+warning of the M probe was a probe artefact (the path is open).
+
+### GUI playtest checklist
+
+Two Flatpak clients on one local server and a **fresh world** (Round 31
+changes the mapgen: PvP POIs, dragon arenas, roads): one Accord and one
+Throng character at level 40+ and one low-level character. Helpers:
+`/xp give`, `/teleport`, `/pvpstate` (privilege `server`). Teleport
+targets (x, z): Ashenward Bastion (136, −488), Bannerbreak Warhold
+(−80, 632), the Wyrmglass dragon (−3260, −40), the Stormscale dragon
+(3260, −40).
+
+PvP (pvp-plan §9 as built):
+
+1. **Own peaceful zone, both unflagged:** the enemy is no target (neutral
+   crosshair; target frame grey with "(protected)"); Ice Nova next to them
+   does nothing to them (the nova itself costs its mana as usual).
+2. **"Flag me for PvP"** on the PvP tab: the "PvP flagged" icon counts down
+   from 60 s, the tab shows "Flagged for N s"; still no hits until the
+   other is flagged too; both flagged → the frame turns red, hits land.
+3. **Contested zone** (a 31–40 zone): banner subtitle "Contested Territory
+   — PvP enabled" and the contested icon; fight; walk back into own
+   peaceful land right after → stays flagged for 60 s after the last hit.
+   Walk out without fighting → safe at once.
+4. **Enemy start zone or capital:** "Enemy Territory" subtitle and icon;
+   enemy guards attack; their unflagged low-level players cannot be hit
+   and cannot hit you.
+5. **Healer:** an unflagged priest aiming Heal, Shield or Mend at a flagged
+   friend gets "You must be flagged for PvP to support a flagged ally.",
+   no mana spent, no self-heal; after the button the cast works; a heal on
+   a friend in PvP combat (10 s after a PvP hit) also counts as contact
+   for the priest.
+6. **PvP combat:** after a PvP hit no mount, no eating, no travel home and
+   no waystone for 10 s; the PvP tab shows the combat line.
+7. **Logout death:** log out during a fight; the other sees the kill and
+   "… fled the fight and fell."; the logged-out character starts dead and
+   respawns at the innkeeper.
+8. **Boats:** from the own coast unflagged at sea; arriving at a dragon
+   island flags; sailing home keeps the flag until own land.
+9. **Flight** from own land into contested ground and back without
+   dismount; warning and dismount at enemy peaceful land.
+10. **Depth:** under the enemy's capital at y −500 its own players stay
+    safe (you are flagged as in enemy territory) and you cannot dig; at
+    y −501 both are flagged and anyone may dig and place.
+11. **Faction filter:** enemy quest giver, vendor, trainer, innkeeper and
+    waystone refuse ("… I serve only The Accord."); map and minimap show
+    no enemy NPC markers except the enemy kings and both dragons; the
+    enemy's starts, capitals, villages, outposts and fortress have no icon,
+    the enemy war camps do.
+12. **PvP tab statistics** after kills, killing blows, deaths and kills of
+    enemy guards, captains, a General or a king.
+13. **Fortress** (both): one gate held by two elites, ten elites inside,
+    the General with two bodyguards and his coloured weapon, three quest
+    givers and the Quartermaster; the waystone is in the list (7 entries);
+    the enemy's stone is inert; the gate trail reaches the middle road;
+    flying over the wall works; no hostile mobs spawn inside.
+14. **Camps:** both factions' picket and war camp in each Battlegrounds
+    zone, in race materials; own guards friendly, enemy guards hostile;
+    the named captain a little larger than his guards (1.15 ×) with more
+    HP, not elite; guards back after about 2 min, the captain after about
+    5; spacing feels right.
+15. **Fortress quests:** from level 40 the three givers offer the camp
+    raids (solo), the ordinary quests and the entry quest from an outpost;
+    credit only for guards and the captain of the named camp.
+
+Appearance and colours:
+
+16. **Creation:** after the class the look page — ◀/▶ per category,
+    random, rotating preview, "Confirm — cannot be changed later"; the
+    look is the same after a relog.
+17. **Helmet:** hides the hair but not the eyes and the beard, tusks or
+    ears.
+18. **NPC variety:** varied looks within the race in a start town and a
+    capital; fortress guards of mixed races; kings and the General
+    distinct.
+19. **Enchant colours:** enchanting changes the item's colours in the
+    inventory, in the hand, dropped on the ground and on the body (armour);
+    the legend at the station fits next to the repair button; kings and
+    the General hold coloured weapons.
+
+Dragon arenas (both):
+
+20. Round arena on local ground, rim stones at the edge; pull the dragon
+    and step outside: it stops, heals and flies home; shooting from outside
+    does nothing; standing high inside it still attacks.
+21. During a fight, step outside the rim (or heal from outside): warning,
+    "Dragon's Wrath" status, 500 per second until you return.
+22. Wyrmglass: stand still on thin ice (breaks after 1.5 s, ice water 250/s
+    and slow, refreezes); Stormscale: an ember fissure (350/s), jump a
+    trunk.
+
+Interface:
+
+23. **Tabs:** the survival tab header (10 tabs) fits at 1280 × 720; note
+    the tab order (Quests, Group, PvP, Map).
+24. Status icons and the banner subtitle are readable; the flight warning
+    sits below the subtitle.
+
+The Round 31 clean-up items (lane C) need no GUI check.

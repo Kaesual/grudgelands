@@ -130,8 +130,9 @@ shows the tier name and its speed ("4 nodes/s on water").
   swing lands on the boat entity. The eject therefore uses **two** hooks, the
   mount pattern: the boat entity's `on_punch` forwards the punch to the rider,
   and the player HP-change observer ejects on any HP loss.
-- PvP on water is voluntary — deep-ocean and channel columns never force the
-  tag (`world_zones.md` §15.1).
+- Deep-ocean and channel columns neither flag nor clear PvP: a player keeps
+  the location flag they had (sail out unflagged, stay unflagged;
+  [pvp.md](pvp.md) §2).
 
 ## 7. Ocean danger and the dragon islands
 

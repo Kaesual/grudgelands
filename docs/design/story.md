@@ -19,7 +19,7 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
 - The **new** threat rises from the flames of the Nether — this world's
   hell, a world of lava and demons. Something **demonic and ancient**
   stretches its dark hands from below into the overworld (genre
-  tradition: classic MMO demon legions, Diablo's Hells, PoE's corruption).
+  tradition: classic MMO demon legions, the genre's hells and corruption).
 - It threatens **both factions equally, despite their enmity** — but it
   does not unite them: each side fights the darkness on its own,
   in parallel and in competition. (Cross-faction cooperation is NOT part

@@ -26,6 +26,35 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   LotT has NO per-faction spawns and no player-PvP gating — we build those
   ourselves (`core.register_on_punchplayer` /
   `register_on_player_hpchange`).
+  **Service rule (Round 31):** `grug_factions/service.lua` —
+  `grug_factions.serves(npc_faction, player)`, `refusal` and `refuse` (one
+  line, at most every 2 s per player). Every quest giver, vendor (a
+  profession vendor takes its settlement's faction), trainer, innkeeper,
+  steward, Shipwright and waystone asks it with the NPC's faction, never
+  the place; fixtures load it on a fake faction table (`tools/r31_n`).
+- **PvP (Round 31, WP41):** `mods/PLAYER/grug_pvp` owns the flag. `rules.lua`
+  is pure (the record, the timers 60/60/10/15 s, `credited`); `init.lua`
+  keeps one record per online player, samples the location once a second
+  (`pvp_rule_at`, `faction_at`; never on the combat path) and exposes the
+  API in its header (`flagged`, `can_harm`, `can_support`, `contact`,
+  `support_contact`, `flag_now`, `state`, `stats`, `register_on_change`,
+  which also fires once at join, before any HUD exists, and
+  `count_npc_kill`). `grug_core` must not depend on it: `grug_pvp` installs
+  `grug_core.pvp_can_harm` (the impact re-check in `deal_ability_damage`
+  and the crosshair's `protected` class) and `grug_core.pvp_hit_landed`
+  (contact from the hp-change modifier, so absorbed hits count);
+  `grug_abilities` gates `valid_target`, the swing handler and support
+  (`support_refused`: a refusal costs nothing). PvP contact arms
+  `mark_in_combat(player, grug_core.PVP_COMBAT_TIMEOUT)`. Logout death:
+  credited at leave, applied at the next join (`grug_pvp:logout_death`);
+  a shutdown sets no mark. NPC kills count through `_grug_pvp_kind` on the
+  garrison prototypes and grug_mobs' eligible-kill hook. `page.lua` (sfinv
+  page after Group; texts in the pure `view.lua`) and `hud.lua` (one status
+  source) are P2's; the banner subtitle reads `state.reason` in
+  `grug_map/location.lua`, the target frame `can_harm`. Fixtures
+  `tools/r31_pvp` (flag core; `run.sh` the engine probe: PvE micro run,
+  zone checks, tick cost), `tools/r31_p2`, `tools/r31_p1b`. Rules:
+  [pvp.md](../design/pvp.md).
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`
   pipeline, HUD bar. Round 18: no death XP loss; cumulative XP caps at level 60,
@@ -556,6 +585,25 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     (world view, border fit; `border_rule.py`), the catalogue checks
     `tools/r28_design/validate.py` and `tools/r28_names/build_review.py
     --check`.
+- **PvP garrisons and dragon arenas (Round 31):** `grug_mobs/pvp_garrison.lua`
+  (pure; built in `init.lua` before `guard.lua` from the mapgen catalogue
+  `r31_pvp_catalog.lua` and `data/pvp_names.json`) answers per socket which
+  NPC stands there (`G.slot`: entity, levels, tier, respawn, royal, leader,
+  name, mixed, area), the quest area `"<zone>/<settlement key>"` and its
+  roles (`G.area_roles`, read by `grug_quests` and `tools/r28_design`).
+  `guard.lua` registers the camp captains (the guard chassis, normal tier,
+  `grug_mobs.LEADER` factors from `levels.lua` in the definition),
+  `bosses.lua` the Generals from `king_def` (the seat race from
+  `catalog.SEAT_RACE`) and their bodyguards; `start_npcs.lua` serves a PvP
+  POI as its own settlement kind and books the respawn slots (the General's
+  group on the royal path). `dragon_arena.lua` holds the pure arena rules
+  (radius from the mapgen profile, inside band, 250/350/500 per second,
+  the 1.5 s ice break, the reset test); `boss_dragons.lua` applies them:
+  `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
+  `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second
+  arena tick (threat prune, reset and flight home, hazards and the wrath
+  through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
+  participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`.
 - **Enchantments**: chosen named prefix/suffix recipes use fixed bonuses by
   enchantment tier, including jewelry; there is no refinement step or random
   crafted bonus. Family eligibility and replacement rules belong to the gear
@@ -745,7 +793,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   quest change, a held objective-item change (the tracker's `Q.journal_key`
   poll, `hud.lua`, five 0.1 s slots; counts capped at what one quest takes,
   Round 31) and a level change (fixtures `tools/r30_p1`, `tools/r31_c`).
-  Unknown quest fields stop the load (`E-unknown-key`, Round 30). The
+  Unknown quest fields stop the load (`E-unknown-key`, Round 30). Round 31:
+  quest NPCs get their faction at load and serve only it; a kill objective's
+  area may be a PvP garrison (`pvp_garrison.area_roles`, guard and captain
+  roles only, the giver of the other faction: `E-garrison-faction`); kill
+  credit needs nothing new (the `_grug_area` tag). Placeholders may name a
+  PvP POI by its settlement key. The design tools mirror it
+  (`tools/r28_design`: `r28common.pvp_pois` reads the tiers from
+  `G.slot`); fixture `tools/r31_q`. The
   catalog requires only V1 overworld content; the Nether is reserved for the
   first expansion. Quest item labels use concise names rather
   than stat/durability lines; worn matching stacks remain valid turn-ins.
@@ -796,7 +851,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (dismount, emerge, deferred re-validation, safe arrival) used by home
   return, respawn and waystone travel (`grug_home.travel(player, trip)`).
   `waypoints.lua` builds the registry from the mapgen's `travel_waypoint`
-  sockets (six capitals, six start pads), discovers a stone by proximity
+  sockets (six capitals, six start pads and, since Round 31, the two PvP
+  fortresses' sockets, registered after the twelve home locations; seven
+  stones per faction), discovers a stone by proximity
   (once a second) or right-click, keeps the per-character list in player
   meta (`grug_home.known_waypoints`) and opens the travel form
   (`grug_home.use_waystone`); the refusals are pure rules in
@@ -847,6 +904,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   later start reads the sampled zone grid from `<world>/grug_map_zone_grid.txt`,
   keyed like the region maps); the pure
   `location_view.lua` holds the rules (fixture `tools/r28_m1`).
+  Round 31: NPC markers carry their NPC's faction and the service and
+  quest-giver lists are split per viewer faction once at load (the kings and
+  dragons stay for everyone); `settlement_icons.lua` (pure, `HIDDEN`) decides
+  which settlement icons a viewer faction sees from the anchor slot in the
+  settlement registry, and the Map tab builds one list per faction. The
+  Map tab's signature includes the faction, and the minimap re-asks its
+  static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
+  `tools/r31_m`.
   Current marker/travel/minimap rules: [world_map.md](../design/world_map.md).
 - **Preparation (Round 14):** `grug_core` freezes starts/full mode in world
   storage on first boot. A stable aligned plan has one in-flight chunk and a
@@ -958,6 +1023,27 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   for the sand override) and `road_writer.lua` builds the pier from the same
   shore point (fixture `tools/r30_l/portable_test.lua`, engine probe
   `tools/r30_l/engine.sh`).
+  **Round 31 mapgen:** the PvP POIs are anchors 101–118 of
+  `source/simple_map.lua` (fitting profiles `pvp_fortress`, `pvp_camp_low`,
+  `pvp_camp_high`); `r31_pvp_catalog.lua` names them as rules (zone, slot,
+  kind, faction, band; `camp_levels`, `camp_race` through the blueprint
+  options' `raw_sha256` seam, the same in main and emerge, `SEAT_RACE`),
+  `r7_settlement.lua` binds every row to its anchor (all or none) and the
+  gate turn, and `r31_pvp_poi_blueprint.lua` is the pure cell builder
+  (sockets as landmarks; `landmarks.race`/`faction` name what the
+  settlement registers as). `road_layout.lua` routes a fortress's gate trail
+  (`GATE_STRETCH`) and every road round the PvP POIs' reserves; the
+  fortress spots lie clear of the middle road's course, which keeps it,
+  while other secondary roads and trails may change (0–6 per seed). `world_protection.lua` grows a PvP
+  slot's box by `PVP_MARGIN` (10), kinds `fortress` and `war_camp`. The
+  dragon arenas: the `dragon` profile carries `arena_radius` 40 and
+  `bowl_core_width` 32; `height.lua` grades the round floor;
+  `arena_layout.lua` (pure, shared with `grug_mobs`) and `arena_writer.lua`
+  (the last pass of the R7 successor settle) place the hazards, registered
+  in `world_nodes.lua`. Contested depth is one constant,
+  `CONTESTED_DEPTH_Y = −501` in `zones.lua` (PvP and territory). Fixtures
+  `tools/r31_s`, `tools/r31_m` (incl. `spacing_check.lua` over six seeds,
+  `engine.sh`), `tools/r31_da2`, `tools/r24_protection_depth`.
   `r6_settlement.lua` owns shallow filler/stone-only strata and the final cave
   transaction. `zones.lua` publishes 80-node owner-local cave candidates but
   never an offline cut; the writer carves only after immutable native-v7 air
@@ -1024,4 +1110,28 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.
+- **Looks and enchant colours (Round 31):** `grug_visuals/looks.lua` (pure)
+  holds the option tables per race, `normalize_look`, `roll_look`,
+  `look_from_seed`, `npc_look` and `look_texture` (layer order, the helmet
+  face window `HELMET_WINDOW`); the art comes from
+  `tools/wp13/gen_character_visuals.py`. `apply.lua` stores a player's look
+  once in meta `grug_visuals:look` (`set_look` refuses a second write) and
+  builds `player_spec`; `compose.lua` puts every armour piece in its own
+  parentheses and keys its cache on every normalized input. NPCs keep
+  `_grug_look_seed` in their staticdata; `npc_race(entity, faction, opts)`
+  gives the settlement's race, or with `{mixed = true}` /
+  `_grug_mixed_race` a race of the faction (fortress garrisons).
+  `creation.lua` is the look step, registered with
+  `grug_classes.register_look_step`; `release_player` closes its form.
+  Enchant colours: `grug_gear/enchant_colors.lua` (`ENCHANT_COLORS`,
+  `ENCHANT_OPACITY` 128, `enchant_image`, `enchant_layers`,
+  `strip_enchant`; masks `<texture>_ench.png` from
+  `tools/r31_b/gen_enchant_masks.py`, `--check` rebuilds and compares);
+  `grug_items.regenerate_description` (`grug_quality/init.lua`) writes the
+  stack's `inventory_image`
+  (removed for a plain stack), which the wield entity and dropped items
+  use; `grug_visuals/enchant.lua` turns worn affixes into compose's
+  `armor_layers`; NPC specs may carry `weapon_colors` (kings, Generals).
+  Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`; rules
+  [character_visuals.md](../design/character_visuals.md).
 

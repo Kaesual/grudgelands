@@ -109,7 +109,8 @@ minimap.
 Round 29 replaced the 240 quests of Rounds 14–20 with 491 quests in the
 per-zone quest files (below): one track per race from the start zone to its
 heartland, the contested 31–40 zones, and the 41–60 front with repeatable
-and island bounties. This is an editorial budget, not a filler quota.
+and island bounties. Round 31 adds 24 PvP fortress quests (below; 515 in
+total). This is an editorial budget, not a filler quota.
 Offer roughly three independent local starter tasks across the adventure giver
 and a separate cook near an oven. Compatible tasks share an outing; avoid
 repeated returns for increasing counts of the same mob. Optional item/cooking

@@ -64,6 +64,19 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 31 complete locally, 2026-10-03 (not pushed).** "PvP, appearance and
+clean-up": geographic PvP (WP41: `grug_pvp`'s per-player flag, the PvP tab,
+icons, banner and target frame, PvP from depth T4), the NPC faction filter
+for services and map markers, WP42's PvP-POI part (a fortress per faction
+with a General and the seventh waystone, 16 Battlegrounds war camps with
+named captains, 24 fortress quests from level 40), character looks at
+creation and NPC look rolls, enchant colours on gear, the dragon arenas
+redesigned (round leash arenas with hazards and the dragon's wrath), the
+Round 30 clean-up items and a fixture runner. Rules: [pvp.md](docs/design/pvp.md).
+Next: fresh world and the two-client GUI test (Round 30's is still open),
+the seed-dependent POI placement decision, then Round 32 (WP9).
+[Plan, completion and playtest checklist](docs/planning/round31-plan.md#completion-2026-10-03).
+
 **Round 30 complete locally, 2026-10-02 (not pushed).** "Performance and
 clean-up" from the [performance review](docs/research/perf-review-2026-10.md):
 the quest-state cache and the Map tab at most every 2 s (P1, with Return home
@@ -75,7 +88,7 @@ per-player ticks (P4: crafting index, crosshair, tag-carrier slots); a pier
 and a beach at the four dragon-island landings (L); the legacy quest fields
 removed, fixtures repaired and the Dawnmere NPC duplication fixed (C);
 band-4/5 loot smoothing with recomputed prices (E). Next: fresh world and
-GUI test, then Round 31 PvP.
+GUI test (still open).
 [Plan, completion and playtest checklist](docs/planning/round30-plan.md#completion-2026-10-02).
 
 **Round 29 complete and pushed, 2026-10-02** (tested by the user). "Economy
@@ -491,8 +504,8 @@ current state). It is **derived, never authoritative**:
   stats of three seeds; the coordinator also used six), `validate.py
   --game`, `ledger.py --track <race>`.
 - **Boats are water mounts** in `grug_mounts` (tiers 5 and 6 next to the
-  four riding tiers); **waystones** are a mapgen node at every start and
-  capital, travel goes through `grug_home/travel.lua` (one shared path with
+  four riding tiers); **waystones** are a mapgen node at every start,
+  capital and (since Round 31) PvP fortress, travel goes through `grug_home/travel.lua` (one shared path with
   home return and respawn; `waypoints.lua`, pure rules in
   `waypoints_core.lua`). Rules: [boats.md](docs/design/boats.md),
   [world.md](docs/design/world.md) §6.
@@ -529,6 +542,40 @@ current state). It is **derived, never authoritative**:
   coverage and corruption cases, `run.sh`; `p4` crafting index with the
   shipped recipe corpus, crosshair, carriers, flight sweep, farming; `l`
   island landings, `engine.sh`; `c` start-NPC duplication).
+
+### PvP, looks and fixtures (since Round 31)
+
+- **PvP is one flag per player** (`mods/PLAYER/grug_pvp`, rules in
+  [pvp.md](docs/design/pvp.md)): combat code asks `grug_pvp.can_harm` /
+  `can_support` and never changes PvP state; `grug_core` reaches it only
+  through the seams `grug_pvp` installs (`pvp_can_harm`, `pvp_hit_landed`).
+  The location is sampled once a second, never on the combat path. PvE
+  combat must not notice PvP: a change on the combat path reports the PvE
+  micro run before and after (`tools/r31_pvp/run.sh`).
+- **An NPC's faction decides whom it serves** (`grug_factions.serves` /
+  `refuse` in `grug_factions/service.lua`), never the place; map markers
+  carry the NPC's faction and settlement icons follow
+  `grug_map/settlement_icons.lua`.
+- **Looks:** a player's look is stored once (`grug_visuals.set_look`) and
+  never changes; NPCs roll theirs once (`_grug_look_seed`); a garrison
+  mixed by design asks `grug_visuals.npc_race` with `{mixed = true}`. New
+  look or enchant art comes from the generators
+  (`tools/wp13/gen_character_visuals.py`, `tools/r31_b/gen_enchant_masks.py
+  --check`).
+- **PvP POIs** are rules in `grug_mapgen/wp40/r31_pvp_catalog.lua` with
+  fixed anchors 101–118; garrisons come from
+  `grug_mobs/pvp_garrison.lua`. Whether POIs move to per-seed placement is
+  an open decision (BACKLOG).
+- **Fixtures:** `tools/run_fixtures.sh` runs every portable fixture
+  (`tools/*/portable_test.lua`, `tools/*/fixture.lua` with the repository
+  path) under LuaJIT and exits 1 on a failure; a new fixture takes the
+  repository path as `arg[1]` and exits non-zero on failure
+  ([tools/README.md](tools/README.md)). Round 31 fixtures and probes live in
+  `tools/r31_<lane>/` (`pvp` flag core and engine probe, `p2` PvP UI, `p1b`
+  support refusal and mount boxes, `n` faction filter, `c` clean-up, `a`
+  looks and `engine.sh`, `b` enchant colours, masks and `engine.sh`, `s`
+  PvP blueprints, `m` placement, `spacing_check.lua` and `engine.sh`, `g`
+  garrisons, `q` fortress quests and `run.sh`, `da2` dragon arenas).
 
 ## Task-specific implementation references
 

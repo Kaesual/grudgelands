@@ -221,7 +221,7 @@ Implement the player-centric deep spawn pulse of `biomes_mobs.md` §4.1. The Lan
 
 **Dependencies:** WP39 ✅, WP40 ✅. WP5 is not a prerequisite: WP41 only reserves the finish and Warding Draught hook points.
 
-**Status:** open; **V1 scope** (B4). Today hostile PvP is gated only by faction, everywhere, including peaceful home zones. The geography seam is delivered (`grug_zones.pvp_rule_at` with the y = −701 override, 12 contested zones), and so are the enemy-vendor and innkeeper refusals. No `grug_pvp` mod, tag or HUD exists.
+**Status:** **delivered in Round 31** (2026-10-03, [completion](round31-plan.md#completion-2026-10-03)) as a simpler design than the card below: a per-player flag (location, button, contact), PvP only between two flagged enemies, no tagging by attack ([pvp-plan.md](pvp-plan.md), rules as built in [pvp.md](../design/pvp.md)). The text below is the historical card; V1 scope (B4).
 
 PvP tag and geographic eligibility: implement exactly `world_zones.md` §15 through one `grug_pvp` seam across melee, authoritative swings, casts, AoE, projectiles, support and protected faction combatants; preserve the four-row peaceful transaction, contested forcing, y = −701 override, support/damage refresh rules, boundary snapshots, death/reconnect and UI states (tag, HUD, Target Frame icons), the dragon islands from the closed WP23 included. Coverage also includes what postdates the brief: mounts and flight, the Round 20 input contract, the 2026-09-28 combat-state model (`combat_stats.md` §5), the Scout and boats. The engineering brief `docs/research/wp41-engineering-brief.md` (2026-08-13) is stale in two places: its 25 % death-XP rule with a PvP exemption is gone (all deaths cost no XP, `progression.md` §3), and so is its Home Stone channel interruption (Round 25: the Claim Stone travel home replaced the channel, `world.md` §6)
 
@@ -229,7 +229,7 @@ PvP tag and geographic eligibility: implement exactly `world_zones.md` §15 thro
 
 **Dependencies:** WP13 ✅ (clash art, Round 20), WP40 ✅; WP41 optional.
 
-**Status:** open; **after V1** (B5): scripted NPC battles are post-V1 content, while small PvP POIs (forts and camps with NPCs) may come in V1. WP42 may ship before WP41 (B6), with war units treating enemy-faction players as hostile until the `grug_pvp` seam exists. All 16 clash anchors and their POI art exist; no war-unit runtime exists.
+**Status:** open; **after V1** (B5): scripted NPC battles are post-V1 content. The small PvP POIs shipped in Round 31 (a fortress per faction, 16 Battlegrounds camps with garrisons and quests; [pvp.md](../design/pvp.md) §6). All 16 clash anchors and their POI art exist; no war-unit runtime exists.
 
 Bounded war-front life: implement `world_zones.md` §16's sixteen clash anchors across eight activity zones, one matched four-vs-four clash per zone, deterministic 8–14-minute windows, activation/withdrawal caps, no catch-up/refill, exact targeting and player-involvement loot, with no capture or persistent border changes
 

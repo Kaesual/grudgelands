@@ -648,3 +648,18 @@ connect to a nearby street within 24 nodes, or to natural terrain within its
 eight-node collar when no street is nearby. Such natural connections retain
 the same slope and headroom requirements. Retaining walls elsewhere are allowed. These rules
 replace the prior no-outside-apron policy where it prevents access.
+
+## Round 31 PvP fortresses and war camps
+
+Anchors 101–118 add the two faction fortresses (49 × 49, stone curtain wall,
+one gate, keep, barracks, the Quartermaster's store, armoury, drill yard and
+waystone pad) and the 16 Battlegrounds camps (23 × 23 pickets and 27 × 27
+war camps: palisade, faction-cloth tents, a command tent and a shelter,
+watchtowers at the war camps), built by `wp40/r31_pvp_poi_blueprint.lua`. A
+fortress registers as its faction's seat race (human, orc); a camp rolls one
+race of its faction per world and builds in that race's materials. Their
+sockets hold the garrison (guard posts tagged gate, inner or camp; the
+General and his bodyguards; a camp's captain), three protected quest givers
+and a Quartermaster in a fortress, and the fortress waystone. Garrisons,
+levels and quests: [pvp.md](pvp.md) §6–§7; positions and protection:
+[world_zones.md](world_zones.md) §16.

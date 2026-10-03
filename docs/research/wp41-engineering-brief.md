@@ -1,5 +1,11 @@
 # WP41 Geographic PvP — Engineering Brief
 
+> **Historical (2026-10-03).** Round 31 shipped a different, simpler PvP
+> design (a per-player flag; no tagging by attack, no four-row transaction):
+> [pvp-plan.md](../planning/pvp-plan.md) and the rules as built in
+> [pvp.md](../design/pvp.md). Nothing below is a current contract; it stays
+> as the record of the earlier design.
+>
 > **Superseded in part (2026-09-29).** The current scope is the
 > [WP41 card](../planning/work-package-scopes.md#wp41) (V1). Two parts of
 > this brief no longer hold: the 25 % death-XP rule with a PvP exemption (all

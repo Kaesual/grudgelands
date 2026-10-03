@@ -4,7 +4,8 @@ Decided spec (2026-08-05/06; continent redesign 2026-08-06; named-zone
 redesign 2026-08-10; R6 camp quantity 2026-08-29), with later approved
 playtest revisions folded into the relevant sections. The current surface is
 the WP40 named-zone map. Structure delivery and outstanding content are tracked
-in BACKLOG WP13; the binding macro-map and PvP rules are in `world_zones.md`.
+in BACKLOG WP13; the binding macro-map is in `world_zones.md`, the PvP rules
+in [pvp.md](pvp.md).
 Planned travel, housing and depth mechanics below remain approved scope, not a
 claim that their work packages are complete.
 
@@ -94,8 +95,9 @@ faction front:
 | Offshore dragon islands | 60 | contested apex mining and world-boss destinations |
 | Capital city zones | no hostile ambient enemies | safe hubs; level-60 guards and important NPCs |
 
-No level-1–30 zone is contested. Automatic PvP begins in every level-31–40
-frontier zone and remains forced through all higher ordinary zones. The four
+No level-1–30 zone is contested. Every level-31–40 frontier zone and every
+higher ordinary zone is contested ground, which flags every player for PvP
+([pvp.md](pvp.md)). The four
 Battlegrounds zones provide the continuous mainland faction contact; both
 level-60 dragon zones are offshore islands without land-neighbor edges.
 Named zones and an authored within-zone gradient replace radial distance as
@@ -385,26 +387,22 @@ because of what the guard does, not because water damages a boat:
 The `open_sea_at` adapter is true only for `deep_ocean`; it is false for
 planned zone water, shelf and dragon channel (`world_zones.md` §13.3).
 
-## 2c. PvP geography and player tag
+## 2c. PvP geography and the flag
 
 Peaceful and contested status belongs to the named surface zone. No level
 1–30 surface zone is contested; every ordinary level-31–60 frontier,
 Battlegrounds and dragon-island zone is contested. Independently of the surface
-zone, every non-ocean land position at **y = −501 and below** is contested.
-Entering a contested zone automatically applies the player's PvP tag; an
-untagged player in a peaceful zone cannot receive unprovoked enemy-player
-damage.
+zone, every non-ocean land column at **y = −501 and below** (depth tier T4) is
+contested; T1–T3 under peaceful land stay peaceful. Deep ocean and the dragon
+channels are neither.
 
-An untagged peaceful-zone player who makes a server-valid hostile contact is
-tagged before resolution. Against an equally safe player that first effect is
-blocked; against an already tagged player it may land. Effective PvP
-HP/absorb damage and effective support of a tagged ally refresh the timer;
-misses, dodge, immunity and zero effect do not. Outside contested zones the
-tag lasts **60 seconds** after the last qualifying contact, death clears it,
-disconnect does not, and leaving contested ground starts a full tail. Every
-melee, cast, area and projectile path uses the central eligibility seam. Full
-transaction, boundary, lifecycle, visitor and HUD rules:
-`world_zones.md` §§4/15.
+Two enemy players can harm each other only while **both are flagged**
+(Round 31, WP41). Contested ground and enemy territory flag a player by
+location; the "Flag me for PvP" button and PvP contact flag for 60 s; only
+own peaceful land clears the location flag; death clears every flag. No
+attack, heal or area effect changes anyone's flag, and an unflagged enemy is
+no valid target. Rules, numbers, interface and the PvP fortresses and camps:
+[pvp.md](pvp.md); geography: `world_zones.md` §4.
 
 ## 3. Capitals
 
@@ -755,7 +753,7 @@ separate travel feature, part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B2;
 WP17).
 
-**Waypoint network** (Diablo/PoE model, decided 2026-08-06; built in Round 29,
+**Waypoint network** (the classic action-RPG model, decided 2026-08-06; built in Round 29,
 [travel plan](../planning/travel-boats-waypoints-plan.md) §1.1 "Waypoints"):
 
 - Waypoints: every race starting settlement, every capital and, since

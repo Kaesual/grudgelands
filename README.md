@@ -26,7 +26,7 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   protected places. Six starting towns and six capitals give each people
   its own home, architecture and surroundings.
 - **Quests and character progression.** Follow your starting town's stories,
-  help local inhabitants and take on stronger enemies. Nearly 500 quests
+  help local inhabitants and take on stronger enemies. More than 500 quests
   lead each people from its starting town through its homelands and the
   contested borderlands to the war front at level 60, with repeatable
   bounties, a journal, quest tracker, world atlas and minimap to help you
@@ -39,9 +39,14 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   vendors and save for a mount or a boat. Bind your home at an innkeeper so
   you can return after a journey, and travel between the waystones of your
   faction's towns.
-- **Adventure together.** Choose one of two factions and six peoples, then
-  form a party with up to ten players of your faction. Party health displays
-  and atlas markers help you stay together while exploring and fighting.
+- **Adventure together.** Choose one of two factions and six peoples, shape
+  your character's look, then form a party with up to ten players of your
+  faction. Party health displays and atlas markers help you stay together
+  while exploring and fighting.
+- **Fight the other faction when you choose to.** Contested lands and enemy
+  territory flag you for PvP, a button flags you anywhere, and only two
+  flagged players can harm each other. Each faction holds a fortress at the
+  front and sends its players to raid the enemy's war camps.
 
 The Accord and the Throng live on rival continents, divided by an old
 conflict. A rising threat beneath the world gives both sides something else
@@ -49,10 +54,20 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-10-02. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-10-03. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 31](docs/planning/round31-plan.md#completion-2026-10-03), "PvP,
+appearance and clean-up", is complete locally and awaits a two-player test
+on a fresh world. Players of the two factions can fight each other only when
+both are flagged: contested lands and enemy territory flag you, and a button
+flags you for a minute anywhere ([PvP rules](docs/design/pvp.md)). Each
+faction has a fortress near the Battlegrounds with a General, a waystone
+and quests to raid the enemy's war camps. You now choose your character's
+face, hair and features at creation, townsfolk and guards look different
+from each other, enchantments show as coloured accents on your gear, and
+both dragons fight in round arenas with ice or ember hazards.
 [Round 30](docs/planning/round30-plan.md#completion-2026-10-02), "Performance
 and clean-up", is complete locally and awaits a playtest on a fresh world.
 Quest markers, the world map, the minimap, crafting and the crosshair cost
@@ -120,24 +135,25 @@ longer-term balancing remain ongoing. A [startup correction](docs/research/round
 fixes the new fish registration and native arrow recipe binding; isolated server
 startup and the 200-arrow Basics recipe are verified.
 
-The full geographic PvP system and the war-front battles are still
-unfinished, and the main story from level 41 to 60 with its finale is still
-to come on top of the front quests.
+The scripted war-front battles are still unfinished, and the main story
+from level 41 to 60 with its finale is still to come on top of the front
+quests.
 
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 42 of 54 tracked work-package identities are complete, 3 are
-canceled and 9 are open, several with playable portions (after the
+**Delivered:** 43 of 54 tracked work-package identities are complete, 3 are
+canceled and 8 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 30](docs/planning/round30-plan.md#completion-2026-10-02)
-(the performance lanes from the
-[performance review](docs/research/perf-review-2026-10.md), the island
-landings and a clean-up), independently reviewed and merged locally; Round
-29 is the latest pushed state and Round 24 the latest formally accepted one.
+[Round 31](docs/planning/round31-plan.md#completion-2026-10-03)
+(geographic PvP with the fortresses and war camps, character looks,
+enchant colours, the dragon arenas and a clean-up), independently reviewed
+and merged locally, after Round 30 (performance); Round 29 is the latest
+pushed state and Round 24 the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 31](docs/planning/round31-plan.md#gui-playtest-checklist),
 [Round 30](docs/planning/round30-plan.md#playtest-checklist),
 [Round 29](docs/planning/round29-plan.md#playtest-checklist),
 [Round 28](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
@@ -145,20 +161,20 @@ landings and a clean-up), independently reviewed and merged locally; Round
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 playtests remain separate.
 
-**Ready for further work:** the first release still needs geographic PvP
-and the main story from level 41 to 60 with its finale. Next is Round 31,
-geographic PvP with enemy-guard quests and small PvP points of interest,
-then Round 32, the main story from level 41 to 60. A design pass on the
-dragon arenas is also queued. Crafting finishes and masterwork and the deep
-spawn pulse follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
+**Ready for further work:** the first release still needs the main story
+from level 41 to 60 with its finale (Round 32). Before it, the user decides
+whether points of interest stay at fixed positions or are placed per world.
+An enchantment and item-level revision, crafting finishes and masterwork and
+the deep spawn pulse follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 30 needs a fresh world. Quests cannot yet ask you to
-fight enemy guards or players. The confusing Cooking feedback now has a distinct success message;
+**Caveats:** Round 31 needs a fresh world. Quests never ask you to kill
+players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. A measured many-player performance pass and first-release validation
 are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round30-plan.md#playtest-checklist),
+the [latest playtest checklist](docs/planning/round31-plan.md#gui-playtest-checklist),
+the [Round 30 checklist](docs/planning/round30-plan.md#playtest-checklist),
 the [Round 29 checklist](docs/planning/round29-plan.md#playtest-checklist),
 the [Round 28 checklist](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
 the [Round 27 checklist](docs/planning/round27-minimap-plan.md#playtest-checklist),
@@ -173,7 +189,7 @@ The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
 - **Toward the first release:** the main story up to level 60 and its
-  finale, and geographic PvP. Performance with many players, balance and
+  finale. Performance with many players, balance and
   reliable everyday play are part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
   creatures and terrain, and scripted faction clashes on the war front. Other
@@ -272,7 +288,7 @@ investigations and delivery records.
 | Area | Design documents |
 |------|------------------|
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
-| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [visuals](docs/design/character_visuals.md): peoples and equipment appearance. |
+| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples and equipment appearance. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
