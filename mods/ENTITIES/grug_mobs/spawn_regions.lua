@@ -856,8 +856,8 @@ function SR.attempt(player_pos, players, clock, roll_angle, roll_dist)
 	return count("spawned")
 end
 
--- The camps of every built map (camps.lua ticks their slots).
--- The camps of `zone_ids` (default: every zone).
+-- The camps of the built maps of `zone_ids`, default every zone (camps.lua
+-- ticks their slots).
 function SR.camp_units(zone_ids)
 	local out = {}
 	for _, zone_id in ipairs(zone_ids or SR.zone_ids()) do
