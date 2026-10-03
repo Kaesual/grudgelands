@@ -37,31 +37,21 @@ this increment: against the opaque regions of `character.png`, and by parsing
 the mesh's own bone tree (`Body / Head / Arm_Left / Arm_Right / Leg_Right /
 Leg_Left`).
 
-### Race skins
-
-Full-body base layers. Face, hair mass and dress differ per race so a character
-is readable before the stature scale is applied.
-
-| File | Author | License | Notes |
-|------|--------|---------|-------|
-| `grug_visuals_skin_human.png` | Grudgelands project | CC0 1.0 | generator, palette `human`: tan skin, brown crop, blue-grey tunic, leather boots |
-| `grug_visuals_skin_dwarf.png` | Grudgelands project | CC0 1.0 | generator, palette `dwarf`: ruddy skin, ginger beard painted into the hat layer, green tunic, brass belt |
-| `grug_visuals_skin_elf.png` | Grudgelands project | CC0 1.0 | generator, palette `elf`: ivory skin, long pale hair over the whole hat layer, pointed ears, silver-green dress |
-| `grug_visuals_skin_undead.png` | Grudgelands project | CC0 1.0 | generator, palette `undead`: grey-green pallor, sunken sockets with a sickly glow colour, ribs showing through a torn violet wrap, patchy scalp |
-| `grug_visuals_skin_orc.png` | Grudgelands project | CC0 1.0 | generator, palette `orc`: green skin, tusks, black topknot, bare chest under a leather harness, bone armbands |
-| `grug_visuals_skin_troll.png` | Grudgelands project | CC0 1.0 | generator, palette `troll`: blue-grey hide, tusks, dark blue mane, ochre wraps |
-
 ### Character look layers (Round 31)
 
-The body features a character is created with (round31-plan.md §2.1), split
-out of the race skins above into layers: a white mask the engine colours with
-`^[multiply:<colour>` plus a detail layer with the shading and the
-fixed-colour pixels (the technique of VoxeLibre's `mcl_skins`; none of its
-art). Same generator, same seed, same licence; the option tables that name
-these files are `looks.lua`.
+Every humanoid of a race is drawn from these layers (round31-plan.md §2.1):
+a white mask the engine colours with `^[multiply:<colour>` plus a detail layer
+with the shading and the fixed-colour pixels (the technique of VoxeLibre's
+`mcl_skins`; none of its art), the race's one dress in its body file, and the
+royal tabard and crown of kings and their guards. The option tables and royal
+colours that name these files are `looks.lua`.
 
 | File | Author | License | Notes |
 |------|--------|---------|-------|
+| `grug_visuals_crown.png` | Grudgelands project | CC0 1.0 | generator, a king's gold crown on the hat layer, above the eyes (the Round 8 crown's colours) |
+| `grug_visuals_tabard.png` | Grudgelands project | CC0 1.0 | generator, royal tabard detail: darker hem and a gold emblem |
+| `grug_visuals_tabard_mask.png` | Grudgelands project | CC0 1.0 | generator, royal tabard panels front and back, white mask coloured with the race's royal cloth colour |
+| `grug_visuals_tabard_trim_mask.png` | Grudgelands project | CC0 1.0 | generator, royal tabard trim band round the waist, white mask coloured with the race's royal trim colour |
 | `grug_visuals_dwarf_body.png` | Grudgelands project | CC0 1.0 | generator, palette `dwarf`: face, skin shading and the race dress, drawn over the toned skin mask |
 | `grug_visuals_dwarf_feature_braided_mask.png` | Grudgelands project | CC0 1.0 | generator, lower-face feature `braided` of the dwarf, white mask coloured in the engine |
 | `grug_visuals_dwarf_feature_braided.png` | Grudgelands project | CC0 1.0 | generator, lower-face feature `braided` of the dwarf: shading and fixed-colour detail |

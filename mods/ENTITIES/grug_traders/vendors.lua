@@ -46,7 +46,8 @@
 -- APPEARANCE (WP13 character visuals): a vendor wears its own race's dress and
 -- carries nothing — a shopkeeper with a sword reads as a guard. The six race
 -- vendors take their race straight from the registry entry they were built
--- from; the two faction Quartermasters take the founding race of their side.
+-- from; a profession vendor and a Quartermaster are of the settlement they
+-- stand in (round31-plan.md §2.1.6). Every vendor rolls its own look once.
 -- The guard skins below stay as the definition's textures, which is what a
 -- build without grug_visuals falls back to.
 
@@ -182,9 +183,9 @@ local function install_nametag(self, text)
 	end
 end
 
--- The race a faction Quartermaster is drawn as. Only the two general vendors
--- need it; a race vendor carries its own `race` field.
-local VENDOR_FACTION_RACE = {accord = "human", throng = "orc"}
+-- The race a profession vendor outside every settlement is drawn as (none is
+-- placed there today; it keeps the draw total).
+local FALLBACK_RACE = "human"
 
 --
 -- WHAT RACE A PROFESSION VENDOR IS DRAWN AS (WP13 round 3). The twelve
@@ -210,25 +211,46 @@ end
 -- `core.add_entity` activates the entity synchronously, so `after_activate`
 -- above -- and with it `grug_visuals.apply_entity` -- has already run by the
 -- time `grug_mobs/start_npcs.lua`'s `install` writes `_grug_start`. For the
--- six race vendors and the two Quartermasters that is harmless, because their
--- race is a property of the entity; for a PROFESSION vendor, whose race is a
--- property of the SETTLEMENT, it meant the first placement composed the Accord
--- fallback and the butcher stood in Hearthpine as a human until the first
--- reload. Found by the review of playtest round 3.
+-- six race vendors that is harmless, because their race is a property of the
+-- entity; for a PROFESSION vendor or a Quartermaster, whose race is a property
+-- of the SETTLEMENT, it meant the first placement composed the fallback and the
+-- butcher stood in Hearthpine as a human until the first reload. Found by the
+-- review of playtest round 3.
 --
 -- Registered into the placement engine's restyle list, which exists for
 -- exactly this class of ordering problem; `apply_entity` compares
 -- `_grug_visual_skin` and does nothing when the composed skin is already
--- right, so this is free for every vendor that is not a profession.
+-- right. The rolled look is kept, so the redraw changes only the race.
 --
+-- The race a vendor is drawn as: a race vendor's own; a Quartermaster's the
+-- settlement's, else one rolled from its faction and kept
+-- (grug_visuals.npc_race); a profession vendor's the settlement's.
+local function vendor_race(vendor, entity)
+	if vendor.race then
+		return vendor.race
+	elseif vendor.faction then
+		return grug_visuals.npc_race(entity, vendor.faction)
+	end
+	return settlement_race(entity) or FALLBACK_RACE
+end
+
+-- The spec builder `apply_entity` takes: a look can depend on the entity it is
+-- applied to (grug_visuals/apply.lua `mob_visual`), and every vendor rolls
+-- its own look once (grug_visuals.npc_look).
+local function vendor_visual(vendor)
+	return function(entity)
+		local race = vendor_race(vendor, entity)
+		return {race = race, look = grug_visuals.npc_look(entity, race)}
+	end
+end
+
 function grug_traders.restyle_socket_vendor(entity)
 	if type(entity) ~= "table" then return end
 	local vendor = grug_traders.vendors[entity.name]
 	-- Only the families whose look depends on where they stand.
-	if not vendor or vendor.race or vendor.faction then return end
+	if not vendor or vendor.race then return end
 	if not core.global_exists("grug_visuals") then return end
-	grug_visuals.apply_entity(entity, {race = settlement_race(entity) or
-		VENDOR_FACTION_RACE.accord})
+	grug_visuals.apply_entity(entity, vendor_visual(vendor))
 end
 
 -- Keep the static vendor out of mobs_redo's otherwise useless state pass.
@@ -237,15 +259,7 @@ local function vendor_tick()
 end
 
 local function vendor_def(vendor, texture)
-	local fixed_race = vendor.race or VENDOR_FACTION_RACE[vendor.faction]
-	-- A FUNCTION, not a table, for the professions: `apply_entity` accepts a
-	-- spec builder precisely so a look can depend on the entity it is applied
-	-- to (grug_visuals/apply.lua `mob_visual`), and a profession vendor's race
-	-- is a property of where it is standing.
-	local visual = fixed_race and {race = fixed_race} or function(entity)
-		return {race = settlement_race(entity) or
-			VENDOR_FACTION_RACE.accord}
-	end
+	local visual = vendor_visual(vendor)
 	return {
 		description = vendor.nametag,
 		-- NO `nametag` FIELD: visible text belongs to the carrier, and the

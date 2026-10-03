@@ -241,6 +241,44 @@ local function player_entry(name)
 	return entry
 end
 
+--
+-- THE STORED LOOK (round31-plan.md §2.1.5). Written ONCE, by the look step at
+-- the end of character creation (creation.lua), and never again: there is no
+-- command and no wardrobe. The indices are read against the character's race
+-- at draw time, so an admin `/race` switch keeps a valid look. A character
+-- without one is drawn with option 1 everywhere.
+--
+local META_LOOK = "grug_visuals:look"
+
+function grug_visuals.has_look(player)
+	return player:get_meta():get_string(META_LOOK) ~= ""
+end
+
+function grug_visuals.get_look(player)
+	local race = grug_classes.get_race(player)
+	if not race then
+		return nil
+	end
+	return grug_visuals.parse_look(race, player:get_meta():get_string(META_LOOK))
+end
+
+-- Stores `look` for good and redraws the character. False when a look is
+-- already stored (immutable) or there is no race to read it against.
+function grug_visuals.set_look(player, look)
+	local meta = player:get_meta()
+	if meta:get_string(META_LOOK) ~= "" then
+		return false
+	end
+	local race = grug_classes.get_race(player)
+	local normal = race and grug_visuals.normalize_look(race, look)
+	if not normal then
+		return false
+	end
+	meta:set_string(META_LOOK, grug_visuals.look_string(normal))
+	grug_visuals.apply(player)
+	return true
+end
+
 -- What this player currently IS, in compose's vocabulary.
 function grug_visuals.player_spec(player)
 	local armor, armor_broken = {}, {}
@@ -258,6 +296,7 @@ function grug_visuals.player_spec(player)
 	local weapon = grug_inventory.get_cosmetic_weapon(player)
 	return {
 		race = grug_classes.get_race(player),
+		look = grug_visuals.get_look(player),
 		armor = armor, armor_broken = armor_broken,
 		weapon = weapon and weapon:get_name() or nil,
 	}
@@ -409,6 +448,49 @@ grug_core.register_on_equipment_change(function(player, listname)
 	end
 	grug_visuals.apply(player)
 end)
+
+--
+-- NPC races (round31-plan.md §2.1.6, pvp-plan §6). An NPC in a settlement is
+-- drawn as that settlement's race: its key (`_grug_start`, written by the
+-- placement engine) answers through the socket registry, the one authority on
+-- which race a settlement belongs to. Anybody else of a faction -- an outpost
+-- guard, a fortress guard -- rolls a race of that faction ONCE and keeps it in
+-- `_grug_visual_race` (the bandit's field), saved with the entity.
+--
+-- The settlement index is built on first use and rebuilt on a miss, because a
+-- capital registers its settlement after load.
+--
+local settlement_races = {}
+
+function grug_visuals.settlement_race(key)
+	if type(key) ~= "string" then
+		return nil
+	end
+	if settlement_races[key] == nil then
+		for _, row in ipairs(grug_core.settlement_socket_settlements()) do
+			settlement_races[row.key] = row.race_id
+		end
+	end
+	return settlement_races[key]
+end
+
+function grug_visuals.npc_race(entity, faction, random)
+	local race = grug_visuals.settlement_race(entity._grug_start)
+	if race and grug_visuals.RACES[race] ~= nil then
+		return race
+	end
+	race = entity._grug_visual_race
+	if type(race) == "string" and grug_visuals.RACES[race] ~= nil then
+		return race
+	end
+	local races = grug_classes.race_ids[faction]
+	if not races or #races == 0 then
+		return grug_visuals.FALLBACK_RACE
+	end
+	race = races[(random or math.random)(#races)]
+	entity._grug_visual_race = race
+	return race
+end
 
 --
 -- Mobs and other humanoid entities (contract §2). The definition field

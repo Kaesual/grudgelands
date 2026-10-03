@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Generate the WP13 character-visuals art: six race skins and eight armor
-overlays for `character.b3d`, the Round 31 look layers (skin tone, eyes,
-hairstyles and lower-face features as engine-coloured masks plus detail, see
-mods/PLAYER/grug_visuals/looks.lua), plus optional review composites.
+"""Generate the character-visuals art for `character.b3d`: the look layers
+(round31-plan.md §2.1 -- skin, the race dress, eyes, hairstyles and lower-face
+features as engine-coloured masks plus detail, see
+mods/PLAYER/grug_visuals/looks.lua), the royal tabard and crown, the helmet
+face window and the eight WP13 armor overlays.
 
 All art is original work of this project (CC0 1.0, the licence every other
 own-art mod in this tree uses -- see mods/PLAYER/grug_visuals/LICENSE-media.md)
@@ -17,10 +18,10 @@ again here by parsing the mesh: bones Body/Head/Arm_Left/Arm_Right/Leg_Right/
 Leg_Left, and the opaque regions of `character.png` land exactly on the boxes
 below).
 
-    python3 tools/wp13/gen_character_visuals.py                # write textures
-    python3 tools/wp13/gen_character_visuals.py --renders DIR  # + composites
+    python3 tools/wp13/gen_character_visuals.py
 
-Requires Pillow. No game runtime, no engine.
+Requires Pillow. No game runtime, no engine. Pictures of composed looks:
+tools/r31_a/preview.py.
 """
 import argparse
 import random
@@ -102,213 +103,45 @@ class Paint:
 
 
 # --------------------------------------------------------------------------
-# Race palettes. Six clearly separated silhouettes-by-colour: skin hue, hair
-# mass and dress colour all differ, so a race is readable at hotbar distance
-# even before the stature scale is applied.
+# Race dress palettes: the one dress each people wears under any armour, so a
+# race stays readable at a distance. Skin, hair and eye colours are options of
+# a look and live in looks.lua; they are not baked into any file.
 # --------------------------------------------------------------------------
 RACES = {
     "human": dict(
-        skin=(224, 176, 140), skin_d=(190, 142, 108), skin_l=(240, 202, 170),
-        hair=(96, 60, 34), hair_d=(66, 40, 22),
         cloth=(78, 96, 132), cloth_d=(56, 70, 100), cloth_l=(106, 126, 162),
         trouser=(88, 70, 52), trouser_d=(62, 48, 36),
         boot=(62, 46, 32), boot_d=(40, 28, 20),
-        accent=(170, 142, 84), eye=(42, 60, 98),
-        style="short_hair", bare_chest=False, tusks=False),
+        accent=(170, 142, 84), bare_chest=False, undead=False),
     "dwarf": dict(
-        skin=(216, 160, 124), skin_d=(180, 126, 94), skin_l=(236, 188, 156),
-        hair=(196, 90, 44), hair_d=(148, 60, 28),
         cloth=(74, 104, 74), cloth_d=(52, 78, 52), cloth_l=(100, 132, 98),
         trouser=(92, 72, 48), trouser_d=(66, 50, 32),
         boot=(66, 46, 30), boot_d=(44, 30, 18),
-        accent=(194, 158, 74), eye=(74, 46, 22),
-        style="beard", bare_chest=False, tusks=False),
+        accent=(194, 158, 74), bare_chest=False, undead=False),
     "elf": dict(
-        skin=(238, 222, 200), skin_d=(210, 190, 166), skin_l=(252, 242, 228),
-        hair=(228, 216, 168), hair_d=(188, 174, 126),
         cloth=(104, 132, 108), cloth_d=(74, 100, 78), cloth_l=(138, 166, 140),
         trouser=(96, 112, 96), trouser_d=(70, 86, 70),
         boot=(78, 66, 50), boot_d=(54, 44, 32),
-        accent=(200, 208, 182), eye=(108, 152, 120),
-        style="long_hair", bare_chest=False, tusks=False),
+        accent=(200, 208, 182), bare_chest=False, undead=False),
     "undead": dict(
-        skin=(150, 164, 140), skin_d=(114, 128, 106), skin_l=(180, 192, 170),
-        hair=(88, 82, 94), hair_d=(60, 56, 66),
         cloth=(78, 64, 92), cloth_d=(54, 44, 66), cloth_l=(104, 88, 120),
         trouser=(64, 60, 66), trouser_d=(44, 42, 48),
         boot=(52, 46, 46), boot_d=(32, 28, 28),
-        accent=(200, 194, 172), eye=(198, 222, 112),
-        style="patchy", bare_chest=False, tusks=False),
+        accent=(200, 194, 172), bare_chest=False, undead=True),
     "orc": dict(
-        skin=(108, 148, 72), skin_d=(78, 114, 50), skin_l=(140, 178, 100),
-        hair=(34, 32, 36), hair_d=(20, 18, 22),
         cloth=(110, 76, 44), cloth_d=(80, 54, 30), cloth_l=(138, 100, 64),
         trouser=(74, 60, 44), trouser_d=(52, 42, 30),
         boot=(58, 42, 28), boot_d=(36, 26, 16),
-        accent=(178, 152, 112), eye=(208, 72, 48),
-        style="topknot", bare_chest=True, tusks=True),
+        accent=(178, 152, 112), bare_chest=True, undead=False),
     "troll": dict(
-        skin=(96, 132, 150), skin_d=(68, 100, 118), skin_l=(128, 164, 180),
-        hair=(46, 58, 96), hair_d=(30, 40, 70),
         cloth=(176, 140, 72), cloth_d=(142, 110, 50), cloth_l=(202, 172, 110),
         trouser=(120, 96, 60), trouser_d=(90, 70, 44),
         boot=(78, 62, 40), boot_d=(52, 40, 26),
-        accent=(228, 222, 198), eye=(238, 196, 76),
-        style="mane", bare_chest=True, tusks=True),
+        accent=(228, 222, 198), bare_chest=True, undead=False),
 }
 
 TUSK = (236, 230, 206)
 EYE_WHITE = (238, 240, 232)
-
-
-# --------------------------------------------------------------------------
-# Race skin
-# --------------------------------------------------------------------------
-def paint_head(p, c):
-    for face in SIDES:
-        p.fill(HEAD[face], c["skin"])
-        p.speckle(HEAD[face], c["skin_d"], c["skin_l"], 0.08)
-        p.edges(HEAD[face], c["skin_d"])
-    p.fill(HEAD["top"], c["skin"])
-    p.fill(HEAD["bottom"], c["skin_d"])
-
-    f = HEAD["front"]
-    # Brow, eyes, nose, mouth. Rows are counted inside the 8x8 face.
-    p.row(f, 2, c["skin_d"], 1, 6)
-    for ex in (1, 5):
-        p.box(f[0] + ex, f[1] + 3, 2, 2, EYE_WHITE)
-    p.box(f[0] + 2, f[1] + 3, 1, 2, c["eye"])
-    p.box(f[0] + 5, f[1] + 3, 1, 2, c["eye"])
-    p.box(f[0] + 3, f[1] + 4, 2, 2, c["skin_d"])
-    p.row(f, 6, c["skin_d"], 2, 4)
-    if c["tusks"]:
-        p.box(f[0] + 1, f[1] + 5, 1, 2, TUSK)
-        p.box(f[0] + 6, f[1] + 5, 1, 2, TUSK)
-    if c["style"] == "patchy":
-        # Sunken sockets instead of a brow: the pallid look needs the shadow.
-        p.box(f[0] + 1, f[1] + 2, 2, 1, c["skin_d"])
-        p.box(f[0] + 5, f[1] + 2, 2, 1, c["skin_d"])
-        p.box(f[0] + 2, f[1] + 3, 1, 1, c["eye"])
-        p.box(f[0] + 5, f[1] + 3, 1, 1, c["eye"])
-
-
-def paint_hair(p, c):
-    style = c["style"]
-    hair, dark = c["hair"], c["hair_d"]
-    if style == "short_hair":
-        p.fill(HAT["top"], hair)
-        for face in ("right", "left", "back"):
-            p.box(HAT[face][0], HAT[face][1], 8, 4, hair)
-        p.box(HAT["front"][0], HAT["front"][1], 8, 2, hair)
-        p.row(HAT["front"], 2, dark, 0, 8)
-    elif style == "long_hair":
-        p.fill(HAT["top"], hair)
-        for face in ("right", "left"):
-            p.box(HAT[face][0], HAT[face][1], 8, 8, hair)
-        p.fill(HAT["back"], hair)
-        p.box(HAT["front"][0], HAT["front"][1], 8, 2, hair)
-        p.row(HAT["front"], 2, dark, 0, 8)
-        # Pointed ears: the one silhouette cue the hat layer can carry.
-        p.box(HAT["right"][0] + 5, HAT["right"][1] + 3, 2, 1, c["skin_l"])
-        p.box(HAT["left"][0] + 1, HAT["left"][1] + 3, 2, 1, c["skin_l"])
-    elif style == "beard":
-        p.fill(HAT["top"], hair)
-        for face in ("right", "left", "back"):
-            p.fill(HAT[face], hair)
-        # Face: a brow fringe on top, a full beard below, eyes left clear.
-        p.box(HAT["front"][0], HAT["front"][1], 8, 2, hair)
-        p.box(HAT["front"][0], HAT["front"][1] + 5, 8, 3, hair)
-        p.box(HAT["front"][0] + 3, HAT["front"][1] + 5, 2, 1, dark)
-        p.box(HAT["right"][0] + 4, HAT["right"][1] + 4, 4, 4, hair)
-        p.box(HAT["left"][0], HAT["left"][1] + 4, 4, 4, hair)
-    elif style == "topknot":
-        p.box(HAT["top"][0] + 3, HAT["top"][1], 2, 8, hair)
-        p.box(HAT["back"][0] + 3, HAT["back"][1], 2, 6, hair)
-        p.box(HAT["back"][0] + 3, HAT["back"][1], 2, 1, dark)
-    elif style == "mane":
-        p.fill(HAT["top"], hair)
-        p.fill(HAT["back"], hair)
-        for face in ("right", "left"):
-            p.box(HAT[face][0], HAT[face][1], 8, 3, hair)
-        p.box(HAT["front"][0], HAT["front"][1], 8, 1, dark)
-    elif style == "patchy":
-        # Torn scalp: a few strands, nothing on the face.
-        for cx in (0, 2, 5, 7):
-            p.box(HAT["top"][0] + cx, HAT["top"][1], 1, 8, hair)
-        p.box(HAT["back"][0] + 1, HAT["back"][1], 1, 4, hair)
-        p.box(HAT["back"][0] + 5, HAT["back"][1], 1, 5, dark)
-
-
-def paint_torso(p, c):
-    for face in SIDES:
-        p.fill(TORSO[face], c["cloth"])
-        p.speckle(TORSO[face], c["cloth_d"], c["cloth_l"], 0.10)
-        p.edges(TORSO[face], c["cloth_d"])
-    p.fill(TORSO["top"], c["cloth_l"])
-    p.fill(TORSO["bottom"], c["trouser_d"])
-    # Collar (the neck opening) and belt.
-    p.row(TORSO["front"], 0, c["skin_d"], 2, 4)
-    for face in SIDES:
-        p.row(TORSO[face], 8, c["trouser_d"])
-        p.row(TORSO[face], 9, c["trouser_d"])
-    p.box(TORSO["front"][0] + 3, TORSO["front"][1] + 8, 2, 2, c["accent"])
-    if c["bare_chest"]:
-        # Harness instead of a shirt: chest and back skin, two straps.
-        p.box(TORSO["front"][0] + 1, TORSO["front"][1] + 1, 6, 7, c["skin"])
-        p.speckle((TORSO["front"][0] + 1, TORSO["front"][1] + 1, 6, 7),
-                  c["skin_d"], c["skin_l"], 0.10)
-        p.box(TORSO["back"][0] + 1, TORSO["back"][1] + 1, 6, 7, c["skin"])
-        p.box(TORSO["front"][0] + 2, TORSO["front"][1] + 1, 1, 7, c["cloth_d"])
-        p.box(TORSO["front"][0] + 5, TORSO["front"][1] + 1, 1, 7, c["cloth_d"])
-        p.box(TORSO["back"][0] + 3, TORSO["back"][1] + 1, 2, 7, c["cloth_d"])
-    if c["style"] == "patchy":
-        # Ribs showing through a torn wrap.
-        for r in (2, 4, 6):
-            p.row(TORSO["front"], r, c["skin_d"], 1, 6)
-            p.row(TORSO["back"], r, c["cloth_d"], 1, 6)
-
-
-def paint_arms(p, c):
-    bare = c["bare_chest"]
-    for face in SIDES:
-        region = ARM[face]
-        if bare:
-            p.fill(region, c["skin"])
-            p.speckle(region, c["skin_d"], c["skin_l"], 0.08)
-            p.box(region[0], region[1] + 2, region[2], 2, c["accent"])
-        else:
-            p.fill(region, c["cloth"])
-            p.speckle(region, c["cloth_d"], c["cloth_l"], 0.10)
-            p.box(region[0], region[1] + 6, region[2], 6, c["skin"])
-            p.box(region[0], region[1] + 6, region[2], 1, c["skin_d"])
-        p.box(region[0], region[1] + 10, region[2], 2, c["skin_d"])
-        p.edges(region, c["skin_d"] if bare else c["cloth_d"])
-    p.fill(ARM["top"], c["skin"] if bare else c["cloth_l"])
-    p.fill(ARM["bottom"], c["skin_d"])
-
-
-def paint_legs(p, c):
-    for face in SIDES:
-        region = LEG[face]
-        p.fill(region, c["trouser"])
-        p.speckle(region, c["trouser_d"], c["cloth_l"], 0.08)
-        p.box(region[0], region[1] + 8, region[2], 4, c["boot"])
-        p.box(region[0], region[1] + 8, region[2], 1, c["boot_d"])
-        p.edges(region, c["trouser_d"])
-    p.fill(LEG["top"], c["trouser_d"])
-    p.fill(LEG["bottom"], c["boot_d"])
-
-
-def race_skin(race):
-    c = RACES[race]
-    image = canvas()
-    p = Paint(image, SEED + sum(ord(ch) for ch in race))
-    paint_head(p, c)
-    paint_hair(p, c)
-    paint_torso(p, c)
-    paint_arms(p, c)
-    paint_legs(p, c)
-    return image
 
 
 # --------------------------------------------------------------------------
@@ -449,9 +282,9 @@ OVERLAYS = {"head": overlay_head, "chest": overlay_chest,
 
 
 # --------------------------------------------------------------------------
-# Round 31 appearance layers (round31-plan.md §2.1). The race skin above is
-# split into what a player chooses: a skin TONE, EYES, a HAIRSTYLE in a hair
-# colour, and the race's lower-face FEATURE. Colours are NOT baked in: a
+# Round 31 appearance layers (round31-plan.md §2.1). A character is what a
+# player chooses: a skin TONE, EYES, a HAIRSTYLE in a hair colour, and the
+# race's lower-face FEATURE, over the race's one dress. Colours are NOT baked in: a
 # colourable layer is a white MASK the engine colours with `^[multiply:<c>`,
 # plus a DETAIL layer on top with the shading (semi-transparent black and
 # white) and the fixed-colour pixels -- the mcl_skins technique, our own art.
@@ -563,7 +396,7 @@ def layer_body(race):
     c = RACES[race]
     image = canvas()
     p = Paint(image, SEED + 100 + sum(ord(ch) for ch in race))
-    undead = c["style"] == "patchy"
+    undead = c["undead"]
 
     # Head: shading, then the face.
     for face in SIDES:
@@ -1085,6 +918,49 @@ FEATURES = {
 }
 
 
+# --- royal attire: a tabard in the race's colours and a king's crown -------
+# The tabard is two masks (cloth panel, trim band) the engine colours with the
+# race's royal colours (looks.lua ROYAL) plus a detail layer (the darker hem,
+# a gold emblem). The crown is fixed colour, on the hat layer, above the eyes.
+GOLD = (232, 184, 58, 255)
+GOLD_D = (150, 104, 28, 255)
+GEM = (116, 220, 238, 255)
+
+
+def layer_tabard():
+    l = Layer(0)
+    trim = canvas()
+    t = trim.load()
+    for face in ("front", "back"):
+        l.box(TORSO[face], 2, 0, 4, 12)
+        l.dot(TORSO[face], 2, 9, 4, 3, (0, 0, 0, 64))
+    for face in SIDES:
+        x, y = TORSO[face][0], TORSO[face][1]
+        for i in range(TORSO[face][2]):
+            t[x + i, y + 7] = (255, 255, 255, 255)
+    for dx, dy in ((3, 3), (4, 4), (5, 3)):
+        l.dot(TORSO["front"], dx, dy, 1, 1, GOLD)
+    return l.mask, trim, l.detail
+
+
+def layer_crown():
+    image = canvas()
+    p = Paint(image, 0)
+    for face in SIDES:
+        x, y = HAT[face][0], HAT[face][1]
+        p.box(x, y + 1, 8, 1, GOLD)
+        p.box(x, y + 2, 8, 1, GOLD_D)
+        for dx in (0, 3, 4, 7):
+            p.box(x + dx, y, 1, 1, GOLD)
+    x, y = HAT["top"][0], HAT["top"][1]
+    for i in range(8):
+        for j in (0, 7):
+            p.box(x + i, y + j, 1, 1, GOLD_D)
+            p.box(x + j, y + i, 1, 1, GOLD_D)
+    p.box(HAT["front"][0] + 3, HAT["front"][1] + 1, 2, 1, GEM)
+    return image
+
+
 def has_pixels(image):
     return image.getbbox() is not None
 
@@ -1095,7 +971,10 @@ def build_layers():
     out = {"grug_visuals_skin_mask.png": layer_skin_mask(),
            "grug_visuals_eyes_mask.png": layer_eyes(False),
            "grug_visuals_eyes_undead_mask.png": layer_eyes(True),
-           "grug_visuals_helmet_window.png": layer_helmet_window()}
+           "grug_visuals_helmet_window.png": layer_helmet_window(),
+           "grug_visuals_crown.png": layer_crown()}
+    (out["grug_visuals_tabard_mask.png"], out["grug_visuals_tabard_trim_mask.png"],
+     out["grug_visuals_tabard.png"]) = layer_tabard()
     for race in sorted(RACES):
         out["grug_visuals_%s_body.png" % race] = layer_body(race)
         salt = sum(ord(ch) for ch in race)
@@ -1172,41 +1051,6 @@ def check_layer_alpha(layers):
     return problems
 
 
-# --------------------------------------------------------------------------
-# Review composites: a flat front paper doll, because nobody in this lane can
-# open the game and look at the mesh.
-# --------------------------------------------------------------------------
-def paper_doll(layers, scale=8, side="front"):
-    """layers: list of RGBA 64x32 images, composited in order.
-
-    `side` is "front" or "back". The back view exists because the front one
-    cannot answer "what does a guard look like from behind" -- the question a
-    reviewer asked of the chest overlay, and the one a flat front doll is
-    structurally unable to show.
-    """
-    flat = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    for layer in layers:
-        flat = Image.alpha_composite(flat, layer)
-    doll = Image.new("RGBA", (16, 32), (0, 0, 0, 0))
-
-    def blit(src_region, dx, dy, mirror=False):
-        x, y, w, h = src_region
-        part = flat.crop((x, y, x + w, y + h))
-        if mirror:
-            part = part.transpose(Image.FLIP_LEFT_RIGHT)
-        doll.alpha_composite(part, (dx, dy))
-
-    blit(HEAD[side], 4, 0)
-    blit(HAT[side], 4, 0)
-    blit(TORSO[side], 4, 8)
-    # Seen from behind the limbs swap sides, so the mirror flips with them.
-    blit(ARM[side], 0, 8, mirror=(side == "front"))
-    blit(ARM[side], 12, 8, mirror=(side == "back"))
-    blit(LEG[side], 4, 20, mirror=(side == "back"))
-    blit(LEG[side], 8, 20, mirror=(side == "front"))
-    return doll.resize((16 * scale, 32 * scale), Image.NEAREST)
-
-
 # What each overlay is REQUIRED to cover, per face, as
 # (box group, faces, rule, value). Rules:
 #   "full"    every pixel of the face is opaque,
@@ -1267,34 +1111,14 @@ def check_coverage(overlays):
     return problems
 
 
-def contact_sheet(dolls, cols, gap=8, bg=(36, 38, 42, 255)):
-    w, h = dolls[0].size
-    rows = (len(dolls) + cols - 1) // cols
-    sheet = Image.new("RGBA", (cols * (w + gap) + gap, rows * (h + gap) + gap),
-                      bg)
-    for index, doll in enumerate(dolls):
-        r, c = divmod(index, cols)
-        sheet.alpha_composite(doll, (gap + c * (w + gap), gap + r * (h + gap)))
-    return sheet
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--textures", type=Path,
                         default=Path("mods/PLAYER/grug_visuals/textures"))
-    parser.add_argument("--renders", type=Path, default=None,
-                        help="also write review composites into this directory")
     args = parser.parse_args()
     args.textures.mkdir(parents=True, exist_ok=True)
 
-    skins, written = {}, []
-    for race in sorted(RACES):
-        image = race_skin(race)
-        skins[race] = image
-        path = args.textures / ("grug_visuals_skin_%s.png" % race)
-        image.save(path, optimize=True)
-        written.append(path)
-
+    written = []
     overlays = {}
     for line in sorted(LINES):
         for slot in ("head", "chest", "legs", "feet"):
@@ -1320,39 +1144,6 @@ def main():
     for problem in layer_problems:
         print("LAYERS: " + problem)
     problems = problems + layer_problems
-
-    if args.renders:
-        args.renders.mkdir(parents=True, exist_ok=True)
-
-        def dressed(race, line):
-            return [skins[race]] + [overlays[line, slot]
-                                    for slot in ("head", "chest", "legs",
-                                                 "feet")]
-
-        # Per race: bare / cloth / metal, front row then back row.
-        for race in sorted(RACES):
-            cells = []
-            for side in ("front", "back"):
-                cells.append(paper_doll([skins[race]], side=side))
-                for line in ("cloth", "metal"):
-                    cells.append(paper_doll(dressed(race, line), side=side))
-            sheet = contact_sheet(cells, 3)
-            out = args.renders / ("race-%s.png" % race)
-            sheet.save(out, optimize=True)
-            print(out)
-
-        # All six races per look, front row then back row.
-        for label, build in (("bare", lambda r: [skins[r]]),
-                             ("cloth", lambda r: dressed(r, "cloth")),
-                             ("metal", lambda r: dressed(r, "metal"))):
-            cells = []
-            for side in ("front", "back"):
-                for race in sorted(RACES):
-                    cells.append(paper_doll(build(race), side=side))
-            sheet = contact_sheet(cells, 6)
-            out = args.renders / ("races-%s.png" % label)
-            sheet.save(out, optimize=True)
-            print(out)
 
     return 1 if problems else 0
 

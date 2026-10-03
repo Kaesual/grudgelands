@@ -95,7 +95,8 @@ function grug_mobs.bandit_def(description)
 				race = grug_mobs.BANDIT_RACES[math.random(#grug_mobs.BANDIT_RACES)]
 				self._grug_visual_race = race
 			end
-			return {race = race, armor_line = "cloth", level = self._grug_level,
+			return {race = race, look = grug_visuals.npc_look(self, race),
+				armor_line = "cloth", level = self._grug_level,
 				weapon_family = "dagger"}
 		end,
 

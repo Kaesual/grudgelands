@@ -132,12 +132,11 @@ local function guard_tick(self, dtime)
 	end
 end
 
--- WP13 character visuals: the Accord watch is human, the Throng watch orc --
--- the two most distinct silhouettes of their sides, so the faction stays
--- readable at a distance now that the skin is composed rather than painted per
--- faction (the old per-faction PNGs remain the definition fallback for a build
--- without grug_visuals).
-local GUARD_RACE = {accord = "human", throng = "orc"}
+-- Character visuals (round31-plan.md §2.1.6): a guard of a settlement is of
+-- that settlement's race, any other guard (an outpost's) rolls a race of its
+-- faction once; each rolls its own look once (grug_visuals.npc_race and
+-- npc_look). The old per-faction PNGs remain the definition fallback for a
+-- build without grug_visuals.
 
 -- One def per faction; everything except description/texture/_grug_faction is
 -- shared, so the two guards can never drift apart.
@@ -156,8 +155,10 @@ local function guard_def(faction, description, texture)
 		-- `_grug_faction` only on the first do_custom tick, which is later than
 		-- this.
 		_grug_visual = function(self)
+			local race = grug_visuals.npc_race(self, faction)
 			return {
-				race = GUARD_RACE[faction],
+				race = race,
+				look = grug_visuals.npc_look(self, race),
 				armor_line = "metal",
 				level = self._grug_level,
 				weapon_family = "sword",

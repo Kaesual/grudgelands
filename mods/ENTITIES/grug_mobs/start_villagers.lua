@@ -504,6 +504,7 @@ end
 local function apply_race_visual(self, race_id, activity)
 	if not core.global_exists("grug_visuals") then return end
 	grug_visuals.apply_entity(self, {race = race_id,
+		look = grug_visuals.npc_look(self, race_id),
 		weapon = activity and activity.item or nil,
 		weapon_family = activity and activity.weapon_family or nil,
 		-- Only alongside a family: `bracket` also picks an armour grade, and a
