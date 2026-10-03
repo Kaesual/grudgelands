@@ -98,8 +98,8 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
 - Quest texts (Round 29 Q1, [quests.md](../../docs/design/quests.md#for-content-lanes)):
   `E-placeholder` (a brace outside a well-formed placeholder, an unknown
   placeholder, a wrong argument count, a direction placeholder in a title),
-  `E-placeholder-target` (not a kind or camp of the zone's recipe or a
-  leader), `E-placeholder-place` (not a settlement key or anchor id; with
+  `E-placeholder-target` (not a kind or camp of the zone's recipe, a
+  leader or a PvP POI), `E-placeholder-place` (not a settlement key or anchor id; with
   `--atlas`), `W-placeholder-spread` (`{dir_from_giver:...}` on an open kind),
   `E-compass` (a fixed compass word in a title or text). The game checks the
   same at load (`grug_quests/validate.lua`).
@@ -208,8 +208,20 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
     names those tracks).
   Without `--atlas` these checks are skipped with one `W-no-atlas` warning.
 - Kill objectives name `roles` only; a guard or another NPC is no kill
-  target (`E-not-a-mob`). The game checks the same rules at load
-  (`grug_quests/validate.lua`).
+  target (`E-not-a-mob`), except a PvP garrison's in its own area (Round
+  31): an area `<zone>/<settlement key>` of a fortress or Battlegrounds camp
+  holds its guard and captain (a camp) or guard, bodyguard and General (a
+  fortress) at the levels the game places them (`r28common.pvp_pois`, read
+  from `r31_pvp_catalog.lua` and `pvp_garrison.lua`), a role it lacks is
+  `E-role-not-in-area`, and only a giver of the other faction may name it
+  (`E-garrison-faction`; the giver's faction: a fortress giver's own, a new
+  giver's race's, else its atlas zone's). The game checks the same rules at
+  load (`grug_quests/validate.lua`).
+- The atlas predates the Round 31 PvP POIs: `Atlas` adds each fortress and
+  camp from the game's catalogue as an anchor (its settlement key) and a
+  named place of its zone, and the fortress quest givers (Warmaster,
+  Drillmaster, Outrider of `npcs.lua`) as that anchor's quest NPCs; the
+  fortress givers are known NPCs without an atlas too.
 - Output: one line per finding, `error [E-code] file: json.path: message` or
   `warning [W-code] …`. Exit 0 = no errors, 1 = errors (or warnings with
   `--strict`), 2 = unreadable files.
@@ -247,7 +259,8 @@ python3 tools/r28_design/ledger.py \
   `--route <the 31-40 and capital zones> --lines front --start-level 40
   --repeat 3` for `ledger/front.md`.
 - Kill objectives and quest drops on a leader (of any zone) use its fixed
-  level.
+  level; on a PvP garrison (Round 31) the garrison's levels and tiers (a
+  camp's captain is elite).
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives

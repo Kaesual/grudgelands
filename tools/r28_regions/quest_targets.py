@@ -20,6 +20,11 @@ the Round 28 quest format on every seed:
     forms a region, the leader (any zone) is placed; else the text reads
     "in <zone>" without a direction on that seed.
 
+A Round 31 PvP POI (a fortress or Battlegrounds camp, by its settlement
+key) is a fixed catalogue anchor on every seed: as an area its garrison's
+roles (r28common.pvp_pois, the game's catalogue) stand there by day and by
+night; as a placeholder target it is always there.
+
 The clock a target is met at comes from the kind's or camp's day and night
 rosters; an objective met at one clock only is noted with it (--verbose),
 and a quest whose text names the other clock only ("after dark" for a day
@@ -42,6 +47,8 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "tools" / "r28_design"))
+import r28common as C  # noqa: E402
 SPAWNS = REPO / "mods/ENTITIES/grug_mobs/data/zones"
 QUESTS = REPO / "mods/PLAYER/grug_quests/data/zones"
 ROOT = REPO / "docs/planning/round28/regions"
@@ -112,6 +119,7 @@ class World:
         self.seeds = seeds
         self.recipes, self.stats, self.stale = {}, {}, []
         self.leader_zone = {}
+        self.pois = C.pvp_pois()
         for path in sorted(Path(spawns).glob("*.spawns.json")):
             data = json.loads(path.read_text())
             if not data.get("recipe"):
@@ -142,6 +150,11 @@ class World:
         it forms no region on, the clocks a kill of any role counts at there,
         and every role that does not stand in it (as the game's load check:
         E-role-not-in-area, a leader E-leader-area)."""
+        poi = self.pois.get(unit)
+        if poi is not None and poi["zone"] == zone:
+            problems = ["%s does not stand in %s/%s" % (role, zone, unit)
+                        for role in sorted(roles) if role not in poi["roles"]]
+            return [], set(CLOCKS), problems
         units = self.recipes.get(zone, ({}, set()))[0]
         if unit not in units:
             return [], set(), ["%s is no kind or camp of %s's recipe" % (unit, zone)]
@@ -179,6 +192,8 @@ class World:
         qualified, _, rest = ref.rpartition("/")
         if rest in self.leader_zone and (not qualified or qualified == self.leader_zone[rest]):
             return [s for s in self.seeds if not self.placed(rest, s)], []
+        if rest in self.pois and (not qualified or qualified == self.pois[rest]["zone"]):
+            return [], []
         gaps, _, problems = self.unit_target(qualified or zone, rest, set())
         return gaps, problems
 

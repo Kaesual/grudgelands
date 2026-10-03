@@ -273,6 +273,21 @@ class Design:
             return {}
         return {unit["id"]: unit_summary(unit) for unit in parsed["kinds"] + parsed["camps"]}
 
+    def garrisons(self):
+        """{settlement key: garrison_summary} of every Round 31 PvP POI (the
+        game's catalogue, not a design file)."""
+        if not hasattr(self, "_garrisons"):
+            self._garrisons = {key: dict(garrison_summary(poi), zone=poi["zone"])
+                               for key, poi in pvp_pois().items()}
+        return self._garrisons
+
+    def quest_areas(self, zone):
+        """What a quest may name as an area of `zone`: its recipe's kinds and
+        camps (areas) and the garrisons of its PvP POIs (Round 31)."""
+        out = dict(self.areas(zone))
+        out.update({key: g for key, g in self.garrisons().items() if g["zone"] == zone})
+        return out
+
     def leaders(self, zone):
         """{role: {"role", "level", "respawn", "at"}}; level is None when the
         recipe gives the leader no level (a parse error)."""
@@ -866,6 +881,94 @@ def zone_records(source=SIMPLE_MAP):
     return out
 
 
+# --- Round 31 PvP POIs: fortresses, Battlegrounds camps, their garrisons ---
+# Mirrors mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua (rows, labels,
+# camp_levels), mods/ENTITIES/grug_mobs/pvp_garrison.lua (area_roles, the
+# garrison levels and tiers) and the fortress quest givers of
+# mods/PLAYER/grug_quests/npcs.lua; the Lua files are the reference and
+# are read here, never copied.
+
+PVP_CATALOG = REPO / "mods" / "MAPGEN" / "grug_mapgen" / "wp40" / "r31_pvp_catalog.lua"
+PVP_GARRISON = REPO / "mods" / "ENTITIES" / "grug_mobs" / "pvp_garrison.lua"
+QUEST_NPCS = REPO / "mods" / "PLAYER" / "grug_quests" / "npcs.lua"
+PVP_FACTION_NAME = {"accord": "Accord", "throng": "Throng"}
+
+
+def _lua_fields(text):
+    """{key: value} of `key = "value"` pairs in one Lua table row."""
+    return dict(re.findall(r'(\w+)\s*=\s*"([^"]*)"', text))
+
+
+def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None):
+    """{settlement key: {"key", "label", "zone", "faction", "kind"
+    ("pvp_fortress" | "pvp_camp"), "band" ("low" | "high" | None), "roles"
+    ({role: [lo, hi]}), "tiers" ({role: "normal" | "elite"})}} of every PvP
+    POI, as the game's catalogue builds them; the garrison roles and levels
+    as pvp_garrison.lua's area_roles and slot place them."""
+    text = Path(catalog).read_text(encoding="utf-8")
+    levels = dict((k, int(v)) for k, v in re.findall(r"M\.(\w+_LEVEL)\s*=\s*(\d+)",
+                                                      Path(garrison).read_text(encoding="utf-8")))
+    records = records or zone_records()
+    rows = []
+    for row in re.findall(r"\{key = \"pvp_fortress_\w+\"[^}]*\}", text):
+        f = _lua_fields(row)
+        rows.append({"key": f["key"], "label": f["label"], "zone": f["zone_id"], "faction": f["faction"],
+                     "kind": "pvp_fortress", "band": None})
+    block = re.search(r"local BATTLEGROUNDS = \{(.*?)\n\}", text, re.S)
+    for row in re.findall(r"\{[^}]*\}", block.group(1) if block else ""):
+        f = _lua_fields(row)
+        for faction in ("accord", "throng"):
+            for band in ("low", "high"):
+                rows.append({"key": "pvp_camp_%s_%s_%s" % (re.sub(r"^front_", "", f["zone_id"]), faction, band),
+                             "label": "%s %s %s" % (f["name"], PVP_FACTION_NAME[faction],
+                                                    "Picket" if band == "low" else "War Camp"),
+                             "zone": f["zone_id"], "faction": faction, "kind": "pvp_camp", "band": band})
+    if not rows:
+        raise LoadError("%s: no PvP POI rows found" % catalog)
+    out = {}
+    for row in rows:
+        fac = row["faction"]
+        if row["kind"] == "pvp_fortress":
+            row["roles"] = {"guard_" + fac: [levels["FORTRESS_GUARD_LEVEL"]] * 2,
+                            "bodyguard_" + fac: [levels["BODYGUARD_LEVEL"]] * 2,
+                            "general_" + fac: [levels["GENERAL_LEVEL"]] * 2}
+            row["tiers"] = {role: "elite" for role in row["roles"]}
+        else:
+            lo, hi = records[row["zone"]]["levels"]
+            low, high = (lo, lo + 2) if row["band"] == "low" else (hi - 2, hi)
+            row["roles"] = {"guard_" + fac: [low, high], "captain_" + fac: [high, high]}
+            row["tiers"] = {"guard_" + fac: "normal", "captain_" + fac: "elite"}
+        out[row["key"]] = row
+    return out
+
+
+def garrison_summary(poi):
+    """A PvP POI's garrison as a quest area, in unit_summary's form plus
+    "garrison" (its faction) and "tiers_by_role"."""
+    roles = poi["roles"]
+    return {"id": poi["key"], "name": poi["label"], "unit": "garrison", "kind": False, "camp": False,
+            "belt": None, "type": "poi", "levels": [min(r[0] for r in roles.values()),
+                                                   max(r[1] for r in roles.values())],
+            "levels_by_role": {role: list(r) for role, r in roles.items()}, "roles": sorted(roles),
+            "species": [{"role": role, "weight": 1, "clock": "both"} for role in sorted(roles)],
+            "density": None, "garrison": poi["faction"], "tiers_by_role": dict(poi["tiers"])}
+
+
+def fortress_quest_npcs(pois=None, npcs=QUEST_NPCS):
+    """{npc id: {"settlement", "socket", "title", "zone", "faction"}} of the
+    PvP fortresses' quest givers (npcs.lua's Round 31 block)."""
+    text = Path(npcs).read_text(encoding="utf-8")
+    block = text[text.find("pvp_fortress_"):]
+    pois = pois or pvp_pois()
+    out = {}
+    for role, title in re.findall(r'\{"(\w+)", "([^"]+)"\}', block):
+        for faction in ("accord", "throng"):
+            key = "pvp_fortress_" + faction
+            out["r31_%s_%s" % (faction, role)] = {"settlement": key, "socket": "quest_" + role, "title": title,
+                                                  "zone": pois[key]["zone"], "faction": faction}
+    return out
+
+
 def track_route(race, sister=None, records=None):
     """The leveling route of a race (frame section 2.1, round29-quests-plan
     section 3.1) as [(zone, lines, levels, label)] in play order: start zone
@@ -944,6 +1047,7 @@ class Atlas:
                 self._zone(data)
         if not self.zones:
             raise LoadError("%s: no zone atlas JSON (<zone_id>.json with id and anchors)" % path)
+        self._pvp_pois()
         self.npc_zone = {}
         # Named places of quest text placeholders ({dir_of:<place>:...}): a
         # settlement key or the anchor id of a settlement (the game's
@@ -1027,8 +1131,35 @@ class Atlas:
                      for c in rec["camps"] if isinstance(c, dict)] if isinstance(rec.get("camps"), list) else None,
         }
 
+    def _pvp_pois(self):
+        """The atlas predates the Round 31 PvP POIs: each fortress and camp is
+        added from the game's catalogue as an anchor of its zone (its
+        settlement key stands for the anchor id) and a named place, and the
+        fortress quest givers as that anchor's quest NPCs."""
+        pois = pvp_pois()
+        for key, poi in pois.items():
+            zone = self.zones.get(poi["zone"])
+            if zone is None:
+                continue
+            zone["anchors"].setdefault(key, key)
+            zone["anchor_kinds"][key] = poi["kind"]
+            zone["places"][key] = poi["label"]
+        for npc, row in fortress_quest_npcs(pois).items():
+            zone = self.zones.get(row["zone"])
+            if zone is not None:
+                zone["npcs"][npc] = {"settlement": row["settlement"], "anchor": row["settlement"],
+                                     "socket": row["socket"], "name": row["title"], "faction": row["faction"]}
+
     def all_npcs(self):
         return set(self.npc_zone)
+
+    def npc_faction(self, npc):
+        """The faction a quest NPC serves: its own (a fortress giver), else its
+        zone's (the race track's for a contested zone); None if unknown."""
+        zone = self.zones.get(self.npc_zone.get(npc))
+        if zone is None:
+            return None
+        return zone["npcs"][npc].get("faction") or zone["faction"]
 
     def resolve_anchor(self, zone, ref):
         """Anchor id for a reference (anchor id, settlement key or slot such

@@ -181,6 +181,10 @@ class Validator:
         self.mob_facts_warned = False
         if atlas:
             self.npcs |= atlas.all_npcs()
+        # The PvP fortresses' quest givers (Round 31; npcs.lua registers
+        # them with the fortress, after the item dump was taken).
+        self.fortress_npcs = C.fortress_quest_npcs()
+        self.npcs |= set(self.fortress_npcs)
         self.registered_npcs = set(self.npcs)
 
     # -- small helpers ---------------------------------------------------
@@ -857,7 +861,7 @@ class Validator:
                         self.W("W-group", file, opath, "group %r is not a recommended item kind "
                                "(see items/existing.md, Item groups)" % group)
                 if "roles" in obj or "area" in obj:
-                    self.item_source(zone, obj, level, file, opath, all_areas)
+                    self.item_source(zone, q, obj, level, file, opath, all_areas)
             else:
                 self.E("E-objective", file, opath, "type %r must be kill, item or talk" % kind)
         drops = q.get("quest_drops") or []
@@ -883,7 +887,9 @@ class Validator:
             area_ref = drop.get("area")
             area = self.resolve_area(area_ref, zone, file, dpath, all_areas) if area_ref else None
             for role in roles:
-                if self.target_role_ok(role, file, dpath, "quest-drop source"):
+                if area is not None and area.get("garrison"):
+                    self.garrison_target(q, role, area_ref, area, level, file, dpath)
+                elif self.target_role_ok(role, file, dpath, "quest-drop source"):
                     levels = self.target_levels(zone, role, area_ref, area, file, dpath, all_areas)
                     self.check_level_fit(role, levels, level, file, dpath)
         for item in item_objectives:
@@ -928,7 +934,11 @@ class Validator:
         found = self.d.find_leader(tid, target_zone if rest else None)
         if found is not None and (not rest or found[0] == target_zone):
             return {"type": "leader"}
-        return (all_areas.get(target_zone) or {}).get(tid)
+        area = (all_areas.get(target_zone) or {}).get(tid)
+        if area is None and not rest:
+            # A PvP POI (Round 31) is found in any zone, as a leader.
+            area = self.d.garrisons().get(tid)
+        return area
 
     def check_texts(self, zone, q, file, path, all_areas):
         """Round 29 Q1: placeholders in the title and text resolve (a title
@@ -948,7 +958,7 @@ class Validator:
                            "belong in the text" % raw)
                 target = self.placeholder_target(zone, args[-1], all_areas)
                 if target is None:
-                    self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp or leader of %s"
+                    self.E("E-placeholder-target", file, kpath, "%s: %s is no kind, camp, leader or PvP POI of %s"
                            % (raw, args[-1], args[-1].split("/")[0] if "/" in args[-1] else zone))
                 elif kind == "dir_from_giver" and target.get("type") == "open":
                     self.W("W-placeholder-spread", file, kpath, "%s: %s is an open kind spread over many "
@@ -1063,6 +1073,35 @@ class Validator:
             return False
         return True
 
+    def giver_faction(self, npc):
+        """The faction a quest giver serves: a fortress giver's own, a new
+        giver's race's, else its atlas zone's; None if unknown."""
+        if npc in self.fortress_npcs:
+            return self.fortress_npcs[npc]["faction"]
+        for zone, data in self.d.quests.items():
+            for hub in (data or {}).get("hubs") or [] if isinstance(data, dict) else []:
+                for giver in (hub or {}).get("givers") or [] if isinstance(hub, dict) else []:
+                    if isinstance(giver, dict) and giver.get("npc") == npc and isinstance(giver.get("new"), dict):
+                        return C.RACE_FACTION.get(giver["new"].get("race"))
+        return self.atlas.npc_faction(npc) if self.atlas else None
+
+    def garrison_target(self, q, role, area_ref, area, level, file, path):
+        """Round 31: a PvP garrison's guards and captain are targets only in
+        their own area (`<zone>/<settlement key>`, the tag the garrison
+        carries) and only of the other faction's quests (pvp-plan rulings 14
+        and 23: never a player). The game checks the same
+        (grug_quests/validate.lua)."""
+        if role not in self.area_roles(area):
+            self.E("E-role-not-in-area", file, path, "%s does not stand in %s (its garrison: %s)"
+                   % (role, area_ref, ", ".join(sorted(self.area_roles(area)))))
+        else:
+            self.check_level_fit(role, tuple(area["levels"]), level, file, path)
+        faction = self.giver_faction(q.get("giver"))
+        if faction is None or area["garrison"] == faction:
+            self.E("E-garrison-faction", file, path, "%s is a garrison of the %s; only the other faction's "
+                   "quests target it (giver %s serves %s)" % (area_ref, area["garrison"], q.get("giver"),
+                                                              faction or "no known faction"))
+
     def kill_roles(self, obj, file, path):
         roles = obj.get("roles")
         if not isinstance(roles, list) or not roles:
@@ -1075,12 +1114,14 @@ class Validator:
         area_ref = obj.get("area")
         area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if "area" in obj else None
         for role in roles:
-            if self.target_role_ok(role, file, path):
+            if area is not None and area.get("garrison"):
+                self.garrison_target(q, role, area_ref, area, level, file, path)
+            elif self.target_role_ok(role, file, path):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
         self.check_recipe_targets(zone, obj, roles, file, path, all_areas)
 
-    def item_source(self, zone, obj, level, file, path, all_areas):
+    def item_source(self, zone, q, obj, level, file, path, all_areas):
         """An item objective's optional source (Lane Q0): the roles that drop
         it, optionally in one area. Checked like a quest drop's source; the
         game shows their level range with the objective."""
@@ -1094,7 +1135,9 @@ class Validator:
         area_ref = obj.get("area")
         area = self.resolve_area(area_ref, zone, file, path + ".area", all_areas) if area_ref else None
         for role in roles:
-            if self.target_role_ok(role, file, path, "item source"):
+            if area is not None and area.get("garrison"):
+                self.garrison_target(q, role, area_ref, area, level, file, path)
+            elif self.target_role_ok(role, file, path, "item source"):
                 levels = self.target_levels(zone, role, area_ref, area, file, path, all_areas)
                 self.check_level_fit(role, levels, level, file, path)
 
@@ -1132,7 +1175,8 @@ class Validator:
         self.catalogs()
         self.collect_new_givers()
         self.npcs |= set(self.new_npcs)
-        all_areas = {zone: self.d.areas(zone) for zone in self.d.spawns}
+        all_areas = {zone: self.d.quest_areas(zone) for zone in
+                     set(self.d.spawns) | {g["zone"] for g in self.d.garrisons().values()}}
         # Quest ids of every zone (front files included) first: requires may
         # cross zones.
         for suffix, files in ((".quests.json", self.d.quests), (".front.quests.json", self.d.front)):
