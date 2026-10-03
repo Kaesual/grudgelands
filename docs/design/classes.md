@@ -186,8 +186,8 @@ held skill shows the item of its own slot in first and third person.
 
 ### Left click and held input
 
-**Mode lock** (Round 28 ruling 14). At key-down the press decides its mode
-for the whole hold:
+**Hold modes** (Round 28 ruling 14; the gather-to-combat switch since
+Round 32). At key-down the press decides its mode:
 
 - **Combat** when the combat ray (non-walkable plants and dropped items
   never hide a mob) finds a valid hostile within the larger of hand reach
@@ -199,16 +199,26 @@ for the whole hold:
   zero for the hold (the client points at nothing, so it neither digs nor
   shows cracks) and the server refuses any dig. It acts on whatever the
   combat ray finds each step, so it retargets freely (a mob dies, the next
-  one steps in).
+  one steps in). A hold that began in combat stays combat until release.
 - **Gather** when the hand ray's first thing within 4 m is a node bare hands
   can dig, any protected node (town ground, walls and undiggable town
   dressing: the client keeps pointing, so the refused dig keeps the
   protection hint and, where diggable, the client's cracks) or a dropped item
-  with no hostile behind it. A gather hold never swings or casts at an actor,
-  even one that walks into the ray, so a passing neutral mob is not pulled by
-  accident. On a protected node the hand may not dig, a short tap still casts
+  with no hostile behind it. A gather hold never swings or casts at an actor
+  that is not a valid hostile (an NPC, an ally, a player the PvP rules
+  protect). On a protected node the hand may not dig, a short tap still casts
   a selected self/support skill (Blink in a town, the same 200 ms window as
   below); a hold there only earns the protection hint.
+- **Gather becomes combat** within the same hold as soon as a valid hostile
+  (a mob combat accepts; a player only where `grug_pvp.can_harm` allows) is
+  in the crosshair and within the combat reach above. From then on it is a
+  combat hold: zero pointing range, no digging, each hit at the hostile now
+  in the crosshair and reach, switching enemies freely. It becomes a gather
+  hold again only when the last hostile it targeted has died; one that
+  despawned or unloaded counts as dead. Targeting another hostile meanwhile
+  makes that one the hostile to wait for. Combat never turns into gather in
+  any other way. The check costs a held gather step nothing while the
+  crosshair rests on a solid node, and one combat ray otherwise.
 
 The mode ends on release, cancel, item or slot change, death and leave; the
 pointing range returns then. A release seen within 0.15 s of the decision
@@ -242,8 +252,9 @@ intervening objects (dropped items excepted) matter.
   becoming ready cannot interrupt the dig.
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
   including when inventory is full. That decision does not also cast. The
-  hold is a gather hold: it may subsequently dig, never attack, and another
-  drop requires another press. A hostile behind the drop makes it a combat
+  hold is a gather hold: it may subsequently dig, attack only once a valid
+  hostile switches it to combat (above), and another drop requires another
+  press. A hostile behind the drop makes it a combat
   press instead: no pickup, the attack goes through the loot.
 - **Empty or otherwise inapplicable context** (combat hold): one applicable
   self/support activation per press, otherwise no mechanical effect.
