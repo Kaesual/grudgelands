@@ -1164,7 +1164,8 @@ class Validator:
     def role_drops(self, role, levels):
         """Items a role drops while met at `levels` (lo, hi): its family's
         bands over those levels and its leader bonus, or an existing mob's
-        drops; None when unknown."""
+        drops; None when unknown. (Not counted: a family's fixed-drop
+        fallback and quest drops; the shipped item sources need neither.)"""
         source, rec = self.role_def(role)
         if source == "subtype":
             family = self.drop_families.get(rec.get("drops")) or {}
