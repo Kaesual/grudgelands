@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Generate the WP13 character-visuals art: six race skins and eight armor
-overlays for `character.b3d`, plus optional review composites.
+overlays for `character.b3d`, the Round 31 look layers (skin tone, eyes,
+hairstyles and lower-face features as engine-coloured masks plus detail, see
+mods/PLAYER/grug_visuals/looks.lua), plus optional review composites.
 
 All art is original work of this project (CC0 1.0, the licence every other
 own-art mod in this tree uses -- see mods/PLAYER/grug_visuals/LICENSE-media.md)
@@ -447,6 +449,730 @@ OVERLAYS = {"head": overlay_head, "chest": overlay_chest,
 
 
 # --------------------------------------------------------------------------
+# Round 31 appearance layers (round31-plan.md §2.1). The race skin above is
+# split into what a player chooses: a skin TONE, EYES, a HAIRSTYLE in a hair
+# colour, and the race's lower-face FEATURE. Colours are NOT baked in: a
+# colourable layer is a white MASK the engine colours with `^[multiply:<c>`,
+# plus a DETAIL layer on top with the shading (semi-transparent black and
+# white) and the fixed-colour pixels -- the mcl_skins technique, our own art.
+# The option lists (ids, colours, counts) live in
+# mods/PLAYER/grug_visuals/looks.lua; the ids below must match it (the
+# r31_a fixture checks every file it names exists).
+#
+# One rule every layer keeps: a semi-transparent pixel only ever lands on a
+# pixel that is opaque by then (the skin mask covers the whole base body, a
+# hair or feature detail sits on its own mask). The engine draws the mesh with
+# alpha clipping, so a half-transparent pixel on the hat layer would flicker
+# between there and gone. `check_layer_alpha` asserts it on every run.
+# --------------------------------------------------------------------------
+SKIN_D = (0, 0, 0, 44)          # skin shadow, about skin_d of the old palettes
+SKIN_L = (255, 255, 255, 56)    # skin highlight
+SOCKET = (0, 0, 0, 150)         # undead eye sockets: the tone, much darker
+HAIR_D = (0, 0, 0, 80)
+HAIR_L = (255, 255, 255, 44)
+HAIR_TIE = (0, 0, 0, 130)       # a tie or band: darker than a strand
+INK = (0, 0, 0, 90)             # an ear's inner shadow, a beard's mouth line
+BONE = (214, 206, 182, 255)
+BONE_D = (178, 168, 142, 255)
+GAP = (40, 30, 34, 255)
+WARPAINT = (140, 28, 24, 255)
+ELF_MARK = (64, 150, 140, 255)
+BEAD = (200, 160, 60, 255)
+
+# The helmet face window, in the hat layer's front face: columns 1..6 and
+# rows 3..7 (eyes, nose, mouth, chin). Cut from every helmet at composition,
+# so the eyes and every head-layer pixel of a feature must sit inside it.
+FACE_WINDOW = (1, 3, 6, 5)
+
+
+class Layer:
+    """A mask image and a detail image painted together, face-relative."""
+
+    def __init__(self, seed):
+        self.mask, self.detail = canvas(), canvas()
+        self.m, self.d = self.mask.load(), self.detail.load()
+        self.rng = random.Random(seed)
+
+    def box(self, region, x0, y0, w, h, alpha=255):
+        x, y = region[0], region[1]
+        for j in range(y + y0, y + y0 + h):
+            for i in range(x + x0, x + x0 + w):
+                self.m[i, j] = (255, 255, 255, alpha)
+
+    def dot(self, region, x0, y0, w, h, col):
+        x, y = region[0], region[1]
+        for j in range(y + y0, y + y0 + h):
+            for i in range(x + x0, x + x0 + w):
+                self.d[i, j] = col
+
+    def stripes(self, region, x0, y0, w, h, col=HAIR_D, phase=0):
+        """Every other row darker: a braid."""
+        for r in range(h):
+            if (r + phase) % 2 == 0:
+                self.dot(region, x0, y0 + r, w, 1, col)
+
+    def shade(self, dark=HAIR_D, light=HAIR_L, rate=0.10):
+        """Speckle every opaque mask pixel that has no detail yet. Runs last,
+        in a fixed pixel order, so the output stays deterministic."""
+        for j in range(H):
+            for i in range(W):
+                if self.m[i, j][3] == 255 and self.d[i, j][3] == 0:
+                    r = self.rng.random()
+                    if r < rate:
+                        self.d[i, j] = dark
+                    elif r < rate * 1.7:
+                        self.d[i, j] = light
+
+
+def mirror_x(face_w, x0, w):
+    """The same span seen on the opposite side face (right <-> left)."""
+    return face_w - x0 - w
+
+
+def both_sides(l, x0, y0, w, h, alpha=255):
+    """Paint a span on the hat's right face and its mirror on the left face.
+    Columns are counted on the RIGHT face, whose column 7 meets the front."""
+    l.box(HAT["right"], x0, y0, w, h, alpha)
+    l.box(HAT["left"], mirror_x(8, x0, w), y0, w, h, alpha)
+
+
+def both_sides_dot(l, x0, y0, w, h, col):
+    l.dot(HAT["right"], x0, y0, w, h, col)
+    l.dot(HAT["left"], mirror_x(8, x0, w), y0, w, h, col)
+
+
+def both_cheeks(l, x0, y0, w, h, col):
+    """A fixed-colour span on the hat front and its left-right mirror."""
+    l.dot(HAT["front"], x0, y0, w, h, col)
+    l.dot(HAT["front"], mirror_x(8, x0, w), y0, w, h, col)
+
+
+# --- skin: one shared mask, one body file per race ------------------------
+def layer_skin_mask():
+    image = canvas()
+    p = Paint(image, 0)
+    for group in (HEAD, TORSO, ARM, LEG):
+        for region in group.values():
+            p.fill(region, (255, 255, 255, 255))
+    return image
+
+
+def layer_body(race):
+    """Face, skin shading and the race's one dress, over the toned skin mask.
+    The dress is opaque; skin is a hole in it, shaded semi-transparently."""
+    c = RACES[race]
+    image = canvas()
+    p = Paint(image, SEED + 100 + sum(ord(ch) for ch in race))
+    undead = c["style"] == "patchy"
+
+    # Head: shading, then the face.
+    for face in SIDES:
+        p.speckle(HEAD[face], SKIN_D, SKIN_L, 0.08)
+        p.edges(HEAD[face], SKIN_D)
+    p.fill(HEAD["bottom"], SKIN_D)
+    f = HEAD["front"]
+    p.row(f, 2, SKIN_D, 1, 6)
+    if undead:
+        for ex in (1, 5):
+            p.box(f[0] + ex, f[1] + 3, 2, 2, SOCKET)
+    else:
+        for ex in (1, 5):
+            p.box(f[0] + ex, f[1] + 3, 2, 2, EYE_WHITE + (255,))
+    p.box(f[0] + 3, f[1] + 4, 2, 2, SKIN_D)
+    p.row(f, 6, SKIN_D, 2, 4)
+
+    # Torso: the dress, with the collar (and a bare chest) left to the skin.
+    for face in SIDES:
+        p.fill(TORSO[face], c["cloth"])
+        p.speckle(TORSO[face], c["cloth_d"], c["cloth_l"], 0.10)
+        p.edges(TORSO[face], c["cloth_d"])
+    p.fill(TORSO["top"], c["cloth_l"])
+    p.fill(TORSO["bottom"], c["trouser_d"])
+    p.row(TORSO["front"], 0, SKIN_D, 2, 4)
+    for face in SIDES:
+        p.row(TORSO[face], 8, c["trouser_d"])
+        p.row(TORSO[face], 9, c["trouser_d"])
+    p.box(TORSO["front"][0] + 3, TORSO["front"][1] + 8, 2, 2, c["accent"])
+    if c["bare_chest"]:
+        for face in ("front", "back"):
+            chest = (TORSO[face][0] + 1, TORSO[face][1] + 1, 6, 7)
+            p.box(*chest, col=(0, 0, 0, 0))
+            p.speckle(chest, SKIN_D, SKIN_L, 0.10)
+        p.box(TORSO["front"][0] + 2, TORSO["front"][1] + 1, 1, 7, c["cloth_d"])
+        p.box(TORSO["front"][0] + 5, TORSO["front"][1] + 1, 1, 7, c["cloth_d"])
+        p.box(TORSO["back"][0] + 3, TORSO["back"][1] + 1, 2, 7, c["cloth_d"])
+    if undead:
+        # Ribs: the skin showing, darker, through a torn wrap.
+        for r in (2, 4, 6):
+            p.row(TORSO["front"], r, SKIN_D, 1, 6)
+            p.row(TORSO["back"], r, c["cloth_d"], 1, 6)
+
+    # Arms: sleeves (or armbands on a bare arm), the hand is skin.
+    bare = c["bare_chest"]
+    for face in SIDES:
+        region = ARM[face]
+        if bare:
+            p.speckle(region, SKIN_D, SKIN_L, 0.08)
+            p.box(region[0], region[1] + 2, region[2], 2, c["accent"])
+        else:
+            p.box(region[0], region[1], region[2], 6, c["cloth"])
+            p.speckle((region[0], region[1], region[2], 6),
+                      c["cloth_d"], c["cloth_l"], 0.10)
+            p.box(region[0], region[1] + 6, region[2], 1, SKIN_D)
+        p.box(region[0], region[1] + 10, region[2], 2, SKIN_D)
+        if bare:
+            p.edges(region, SKIN_D)
+        else:
+            p.edges((region[0], region[1], region[2], 6), c["cloth_d"])
+    if not bare:
+        p.fill(ARM["top"], c["cloth_l"])
+    p.fill(ARM["bottom"], SKIN_D)
+
+    # Legs: trousers and boots, fully dressed.
+    for face in SIDES:
+        region = LEG[face]
+        p.fill(region, c["trouser"])
+        p.speckle(region, c["trouser_d"], c["cloth_l"], 0.08)
+        p.box(region[0], region[1] + 8, region[2], 4, c["boot"])
+        p.box(region[0], region[1] + 8, region[2], 1, c["boot_d"])
+        p.edges(region, c["trouser_d"])
+    p.fill(LEG["top"], c["trouser_d"])
+    p.fill(LEG["bottom"], c["boot_d"])
+    return image
+
+
+# --- eyes: the iris (undead: the glow), coloured in the engine -----------
+def layer_eyes(undead):
+    image = canvas()
+    p = Paint(image, 0)
+    f = HEAD["front"]
+    white = (255, 255, 255, 255)
+    if undead:
+        p.box(f[0] + 1, f[1] + 3, 2, 1, white)
+        p.box(f[0] + 5, f[1] + 3, 2, 1, white)
+    else:
+        p.box(f[0] + 2, f[1] + 3, 1, 2, white)
+        p.box(f[0] + 5, f[1] + 3, 1, 2, white)
+    return image
+
+
+# --- the helmet face window (a [mask: white keeps, transparent cuts) ------
+def layer_helmet_window():
+    image = Image.new("RGBA", (W, H), (255, 255, 255, 255))
+    p = Paint(image, 0)
+    x0, y0, w, h = FACE_WINDOW
+    p.box(HAT["front"][0] + x0, HAT["front"][1] + y0, w, h, (0, 0, 0, 0))
+    return image
+
+
+# --- hairstyles ------------------------------------------------------------
+T, FR, BK = HAT["top"], HAT["front"], HAT["back"]
+
+
+def hair_human_crop(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 4)
+    l.box(BK, 0, 0, 8, 4)
+    l.box(FR, 0, 0, 8, 3)
+    l.dot(FR, 0, 2, 8, 1, HAIR_D)
+
+
+def hair_human_swept(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 5)
+    l.box(BK, 0, 0, 8, 6)
+    l.box(FR, 0, 0, 8, 1)
+    l.box(FR, 0, 1, 6, 1)
+    l.box(FR, 0, 2, 3, 1)
+    l.dot(FR, 3, 1, 3, 1, HAIR_D)
+    l.dot(FR, 0, 2, 3, 1, HAIR_D)
+
+
+def hair_human_long(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 8)
+    l.box(BK, 0, 0, 8, 8)
+    l.box(FR, 0, 0, 8, 2)
+    l.box(FR, 0, 2, 1, 5)
+    l.box(FR, 7, 2, 1, 5)
+    l.dot(FR, 0, 1, 8, 1, HAIR_D)
+    for cx in (2, 5):
+        l.dot(BK, cx, 1, 1, 7, HAIR_D)
+
+
+def hair_human_tail(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 3)
+    l.box(BK, 0, 0, 8, 3)
+    l.box(BK, 3, 3, 2, 5)
+    l.box(FR, 0, 0, 8, 2)
+    l.dot(BK, 3, 3, 2, 1, HAIR_TIE)
+    l.dot(FR, 0, 1, 8, 1, HAIR_D)
+
+
+def hair_dwarf_full(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 4)
+    both_sides(l, 0, 4, 4, 4)
+    l.box(BK, 0, 0, 8, 8)
+    l.box(FR, 0, 0, 8, 2)
+    l.dot(FR, 0, 1, 8, 1, HAIR_D)
+
+
+def hair_dwarf_crown(l):
+    # Bald on top: a horseshoe of hair round the back and the sides.
+    l.box(T, 0, 0, 8, 3)
+    l.box(T, 0, 3, 1, 5)
+    l.box(T, 7, 3, 1, 5)
+    both_sides(l, 0, 1, 6, 5)
+    l.box(BK, 0, 0, 8, 7)
+    l.dot(BK, 0, 6, 8, 1, HAIR_D)
+
+
+def hair_dwarf_braid(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 5)
+    l.box(BK, 0, 0, 8, 8)
+    l.box(FR, 0, 0, 8, 2)
+    l.stripes(BK, 3, 0, 2, 8)
+    l.dot(BK, 3, 7, 2, 1, BEAD)
+    l.dot(FR, 0, 1, 8, 1, HAIR_D)
+
+
+def hair_elf_long(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 8)
+    l.box(BK, 0, 0, 8, 8)
+    l.box(FR, 0, 0, 8, 3)
+    l.dot(FR, 0, 2, 8, 1, HAIR_D)
+
+
+def hair_elf_tail(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 3)
+    l.box(BK, 0, 0, 8, 3)
+    l.box(BK, 2, 3, 4, 1)
+    l.box(BK, 3, 4, 2, 4)
+    l.box(FR, 0, 0, 8, 2)
+    l.dot(BK, 2, 3, 4, 1, HAIR_TIE)
+
+
+def hair_elf_braid(l):
+    # A braid round the crown and one long braid down the back.
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 4)
+    l.box(BK, 0, 0, 8, 4)
+    l.box(BK, 3, 4, 2, 4)
+    l.box(FR, 0, 0, 8, 1)
+    l.box(FR, 0, 1, 2, 1)
+    l.box(FR, 6, 1, 2, 1)
+    both_sides_dot(l, 0, 2, 8, 1, HAIR_D)
+    l.dot(BK, 0, 2, 8, 1, HAIR_D)
+    l.stripes(BK, 3, 4, 2, 4, phase=1)
+
+
+def hair_elf_short(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 3)
+    l.box(BK, 0, 0, 8, 5)
+    l.box(FR, 0, 0, 8, 1)
+    l.box(FR, 2, 1, 6, 1)
+    l.dot(FR, 2, 1, 6, 1, HAIR_D)
+
+
+def hair_orc_topknot(l):
+    # A strip over the crown, a knot at the back of the head, a short tail.
+    l.box(T, 3, 0, 2, 8)
+    l.box(BK, 2, 0, 4, 2)
+    l.box(BK, 3, 2, 2, 5)
+    l.dot(BK, 3, 2, 2, 1, HAIR_TIE)
+
+
+def hair_orc_mohawk(l):
+    # A broad ridge from the brow down to the neck.
+    l.box(T, 2, 0, 4, 8)
+    l.box(FR, 2, 0, 4, 2)
+    l.box(BK, 2, 0, 4, 8)
+    l.dot(FR, 2, 1, 4, 1, HAIR_D)
+    for x0 in (2, 5):
+        l.dot(T, x0, 0, 1, 8, HAIR_D)
+        l.dot(BK, x0, 0, 1, 8, HAIR_D)
+
+
+def hair_orc_shaved(l):
+    # Stubble on the HEAD layer itself: a thin, semi-transparent hair colour
+    # over the opaque scalp, nothing on the hat layer.
+    l.box(HEAD["top"], 0, 0, 8, 8, alpha=110)
+    for face in ("right", "left", "back"):
+        l.box(HEAD[face], 0, 0, 8, 2, alpha=110)
+    l.box(HEAD["front"], 0, 0, 8, 1, alpha=110)
+
+
+def hair_orc_braids(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 2)
+    l.box(BK, 0, 0, 8, 3)
+    l.box(BK, 1, 3, 1, 5)
+    l.box(BK, 6, 3, 1, 5)
+    l.box(FR, 0, 0, 8, 1)
+    l.stripes(BK, 1, 3, 1, 5)
+    l.stripes(BK, 6, 3, 1, 5)
+
+
+def hair_troll_mane(l):
+    l.box(T, 0, 0, 8, 8)
+    l.box(BK, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 3)
+    l.box(FR, 0, 0, 8, 1)
+    l.dot(FR, 0, 0, 8, 1, HAIR_D)
+
+
+def hair_troll_crest(l):
+    l.box(T, 2, 0, 4, 8)
+    l.box(FR, 2, 0, 4, 2)
+    l.box(BK, 2, 0, 4, 8)
+    l.dot(FR, 2, 1, 4, 1, HAIR_D)
+    l.dot(BK, 2, 0, 1, 8, HAIR_D)
+    l.dot(BK, 5, 0, 1, 8, HAIR_D)
+
+
+def hair_troll_swept(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 4)
+    both_sides(l, 0, 4, 4, 4)
+    l.box(BK, 0, 0, 8, 8)
+    l.box(FR, 0, 0, 8, 1)
+    for cy in (2, 5):
+        both_sides_dot(l, 0, cy, 4, 1, HAIR_D)
+
+
+def hair_troll_twintails(l):
+    l.box(T, 0, 0, 8, 8)
+    both_sides(l, 0, 0, 8, 3)
+    l.box(BK, 0, 0, 8, 3)
+    l.box(BK, 0, 3, 2, 5)
+    l.box(BK, 6, 3, 2, 5)
+    l.box(FR, 0, 0, 8, 1)
+    l.dot(BK, 0, 3, 2, 1, HAIR_TIE)
+    l.dot(BK, 6, 3, 2, 1, HAIR_TIE)
+
+
+def hair_undead_patchy(l):
+    for cx in (0, 2, 5, 7):
+        l.box(T, cx, 0, 1, 8)
+    l.box(BK, 1, 0, 1, 4)
+    l.box(BK, 5, 0, 1, 5)
+    l.dot(BK, 5, 0, 1, 5, HAIR_D)
+
+
+def hair_undead_stringy(l):
+    for cx in (0, 1, 3, 4, 6, 7):
+        l.box(T, cx, 0, 1, 8)
+    for cx, h in ((0, 8), (1, 6), (3, 7), (5, 8)):
+        both_sides(l, cx, 0, 1, h)
+    for cx, h in ((0, 7), (2, 8), (3, 5), (5, 8), (7, 6)):
+        l.box(BK, cx, 0, 1, h)
+    l.box(FR, 0, 0, 1, 5)
+    l.box(FR, 7, 0, 1, 4)
+
+
+def hair_undead_bald(l):
+    l.box(T, 2, 0, 1, 4)
+    l.box(T, 5, 1, 1, 4)
+    l.box(BK, 3, 0, 1, 3)
+
+
+HAIRSTYLES = {
+    "human": {"crop": hair_human_crop, "swept": hair_human_swept,
+              "long": hair_human_long, "tail": hair_human_tail},
+    "dwarf": {"full": hair_dwarf_full, "crown": hair_dwarf_crown,
+              "braid": hair_dwarf_braid},
+    "elf": {"long": hair_elf_long, "tail": hair_elf_tail,
+            "braid": hair_elf_braid, "short": hair_elf_short},
+    "orc": {"topknot": hair_orc_topknot, "mohawk": hair_orc_mohawk,
+            "shaved": hair_orc_shaved, "braids": hair_orc_braids},
+    "troll": {"mane": hair_troll_mane, "crest": hair_troll_crest,
+              "swept": hair_troll_swept, "twintails": hair_troll_twintails},
+    "undead": {"patchy": hair_undead_patchy, "stringy": hair_undead_stringy,
+               "bald": hair_undead_bald},
+}
+
+
+# --- lower-face features -----------------------------------------------------
+# `tinted` features paint a mask (hair colour or skin tone, per looks.lua);
+# the others paint fixed colours into the detail only.
+def feat_human_stubble(l):
+    l.box(HEAD["front"], 1, 5, 6, 3, alpha=64)
+    l.box(HEAD["right"], 6, 5, 2, 3, alpha=64)
+    l.box(HEAD["left"], 0, 5, 2, 3, alpha=64)
+
+
+def feat_human_beard(l):
+    l.box(FR, 0, 6, 8, 2)
+    l.box(FR, 0, 5, 2, 1)
+    l.box(FR, 6, 5, 2, 1)
+    both_sides(l, 5, 5, 3, 3)
+    l.dot(FR, 3, 6, 2, 1, INK)
+
+
+def feat_human_moustache(l):
+    l.box(FR, 2, 5, 4, 1)
+    l.box(FR, 1, 6, 1, 1)
+    l.box(FR, 6, 6, 1, 1)
+    l.dot(FR, 2, 5, 4, 1, HAIR_D)
+
+
+def beard_face(l):
+    """The dwarf beard's face part, shared by all four beards."""
+    l.box(FR, 0, 5, 8, 3)
+    both_sides(l, 4, 4, 4, 4)
+    l.dot(FR, 3, 5, 2, 1, INK)
+
+
+def feat_dwarf_full(l):
+    beard_face(l)
+    l.box(TORSO["front"], 1, 0, 6, 3)
+    l.box(TORSO["front"], 2, 3, 4, 1)
+
+
+def feat_dwarf_braided(l):
+    beard_face(l)
+    l.box(TORSO["front"], 1, 0, 6, 1)
+    l.box(TORSO["front"], 1, 1, 2, 4)
+    l.box(TORSO["front"], 5, 1, 2, 4)
+    l.stripes(TORSO["front"], 1, 1, 2, 4, phase=1)
+    l.stripes(TORSO["front"], 5, 1, 2, 4, phase=1)
+    l.dot(TORSO["front"], 1, 4, 2, 1, BEAD)
+    l.dot(TORSO["front"], 5, 4, 2, 1, BEAD)
+
+
+def feat_dwarf_forked(l):
+    beard_face(l)
+    l.box(TORSO["front"], 1, 0, 6, 2)
+    l.box(TORSO["front"], 1, 2, 2, 1)
+    l.box(TORSO["front"], 5, 2, 2, 1)
+    l.box(TORSO["front"], 1, 3, 1, 1)
+    l.box(TORSO["front"], 6, 3, 1, 1)
+    l.dot(TORSO["front"], 3, 1, 2, 1, HAIR_D)
+
+
+def feat_dwarf_short(l):
+    l.box(FR, 0, 5, 8, 3)
+    both_sides(l, 5, 5, 3, 3)
+    l.dot(FR, 3, 5, 2, 1, INK)
+
+
+def ears(l, swept):
+    if swept:
+        spans = ((6, 4, 1), (4, 3, 3), (2, 2, 3), (2, 1, 1))
+    else:
+        spans = ((6, 4, 1), (4, 3, 3), (4, 2, 1))
+    for x0, y0, w in spans:
+        both_sides(l, x0, y0, w, 1)
+    both_sides_dot(l, 5, 3, 1, 1, INK)
+
+
+def feat_elf_pointed(l):
+    ears(l, False)
+
+
+def feat_elf_swept(l):
+    ears(l, True)
+
+
+def feat_elf_marked(l):
+    ears(l, False)
+    f = HEAD["front"]
+    for x0 in (1, 6):
+        l.dot(f, x0, 5, 1, 2, ELF_MARK)
+    l.dot(f, 3, 7, 2, 1, ELF_MARK)
+
+
+def tusk(l, x0, y0, h):
+    """One tusk on the hat front, tip on top, a darker root row."""
+    l.dot(FR, x0, y0, 1, h, TUSK + (255,))
+    l.dot(FR, x0, y0 + h - 1, 1, 1, BONE_D)
+
+
+def feat_orc_tusks_small(l):
+    tusk(l, 1, 5, 2)
+    tusk(l, 6, 5, 2)
+
+
+def feat_orc_tusks_large(l):
+    for x0 in (1, 6):
+        tusk(l, x0, 5, 3)
+    both_cheeks(l, 2, 6, 1, 2, TUSK + (255,))
+    both_cheeks(l, 2, 7, 1, 1, BONE_D)
+
+
+def feat_orc_tusks_broken(l):
+    tusk(l, 1, 5, 3)
+    l.dot(FR, 2, 6, 1, 2, TUSK + (255,))
+    l.dot(FR, 2, 7, 1, 1, BONE_D)
+    tusk(l, 6, 6, 2)
+    l.dot(FR, 6, 6, 1, 1, BONE_D)
+
+
+def feat_orc_warpaint(l):
+    feat_orc_tusks_small(l)
+    f = HEAD["front"]
+    l.dot(f, 0, 2, 8, 1, WARPAINT)
+    l.dot(f, 2, 5, 1, 1, WARPAINT)
+    l.dot(f, 5, 5, 1, 1, WARPAINT)
+    l.dot(f, 3, 7, 2, 1, WARPAINT)
+
+
+def feat_troll_tusks_small(l):
+    tusk(l, 1, 6, 2)
+    tusk(l, 6, 6, 2)
+
+
+def feat_troll_tusks_large(l):
+    both_cheeks(l, 1, 6, 1, 2, TUSK + (255,))
+    both_cheeks(l, 1, 7, 1, 1, BONE_D)
+    both_cheeks(l, 0, 4, 1, 2, TUSK + (255,))
+
+
+def feat_troll_tusks_huge(l):
+    feat_troll_tusks_large(l)
+    both_cheeks(l, 2, 7, 1, 1, BONE_D)
+    both_sides_dot(l, 7, 3, 1, 2, TUSK + (255,))
+    both_sides_dot(l, 6, 2, 1, 1, TUSK + (255,))
+
+
+def feat_undead_jaw(l):
+    f = HEAD["front"]
+    l.dot(f, 1, 5, 6, 3, BONE)
+    for x0 in (1, 3, 5):
+        l.dot(f, x0, 6, 1, 1, GAP)
+    l.dot(f, 1, 7, 1, 1, GAP)
+    l.dot(f, 6, 7, 1, 1, GAP)
+    l.dot(f, 2, 5, 4, 1, BONE_D)
+
+
+def feat_undead_stitches(l):
+    f = HEAD["front"]
+    l.dot(f, 1, 6, 6, 1, GAP)
+    for x0 in (2, 4):
+        l.dot(f, x0, 5, 1, 1, GAP)
+        l.dot(f, x0, 7, 1, 1, GAP)
+    l.dot(f, 6, 5, 1, 1, GAP)
+
+
+def feat_undead_nose(l):
+    f = HEAD["front"]
+    l.dot(f, 3, 4, 2, 1, GAP)
+    l.dot(f, 3, 5, 2, 1, (70, 50, 56, 255))
+
+
+FEATURES = {
+    "human": {"stubble": feat_human_stubble, "beard": feat_human_beard,
+              "moustache": feat_human_moustache},
+    "dwarf": {"full": feat_dwarf_full, "braided": feat_dwarf_braided,
+              "forked": feat_dwarf_forked, "short": feat_dwarf_short},
+    "elf": {"pointed": feat_elf_pointed, "swept": feat_elf_swept,
+            "marked": feat_elf_marked},
+    "orc": {"tusks_small": feat_orc_tusks_small,
+            "tusks_large": feat_orc_tusks_large,
+            "tusks_broken": feat_orc_tusks_broken,
+            "warpaint": feat_orc_warpaint},
+    "troll": {"tusks_small": feat_troll_tusks_small,
+              "tusks_large": feat_troll_tusks_large,
+              "tusks_huge": feat_troll_tusks_huge},
+    "undead": {"jaw": feat_undead_jaw, "stitches": feat_undead_stitches,
+               "nose": feat_undead_nose},
+}
+
+
+def has_pixels(image):
+    return image.getbbox() is not None
+
+
+def build_layers():
+    """name -> image for every look layer. A feature without a mask (fixed
+    colour) writes no mask file; looks.lua knows which by its `tint`."""
+    out = {"grug_visuals_skin_mask.png": layer_skin_mask(),
+           "grug_visuals_eyes_mask.png": layer_eyes(False),
+           "grug_visuals_eyes_undead_mask.png": layer_eyes(True),
+           "grug_visuals_helmet_window.png": layer_helmet_window()}
+    for race in sorted(RACES):
+        out["grug_visuals_%s_body.png" % race] = layer_body(race)
+        salt = sum(ord(ch) for ch in race)
+        for kind, table in (("hair", HAIRSTYLES), ("feature", FEATURES)):
+            for ident in sorted(table[race]):
+                stem = "grug_visuals_%s_%s_%s" % (race, kind, ident)
+                l = Layer(SEED + 200 + salt + sum(ord(ch) for ch in stem))
+                table[race][ident](l)
+                if kind == "hair":
+                    l.shade()
+                elif has_pixels(l.mask):
+                    l.shade(rate=0.08)
+                if has_pixels(l.mask):
+                    out[stem + "_mask.png"] = l.mask
+                out[stem + ".png"] = l.detail
+    return out
+
+
+def check_layer_alpha(layers):
+    """Every combination a look can make, drawn with white for every colour:
+    the result must be fully opaque or fully transparent at every pixel (see
+    the section comment), and the eyes and every head-front pixel of a
+    feature must lie inside the helmet face window."""
+    problems = []
+    base = Image.alpha_composite(layers["grug_visuals_skin_mask.png"],
+                                 Image.new("RGBA", (W, H), (0, 0, 0, 0)))
+    fx, fy, fw, fh = FACE_WINDOW
+    hx, hy = HEAD["front"][0], HEAD["front"][1]
+    window = set((hx + fx + i, hy + fy + j)
+                 for i in range(fw) for j in range(fh))
+    head_front = set((hx + i, hy + j) for i in range(8) for j in range(8))
+    for race in sorted(RACES):
+        body = Image.alpha_composite(base, layers["grug_visuals_%s_body.png"
+                                                  % race])
+        eyes = "grug_visuals_eyes_undead_mask.png" if race == "undead" \
+            else "grug_visuals_eyes_mask.png"
+        body = Image.alpha_composite(body, layers[eyes])
+
+        def stack(img, stem):
+            if stem + "_mask.png" in layers:
+                img = Image.alpha_composite(img, layers[stem + "_mask.png"])
+            return Image.alpha_composite(img, layers[stem + ".png"])
+
+        for style in sorted(HAIRSTYLES[race]):
+            for feature in sorted(FEATURES[race]):
+                img = stack(body, "grug_visuals_%s_hair_%s" % (race, style))
+                img = stack(img, "grug_visuals_%s_feature_%s"
+                            % (race, feature))
+                px = img.load()
+                bad = [(i, j) for j in range(H) for i in range(W)
+                       if 0 < px[i, j][3] < 255]
+                if bad:
+                    problems.append("%s %s+%s: %d half-transparent pixels, "
+                                    "first %s" % (race, style, feature,
+                                                  len(bad), bad[0]))
+        for feature in sorted(FEATURES[race]):
+            stem = "grug_visuals_%s_feature_%s" % (race, feature)
+            for name in (stem + ".png", stem + "_mask.png"):
+                if name not in layers:
+                    continue
+                px = layers[name].load()
+                outside = [p for p in head_front
+                           if px[p][3] > 0 and p not in window]
+                # War paint deliberately crosses the brow; under a helmet
+                # that part is hidden, as a helmet hides a brow.
+                if outside and not feature == "warpaint":
+                    problems.append("%s: head-front pixels outside the face "
+                                    "window %s" % (name, sorted(outside)[:3]))
+    for eyes in ("grug_visuals_eyes_mask.png",
+                 "grug_visuals_eyes_undead_mask.png"):
+        px = layers[eyes].load()
+        if any(px[p][3] > 0 and p not in window for p in head_front):
+            problems.append("%s: an eye outside the face window" % eyes)
+    return problems
+
+
+# --------------------------------------------------------------------------
 # Review composites: a flat front paper doll, because nobody in this lane can
 # open the game and look at the mesh.
 # --------------------------------------------------------------------------
@@ -581,9 +1307,19 @@ def main():
     for path in written:
         print(path)
 
+    layers = build_layers()
+    for name in sorted(layers):
+        path = args.textures / name
+        layers[name].save(path, optimize=True)
+        print(path)
+
     problems = check_coverage(overlays)
     for problem in problems:
         print("COVERAGE: " + problem)
+    layer_problems = check_layer_alpha(layers)
+    for problem in layer_problems:
+        print("LAYERS: " + problem)
+    problems = problems + layer_problems
 
     if args.renders:
         args.renders.mkdir(parents=True, exist_ok=True)
