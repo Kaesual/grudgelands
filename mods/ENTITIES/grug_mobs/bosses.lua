@@ -629,7 +629,9 @@ for faction, race in pairs(GENERALS) do
 	general.description = garrison.general_name(faction_id)
 	general._grug_visual = function(self)
 		return {race = race_id, look = GENERAL_LOOKS[faction_id], royal = "guard",
-			level = self._grug_level, weapon_family = RACES[race_id].weapon}
+			level = self._grug_level, weapon_family = RACES[race_id].weapon,
+			-- His seat king's fixed weapon colours (visual only, lane B).
+			weapon_colors = RACES[race_id].colors}
 	end
 	-- A fresh copy of the guard's PvP-only loot (guard.lua).
 	general.drops = grug_mobs.guard_definition(faction_id, "", texture).drops
