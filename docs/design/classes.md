@@ -73,7 +73,9 @@ Core principles:
   same-faction player. Friendly skills resolve to a currently pointed valid
   ally within the skill's range and line of sight, otherwise the caster.
   There is no remembered-ally fallback; looking into empty space always selects
-  self (user ruling 2026-09-24).
+  self (user ruling 2026-09-24). An aimed ally the PvP flag rules out (an
+  unflagged helper, a flagged ally) is a refusal at no cost, never a self-cast
+  (Round 31 ruling 9).
   Service NPCs, guards and mobs are not player party
   members and cannot receive player heals or shields. `self`
   ignores all pointed and remembered objects and anchors the

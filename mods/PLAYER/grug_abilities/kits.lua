@@ -79,14 +79,28 @@ local function current_enemy_target(user, def)
 	return target
 end
 
--- A current visible ally receives support; all other aim resolves to self.
--- The shared ray checks exact selection-box range and solid blockers. Neither
--- a stale client pointed reference nor Target Frame memory grants authority.
+-- A current visible ally receives support; aim at no ally resolves to self.
+-- An aimed ally the PvP flag forbids (an unflagged helper, a flagged ally:
+-- pvp-plan ruling 6) is a refusal, never a self-cast (Round 31 ruling 9):
+-- nil plus the reason, so try_cast spends nothing. The shared ray checks
+-- exact selection-box range and solid blockers. Neither a stale client
+-- pointed reference nor Target Frame memory grants authority.
+grug_abilities.SUPPORT_REFUSED = "You must be flagged for PvP to support a flagged ally."
+
+function grug_abilities.support_refused(user, obj)
+	return obj ~= nil and obj ~= user and obj:is_player() and obj:get_hp() > 0
+		and grug_factions.same_faction(user, obj)
+		and not grug_pvp.can_support(user, obj)
+end
+
 function grug_abilities.resolve_friendly_target(user, pointed, def)
-	local target = grug_abilities.aimed_target(user, def)
+	local target, ray = grug_abilities.aimed_target(user, def)
 	if target then
 		grug_abilities.set_target(user, target, true)
 		return target
+	end
+	if ray.reason == "friendly" and grug_abilities.support_refused(user, ray.target) then
+		return nil, grug_abilities.SUPPORT_REFUSED
 	end
 	return user
 end

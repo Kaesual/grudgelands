@@ -371,6 +371,7 @@ grug_abilities = {
 	is_unlocked = function() return true end,
 	get_range = function() return 20 end,
 	valid_target = function(_, ref, kind) return ref == mob and kind == "hostile" end,
+	support_refused = function() return false end,
 	flash = function(_, msg) flashes[#flashes + 1] = msg end,
 	cancel_bow_draw = function() end,
 	start_bow_draw = function()
