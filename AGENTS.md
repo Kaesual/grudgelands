@@ -599,7 +599,8 @@ behavior from an old completion report or source-line citation.
   `CREDITS.md` (Mineclonia model).
 - Before importing anything, verify the license **in the source repo**
   (LICENSE/README files) — ContentDB metadata can be wrong (real case:
-  a CC BY-NC sound hidden inside the otherwise-clean ambience mod).
+  a CC BY-NC sound hidden inside the ambience mod, which on a closer look
+  also carries Pixabay-licensed and unmapped files).
 - Asset shopping lists with verified licenses:
   [docs/research/assets/](docs/research/assets/).
 - **Never copy assets or names 1:1 from existing commercial games** (their
