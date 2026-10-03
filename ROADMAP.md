@@ -222,7 +222,7 @@ B1–B7) settle the rest:
 
 ### Remaining work
 
-- [ ] **Seed-dependent POI placement** (decision before the next round):
+- [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03):
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-decide-before-the-next-round)).

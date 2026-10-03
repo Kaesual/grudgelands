@@ -635,10 +635,10 @@ none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
   (allowed by ruling 6); the enchant masks keep their source texture's
   licence (CC BY-SA derivatives); Smite keeps its name for now.
 
-### Seed-dependent POI placement (user, 2026-10-03; decide before the next round)
+### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
 
-Open decision: the user decides before the next round whether POIs and the
-fortresses stay at their fixed positions or are placed per seed. If they move,
+Set aside by the user (2026-10-03): optional, not planned for now; POIs and
+the fortresses stay at their fixed positions. If they move,
 the zone's mob-level distribution must be respected too (a POI's level band
 must fit the level field where it lands).
 
