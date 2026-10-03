@@ -1061,7 +1061,9 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   enough past the 16 m view_range of our longest-sighted ground mobs to
   size up what is about to notice you, and inside the ability targeting
   ranges so what you can frame is roughly what you can hit. The frame
-  also works on **players** (name + faction, faction-colored). It refreshes
+  also works on **players** (name + faction, faction-colored); an enemy
+  player also shows "(flagged)" or "(protected)" from their own PvP flag
+  (Round 31), red only while both are flagged and can fight, else gray. It refreshes
   twice a second from the crosshair's own skill ray when that ray reaches
   20 m and settles the question (nothing in reach, a wall, or a framable
   target first), otherwise from a 20 m ray of its own.

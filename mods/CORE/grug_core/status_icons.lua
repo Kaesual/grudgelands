@@ -110,14 +110,17 @@ icons.STATUS = {
 	scorched = def("debuff", "Scorched", "Burning ground", art("scorched")),
 
 	-- Neither buff nor debuff. in_combat is drawn next to the health bar by
-	-- combat_hud.lua, not on the status row (ruling 19). The PvP tags are
-	-- WP41's; their art and frame are ready for its set_status calls.
+	-- combat_hud.lua, not on the status row (ruling 19). The PvP flag
+	-- (Round 31, grug_pvp/hud.lua, a status source): pvp_tagged with the
+	-- countdown while the button or PvP contact flags the player, untimed
+	-- pvp_contested while the location does (its label names contested or
+	-- enemy territory).
 	in_combat = def("neutral", "In combat", "No eating, mounting or regeneration",
 		art("in_combat")),
-	pvp_tagged = def("neutral", "PvP", "Enemy players can attack you",
+	pvp_tagged = def("neutral", "PvP flagged", "Flagged enemies can attack you",
 		art("pvp_tagged")),
-	pvp_contested = def("neutral", "Contested", "PvP is forced here",
-		art("pvp_contested")),
+	pvp_contested = def("neutral", "Contested Territory",
+		"Flagged enemies can attack you", art("pvp_contested")),
 }
 
 -- The Effects tab's remaining time: coarse on purpose, so the cached page

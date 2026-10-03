@@ -456,3 +456,8 @@ core.register_chatcommand("pvpstate", {
 		return true, text
 	end,
 })
+
+-- The PvP tab and the status icons (Round 31 lane P2).
+local modpath = core.get_modpath(core.get_current_modname())
+dofile(modpath .. "/page.lua")
+dofile(modpath .. "/hud.lua")

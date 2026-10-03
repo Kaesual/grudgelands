@@ -342,9 +342,12 @@ the Round 19 top-centre text list:
   move immunity, Sprint, Sidestep and Renew (their skill icons), the six
   talent windows (Unbroken, Ruination, Whitehot, Turn Aside, Last Word,
   Untouchable), poisoned, slowed (one icon for every slow), rooted, stunned
-  and scorched (1.5 s per Dragon Scorch tick). Registered but not set by
-  anything yet: the Warding Draught (a buff, green; WP5) and the neutral PvP
-  tagged and PvP contested (gold; WP41 calls `set_status`).
+  and scorched (1.5 s per Dragon Scorch tick); the neutral (gold) PvP flag
+  (Round 31, `grug_pvp/hud.lua`, a status source read from
+  `grug_pvp.state`): "Contested Territory" or "Enemy Territory" (untimed)
+  while the location flags the player, "PvP flagged" with the countdown while
+  the button or PvP contact does. Registered but not set by anything yet: the
+  Warding Draught (a buff, green; WP5).
 - **The combat state is not a status.** It never takes a row slot or appears
   on the Effects tab: `grug_core/combat_hud.lua` draws a 32 px gold-framed
   crossed-swords icon right of the health bar, where the "Combat" text was.
@@ -431,7 +434,11 @@ The inventory gains separate Quests, Group and Map tabs, following `quests.md`,
 `parties.md` and `world_map.md`. Quests and Group each own a saved HUD toggle,
 default on; empty quest logs and ungrouped players have no corresponding HUD.
 Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
-our own minimap, default on (`world_map.md`).
+our own minimap, default on (`world_map.md`). Since Round 31 a PvP tab
+(right after Group, `grug_pvp/page.lua`) holds the "Flag me for PvP"
+button, the current state (safe, or flagged with the reason and the seconds
+left; PvP combat) and the PvP statistics; it is re-sent once a second only
+while its text changes.
 Party rows show name and HP only, with explicit offline state. HUD allocation
 uses the shared layout authority so party, quest and transient notices do not
 overlap existing combat bars, target information or status effects.

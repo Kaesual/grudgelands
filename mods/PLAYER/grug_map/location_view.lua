@@ -1,7 +1,8 @@
 -- Zone and town names for players (Round 28 Lane M1; docs/design/world_map.md
 -- "Zone and town names"): which name a position shows, when the entry banner
--- shows it, and where each zone's marker sits on the Map tab. PURE Lua: it
--- calls nothing from `core`, so the portable fixture loads the real file.
+-- shows it (with the PvP subtitle, Round 31), and where each zone's marker
+-- sits on the Map tab. PURE Lua: it calls nothing from `core`, so the
+-- portable fixture loads the real file.
 -- location.lua is the runtime around it.
 
 local L = {}
@@ -55,28 +56,57 @@ end
 -- Entry banner debounce (one state per player)
 -- ---------------------------------------------------------------------------
 
--- `shown` is what the last display said, `current` the last sampled text,
--- `busy_until` the end of the running display (nil when none runs).
-function L.new_state()
-	return {shown = nil, current = nil, busy_until = nil}
+-- The PvP subtitle under the banner's name (Round 31 lane P2, pvp-plan.md
+-- ruling 2), by the reason grug_pvp.state gives while the LOCATION flags the
+-- player; no subtitle for any other reason or none.
+L.SUBTITLES = {
+	location_contested = "Contested Territory — PvP enabled",
+	location_enemy = "Enemy Territory — PvP enabled",
+}
+
+function L.subtitle(reason)
+	return reason and L.SUBTITLES[reason] or nil
 end
 
--- A new sample `text` at time `now`. Returns the text to display now, or nil.
--- While a display runs nothing new starts.
-function L.sample(state, text, now)
+-- `shown` is what the last display said, `current` the last sampled text,
+-- `busy_until` the end of the running display (nil when none runs), `sub`
+-- the last sampled subtitle (nil when none). A display shows `shown` with the
+-- current `sub` under it.
+function L.new_state()
+	return {shown = nil, current = nil, busy_until = nil, sub = nil}
+end
+
+-- A new sample `text` (and subtitle `sub`) at time `now`. Returns the text to
+-- display now, or nil. While a display runs nothing new starts, but the
+-- subtitle follows the flag: one that appears restarts the display, one that
+-- goes is taken off (the name is displayed again with the new subtitle). A
+-- subtitle appearing on the same name is an entry too ("on entering a
+-- flagging area", which can be below y -700 inside one zone); one going
+-- away outside a display shows nothing.
+function L.sample(state, text, now, sub)
 	state.current = text
-	if state.busy_until or text == nil or text == state.shown then return nil end
+	local changed = sub ~= state.sub
+	local entered = changed and sub ~= nil
+	state.sub = sub
+	if state.busy_until then
+		if not changed then return nil end
+		if entered then state.busy_until = now + L.DISPLAY end
+		return state.shown
+	end
+	if text == nil or (text == state.shown and not entered) then return nil end
 	state.shown, state.busy_until = text, now + L.DISPLAY
 	return text
 end
 
--- Called while a display runs, with a fresh sample `text`. Before the display
--- ends: nil. When it ends: the next text to display if the player is now
--- somewhere other than what was just shown, else false (hide).
-function L.expire(state, text, now)
+-- Called while a display runs, with a fresh sample `text` and `sub`. Before
+-- the display ends: nil. When it ends: the next text to display if the
+-- player is now somewhere other than what was just shown (or has just
+-- entered a flagging area), else false (hide).
+function L.expire(state, text, now, sub)
 	if not state.busy_until or now < state.busy_until then return nil end
-	state.busy_until, state.current = nil, text
-	if text ~= nil and text ~= state.shown then
+	local entered = sub ~= nil and sub ~= state.sub
+	state.busy_until, state.current, state.sub = nil, text, sub
+	if text ~= nil and (text ~= state.shown or entered) then
 		state.shown, state.busy_until = text, now + L.DISPLAY
 		return text
 	end

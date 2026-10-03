@@ -18,6 +18,11 @@
 -- players, while the frame remains the viewer-specific faction-color signal. The
 -- colors are the same three, deliberately: one palette, one meaning
 -- ("green = safe for me, red = a problem, gray = nothing at stake").
+-- An ENEMY player also shows whether they can be fought (Round 31, pvp-plan
+-- ruling 1): "(flagged)" or "(protected)" after the faction, from their own
+-- PvP flag; the line is red only while the two of you can harm each other
+-- (both flagged), gray otherwise -- a protected enemy, or a flagged one while
+-- you are not, is nothing at stake.
 --
 -- Being punched by a mob deliberately does not open the frame (MVP:
 -- looking is enough).
@@ -45,6 +50,18 @@ local function con_color(mob_level, player_level)
 		return COLOR_GREEN
 	end
 	return COLOR_RED
+end
+
+-- The PvP marker of an enemy player and whether the pair can fight, or nil
+-- without grug_pvp. It does not depend on this mod (nor this one on it), so
+-- it is read at update time.
+local function pvp_marker(viewer, target)
+	local pvp = rawget(_G, "grug_pvp")
+	if not pvp then
+		return nil
+	end
+	return pvp.flagged(target) and "flagged" or "protected",
+		pvp.can_harm(viewer, target)
 end
 
 -- Relation of a framed PLAYER to the viewer. Factionless on either side is
@@ -167,6 +184,13 @@ local function update(player, frame)
 			-- UTF-8 written literally: \u{} escapes are LuaJIT-only
 			-- (luanti-lua.md).
 			text = text .. " — " .. label
+		end
+		if color == COLOR_RED then
+			local marker, can_fight = pvp_marker(player, target)
+			if marker then
+				text = text .. " (" .. marker .. ")"
+				color = can_fight and COLOR_RED or COLOR_GRAY
+			end
 		end
 	elseif target then
 		local mob = target
