@@ -6,19 +6,21 @@
 -- Loads the REAL grug_abilities/input.lua on a fake engine and the REAL
 -- grug_quests/labels.lua and grug_core/item_names.lua over the shipped data.
 -- Checks:
---   G  LMB hold, gather -> combat (the user's rule): a gather hold switches
---      to combat as soon as a valid hostile is in the crosshair and in reach
---      (zero pointing range, no dig, the hit goes to it); each hit goes to
---      the hostile now in the crosshair; no way back to gather while the
---      last targeted hostile lives (the crosshair back on the node digs
---      nothing); targeting another hostile makes that one the lock; its
---      death (or despawn, unload) allows gather again and the node digs;
---      a hostile in sight at that moment keeps the hold in combat without
---      a range rewrite; release and a slot change reset everything; a
---      non-harmable player, a friendly NPC or a hostile out of reach never
---      switches; a hold that began in combat never becomes gather; cost: no
---      combat ray while the crosshair rests on a solid node, one per step
---      behind a plant, loot or an actor.
+--   G  the LMB hold state machine (the user's rule and its ruling of
+--      2026-10-03): every hold starts as gather, a key-down on a valid
+--      hostile (a neutral mob too) starts it in combat with that foe; a held
+--      gather switches to combat on a threat in the crosshair and in reach
+--      (an aggressive mob, a mob fighting the player, a PvP-harmable player;
+--      never a neutral mob or critter, a protected player, an NPC or a
+--      hostile out of reach) and only while an attacking skill is selected
+--      (Ward and Blink never fire because a mob walked in, nor on a later
+--      air step); combat hits whatever hostile is in the crosshair, never
+--      digs beside a living foe, and the last hostile it aimed at is its foe;
+--      the foe dead, despawned or fled beyond 2 x reach returns it to gather
+--      (briefly out of reach keeps the lock); a hostile in sight then keeps
+--      combat without a range rewrite; release and a slot change reset; a
+--      key-down on air is gather; cost: no combat ray while the crosshair
+--      rests on a solid node, one per step behind a plant, loot or an actor.
 --   L  quest labels: every shipped kill objective names each target by its
 --      zone display name (a leader's zone, else the area's zone, else the
 --      quest's zone); how many quests and zones that changes (30 and 13 at
@@ -65,15 +67,19 @@ local hits = {} -- what the next ray returns, nearest first
 local swings, casts = {}, {}
 local joins, leaves = {}, {}
 
--- Actors. A mob has health and may despawn; a player has hp and may be
--- harmable (grug_pvp.can_harm) or not; an NPC is never hostile.
-local function new_mob(name)
-	local m = {kind = "mob", health = 10, gone = false, name = name}
-	function m:get_pos() return not self.gone and vector.new(0, 1, 2) or nil end
+-- Actors. A mob has health, a disposition (aggressive unless given), an
+-- attack target and a distance from the player (z), and may despawn; a
+-- player has hp and may be harmable (grug_pvp.can_harm) or not; an NPC is
+-- never hostile.
+local function new_mob(name, disposition)
+	local m = {kind = "mob", health = 10, gone = false, name = name, z = 2,
+		disposition = disposition or "aggressive"}
+	function m:get_pos() return not self.gone and vector.new(0, 1, self.z) or nil end
 	function m:is_player() return false end
 	function m:get_luaentity()
 		if self.gone then return nil end
-		return {name = "test:mob", health = self.health, _cmi_is_mob = true}
+		return {name = "test:mob", health = self.health, _cmi_is_mob = true,
+			_grug_disposition = self.disposition, attack = self.attack}
 	end
 	return m
 end
@@ -168,6 +174,7 @@ local inventory = {
 	end,
 }
 
+grug_mobs = {disposition = function(ent) return ent._grug_disposition end}
 grug_core = {
 	combat_eye_pos = function() return vector.copy(EYE) end,
 	is_stunned = function() return false end,
@@ -203,6 +210,8 @@ local defs = {
 	strike = {id = "strike", kind = "swing", target_kind = "hostile", name = "Strike"},
 	fireball = {id = "fireball", kind = "cast", target_kind = "hostile", name = "Fireball"},
 	loose = {id = "loose", kind = "cast", target_kind = "hostile", name = "Loose"},
+	blink = {id = "blink", kind = "cast", target_kind = "self", name = "Blink", repeat_policy = "once"},
+	ward = {id = "ward", kind = "cast", target_kind = "self", name = "Ward"},
 }
 grug_abilities = {
 	registered = defs,
@@ -246,6 +255,7 @@ local player = {
 		return true
 	end,
 	get_hp = function() return 20 end,
+	get_pos = function() return vector.new(0, 0, 0) end,
 	get_look_dir = function() return vector.new(0, 0, 1) end,
 }
 
@@ -275,7 +285,7 @@ local function range0() return main[wield_index].meta.range == "0" end
 local function can_dig() return input.can_dig(player, NODE.under, core.get_node_or_nil(NODE.under)) end
 local function swung_since(n) return #swings > n end
 
-do -- G1 gather -> combat on a hostile in the crosshair and in reach.
+do -- G1 a gather hold switches to combat on a threat in the crosshair and reach.
 	select("strike")
 	aim(NODE)
 	press()
@@ -283,62 +293,76 @@ do -- G1 gather -> combat on a hostile in the crosshair and in reach.
 	hold(3)
 	check(#swings == 0, "G1 gather does not swing")
 	local a = new_mob("a")
-	aim(at(a), NODE) -- a hostile steps in front of the node
+	aim(at(a), NODE) -- an aggressive mob steps in front of the node
 	hold()
 	check(range0() and writes == 1, "G1 switched to combat: zero range, one write")
 	check(#swings == 1, "G1 the same step's hit goes to the hostile")
 	check(not can_dig(), "G1 combat refuses the dig")
-	-- G2 no way back while it lives: the crosshair on the node digs nothing.
+	-- G2 a miss while fighting: the crosshair on the ground beside the living
+	-- foe digs nothing and swings at nothing.
 	aim(NODE)
 	local n = #swings
 	hold(5)
-	check(range0() and not can_dig() and #swings == n, "G2 last target alive: no gather, no swing at the node")
+	check(range0() and not can_dig() and #swings == n, "G2 a miss beside the living foe never digs")
 	-- G3 switching enemies is free; the new one becomes the lock.
-	local b = new_mob("b")
+	local b = new_mob("b", "neutral") -- once in combat any valid hostile is hit
 	aim(at(b), NODE)
 	hold(2)
-	check(swung_since(n), "G3 hits go to the hostile now in the crosshair")
-	a.health = 0 -- the first one dies: b is still the one to wait for
+	check(#swings > n, "G3 hits go to the hostile now in the crosshair, a neutral one too")
+	a.health = 0 -- the first one dies: b is the one to wait for
 	aim(NODE)
 	hold(3)
-	check(range0() and not can_dig(), "G3 retarget locks again until that one dies")
-	-- G4 its death allows gather again.
+	check(range0() and not can_dig(), "G3 retarget locks again until that one is gone")
 	b.health = 0
 	hold()
-	check(not range0() and can_dig(), "G4 last target dead: gather again, the node digs")
-	eq(writes, 2, "G4 range written twice in all (switch and back)")
-	-- G5 a new hostile switches again; despawn counts as dead.
+	check(not range0() and can_dig(), "G3 the last foe dead: gather again, the node digs")
+	eq(writes, 2, "G3 range written twice in all (switch and back)")
+	-- G4 despawned or unloaded counts as gone.
 	local c = new_mob("c")
 	aim(at(c), NODE)
 	hold()
-	check(range0(), "G5 a new hostile switches the gather hold again")
+	check(range0(), "G4 a new threat switches the gather hold again")
 	c.gone = true
 	aim(NODE)
 	hold()
-	check(not range0() and can_dig(), "G5 despawned / unloaded counts as dead")
-	-- G6 the lock dies while another hostile is in sight: stays combat, no flip.
-	local d, e = new_mob("d"), new_mob("e")
+	check(not range0() and can_dig(), "G4 despawned / unloaded counts as gone")
+	-- G5 fled: beyond FLEE_REACH (2) x reach (Strike: hand reach 4 m) = 8 m.
+	local d = new_mob("d")
 	aim(at(d), NODE)
 	hold()
-	local w = writes
+	d.z = 6 -- out of reach, inside the flee distance: the lock holds
+	aim(NODE)
+	hold(3)
+	check(range0() and not can_dig(), "G5 a foe briefly out of reach keeps the lock")
+	d.z = 7.9
+	hold()
+	check(range0(), "G5 still inside 8 m")
+	d.z = 8.2
+	hold()
+	check(not range0() and can_dig(), "G5 a foe beyond 8 m has fled: gather again")
+	-- G6 the foe dies while another hostile is in sight: combat, no rewrite.
+	local e, f = new_mob("e"), new_mob("f")
 	aim(at(e), NODE)
-	d.health = 0
+	hold()
+	local w = writes
+	aim(at(f), NODE)
+	e.health = 0
 	hold(2)
 	check(range0() and writes == w, "G6 another hostile in sight at the death: combat, no range rewrite")
-	e.health = 0
+	f.health = 0
 	aim(NODE)
 	hold()
 	check(not range0(), "G6 then its death returns to gather")
 	-- G7 release resets everything.
-	local f = new_mob("f")
-	aim(at(f), NODE)
+	local g = new_mob("g")
+	aim(at(g), NODE)
 	hold()
 	check(range0(), "G7 combat again")
 	release()
 	check(not range0(), "G7 release restores the range")
 	aim(NODE)
 	press()
-	check(not range0() and can_dig(), "G7 a new press on the node is gather although f lives")
+	check(not range0() and can_dig(), "G7 a new press on the node is gather although g lives")
 	release()
 end
 
@@ -347,8 +371,7 @@ do -- G8 a slot change resets everything.
 	main[2] = new_stack("grug_abilities:fireball")
 	aim(NODE)
 	press()
-	local g = new_mob("g")
-	aim(at(g), NODE)
+	aim(at(new_mob("h")), NODE)
 	hold()
 	check(range0(), "G8 switched on slot 1")
 	wield_index = 2
@@ -362,7 +385,7 @@ do -- G8 a slot change resets everything.
 	wield_index = 1
 end
 
-do -- G9 no switch for a protected player, a friendly NPC or out of reach.
+do -- G9 what never switches a gather hold, and what does.
 	select("strike")
 	aim(NODE)
 	press()
@@ -375,53 +398,111 @@ do -- G9 no switch for a protected player, a friendly NPC or out of reach.
 	aim(at(new_mob("far"), 10), NODE) -- 10 m: beyond Strike's reach (hand reach 4 m)
 	hold(3)
 	check(not range0() and #swings == 0, "G9 a hostile out of reach: no switch")
+	local neutral = new_mob("neutral", "neutral")
+	aim(at(neutral), NODE)
+	hold(3)
+	check(not range0() and #swings == 0, "G9 a passing neutral mob is not pulled")
+	aim(at(new_mob("rabbit", "critter")), NODE)
+	hold(3)
+	check(not range0() and #swings == 0, "G9 a critter is not pulled")
+	neutral.attack = player -- it fights this player now
+	aim(at(neutral), NODE)
+	hold()
+	check(range0() and #swings == 1, "G9 a neutral mob fighting the player: switch and hit")
+	release()
+	aim(NODE)
+	press()
 	aim(at(new_player(true)), NODE)
 	hold()
-	check(range0() and #swings == 1, "G9 a player PvP allows: switch and hit")
+	check(range0() and #swings == 2, "G9 a player PvP allows: switch and hit")
 	release()
 end
 
-do -- G10 a hold that began in combat never becomes gather.
+do -- G10 key-down on a hostile: the same machine, starting in combat.
 	select("strike")
-	local h = new_mob("h")
-	aim(at(h), NODE)
+	local m = new_mob("m", "neutral")
+	aim(at(m), NODE)
 	press()
-	check(range0(), "G10 key-down on a mob: combat")
-	h.health = 0
+	check(range0() and #swings == 1, "G10 key-down on a neutral mob: combat with it as the foe")
 	aim(NODE)
-	hold(4)
-	check(range0() and not can_dig(), "G10 the mob dead, the crosshair on a node: still combat, no dig")
+	hold(3)
+	check(range0() and not can_dig(), "G10 a miss beside the living foe never digs")
+	m.health = 0
+	hold()
+	check(not range0() and can_dig(), "G10 the foe dead: the hold gathers, the node digs")
+	local n = new_mob("n")
+	aim(at(n), NODE)
+	hold()
+	check(range0(), "G10 a threat in the crosshair: combat again")
+	n.health = 0
+	aim(NODE)
+	hold()
+	check(not range0() and can_dig(), "G10 and gather after it")
+	release()
+	-- Key-down on air starts as gather and switches like any gather hold.
+	local before = #swings
+	aim()
+	press()
+	check(not range0() and #swings == before, "G10 key-down on air: gather")
+	aim(at(new_mob("o")))
+	hold()
+	check(range0() and #swings == before + 1, "G10 a threat in sight: combat")
 	release()
 end
 
-do -- G11 cost: no combat ray on a solid node, one per step otherwise.
+do -- G11 a self or support skill never fires because a mob walked in.
+	select("ward")
+	aim(NODE)
+	press()
+	aim(at(new_mob("p")), NODE)
+	hold(4)
+	check(not range0() and #casts == 0 and #swings == 0, "G11 Ward: the hold stays gather, nothing cast")
+	aim() -- the crosshair to air while held: no empty-space self cast either
+	hold(3)
+	check(#casts == 0, "G11 no self cast on a later air step")
+	release()
+	select("blink")
+	aim(NODE)
+	press()
+	aim(at(new_mob("q")), NODE)
+	hold(2)
+	aim()
+	hold(2)
+	check(#casts == 0 and not range0(), "G11 Blink: a miner is never teleported")
+	release()
+	aim() -- a key-down on air still casts the self skill once
+	press()
+	check(#casts == 1, "G11 a fresh press on air casts Blink once")
+	release()
+end
+
+do -- G12 cost: no combat ray on a solid node, one per step otherwise.
 	select("strike")
 	aim(NODE)
 	press()
 	combat_rays, raycasts = 0, 0
 	hold(10)
-	eq(combat_rays, 0, "G11 gather on a solid node: no combat ray")
-	eq(raycasts, 10, "G11 gather on a solid node: the hand ray only")
+	eq(combat_rays, 0, "G12 gather on a solid node: no combat ray")
+	eq(raycasts, 10, "G12 gather on a solid node: the hand ray only")
 	aim(GRASS, NODE)
 	combat_rays = 0
 	hold(10)
-	eq(combat_rays, 10, "G11 behind a plant: one combat ray per step")
+	eq(combat_rays, 10, "G12 behind a plant: one combat ray per step")
 	aim(at(drop), NODE)
 	combat_rays = 0
 	hold(10)
-	eq(combat_rays, 10, "G11 behind loot: one combat ray per step")
-	local m = new_mob("behind_grass")
-	aim(GRASS, at(m, 1.2), NODE)
+	eq(combat_rays, 10, "G12 behind loot: one combat ray per step")
+	aim(GRASS, at(new_mob("behind_grass"), 1.2), NODE)
 	hold()
-	check(range0(), "G11 a hostile behind a plant switches the hold")
+	check(range0(), "G12 a threat behind a plant switches the hold")
 	release()
-	-- A Fireball (20 m) gather hold switches on a hostile 10 m away in the air.
+	-- A Fireball (20 m) gather hold switches on a threat 10 m away.
 	select("fireball")
 	aim(NODE)
 	press()
 	aim(at(new_mob("far"), 10))
 	hold()
-	check(range0() and #casts == 1, "G11 a 20 m skill reaches 10 m: switch and cast")
+	check(range0() and #casts == 1, "G12 a 20 m skill reaches 10 m: switch and cast")
 	release()
 end
 

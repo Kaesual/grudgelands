@@ -13,9 +13,9 @@
 --      message at once; the cast-gate, swing-gate, try_cast, tap, empty-air
 --      and bow-start refusals all reach the flash line; held retries of a
 --      failed cast at most every 0.25 s.
---   L  LMB mode at key-down (ruling 14): combat on a mob (plants never hide
---      it), on air and on nodes bare hands cannot dig; gather on a
---      hand-diggable node (protected too) or a dropped item; combat holds
+--   L  LMB mode at key-down (ruling 14, Round 32): combat on a mob (plants
+--      never hide it); gather otherwise (a hand-diggable or protected node,
+--      a dropped item, air, a node bare hands cannot dig); combat holds
 --      zero the pointing range once and never dig, gather holds never swing;
 --      the grace for a native press; slot change, leave and join restore; the
 --      bow shares the zero range. The Round 32 gather -> combat switch within
@@ -419,6 +419,7 @@ local player = {
 		return true
 	end,
 	get_hp = function() return 20 end,
+	get_pos = function() return vector.new(0, 0, 0) end,
 	get_look_dir = function() return vector.new(0, 0, 1) end,
 }
 
@@ -659,7 +660,7 @@ do -- L5 air, a non-hand node and a dropped item.
 	select("blink")
 	aim()
 	press()
-	check(range_of(1) == "0" and casts[1] == "blink", "L5 air: combat, one empty-space cast")
+	check(range_of(1) == "" and casts[1] == "blink", "L5 air: gather (Round 32), one empty-space cast")
 	release()
 	hold(4)
 	check(range_of(1) == "", "L5 air hold restored")
@@ -667,7 +668,7 @@ do -- L5 air, a non-hand node and a dropped item.
 	node_at[pkey(NODE_HIT.under)] = "test:stone"
 	aim(NODE_HIT)
 	press()
-	check(range_of(1) == "0", "L5 a node bare hands cannot dig: combat")
+	check(range_of(1) == "" and #swings == 0, "L5 a node bare hands cannot dig: gather (Round 32), no swing")
 	release()
 	hold(4)
 	node_at[pkey(NODE_HIT.under)] = nil

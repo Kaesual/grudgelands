@@ -188,75 +188,69 @@ return function(api)
 		s.failed[def.id] = now
 		return false
 	end
-	-- LMB mode (Round 28 ruling 14, Round 32 §2.4), decided at key-down:
-	-- "combat" when the combat ray (plants and dropped loot never hide a mob)
-	-- finds a valid hostile within max(hand reach, skill range); otherwise
-	-- "gather" when the hand ray's first thing within reach is a hand-diggable
-	-- or a protected node (the client keeps pointing, so the Round 24
-	-- protection hint stays) or a dropped item; otherwise "combat" (air, out
-	-- of reach, anything else). Combat never digs (zero pointing range,
-	-- can_dig refuses); gather never swings. A gather hold becomes combat as
-	-- soon as a valid hostile is in the crosshair and in reach, and gathers
-	-- again only once the last hostile it targeted is dead (`s.foe`); a hold
-	-- that began in combat stays combat.
+	-- The LMB hold (Round 28 ruling 14, Round 32 §2.4) is one state machine:
+	-- "gather" or "combat" locked on a foe (`s.foe`, the last valid hostile
+	-- the hold aimed at). Every hold starts as gather; at key-down a valid
+	-- hostile the combat ray finds (plants and dropped loot never hide a mob)
+	-- within max(hand reach, skill range) makes it combat at once. Later in
+	-- the hold only a threat does -- a PvP-harmable player, an aggressive mob
+	-- or one fighting this player, never a passing neutral mob -- and only
+	-- while the selected skill attacks hostiles (a self or support skill
+	-- never fires because a mob walked into the crosshair). Combat returns to
+	-- gather once its foe is gone: dead, despawned or unloaded, or farther
+	-- than FLEE_REACH times the reach (a foe briefly stepping out of reach
+	-- keeps the lock). Combat never digs (zero pointing range, can_dig
+	-- refuses); gather never attacks.
+	local FLEE_REACH = 2
 	local function combat_reach(player, def)
 		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
 		if def.id == "loose" then return HAND_RANGE end
 		return math.max(HAND_RANGE, Q.get_range(player, def))
 	end
-	local function hostile_in_sight(player, def)
-		local r = grug_core.combat_ray(player, combat_reach(player, def))
-		return r.status == "target" and Q.valid_target(player, r.target, "hostile") and
-			r.target or nil
-	end
-	-- Dead, despawned or unloaded (an invalid ObjectRef has no position).
-	local function alive(ref)
-		if not ref:get_pos() then return false end
-		if ref:is_player() then return ref:get_hp() > 0 end
+	local function threatens(player, ref)
+		if ref:is_player() then return true end -- valid_target asked grug_pvp.can_harm
 		local ent = ref:get_luaentity()
-		return ent ~= nil and (ent.health or 0) > 0
+		return ent ~= nil and (ent.attack == player or grug_mobs.disposition(ent) == "aggressive")
 	end
-	local function decide_mode(player, def)
-		if hostile_in_sight(player, def) then
-			return "combat"
+	-- The valid hostile the crosshair finds within `reach` (only a threat
+	-- unless `any`), or nil. `hit` is the step's hand ray, which reaches at
+	-- least as far: a walkable node first (or nothing) hides every actor, so
+	-- the combat ray runs only behind plants, loot and actors.
+	local function hostile_ahead(player, reach, hit, any)
+		if not hit then return nil end
+		if hit.type == "node" then
+			local node = core.get_node_or_nil(hit.under)
+			local ndef = node and core.registered_nodes[node.name]
+			if ndef and ndef.walkable then return nil end
 		end
-		local hit, distance = ray(player, HAND_RANGE)
-		if hit and distance <= HAND_RANGE then
-			if hit.type == "object" then
-				local ent = hit.ref and hit.ref:get_luaentity()
-				if ent and ent.name == "__builtin:item" then return "gather" end
-			elseif hand_diggable(hit, distance) or
-					core.is_protected(hit.under, player:get_player_name()) then
-				return "gather"
-			end
+		local r = grug_core.combat_ray(player, reach)
+		local target = r.status == "target" and Q.valid_target(player, r.target, "hostile") and r.target
+		return target and (any or threatens(player, target)) and target or nil
+	end
+	local function foe_gone(player, foe, reach)
+		local pos = foe:get_pos() -- an invalid ObjectRef (despawned, unloaded) has none
+		if not pos then return true end
+		if foe:is_player() then
+			if foe:get_hp() <= 0 then return true end
+		else
+			local ent = foe:get_luaentity()
+			if not ent or (ent.health or 0) <= 0 then return true end
 		end
-		return "combat"
+		local own = player:get_pos()
+		local dx, dy, dz = pos.x - own.x, pos.y - own.y, pos.z - own.z
+		local far = FLEE_REACH * reach
+		return dx * dx + dy * dy + dz * dz > far * far
 	end
 	-- What a combat hold acts on: the combat ray's first actor, else nothing.
-	-- A hold that came from gather remembers the last valid hostile it aimed at.
-	local function combat_hit(player, def, s)
-		local r = grug_core.combat_ray(player, combat_reach(player, def))
+	-- A valid hostile there becomes the hold's foe.
+	local function combat_hit(player, reach, s)
+		local r = grug_core.combat_ray(player, reach)
 		if not r.target or r.reason == "out_of_range" then return nil end
-		if s.foe and r.status == "target" and Q.valid_target(player, r.target, "hostile") then
+		if r.status == "target" and Q.valid_target(player, r.target, "hostile") then
 			s.foe = r.target
 		end
 		return {type = "object", ref = r.target,
 			intersection_point = r.pointed and r.pointed.intersection_point}, r.distance or 0
-	end
-	-- One cheap test per held gather step: a walkable node first (or nothing)
-	-- on the hand ray, which reaches at least as far as the combat ray, hides
-	-- every actor, so the combat ray runs only behind plants, loot and actors.
-	local function gather_to_combat(player, def, s, hit)
-		if not hit then return end
-		if hit.type == "node" then
-			local node = core.get_node_or_nil(hit.under)
-			local ndef = node and core.registered_nodes[node.name]
-			if ndef and ndef.walkable then return end
-		end
-		local foe = hostile_in_sight(player, def)
-		if not foe then return end
-		s.mode, s.foe, s.pending, s.dig = "combat", foe, nil, nil
-		hold_range(player, "combat", true)
 	end
 	local function interactive(hit, distance)
 		if not hit or distance > HAND_RANGE then return false end
@@ -351,13 +345,14 @@ return function(api)
 		end
 		if hit and hit.type == "object" then
 			s.dig = nil
-			-- Gather never swings or casts at an actor that crosses the ray.
-			if s.mode == "gather" then return end
 			if Q.valid_target(player, hit.ref, "friendly") then
 				if support(def) and not def.offensive then cast(player, def, s, hit, fresh) end
 				return
 			end
 			if Q.valid_target(player, hit.ref, "hostile") then
+				-- Gather never attacks (a passing neutral mob is not pulled); a
+				-- hostile that should be fought has made the hold combat.
+				if s.mode == "gather" then return end
 				if def.kind == "swing" then
 					local refusal = api.swing_refusal(player, def)
 					if refusal and fresh then report(player, s, refusal) end
@@ -389,7 +384,8 @@ return function(api)
 			return
 		end
 		s.dig = nil
-		if s.mode == "gather" and hit and hit.type == "node" then
+		if s.mode == "gather" and hit and hit.type == "node" and distance <= HAND_RANGE and
+				core.is_protected(hit.under, player:get_player_name()) then
 			-- A gather press on a node the hand may not dig (protected town
 			-- ground): a short tap still casts a self/support skill (Blink in a
 			-- town); holding only earns the protection hint.
@@ -399,7 +395,9 @@ return function(api)
 			end
 			return
 		end
-		if s.mode ~= "gather" and not s.empty_used and support(def) then
+		-- Nothing to act on (air, out of reach, a node bare hands cannot dig):
+		-- one self/support activation per press, at key-down or in combat.
+		if (fresh or s.mode == "combat") and not s.empty_used and support(def) then
 			s.empty_used = true
 			cast(player, def, s, nil, true)
 		end
@@ -464,21 +462,29 @@ return function(api)
 			s.rmb, s.down = false, down
 			return -- Scout settles the release before another weapon action.
 		end
-		if down and def and not s.mode then
-			-- Key-down (or a press first seen after an RMB action): decide the mode.
-			s.mode, s.mode_at = decide_mode(player, def), core.get_us_time()
-			if s.mode == "combat" then hold_range(player, "combat", true) end
-		elseif down and def and s.mode == "gather" then
-			gather_to_combat(player, def, s, hit)
-		end
-		if down and def and s.mode == "combat" then
-			hit, distance = combat_hit(player, def, s)
-			if s.foe and not alive(s.foe) then
-				-- The last hostile this gather hold aimed at (combat_hit keeps it
-				-- current) is dead and none is in sight: gather again.
-				hold_range(player, "combat", false)
-				s.mode, s.foe = "gather", nil
-				hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def)))
+		if down and def then
+			local reach = combat_reach(player, def)
+			-- Key-down (or a press first seen after an RMB action) starts as gather.
+			local starting = not s.mode
+			if starting then s.mode, s.mode_at = "gather", core.get_us_time() end
+			if s.mode == "gather" and (starting or def.target_kind == "hostile") then
+				local foe = hostile_ahead(player, reach, hit, starting)
+				if foe then
+					s.mode, s.foe, s.pending, s.dig = "combat", foe, nil, nil
+					-- A switch mid-hold never brings an empty-space self cast along.
+					if not starting then s.empty_used = true end
+					hold_range(player, "combat", true)
+				end
+			end
+			if s.mode == "combat" then
+				hit, distance = combat_hit(player, reach, s)
+				if foe_gone(player, s.foe, reach) then
+					-- No hostile in sight (combat_hit keeps the foe current) and the
+					-- last one is gone: gather again.
+					hold_range(player, "combat", false)
+					s.mode, s.foe = "gather", nil
+					hit, distance = ray(player, math.max(HAND_RANGE, Q.get_range(player, def)))
+				end
 			end
 		end
 		if down and not s.down then
