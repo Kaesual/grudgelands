@@ -17,24 +17,32 @@
 --   5. every road of the network routes;
 --   6. every PvP anchor stands in its own zone: its fitting square lies in
 --      the zone and on land (the zone field's own keypoint test), its core
---      is dry (no lake or river) and fitted flat;
+--      is dry (no lake or river) and fitted flat, and the natural ground
+--      under the core varies by at most RELIEF (40) nodes (the terrain
+--      field lays a calm bowl only above 40: up to that the core is cut into
+--      the slope and the collar returns to the ground);
 --   7. no road or trail surface comes within ROAD_GAP (6) nodes of what a
 --      PvP POI builds (its blueprint box, `r7_settlement.BOUNDS`);
---   8. each fortress stands beside the middle road (Highcourt - Gor
---      Drazhak): the road passes within NEAR (48) nodes of its walls;
+--   8. each fortress stands on the Battlegrounds half of its zone, beside
+--      the middle road (Highcourt - Gor Drazhak: within NEAR (120) nodes of
+--      its walls) without bending it: no routing cell the middle road runs
+--      through lies within the router's round reserve (core / 2 + 10); and a
+--      trail leaves the fortress through its gate (its first point straight
+--      in front of the gate) and joins a road;
 --   9. each camp's centre lies within its level band (`camp_levels`) give or
 --      take one level (a rough fit; the strict hits are reported);
 --  10. the world protection covers each PvP POI's blueprint box plus the
---      10-node margin (kind "fortress" or "camp" 10 nodes out, nothing
+--      10-node margin (kind "fortress" or "war_camp" 10 nodes out, nothing
 --      else 12 nodes out on at least two sides away from roads).
--- Prints per seed each POI's fitted height, its level (camps) or the middle
--- road's distance (fortresses) and the strict level hits, then
+-- Prints per seed each POI's fitted height, the natural relief under its
+-- core, its level (camps) or the middle road's distance and the gate
+-- trail's length (fortresses) and the strict level hits, then
 -- "R31 M SPACING PASS checks=<n>", or raises.
 local repo = arg[1] or "."
 local seeds = {}
 for i = 2, #arg do seeds[#seeds + 1] = arg[i] end
 if #seeds == 0 then seeds = {"42", "7", "2026", "1234", "99999", "314159"} end
-local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, NEAR = 120, 16, 128, 6, 48
+local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, NEAR, RELIEF = 120, 16, 128, 6, 120, 40
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1
@@ -95,6 +103,7 @@ local log_lines = {}
 _G.core = _G.core or {}
 core.log = function(level, message) log_lines[#log_lines + 1] = {level, message} end
 local world = dofile(repo .. "/tools/r25_road_poi/world.lua")
+local reliefs = {}
 for _, seed in ipairs(seeds) do
 	local t0 = os.clock()
 	log_lines = {}
@@ -131,14 +140,21 @@ for _, seed in ipairs(seeds) do
 			check(S.water_class_at(x, z) ~= "deep_ocean" and S.water_class_at(x, z) ~= "coastal_shelf",
 				label .. ": fitting corner on land")
 		end
+		local low, high
 		for z = p.z - p.core_half, p.z + p.core_half - 1, 2 do
 			for x = p.x - p.core_half, p.x + p.core_half - 1, 2 do
 				local class, _, _, _, _, terrain_y = column(x, z)
 				check(class == "land" and terrain_y == a.y,
 					("%s: core (%d,%d) dry and flat (%s, %s vs %d)"):format(label, x, z,
 						tostring(class), tostring(terrain_y), a.y))
+				local y = floor(W.height.natural_height_at(x, z))
+				low, high = low and min(low, y) or y, high and max(high, y) or y
 			end
 		end
+		local relief = high - low
+		check(relief <= RELIEF, ("%s: natural relief %d under the core"):format(label, relief))
+		reliefs[row.key] = reliefs[row.key] or {}
+		reliefs[row.key][#reliefs[row.key] + 1] = relief
 		-- 7. roads keep off what the POI builds
 		local near_middle = math.huge
 		for _, r in ipairs(W.built.roads) do
@@ -156,10 +172,30 @@ for _, seed in ipairs(seeds) do
 				end
 			end
 		end
-		-- 8. fortress beside the middle road
+		-- 8. fortress beside the middle road, the road unbent, the gate trail
+		local spur
 		if row.kind == "pvp_fortress" then
+			check((p.z < 0) == (row.faction == "accord") and abs(p.z) <=
+				(abs(zone_by_id[row.zone_id].hub.z) + 60), label .. ": on the Battlegrounds half")
 			check(near_middle <= NEAR, ("%s: the middle road passes %.0f nodes off the walls"):format(
 				label, near_middle))
+			local reserve = p.core_half + 10
+			for i = 1, #middle.X do
+				local gx = floor(middle.X[i] / 16 + 0.5) * 16
+				local gz = floor(middle.Z[i] / 16 + 0.5) * 16
+				local dx, dz = gx - p.x, gz - p.z
+				check(dx * dx + dz * dz > reserve * reserve,
+					label .. ": the middle road's cells keep out of the fortress reserve")
+			end
+			local gate_x = p.x > 0 and -1 or 1
+			for _, r in ipairs(W.built.roads) do
+				if r.a == p.anchor.id then spur = r end
+			end
+			check(spur and spur.kind == "trail", label .. ": a trail leaves the fortress")
+			local fx, fz = spur.X[1] - p.x, spur.Z[1] - p.z
+			check(fx * gate_x >= p.core_half and abs(fz) <= 3,
+				("%s: the trail starts in front of the gate (%.1f, %.1f)"):format(label, fx, fz))
+			check(spur.parent ~= nil, label .. ": the trail joins a road")
 		end
 		-- 9. level band
 		local level = S.surface_mob_level_at(p.x, p.z)
@@ -171,7 +207,7 @@ for _, seed in ipairs(seeds) do
 			if level >= lo and level <= hi then strict = strict + 1 end
 		end
 		-- 10. protection with the margin
-		local kind = row.kind == "pvp_fortress" and "fortress" or "camp"
+		local kind = row.kind == "pvp_fortress" and "fortress" or "war_camp"
 		local kind_at = W.protection.kind_at
 		check(kind_at(p.x, a.y + 1, p.z) == kind, label .. ": core protected as " .. kind)
 		local edge = p.box_half
@@ -185,12 +221,19 @@ for _, seed in ipairs(seeds) do
 			if k12 == nil then open_sides = open_sides + 1 end
 		end
 		check(open_sides >= 2, label .. ": open ground beyond the margin")
-		parts[#parts + 1] = ("%s y%d%s%s"):format(row.key:gsub("^pvp_", ""):gsub("_escarpment", "")
-			:gsub("_causeway", ""):gsub("_line", ""):gsub("_canopy", ""), a.y,
-			row.band and (" L" .. level) or "",
-			row.kind == "pvp_fortress" and (" road+" .. floor(near_middle)) or "")
+		parts[#parts + 1] = ("%s y%d r%d%s%s"):format(row.key:gsub("^pvp_", "")
+			:gsub("_escarpment", ""):gsub("_causeway", ""):gsub("_line", ""):gsub("_canopy", ""),
+			a.y, relief, row.band and (" L" .. level) or "",
+			spur and (" road+%d trail %d%s"):format(floor(near_middle), #spur.X,
+				spur.parent == middle.id and " to the middle road" or "") or "")
 	end
 	print(("seed %s: %.1f s, camps in band %d of 16; %s"):format(seed, os.clock() - t0, strict,
 		table.concat(parts, ", ")))
+end
+print("natural relief under each core, per seed in order:")
+for _, p in ipairs(pvp) do
+	local list, worst = reliefs[p.row.key], 0
+	for _, r in ipairs(list) do worst = max(worst, r) end
+	print(("  %-44s %s  (worst %d)"):format(p.row.key, table.concat(list, " "), worst))
 end
 print(("R31 M SPACING PASS checks=%d"):format(checks))

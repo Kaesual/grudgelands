@@ -10,15 +10,18 @@
 --     row's zone and on dry land (no sea, no lake, no river);
 --   * its fitting square keeps 16 nodes off every other anchor's fitting
 --     square (a capital's 532 reserved square, a start's 152 town square);
---   * every road's surface stays outside the round reserved area the road
+--   * no road of today's network has to bend: the 16-node routing cell
+--     under every road point stays 8 nodes outside the round reserve the
 --     router keeps free round a POI core (core / 2 + 10, `road_layout.lua`
---     inputs) plus 4 nodes, so the existing network does not have to bend;
+--     inputs), and the road surface keeps 6 nodes off the blueprint box;
 --   * a camp's centre and its core corners stand inside the camp's level
 --     band (`r31_pvp_catalog.camp_levels`);
 -- and reports the ground's relief under the core (highest minus lowest
--- terrain y, 2-node step) and, for a fortress, how far its core edge stands
+-- terrain y, 2-node step) and, for a fortress, how far its walls stand
 -- from the middle road (Highcourt - Gor Drazhak). One line per passing
--- centre: `key x z relief road_gap`. `pick.lua` combines the seeds.
+-- centre: `key x z relief road_gap zone_out level_min level_max
+-- level_centre wet`. `pick.lua` combines the seeds. ONLY=<key,...> limits
+-- the search to some rows.
 local repo, seed, out_file = arg[1], arg[2], arg[3]
 assert(repo and seed and out_file, "usage: candidates.lua REPO SEED OUT_FILE")
 local dir = repo .. "/mods/MAPGEN/grug_mapgen/wp40"
@@ -33,10 +36,14 @@ for _, p in ipairs(source.anchor_profiles) do prof[p.id] = p end
 local zone_index, zone_row = {}, {}
 for _, z in ipairs(source.zones) do zone_index[z.id] = z.numeric_id; zone_row[z.id] = z end
 
-local GRID, ZONE_MARGIN, ANCHOR_GAP, ROAD_PAD = 8, 24, 16, 4
+local GRID, ZONE_MARGIN, ANCHOR_GAP, ROAD_GAP = 8, 24, 16, 6
+-- the blueprint boxes' half sizes (r7_settlement.BOUNDS)
+local BOX_HALF = {pvp_fortress = 24, pvp_camp_low = 11, pvp_camp_high = 13}
 local DOMAIN = {
-	elandor_ashenward_march = {-256, 256, -1184, -344},
-	kragmar_bannerbreak_mesa = {-256, 256, 344, 1184},
+	-- the fortresses on the Battlegrounds half of their zone (user ruling
+	-- after the first preview: toward the contested middle)
+	elandor_ashenward_march = {-448, 448, -760, -344},
+	kragmar_bannerbreak_mesa = {-448, 448, 344, 760},
 	front_gravesalt_escarpment = {-2560, -1360},
 	front_broken_causeway = {-1376, -16},
 	front_shattered_line = {16, 1376},
@@ -101,7 +108,7 @@ for _, r in ipairs(W.built.roads) do
 		local n = max(1, floor(sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1)) / 4))
 		for k = 0, n - 1 do
 			local px, pz = x1 + (x2 - x1) * k / n, z1 + (z2 - z1) * k / n
-			road_points[#road_points + 1] = {px, pz, r.hw or 3, is_middle}
+			road_points[#road_points + 1] = {px, pz, r.hw or 3, is_middle, r.kind == "trail"}
 			if is_middle then middle[#middle + 1] = {px, pz} end
 		end
 	end
@@ -172,7 +179,17 @@ end
 
 local out = assert(io.open(out_file, "w"))
 local passed = {}
+-- ONLY=<key,key,...> limits the search to those catalogue rows
+local only
+if os.getenv("ONLY") then
+	only = {}
+	for key in os.getenv("ONLY"):gmatch("[^,]+") do only[key] = true end
+end
+local rows = {}
 for _, row in ipairs(catalog.rows) do
+	if not only or only[row.key] then rows[#rows + 1] = row end
+end
+for _, row in ipairs(rows) do
 	local p = prof[row.kind]
 	local core_half, fit_half = p.building_core_width / 2, p.fitting_width / 2
 	local zid = row.zone_id
@@ -184,7 +201,11 @@ for _, row in ipairs(catalog.rows) do
 	end
 	local lo, hi
 	if row.band then lo, hi = catalog.camp_levels(z_row.level_min, z_row.level_max, row.band) end
-	local reserve = core_half * sqrt(2) + 10 + ROAD_PAD
+	-- the road router blocks every routing cell whose centre lies within
+	-- core / 2 + 10 of a POI (`road_layout.lua` inputs, `round`): a road
+	-- whose cells keep 8 more nodes off keeps its course
+	local reserve = core_half + 10 + 8
+	local box_half = BOX_HALF[row.kind]
 	local count = 0
 	for cz = z0, z1, GRID do
 		for cx = x0, x1, GRID do
@@ -222,12 +243,22 @@ for _, row in ipairs(catalog.rows) do
 				end
 			end
 			if ok then
-				for _, q in ipairs(roads_near(cx, cz, reserve + 8)) do
-					local dx, dz = q[1] - cx, q[2] - cz
-					-- a fortress bends the middle road round itself
-					if q[4] and row.kind == "pvp_fortress" then dx = math.huge end
-					local lim = reserve + q[3]
-					if dx * dx + dz * dz < lim * lim then ok = false break end
+				for _, q in ipairs(roads_near(cx, cz, reserve + 24)) do
+				-- a trail (routed last, to the nearest road) may route round a
+				-- fortress; the roads may not
+				if not (q[5] and row.kind == "pvp_fortress") then
+					-- the 16-node routing cell the road runs through stays outside
+					-- the router's round reserve (+ 8 for the smoothing)
+					local gx, gz = floor(q[1] / 16 + 0.5) * 16, floor(q[2] / 16 + 0.5) * 16
+					local dx, dz = gx - cx, gz - cz
+					if dx * dx + dz * dz <= reserve * reserve then ok = false break end
+					-- and the road surface keeps ROAD_GAP off the blueprint box
+					local bx = max(0, abs(q[1] - cx) - box_half)
+					local bz = max(0, abs(q[2] - cz) - box_half)
+					if bx * bx + bz * bz < (ROAD_GAP + q[3]) * (ROAD_GAP + q[3]) then
+						ok = false break
+					end
+				end
 				end
 			end
 			local lv_min, lv_max, lv_centre = 0, 0, 0
@@ -252,8 +283,9 @@ for _, row in ipairs(catalog.rows) do
 				if row.kind == "pvp_fortress" then
 					local best = math.huge
 					for _, q in ipairs(middle) do
-						local dx = max(0, abs(q[1] - cx) - core_half)
-						local dz = max(0, abs(q[2] - cz) - core_half)
+						-- from the walls (the blueprint box, half 24)
+						local dx = max(0, abs(q[1] - cx) - 24)
+						local dz = max(0, abs(q[2] - cz) - 24)
 						best = min(best, sqrt(dx * dx + dz * dz))
 					end
 					road_gap = floor(best)

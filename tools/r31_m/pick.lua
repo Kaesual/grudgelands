@@ -16,6 +16,10 @@ local catalog = dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lu
 local SPACING, NEAR = tonumber(os.getenv("SPACING") or "160"), tonumber(os.getenv("NEAR") or "40")
 local ZONE_OUT = tonumber(os.getenv("ZONE_OUT") or "60")
 local WET = tonumber(os.getenv("WET") or "20")
+-- the worst relief (highest minus lowest natural ground under the core, on
+-- any seed) a centre may have: well under the 40 at which the terrain field
+-- lays a calm bowl (`terrain_data.lua` poi_bowl_relief)
+local RELIEF = tonumber(os.getenv("RELIEF") or "30")
 -- boat-path mainland ends: a camp keeps off the harbours
 local BOAT_GAP = 128
 local boat_ends = {}
@@ -66,7 +70,7 @@ for _, row in pairs(seen) do
 		if dx * dx + dz * dz < BOAT_GAP * BOAT_GAP then harbour = true end
 	end
 	if row.n == #files and (row.gap < 0 or row.gap <= NEAR) and row.level_near == #files and
-			row.out <= ZONE_OUT and row.wet <= WET and not harbour then
+			row.out <= ZONE_OUT and row.wet <= WET and not harbour and row.relief <= RELIEF then
 		local list = by_key[row.key] or {}
 		by_key[row.key] = list
 		list[#list + 1] = row
