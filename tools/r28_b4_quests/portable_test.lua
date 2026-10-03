@@ -157,7 +157,10 @@ local purse = {}
 grug_money = {MAX = 1000000, format = function(copper) return copper .. " copper" end,
 	get = function(player) return purse[player:get_player_name()] or 0 end,
 	add = function(player, copper) purse[player:get_player_name()] = (purse[player:get_player_name()] or 0) + copper end}
-grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end}
+grug_factions = {get_faction = function() return "accord" end, same_faction = function() return false end,
+	display_name = function(id) return "The " .. id end}
+-- Round 31: which NPCs serve whom (the real rule on the fake faction table).
+dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
 local zone_at = {}

@@ -272,12 +272,17 @@ grug_core = {
 	end,
 	settlement_sockets_at = function(key) return key == "s" and sockets or {} end,
 	zone_authority_installed = function() return false end,
+	faction_ids = {"accord", "throng"},
+	start_identities = function() return {{race_id = "human", faction_id = "accord"}} end,
 }
 dofile(repo .. "/mods/CORE/grug_core/hud_layout.lua")
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end,
 	UI = {width = 10.4, height = 11.1}}
-grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
+grug_factions = {get_faction = function() return faction end, same_faction = function() return false end,
+	display_name = function(id) return "The " .. id end}
+-- Round 31: which NPCs serve whom (the real rule on the fake faction table).
+dofile(repo .. "/mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return "human" end}
 local level_changes = {}
 grug_xp = {get_level = function() return level end, add_xp = function() end,

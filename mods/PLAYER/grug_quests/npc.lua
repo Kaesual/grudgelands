@@ -15,6 +15,12 @@ end
 function Q.open_npc(player, entity, selected, notice)
 	local id = npc_id(entity)
 	if not id or not in_reach(player, entity) then return false end
+	-- Ruling 13 (Round 31): a quest giver serves only its own faction.
+	local npc = Q.registered_npcs[id]
+	if not grug_factions.serves(npc.faction, player) then
+		grug_factions.refuse(player, npc.title or id, npc.faction)
+		return true
+	end
 	local rows = Q.npc_quests(player, id)
 	if #rows == 0 then return false end
 	local esc, entries = core.formspec_escape, {}
@@ -40,7 +46,7 @@ function Q.open_npc(player, entity, selected, notice)
 		local stack = ItemStack(item)
 		detail = detail .. "\n" .. grug_core.item_name(stack) .. " × " .. stack:get_count()
 	end
-	local form = "formspec_version[6]size[12,9]label[0.4,0.4;" .. esc(Q.registered_npcs[id].title or id) .. "]" ..
+	local form = "formspec_version[6]size[12,9]label[0.4,0.4;" .. esc(npc.title or id) .. "]" ..
 		"textlist[0.4,0.9;4,6;quests;" .. table.concat(entries, ",") .. ";" .. selected .. ";false]" ..
 		"textarea[4.7,0.9;6.8,6.4;description;;" .. esc(detail) .. "]" ..
 		"label[0.4,7.4;" .. esc(notice or row.reason or "") .. "]button_exit[9.2,8;2.3,0.7;close;Close]"
@@ -55,7 +61,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local name = player:get_player_name()
 	local session = sessions[name]
 	if fields.quit then sessions[name] = nil; return true end
-	if not session or npc_id(session.entity) ~= session.npc or not in_reach(player, session.entity) then
+	if not session or npc_id(session.entity) ~= session.npc or not in_reach(player, session.entity) or
+			not grug_factions.serves(Q.registered_npcs[session.npc].faction, player) then
 		sessions[name] = nil
 		return true
 	end

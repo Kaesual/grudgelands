@@ -34,7 +34,7 @@ local SELL_ROWS = 8 -- rows per page
 local FORM_W, FORM_H = 14, 10.2
 local UNCOMMON_COLOR = "#4A90FF"
 
--- player name -> {vendor, pos, mode, tab, page, offer, rows}
+-- player name -> {vendor, faction, pos, mode, tab, page, offer, rows}
 local sessions = {}
 
 local function esc(text)
@@ -309,18 +309,20 @@ end
 -- Entry point (called from the vendor entity's on_rightclick)
 --
 
-function grug_traders.open(clicker, vendor_name, pos)
+-- `faction`: the faction the vendor serves (grug_traders.vendor_faction).
+function grug_traders.open(clicker, vendor_name, pos, faction)
 	if not clicker or not clicker:is_player() or not pos then
 		return
 	end
 	local vendor = grug_traders.get_vendor(vendor_name)
-	local ok, message = grug_traders.can_trade(clicker, vendor)
+	local ok, message = grug_traders.can_trade(clicker, vendor, faction)
 	if not ok then
 		core.chat_send_player(clicker:get_player_name(), message)
 		return
 	end
 	sessions[clicker:get_player_name()] = {
 		vendor = vendor_name,
+		faction = faction,
 		-- A POSITION, never the ObjectRef: the entity may be unloaded or
 		-- replaced between two field submissions (AGENTS.md).
 		pos = {x = pos.x, y = pos.y, z = pos.z},
@@ -351,7 +353,7 @@ local function validate(player)
 		close(player, "You walked away from the vendor.")
 		return nil
 	end
-	local ok, message = grug_traders.can_trade(player, vendor)
+	local ok, message = grug_traders.can_trade(player, vendor, session.faction)
 	if not ok then
 		close(player, message)
 		return nil

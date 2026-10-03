@@ -250,6 +250,10 @@ local SPOT_GIVE_UP = 15
 -- One answer per player per two seconds: on_rightclick fires per click and a
 -- held mouse button is a chat flood otherwise.
 local ANSWER_COOLDOWN = 2
+-- The socket roles a villager entity serves at (profession trainers are known
+-- by `_grug_profession`); each serves only its own faction (Round 31).
+local SERVICE_ROLE = {innkeeper = true, riding_trainer = true, shipwright = true,
+	housing_manager = true}
 --
 -- THE MOURNER'S BOWED HEAD (contract section 8.2, wave 2: "stands still, head
 -- bowed if the mesh allows"). MEASURED, not assumed: `character.b3d` carries
@@ -1022,6 +1026,13 @@ for index = 1, #identities do
 				grug_mobs.face_yaw(self, self._grug_face_yaw)
 			end,
 			on_rightclick = function(self, clicker)
+				-- Ruling 13 (Round 31): a service serves only the NPC's own
+				-- faction, its race's; plain residents still answer anyone.
+				if (SERVICE_ROLE[self._grug_socket_role] or self._grug_profession) and
+						not grug_factions.serves(faction_id, clicker) then
+					grug_factions.refuse(clicker, self._grug_npc_tag or names.villager, faction_id)
+					return
+				end
 				if self._grug_socket_role == "innkeeper" then
 					grug_home.open_innkeeper(clicker, self)
 					return
