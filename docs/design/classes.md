@@ -216,7 +216,10 @@ differs:
   last one aimed at is the foe (switching enemies is free, and the new one
   is the foe to wait for).
 - **Combat becomes gather** when the foe is gone: dead, despawned or
-  unloaded, or fled farther than twice the reach above (`FLEE_REACH` in
+  unloaded, no longer a valid target for this player (its PvP flag dropped,
+  so `grug_pvp.can_harm` refuses; a mob evading home after a leash reset,
+  which also never switches a gather hold), or fled farther than twice the
+  reach above (`FLEE_REACH` in
   `input.lua`; a foe briefly stepping out of reach keeps the lock). A
   hostile in the crosshair at that moment becomes the new foe instead. Then
   the gather rules apply again, including the switch back to combat.

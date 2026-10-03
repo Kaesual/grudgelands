@@ -16,7 +16,9 @@
 --      (Ward and Blink never fire because a mob walked in, nor on a later
 --      air step); combat hits whatever hostile is in the crosshair, never
 --      digs beside a living foe, and the last hostile it aimed at is its foe;
---      the foe dead, despawned or fled beyond 2 x reach returns it to gather
+--      the foe dead, despawned, no longer fightable (a PvP flag dropped, a
+--      mob evading after a leash reset) or fled beyond 2 x reach returns it
+--      to gather
 --      (briefly out of reach keeps the lock); a hostile in sight then keeps
 --      combat without a range rewrite; release and a slot change reset; a
 --      key-down on air is gather; cost: no combat ray while the crosshair
@@ -79,7 +81,8 @@ local function new_mob(name, disposition)
 	function m:get_luaentity()
 		if self.gone then return nil end
 		return {name = "test:mob", health = self.health, _cmi_is_mob = true,
-			_grug_disposition = self.disposition, attack = self.attack}
+			_grug_disposition = self.disposition, attack = self.attack,
+			temp = {grug_evading = self.evading}}
 	end
 	return m
 end
@@ -447,6 +450,41 @@ do -- G10 key-down on a hostile: the same machine, starting in combat.
 	aim(at(new_mob("o")))
 	hold()
 	check(range0() and #swings == before + 1, "G10 a threat in sight: combat")
+	release()
+end
+
+do -- G13 a foe no longer fightable is gone: a PvP flag dropped, a mob evading.
+	select("strike")
+	local enemy = new_player(true)
+	aim(at(enemy), NODE)
+	press()
+	check(range0(), "G13 key-down on a PvP-harmable player: combat")
+	enemy.harmable = false -- the PvP flag dropped: can_harm is false now
+	hold()
+	check(not range0() and #swings == 1, "G13 the foe turned unharmable: gather, no further hit")
+	local w = writes
+	hold(4)
+	check(not range0() and writes == w and #swings == 1,
+		"G13 it stays gather (no flip-flop on the protected player)")
+	aim(NODE)
+	hold()
+	check(can_dig(), "G13 the node beside it digs")
+	release()
+	aim(NODE)
+	press()
+	local m = new_mob("evader")
+	aim(at(m), NODE)
+	hold()
+	check(range0(), "G13 a threat switches the hold")
+	m.evading = true -- leash reset: running home, taking no damage
+	hold()
+	check(not range0(), "G13 an evading foe is gone: gather")
+	w = writes
+	hold(4)
+	check(not range0() and writes == w, "G13 an evading mob in the crosshair never re-locks the hold")
+	m.evading = false
+	hold()
+	check(range0(), "G13 back from evading it is a threat again")
 	release()
 end
 

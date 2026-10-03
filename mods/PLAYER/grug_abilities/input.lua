@@ -197,15 +197,24 @@ return function(api)
 	-- or one fighting this player, never a passing neutral mob -- and only
 	-- while the selected skill attacks hostiles (a self or support skill
 	-- never fires because a mob walked into the crosshair). Combat returns to
-	-- gather once its foe is gone: dead, despawned or unloaded, or farther
-	-- than FLEE_REACH times the reach (a foe briefly stepping out of reach
-	-- keeps the lock). Combat never digs (zero pointing range, can_dig
+	-- gather once its foe is gone: dead, despawned or unloaded, no longer a
+	-- valid target (a PvP flag dropped, evading home), or farther than
+	-- FLEE_REACH times the reach (a foe briefly stepping out of reach keeps
+	-- the lock). Combat never digs (zero pointing range, can_dig
 	-- refuses); gather never attacks.
 	local FLEE_REACH = 2
 	local function combat_reach(player, def)
 		-- Loose's LMB is Strike or hand digging; its bow range is RMB's.
 		if def.id == "loose" then return HAND_RANGE end
 		return math.max(HAND_RANGE, Q.get_range(player, def))
+	end
+	-- A hostile this hold may fight: what combat accepts (Q.valid_target:
+	-- alive, loaded, hostile, PvP-harmable), range aside, and not a mob that
+	-- is evading home after a leash reset (it takes no damage).
+	local function fightable(player, ref)
+		if not Q.valid_target(player, ref, "hostile") then return false end
+		local ent = ref:get_luaentity()
+		return not (ent and ent.temp and ent.temp.grug_evading)
 	end
 	local function threatens(player, ref)
 		if ref:is_player() then return true end -- valid_target asked grug_pvp.can_harm
@@ -224,19 +233,14 @@ return function(api)
 			if ndef and ndef.walkable then return nil end
 		end
 		local r = grug_core.combat_ray(player, reach)
-		local target = r.status == "target" and Q.valid_target(player, r.target, "hostile") and r.target
+		local target = r.status == "target" and fightable(player, r.target) and r.target
 		return target and (any or threatens(player, target)) and target or nil
 	end
+	-- Dead, despawned or unloaded, no longer fightable (a PvP flag dropped,
+	-- evading), or fled beyond FLEE_REACH times the reach.
 	local function foe_gone(player, foe, reach)
-		local pos = foe:get_pos() -- an invalid ObjectRef (despawned, unloaded) has none
-		if not pos then return true end
-		if foe:is_player() then
-			if foe:get_hp() <= 0 then return true end
-		else
-			local ent = foe:get_luaentity()
-			if not ent or (ent.health or 0) <= 0 then return true end
-		end
-		local own = player:get_pos()
+		if not fightable(player, foe) then return true end
+		local pos, own = foe:get_pos(), player:get_pos()
 		local dx, dy, dz = pos.x - own.x, pos.y - own.y, pos.z - own.z
 		local far = FLEE_REACH * reach
 		return dx * dx + dy * dy + dz * dz > far * far
@@ -246,7 +250,7 @@ return function(api)
 	local function combat_hit(player, reach, s)
 		local r = grug_core.combat_ray(player, reach)
 		if not r.target or r.reason == "out_of_range" then return nil end
-		if r.status == "target" and Q.valid_target(player, r.target, "hostile") then
+		if r.status == "target" and fightable(player, r.target) then
 			s.foe = r.target
 		end
 		return {type = "object", ref = r.target,
