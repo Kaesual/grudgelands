@@ -7,7 +7,7 @@
 --
 -- Camps: per Battlegrounds zone and faction one lower and one higher camp
 -- (ruling 19). Their level bands come from the zone's own range
--- (`M.camp_levels`); their race is rolled once per world from the full seed
+-- (`M.camp_levels`); their race is drawn once per world from the full seed
 -- and the anchor number (ruling 20, `M.camp_race`), and the blueprint
 -- publishes it as `landmarks.race` so the socket registry carries the camp's
 -- real race.
@@ -55,14 +55,16 @@ function M.camp_levels(level_min, level_max, band)
 end
 
 -- The camp's race: one of its faction's three, fixed by the world seed (a
--- decimal string) and the anchor number. Exact integer arithmetic below
--- 2^53, so LuaJIT and PUC 5.1 agree.
-function M.camp_race(full_seed, numeric_id, faction)
+-- decimal string) and the anchor number through SHA-256 (`raw_sha256` is
+-- the blueprint options' seam, the same in main and emerge): the first four
+-- digest bytes, mod 3.
+function M.camp_race(raw_sha256, full_seed, numeric_id, faction)
 	local races = assert(M.FACTION_RACES[faction], "Round 31 PvP faction differs")
-	local text = tostring(full_seed) .. ":" .. tostring(numeric_id)
-	local h = 7
-	for i = 1, #text do h = (h * 131 + text:byte(i)) % 2147483647 end
-	return races[h % #races + 1]
+	local digest = raw_sha256("grug_r31_camp_race_v1\t" .. tostring(full_seed) .. "\t" ..
+		tostring(numeric_id))
+	assert(type(digest) == "string" and #digest == 32, "Round 31 PvP SHA-256 seam differs")
+	local b1, b2, b3, b4 = digest:byte(1, 4)
+	return races[(((b1 * 256 + b2) * 256 + b3) * 256 + b4) % #races + 1]
 end
 
 return M

@@ -79,7 +79,8 @@ return function(options, profile)
 	local r, height = size.r, size.h
 	local race = catalog.SEAT_RACE[art.faction]
 	if art.kind~="pvp_fortress" then
-		race = art.race or catalog.camp_race(assert(options and options.full_seed,
+		race = art.race or catalog.camp_race(assert(options and options.raw_sha256,
+			"Round 31 PvP camp needs the SHA-256 seam"), assert(options.full_seed,
 			"Round 31 PvP camp needs the world seed"), profile.numeric_id, art.faction)
 	end
 	local by_pos, structures, sockets = {}, {}, {}

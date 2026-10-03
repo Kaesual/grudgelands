@@ -315,7 +315,7 @@ for i, profile in ipairs(profiles) do
 		if row.kind == "pvp_fortress" then
 			check(race == catalog.SEAT_RACE[row.faction], row.key .. ": fortress race")
 		else
-			check(race == catalog.camp_race(seed, profile.numeric_id, row.faction), row.key .. ": rolled race")
+			check(race == catalog.camp_race(sha, seed, profile.numeric_id, row.faction), row.key .. ": rolled race")
 		end
 		local socket_rows = settlement.sockets(prepared, {x = profile.x, y = 20, z = profile.z})
 		check(register(profile.key, race, socket_rows, profile.label) == #socket_rows,
@@ -328,8 +328,8 @@ for _, faction in ipairs({"accord", "throng"}) do
 	local hits = {}
 	for n = 101, 118 do
 		for _, seed in ipairs({"1", "42", "7", "2026", "99999999999"}) do
-			local race = catalog.camp_race(seed, n, faction)
-			check(race == catalog.camp_race(seed, n, faction), "roll is deterministic")
+			local race = catalog.camp_race(sha, seed, n, faction)
+			check(race == catalog.camp_race(sha, seed, n, faction), "roll is deterministic")
 			local ok = false
 			for _, r in ipairs(catalog.FACTION_RACES[faction]) do ok = ok or r == race end
 			check(ok, faction .. ": rolled race " .. tostring(race) .. " is of the faction")
@@ -340,4 +340,19 @@ for _, faction in ipairs({"accord", "throng"}) do
 		check((hits[r] or 0) >= 15, faction .. ": " .. r .. " is rolled (" .. (hits[r] or 0) .. " of 90)")
 	end
 end
+-- The seed reshuffles the whole world: the 16 camps' races (anchors
+-- 103..118, as the synthetic binding numbers them) form many distinct
+-- layouts over 18 seeds, not a few rotations of one pattern.
+local layouts, distinct = {}, 0
+for s = 1, 18 do
+	local seed = tostring(s * 7919 - 40000)
+	local parts = {}
+	for i, row in ipairs(catalog.rows) do
+		if row.band then parts[#parts + 1] = catalog.camp_race(sha, seed, 100 + i, row.faction) end
+	end
+	local layout = table.concat(parts, ",")
+	if not layouts[layout] then layouts[layout] = true; distinct = distinct + 1 end
+end
+check(distinct >= 10, ("distinct camp race layouts over 18 seeds: %d"):format(distinct))
+print(("  camp race layouts over 18 seeds: %d distinct"):format(distinct))
 print(("R31 S PORTABLE PASS checks=%d"):format(checks))
