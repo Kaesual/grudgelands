@@ -609,8 +609,9 @@ end
 -- like kings", the coordinator defaults). His seat race's king's chassis and
 -- kit -- level 65 elite, the tallest figure of his keep -- and, like a king,
 -- one fixed look of his seat race, but in the royal guards' tabard: no crown.
--- No Fallen Crown either: he drops what a guard drops (war trophies, only to
--- an enemy player's kill) and keeps no reward ledger. His two bodyguards
+-- No Fallen Crown either and no reward ledger: on an enemy player's kill only
+-- he drops a guard's war trophies and rolls gear of his level (item level 65,
+-- 60 % uncommon, 25 % rare: grug_quality's `general` row). His two bodyguards
 -- follow him like royal guards, in the guard look of any race of their
 -- faction (a mixed garrison, start_npcs.lua). start_npcs.lua's royal path
 -- books the group's return. `_grug_royal_race` marks the group as a royal

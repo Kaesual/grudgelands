@@ -34,6 +34,9 @@
 --      Generals, and nothing of the own side's;
 --   Q  the fortress quest givers' records (grug_quests/npcs.lua) follow the
 --      registry: three per registered fortress, none for one that is not;
+--      the placed quest shell (the REAL start_villagers.lua elder) shows its
+--      role title as nametag and as its own name (`description`), also after
+--      a reload;
 --   L  the General's loot (user ruling): grug_quality's REAL kill-loot hook
 --      and gear roll give him his level's gear (ilvl 65) at the raised
 --      `general` chances (60 % uncommon, 25 % rare, the rare window) and his
@@ -337,10 +340,14 @@ _G.grug_mobs = {
 }
 dofile(repo .. "/mods/ENTITIES/grug_mobs/guard.lua")
 dofile(repo .. "/mods/ENTITIES/grug_mobs/bosses.lua")
--- The two families the fortress also places, as stand-ins: the quest shell
--- (its resolver is start_npcs.lua's own) and the Quartermaster (grug_traders'
--- resolver, as vendors.lua registers it).
-core.registered_entities["grug_mobs:elder_human"] = {}
+-- The quest shell is start_villagers.lua's real elder (its nametag path);
+-- the Quartermaster a stand-in (grug_traders' resolver, as vendors.lua
+-- registers it).
+local carrier_text = {}
+grug_mobs.noncombatant = function(def) return def end
+grug_mobs.set_plain_tag = function(self, text) carrier_text[self] = text end
+function mobs:register_mob(name, def) core.registered_entities[name] = def end
+dofile(repo .. "/mods/ENTITIES/grug_mobs/start_villagers.lua")
 core.registered_entities["grug_traders:vendor_general_accord"] = {}
 -- Only start_npcs.lua's heartbeat runs below (not bosses.lua's dragon clock).
 steps = {}
@@ -362,6 +369,10 @@ for _, poi in ipairs(POIS) do
 	poi.race = race
 	grug_core.register_settlement_sockets(poi.key, race, poi.anchor, sockets, poi.key)
 end
+-- grug_quests loads after the registry, before the mods-loaded placement.
+_G.grug_quests = {}
+dofile(repo .. "/mods/PLAYER/grug_quests/registry.lua")
+dofile(repo .. "/mods/PLAYER/grug_quests/npcs.lua")
 for _, fn in ipairs(loaded) do fn() end
 local npc_steps = steps
 local function heartbeat(seconds)
@@ -599,9 +610,6 @@ end
 -- Q. The fortress quest givers' records.
 ------------------------------------------------------------------------------
 do
-	_G.grug_quests = {}
-	dofile(repo .. "/mods/PLAYER/grug_quests/registry.lua")
-	dofile(repo .. "/mods/PLAYER/grug_quests/npcs.lua")
 	local Q = grug_quests
 	for _, role in ipairs({"warmaster", "drillmaster", "outrider"}) do
 		local npc = Q.registered_npcs["r31_accord_" .. role]
@@ -611,6 +619,31 @@ do
 	end
 	eq(grug_mobs.quest_socket_title("pvp_fortress_accord", "quest_warmaster"), "Warmaster",
 		"Q the quest shell takes the record's title")
+	-- The placed shells: nametag and own name are the role title, not the
+	-- race's "Village Elder", at placement and after a reload.
+	local fortress = holders("pvp_fortress_accord")
+	for _, pair in ipairs({{"quest_warmaster", "Warmaster"}, {"quest_drillmaster", "Drillmaster"},
+			{"quest_outrider", "Outrider"}}) do
+		local shell = fortress[pair[1]]
+		if check(shell ~= nil, "Q " .. pair[1] .. " placed") then
+			eq(carrier_text[shell], pair[2], "Q " .. pair[1] .. " nametag")
+			eq(shell.description, pair[2], "Q " .. pair[1] .. " own name")
+			eq(shell._grug_npc_tag, pair[2], "Q " .. pair[1] .. " spoken name")
+			-- Reload: the saved plain fields onto a fresh entity, then the
+			-- family's after_activate, as mob_activate does.
+			local saved = {}
+			for k, v in pairs(shell) do
+				if type(v) ~= "function" and k ~= "object" and k ~= "temp" and k ~= "name" then
+					saved[k] = copy(v)
+				end
+			end
+			shell.object:remove()
+			local _, back = activate(shell.name, core.serialize(saved), shell.object.pos)
+			core.registered_entities[shell.name].after_activate(back)
+			eq(carrier_text[back], pair[2], "Q " .. pair[1] .. " nametag after a reload")
+			eq(back.description, pair[2], "Q " .. pair[1] .. " own name after a reload")
+		end
+	end
 end
 
 ------------------------------------------------------------------------------
