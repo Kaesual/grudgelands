@@ -19,7 +19,7 @@ end
 
 -- The location flag after one sample (rulings 2 and 3). `pvp_rule` and
 -- `faction_here` are grug_zones' answers for the position: contested ground
--- (the 31-60 zones, the islands, land at y <= -701) and enemy territory flag;
+-- (the 31-60 zones, the islands, land at y <= -501) and enemy territory flag;
 -- own peaceful territory clears; deep ocean and dragon channels (nil rule)
 -- keep the previous value.
 function R.location(previous, pvp_rule, faction_here, own_faction)

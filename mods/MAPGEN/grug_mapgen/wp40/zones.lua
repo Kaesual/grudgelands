@@ -217,6 +217,13 @@ local function zones_factory(dependencies)
 	local injected_raw_sha256 = dependencies.raw_sha256
 	local MAX_SAFE = 9007199254740991
 	local WATER_LEVEL = 1
+	-- Every land column at and below this y is contested ground (Round 31
+	-- ruling: from depth tier T4, y -501, the Silversteel stone): PvP flags
+	-- there (pvp_rule_at) and either faction may alter the ground
+	-- (territory_rule_at), whatever the surface zone. Deep ocean and the
+	-- dragon channels stay outside it. Mob levels and stone tiers by depth
+	-- are separate and unchanged.
+	local CONTESTED_DEPTH_Y = -501
 	local MIN_X, MAX_X = -3740, 3740
 	local MIN_Z, MAX_Z = -3340, 3340
 	local ZONES_SCHEMA = "grug_wp40_zones_v1"
@@ -1136,7 +1143,7 @@ local function zones_factory(dependencies)
 					water_class == "immutable_dragon_channel" then
 				return "immutable"
 			end
-			if y <= -701 then return "contested_land" end
+			if y <= CONTESTED_DEPTH_Y then return "contested_land" end
 			if not owner then fail("territory owner is absent") end
 			return zone_by_numeric[owner].territory_rule
 		end
@@ -1157,7 +1164,7 @@ local function zones_factory(dependencies)
 			local water_class, _, owner = classification_values(x, z, outside)
 			if water_class == "deep_ocean" or
 					water_class == "immutable_dragon_channel" then return nil end
-			if y <= -701 then return "contested" end
+			if y <= CONTESTED_DEPTH_Y then return "contested" end
 			if not owner then fail("PvP owner is absent") end
 			return zone_by_numeric[owner].pvp_rule
 		end

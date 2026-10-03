@@ -4,7 +4,7 @@
 -- under small stubs, with os.time and the engine clock under test control:
 --   L  location flag: contested and enemy land flag, own peaceful land
 --      clears, deep ocean and dragon channels keep the last value (sail out
---      unflagged, sail home flagged), land below y -701 under a capital;
+--      unflagged, sail home flagged), land below y -501 under a capital;
 --   B  the button: 60 s from the press, a press restarts it;
 --   C  contact: 60 s flag and 10 s PvP combat for dealer and receiver, the
 --      shared combat timer for 10 s (a later 5 s mark does not shorten it),
@@ -135,11 +135,11 @@ end
 
 -- World stub: x < 0 own (accord) peaceful land, 0 <= x < 100 contested,
 -- 100 <= x < 200 deep ocean, x >= 200 throng peaceful land; land at
--- y <= -701 is contested (grug_zones' order: ocean first, then depth).
+-- y <= -501 is contested (grug_zones' order: ocean first, then depth).
 grug_zones = {
 	pvp_rule_at = function(pos)
 		if pos.x >= 100 and pos.x < 200 then return nil end
-		if pos.y <= -701 then return "contested" end
+		if pos.y <= -501 then return "contested" end
 		if pos.x >= 0 and pos.x < 100 then return "contested" end
 		return "peaceful"
 	end,
@@ -299,11 +299,11 @@ do
 	a.pos = vec(250, 10, 0); tick()
 	s = state(a)
 	check(s.flagged and s.reason == "location_enemy", "L: enemy peaceful land flags")
-	-- Below -701 under an own capital (own peaceful surface).
-	a.pos = vec(-50, -701, 0); tick()
-	eq(state(a).reason, "location_contested", "L: own land at y -701 is contested")
-	a.pos = vec(-50, -700, 0); tick()
-	check(not state(a).flagged, "L: own land at y -700 is safe")
+	-- Below -501 under an own capital (own peaceful surface).
+	a.pos = vec(-50, -501, 0); tick()
+	eq(state(a).reason, "location_contested", "L: own land at y -501 is contested")
+	a.pos = vec(-50, -500, 0); tick()
+	check(not state(a).flagged, "L: own land at y -500 is safe")
 	-- Persisted on change; join recomputes from the position, ocean keeps it.
 	a.pos = vec(50, 10, 0); tick()
 	eq(a.meta:get_string("grug_pvp:loc"), "contested", "L: location persisted on change")

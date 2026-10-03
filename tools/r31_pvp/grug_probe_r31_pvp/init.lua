@@ -4,7 +4,7 @@
 --         for an Accord and a Throng player on a 64-node grid of the whole
 --         map, by water class (land, planned water, shelf, deep ocean, dragon
 --         channel) and zone rule, at every registered settlement anchor (POI,
---         camp, village, town and capital boxes) and below y -701 under the
+--         camp, village, town and capital boxes) and below y -501 under the
 --         six capitals; every answer is compared with the expectation of
 --         rulings 2/3 and the zone record.
 --   MICRO the PvE combat paths before/after: valid_target on a live mob, the
@@ -295,7 +295,7 @@ local function run_zone_checks()
 	for _, id in ipairs(grug_core.start_identities()) do
 		local a = grug_core.capital_anchor(id.faction_id, id.race_id)
 		if a then
-			for _, y in ipairs({-700, -701, -1200}) do
+			for _, y in ipairs({-500, -501, -700, -701, -1200}) do
 				zone_check("capital " .. id.race_id .. " y=" .. y,
 					{x = a.x, y = y, z = a.z}, rows)
 			end
