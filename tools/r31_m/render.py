@@ -34,7 +34,7 @@ spec.loader.exec_module(srender)
 
 # building core and blueprint box half sizes (source/simple_map.lua,
 # r7_settlement.BOUNDS)
-CORE = {"fortress": 32, "camp_low": 12, "camp_high": 14}
+CORE = {"fortress": 30, "camp_low": 12, "camp_high": 14}
 BOX = {"fortress": 24, "camp_low": 11, "camp_high": 13}
 MARGIN = 10
 
@@ -62,10 +62,14 @@ def zone_colour(n):
     return (int(r * 255), int(g * 255), int(b * 255))
 
 
-def overview(prefix, out_png, scale=2):
+def overview(prefix, out_png, scale=2, region=None):
+    """The front (or `region` = (x0, z0, x1, z1) of it), `scale` pixels per
+    8-node raster cell."""
     zones = {}
     for line in open(prefix + ".zones.tsv", encoding="utf-8"):
         x, z, n, wet = (int(v) for v in line.split("\t"))
+        if region and not (region[0] <= x <= region[2] and region[1] <= z <= region[3]):
+            continue
         zones[(x, z)] = (n, wet)
     xs = sorted({k[0] for k in zones})
     zs = sorted({k[1] for k in zones})
@@ -94,8 +98,11 @@ def overview(prefix, out_png, scale=2):
         kind = parts[1]
         pts = [to_px(*map(int, p.split())) for p in parts[2:]]
         if len(pts) > 1:
-            draw.line(pts, fill=(235, 225, 200) if kind != "trail" else (190, 175, 150),
-                      width=3 if kind == "primary" else (2 if kind != "trail" else 1))
+            nodes = 7 if kind == "primary" else (5 if kind != "trail" else 3)
+            width = max(3 if kind == "primary" else (2 if kind != "trail" else 1),
+                        int(nodes * scale / 8 + 0.5))
+            draw.line(pts, fill=(235, 225, 200) if kind != "trail" else (150, 95, 40),
+                      width=width)
     f = font(13)
     pvp = []
     for line in open(prefix + ".anchors.tsv", encoding="utf-8"):
@@ -103,16 +110,22 @@ def overview(prefix, out_png, scale=2):
         x, z = int(x), int(z)
         X, Z = to_px(x, z)
         if template.startswith("pvp_"):
-            pvp.append((aid, template, slot, X, Z))
+            pvp.append((aid, template, slot, X, Z, z))
         elif slot not in ("capital", "start"):
             draw.ellipse((X - 2, Z - 2, X + 2, Z + 2), fill=(40, 40, 40))
         else:
             draw.rectangle((X - 4, Z - 4, X + 4, Z + 4), outline=(20, 20, 20), width=2)
-    for index, (aid, template, slot, X, Z) in enumerate(pvp, 1):
-        accord = slot.startswith("pvp_accord") or (template == "pvp_fortress" and Z > h / 2)
+    for index, (aid, template, slot, X, Z, z) in enumerate(pvp, 1):
+        accord = slot.startswith("pvp_accord") or (template == "pvp_fortress" and z < 0)
         col = (40, 90, 230) if accord else (215, 40, 40)
         r = 9 if template == "pvp_fortress" else 7
-        if template == "pvp_fortress":
+        if region:
+            # the walls (the blueprint box) to scale
+            r = (24 if template == "pvp_fortress" else 13) * scale / 8
+            draw.rectangle((X - r, Z - r, X + r, Z + r), outline=col, width=4)
+            draw.rectangle((X - r - 2, Z - r - 2, X + r + 2, Z + r + 2), outline=(255, 255, 255),
+                           width=1)
+        elif template == "pvp_fortress":
             draw.rectangle((X - r, Z - r, X + r, Z + r), fill=col, outline=(255, 255, 255), width=2)
         elif template == "pvp_camp_high":
             draw.ellipse((X - r, Z - r, X + r, Z + r), fill=col, outline=(255, 255, 255), width=2)
@@ -197,11 +210,17 @@ def main():
     ap.add_argument("out")
     ap.add_argument("--overview", nargs="*", default=[])
     ap.add_argument("--engine", nargs="*", default=[])
+    ap.add_argument("--zoom", nargs=5, action="append", default=[],
+                    metavar=("NAME", "X0", "Z0", "X1", "Z1"),
+                    help="also draw OUT_DIR/zoom_<NAME>_<seed>.png of that region at 8 px per cell")
     opts = ap.parse_args()
     os.makedirs(opts.out, exist_ok=True)
     for prefix in opts.overview:
         seed = os.path.basename(prefix).lstrip("s")
         overview(prefix, os.path.join(opts.out, "overview_%s.png" % seed))
+        for name, x0, z0, x1, z1 in opts.zoom:
+            overview(prefix, os.path.join(opts.out, "zoom_%s_%s.png" % (name, seed)), 8,
+                     (int(x0), int(z0), int(x1), int(z1)))
         sys.stderr.write("overview %s\n" % seed)
     bank = rb.TextureBank(rb.DEFAULT_TILES)
     bank.nodes["grug_mapgen:waystone"] = {
