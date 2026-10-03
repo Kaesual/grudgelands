@@ -25,19 +25,25 @@ How the groups are found (no hand-painted pixels):
      material, every other one a secondary material.
   3. An OUTLINE colour (the texture's darkest colour, mostly on the
      silhouette edge) never takes part.
-  4. Group B (fittings) is the largest secondary material that is big enough
-     (a hilt, a handle, a strap, a trim); without one, the darkest
-     non-outline tones of the main material.
-  5. Group A (accents) is the brightest tones of the main material (edge
-     highlights, sheen) that are not in B.
-  Both groups take whole colours, brightest (A) or darkest (B) first, until
-  they reach TARGET of the opaque pixels, and stop before CAP.
-  When a texture fails (a group too small, or too much of the texture), the
-  OVERRIDES table names the source colours of its groups instead.
+  4. Group B (fittings) comes from the biggest secondary material that can
+     supply it (a grip wrap, a guard, a buckle, a trim line); without one,
+     from the darkest non-outline tones of the main material.
+  5. Group A (accents) comes from the brightest tones of the main material
+     (edge highlights), never from B's pixels.
+  A group is a small ACCENT, not a scatter and not a repaint (design round 2,
+  the user's ruling 7 of round31-plan.md section 6: a narrow stripe is
+  enough): tones are added one at a time, but only 8-connected runs of at
+  least two pixels count, and a run with inner pixels keeps only its rim, so
+  a group is made of thin stripes. The biggest stripes are taken first and
+  the group stops at TARGET of the opaque pixels; a stripe longer than what
+  is left is cut to a connected piece grown from its first pixel in tone
+  order. Lone pixels are never coloured.
+  When a texture fails (a group too small), the OVERRIDES table names the
+  source colours a group may draw from instead; the same run rule applies.
 
 Every result is checked: A and B inside the opaque pixels, A and B disjoint,
 both at least the minimum size (MIN_PIXELS and MIN_SHARE of the opaque
-pixels), neither above MAX_SHARE.
+pixels), neither above its cap.
 
     python3 tools/r31_b/gen_enchant_masks.py            # write the masks
     python3 tools/r31_b/gen_enchant_masks.py --check    # fixture: rebuild in
@@ -94,48 +100,23 @@ def sources():
     return out
 
 
-# A group grows (whole colours) until it covers TARGET of the opaque pixels
-# and never past CAP. Worn overlays take less: on the body all four pieces
-# show at once and at a larger size.
-TARGET = {"item": 0.14, "worn": 0.10}
-CAP = {"item": 0.25, "worn": 0.18}
-MIN_PIXELS = {"item": 5, "worn": 8}
-MIN_SHARE = 0.05   # each group at least this share of the opaque pixels
-MAX_SHARE = 0.30   # each group at most this share (checked)
+# A group grows until it covers TARGET of the opaque pixels and never passes
+# CAP. Worn overlays take less: on the body all four pieces show at once and
+# at a larger size. `scale` (the preview's smaller variant) multiplies both.
+TARGET = {"item": 0.07, "worn": 0.04}
+CAP = {"item": 0.10, "worn": 0.06}
+MIN_PIXELS = {"item": 4, "worn": 6}
+MIN_SHARE = {"item": 0.03, "worn": 0.015}
 MATERIAL_SPLIT = 0.045  # OKLab chroma distance that separates two materials
 OUTLINE_DARK = 48  # a darkest colour below this brightness is outline anyway
 TONE_FLOOR = 0.6   # darkest pixel of a group multiplies the colour by 0.6
 
-# Textures where the automatic split fails, with the source colours of each
-# group (hex, as in the PNG). Found with --report.
-OVERRIDES = {}
-# The six greataxes share one map: the dark outline and haft colour covers
-# half the sprite and the head body another third, so no whole colour fits
-# a group. A = the head's highlight, B = the haft fittings and the head's rim.
-for _metal, _light, _rim in [("bronze", "ffad70", "5b2d18"), ("iron", "d7dad8", "383b3e"),
-                             ("steel", "eef3f2", "34383d"), ("silversteel", "f3fbff", "48535c"),
-                             ("embersteel", "ffd06a", "4a1713"),
-                             ("abyssal_steel", "d5c2f1", "302447")]:
-    OVERRIDES["grug_gear_item_greataxe_" + _metal] = {
-        "a": [_light], "b": ["986335", "c18a4d", _rim]}
-OVERRIDES.update({
-    # Its main gold tones are 32 % and 40 %: A = the highlight, B = the rim.
-    "grug_gear_shield_embersteel": {"a": ["e8d4aa"], "b": ["ab7d19"]},
-    # The Woven Hood icon is a 16-pixel band (the source art is that thin),
-    # too small for the size rule: the two light cord tones (A) and the two
-    # light cloth tones (B); reported to the user as a weak icon.
-    "grug_gear_item_head_cloth_woven": {
-        "a": ["a3a1a1", "c5c5c5"], "b": ["2d4b27", "2b4f28"], "weak": True},
-    # Light leather is one ramp whose middle tones are each a third of the
-    # piece: A = the three light tones, B = the darkest seam tone.
-    "grug_gear_item_legs_leather_light": {
-        "a": ["9a947f", "a6a48f", "b6b7a4"], "b": ["605244"]},
-    "grug_gear_item_feet_leather_light": {
-        "a": ["9a947f", "a6a48f", "b6b7a4"], "b": ["605244"]},
-    # Flat grey shoes on a black sole (the outline colour): A = the lightest
-    # grey, B = the sole.
-    "grug_visuals_cloth_feet_silkweave": {"a": ["8d8d8d", "8d8e8d"], "b": ["000000"]},
-})
+# Textures where the automatic choice fails, with the source colours (hex, as
+# in the PNG) each group may draw from. Found with --report.
+OVERRIDES = {
+}
+
+NEIGHBOURS = ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1))
 
 
 def srgb_to_linear(v):
@@ -198,33 +179,117 @@ def materials(colors):
     return clusters
 
 
-def take(tones, colors, goal, cap):
-    """Whole colours from `tones` (already ordered) until `goal` pixels; a
-    colour that would carry the group past `cap` is skipped."""
-    picked, count = [], 0
-    for c in tones:
-        if count >= goal:
-            break
-        if count + colors[c] > cap:
+def runs(pixels):
+    """8-connected runs of a pixel set, as sorted lists, biggest first."""
+    left, out = set(pixels), []
+    for start in sorted(pixels, key=lambda p: (p[1], p[0])):
+        if start not in left:
             continue
-        picked.append(c)
-        count += colors[c]
+        left.discard(start)
+        run, todo = [start], [start]
+        while todo:
+            x, y = todo.pop()
+            for dx, dy in NEIGHBOURS:
+                q = (x + dx, y + dy)
+                if q in left:
+                    left.discard(q)
+                    run.append(q)
+                    todo.append(q)
+        out.append(sorted(run, key=lambda p: (p[1], p[0])))
+    out.sort(key=lambda r: (-len(r), r[0][1], r[0][0]))
+    return out
+
+
+def stripes(pixels):
+    """The runs of a pixel set, each thinned to a stripe: a run that has
+    inner pixels (all four side neighbours in the run) keeps only its rim,
+    so a flat patch becomes the thin line along its edge."""
+    out = []
+    for run in runs(pixels):
+        inside = set(run)
+        rim = [p for p in run if any((p[0] + dx, p[1] + dy) not in inside
+                                     for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+        out.extend(runs(rim) if len(rim) < len(run) else [run])
+    out.sort(key=lambda r: (-len(r), r[0][1], r[0][0]))
+    return out
+
+
+def grow(tones, by_tone, rank, goal, exclude):
+    """A calm group from `tones` (ordered): see the module docstring.
+
+    `by_tone` maps a colour to its pixels, `rank` a pixel to its place in the
+    tone order (for cutting an oversized run from its brightest end)."""
+    candidates, pieces = set(), []
+    for tone in tones:
+        candidates |= set(by_tone[tone]) - exclude
+        pieces = [r for r in stripes(candidates) if len(r) >= 2]
+        if sum(len(r) for r in pieces) >= goal:
+            break
+    picked = set()
+    for run in pieces:
+        if len(picked) >= goal:
+            break
+        # A run is at least two pixels, so the last one may pass the goal by one.
+        room = max(2, int(math.ceil(goal - len(picked))))
+        if len(run) <= room:
+            picked.update(run)
+        else:
+            # Too big for what is left: a connected piece of it, grown from
+            # its first pixel in tone order.
+            picked |= piece(run, room, rank)
     return picked
 
 
-def split(directory, stem, kind):
+def piece(run, size, rank):
+    run = set(run)
+    start = min(run, key=lambda p: (rank[p], p[1], p[0]))
+    picked, todo = {start}, [start]
+    while todo and len(picked) < size:
+        x, y = todo.pop(0)
+        for dx, dy in NEIGHBOURS:
+            q = (x + dx, y + dy)
+            if q in run and q not in picked and len(picked) < size:
+                picked.add(q)
+                todo.append(q)
+    return picked
+
+
+def split(directory, stem, kind, scale=1.0):
     """The two groups as sets of (x, y), and how they were found."""
     _, w, h, px = load(directory, stem)
     opaque = [(x, y) for y in range(h) for x in range(w) if px[x, y][3] == 255]
-    colors = {}
+    by_tone = {}
     for x, y in opaque:
-        c = px[x, y][:3]
-        colors[c] = colors.get(c, 0) + 1
+        by_tone.setdefault(px[x, y][:3], []).append((x, y))
+    colors = {c: len(p) for c, p in by_tone.items()}
     n = len(opaque)
+    minimum = max(MIN_PIXELS[kind], MIN_SHARE[kind] * n)
+    goal = max(minimum, TARGET[kind] * scale * n)
+    cap = max(goal + 1, CAP[kind] * scale * n)
+
+    def brightest(group):
+        return sorted(group, key=lambda c: (-brightness(c), c))
+
+    def darkest(group):
+        return sorted(group, key=lambda c: (brightness(c), c))
+
+    def ranks(tones):
+        order = {}
+        for index, tone in enumerate(tones):
+            for p in by_tone[tone]:
+                order[p] = index
+        return order
+
+    def pick(tones, exclude=frozenset()):
+        return grow(tones, by_tone, ranks(tones), goal, exclude)
+
     override = OVERRIDES.get(stem)
     if override:
-        a_set = {tuple(int(v[i:i + 2], 16) for i in (0, 2, 4)) for v in override["a"]}
-        b_set = {tuple(int(v[i:i + 2], 16) for i in (0, 2, 4)) for v in override["b"]}
+        def listed(names):
+            return [c for c in (tuple(int(v[i:i + 2], 16) for i in (0, 2, 4)) for v in names)
+                    if c in by_tone]
+        b_set = pick(brightest(listed(override["b"])))
+        a_set = pick(brightest(listed(override["a"])), b_set)
         method = "override"
     else:
         # The outline colour: the darkest one, if most of its pixels touch the
@@ -236,61 +301,41 @@ def split(directory, stem, kind):
                     return True
             return False
         deepest = min(colors, key=lambda c: (brightness(c), c))
-        edge = sum(1 for x, y in opaque if px[x, y][:3] == deepest and on_edge(x, y))
+        edge = sum(1 for x, y in by_tone[deepest] if on_edge(x, y))
         outline = {deepest} if (edge >= 0.6 * colors[deepest] or
                                brightness(deepest) < OUTLINE_DARK) else set()
         mats = [sorted(m) for m in
                 materials({c: k for c, k in colors.items() if c not in outline})]
-        goal = TARGET[kind] * n
-        minimum = max(MIN_PIXELS[kind], MIN_SHARE * n)
         main = mats[0]
-        others = [c for m in mats[1:] for c in m]
-
-        def brightest(group):
-            return sorted(group, key=lambda c: (-brightness(c), c))
-
-        def darkest(group):
-            return sorted(group, key=lambda c: (brightness(c), c))
-
-        def enough(picked):
-            return sum(colors[c] for c in picked) >= minimum
-
-        def choose(cap):
-            # B: the largest big-enough secondary material (all of it up to
-            # the cap, brightest tones first); else the main material's dark
-            # tones; else the dark tones of whatever else there is.
-            b_set, method = [], "tones"
-            for m in mats[1:]:
-                if sum(colors[c] for c in m) >= minimum:
-                    b_set, method = take(brightest(m), colors, n, cap), "material"
-                    break
-            if not enough(b_set):
-                b_set, method = take(darkest(main), colors, goal, cap), "tones"
-            if not enough(b_set):
-                b_set, method = take(darkest(others), colors, goal, cap), "other"
-            # A: the main material's bright tones; else any other bright tones.
-            a_set = take([c for c in brightest(main) if c not in b_set], colors, goal, cap)
-            if not enough(a_set):
-                a_set = take([c for c in brightest(main + others) if c not in b_set],
-                             colors, goal, cap)
-            return a_set, b_set, method
-        # A worn overlay whose tones are too coarse for its smaller cap gets
-        # the item cap.
-        a_set, b_set, method = choose(CAP[kind] * n)
-        if not (enough(a_set) and enough(b_set)) and kind != "item":
-            a_set, b_set, method = choose(CAP["item"] * n)
-        a_set, b_set = set(a_set), set(b_set)
-    group_a = {(x, y) for x, y in opaque if px[x, y][:3] in a_set}
-    group_b = {(x, y) for x, y in opaque if px[x, y][:3] in b_set}
-    return {"a": group_a, "b": group_b, "opaque": set(opaque), "method": method,
-            "weak": bool(override and override.get("weak"))}
+        everything = [c for m in mats for c in m]
+        # B: the first secondary material that supplies a group, else the
+        # main material's dark tones, else any dark tones (the best try wins).
+        attempts = [(brightest(m), "material") for m in mats[1:]]
+        attempts += [(darkest(main), "tones"), (darkest(everything), "other")]
+        b_set, method = set(), "none"
+        for tones, how in attempts:
+            found = pick(tones)
+            if len(found) > len(b_set):
+                b_set, method = found, how
+            if len(b_set) >= minimum:
+                break
+        # A: the main material's bright tones; else any bright tones.
+        a_set = set()
+        for tones in (brightest(main), brightest(everything)):
+            found = pick(tones, b_set)
+            if len(found) > len(a_set):
+                a_set = found
+            if len(a_set) >= minimum:
+                break
+    return {"a": a_set, "b": b_set, "opaque": set(opaque), "method": method,
+            "weak": bool(override and override.get("weak")), "minimum": minimum,
+            "cap": cap}
 
 
 def problems(result, kind):
-    """Inside, disjoint, non-empty; the size rule unless the override marks
-    the source as too small for it."""
-    n = len(result["opaque"])
-    minimum = 1 if result["weak"] else max(MIN_PIXELS[kind], MIN_SHARE * n)
+    """Inside, disjoint, at least the minimum, at most the cap; the size rule
+    only as far as the override marks the source as too small for it."""
+    minimum = 1 if result["weak"] else result["minimum"]
     out = []
     for name in ("a", "b"):
         group = result[name]
@@ -298,8 +343,9 @@ def problems(result, kind):
             out.append("group %s outside the opaque pixels" % name.upper())
         if len(group) < minimum:
             out.append("group %s has %d px (< %.0f)" % (name.upper(), len(group), minimum))
-        if not result["weak"] and len(group) > MAX_SHARE * n:
-            out.append("group %s covers %d of %d px" % (name.upper(), len(group), n))
+        if len(group) > result["cap"]:
+            out.append("group %s has %d px (> cap %.0f)" % (name.upper(), len(group),
+                                                            result["cap"]))
     if result["a"] & result["b"]:
         out.append("groups overlap")
     return out
