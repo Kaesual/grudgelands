@@ -458,6 +458,16 @@ rawset(_G, "grug_zones", {at=function() return nil end})
 rawset(_G, "grug_inventory", {UI={width=10.4, height=11.1}})
 -- Round 27 minimap switch (page.lua asks it); this server has no world map.
 grug_map.minimap = {available=function() return false end, enabled=function() return false end}
+-- Round 31: the settlement icons ask each race's faction.
+grug_core.start_identities = function()
+ local result = {}
+ for _, row in ipairs(defs) do
+  if not result[row.race] then result[row.race] = true; result[#result + 1] = {race_id=row.race,
+   faction_id=row.faction} end
+ end
+ return result
+end
+grug_core.faction_ids = grug_core.faction_ids or {"accord", "throng"}
 dofile(repo .. "/mods/PLAYER/grug_map/page.lua")
 check(not page.get(page, player, {}):find("Return home", 1, true), "M no Return home on the Map tab")
 -- Round 30 ruling: Return home is on the Character page (the real
