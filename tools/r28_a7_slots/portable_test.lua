@@ -425,15 +425,21 @@ do
 	-- Wrong slot: refused with a hint that names the right slot.
 	local sc = new_player("s2", "scout", 30)
 	join(sc)
-	local before = #chat
+	-- Refusals are message-feed lines keyed by their reason, never chat
+	-- (Round 32 F3).
+	local before, chat_before = #feed_lines, #chat
 	check(not equip(sc, "grug_gear:sword_bronze", W), "scout cannot put sword in Ranged")
-	check(#chat == before + 1 and chat[#chat]:find("Melee slot", 1, true) ~= nil,
-		"refusal names the Melee slot")
+	local line = feed_lines[#feed_lines]
+	check(#feed_lines == before + 1 and line.text:find("Melee slot", 1, true) ~= nil and
+		line.kind == "notice" and line.key:find("^equip:") ~= nil,
+		"refusal names the Melee slot in a keyed feed line")
 	-- Level gate applies to the Melee slot too.
 	local low = new_player("s3", "scout", 5)
 	join(low)
 	check(not equip(low, "grug_gear:dagger_steel", O), "level gate on Melee slot")
-	check(chat[#chat]:find("Melee slot", 1, true) ~= nil, "level refusal names the slot")
+	check(feed_lines[#feed_lines].text:find("Melee slot", 1, true) ~= nil,
+		"level refusal names the slot")
+	eq(#chat, chat_before, "equip refusals: nothing in chat")
 	-- Broken melee weapon: bare hand.
 	local broken = new_player("s4", "scout", 30)
 	join(broken)
@@ -453,10 +459,14 @@ do
 		"warrior melee weapon is the Weapon slot")
 	check(not equip(warrior, "grug_gear:greataxe_bronze", W),
 		"greataxe refused while a shield is held")
+	check(feed_lines[#feed_lines].text:find("is two-handed: take", 1, true) ~= nil,
+		"two-handed refusal (incoming) is one short feed line: " .. feed_lines[#feed_lines].text)
 	local mage = new_player("m1", "mage", 30)
 	join(mage)
 	check(equip(mage, "grug_gear:staff_bronze", W), "mage staff")
 	check(not equip(mage, "grug_gear:spellbook_bronze", O), "staff is two-handed")
+	check(feed_lines[#feed_lines].text:find("is two-handed: equip a one-handed weapon", 1, true) ~= nil,
+		"two-handed refusal (held) is one short feed line: " .. feed_lines[#feed_lines].text)
 	check(equip(mage, "grug_gear:wand_bronze", W), "mage swaps to a wand")
 	eq(mage.inv:get_stack("main", 1):get_name(), "grug_gear:staff_bronze",
 		"the staff swapped back to main")

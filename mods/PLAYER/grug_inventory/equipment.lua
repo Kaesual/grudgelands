@@ -238,10 +238,11 @@ local ARMOR_CLASS_NAME = {"cloth", "leather", "metal"}
 local WARN_INTERVAL = 2 -- seconds
 -- ... and at most this many DIFFERENT refusals inside one such window.
 local WARN_BURST = 2
-local WARN_COLOR = "#ff9955"
 
 -- The allow callback fires repeatedly while a stack is dragged around, so the
--- refusal message has to be throttled per player or it spams the chat.
+-- refusal message has to be throttled per player or it spams the message
+-- feed (grug_core/feed.lua, never chat). Each refusal is one feed line keyed
+-- by its reason, so a repeat after the window refreshes its own line.
 --
 -- ONE channel for every equip refusal (armor rank, weapon level and two-handed
 -- rule), not one budget per rule: a drag is a single gesture, and
@@ -294,25 +295,25 @@ end
 -- class cannot change inside one throttle window -- so the rank alone is a
 -- faithful identity for it, and a cheap one.
 local function warn_armor_class(player, rank)
-	local name = claim_warn(player, "armor:" .. rank)
-	if not name then
+	local reason = "armor:" .. rank
+	if not claim_warn(player, reason) then
 		return
 	end
 	local class_def = grug_classes.get_class_def(player)
-	core.chat_send_player(name, core.colorize(WARN_COLOR,
+	grug_core.feed(player, "notice",
 		"A " .. (class_def and class_def.name or "character without a class") ..
-		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor."))
+		" cannot wear " .. (ARMOR_CLASS_NAME[rank] or "that") .. " armor.",
+		"equip:" .. reason)
 end
 
 local function warn_weapon_level(player, stack, label, required, current)
 	local reason = "level:" .. stack:get_name() .. ":" .. required
-	local name = claim_warn(player, reason)
-	if not name then
+	if not claim_warn(player, reason) then
 		return
 	end
-	core.chat_send_player(name, core.colorize(WARN_COLOR,
-		piece_name(stack) .. " requires level " .. required ..
-		" for the " .. label .. " slot; you are level " .. current .. "."))
+	grug_core.feed(player, "notice", piece_name(stack) .. " requires level " ..
+		required .. " for the " .. label .. " slot; you are level " .. current .. ".",
+		"equip:" .. reason)
 end
 
 -- An item the hand slot does not take. Silent for anything that is not hand
@@ -324,8 +325,8 @@ local function warn_hand_item(player, list, stack)
 			core.get_item_group(itemname, "grug_equip_offhand") == 0 then
 		return
 	end
-	local name = claim_warn(player, "hand:" .. list .. ":" .. itemname)
-	if not name then
+	local reason = "hand:" .. list .. ":" .. itemname
+	if not claim_warn(player, reason) then
 		return
 	end
 	local class_id = grug_classes.get_class(player)
@@ -340,7 +341,7 @@ local function warn_hand_item(player, list, stack)
 	else
 		msg = "Your class cannot equip " .. piece_name(stack) .. " there."
 	end
-	core.chat_send_player(name, core.colorize(WARN_COLOR, msg))
+	grug_core.feed(player, "notice", msg, "equip:" .. reason)
 end
 
 --
@@ -414,22 +415,19 @@ local function allow_hands(player, inventory, to_list, stack, action, info)
 	local reason = incoming_2h
 		and ("hands:incoming:" .. stack:get_name() .. ":" .. other:get_name())
 		or ("hands:held:" .. other:get_name() .. ":" .. stack:get_name())
-	local name = claim_warn(player, reason)
-	if name then
+	if claim_warn(player, reason) then
 		local label = grug_inventory.slot_label(grug_classes.get_class(player),
 			other_list) or "other hand"
 		local msg
+		-- Short enough for one feed line.
 		if incoming_2h then
-			msg = piece_name(stack) .. " is two-handed and needs an empty " ..
-				label .. " slot — take " .. piece_name(other) .. " out first." ..
-				" A two-handed weapon and an offhand item are a choice between" ..
-				" the two, never both."
+			msg = piece_name(stack) .. " is two-handed: take " .. piece_name(other) ..
+				" out of the " .. label .. " slot first."
 		else
-			msg = piece_name(other) .. " is two-handed and leaves no hand free" ..
-				" for " .. piece_name(stack) .. " — equip a one-handed weapon to" ..
-				" carry both."
+			msg = piece_name(other) .. " is two-handed: equip a one-handed weapon" ..
+				" to carry " .. piece_name(stack) .. " too."
 		end
-		core.chat_send_player(name, core.colorize(WARN_COLOR, msg))
+		grug_core.feed(player, "notice", msg, "equip:" .. reason)
 	end
 	return false
 end

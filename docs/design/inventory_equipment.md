@@ -158,7 +158,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     an occupied offhand, and an occupied two-handed hand refuses anything
     into the other slot.
   - Enforced in the **same `allow_put`** as the armor rank,
-    as a **refusal with a chat message that says why** (throttled — the
+    as a **refusal with a message-feed line that says why** (throttled — the
     allow callback fires repeatedly while a stack is dragged) — never by
     clearing the other slot. Two-handers also carry ", two-handed" in their
     generated stat line, so the trade is readable before the refusal ever
@@ -233,7 +233,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     rating-based mitigation and leather's avoidance pool, not between wearing
     and not wearing.
   - Enforced in the **same group-filtered `allow_put`** as the rest of
-    the slot rules, with a throttled chat refusal (the allow callback
+    the slot rules, with a throttled message-feed refusal (the allow callback
     fires repeatedly while a stack is dragged).
   - A **class change unequips** every piece above the new rank back
     into the main inventory — the filter can only ever refuse an equip,
