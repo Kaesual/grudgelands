@@ -20,7 +20,8 @@
 -- terrain y, 2-node step) and, for a fortress, how far its walls stand
 -- from the middle road (Highcourt - Gor Drazhak). One line per passing
 -- centre: `key x z relief road_gap zone_out level_min level_max
--- level_centre wet`. `pick.lua` combines the seeds. ONLY=<key,...> limits
+-- level_centre wet core_wet` (wet: water cells of the fitting square on an
+-- 8-node lattice; core_wet: under the core on a 4-node lattice). `pick.lua` combines the seeds. ONLY=<key,...> limits
 -- the search to some rows.
 local repo, seed, out_file = arg[1], arg[2], arg[3]
 assert(repo and seed and out_file, "usage: candidates.lua REPO SEED OUT_FILE")
@@ -290,8 +291,19 @@ for _, row in ipairs(rows) do
 					end
 					road_gap = floor(best)
 				end
-				out:write(("%s %d %d %d %d %d %d %d %d %d\n"):format(row.key, cx, cz, high - low,
-					road_gap, zone_out, lv_min, lv_max, lv_centre, wet))
+				-- water (lake, river, sea) under the core, apron included, on a
+				-- 4-node lattice
+				local core_wet = 0
+				for z = cz - core_half, cz + core_half - 1, 4 do
+					for x = cx - core_half, cx + core_half - 1, 4 do
+						local class = S.water_class_at(x, z)
+						if class ~= "land" or select(1, column(x, z)) ~= "land" then
+							core_wet = core_wet + 1
+						end
+					end
+				end
+				out:write(("%s %d %d %d %d %d %d %d %d %d %d\n"):format(row.key, cx, cz,
+					high - low, road_gap, zone_out, lv_min, lv_max, lv_centre, wet, core_wet))
 				count = count + 1
 			end
 		end
