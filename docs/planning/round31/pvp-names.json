@@ -1,0 +1,88 @@
+{
+  "generals": {
+    "accord": "General Haldren Ashward",
+    "throng": "General Grask Oathscar"
+  },
+  "captains": {
+    "pvp_camp_gravesalt_escarpment_accord_low": {
+      "human": "Captain Werric Fenholt",
+      "dwarf": "Captain Brekka Flintbrace",
+      "elf": "Captain Avelune"
+    },
+    "pvp_camp_gravesalt_escarpment_accord_high": {
+      "human": "Captain Edralt Greyford",
+      "dwarf": "Captain Dorrik Cragbolt",
+      "elf": "Captain Orelith"
+    },
+    "pvp_camp_gravesalt_escarpment_throng_low": {
+      "orc": "Captain Vrakk",
+      "troll": "Captain Zembaku",
+      "undead": "Captain Velrath Mournveil"
+    },
+    "pvp_camp_gravesalt_escarpment_throng_high": {
+      "orc": "Captain Drezg",
+      "troll": "Captain Dorazai",
+      "undead": "Captain Orselle Pallcrest"
+    },
+    "pvp_camp_broken_causeway_accord_low": {
+      "human": "Captain Oswren Tarnholt",
+      "dwarf": "Captain Threlga Ironkeel",
+      "elf": "Captain Silevra"
+    },
+    "pvp_camp_broken_causeway_accord_high": {
+      "human": "Captain Brendric Rookward",
+      "dwarf": "Captain Kordek Slatefist",
+      "elf": "Captain Thaelori"
+    },
+    "pvp_camp_broken_causeway_throng_low": {
+      "orc": "Captain Khorga",
+      "troll": "Captain Vezuli",
+      "undead": "Captain Nerovan Ashcrown"
+    },
+    "pvp_camp_broken_causeway_throng_high": {
+      "orc": "Captain Skurzh",
+      "troll": "Captain Ruzakai",
+      "undead": "Captain Caldris Duskwrit"
+    },
+    "pvp_camp_shattered_line_accord_low": {
+      "human": "Captain Hedran Woldmere",
+      "dwarf": "Captain Vragni Brasshelm",
+      "elf": "Captain Iverel"
+    },
+    "pvp_camp_shattered_line_accord_high": {
+      "human": "Captain Alweth Flintrow",
+      "dwarf": "Captain Dravka Kilnhand",
+      "elf": "Captain Nerelith"
+    },
+    "pvp_camp_shattered_line_throng_low": {
+      "orc": "Captain Grelk",
+      "troll": "Captain Mavunko",
+      "undead": "Captain Vaustren"
+    },
+    "pvp_camp_shattered_line_throng_high": {
+      "orc": "Captain Zharvek",
+      "troll": "Captain Jekoru",
+      "undead": "Captain Selvrane Gravefold"
+    },
+    "pvp_camp_skyglass_canopy_accord_low": {
+      "human": "Captain Caldren Briarwatch",
+      "dwarf": "Captain Skeldra Basaltbrand",
+      "elf": "Captain Lethira"
+    },
+    "pvp_camp_skyglass_canopy_accord_high": {
+      "human": "Captain Westren Hartholt",
+      "dwarf": "Captain Grendek Cinderlock",
+      "elf": "Captain Elarven"
+    },
+    "pvp_camp_skyglass_canopy_throng_low": {
+      "orc": "Captain Kravzh",
+      "troll": "Captain Talembo",
+      "undead": "Captain Morveth the Still"
+    },
+    "pvp_camp_skyglass_canopy_throng_high": {
+      "orc": "Captain Vroshka",
+      "troll": "Captain Vazeka",
+      "undead": "Captain Othrelle Duskheir"
+    }
+  }
+}
