@@ -285,6 +285,11 @@ need no GUI check.
     the mage's frost root is Ice Nova; Smite stays for now;
     generic words such as "Sprint" or "Heal" are fine even where other games
     use them too.
+15. **Fortress spot and depth PvP** (user, after the M rework): a fortress
+    may lie further from the road where that gives a better spot — near the
+    Battlegrounds and the road, but a fitting place beats reshaping terrain;
+    the road is flair. PvP in the depths starts at depth tier T4 (land at
+    y ≤ −501) instead of T5 (y ≤ −701).
 14. **General's drops** (user): the normal PvP drops plus a raised chance of
     an enchanted high-level item.
 
