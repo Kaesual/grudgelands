@@ -476,7 +476,7 @@ Numbers are each lane's own probe before and after, same seed and area
   brackets): before Q human 40→50 77 % (70), 50→60 103 % (70), orc 74 %,
   85 %; with Q human 108 %, 123 %, orc 102 %, 104 %. **User ruling
   (option b):** the raids' reward weights 5 (picket) / 6 (war camp) → 3 /
-  4 (coordinator commit on main after `699a2002`); then human 30→40 134 %
+  4 (`8a2610c5`); then human 30→40 134 %
   (80), 40→50 104 %, 50→60 119 %; orc 30→40 120 %, 40→50 98 %, 50→60
   101 %. Most of the rest is the raid targets' kill XP, not the reward
   weights; the human 50→60 overshoot predates the round (103 %).
