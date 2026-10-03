@@ -126,7 +126,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     `grug_inventory.equipment_changed`, so the ability skins and the visible
     weapon follow exactly as they do for a manual equip. It obeys the
     two-handed rule below rather than bypassing it, and falls back to `main`
-    (with a chat line saying so) if the slot cannot take the item. The starter
+    (with a message-feed line saying so) if the slot cannot take the item. The starter
     torch stays in `main`; torches are not offhand items (no carried light,
     `combat_stats.md` §7).
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
@@ -213,7 +213,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - **Weapon level requirement is implemented here:** the same `allow_put`
   filter reads a weapon's generated `_grug_ilvl` (or `_grug_req_level`)
   directly in either hand slot, rejects it when that value exceeds the
-  character's level, and says so in chat, naming the slot
+  character's level, and says so in the message feed, naming the slot
   (`grug_inventory/equipment.lua`). Items without a positive level, shields,
   spellbooks and the armor slots are unrestricted. Rejecting
   the equip is deliberate — letting the item sit in the slot without effect

@@ -488,7 +488,19 @@ do
 	local s = new_player("q1", nil, 1)
 	join(s)
 	eq(s.inv:get_size(Q), 5, "quiver list has five hidden stacks")
+	local fed, chat_before = #feed_lines, #chat
 	choose_class(s, "scout")
+	-- One feed line per starter item, keyed per slot, never chat (Round 32 F3).
+	local starter_lines = 0
+	for index = fed + 1, #feed_lines do
+		local line = feed_lines[index]
+		if line.key and line.key:find("^starter:") and
+				line.text:find(" is equipped in the ", 1, true) then
+			starter_lines = starter_lines + 1
+		end
+	end
+	eq(starter_lines, 2, "starter bow and sword each report their slot in the feed")
+	eq(#chat, chat_before, "starter grant: nothing in chat")
 	eq(s.inv:get_stack(W, 1):get_name(), "grug_gear:bow_bronze", "starter bow in Ranged")
 	eq(s.inv:get_stack(O, 1):get_name(), "grug_gear:sword_bronze", "starter sword in Melee")
 	eq(quiver_counts(s), "100,100,0,0,0", "starter arrows in the quiver")

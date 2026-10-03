@@ -757,16 +757,16 @@ grug_classes.register_on_class_chosen(function(player)
 	if #removed == 0 and #stuck == 0 then
 		return
 	end
-	local name = player:get_player_name()
+	-- Message-feed lines, never chat.
 	if #removed > 0 then
-		core.chat_send_player(name, core.colorize("#ff9955",
-			"Your new class cannot wear " .. table.concat(removed, ", ") ..
-			" — moved to your inventory."))
+		grug_core.feed(player, "notice", "Your new class cannot wear " ..
+			table.concat(removed, ", ") .. " — moved to your inventory.",
+			"class_change:moved")
 	end
 	if #stuck > 0 then
-		core.chat_send_player(name, core.colorize("#ff9955",
-			"Your new class cannot wear " .. table.concat(stuck, ", ") ..
-			", but your inventory is full — make room and take it off."))
+		grug_core.feed(player, "notice", "Your new class cannot wear " ..
+			table.concat(stuck, ", ") .. ", but your inventory is full — make room" ..
+			" and take it off.", "class_change:stuck")
 	end
 end)
 
@@ -872,16 +872,16 @@ grug_classes.register_on_class_chosen(function(player, class_id)
 		return
 	end
 	meta:set_int(STARTER_WEAPON_KEY, 1)
-	local name = player:get_player_name()
+	-- One message-feed line per starter item (never chat), short enough to
+	-- read in the feed's time.
 	local function say(item, list, placed)
 		local label = grug_inventory.slot_label(class_id, list) or "Weapon"
 		local where_text = placed == "slot"
-			and (" is equipped in the " .. label .. " slot — your skills take " ..
-				"their damage and their look from it.")
+			and (" is equipped in the " .. label .. " slot; your skills use it.")
 			or ((placed == "main" and " is in your inventory" or " lies at your feet") ..
-				"; equip it in the " .. label .. " slot on the Character screen.")
-		core.chat_send_player(name, core.colorize("#ffd100",
-			"Your " .. item_label(item) .. where_text))
+				": equip it in the " .. label .. " slot (Character page).")
+		grug_core.feed(player, "notice", "Your " .. item_label(item) .. where_text,
+			"starter:" .. list)
 	end
 	say(itemname, WEAPON_LIST, where)
 	-- The class selection inventory is normally empty. Keep the fallbacks
