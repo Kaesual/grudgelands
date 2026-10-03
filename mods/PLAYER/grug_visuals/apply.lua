@@ -281,7 +281,10 @@ end
 
 -- What this player currently IS, in compose's vocabulary.
 function grug_visuals.player_spec(player)
-	local armor, armor_broken = {}, {}
+	local armor, armor_broken, worn = {}, {}, {}
+	-- The affixes are grug_quality's (read at call time: grug_quality loads
+	-- after this mod).
+	local items = rawget(_G, "grug_items")
 	local inv = player:get_inventory()
 	if inv then
 		for list, slot in pairs(ARMOR_LIST_SLOT) do
@@ -289,6 +292,8 @@ function grug_visuals.player_spec(player)
 			if stack and not stack:is_empty() then
 				armor[slot] = stack:get_name()
 				armor_broken[slot] = grug_core.equipment_is_broken(stack)
+				worn[slot] = {name = armor[slot],
+					affixes = items and items.get_affixes(stack) or nil}
 			end
 		end
 	end
@@ -298,6 +303,8 @@ function grug_visuals.player_spec(player)
 		race = grug_classes.get_race(player),
 		look = grug_visuals.get_look(player),
 		armor = armor, armor_broken = armor_broken,
+		-- Enchant colours on the worn pieces (enchant.lua; nil when plain).
+		armor_layers = grug_visuals.armor_layers(worn),
 		weapon = weapon and weapon:get_name() or nil,
 	}
 end
@@ -529,7 +536,28 @@ function grug_visuals.mob_visual(entity, cfg)
 	if type(spec) ~= "table" then
 		return nil
 	end
-	return grug_visuals.compose(spec)
+	return grug_visuals.compose(spec), spec
+end
+
+-- The item an NPC is shown holding: the plain name, or -- with the spec field
+-- `weapon_colors = {prefix = stat, suffix = stat}` (kings, named NPCs; visual
+-- only, round31-plan.md §2.2.4) -- an item string whose per-stack image
+-- carries those enchant colours. Nothing is dropped or equipped from it.
+function grug_visuals.npc_weapon(weapon, colors)
+	if not weapon or type(colors) ~= "table" then
+		return weapon
+	end
+	local def = core.registered_items[weapon]
+	if not grug_gear.has_enchant_masks(def) then
+		return weapon
+	end
+	local image = grug_gear.enchant_image(def.inventory_image, colors.prefix, colors.suffix)
+	if image == def.inventory_image then
+		return weapon
+	end
+	local stack = ItemStack(weapon)
+	stack:get_meta():set_string("inventory_image", image)
+	return stack:to_string()
 end
 
 -- Apply a composed look to a live entity.
@@ -547,7 +575,7 @@ function grug_visuals.apply_entity(entity, cfg, write_textures)
 	if not entity or not entity.object then
 		return nil
 	end
-	local result = grug_visuals.mob_visual(entity, cfg)
+	local result, spec = grug_visuals.mob_visual(entity, cfg)
 	if not result then
 		return nil
 	end
@@ -562,7 +590,7 @@ function grug_visuals.apply_entity(entity, cfg, write_textures)
 			entity.object:set_properties({textures = result.textures})
 		end
 	end
-	sync_wield(entity, entity.object, result.weapon)
+	sync_wield(entity, entity.object, grug_visuals.npc_weapon(result.weapon, spec.weapon_colors))
 	return result
 end
 
