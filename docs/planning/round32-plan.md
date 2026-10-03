@@ -1,7 +1,7 @@
 # Round 32 — Fixes, preparation and research: round plan
 
-Coordinator: Claude (Opus 5.5), 2026-10-03. Status: **draft for the user's
-approval.**
+Coordinator: Claude (Opus 5.5), 2026-10-03. Status: **approved by the user
+(2026-10-03, "go").**
 
 A small round between the content rounds: the first findings of the user's
 Round 30/31 playtest, and three read-only studies that prepare the next large
