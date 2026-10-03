@@ -266,7 +266,16 @@ drawn from the base image above. The gliding version (approved in playtest,
   flying, about 3.7–3.9 times the earlier snapped minimap (4.9 walking,
   11.5 flying). Minimap work is about 5–7 µs per player per step there. By
   the portable fixture a 3000-node walk builds 76 client textures (about
-  6.0 MB) at normal and 95 (about 20.9 MB) at high.
+  6.0 MB) at normal and 95 (about 20.9 MB) at high. Round 32's zoom
+  (440 nodes): the bench measures 13.2 packets and 0.38 KB per second
+  walking, 20.1 sprinting, 28.4 riding and 39.5 (1.1 KB/s) flying (fewer
+  markers in the smaller window); the fixture's walk builds 226 textures
+  (about 4.5 MB, 72 px each) at normal and 188 (about 10.3 MB, 120 px) at
+  high. The engine probe `tools/r32_f1/engine.sh` (one player stand-in
+  leaving Dawnmere on one seed, 30 s per speed) measured, before and after
+  the zoom: walking 0.23 → 0.39 KB/s, sprinting 0.29 → 0.31, riding
+  0.23 → 0.21, flying 0.15 → 0.31 KB/s, and new cell textures 0.17–0.40 →
+  0.47–1.23 per second.
 - **Underground** the minimap keeps showing the surface map.
 - **Switch:** "Show minimap" on the Map tab (Luanti has no custom keybinds),
   stored per player in player meta, on by default. If the server has no base
