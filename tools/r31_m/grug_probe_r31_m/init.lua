@@ -190,12 +190,14 @@ local function poi(row, done)
 			if row.kind == "pvp_fortress" then gx, gz = a.x > 0 and -1 or 1, 0 end
 			local sx, sz = a.x + gx * (box + 6), a.z + gz * (box + 6)
 			if row.kind == "pvp_fortress" then
-				local tx, tz = a.x + gx * (core_half + 4), a.z
+				-- beyond the 10-node protection margin the trail is a road
+				-- corridor of its own
+				local tx, tz = a.x + gx * (box + 12), a.z
 				local ty = solid_top(tx, tz, y0, y1)
 				check(ty and grug_core.world_feature_at({x = tx, y = ty, z = tz}) == "road",
-					("%s: the gate trail starts at %d,%d (%s)"):format(row.key, tx, tz,
+					("%s: the gate trail runs at %d,%d (%s)"):format(row.key, tx, tz,
 						ty and node_at(tx, ty, tz).name or "-"))
-				sx, sz = tx, tz
+				sx, sz = a.x + gx * (core_half + 4), a.z
 				-- the map: the own faction sees the fortress icon, the enemy not
 				local function sees(faction)
 					for _, m in ipairs(grug_map.atlas.collect_markers(fake_player(faction, ""),
@@ -231,7 +233,8 @@ local function poi(row, done)
 				for _, d in ipairs({{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) do
 					local nx, nz = x + d[1], z + d[2]
 					local k = nx .. "," .. nz
-					if not seen[k] and math.abs(nx - a.x) <= box + 8 and math.abs(nz - a.z) <= box + 8 then
+					local bound = math.max(box + 8, core_half + 6)
+					if not seen[k] and math.abs(nx - a.x) <= bound and math.abs(nz - a.z) <= bound then
 						local ny = stand(nx, nz, y)
 						if ny then
 							seen[k] = true
