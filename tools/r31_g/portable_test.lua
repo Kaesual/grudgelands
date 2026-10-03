@@ -32,7 +32,13 @@
 --      player's kills of fortress and camp guards, bodyguards, captains and
 --      Generals, and nothing of the own side's;
 --   Q  the fortress quest givers' records (grug_quests/npcs.lua) follow the
---      registry: three per registered fortress, none for one that is not.
+--      registry: three per registered fortress, none for one that is not;
+--   L  the General's loot (user ruling): grug_quality's REAL kill-loot hook
+--      and gear roll give him his level's gear (ilvl 65) at the raised
+--      `general` chances (60 % uncommon, 25 % rare, the rare window) and his
+--      bodyguards, kings and royal guards none; the hook only runs for a
+--      kill aggro.lua's REAL player_drop_tagger credits, which for a faction
+--      NPC is an enemy player's (the war trophies' rule).
 -- Prints "R31 G PORTABLE PASS checks=<n>" or the failures.
 
 local repo = arg and arg[1] or "."
@@ -579,6 +585,136 @@ do
 	end
 	eq(grug_mobs.quest_socket_title("pvp_fortress_accord", "quest_warmaster"), "Warmaster",
 		"Q the quest shell takes the record's title")
+end
+
+------------------------------------------------------------------------------
+-- L. The General's loot.
+------------------------------------------------------------------------------
+do
+	-- grug_quality under small stubs: an item stack with meta, PCG as a plain
+	-- LCG, one gear item per tier, and the hooks it registers captured.
+	local loot_hook
+	local saved_core, saved_mobs = _G.core, _G.grug_mobs
+	local function stack_of(name)
+		local meta_store = {}
+		local meta = {
+			set_int = function(_, k, v) meta_store[k] = v end,
+			get_int = function(_, k) return tonumber(meta_store[k]) or 0 end,
+			set_string = function(_, k, v) meta_store[k] = v end,
+			get_string = function(_, k) return meta_store[k] or "" end,
+		}
+		return {name = name, meta_store = meta_store,
+			get_meta = function() return meta end,
+			get_definition = function() return {groups = {}} end,
+			get_name = function() return name end,
+			is_empty = function() return false end,
+			get_count = function() return 1 end}
+	end
+	_G.ItemStack = function(name) return stack_of(name) end
+	_G.PcgRandom = function(seed)
+		local state = seed % 2147483647
+		return {next = function(_, a, b)
+			state = (state * 48271) % 2147483647
+			return a + state % (b - a + 1)
+		end}
+	end
+	local dropped = {}
+	_G.core = setmetatable({
+		add_item = function(_, stack)
+			dropped[#dropped + 1] = stack
+			return {set_velocity = noop}
+		end,
+		get_us_time = function() return 123456789 end,
+		get_gametime = function() return gametime end,
+		serialize = function() return "" end,
+	}, {__index = function() return noop end})
+	local quality_mobs = setmetatable({
+		register_kill_loot_hook = function(fn) loot_hook = fn end,
+	}, {__index = function() return noop end})
+	_G.grug_mobs = quality_mobs
+	_G.grug_gear = {catalog = {}}
+	for tier = 1, 6 do grug_gear.catalog[tier] = {all = {"grug_gear:test_" .. tier}} end
+	local saved_items = rawget(_G, "grug_items")
+	_G.grug_items = nil
+	setmetatable(_G, {__index = function(_, name)
+		if type(name) == "string" and name:match("^grug_") then
+			return setmetatable({}, {__index = function() return noop end})
+		end
+	end})
+	dofile(repo .. "/mods/ITEMS/grug_quality/init.lua")
+	setmetatable(_G, nil)
+	local rolled = {}
+	grug_items.roll_enchants = function(stack, ilvl, window)
+		rolled[#rolled + 1] = {quality = stack.meta_store.grug_quality, ilvl = ilvl, window = window}
+	end
+	check(loot_hook ~= nil, "L grug_quality hooks the kill loot")
+	local row = grug_items.DROP_CHANCES.general
+	check(row and row.uncommon == 60 and row.rare == 25 and row.window == "rare",
+		"L the General's chances: 60 % uncommon, 25 % rare, the rare window")
+	local elite = grug_items.DROP_CHANCES.elite
+	check(row.uncommon > elite.uncommon and row.rare > elite.rare, "L ...above an elite's")
+
+	local general = {name = "grug_mobs:general_accord", _grug_boss_id = "general:accord",
+		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 65,
+		object = {get_pos = function() return {x = 0, y = 0, z = 0} end}}
+	local bodyguard = {name = "grug_mobs:bodyguard_accord", _grug_boss_id = "general:accord",
+		_grug_tier = "elite", _grug_level = 60, object = general.object}
+	local king = {name = "grug_mobs:king_human", _grug_boss_id = "king:human",
+		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 65, object = general.object}
+	local royal = {name = "grug_mobs:royal_guard_human", _grug_boss_id = "king:human",
+		_grug_tier = "elite", _grug_level = 60, object = general.object}
+	-- 2000 seeded rolls: the item level and the rates.
+	local uncommon, rare, n = 0, 0, 2000
+	local ilvl_ok, window_ok = true, true
+	for seed = 1, n do
+		rolled = {}
+		grug_items.roll_mob_gear(general, seed * 7919)
+		for _, roll in ipairs(rolled) do
+			ilvl_ok = ilvl_ok and roll.ilvl == 65
+			window_ok = window_ok and roll.window == "rare"
+			if roll.quality == 2 then uncommon = uncommon + 1 else rare = rare + 1 end
+		end
+	end
+	check(ilvl_ok, "L the General's gear is item level 65")
+	check(window_ok, "L ...rolled in the rare window")
+	check(math.abs(uncommon / n - 0.60) < 0.05, ("L uncommon about 60 %% (%.1f %%)"):format(100 * uncommon / n))
+	check(math.abs(rare / n - 0.25) < 0.05, ("L rare about 25 %% (%.1f %%)"):format(100 * rare / n))
+	-- The hook: the General drops gear (over many kills), his bodyguards,
+	-- kings and royal guards none.
+	local function drops_over(entity, kills)
+		dropped = {}
+		for _ = 1, kills do loot_hook(entity, "org") end
+		return #dropped
+	end
+	check(drops_over(general, 50) > 20, "L the kill-loot hook drops the General's gear")
+	eq(drops_over(bodyguard, 50), 0, "L a bodyguard drops no gear")
+	eq(drops_over(king, 50), 0, "L a king's gear stays in his reward ledger")
+	eq(drops_over(royal, 50), 0, "L a royal guard drops no gear")
+
+	-- Whose kill runs the hook: aggro.lua's player_drop_tagger, the war
+	-- trophies' predicate (the REAL function cut out of the source).
+	local src = read(repo .. "/mods/ENTITIES/grug_mobs/aggro.lua")
+	local body = src:match("(function grug_mobs%.player_drop_tagger%(self%).-\nend)\n")
+	check(body ~= nil, "L player_drop_tagger found in aggro.lua")
+	_G.grug_mobs = {}
+	_G.core = {is_player = function(obj) return type(obj) == "table" and obj.player == true end,
+		get_gametime = function() return gametime end}
+	local factions = {org = "throng", ann = "accord"}
+	_G.grug_core = {get_player_faction = function(name) return factions[name] end,
+		opposing_faction = function(id) return id == "accord" and "throng" or "accord" end}
+	assert(loadstring(body))()
+	local function killer(name)
+		return {player = true, get_player_name = function() return name end}
+	end
+	local function tagged(by)
+		local victim = {_grug_faction = "accord", cause_of_death = by and {puncher = by} or nil}
+		return grug_mobs.player_drop_tagger(victim)
+	end
+	eq(tagged(killer("org")), "org", "L an enemy player's kill of the General drops")
+	eq(tagged(killer("ann")), nil, "L an own-faction player's kill drops nothing")
+	eq(tagged({player = false}), nil, "L a mob's kill drops nothing")
+	eq(tagged(nil), nil, "L a death without a puncher drops nothing")
+	_G.core, _G.grug_mobs, _G.grug_items = saved_core, saved_mobs, saved_items
 end
 
 if failures > 0 then

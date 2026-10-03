@@ -104,6 +104,10 @@ grug_items.DROP_CHANCES = {
 	elite = {uncommon = 20, rare = 3, window = "elite"},
 	rare = {uncommon = 100, rare = 25, window = "rare"},
 	boss = {uncommon = 0, rare = 100, window = "boss"},
+	-- A PvP fortress General (Round 31, user ruling): no reward ledger, but
+	-- every enemy player's kill of him rolls his level's gear at a raised
+	-- chance and in the named rares' value window.
+	general = {uncommon = 60, rare = 25, window = "rare"},
 }
 
 local ENCHANT_VALUES = {
@@ -732,7 +736,12 @@ function grug_items.roll_mob_gear(self, seed)
 	local boss_id = self._grug_boss_id
 	local ledger_boss = type(boss_id) == "string" and
 		(boss_id:match("^king:") or boss_id:match("^dragon:"))
-	local source = (ledger_boss or self._grug_royal_king) and "boss" or tier
+	-- The General leads a "general:" encounter; his bodyguards share the id
+	-- but are no leader.
+	local general = type(boss_id) == "string" and boss_id:match("^general:") and
+		self._grug_royal_king and true or false
+	local source = general and "general" or
+		((ledger_boss or self._grug_royal_king) and "boss" or tier)
 	if not grug_items.DROP_CHANCES[source] then source = "normal" end
 	local row = grug_items.DROP_CHANCES[source]
 	local ilvl
@@ -740,6 +749,9 @@ function grug_items.roll_mob_gear(self, seed)
 		ilvl = 70
 	elseif type(boss_id) == "string" and boss_id:match("^dragon:") then
 		ilvl = 75
+	elseif general then
+		-- His own level (65), above the ordinary mob ceiling of 60.
+		ilvl = clamp(math.floor(tonumber(self._grug_level) or 1), 1, 70)
 	else
 		ilvl = clamp(math.floor(tonumber(self._grug_level) or 1), 1, 60)
 	end
@@ -764,7 +776,13 @@ end
 -- player-tag/enemy-kill predicate. It drops concrete ItemStacks so their meta
 -- survives, including on bosses whose ordinary string-drop list is empty.
 grug_mobs.register_kill_loot_hook(function(self, tagger_name)
-	if self._grug_boss_id or self._grug_royal_king then return end
+	-- Encounters reward through their ledger, except a fortress General, who
+	-- has none (Round 31): his gear drops here, on the same enemy-player kill
+	-- that drops his war trophies. His bodyguards drop no gear, like royal
+	-- guards.
+	local general = type(self._grug_boss_id) == "string" and
+		self._grug_boss_id:match("^general:") and self._grug_royal_king
+	if (self._grug_boss_id or self._grug_royal_king) and not general then return end
 	local rolled = grug_items.roll_mob_gear(self)
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
