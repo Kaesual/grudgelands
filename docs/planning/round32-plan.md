@@ -44,17 +44,23 @@ Bandit and other hostile camps get their own map symbol and colour instead of
 "!", which reads as an available quest.
 
 ### 2.3 Zone names: colour and territory line
-- Colour by relation, on the large centred banner and the zone line under the
-  minimap: **green** own peaceful territory, **yellow** contested, **red**
-  enemy territory. Both banner lines in the same colour.
+- **Territory status** at the player's position, depth included: friendly
+  (own peaceful land above y −501), contested (contested zones, and every
+  column at y ≤ −501), enemy (enemy land above y −501).
+- **Colour** by status, on the large centred banner and the zone line under
+  the minimap: **green** friendly, **yellow** contested, **red** enemy. Both
+  banner lines in the same colour; the line under the minimap follows the
+  status continuously.
 - The large banner (name at 2.5×) gets a second centred line in normal text
-  size that replaces Round 31's PvP subtitle: "Friendly Territory (1–10)",
-  "Contested Territory (31–40, PvP)", "Enemy Territory (1–10, PvP)" — the
-  zone's level range.
-- Entering the contested depths (y ≤ −501) under own land: the banner line
-  "Contested Depths (PvP)" in yellow, without a level range (coordinator
-  proposal).
-- Under the minimap: the zone name as today, only coloured; no level range.
+  size that replaces Round 31's PvP subtitle: "Friendly Territory",
+  "Contested Territory (PvP)", "Enemy Territory (PvP)". **No level range**
+  (user: underground it would only confuse).
+- **Trigger:** the banner shows whenever the zone **or** the territory status
+  changes. So crossing y −501 under friendly or enemy land (through caves or
+  shafts too) shows the same zone name again with the changed line and
+  colour; crossing it in a contested zone shows nothing; a zone change always
+  shows.
+- Under the minimap: the zone name as today, only coloured.
 
 ### 2.4 LMB hold: gather may become combat (supersedes Round 28 ruling 14's lock)
 Within one continuous LMB hold:
