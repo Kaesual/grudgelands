@@ -32,6 +32,7 @@
 
 grug_gear = {}
 dofile(core.get_modpath(core.get_current_modname()) .. "/permissions.lua")
+dofile(core.get_modpath(core.get_current_modname()) .. "/enchant_colors.lua")
 
 --
 -- Brackets. Prices are the Common slot table of economy.md §2 VERBATIM (in
