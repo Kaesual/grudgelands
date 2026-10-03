@@ -994,6 +994,17 @@ dofile(modpath .. "/skeleton_raider.lua")
 dofile(modpath .. "/bandit.lua")
 dofile(modpath .. "/bandit_archer.lua")
 dofile(modpath .. "/mirefolk.lua")
+-- Round 31 PvP garrisons: the pure rules over lane S's catalogue and the
+-- Astra names (data/pvp_names.json, a copy of
+-- docs/planning/round31/pvp-names.json). guard.lua and bosses.lua register
+-- the captains, Generals and bodyguards from them; start_npcs.lua places them.
+do
+	local handle = assert(io.open(modpath .. "/data/pvp_names.json", "r"))
+	local names = core.parse_json(handle:read("*a"))
+	handle:close()
+	grug_mobs.pvp_garrison = dofile(modpath .. "/pvp_garrison.lua").new(
+		dofile(core.get_modpath("grug_mapgen") .. "/wp40/r31_pvp_catalog.lua"), names)
+end
 -- Faction guards + military outposts (world.md §4, WP6/T8): guard.lua must
 -- come before camps.lua, which names the two guard mobs in its camp types.
 dofile(modpath .. "/guard.lua")

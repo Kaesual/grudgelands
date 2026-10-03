@@ -78,7 +78,9 @@
 
 -- world.md §1: "elite city watch (60+)". The auto-promotion runs on the
 -- guard's own do_custom, AFTER init.lua's wrapper called ensure_init — so
--- _grug_level is already assigned when we look at it.
+-- _grug_level is already assigned when we look at it. A Round 31 PvP
+-- garrison decides its tier at placement and marks it checked
+-- (start_npcs.lua install_garrison): a level-60 camp guard stays normal.
 local ELITE_LEVEL = 60
 
 local function guard_tick(self, dtime)
@@ -278,3 +280,21 @@ grug_mobs.register_mob("grug_mobs:guard_accord",
 	guard_def("accord", "Accord Guard", "grug_mobs_guard_accord.png"))
 grug_mobs.register_mob("grug_mobs:guard_throng",
 	guard_def("throng", "Throng Guard", "grug_mobs_guard_throng.png"))
+
+-- Round 31: a Battlegrounds camp's captain (pvp-plan ruling 19, the
+-- coordinator defaults). The guard chassis -- it holds its socket like a
+-- post guard, attacks enemy players everywhere, never fights guards and drops
+-- war trophies only to an enemy player's kill -- under its own entity name, so
+-- a quest can name "the captain" apart from his guards. Its name comes from
+-- data/pvp_names.json per camp and race and is written at placement
+-- (start_npcs.lua); the level, the elite tier and the camp's race too.
+local garrison = grug_mobs.pvp_garrison
+for _, faction in ipairs({"accord", "throng"}) do
+	local name = garrison.captain_entity(faction)
+	grug_mobs.register_mob(name, guard_def(faction,
+		(faction == "accord" and "Accord" or "Throng") .. " Captain",
+		"grug_mobs_guard_" .. faction .. ".png"))
+	-- mobs_redo copies a whitelist of definition fields, so grug_pvp's NPC
+	-- counter reads its kind off the registered prototype.
+	core.registered_entities[name]._grug_pvp_kind = garrison.pvp_kind(name)
+end

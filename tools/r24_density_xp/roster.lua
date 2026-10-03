@@ -52,6 +52,15 @@ return function(repo)
 	_G.mobs = permissive({mob_class = permissive({}), spawning_mobs = {},
 		spawn = function(_, def) rows[#rows + 1] = def end})
 	_G.grug_mobs = permissive({})
+	-- Round 31: guard.lua and bosses.lua read the PvP garrison rules at load
+	-- (init.lua builds them from lane S's catalogue and the Astra names).
+	do
+		local handle = assert(io.open(dir .. "/data/pvp_names.json", "rb"))
+		local names = dofile(repo .. "/tools/r28_b1/json.lua").parse(handle:read("*a"))
+		handle:close()
+		_G.grug_mobs.pvp_garrison = dofile(dir .. "/pvp_garrison.lua").new(
+			dofile(repo .. "/mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names)
+	end
 	_G.grug_core = permissive({DAY_PHASE_START = 0.1875, DAY_PHASE_END = 0.8125})
 	_G.grug_zones = permissive({})
 	_G.grug_factions = permissive({})

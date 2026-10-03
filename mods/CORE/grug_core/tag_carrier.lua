@@ -99,7 +99,10 @@ local function category_for(parent)
 	local name = entity.name or ""
 	if name == "grug_mobs:guard_accord" or name == "grug_mobs:guard_throng"
 			or name == "grug_mobs:land_guard"
-			or name:match("^grug_mobs:royal_guard_") then
+			or name:match("^grug_mobs:royal_guard_")
+			-- Round 31 PvP garrisons: a camp captain, a General's bodyguard.
+			or name:match("^grug_mobs:captain_")
+			or name:match("^grug_mobs:bodyguard_") then
 		return "guard"
 	end
 	if entity._grug_disposition == "aggressive"
