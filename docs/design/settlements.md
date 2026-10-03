@@ -129,8 +129,9 @@ Decided 2026-09-14.
   yet, get one line, "<NPC> I serve only The Accord." (the Throng's
   likewise), at most once every two seconds. Plain residents are no service
   and still answer anyone with their flavour line. Every settlement NPC has
-  a faction, so no NPC serves both. Guards, royal guards and kings give no
-  quests: quest givers stand only on `quest` sockets.
+  a faction, so no NPC serves both. Guards, royal guards, kings and the PvP
+  POIs' captains and Generals give no quests: quest givers stand only on
+  `quest` sockets.
 - Blueprints export named sockets (guard post, patrol loop, vendor, idle,
   work, quest, king, waypoint) that runtime mods read through one registry,
   see [wp13-npc-sockets-contract.md](../research/wp13-npc-sockets-contract.md).
