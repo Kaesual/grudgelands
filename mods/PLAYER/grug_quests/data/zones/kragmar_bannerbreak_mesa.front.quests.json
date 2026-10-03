@@ -430,8 +430,8 @@
       "min_level": 40,
       "level": 41,
       "requires": [],
-      "title": "Report to {name:pvp_fortress_throng}",
-      "text": "The Throng has raised {name:pvp_fortress_throng} {dir_from_giver:pvp_fortress_throng} to carry the war to the Accord camps on the Battlegrounds. Its Warmaster wants every fighter who has already seen the front. Go there and report; the Warmaster will put you to work.",
+      "title": "Room Under the Banner at {name:pvp_fortress_throng}",
+      "text": "I can keep stitching this standard, but somebody has to give the Accord a reason to fear it. Go to {name:pvp_fortress_throng}, {dir_from_giver:pvp_fortress_throng}, and report to the Warmaster for the fight against their Battlegrounds camps. Tell the Warmaster I sent a fighter; I have no spare cloth for a letter.",
       "objectives": [
         {
           "type": "talk",
@@ -453,8 +453,8 @@
       "min_level": 40,
       "level": 41,
       "requires": [],
-      "title": "Steel for the Quartermaster",
-      "text": "A fortress eats steel faster than bread. The Quartermaster is short of Silversteel Bars for arrowheads and gate bolts. Bring me four, and the walls will thank you before the Accord does.",
+      "title": "Four Bars Beat a Boast",
+      "text": "Every loudmouth in this hold promises to be our shield, yet the Quartermaster still has to mend the gate. Bring me four Silversteel Bars for gate bolts and arrowheads. There is honour in keeping a warband armed, even if nobody sings about the bolts.",
       "objectives": [
         {
           "type": "item",
@@ -477,8 +477,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Trophies for the Drill Yard",
-      "text": "Recruits drill harder when they can see what the enemy wore. Bring me six War Trophies taken from Accord guards; any Accord garrison will do. I will hang them where the new blades can count them.",
+      "title": "Something Solid to Boast About",
+      "text": "My recruits swear they could beat the Accord with one hand, usually while dropping their weapons with the other. Bring me six War Trophies from Accord Guards you defeat; any Accord garrison will serve. I want something from a real fight to hang in the drill yard before another practice dummy hears a victory speech.",
       "objectives": [
         {
           "type": "item",
@@ -501,8 +501,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "A Clear Road for the Scouts",
-      "text": "My riders cannot watch the Accord camps while Causeway Brigands prowl the road there. Kill five of them by day in the {name:front_broken_causeway/alderwood}, which lies {zone_area:front_broken_causeway/alderwood}. Then my scouts can ride past and count the enemy's tents.",
+      "title": "No Toll for the Throng",
+      "text": "Causeway Brigands keep stopping my scouts to ask what their lives are worth. Kill five of those brigands by day in the {name:front_broken_causeway/alderwood}, {zone_area:front_broken_causeway/alderwood}. We have Accord camps to watch, and I will not have our riders held up haggling with thieves.",
       "objectives": [
         {
           "type": "kill",
@@ -528,8 +528,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Group: Pull Up the {name:pvp_camp_shattered_line_accord_low}",
-      "text": "The Accord has staked a picket on the Battlegrounds: the {name:pvp_camp_shattered_line_accord_low}, which lies {zone_area:pvp_camp_shattered_line_accord_low}. Gather a group, kill four Accord Guards there and the Accord Captain who holds it. My riders need those eyes put out.",
+      "title": "Group: Rattle the {name:pvp_camp_shattered_line_accord_low}",
+      "text": "The {name:pvp_camp_shattered_line_accord_low}, {zone_area:pvp_camp_shattered_line_accord_low}, watches our movements like a cook watching the last joint of meat. Take a group and kill four Accord Guards and the Accord Captain at that camp. Give them a fight to handle while my riders get on with their work.",
       "objectives": [
         {
           "type": "kill",
@@ -567,8 +567,8 @@
       "requires": [
         "bannerbreak_warhold_picket_shattered"
       ],
-      "title": "Group: Pull Up the {name:pvp_camp_broken_causeway_accord_low}",
-      "text": "The Accord has staked a picket on the Battlegrounds: the {name:pvp_camp_broken_causeway_accord_low}, which lies {zone_area:pvp_camp_broken_causeway_accord_low}. Gather a group, kill four Accord Guards there and the Accord Captain who holds it. My riders need those eyes put out.",
+      "title": "Group: Trouble for the {name:pvp_camp_broken_causeway_accord_low}",
+      "text": "Now the {name:pvp_camp_broken_causeway_accord_low}, {zone_area:pvp_camp_broken_causeway_accord_low}, is making our scouts earn every muddy step. Gather a group and defeat four Accord Guards and the Accord Captain there. The marsh already takes a toll on our boots; the Accord does not get to take one on our riders.",
       "objectives": [
         {
           "type": "kill",
@@ -604,8 +604,8 @@
       "min_level": 47,
       "level": 49,
       "requires": [],
-      "title": "Group: Burn the {name:pvp_camp_shattered_line_accord_high}",
-      "text": "The {name:pvp_camp_shattered_line_accord_high}, which lies {zone_area:pvp_camp_shattered_line_accord_high}, is the strongest Accord war camp on the Battlegrounds there. Take a group, kill five Accord Guards and the Accord Captain who commands them. A war camp without a captain is just a lot of tents.",
+      "title": "Group: Challenge the {name:pvp_camp_shattered_line_accord_high}",
+      "text": "The soldiers at the {name:pvp_camp_shattered_line_accord_high}, {zone_area:pvp_camp_shattered_line_accord_high}, have drilled until they can probably march in their sleep. Take a group and defeat five Accord Guards and the Accord Captain at that camp. Stay together when they hit back; a warband that scatters is just a collection of future warnings.",
       "objectives": [
         {
           "type": "kill",
@@ -643,8 +643,8 @@
       "requires": [
         "bannerbreak_warhold_warcamp_shattered"
       ],
-      "title": "Group: Burn the {name:pvp_camp_broken_causeway_accord_high}",
-      "text": "The {name:pvp_camp_broken_causeway_accord_high}, which lies {zone_area:pvp_camp_broken_causeway_accord_high}, is the strongest Accord war camp on the Battlegrounds there. Take a group, kill five Accord Guards and the Accord Captain who commands them. A war camp without a captain is just a lot of tents.",
+      "title": "Group: Shake the {name:pvp_camp_broken_causeway_accord_high}",
+      "text": "The {name:pvp_camp_broken_causeway_accord_high}, {zone_area:pvp_camp_broken_causeway_accord_high}, keeps the Accord's war machine marching through all that mud. Bring a group and kill five Accord Guards and the Accord Captain commanding the camp. They have discipline; show them the Throng can stand shoulder to shoulder too.",
       "objectives": [
         {
           "type": "kill",
@@ -680,8 +680,8 @@
       "min_level": 50,
       "level": 52,
       "requires": [],
-      "title": "Group: Pull Up the {name:pvp_camp_gravesalt_escarpment_accord_low}",
-      "text": "The Accord has staked a picket on the Battlegrounds: the {name:pvp_camp_gravesalt_escarpment_accord_low}, which lies {zone_area:pvp_camp_gravesalt_escarpment_accord_low}. Gather a group, kill four Accord Guards there and the Accord Captain who holds it. My riders need those eyes put out.",
+      "title": "Group: Lean on the {name:pvp_camp_gravesalt_escarpment_accord_low}",
+      "text": "My riders have enough trouble finding safe ground among the salt and old graves without the Accord measuring them for more. Form a group and strike the {name:pvp_camp_gravesalt_escarpment_accord_low}, {zone_area:pvp_camp_gravesalt_escarpment_accord_low}, killing four Accord Guards and the Accord Captain there. I need a way through for the scouts, and I need you back to tell them it is open.",
       "objectives": [
         {
           "type": "kill",
@@ -719,8 +719,8 @@
       "requires": [
         "bannerbreak_warhold_picket_gravesalt"
       ],
-      "title": "Group: Pull Up the {name:pvp_camp_skyglass_canopy_accord_low}",
-      "text": "The Accord has staked a picket on the Battlegrounds: the {name:pvp_camp_skyglass_canopy_accord_low}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_low}. Gather a group, kill four Accord Guards there and the Accord Captain who holds it. My riders need those eyes put out.",
+      "title": "Group: A Roar for the {name:pvp_camp_skyglass_canopy_accord_low}",
+      "text": "There is a great deal of forest to hide in, yet the {name:pvp_camp_skyglass_canopy_accord_low}, {zone_area:pvp_camp_skyglass_canopy_accord_low}, keeps spotting our scouts. Gather a group and defeat four Accord Guards and the Accord Captain at that camp. Let them hear the Throng coming for once; my riders can use the distraction.",
       "objectives": [
         {
           "type": "kill",
@@ -756,8 +756,8 @@
       "min_level": 57,
       "level": 59,
       "requires": [],
-      "title": "Group: Burn the {name:pvp_camp_gravesalt_escarpment_accord_high}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, which lies {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, is the strongest Accord war camp on the Battlegrounds there. Take a group, kill five Accord Guards and the Accord Captain who commands them. A war camp without a captain is just a lot of tents.",
+      "title": "Group: Stand Against the {name:pvp_camp_gravesalt_escarpment_accord_high}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, holds fighters who have survived more than a few brave charges. Take a trusted group and kill five Accord Guards and the Accord Captain there. You owe your warband a steady blade and a clear head; save the roaring for when everyone is back.",
       "objectives": [
         {
           "type": "kill",
@@ -795,8 +795,8 @@
       "requires": [
         "bannerbreak_warhold_warcamp_gravesalt"
       ],
-      "title": "Group: Burn the {name:pvp_camp_skyglass_canopy_accord_high}",
-      "text": "The {name:pvp_camp_skyglass_canopy_accord_high}, which lies {zone_area:pvp_camp_skyglass_canopy_accord_high}, is the strongest Accord war camp on the Battlegrounds there. Take a group, kill five Accord Guards and the Accord Captain who commands them. A war camp without a captain is just a lot of tents.",
+      "title": "Group: Answer the {name:pvp_camp_skyglass_canopy_accord_high}",
+      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Gather a group and defeat five Accord Guards and the Accord Captain in that camp. Keep your eyes on your comrades as well as the enemy; the Throng needs fighters who come back together to argue over who fought best.",
       "objectives": [
         {
           "type": "kill",
