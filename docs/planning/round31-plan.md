@@ -262,6 +262,17 @@ need no GUI check.
     - Coordinator defaults (veto welcome): the proposal's height fix (a
       player inside the arena is a target whatever their height) and
       protection for the whole arena, so the hazards cannot be dug out.
+    - **Fight participants** (user, after the DA2 review): players who take
+      part in a dragon fight (damage or threat on the dragon or its whelps,
+      hit by them, or support on a participant) are flagged for that fight;
+      while it runs, a flagged player outside the arena circle takes 500
+      damage per second. The flag ends when the dragon dies, or at once when
+      all players have left the arena and the dragon resets. (This answers
+      the healer standing outside the invisible edge.)
+12. **Skill names** (user): the three priest skills that carry another
+    game's exact names (Flash Heal, Power Word: Shield, Renew) are renamed;
+    generic words such as "Sprint" or "Heal" are fine even where other games
+    use them too.
 
 ## 7. Orchestration notes (for the coordinator)
 
