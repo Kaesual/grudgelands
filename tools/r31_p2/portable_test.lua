@@ -334,6 +334,9 @@ do
 	context.page = "grug_pvp:pvp"
 	change_callbacks[1](bob, {})
 	eq(#sends, 3, "P a change on the open tab re-sends at once")
+	-- grug_pvp fires once at join, possibly before sfinv made a context.
+	local ok = pcall(change_callbacks[1], fake_player("newcomer"), {flagged = false})
+	check(ok and #sends == 3, "P a join-time change without a context does nothing")
 	pvp_state.bob, pvp_stats.bob, players.bob = nil, nil, nil
 
 	-- Nav order: grug_inventory's order, then the other tabs' hooks (each moves
@@ -529,6 +532,10 @@ do
 		end
 	end
 	check(banner and subtitle, "B banner and subtitle elements on join")
+	-- grug_pvp fires once at join, before or after this mod's join hook.
+	local early = fake_player("early")
+	check(pcall(change_callbacks[1], early, {flagged = false}) and early.sent == 0,
+		"B a join-time change before the HUD exists does nothing")
 	local layout = grug_core.hud_layout
 	check(subtitle and p.huds[subtitle].offset.y == layout.zone_subtitle_offset(nil).y and
 		p.huds[subtitle].number == 0xff5555, "B subtitle at its anchor, in red")

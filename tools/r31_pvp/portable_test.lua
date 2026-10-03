@@ -185,6 +185,12 @@ end
 local eligible_kill
 grug_mobs = {register_on_eligible_kill = function(fn) eligible_kill = fn end}
 
+-- The PvP tab and status icons (lane P2, page.lua and hud.lua) load with
+-- init.lua; tools/r31_p2 tests them, here they only need somewhere to register.
+sfinv = {pages = {}, pages_unordered = {}, contexts = {},
+	register_page = function(name, def) sfinv.pages[name] = def end}
+function grug_core.register_status_source() return true end
+
 dofile(repo .. "/mods/PLAYER/grug_pvp/init.lua")
 check(grug_core.pvp_can_harm == grug_pvp.can_harm, "grug_pvp installs the impact gate")
 check(type(grug_core.pvp_hit_landed) == "function", "grug_pvp installs the landed-hit hook")
