@@ -66,8 +66,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     Priest staff / spellbook ("Weapon" / "Caster offhand"), Scout bow / sword
     ("Ranged" / "Melee"). The Scout's quiver slot shows a dimmed quiver.
 - Further pages: **Bags**, existing **Crafting** (3×3 grid).
-- Armor visuals on the player model (multiskin layering à la lottarmor):
-  Phase 3.
+- Armor visuals on the player model: composed with the character's look
+  ([character_visuals.md](character_visuals.md) §1, §3).
 
 ## 2. Equipment slots (MVP)
 

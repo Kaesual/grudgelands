@@ -473,6 +473,45 @@ run_after()
 sc = shown_since(mark, "carol")
 eq(sc[1] and sc[1].formname, RACE_FORM, "reconnect: race dialog on the deferred join step")
 
+--
+-- 8. The look step (Round 31 A): after the class, before the arrival. On the
+--    common path the arrival is loaded before the look is confirmed; the
+--    confirm completes creation and closes the look dialog with the others.
+--
+local LOOK_FORM = "grug_classes:look"
+grug_classes.register_look_step({
+	done = function(p) return p:get_meta():get_string("test:look") ~= "" end,
+	formspec = function() return "LOOK_DIALOG" end,
+	handles = function(fields) return fields.look_confirm ~= nil or fields.look_next_tone ~= nil end,
+	act = function(p, fields)
+		if fields.look_confirm then p:get_meta():set_string("test:look", "1,1,1,1,1") end
+	end,
+})
+mark = #shown
+local d = join("dave", true)
+submit(d, "", {choose_throng = "The Throng"})
+submit(d, RACE_FORM, {choose_troll = "Troll"})
+emerges[#emerges](nil, core.EMERGE_GENERATED, 0)
+run_after()
+submit(d, CLASS_FORM, {choose_warrior = "Warrior"})
+local sd = shown_since(mark, "dave")
+eq(sd[#sd] and sd[#sd].formname, LOOK_FORM, "look dialog after the class")
+eq(grug_classes.get_class(d), nil, "no arrival before the look is confirmed")
+eq(d.armor.immortal, 1, "still in stasis on the look step")
+submit(d, LOOK_FORM, {look_next_tone = ">"})
+eq(grug_classes.get_class(d), nil, "a look change does not finish creation")
+local closed_before = #closed
+submit(d, LOOK_FORM, {look_confirm = "Confirm"})
+eq(grug_classes.get_class(d), "warrior", "confirm completes creation")
+eq(d.armor.immortal, nil, "stasis released after the look")
+local look_closed = false
+for index = closed_before + 1, #closed do
+	if closed[index].name == "dave" and closed[index].formname == LOOK_FORM then
+		look_closed = true
+	end
+end
+check(look_closed, "completion closes the look dialog")
+
 if failures > 0 then
 	error(("R24 CREATION PAUSE PORTABLE FAIL %d/%d"):format(failures, checks), 0)
 end

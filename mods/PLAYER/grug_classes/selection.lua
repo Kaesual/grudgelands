@@ -1,5 +1,5 @@
--- Character creation flow: faction (grug_factions) -> race -> class, all
--- mandatory, all final. While the flow is incomplete the player remains
+-- Character creation flow: faction (grug_factions) -> race -> class -> look
+-- (when grug_visuals registers its step), all mandatory, all final. While the flow is incomplete the player remains
 -- frozen and engine-immortal (creation stasis). The final teleport waits for
 -- the selected server-wide preparation plan. Existing characters reconnecting
 -- during preparation wait without changing position.
@@ -15,6 +15,7 @@
 local RACE_FORM = "grug_classes:race"
 local CLASS_FORM = "grug_classes:class"
 local LOADING_FORM = "grug_classes:loading"
+local LOOK_FORM = "grug_classes:look"
 local FACTION_FORM = grug_factions.SELECTION_FORM
 -- The class chosen before the arrival area is loaded. Only the final teleport
 -- turns it into grug_classes:class, and nothing else reads this key: a pending
@@ -29,8 +30,32 @@ local CREATION_FORMS = {
 	[FACTION_FORM] = true,
 	[RACE_FORM] = true,
 	[CLASS_FORM] = true,
+	[LOOK_FORM] = true,
 	[LOADING_FORM] = true,
 }
+
+--
+-- THE LOOK STEP (round31-plan.md §2.1.5): the last choice before the arrival
+-- teleport, after the class. Its dialog and its storage belong to grug_visuals,
+-- which depends on this mod and therefore registers the step here instead of
+-- being called. Without it creation simply has no look step.
+--   step.done(player)                 the look is chosen (stored for good)
+--   step.formspec(player, background) the dialog
+--   step.handles(fields)              the fields are the dialog's
+--   step.act(player, fields)          apply them; nothing else to return
+--
+local look_step = nil
+
+function grug_classes.register_look_step(step)
+	assert(type(step) == "table" and type(step.done) == "function" and
+		type(step.formspec) == "function" and type(step.handles) == "function" and
+		type(step.act) == "function", "grug_classes.register_look_step: incomplete step")
+	look_step = step
+end
+
+local function look_done(player)
+	return look_step == nil or look_step.done(player)
+end
 
 -- The screen hint while no creation dialog is open.
 local HINT = {
@@ -148,6 +173,7 @@ local function release_player(player, session)
 	end
 	set_pending_class(player, nil)
 	core.close_formspec(name, CLASS_FORM)
+	core.close_formspec(name, LOOK_FORM)
 	core.close_formspec(name, LOADING_FORM)
 	-- Hand the inventory back to sfinv; its suspension ended with the session.
 	if sfinv.enabled then
@@ -246,6 +272,9 @@ current_step = function(player, session)
 		end
 		if not grug_classes.get_class(player) and not pending_class(player) then
 			return "class", CLASS_FORM, class_formspec()
+		end
+		if not grug_classes.get_class(player) and not look_done(player) then
+			return "look", LOOK_FORM, look_step.formspec(player, DARK_BACKGROUND)
 		end
 	end
 	local failed = session.load_failed ~= nil or grug_core.starts_preload_failed()
@@ -433,7 +462,8 @@ finish_if_ready = function(player)
 	-- player disconnected while the arrival area loaded) is applied here too.
 	local class_id = grug_classes.get_class(player) or pending_class(player)
 	local key = identity_key(player)
-	if not key or not class_id then
+	if not key or not class_id or
+			(not grug_classes.get_class(player) and not look_done(player)) then
 		present(player)
 		return false
 	end
@@ -523,7 +553,8 @@ continue_creation = function(player, open)
 	end
 	if grug_factions.get_faction(player) and grug_classes.get_race(player) then
 		start_spawn_load(player)
-		if grug_classes.get_class(player) or pending_class(player) then
+		if grug_classes.get_class(player) or
+				(pending_class(player) and look_done(player)) then
 			finish_if_ready(player)
 			return
 		end
@@ -579,6 +610,9 @@ local function act_on_step(player, session, step, fields)
 			set_pending_class(player, id)
 		end
 		continue_creation(player)
+	elseif step == "look" then
+		look_step.act(player, fields)
+		continue_creation(player)
 	elseif step == "failed" and fields.retry_spawn then
 		session.spawn_key = nil
 		session.load_failed = nil
@@ -612,6 +646,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	local acts
 	if step == "failed" then
 		acts = fields.retry_spawn ~= nil
+	elseif step == "look" then
+		acts = look_step.handles(fields)
 	else
 		acts = step ~= "waiting" and chosen_id(fields) ~= nil
 	end

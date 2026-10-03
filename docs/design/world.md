@@ -777,11 +777,12 @@ territory.
   in its race's outer starting settlement and reaches its central capital
   through the safe early-level roads.
 - Race choice at character creation (after faction, before class), stored
-  in player meta. Visuals (skins) can come later.
+  in player meta. The look follows the class
+  ([character_visuals.md](character_visuals.md) §1.1).
 - Until faction, race and class are all complete, the player is held in
   **character-creation stasis**: movement, jumping and gravity are frozen,
   current velocity is cancelled and engine immortality prevents damage and
-  drowning. The mandatory faction → race → class forms use an opaque dark
+  drowning. The mandatory faction → race → class → look forms use an opaque dark
   backdrop; no physical lobby or generated holding room exists. Choosing a
   race starts an asynchronous emerge of that race's start behind the remaining
   UI. The first class choice is stored at once as a *pending* class; only when
@@ -792,7 +793,8 @@ territory.
   release a later session, and emerge failure stays safe with an explicit
   retry.
 - **Character creation can always be paused** (Round 24 ruling 32). Esc
-  really closes every creation dialog (faction, race, class, waiting screen)
+  really closes every creation dialog (faction, race, class, look, waiting
+  screen)
   and nothing reopens it by itself, so the next Esc reaches the native game
   menu; the player stays in stasis. While creation is unfinished the player's
   inventory formspec is the current step (the inventory key continues), and a
@@ -801,8 +803,9 @@ territory.
   finished meanwhile, a retry hint after a failure). When preparation finishes
   while the waiting screen is open, the next step replaces it; when it was
   dismissed only the hint changes; a failure never forces the dialog open.
-  Faction, race and the pending class are stored in player meta at once, so a
-  reconnect continues at the first missing step. There is no kick button.
+  Faction, race, the pending class and the confirmed look are stored in player
+  meta at once (a look in progress is not), so a reconnect continues at the
+  first missing step. There is no kick button.
   After completion the normal inventory returns.
 - MVP perks (revised 2026-08-06 — a perk must be FELT from level 1, a
   vendor discount is invisible for the first ten hours): **one visible

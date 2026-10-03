@@ -1,7 +1,7 @@
 # Character visuals
 
-What a humanoid looks like in Grudgelands: race skin, stature, visible armor
-and the weapon in hand. One rule set for players and for the humanoid NPCs on
+What a humanoid looks like in Grudgelands: race and look, stature, visible
+armor and the weapon in hand. One rule set for players and for the humanoid NPCs on
 the same model, so the two can never disagree.
 
 Decided 2026-09-14 (WP13). The implementation seam is
@@ -12,25 +12,72 @@ the settlement side that populates the starts with those NPCs is
 ## 1. One model, six peoples
 
 Every humanoid — player, guard, bandit, vendor, mirefolk — uses the engine's
-`character.b3d`. A character's appearance is **composed** from at most four
-layers, in this order:
+`character.b3d`. A humanoid of a race is **composed** from layers on the one
+64×32 skin, in this order (decided 2026-10-03, Round 31):
 
-1. the **race skin** (or, for a humanoid that is nobody's race, its own skin);
-2. the **head** overlay;
-3. the **chest** overlay (it also carries the shoulders and sleeves);
-4. the **legs** overlay, then the **feet** overlay.
+1. **skin** — the skin tone, then the race's body: face, shading and the race's
+   one dress;
+2. **eyes**;
+3. **hairstyle** in a hair colour — left out entirely under a helmet;
+4. **attire** — a royal tabard (kings and royal guards only);
+5. **body armor** — chest (with shoulders and sleeves), legs, feet;
+6. **helmet**, with one shared **face window** cut out of every helmet, so the
+   eyes and the lower face stay visible and the hair is hidden;
+7. **headwear** — a king's crown;
+8. the race's **lower-face feature** (beard, tusks, ears, …), last, so it shows
+   over the helmet.
 
-The six race skins differ in skin tone, hair mass and dress, so a people is
-readable at a distance before anything else about the character is:
+A humanoid that is nobody's race (the mirefolk) keeps its own skin with its
+armor over it.
 
-| Race | Reads as |
+The six dresses keep a people readable at a distance before anything else
+about the character is:
+
+| Race | Dress |
 | --- | --- |
-| Human | tan skin, brown crop, blue-grey tunic |
-| Dwarf | ruddy skin, full ginger beard, green tunic, brass belt |
-| Elf | ivory skin, long pale hair, pointed ears, silver-green dress |
-| Undead | grey-green pallor, sunken glowing sockets, ribs through a torn violet wrap |
-| Orc | green skin, tusks, black topknot, bare chest under a leather harness |
-| Troll | blue-grey hide, tusks, dark blue mane, ochre wraps |
+| Human | blue-grey tunic |
+| Dwarf | green tunic, brass belt |
+| Elf | silver-green dress |
+| Undead | torn violet wrap, ribs showing through |
+| Orc | bare chest under a leather harness |
+| Troll | ochre wraps over a bare chest |
+
+### 1.1 Looks
+
+Only body features are chosen — no clothing, capes or headwear. Five
+categories, options per race (skin tones stay within the race's look):
+
+| Race | Skin tones | Hair colours | Hairstyles | Eyes | Lower-face feature |
+| --- | --- | --- | --- | --- | --- |
+| Human | 4 | 6 | short crop, side parting, long, ponytail | 3 | stubble, short beard, moustache |
+| Dwarf | 3 | 5 | full, bald crown, braid | 3 | full, braided, forked or short beard (hair colour) |
+| Elf | 3 | 5 | long, high tail, crown braid, short | 3 | pointed ears, long ears, ears and face marking (skin tone) |
+| Orc | 3 greens | 4 | topknot, mohawk, shaved, braids | 3 | small, large or broken tusks, war paint |
+| Troll | 3 blue-greys | 5 | mane, crest, swept back, twin tails | 3 | small, large or huge tusks |
+| Undead | 3 | 4 | patchy, stringy, bald | 3 glow colours | exposed jaw, stitches, sunken nose |
+
+Colours are not separate art: a coloured layer is a white mask coloured by the
+engine (`^[multiply`) with a detail layer of shading and fixed colours over it.
+A dwarf beard reaches onto the chest and lies over the armor there.
+
+**Character creation** ends with the look, after the class and before the
+arrival: one page with previous/next per category, a random button and a
+rotating full-body preview, and one "Confirm — cannot be changed later". The
+look is stored once in player meta and never changes — there is no command
+and no wardrobe. A character without a stored look is drawn with the first
+option in every category.
+
+**NPCs** roll their look once, the first time they are drawn, and keep it with
+the entity. Town and capital NPCs and their guards are of their settlement's
+race; any other faction NPC (an outpost or fortress guard, a Quartermaster
+outside a settlement) rolls one race of its faction and keeps it. A
+garrison that is mixed by design — a PvP fortress's guards, registered under
+their side's seat race — rolls a race of its faction even inside that
+settlement: its placer marks it (`grug_visuals.npc_race` with
+`{mixed = true}`, or the entity field `_grug_mixed_race`). Every option
+may be rolled. Royal guards are of their king's race with their own rolled
+look and the royal tabard; a king has one fixed look with the tabard and a
+crown, in his people's royal colours.
 
 ## 2. Stature is visual only
 
@@ -57,8 +104,10 @@ differ. So the anisotropy went and the **body shape belongs to the skin art**,
 which the engine cannot shear. The derivation is in
 `mods/PLAYER/grug_visuals/wield_geometry.lua`.
 
-**The collision box and the eye height never change.** Visual stature keeps
-all races within the same two-node door and boat-seat geometry. It does not
+**The collision box, the selection box and the eye height never change**: they
+are the same for every race (fairness, Round 31), and only the visual size
+differs. Visual stature keeps all races within the same two-node door and
+boat-seat geometry. It does not
 change the fall calculation or other combat, building or movement rules.
 Fall damage follows [combat_stats.md](combat_stats.md), including the Dwarf's
 20% reduction after maximum-HP scaling (absorb does not cover fall damage).
@@ -82,7 +131,9 @@ NPCs that have no inventory wear a **whole line at one tier** instead:
 | --- | --- |
 | Faction guard | metal line at the tier its own level buys — the elite city watch (60+) is the sixth, Abyssal Steel tier by construction |
 | Bandit | cloth line at the tier its camp's level buys |
-| Vendor | no armor: race dress, so a shopkeeper never reads as a guard |
+| Vendor | no armor: its race's dress, so a shopkeeper never reads as a guard |
+| Royal guard | no armor: the royal tabard over the race's dress |
+| King | no armor: the royal tabard and a crown |
 | Mirefolk | its own fish-folk skin, no armor |
 
 ## 4. The weapon in hand
@@ -160,7 +211,11 @@ weapon**; only a Scout's Melee skill puts the offhand blade into the hand
 - Appearance is composed by **one function** for players and NPCs. Two mods
   writing the model's texture list independently is the failure this replaces.
 - Composition uses **texture modifiers only**. Nothing is generated per frame,
-  no image is built at runtime, and the web build needs no exception.
+  no image is built at runtime, and the web build needs no exception. Every
+  armor piece sits in its own parentheses, so a piece's own modifier (the
+  Silversteel correction, a crack, later its enchant colours) never reaches
+  the layers under it; a helmet's own layers are cut by the face window with
+  it.
 - A character whose look has not changed **writes no texture**: equipping a
   trinket, opening the inventory or taking a hit costs no update. The stature
   is re-asserted every time instead, because the scale is not this system's

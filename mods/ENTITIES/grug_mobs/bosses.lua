@@ -400,10 +400,14 @@ local function king_def(race, row)
 		jump = true, jump_height = 4, stepheight = 1.1, fear_height = 4,
 		view_range = 18, owner = "",
 		visual = "mesh", mesh = "character.b3d",
-		textures = {{"grug_mobs_royal_" .. race .. ".png"}},
+		-- The definition fallback of a build without grug_visuals; with it, a
+		-- king wears his people's royal tabard and crown over his one fixed
+		-- look (round31-plan.md §2.1.6).
+		textures = {{"character.png"}},
 		_grug_visual = function(self)
-			return {skin = "grug_mobs_royal_" .. race .. ".png",
-				level = self._grug_level, weapon_family = row.weapon}
+			return {race = race, look = grug_visuals.KING_LOOKS[race],
+				royal = "king", level = self._grug_level,
+				weapon_family = row.weapon}
 		end,
 		-- The king is the tallest figure in his hall (Round 28 ruling 9):
 		-- final visual_size 1.6 against his elite guards' 1.4. Elite visuals
@@ -533,7 +537,7 @@ for race, row in pairs(RACES) do
 	grug_mobs.register_mob("grug_mobs:king_" .. race_id,
 		king_def(race_id, race_row))
 	local guard = grug_mobs.guard_definition(row.faction,
-		row.name .. " Royal Guard", "grug_mobs_royal_guard_" .. race_id .. ".png")
+		row.name .. " Royal Guard", "character.png")
 	local base_tick = guard.do_custom
 	guard._grug_fixed_level = 60
 	guard._grug_tier = "elite"
@@ -542,11 +546,12 @@ for race, row in pairs(RACES) do
 	-- anchor or reset the five-NPC group.
 	guard._grug_no_leash = true
 	guard._grug_leash_range = nil
+	-- The king's people, each guard with a look of its own, in the royal
+	-- tabard (round31-plan.md §2.1.6).
 	guard._grug_visual = function(self)
-		return {skin = "grug_mobs_royal_guard_" .. race_id .. ".png",
-			level = self._grug_level, weapon_family = "sword"}
+		return {race = race_id, look = grug_visuals.npc_look(self, race_id),
+			royal = "guard", level = self._grug_level, weapon_family = "sword"}
 	end
-	guard.textures = {{"grug_mobs_royal_guard_" .. race_id .. ".png"}}
 	guard.do_custom = function(self, dtime)
 		self._grug_royal_race = self._grug_royal_race or race_id
 		return royal_guard_tick(base_tick, self, dtime)

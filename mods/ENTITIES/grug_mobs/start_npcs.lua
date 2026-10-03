@@ -1270,6 +1270,10 @@ local function place(row, slot)
 		for index = 1, #restylers do
 			restylers[index](entity)
 		end
+		-- A guard is drawn as the race of the settlement it stands in
+		-- (grug_visuals.npc_race), which is known only now. A no-op for
+		-- every family without a composed look of grug_mobs' own.
+		grug_mobs.refresh_visual(entity)
 	end
 	-- Claim the socket at once. The families claim on activation, which for THIS
 	-- entity happened before it had a socket at all.

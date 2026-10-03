@@ -53,6 +53,8 @@ Pure, deterministic, cached by its key string. Unknown race falls back to
 
 - Base skins: `grug_visuals_skin_<race>.png` in the `character.png` layout
   shipped by `player_api`; overlays `grug_visuals_<line>_<slot>.png`.
+  (Superseded in Round 31: the painted race skins are gone; every race is
+  drawn from look layers, see docs/design/character_visuals.md §1.)
   First version is pixel art by the lane; LICENSE-media.md per file.
 - Composition uses texture modifiers only (`^`, `^[colorize`,
   `^[multiply`); no per-frame updates, one attached entity per character.

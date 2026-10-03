@@ -20,10 +20,10 @@
 --
 
 --
--- Races. `skin` is the base layer in the `character.png` layout shipped by
--- player_api; `stature` is the VISUAL-ONLY scale of the contract's §1 --
--- collision box and eye height stay exactly what player_api's model says, so
--- every race walks through the two-node doors of its own houses.
+-- Races. A race is drawn from its look layers (looks.lua); `stature` is the
+-- VISUAL-ONLY scale of the contract's §1 -- collision box and eye height stay
+-- exactly what player_api's model says, so every race walks through the
+-- two-node doors of its own houses.
 --
 -- ONE SCALAR PER RACE, not an (x, y, z) triple (playtest round 2, 2026-09-15).
 -- The first version made dwarves and orcs broader AND lower (1.10/0.88 and
@@ -43,12 +43,12 @@
 local STATURE_MIN, STATURE_MAX = 0.85, 1.12
 
 local RACES = {
-	human = {skin = "grug_visuals_skin_human.png", stature = 1.00},
-	dwarf = {skin = "grug_visuals_skin_dwarf.png", stature = 0.90},
-	elf = {skin = "grug_visuals_skin_elf.png", stature = 1.06},
-	undead = {skin = "grug_visuals_skin_undead.png", stature = 0.94},
-	orc = {skin = "grug_visuals_skin_orc.png", stature = 1.08},
-	troll = {skin = "grug_visuals_skin_troll.png", stature = 1.12},
+	human = {stature = 1.00},
+	dwarf = {stature = 0.90},
+	elf = {stature = 1.06},
+	undead = {stature = 0.94},
+	orc = {stature = 1.08},
+	troll = {stature = 1.12},
 }
 
 -- `size` is the engine-shaped form of `stature`, built once so no consumer has
@@ -175,15 +175,20 @@ end
 --
 -- The composition itself.
 --
---     grug_visuals.compose{race = "dwarf",
+--     grug_visuals.compose{race = "dwarf", look = {tone = 2, ...},
 --         armor = {head = itemname_or_nil, chest = ..., legs = ..., feet = ...},
 --         weapon = itemname_or_nil}
 --     -> {textures = {...}, visual_size = {x=,y=,z=}, weapon = ..., key = ...}
 --
--- Extra spec fields beyond the contract's three, all of them for the mob side
--- and all of them normalized BEFORE the cache key is built:
---   * `skin`        an explicit base texture (the mirefolk keep their own
---                   fish-folk skin and are not a playable race);
+-- A race is drawn from its look layers (looks.lua, round31-plan.md §2.1):
+--   * `look`        the five option indices (normalized here; missing means
+--                   option 1 everywhere);
+--   * `royal`       "guard" (the race's royal tabard) or "king" (tabard and
+--                   crown);
+-- Extra spec fields for the mob side, all normalized BEFORE the key is built:
+--   * `skin`        an explicit base texture INSTEAD of a race's layers (the
+--                   mirefolk keep their own fish-folk skin and are not a
+--                   playable race);
 --   * `armor_line`  "cloth"/"leather"/"metal" -- a whole set in one line, for
 --                   an NPC that has no inventory to read;
 --   * `bracket`     1..6 for that set, or
@@ -193,8 +198,15 @@ end
 -- `armor.torso` is accepted as a spelling of `armor.chest` (the contract's §2
 -- signature says `torso`, every slot, group and list in the game says `chest`).
 --
--- Composition is texture modifiers only -- `^` and `^[multiply` -- so there is
--- nothing per frame and nothing the web build has to do differently.
+-- THE SEAM FOR COLOUR LAYERS ON ARMOUR (lane B, round31-plan.md §2.2):
+-- `armor_layers[slot]` is a modifier string appended INSIDE that piece's
+-- parentheses -- "(<overlay>^<layers>)" -- so it colours that piece and
+-- nothing under it, a helmet's layers are cut by the face window together
+-- with the helmet, and the string is part of the cache key.
+--
+-- Composition is texture modifiers only, every armour piece in its own
+-- parentheses (a piece's own `^[hsl` must never reach the skin under it), so
+-- there is nothing per frame and nothing the web build has to do differently.
 --
 local cache = {}
 local warned_race = {}
@@ -206,16 +218,18 @@ local function warn_unknown_race(race)
 	if not warned_race[id] then
 		warned_race[id] = true
 		core.log("warning", "[grug_visuals] unknown race \"" .. id ..
-			"\" -- wearing the " .. grug_visuals.FALLBACK_RACE .. " skin")
+			"\" -- drawn as " .. grug_visuals.FALLBACK_RACE)
 	end
 end
+
+local ROYAL_KINDS = {guard = true, king = true}
 
 function grug_visuals.compose(spec)
 	if type(spec) ~= "table" then
 		spec = {}
 	end
 
-	-- Race and base skin.
+	-- Race (or an explicit skin) and the look.
 	local race = spec.race
 	if race ~= nil and RACES[race] == nil then
 		warn_unknown_race(race)
@@ -228,9 +242,8 @@ function grug_visuals.compose(spec)
 	if not race and not skin then
 		race = grug_visuals.FALLBACK_RACE
 	end
-	if not skin then
-		skin = RACES[race].skin
-	end
+	local look = not skin and grug_visuals.normalize_look(race, spec.look) or nil
+	local royal = not skin and ROYAL_KINDS[spec.royal] and spec.royal or nil
 	-- Stature belongs to a RACE. A spec that only names a skin (a humanoid mob
 	-- that is nobody's race) keeps whatever size its own definition set.
 	local size = race and RACES[race].size or nil
@@ -245,6 +258,7 @@ function grug_visuals.compose(spec)
 
 	local pieces = {}
 	local armor = type(spec.armor) == "table" and spec.armor or nil
+	local layers = type(spec.armor_layers) == "table" and spec.armor_layers or {}
 	for index, slot in ipairs(SLOTS) do
 		local itemname = nil
 		if armor then
@@ -255,12 +269,18 @@ function grug_visuals.compose(spec)
 		end
 		local entry = type(itemname) == "string" and armor_appearance[itemname]
 			or nil
+		local piece = nil
 		if entry then
-			pieces[index] = {line = entry.line, bracket = entry.bracket,
+			piece = {line = entry.line, bracket = entry.bracket,
 				broken = spec.armor_broken and spec.armor_broken[slot] == true}
 		elseif line_default then
-			pieces[index] = {line = line_default, bracket = bracket_default}
+			piece = {line = line_default, bracket = bracket_default}
 		end
+		if piece then
+			local extra = layers[slot]
+			piece.layers = type(extra) == "string" and extra ~= "" and extra or nil
+		end
+		pieces[index] = piece
 	end
 
 	-- Weapon: a plain item name, or the family shorthand at the set's bracket.
@@ -279,11 +299,13 @@ function grug_visuals.compose(spec)
 	-- differ only in a field the composition ignores share one cache entry.
 	-- Semicolon, not a pipe: a hand-run bitwise-operator grep sweep of
 	-- docs/research/luanti-lua.md matches `"|"` even inside a string.
-	local key = (race or "-") .. ";" .. skin
+	local key = (race or "-") .. ";" .. (skin or "-") .. ";" ..
+		(look and grug_visuals.look_string(look) or "-") .. ";" .. (royal or "-")
 	for index = 1, #SLOTS do
 		local piece = pieces[index]
-		key = key .. ";" ..
-			(piece and (piece.line .. piece.bracket .. (piece.broken and "!" or "")) or "-")
+		key = key .. ";" .. (piece and (piece.line .. piece.bracket ..
+			(piece.broken and "!" or "") .. (piece.layers and "+" .. piece.layers or ""))
+			or "-")
 	end
 	key = key .. ";" .. (weapon or "-")
 
@@ -292,14 +314,44 @@ function grug_visuals.compose(spec)
 		return hit
 	end
 
-	local texture = skin
+	-- Every piece in its own parentheses: "(overlay^layers)", cracked as a
+	-- whole when broken.
+	local strings = {}
 	for index, slot in ipairs(SLOTS) do
 		local piece = pieces[index]
 		if piece then
 			local overlay = OVERLAY[LINE_ART[piece.line]][slot][piece.bracket]
-			if piece.broken then overlay = "(" .. grug_gear.broken_image(overlay) .. ")" end
-			texture = texture .. "^" .. overlay
+			if piece.layers then
+				overlay = overlay .. "^" .. piece.layers
+			end
+			if piece.broken then
+				overlay = grug_gear.broken_image(overlay)
+			end
+			strings[slot] = "(" .. overlay .. ")"
 		end
+	end
+
+	local texture
+	if skin then
+		texture = skin
+		for _, slot in ipairs(SLOTS) do
+			if strings[slot] then
+				texture = texture .. "^" .. strings[slot]
+			end
+		end
+	else
+		local attire, headwear = nil, nil
+		if royal then
+			attire, headwear = grug_visuals.royal_attire(race, royal == "king")
+		end
+		local body = {}
+		for _, slot in ipairs(SLOTS) do
+			if slot ~= "head" and strings[slot] then
+				body[#body + 1] = strings[slot]
+			end
+		end
+		texture = grug_visuals.look_texture(race, look, {attire = attire,
+			body = body, helmet = strings.head, headwear = headwear})
 	end
 
 	local result = {textures = {texture}, visual_size = size,
