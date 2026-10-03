@@ -520,6 +520,15 @@ themselves stay untamed: no mapgen paths or roads by design (user
 **Noted 2026-10-02** ([completion](docs/planning/round30-plan.md#completion-2026-10-02));
 none blocks the fresh-world playtest. Numbers are comparisons, never targets.
 
+**Round 31 clean-up lane** (user, 2026-10-03): the small code follow-ups
+below go into one clean-up lane of Round 31: the cold-build heap (drop the
+zone-query caches after a build), the held objective counts capped at
+`min(count, needed)`, `changed()` also after a failed turn-in reward, the
+zone-grid encode assert inside the pcall, and one runner script that starts
+every `tools/*` fixture with its right arguments (several `fixture.lua`
+files need the repository path). The #22 proposal stays the user's call; the
+Map tab strip and the crosshair timing wait for the GUI test.
+
 - **grug_mapgen warm load (perf review #22, proposal; the user decides):** on
   a cache hit grug_mapgen still spends about 6.35 s loading (settlement
   preparation 4.09 s, the capitals about 3.5 s). Storing
