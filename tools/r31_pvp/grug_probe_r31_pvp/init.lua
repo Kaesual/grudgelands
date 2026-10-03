@@ -43,6 +43,24 @@ core.get_player_window_information = function(name)
 	return orig_gpwi(name)
 end
 
+local orig_gpi = core.get_player_information
+core.get_player_information = function(name)
+	if fakes[name] then
+		return {address = "127.0.0.1", ip_version = 4, connection_uptime = 100,
+			protocol_version = 48, formspec_version = 8, lang_code = "",
+			min_rtt = 0.01, max_rtt = 0.05, avg_rtt = 0.02, min_jitter = 0,
+			max_jitter = 0, avg_jitter = 0, version_string = "5.15.0"}
+	end
+	return orig_gpi(name)
+end
+-- A nametag carrier cannot attach to a table: fake players get none.
+local fake_refs = {}
+local orig_ctc = grug_core.create_tag_carrier
+grug_core.create_tag_carrier = function(parent, owner)
+	if fake_refs[parent] then return nil end
+	return orig_ctc(parent, owner)
+end
+
 local function new_meta()
 	local store = {}
 	local m = {}
@@ -165,10 +183,15 @@ local function make_fake(name, pos, faction)
 		end
 		return nil
 	end})
+	fake_refs[p] = true
 	return p
 end
 
 local function join_fake(p, only_mod)
+	pcall(function()
+		local h = core.get_auth_handler()
+		if not h.get_auth(p._name) then h.create_auth(p._name, "") end
+	end)
 	fakes[p._name] = p
 	fake_list[#fake_list + 1] = p
 	for _, cb in ipairs(core.registered_on_joinplayers) do
@@ -281,7 +304,43 @@ end
 
 -- ---------------------------------------------------------------- MICRO
 local mob_obj, fa, ft
+local candidates = {}
+local CANDIDATES = {"grug_mobs:wolf", "grug_mobs:boar", "grug_mobs:stag",
+	"grug_mobs:bear", "grug_mobs:guard_throng"}
+
+local function ground_above(x, z, y0)
+	for y = y0 + 12, y0 - 20, -1 do
+		local node = core.get_node({x = x, y = y, z = z})
+		local above = core.get_node({x = x, y = y + 1, z = z})
+		local def = core.registered_nodes[node.name]
+		local adef = core.registered_nodes[above.name]
+		if def and def.walkable and adef and not adef.walkable then
+			return {x = x, y = y + 1, z = z}
+		end
+	end
+	return nil
+end
+
+local function spawn_candidates(center)
+	for i, name in ipairs(CANDIDATES) do
+		local pos = ground_above(center.x + 6 * i, center.z + 8, center.y)
+		local obj = pos and core.add_entity(vector.offset(pos, 0, 0.5, 0), name)
+		candidates[i] = {name = name, obj = obj, pos = pos}
+	end
+end
+
+local function pick_mob()
+	for _, c in ipairs(candidates) do
+		local alive = c.obj and c.obj:get_pos() ~= nil
+		local valid = alive and grug_abilities.valid_target(fa, c.obj, "hostile")
+		log(("MICRO candidate %s at %s alive=%s valid=%s"):format(c.name,
+			c.pos and core.pos_to_string(c.pos) or "-", tostring(alive), tostring(valid)))
+		if valid and not mob_obj then mob_obj = c.obj end
+	end
+end
+
 local function run_micro(center)
+	pick_mob()
 	if not mob_obj or not mob_obj:get_pos() then
 		log("MICRO no mob")
 		return
@@ -393,6 +452,13 @@ core.register_globalstep(function(dtime)
 				vector.add(center, {x = 24, y = 16, z = 24}), function(_, _, remaining)
 					if remaining == 0 then emerge_done = true end
 				end)
+			-- Without a real player no block is active: keep the bench mobs'.
+			for dx = 0, 3 do
+				for dz = 0, 1 do
+					core.forceload_block({x = center.x + dx * 16, y = center.y,
+						z = center.z + dz * 16}, true)
+				end
+			end
 			set_phase("emerge")
 		end
 	elseif phase == "emerge" then
@@ -403,7 +469,7 @@ core.register_globalstep(function(dtime)
 			ft = make_fake("r31t", vector.offset(center, 2, 0, 0), "throng")
 			join_fake(fa)
 			join_fake(ft)
-			mob_obj = core.add_entity(vector.offset(center, 6, 0.5, 0), "grug_mobs:wolf")
+			spawn_candidates(center)
 			set_phase("settle")
 		end
 	elseif phase == "settle" then
