@@ -334,6 +334,12 @@ return function(api)
 				end
 				return
 			end
+			-- An ally the PvP flag forbids: the cast refuses (and reports) at
+			-- no cost, never healing the caster instead (Round 31 ruling 9).
+			if Q.support_refused(player, hit.ref) then
+				if def.target_kind == "friendly" then cast(player, def, s, hit, fresh) end
+				return
+			end
 			-- Actors block action on anything behind them, including drops after
 			-- this press's initial pickup attempt and non-healable service NPCs.
 			return

@@ -95,7 +95,8 @@ function grug_mobs.configure_capital_display(self)
    (tier==3 and "expert_" or "master_")..faction
   local model=assert(grug_mounts.MODELS[key],"capital mount appearance missing")
   self.object:set_properties({visual="mesh",mesh=model.mesh,textures=model.textures,
-   visual_size=model.visual_size,collisionbox=model.collisionbox,nametag=""})
+   visual_size=model.visual_size,collisionbox=model.display_box,
+   selectionbox=model.display_box,nametag=""})
   configure_display_tag(self,model.description)
   local pos=self.object:get_pos()
   local foot_y=tier<=2 and ground_foot_y(key) or assert(FOOT_Y[key])
