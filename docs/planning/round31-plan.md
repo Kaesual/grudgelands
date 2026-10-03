@@ -232,9 +232,13 @@ need no GUI check.
    throughout and the colours overlaid at **50 %** strength; a new preview
    before stage 2 (GPT-6 Astra may help with the art if needed). The
    colours are visual **accents, never a redesign** of the base item; a
-   narrow stripe is usually enough.
+   narrow stripe is usually enough. **Second preview approved** for the
+   first version: variant N (thin stripes, about 7 % of an icon and 4 % of a
+   worn overlay per group, 50 % strength), the nine colours unchanged, no art
+   pass.
 8. **Mounted hitbox:** every tier-2 mount gets the same collision and
-   selection box (fairness, as §2.1.4).
+   selection box (fairness, as §2.1.4); the flying mounts of tiers 3 and 4
+   are equalised across the factions too.
 9. **Healer fallback:** support that is not allowed on the aimed ally (an
    unflagged healer aiming at a flagged ally) does nothing and costs nothing,
    instead of falling back to the caster.
