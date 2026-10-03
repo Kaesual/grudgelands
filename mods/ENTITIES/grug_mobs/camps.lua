@@ -894,10 +894,10 @@ grug_mobs.register_camp_type("guard_throng", {
 --     up; after that the queue and its due time behave exactly like a fire's,
 --     the dormant catch-up included (due times lag `now` while nobody is
 --     near, and the drain serves what the elapsed time earned).
--- Ticked every five seconds by spawn_regions.lua's globalstep, for the camps
--- of the region maps built so far. The same known blind spot as
--- count_camp_mobs: a member in an unloaded block reads as dead, so a camp may
--- briefly hold one too many.
+-- Ticked every five seconds by spawn_regions.lua's globalstep (a slice of
+-- the zones per quarter second), for the camps of the region maps built so
+-- far. The same known blind spot as count_camp_mobs: a member in an unloaded
+-- block reads as dead, so a camp may briefly hold one too many.
 --
 
 local REGION_CAMP_RANGE = PLAYER_RANGE
@@ -962,9 +962,9 @@ local function spawn_region_member(unit, zone_id, players, center_y, clock)
 	return false
 end
 
-function grug_mobs.region_camp_tick(now, players, clock)
+function grug_mobs.region_camp_tick(now, players, clock, zone_ids)
 	local SR = grug_mobs.spawn_regions
-	local list = SR.camp_units()
+	local list = SR.camp_units(zone_ids)
 	for i = 1, #list do
 		local unit = list[i]
 		local camp = unit.camp

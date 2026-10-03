@@ -856,10 +856,11 @@ function SR.attempt(player_pos, players, clock, roll_angle, roll_dist)
 	return count("spawned")
 end
 
--- The camps of every built map (camps.lua ticks their slots).
-function SR.camp_units()
+-- The camps of the built maps of `zone_ids`, default every zone (camps.lua
+-- ticks their slots).
+function SR.camp_units(zone_ids)
 	local out = {}
-	for _, zone_id in ipairs(SR.zone_ids()) do
+	for _, zone_id in ipairs(zone_ids or SR.zone_ids()) do
 		local map = maps[zone_id]
 		if map then
 			for _, unit in ipairs(map.camps) do out[#out + 1] = unit end
@@ -991,8 +992,9 @@ local function player_near_xz(x, z, range, players)
 end
 SR.player_near_xz = player_near_xz
 
-function SR.leader_tick(now, players)
-	for _, zone_id in ipairs(SR.zone_ids()) do
+-- The leaders of `zone_ids` (default: every zone).
+function SR.leader_tick(now, players, zone_ids)
+	for _, zone_id in ipairs(zone_ids or SR.zone_ids()) do
 		local map = maps[zone_id]
 		for _, spot in ipairs(map and map.leaders or {}) do
 			local role = spot.role
@@ -1038,7 +1040,7 @@ end
 
 --
 -- The one throttled globalstep: one ambient attempt per player per second;
--- camp slots and leaders every five seconds.
+-- camp slots and leaders of every zone every five seconds.
 --
 
 SR.ATTEMPT_PERIOD = 1
@@ -1046,7 +1048,13 @@ SR.SLOW_PERIOD = 5
 -- The second is cut into SLICES steps; each step serves the players whose
 -- index falls in its slice, so many players' attempts spread over the second.
 local SLICES = 4
-local attempt_acc, slow_acc, slice = 0, 0, 0
+-- The five seconds are cut the same way into SLOW_SLICES steps of the zones
+-- (Round 32, perf review R3): each serves the camps and leaders of the zones
+-- whose index falls in its slice, so no step weighs every camp and leader
+-- against every player, and each zone is still served once per SLOW_PERIOD.
+SR.SLOW_SLICES = SR.SLOW_PERIOD * SLICES / SR.ATTEMPT_PERIOD
+local SLOW_STEP = SR.SLOW_PERIOD / SR.SLOW_SLICES
+local attempt_acc, slow_acc, slice, slow_slice = 0, 0, 0, 0
 local spawning = core.settings:get_bool("mobs_spawn") ~= false
 
 local function any_recipe()
@@ -1080,11 +1088,21 @@ core.register_globalstep(function(dtime)
 			end
 		end
 	end
-	if slow_acc >= SR.SLOW_PERIOD then
-		slow_acc = 0
+	-- A pass comes a whole server step after its quarter second or later:
+	-- a pass a slow step behind serves two, so the period stays
+	-- SLOW_PERIOD; a longer stall is not caught up.
+	local due = slow_acc >= 2 * SLOW_STEP and 2 or slow_acc >= SLOW_STEP and 1 or 0
+	slow_acc = math.min(slow_acc - due * SLOW_STEP, SLOW_STEP)
+	local zone_ids = due > 0 and SR.zone_ids()
+	for _ = 1, due do
+		slow_slice = (slow_slice + 1) % SR.SLOW_SLICES
+		local mine = {}
+		for i = 1, #zone_ids do
+			if i % SR.SLOW_SLICES == slow_slice then mine[#mine + 1] = zone_ids[i] end
+		end
 		local now = core.get_gametime()
-		grug_mobs.region_camp_tick(now, players, clock)
-		SR.leader_tick(now, players)
+		grug_mobs.region_camp_tick(now, players, clock, mine)
+		SR.leader_tick(now, players, mine)
 	end
 end)
 

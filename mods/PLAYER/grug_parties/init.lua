@@ -134,6 +134,11 @@ function grug_parties.view(player)
 	end
 	return view
 end
+-- Membership alone, without building a view (the party HUD poll skips
+-- players without a party with it).
+function grug_parties.in_party(player)
+	return membership[name_of(player)] ~= nil
+end
 function grug_parties.pending(player)
 	local name, time = name_of(player), now()
 	prune(name, time)

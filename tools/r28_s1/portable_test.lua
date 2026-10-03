@@ -24,7 +24,8 @@
 --    level overlay, the quest seams (get_area, area_roles, zone_area_ids,
 --    leader), describe and direction. The leader's 1.15 size and 1.5x HP are
 --    checked with the real registration in tools/r28_b2/portable_test.lua;
---    here levels.lua's HP factor.
+--    here levels.lua's HP factor. Round 32 F4: the globalstep serves the
+--    camps and leaders in zone slices, every zone once per five seconds.
 -- Prints "R28 S1 PORTABLE PASS checks=<n>" or raises on the first failure.
 local repo = arg[1] or "."
 local checks = 0
@@ -985,6 +986,64 @@ do
 	check(a._grug_level == 10 and b._grug_level == 10, "both at the gameplay level 10")
 	check(b.hp_max == math.floor(1.5 * a.hp_max + 0.5) and b.hp_max > a.hp_max and
 		a.hp_max == LG.stats_for(10, "normal"), "HP x1.5 for a leader definition")
+end
+
+-- Round 32 F4 (perf review R3): camps and leaders in zone slices. The real
+-- globalstep, driven with 90 ms server steps and then with slow 300 ms
+-- steps, hands each slice's zones to the camp and the leader tick: any
+-- SLOW_SLICES consecutive slices serve every zone exactly once, both ticks
+-- get the same zones, a pass serves at most two slices, and a zone's
+-- average period stays SR.SLOW_PERIOD. A zone list limits the camps.
+do
+	check(#SR.camp_units({DAWN}) == #SR.camp_units() and #SR.camp_units({DAWN}) > 0 and
+		#SR.camp_units({GOLD}) == 0, "camp_units of a zone list")
+	local real = {camp = GM.region_camp_tick, leader = SR.leader_tick, ids = SR.zone_ids,
+		attempt = SR.attempt}
+	local IDS = {}
+	for i = 1, 38 do IDS[i] = ("zone_%02d"):format(i) end
+	local calls, t = {}, 0
+	SR.zone_ids = function() return IDS end
+	SR.attempt = noop
+	GM.region_camp_tick = function(_, _, _, zone_ids) calls[#calls + 1] = {t = t, camps = zone_ids} end
+	SR.leader_tick = function(_, _, zone_ids) calls[#calls].leaders = zone_ids end
+	local function run(dt, seconds)
+		calls = {}
+		local most = 0
+		for _ = 1, math.floor(seconds / dt + 0.5) do
+			t = t + dt
+			local before = #calls
+			globalsteps[1](dt)
+			most = math.max(most, #calls - before)
+		end
+		check(most <= 2, ("at most two slices per pass at %.2f s steps (%d)"):format(dt, most))
+		local slices = SR.SLOW_SLICES
+		local whole = true
+		for first = 1, #calls - slices + 1 do
+			local seen = {}
+			for i = first, first + slices - 1 do
+				local row = calls[i]
+				whole = whole and row.leaders == row.camps and #row.camps <= 2
+				for _, id in ipairs(row.camps) do seen[id] = (seen[id] or 0) + 1 end
+			end
+			for _, id in ipairs(IDS) do whole = whole and seen[id] == 1 end
+		end
+		check(whole, ("any %d consecutive slices serve every zone once at %.2f s steps"):format(slices, dt))
+		local worst = 0
+		for _, id in ipairs(IDS) do
+			local visits = {}
+			for _, row in ipairs(calls) do
+				for _, z in ipairs(row.camps) do if z == id then visits[#visits + 1] = row.t end end
+			end
+			local mean = (visits[#visits] - visits[1]) / (#visits - 1)
+			worst = math.max(worst, math.abs(mean - SR.SLOW_PERIOD))
+		end
+		check(worst <= 0.15, ("a zone's average period is %d s at %.2f s steps (off by %.3f s)"):format(
+			SR.SLOW_PERIOD, dt, worst))
+	end
+	run(0.09, 60)
+	run(0.3, 90)
+	GM.region_camp_tick, SR.leader_tick, SR.zone_ids, SR.attempt = real.camp, real.leader,
+		real.ids, real.attempt
 end
 
 print(("B: %d regions, build %.0f ms; spawner, drift, density, camps, leaders, overlay, seams"):format(

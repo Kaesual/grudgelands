@@ -56,34 +56,54 @@ local function make_row(player, index, count, window)
 		track=bar(layout.COLOR.track,0), fill=bar(layout.COLOR.life,1),
 	}
 end
+-- What the rows' places, the icon size and the name width follow: the
+-- window's width and scalings and the row count. They are recomputed only
+-- when this changes (Round 32, perf review R2).
+local function layout_key(window, count)
+	if not window then return tostring(count) end
+	return ("%d %s %s %s"):format(count, tostring(window.size and window.size.x),
+		tostring(window.real_hud_scaling), tostring(window.real_gui_scaling))
+end
 local function refresh(player)
-	local record = huds[player:get_player_name()]
+	local name = player:get_player_name()
+	local record = huds[name]
 	if not record then return end
+	-- Most players have no party: no rows to keep and nothing to read.
+	if #record.rows == 0 and not grug_parties.in_party(name) then return end
 	local view = grug_parties.hud_enabled(player) and grug_parties.view(player)
-	if not view then remove_rows(player,record,0); return end
-	remove_rows(player,record,#view.members)
+	if not view then remove_rows(player,record,0); record.layout = nil; return end
+	local count = #view.members
+	remove_rows(player,record,count)
 	local layout = grug_core.hud_layout
 	local color_mode = health_color_mode(player)
-	local window = core.get_player_window_information(player:get_player_name())
-	local width = layout.side_text_width(window)
+	local window = core.get_player_window_information(name)
+	local key = layout_key(window, count)
+	local relayout = key ~= record.layout
+	if relayout then
+		record.layout, record.width = key, layout.side_text_width(window)
+	end
+	local width = record.width
+	local icon_scale = relayout and layout.party_icon_size(window) / 64
 	for index, member in ipairs(view.members) do
 		local row = record.rows[index]
-		if not row then row=make_row(player,index,#view.members,window);record.rows[index]=row end
-		change(player,row,"icon_offset",row.icon,"offset",layout.party_icon_offset(index,#view.members,window))
-		local icon_scale = layout.party_icon_size(window) / 64
-		change(player,row,"icon_scale",row.icon,"scale",{x=icon_scale,y=icon_scale})
+		if not row then row=make_row(player,index,count,window);record.rows[index]=row end
+		if relayout then
+			change(player,row,"icon_offset",row.icon,"offset",layout.party_icon_offset(index,count,window))
+			change(player,row,"icon_scale",row.icon,"scale",{x=icon_scale,y=icon_scale})
+			change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,count,false,window))
+			local bar_offset = layout.party_row_offset(index,count,true,window)
+			change(player,row,"track_offset",row.track,"offset",bar_offset)
+			change(player,row,"fill_offset",row.fill,"offset",bar_offset)
+		end
 		change(player,row,"icon_texture",row.icon,"text",
 			grug_core.status_icons.class_icon(member.class))
-		change(player,row,"label_offset",row.label,"offset",layout.party_row_offset(index,#view.members,false,window))
-		change(player,row,"track_offset",row.track,"offset",layout.party_row_offset(index,#view.members,true,window))
-		change(player,row,"fill_offset",row.fill,"offset",layout.party_row_offset(index,#view.members,true,window))
 		local prefix = member.name == view.leader and "* " or ""
 		local suffix = " [Lv " .. member.level .. "]" ..
 			(member.online and ("  %d/%d"):format(member.hp,member.hp_max) or " [Offline]")
 		local limit = math.max(4, math.min(18, width - #prefix - #suffix))
-		local name = member.name
-		if #name > limit then name = name:sub(1,limit-2) .. ".." end
-		local label = prefix .. name .. suffix
+		local shown = member.name
+		if #shown > limit then shown = shown:sub(1,limit-2) .. ".." end
+		local label = prefix .. shown .. suffix
 		change(player,row,"text",row.label,"text",label)
 		local fill = member.online and grug_core.hud_layout.bar_fill(member.hp,member.hp_max) or 0
 		local color = grug_parties.health_bar_color(color_mode, member.class)
@@ -92,18 +112,38 @@ local function refresh(player)
 			grug_core.hud_layout.bar_texture(color) or "")
 	end
 end
+-- Each player is polled every SLOTS x SLOT_PERIOD = 0.5 s, in one of SLOTS
+-- phases by join order, so many players never refresh in the same step
+-- (Round 32, perf review R2; the quest tracker's pattern, grug_quests/hud.lua).
+local SLOTS, SLOT_PERIOD = 5, 0.1
+local slot_of, joined, current_slot = {}, 0, 0
+
 core.register_on_joinplayer(function(player)
-	huds[player:get_player_name()] = {rows={}}
+	local name = player:get_player_name()
+	huds[name] = {rows={}}
+	joined = joined + 1
+	slot_of[name] = joined % SLOTS + 1
 	refresh(player)
 end)
-core.register_on_leaveplayer(function(player) huds[player:get_player_name()] = nil end)
+core.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	huds[name], slot_of[name] = nil, nil
+end)
 grug_parties.register_on_change(function(name)
 	local player=core.get_player_by_name(name)
 	if player then refresh(player) end
 end)
 core.register_globalstep(function(dtime)
 	elapsed=elapsed+dtime
-	if elapsed < 0.5 then return end
-	elapsed=elapsed%0.5
-	for _,player in ipairs(core.get_connected_players()) do refresh(player) end
+	if elapsed < SLOT_PERIOD then return end
+	-- A stall longer than one period collapses to a single slot.
+	elapsed=elapsed-SLOT_PERIOD
+	if elapsed > SLOT_PERIOD then elapsed=0 end
+	current_slot = current_slot % SLOTS + 1
+	for name, slot in pairs(slot_of) do
+		if slot == current_slot then
+			local player = core.get_player_by_name(name)
+			if player then refresh(player) end
+		end
+	end
 end)

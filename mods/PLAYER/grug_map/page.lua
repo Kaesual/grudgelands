@@ -63,6 +63,14 @@ local HALO_OFFSETS = {{-HALO, -HALO}, {HALO, -HALO}, {-HALO, HALO}, {HALO, HALO}
 -- markers are brought up to date at most every REBUILD seconds, and only
 -- when the signature below changed. Clicks still answer at once.
 local REBUILD_US = 2000000
+-- Round 32 (perf review R1): the poll runs every PASS seconds and reads at
+-- most CHECKS_PER_PASS signatures and builds at most BUILDS_PER_PASS forms
+-- per pass. Viewers that are due wait in the order they fell due, so none
+-- starves; a viewer's phase is its own last read or build, so viewers who
+-- opened the tab together drift apart once they are served in different
+-- passes. A scrollbar move defers a viewer's rebuild by QUIET_US.
+local PASS, CHECKS_PER_PASS, BUILDS_PER_PASS = 0.1, 8, 2
+local QUIET_US = 500000
 -- Player and party arrows are drawn on a grid of ARROW_STEP formspec units
 -- (about a screen pixel), so a move changes the form only when it shows.
 local ARROW_STEP = 0.02
@@ -334,7 +342,7 @@ sfinv.register_page(PAGE, {
 					if kind == "CHG" then
 						context.grug_map_focus = key
 						local session = active[player:get_player_name()]
-						if session then session.scroll_quiet = 0.5 end
+						if session then session.quiet_until = core.get_us_time() + QUIET_US end
 					end
 					context[key] = atlas.clamp_scroll(tonumber(value), context.grug_map_zoom or 1)
 				end
@@ -369,12 +377,20 @@ sfinv.register_page(PAGE, {
 -- form does not open a menu; the client updates it in place if it is visible
 -- (lua_api.md, set_inventory_formspec). Stable button names survive rebuilds.
 -- The signature is read at most every REBUILD_US after the last read or
--- build, and the form is built only when it changed.
+-- build, and the form is built only when it changed; each pass serves the
+-- longest-waiting due viewers within its budget (PASS above).
+local function longest_waiting(a, b)
+	if a.session.checked ~= b.session.checked then
+		return a.session.checked < b.session.checked
+	end
+	return a.name < b.name
+end
 core.register_globalstep(function(dtime)
 	elapsed = elapsed + dtime
-	if elapsed < 0.5 then return end
-	elapsed = elapsed % 0.5
+	if elapsed < PASS then return end
+	elapsed = elapsed % PASS
 	local now = core.get_us_time()
+	local due = {}
 	for name, session in pairs(active) do
 		local player = core.get_player_by_name(name)
 		local context = sfinv.contexts[name]
@@ -383,18 +399,27 @@ core.register_globalstep(function(dtime)
 			-- A suspended inventory belongs to character creation (ruling 32);
 			-- this direct write must not replace it.
 			active[name] = nil
-		elseif (session.scroll_quiet or 0) > 0 then
+		elseif now < (session.quiet_until or 0) then
 			-- Avoid replacing native widgets during an actively moving scrollbar.
 			-- Pending marker changes are rendered once scrolling has settled.
-			session.scroll_quiet = math.max(0, session.scroll_quiet - 0.5)
 		elseif now - (session.checked or 0) >= REBUILD_US then
-			session.checked = now
-			if signature(player, context) ~= session.signature then
-				local form, sig = make_form(player, context)
-				player:set_inventory_formspec(form)
-				session.signature = sig
-			end
+			session.checked = session.checked or 0
+			due[#due + 1] = {name = name, session = session, player = player, context = context}
 		end
+	end
+	table.sort(due, longest_waiting)
+	local builds = 0
+	for index = 1, math.min(#due, CHECKS_PER_PASS) do
+		local row = due[index]
+		local session = row.session
+		if signature(row.player, row.context) ~= session.signature then
+			if builds == BUILDS_PER_PASS then break end
+			builds = builds + 1
+			local form, sig = make_form(row.player, row.context)
+			row.player:set_inventory_formspec(form)
+			session.signature = sig
+		end
+		session.checked = now
 	end
 end)
 core.register_on_leaveplayer(function(player)
