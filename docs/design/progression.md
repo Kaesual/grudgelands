@@ -152,8 +152,10 @@ Revised 2026-09-23, Round 18:
 - The final quest at each starting settlement is handed in to the next
   regional giver, so completion and the following regional quest meet at the
   same NPC.
-- First PvP quests begin in the level-31–40 contested approaches and
-  Battlegrounds entry, never below level 31 (`world_zones.md` §§2/8).
+- PvP quests start at level 40 (Round 31, PvP ruling 15): each faction's
+  fortress gives them (one raid per enemy Battlegrounds camp plus a few
+  ordinary fortress quests), and an outpost of the fortress's zone sends a
+  level-40 player there ([quests.md](quests.md#pvp-fortress-quests-round-31)).
 - Gather and kill objectives use stable named-zone ids and authored biome/
   resource palettes so progression teaches exploration rather than old radial
   ring coordinates.

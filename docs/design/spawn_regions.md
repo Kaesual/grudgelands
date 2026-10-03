@@ -315,7 +315,8 @@ seed (`grug_mobs.spawn_regions.describe(zone, target, mode, ref)`):
 
 - target: a leader role (its spot), a camp id (its centre) or a kind id —
   the centroid of the kind's **largest** region, in every phrasing, so two
-  placeholders of one quest never point at different patches;
+  placeholders of one quest never point at different patches; or a named
+  place given as its `{x, z}` (Round 31: a PvP POI's anchor, quests.md);
 - `"of"`, ref = a settlement key or anchor id (name from the settlement
   roster) or `{x, z, name}`: "southeast of Highcourt"; within 80 nodes:
   "near Highcourt";
