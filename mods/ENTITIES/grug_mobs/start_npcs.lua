@@ -1145,24 +1145,10 @@ function grug_mobs.install_profession_trainer(entity, slot)
 end
 
 --
--- THE GARRISON LOOK, THE ONE SEAM LANE A'S LOOK ROLL REPLACES (round31-plan
--- §3 "A <-> G"). `races` is what the garrison may look like
--- (pvp_garrison.lua: a fortress guard or bodyguard any race of its faction,
--- the General his seat race, a camp's people the camp's race); today the roll
--- picks one race skin, once, and keeps it in the saved `_grug_visual_race`
--- that the guard and General definitions compose from (the bandit pattern).
---
-function grug_mobs.roll_garrison_look(entity, races)
-	if not entity._grug_visual_race then
-		entity._grug_visual_race = races[math.random(#races)]
-	end
-	grug_mobs.refresh_visual(entity)
-end
-
---
--- A PvP POI's garrison NPC (Round 31, pvp_garrison.lua): level, tier, name,
--- look and the quest area, written once at placement. Plain fields, so all of
--- it rides in staticdata.
+-- A PvP POI's garrison NPC (Round 31, pvp_garrison.lua): level, tier, name and
+-- the quest area, written once at placement. Plain fields, so all of it rides
+-- in staticdata. Its look is grug_visuals' NPC roll (the settlement's race, or
+-- a mixed garrison's faction race, `_grug_mixed_race` in `place`).
 --
 local function install_garrison(entity, spec)
 	-- The quest credit's area (grug_quests matches a kill objective's `area`
@@ -1181,7 +1167,6 @@ local function install_garrison(entity, spec)
 	if spec.level_min then
 		grug_mobs.relevel(entity, math.random(spec.level_min, spec.level_max))
 	end
-	grug_mobs.roll_garrison_look(entity, spec.looks)
 	if entity.update_tag then
 		entity:update_tag()
 	end
@@ -1333,8 +1318,13 @@ local function place(row, slot)
 	-- A capital display is a plain entity that reads only its own saved
 	-- fields and removes an incomplete copy itself (capital_displays.lua).
 	local def = core.registered_entities[slot.entity]
+	-- A mixed garrison (a PvP fortress's guards and bodyguards) is marked
+	-- before its first draw, so grug_visuals.npc_race rolls a race of its
+	-- faction instead of drawing the settlement's seat race (lane A's
+	-- contract).
 	local staticdata = not (def and def._grug_capital_display) and
-		core.serialize({_grug_unplaced = true, _grug_start = row.key}) or nil
+		core.serialize({_grug_unplaced = true, _grug_start = row.key,
+			_grug_mixed_race = slot.garrison and slot.garrison.mixed or nil}) or nil
 	placing = true
 	local object = core.add_entity(slot.pos, slot.entity, staticdata)
 	placing = false

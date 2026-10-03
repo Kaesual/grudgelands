@@ -606,13 +606,18 @@ end
 
 -- Round 31: the two fortress Generals (pvp-plan ruling 17; "Generals respawn
 -- like kings", the coordinator defaults). His seat race's king's chassis and
--- kit -- level 65 elite, the tallest figure of his keep -- in the composed
--- armour of his level instead of a crowned royal skin, and no Fallen Crown:
--- he drops what a guard drops (war trophies, only to an enemy player's kill)
--- and keeps no reward ledger. His two bodyguards follow him like royal
--- guards, in the composed guard look. start_npcs.lua's royal path books the
--- group's return. `_grug_royal_race` marks the group as a royal encounter
--- (boss_leash_reset); for a General it is his seat race.
+-- kit -- level 65 elite, the tallest figure of his keep -- and, like a king,
+-- one fixed look of his seat race, but in the royal guards' tabard: no crown.
+-- No Fallen Crown either: he drops what a guard drops (war trophies, only to
+-- an enemy player's kill) and keeps no reward ledger. His two bodyguards
+-- follow him like royal guards, in the guard look of any race of their
+-- faction (a mixed garrison, start_npcs.lua). start_npcs.lua's royal path
+-- books the group's return. `_grug_royal_race` marks the group as a royal
+-- encounter (boss_leash_reset); for a General it is his seat race.
+local GENERAL_LOOKS = {
+	accord = {tone = 3, hair = 2, style = 1, eyes = 2, feature = 2},
+	throng = {tone = 1, hair = 1, style = 1, eyes = 3, feature = 3},
+}
 local garrison = grug_mobs.pvp_garrison
 for faction, race in pairs(GENERALS) do
 	local faction_id, race_id = faction, race
@@ -621,10 +626,8 @@ for faction, race in pairs(GENERALS) do
 	local name = garrison.general_entity(faction_id)
 	local general = king_def(race_id, RACES[race_id])
 	general.description = garrison.general_name(faction_id)
-	general.textures = {{texture}}
-	-- The race a garrison look rolled (start_npcs.lua), else the seat race.
 	general._grug_visual = function(self)
-		return {race = self._grug_visual_race or race_id, armor_line = "metal",
+		return {race = race_id, look = GENERAL_LOOKS[faction_id], royal = "guard",
 			level = self._grug_level, weapon_family = RACES[race_id].weapon}
 	end
 	-- A fresh copy of the guard's PvP-only loot (guard.lua).

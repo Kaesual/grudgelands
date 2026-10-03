@@ -13,13 +13,16 @@
 --      Quartermaster and the waystone are no garrison) and both camp layouts
 --      of every catalogue row in every race of its faction (4 or 5 guards in
 --      the camp's 3-level band, never elite, and the named captain, elite at
---      the top level); levels per band, respawn intervals, looks, quest
+--      the top level); levels per band, respawn intervals, the mixed look of
+--      the fortress guards and bodyguards (lane A's npc_race contract), quest
 --      areas; a camp race of the other faction is refused;
 --   P  placement through the REAL start_npcs.lua, guard.lua and bosses.lua
 --      (under a small engine model) on a fortress and two camps registered
 --      in the real socket registry: the right entity on every socket, level,
---      tier, name, look race, quest area, post or home, the royal encounter
---      id; the quest givers and the Quartermaster on their sockets;
+--      tier, name, the mixed-race mark before the first draw, quest area,
+--      post or home, the royal encounter id; the General's one fixed look of
+--      his seat race in the royal guards' tabard; the quest givers and the
+--      Quartermaster on their sockets;
 --   T  respawn timers: a camp guard returns 100-140 s, a captain 270-330 s
 --      and a fortress guard 180-360 s of world time after its death, each
 --      re-rolled in its band; a dead bodyguard stays down until the General's
@@ -75,10 +78,6 @@ for _, zone in ipairs(source.zones) do zone_of[zone.id] = zone end
 local function band_of(row)
 	local zone = zone_of[row.zone_id]
 	return {zone.level_min, zone.level_max}
-end
-local function has(list, value)
-	for _, item in ipairs(list) do if item == value then return true end end
-	return false
 end
 
 ------------------------------------------------------------------------------
@@ -154,10 +153,7 @@ for _, faction in ipairs({"accord", "throng"}) do
 			eq(spec.tier, "elite", where .. " elite")
 			check(spec.respawn[1] == 180 and spec.respawn[2] == 360, where .. " guard-post respawn")
 			check(not spec.royal and not spec.name, where .. " an ordinary guard")
-			eq(#spec.looks, 3, where .. " looks: any race of the faction")
-			for _, look in ipairs(spec.looks) do
-				check(has(catalog.FACTION_RACES[faction], look), where .. " look " .. look)
-			end
+			eq(spec.mixed, true, where .. " any race of the faction")
 			eq(spec.area, (faction == "accord" and "elandor_ashenward_march/" or
 				"kragmar_bannerbreak_mesa/") .. key, where .. " quest area")
 		elseif socket.role == "general" then
@@ -165,11 +161,12 @@ for _, faction in ipairs({"accord", "throng"}) do
 			eq(spec.entity, "grug_mobs:general_" .. faction, where .. " entity")
 			check(spec.royal and spec.leader and not spec.respawn and not spec.level_min,
 				where .. " the leader of a royal group at his own level")
-			eq(spec.looks[1], catalog.SEAT_RACE[faction], where .. " the seat race")
+			check(not spec.mixed, where .. " of the seat race")
 		elseif socket.role == "bodyguard" then
 			count.bodyguard = count.bodyguard + 1
 			eq(spec.entity, "grug_mobs:bodyguard_" .. faction, where .. " entity")
 			check(spec.royal and not spec.leader and not spec.respawn, where .. " retinue")
+			eq(spec.mixed, true, where .. " any race of the faction")
 		else
 			count.none = count.none + 1
 			eq(spec, nil, where .. " (" .. socket.role .. ") is no garrison post")
@@ -201,7 +198,7 @@ for _, row in ipairs(catalog.rows) do
 					check(spec.level_min == low and spec.level_max == high, where .. " the camp band")
 					eq(spec.tier, "normal", where .. " never elite")
 					check(spec.respawn[1] == 100 and spec.respawn[2] == 140, where .. " about 2 min")
-					check(#spec.looks == 1 and spec.looks[1] == race, where .. " the camp's race")
+					check(not spec.mixed, where .. " the camp's race")
 					eq(spec.area, row.zone_id .. "/" .. row.key, where .. " quest area")
 				elseif socket.role == "captain" then
 					captains = captains + 1
@@ -210,7 +207,7 @@ for _, row in ipairs(catalog.rows) do
 					eq(spec.tier, "elite", where .. " elite")
 					check(spec.respawn[1] == 270 and spec.respawn[2] == 330, where .. " about 5 min")
 					eq(spec.name, names.captains[row.key][race], where .. " named")
-					check(#spec.looks == 1 and spec.looks[1] == race, where .. " the camp's race")
+					check(not spec.mixed, where .. " the camp's race")
 					eq(spec.area, row.zone_id .. "/" .. row.key, where .. " quest area")
 				else
 					eq(spec, nil, where .. " is no garrison post")
@@ -324,7 +321,7 @@ _G.grug_mobs = {
 	-- levels.lua's two seams the garrison install calls, reduced to the fields.
 	set_tier = function(entity, tier) entity._grug_tier = tier end,
 	relevel = function(entity, level) entity._grug_level = level end,
-	refresh_visual = function(entity) entity._grug_refreshed = entity._grug_visual_race end,
+	refresh_visual = noop,
 	-- The wrapper's registration, reduced to keeping the definition (mobs_redo
 	-- copies its fields; a live entity reads them through its prototype here).
 	register_mob = function(name, def) core.registered_entities[name] = def end,
@@ -402,9 +399,7 @@ for _, poi in ipairs(POIS) do
 			if spec then
 				eq(entity.name, spec.entity, where .. " entity")
 				eq(entity._grug_area, spec.area, where .. " quest area")
-				check(has(spec.looks, entity._grug_visual_race), where .. " look race " ..
-					tostring(entity._grug_visual_race))
-				eq(entity._grug_refreshed, entity._grug_visual_race, where .. " look applied")
+				eq(entity._grug_mixed_race, spec.mixed, where .. " mixed race marked before the first draw")
 				eq(entity._grug_tier or "normal", spec.tier, where .. " tier")
 				local level = entity._grug_level or entity._grug_fixed_level
 				check(level and level >= (spec.level_min or level) and level <= (spec.level_max or level),
@@ -440,7 +435,13 @@ do
 	eq(high.captain._grug_level, 50, "P the higher Shattered Line captain is level 50")
 	eq(high.captain.description, names.captains.pvp_camp_shattered_line_throng_high.troll,
 		"P the troll captain's name")
-	eq(high.captain._grug_visual_race, "troll", "P the captain looks like his camp")
+	eq(high.captain._grug_mixed_race, nil, "P the captain is drawn as his camp's race")
+	local look = fortress.general.name and core.registered_entities[fortress.general.name]._grug_visual
+	local spec = look(fortress.general)
+	check(spec.race == "human" and spec.royal == "guard" and type(spec.look) == "table",
+		"P the General: the seat race in the royal guards' tabard, no crown")
+	local again = look(fortress.general)
+	check(again.look == spec.look, "P ...one fixed look")
 end
 local census = {}
 for _, row in ipairs(grug_mobs.start_npc_census()) do census[row.key] = row end

@@ -21,10 +21,10 @@
 --                                       camp's 3-level band, never elite
 --             captain                   the named captain, elite at the top
 --                                       of the band
--- Looks: fortress guards and bodyguards a race of their faction, the General
--- his faction's seat race, a camp's people its own race (round31-plan §1:
--- lane A's look roll replaces the race roll through one seam in
--- start_npcs.lua, `grug_mobs.roll_garrison_look`).
+-- Looks (round31-plan §1, lane A's contract at grug_visuals.npc_race): a
+-- camp's people are of the camp's race and the General of his fortress's seat
+-- race, both the race their settlement registered as; fortress guards and
+-- bodyguards are `mixed`, any race of their faction, rolled once.
 --
 -- Plain Lua 5.1, no globals.
 --
@@ -140,7 +140,8 @@ function M.new(catalog, names)
 	--   band     {level_min, level_max} of the POI's zone (camps only)
 	-- Returns {entity, level_min, level_max (nil: the entity's own fixed
 	-- level), tier ("elite" | "normal"), respawn ({min, max}, nil for the
-	-- General's group), royal, leader, name, looks (races to roll from),
+	-- General's group), royal, leader, name, mixed (a race of the faction
+	-- instead of the settlement's),
 	-- area, faction}.
 	function G.slot(key, race_id, socket, band)
 		local row = by_key[key]
@@ -152,14 +153,13 @@ function M.new(catalog, names)
 			if role == "guard_post" then
 				spec.entity = M.guard_entity(faction)
 				spec.level_min, spec.level_max = M.FORTRESS_GUARD_LEVEL, M.FORTRESS_GUARD_LEVEL
-				spec.tier, spec.respawn, spec.looks = "elite", M.RESPAWN.fortress_guard, races
+				spec.tier, spec.respawn, spec.mixed = "elite", M.RESPAWN.fortress_guard, true
 			elseif role == "general" then
 				spec.entity, spec.tier = M.general_entity(faction), "elite"
 				spec.royal, spec.leader = true, true
-				spec.looks = {catalog.SEAT_RACE[faction]}
 			elseif role == "bodyguard" then
 				spec.entity, spec.tier = M.bodyguard_entity(faction), "elite"
-				spec.royal, spec.looks = true, races
+				spec.royal, spec.mixed = true, true
 			else
 				return nil
 			end
@@ -173,7 +173,6 @@ function M.new(catalog, names)
 		for _, race in ipairs(races) do of_faction = of_faction or race == race_id end
 		if not of_faction then fail(key .. ": race " .. tostring(race_id) .. " is not of " .. faction) end
 		local low, high = catalog.camp_levels(band[1], band[2], row.band)
-		spec.looks = {race_id}
 		if role == "captain" then
 			spec.entity = M.captain_entity(faction)
 			spec.level_min, spec.level_max = high, high
