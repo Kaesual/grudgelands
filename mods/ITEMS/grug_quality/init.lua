@@ -422,12 +422,74 @@ local function affix_line(slot, player)
 		definition.label .. extra
 end
 
+-- The enchant colours (round31-plan.md §2.2): the per-stack inventory image
+-- of an item with affixes carries the prefix and suffix colour layers
+-- (grug_gear.enchant_image); without affixes the key stays empty, so a plain
+-- stack has no image meta at all. The engine draws the wielded item from the
+-- same image, and so do the visible weapon entity (grug_visuals) and the
+-- ability items (grug_abilities). A broken stack is cracked over this image by
+-- grug_repair.refresh_appearance, which regenerate_description runs next.
+-- Returns true when the key changed.
+local function refresh_enchant_image(stack, affixes)
+	local def = stack:get_definition()
+	if not grug_gear.has_enchant_masks(def) then return false end
+	local prefix, suffix
+	for index = 1, #affixes do
+		if affixes[index].channel == "prefix" then
+			prefix = affixes[index].stat
+		else
+			suffix = affixes[index].stat
+		end
+	end
+	local desired = ""
+	if prefix or suffix then
+		desired = grug_gear.enchant_image(def.inventory_image, prefix, suffix)
+	end
+	local meta = stack:get_meta()
+	local current = meta:get_string("inventory_image")
+	if current == desired then return false end
+	-- A broken stack shows grug_repair's cracked rendering and keeps the
+	-- uncracked image as its saved base: unchanged when that base is ours.
+	local drawn = meta:get_string("_grug_broken_drawn_inventory_image")
+	if drawn ~= "" and current == drawn and
+			meta:get_string("_grug_broken_base_inventory_image") == desired then
+		return false
+	end
+	meta:set_string("inventory_image", desired)
+	return true
+end
+
+grug_items.refresh_enchant_image = refresh_enchant_image
+
+-- The colour legend of the enchanting stations (round31-plan.md §2.2.2):
+-- formspec elements for a 4.2 x 1.3 area at (x, y), the nine stats in three
+-- rows with their swatches. Short words: the area ends before the station's
+-- repair button.
+local LEGEND_WORD = {str = "Str", dex = "Dex", int = "Int", max_hp_percent = "HP",
+	max_mana_percent = "Mana", crit_percent = "Crit", attack_speed_percent = "Speed",
+	dodge_percent = "Dodge", armor_rating = "Armor"}
+
+function grug_items.enchant_legend_formspec(x, y)
+	local out = {("label[%.2f,%.2f;%s]"):format(x, y,
+		core.formspec_escape("Colours: prefix = accent, suffix = fitting"))}
+	for index, stat in ipairs(grug_gear.ENCHANT_ORDER) do
+		local column, row = (index - 1) % 3, math.floor((index - 1) / 3)
+		local cx, cy = x + column * 1.35, y + 0.3 + row * 0.36
+		out[#out + 1] = ("box[%.2f,%.2f;0.24,0.24;%s]"):format(cx, cy,
+			grug_gear.ENCHANT_COLORS[stat])
+		out[#out + 1] = ("label[%.2f,%.2f;%s]"):format(cx + 0.32, cy + 0.12,
+			LEGEND_WORD[stat])
+	end
+	return table.concat(out)
+end
+
 function grug_items.regenerate_description(stack, player)
 	if not stack or stack:is_empty() then return false end
 	local family = family_for(stack)
 	if not family then return false end
 	local meta = stack:get_meta()
 	local affixes = read_affixes(meta)
+	local image_changed = refresh_enchant_image(stack, affixes)
 	local ilvl = effective_ilvl(stack)
 	local base_name = ensure_base_name(stack)
 	local display_name = generated_name(base_name, affixes)
@@ -450,7 +512,7 @@ function grug_items.regenerate_description(stack, player)
 	end
 	write_derived(meta, affixes)
 	local desired = table.concat(lines, "\n")
-	if meta:get_string("description") == desired then return false end
+	if meta:get_string("description") == desired then return image_changed end
 	meta:set_string("description", desired)
 	return true
 end

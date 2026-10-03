@@ -31,28 +31,58 @@ grug_gear.ENCHANT_COLORS = {
 -- so the material shows through.
 grug_gear.ENCHANT_OPACITY = 128
 
+-- The legend's order (the order of grug_quality's affix table).
+grug_gear.ENCHANT_ORDER = {"str", "dex", "int", "max_hp_percent", "max_mana_percent",
+	"crit_percent", "attack_speed_percent", "dodge_percent", "armor_rating"}
+
 -- One coloured group: the mask frame, shaded by the stat colour.
 local function layer(mask, frame, color)
-	local out = "^(" .. mask .. "^[verticalframe:2:" .. frame .. "^[multiply:" .. color
+	local out = "(" .. mask .. "^[verticalframe:2:" .. frame .. "^[multiply:" .. color
 	if grug_gear.ENCHANT_OPACITY < 255 then
 		out = out .. "^[opacity:" .. grug_gear.ENCHANT_OPACITY
 	end
 	return out .. ")"
 end
 
--- `image` is a texture string whose first part is the source file
--- ("grug_gear_bow_birch.png^[hsl:0:-20:16" is fine); `prefix` and `suffix`
--- are stat ids or nil. Without a known stat the image comes back unchanged,
--- byte for byte, so an unenchanted item never gains a modifier.
-function grug_gear.enchant_image(image, prefix, suffix)
+local function mask_of(image)
+	local stem = type(image) == "string" and image:match("^([%w_%-]+)%.png")
+	return stem and stem .. "_ench.png" or nil
+end
+
+-- Just the coloured layers for `image` -- "(A)", "(B)" or "(A)^(B)", nil
+-- without a known stat -- for a caller that places them itself (the worn
+-- armour seam `armor_layers` of grug_visuals.compose). `image` is a texture
+-- string whose first part is the source file ("grug_gear_bow_birch.png^[hsl:
+-- 0:-20:16" is fine); `prefix` and `suffix` are stat ids or nil.
+function grug_gear.enchant_layers(image, prefix, suffix)
 	local a = prefix and grug_gear.ENCHANT_COLORS[prefix]
 	local b = suffix and grug_gear.ENCHANT_COLORS[suffix]
-	if not a and not b then return image end
-	local stem = image:match("^([%w_%-]+)%.png")
-	if not stem then return image end
-	local mask = stem .. "_ench.png"
-	local out = image
-	if a then out = out .. layer(mask, 0, a) end
-	if b then out = out .. layer(mask, 1, b) end
-	return out
+	local mask = mask_of(image)
+	if not mask or (not a and not b) then return nil end
+	if a and b then return layer(mask, 0, a) .. "^" .. layer(mask, 1, b) end
+	return a and layer(mask, 0, a) or layer(mask, 1, b)
+end
+
+-- The whole image. Without a known stat it comes back unchanged, byte for
+-- byte, so an unenchanted item never gains a modifier.
+function grug_gear.enchant_image(image, prefix, suffix)
+	local layers = grug_gear.enchant_layers(image, prefix, suffix)
+	return layers and image .. "^" .. layers or image
+end
+
+-- The image without its colour layers: for art drawn from an item's image
+-- string on another shape (the Scout's bow draw stages), where the item's
+-- masks do not fit.
+function grug_gear.strip_enchant(image)
+	local mask = mask_of(image)
+	if not mask then return image end
+	local at = image:find("^(" .. mask, 1, true)
+	return at and image:sub(1, at - 1) or image
+end
+
+-- Only items registered with `_grug_enchant_masks = true` (grug_gear's
+-- weapons, offhands and armour, whose textures ship masks) are coloured.
+function grug_gear.has_enchant_masks(def)
+	return type(def) == "table" and def._grug_enchant_masks == true and
+		mask_of(def.inventory_image) ~= nil
 end

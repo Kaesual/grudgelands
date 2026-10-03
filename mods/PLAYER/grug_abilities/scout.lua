@@ -262,7 +262,9 @@ local function bow_wield_image(player)
 end
 
 local function staged_bow_image(player, stage)
-	local source = bow_wield_image(player)
+	-- The draw stages are other shapes than the bow's own sprite, so the bow's
+	-- enchant-colour masks do not fit them: drawn, the bow shows plain.
+	local source = grug_gear.strip_enchant(bow_wield_image(player))
 	for base, family_tint in pairs(DRAW_STAGE_SOURCE) do
 		if source:sub(1, #base) == base then
 			return "grug_abilities_bow_draw_" .. stage .. ".png" ..
