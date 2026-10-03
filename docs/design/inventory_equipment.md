@@ -413,7 +413,8 @@ them.
   refusals (level, potion cooldown, full health, no mana pool, not
   poisoned), the raw-weapon hint as two lines, mount notices (dismount
   reason, flight-boundary warning, summon refusal), talent points earned or
-  returned, and "Boss loot is waiting for free inventory space." Each
+  returned, and "Boss loot is waiting: free main inventory space, then
+  rejoin." (queued boss loot is handed over at the next join). Each
   notice group keeps one keyed line that a repeat refreshes (`potion`,
   `food`, `weapon_hint:1/2`, `mount`, `talents`, `boss_loot`, `combat:*`).
   Still in chat: death messages, rare sightings for the faction, the dragon
