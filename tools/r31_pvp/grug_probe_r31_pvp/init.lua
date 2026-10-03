@@ -205,10 +205,13 @@ end
 
 -- ---------------------------------------------------------------- benches
 -- `rounds` rounds of `n` calls; median and best microseconds per call.
-local function bench(label, n, fn, rounds)
-	rounds = rounds or 7
+-- `setup` (untimed) runs before every round.
+local ROUNDS = 15
+local function bench(label, n, fn, setup)
+	local rounds = ROUNDS
 	local per = {}
 	for r = 1, rounds do
+		if setup then setup() end
 		local t = now_us()
 		for _ = 1, n do fn() end
 		per[r] = (now_us() - t) / n
@@ -352,15 +355,31 @@ local function run_micro(center)
 	bench("valid_target(player, mob, hostile)", 20000, function()
 		grug_abilities.valid_target(fa, mob_obj, "hostile")
 	end)
-	local hits = 0
-	local function ray()
+	-- The mob walks: before every round, an origin 2 m beside or above it
+	-- whose ray reaches it (the first of five), then the round's rays.
+	local hits, aim = 0, nil
+	local OFFSETS = {{-2, 0.4, 0}, {2, 0.4, 0}, {0, 0.4, -2}, {0, 0.4, 2}, {0, 2.5, 0}}
+	local function find_aim()
+		aim = nil
 		local m = mob_obj:get_pos()
-		local origin = {x = m.x - 3, y = m.y + 0.5, z = m.z}
-		local r = grug_core.combat_ray(fa, 10, {origin = origin, direction = {x = 1, y = 0, z = 0}})
-		if r.status == "target" then hits = hits + 1 end
+		local centre = {x = m.x, y = m.y + 0.4, z = m.z}
+		local reasons = {}
+		for _, o in ipairs(OFFSETS) do
+			local origin = {x = m.x + o[1], y = m.y + o[2], z = m.z + o[3]}
+			local opts = {origin = origin,
+				direction = vector.normalize(vector.subtract(centre, origin))}
+			local r = grug_core.combat_ray(fa, 10, opts)
+			if r.status == "target" then aim = opts return end
+			reasons[#reasons + 1] = r.reason
+		end
+		log("MICRO no aim at the mob: " .. table.concat(reasons, ","))
 	end
-	bench("combat_ray onto the mob (10 m)", 2000, ray)
-	log("MICRO ray hits on the mob: " .. hits)
+	local fallback = {origin = {x = 0, y = 0, z = 0}, direction = {x = 1, y = 0, z = 0}}
+	bench("combat_ray onto the mob (10 m)", 2000, function()
+		local r = grug_core.combat_ray(fa, 10, aim or fallback)
+		if r.status == "target" then hits = hits + 1 end
+	end, find_aim)
+	log(("MICRO ray hits on the mob: %d of %d"):format(hits, 2000 * ROUNDS))
 	local hpc = core.registered_on_player_hpchange
 	bench("hp-change chain: mob punch 3 on a player", 2000, function()
 		hpc(fa, -3, {type = "punch", object = mob_obj, from = "mod"})
