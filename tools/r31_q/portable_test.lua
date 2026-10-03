@@ -22,7 +22,7 @@
 --      faction one quest per enemy Battlegrounds camp (8), each killing that
 --      camp's guards (its garrison size) and its captain, area-limited to
 --      that camp, at a reward level its band fits, given and turned in by a
---      fortress quest giver; 3-5 ordinary fortress quests; every quest of
+--      fortress quest giver, a solo quest; 3-5 ordinary fortress quests; every quest of
 --      the fortress givers from level 40; no objective names a player.
 -- Prints "R31 Q PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
@@ -360,7 +360,9 @@ for faction, zone in pairs(FORT) do
 				eq(captain.area, area, quest.id .. ": both in the camp")
 				check(roles["guard_" .. enemy][1] >= quest.level - 3 and roles["captain_" .. enemy][2] <= quest.level + 3,
 					quest.id .. ": the camp's band fits the reward level")
-				check(quest.group == true and quest.title:match("^Group: ") ~= nil, quest.id .. ": a Group quest")
+				-- Solo quests (user, round31-plan §6 item 16): no Group flag or prefix.
+				check(quest.group == nil and quest.optional == nil and not quest.title:match("^Group: "),
+					quest.id .. ": a solo quest")
 				check(quest.turnin == quest.giver, quest.id .. ": turned in where given")
 			elseif givers[quest.giver] then
 				ordinary = ordinary + 1

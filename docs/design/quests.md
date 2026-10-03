@@ -139,7 +139,8 @@ PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
 - **one raid per enemy Battlegrounds camp** (8 per faction): kill the camp's
   guards (4 at a lower camp, 5 at a higher one) and its captain, both
   limited to that camp's area, at the reward level of the camp's band;
-  "Group:" quests, given and turned in by the Outrider (lower camps) or the
+  solo quests (round31-plan §6 item 16: the captain is a normal-tier camp
+  leader), given and turned in by the Outrider (lower camps) or the
   Drillmaster (higher camps), the two camps of a band chained by zone;
 - **ordinary fortress quests**: supplies for the Quartermaster (Warmaster),
   War Trophies from enemy guards (Drillmaster; they drop only to an enemy
@@ -148,7 +149,7 @@ PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
   travel quest to the Warmaster.
 
 No objective names a player or a General. The front ledger counts these
-quests like every front quest (the raids as group quests).
+quests like every front quest.
 
 ## Objective presentation
 

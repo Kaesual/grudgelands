@@ -899,32 +899,84 @@ def _lua_fields(text):
     return dict(re.findall(r'(\w+)\s*=\s*"([^"]*)"', text))
 
 
+# The branches of pvp_garrison.lua's G.slot that place each garrison role:
+# role -> (the line opening its branch, the line opening the next one).
+_SLOT_BRANCHES = {
+    ("pvp_fortress", "guard"): (r'if role == "guard_post" then', r'elseif role == "general" then'),
+    ("pvp_fortress", "general"): (r'elseif role == "general" then', r'elseif role == "bodyguard" then'),
+    ("pvp_fortress", "bodyguard"): (r'elseif role == "bodyguard" then', r'\n\t\t\telse\n'),
+    ("pvp_camp", "captain"): (r'if role == "captain" then', r'\n\t\telse\n'),
+    ("pvp_camp", "guard"): (r'\n\t\telse\n\t\t\tspec\.entity = M\.guard_entity', r'\n\t\tend\n'),
+}
+
+
+def _slot_tiers(source, where):
+    """{(poi kind, role): tier} as G.slot places them: a branch's literal
+    `spec.tier ... = "<tier>"`, "normal" when the branch sets no tier (the
+    garrison installer's default). A branch that cannot be found, or that
+    sets its tier in a form this reader does not take, fails loudly."""
+    body = source[source.find("function G.slot("):]
+    if not body.startswith("function G.slot("):
+        raise LoadError("%s: no G.slot found" % where)
+    out = {}
+    for key, (start, stop) in _SLOT_BRANCHES.items():
+        m = re.search(start + r"(.*?)" + stop, body, re.S)
+        if not m:
+            raise LoadError("%s: G.slot's branch for %s %s not found (the reader differs from the code)"
+                            % (where, key[0], key[1]))
+        branch = m.group(1)
+        if "spec.tier" not in branch:
+            out[key] = "normal"
+            continue
+        lines = [line for line in branch.splitlines() if re.search(r"\bspec\.tier\b.*=", line)]
+        names, _, values = lines[0].partition("=") if len(lines) == 1 else ("", "", "")
+        names = [n.strip() for n in names.split(",")]
+        values = [v.strip() for v in values.split(",")]
+        value = values[names.index("spec.tier")] if "spec.tier" in names and len(names) == len(values) else ""
+        if value not in ('"normal"', '"elite"'):
+            raise LoadError("%s: G.slot's %s %s tier is not a literal this reader takes" % (where, key[0], key[1]))
+        out[key] = value.strip('"')
+    return out
+
+
 def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None):
     """{settlement key: {"key", "label", "zone", "faction", "kind"
     ("pvp_fortress" | "pvp_camp"), "band" ("low" | "high" | None), "roles"
     ({role: [lo, hi]}), "tiers" ({role: "normal" | "elite"})}} of every PvP
-    POI, as the game's catalogue builds them; the garrison roles and levels
-    as pvp_garrison.lua's area_roles and slot place them."""
+    POI, as the game's catalogue builds them; the garrison roles, levels and
+    tiers as pvp_garrison.lua's area_roles and slot place them. A partial
+    parse of either file fails loudly (LoadError)."""
     text = Path(catalog).read_text(encoding="utf-8")
-    levels = dict((k, int(v)) for k, v in re.findall(r"M\.(\w+_LEVEL)\s*=\s*(\d+)",
-                                                      Path(garrison).read_text(encoding="utf-8")))
+    source = Path(garrison).read_text(encoding="utf-8")
+    levels = dict((k, int(v)) for k, v in re.findall(r"M\.(\w+_LEVEL)\s*=\s*(\d+)", source))
+    for name in ("FORTRESS_GUARD_LEVEL", "BODYGUARD_LEVEL", "GENERAL_LEVEL"):
+        if name not in levels:
+            raise LoadError("%s: M.%s not found" % (garrison, name))
+    tiers = _slot_tiers(source, garrison)
     records = records or zone_records()
     rows = []
-    for row in re.findall(r"\{key = \"pvp_fortress_\w+\"[^}]*\}", text):
+    fortresses = re.findall(r"\{key = \"pvp_fortress_\w+\"[^}]*\}", text)
+    for row in fortresses:
         f = _lua_fields(row)
+        if not all(f.get(k) for k in ("key", "label", "zone_id", "faction")):
+            raise LoadError("%s: fortress row %s lacks a field" % (catalog, row))
         rows.append({"key": f["key"], "label": f["label"], "zone": f["zone_id"], "faction": f["faction"],
                      "kind": "pvp_fortress", "band": None})
     block = re.search(r"local BATTLEGROUNDS = \{(.*?)\n\}", text, re.S)
-    for row in re.findall(r"\{[^}]*\}", block.group(1) if block else ""):
+    zones = re.findall(r"\{[^}]*\}", block.group(1) if block else "")
+    if sorted(r["faction"] for r in rows) != ["accord", "throng"] or len(zones) != 4:
+        raise LoadError("%s: expected 2 fortresses and 4 Battlegrounds zones, read %d and %d"
+                        % (catalog, len(rows), len(zones)))
+    for row in zones:
         f = _lua_fields(row)
+        if not (f.get("zone_id") in records and f.get("name")):
+            raise LoadError("%s: Battlegrounds row %s differs" % (catalog, row))
         for faction in ("accord", "throng"):
             for band in ("low", "high"):
                 rows.append({"key": "pvp_camp_%s_%s_%s" % (re.sub(r"^front_", "", f["zone_id"]), faction, band),
                              "label": "%s %s %s" % (f["name"], PVP_FACTION_NAME[faction],
                                                     "Picket" if band == "low" else "War Camp"),
                              "zone": f["zone_id"], "faction": faction, "kind": "pvp_camp", "band": band})
-    if not rows:
-        raise LoadError("%s: no PvP POI rows found" % catalog)
     out = {}
     for row in rows:
         fac = row["faction"]
@@ -932,12 +984,11 @@ def pvp_pois(catalog=PVP_CATALOG, garrison=PVP_GARRISON, records=None):
             row["roles"] = {"guard_" + fac: [levels["FORTRESS_GUARD_LEVEL"]] * 2,
                             "bodyguard_" + fac: [levels["BODYGUARD_LEVEL"]] * 2,
                             "general_" + fac: [levels["GENERAL_LEVEL"]] * 2}
-            row["tiers"] = {role: "elite" for role in row["roles"]}
         else:
             lo, hi = records[row["zone"]]["levels"]
             low, high = (lo, lo + 2) if row["band"] == "low" else (hi - 2, hi)
             row["roles"] = {"guard_" + fac: [low, high], "captain_" + fac: [high, high]}
-            row["tiers"] = {"guard_" + fac: "normal", "captain_" + fac: "elite"}
+        row["tiers"] = {role: tiers[(row["kind"], role[:-len(fac) - 1])] for role in row["roles"]}
         out[row["key"]] = row
     return out
 

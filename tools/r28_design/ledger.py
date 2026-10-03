@@ -102,7 +102,7 @@ class Ledger:
             self.warnings.append(text)
 
     def role_tier(self, role, area=None):
-        # A PvP garrison's tiers are its own (Round 31: the captain is elite).
+        # A PvP garrison's tiers are its own (Round 31, read from G.slot).
         if area and role in (area.get("tiers_by_role") or {}):
             return area["tiers_by_role"][role]
         sub = self.subtypes.get(role)

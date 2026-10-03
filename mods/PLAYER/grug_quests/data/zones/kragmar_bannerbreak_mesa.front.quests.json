@@ -528,8 +528,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Group: Rattle the {name:pvp_camp_shattered_line_accord_low}",
-      "text": "The {name:pvp_camp_shattered_line_accord_low}, {zone_area:pvp_camp_shattered_line_accord_low}, watches our movements like a cook watching the last joint of meat. Take a group and kill four Accord Guards and the Accord Captain at that camp. Give them a fight to handle while my riders get on with their work.",
+      "title": "Rattle the {name:pvp_camp_shattered_line_accord_low}",
+      "text": "The {name:pvp_camp_shattered_line_accord_low}, {zone_area:pvp_camp_shattered_line_accord_low}, watches our movements like a cook watching the last joint of meat. Kill four Accord Guards and the Accord Captain at that camp. Give them a fight to handle while my riders get on with their work.",
       "objectives": [
         {
           "type": "kill",
@@ -552,8 +552,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -567,8 +565,8 @@
       "requires": [
         "bannerbreak_warhold_picket_shattered"
       ],
-      "title": "Group: Trouble for the {name:pvp_camp_broken_causeway_accord_low}",
-      "text": "Now the {name:pvp_camp_broken_causeway_accord_low}, {zone_area:pvp_camp_broken_causeway_accord_low}, is making our scouts earn every muddy step. Gather a group and defeat four Accord Guards and the Accord Captain there. The marsh already takes a toll on our boots; the Accord does not get to take one on our riders.",
+      "title": "Trouble for the {name:pvp_camp_broken_causeway_accord_low}",
+      "text": "Now the {name:pvp_camp_broken_causeway_accord_low}, {zone_area:pvp_camp_broken_causeway_accord_low}, is making our scouts earn every muddy step. Defeat four Accord Guards and the Accord Captain there. The marsh already takes a toll on our boots; the Accord does not get to take one on our riders.",
       "objectives": [
         {
           "type": "kill",
@@ -591,8 +589,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -604,8 +600,8 @@
       "min_level": 47,
       "level": 49,
       "requires": [],
-      "title": "Group: Challenge the {name:pvp_camp_shattered_line_accord_high}",
-      "text": "The soldiers at the {name:pvp_camp_shattered_line_accord_high}, {zone_area:pvp_camp_shattered_line_accord_high}, have drilled until they can probably march in their sleep. Take a group and defeat five Accord Guards and the Accord Captain at that camp. Stay together when they hit back; a warband that scatters is just a collection of future warnings.",
+      "title": "Challenge the {name:pvp_camp_shattered_line_accord_high}",
+      "text": "The soldiers at the {name:pvp_camp_shattered_line_accord_high}, {zone_area:pvp_camp_shattered_line_accord_high}, have drilled until they can probably march in their sleep. Defeat five Accord Guards and the Accord Captain at that camp. Keep your feet when they hit back; a fighter who stumbles is just a future warning.",
       "objectives": [
         {
           "type": "kill",
@@ -628,8 +624,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -643,8 +637,8 @@
       "requires": [
         "bannerbreak_warhold_warcamp_shattered"
       ],
-      "title": "Group: Shake the {name:pvp_camp_broken_causeway_accord_high}",
-      "text": "The {name:pvp_camp_broken_causeway_accord_high}, {zone_area:pvp_camp_broken_causeway_accord_high}, keeps the Accord's war machine marching through all that mud. Bring a group and kill five Accord Guards and the Accord Captain commanding the camp. They have discipline; show them the Throng can stand shoulder to shoulder too.",
+      "title": "Shake the {name:pvp_camp_broken_causeway_accord_high}",
+      "text": "The {name:pvp_camp_broken_causeway_accord_high}, {zone_area:pvp_camp_broken_causeway_accord_high}, keeps the Accord's war machine marching through all that mud. Kill five Accord Guards and the Accord Captain commanding the camp. They have discipline; show them one Throng fighter can stand firm too.",
       "objectives": [
         {
           "type": "kill",
@@ -667,8 +661,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -680,8 +672,8 @@
       "min_level": 50,
       "level": 52,
       "requires": [],
-      "title": "Group: Lean on the {name:pvp_camp_gravesalt_escarpment_accord_low}",
-      "text": "My riders have enough trouble finding safe ground among the salt and old graves without the Accord measuring them for more. Form a group and strike the {name:pvp_camp_gravesalt_escarpment_accord_low}, {zone_area:pvp_camp_gravesalt_escarpment_accord_low}, killing four Accord Guards and the Accord Captain there. I need a way through for the scouts, and I need you back to tell them it is open.",
+      "title": "Lean on the {name:pvp_camp_gravesalt_escarpment_accord_low}",
+      "text": "My riders have enough trouble finding safe ground among the salt and old graves without the Accord measuring them for more. Strike the {name:pvp_camp_gravesalt_escarpment_accord_low}, {zone_area:pvp_camp_gravesalt_escarpment_accord_low}, killing four Accord Guards and the Accord Captain there. I need a way through for the scouts, and I need you back to tell them it is open.",
       "objectives": [
         {
           "type": "kill",
@@ -704,8 +696,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -719,8 +709,8 @@
       "requires": [
         "bannerbreak_warhold_picket_gravesalt"
       ],
-      "title": "Group: A Roar for the {name:pvp_camp_skyglass_canopy_accord_low}",
-      "text": "There is a great deal of forest to hide in, yet the {name:pvp_camp_skyglass_canopy_accord_low}, {zone_area:pvp_camp_skyglass_canopy_accord_low}, keeps spotting our scouts. Gather a group and defeat four Accord Guards and the Accord Captain at that camp. Let them hear the Throng coming for once; my riders can use the distraction.",
+      "title": "A Roar for the {name:pvp_camp_skyglass_canopy_accord_low}",
+      "text": "There is a great deal of forest to hide in, yet the {name:pvp_camp_skyglass_canopy_accord_low}, {zone_area:pvp_camp_skyglass_canopy_accord_low}, keeps spotting our scouts. Defeat four Accord Guards and the Accord Captain at that camp. Let them hear the Throng coming for once; my riders can use the distraction.",
       "objectives": [
         {
           "type": "kill",
@@ -743,8 +733,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -756,8 +744,8 @@
       "min_level": 57,
       "level": 59,
       "requires": [],
-      "title": "Group: Stand Against the {name:pvp_camp_gravesalt_escarpment_accord_high}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, holds fighters who have survived more than a few brave charges. Take a trusted group and kill five Accord Guards and the Accord Captain there. You owe your warband a steady blade and a clear head; save the roaring for when everyone is back.",
+      "title": "Stand Against the {name:pvp_camp_gravesalt_escarpment_accord_high}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_accord_high}, {zone_area:pvp_camp_gravesalt_escarpment_accord_high}, holds fighters who have survived more than a few brave charges. Kill five Accord Guards and the Accord Captain there. You owe the Throng a steady blade and a clear head; save the roaring for when you are back.",
       "objectives": [
         {
           "type": "kill",
@@ -780,8 +768,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -795,8 +781,8 @@
       "requires": [
         "bannerbreak_warhold_warcamp_gravesalt"
       ],
-      "title": "Group: Answer the {name:pvp_camp_skyglass_canopy_accord_high}",
-      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Gather a group and defeat five Accord Guards and the Accord Captain in that camp. Keep your eyes on your comrades as well as the enemy; the Throng needs fighters who come back together to argue over who fought best.",
+      "title": "Answer the {name:pvp_camp_skyglass_canopy_accord_high}",
+      "text": "The Accord troops at the {name:pvp_camp_skyglass_canopy_accord_high}, {zone_area:pvp_camp_skyglass_canopy_accord_high}, have learned to fight in country that catches blades and swallows war cries. Defeat five Accord Guards and the Accord Captain in that camp. Keep your eyes on the trees as well as the enemy; the Throng needs fighters who come back to argue over who fought best.",
       "objectives": [
         {
           "type": "kill",
@@ -819,8 +805,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     }

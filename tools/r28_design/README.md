@@ -259,8 +259,9 @@ python3 tools/r28_design/ledger.py \
   `--route <the 31-40 and capital zones> --lines front --start-level 40
   --repeat 3` for `ledger/front.md`.
 - Kill objectives and quest drops on a leader (of any zone) use its fixed
-  level; on a PvP garrison (Round 31) the garrison's levels and tiers (a
-  camp's captain is elite).
+  level; on a PvP garrison (Round 31) the garrison's levels and tiers as
+  `pvp_garrison.lua`'s `G.slot` places them (`r28common.pvp_pois` reads both
+  and fails loudly when it cannot).
 - Walks the route quest by quest (prerequisites first, then by `min_level`)
   with a simulated player and counts real XP: quest rewards
   (`weight × M(level)`, rounded half up; `--human` +10 %), kill objectives

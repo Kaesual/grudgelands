@@ -485,8 +485,8 @@
       "min_level": 40,
       "level": 42,
       "requires": [],
-      "title": "Group: Blind the {name:pvp_camp_broken_causeway_throng_low}",
-      "text": "The {name:pvp_camp_broken_causeway_throng_low}, {zone_area:pvp_camp_broken_causeway_throng_low}, has been counting our patrols with an accuracy I find offensive. Form a group and defeat four Throng Guards and the Throng Captain at that camp. Give our riders a chance to cross without becoming somebody else's morning report.",
+      "title": "Blind the {name:pvp_camp_broken_causeway_throng_low}",
+      "text": "The {name:pvp_camp_broken_causeway_throng_low}, {zone_area:pvp_camp_broken_causeway_throng_low}, has been counting our patrols with an accuracy I find offensive. Defeat four Throng Guards and the Throng Captain at that camp. Give our riders a chance to cross without becoming somebody else's morning report.",
       "objectives": [
         {
           "type": "kill",
@@ -509,8 +509,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -524,8 +522,8 @@
       "requires": [
         "ashenward_bastion_picket_broken"
       ],
-      "title": "Group: A Gap at the {name:pvp_camp_shattered_line_throng_low}",
-      "text": "The next obstacle to our scouts is the {name:pvp_camp_shattered_line_throng_low}, {zone_area:pvp_camp_shattered_line_throng_low}. Take a group and kill four Throng Guards and the Throng Captain stationed there. A gap in their watch gives us room to work; keep your party together so we do not hand them one in return.",
+      "title": "A Gap at the {name:pvp_camp_shattered_line_throng_low}",
+      "text": "The next obstacle to our scouts is the {name:pvp_camp_shattered_line_throng_low}, {zone_area:pvp_camp_shattered_line_throng_low}. Kill four Throng Guards and the Throng Captain stationed there. A gap in their watch gives us room to work; keep your own guard up so we do not hand them one in return.",
       "objectives": [
         {
           "type": "kill",
@@ -548,8 +546,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -561,8 +557,8 @@
       "min_level": 47,
       "level": 49,
       "requires": [],
-      "title": "Group: Dislodge the {name:pvp_camp_broken_causeway_throng_high}",
-      "text": "The troops at the {name:pvp_camp_broken_causeway_throng_high}, {zone_area:pvp_camp_broken_causeway_throng_high}, have had time to settle in and learn their ground. Take a group and defeat five Throng Guards and the Throng Captain commanding that camp. Respect their preparation, check your own, and spare me the speech about how courage will cover the difference.",
+      "title": "Dislodge the {name:pvp_camp_broken_causeway_throng_high}",
+      "text": "The troops at the {name:pvp_camp_broken_causeway_throng_high}, {zone_area:pvp_camp_broken_causeway_throng_high}, have had time to settle in and learn their ground. Defeat five Throng Guards and the Throng Captain commanding that camp. Respect their preparation, check your own, and spare me the speech about how courage will cover the difference.",
       "objectives": [
         {
           "type": "kill",
@@ -585,8 +581,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -600,8 +594,8 @@
       "requires": [
         "ashenward_bastion_warcamp_broken"
       ],
-      "title": "Group: Break Ranks at the {name:pvp_camp_shattered_line_throng_high}",
-      "text": "The {name:pvp_camp_shattered_line_throng_high}, {zone_area:pvp_camp_shattered_line_throng_high}, keeps the Throng's fighting strength on this front close at hand. Assemble a group and kill five Throng Guards and the Throng Captain there. You know the drill: hold together, finish the engagement, and count your people before you count your victories.",
+      "title": "Break Ranks at the {name:pvp_camp_shattered_line_throng_high}",
+      "text": "The {name:pvp_camp_shattered_line_throng_high}, {zone_area:pvp_camp_shattered_line_throng_high}, keeps the Throng's fighting strength on this front close at hand. Kill five Throng Guards and the Throng Captain there. You know the drill: pick your moment, finish the engagement, and count your wounds before you count your victories.",
       "objectives": [
         {
           "type": "kill",
@@ -624,8 +618,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -637,8 +629,8 @@
       "min_level": 50,
       "level": 52,
       "requires": [],
-      "title": "Group: No Cover for the {name:pvp_camp_skyglass_canopy_throng_low}",
-      "text": "A forest offers plenty of cover, and the Throng is making better use of it than I would like. Gather a group and raid the {name:pvp_camp_skyglass_canopy_throng_low}, {zone_area:pvp_camp_skyglass_canopy_throng_low}, defeating four Throng Guards and the Throng Captain there. My scouts can handle roots and mist; give them fewer enemy sentries to worry about.",
+      "title": "No Cover for the {name:pvp_camp_skyglass_canopy_throng_low}",
+      "text": "A forest offers plenty of cover, and the Throng is making better use of it than I would like. Raid the {name:pvp_camp_skyglass_canopy_throng_low}, {zone_area:pvp_camp_skyglass_canopy_throng_low}, defeating four Throng Guards and the Throng Captain there. My scouts can handle roots and mist; give them fewer enemy sentries to worry about.",
       "objectives": [
         {
           "type": "kill",
@@ -661,8 +653,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -676,8 +666,8 @@
       "requires": [
         "ashenward_bastion_picket_skyglass"
       ],
-      "title": "Group: Pressure on the {name:pvp_camp_gravesalt_escarpment_throng_low}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_low}, {zone_area:pvp_camp_gravesalt_escarpment_throng_low}, gives the Throng a watch on ground our scouts need to cross. Bring a group and kill four Throng Guards and the Throng Captain at that post. We need breathing room out there, and the enemy has declined to provide it on request.",
+      "title": "Pressure on the {name:pvp_camp_gravesalt_escarpment_throng_low}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_low}, {zone_area:pvp_camp_gravesalt_escarpment_throng_low}, gives the Throng a watch on ground our scouts need to cross. Kill four Throng Guards and the Throng Captain at that post. We need breathing room out there, and the enemy has declined to provide it on request.",
       "objectives": [
         {
           "type": "kill",
@@ -700,8 +690,6 @@
         "weight": 5,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -713,8 +701,8 @@
       "min_level": 57,
       "level": 59,
       "requires": [],
-      "title": "Group: Test the {name:pvp_camp_skyglass_canopy_throng_high}",
-      "text": "At the {name:pvp_camp_skyglass_canopy_throng_high}, {zone_area:pvp_camp_skyglass_canopy_throng_high}, the Throng has soldiers who know how to fight when the trees swallow every shouted order. Choose a steady group and defeat five Throng Guards and the Throng Captain in that camp. Agree on your plan before you go; I have yet to see a fern relay a command correctly.",
+      "title": "Test the {name:pvp_camp_skyglass_canopy_throng_high}",
+      "text": "At the {name:pvp_camp_skyglass_canopy_throng_high}, {zone_area:pvp_camp_skyglass_canopy_throng_high}, the Throng has soldiers who know how to fight when the trees swallow every shouted order. Keep a steady hand and defeat five Throng Guards and the Throng Captain in that camp. Settle on your plan before you go; I have yet to see a fern relay a command correctly.",
       "objectives": [
         {
           "type": "kill",
@@ -737,8 +725,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     },
@@ -752,8 +738,8 @@
       "requires": [
         "ashenward_bastion_warcamp_skyglass"
       ],
-      "title": "Group: Reckoning at the {name:pvp_camp_gravesalt_escarpment_throng_high}",
-      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_high}, {zone_area:pvp_camp_gravesalt_escarpment_throng_high}, anchors the Throng's strength in a country already thick with old graves. Muster a group and defeat five Throng Guards and the Throng Captain there. This is a hard assignment, so take people you trust to watch one another's backs and bring them home.",
+      "title": "Reckoning at the {name:pvp_camp_gravesalt_escarpment_throng_high}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_high}, {zone_area:pvp_camp_gravesalt_escarpment_throng_high}, anchors the Throng's strength in a country already thick with old graves. Defeat five Throng Guards and the Throng Captain there. This is a hard assignment, so watch your back and bring yourself home.",
       "objectives": [
         {
           "type": "kill",
@@ -776,8 +762,6 @@
         "weight": 6,
         "items": []
       },
-      "optional": true,
-      "group": true,
       "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
       "duration_min": 20
     }
