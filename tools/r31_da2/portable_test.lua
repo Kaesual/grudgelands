@@ -395,14 +395,29 @@ do
 	healer.pos = {x = ARENA.x + 50, y = ARENA.y, z = ARENA.z}
 	second()
 	check(healer.hp == hp1 - 500, "C8 out again: the wrath again")
-	-- hit by the dragon: taking part
-	for _, fn in ipairs(hp_callbacks) do
-		fn(bystander, -100, {type = "punch", object = {get_luaentity = function() return dragon end}})
+	-- hit by the dragon: taking part inside the arena, never by splash outside
+	local function hit(p)
+		for _, fn in ipairs(hp_callbacks) do
+			fn(p, -100, {type = "punch", object = {get_luaentity = function() return dragon end}})
+		end
 	end
-	check(fights[id].bystander ~= nil, "C8 a player hit by the dragon takes part")
+	hit(bystander)
+	check(fights[id].bystander == nil, "C8 a splash hit just outside the rim flags nobody")
+	bystander.pos = {x = ARENA.x + 39, y = ARENA.y, z = ARENA.z}
+	hit(bystander)
+	check(fights[id].bystander ~= nil, "C8 a player hit inside the arena takes part")
+	-- a supporter beyond the arena radius + 15 does not join
+	local far_healer = new_player("far_healer", {x = ARENA.x + 56, y = ARENA.y, z = ARENA.z})
+	local near_healer = new_player("near_healer", {x = ARENA.x + 54, y = ARENA.y, z = ARENA.z})
+	for _, fn in ipairs(heal_callbacks) do fn(far_healer, tank, 50) end
+	for _, fn in ipairs(absorb_callbacks) do fn(near_healer, tank, 50) end
+	check(fights[id].far_healer == nil, "C8 a healer beyond radius + 15 does not join")
+	check(fights[id].near_healer ~= nil, "C8 a shielder within radius + 15 joins")
+	fights[id].near_healer = nil
 	-- logout and death drop one player
 	for _, fn in ipairs(leave_callbacks) do fn(bystander) end
 	check(fights[id].bystander == nil, "C8 a logout drops the player")
+	players = {tank, healer}
 	-- everyone leaves: the reset ends the fight for all, no further wrath
 	tank.pos = {x = ARENA.x + 60, y = ARENA.y, z = ARENA.z}
 	local hp2, thp2 = healer.hp, tank.hp
@@ -492,6 +507,17 @@ do
 	check(mob.attack == tank and not mob.forced, "D a stale outside entry is never picked")
 	tank.outside = true
 	check(grug_core.taunt(mob, tank) == false, "D the tank stepping out cannot taunt")
+	-- the wrath bypasses the absorb shield; the arena hazards do not
+	dofile(repo .. "/mods/CORE/grug_core/environment_damage.lua")
+	check(grug_core.DRAGON_WRATH_CUSTOM_TYPE == "grug_mobs:dragon_wrath",
+		"D the wrath reason is the one boss_dragons.lua deals")
+	check(grug_core.bypasses_absorb({type = "set_hp",
+		custom_type = "grug_mobs:dragon_wrath"}) == true, "D no shield soaks the wrath")
+	check(not grug_core.bypasses_absorb({type = "node_damage",
+		node = "grug_mapgen:arena_ice_water", custom_type = "grug_mobs:ice_water"}),
+		"D ice water still soaks like scorch")
+	check(not grug_core.bypasses_absorb({type = "node_damage",
+		node = "grug_mapgen:arena_ember"}), "D embers still soak like scorch")
 end
 
 -- ---------------------------------------------------------------------------

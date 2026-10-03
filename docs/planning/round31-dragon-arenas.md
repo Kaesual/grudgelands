@@ -73,12 +73,16 @@ relief is already −53..+21 nodes on the checked seeds.
   evade run skips the dragons (they fly home). Its flight stays 4 nodes inside the edge.
 - **The dragon's wrath** (user ruling 2026-10-03, the outside-healer
   question): fight participants are kept per dragon (a small table keyed by
-  boss id). Taking part = being targeted or hit by the dragon, its whelps or
-  their breath (an hp-change hook), damaging them from inside, or an
-  effective heal or shield on a participant (the `register_on_effective_heal`
-  / `_absorb` hooks). The 1 s arena tick deals 500 per second through
-  `set_hp` to every participant outside the arena (a chat warning on
-  leaving, the "Dragon's Wrath" status, its own death message). The reset
+  boss id). Taking part = being targeted by the dragon or its whelps, being
+  hit by them or their breath while inside the arena (an hp-change hook; a
+  splash just beyond the rim flags nobody), damaging them from inside, or an
+  effective heal or shield on a participant from within the arena radius +
+  15 nodes of its centre (the `register_on_effective_heal` / `_absorb`
+  hooks; a participant healed far away in a town flags no town healer). The
+  1 s arena tick deals 500 per second through `set_hp` to every participant
+  outside the arena (a chat warning on leaving, the "Dragon's Wrath"
+  status, its own death message); no absorb shield soaks it
+  (`grug_core.bypasses_absorb`), the hazards still soak like scorch. The reset
   and the dragon's death end every flag at once; a participant's death or
   logout drops only them; a dragon that activates without a fight state ends
   any stale fight.
@@ -109,7 +113,7 @@ dragon's breath patches stay possible there, as before.
 
 ### 0.6 Checks
 
-- `tools/r31_da2/portable_test.lua` (7439 checks): layout, rules, and the
+- `tools/r31_da2/portable_test.lua` (7446 checks): layout, rules, and the
   real `boss_dragons.lua` on a fake engine (high player targeted, outside
   player vetoed and harmless, one reset when the last hostile leaves with
   full health and cleared enrage, the flight home and landing, a clean
@@ -117,7 +121,8 @@ dragon's breath patches stay possible there, as before.
   threat prune, the whelps' veto; the real `combat.lua` refusing threat,
   heal threat, taunt and a forced switch to a vetoed player; the evade skip
   limited to dragons; the wrath: a healer outside joins and takes 500 per
-  second, stepping in stops it, a hit joins, logout and death drop one
+  second, stepping in stops it, a hit inside joins and a splash outside does
+  not, a far healer does not join, the wrath bypasses shields, logout and death drop one
   player, the reset and the dragon's death clear all).
 - `tools/run_fixtures.sh`: all pass (`tools/r24_density_xp/roster.lua`'s
   stub now maps `grug_mapgen` for the arena layout file).

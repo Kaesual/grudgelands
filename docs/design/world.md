@@ -596,10 +596,11 @@ combat damage for the ordinary five-second combat window.
   health) and the dragon flies back to its spawn point and lands. A re-pull
   is a fresh attempt. There is no distance or contact leash for dragons.
 - **The dragon's wrath** (user ruling 2026-10-03): a player who takes part in
-  the fight (damages the dragon or its whelps, is targeted or hit by them, or
-  heals or shields a participant) is flagged for that fight. While the fight
-  runs, a flagged player outside the arena takes **500 damage per second**
-  (the hazards' path: armour never reduces it, never PvP contact), with a
+  the fight (damages the dragon or its whelps, is targeted by them or hit by
+  them inside the arena, or heals or shields a participant from within the
+  arena radius + 15 nodes of its centre) is flagged for that fight. While the
+  fight runs, a flagged player outside the arena takes **500 damage per
+  second** (armour never reduces it, no shield soaks it, never PvP contact), with a
   chat warning on leaving, a "Dragon's Wrath" status and its own death
   message. The flags end together, at once, when the dragon dies or resets;
   a participant's death or logout drops only that player.

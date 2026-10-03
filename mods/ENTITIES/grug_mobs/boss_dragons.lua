@@ -82,17 +82,27 @@ local function fight_of(player)
 	end
 	return nil
 end
--- Hit by the dragon, a whelp or their breath: taking part.
+-- Hit by the dragon, a whelp or their breath inside the arena: taking part
+-- (a dive, lightning or breath splash just beyond the rim flags nobody).
 core.register_on_player_hpchange(function(player, hp_change, reason)
 	if hp_change < 0 and reason and reason.type == "punch" and reason.object and
 			reason.object.get_luaentity then
-		join_fight(boss_of_entity(reason.object:get_luaentity()), player)
+		local boss_id = boss_of_entity(reason.object:get_luaentity())
+		local arena = boss_id and arena_by_id(boss_id)
+		if arena and arena_rules.inside(arena, player:get_pos()) then
+			join_fight(boss_id, player)
+		end
 	end
 end, false)
--- Healing or shielding a participant: taking part.
+-- Healing or shielding a participant: taking part, when the supporter is
+-- near the arena (its radius + SUPPORT_REACH from the centre), so a fleeing
+-- participant healed far away in a town flags no town healer.
 local function supported(source, target)
 	local boss_id = fight_of(target)
-	if boss_id and source ~= target then join_fight(boss_id, source) end
+	if not boss_id or source == target or not core.is_player(source) then return end
+	local arena = arena_by_id(boss_id)
+	local pos = source:get_pos()
+	if arena and pos and arena_rules.near(arena, pos) then join_fight(boss_id, source) end
 end
 grug_core.register_on_effective_heal(function(healer, target) supported(healer, target) end)
 grug_core.register_on_effective_absorb(function(source, target) supported(source, target) end)
@@ -131,8 +141,10 @@ local function wrath_tick(boss_id, arena)
 				duration = 1.5,
 			})
 			grug_core.mark_in_combat(player)
+			-- grug_core.bypasses_absorb: no shield soaks the wrath.
 			player:set_hp(math.max(0, player:get_hp() - arena_rules.WRATH_DPS), {
-				type = "set_hp", custom_type = "grug_mobs:dragon_wrath",
+				type = "set_hp", custom_type = grug_core.DRAGON_WRATH_CUSTOM_TYPE or
+					"grug_mobs:dragon_wrath",
 			})
 		end
 	end

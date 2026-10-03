@@ -22,6 +22,16 @@ M.ICE_BREAK_TIME = 1.5
 -- The dragon's wrath (user ruling 2026-10-03): damage per second to a fight
 -- participant who stands outside the arena while the fight runs.
 M.WRATH_DPS = 500
+-- A supporter (heal, shield) of a participant joins the fight only within
+-- the arena radius + SUPPORT_REACH of its centre (horizontal).
+M.SUPPORT_REACH = 15
+
+function M.near(arena, pos)
+	if not arena or not pos then return false end
+	local dx, dz = pos.x - arena.x, pos.z - arena.z
+	local r = (arena.radius or M.RADIUS) + M.SUPPORT_REACH
+	return dx * dx + dz * dz <= r * r
+end
 
 -- `arena` = {x, y, z, radius}: the spawn point (y the floor + 1) and radius.
 function M.inside(arena, pos)

@@ -243,12 +243,13 @@ idea (Round 28 ruling 6), see "Mobs" at the end of this list.
   share) dealt as node damage once a second; ice water also slows. Armor
   never reduces it and it is never PvP contact; the absorb shield soaks it
   like dragon scorch. The dragon's wrath (500 per second to a fight
-  participant outside the arena, `world.md` §4b) takes the same path.
+  participant outside the arena, `world.md` §4b) takes the same path, but
+  the absorb shield never soaks it (`grug_core.bypasses_absorb`).
 - Fall damage is the pool conversion in §2 above
   (`ceil(max_hp × r / 20)`, then the Dwarf multiplier).
 - **Armor never reduces** fall, lava, drowning or suffocation (armor is
   punch-only, §2). **The absorb shield never absorbs fall, lava or drowning
-  damage**; other sources (hits, suffocation, authored ground effects such as
+  damage** (nor the dragon's wrath); other sources (hits, suffocation, authored ground effects such as
   dragon scorch) still consume it. Both shares round up and deal at least 1 HP
   for any positive pool.
 - **Mobs** (Round 28 ruling 6): environmental damage to a Grudgelands mob is a

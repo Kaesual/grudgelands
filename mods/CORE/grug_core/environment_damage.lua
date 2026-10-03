@@ -63,14 +63,19 @@ function grug_core.is_engine_lava_damage(reason)
 		core.get_item_group(reason.node, "lava") > 0
 end
 
+-- A dragon's wrath on a fight participant outside its arena (grug_mobs
+-- boss_dragons.lua, Round 31): never soaked by a shield.
+grug_core.DRAGON_WRATH_CUSTOM_TYPE = "grug_mobs:dragon_wrath"
+
 -- The environmental sources the absorb shield never soaks (ruling 24):
--- fall, engine lava and this file's drowning tick.
+-- fall, engine lava and this file's drowning tick; and the dragon's wrath.
 function grug_core.bypasses_absorb(reason)
 	if not reason then
 		return false
 	end
 	return reason.type == "fall" or reason.type == "drown" or
-		grug_core.is_engine_lava_damage(reason)
+		grug_core.is_engine_lava_damage(reason) or
+		reason.custom_type == grug_core.DRAGON_WRATH_CUSTOM_TYPE
 end
 
 -- Mirrors the engine's drowning condition (src/server/player_sao.cpp:154-170):
