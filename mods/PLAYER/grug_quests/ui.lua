@@ -41,8 +41,8 @@ local TEXT_W = 6.0
 -- One text field holds the description, the objective lines and the reward
 -- line (Round 32), so all of it shares the column and the field scrolls
 -- only when everything together does not fit. Below it one row: "Track on
--- HUD" left, Abandon (or Confirm abandon and Cancel) right-aligned to the
--- text's right edge (COLUMN_RIGHT: a button's x + w lands there). In legacy
+-- HUD" left, Abandon right-aligned to the text's right edge (Confirm
+-- abandon and Cancel take the row alone, right-aligned the same way) (COLUMN_RIGHT: a button's x + w lands there). In legacy
 -- coordinates a checkbox is centred half an image below its y and a button
 -- half its height below its y (parseCheckbox, parseButton), so the checkbox
 -- sits ROW_SHIFT higher to share the buttons' centre line. A textarea's top
@@ -97,8 +97,8 @@ local function content(player, context)
 		esc(quest.title .. (quest.repeatable and " (Repeatable)" or "")))
 	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(TEXT_X, TEXT_Y,
 		TEXT_W, TEXT_H, esc(detail_text(quest)))
-	fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_quest_track;Track on HUD;%s]")
-		:format(COLUMN_X, ROW_Y - ROW_SHIFT, tracked(journal, quest.id) and "true" or "false")
+	-- While the abandon confirmation is shown, its two buttons take the row
+	-- alone: at a large GUI scale "Track on HUD" would run into them.
 	if context.grug_quest_abandon == quest.id then
 		local cancel_x = COLUMN_RIGHT - CANCEL_W
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_confirm;Confirm abandon]")
@@ -106,6 +106,8 @@ local function content(player, context)
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_cancel;Cancel]")
 			:format(cancel_x, ROW_Y, CANCEL_W, BUTTON_H)
 	else
+		fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_quest_track;Track on HUD;%s]")
+			:format(COLUMN_X, ROW_Y - ROW_SHIFT, tracked(journal, quest.id) and "true" or "false")
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_abandon;Abandon]")
 			:format(COLUMN_RIGHT - ABANDON_W, ROW_Y, ABANDON_W, BUTTON_H)
 	end

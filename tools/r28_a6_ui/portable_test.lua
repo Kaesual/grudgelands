@@ -11,8 +11,8 @@
 --      posts "<subject> n/m" under the quest's key, a fall is silent;
 --   4. the quest log column (grug_quests/ui.lua): one text field right of the
 --      list with a visible gap, the title aligned with the text; description,
---      objectives and rewards in that field, "Track on HUD" and the abandon
---      buttons on one row below it (Round 32 F3);
+--      objectives and rewards in that field, "Track on HUD" and Abandon on
+--      one row below it, the abandon confirmation alone on it (Round 32 F3);
 --   5. the Riding Trainer (grug_mounts/state.lua tier_state + trainer.lua):
 --      all four tiers with the right state, buttons only for "buy";
 --   6. the Character page (grug_inventory/pages.lua): "Damage reduction" with
@@ -515,34 +515,36 @@ local d_rew = detail and detail:find("\n\nRewards: 40 XP\\, 5 copper\\, 2 × Lig
 check(d_desc == 1 and d_obj and d_rew and d_obj < d_rew,
 	"one field: description, empty line, objective, empty line, rewards (" .. tostring(detail) .. ")")
 local text = textarea_box(quest_fs)
+local row_centre = checkbox_at(quest_fs, "grug_quest_track").centre
 local function check_row(fs, label)
-	local track = checkbox_at(fs, "grug_quest_track")
-	check(near(track.left, text.left), label .. ": Track on HUD starts at the text's left edge")
 	local right
 	for _, field in ipairs({"grug_quest_abandon", "grug_quest_confirm", "grug_quest_cancel"}) do
 		local box = button_box(fs, field)
 		if box then
-			check(near(box.centre, track.centre), label .. ": " .. field .. " on the checkbox row")
+			check(near(box.centre, row_centre), label .. ": " .. field .. " on the checkbox row")
 			check(box.top - text.bottom >= 0.2, ("%s: %s below the text field (gap %.2f images)")
 				:format(label, field, box.top - text.bottom))
 			right = math.max(right or 0, box.right)
 		end
 	end
 	check(near(right, text.right), label .. ": the buttons end at the text's right edge")
-	return track
 end
+check(near(checkbox_at(quest_fs, "grug_quest_track").left, text.left),
+	"row: Track on HUD starts at the text's left edge")
 check_row(quest_fs, "row")
 local confirm_fs = pages["grug_quests:quests"]:get(carol, {grug_quest_abandon = "q1"})
 formspec_ok(confirm_fs, "quest log, confirm abandon")
-local track = check_row(confirm_fs, "confirm row")
+check_row(confirm_fs, "confirm row")
 local confirm = button_box(confirm_fs, "grug_quest_confirm")
 local cancel = button_box(confirm_fs, "grug_quest_cancel")
 check(confirm and cancel and cancel.left - confirm.right > 0.1, "Confirm abandon left of Cancel")
--- "Track on HUD" with its box measures about 1.6 images at default scaling.
-check(confirm and confirm.left - track.left >= 2.5, ("room for Track on HUD before Confirm abandon (%.2f images)")
-	:format(confirm and confirm.left - track.left or -1))
+-- "Track on HUD" (about 125 px x gui_scaling with its box) would reach into
+-- Confirm abandon at 720p from gui_scaling 1.25, so the confirmation takes
+-- the row alone.
+check(not confirm_fs:find("grug_quest_track", 1, true),
+	"no Track on HUD checkbox while the abandon confirmation is shown")
 print(("quest log: text field %.2f..%.2f images high (before: three fields, %.2f in all), row centre %.2f")
-	:format(text.top, text.bottom, 1.35 + 1.55 + 0.75 - 3 * (SY - 1), track.centre))
+	:format(text.top, text.bottom, 1.35 + 1.55 + 0.75 - 3 * (SY - 1), row_centre))
 -- The ready line stays below the row.
 local plain_journal = grug_quests.journal
 grug_quests.journal = function()

@@ -22,7 +22,8 @@ quest files and the front bounty baseline
   Right of the quest list: the title, then one scrolling text field with the
   description, the objective lines and the reward line, separated by an
   empty line each, and below it one row with "Track on HUD" on the left and
-  Abandon (Confirm abandon and Cancel) on the right (Round 32).
+  Abandon on the right; while Confirm abandon and Cancel are shown they take
+  the row alone (Round 32).
 - A quest HUD toggle lives in this tab, defaults on and is saved per player.
   No active quests means no quest HUD, without changing the saved preference.
 - Objective families are **item turn-in**, **kill** and **travel**
