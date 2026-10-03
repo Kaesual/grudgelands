@@ -445,42 +445,42 @@ scenario("bandit_fireball", function(origin)
 end)
 
 -- Friendly heal: ally player just inside/outside 15 m; a hostile is not green.
-scenario("friendly_flash_heal", function(origin)
+scenario("friendly_heal", function(origin)
 	local ref, fake = make_player("heal", "priest", origin)
 	local ally_ref = make_player("ally", "warrior", origin, "grug_probe_crosshair:ally")
 	local dummy
 	return {
 		{0, function()
-			skill(fake, "flash_heal")
-			check(grug_abilities.get_range(ref, grug_abilities.registered.flash_heal) == 15,
-				"flash_heal: effective range 15")
+			skill(fake, "heal")
+			check(grug_abilities.get_range(ref, grug_abilities.registered.heal) == 15,
+				"heal: effective range 15")
 			look_ahead(fake)
 			place_ahead(fake, ally_ref, 14.7, 0.3)
 			activate(fake)
 		end},
 		{0.3, function()
-			local def = grug_abilities.registered.flash_heal
+			local def = grug_abilities.registered.heal
 			local target, ray = grug_abilities.aimed_target(ref, def)
-			log(("flash_heal diag: unlocked=%s wield=%s target=%s status=%s reason=%s " ..
+			log(("heal diag: unlocked=%s wield=%s target=%s status=%s reason=%s " ..
 				"distance=%s kind=%s relation=%s")
-				:format(tostring(grug_abilities.is_unlocked(ref, "flash_heal")),
+				:format(tostring(grug_abilities.is_unlocked(ref, "heal")),
 					fake.inv:get_stack("main", fake.index):get_name(), tostring(target),
 					tostring(ray.status), tostring(ray.reason), tostring(ray.distance),
 					tostring(ray.object_kind), tostring(ray.relation)))
-			expect_state(fake, "friendly", "flash_heal: ally @14.7 m")
+			expect_state(fake, "friendly", "heal: ally @14.7 m")
 			place_ahead(fake, ally_ref, 15.3, 0.3)
 		end},
 		{0.6, function()
-			expect_state(fake, nil, "flash_heal: ally @15.3 m")
+			expect_state(fake, nil, "heal: ally @15.3 m")
 			ally_ref:set_pos(vector.offset(origin, 3, 0, 0))
 			dummy = core.add_entity(origin, "grug_probe_crosshair:dummy")
 			place_ahead(fake, dummy, 5, DUMMY_R)
 		end},
 		{0.9, function()
-			expect_state(fake, nil, "flash_heal: hostile in range shows no state")
+			expect_state(fake, nil, "heal: hostile in range shows no state")
 			check(grug_abilities.get_target(ref, true) == nil and
 				grug_abilities.get_target(ref, false) == nil,
-				"flash_heal: no ally/enemy memory written by the overlay")
+				"heal: no ally/enemy memory written by the overlay")
 			deactivate(fake)
 			dummy:remove()
 		end},
@@ -900,7 +900,7 @@ end
 scenario("skip_equivalence", function(origin)
 	local players = {
 		{"strike", "warrior"}, {"fireball", "mage"}, {"loose", "scout"},
-		{"flash_heal", "priest"}, {nil, "warrior"},
+		{"heal", "priest"}, {nil, "warrior"},
 	}
 	local cleanup, ally
 	return {{0, function()
@@ -988,7 +988,7 @@ scenario("real_casts", function(origin)
 				"real cast: Smite hit and wrote Target Frame memory")
 			check(logged, "real cast: Smite logged its cast_ray diagnostics")
 			mob:remove()
-			local heal = grug_abilities.registered.flash_heal
+			local heal = grug_abilities.registered.heal
 			fake.look = vector.new(0, 1, 0)
 			check(grug_abilities.resolve_friendly_target(ref, nil, heal) == ref,
 				"real cast: friendly cast with no ally falls back to self")

@@ -152,7 +152,7 @@ function grug_pvp.contact(dealer, receiver)
 	notify(receiver)
 end
 
--- Ruling 7b: heal, shield or Renew on an own-faction player in PvP combat is
+-- Ruling 7b: Heal, Shield or Mend on an own-faction player in PvP combat is
 -- contact for the helper.
 function grug_pvp.support_contact(helper, target)
 	if helper == target then

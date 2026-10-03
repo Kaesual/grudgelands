@@ -51,8 +51,9 @@
       "sha256": "93ca48384e8fbd89f4493eb8d2a5a7b4544928ed28d7056ebf8ddc9889d71cb1"
     },
     {
-      "id": "frost_nova",
-      "file": "grug_abilities_skill_frost_nova.png",
+      "id": "ice_nova",
+      "renamed_from": "frost_nova",
+      "file": "grug_abilities_skill_ice_nova.png",
       "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-5a63d510-0eb5-4b8a-83b4-40b62b238907.png",
       "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: FROST NOVA: outward circular explosion of six chunky cyan ice spikes radiating from an icy white central burst; radial frost shockwave.",
       "sha256": "e5e5207e0aca51f5ddab5a6813a47e30cd82985f06b03c700d35fce8d444fde1"
@@ -72,22 +73,25 @@
       "sha256": "e845d749a84cd1738777b24bb591e32714cd076c4d38b71226d5664ce56e38a2"
     },
     {
-      "id": "flash_heal",
-      "file": "grug_abilities_skill_flash_heal.png",
+      "id": "heal",
+      "renamed_from": "flash_heal",
+      "file": "grug_abilities_skill_heal.png",
       "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-7dc79dfa-6817-485b-b1ee-bb3171edb49a.png",
       "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: FLASH HEAL: two cupped warm ivory hands holding one large luminous golden healing cross, teal glow; immediate healing.",
       "sha256": "a7fbb622be409dc315181d0e14aa2488adc28469505c6bad1db638cd9790aae0"
     },
     {
-      "id": "power_word_shield",
-      "file": "grug_abilities_skill_power_word_shield.png",
+      "id": "shield_spell",
+      "renamed_from": "power_word_shield",
+      "file": "grug_abilities_skill_shield_spell.png",
       "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-3f4f1a51-f55d-4932-bd6a-f7c8d1c07313.png",
       "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: POWER WORD SHIELD: a large translucent round golden protective bubble enclosing a simple bright upright person silhouette, radiant upper rim; spherical magical absorption barrier, no physical shield.",
       "sha256": "8b88365d5c085f40454edc27118cfd018bc039fdbfeaa48ea0ce1699ff035b6d"
     },
     {
-      "id": "renew",
-      "file": "grug_abilities_skill_renew.png",
+      "id": "mend",
+      "renamed_from": "renew",
+      "file": "grug_abilities_skill_mend.png",
       "source": "/home/jan/.codex/generated_images/01a0cde8-9b66-7a31-b892-a8ccba50dca8/exec-6b596c55-58a9-4ad8-b242-cad718be5ebb.png",
       "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG ability inventory icon, readable at 32x32 pixels. Style: bold hand-painted pixel-art inspired fantasy icon, chunky shapes, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: centered single action emblem filling 85% of square, dark charcoal-blue opaque background, subtle dark edge, no ornamental frame. No text, letters, numbers, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: RENEW: a warm glowing heart wrapped in a broad green circular arrow made of two unfurling leaves, sustained regenerating life.",
       "sha256": "ffb8e64c8183611707f7034a89e048f6d4d42424baf164f8bc37339a71e20c5e"

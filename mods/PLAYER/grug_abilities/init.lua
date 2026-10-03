@@ -231,7 +231,7 @@ end
 
 -- One relation predicate for every ability target. `target_kind` describes
 -- the button's acquisition authority, not every object an area effect may
--- later touch: Frost Nova is self-targeted even though its effect visits
+-- later touch: Ice Nova is self-targeted even though its effect visits
 -- nearby hostiles. Friendly targeting remains player-only by design; guards
 -- and civic NPCs are not party members and cannot receive player heals.
 -- Players are gated by the PvP flag (pvp-plan rulings 1, 5, 6): an enemy only
@@ -710,8 +710,8 @@ function grug_abilities.register_ability(def)
 	def.cost = def.cost or {}
 	-- Which equipment slot's item this ability wears and (from T4 on) swings
 	-- (weapon-slot design C1). "weapon" is the default -- deliberately
-	-- INCLUDING the ones that deal no weapon damage at all (Blink, Renew, Power
-	-- Word: Shield): "all skills use the weapon skin" is the rule, and an
+	-- INCLUDING the ones that deal no weapon damage at all (Blink, Mend,
+	-- Shield): "all skills use the weapon skin" is the rule, and an
 	-- exception list would put the orb back on precisely the abilities whose
 	-- colour is hardest to remember. A melee skill defaults to "melee", the
 	-- list its swing reads: the Scout's Melee slot (the offhand), everyone

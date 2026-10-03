@@ -90,7 +90,7 @@ local function stage(player)
 	log("food status " .. tostring(grug_core.get_status(player, "food") ~= nil))
 	grug_core.set_status(player, "elixir", {label = "Elixir of Focus III",
 		duration = 900, variant = "focus", detail = "+5% maximum Mana"})
-	grug_core.add_absorb(player, "power_word_shield", 60, LONG, player, {},
+	grug_core.add_absorb(player, "shield_spell", 60, LONG, player, {},
 		{dodge_percent = 10})
 	grug_classes.start_talent_window(player, "untouchable", LONG)
 	grug_core.set_move_modifier(player, "mob_web", {speed = -0.4}, LONG)

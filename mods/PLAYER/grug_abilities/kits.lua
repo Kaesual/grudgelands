@@ -404,7 +404,7 @@ grug_abilities.register_ability({
 -- TALENT-GATED since ruling 19 (2026-09-16, skill_trees.md §2.2/§3.4): every
 -- class starts with Strike plus three, so Hamstring leaves the Warrior's base
 -- kit and returns as Ruin's new-skill keystone. Until lane X3 wires the grant,
--- NO Warrior has it -- the same predicate that has kept Renew out of the kit
+-- NO Warrior has it -- the same predicate that has kept Mend out of the kit
 -- since WP19 keeps this one out too.
 grug_abilities.register_ability({
 	id = "hamstring",
@@ -630,9 +630,9 @@ local function nova_values(user)
 end
 
 grug_abilities.register_ability({
-	id = "frost_nova", offensive = true,
+	id = "ice_nova", offensive = true,
 	class = "mage",
-	name = "Frost Nova",
+	name = "Ice Nova",
 	values = nova_values,
 	kind = "cast",
 	target_kind = "self",
@@ -644,7 +644,7 @@ grug_abilities.register_ability({
 	range = 4,
 	cast = function(user, pointed, def)
 		local pos = user:get_pos()
-		local ranged = grug_classes.get_talent_bonus(user, "frost_nova_ranged")
+		local ranged = grug_classes.get_talent_bonus(user, "ice_nova_ranged")
 		if ranged > 0 then
 			local target = current_enemy_target(user, {
 				id = def.id, target_kind = "hostile", range = 20,
@@ -655,9 +655,9 @@ grug_abilities.register_ability({
 		-- Deep Chill and Hoarfrost (skill_trees.md §2.4); 0 each without the
 		-- talent, so the base 4 s root and 3 s slow remain exact.
 		local root_time = 4 + grug_classes.get_talent_bonus(user,
-			"frost_nova_root_add")
+			"ice_nova_root_add")
 		local slow_time = 3 + grug_classes.get_talent_bonus(user,
-			"frost_nova_slow_add")
+			"ice_nova_slow_add")
 		local radius = ranged > 0 and ranged or 5
 		local action_id = {}
 		for _, obj in ipairs(core.get_objects_inside_radius(pos, radius)) do
@@ -672,7 +672,7 @@ grug_abilities.register_ability({
 							if grug_core.set_root(obj, root_time) then
 								grug_core.mark_nova_root(obj, root_time)
 							end
-							grug_core.set_move_modifier(obj, "frost_nova_slow",
+							grug_core.set_move_modifier(obj, "ice_nova_slow",
 								{speed = -0.5}, root_time + slow_time)
 						elseif ent and (ent.health or 0) > 0 and obj:get_pos() then
 							grug_mobs.root(ent, root_time)
@@ -795,16 +795,16 @@ grug_abilities.register_ability({
 })
 
 grug_abilities.register_ability({
-	id = "flash_heal",
+	id = "heal",
 	class = "priest",
-	name = "Flash Heal",
+	name = "Heal",
 	kind = "cast",
 	target_kind = "friendly",
 	description = "Heals the pointed ally (or yourself); healing scales with your level.",
 	values = function(user)
 		return {
 			heal = support_value(user, 25
-				+ grug_classes.get_talent_bonus(user, "flash_heal_add")),
+				+ grug_classes.get_talent_bonus(user, "heal_add")),
 		}
 	end,
 	description_for = function(user, def)
@@ -834,7 +834,7 @@ grug_abilities.register_ability({
 				{action_id = action_id}) > 0 then
 			grug_pvp.support_contact(user, target)
 		end
-		local splash = grug_classes.get_talent_bonus(user, "flash_heal_splash")
+		local splash = grug_classes.get_talent_bonus(user, "heal_splash")
 		if splash > 0 then
 			for _, obj in ipairs(core.get_objects_inside_radius(target:get_pos(), 8)) do
 				if obj ~= target and grug_abilities.valid_target(user, obj, "friendly") and
@@ -849,18 +849,18 @@ grug_abilities.register_ability({
 	end,
 })
 
--- Base-kit shield (kit tuning 2026-08-06, replaces Renew): an absorb
+-- Base-kit shield (kit tuning 2026-08-06, replaces Mend): an absorb
 -- plays differently from a second heal and makes the Priest useful
 -- BEFORE damage lands. The soak itself lives in grug_core's central hp
 -- change modifier (grug_core.add_absorb).
 grug_abilities.register_ability({
-	id = "power_word_shield",
+	id = "shield_spell",
 	class = "priest",
-	name = "Power Word: Shield",
+	name = "Shield",
 	kind = "cast",
 	target_kind = "friendly",
-	description = "Shields the pointed ally (or yourself); absorption scales\n" ..
-		"with your level and lasts 15 s or until consumed.",
+	description = "Wraps the pointed ally (or yourself) in a magic shield;\n" ..
+		"absorption scales with your level and lasts 15 s or until consumed.",
 	values = function(user)
 		return {
 			absorb = support_value(user, 25
@@ -868,8 +868,8 @@ grug_abilities.register_ability({
 		}
 	end,
 	description_for = function(user, def)
-		return ("Shields the pointed ally (or yourself): absorbs %d damage\n" ..
-			"for 15 s or until consumed."):format(
+		return ("Wraps the pointed ally (or yourself) in a magic shield that\n" ..
+			"absorbs %d damage for 15 s or until consumed."):format(
 				effective_support_number(def.values(user).absorb))
 	end,
 	color = "#e8e07a",
@@ -888,7 +888,7 @@ grug_abilities.register_ability({
 		-- Warding Faith and Second Skin (skill_trees.md §2.5); their flat add
 		-- joins the base before the central level scalar. The 15 s duration is
 		-- unscaled. Turn Aside's dodge window is lane X3's.
-		if grug_core.add_absorb(target, "power_word_shield", def.values(user).absorb,
+		if grug_core.add_absorb(target, "shield_spell", def.values(user).absorb,
 				15 + grug_classes.get_talent_bonus(user, "shield_duration_add"), user, {},
 				{dodge_percent = talent_rank_value(user, "turn_aside", "dodge_chance_window", 0)})
 				> 0 then
@@ -899,16 +899,17 @@ grug_abilities.register_ability({
 	end,
 })
 
--- Active renews: target name -> {ticks, amount, healer}
-local renews = {}
+-- Active mends: target name -> {ticks, amount, healer}
+local mends = {}
 
 -- Talent-gated (kit tuning 2026-08-06): stays registered, but sync_kit
--- does not grant it — the Priest's Mercy tree unlocks it in WP11, where Renew
--- is the Balm chain's keystone (skill_trees.md §2.5).
+-- does not grant it — the Priest's Mercy tree unlocks it in WP11, where Mend
+-- is the Balm chain's keystone (skill_trees.md §2.5). Its display name lives
+-- on that keystone only, so a rename is one line in talents.lua.
 grug_abilities.register_ability({
-	id = "renew",
+	id = "mend",
 	class = "priest",
-	name = "Renew",
+	name = grug_classes.registered_talents.mend.name,
 	kind = "cast",
 	target_kind = "friendly",
 	talent_gated = true,
@@ -916,7 +917,7 @@ grug_abilities.register_ability({
 		"scales with your level every 3 s for 12 s.\nUnlocked via talents.",
 	values = function(user)
 		return {heal = support_value(user, 8
-			+ grug_classes.get_talent_bonus(user, "renew_tick_add"))}
+			+ grug_classes.get_talent_bonus(user, "mend_tick_add"))}
 	end,
 	description_for = function(user, def)
 		return ("Heal the pointed ally (or yourself) for %d every 3 s for 12 s.\n" ..
@@ -937,15 +938,15 @@ grug_abilities.register_ability({
 			return false, "Target is dead."
 		end
 		-- Re-casting refreshes duration and snapshot amount.
-		renews[target:get_player_name()] = {
+		mends[target:get_player_name()] = {
 			ticks = 4,
 			amount = def.values(user).heal,
 			healer = user:get_player_name(),
 			action_id = {},
 		}
 		if grug_core.set_status then
-			grug_core.set_status(target, "renew", {
-				label = "Renew",
+			grug_core.set_status(target, "mend", {
+				label = def.name,
 				duration = 12,
 				kind = "buff",
 			})
@@ -957,31 +958,31 @@ grug_abilities.register_ability({
 	end,
 })
 
-local renew_acc = 0
+local mend_acc = 0
 
 core.register_globalstep(function(dtime)
-	renew_acc = renew_acc + dtime
-	if renew_acc < 3 then
+	mend_acc = mend_acc + dtime
+	if mend_acc < 3 then
 		return
 	end
-	renew_acc = 0
-	for name, renew in pairs(renews) do
+	mend_acc = 0
+	for name, mend in pairs(mends) do
 		local target = core.get_player_by_name(name)
 		if not target or target:get_hp() <= 0 then
-			renews[name] = nil
+			mends[name] = nil
 			if target and grug_core.clear_status then
-				grug_core.clear_status(target, "renew")
+				grug_core.clear_status(target, "mend")
 			end
 		else
-			local healer = core.get_player_by_name(renew.healer) or target
-			grug_core.heal_player(healer, target, renew.amount,
-				{action_id = renew.action_id})
+			local healer = core.get_player_by_name(mend.healer) or target
+			grug_core.heal_player(healer, target, mend.amount,
+				{action_id = mend.action_id})
 			burst(target:get_pos(), "mobs_heart_particle.png", 3)
-			renew.ticks = renew.ticks - 1
-			if renew.ticks <= 0 then
-				renews[name] = nil
+			mend.ticks = mend.ticks - 1
+			if mend.ticks <= 0 then
+				mends[name] = nil
 				if grug_core.clear_status then
-					grug_core.clear_status(target, "renew")
+					grug_core.clear_status(target, "mend")
 				end
 			end
 		end
@@ -989,11 +990,11 @@ core.register_globalstep(function(dtime)
 end)
 
 core.register_on_leaveplayer(function(player)
-	renews[player:get_player_name()] = nil
+	mends[player:get_player_name()] = nil
 end)
 
 core.register_on_dieplayer(function(player)
-	renews[player:get_player_name()] = nil
+	mends[player:get_player_name()] = nil
 end)
 
 -- WP11 X3 talent-granted active skills. Entitlement is owned by the Skills

@@ -364,7 +364,7 @@ end
 -- That is the same policy the named modifiers follow through
 -- `grug_mobs.slow_player`'s merge, and it is what the staged chain in
 -- `kits.lua` used to guarantee by hand ("a Hamstring must not lift an ally's
--- Frost Nova root"). The root is unnamed on purpose -- it is one flag, not a
+-- Ice Nova root"). The root is unnamed on purpose -- it is one flag, not a
 -- set -- so "the longest wins" is the only rule that can express that
 -- guarantee here. `prune` has already dropped an expired root, so the max is
 -- taken against a live expiry or nothing.
