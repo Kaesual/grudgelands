@@ -34,7 +34,7 @@ mods/ENTITIES/grug_mobs/jungle_ape.lua:101:-- §4 row "Jungle Ape | rainforest l
 mods/ENTITIES/grug_mobs/jungle_lynx.lua:63:	-- Wolf table (§3.2: "wolf table | Wolf | ... Raptor*"): meat and leather
 mods/ENTITIES/grug_mobs/jungle_lynx.lua:81:-- §4 row "Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner,
 mods/ENTITIES/grug_mobs/levels.lua:2:-- Level & tier engine (combat_stats.md §3/§6, biomes_mobs.md §0).
-mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'classic-MMO fish-folk memory') | swarms
 mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
 mods/ENTITIES/grug_mobs/panther.lua:77:-- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
 mods/ENTITIES/grug_mobs/parrot.lua:2:-- jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2").

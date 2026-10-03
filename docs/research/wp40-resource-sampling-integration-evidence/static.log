@@ -22,7 +22,7 @@ mods/ENTITIES/grug_mobs/golem.lua:166:-- §4 row "Stone/Mesa Golem (elite) | gra
 mods/ENTITIES/grug_mobs/golem.lua:167:-- 1 | any | outer, coast, underground", split by continent-side top node;
 mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
 mods/ENTITIES/grug_mobs/carrion_crow.lua:117:	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
-mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'classic-MMO fish-folk memory') | swarms
 mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
 mods/ENTITIES/grug_mobs/panther.lua:77:-- §4 row "Panther | rainforest litter | 20 | 1800 | 4 | max 5 | outer,
 mods/ENTITIES/grug_mobs/parrot.lua:2:-- jungle_edge critter | flees | day | 3.4 | feather 1/1; meat 1/2").

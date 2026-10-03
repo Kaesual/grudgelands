@@ -596,15 +596,15 @@ Renamed in this revision:
 
 | Revision 1 | Revision 2 | Why |
 |---|---|---|
-| Meditation | **Deep Reserve** | Classic Priest Discipline talent, same 5/10/15 ranks |
-| Kindling | **Tinder** | Fire Mage talent |
-| Cripple | **Hobble** | Warlock spell |
+| Meditation | **Deep Reserve** | healing-priest talent from that MMO's original release, same 5/10/15 ranks |
+| Kindling | **Tinder** | talent of that MMO's fire-caster spec |
+| Cripple | **Hobble** | spell of that MMO's demon-summoner class |
 | Iron Discipline | **Ironbound** | "Discipline" and "Iron Will" both read as that MMO's class terms |
 | Battle Hunger | **Spite** | "Battle" + noun is that MMO's warrior naming shape |
 | Bloodrush | **Stoke** | too close to Bloodthirst / Blood Rush |
 | Reaving Strike | **Broadstroke** | "…Strike" is that MMO's ability suffix |
 | Stand Fast | **Hold Ground** (keystone) + **Unbroken** (capstone) | "Last Stand" / "Stand Fast" read as warrior cooldown names |
-| Scorching Focus | **Firebrand** | "Scorch" is a Fire Mage spell |
+| Scorching Focus | **Firebrand** | "Scorch" is that MMO's fire-caster spell |
 | Zealous Mind | **Hard Faith** | "Zeal" is a Paladin/Priest term in that MMO |
 
 *Two entries of that table name talents that no longer exist*: **Hobble**
@@ -616,18 +616,18 @@ history of what was retired and why, not a list of live names.
 
 **Second pass (independent review, 2026-09-16).** The review found five more
 names on the first pass's "no collision" list that are that MMO's talent
-names, three of them **Hunter** talents sitting on the bow class — the worst
-possible placement. All five are renamed here, and one of them (Fervour) was
-itself a first-pass rename, which is the argument for labelling confidence
-instead of asserting cleanliness:
+names, three of them talents of its **ranged-pet class** sitting on our bow
+class — the worst possible placement. All five are renamed here, and one of
+them (Fervour) was itself a first-pass rename, which is the argument for
+labelling confidence instead of asserting cleanliness:
 
 | First pass | Now | Why |
 |---|---|---|
-| Fervour | **Hard Faith** | *Fervor* — Hunter talent (Cataclysm/MoP) |
-| Hawk-Eyed | **Cold Eye** | *Hawk Eye* — Classic Hunter talent, and a **Hunter** name on the bow class |
-| Sure Footing | **Shifting Weight** | *Surefooted* — Classic Hunter talent, likewise |
-| Thick Hide | **Weathered** | Classic Druid talent; Hunter pet family bonus |
-| Pyre | **Whitehot** | Devastation Evoker's core spell (Dragonflight) |
+| Fervour | **Hard Faith** | *Fervor* — ranged-pet-class talent from an expansion-era talent rework |
+| Hawk-Eyed | **Cold Eye** | *Hawk Eye* — original-release ranged-pet-class talent, and that class's name on our bow class |
+| Sure Footing | **Shifting Weight** | *Surefooted* — original-release ranged-pet-class talent, likewise |
+| Thick Hide | **Weathered** | original-release shapeshifter-class talent; a pet-family bonus of the ranged-pet class |
+| Pyre | **Whitehot** | core spell of a dragon-caster class added in a late expansion |
 
 Every talent name in §§2.1-2.8, checked against the author's and the
 reviewer's knowledge of that MMO. **This is not verifiable inside this repo**,
@@ -655,31 +655,33 @@ so each name carries a confidence label rather than a verdict, and "low" means
 
   | Name | The echo | An alternative, if the picture ever gets too close |
   |---|---|---|
-  | **Deep Chill** | the shape of *Deep Freeze* (Frost Mage) | **Long Winter** |
-  | **Frostbind** | *Frostbite*, a Classic Frost Mage talent, and this is a Frost-tree talent | **Rimelock** |
-  | **Glacial Ward** | near *Ice Ward* / *Ice Barrier* (Frost Mage) | **Coldshell** |
-  | **Tendon Cut** | *Tendon Rip*, a Classic Hunter pet snare, and this is a snare | **Cut Deep** |
-  | **Pinning Shot** | *Binding Shot*, a Hunter talent that roots at range — the same function and the same placement | **Stake Shot** |
-  | **Brand** | *Fiery Brand* (Vengeance Demon Hunter) | **Sear** |
-  | **Quiver** | an ordinary noun, and a Hunter aura in some expansions | **Full Quiver** |
+  | **Deep Chill** | the shape of *Deep Freeze* (that MMO's frost-caster spec) | **Long Winter** |
+  | **Frostbind** | *Frostbite*, an original-release frost-caster talent, and this is a Frost-tree talent | **Rimelock** |
+  | **Glacial Ward** | near *Ice Ward* / *Ice Barrier* (frost-caster spec) | **Coldshell** |
+  | **Tendon Cut** | *Tendon Rip*, an original-release ranged-pet-class pet snare, and this is a snare | **Cut Deep** |
+  | **Pinning Shot** | *Binding Shot*, a ranged-pet-class talent that roots at range — the same function and the same placement | **Stake Shot** |
+  | **Brand** | *Fiery Brand* (tank spec of a later-added demon-themed class) | **Sear** |
+  | **Quiver** | an ordinary noun, and a ranged-pet-class aura in some expansions | **Full Quiver** |
   | **Opening** | generic, but next to that MMO's "opener" vocabulary | **First Cut** |
-  | **Snare Shot** | the Scout's base kit ([scout.md](scout.md) §2): an ordinary phrase, and adjacent to the Hunter "…Shot" family | **Cripple Shot** |
+  | **Snare Shot** | the Scout's base kit ([scout.md](scout.md) §2): an ordinary phrase, and adjacent to the ranged-pet class's "…Shot" family | **Cripple Shot** |
   | **Sprint** | the Scout's base kit: an ordinary English word, and a Rogue ability — **explicitly named by ruling 21 as not protected** | **Break Away** |
 
   **The count is the thing to watch, not any single entry.** Three of these
   sit on the Scout's bow tree and one in its base kit, which is the one place
-  in the design where the picture could start to read as that MMO's Hunter.
-  If a later pass renames anything, that cluster is where to start.
+  in the design where the picture could start to read as that MMO's
+  ranged-pet class. If a later pass renames anything, that cluster is where to
+  start.
 
 - **A question for the user, not an automatic rename.** Under ruling 21 this
   is the one naming item that is about the *picture* rather than a word: the
   Priest's **Sharpened Word / Swift Word / Word of Ruin / Last Word** extend a
   well-known MMO's Priest *"Power Word:" / "Shadow Word:" / "Holy Word:"*
   family — four new talents, on the Priest, in that exact vocabulary — and
-  **Twin Shot** plus Snare Shot extend the Hunter *"…Shot"* family on the bow
-  class. The shipped `Power Word: Shield` is pre-existing and ruling 5 does
-  not reopen it. Clean replacements if the user wants them: **Whetted Verse**,
-  **Quick Verse**, **Verse of Ruin**, **Final Verse**; **Twinned Arrow**.
+  **Twin Shot** plus Snare Shot extend the ranged-pet class's *"…Shot"* family
+  on the bow class. The shipped `Power Word: Shield` is pre-existing and
+  ruling 5 does not reopen it. Clean replacements if the user wants them:
+  **Whetted Verse**, **Quick Verse**, **Verse of Ruin**, **Final Verse**;
+  **Twinned Arrow**.
 - **Deliberately kept by ruling 5 (tree names):** Ruin, Rime, Reckoning.
 - **Renew and Hamstring keep their names**, and are the two talents that are
   also shipped abilities (§2.5, §2.2). They belong to the pre-existing group

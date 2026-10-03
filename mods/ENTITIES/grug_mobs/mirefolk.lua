@@ -1,7 +1,7 @@
 -- Mirefolk (docs/design/biomes_mobs.md §3.1, grug_swamp row: "Mirefolk
--- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
--- (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2;
--- fish 1/1; shiny scale 1/4").
+-- (fish-folk humanoid, camps at swamp pools; the 'classic-MMO fish-folk
+-- memory') | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen
+-- cloth 1/2; fish 1/1; shiny scale 1/4").
 --
 -- NO mobs:spawn ROW, same as bandit.lua: §4 puts this family on the camp
 -- node timer ("Bandits / Mirefolk | **no ABM**"). WP13 places mirefolk camps

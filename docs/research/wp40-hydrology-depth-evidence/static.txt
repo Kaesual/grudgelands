@@ -12,7 +12,7 @@ mods/ENTITIES/grug_mobs/jungle_lynx.lua:63:	-- Wolf table (§3.2: "wolf table | 
 mods/ENTITIES/grug_mobs/jungle_lynx.lua:81:-- §4 row "Raptor | rainforest litter | 20 | 1500 | 5 | min 10 | inner,
 mods/ENTITIES/grug_mobs/crocodile.lua:105:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
 mods/ENTITIES/grug_mobs/skeleton_raider.lua:7:-- boar/zombie/bandit/skeleton | identical biomes both sides | identical" —
-mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'classic-MMO fish-folk memory') | swarms
 mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
 mods/ENTITIES/grug_mobs/carrion_crow.lua:117:	-- biome, so whatever the local band's voronoi produces at |z| 100..300 is
 mods/ENTITIES/grug_mobs/stag.lua:85:-- §4 row "Stag/Gaunt Stag/Zebra | forest litter, bone litter, grass, dry
