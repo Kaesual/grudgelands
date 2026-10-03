@@ -2,10 +2,11 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 491 quests (Round 29), one data file per zone (`quests.md`,
-"Quest data"): one track per race from the start zone to its heartland, the
-contested 31–40 zones and the 41–60 front with its repeatable and island
-bounties. They replaced the 240 quests of Rounds 14, 15 and 20. The broader
+The game ships 515 quests, one data file per zone (`quests.md`, "Quest
+data"): Round 29's 491 — one track per race from the start zone to its
+heartland, the contested 31–40 zones and the 41–60 front with its repeatable
+and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 — and
+Round 31's 24 PvP fortress quests (§4). The broader
 named-zone WP9 story remains open.
 
 ## 1. Leveling pace

@@ -415,8 +415,8 @@ not alter the melee damage tables.
 
 ### PvP eligibility and flag
 
-Geographic PvP (Round 31, `grug_pvp`; rulings in
-[pvp-plan.md](../planning/pvp-plan.md) §2). Two enemy players can harm each
+Geographic PvP (Round 31, `grug_pvp`; all PvP rules in [pvp.md](pvp.md),
+the combat seams here). Two enemy players can harm each
 other only while **both are flagged**; no attack, heal or area effect changes
 anyone's flag. A player is flagged while standing in contested ground (the
 31–60 zones, both islands, every land column at **y = −501 and below**,
@@ -431,8 +431,9 @@ dragon channels keep the last value. Death clears all three.
   neutral crosshair, reason `protected`) and at impact (`deal_ability_damage`
   and the swing punch). Nothing is paid for a refused target.
 - Support is one-way: an unflagged helper cannot cast Heal, Shield or Mend
-  on a flagged ally (Heal's splash included); a flagged helper may support
-  anyone of the own faction.
+  on a flagged ally (Heal's splash included); the cast is refused with a
+  line and costs nothing (no fallback to the caster). A flagged helper may
+  support anyone of the own faction.
 - **PvP contact** is hostile player damage that lands (HP lost or absorb
   consumed) for dealer and receiver, and effective support cast on an ally in
   PvP combat for the helper (effects over time count at application only).
