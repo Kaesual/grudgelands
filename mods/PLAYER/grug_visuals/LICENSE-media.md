@@ -159,3 +159,14 @@ not the source of tier identity; all six silhouettes remain their authored set.
 | `character.b3d` | `mods/BASE/player_api/models` | the mesh every composed skin is painted for; referenced by bare name (Luanti's media namespace is flat) and never copied |
 | `grug_mobs_mirefolk.png` | `mods/ENTITIES/grug_mobs/textures` | the mirefolk name their own skin as a composition base instead of a race (CC0 1.0, `grug_mobs/LICENSE-media.md` §6) |
 | every `grug_gear_item_*.png` | `mods/ITEMS/grug_gear/textures` | the visible weapon is an attached `visual = "wielditem"` entity, which renders the item's own inventory image — no texture of this mod is involved |
+
+## Round 31 enchant masks — licence of their source
+
+Each `grug_visuals_<line>_<slot>_<grade>_ench.png` (72 files) is a two-frame
+greyscale mask that `tools/r31_b/gen_enchant_masks.py` derives
+deterministically from the worn overlay of the same name (top frame group A,
+bottom frame group B, with the overlay's own shading). A mask carries its
+source's shapes and shading, so it keeps the **overlay's licence and
+attribution** (see "Armor overlays" above and `grug_gear/LICENSE-media.md`):
+metal and leather CC BY-SA 4.0 bases with CC BY 4.0 trims, cloth CC BY-SA 3.0.
+The modification is "pixel-group mask derived by the generator".

@@ -32,6 +32,7 @@
 
 grug_gear = {}
 dofile(core.get_modpath(core.get_current_modname()) .. "/permissions.lua")
+dofile(core.get_modpath(core.get_current_modname()) .. "/enchant_colors.lua")
 
 --
 -- Brackets. Prices are the Common slot table of economy.md §2 VERBATIM (in
@@ -483,6 +484,8 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			-- One sprite per family AND material, all in the one diagonal
 			-- convention (grip bottom-left) the wield transform is derived for.
 			inventory_image = image,
+			-- Its texture ships enchant-colour masks (enchant_colors.lua).
+			_grug_enchant_masks = true,
 			groups = groups,
 			stack_max = 1,
 			tool_capabilities = {
@@ -522,7 +525,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			groupcaps={}, punch_attack_uses=0},
 		description = describe(metal.name, "Shield", br.ilvl,
 			shield_rating .. " armor rating"),
-		inventory_image = SHIELD_IMAGE[bracket],
+		inventory_image = SHIELD_IMAGE[bracket], _grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
@@ -537,6 +540,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		description = describe(metal.name, "Spellbook", br.ilvl,
 			"+" .. mana .. "% maximum Mana"),
 		inventory_image = BOOK_IMAGE .. "^[colorize:" .. BRACKET_TINT[bracket] .. ":48",
+		_grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
@@ -569,6 +573,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					description = describe(grade.name, line.nouns[slot.key],
 						br.ilvl, ARMOR_LABELS[line.rank] .. "\n" .. armor_stats(armor)),
 					inventory_image = armor_image,
+					_grug_enchant_masks = true,
 					groups = {
 						["grug_equip_" .. slot.key] = 1,
 						grug_armor_class = line.rank,

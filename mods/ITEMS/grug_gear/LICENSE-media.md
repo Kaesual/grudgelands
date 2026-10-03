@@ -94,3 +94,21 @@ VoxeLibre contributors, CC BY-SA 4.0 per upstream `LEGAL.md`.
 |---|---|---|
 | `grug_gear_spellbook.png` | `mcl_enchanting_book_enchanted.png` | native per-tier color grade |
 | `grug_gear_arrow.png` | `mcl_bows_arrow_inv.png` | unchanged copy |
+
+## Round 31 enchant masks — licence of their source
+
+Each `<source>_ench.png` (113 files) is a two-frame greyscale mask that
+`tools/r31_b/gen_enchant_masks.py` derives deterministically from the texture
+named by `<source>`: the top frame marks group A, the bottom frame group B,
+with that texture's own shading. A mask carries its source's shapes and
+shading, so it keeps the **source's licence and attribution** above; the
+modification is "pixel-group mask derived by the generator".
+
+| Files | Source | Licence |
+|---|---|---|
+| `grug_gear_item_{sword,dagger,staff}_<metal>_ench.png` (18) | the weapon sprites above | CC BY-SA 3.0 |
+| `grug_gear_item_{greataxe,wand}_<metal>_ench.png` (12) | the Round 12 sprites above | CC0 1.0 |
+| `grug_gear_bow_{lebethron,birch,mallorn,alder}_ench.png`, `grug_gear_shield_<metal>_ench.png` (10) | the Round 11 bows and shields | CC BY-SA 3.0 |
+| `grug_gear_spellbook_ench.png` | the Round 11 book | CC BY-SA 4.0 |
+| `grug_gear_item_<slot>_{metal,leather}_<grade>_ench.png` (48) | the R10 metal and leather icons | as their sources: CC BY-SA 4.0 bases, CC BY 4.0 trims |
+| `grug_gear_item_<slot>_cloth_<grade>_ench.png` (24) | the R10 cloth icons | CC BY-SA 3.0 |

@@ -213,7 +213,7 @@ weapon**; only a Scout's Melee skill puts the offhand blade into the hand
 - Composition uses **texture modifiers only**. Nothing is generated per frame,
   no image is built at runtime, and the web build needs no exception. Every
   armor piece sits in its own parentheses, so a piece's own modifier (the
-  Silversteel correction, a crack, later its enchant colours) never reaches
+  Silversteel correction, a crack, its enchant colours) never reaches
   the layers under it; a helmet's own layers are cut by the face window with
   it.
 - A character whose look has not changed **writes no texture**: equipping a
@@ -234,6 +234,40 @@ weapon**; only a Scout's Melee skill puts the offhand blade into the hand
 The state of the implementation — what is already tuned and what still needs a
 look in the client — lives in the increment record,
 [wp13-character-visuals.md](../research/wp13-character-visuals.md).
+
+## 5a. Enchant colours (Round 31)
+
+Decided 2026-10-03 (round31-plan.md §2.2 and §6 item 7, approved variant N).
+Enchantments show on gear as small **accents**, never as a repaint of the base
+item:
+
+- Every weapon, offhand and armour texture, and every worn armour overlay, has
+  two non-overlapping pixel groups: **group A** (a highlight or edge stripe of
+  the main material) takes the **prefix** stat's colour, **group B** (a fitting:
+  grip wrap, guard, strap, hem, rim) the **suffix** stat's colour. Each group is
+  a thin connected stripe of about 7 % of an inventory icon and 4 % of a worn
+  overlay; lone pixels are never coloured.
+- Each of the nine affix stats has one fixed colour (`grug_gear.ENCHANT_COLORS`):
+  Strength deep red, Dexterity mint green, Intelligence indigo, maximum HP
+  rose, maximum Mana sky blue, Crit yellow, attack speed orange, Dodge
+  lavender, armour rating white. They stay apart for normal vision and for
+  red-green colour blindness. The colour lies over the material at **50 %**.
+- The colour shows on the **inventory icon**, the item **in hand** (first and
+  third person) and a **dropped** item, through the stack's own
+  `inventory_image`, and on the **armour worn on the body** (each piece's
+  layers inside that piece's parentheses; a helmet's are cut by the face
+  window with it; a broken piece cracks with its colours). A plain item has no
+  image of its own and looks exactly as before.
+- **Kings** hold their weapon in fixed colours of their weapon's pool; this is
+  visual only, their rewards are rolled as before. A future named NPC with gear
+  uses the same visual spec field (`weapon_colors`). Ordinary guards, royal
+  guards, bandits and the named rares (beasts without gear) stay plain.
+- Trinkets have no texture masks and stay uncoloured; a Scout's bow shows plain
+  while it is being drawn (the draw stages are other shapes).
+- Every enchanting station shows a **legend** of the nine colours.
+
+The masks are generated (`tools/r31_b/gen_enchant_masks.py`, one two-frame
+`<texture>_ench.png` per texture, each under its source texture's licence).
 
 ## 6. Round 11 item and station presentation
 
@@ -285,4 +319,5 @@ less than one second. No fitted shell or persistent decorative entity is used.
 Cosmetic hand attachments retain broken equipped items with a crack overlay;
 combat eligibility remains disabled. Worn armor cracks affect only the broken
 slot's texture layer, not skin or intact equipment. Repair removes the overlay
-and preserves the item's current enchantment appearance.
+and preserves the item's current enchantment appearance (its enchant colours,
+§5a).

@@ -1,9 +1,10 @@
 -- Character visuals (docs/design/character_visuals.md, contract
 -- docs/research/wp13-character-visuals-contract.md).
 --
--- One global table, five files: `looks.lua` holds the body-feature layers a
+-- One global table, six files: `looks.lua` holds the body-feature layers a
 -- look is drawn from (round31-plan.md §2.1), `compose.lua` is the pure
--- composition every humanoid on `character.b3d` goes through,
+-- composition every humanoid on `character.b3d` goes through, `enchant.lua`
+-- the enchant-colour layers of worn armour (§2.2),
 -- `wield_geometry.lua` is the hand attachment derived from the mesh's own bone
 -- tree (engine-free, so a fixture can read the same numbers), `apply.lua` is
 -- the engine side (player hooks, the stored look, the attached wield entity,
@@ -14,6 +15,7 @@ grug_visuals = {}
 local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/looks.lua")
 dofile(modpath .. "/compose.lua")
+dofile(modpath .. "/enchant.lua")
 dofile(modpath .. "/wield_geometry.lua")
 dofile(modpath .. "/apply.lua")
 dofile(modpath .. "/creation.lua")

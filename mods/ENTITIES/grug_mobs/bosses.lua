@@ -9,19 +9,28 @@ local DEATH_GRACE = 60
 
 local ledgers = {}
 
+-- `colors`: the fixed enchant colours of the king's weapon (round31-plan.md
+-- §2.2.4), a prefix and a suffix stat from the weapon family's pool. Visual
+-- only: the king's rewards are rolled as before.
 local RACES = {
 	dwarf = {name = "King of Dur Brannoc", faction = "accord",
-		kit = "shatter", weapon = "greataxe"},
+		kit = "shatter", weapon = "greataxe",
+		colors = {prefix = "str", suffix = "max_hp_percent"}},
 	human = {name = "King of Highcourt", faction = "accord",
-		kit = "rally", weapon = "sword"},
+		kit = "rally", weapon = "sword",
+		colors = {prefix = "str", suffix = "crit_percent"}},
 	elf = {name = "King of Lethariel", faction = "accord",
-		kit = "volley", weapon = "staff"},
+		kit = "volley", weapon = "staff",
+		colors = {prefix = "int", suffix = "crit_percent"}},
 	undead = {name = "King of Nhal Veyr", faction = "throng",
-		kit = "bone_call", weapon = "staff"},
+		kit = "bone_call", weapon = "staff",
+		colors = {prefix = "int", suffix = "max_mana_percent"}},
 	orc = {name = "King of Gor Drazhak", faction = "throng",
-		kit = "cleave", weapon = "greataxe"},
+		kit = "cleave", weapon = "greataxe",
+		colors = {prefix = "attack_speed_percent", suffix = "str"}},
 	troll = {name = "King of Kezamba", faction = "throng",
-		kit = "regrowth", weapon = "staff"},
+		kit = "regrowth", weapon = "staff",
+		colors = {prefix = "max_hp_percent", suffix = "max_mana_percent"}},
 }
 
 local DRAGONS = {
@@ -407,7 +416,7 @@ local function king_def(race, row)
 		_grug_visual = function(self)
 			return {race = race, look = grug_visuals.KING_LOOKS[race],
 				royal = "king", level = self._grug_level,
-				weapon_family = row.weapon}
+				weapon_family = row.weapon, weapon_colors = row.colors}
 		end,
 		-- The king is the tallest figure in his hall (Round 28 ruling 9):
 		-- final visual_size 1.6 against his elite guards' 1.4. Elite visuals

@@ -202,6 +202,8 @@ local function formspec(ctx)
 		if #choices > 1 then
 			result = result .. "dropdown[5,3.7;6.5,0.8;operation;" .. table.concat(choices, ",") ..
 				";" .. chosen .. ";true]"
+			-- What each stat's colour is on the enchanted item (grug_quality).
+			result = result .. grug_items.enchant_legend_formspec(5, 4.65)
 		end
 		if ctx.operation then result = result .. "button[7.3,2.3;2,0.8;apply;Apply]" end
 	end
