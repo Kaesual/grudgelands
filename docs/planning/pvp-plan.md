@@ -52,7 +52,8 @@ not notice PvP at all.
    combat code stays a pure check.
 2. **What flags a player:**
    - **location:** standing in contested ground (`pvp_rule_at = contested`:
-     the 31–60 zones, both islands, every land column at y ≤ −701) or in
+     the 31–60 zones, both islands, every land column at y ≤ −501 — moved
+     from −701 to depth tier T4 by the user in Round 31) or in
      **enemy territory** (`faction_at` = the other faction: its start, home
      and capital zones);
    - **the button** "Flag me for PvP" in the PvP tab: flagged for 60 s from

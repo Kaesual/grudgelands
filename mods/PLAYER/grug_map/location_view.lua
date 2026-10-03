@@ -81,7 +81,7 @@ end
 -- subtitle follows the flag: one that appears restarts the display, one that
 -- goes is taken off (the name is displayed again with the new subtitle). A
 -- subtitle appearing on the same name is an entry too ("on entering a
--- flagging area", which can be below y -700 inside one zone); one going
+-- flagging area", which can be below y -500 inside one zone); one going
 -- away outside a display shows nothing.
 function L.sample(state, text, now, sub)
 	state.current = text

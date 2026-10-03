@@ -1767,7 +1767,7 @@ numeric-truncated seed.
   `pvp_rule_at` apply full 3D precedence: bounded hard protection (each
   footprint from its placement height − 100 upward), immutable
   deep ocean/channels, planned-water/shelf inheritance,
-  ordinary land and the y = -701 contested-depth override.
+  ordinary land and the y = -501 contested-depth override.
 - Current `grug_core.territory_at`, `zone_at`, `mob_level_at`,
   `guard_level_at`, `open_sea_at` and protection callers consume the
   `grug_zones` authority through explicit adapters. `difficulty_at` is gone;

@@ -1268,7 +1268,7 @@ nodes there. Cultural material and signature wood follow the owning
   architecture, decoration, quests and trade. A concentrated T4 source also
   exists in its contested level-31+ zones or projected deep column. Foreign
   cultural material is optional PvP-counter input, never base progression.
-- At y = −701 and below, territory is contested but the surface race region
+- At y = −501 and below, territory is contested but the surface race region
   continues to select cultural deposits. Players can mine through
   opposing deep columns without gaining ownership of the surface above.
 - Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The

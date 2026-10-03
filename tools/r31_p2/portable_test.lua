@@ -21,7 +21,7 @@
 --      nothing; nav order: right after Group for every order of the other
 --      tabs' hooks (ours runs after Group's, it loads after grug_parties);
 --   B  the banner subtitle: pure debounce rules (entry with the name, the
---      subtitle joining a running display, taken off, entry below y -700
+--      subtitle joining a running display, taken off, entry below y -500
 --      inside one zone, silent loss) and the runtime (subtitle element,
 --      shown and hidden with the banner, no extra zone query per sample, a
 --      flag change sampling on the next step, HUD writes only on change);
@@ -442,7 +442,7 @@ do
 	eq(s.sub, nil, "B no subtitle")
 	eq(s.busy_until, 6 + L.DISPLAY, "B taking it off does not restart the display")
 	eq(L.expire(s, "Home", 7.5), false, "B hides")
-	-- Below y -700 inside one zone: the subtitle alone is an entry.
+	-- Below y -500 inside one zone: the subtitle alone is an entry.
 	eq(L.sample(s, "Home", 10, C), "Home", "B entering a flagging area without a new name")
 	eq(L.expire(s, "Home", 11.5, C), false, "B hides after its display")
 	-- Losing it outside a display shows nothing; the next entry shows again.

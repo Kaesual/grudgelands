@@ -21,7 +21,7 @@ Earlier delivery narratives are preserved in the
   combatants; essential service NPCs are separate and invulnerable.
 - **Progression moves toward conflict.** All level-1–30 surface zones are
   peaceful. Every ordinary level-31–60 frontier, Battlegrounds or dragon-island
-  zone is contested. At y = −701 and below, every non-ocean land column is
+  zone is contested. At y = −501 and below, every non-ocean land column is
   contested independently of its surface zone.
 - **PvP uses one exact transaction.** A safe player who initiates a valid
   hostile action becomes tagged before resolution; safe→safe is blocked,

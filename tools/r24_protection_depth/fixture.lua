@@ -240,9 +240,6 @@ local function runtime_checks(W)
 end
 
 -- ---------------------------------------------------------------------------
--- 3. Mapgen: the P8 floor of every anchor envelope, and the column predicate
--- ---------------------------------------------------------------------------
--- ---------------------------------------------------------------------------
 -- 5. Round 31: the contested deep from depth tier T4 (y = -501)
 -- ---------------------------------------------------------------------------
 local pvp_rules = dofile(repo .. "/mods/PLAYER/grug_pvp/rules.lua")
@@ -299,6 +296,9 @@ local function contested_depth_checks(W)
 	lines[#lines + 1] = ("contested depth: %d peaceful columns checked at -500/-501"):format(#columns)
 end
 
+-- ---------------------------------------------------------------------------
+-- 3. Mapgen: the P8 floor of every anchor envelope, and the column predicate
+-- ---------------------------------------------------------------------------
 local function mapgen_checks(W)
 	local S, P, source = W.session, W.planner_source, W.source
 	local anchor_by_id = {}
