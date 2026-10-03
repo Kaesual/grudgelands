@@ -295,7 +295,7 @@ were in, and quest texts and level routes now name zones.
   enabled" in red, one bold default line under the name
   (`hud_layout.zone_subtitle_offset`; the flight-boundary warning moved one
   line down). Entering a flagging area is an entry even without a name
-  change (below y −700 inside one zone); a subtitle that appears during a
+  change (below y −500 inside one zone); a subtitle that appears during a
   display restarts it, one that goes is taken off; losing it outside a
   display shows nothing. The reason is read at each sample (no zone query of
   its own); a flag change samples the player on the next step.

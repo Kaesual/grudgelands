@@ -419,7 +419,8 @@ Geographic PvP (Round 31, `grug_pvp`; rulings in
 [pvp-plan.md](../planning/pvp-plan.md) §2). Two enemy players can harm each
 other only while **both are flagged**; no attack, heal or area effect changes
 anyone's flag. A player is flagged while standing in contested ground (the
-31–60 zones, both islands, every land column at **y = −701 and below**) or in
+31–60 zones, both islands, every land column at **y = −501 and below**,
+depth tier T4 and deeper) or in
 enemy territory, for **60 s** after pressing "Flag me for PvP", and for
 **60 s** after the last PvP contact. Only the own faction's peaceful territory
 clears the location flag, once those timers have run out; deep ocean and the
@@ -748,10 +749,11 @@ complete 50-node window from depth 50 onward. There is no smooth depth ramp.
 portals only.) The retired WP18 radial field is historical and has no current
 level authority.
 
-The political/tool boundary is independent of the level formula: y = −700 is
-the last shallow T4 node, y = −701 begins contested T5 and y = −1001 begins T6.
-The surface column's race region continues to select deep regional resources,
-but never changes the universal PvP/terrain rule below −700.
+The political boundary follows the tool tiers, not the level formula: y = −500
+is the last T3 node, y = −501 begins contested T4 (Round 31; it was T5 from
+−701), y = −701 begins T5 and y = −1001 begins T6. The surface column's race
+region continues to select deep regional resources, but never changes the
+universal PvP/terrain rule below −500.
 
 **Depth buys frequency, not stats.** Past the level-60 cap the axis
 keeps going as *spawn pressure*: a player-centric arrival pulse whose

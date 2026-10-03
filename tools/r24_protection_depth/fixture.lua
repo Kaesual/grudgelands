@@ -12,7 +12,7 @@
 --      bound - 1, through territory_rule_at, hard_protection_kind_at and
 --      world_protected_for_faction for both factions; protection stays
 --      unbounded upward; below the bound the zone's own territory rule
---      answers, and the contested deep still starts at y = -701;
+--      answers, and the contested deep starts at y = -501 (Round 31);
 --   2. the capital guard level is 60 inside the capital's volume only;
 --   3. mapgen: the protected floor planner_source.protection_floor_y hands
 --      the P8 resource pass for every anchor envelope,
@@ -142,8 +142,8 @@ local function check_volume(W, label, x, z, bound, kind)
 		tostring(rule) .. ")")
 	check(Z.hard_protection_kind_at(below) == nil, label .. " no kind at bound-1")
 	-- Below the bound the ordinary rules answer: the zone's own territory rule
-	-- down to -700, the contested deep from -701.
-	if bound - 1 >= -700 then
+	-- down to -500, the contested deep from -501 (Round 31, depth tier T4).
+	if bound - 1 >= -500 then
 		local expected = zone_rule(Z, x, z)
 		if Z.water_class_at(x, z) == "deep_ocean" then expected = "immutable" end
 		check(rule == expected, label .. " zone rule below the bound: " ..
@@ -161,9 +161,13 @@ local function check_volume(W, label, x, z, bound, kind)
 				label .. " closed to the other faction below the bound")
 		end
 	end
-	local deep = {x = x, y = -701, z = z}
+	local deep = {x = x, y = -501, z = z}
 	check(Z.territory_rule_at(deep) == "contested_land",
-		label .. " contested deep at -701")
+		label .. " contested deep at -501")
+	local above = {x = x, y = -500, z = z}
+	check(Z.territory_rule_at(above) ~= "contested_land" or
+		zone_rule(Z, x, z) == "contested_land",
+		label .. " the zone's own rule at -500")
 end
 
 local lines = {}

@@ -163,8 +163,8 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     placement height is the final surface y at the footprint's centre column:
     the anchor for a capital's protected city or a start town, the anchor's
     fitted surface for an outpost or bandit-camp functional column. Below that floor the position follows the
-    ordinary rules of its column — the zone's territory rule down to y = −700,
-    the universal contested deep rule from y = −701 — and mapgen treats it
+    ordinary rules of its column — the zone's territory rule down to y = −500,
+    the universal contested deep rule from y = −501 — and mapgen treats it
     like any other ground (ores, gems, rock layers, nests). Each
     hard-protected footprint contains
     only the functional/core structure plus its explicitly authored apron; a
@@ -218,7 +218,7 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     (WP46).
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
-  usable. At y = -701 and below the universal contested deep rule overrides
+  usable. At y = -501 and below the universal contested deep rule overrides
   land-side faction ownership.
 - **R2b — Contested land and Battlegrounds**: every ordinary level-31–60
   frontier or dragon-island zone has no construction owner; both factions may
@@ -289,10 +289,11 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
   shovel and pick dig it, a shovel fastest. Decorative Slate, Basalt and
   Granite are any-pick building rock that drops itself.
 
-  The exact political split follows those boundaries: **y = −700 is the last
-  node of faction home territory; y = −701 is the first universally contested
-  deep node**. T5 occupies y = −701..−1000 and T6 y = −1001..−31000. On every
-  non-ocean land column, both factions may dig and place at y = −701 and below,
+  The exact political split follows those boundaries: **y = −500 is the last
+  node of faction home territory; y = −501, the first T4 node, is the first
+  universally contested deep node** (Round 31; it was −701). T4 occupies
+  y = −501..−700, T5 y = −701..−1000 and T6 y = −1001..−31000. On every
+  non-ocean land column, both factions may dig and place at y = −501 and below,
   even beneath a road or active claim. Hard-protected capitals, start towns
   and functional anchors end 100 nodes below their placement height (§2 R1,
   Round 24 ruling 30), well above this boundary. Deep ocean and immutable
@@ -389,7 +390,7 @@ planned zone water, shelf and dragon channel (`world_zones.md` §13.3).
 Peaceful and contested status belongs to the named surface zone. No level
 1–30 surface zone is contested; every ordinary level-31–60 frontier,
 Battlegrounds and dragon-island zone is contested. Independently of the surface
-zone, every non-ocean land position at **y = −701 and below** is contested.
+zone, every non-ocean land position at **y = −501 and below** is contested.
 Entering a contested zone automatically applies the player's PvP tag; an
 untagged player in a peaceful zone cannot receive unprovoked enemy-player
 damage.
@@ -418,7 +419,7 @@ cover, so players see where the protection ends (Round 22, D76;
 `world_zones.md` §12). It runs upward without limit and downward through the
 capital anchor's placement height − 100 (Round 24 ruling 30); below that the
 capital zone's ordinary territory rule applies, and the contested deep rule
-from y = −701.
+from y = −501.
 
 - A capital is a safe civic hub with **no hostile ambient enemies**.
 - All six capitals are walled (Round 23 ruling 2026-09-28, which walled
@@ -675,11 +676,11 @@ combat damage for the ordinary five-second combat window.
   update, whose Nether has its own mapgen, story line and mob cast; the Fire
   Dragon and the wider Nether encounter reserve stay reserved until then.
 
-## 4c. Deep T5/T6 is contested endgame territory
+## 4c. Deep T4–T6 is contested endgame territory
 
-The political deep layer begins at **y = −701**, independently of the surface
-zone. T5 occupies y = −701..−1000; T6 begins at y = −1001 and continues to the
-map floor. Both factions may excavate, place and fight there under §2 R6. Race
+The political deep layer begins at **y = −501** (depth tier T4; Round 31, it
+was −701), independently of the surface zone. T4 occupies y = −501..−700, T5
+y = −701..−1000; T6 begins at y = −1001 and continues to the map floor. Both factions may excavate, place and fight there under §2 R6. Race
 region still projects down from the surface column for regional resource and
 content selection, but it grants no territorial ownership.
 

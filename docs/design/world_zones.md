@@ -144,7 +144,8 @@ in this file as of commit `082982da`.
 - The existing depth floor remains independent: underground level is the
   maximum of the local surface-zone level and the depth level from
   `combat_stats.md`.
-- At **y = −701 and below**, every non-ocean land column is contested even
+- At **y = −501 and below** (depth tier T4 and deeper; Round 31, it was
+  −701), every non-ocean land column is contested even
   beneath a peaceful surface zone, capital, functional anchor or active claim.
   Deep ocean and immutable dragon channels remain full-column exceptions.
 - **Shore-height ruling (2026-09-17):** the first cardinal dry-land column
@@ -197,7 +198,7 @@ in this file as of commit `082982da`.
   **PvP-tagged**.
 - Entering a contested zone applies the PvP tag automatically. Leaving the
   zone does not remove it early.
-- Entering y = −701 or below on any non-ocean land column applies the same
+- Entering y = −501 or below on any non-ocean land column applies the same
   automatic tag. Returning above that boundary under a peaceful surface zone
   starts the ordinary full safe-zone tail; it never clears the tag early.
 - In a peaceful zone, an untagged player cannot receive unprovoked damage from
@@ -1030,7 +1031,7 @@ spawning, and flying families have no near-ground bias.
 | 0 to −100 | 1–6 | Cave Bat, Cave Crawler, Giant Rat and Spiderling |
 | −100 to −300 | 6–18 | Giant Spider, Lost Miner, Blood Bat, Goblin Miner and Goblin Miner Slinger |
 | −300 to −500 | 18–30 | Stone Golem, Oerkki, Glowwing and Crystal Shard |
-| −500 to −700 | 30–42 | Dungeon Master, Crystal Shard, Oerkki and Stone Golem |
+| −500 to −700 | 30–42 contested T4 | Dungeon Master, Crystal Shard, Oerkki and Stone Golem |
 | −700 to −1000 | 42–60 contested T5 | Lava Flan, Ember Wisp, Dungeon Master and Stone Mite |
 | Below −1000 | 60 contested T6 | Lava Flan, Ember Wisp, Land Guard and Rift Spawn |
 
