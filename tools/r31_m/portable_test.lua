@@ -243,6 +243,11 @@ end
 check(classes.start == 6 and classes.capital == 6 and classes.fortress == 2 and
 	classes.war_camp == 16 and classes.village == 12 and classes.outpost == 24,
 	"icon classes of the 118 anchors")
+-- Round 32: the hostile camps (their own map symbol): 6 start-zone and 6
+-- frontier bandit camps, 4 Mirefolk camps.
+check(classes.bandit == 12 and classes.mirefolk == 4,
+	("hostile camp classes: %s bandit, %s Mirefolk"):format(tostring(classes.bandit),
+		tostring(classes.mirefolk)))
 local function read(path)
 	local f = assert(io.open(repo .. path, "rb")); local t = f:read("*a"); f:close(); return t
 end

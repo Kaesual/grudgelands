@@ -16,6 +16,10 @@
 --   grug_pvp.state(player)   -> {flagged, reason, seconds_left, pvp_combat}
 --     reason: "location_contested" | "location_enemy" | "button" | "contact"
 --     | nil; seconds_left only for button and contact.
+--   grug_pvp.territory_at(pos, faction) -> "friendly" | "contested" |
+--     "enemy" | nil: the ground at pos for a player of that faction, the same
+--     rule the location flag follows (nil: deep ocean, dragon channels, no
+--     faction); the zone banner's status (grug_map location.lua).
 --   grug_pvp.stats(player)   -> copy of {kills, killing_blows, deaths, guards,
 --     captains, generals, kings}
 --   grug_pvp.register_on_change(fn(player, state)): whenever `flagged`,
@@ -220,6 +224,22 @@ end
 -- Location (rulings 2 and 3)
 --
 
+-- grug_zones' answers for a position: its PvP rule and, on peaceful ground,
+-- the faction owning it.
+local function zone_answers(zones, pos)
+	local rule = zones.pvp_rule_at(pos)
+	return rule, rule == "peaceful" and zones.faction_at(pos) or nil
+end
+
+function grug_pvp.territory_at(pos, faction)
+	local zones = rawget(_G, "grug_zones")
+	if not zones or not pos or not faction then
+		return nil
+	end
+	local rule, here = zone_answers(zones, pos)
+	return R.territory(rule, here, faction)
+end
+
 local function sample(player, rec)
 	local zones = rawget(_G, "grug_zones")
 	local pos = player:get_pos()
@@ -227,8 +247,7 @@ local function sample(player, rec)
 	if not zones or not pos or not own then
 		return
 	end
-	local rule = zones.pvp_rule_at(pos)
-	local here = rule == "peaceful" and zones.faction_at(pos) or nil
+	local rule, here = zone_answers(zones, pos)
 	local loc = R.location(rec.loc, rule, here, own)
 	if loc ~= rec.loc then
 		rec.loc = loc

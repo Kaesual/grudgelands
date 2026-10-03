@@ -3,7 +3,8 @@
 -- under a fixed centred arrow, and where markers go. PURE Lua: it calls
 -- nothing from `core`, so the portable fixture loads the real file.
 --
--- Rulings: north up (6), a window of about 900 nodes (7), markers are
+-- Rulings: north up (6), a window of about 440 nodes (7, zoomed in twice
+-- since Round 32), markers are
 -- separate HUD elements, party members outside the window become rim
 -- arrows (8), and the client builds a new map texture only when the player
 -- enters a new grid cell (9).
@@ -19,9 +20,11 @@
 
 local V = {}
 
--- About 900 nodes (ruling 7): 880 lets the finer grid's smallest texture
--- (144 px at normal) cover the hole with a texel and a half to spare.
-V.WINDOW_NODES = 880
+-- Twice the zoom of Round 27's 880 (Round 32 §2.1): quest givers and
+-- trainers sit twice as far apart on the minimap, so players can tell them
+-- apart. The base image is the same; at normal each base pixel is drawn
+-- twice as large (66 px across the hole at normal, 220 at high).
+V.WINDOW_NODES = 440
 -- The bezel art (textures/grug_map_minimap_bezel.png): hole radius over
 -- outer radius. The hole shows the C-pixel window, so R = C / 2 / BEZEL_HOLE.
 -- The art is fully opaque only out to BEZEL_OPAQUE of its radius (its outer
@@ -30,17 +33,23 @@ V.WINDOW_NODES = 880
 V.BEZEL_HOLE = 0.83
 V.BEZEL_OPAQUE = 0.975
 V.RIM_FRAMES = 16
--- The snap grid in base pixels per map quality (ruling 9): 6 px (40 nodes)
--- at normal, 16 px (32 nodes) at high. A new texture is built every cell;
+-- The snap grid in base pixels per map quality (ruling 9): 2 px (13 nodes)
+-- at normal, 8 px (16 nodes) at high. A new texture is built every cell;
 -- the bezel must cover the texture's overhang, about 1.4 cells, so a finer
--- grid is a slimmer bezel (about 22 px at 1080p) for more textures.
-V.GRID = {normal = 6, high = 16}
+-- grid is a slimmer bezel (about 22 px at 1080p) for more textures. Round
+-- 32's zoom draws a base pixel twice as large, so the grid shrank with it:
+-- at high to half (the same screen geometry as before); at normal 3 px
+-- would overhang the bezel's opaque band by about a pixel, so 2 px. Its
+-- price: the scale steps by half a screen pixel per base pixel, so the
+-- bezel fills 0.79-0.99 of the native box by window (0.89 at 1080p), where
+-- Round 27's normal filled 0.88-0.98.
+V.GRID = {normal = 2, high = 8}
 -- High quality's cell texture is halved on the client (`[resize`) for a
--- quarter of the client memory. The trade-off: up to 1080p the HUD draws
--- the texture at half its base pixels or less anyway (f <= 0.5), so
--- nothing is lost there; at 1440p (f 0.625) and 4K (f 1.0) the half-size
--- texture is drawn larger than it is and high shows less detail than it
--- could, though still more than normal. The texture is combined one pixel
+-- quarter of the client memory. The trade-off: since Round 32's zoom the
+-- HUD draws a base pixel about a screen pixel wide at 1080p (f 1.0; 0.625
+-- at 720p, 2.0 at 4K), so the half-size texture is drawn larger than it is
+-- and high shows less detail than it could, though still more than normal
+-- (f 3.0 at 1080p, 6.7 nodes per base pixel). The texture is combined one pixel
 -- short (one base pixel less), because `[resize` (CImage::copyToScaling) then
 -- steps exactly 2.0 from its first pixel: texel u is base pixel 2u, a cell
 -- is a whole number of texels, and a swap moves no pixel.

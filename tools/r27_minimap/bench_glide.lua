@@ -83,7 +83,8 @@ rawset(_G, "core", {
 	registered_entities = {},
 })
 -- Markers on a 250-node grid over the whole route, so about 10 are in the
--- 900-node window wherever the player is (a town's worth).
+-- 900-node window wherever the player is (a town's worth); about 3 in Round
+-- 32's 440-node window.
 local sockets = {}
 local ROLES = {"trainer", "quest", "trainer", "housing_manager", "quest"}
 for gx = -2400, 2400, 250 do

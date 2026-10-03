@@ -5,6 +5,7 @@
 --   L  location flag: contested and enemy land flag, own peaceful land
 --      clears, deep ocean and dragon channels keep the last value (sail out
 --      unflagged, sail home flagged), land below y -501 under a capital;
+--      the territory behind it (Round 32, R.territory / territory_at);
 --   B  the button: 60 s from the press, a press restarts it;
 --   C  contact: 60 s flag and 10 s PvP combat for dealer and receiver, the
 --      shared combat timer for 10 s (a later 5 s mark does not shorten it),
@@ -273,6 +274,24 @@ do
 	eq(R.location("contested", "peaceful", "accord", "accord"), false, "L: own peaceful clears")
 	eq(R.location("contested", nil, nil, "accord"), "contested", "L: ocean keeps flagged")
 	eq(R.location(false, nil, nil, "accord"), false, "L: ocean keeps unflagged")
+	-- Round 32: the territory behind the flag, from the position alone (the
+	-- zone banner's status), through grug_pvp.territory_at on the stub world.
+	eq(R.territory("peaceful", "accord", "accord"), "friendly", "L: own peaceful is friendly")
+	eq(R.territory("peaceful", "throng", "accord"), "enemy", "L: other peaceful is enemy")
+	eq(R.territory("contested", nil, "accord"), "contested", "L: contested is contested")
+	eq(R.territory(nil, nil, "accord"), nil, "L: ocean has no territory")
+	eq(R.territory("contested", nil, nil), nil, "L: no faction, no territory")
+	eq(grug_pvp.territory_at(vec(-50, -500, 0), "accord"), "friendly",
+		"L: own land at y -500 is friendly")
+	eq(grug_pvp.territory_at(vec(-50, -501, 0), "accord"), "contested",
+		"L: own land at y -501 is contested")
+	eq(grug_pvp.territory_at(vec(250, 10, 0), "accord"), "enemy", "L: enemy land is enemy")
+	eq(grug_pvp.territory_at(vec(250, -501, 0), "accord"), "contested",
+		"L: enemy land at y -501 is contested")
+	eq(grug_pvp.territory_at(vec(250, 10, 0), "throng"), "friendly",
+		"L: the same land is friendly to its owners")
+	eq(grug_pvp.territory_at(vec(150, 0, 0), "accord"), nil, "L: deep ocean has none")
+	eq(grug_pvp.territory_at(vec(-50, 10, 0), nil), nil, "L: a player without a faction has none")
 
 	local a = new_player("loc_a", "accord", vec(-50, 10, 0))
 	join(a)

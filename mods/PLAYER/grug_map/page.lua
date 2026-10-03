@@ -80,6 +80,9 @@ end
 -- Settlement icons per viewer faction (Round 31): settlement_icons.lua
 -- holds the rule and the one list of hidden classes.
 local icons = dofile(core.get_modpath("grug_map") .. "/settlement_icons.lua")
+-- Hostile camps (Round 32 §2.2): a red "X", never the quest giver's gold
+-- "!" (an available quest).
+local HOSTILE_SYMBOL, HOSTILE_COLOR = "X", "#ff5a4a"
 
 -- The marker lists per viewer faction ("" for a player without one), built
 -- once on first use: the registry is complete before any player opens the map.
@@ -99,7 +102,7 @@ local function build_settlement_markers()
 			if icons.visible(row.slot, owner, viewer) then
 				local label = row.display_name or LABELS[row.key] or humanize(row.key)
 				list[#list + 1] = {id = row.key, label = label, position = row.anchor,
-					kind = row.key:find("bandit_camp", 1, true) and "hostile" or "settlement",
+					kind = icons.hostile(row.slot) and "hostile" or "settlement",
 					detail = label}
 			end
 		end
@@ -250,9 +253,10 @@ local function page_content(player, context)
 				local quest = marker.kind == "quest"
 				local symbol = marker.kind == "home" and "H" or
 					marker.kind == "innkeeper" and "I" or quest and ((marker.status == "ready" or marker.status == "active")
-					and "?" or "!") or (marker.kind == "hostile" and "!" or "+")
+					and "?" or "!") or (marker.kind == "hostile" and HOSTILE_SYMBOL or "+")
 				local color = quest and ((marker.status == "ready" or marker.status == "available")
-					and "#ffd700" or "#c0c0c0") or "#ffe9a8"
+					and "#ffd700" or "#c0c0c0") or
+					(marker.kind == "hostile" and HOSTILE_COLOR or "#ffe9a8")
 				style("bgcolor=#2b2118cc;textcolor=" .. color, field)
 				elements[#elements + 1] = ("button[%.3f,%.3f;0.32,0.32;%s;%s]"):
 					format(sx - 0.16, sy - 0.16, field, symbol)

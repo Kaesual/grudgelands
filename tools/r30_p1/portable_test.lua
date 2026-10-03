@@ -734,9 +734,11 @@ local installed = {quality = "normal", width = 1080, height = 960,
 installed.texture = grug_map.base.combined_texture(1080, 960, installed.tiles)
 atlas.set_base_texture(installed.texture)
 local location_reads = 0
+-- Round 32: the line's colour follows the territory status (nil: neutral).
+local location_color = nil
 grug_map.location = {text_of = function()
 	location_reads = location_reads + 1
-	return "Dawnmere Fields"
+	return "Dawnmere Fields", location_color
 end}
 local steps_before = #registered.register_globalstep
 dofile(repo .. "/mods/PLAYER/grug_map/minimap.lua")
@@ -1033,6 +1035,22 @@ do
 	eq(asked.mate, nil, "W ...for that player only")
 	faction = "accord"
 	atlas.collect_markers = real
+	-- Round 32: the location line takes its status colour within 0.5 s and
+	-- sends it only when it changes; no colour is the notice colour.
+	local line
+	for _, def in pairs(walker.huds) do
+		if def.type == "text" and def.text == "Dawnmere Fields" then line = def end
+	end
+	check(line and line.number == 0xf0e6c8, "W the location line starts in the notice colour")
+	location_color = 0xff5555
+	for _ = 1, 6 do minimap_step(0.09) end
+	eq(line and line.number, 0xff5555, "W the location line follows its status colour")
+	local changes = hud_changes
+	for _ = 1, 12 do minimap_step(0.09) end
+	eq(hud_changes, changes, "W an unchanged colour sends nothing")
+	location_color = nil
+	for _ = 1, 6 do minimap_step(0.09) end
+	eq(line and line.number, 0xf0e6c8, "W no status: back to the notice colour")
 end
 
 if #failures == 0 then
