@@ -83,8 +83,13 @@ quest files and the front bounty baseline
 - Dependent quests remain hidden until every prerequisite has been turned in.
   Acceptance or completed objectives alone do not reveal successors. Once its
   prerequisites pass, a level-locked quest is visible with its required level.
-  Quests carry no race or faction gate; where the giver stands decides who
-  reaches it. Dialog, floating symbols and atlas use the same visibility.
+  Quests carry no race or faction gate of their own; the giver's faction
+  decides (Round 31, PvP ruling 13): a giver serves only its own faction,
+  the faction of its race (a new giver's own race, else its settlement's),
+  and the other faction gets the shared refusal line
+  ([settlements.md](settlements.md)). Dialog, floating symbols and atlas use
+  the same visibility: the other faction never sees a giver's marker. A
+  quest's turn-in NPC is of its giver's faction (checked at load).
   NPCs with multiple quests offer a simple list; independent tasks can form
   bundles without a separate bundle engine.
 - Explain optional crafting through a side branch; do not force every player
@@ -223,7 +228,9 @@ Quest content is data, one file per zone, read at load by
   zone's own quests never use `front`.
 - New givers stand at a free quest socket of the hub's settlement
   (`{"npc", "new": {"name", "race", "socket"}, "lines"}`): the socket-bound
-  NPC system places the quest giver there with that name and race.
+  NPC system places the quest giver there with that name and race; the race
+  sets the giver's faction, so a giver of the other faction can stand in a
+  settlement (a spy).
 - The loader checks every file at load and stops the server with every
   finding listed, each naming the file and the quest: givers and lines per
   hub, front lines, objective shapes, known NPCs, items, groups and roles,

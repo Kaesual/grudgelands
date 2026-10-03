@@ -57,6 +57,19 @@ hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
 is necessary. Map markers confer no remote interaction or travel.
 
+Round 31 (PvP ruling 13): **the NPC's faction decides who sees its
+marker.** Each NPC marker carries its NPC's faction (the race's; a quest
+giver's own race where it names one). A player sees only the own faction's
+quest givers, trainers, Housing Stewards and innkeepers, plus every king
+(the enemy's too) and both dragons; a character without a faction yet sees
+only the kings and dragons. Both factions can have markers in one zone
+(a spy in a contested zone), each seen only by its own side. The base,
+the region names, settlements, camps and zone markers stay complete for
+everyone. The service and quest-giver lists are split per viewer faction
+once at server start, so a marker build only picks the own list, in the
+Map tab and the minimap alike; the quest givers' states still come from
+one `grug_quests.marker_states` call.
+
 Round 29 (WP17): every **discovered** waystone of the player's own network
 (three starts, three capitals; [world.md](world.md) §6) is a marker of kind
 `waypoint` at the stone, labelled "<settlement> Waystone", with the icon
@@ -68,7 +81,7 @@ marker never unlocks or starts travel.
 ## Innkeeper home travel
 
 Round 17 adds the twelve innkeeper locations and the labels/current-home
-distinction. The Return home button with destination and cooldown moved to
+distinction; since Round 31 a player's map shows the six of the own faction. The Return home button with destination and cooldown moved to
 the Character page in Round 30 (user ruling, 2026-10-02: its live countdown
 is cheap in that small form and no longer resends the Map tab). Its server
 authority is [home_travel.md](home_travel.md). Map browsing itself grants no binding or
