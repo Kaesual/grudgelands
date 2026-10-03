@@ -37,9 +37,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   keeps one record per online player, samples the location once a second
   (`pvp_rule_at`, `faction_at`; never on the combat path) and exposes the
   API in its header (`flagged`, `can_harm`, `can_support`, `contact`,
-  `support_contact`, `flag_now`, `state`, `stats`, `register_on_change`,
-  which also fires once at join, before any HUD exists, and
-  `count_npc_kill`). `grug_core` must not depend on it: `grug_pvp` installs
+  `support_contact`, `flag_now`, `state`, `territory_at`, `stats`,
+  `register_on_change`, which also fires once at join, before any HUD
+  exists, and `count_npc_kill`). `grug_core` must not depend on it: `grug_pvp` installs
   `grug_core.pvp_can_harm` (the impact re-check in `deal_ability_damage`
   and the crosshair's `protected` class) and `grug_core.pvp_hit_landed`
   (contact from the hp-change modifier, so absorbed hits count);
@@ -50,10 +50,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   a shutdown sets no mark. NPC kills count through `_grug_pvp_kind` on the
   garrison prototypes and grug_mobs' eligible-kill hook. `page.lua` (sfinv
   page after Group; texts in the pure `view.lua`) and `hud.lua` (one status
-  source) are P2's; the banner subtitle reads `state.reason` in
-  `grug_map/location.lua`, the target frame `can_harm`. Fixtures
+  source) are P2's; the zone banner's territory line and colour ask
+  `territory_at` (Round 32: the position's territory by the flag's own
+  rule, never the flag) in `grug_map/location.lua`, the target frame
+  `can_harm`. Fixtures
   `tools/r31_pvp` (flag core; `run.sh` the engine probe: PvE micro run,
-  zone checks, tick cost), `tools/r31_p2`, `tools/r31_p1b`. Rules:
+  zone checks, tick cost), `tools/r31_p2`, `tools/r31_p1b`, `tools/r32_f1`
+  (the territory line). Rules:
   [pvp.md](../design/pvp.md).
 - **XP/levels**: template VoxeLibre `mods/HUD/mcl_experience/init.lua` — XP
   as an int in player meta, `level_to_xp` curve, `register_on_add_xp`

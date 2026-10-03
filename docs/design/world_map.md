@@ -75,7 +75,11 @@ sites, dragon arenas) show to everyone; the kings and dragons stay visible
 as NPC markers. A settlement's class comes from its anchor slot, carried in
 the settlement registry; the rule and its one list of hidden classes live
 in `grug_map/settlement_icons.lua` (`HIDDEN`), and the Map tab keeps one
-list per viewer faction, built once. The minimap shows no settlement icons. The service and quest-giver lists are split per viewer faction
+list per viewer faction, built once. **Hostile camps** (Round 32: the bandit
+camps of the start zones and the frontier, and the Mirefolk camps; by their
+anchor slot, `HOSTILE` in the same file) draw a red "X", never the quest
+giver's gold "!" (an available quest); other settlements keep their "+".
+The minimap shows no settlement icons. The service and quest-giver lists are split per viewer faction
 once at server start, so a marker build only picks the own list, in the
 Map tab and the minimap alike; the quest givers' states still come from
 one `grug_quests.marker_states` call.
@@ -188,7 +192,10 @@ drawn from the base image above. The gliding version (approved in playtest,
   and dot marks at E, S and W) frames the map and covers the map texture's
   overhang, since HUD images are never clipped. The art is opaque out to
   0.975 of its radius and the hole is 0.83 of it; at 1920×1080 the bezel is
-  265 px across with a band of about 22.5 px. The whole bezel sits inside the
+  265 px across with a band of about 22.5 px at high quality and 239 px with
+  a band of about 20.5 px at normal (since Round 32's zoom the normal scale
+  steps by half a pixel, so the bezel fills 0.79–0.99 of the box by window
+  size, 0.89 at 1080p, where it filled 0.88–0.98 before). The whole bezel sits inside the
   native box (top-right corners aligned), so the quest list's clearance below
   it is unchanged. North is always up; the map never rotates.
 - **Centred arrow, gliding map:** the player's gold arrow stays at the
@@ -197,24 +204,32 @@ drawn from the base image above. The gliding version (approved in playtest,
   server step: the map element is placed so the player's own pixel lies on
   the arrow's pixel, and a `hud_change` is sent only when that rounded pixel
   changes.
-- **One zoom level:** a window of about 880 nodes (132 base pixels at normal
-  quality, 440 at high).
+- **One zoom level:** a window of about 440 nodes (66 base pixels at normal
+  quality, 220 at high). Round 32 halved it from 880 (the user, 2026-10-03):
+  quest givers and trainers sit twice as far apart, so players can tell
+  them apart; the base image, its tiles and their download stay the same,
+  each base pixel is simply drawn twice as large.
 - **Cells:** the Luanti client never frees textures it builds from texture
   modifiers, so every distinct map texture stays in client memory. The map
-  therefore uses one texture per grid cell of 6 base pixels at normal
-  (40 nodes) and 16 at high (32 nodes): a disc large enough to cover the hole
+  therefore uses one texture per grid cell of 2 base pixels at normal
+  (about 13 nodes) and 8 at high (16 nodes): a disc large enough to cover the hole
   wherever the player is in the cell, combined from the at most four tiles it
   overlaps. A new texture is built only when the player enters a new cell.
   The drawn scale is a whole multiple of 1/grid screen pixels per base pixel,
   so neighbouring cells' textures sit a whole number of pixels apart, and the
   texture and position change in the same step: a cell swap moves no pixel.
+  The overhang under the bezel grows with the cell, so Round 32's zoom
+  halved the high grid (the same screen geometry as before) and took the
+  normal one from 6 to 2 base pixels (3 would reach about a pixel past the
+  bezel's opaque band).
 - **High quality at half resolution:** the high cell texture is combined at
-  479 base pixels and halved on the client with `[resize` to 240 px, a
+  239 base pixels and halved on the client with `[resize` to 120 px, a
   quarter of the memory (one pixel short, so the resize steps exactly two
-  base pixels per texel and swaps stay seam-free). Up to 1080p the HUD draws
-  the texture at half its base pixels or less anyway, so nothing is lost; at
-  1440p and 4K the half-size texture is drawn larger than it is, and high
-  shows less detail than it could, though still more than normal.
+  base pixels per texel and swaps stay seam-free). Since Round 32's zoom
+  the HUD draws a base pixel about one screen pixel wide at 1080p, so the
+  half-size texture is drawn larger than it is and high shows less detail
+  than it could, though still more than normal (three screen pixels per
+  base pixel of about 6.7 nodes at 1080p).
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
   locked), the Housing Steward, profession and Riding trainers, innkeepers,
@@ -277,28 +292,40 @@ were in, and quest texts and level routes now name zones.
   everything else. The minimap line, the entry banner and the Map tab's
   "Current:" label show the same text.
 - **Location line:** a small text centred under the minimap bezel (4 HUD px
-  gap), in the feed's calm notice colour, created and removed with the
-  minimap (hidden when the minimap is switched off or unavailable) and moved
-  with it when the window changes. It is sent only when the text changes.
-- **Entry banner:** when the location changes, its name shows top centre for
-  1.5 s at 2.5 times the default font, bold, in the same colour, below the
+  gap), in the colour of the territory status (below), created and removed
+  with the minimap (hidden when the minimap is switched off or unavailable)
+  and moved with it when the window changes. Text and colour follow the
+  samples within 0.5 s and are sent only when they change.
+- **Territory status** (Round 32, the user's ruling): from the player's
+  position, never from the PvP flag (`grug_pvp.territory_at`, the rule the
+  location flag follows, [pvp.md](pvp.md) §1), sampled with the location:
+  **friendly** (own peaceful land above y −501, green), **contested**
+  (contested zones, and every land column at y −501 and below, yellow),
+  **enemy** (the other faction's peaceful land above y −501, red). A player
+  flagged by the PvP button in own land still stands in friendly territory.
+  The open sea and a character without a faction have no status: no
+  territory line, the feed's calm notice colour.
+- **Entry banner:** when the location **or** the territory status changes,
+  the name shows top centre for 1.5 s at 2.5 times the default font, bold,
+  in the status colour, below the
   target frame's line (`hud_layout.zone_banner_offset`), clear of the
   level-up banner (0.25 of the window height) and the flash line (0.35).
   While a display runs no new one starts; when it ends, a fresh sample
-  decides: a location other than the one just shown displays at once,
-  otherwise the banner hides (leaving a city and coming back within the
-  1.5 s shows nothing new). The location a player joins in shows once on
-  join. A change shows within about a second.
-- **PvP subtitle** (Round 31): while the location flags the player
-  (`grug_pvp.state` reason `location_contested` or `location_enemy`), the
-  banner shows "Contested Territory — PvP enabled" or "Enemy Territory — PvP
-  enabled" in red, one bold default line under the name
-  (`hud_layout.zone_subtitle_offset`; the flight-boundary warning moved one
-  line down). Entering a flagging area is an entry even without a name
-  change (below y −500 inside one zone); a subtitle that appears during a
-  display restarts it, one that goes is taken off; losing it outside a
-  display shows nothing. The reason is read at each sample (no zone query of
-  its own); a flag change samples the player on the next step.
+  decides: a location or status other than the one just shown displays at
+  once, otherwise the banner hides (leaving a city and coming back within
+  the 1.5 s shows nothing new). Crossing y −501 under friendly or enemy land
+  (through caves or shafts too) shows the same name again with the new line
+  and colour; crossing it in a contested zone shows nothing; a zone change
+  always shows. The location a player joins in shows once on join. A change
+  shows within about a second.
+- **Territory line** (Round 32; it replaces Round 31's PvP subtitle): one
+  centred line in the default size, bold, in the same colour under the name
+  (`hud_layout.zone_subtitle_offset`; the flight-boundary warning sits one
+  line below it): "Friendly Territory", "Contested Territory (PvP)" or
+  "Enemy Territory (PvP)", none without a status. No level range (the
+  underground mob level follows depth, so a range would only confuse).
+  Each sample adds the status's two zone queries (`pvp_rule_at`,
+  `faction_at`) to the location's one.
 - **Zone markers on the Map tab:** one marker per zone (islands and front
   zones included), a plain pennant icon, with the zone name and level band
   in its tooltip, e.g. "Dawnmere Fields (levels 1–10)" ("(level 60)" for a

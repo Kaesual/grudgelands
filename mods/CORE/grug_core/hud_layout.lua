@@ -391,9 +391,9 @@ end
 layout.anchors.zone_banner = {position = {x = 0.5, y = 0},
 	offset = layout.zone_banner_offset(nil)}
 
--- The banner's PvP subtitle (Round 31, grug_map location.lua: "Contested
--- Territory — PvP enabled"): one default line, ZONE_SUBTITLE_GAP below the
--- zone banner's bottom.
+-- The banner's second line (Round 31's PvP subtitle, since Round 32 the
+-- territory line, grug_map location.lua: "Contested Territory (PvP)"): one
+-- default line, ZONE_SUBTITLE_GAP below the zone banner's bottom.
 layout.ZONE_SUBTITLE_GAP = 4
 
 function layout.zone_subtitle_offset(window)

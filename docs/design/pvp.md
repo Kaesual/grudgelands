@@ -130,9 +130,14 @@ eligibility and flag".
   `pvp_contested` ("Contested Territory" or "Enemy Territory", untimed)
   while the location flags the player; `pvp_tagged` ("PvP flagged") with
   the countdown while the button or contact does.
-- **Zone banner subtitle:** "Contested Territory — PvP enabled" or "Enemy
-  Territory — PvP enabled" in red under the zone name when the location
-  flags the player.
+- **Zone banner territory line** (Round 32, replacing the Round 31
+  subtitle): the territory at the player's position, from §1's rule and
+  never from the flag ([world_map.md](world_map.md), "Zone and town
+  names"): "Friendly Territory" in green, "Contested Territory (PvP)" in
+  yellow (contested zones and every land column from y −501), "Enemy
+  Territory (PvP)" in red, under the zone name in the same colour; the
+  minimap's location line takes the colour too. A player flagged by the
+  button in own land still reads "Friendly Territory".
 - **Target frame:** an enemy player's line shows "(flagged)" or
   "(protected)" from their own flag; it is red only while both can fight,
   else grey.
