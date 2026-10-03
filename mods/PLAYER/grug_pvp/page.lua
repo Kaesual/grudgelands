@@ -85,18 +85,18 @@ core.register_globalstep(function(dtime)
 	end
 end)
 
--- After Group, before Help: the other tabs move only themselves, each right
--- after its predecessor (Talents after Bags ... Group after Quests), and Help
--- keeps its place behind them, so whichever order the mods-loaded hooks run
--- in, PvP ends up between Group and Help.
+-- Right after Group. Each tab's hook moves only its own page, right after its
+-- predecessor as it stands when the hook runs, and the hooks run in mod load
+-- order; grug_pvp loads after grug_parties (optional dependency), so Group has
+-- found its place when this runs and nothing moves it afterwards.
 core.register_on_mods_loaded(function()
 	local page, ordered, inserted = sfinv.pages[PAGE], {}, false
 	for _, def in ipairs(sfinv.pages_unordered) do
-		if def.name == "grug_inventory:help" then
+		if def ~= page then ordered[#ordered + 1] = def end
+		if def.name == "grug_parties:group" then
 			ordered[#ordered + 1] = page
 			inserted = true
 		end
-		if def ~= page then ordered[#ordered + 1] = def end
 	end
 	if not inserted then ordered[#ordered + 1] = page end
 	sfinv.pages_unordered = ordered

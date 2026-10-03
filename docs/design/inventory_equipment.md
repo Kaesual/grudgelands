@@ -435,7 +435,7 @@ The inventory gains separate Quests, Group and Map tabs, following `quests.md`,
 default on; empty quest logs and ungrouped players have no corresponding HUD.
 Since Round 27 the Map tab likewise owns the saved "Show minimap" switch for
 our own minimap, default on (`world_map.md`). Since Round 31 a PvP tab
-(between Group and Help, `grug_pvp/page.lua`) holds the "Flag me for PvP"
+(right after Group, `grug_pvp/page.lua`) holds the "Flag me for PvP"
 button, the current state (safe, or flagged with the reason and the seconds
 left; PvP combat) and the PvP statistics; it is re-sent once a second only
 while its text changes.

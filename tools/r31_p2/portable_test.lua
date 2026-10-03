@@ -18,7 +18,8 @@
 --      counters; every element above the shared inventory (y 7.0) and
 --      inside the page width; the button flags and re-sends; the 1 s poll
 --      re-sends only while the open tab's text changes; another page gets
---      nothing; nav order: between Group and Help for every hook order;
+--      nothing; nav order: right after Group for every order of the other
+--      tabs' hooks (ours runs after Group's, it loads after grug_parties);
 --   B  the banner subtitle: pure debounce rules (entry with the name, the
 --      subtitle joining a running display, taken off, entry below y -700
 --      inside one zone, silent loss) and the runtime (subtitle element,
@@ -35,6 +36,10 @@ local checks, failures = 0, {}
 local function check(ok, label)
 	checks = checks + 1
 	if not ok then failures[#failures + 1] = label end
+end
+function table.indexof(list, value)
+	for i, v in ipairs(list) do if v == value then return i end end
+	return -1
 end
 local function eq(actual, expected, label)
 	check(actual == expected, label .. " (got " .. tostring(actual) .. ", expected " ..
@@ -332,7 +337,9 @@ do
 	pvp_state.bob, pvp_stats.bob, players.bob = nil, nil, nil
 
 	-- Nav order: grug_inventory's order, then the other tabs' hooks (each moves
-	-- its page right after its predecessor) and ours in every position.
+	-- its page right after its predecessor) in every order, ours last (it
+	-- loads after grug_parties); the start lists both load positions of Skills
+	-- seen in practice. PvP must follow Group directly.
 	local reorder = loaded[1]
 	local function move_after(name, after)
 		return function()
@@ -349,33 +356,52 @@ do
 		move_after("grug_skills:skills", "grug_classes:talents"),
 		move_after("grug_quests:quests", "grug_skills:skills"),
 		move_after("grug_parties:group", "grug_quests:quests")}
-	local start = {"grug_inventory:character", "grug_inventory:bags", "grug_inventory:help",
-		"sfinv:crafting", "grug_classes:talents", "grug_skills:skills", "grug_quests:quests",
-		"grug_parties:group", "grug_pvp:pvp", "grug_map:atlas"}
-	local want = "grug_inventory:character grug_inventory:bags grug_classes:talents " ..
-		"grug_skills:skills grug_quests:quests grug_parties:group grug_pvp:pvp " ..
-		"grug_inventory:help sfinv:crafting grug_map:atlas"
-	local all_ok = true
-	for position = 1, #others + 1 do
-		for _, name in ipairs(start) do
-			sfinv.pages[name] = sfinv.pages[name] or {name = name}
+	local starts = {
+		{"grug_inventory:character", "grug_inventory:bags", "grug_inventory:help",
+			"sfinv:crafting", "grug_classes:talents", "grug_skills:skills",
+			"grug_quests:quests", "grug_parties:group", "grug_pvp:pvp", "grug_map:atlas"},
+		{"grug_inventory:character", "grug_inventory:bags", "grug_inventory:help",
+			"sfinv:crafting", "grug_classes:talents", "grug_quests:quests",
+			"grug_parties:group", "grug_map:atlas", "grug_pvp:pvp", "grug_skills:skills"},
+	}
+	local function permutations(list)
+		if #list <= 1 then return {list} end
+		local out = {}
+		for i = 1, #list do
+			local rest = {}
+			for j = 1, #list do if j ~= i then rest[#rest + 1] = list[j] end end
+			for _, tail in ipairs(permutations(rest)) do
+				local p = {list[i]}
+				for _, item in ipairs(tail) do p[#p + 1] = item end
+				out[#out + 1] = p
+			end
 		end
-		sfinv.pages_unordered = {}
-		for _, name in ipairs(start) do
-			sfinv.pages_unordered[#sfinv.pages_unordered + 1] = sfinv.pages[name]
-		end
-		local hooks = {}
-		for _, fn in ipairs(others) do hooks[#hooks + 1] = fn end
-		table.insert(hooks, position, reorder)
-		for _, fn in ipairs(hooks) do fn() end
-		local names = {}
-		for _, d in ipairs(sfinv.pages_unordered) do names[#names + 1] = d.name end
-		if table.concat(names, " ") ~= want then
-			all_ok = false
-			print("nav order with our hook at " .. position .. ": " .. table.concat(names, " "))
+		return out
+	end
+	local all_ok, runs = true, 0
+	for _, start in ipairs(starts) do
+		for _, hooks in ipairs(permutations(others)) do
+			for _, name in ipairs(start) do
+				sfinv.pages[name] = sfinv.pages[name] or {name = name}
+			end
+			sfinv.pages_unordered = {}
+			for _, name in ipairs(start) do
+				sfinv.pages_unordered[#sfinv.pages_unordered + 1] = sfinv.pages[name]
+			end
+			for _, fn in ipairs(hooks) do fn() end
+			reorder()
+			runs = runs + 1
+			local names = {}
+			for index, d in ipairs(sfinv.pages_unordered) do names[index] = d.name end
+			local at = table.indexof(names, "grug_parties:group")
+			if names[at + 1] ~= "grug_pvp:pvp" or #names ~= #start then
+				all_ok = false
+				print("nav order: " .. table.concat(names, " "))
+			end
 		end
 	end
-	check(all_ok, "P PvP sits between Group and Help for every hook order")
+	eq(runs, 48, "P nav: every hook order on both load orders")
+	check(all_ok, "P PvP follows Group for every hook order")
 end
 
 -- ---------------------------------------------------------------------------
