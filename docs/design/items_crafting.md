@@ -1245,7 +1245,10 @@ changes:
     is mechanically identical to the Common beside it while costing
     more than the Common beside it — a blue-named trap, not a luxury. The
     quality/description machinery ships regardless; WP5 lights it up only
-    after the economy/loot pass fixes the multiplier.
+    after the economy/loot pass fixes the multiplier. **As built:** the
+    enchant roller exists, so the Uncommon is offered today at ×3
+    (`grug_traders/stock.lua`); whether it stays is a question for the
+    items design session (BACKLOG).
   - The rotation is **deterministic**: a pure function of (real hour,
     vendor, bracket). Two players at the same vendor in the same hour
     see the same shelf, and a restart does not re-roll it.
@@ -1656,7 +1659,9 @@ invulnerable.
   visual identity.
 - No universal bar, pick, profession-level advancement or ordinary base gear requires a
   Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
-  level-60 elite loot and never substitutes for a Crown. Rewards enter the
+  level-60 elite loot and never substitutes for a Crown. **As built,** royal
+  guards drop no gear (§5.1; `grug_quality/init.lua`), so this sentence and
+  §5.1 disagree; the items design session settles it (BACKLOG). Rewards enter the
   ledger only if their sellable items are later sold.
 
 ### 5.5 Contested-front reward hook

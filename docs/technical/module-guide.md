@@ -288,6 +288,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   object is reused for up to 0.25 s, and the Target Frame
   (`grug_mobs/target_frame.lua`) reads
   `grug_abilities.crosshair.recent_aim` before casting its own 20 m ray.
+  Since Round 32 a held LMB is one state machine in `input.lua` (`step`):
+  `s.mode` is `"gather"` or `"combat"` with its foe `s.foe` (the support
+  ally of a fresh press in `s.ally`); a key-down on a valid hostile starts
+  in combat, every other press in gather; a held gather switches only when
+  `hostile_ahead` finds a target `fightable` accepts (combat's validity
+  test, so `grug_pvp.can_harm` for players) while the selected skill
+  attacks hostiles, and casts the extra combat ray only when the hand ray
+  hits a non-walkable node, loot or an actor; `foe_gone` (dead, invalid,
+  evading, or beyond `FLEE_REACH` × the reach) returns it to gather.
+  `end_mode` clears mode, foe and ally on release, cancel, slot change,
+  death and leave. Fixture `tools/r32_f2`; rules `classes.md` §2b.
   It also ships permanent
   admin-only per-player `/combatdebug`; disabled sites do no ray/log
   formatting/globalstep work beyond the enabled check.
@@ -575,7 +586,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     `tools/r30_p3` (input coverage) fails. API: `region_at`, `level_at`,
     `describe` (direction phrases for quest texts), `area_roles`,
     `leader_pos`; every spawned mob carries `_grug_area` for area kill
-    credit. Rules: [spawn_regions.md](../design/spawn_regions.md),
+    credit. Its one throttled globalstep runs one ambient attempt per
+    player per second in four player slices and, since Round 32 (perf
+    review R3), the camp slots (`grug_mobs.region_camp_tick`, `camps.lua`)
+    and leaders (`SR.leader_tick`) in `SR.SLOW_SLICES` (20) zone slices of
+    0.25 s, so each zone is still served once per `SR.SLOW_PERIOD` (5 s)
+    but no step weighs every camp against every player (fixture
+    `tools/r28_s1`, section "Round 32 F4"). Rules: [spawn_regions.md](../design/spawn_regions.md),
     [biomes_mobs.md](../design/biomes_mobs.md) §4.2.
   - `env_damage.lua` (percent environmental damage, read by the
     `grug_env_damage` GRUG PATCH), `roam_avoid.lua` (idle aggressive mobs
@@ -780,7 +797,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_xp.quest_reward`. `labels.lua` words an objective for the dialogue,
   log, tracker and feed (item names only, never tooltip text) and carries
   each objective's target level range, computed once at load by
-  `validate.lua` (Lane Q0), and fills the quest text placeholders (Round 29
+  `validate.lua` (Lane Q0); since Round 32 a kill target is named by its
+  sub-type's zone display name (`display_by_zone`), the zone resolved once
+  at load by `Q.target_zones` (a leader's zone, else the area's, else the
+  quest's) and kept as the objective's `zones` (fixture `tools/r32_f2`;
+  `tools/r28_design/validate.py` `E-label-name`, `E-item-source-drop`). It
+  also fills the quest text placeholders (Round 29
   Q1): titles (`{name:...}` only) at load, texts on first display through
   `grug_mobs.spawn_regions.describe`, cached per quest (`Q.quest_text`);
   `registry.lua` computes the copper of a quest without `rewards.copper`
@@ -814,7 +836,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   loot or quest-credit rules. UI actions resolve rendered stable identities,
   then core APIs revalidate current authority. HUD HP writes are compare-first.
   The saved color preference defaults to By class; an explicit All green choice
-  persists. Current geometry and offline presentation: [parties.md](../design/parties.md).
+  persists. Since Round 32 (perf review R2) `hud.lua` polls each player every
+  0.5 s in one of five 0.1 s slots (`slot_of`, assigned at join), skips a
+  player without a party through `grug_parties.in_party` (membership only,
+  no view built) and recomputes the row layout only on a window change
+  (fixture `tools/r32_f4`). Current geometry and offline presentation:
+  [parties.md](../design/parties.md).
 - **Housing (Round 25, Round 26 drafts):** `mods/PLAYER/grug_housing` implements
   [housing.md](../design/housing.md). One global `grug_housing`; each file has
   one owner lane so the lanes work in parallel:
@@ -880,6 +907,12 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   grid, the quest markers' version, the home, the waystones) is compared and
   the form is built and sent only when it changed; clicks rebuild at once.
   Anything a marker draws must be in that signature, or it goes stale.
+  Since Round 32 (perf review R1) the poll runs every 0.1 s and reads at
+  most `CHECKS_PER_PASS` (8) signatures and builds at most
+  `BUILDS_PER_PASS` (2) forms per pass, the longest-waiting viewers first,
+  so open tabs keep their own phase and never rebuild together (beyond
+  about 40 viewers whose maps change at once the 2 s interval stretches;
+  fixture `tools/r32_f4`).
   Scrolling defers rebuilds until a 0.5 s quiet interval. Closing resets to
   Character; leave/death clean up. Return home lives on the Character page
   since Round 30 (`grug_inventory/pages.lua`, its 1 s pass re-sends that page
@@ -892,7 +925,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   placement, rim arrows) draw the gliding minimap in
   `grug_core.hud_layout.minimap_box`. Keep the texture and position change
   in the same step and the scale a whole multiple of 1/grid, or cell swaps
-  jump. Since Round 30 the window size, the frame-only elements and the
+  jump. Round 32 halved the window (`V.WINDOW_NODES` 440) and the cell grid
+  (`V.GRID` 2 base pixels at normal, 8 at high) so the bezel still covers
+  the overhang (geometry in `tools/r27_minimap`); `tools/r32_f1/engine.sh`
+  measures the traffic and the location sample on a player stand-in. Since Round 30 the window size, the frame-only elements and the
   location line are handled every 0.5 s or on a window change, and the
   static markers are re-asked on `grug_quests.register_on_markers_changed`
   and every 5 s. The minimap asks only the quest, service, home and (since Round 29)
@@ -906,12 +942,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   banner and places one zone marker per zone at startup (since Round 30 a
   later start reads the sampled zone grid from `<world>/grug_map_zone_grid.txt`,
   keyed like the region maps); the pure
-  `location_view.lua` holds the rules (fixture `tools/r28_m1`).
+  `location_view.lua` holds the rules (fixture `tools/r28_m1`). Since
+  Round 32 each sample also takes the territory status
+  (`grug_pvp.territory_at`, the PvP flag's own rule, never the flag): it
+  colours the minimap line and the banner, the banner's second line
+  ("Friendly Territory", …) replaces the PvP subtitle, and a status change
+  shows the banner like a zone change (fixture `tools/r32_f1`).
   Round 31: NPC markers carry their NPC's faction and the service and
   quest-giver lists are split per viewer faction once at load (the kings and
   dragons stay for everyone); `settlement_icons.lua` (pure, `HIDDEN`) decides
   which settlement icons a viewer faction sees from the anchor slot in the
-  settlement registry, and the Map tab builds one list per faction. The
+  settlement registry, and the Map tab builds one list per faction; since
+  Round 32 it also names the hostile camps (`HOSTILE`: slots `bandit_N`
+  and `mirefolk`), which draw a red "X" instead of the "!". The
   Map tab's signature includes the faction, and the minimap re-asks its
   static markers on `register_on_faction_chosen`. Fixtures `tools/r31_n`,
   `tools/r31_m`.
@@ -1110,7 +1153,14 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Gains (XP, loot, quest progress, catches), combat notices and personal
   notices (item-use refusals, mount notices, talent points) go to the message
   feed above the bars, never to chat: `grug_core.feed(player, kind, text, key)`,
-  `feed_xp`, `feed_item` (`grug_core/feed.lua`, Round 28 ruling 20).
+  `feed_xp`, `feed_item` (`grug_core/feed.lua`, Round 28 ruling 20). Since
+  Round 32 the kind `combat` (grey) carries "You dodge!" and "Dismount
+  before attacking.", and each personal notice group keeps one keyed line a
+  repeat refreshes (`potion`, `food`, `equip:<reason>`, `class_change:*`,
+  `starter:<slot>`, `weapon_hint`, `mount`, `talents`, `boss_loot`); a new
+  personal notice goes there too. Chat keeps deaths, rare sightings, boss
+  and dragon warnings and the one-time no-weapon hint
+  ([inventory_equipment.md](../design/inventory_equipment.md) "Message feed").
 - **Player model/skins**: `player:set_properties{visual="mesh", mesh=...,
   textures={...}}`; texture layering (skin/armor/wielditem) following
   LotT `lottarmor/multiskin.lua`.

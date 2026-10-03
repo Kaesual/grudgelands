@@ -2,6 +2,45 @@
 
 Updated 2026-10-03. This is the delivery pointer, not another game specification.
 
+- **Round 32 "Fixes, preparation and research" delivered locally**
+  (2026-10-03, [plan, completion and GUI checklist](planning/round32-plan.md#completion-2026-10-03)).
+  Every code lane is merged on local main (last lane F4, `2f709fbc`), each
+  independently reviewed by Opus (F3's third pass and F2's last small
+  commit checked by the coordinator); 66 fixtures pass; not pushed. No
+  mapgen change: the Round 31 fresh world serves the GUI test.
+  - **Map and HUD (F1):** the minimap zoomed ×2 (a 440-node window; the base
+    map unchanged); hostile camps (bandit and Mirefolk) as a red "X" on the
+    Map tab instead of the quest giver's "!"; the zone banner and the
+    minimap line coloured by the territory at the player's position (green
+    friendly, yellow contested, red enemy, y ≤ −501 contested) with the
+    line "Friendly Territory" / "Contested Territory (PvP)" / "Enemy
+    Territory (PvP)" in place of Round 31's subtitle
+    ([world_map.md](design/world_map.md)).
+  - **LMB hold and quest labels (F2):** one gather/combat state machine: a
+    gather hold turns into combat when a hostile (neutral mobs too, players
+    only when both are flagged) comes into the crosshair and reach, and
+    back once that foe is gone; self and support skills fire only on a
+    fresh press ([classes.md](design/classes.md#left-click-and-held-input));
+    kill objectives name the mob as its zone shows it, kept by two new
+    validator rules ([quests.md](design/quests.md)).
+  - **Playtest fixes (F3):** combat notices and the personal notices
+    (item-use and equip refusals, mount and talent notices, boss loot) in
+    the message feed instead of chat; the quest log in one text field with
+    Track on HUD and Abandon in one row.
+  - **Performance (F4):** the Map tab builds at most two forms per 0.1 s
+    pass, the party HUD polls in five slots, camps and leaders tick in zone
+    slices (100 stand-ins: Map tab step maximum 34.5 → 13.4 ms, party HUD
+    16.2 → 4.3 ms).
+  - **Studies (R1–R3, read-only):**
+    [performance review](research/perf-review-2026-10-r32.md) (50/100
+    stand-ins; memory and first-join media notes for a playtest server),
+    [sound research](research/sound-research-2026-10.md) (sound is V1; seven
+    decisions open), [items and professions analysis](research/items-professions-analysis-2026-10.md)
+    (16 questions for a design session).
+  - Next: the user's GUI test (with Rounds 30 and 31); the sound decisions
+    and the items design session; Round 33 as proposed by the coordinator
+    (sound lanes, items options 1 and 2, a small fix lane), then WP9.
+
 - **Round 31 "PvP, appearance and clean-up" delivered locally** (2026-10-03,
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
   Every lane is merged on local main (last lane Q, `699a2002`), each
@@ -51,8 +90,8 @@ Updated 2026-10-03. This is the delivery pointer, not another game specification
     commercial MMO's terms; captain and General names by GPT-6 Astra.
   - Final engine check (2026-10-03, main 699a2002, seed 42): PASS 7/7 — boot clean (cold 38.3 s to listening, heap 111 MiB; second boot 7.3 s, 67 MiB); both fortresses 19/19 NPCs with mixed faction races, camps with leader-captains (×1.5 HP, ×1.15 size), gate trails, protection margin, 7th waystone, no hostile spawns inside; flag logic 9/9 incl. y −500/−501 under a capital; faction filter (enemy settlement icons hidden, 8/8 enemy war camps shown, enemy givers/vendors refuse); looks persist and vary (13/13); enchant colours on dropped, wielded and worn gear; Wyrmglass arena floor of local ground, hazards and protection to ±40; 515 quests load. Cosmetic: frost terraces merge into the floor where the ground reaches their height (57 of 409 columns); fortress quest givers' nametags fixed after the check.
   - Next: the user's two-client GUI test on a fresh world (the Round 30
-    test is still open and can share it); the decision on seed-dependent
-    POI placement; then Round 32, WP9.
+    test is still open and can share it). Seed-dependent POI placement was
+    set aside (2026-10-03); Round 32 followed.
 
 - **Round 30 "Performance and clean-up" delivered locally** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).

@@ -58,6 +58,19 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 32](docs/planning/round32-plan.md#completion-2026-10-03), "Fixes,
+preparation and research", is complete locally and awaits a playtest. The
+minimap zooms in twice as far, so quest givers and trainers are easier to
+tell apart, and hostile camps get their own red mark on the world map. Zone
+names now show in green, yellow or red for friendly, contested or enemy
+territory, with a line saying which. Holding the left mouse button while
+mining now fights a creature that walks into your aim and goes back to
+mining once it is gone, quest objectives name creatures as you meet them in
+that zone, and short notices such as "You dodge!" or a refused potion
+appear above your bars instead of in chat. The server also handles many
+players at once more evenly, and three studies prepare the next steps:
+performance with 50 to 100 players, sound and music for the first release,
+and items and professions.
 [Round 31](docs/planning/round31-plan.md#completion-2026-10-03), "PvP,
 appearance and clean-up", is complete locally and awaits a two-player test
 on a fresh world. Players of the two factions can fight each other only when
@@ -147,12 +160,14 @@ canceled and 8 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 31](docs/planning/round31-plan.md#completion-2026-10-03)
-(geographic PvP with the fortresses and war camps, character looks,
-enchant colours, the dragon arenas and a clean-up), independently reviewed
-and merged locally, after Round 30 (performance); Round 29 is the latest
-pushed state and Round 24 the latest formally accepted one.
+[Round 32](docs/planning/round32-plan.md#completion-2026-10-03)
+(map and HUD fixes, the held left click that turns from mining into combat,
+notices in the message feed, performance fixes and three studies),
+independently reviewed and merged locally, after Round 31 (PvP, looks,
+dragon arenas) and Round 30 (performance); Round 29 is the latest pushed
+state and Round 24 the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 32](docs/planning/round32-plan.md#gui-playtest-checklist),
 [Round 31](docs/planning/round31-plan.md#gui-playtest-checklist),
 [Round 30](docs/planning/round30-plan.md#playtest-checklist),
 [Round 29](docs/planning/round29-plan.md#playtest-checklist),
@@ -161,19 +176,23 @@ pushed state and Round 24 the latest formally accepted one.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 playtests remain separate.
 
-**Ready for further work:** the first release still needs the main story
-from level 41 to 60 with its finale (Round 32). Before it, the user decides
-whether points of interest stay at fixed positions or are placed per world.
-An enchantment and item-level revision, crafting finishes and masterwork and
-the deep spawn pulse follow; the [roadmap](ROADMAP.md) records the V1 scope and order.
+**Ready for further work:** the first release still needs sound and calm
+background music (researched in Round 32, the user's choices pending) and
+the main story from level 41 to 60 with its finale. Items and professions
+get a design session on the Round 32 analysis first; an enchantment and
+item-level revision, crafting finishes and masterwork and the deep spawn
+pulse follow. Points of interest stay at fixed positions (per-world
+placement set aside); the [roadmap](ROADMAP.md) records the V1 scope and order.
 
 **Caveats:** Round 31 needs a fresh world. Quests never ask you to kill
 players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
-deferred. A measured many-player performance pass and first-release validation
-are still open. Optional
+deferred. Round 32's [performance review](docs/research/perf-review-2026-10-r32.md)
+measured 50 and 100 simulated players; a test with real clients and
+first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round31-plan.md#gui-playtest-checklist),
+the [latest playtest checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
+the [Round 31 checklist](docs/planning/round31-plan.md#gui-playtest-checklist),
 the [Round 30 checklist](docs/planning/round30-plan.md#playtest-checklist),
 the [Round 29 checklist](docs/planning/round29-plan.md#playtest-checklist),
 the [Round 28 checklist](docs/planning/round28-questing-leveling-plan.md#playtest-checklist),
@@ -188,9 +207,10 @@ and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#
 The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
-- **Toward the first release:** the main story up to level 60 and its
-  finale. Performance with many players, balance and
-  reliable everyday play are part of that work too.
+- **Toward the first release:** sound effects, ambience and calm
+  background music, and the main story up to level 60 and its finale.
+  Rewarding items and professions across all tiers, performance with many
+  players, balance and reliable everyday play are part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
   creatures and terrain, and scripted faction clashes on the war front. Other
   plans include further classes, dungeons, regional bosses, reputation and

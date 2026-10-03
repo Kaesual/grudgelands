@@ -13,6 +13,11 @@ file redistribution are unusable.
    variants, night crickets/owl/wolves, coyote, jungle frogs, cave
    drips). ⚠ Exactly one file must be excluded: `seagull 2` (CC BY-NC
    4.0). Harvest sounds + use its trigger logic as reference.
+   **Corrected 2026-10-03** ([sound research](../sound-research-2026-10.md)
+   §4.2): at commit `4587abc9` two cave sounds are under the Pixabay
+   licence, the jungle sounds point to freesfx.co.uk, and about ten files
+   map to no licence line. Use the mod's code as a reference only and take
+   originals from Freesound.
 2. **minetest_game default sounds** — footsteps/dig/place set, 100%
    CC BY 3.0 + CC0, cleanest filler source (we ship it in BASE already).
 3. **CC0 SFX packs** cover ~90% of combat/mob/UI needs: Kenney (RPG
@@ -29,7 +34,7 @@ file redistribution are unusable.
 
 | Name | Author | Code | Media | Harvestable | ⚠ |
 |------|--------|------|-------|-------------|---|
-| Ambience ([ContentDB](https://content.luanti.org/packages/TenPlus1/ambience/), [Codeberg](https://codeberg.org/tenplus1/ambience)) | TenPlus1 | MIT | per-file CC0/CC BY 3.0/4.0 | region ambience for all 6 regions | `seagull 2` is CC BY-NC — exclude |
+| Ambience ([ContentDB](https://content.luanti.org/packages/TenPlus1/ambience/), [Codeberg](https://codeberg.org/tenplus1/ambience)) | TenPlus1 | MIT | per-file CC0/CC BY 3.0/4.0 | region ambience for all 6 regions | `seagull 2` is CC BY-NC; Pixabay, freesfx and unmapped files too (2026-10-03) — code reference only |
 | minetest_game `default` ([license.txt](https://github.com/luanti-org/minetest_game/blob/master/mods/default/license.txt)) | core devs | LGPL 2.1+ | CC BY 3.0 + CC0 | footsteps/dig/place full set | none |
 | VoxeLibre sounds | VL team | GPLv3+ | mixed, per-mod | mob/env sounds | per-file audit needed — deprioritize |
 | Scary Ambience / Cave Ambience | StarNinjas / Thresher | unverified | unverified | dark-forest/cave mood | ⚠ verify licenses before use |
