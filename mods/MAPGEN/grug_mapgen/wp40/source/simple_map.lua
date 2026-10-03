@@ -433,6 +433,12 @@ source.anchor_profiles = {
 	{id="dragon",shape="arena_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,force_native_dungeon=false},
+	-- Round 31 PvP POIs (r31_pvp_catalog.lua): each core is one node wider
+	-- than the centred blueprint box (r7_settlement BOUNDS), so the half-open
+	-- core square holds it.
+	{id="pvp_fortress",shape="gentle_grade",building_core_width=50,fitting_width=112,blend_width=176,force_native_dungeon=false},
+	{id="pvp_camp_low",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
+	{id="pvp_camp_high",shape="gentle_grade",building_core_width=28,fitting_width=72,blend_width=120,force_native_dungeon=false},
 }
 -- A capital's protection is its planned city (Round 22, plan D76): inside the
 -- wall line, the edge and a band beyond it, built from the capital layout

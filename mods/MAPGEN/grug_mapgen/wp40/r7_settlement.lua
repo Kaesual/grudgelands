@@ -63,6 +63,7 @@ local module_dir = type(module_info)=="table" and type(module_info.source)=="str
 	module_info.source:sub(1,1)=="@" and module_info.source:sub(2):match("^(.*)[/\\][^/\\]*$")
 if not module_dir or module_dir=="" then module_dir=core.get_modpath("grug_mapgen").."/wp40" end
 local round20_catalog = dofile(module_dir.."/r20_poi_catalog.lua")
+local pvp_catalog = dofile(module_dir.."/r31_pvp_catalog.lua")
 local plot_approach = dofile(module_dir.."/../wp13/plot_approach.lua")
 local approach_palettes = dofile(module_dir.."/../wp13/palette.lua")
 local parts = dofile(module_dir.."/../wp13/parts.lua")
@@ -78,6 +79,12 @@ M.BOUNDS = {
 	-- Authored POIs stay inside the exact half-open flat terrain cores.
 	poi = {min = {x = -12, y = 0, z = -12}, max = {x = 11, y = 8, z = 11}},
 	poi_outpost = {min = {x = -8, y = 0, z = -8}, max = {x = 7, y = 8, z = 7}},
+	-- Round 31 PvP POIs: square and centred on the anchor, so a quarter turn
+	-- keeps them (`r31_pvp_poi_blueprint.lua`); the fitting profiles' cores
+	-- (source/simple_map.lua) are one node wider than these boxes.
+	pvp_fortress = {min = {x = -24, y = 0, z = -24}, max = {x = 24, y = 16, z = 24}},
+	pvp_camp_low = {min = {x = -11, y = 0, z = -11}, max = {x = 11, y = 9, z = 11}},
+	pvp_camp_high = {min = {x = -13, y = 0, z = -13}, max = {x = 13, y = 9, z = 13}},
 }
 
 -- The city edge (walls or palisades, gatehouses, turrets) is the one
@@ -424,6 +431,65 @@ for _, art in ipairs(round20_catalog) do
 		config_schema=stem.."_config_v1",ledger_schema=stem.."_ledger_v1",
 		metrics_schema=stem.."_metrics_v1",delta_schema=stem.."_delta_v1",
 		reserve_anchor_root=true}
+end
+
+-- The Round 31 PvP POIs (`r31_pvp_catalog.lua`) bind the anchors their zone
+-- and slot name in the source (lane M adds those anchor rows, template id =
+-- the row's kind). All rows or none: before the anchors exist nothing
+-- registers; a partial set is an authoring error.
+--
+-- The one gate faces where players come from: a fortress's faces the middle
+-- road along x = 0 (west when the fortress stands east of it, east when
+-- west, and toward its own continent when it stands on the line); a camp's
+-- faces its own continent (Elandor at -z, Kragmar at +z). A row's own
+-- `turns` overrides the rule.
+function M.pvp_gate_turns(row, x)
+	if row.turns ~= nil then return row.turns end
+	if row.kind == "pvp_fortress" and x > 0 then return 1 end
+	if row.kind == "pvp_fortress" and x < 0 then return 3 end
+	return row.faction == "accord" and 0 or 2
+end
+
+function M.pvp_profiles(source)
+	local zone_numeric = {}
+	for index = 1, #source.zones do zone_numeric[source.zones[index].id] = index end
+	local anchor_of = {}
+	for index = 1, #source.anchors do
+		local a = source.anchors[index]
+		anchor_of[a.zone_numeric_id .. "/" .. a.slot_id] = a
+	end
+	local profiles = {}
+	for _, row in ipairs(pvp_catalog.rows) do
+		local zone = zone_numeric[row.zone_id]
+		if not zone then error("WP13 PvP POI zone differs: " .. row.key, 0) end
+		local a = anchor_of[zone .. "/" .. row.slot]
+		if a then
+			if a.template_id ~= row.kind then
+				error("WP13 PvP POI template differs: " .. row.key, 0)
+			end
+			local stem = "grug_r31_" .. row.key
+			profiles[#profiles + 1] = {key = row.key, label = row.label,
+				race = pvp_catalog.SEAT_RACE[row.faction], slot = row.slot,
+				bounds = row.kind, lazy = true, zone_id = row.zone_id,
+				anchor_id = a.id, numeric_id = a.numeric_id,
+				x = a.position.x, z = a.position.z,
+				blueprint_file = "r31_pvp_poi_blueprint.lua",
+				art = {kind = row.kind, faction = row.faction, band = row.band,
+					turns = M.pvp_gate_turns(row, a.position.x)},
+				blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
+				config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
+				metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
+				reserve_anchor_root = true}
+		end
+	end
+	if #profiles > 0 and #profiles ~= #pvp_catalog.rows then
+		error("WP13 PvP POIs: " .. #profiles .. " of " .. #pvp_catalog.rows ..
+			" catalogue rows have an anchor", 0)
+	end
+	return profiles
+end
+for _, profile in ipairs(M.pvp_profiles(dofile(module_dir .. "/source/simple_map.lua"))) do
+	M.roster[#M.roster + 1] = profile
 end
 
 -- ASCII byte order. Lua's `<` on strings is `strcoll`, so under a locale that

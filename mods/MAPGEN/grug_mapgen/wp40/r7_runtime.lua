@@ -659,7 +659,11 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					type(anchor.y) ~= "number" then
 				fail("settlement socket anchor differs: " .. profile.key)
 			end
-			rows[index] = {key = profile.key, label = profile.label, race = profile.race,
+			-- A composition that decides its race per world (a Round 31 camp)
+			-- publishes it; the socket registry carries that race.
+			local landmarks = row.prepared.blueprints[1].landmarks
+			local race = type(landmarks) == "table" and landmarks.race or profile.race
+			rows[index] = {key = profile.key, label = profile.label, race = race,
 				slot = profile.slot, zone_id = profile.zone_id, anchor = anchor,
 				sockets = r7_settlement_module.sockets(row.prepared, anchor)}
 		end
