@@ -188,6 +188,11 @@ in this file as of commit `082982da`.
 
 ## 4. PvP zones and voluntary flagging
 
+> **Superseded (Round 31):** the shipped rule is geographic PvP with a
+> per-player flag ([pvp-plan.md](../planning/pvp-plan.md) §2,
+> [combat_stats.md](combat_stats.md) "PvP eligibility and flag"); the
+> automatic tag by attacks and the transaction below no longer apply.
+
 - PvP state is explicit per player. A player is either **safe** or
   **PvP-tagged**.
 - Entering a contested zone applies the PvP tag automatically. Leaving the
@@ -1848,6 +1853,11 @@ ignored completely; at most one optional crash smoke test under PUC runs once
 the mapgen is finished.
 
 ## 15. Exact PvP eligibility contract (WP41)
+
+> **Superseded (Round 31):** the shipped rule is geographic PvP with a
+> per-player flag ([pvp-plan.md](../planning/pvp-plan.md) §2,
+> [combat_stats.md](combat_stats.md) "PvP eligibility and flag"); the
+> automatic tag by attacks and the transaction below no longer apply.
 
 WP41 is part of V1 (user decision 2026-09-29,
 [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29) B4).
