@@ -291,7 +291,10 @@ need no GUI check.
     may lie further from the road where that gives a better spot — near the
     Battlegrounds and the road, but a fitting place beats reshaping terrain;
     the road is flair. PvP in the depths starts at depth tier T4 (land at
-    y ≤ −501) instead of T5 (y ≤ −701).
+    y ≤ −501) instead of T5 (y ≤ −701): under peaceful areas T1–T3 stay
+    protected from enemy players like the surface (no mining, no combat),
+    own-faction players are flagged by depth only from T4, and from T4 down
+    every player may dig and place blocks.
 
 ## 7. Orchestration notes (for the coordinator)
 
