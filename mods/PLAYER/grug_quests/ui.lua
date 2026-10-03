@@ -38,6 +38,38 @@ local PADDING, DETAIL_GAP = 0.3, 0.2
 local TEXT_X = 3.60 + PADDING + DETAIL_GAP
 local COLUMN_X = TEXT_X - PADDING
 local TEXT_W = 6.0
+-- One text field holds the description, the objective lines and the reward
+-- line (Round 32), so all of it shares the column and the field scrolls
+-- only when everything together does not fit. Below it one row: "Track on
+-- HUD" left, Abandon (or Confirm abandon and Cancel) right-aligned to the
+-- text's right edge (COLUMN_RIGHT: a button's x + w lands there). In legacy
+-- coordinates a checkbox is centred half an image below its y and a button
+-- half its height below its y (parseCheckbox, parseButton), so the checkbox
+-- sits ROW_SHIFT higher to share the buttons' centre line. A textarea's top
+-- is a button half-height below its y, its height h images less the slot
+-- gap; TEXT_H leaves about a quarter image above the buttons.
+local TEXT_Y, TEXT_H = 1.05, 4.75
+local ROW_Y, BUTTON_H, ROW_SHIFT = 5.35, 0.65, 0.15
+local COLUMN_RIGHT = COLUMN_X + TEXT_W
+local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.55, 2.05, 1.35, 0.15
+
+-- Description, objective lines and the reward line, separated by an empty
+-- line each like the quest-offer dialogue.
+local function detail_text(quest)
+	local objectives = {}
+	for _, objective in ipairs(quest.objectives) do
+		objectives[#objectives + 1] = objective_label(objective)
+	end
+	local rewards = {}
+	if quest.reward_xp > 0 then rewards[#rewards + 1] = quest.reward_xp .. " XP" end
+	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
+	for _, item in ipairs(quest.rewards.items) do
+		local stack = ItemStack(item)
+		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
+	end
+	return grug_inventory.wrap_text(quest.description, 58) .. "\n\n" ..
+		table.concat(objectives, "\n") .. "\n\nRewards: " .. table.concat(rewards, ", ")
+end
 
 local function content(player, context)
 	local journal = grug_quests.journal(player)
@@ -63,33 +95,19 @@ local function content(player, context)
 	end
 	fs[#fs + 1] = ("label[%.2f,0.65;%s]"):format(COLUMN_X,
 		esc(quest.title .. (quest.repeatable and " (Repeatable)" or "")))
-	fs[#fs + 1] = ("textarea[%.2f,1.05;%.2f,1.35;;;%s]"):format(TEXT_X, TEXT_W,
-		esc(grug_inventory.wrap_text(quest.description, 58)))
-	local objectives = {}
-	for _, objective in ipairs(quest.objectives) do
-		objectives[#objectives + 1] = objective_label(objective)
-	end
-	fs[#fs + 1] = ("textarea[%.2f,2.35;%.2f,1.55;;;%s]"):format(TEXT_X, TEXT_W,
-		esc(table.concat(objectives, "\n")))
-	local rewards = {}
-	if quest.reward_xp > 0 then rewards[#rewards + 1] = quest.reward_xp .. " XP" end
-	if quest.rewards.copper > 0 then rewards[#rewards + 1] = grug_money.format(quest.rewards.copper) end
-	for _, item in ipairs(quest.rewards.items) do
-		local stack = ItemStack(item)
-		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
-	end
-	fs[#fs + 1] = ("textarea[%.2f,4.00;%.2f,0.75;;;%s]"):format(TEXT_X, TEXT_W,
-		esc("Rewards: " .. table.concat(rewards, ", ")))
-	fs[#fs + 1] = ("checkbox[%.2f,4.78;grug_quest_track;Track on HUD;%s]")
-		:format(COLUMN_X, tracked(journal, quest.id) and "true" or "false")
+	fs[#fs + 1] = ("textarea[%.2f,%.2f;%.2f,%.2f;;;%s]"):format(TEXT_X, TEXT_Y,
+		TEXT_W, TEXT_H, esc(detail_text(quest)))
+	fs[#fs + 1] = ("checkbox[%.2f,%.2f;grug_quest_track;Track on HUD;%s]")
+		:format(COLUMN_X, ROW_Y - ROW_SHIFT, tracked(journal, quest.id) and "true" or "false")
 	if context.grug_quest_abandon == quest.id then
-		fs[#fs + 1] = ("button[%.2f,5.35;2.05,0.65;grug_quest_confirm;Confirm abandon]")
-			:format(COLUMN_X)
-		fs[#fs + 1] = ("button[%.2f,5.35;1.35,0.65;grug_quest_cancel;Cancel]")
-			:format(COLUMN_X + 2.2)
+		local cancel_x = COLUMN_RIGHT - CANCEL_W
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_confirm;Confirm abandon]")
+			:format(cancel_x - BUTTON_GAP - CONFIRM_W, ROW_Y, CONFIRM_W, BUTTON_H)
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_cancel;Cancel]")
+			:format(cancel_x, ROW_Y, CANCEL_W, BUTTON_H)
 	else
-		fs[#fs + 1] = ("button[%.2f,5.35;1.55,0.65;grug_quest_abandon;Abandon]")
-			:format(COLUMN_X)
+		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;grug_quest_abandon;Abandon]")
+			:format(COLUMN_RIGHT - ABANDON_W, ROW_Y, ABANDON_W, BUTTON_H)
 	end
 	if quest.ready then
 		local npc = grug_quests.registered_npcs[quest.npc]

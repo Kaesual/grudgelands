@@ -352,14 +352,19 @@ for _, id in ipairs(ids) do
 	-- Quest log (ui.lua) and HUD tracker (hud.lua), quest active.
 	set_state({active = {[id] = {}}, completed = completed, tracked = {id}, hud = true})
 	local form = pages["grug_quests:quests"].get(nil, player, {grug_quest_selected = id})
-	local _, after = element(form, "textarea[4.10,1.05;6.00,1.35;;;")
-	local objectives = element(form, "textarea[4.10,2.35;6.00,1.55;;;", after)
-	local rewards = element(form, "textarea[4.10,4.00;6.00,0.75;;;")
-	if check(objectives and rewards, "quest log textareas present: " .. id) then
-		local log_lines = lines_of(objectives)
-		eq(#log_lines, #def.objectives, "quest log one line per objective: " .. id)
+	-- One text field (Round 32): description, an empty line, one line per
+	-- objective, an empty line, the reward line.
+	local detail = element(form, "textarea[4.10,1.05;6.00,4.75;;;")
+	if check(detail ~= nil, "quest log text field present: " .. id) then
+		local detail_lines = lines_of(detail)
+		local count = #detail_lines
+		local rewards = detail_lines[count]
+		local first = count - 1 - #def.objectives
+		eq(detail_lines[count - 1], "", "quest log empty line before the rewards: " .. id)
+		eq(detail_lines[first - 1], "", "quest log empty line before the objectives: " .. id)
+		check(rewards:sub(1, 9) == "Rewards: ", "quest log reward line last: " .. id)
 		for index, objective in ipairs(def.objectives) do
-			local line = log_lines[index] or ""
+			local line = detail_lines[first + index - 1] or ""
 			check(one_clean_line(line), "quest log objective clean: " .. id .. " " .. ("%q"):format(line))
 			if objective.type == "item" and objective.item then
 				eq(line, ("Bring %s: 0/%d"):format(expected[objective.item], objective.count),
