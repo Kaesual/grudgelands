@@ -26,8 +26,8 @@ not notice PvP at all.
   goes through `valid_target` (`grug_abilities/init.lua`) and either the
   authoritative swing punch or `grug_core.deal_ability_damage`
   (`grug_core/combat.lua`), which also serves casts, AoE and projectiles.
-- Support on other players is Flash Heal (with splash), Power Word: Shield
-  and Renew (`grug_abilities/kits.lua`), gated by `valid_target("friendly")`.
+- Support on other players is Heal (with splash), Shield
+  and Mend (`grug_abilities/kits.lua`), gated by `valid_target("friendly")`.
   No player DoTs, pets, cleanses or buffs on others exist.
 - The combat timer is 5 s (`COMBAT_TIMEOUT`, `grug_core/combat.lua`); PvP
   hits arm it. It gates food, mounting/boats, travel home and waystones.
@@ -72,27 +72,27 @@ not notice PvP at all.
 4. **No flag modes.** No automatic flagging by attacking, healing or AoE, no
    "always on". The button is the only manual control; there is no manual
    unflag. *Reason:* the automatic mode carries the griefing (walking into a
-   Frost Nova) and most of the combat-code cost; "always on" is a further
+   Ice Nova) and most of the combat-code cost; "always on" is a further
    setting for little gain.
 5. **An unflagged enemy is not a valid hostile target.** The crosshair ray,
    swings, targeted casts and projectile launch treat them like no target
    (no swing, no cost); AoE skips them; casts and projectiles re-check at
    impact. *Reason:* no "blocked but paid" semantics, no knockback wrapper,
    no AoE ordering rule.
-6. **Support is one-way:** an unflagged helper cannot heal, shield or Renew
-   a flagged player of the own faction (including Flash Heal's splash); a
+6. **Support is one-way:** an unflagged helper cannot heal, shield or Mend
+   a flagged player of the own faction (including Heal's splash); a
    flagged helper may support anyone of the own faction. *Reason:* an
    unflagged player never joins a fight by accident.
 7. **PvP contact** is (a) hostile damage that lands (HP lost or absorb
    consumed) between two enemy players, for **both** the dealer and the
-   receiver, and (b) heal, shield or Renew cast on an own-faction player who
+   receiver, and (b) heal, shield or Mend cast on an own-faction player who
    is in PvP combat (ruling 8), for the helper. Effects over time count only
    at application, never per tick. Fighting guards, kings, generals or any
    NPC is **never** PvP contact. *Reason:* only real player-versus-player
    counts; one timestamp per player holds it.
 8. **PvP combat = PvP contact within the last 10 s.** It sets the shared
    combat state (`grug_core.in_combat`) for 10 s; mob combat keeps its 5 s.
-   *Reason:* Frost Nova plus Blink should not escape to a mount in 5 s.
+   *Reason:* Ice Nova plus Blink should not escape to a mount in 5 s.
 9. **Logout in PvP combat while flagged is death.** The enemy players who
    dealt damage in the last 15 s get the kill immediately (statistics, death
    message "… fled the fight and fell" or similar); the character is marked
@@ -244,8 +244,8 @@ opposing / equal faction; every PvE path returns before them.
   `grug_pvp` installs at load (`grug_core` must not depend on `grug_pvp`);
   the swing punch handler checks `can_harm` before its damage. After landed
   damage both call `contact`.
-- Support kits (Flash Heal and splash, Power Word: Shield, Renew cast) call
-  `support_contact` after an effective result. Renew ticks do not.
+- Support kits (Heal and splash, Shield, Mend cast) call
+  `support_contact` after an effective result. Mend ticks do not.
 - Combat state: PvP contact arms `grug_core`'s combat timer for 10 s
   (a per-call duration or a separate PvP constant in `combat.lua`).
 - Leave handler: logout death (ruling 9); join handler: apply the pending
@@ -338,7 +338,7 @@ Two Flatpak clients on one local server, one Accord and one Throng
 character at level 40+ (and a low-level one for ruling 3/12 checks).
 
 1. Own peaceful zone, both unflagged: enemy is no target (neutral
-   crosshair, "protected" in the target frame); Frost Nova next to the enemy
+   crosshair, "protected" in the target frame); Ice Nova next to the enemy
    does nothing to them.
 2. Press "Flag me for PvP": icon with countdown; still no hits until the
    other is flagged too; both flagged → hits land.
