@@ -123,6 +123,26 @@ function M.new(catalog, names)
 		return row and (row.zone_id .. "/" .. key) or nil
 	end
 
+	-- What a kill objective may name in that area (Round 31 lane Q): role
+	-- (the entity name without "grug_mobs:") -> {level_min, level_max}, as
+	-- G.slot places them; `band` as there (camps only).
+	function G.area_roles(key, band)
+		local row = by_key[key]
+		if not row then return nil end
+		local function role(entity) return (entity:gsub("^grug_mobs:", "")) end
+		local faction, out = row.faction, {}
+		if row.kind == "pvp_fortress" then
+			out[role(M.guard_entity(faction))] = {M.FORTRESS_GUARD_LEVEL, M.FORTRESS_GUARD_LEVEL}
+			out[role(M.bodyguard_entity(faction))] = {M.BODYGUARD_LEVEL, M.BODYGUARD_LEVEL}
+			out[role(M.general_entity(faction))] = {M.GENERAL_LEVEL, M.GENERAL_LEVEL}
+			return out
+		end
+		local low, high = catalog.camp_levels(band[1], band[2], row.band)
+		out[role(M.guard_entity(faction))] = {low, high}
+		out[role(M.captain_entity(faction))] = {high, high}
+		return out
+	end
+
 	function G.general_name(faction)
 		return names.generals[faction]
 	end

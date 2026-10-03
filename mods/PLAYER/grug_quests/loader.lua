@@ -142,8 +142,8 @@ local function register_quests(files)
 end
 
 -- What validate.lua's world checks ask, from the spawn recipes (an area a
--- quest names is a kind or a camp of its zone's recipe, Lane S1), the
--- sub-type catalogue (B2) and the registries.
+-- quest names is a kind or a camp of its zone's recipe, Lane S1, or a PvP
+-- POI's garrison, Round 31), the sub-type catalogue (B2) and the registries.
 local function read_json(path)
 	local handle = io.open(path, "r")
 	if not handle then return nil end
@@ -163,9 +163,25 @@ local function world_view()
 	end
 	local groups
 	local zone_cache = {}
+	-- A fortress's or Battlegrounds camp's garrison, "<zone>/<settlement
+	-- key>" (the `_grug_area` lane G's garrisons carry): its roles at their
+	-- levels and, as `garrison`, its faction.
+	local function garrison_area(zone, id)
+		local garrison = grug_mobs.pvp_garrison
+		local row = garrison and garrison.poi(id)
+		local record = row and row.zone_id == zone and grug_zones.get(zone)
+		if not record then return nil end
+		local by_role = garrison.area_roles(id, {record.level_min, record.level_max})
+		local roles, lo, hi = {}, nil, nil
+		for role, range in pairs(by_role) do
+			roles[role] = true
+			lo, hi = math.min(lo or range[1], range[1]), math.max(hi or range[2], range[2])
+		end
+		return {levels = {lo, hi}, levels_by_role = by_role, roles = roles, garrison = row.faction}
+	end
 	local function area(zone, id)
 		local found = areas.get_area(zone, id)
-		if not found then return nil end
+		if not found then return garrison_area(zone, id) end
 		return {levels = found.levels, levels_by_role = found.levels_by_role,
 			roles = areas.area_roles(zone, id) or {}}
 	end
@@ -176,6 +192,10 @@ local function world_view()
 			return def and def._grug_disposition or grug_mobs.disposition(name)
 		end,
 		role_levels = function(role) return levels[role] end,
+		-- The faction a quest giver serves (registry.lua, resolved before
+		-- these checks) and the one it fights.
+		npc_faction = function(npc) return (Q.registered_npcs[npc] or {}).faction end,
+		opposing_faction = function(faction) return grug_core.opposing_faction(faction) end,
 		leader = function(role) return areas.leader(role) end,
 		-- {level_min, level_max} of a named zone (base mobs' surface levels).
 		zone_band = function(zone)

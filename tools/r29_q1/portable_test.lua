@@ -379,6 +379,10 @@ local function findings(change)
 			group = function() return true end,
 			placeholder_target = Q.placeholder_target,
 			place = function(ref) return regions.place(ref) end,
+			-- The giver's faction for a PvP garrison target (Round 31 Q; the
+			-- fixture names none).
+			npc_faction = function(npc) return (Q.registered_npcs[npc] or {}).faction end,
+			opposing_faction = function(f) return f == "accord" and "throng" or "accord" end,
 		})
 		errors = world_errors
 	end

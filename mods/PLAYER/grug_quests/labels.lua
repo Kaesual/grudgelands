@@ -71,9 +71,10 @@ end
 --                       "in the heart of Dawnmere Fields"
 --   {name:T}            the display name: "Dawnmere Meadows", "Crumb"
 --
--- T is a kind or camp of a zone's spawn recipe or a leader role; a bare id
--- means the quest file's zone, "zone_id/id" another zone (a leader role is
--- found in any zone). P is a settlement key or anchor id ("highcourt",
+-- T is a kind or camp of a zone's spawn recipe, a leader role or a PvP POI
+-- (Round 31: a fortress or Battlegrounds camp by its settlement key); a bare
+-- id means the quest file's zone, "zone_id/id" another zone (a leader role
+-- and a PvP POI are found in any zone). P is a settlement key or anchor id ("highcourt",
 -- "goldmead_village", "anchor_015"). A fill that starts a sentence starts
 -- with a capital letter. Titles take only {name:T}: they are listed in the
 -- dialogue, the quest log and other quests' requirements, and are filled
@@ -174,7 +175,7 @@ function P.fill(text, resolve)
 end
 
 -- What a placeholder target names: {zone, id, what = "leader" | "kind" |
--- "camp", name, type (a kind's terrain type)}, or nil and the reason. `zone` is the quest file's zone.
+-- "camp" | "poi", name, type (a kind's terrain type)}, or nil and the reason. `zone` is the quest file's zone.
 -- Static: no region map is built.
 function Q.placeholder_target(zone, ref)
 	local regions = grug_mobs.spawn_regions
@@ -189,7 +190,12 @@ function Q.placeholder_target(zone, ref)
 	end
 	local area = regions.get_area(qualified or zone, id)
 	if not area then
-		return nil, ("%s is no kind, camp or leader of %s"):format(id, qualified or zone)
+		-- A PvP POI (Round 31) points at its anchor; its name is the POI's.
+		local poi = grug_mobs.pvp_garrison and grug_mobs.pvp_garrison.poi(id)
+		if poi and (not qualified or qualified == poi.zone_id) then
+			return {zone = poi.zone_id, id = id, what = "poi", name = poi.label}
+		end
+		return nil, ("%s is no kind, camp, leader or PvP POI of %s"):format(id, qualified or zone)
 	end
 	return {zone = qualified or zone, id = id, what = area.is_camp and "camp" or "kind", name = area.name,
 		type = area.type}
@@ -236,18 +242,20 @@ local function placeholder_value(def, p, at_giver)
 	end
 	if p.kind == "name" then return target.name end
 	local regions = grug_mobs.spawn_regions
+	-- A PvP POI is described at its anchor ({x, z}, spawn_regions.place).
+	local subject = target.what == "poi" and regions.place(target.id) or target.id
 	local result
 	if p.kind == "dir_from_giver" and not at_giver then
 		local npc = Q.registered_npcs[def.npc]
-		result, reason = regions.describe(target.zone, target.id, "of", npc and npc.settlement)
+		result, reason = regions.describe(target.zone, subject, "of", npc and npc.settlement)
 	elseif p.kind == "dir_from_giver" then
 		local pos = giver_position(def.npc)
-		result, reason = pos and regions.describe(target.zone, target.id, "from", pos)
+		result, reason = pos and regions.describe(target.zone, subject, "from", pos)
 		reason = reason or "the giver has no position"
 	elseif p.kind == "dir_of" then
-		result, reason = regions.describe(target.zone, target.id, "of", p.args[1])
+		result, reason = regions.describe(target.zone, subject, "of", p.args[1])
 	else
-		result, reason = regions.describe(target.zone, target.id, "zone")
+		result, reason = regions.describe(target.zone, subject, "zone")
 	end
 	if result then return result.phrase end
 	core.log("warning", ("[grug_quests] %s: %s has no direction on this world (%s)")
