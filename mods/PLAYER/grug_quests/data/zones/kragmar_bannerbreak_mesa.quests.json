@@ -27,6 +27,36 @@
           ]
         }
       ]
+    },
+    {
+      "id": "bannerbreak_warhold",
+      "anchor": "pvp_fortress_throng",
+      "givers": [
+        {
+          "npc": "r31_throng_warmaster",
+          "lines": [
+            "front"
+          ]
+        },
+        {
+          "npc": "r31_throng_drillmaster",
+          "lines": [
+            "front"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bannerbreak_warhold_scouts",
+      "anchor": "pvp_fortress_throng",
+      "givers": [
+        {
+          "npc": "r31_throng_outrider",
+          "lines": [
+            "front"
+          ]
+        }
+      ]
     }
   ],
   "quests": [

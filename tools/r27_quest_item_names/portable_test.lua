@@ -90,8 +90,9 @@ end
 -- 1. The helper itself.
 ------------------------------------------------------------------------------
 grug_core = {register_tag_visibility = function() end,
-	-- grug_quests/npcs.lua: no PvP fortress is registered here (Round 31).
-	settlement_socket_anchor = function() return nil end,
+	-- grug_quests/npcs.lua: both PvP fortresses are bound, so their quest
+	-- givers register (Round 31; the shipped quest files name them).
+	settlement_socket_anchor = function(key) return key:match("^pvp_fortress_") and {x = 0, z = 0} or nil end,
 	hud_layout = {side_text_width = function() return 38 end},
 	settlement_sockets_at = function() return {} end}
 dofile("mods/CORE/grug_core/item_names.lua")

@@ -27,6 +27,36 @@
           ]
         }
       ]
+    },
+    {
+      "id": "ashenward_bastion",
+      "anchor": "pvp_fortress_accord",
+      "givers": [
+        {
+          "npc": "r31_accord_warmaster",
+          "lines": [
+            "front"
+          ]
+        },
+        {
+          "npc": "r31_accord_drillmaster",
+          "lines": [
+            "front"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ashenward_bastion_scouts",
+      "anchor": "pvp_fortress_accord",
+      "givers": [
+        {
+          "npc": "r31_accord_outrider",
+          "lines": [
+            "front"
+          ]
+        }
+      ]
     }
   ],
   "quests": [
