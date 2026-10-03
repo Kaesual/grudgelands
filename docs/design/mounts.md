@@ -334,7 +334,7 @@ warning and forced dismount are separate consumer states derived from
   16 horizontal directions at 1, 2, 4, 8, 16, 32 and 48 nodes. This samples at
   most 112 columns per rider per second, detects adjacent illegality exactly
   and resolves the 48-node warning reach to within plus or minus 4 nodes at
-  range. HUD text and one chat notice warn that crossing will force a dismount;
+  range. HUD text and one message-feed line warn that crossing will force a dismount;
   moving clear of every sampled illegal column removes the warning.
 - Width is spatial, not a timer, so the +100% and +200% flyers receive the same
   boundary. The **first ocean node** is already illegal and dismounts

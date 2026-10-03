@@ -141,7 +141,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **No migration**: weapons stay valid `main` items and nothing of a
     character's is moved behind its back. A character that owns a
     slot-eligible weapon, has finished character creation and has the slot
-    empty gets a **one-time chat hint** instead. Since the starter grant above
+    empty gets a **one-time chat hint** instead (kept in chat: it is too
+    long to read in the message feed). Since the starter grant above
     fills the slot at class choice, a fresh character never sees that hint;
     it survives for a character that took its weapon back out.
 - **Hand count — the mechanism for `combat_stats.md` §7's two-handed rule**
@@ -395,7 +396,9 @@ them.
 - **Lines:** at most 3, newest at the bottom; each lives 2.5 s and is drawn
   at 45 % brightness for its last 0.5 s (HUD text has no alpha fade on every
   client). Colours by kind: loot white, XP purple (`#aa66ff`), quest yellow
-  (`#ffe080`), fishing light blue, combat notices grey (`#aaaaaa`).
+  (`#ffe080`, also talent points), fishing light blue, combat notices grey
+  (`#aaaaaa`), other notices and refusals the neutral notice colour
+  (`#f0e6c8`).
 - **Content:** XP gains as "+N XP", every grant within 1.5 s of the previous
   one summed into the same line; items picked up off the ground (mob drops,
   dropped items) and boss loot entering the inventory as "+3 Light Leather",
@@ -406,7 +409,16 @@ them.
   tracker line (38 characters, "..."); fishing catches as
   "Caught <fish> (+N XP)" (junk: "Caught <item>"); combat notices
   "You dodge!" and "Dismount before attacking." (a mounted attack, at most
-  once a second), each one keyed line that a repeat refreshes (Round 32).
+  once a second); and since Round 32 the personal notices: potion and food
+  refusals (level, potion cooldown, full health, no mana pool, not
+  poisoned), the raw-weapon hint as two lines, mount notices (dismount
+  reason, flight-boundary warning, summon refusal), talent points earned or
+  returned, and "Boss loot is waiting for free inventory space." Each
+  notice group keeps one keyed line that a repeat refreshes (`potion`,
+  `food`, `weapon_hint:1/2`, `mount`, `talents`, `boss_loot`, `combat:*`).
+  Still in chat: death messages, rare sightings for the faction, the dragon
+  arena's warnings, a boss's return warning and the one-time no-weapon hint
+  (too long for the feed's 2.5 s).
 - **Level-up** is a separate large centre announcement ("Reached level N!",
   double font size, 3 s), not a feed line.
 - **API** (`grug_core/feed.lua`): `grug_core.feed(player, kind, text, key)`
