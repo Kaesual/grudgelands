@@ -18,7 +18,7 @@ GPL-family / LGPL / MIT / Apache / CC0 / CC BY / CC BY-SA.
 The **castle_* suite by FaceDeer** (MIT code+media, minetest-mods org) is the single
 best source for capital/outpost building blocks: masonry walls, arrowslits,
 murder holes, gates/portcullis, medieval lighting, tapestries and wall shields —
-exactly WoW-keep flair. **cottages** (Sokomine) and **darkage** cover village-tier
+exactly classic-MMO keep flair. **cottages** (Sokomine) and **darkage** cover village-tier
 roofs/furniture and pre-industrial nodes. For faction banners, the
 **pandorabox banners fork** (layered heraldic designs, GPLv3/CC0) plus the simple
 CC0 **Banners** mod cover both custom crests and mass-produced flags. Ready-made

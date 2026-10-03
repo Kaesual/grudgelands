@@ -270,9 +270,9 @@ Explicitly **not** planned or not timed (no icon):
   the `mob_web` key.
 - **Move immunity.** Hold Ground and Shake Loose share one `move_immune` icon.
 - **Ability buffs.** Sprint, Sidestep, Renew and Power Word: Shield can reuse
-  their Round-18 skill icons, the WoW convention where the aura icon equals
-  the spell icon, but only if the opaque background is kept. Otherwise draw
-  new ones from the briefs.
+  their Round-18 skill icons, the classic MMO convention where the aura icon
+  equals the spell icon, but only if the opaque background is kept. Otherwise
+  draw new ones from the briefs.
 - **PvP.** Tagged and Contested share the crossed-swords core; Contested adds
   the banner.
 

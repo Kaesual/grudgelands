@@ -1,6 +1,6 @@
 # AGENTS.md — Project Guide
 
-WoW-inspired Luanti game, titled "Grudgelands". Goals and scope:
+MMO-inspired Luanti game, titled "Grudgelands". Goals and scope:
 **[ROADMAP.md](ROADMAP.md)**. Work packages and status:
 **[BACKLOG.md](BACKLOG.md)**. Documentation entry point and source roles: **[docs/README.md](docs/README.md)**.
 Research and historical evidence: **[docs/research/README.md](docs/research/README.md)**.
@@ -555,8 +555,9 @@ behavior from an old completion report or source-line citation.
   a CC BY-NC sound hidden inside the otherwise-clean ambience mod).
 - Asset shopping lists with verified licenses:
   [docs/research/assets/](docs/research/assets/).
-- **Never copy WoW assets/names 1:1** — Blizzard IP. Own assets, own names
-  with a recognizable character ("inspired by", not "copied").
+- **Never copy assets or names 1:1 from existing commercial games** (their
+  IP). Own assets, own names with a recognizable character ("inspired by",
+  not "copied").
 
 ## Testing & development
 

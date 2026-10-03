@@ -830,7 +830,7 @@ is met at the hotspots and not in the median cell.
   40 s teleport backstop bounds how long a returning member can stay
   uncounted); a determined puller can still inflate a camp temporarily.
 - **No floating combat text**: damage numbers, crits and the "Evade!"
-  banner WoW shows over an evading mob have nowhere to go — the evade
+  banner classic MMOs show over an evading mob have nowhere to go — the evade
   ships silent (the mob simply takes no damage) and crits announce
   themselves only through a particle burst. A combat-text system (HUD or
   short-lived text entities over the target) is a future WP idea; the

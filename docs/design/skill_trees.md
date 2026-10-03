@@ -49,9 +49,10 @@ commit (§5.3).
   supersession history.
 - `AGENTS.md` requires `docs/design/` to contain decided rules only. Section 6
   is therefore a closed decision record; it contains no current open question.
-- `AGENTS.md:844`: "Never copy WoW assets/names 1:1 — Blizzard IP. Own
-  assets, own names with a recognizable character." Ruling 5 makes this
-  binding for every talent name; §2.11 is the audit.
+- `AGENTS.md:844` (paraphrased): never copy assets or names 1:1 from
+  existing commercial games (their IP); own assets, own names with a
+  recognizable character. Ruling 5 makes this binding for every talent name;
+  §2.11 is the audit.
 
 Everything this design says about the code is a `file:line` citation into
 `mods/` at **`70dda602`**, re-resolved after this file was written; nothing
@@ -87,10 +88,10 @@ then either the capstone or a finisher.
 | Scout | **Veil** | the blade and the shadow | **Blade** — melee damage | **Shadow** — avoidance and stealth |
 
 Tree names are unchanged from revision 1 by ruling 5 ("Tree names as proposed
-stay"). Ruin, Rime and Reckoning are known collisions with WoW talent names
-and the user has kept them deliberately; **talent** names are a different
-matter and §2.11 audits every one of them. The Scout's two tree names are new
-and ruling 27 settles them.
+stay"). Ruin, Rime and Reckoning are known collisions with talent names of an
+existing commercial MMO and the user has kept them deliberately; **talent**
+names are a different matter and §2.11 audits every one of them. The Scout's
+two tree names are new and ruling 27 settles them.
 
 Two sites in the repo still call the Priest healing tree "the **Holy** tree",
 one of them a code comment: `classes.md:464` and
@@ -586,9 +587,10 @@ Turn Aside's +20 dodge is clamped at 30 % like any gear roll.
 
 ### 2.11 Name audit (ruling 5)
 
-Ruling 5: "TALENT names must not remind of WoW — rename every talent the
-review flagged (Ruin/Rime/Reckoning stay as TREE names; Meditation, Kindling,
-Cripple as talent names go) and check the rest."
+Ruling 5 (paraphrased): the user ruled that TALENT names must not remind of
+an existing commercial MMO — rename every talent the review flagged
+(Ruin/Rime/Reckoning stay as TREE names; Meditation, Kindling, Cripple as
+talent names go) and check the rest.
 
 Renamed in this revision:
 
@@ -597,13 +599,13 @@ Renamed in this revision:
 | Meditation | **Deep Reserve** | Classic Priest Discipline talent, same 5/10/15 ranks |
 | Kindling | **Tinder** | Fire Mage talent |
 | Cripple | **Hobble** | Warlock spell |
-| Iron Discipline | **Ironbound** | "Discipline" and "Iron Will" both read as WoW class terms |
-| Battle Hunger | **Spite** | "Battle" + noun is the WoW warrior naming shape |
+| Iron Discipline | **Ironbound** | "Discipline" and "Iron Will" both read as that MMO's class terms |
+| Battle Hunger | **Spite** | "Battle" + noun is that MMO's warrior naming shape |
 | Bloodrush | **Stoke** | too close to Bloodthirst / Blood Rush |
-| Reaving Strike | **Broadstroke** | "…Strike" is the WoW ability suffix |
+| Reaving Strike | **Broadstroke** | "…Strike" is that MMO's ability suffix |
 | Stand Fast | **Hold Ground** (keystone) + **Unbroken** (capstone) | "Last Stand" / "Stand Fast" read as warrior cooldown names |
 | Scorching Focus | **Firebrand** | "Scorch" is a Fire Mage spell |
-| Zealous Mind | **Hard Faith** | "Zeal" is a Paladin/Priest term in WoW |
+| Zealous Mind | **Hard Faith** | "Zeal" is a Paladin/Priest term in that MMO |
 
 *Two entries of that table name talents that no longer exist*: **Hobble**
 (Lash's old tier-2) and **Deadweight** (its old tier-4) were both retired by
@@ -613,11 +615,11 @@ duration Deadweight used to. The renames stay recorded because the table is a
 history of what was retired and why, not a list of live names.
 
 **Second pass (independent review, 2026-09-16).** The review found five more
-names on the first pass's "no collision" list that are WoW talent names, three
-of them **Hunter** talents sitting on the bow class — the worst possible
-placement. All five are renamed here, and one of them (Fervour) was itself a
-first-pass rename, which is the argument for labelling confidence instead of
-asserting cleanliness:
+names on the first pass's "no collision" list that are that MMO's talent
+names, three of them **Hunter** talents sitting on the bow class — the worst
+possible placement. All five are renamed here, and one of them (Fervour) was
+itself a first-pass rename, which is the argument for labelling confidence
+instead of asserting cleanliness:
 
 | First pass | Now | Why |
 |---|---|---|
@@ -628,8 +630,8 @@ asserting cleanliness:
 | Pyre | **Whitehot** | Devastation Evoker's core spell (Dragonflight) |
 
 Every talent name in §§2.1-2.8, checked against the author's and the
-reviewer's knowledge of WoW. **This is not verifiable inside this repo**, so
-each name carries a confidence label rather than a verdict, and "low" means
+reviewer's knowledge of that MMO. **This is not verifiable inside this repo**,
+so each name carries a confidence label rather than a verdict, and "low" means
 "no collision either of us is aware of", never "proven clean":
 
 - **Low risk (no collision either reader is aware of), 54 names:** Ironbound,
@@ -643,12 +645,13 @@ each name carries a confidence label rather than a verdict, and "low" means
   Longshot, Fletching, Shifting Weight, Fine Edge, Deep Focus,
   Follow Through, Light Step, Slip Away, Shake Loose, Untouchable, Onset.
 - **Medium risk, recorded and NOT renamed.** **Ruling 21 settles the
-  criterion**: "what matters is the overall similarity — single words like
-  'Holy' or 'Sprint' are not protected; the whole picture must not sit too
-  close to WoW." Every entry below is a *single-word or single-concept* echo,
-  so none of them is renamed; the list stays because a reviewer should be able
-  to see that it was looked at, and because if enough of them accumulated the
-  *picture* would be the thing ruling 21 forbids.
+  criterion** (paraphrased): what matters is the overall similarity — single
+  words like 'Holy' or 'Sprint' are not protected; the whole picture must not
+  sit too close to the existing commercial MMO. Every entry below is a
+  *single-word or single-concept* echo, so none of them is renamed; the list
+  stays because a reviewer should be able to see that it was looked at, and
+  because if enough of them accumulated the *picture* would be the thing
+  ruling 21 forbids.
 
   | Name | The echo | An alternative, if the picture ever gets too close |
   |---|---|---|
@@ -659,24 +662,24 @@ each name carries a confidence label rather than a verdict, and "low" means
   | **Pinning Shot** | *Binding Shot*, a Hunter talent that roots at range — the same function and the same placement | **Stake Shot** |
   | **Brand** | *Fiery Brand* (Vengeance Demon Hunter) | **Sear** |
   | **Quiver** | an ordinary noun, and a Hunter aura in some expansions | **Full Quiver** |
-  | **Opening** | generic, but next to WoW's "opener" vocabulary | **First Cut** |
+  | **Opening** | generic, but next to that MMO's "opener" vocabulary | **First Cut** |
   | **Snare Shot** | the Scout's base kit ([scout.md](scout.md) §2): an ordinary phrase, and adjacent to the Hunter "…Shot" family | **Cripple Shot** |
   | **Sprint** | the Scout's base kit: an ordinary English word, and a Rogue ability — **explicitly named by ruling 21 as not protected** | **Break Away** |
 
   **The count is the thing to watch, not any single entry.** Three of these
   sit on the Scout's bow tree and one in its base kit, which is the one place
-  in the design where the picture could start to read as WoW's Hunter. If a
-  later pass renames anything, that cluster is where to start.
+  in the design where the picture could start to read as that MMO's Hunter.
+  If a later pass renames anything, that cluster is where to start.
 
 - **A question for the user, not an automatic rename.** Under ruling 21 this
   is the one naming item that is about the *picture* rather than a word: the
-  Priest's **Sharpened Word / Swift Word / Word of Ruin / Last Word** extend
-  WoW's Priest *"Power Word:" / "Shadow Word:" / "Holy Word:"* family — four
-  new talents, on the Priest, in that exact vocabulary — and **Twin Shot**
-  plus Snare Shot extend the Hunter *"…Shot"* family on the bow class. The
-  shipped `Power Word: Shield` is pre-existing and ruling 5 does not reopen
-  it. Clean replacements if the user wants them: **Whetted Verse**, **Quick
-  Verse**, **Verse of Ruin**, **Final Verse**; **Twinned Arrow**.
+  Priest's **Sharpened Word / Swift Word / Word of Ruin / Last Word** extend a
+  well-known MMO's Priest *"Power Word:" / "Shadow Word:" / "Holy Word:"*
+  family — four new talents, on the Priest, in that exact vocabulary — and
+  **Twin Shot** plus Snare Shot extend the Hunter *"…Shot"* family on the bow
+  class. The shipped `Power Word: Shield` is pre-existing and ruling 5 does
+  not reopen it. Clean replacements if the user wants them: **Whetted Verse**,
+  **Quick Verse**, **Verse of Ruin**, **Final Verse**; **Twinned Arrow**.
 - **Deliberately kept by ruling 5 (tree names):** Ruin, Rime, Reckoning.
 - **Renew and Hamstring keep their names**, and are the two talents that are
   also shipped abilities (§2.5, §2.2). They belong to the pre-existing group
@@ -1322,9 +1325,9 @@ for this revision. Each is followed by what it replaced.
    §1.4, §3.5. The user is recorded as "against money" as the respec's price
    shape; ruling 22 settles it.)*
 5. **Names.** Tree names as proposed stay (Bulwark/Ruin, Ember/Rime,
-   Mercy/Reckoning). **Talent** names must not remind of WoW — rename every
-   talent the review flagged (Meditation, Kindling, Cripple) and check the
-   rest. *(Done in §2.11.)*
+   Mercy/Reckoning). **Talent** names must not remind of an existing
+   commercial MMO — rename every talent the review flagged (Meditation,
+   Kindling, Cripple) and check the rest. *(Done in §2.11.)*
 6. **Caps** *(coordinator proposal, not a user ruling)*: talents work within
    the `combat_stats.md` caps; only capstones may exceed a cap, time-limited.
    **SUPERSEDED the same day by ruling 10**, which widens it: rule-breaker
@@ -1446,8 +1449,9 @@ closed**.
     reset** as well. *(Answers original 5.9 and 5.10. §1.4 and §3.10 carry the
     consequences, including the shipped `/class` command and the four code
     comments that assume a switch.)*
-21. **Names: what matters is the overall picture.** "Single words like 'Holy'
-    or 'Sprint' are not protected — the whole must not sit too close to WoW."
+21. **Names: what matters is the overall picture.** Paraphrased: single
+    words like 'Holy' or 'Sprint' are not protected — the whole must not sit
+    too close to an existing commercial MMO.
     Keep the audit; do not rename for single common words. *(Answers original
     5.6. §2.11 keeps its confidence labels and stops proposing renames for
     single-word collisions.)*
