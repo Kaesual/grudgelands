@@ -200,7 +200,9 @@ print("synthetic roads: ok")
 -- ---------------------------------------------------------------------------
 local EXPECTED_KIND = {village = "village", outpost = "poi", bandit_home = "camp",
 	bandit_frontier = "camp", mine = "poi", mirefolk = "camp", clash = "poi",
-	dragon = "poi", apex_mine = "poi", rare_route = "poi"}
+	dragon = "poi", apex_mine = "poi", rare_route = "poi",
+	-- Round 31 PvP POIs (pvp-plan ruling 22: 10 nodes of margin)
+	pvp_fortress = "fortress", pvp_camp_low = "camp", pvp_camp_high = "camp"}
 
 -- Deterministic pseudo-random numbers (no math.random state shared).
 local function rng(seed_value)
@@ -222,7 +224,7 @@ local function run_seed(seed)
 		W.seconds.world, W.seconds.blueprints, W.seconds.protection, W.memory_kib,
 		m.corridors, m.segments, m.runs, m.boxes, m.records, m.populated_cells,
 		m.candidate_references, m.maximum_candidates, #W.road_text))
-	check(m.boxes == 88, "88 settlement boxes")
+	check(m.boxes == 106, "106 settlement boxes")
 
 	-- The oracle: every box, then every segment of every road.
 	local corridors = wp.road_corridors(W.roads, W.road_text)
@@ -275,8 +277,10 @@ local function run_seed(seed)
 		check(b.kind == want, row.key .. " category " .. tostring(b.kind))
 		by_kind[b.kind] = (by_kind[b.kind] or 0) + 1
 		local a, bb = row.anchor, row.bounds
-		check(b.min_x == a.x + bb.min.x and b.max_x == a.x + bb.max.x and
-			b.min_z == a.z + bb.min.z and b.max_z == a.z + bb.max.z and
+		local margin = wp.settlement_margin(row.slot)
+		check(margin == (row.template_id:match("^pvp_") and 10 or 0), row.key .. " margin")
+		check(b.min_x == a.x + bb.min.x - margin and b.max_x == a.x + bb.max.x + margin and
+			b.min_z == a.z + bb.min.z - margin and b.max_z == a.z + bb.max.z + margin and
 			b.min_y == a.y - 10 and b.max_y == a.y + bb.max.y + 10 and bb.min.y == 0,
 			row.key .. " box derivation")
 		-- the blueprint's cells fill the anchor profile's building core square
@@ -285,9 +289,17 @@ local function run_seed(seed)
 		for _, p in ipairs(core) do
 			if p.id == row.template_id then width = p.building_core_width end
 		end
-		check(bb.max.x - bb.min.x + 1 == width and bb.max.z - bb.min.z + 1 == width and
-			bb.min.x == -width / 2 and bb.min.z == -width / 2,
-			row.key .. " cell bounds are the building core square")
+		if row.template_id:match("^pvp_") then
+			-- a PvP POI's centred box lies inside its core (a camp's core is one
+			-- node wider, the fortress's a flat field round its walls)
+			check(bb.min.x >= -width / 2 and bb.max.x <= width / 2 - 1 and
+				bb.min.z >= -width / 2 and bb.max.z <= width / 2 - 1,
+				row.key .. " cell bounds inside the building core square")
+		else
+			check(bb.max.x - bb.min.x + 1 == width and bb.max.z - bb.min.z + 1 == width and
+				bb.min.x == -width / 2 and bb.min.z == -width / 2,
+				row.key .. " cell bounds are the building core square")
+		end
 		local mx, my, mz = floor((b.min_x + b.max_x) / 2), floor((b.min_y + b.max_y) / 2),
 			floor((b.min_z + b.max_z) / 2)
 		for _, p in ipairs({{b.min_x, my, mz}, {b.max_x, my, mz}, {mx, my, b.min_z},
@@ -303,10 +315,10 @@ local function run_seed(seed)
 			agree(p[1], p[2], p[3], row.key .. " face out (full index)")
 		end
 	end
-	print(("  boxes: %d village, %d camp, %d poi"):format(by_kind.village or 0,
-		by_kind.camp or 0, by_kind.poi or 0))
-	check(by_kind.village == 12 and by_kind.camp == 16 and by_kind.poi == 60,
-		"box categories")
+	print(("  boxes: %d village, %d camp, %d poi, %d fortress"):format(by_kind.village or 0,
+		by_kind.camp or 0, by_kind.poi or 0, by_kind.fortress or 0))
+	check(by_kind.village == 12 and by_kind.camp == 32 and by_kind.poi == 60 and
+		by_kind.fortress == 2, "box categories")
 
 	-- b. Candidate grid against the oracle.
 	local random = rng(tonumber(seed:sub(-9)) or 1)
@@ -468,7 +480,7 @@ local function run_seed(seed)
 			per_kind[b.kind] = true
 			local p = {x = b.min_x, y = b.max_y, z = b.max_z}
 			local text = ({village = "Village – protected", camp = "Camp – protected",
-				poi = "Point of interest – protected"})[b.kind]
+				poi = "Point of interest – protected", fortress = "Fortress – protected"})[b.kind]
 			for _, name in ipairs({"a", "t"}) do
 				check(core.is_protected(p, name), W.rows[index].key .. " protected for " .. name)
 				local got = hint(p, name)

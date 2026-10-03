@@ -118,6 +118,11 @@ for i, row in ipairs(defs) do
    -- Round 29: every home location carries its waystone (grug_home waypoints).
    {id="travel_waypoint", role="waypoint", x=40, y=1, z=0, dir={x=0, z=1}}})
 end
+-- Round 31: both PvP fortresses carry one too (no home location).
+for i, row in ipairs({{"pvp_fortress_accord", "human"}, {"pvp_fortress_throng", "orc"}}) do
+ grug_core.register_settlement_sockets(row[1], row[2], {x=(#defs + i) * 100, y=100, z=0},
+  {{id="travel_waypoint", role="waypoint", x=40, y=1, z=0, dir={x=0, z=1}}})
+end
 rawset(_G, "grug_mobs", {register_start_socket_role=function(role, fn)
  assert(role == "innkeeper" and fn({}, {race_id="elf"}) == "grug_mobs:villager_elf")
 end, dragon_map_markers=function() return {} end})
