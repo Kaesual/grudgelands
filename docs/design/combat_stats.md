@@ -69,7 +69,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   attribute and flat talent terms before this scalar and floors once at
   settlement; a positive authored damage value settles to at least 1.
 - **Support values are already level-derived and are never level-scaled a
-  second time.** Flash Heal and Shield are each 25% of `P(L)`; each Renew tick
+  second time.** Heal and Shield are each 25% of `P(L)`; each Mend tick
   is 8%. Multiply that pool share by `1 + spell power/100`, then pass the
   resulting absolute amount unchanged through `scale_player_value` and the
   existing `heal_player`/`add_absorb` seams. Percentage consumables likewise
@@ -429,8 +429,8 @@ dragon channels keep the last value. Death clears all three.
   launch), in the crosshair ray (an unflagged enemy is a blocker with a
   neutral crosshair, reason `protected`) and at impact (`deal_ability_damage`
   and the swing punch). Nothing is paid for a refused target.
-- Support is one-way: an unflagged helper cannot heal, shield or Renew a
-  flagged ally (Flash Heal's splash included); a flagged helper may support
+- Support is one-way: an unflagged helper cannot cast Heal, Shield or Mend
+  on a flagged ally (Heal's splash included); a flagged helper may support
   anyone of the own faction.
 - **PvP contact** is hostile player damage that lands (HP lost or absorb
   consumed) for dealer and receiver, and effective support cast on an ally in

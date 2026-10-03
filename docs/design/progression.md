@@ -106,7 +106,7 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   rulings 2026-09-16); the other keystone and the capstone **improve or
   replace** a button the player already has, so no build carries more than two
   extra hotbar keys. The new skill is the "new ability every ~10 levels" beat
-  (e.g. Renew, the Priest healing tree's keystone). **A character reaches
+  (e.g. Mend, the Priest healing tree's keystone). **A character reaches
   exactly one capstone**: it costs 21 of the 30 points in a single tree, which
   is level 42, and two would cost 42. *(Supersedes "9 of 10 talents are numeric
   modifiers; exactly one capstone per tree, unlocked at 8+ points in that

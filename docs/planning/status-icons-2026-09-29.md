@@ -62,14 +62,14 @@ variants**. The core set is 24 buffs, 6 debuffs and 4 planned icons.
    It reads better over bright sky or snow, and ability buffs could then reuse
    the skill art. Which do you want?
 2. **Shield.** All absorbs merge into one status called `shield`
-   (`combat.lua:1601-1610`). There are five sources: Power Word: Shield,
+   (`combat.lua:1601-1610`). There are five sources: Shield,
    Glacial Ward, Hold Ground, Recompense and Last Light. Should the icon
    follow the dominant source (5 variants), or stay one generic shield?
 3. **Slows.** Every mob slow shares the single modifier key `mob_web`
    (`verbs.lua:125, 145-156`). That key covers spider webs, the Bog Witch hex,
    the treant root aura, Dragon Rime and the dragon gust. One generic "Slowed"
    icon is simplest. Per-source icons would need a code change.
-4. **PvP-only debuffs.** Roots, stuns, Hamstring, Frost Nova and Snare Shot
+4. **PvP-only debuffs.** Roots, stuns, Hamstring, Ice Nova and Snare Shot
    reach players only through PvP. PvP is live today: faction gate plus
    `enable_pvp` (`combat_stats.md:393-394`). Should these ship icons now or
    with WP41?
@@ -153,7 +153,7 @@ from the Round-18 skill icon precedent.
 - **Distinctness.** Semantics come from shape, not only colour. This was the
   Round-18 rule, and it matters here because red/green frames already carry
   colour meaning. Colour-sensitive pairs:
-  - Poisoned (green drop) and Renew (green leaf);
+  - Poisoned (green drop) and Mend (green leaf);
   - Rooted (locked chain) and Move Immune (broken chain);
   - Whitehot (white fireball) and Scorched (orange flame).
 
@@ -190,9 +190,9 @@ icon.
 |---|---|---|---|---|---|---|
 | `scout_sprint` | "Sprint (+50% Speed)" | B | Scout: Sprint | +50% speed, 10 s | exists, reg. `grug_abilities/scout.lua:499-521` | A leather boot in a forward running stride with three **gold** speed lines behind it. You can reuse `grug_abilities_skill_sprint.png` if the background stays opaque. |
 | `sidestep` *(new status)* | "Sidestep" | B | Scout: Sidestep | +15 dodge percentage points, 4 s | exists, not reg. `scout.lua:488-498`; `grug_classes/scout.lua:19-39` | A pale **teal** ghostly after-image of a figure leaning sideways, with a curved dodge arrow. Reuse candidate: `grug_abilities_skill_sidestep.png`. |
-| `renew` | "Renew" | B | Priest: Renew (talent) | Heal every 3 s for 12 s (shown on the target) | exists, reg. `kits.lua:913-919` | A bright **green** sprouting leaf pair cradling a small pink heart, with a circular renewal arrow. |
+| `mend` | "Mend" | B | Priest: Mend (talent) | Heal every 3 s for 12 s (shown on the target) | exists, reg. `kits.lua:913-919` | A bright **green** sprouting leaf pair cradling a small pink heart, with a circular renewal arrow. |
 | `shield` | "Shield N" (value = remaining absorb) | B | Any absorb (see variants) | Absorbs damage until consumed or expired | exists, reg. `grug_core/combat.lua:1601-1610` | Generic: a translucent **golden** bubble dome with a bright rim highlight, empty inside. |
-| ↳ variant `shield_power_word` | – | B | Priest: Power Word: Shield | Absorb, 15 s (+talents) | `kits.lua:861-863` | A golden sphere with a small radiant figure inside. Reuse candidate: `grug_abilities_skill_power_word_shield.png`. |
+| ↳ variant `shield_priest` | – | B | Priest: Shield | Absorb, 15 s (+talents) | `kits.lua:861-863` | A golden sphere with a small radiant figure inside. Reuse candidate: `grug_abilities_skill_shield_spell.png`. |
 | ↳ variant `shield_glacial_ward` | – | B | Mage: Glacial Ward (talent) | Absorb, 10 s | `kits.lua:1016-1030` | A shell of **pale-blue ice** plates, faceted like a geode. |
 | ↳ variant `shield_hold_ground` | – | B | Warrior: Hold Ground (talent) | Absorb, 8 s | `kits.lua:967-984` | A **bronze** tower shield planted upright in cracked earth. |
 | ↳ variant `shield_recompense` | – | B | Priest: Recompense (talent; Smite grants an absorb) | Absorb, 15 s | `kits.lua:760-766`; `talents.lua:697-702` | A **violet-gold** shield-shaped glyph with a small lightning spark. |
@@ -211,9 +211,9 @@ icon.
 |---|---|---|---|---|---|---|
 | `poisoned` *(new)* | "Poisoned" | D | Serpent, Scorpion, Viper, Bog Witch | 1 damage every 2 s; 6 s (Serpent), 4–6 s others; cured by Antivenom | exists, not reg. `grug_mobs/verbs.lua:170-260`; `serpent.lua:14-16, 70`; `start_zone_families.lua:231-232`; `bog_witch.lua:12-13` | A single fat **acid-green** venom drop falling from a curved fang. Sickly green on dark. |
 | `slowed` *(new; key `mob_web`)* | "Slowed" | D | Giant Spider (40%, 3 s), Spiderling (20%, 2 s), Bog Witch hex (30%, 4 s), Ashen/Gravewood Treant aura (30%), Dragon Rime patch (40%), dragon gust (40%, 2 s) | Movement speed reduced | exists, not reg. `verbs.lua:137-156`; `spider.lua:8-9, 70`; `zero_asset_variants.lua:246-247`; `bog_witch.lua:15`; `night_families.lua:194-207`; `boss_dragons.lua:171, 421` | A leather boot tangled in thick **grey-white sticky web strands**, with a downward drag mark under it. |
-| ↳ optional `slowed_chill` | "Chilled" | D | Frost Nova follow-up slow (PvP); could also take Dragon Rime | −50%, root time + 3 s | `kits.lua:651-652` | A boot rimed with **ice-blue** frost and icicles hanging from its sole. |
+| ↳ optional `slowed_chill` | "Chilled" | D | Ice Nova follow-up slow (PvP); could also take Dragon Rime | −50%, root time + 3 s | `kits.lua:651-652` | A boot rimed with **ice-blue** frost and icicles hanging from its sole. |
 | ↳ optional `slowed_cripple` | "Crippled" | D | Hamstring (PvP, −50%, 5 s); Snare Shot (PvP, −50%, 4 s) | Movement speed reduced | `kits.lua:417-418`; `scout.lua:95-103, 477-487` | A boot caught in a taut **rope snare loop**, with a thin red slash mark across the ankle. |
-| `rooted` *(new)* | "Rooted" | D | Frost Nova (PvP, 4 s+), Pinning Shot, Hamstring with Tendon Cut (PvP) | Cannot move (hard flag) | exists, not reg. `movement.lua:371-387`; `kits.lua:416, 648-649`; `scout.lua:85-91` | A boot locked to the ground by a **closed iron chain** staked into stone, with ice crystals at the stake. Must not resemble the snapped chain of Move Immune. |
+| `rooted` *(new)* | "Rooted" | D | Ice Nova (PvP, 4 s+), Pinning Shot, Hamstring with Tendon Cut (PvP) | Cannot move (hard flag) | exists, not reg. `movement.lua:371-387`; `kits.lua:416, 648-649`; `scout.lua:85-91` | A boot locked to the ground by a **closed iron chain** staked into stone, with ice crystals at the stake. Must not resemble the snapped chain of Move Immune. |
 | `stunned` *(new)* | "Stunned" | D | Warrior Charge (PvP, 1.5 s) | Cannot act or move | exists, not reg. `movement.lua:418-428`; `kits.lua:319` | A dented helmet with three bright **yellow** stars circling above it. |
 | `scorched` *(new)* | "Scorched" | D | Stormscale dragon breath patch | 2 (scaled) damage/s while standing on it; patch lasts 6 s | exists, not reg. `boss_dragons.lua:31-33, 66-80, 172-176` | Orange-red flame tongues rising from **cracked, glowing ground**. Ground-based, so it differs from Whitehot's airborne ball. |
 | `in_combat` *(optional; design says no)* | "Combat" | N | Combat state | Blocks eating, mounting and regeneration | exists as HUD text `grug_core/combat_hud.lua:4-21`; rule `combat_stats.md:787-798` | Two clashing gauntleted fists or a red burst. Avoid crossed swords, which are reserved for PvP Tagged. |
@@ -269,7 +269,7 @@ Explicitly **not** planned or not timed (no icon):
   optional PvP variants. Mob sources cannot be told apart without splitting
   the `mob_web` key.
 - **Move immunity.** Hold Ground and Shake Loose share one `move_immune` icon.
-- **Ability buffs.** Sprint, Sidestep, Renew and Power Word: Shield can reuse
+- **Ability buffs.** Sprint, Sidestep, Mend and Shield can reuse
   their Round-18 skill icons, the classic MMO convention where the aura icon
   equals the spell icon, but only if the opaque background is kept. Otherwise
   draw new ones from the briefs.
@@ -284,7 +284,7 @@ Explicitly **not** planned or not timed (no icon):
     `elixir_stoneskin`, `elixir_deepwater`.
   - Draughts: `alchemy_swiftness`, `alchemy_cave`.
   - Mounts: `mount_land`, `mount_flight`.
-  - Ability buffs: `scout_sprint`, `sidestep`, `renew`, `shield`,
+  - Ability buffs: `scout_sprint`, `sidestep`, `mend`, `shield`,
     `move_immune`.
   - Talent windows: `talent_unbroken`, `talent_ruination`,
     `talent_whitehot`, `talent_turn_aside`, `talent_last_word`,
@@ -293,7 +293,7 @@ Explicitly **not** planned or not timed (no icon):
     `scorched`.
   - Planned: `pvp_tagged`, `pvp_contested`, `warding_draught`.
 - **Optional (10):**
-  - Shield variants: `shield_power_word`, `shield_glacial_ward`,
+  - Shield variants: `shield_priest`, `shield_glacial_ward`,
     `shield_hold_ground`, `shield_recompense`, `shield_last_light`.
   - Slow variants: `slowed_chill`, `slowed_cripple`.
   - Others: `stealth`, `home_travel_cooldown`, `in_combat`.

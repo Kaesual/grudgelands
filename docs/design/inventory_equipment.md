@@ -343,7 +343,7 @@ the Round 19 top-centre text list:
   generic food icon), elixirs, draughts, mounts (land or flight; an untimed
   status, so the row caption is empty and the tier name and "+N% speed"
   appear only on the Effects tab), one shield icon for every absorb source,
-  move immunity, Sprint, Sidestep and Renew (their skill icons), the six
+  move immunity, Sprint, Sidestep and Mend (their skill icons), the six
   talent windows (Unbroken, Ruination, Whitehot, Turn Aside, Last Word,
   Untouchable), poisoned, slowed (one icon for every slow), rooted, stunned
   and scorched (1.5 s per Dragon Scorch tick); the neutral (gold) PvP flag
