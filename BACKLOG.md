@@ -557,13 +557,18 @@ Map tab strip and the crosshair timing wait for the GUI test.
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).
 
-### Seed-dependent POI placement (user, 2026-10-03; next round)
+### Seed-dependent POI placement (user, 2026-10-03; decide before the next round)
+
+Open decision: the user decides before the next round whether POIs and the
+fortresses stay at their fixed positions or are placed per seed. If they move,
+the zone's mob-level distribution must be respected too (a POI's level band
+must fit the level field where it lands).
 
 Today every one of the 118 anchors has fixed coordinates in
 `grug_mapgen/wp40/source/simple_map.lua` (`layout_fixed` / `authored_fixed`,
 "frozen layout"); the world plan builds on them in a fixed order (core
 flattening, road routing, protection, region-map cache, quest targets).
-The user wants, from the next round:
+The proposal, if chosen:
 
 - **Start towns and capitals stay fixed.**
 - **POIs, camps (bandit, Mirefolk, PvP war camps), outposts, mines and the
