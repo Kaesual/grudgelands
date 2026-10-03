@@ -8,15 +8,37 @@ local function title_case(text)
 	return (text:gsub("_", " "):gsub("(%a)([%w']*)", function(a, b) return a:upper() .. b end))
 end
 
-local function mob_label(name)
+-- The name a mob shows in `zone`: a sub-type's zone display name
+-- (grug_mobs subtypes.lua, apply_zone_variant: "Small Jungle Boar" in the
+-- Kapok Cradle), else its own display name or entity description.
+local function mob_label(name, zone)
+	local sub = grug_mobs.subtype and grug_mobs.subtype(name)
+	local by_zone = sub and zone and sub.display_by_zone
+	if sub then return plain(by_zone and by_zone[zone] or sub.display) end
 	local def = core.registered_entities[name]
 	local label = def and def.description
 	if not label or label == "" then label = title_case(name:match("[^:]+$") or name) end
 	return plain(label)
 end
 
+-- The zone each kill target (`mobs`, entity names) is met in, so its label
+-- reads as the mob does there: a named leader's own zone, else the area's
+-- zone ("zone/area"), else the quest's zone. Resolved once at load (the
+-- loader keeps it as the objective's `zones`); rendering never reads the
+-- world.
+function Q.target_zones(mobs, area_ref, zone)
+	local regions = grug_mobs.spawn_regions
+	local area_zone = area_ref and area_ref:match("^([^/]+)/")
+	local zones = {}
+	for i, name in ipairs(mobs) do
+		local leader = regions and regions.leader(name:match("^grug_mobs:(.+)$") or name)
+		zones[i] = leader and leader.zone or area_zone or zone
+	end
+	return zones
+end
+
 -- The short subject: "Wood Axe", "Any Tree", "Small Boar or Large Rat",
--- "Elder Maren".
+-- "Small Jungle Boar", "Elder Maren".
 function Q.objective_subject(objective)
 	if objective.type == "item" then
 		if objective.item then return grug_core.item_name(objective.item) end
@@ -27,7 +49,8 @@ function Q.objective_subject(objective)
 		return npc and npc.title or tostring(objective.npc)
 	end
 	local names = {}
-	for _, name in ipairs(objective.mobs or {}) do names[#names + 1] = mob_label(name) end
+	local zones = objective.zones or {}
+	for i, name in ipairs(objective.mobs or {}) do names[i] = mob_label(name, zones[i]) end
 	return table.concat(names, " or ")
 end
 
@@ -183,10 +206,7 @@ function Q.placeholder_target(zone, ref)
 	id = id or ref
 	local leader = regions.leader(id)
 	if leader and (not qualified or qualified == leader.zone) then
-		local sub = grug_mobs.subtype and grug_mobs.subtype(id)
-		local name = sub and (sub.display_by_zone and sub.display_by_zone[leader.zone] or sub.display) or
-			mob_label("grug_mobs:" .. id)
-		return {zone = leader.zone, id = id, what = "leader", name = name}
+		return {zone = leader.zone, id = id, what = "leader", name = mob_label("grug_mobs:" .. id, leader.zone)}
 	end
 	local area = regions.get_area(qualified or zone, id)
 	if not area then

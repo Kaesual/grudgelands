@@ -186,39 +186,66 @@ held skill shows the item of its own slot in first and third person.
 
 ### Left click and held input
 
-**Mode lock** (Round 28 ruling 14). At key-down the press decides its mode
-for the whole hold:
+**Hold modes** (Round 28 ruling 14; one state machine since Round 32). A
+held LMB is either **gather** or **combat locked on a foe**; only the start
+differs:
 
-- **Combat** when the combat ray (non-walkable plants and dropped items
-  never hide a mob) finds a valid hostile within the larger of hand reach
-  (4 m) and the selected skill's range (Loose: hand reach only, its LMB is
-  Strike or digging), and otherwise whenever the press does not start on a
-  gather target (air, out of reach, an unprotected node bare hands cannot
-  dig, an NPC or ally).
-  A combat hold never digs: the held skill item's pointing range drops to
-  zero for the hold (the client points at nothing, so it neither digs nor
-  shows cracks) and the server refuses any dig. It acts on whatever the
-  combat ray finds each step, so it retargets freely (a mob dies, the next
-  one steps in).
-- **Gather** when the hand ray's first thing within 4 m is a node bare hands
-  can dig, any protected node (town ground, walls and undiggable town
-  dressing: the client keeps pointing, so the refused dig keeps the
-  protection hint and, where diggable, the client's cracks) or a dropped item
-  with no hostile behind it. A gather hold never swings or casts at an actor,
-  even one that walks into the ray, so a passing neutral mob is not pulled by
-  accident. On a protected node the hand may not dig, a short tap still casts
-  a selected self/support skill (Blink in a town, the same 200 ms window as
-  below); a hold there only earns the protection hint.
+- **Start.** At key-down the hold is combat when the combat ray
+  (non-walkable plants and dropped items never hide a mob) finds a valid
+  hostile within the larger of hand reach (4 m) and the selected skill's
+  range (Loose: hand reach only, its LMB is Strike or digging); that hostile,
+  a neutral mob too, is its foe. Every other press starts as gather: a node,
+  a protected node, a dropped item with no hostile behind it, air, an NPC or
+  an ally.
+- **Gather** digs and picks up, never attacks. On a protected node the hand
+  may not dig (town ground, walls, undiggable dressing), the client keeps
+  pointing, so the refused dig keeps the protection hint and, where
+  diggable, the client's cracks; a short tap there still casts a selected
+  self/support skill (Blink in a town, the same 200 ms window as below), a
+  hold only earns the hint. A self or support skill fires once per fresh
+  press at its target (air or a hostile for a self skill, an ally for a
+  heal) and never from a hold on its own. The only repeat while held: a
+  support cast a fresh press began on an ally repeats on that same ally,
+  never on another one that walks into the crosshair, and never after that
+  press ends.
+- **Gather becomes combat** as soon as a hostile combat accepts is in the
+  crosshair and within that reach: any mob it may attack, a neutral mob or
+  critter too (the user, 2026-10-03), and a player only where
+  `grug_pvp.can_harm` allows. It happens only while the selected skill
+  attacks hostiles; with a self or support skill selected the hold stays
+  gather (a mob walking in never makes a miner cast Ward or Blink). A
+  protected player, an NPC, an ally or a hostile out of reach never
+  switches it.
+- **Combat** never digs: the held skill item's pointing range drops to zero
+  (the client points at nothing, so it neither digs nor shows cracks) and
+  the server refuses any dig, so a miss beside a living foe digs nothing.
+  Each hit goes to the valid hostile now in the crosshair and reach; the
+  last one aimed at is the foe (switching enemies is free, and the new one
+  is the foe to wait for).
+- **Combat becomes gather** when the foe is gone: dead, despawned or
+  unloaded, no longer a valid target for this player (its PvP flag dropped,
+  so `grug_pvp.can_harm` refuses; a mob evading home after a leash reset,
+  which also never switches a gather hold), or fled farther than twice the
+  reach above (`FLEE_REACH` in
+  `input.lua`; a foe briefly stepping out of reach keeps the lock). A
+  hostile in the crosshair at that moment becomes the new foe instead. Then
+  the gather rules apply again, including the switch back to combat, also
+  for the same foe once it is back in the crosshair and reach.
+
+The check costs a held gather step nothing on a solid node or air, one
+combat ray behind a plant, loot or an actor, and nothing at all with a self
+or support skill selected.
 
 The mode ends on release, cancel, item or slot change, death and leave; the
 pointing range returns then. A release seen within 0.15 s of the decision
 keeps the mode (a native punch can report a press before the control report
 does). The zero range reaches the client one round trip after the server
 sees the press: a press on a mob within 4 m reports itself at once and the
-client does not dig for 0.15 s after a punch anyway, but a press on air or on
-a mob beyond 4 m is seen with the next control report, so cracks may flash
-briefly if the crosshair slides onto a diggable node within that window
-(accepted by the user, 2026-10-01). The node is never removed.
+client does not dig for 0.15 s after a punch anyway, but a press on a mob
+beyond 4 m is seen with the next control report, and a switch from gather
+reaches the client one round trip late, so cracks may flash briefly if the
+crosshair is on a diggable node within that window (accepted by the user,
+2026-10-01). The node is never removed.
 
 Within its mode, the current first visible crosshair target determines the
 action. Every operation checks its own reach: 4 m interaction/digging, 3 m
@@ -228,10 +255,13 @@ intervening objects (dropped items excepted) matter.
 - **Hostile:** use the selected applicable ready skill immediately. If it is
   unavailable (including cooldown, resources or applicability), use ordinary
   melee Strike when in range. Holding repeats at the appropriate clocks;
-  once the selected skill is ready it takes precedence again. An applicable
-  heal here targets self, never the hostile or a remembered ally.
-- **Friendly player:** use an applicable heal/support action on the currently
-  aimed eligible ally. No Strike fallback or attack through that ally.
+  once the selected skill is ready it takes precedence again. A selected
+  self or support skill fires only on the fresh press (an applicable heal
+  here targets self, never the hostile or a remembered ally); held, the
+  hold strikes.
+- **Friendly player:** use an applicable heal/support action on the eligible
+  ally a fresh press aims at, repeated while held on that ally. No Strike
+  fallback or attack through that ally.
 - **Hand-diggable node:** dig with hand capabilities, never equipped-weapon
   mining power. On the initial press only, a selected self/support skill
   waits approximately 200 ms, whether it is ready or not: short release
@@ -242,12 +272,14 @@ intervening objects (dropped items excepted) matter.
   becoming ready cannot interrupt the dig.
 - **Dropped item:** one pickup attempt at the beginning of each physical press,
   including when inventory is full. That decision does not also cast. The
-  hold is a gather hold: it may subsequently dig, never attack, and another
-  drop requires another press. A hostile behind the drop makes it a combat
+  hold is a gather hold: it may subsequently dig, attack only once a threat
+  switches it to combat (above), and another drop requires another
+  press. A hostile behind the drop makes it a combat
   press instead: no pickup, the attack goes through the loot.
-- **Empty or otherwise inapplicable context** (combat hold): one applicable
-  self/support activation per press, otherwise no mechanical effect.
-  Retargeting while held may enter combat, never digging.
+- **Empty or otherwise inapplicable context** (air, out of reach, a node
+  bare hands cannot dig): one applicable self/support activation on the
+  fresh press, otherwise no mechanical effect. A hold that later aims at
+  air casts nothing.
 
 Block progress belongs to the current node and is lost on retargeting. Apples,
 plants and torches require positive digging time; the initial torch timing is

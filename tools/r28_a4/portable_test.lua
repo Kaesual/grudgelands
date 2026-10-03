@@ -13,12 +13,13 @@
 --      message at once; the cast-gate, swing-gate, try_cast, tap, empty-air
 --      and bow-start refusals all reach the flash line; held retries of a
 --      failed cast at most every 0.25 s.
---   L  LMB mode lock (ruling 14): combat on a mob (plants never hide it), on
---      air and on nodes bare hands cannot dig; gather on a hand-diggable node
---      (protected too) or a dropped item; combat holds zero the pointing
---      range once and never dig, gather holds never swing; the grace for a
---      native press; slot change, leave and join restore; the bow shares
---      the zero range.
+--   L  LMB mode at key-down (ruling 14, Round 32): combat on a mob (plants
+--      never hide it); gather otherwise (a hand-diggable or protected node,
+--      a dropped item, air, a node bare hands cannot dig); combat holds
+--      zero the pointing range once and never dig, gather holds never swing;
+--      the grace for a native press; slot change, leave and join restore; the
+--      bow shares the zero range. The Round 32 gather -> combat switch within
+--      a hold is tools/r32_f2's.
 -- Prints "R28 A4 PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -251,7 +252,8 @@ local node_at = {} -- "x,y,z" -> node name (default test:dirt)
 local protected = {} -- "x,y,z" -> true
 local function pkey(p) return p.x .. "," .. p.y .. "," .. p.z end
 local flashes, swings, casts = {}, {}, {}
-local mob = {get_luaentity = function() return {name = "test:mob"} end}
+local mob = {get_luaentity = function() return {name = "test:mob", health = 10} end,
+	get_pos = function() return vector.new(0, 1, 2) end, is_player = function() return false end}
 local drop = {get_luaentity = function() return {name = "__builtin:item"} end}
 local try_cast_result = {} -- id -> {ok, message}
 local refusals = {} -- id -> cast or swing refusal message
@@ -417,6 +419,7 @@ local player = {
 		return true
 	end,
 	get_hp = function() return 20 end,
+	get_pos = function() return vector.new(0, 0, 0) end,
 	get_look_dir = function() return vector.new(0, 0, 1) end,
 }
 
@@ -610,15 +613,16 @@ do -- L1 key-down on a mob: combat; zero range for the hold, never digs.
 		writes[2].skip == true, "L1 release restores the range")
 end
 
-do -- L2 key-down on a hand-diggable node: gather; never swings, no writes.
+do -- L2 key-down on a hand-diggable node: gather; no writes while gathering.
+	-- (A hostile walking into the ray switches the hold to combat since Round
+	-- 32; tools/r32_f2 covers that state machine.)
 	select("strike")
 	aim(NODE_HIT)
 	press()
 	check(#writes == 0 and range_of(1) == "", "L2 gather leaves the range alone")
 	check(dig_ok(NODE_HIT.under), "L2 gather may dig the node")
-	aim(MOB_NEAR, NODE_HIT) -- a mob walks into the ray, in front of the node
 	hold(5)
-	check(#swings == 0 and #casts == 0, "L2 gather never swings at a passing mob")
+	check(#swings == 0 and #casts == 0, "L2 gather on a node never swings")
 	release()
 	hold(4)
 	check(#writes == 0, "L2 no range writes at all")
@@ -656,7 +660,7 @@ do -- L5 air, a non-hand node and a dropped item.
 	select("blink")
 	aim()
 	press()
-	check(range_of(1) == "0" and casts[1] == "blink", "L5 air: combat, one empty-space cast")
+	check(range_of(1) == "" and casts[1] == "blink", "L5 air: gather (Round 32), one empty-space cast")
 	release()
 	hold(4)
 	check(range_of(1) == "", "L5 air hold restored")
@@ -664,7 +668,7 @@ do -- L5 air, a non-hand node and a dropped item.
 	node_at[pkey(NODE_HIT.under)] = "test:stone"
 	aim(NODE_HIT)
 	press()
-	check(range_of(1) == "0", "L5 a node bare hands cannot dig: combat")
+	check(range_of(1) == "" and #swings == 0, "L5 a node bare hands cannot dig: gather (Round 32), no swing")
 	release()
 	hold(4)
 	node_at[pkey(NODE_HIT.under)] = nil
@@ -672,7 +676,6 @@ do -- L5 air, a non-hand node and a dropped item.
 	aim(DROP_HIT)
 	press()
 	check(#writes == 0, "L5 dropped item alone: gather")
-	aim(MOB_NEAR)
 	hold(3)
 	check(#swings == 0, "L5 a pickup press never swings")
 	release()

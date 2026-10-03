@@ -165,7 +165,15 @@ conversation), the quest posts one line with every objective as
 "<name> n/m" ("Small Boar 3/10"), replacing that quest's previous line.
 Accepting a quest and falling item counts post nothing; nothing goes to chat.
 
-Item objectives show the concise item name, not description stat/durability lines.
+Kill objectives name each target as the player sees the mob where it is met
+(Round 32): its zone display name ("Small Jungle Boar" in the Kapok Cradle),
+taken from a named leader's zone, else the objective's area's zone, else the
+quest's zone; the dialogue, the quest log, the tracker and the message feed
+share that label. `validate.py` fails a kill objective whose targets are met
+only in another zone under another name (`E-label-name`).
+Item objectives show the concise item name, not description stat/durability
+lines; an item objective's named source must really drop that item at the
+levels it is met (`E-item-source-drop`).
 Worn qualifying items remain acceptable. Starter kill/drop targets follow the
 minimum-level-aware local wildlife roster and remain locally achievable.
 

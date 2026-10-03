@@ -18,7 +18,8 @@ function grug_quests.register_npc(id, def)
 end
 -- Objectives (Round 28 rulings 39 and 41): `kill` names `mobs` (entity
 -- names; the loader turns design `roles` into them), optionally limited to
--- one spawn `area` ("zone/area", credited by the mob's `_grug_area` tag);
+-- one spawn `area` ("zone/area", credited by the mob's `_grug_area` tag),
+-- and `zones`, the zone each target's label names it in (labels.lua);
 -- `item` names one `item` or an item `group`; `talk` is a travel quest's
 -- only objective.
 function grug_quests.register_quest(id, def)

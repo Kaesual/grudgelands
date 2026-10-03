@@ -182,7 +182,7 @@ grug_mobs = {
 	register_on_eligible_kill = function() end,
 	register_participant_drop_hook = function() end,
 	disposition = function(name) return name == "grug_mobs:wild_turkey" and "critter" or "aggressive" end,
-	subtype = function(role) return catalogue[role] end,
+	subtype = function(name) return catalogue[name:match("^grug_mobs:(.+)$") or name] end,
 	spawn_regions = regions,
 }
 grug_zones = {get = function(zone)

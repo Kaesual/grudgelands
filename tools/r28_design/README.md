@@ -159,6 +159,12 @@ python3 tools/r28_design/validate.py --game --atlas docs/planning/round28/zones/
   levels (the union over its roles, as the game's quest validator), else the
   union over the zone's kinds and camps hosting the role, else the role's
   levels.
+- Shown names (Round 32): a kill objective's label names each sub-type by
+  its zone display name (a leader's zone, else the area's zone, else the
+  quest's zone, as `grug_quests/labels.lua`); `E-label-name` when its
+  targets are met only in another zone under another name. An item
+  objective's named source must drop that item in a band of the levels it is
+  met at (`E-item-source-drop`).
 - Leaders: a kill objective or quest drop on a leader role finds the leader
   in the zone's recipe `leaders`, else in any zone's (leader roles are
   unique), and uses its computed level; it names no area (`E-leader-area`),

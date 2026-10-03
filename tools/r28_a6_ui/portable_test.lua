@@ -398,6 +398,7 @@ grug_quests = {MAX_TRACKED = 10, registered_npcs = {elder = {title = "Elder Mare
 		return table.concat(parts, " "), ""
 	end}
 core.registered_entities["grug_mobs:small_boar"] = {description = "Small Boar"}
+grug_mobs = {} -- no sub-types here: labels read the entity description
 dofile("mods/PLAYER/grug_quests/labels.lua")
 dofile("mods/PLAYER/grug_quests/hud.lua")
 local function quest(id, objectives) return {id = id, objectives = objectives, ready = false} end
