@@ -514,6 +514,18 @@ local d_obj = detail and detail:find("Small Boar: 3/10", 1, true)
 local d_rew = detail and detail:find("\n\nRewards: 40 XP\\, 5 copper\\, 2 × Light Leather", 1, true)
 check(d_desc == 1 and d_obj and d_rew and d_obj < d_rew,
 	"one field: description, empty line, objective, empty line, rewards (" .. tostring(detail) .. ")")
+-- No hard wrap: a description longer than 58 characters stays one line for
+-- the textarea to wrap at its own width.
+local long_description = ("Boars trample the fields east of the village every night "):rep(2)
+local plain_journal = grug_quests.journal
+grug_quests.journal = function()
+	local journal = plain_journal()
+	journal.quests[1].description = long_description
+	return journal
+end
+has(pages["grug_quests:quests"]:get(carol, {}), long_description .. "\n\n",
+	"the description reaches the text field unwrapped")
+grug_quests.journal = plain_journal
 local text = textarea_box(quest_fs)
 local row_centre = checkbox_at(quest_fs, "grug_quest_track").centre
 local function check_row(fs, label)
@@ -546,7 +558,6 @@ check(not confirm_fs:find("grug_quest_track", 1, true),
 print(("quest log: text field %.2f..%.2f images high (before: three fields, %.2f in all), row centre %.2f")
 	:format(text.top, text.bottom, 1.35 + 1.55 + 0.75 - 3 * (SY - 1), row_centre))
 -- The ready line stays below the row.
-local plain_journal = grug_quests.journal
 grug_quests.journal = function()
 	local journal = plain_journal()
 	journal.quests[1].ready = true

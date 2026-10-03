@@ -54,7 +54,9 @@ local COLUMN_RIGHT = COLUMN_X + TEXT_W
 local ABANDON_W, CONFIRM_W, CANCEL_W, BUTTON_GAP = 1.55, 2.05, 1.35, 0.15
 
 -- Description, objective lines and the reward line, separated by an empty
--- line each like the quest-offer dialogue.
+-- line each like the quest-offer dialogue. No hard wrap: the textarea wraps
+-- at its own width, which a fixed character count cannot match at every
+-- window size and GUI scale.
 local function detail_text(quest)
 	local objectives = {}
 	for _, objective in ipairs(quest.objectives) do
@@ -67,7 +69,7 @@ local function detail_text(quest)
 		local stack = ItemStack(item)
 		rewards[#rewards + 1] = stack:get_count() .. " × " .. grug_core.item_name(stack)
 	end
-	return grug_inventory.wrap_text(quest.description, 58) .. "\n\n" ..
+	return quest.description .. "\n\n" ..
 		table.concat(objectives, "\n") .. "\n\nRewards: " .. table.concat(rewards, ", ")
 end
 
