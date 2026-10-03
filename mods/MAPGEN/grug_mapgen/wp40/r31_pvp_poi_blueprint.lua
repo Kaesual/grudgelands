@@ -284,7 +284,9 @@ return function(options, profile)
 		socket("bodyguard_east","bodyguard",2,16,0,-1)
 		socket("quest_warmaster","quest",-6,10,0,-1)
 		socket("quest_drillmaster","quest",-10,-9,0,-1)
-		socket("quest_scout","quest",7,-9,0,-1)
+		-- (No Round 14 POI marker id: quest_steward, quest_scout, quest_captive
+		-- and quest_host tell grug_mobs a settlement's kind.)
+		socket("quest_outrider","quest",7,-9,0,-1)
 		socket("vendor_quartermaster","vendor",19,0,-1,0,{kind="general"})
 		socket("travel_waypoint","waypoint",12,-12,0,1)
 	else

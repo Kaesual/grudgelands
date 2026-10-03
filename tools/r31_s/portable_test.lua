@@ -20,6 +20,8 @@
 --      Quartermaster, one waystone, no innkeeper; camps: 4 or 5 guards and
 --      one captain), each standing on ground with feet and head air (the
 --      waystone socket on its waystone); the grug_core registry accepts them;
+--      no id is one of the Round 14 quest ids grug_mobs reads a settlement's
+--      kind from;
 --   4. walking on the ground course from outside the gate reaches every
 --      socket, and the gate is the footprint's only opening at ground level;
 --   5. a turn keeps the cell count and moves the gate with it.
@@ -145,6 +147,8 @@ for _, c in ipairs(compositions) do
 		local seen, roles, groups = {}, {}, {}
 		for _, s in ipairs(rows) do
 			check(not seen[s.id], label .. ": socket id " .. s.id .. " unique")
+			check(not ({quest_steward = true, quest_scout = true, quest_captive = true,
+				quest_host = true})[s.id], label .. ": " .. s.id .. " is no Round 14 POI marker id")
 			seen[s.id] = true
 			roles[s.role] = (roles[s.role] or 0) + 1
 			if s.role == "guard_post" then
