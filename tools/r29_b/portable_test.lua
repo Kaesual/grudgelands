@@ -184,6 +184,7 @@ end
 player_api = {player_attached = {}, set_animation = function() end}
 local combat = {}
 local statuses = {}
+local feed_lines = {}
 grug_core = {
 	FLIGHT_CEILING = 600,
 	FLASH_COLOR = {error = 1, notice = 2},
@@ -192,6 +193,12 @@ grug_core = {
 	clear_status = function(player) statuses[player:get_player_name()] = nil end,
 	flash = function() end,
 	hud_layout = {anchors = {flight_warning = {}}, flight_warning_offset = function() return {} end},
+	-- Mount notices go to the message feed (Round 32 F3); recorded like chat.
+	feed = function(player, kind, text, key)
+		feed_lines[#feed_lines + 1] = {name = player:get_player_name(), kind = kind,
+			text = text, key = key}
+		return true
+	end,
 }
 local water_class = "deep_ocean"
 grug_zones = {
@@ -243,6 +250,7 @@ local function controller_of(player)
 	return record and record.object:get_luaentity()
 end
 local function last_chat() return chat[#chat] and chat[#chat].text end
+local function last_feed() return feed_lines[#feed_lines] and feed_lines[#feed_lines].text end
 local function clear_world() for k in pairs(world) do world[k] = nil end end
 -- A pond: water at y = -3..0 over x, z in [-3, 3], dirt banks at y = 0 around
 -- it and dirt below; the surface node is y = 0, its top y = 0.5.
@@ -372,7 +380,9 @@ eq(boat.object.acceleration.y, -9.81, "off the water the boat falls")
 step(boat, 0.5)
 check(not grug_mounts.is_mounted(ada), "removed by the water-contact check")
 check(not boat.object:is_valid(), "the boat entity is gone")
-eq(last_chat(), "Your boat left the water.", "water-contact message")
+eq(last_feed(), "Your boat left the water.", "water-contact message in the feed")
+eq(feed_lines[#feed_lines].key, "mount", "mount notices share one keyed feed line")
+eq(#chat, 0, "mount notices never go to chat")
 check(grug_mounts.boat_touches_water({x = 0, y = 0.5, z = 0}), "surface boat touches water (node below)")
 check(not grug_mounts.boat_touches_water({x = 5, y = 1, z = 0}), "bank position touches no water")
 
