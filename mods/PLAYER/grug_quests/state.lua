@@ -328,26 +328,38 @@ function Q.journal(player, counts)
 end
 -- The tracker's change test (Round 30, perf review #5): the raw state string
 -- and, as one string, the count of every held item that an active item
--- objective accepts. Equal keys give equal journals. The third value is
--- the holdings snapshot read for it, for Q.journal.
+-- objective accepts, capped at what one quest's objectives can take of it
+-- (Round 31 C: items beyond that change no allocation, so over-gathering
+-- changes neither the key nor the markers). Equal keys give equal
+-- journals. The third value is the holdings snapshot read for it, for
+-- Q.journal.
 function Q.journal_key(player)
 	local state, raw = load(player)
 	if not next(state.active) then return raw, "" end
-	local counts, objectives, names = holdings(player), {}, {}
+	local counts, quests, names = holdings(player), {}, {}
 	for id in pairs(state.active) do
+		local objectives = {}
 		for _, objective in ipairs(Q.registered_quests[id].objectives) do
 			if objective.type == "item" then objectives[#objectives + 1] = objective end
 		end
+		if #objectives > 0 then quests[#quests + 1] = objectives end
 	end
 	for name, count in pairs(counts) do
 		if count > 0 then
-			for _, objective in ipairs(objectives) do
-				if accepts(objective, name) then names[#names + 1] = name; break end
+			-- The most any one quest takes of this item (each quest's
+			-- progress allocates from its own copy of the snapshot).
+			local needed = 0
+			for _, objectives in ipairs(quests) do
+				local sum = 0
+				for _, objective in ipairs(objectives) do
+					if accepts(objective, name) then sum = sum + objective.count end
+				end
+				if sum > needed then needed = sum end
 			end
+			if needed > 0 then names[#names + 1] = name .. " " .. math.min(count, needed) end
 		end
 	end
 	table.sort(names)
-	for index, name in ipairs(names) do names[index] = name .. " " .. counts[name] end
 	return raw, table.concat(names, ","), counts
 end
 -- Preflight copies every owned slot. Removing requirements and adding rewards
@@ -426,9 +438,11 @@ function Q.turn_in(player, id)
 	local money_ok, money_error = pcall(grug_money.add, player, def.rewards.copper)
 	local xp_ok, xp_error = pcall(grug_xp.add_xp, player, Q.reward_xp(def), "quest")
 	busy[name] = nil
+	-- The state is saved: the markers and the tracker follow it even when a
+	-- reward observer failed.
+	changed(player)
 	if not money_ok then error(money_error, 0) end
 	if not xp_ok then error(xp_error, 0) end
-	changed(player)
 	return true
 end
 -- Does this mob count for a kill objective or quest drop? The entity name is

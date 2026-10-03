@@ -21,8 +21,12 @@
 -- Fixed arrays instead of vararg tuples and of rows keyed by signed
 -- coordinates: `unpack`, a table built from `...` and a variable negative key
 -- in a table with an array part all stop LuaJIT traces (Round 22 D4).
+-- Returns the lookup and a function that empties the memo.
 local function new_classification_cache(classify, slots)
 	local memo_x, memo_z, memo_class, memo_owner = {}, {}, {}, {}
+	local function reset()
+		memo_x, memo_z, memo_class, memo_owner = {}, {}, {}, {}
+	end
 	return function(x, z)
 		local slot = (x * 40503 + z) % slots
 		if memo_x[slot] == x and memo_z[slot] == z then
@@ -32,7 +36,7 @@ local function new_classification_cache(classify, slots)
 		memo_class[slot], memo_owner[slot] = class, owner
 		memo_x[slot], memo_z[slot] = x, z
 		return class, owner
-	end
+	end, reset
 end
 
 local function height_factory(dependencies)
@@ -228,7 +232,7 @@ local function height_factory(dependencies)
 
 	local function construct(full_seed_string)
 		deterministic.validate_seed(full_seed_string)
-		local classified = new_classification_cache(
+		local classified, reset_classified = new_classification_cache(
 			horizontal.classification_values_at, 65536)
 
 		-- Column classes. Bays (planned water) and the open sea carry water at
@@ -1944,6 +1948,14 @@ local function height_factory(dependencies)
 			end
 			flush_memo()
 			publish_records()
+		end
+		-- Empties the column memos and the horizontal session's (Round 31 C:
+		-- a boot's whole-world sweeps fill them); the next query recomputes
+		-- the same values.
+		function session.drop_caches()
+			flush_memo()
+			reset_classified()
+			horizontal.drop_caches()
 		end
 		function session.terrain_height_at(x, z)
 			return final_terrain_height_at(x, z)

@@ -146,10 +146,10 @@ local function encode_grid(key, grid)
 		if id and not index[id] then
 			ids[#ids + 1] = id
 			index[id] = #ids
+			assert(#ids < 256, "too many zones for the zone grid file")
 		end
 		bytes[n] = string.char(id and index[id] or 0)
 	end
-	assert(#ids < 256, "too many zones for the zone grid file")
 	local head = table.concat({GRID_FORMAT, "\nkey ", key, "\nids ", table.concat(ids, " "),
 		"\ngrid ", grid.nx, " ", grid.nz, "\n", table.concat(bytes), "\n"})
 	return head .. "end " .. core.sha256(head) .. "\n"
@@ -189,7 +189,14 @@ local function zone_grid(view)
 	end
 	local grid, seen = sample_grid(view)
 	if not key then return grid, seen, "sampled, not cached (no world key)" end
-	if not core.safe_file_write(GRID_FILE, encode_grid(key, grid)) then
+	-- A grid the file cannot hold (more than 255 zones) is used but not
+	-- stored: a cache failure never stops the load.
+	local ok, bytes = pcall(encode_grid, key, grid)
+	if not ok then
+		core.log("warning", "[grug_map] the zone grid is not stored: " .. tostring(bytes))
+		return grid, seen, "sampled"
+	end
+	if not core.safe_file_write(GRID_FILE, bytes) then
 		core.log("warning", "[grug_map] the zone grid file could not be written: " .. GRID_FILE)
 		return grid, seen, "sampled"
 	end

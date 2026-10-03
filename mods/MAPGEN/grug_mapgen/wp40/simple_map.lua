@@ -794,6 +794,13 @@ return function(zone_field)
 				return 0, 0
 			end
 
+			-- Empties the field-sample memo (Round 31 C: a boot's whole-world
+			-- sweeps fill it); the next query recomputes the same values.
+			function session.drop_caches()
+				memo_x, memo_z = {}, {}
+				memo_1, memo_2, memo_3, memo_4, memo_5 = {}, {}, {}, {}, {}
+			end
+
 			return session
 		end
 

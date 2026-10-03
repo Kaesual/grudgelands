@@ -341,6 +341,7 @@ local function planner_factory(allocator_factory)
 		protected_floor_at = true,
 		protected_only_floor_at = true,
 		metrics = true,
+		drop_caches = true,
 	}
 	local LOOKUP_FIELDS = {
 		schema = true,
