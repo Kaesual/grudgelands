@@ -12,7 +12,9 @@
 --   Z  zoom steps 1 -> 2 -> 4 -> 8 and stops at 8, back down to 1; the page
 --      label, base image size, scroll range and thumb follow the level;
 --      markers scale with the level; zooming keeps the view centre; scroll
---      values clamp to the 8x range.
+--      values clamp to the 8x range;
+--   H  (Round 32) hostile camps, bandits and Mirefolk by their slot, draw a
+--      red "X", never the quest giver's "!"; a village keeps its "+".
 -- Prints "R26 MAP PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -46,7 +48,17 @@ rawset(_G, "core", {
 })
 
 local STEWARD_POS = {x = 1234, y = 30, z = -987}
-local settlements = {{key = "highcourt", race_id = "human", anchor = {x = 1200, z = -950}}}
+local settlements = {{key = "highcourt", race_id = "human", anchor = {x = 1200, z = -950}},
+	-- Round 32: a start-zone and a frontier bandit camp, a Mirefolk camp and
+	-- a village (by slot, not by key).
+	{key = "goldmead_bandit_camp", display_name = "Goldmead Bandit Camp", race_id = "human",
+		slot = "bandit_1", anchor = {x = 320, z = -1980}},
+	{key = "r20_anchor_050", display_name = "Slatehook Hideout", race_id = "dwarf",
+		slot = "bandit_1", anchor = {x = -1824, z = -526}},
+	{key = "r20_anchor_067", display_name = "Siltbasket Camp", race_id = "human",
+		slot = "mirefolk", anchor = {x = -620, z = -1760}},
+	{key = "goldmead_village", display_name = "Goldmead Village", race_id = "human",
+		slot = "village_1", anchor = {x = 400, z = -1700}}}
 local sockets = {highcourt = {
 	{id = "zz_trainer", role = "trainer", profession = "tailor",
 		pos = {x = 1236, y = 30, z = -985}},
@@ -148,6 +160,23 @@ local x1, y1 = button_at(fs1, TEXTURE)
 check(x1 ~= nil, "S steward image button on the page")
 check(fs1:find("label[0.15,0.22;World — 1x]", 1, true), "Z label at 1x")
 local base_w = tonumber(fs1:match("image%[0,0;([%d.]+),[%d.]+;grug_map_base%.png%]"))
+
+-- H: hostile camps (Round 32): kind, symbol and colour.
+do
+	local kinds = {}
+	for _, marker in ipairs(atlas.collect_markers(player)) do kinds[marker.label] = marker.kind end
+	check(kinds["Goldmead Bandit Camp"] == "hostile" and kinds["Slatehook Hideout"] == "hostile" and
+		kinds["Siltbasket Camp"] == "hostile" and kinds["Goldmead Village"] == "settlement",
+		"H bandit and Mirefolk camps are hostile, a village is not")
+	local symbols = {}
+	for symbol in fs1:gmatch("button%[[%d.%-]+,[%d.%-]+;0%.32,0%.32;[^;%]]+;([^%]]*)%]") do
+		symbols[symbol] = (symbols[symbol] or 0) + 1
+	end
+	check(symbols.X == 3 and symbols["!"] == nil and symbols["+"] == 2,
+		("H three red X, no \"!\", \"+\" for Highcourt and the village (X %s, ! %s, + %s)"):format(
+			tostring(symbols.X), tostring(symbols["!"]), tostring(symbols["+"])))
+	check(fs1:find("textcolor=#ff5a4a", 1, true) ~= nil, "H the hostile symbol is red")
+end
 check(base_w and base_w > 5, "Z base image at 1x")
 
 check(atlas.MAX_ZOOM == 8, "Z top level is 8x")
