@@ -388,14 +388,16 @@ end
 -- resource regen and decay, recovery, eating, mounting and travel. A player
 -- is in combat while EITHER
 --   * at least one live, active grug mob is ENGAGED with them (mob combat), or
---   * the 5 s timer runs: PvP hits and every hit whose source is not a
---     tracked grug mob (other entities, scorched ground).
+--   * the timer runs: 5 s after PvP hits and every hit whose source is not
+--     a tracked grug mob (other entities, scorched ground), 10 s after PvP
+--     contact (pvp-plan ruling 8, armed by grug_pvp through mark_in_combat).
 -- A mob hit never arms the timer, so mob combat ends in the very step the
 -- last engaged mob dies, resets, gives up its fight or leaves the active
 -- world. Death clears both halves; a dead player cannot be re-marked.
 --
 
 grug_core.COMBAT_TIMEOUT = 5
+grug_core.PVP_COMBAT_TIMEOUT = 10
 
 -- Monotonic seconds since server start. ONE clock for every combat timer
 -- shared between grug_core and grug_mobs (taunt force window, leash contact
@@ -407,7 +409,7 @@ function grug_core.mono_time()
 	return core.get_us_time() / 1e6
 end
 
-local last_combat = {} -- player name -> us timestamp of the last untracked hit
+local combat_until = {} -- player name -> us time the combat timer runs out
 
 -- Engagement edges (player name, mob luaentity), kept in two event-driven
 -- indexes that always change together:
@@ -437,14 +439,21 @@ local last_combat = {} -- player name -> us timestamp of the last untracked hit
 local engaged_mobs = {}
 local WEAK_KEYS = {__mode = "k"}
 
-function grug_core.mark_in_combat(player)
+-- `seconds` defaults to COMBAT_TIMEOUT; a shorter mark never cuts a longer
+-- running timer short (a dodged PvP hit inside the 10 s PvP combat).
+function grug_core.mark_in_combat(player, seconds)
 	-- Dead players stay out of combat: death cleared the state, and a killing
 	-- blow's own bookkeeping (a DoT tick, an after-punch mark) must not re-arm
 	-- it. get_hp() is 0 from the lethal set_hp until the respawn.
 	if not core.is_player(player) or player:get_hp() <= 0 then
 		return
 	end
-	last_combat[player:get_player_name()] = core.get_us_time()
+	local name = player:get_player_name()
+	local until_us = core.get_us_time() +
+		(seconds or grug_core.COMBAT_TIMEOUT) * 1e6
+	if until_us > (combat_until[name] or 0) then
+		combat_until[name] = until_us
+	end
 end
 
 -- A mob whose lifecycle hooks drop its edges: every mob registered through
@@ -547,7 +556,7 @@ end
 -- Drop the timer and every edge of one player. O(mobs engaged with them).
 local function clear_combat(player)
 	local name = player:get_player_name()
-	last_combat[name] = nil
+	combat_until[name] = nil
 	local set = engaged_mobs[name]
 	if not set then
 		return
@@ -592,9 +601,8 @@ function grug_core.in_combat(player)
 	if set and next(set) ~= nil then
 		return true
 	end
-	local t = last_combat[name]
-	return t ~= nil and
-		(core.get_us_time() - t) < grug_core.COMBAT_TIMEOUT * 1e6
+	local t = combat_until[name]
+	return t ~= nil and core.get_us_time() < t
 end
 
 -- Death ends combat at once (user ruling 2026-09-28) and the respawned player
@@ -1385,6 +1393,18 @@ end)
 grug_core.in_ability_punch = false
 local ability_attacker_level
 
+-- The PvP seam (pvp-plan §4). grug_pvp installs both functions at load;
+-- grug_core never depends on it, and without it enemy players stay hostile as
+-- before. Every PvE path returns before either is asked.
+--   pvp_can_harm(attacker, target)  -> bool, for a player pair: the impact
+--     re-check below and the crosshair ray (combat_ray.lua) ask it;
+--   pvp_hit_landed(attacker, target): hostile player damage landed on a
+--     player (HP lost or absorb consumed), called from the central hp-change
+--     modifier below -- the one place every PvP hit (swing, cast, area
+--     effect, projectile) passes after dodge, armor and absorb.
+grug_core.pvp_can_harm = nil
+grug_core.pvp_hit_landed = nil
+
 function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	opts = opts or {}
 	-- Callers have already assembled base, gear and flat talent additions.
@@ -1397,6 +1417,13 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 			local af = grug_core.get_player_faction(attacker:get_player_name())
 			local tf = grug_core.get_player_faction(target:get_player_name())
 			if af and tf and af == tf then
+				return 0
+			end
+			-- Impact re-check (pvp-plan ruling 5): a cast, area effect or
+			-- projectile chosen while both were flagged may land after one of
+			-- them lost the flag. No dodge roll, no combat mark, no cost here.
+			if grug_core.pvp_can_harm and
+					not grug_core.pvp_can_harm(attacker, target) then
 				return 0
 			end
 		end
@@ -1814,8 +1841,10 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 	end
 	-- Absorb shield soaks the remaining damage of every source except fall,
 	-- lava and drowning (ruling 24).
+	local absorbed = false
 	if hp_change < 0 and not grug_core.bypasses_absorb(reason) and
 			grug_core.get_absorb(player) > 0 then
+		absorbed = true
 		local name = player:get_player_name()
 		local entries = absorbs[name]
 		local ordered = {}
@@ -1836,6 +1865,13 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		hp_change = -remaining
 		absorb_particles(player:get_pos())
 		if next(entries) == nil then absorbs[name] = nil end
+	end
+	-- PvP contact (pvp-plan ruling 7a): a player's hit that cost HP or absorb.
+	-- A dodge returned above; a mob's hit has no player object.
+	if (hp_change < 0 or absorbed) and reason.type == "punch" and
+			grug_core.pvp_hit_landed and reason.object and
+			reason.object ~= player and reason.object:is_player() then
+		grug_core.pvp_hit_landed(reason.object, player)
 	end
 	return hp_change
 end, true)

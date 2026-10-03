@@ -26,11 +26,20 @@ local TEMPLATES = {
 		"%s was bested by %s.",
 		"%s lost a grudge match to %s.",
 	},
+	fled = {
+		"%s fled the fight and fell.",
+		"%s turned tail mid-fight and fell.",
+	},
 	fallback = {
 		"%s met an untimely end.",
 		"%s will need another try.",
 	},
 }
+
+-- The custom_type of a logout death (pvp-plan ruling 9): grug_pvp announces
+-- it with this reason when the player leaves in PvP combat and applies the
+-- death with it at the next join, which therefore broadcasts nothing.
+grug_core.LOGOUT_DEATH_CUSTOM_TYPE = "grug_core:logout_death"
 
 -- Shown for an entity that has no readable name of its own.
 local GENERIC_ACTOR = "a hostile creature"
@@ -96,6 +105,8 @@ function grug_core.death_message(player_name, reason)
 	local reason_type = reason and reason.type
 	if reason and reason.custom_type == "grug_core:suffocation" then
 		category = "suffocation"
+	elseif reason and reason.custom_type == grug_core.LOGOUT_DEATH_CUSTOM_TYPE then
+		category = "fled"
 	elseif reason_type == "fall" then
 		category = "fall"
 	elseif reason_type == "drown" then
@@ -118,6 +129,9 @@ function grug_core.death_message(player_name, reason)
 end
 
 core.register_on_dieplayer(function(player, reason)
+	if reason and reason.custom_type == grug_core.LOGOUT_DEATH_CUSTOM_TYPE then
+		return
+	end
 	local _, message = grug_core.death_message(player:get_player_name(), reason)
 	core.chat_send_all(message)
 end)
