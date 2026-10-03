@@ -219,6 +219,44 @@ need no GUI check.
    with the user, the rest moves to Round 32.
 4. **Customization covers body features only** (§2.1.2).
 
+### Preview rulings (user, 2026-10-03, after wave 1)
+
+5. **Character layers (A) approved** for the first version. One check in
+   stage 2: on several pictures (mostly metal helmets) the back and side of
+   the head look transparent; find out whether that is the preview renderer
+   or a real gap in the composed skin, and fix it if real.
+6. **Fortress and camps (S) approved** with every first proposal on the
+   page; fortress size **49 × 49**.
+7. **Enchant colours (B) need another design round:** the items, armour
+   most of all, look too colourfully pixelated. Smaller pixel groups
+   throughout and the colours overlaid at **50 %** strength; a new preview
+   before stage 2 (GPT-6 Astra may help with the art if needed).
+8. **Mounted hitbox:** every tier-2 mount gets the same collision and
+   selection box (fairness, as §2.1.4).
+9. **Healer fallback:** support that is not allowed on the aimed ally (an
+   unflagged healer aiming at a flagged ally) does nothing and costs nothing,
+   instead of falling back to the caster.
+10. **Target frame:** an enemy who cannot be fought shows grey (as built).
+11. **Dragon arenas (DA), redesigned by the user:**
+    - The arena floor uses the local ground (stone, grass and so on) instead
+      of dirt, with a lightly randomized edge so it does not read as a placed
+      square; the floor may be gently undulating (mapgen), never rough.
+    - **Bigger arenas that show the dragon's leash:** the arena's clear edge is
+      the leash. When the dragon has no active hostile target left inside its
+      arena, the fight ends: the dragon heals fully and flies back to its spawn
+      point. (This replaces the Round 30 "dragons only wait" rule for dragons;
+      kings keep theirs.)
+    - **Ice (Wyrmglass):** breaking ice that turns into ice water — fixed
+      damage per second suited to level 60 (about 250/s), not reduced by
+      armour, plus a slow; flat frost terraces, clearly distinct from the
+      breaking ice. **No ice pillars** (cover and dragon pathing).
+    - **Jungle (Stormscale):** glowing ember fissures framed by basalt, about
+      350/s, no slow; fallen trunks **one node high** — a small obstacle players
+      jump over, which the dragon walks or flies over; not cover.
+    - Coordinator defaults (veto welcome): the proposal's height fix (a
+      player inside the arena is a target whatever their height) and
+      protection for the whole arena, so the hazards cannot be dug out.
+
 ## 7. Orchestration notes (for the coordinator)
 
 - **Start state:** main `4b06f9c9` or later (local,
