@@ -173,6 +173,7 @@ local function release_player(player, session)
 	end
 	set_pending_class(player, nil)
 	core.close_formspec(name, CLASS_FORM)
+	core.close_formspec(name, LOOK_FORM)
 	core.close_formspec(name, LOADING_FORM)
 	-- Hand the inventory back to sfinv; its suspension ended with the session.
 	if sfinv.enabled then
