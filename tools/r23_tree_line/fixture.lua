@@ -606,3 +606,4 @@ local text = table.concat(lines, "\n")
 for index = 1, #text do digest = (digest * 131 + text:byte(index)) % 2147483629 end
 print("DIGEST " .. digest)
 print(failures == 0 and "RESULT PASS" or ("RESULT FAIL " .. failures))
+if failures > 0 then os.exit(1) end
