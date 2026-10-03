@@ -1621,6 +1621,22 @@ local function zones_factory(dependencies)
 					runtime_column_cache_evictions = column_cache_evictions,
 				}
 			end
+
+			-- Empties this session's query caches: the column cache, the front
+			-- borders and the horizontal and height memos (Round 31 C: a boot's
+			-- whole-world sweeps fill them, a later start that reads its
+			-- layouts and maps from the world folder does not). The next query
+			-- recomputes the same values.
+			function planner_source.drop_caches()
+				if runtime_mode then
+					column_cache_by_x, column_cache_rows = {}, {}
+					column_cache_slot_x, column_cache_slot_z = {}, {}
+					column_cache_count, column_cache_next_slot = 0, 1
+				end
+				front_cache, front_cache_count = {}, 0
+				horizontal.drop_caches()
+				height.drop_caches()
+			end
 			planner_source_count = planner_source_count + 1
 		end
 

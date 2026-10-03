@@ -53,6 +53,12 @@ do
 		"full collection (%.0f ms)"):format(loaded / 1024, collectgarbage("count") / 1024,
 		(core.get_us_time() - started) / 1000))
 	core.after(0, function()
+		-- A first start's whole-world sweeps (the world layouts, the map base,
+		-- the region maps, the zone grid) leave the bounded query caches full;
+		-- a later start reads those from the world folder and never fills
+		-- them. Emptied here, the session starts with the same heap either
+		-- way (Round 31 C); queries at runtime refill what they use.
+		grug_mapgen.wp40.planner_source.drop_caches()
 		collectgarbage("collect")
 		core.log("action", ("[grug_mapgen] Lua heap at the first server step after a full " ..
 			"collection: %.0f MiB"):format(collectgarbage("count") / 1024))
