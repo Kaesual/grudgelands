@@ -15,7 +15,9 @@
 --      real item, group and mob registrations and the settlement places:
 --      they pass the load-time world checks and the registry checks; how
 --      many objectives get a range, and how many HUD tracker lines would
---      exceed the tracker width with the range added (the HUD decision).
+--      exceed the tracker width with the range added (the HUD decision);
+--      Round 32: kill targets read as their zone shows them (Kapok's boar,
+--      bandit and leader) in the dialogue text and the tracker line.
 --
 -- Usage (repo root): luajit tools/r28_q0/portable_test.lua
 local json = dofile("tools/r28_b4_quests/json.lua")
@@ -192,6 +194,14 @@ local function install_world(mobs_root)
 			return "aggressive"
 		end,
 		spawn_regions = seams,
+		-- A sub-type's display names (Round 32: labels name a mob as its zone
+		-- shows it); the fixture's catalogue rows have none (entity
+		-- descriptions name them).
+		subtype = function(name)
+			local row = catalogue[name:match("^grug_mobs:(.+)$") or name]
+			return row and row.display and {display = row.display, display_by_zone = row.display_by_zone or {}}
+				or nil
+		end,
 	}
 	grug_zones = {get = function(zone) return BANDS[zone] end, id_at = function() return "elandor_dawnmere_fields" end}
 	mod_paths.grug_mobs = mobs_root
@@ -499,8 +509,8 @@ for _, id in ipairs(ids) do
 			if objective.levels then ranged_items = ranged_items + 1 end
 		end
 		rows[index] = {type = objective.type, item = objective.item, group = objective.group,
-			mobs = objective.mobs, npc = objective.npc, count = 0, required = objective.count,
-			levels = objective.levels}
+			mobs = objective.mobs, zones = objective.zones, npc = objective.npc, count = 0,
+			required = objective.count, levels = objective.levels}
 	end
 	if not Q.is_travel(def) then
 		-- The tracker line at 0 progress, without and with each range.
@@ -524,6 +534,21 @@ for _, id in ipairs(ids) do
 	end
 end
 check(ranged_kills > 0 and ranged_kills <= kills, "shipped kill objectives get ranges")
+-- Round 32: kill targets read as their zone shows them, through the
+-- loader's per-target zones and the quest state's rows (tracker).
+eq(Q.objective_action(Q.registered_quests.kapok_hunt_01.objectives[1]), "Defeat Small Jungle Boar",
+	"shipped: Kapok's small boar by its zone name")
+do
+	local objectives = Q.registered_quests.kapok_hunt_05.objectives
+	eq(Q.objective_subject(objectives[1]) .. ", " .. Q.objective_subject(objectives[2]),
+		"Confused Offering Thief, Confused Offering Thief Chief Tangle",
+		"shipped: Kapok's bandit by its zone name, its leader")
+end
+-- The journal fills the quest text; this fixture builds no region map.
+grug_mobs.spawn_regions.describe = function() return nil, "no region map in this fixture" end
+for key in pairs(meta) do meta[key] = nil end -- section 2's quests are not shipped ones
+check(Q.accept(player, "kapok_hunt_01"), "shipped: accept kapok_hunt_01")
+eq(hud("kapok_hunt_01"), "0/8 Defeat Small Jungle Boar", "shipped: the tracker line names the zone's boar")
 -- What the one-time computation costs at load (reported, not a target).
 do
 	local world, real = nil, Q.validate.world

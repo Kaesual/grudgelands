@@ -45,6 +45,7 @@ local function definition(file, quest)
 		if objective.type == "kill" then
 			row.mobs = V.target_names(objective)
 			row.area = V.area_ref(objective.area, file.zone)
+			row.zones = Q.target_zones(row.mobs, row.area, file.zone) -- labels.lua
 		elseif objective.type == "item" then
 			row.item = objective.item
 			row.group = objective.group and objective.group:gsub("^group:", "") or nil
