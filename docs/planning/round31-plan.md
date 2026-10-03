@@ -273,9 +273,11 @@ need no GUI check.
     lie on the Battlegrounds side of their zone; close to the middle road,
     but the road's course has priority and a narrow side road connects the
     gate; no hostile spawns in fortresses and camps, roaming mobs are nudged
-    away from them (chasing in combat is allowed); the enemy fortress is
-    hidden on the map, enemy Battlegrounds camps stay visible (quest
-    targets), kings stay visible; a fortress cut into a slope is fine within
+    away from them (chasing in combat is allowed); the map looks the same
+    for both factions, only the icons differ: every enemy settlement and POI
+    icon (towns, capitals, outposts, the fortress) is hidden, the enemy
+    kings, both dragons and the enemy Battlegrounds camps (quest targets)
+    stay visible; a fortress cut into a slope is fine within
     limits, and placement checks the relief.
 13. **Skill names** (user): the three priest skills that carry another
     game's exact names (Flash Heal, Power Word: Shield, Renew) are renamed;
