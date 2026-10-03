@@ -269,7 +269,15 @@ need no GUI check.
       damage per second. The flag ends when the dragon dies, or at once when
       all players have left the arena and the dragon resets. (This answers
       the healer standing outside the invisible edge.)
-12. **Skill names** (user): the three priest skills that carry another
+12. **PvP POI placement** (user, after the lane-M preview): the fortresses
+    lie on the Battlegrounds side of their zone; close to the middle road,
+    but the road's course has priority and a narrow side road connects the
+    gate; no hostile spawns in fortresses and camps, roaming mobs are nudged
+    away from them (chasing in combat is allowed); the enemy fortress is
+    hidden on the map, enemy Battlegrounds camps stay visible (quest
+    targets), kings stay visible; a fortress cut into a slope is fine within
+    limits, and placement checks the relief.
+13. **Skill names** (user): the three priest skills that carry another
     game's exact names (Flash Heal, Power Word: Shield, Renew) are renamed;
     generic words such as "Sprint" or "Heal" are fine even where other games
     use them too.
