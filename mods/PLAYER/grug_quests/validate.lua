@@ -430,18 +430,34 @@ local function target_levels(add, where, world, zone, name, area_ref)
 	return nil
 end
 
-local function check_target(add, where, world, zone, name, area_ref, level, what)
+-- The PvP garrison an area names ("<zone>/<settlement key>" of a fortress
+-- or Battlegrounds camp, Round 31), or nil.
+local function garrison_area(world, area_ref)
+	local zone_id, area_id = (area_ref or ""):match("^([^/]+)/(.+)$")
+	local area = zone_id and world.area(zone_id, area_id)
+	return area and area.garrison and area or nil
+end
+
+-- `faction` is the quest giver's: a PvP garrison's guards and captain are
+-- targets only in their own area and only of the other faction's quests
+-- (pvp-plan rulings 14 and 23; a player is never a target).
+local function check_target(add, where, world, zone, name, area_ref, level, what, faction)
 	local role = name:match("^grug_mobs:(.+)$") or name
 	if not world.entity(name) then
 		add(where, ("role %s is neither a sub-type nor an existing mob [E-unknown-role]"):format(role))
 		return
 	end
+	local garrison = garrison_area(world, area_ref)
 	local disposition = world.disposition(name)
-	if disposition == "critter" then
+	if garrison then
+		if not faction or garrison.garrison ~= world.opposing_faction(faction) then
+			add(where, ("%s is a garrison of the %s; only the other faction's quests target it " ..
+				"[E-garrison-faction]"):format(area_ref, garrison.garrison))
+		end
+	elseif disposition == "critter" then
 		add(where, ("critter %s is never a %s (Ruling 29) [E-critter-target]"):format(role, what))
 		return
-	end
-	if disposition == nil then
+	elseif disposition == nil then
 		add(where, ("%s is an NPC or guard, not a %s [E-not-a-mob]"):format(role, what))
 		return
 	end
@@ -477,8 +493,8 @@ local function check_recipe_targets(warn, where, world, zone, objective)
 	warn(where, ("no kill target is spawned by %s's spawn recipe [W-recipe-target]"):format(zone))
 end
 
--- Every placeholder's target (a kind or camp of the zone's recipe or a
--- leader) and place (a settlement key or anchor id) exists. "From here"
+-- Every placeholder's target (a kind or camp of the zone's recipe, a leader
+-- or a PvP POI) and place (a settlement key or anchor id) exists. "From here"
 -- points at a compact target: an open kind spreads over many patches, so it
 -- takes the zone phrasing or a named place (a warning).
 local function check_placeholders(add, warn, where, world, zone, quest)
@@ -508,12 +524,13 @@ function V.world(files, world)
 		local quest, zone = row.quest, row.file.zone
 		local add = reporter(errors, row.file)
 		local warn = reporter(warnings, row.file)
+		local faction = world.npc_faction(quest.giver)
 		for index, objective in ipairs(quest.objectives) do
 			local where = ("%s: objective %d"):format(row.where, index)
 			if objective.type == "kill" then
 				local area = V.area_ref(objective.area, zone)
 				for _, name in ipairs(V.target_names(objective)) do
-					check_target(add, where, world, zone, name, area, quest.level, "kill target")
+					check_target(add, where, world, zone, name, area, quest.level, "kill target", faction)
 				end
 				check_recipe_targets(warn, where, world, zone, objective)
 			elseif objective.type == "item" then
@@ -524,7 +541,7 @@ function V.world(files, world)
 				end
 				for _, name in ipairs(objective.roles and V.target_names(objective) or {}) do
 					check_target(add, where, world, zone, name, V.area_ref(objective.area, zone), quest.level,
-						"item source")
+						"item source", faction)
 				end
 			end
 		end
@@ -533,7 +550,7 @@ function V.world(files, world)
 			check_item(add, where, world, drop.item, "quest drop")
 			for _, name in ipairs(V.target_names(drop)) do
 				check_target(add, where, world, zone, name, V.area_ref(drop.area, zone), quest.level,
-					"quest-drop source")
+					"quest-drop source", faction)
 			end
 		end
 		for _, item in ipairs(quest.rewards.items or {}) do

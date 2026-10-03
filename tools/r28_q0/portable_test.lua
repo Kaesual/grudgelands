@@ -104,8 +104,9 @@ setmetatable(core, {__index = function(_, key)
 end})
 vector = {distance = function() return 1 end}
 grug_core = {register_tag_visibility = function() end,
-	-- grug_quests/npcs.lua: no PvP fortress is registered here (Round 31).
-	settlement_socket_anchor = function() return nil end,
+	-- grug_quests/npcs.lua: both PvP fortresses are bound, so their quest
+	-- givers register (Round 31; the shipped quest files name them).
+	settlement_socket_anchor = function(key) return key:match("^pvp_fortress_") and {x = 0, z = 0} or nil end,
 	hud_layout = {side_text_width = function() return 38 end, QUEST_WRAP = 38, anchors = {quest_list = {}}}}
 dofile("mods/CORE/grug_core/item_names.lua")
 grug_xp = {get_level = function() return 60 end, register_on_level_change = function() end,
@@ -243,12 +244,41 @@ local function register_real(_, mobs_root)
 		core.registered_entities["grug_mobs:" .. row.role] = {description = row.display,
 			_grug_disposition = row.disposition}
 	end
+	-- Round 31: the PvP garrisons' entities (lane G registers them after the
+	-- dump was taken; no disposition, as a guard) and their rules, which the
+	-- quest checks ask about a fortress's or camp's area.
+	local names = read_json(mobs_root .. "/data/pvp_names.json")
+	local garrison = dofile(mobs_root .. "/pvp_garrison.lua").new(
+		dofile("mods/MAPGEN/grug_mapgen/wp40/r31_pvp_catalog.lua"), names)
+	for _, faction in ipairs({"accord", "throng"}) do
+		for _, entity in ipairs({garrison.guard_entity(faction), garrison.captain_entity(faction),
+				garrison.general_entity(faction), garrison.bodyguard_entity(faction)}) do
+			core.registered_entities[entity] = core.registered_entities[entity] or {description = entity}
+		end
+	end
+	grug_mobs.pvp_garrison = garrison
 	grug_mobs.disposition = function() return nil end
 end
 
+-- Every quest NPC's faction from its settlement's race (the roster), as
+-- registry.lua resolves it once mods are loaded.
+local function resolve_factions(Q)
+	local records = {}
+	for _, row in ipairs(dofile("mods/MAPGEN/grug_mapgen/wp40/r7_settlement.lua").roster) do
+		records[#records + 1] = {key = row.key, race_id = row.race}
+	end
+	grug_core.settlement_socket_settlements = function() return records end
+	grug_core.opposing_faction = function(f) return f == "accord" and "throng" or "accord" end
+	grug_classes.registered_races = {human = {faction = "accord"}, dwarf = {faction = "accord"},
+		elf = {faction = "accord"}, orc = {faction = "throng"}, troll = {faction = "throng"},
+		undead = {faction = "throng"}}
+	Q.resolve_npc_factions()
+end
+
 -- Load grug_quests from `quest_root` (its data/zones are the quest files)
--- over `mobs_root`'s spawn data, then the on_mods_loaded checks.
-local function load_quests(quest_root, mobs_root, register)
+-- over `mobs_root`'s spawn data, then the on_mods_loaded checks (`prepare`,
+-- if given, runs before them, as init.lua's NPC factions do).
+local function load_quests(quest_root, mobs_root, register, prepare)
 	grug_quests = {}
 	install_world(mobs_root)
 	register = register or register_named
@@ -258,6 +288,7 @@ local function load_quests(quest_root, mobs_root, register)
 	for _, file in ipairs({"registry", "state", "labels", "npc", "npcs", "validate", "loader", "ui", "hud"}) do
 		dofile(base .. file .. ".lua")
 	end
+	if prepare then prepare(grug_quests) end
 	local ok, err = pcall(grug_quests.validate_quest_data)
 	check(ok, quest_root .. ": the load-time world checks pass: " .. tostring(err))
 	return grug_quests
@@ -425,7 +456,7 @@ end
 ------------------------------------------------------------------------------
 -- 5. The shipped quest files over the shipped recipes and catalogue.
 ------------------------------------------------------------------------------
-Q = load_quests("mods/PLAYER/grug_quests", "mods/ENTITIES/grug_mobs", register_real)
+Q = load_quests("mods/PLAYER/grug_quests", "mods/ENTITIES/grug_mobs", register_real, resolve_factions)
 -- The registry checks' socket index: every quest NPC at its own quest socket
 -- (that the socket exists is the engine boot's and validate.py --atlas's
 -- check; two NPCs on one socket still fail here).

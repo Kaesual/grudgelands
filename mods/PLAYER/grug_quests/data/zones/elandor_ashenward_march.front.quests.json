@@ -378,6 +378,392 @@
       },
       "lesson": "Handoff from the 41-50 front to Gravesalt.",
       "duration_min": 10
+    },
+    {
+      "id": "ashenward_bastion_call",
+      "line": "front",
+      "giver": "r20_anchor_032_host",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 40,
+      "level": 41,
+      "requires": [],
+      "title": "A Posting at {name:pvp_fortress_accord}",
+      "text": "The Warmaster at {name:pvp_fortress_accord} needs fighters who know what a frontier posting costs. Report there, {dir_from_giver:pvp_fortress_accord}, for orders against the Throng camps on the Battlegrounds. If anyone asks why I sent you, tell them I prefer recommendations that can carry their own kit.",
+      "objectives": [
+        {
+          "type": "talk",
+          "npc": "r31_accord_warmaster"
+        }
+      ],
+      "rewards": {
+        "weight": 1,
+        "items": []
+      },
+      "lesson": "Entry: from a 31-40 outpost to the PvP fortress at level 40.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_bastion_steel",
+      "line": "front",
+      "giver": "r31_accord_warmaster",
+      "turnin": "r31_accord_warmaster",
+      "min_level": 40,
+      "level": 41,
+      "requires": [],
+      "title": "The Gate Does Not Salute",
+      "text": "The Quartermaster's latest requisition has four underlines and very little steel behind it. Bring me four Silversteel Bars for arrowheads and gate bolts. Our gate must hold when the Throng comes calling; looking imposing is a secondary duty.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_materials:silversteel_bar",
+          "count": 4
+        }
+      ],
+      "rewards": {
+        "weight": 2,
+        "items": []
+      },
+      "lesson": "Fortress supplies: an ordinary tier-4 bar.",
+      "duration_min": 10
+    },
+    {
+      "id": "ashenward_bastion_trophies",
+      "line": "front",
+      "giver": "r31_accord_drillmaster",
+      "turnin": "r31_accord_drillmaster",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Exhibits for the Drill Yard",
+      "text": "A recruit who has only fought straw tends to expect straw's standards of resistance. Bring me six War Trophies from defeated Throng Guards; any Throng garrison will do. We will put the enemy's kit beside the practice dummies and discuss the difference.",
+      "objectives": [
+        {
+          "type": "item",
+          "item": "grug_mobs:war_trophy",
+          "count": 6
+        }
+      ],
+      "rewards": {
+        "weight": 3,
+        "items": []
+      },
+      "lesson": "War Trophies drop only from enemy guards killed by a player (never a player kill).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_scouting",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Intelligence with Teeth",
+      "text": "My scouts are meant to count Throng tents, but lately their reports contain more teeth than canvas. Kill five Warpack Hyenas by day in the {name:front_shattered_line/approaches}, {zone_area:front_shattered_line/approaches}. A scout should finish a report with both boots still occupied.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "warpack_hyena"
+          ],
+          "area": "front_shattered_line/approaches",
+          "count": 5
+        }
+      ],
+      "rewards": {
+        "weight": 4,
+        "items": []
+      },
+      "lesson": "Scouting a Battlegrounds zone: a kill quest on its 41-43 kind.",
+      "duration_min": 15
+    },
+    {
+      "id": "ashenward_bastion_picket_broken",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 40,
+      "level": 42,
+      "requires": [],
+      "title": "Blind the {name:pvp_camp_broken_causeway_throng_low}",
+      "text": "The {name:pvp_camp_broken_causeway_throng_low}, {zone_area:pvp_camp_broken_causeway_throng_low}, has been counting our patrols with an accuracy I find offensive. Defeat four Throng Guards and the Throng Captain at that camp. Give our riders a chance to cross without becoming somebody else's morning report.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_low",
+          "count": 4
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_low",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_picket_shattered",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 40,
+      "level": 42,
+      "requires": [
+        "ashenward_bastion_picket_broken"
+      ],
+      "title": "A Gap at the {name:pvp_camp_shattered_line_throng_low}",
+      "text": "The next obstacle to our scouts is the {name:pvp_camp_shattered_line_throng_low}, {zone_area:pvp_camp_shattered_line_throng_low}. Kill four Throng Guards and the Throng Captain stationed there. A gap in their watch gives us room to work; keep your own guard up so we do not hand them one in return.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_low",
+          "count": 4
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_low",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_warcamp_broken",
+      "line": "front",
+      "giver": "r31_accord_drillmaster",
+      "turnin": "r31_accord_drillmaster",
+      "min_level": 47,
+      "level": 49,
+      "requires": [],
+      "title": "Dislodge the {name:pvp_camp_broken_causeway_throng_high}",
+      "text": "The troops at the {name:pvp_camp_broken_causeway_throng_high}, {zone_area:pvp_camp_broken_causeway_throng_high}, have had time to settle in and learn their ground. Defeat five Throng Guards and the Throng Captain commanding that camp. Respect their preparation, check your own, and spare me the speech about how courage will cover the difference.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_high",
+          "count": 5
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_high",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_warcamp_shattered",
+      "line": "front",
+      "giver": "r31_accord_drillmaster",
+      "turnin": "r31_accord_drillmaster",
+      "min_level": 47,
+      "level": 49,
+      "requires": [
+        "ashenward_bastion_warcamp_broken"
+      ],
+      "title": "Break Ranks at the {name:pvp_camp_shattered_line_throng_high}",
+      "text": "The {name:pvp_camp_shattered_line_throng_high}, {zone_area:pvp_camp_shattered_line_throng_high}, keeps the Throng's fighting strength on this front close at hand. Kill five Throng Guards and the Throng Captain there. You know the drill: pick your moment, finish the engagement, and count your wounds before you count your victories.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_high",
+          "count": 5
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_shattered_line/pvp_camp_shattered_line_throng_high",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_picket_skyglass",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 50,
+      "level": 52,
+      "requires": [],
+      "title": "No Cover for the {name:pvp_camp_skyglass_canopy_throng_low}",
+      "text": "A forest offers plenty of cover, and the Throng is making better use of it than I would like. Raid the {name:pvp_camp_skyglass_canopy_throng_low}, {zone_area:pvp_camp_skyglass_canopy_throng_low}, defeating four Throng Guards and the Throng Captain there. My scouts can handle roots and mist; give them fewer enemy sentries to worry about.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_skyglass_canopy/pvp_camp_skyglass_canopy_throng_low",
+          "count": 4
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_skyglass_canopy/pvp_camp_skyglass_canopy_throng_low",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_picket_gravesalt",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 50,
+      "level": 52,
+      "requires": [
+        "ashenward_bastion_picket_skyglass"
+      ],
+      "title": "Pressure on the {name:pvp_camp_gravesalt_escarpment_throng_low}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_low}, {zone_area:pvp_camp_gravesalt_escarpment_throng_low}, gives the Throng a watch on ground our scouts need to cross. Kill four Throng Guards and the Throng Captain at that post. We need breathing room out there, and the enemy has declined to provide it on request.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_low",
+          "count": 4
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_low",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy picket's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_warcamp_skyglass",
+      "line": "front",
+      "giver": "r31_accord_drillmaster",
+      "turnin": "r31_accord_drillmaster",
+      "min_level": 57,
+      "level": 59,
+      "requires": [],
+      "title": "Test the {name:pvp_camp_skyglass_canopy_throng_high}",
+      "text": "At the {name:pvp_camp_skyglass_canopy_throng_high}, {zone_area:pvp_camp_skyglass_canopy_throng_high}, the Throng has soldiers who know how to fight when the trees swallow every shouted order. Keep a steady hand and defeat five Throng Guards and the Throng Captain in that camp. Settle on your plan before you go; I have yet to see a fern relay a command correctly.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_skyglass_canopy/pvp_camp_skyglass_canopy_throng_high",
+          "count": 5
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_skyglass_canopy/pvp_camp_skyglass_canopy_throng_high",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
+      "duration_min": 20
+    },
+    {
+      "id": "ashenward_bastion_warcamp_gravesalt",
+      "line": "front",
+      "giver": "r31_accord_drillmaster",
+      "turnin": "r31_accord_drillmaster",
+      "min_level": 57,
+      "level": 59,
+      "requires": [
+        "ashenward_bastion_warcamp_skyglass"
+      ],
+      "title": "Reckoning at the {name:pvp_camp_gravesalt_escarpment_throng_high}",
+      "text": "The {name:pvp_camp_gravesalt_escarpment_throng_high}, {zone_area:pvp_camp_gravesalt_escarpment_throng_high}, anchors the Throng's strength in a country already thick with old graves. Defeat five Throng Guards and the Throng Captain there. This is a hard assignment, so watch your back and bring yourself home.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_high",
+          "count": 5
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_gravesalt_escarpment/pvp_camp_gravesalt_escarpment_throng_high",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 6,
+        "items": []
+      },
+      "lesson": "PvP camp raid: the enemy war camp's garrison (area-limited; no player kills).",
+      "duration_min": 20
     }
   ]
 }

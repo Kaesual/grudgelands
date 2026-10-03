@@ -101,9 +101,19 @@ class Ledger:
         if text not in self.warnings:
             self.warnings.append(text)
 
-    def role_tier(self, role):
+    def role_tier(self, role, area=None):
+        # A PvP garrison's tiers are its own (Round 31, read from G.slot).
+        if area and role in (area.get("tiers_by_role") or {}):
+            return area["tiers_by_role"][role]
         sub = self.subtypes.get(role)
         return (sub or {}).get("tier", "normal")
+
+    def quest_area(self, area_ref, zone):
+        """The kind, camp or PvP garrison an objective names, or None."""
+        if not area_ref:
+            return None
+        azone, aid = C.split_area_ref(area_ref, zone)
+        return self.design.quest_areas(azone).get(aid)
 
     def role_levels(self, role, zone, area_ref=None, own_zone=None):
         # A named leader (this zone first, else any zone: leader roles are
@@ -115,8 +125,7 @@ class Ledger:
         # Areas are the recipe's kinds and camps; a role is met there at its
         # own levels (the belt's levels within the role's).
         if area_ref:
-            azone, aid = C.split_area_ref(area_ref, own_zone or zone)
-            area = self.design.areas(azone).get(aid)
+            area = self.quest_area(area_ref, own_zone or zone)
             if area and area["levels_by_role"].get(role):
                 return tuple(area["levels_by_role"][role])
             if area and area.get("levels"):
@@ -159,10 +168,10 @@ class Ledger:
                 out[row["item"]] = out.get(row["item"], 0) + (lo + hi) / 2 / max(1, row.get("chance", 1))
         return out
 
-    def add_kills(self, count, role, level_range, acc, key):
+    def add_kills(self, count, role, level_range, acc, key, area=None):
         """`count` kills by this player's party; returns XP for this player.
         Expected drops go into this player's inventory (split in a party)."""
-        tier = self.role_tier(role)
+        tier = self.role_tier(role, area)
         drops = self.family_rows(role, level_range)
         total = 0.0
         whole = int(count)
@@ -303,7 +312,7 @@ class Ledger:
                     self.warn("%s: no level range for kill target %s; using quest level" % (qid, role))
                     levels = (q.get("level", 1), q.get("level", 1))
                 start = self.level
-                gained = self.add_kills(count, role, levels, acc, "kills")
+                gained = self.add_kills(count, role, levels, acc, "kills", self.quest_area(obj.get("area"), zone))
                 self.kill_rows.append({
                     "quest": qid, "zone": zone, "area": obj.get("area") or "(anywhere)",
                     "count": count, "roles": roles, "levels": levels, "player": start,
@@ -318,8 +327,7 @@ class Ledger:
     def species_mix(self, zone, area_ref):
         if not area_ref:
             return ""
-        azone, aid = C.split_area_ref(area_ref, zone)
-        return C.species_text(self.design.areas(azone).get(aid) or {})
+        return C.species_text(self.quest_area(area_ref, zone) or {})
 
     def item_objective(self, zone, q, obj, count, quest_drops, acc):
         qid = q.get("id")

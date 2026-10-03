@@ -447,8 +447,9 @@ function Q.turn_in(player, id)
 end
 -- Does this mob count for a kill objective or quest drop? The entity name is
 -- the role; an area limit is matched by the area tag the mob spawned with
--- (`_grug_area` = "<zone>/<kind or camp>", spawn_regions.lua), never by
--- where it died. Leaders carry no area.
+-- (`_grug_area` = "<zone>/<kind or camp>", spawn_regions.lua; a PvP
+-- garrison's guards and captain "<zone>/<settlement key>", start_npcs.lua),
+-- never by where it died. Leaders carry no area.
 local function mob_counts(target, mob)
 	if target.area and mob._grug_area ~= target.area then return false end
 	for _, name in ipairs(target.mobs) do
@@ -457,7 +458,9 @@ local function mob_counts(target, mob)
 	return false
 end
 -- Most kills credit nothing: the shared state is only read, and copied
--- once a counter actually rises.
+-- once a counter actually rises. A kill of the player's own faction (its
+-- guards) credits nothing; the load checks let only the other faction's
+-- quests name a garrison (validate.lua, E-garrison-faction).
 function Q.credit_kill(player, mob, pos)
 	if grug_factions.same_faction(player, mob.object) then return end
 	local state, copy = load(player), nil

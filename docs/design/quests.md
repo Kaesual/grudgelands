@@ -119,13 +119,37 @@ Each race has a level-10 capital/service introduction, followed by capital and
 regional bundles and explicit destination-only travel handoffs. Keep existing
 regional giver identities and add hosts at authored peaceful villages, outposts
 and mining camps. Existing hostile camps do not acquire friendly quest hosts.
-Kill objectives name spawn-recipe roles and leaders only, so the quest
-format has no enemy-guard objective; no civilian kills, player kills, king
+Kill objectives name spawn-recipe roles and leaders, and from Round 31 the
+guards and captain of an enemy PvP garrison in its own area (below); no
+civilian kills, player kills (PvP ruling 14: players may not be online), king
 finale, Nether or future warfront AI.
 Rewards follow the quest's reward level (`progression.md`), not the
 receiver's current level. Content, actor sockets and local materials
 must agree with the current world roster. Exact cards/IDs are maintained in the
 Round 20 content contract; delivery status belongs in STATUS/BACKLOG.
+
+## PvP fortress quests (Round 31)
+
+Each faction's fortress ([world.md](world.md) §4; Ashenward Bastion in
+Ashenward March, Bannerbreak Warhold in Bannerbreak Mesa) is the hub of its
+PvP quests (pvp-plan rulings 14, 15 and 23). Its three quest givers
+(Warmaster, Drillmaster, Outrider) give, all from level 40, on their line
+`front` (the zone's front file):
+
+- **one raid per enemy Battlegrounds camp** (8 per faction): kill the camp's
+  guards (4 at a lower camp, 5 at a higher one) and its captain, both
+  limited to that camp's area, at the reward level of the camp's band;
+  solo quests (round31-plan §6 item 16: the captain is a normal-tier camp
+  leader), given and turned in by the Outrider (lower camps) or the
+  Drillmaster (higher camps), the two camps of a band chained by zone;
+- **ordinary fortress quests**: supplies for the Quartermaster (Warmaster),
+  War Trophies from enemy guards (Drillmaster; they drop only to an enemy
+  player's kill), and a scouting kill in a Battlegrounds kind (Outrider);
+- **an entry quest** from an outpost of the fortress's zone at level 40, a
+  travel quest to the Warmaster.
+
+No objective names a player or a General. The front ledger counts these
+quests like every front quest.
 
 ## Objective presentation
 
@@ -177,6 +201,14 @@ instead of 2.
   mobs drop (a family drop such as a boar tusk) may name its source:
   `roles` and optionally one `area`, checked like a quest drop's source and
   shown only as the level range (the item counts however it was obtained).
+- **PvP garrison kill** (Round 31): the area may also be a PvP POI's garrison,
+  `<zone>/<settlement key>` of a fortress or Battlegrounds camp
+  (`front_broken_causeway/pvp_camp_broken_causeway_throng_low`), the tag its
+  guards and captain carry ([world.md](world.md) §4). Its roles are the
+  faction's guard and captain (a camp, at the camp's band; the captain at
+  its top) or guard, bodyguard and General (a fortress); a guard or captain
+  is a kill target only there, and only for a quest whose giver serves the
+  other faction (`E-garrison-faction`). Own-faction kills never count.
 - **Travel**: one conversation, the quest's only objective, credited on
   accept (Ruling 39): the destination NPC shows its yellow "?" at once and the
   HUD reads "Travel to <NPC>". The turn-in still needs the visit.
@@ -264,10 +296,13 @@ regions and leader spots ([spawn_regions.md](spawn_regions.md#directions)):
 | `{zone_area:T}` | "in the southeast of Dawnmere Fields", "in the heart of Dawnmere Fields" | open kinds spread over many patches |
 | `{name:T}` | "Dawnmere Meadows", "Crumb" | the display name of a kind, camp or leader |
 
-- `T` is a kind or camp of a spawn recipe or a leader role. A bare id means
-  the quest file's zone; another zone's kind or camp is written
+- `T` is a kind or camp of a spawn recipe, a leader role or a PvP POI (a
+  fortress or Battlegrounds camp by its settlement key, Round 31). A bare id
+  means the quest file's zone; another zone's kind or camp is written
   `zone_id/id` (`{zone_area:elandor_whitebridge_shire/oakwood}`); a
-  leader role is found in any zone.
+  leader role and a PvP POI are found in any zone. A PvP POI reads its label
+  (`{name:pvp_fortress_accord}` "Ashenward Bastion") and points at its
+  anchor.
 - `P` is a settlement key or anchor id: `highcourt`, `goldmead_village`,
   `anchor_015`.
 - A kind is pointed at by its largest patch, so two placeholders of one

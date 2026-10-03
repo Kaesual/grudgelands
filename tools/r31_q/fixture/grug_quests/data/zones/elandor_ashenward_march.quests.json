@@ -1,0 +1,18 @@
+{
+  "zone": "elandor_ashenward_march",
+  "hubs": [
+    {
+      "id": "bastion",
+      "anchor": "pvp_fortress_accord",
+      "givers": [
+        {
+          "npc": "r31_accord_outrider",
+          "lines": [
+            "front"
+          ]
+        }
+      ]
+    }
+  ],
+  "quests": []
+}

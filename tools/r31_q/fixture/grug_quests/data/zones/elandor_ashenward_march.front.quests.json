@@ -1,0 +1,37 @@
+{
+  "zone": "elandor_ashenward_march",
+  "quests": [
+    {
+      "id": "q31_picket",
+      "line": "front",
+      "giver": "r31_accord_outrider",
+      "turnin": "r31_accord_outrider",
+      "min_level": 40,
+      "level": 42,
+      "title": "Group: Pull Up the {name:pvp_camp_broken_causeway_throng_low}",
+      "text": "The picket stands {dir_from_giver:pvp_camp_broken_causeway_throng_low}. The {name:front_broken_causeway/pvp_camp_broken_causeway_throng_low}, which lies {zone_area:pvp_camp_broken_causeway_throng_low}, is held by guards.",
+      "objectives": [
+        {
+          "type": "kill",
+          "roles": [
+            "guard_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_low",
+          "count": 2
+        },
+        {
+          "type": "kill",
+          "roles": [
+            "captain_throng"
+          ],
+          "area": "front_broken_causeway/pvp_camp_broken_causeway_throng_low",
+          "count": 1
+        }
+      ],
+      "rewards": {
+        "weight": 5
+      },
+      "group": true
+    }
+  ]
+}

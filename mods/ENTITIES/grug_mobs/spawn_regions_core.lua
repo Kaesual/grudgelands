@@ -1835,8 +1835,12 @@ M.HEART = 0.3  -- zone mode: within this share of the zone's half extent
 -- Where a describe target stands: a leader role (its spot), a camp id (its
 -- centre) or a kind id (the centroid of the kind's LARGEST region, ties to
 -- the lower region id; one patch for every phrasing, so two placeholders in
--- one quest never point at different patches). Nil when the map has none.
+-- one quest never point at different patches), or a named place passed as
+-- its {x, z} (a Round 31 PvP POI). Nil when the map has none.
 function M.target_of(map, target)
+	if type(target) == "table" then
+		return {x = target.x, z = target.z, what = "place"}
+	end
 	for _, l in ipairs(map.leaders) do
 		if l.role == target then
 			return {x = l.x, z = l.z, what = "leader", region = l.region}
