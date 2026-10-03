@@ -453,9 +453,9 @@ do
 	eq(made, 1, "T the own faction's observer gets it")
 end
 
-if #failures > 0 then
-	print("R31 N PORTABLE FAIL " .. #failures .. "/" .. checks)
+if #failures == 0 then
+	print("R31 N PORTABLE PASS checks=" .. checks)
+else
 	for _, failure in ipairs(failures) do print("FAIL " .. failure) end
-	os.exit(1)
+	error(("R31 N PORTABLE FAIL %d/%d"):format(#failures, checks))
 end
-print("R31 N PORTABLE PASS checks=" .. checks)

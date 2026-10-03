@@ -148,7 +148,10 @@ core.get_translated_string = engine_translate
 ------------------------------------------------------------------------------
 local faction, race = "accord", "human"
 grug_inventory = {BAG_COUNT = 0, wrap_text = function(text) return text end}
-grug_factions = {get_faction = function() return faction end, same_faction = function() return false end}
+grug_factions = {get_faction = function() return faction end, same_faction = function() return false end,
+	display_name = function(id) return "The " .. id end}
+-- Round 31: which NPCs serve whom (the real rule on the fake faction table).
+dofile("mods/PLAYER/grug_factions/service.lua")
 grug_classes = {get_race = function() return race end}
 grug_xp = {get_level = function() return 60 end, quest_reward = function(_, weight) return weight end,
 	register_on_level_change = function() end}
