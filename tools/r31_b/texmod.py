@@ -1,8 +1,9 @@
 """A small offline renderer for Luanti texture strings (Round 31 lane B).
 
-Covers the parts the gear images use: file parts, `^` overlays, `(...)`
-groups, and the modifiers [verticalframe, [multiply, [opacity, [colorize,
-[hsl and [cracko (drawn as a simple crack pattern, only for completeness).
+Covers the parts the gear and body images use: file parts, `^` overlays,
+`(...)` groups, and the modifiers [verticalframe, [multiply, [mask (bitwise
+AND, apply_mask), [opacity, [colorize, [hsl and [cracko (drawn as a simple
+crack pattern, only for completeness).
 Each follows reference_projects/luanti/src/client/imagesource.cpp
 (blit_pixel<false>, apply_multiplication, apply_colorize,
 apply_hue_saturation, the [opacity and [verticalframe branches), so the
@@ -157,6 +158,9 @@ def apply_modifier(img, mod):
         count, index = (int(v) for v in rest.split(":"))
         h = img.shape[0] // count
         return img[index * h:(index + 1) * h].copy()
+    if name == "[mask":
+        mask = upscale(render(rest), img.shape[:2])
+        return img & mask
     if name == "[multiply":
         r, g, b, _ = parse_color(rest)
         out = img.copy()

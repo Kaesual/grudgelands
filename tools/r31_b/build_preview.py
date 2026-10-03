@@ -87,14 +87,17 @@ def all_pairs():
 
 
 def emit(opacity, pairs):
+    bodies = sorted({"body=%s:%s:%d" % (d[0], d[1], d[2]) for d in DOLLS})
     args = ["luajit", str(ROOT / "tools/r31_b/portable_test.lua"), str(ROOT), "emit",
-            str(opacity)] + ["%s:%s" % p for p in pairs]
+            str(opacity)] + ["%s:%s" % p for p in pairs] + bodies
     lines = subprocess.run(args, check=True, capture_output=True, text=True).stdout.splitlines()
     items, worn = {}, {}
     for line in lines:
         parts = line.split("\t")
         if parts[0] == "item":
             items[(parts[1], tuple(parts[2].split(":")))] = parts[3]
+        elif parts[0] == "body":
+            worn[("body", parts[1], parts[2], int(parts[3]), tuple(parts[4].split(":")))] = parts[5]
         else:
             worn[(parts[1], parts[2], int(parts[3]), tuple(parts[4].split(":")))] = parts[5]
     return items, worn
@@ -165,9 +168,8 @@ def doll(skin):
 
 
 def body(race, line, bracket, pair, worn):
-    text = "grug_visuals_skin_%s.png" % race
-    for slot in ["head", "chest", "legs", "feet"]:
-        text += "^" + worn[(line, slot, bracket, pair)]
+    """The composed skin of a full set, as grug_visuals.compose builds it."""
+    text = worn[("body", race, line, bracket, pair)]
     return texmod.render(text), text
 
 
@@ -311,8 +313,8 @@ def main():
     # --- 1: body -----------------------------------------------------------------------
     names = [v[0] for v in variants]
     add("<h2>1. Am Körper: %s</h2>" % " / ".join(names))
-    add("<p>Je Figur von links: unverzaubert, dann %s, jeweils vorne und hinten. Aktuelle "
-        "Haut (Lane As neue Ebenen sind noch nicht dabei).</p>" %
+    add("<p>Je Figur von links: unverzaubert, dann %s, jeweils vorne und hinten, mit "
+        "der Standard-Optik des Volks.</p>" %
         ", ".join("<b>%s</b> %s" % (v[0], v[1]) for v in variants))
     add("<div class='row'>")
     for race, line, bracket, pair, title in DOLLS:
