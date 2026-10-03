@@ -1,6 +1,57 @@
 # Project status
 
-Updated 2026-10-02. This is the delivery pointer, not another game specification.
+Updated 2026-10-03. This is the delivery pointer, not another game specification.
+
+- **Round 31 "PvP, appearance and clean-up" delivered locally** (2026-10-03,
+  [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
+  Every lane is merged on local main (last lane Q, `699a2002`), each
+  independently reviewed by Opus; not pushed. WP41 delivered and WP42's
+  PvP-POI part; rules in [pvp.md](design/pvp.md). A fresh world is required.
+  - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
+    flagged enemy players; the flag comes from contested ground or enemy
+    territory, the "Flag me for PvP" button (60 s) and PvP contact (60 s);
+    only own peaceful land clears it; an unflagged enemy is no target; one-way
+    support whose refusal costs nothing; 10 s PvP combat; logout in PvP
+    combat is death with kill credit; contested depth from T4 (y ≤ −501).
+    A PvP tab with the button, the state and statistics, two status icons,
+    a banner subtitle and the target-frame marker. PvE combat unchanged
+    (within noise); location tick 53 µs per second for 50 fake players.
+  - **Faction filter (N):** NPC services, quest givers and waystones serve
+    only their own faction; map and minimap show own-faction NPC markers
+    plus every king and both dragons, and hide the enemy's settlement icons
+    (war camps stay).
+  - **PvP POIs (S, M, M2, G, G2, Q; WP42 part):** Ashenward Bastion and
+    Bannerbreak Warhold (49 × 49, one gate, 12 elite guards, a level-65
+    General with two bodyguards, three quest givers, a Quartermaster, the
+    seventh waystone, a trail to the middle road) and 16 Battlegrounds camps
+    with garrisons in the camp's race and band and named captains (leaders,
+    not elites); protection + 10 nodes, no hostile spawns; 24 fortress
+    quests from level 40 (8 solo camp raids, 3 ordinary, 1 entry per
+    faction; 515 quests in total). Several secondary roads and trails
+    re-route round the new POIs (0–6 per seed); the middle road keeps its
+    course. Quest share: the user chose lower raid weights (3/4).
+  - **Appearance (A, B):** body features chosen once at creation (skin tone,
+    hair colour, hairstyle, eyes, a race feature), NPC looks rolled once,
+    helmets with a face window, equal hitboxes for every race and for the
+    mounts of each tier; enchant colours as thin stripes at 50 % on items,
+    held and dropped stacks, worn armour and the kings' weapons, with a
+    legend at the enchanting stations
+    ([character_visuals.md](design/character_visuals.md)).
+  - **Dragon arenas (DA2):** round arenas of radius 40 on local ground; the
+    edge is the leash (reset, full heal, flight home); ice water 250/s and
+    frost terraces on Wyrmglass, ember fissures 350/s and trunks on
+    Stormscale; the dragon's wrath 500/s for participants outside
+    ([world.md](design/world.md) §4b).
+  - **Clean-up (C) and names:** the query caches dropped after a first
+    start's build (heap at the first step 149 → 110 MiB), held objective
+    counts capped, the turn-in refresh, the zone-grid encode in the pcall,
+    `tools/run_fixtures.sh` (63 fixtures pass); Heal, Shield, Mend and Ice
+    Nova replace another game's spell names; neutral wording instead of a
+    commercial MMO's terms; captain and General names by GPT-6 Astra.
+  - Final engine check: (coordinator fills in)
+  - Next: the user's two-client GUI test on a fresh world (the Round 30
+    test is still open and can share it); the decision on seed-dependent
+    POI placement; then Round 32, WP9.
 
 - **Round 30 "Performance and clean-up" delivered locally** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
@@ -48,7 +99,8 @@ Updated 2026-10-02. This is the delivery pointer, not another game specification
     cave and bay spawns with at most one mob per merged trigger;
     Dawnmere 13 NPCs, no duplicates after reloads; boxed-in target given
     up and searches drop to 0, a target on a bottom slab is chased.
-    Next: the user's GUI test on a fresh world; then Round 31 PvP.
+    The user's GUI test of Round 30 is still open (it can share Round 31's
+    fresh world).
 
 - **Round 29 "Economy and travel" complete and pushed** (2026-10-02,
   [plan, completion and playtest checklist](planning/round29-plan.md#completion-2026-10-02)).

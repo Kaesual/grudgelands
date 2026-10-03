@@ -9,25 +9,37 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**42 delivered**, **3 canceled** (WP16, WP37, WP49), **9 open or partial**.
+**43 delivered**, **3 canceled** (WP16, WP37, WP49), **8 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
-WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29. The
-audit's letters and numbers (for example E5) are cited below.
+WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29, WP41
+in Round 31 (with WP42's PvP-POI part). The audit's letters and numbers (for
+example E5) are cited below.
 
 - **Latest delivery:
-  [Round 30 "Performance and clean-up"](docs/planning/round30-plan.md#completion-2026-10-02)
-  complete locally** (2026-10-02, not pushed): the
+  [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
+  complete locally** (2026-10-03, not pushed): WP41 geographic PvP (the
+  per-player flag, the PvP tab and markers, the NPC faction filter, PvP from
+  depth tier T4), WP42's PvP-POI part (a fortress per faction, 16
+  Battlegrounds war camps, garrisons with Generals and named captains, 24
+  fortress quests), the appearance package (looks at creation, NPC look
+  rolls, enchant colours), the dragon arena redesign and the Round 31
+  clean-up lane. Next: fresh world and the two-client GUI test, the
+  seed-dependent placement decision, then Round 32 (WP9)
+  ([Round 31](#round-31--pvp-appearance-and-clean-up),
+  [carry-overs](#round-31-carry-overs)).
+- [Round 30 "Performance and clean-up"](docs/planning/round30-plan.md#completion-2026-10-02)
+  (2026-10-02, not pushed, GUI test still open): the
   [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
   (quest-state cache and Map tab every 2 s, the region-map file cache and boot
   memory, the per-step A* budget with the give-up of unreachable targets and
   three merged spawn ABMs, per-player ticks), Return home on the Character
   page, piers and beaches at the dragon-island landings, the quest and fixture
   clean-up with the Dawnmere duplication fix, and the band-4/5 loot smoothing
-  with recomputed prices. Next: fresh world and GUI test, then Round 31 PvP
-  ([Round 30](#round-30--performance), [carry-overs](#round-30-carry-overs)).
+  with recomputed prices ([Round 30](#round-30--performance),
+  [carry-overs](#round-30-carry-overs)).
 - [Round 29 "Economy and travel"](docs/planning/round29-plan.md#completion-2026-10-02)
   (2026-10-02, pushed as `e512bb5c` after the user's fresh-world test): 491 quests on the Round 28
   framework replace the 240 legacy quests (one track per race, the
@@ -61,10 +73,10 @@ audit's letters and numbers (for example E5) are cited below.
   WP10.
 - Round 25 delivers WP24 Housing; its playtest is under way. Round 24 is
   pushed (`d4eaffff`) and accepted.
-- **V1 scope** ([ROADMAP](ROADMAP.md#v1-scope)): WP17 boats and waypoints (starts
-  and capitals only), WP41 geographic PvP and WP9's story levels 41–60 with
-  the finale are V1; WP42's scripted NPC battles come after V1, while small
-  PvP POIs may come in V1.
+- **V1 scope** ([ROADMAP](ROADMAP.md#v1-scope)): WP17 boats and waypoints (starts,
+  capitals and, since Round 31, the PvP fortresses), WP41 geographic PvP and
+  WP9's story levels 41–60 with the finale are V1; WP42's scripted NPC
+  battles come after V1, its small PvP POIs shipped in Round 31.
 - **Removed systems** (never to be built): renewable ores and camp sockets
   (E5), natural out-of-combat HP regeneration and rested XP (WP21: food is the
   recovery system), carried torch light (C5), the dragon hoard chest (E11) and
@@ -88,17 +100,17 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP3 | Character creation and original classes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP4 | Original ability framework | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Round 29's per-band payout calibration completes the loot/demand audit. Cultural/PvP finishes and masterwork (item-level-70 upgrade, D3) open. Named rares drop no trophies (D4). | WP1 ✅, WP3 ✅, WP43 ✅ |
-| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Current rules: topic design. | — |
+| WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
-| WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties. **V1:** the main storyline 41–60 and the finale remain open. | WP6 ✅, WP8 ✅, WP40 ✅; WP41 for PvP-tag quests |
+| WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total). **V1:** the main storyline 41–60 and the finale remain open. | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
 | WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; Round 28 makes every profession self-contained (no metal fittings; enchant inputs = own material + tier loot + a mined or gathered item). Cultural finishing and helper NPC services remain (cultural masters later, D11). | WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
 | WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-Speed | Shared movement modifiers | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP12 | World atlas | Delivered through R19: whole-atlas zoom/scroll and live markers; waystone markers came with WP17 (Round 29). | — |
-| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72). Remaining: a separate POI walk (E2). | WP40 ✅, WP43 ✅ |
+| WP13 | [Remaining authored structures and POI roster](docs/planning/work-package-scopes.md#wp13) | Round 20 completes roster art; Round 21 improves access/ground; Round 23 walls all six capitals. `bandit_frontier` core stays 16 (E1); Round 26 gives every capital its own outline and character (D72); Round 31 adds the PvP fortress and camp blueprints. Remaining: a separate POI walk (E2). | WP40 ✅, WP43 ✅ |
 | WP14 | [Offhands](docs/planning/work-package-scopes.md#wp14) | Delivered; closed 2026-09-29. Carried light canceled (C5). | WP3 ✅ |
 | WP15 | Character equipment and bags | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP16 | Canceled historical proposal | Canceled 2026-08-12; no game code shipped. | — |
@@ -108,7 +120,7 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP20 | Same-faction parties | Delivered R14–19: persistent parties, management and optional HUD. | — |
 | WP21 | [Recovery/rest](docs/planning/work-package-scopes.md#wp21) | Food recovery delivered; closed 2026-09-29: food is the recovery system, no natural HP regeneration, no rested XP. | WP1 ✅ |
 | WP22 | [Tool wear and repair](docs/planning/work-package-scopes.md#wp22) | Delivered; closed 2026-09-29. Dig speed stays as in the game (D8); prices to WP44; claim-station repair (D7) below. | WP43 ✅ |
-| WP23 | [Dragon encounters](docs/planning/work-package-scopes.md#wp23) | Delivered R8–R10; closed 2026-09-29. Boat route → WP17, island PvP tag → WP41; no hoard chest (E11), no apex sockets (E5). | — |
+| WP23 | [Dragon encounters](docs/planning/work-package-scopes.md#wp23) | Delivered R8–R10; closed 2026-09-29. Boat route → WP17, island PvP → WP41 (delivered); no hoard chest (E11), no apex sockets (E5). Round 31 redesigns the arenas (round leash arenas with hazards, `world.md` §4b). | — |
 | WP24 | [Open-world Claim Stone Housing](docs/planning/work-package-scopes.md#wp24) | Delivered in Round 25 ([completion](docs/planning/round25-housing-plan.md#completion-2026-09-29)): Claim Stones as in `housing.md`, no price, housing masks removed; road and POI protection alongside. Round 26 Lane S adds the draft and 5-lump activation, the 12 h pick-up lock, the Housing Steward and admin removal. User playtest under way; carry-overs below. | WP40 |
 | WP25 | Original strata/materials (superseded by WP43) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP26 | Furnace and alloy chain | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -126,8 +138,8 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP38 | Held melee timing and settlement | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP39 | Crosshair-authoritative combat | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP40 | Named-zone world foundation | Development delivery accepted; first-public-release gates remain open. | — |
-| WP41 | [Geographic PvP transaction](docs/planning/work-package-scopes.md#wp41) | **V1.** Open; geography seam delivered; WP5 hooks are consumption-only. Brief partly stale (death XP, Home Stone channel). | WP39 ✅, WP40 ✅ |
-| WP42 | [Bounded war-front encounters](docs/planning/work-package-scopes.md#wp42) | **After V1** (scripted battles; PvP POIs may come in V1). Anchors and art delivered; may precede WP41 (B6). | WP13 ✅, WP40 ✅ |
+| WP41 | [Geographic PvP transaction](docs/planning/work-package-scopes.md#wp41) | **V1.** Delivered in Round 31 ([completion](docs/planning/round31-plan.md#completion-2026-10-03), rules [pvp.md](docs/design/pvp.md)): a per-player flag (location, button, contact) instead of the old transaction; the PvP tab, icons, banner and target frame; the NPC faction filter; PvP from depth T4. GUI acceptance pending; the engineering brief is historical. | WP39 ✅, WP40 ✅ |
+| WP42 | [Bounded war-front encounters](docs/planning/work-package-scopes.md#wp42) | **After V1** (scripted battles). The PvP-POI part shipped in Round 31: two fortresses and 16 Battlegrounds war camps with garrisons and quests ([pvp.md](docs/design/pvp.md) §6). Clash anchors and art delivered; no war-unit runtime. | WP13 ✅, WP40 ✅ |
 | WP43 | Canonical material/depth registry | Delivered; Round 24 replaces pick depth bounds and shatter with tier rock and engine-native gating (rulings 1–8). Current rules: topic design. | — |
 | WP44 | [Economy rebase, lighter pass](docs/planning/work-package-scopes.md#wp44) | Delivered in Round 29 ([lane status](docs/planning/economy-vendor-plan.md#lane-status-round-29-2026-10-02)): one price module for every payout, 5% buy-back on vendor goods, the vendor rule and shelves, the audit fixes, quest copper from weight, repair at claim stations (D7), mount, boat and respec prices from a simple income estimate (D1, D2); gems by depth. The user's Round 29 test passed; Round 30 smooths the band-4/5 loot medians and recomputes Expert Riding and two respec prices. | WP7 ✅, WP43 ✅ |
 | WP45 | Character-creation stasis and safe arrival | Delivered; Round 24 makes creation pausable (ruling 32). Current rules: topic design. | — |
@@ -401,6 +413,8 @@ none blocks the fresh-world playtest.
 - **Quests the new format cannot express:** kill objectives name only
   spawn-recipe roles and leaders, so enemy-faction guard quests and PvP
   quests (which also need WP41's tag) have no form. A design step first.
+  **Done in Round 31 Lane Q:** a kill objective may name a PvP garrison's
+  area (enemy guards and captains); player kills stay excluded.
 - **Legacy quest fields in code:** no shipped quest uses `mobs`, `zone`,
   fixed `xp`, `faction`/`race` gates or the line `legacy`, but
   `grug_quests` (`registry.lua`, `validate.lua` incl. `LEGACY_GUARDS`) and
@@ -506,7 +520,8 @@ objectives and small PvP POIs from WP42, planned in its own design session),
 Round 32 the WP9 main storyline 41–60 and the finale.
 
 **Dragon arena design iteration** (user, 2026-10-02; next round, a small
-design step first): the ice dragon (Wyrmglass) stands on a square, rather
+design step first; **done in Round 31, lanes DA and DA2**:
+[round31-dragon-arenas.md](docs/planning/round31-dragon-arenas.md)): the ice dragon (Wyrmglass) stands on a square, rather
 plain terrace (the jungle dragon's arena is to be checked). The arena core
 (32 nodes, `simple_map.lua` POI kind `dragon`, `arena_terrace`) is already
 protected as a POI core (`grug_core.world_feature_at`; the dragon's own
@@ -527,7 +542,10 @@ zone-query caches after a build), the held objective counts capped at
 zone-grid encode assert inside the pcall, and one runner script that starts
 every `tools/*` fixture with its right arguments (several `fixture.lua`
 files need the repository path). The #22 proposal stays the user's call; the
-Map tab strip and the crosshair timing wait for the GUI test.
+Map tab strip and the crosshair timing wait for the GUI test. **Done in
+Round 31 Lane C** (all five: first-start heap 149 → 110 MiB at the first
+step, `tools/run_fixtures.sh`); the cache keys that omit the mapgen data
+files and the engine version stay as noted.
 
 - **grug_mapgen warm load (perf review #22, proposal; the user decides):** on
   a cache hit grug_mapgen still spends about 6.35 s loading (settlement
@@ -556,6 +574,67 @@ Map tab strip and the crosshair timing wait for the GUI test.
   each give-up (about every 7 s); P2's one-seed count run showed +55 % spawn
   attempts in a shallow cave, judged run noise (the merged dispatcher keeps
   every row's rate by construction).
+
+### Round 31 — PvP, appearance and clean-up
+
+**Delivered locally 2026-10-03**
+([completion](docs/planning/round31-plan.md#completion-2026-10-03), plan
+[round31-plan.md](docs/planning/round31-plan.md) with
+[pvp-plan.md](docs/planning/pvp-plan.md)); every lane independently reviewed
+by Opus, the rules as built in [pvp.md](docs/design/pvp.md):
+
+- **WP41 geographic PvP delivered** (P1, P2, P1b, P1c): `grug_pvp` with the
+  per-player flag, one-way support, 10 s PvP combat, logout death and kill
+  credit; the PvP tab, status icons, banner subtitle and target-frame
+  marker; PvP and building rights in the depths from T4 (y ≤ −501).
+- **NPC faction filter** (N): services, quest givers and waystones serve
+  only their own faction; map and minimap markers per viewer faction.
+- **WP42 PvP-POI part delivered** (S, M, M2, G, G2, Q, names): the two
+  fortresses and 16 Battlegrounds war camps, placed, protected and
+  garrisoned (Generals with bodyguards, named captains as leaders), seven
+  waystones per faction, enemy settlement icons hidden, 24 fortress quests
+  from level 40 with GPT-6 Astra texts.
+- **Appearance package** (A, B): character looks at creation, NPC look
+  rolls, the helmet face window, equal hitboxes for races and mounts,
+  enchant colours on items, held and dropped stacks, worn armour and the
+  kings' weapons.
+- **Dragon arena iteration** (DA, DA2): round leash arenas of radius 40 on
+  local ground with hazards and the dragon's wrath.
+- **Round 31 clean-up lane** (C) as listed under the Round 30 carry-overs;
+  the skill renames (Heal, Shield, Mend, Ice Nova) and neutral wording in
+  place of a commercial MMO's terms.
+
+### Round 31 carry-overs
+
+**Noted 2026-10-03** ([completion](docs/planning/round31-plan.md#completion-2026-10-03));
+none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
+
+- **Quest XP share above 100 % in several bands** (human 30→40 134 %,
+  50→60 119 %; orc 30→40 120 %; `ledger.py --game --track <race> --repeat 2`,
+  solo): a ledger/balance pass in a later round. The human 50→60 overshoot
+  predates Round 31 (103 %); most of the PvP raids' share is their targets'
+  kill XP, not the reward weights (lowered to 3/4 by the user's option (b)).
+- **First-start heap:** after Lane C a first start still holds about 45 MiB
+  more Lua heap at the first step than a later start (110 against 65 MiB);
+  it is grug_mapgen's first-start load, not caches (a possible later item;
+  the #22 warm-load proposal above stays the user's call).
+- **Tab order** (pre-existing): Quests and Group land behind Map in the
+  engine (their hooks place each page after its predecessor as it stands
+  then; Map has no ordering hook); the order ends …, Quests, Group, PvP,
+  Map. Check in the GUI test whether to change it.
+- **Mounts:** the tier-3/4 flyers share one selection box per tier, sized
+  for the highest seat (taller than a smaller race's flyer); the riderless
+  capital displays keep each model's own box (`display_box`) — check their
+  name tags in the GUI test.
+- **Dragon arenas (DA2 review notes):** Dragon Rime from the breath can lie
+  on thin ice; the refreeze radius of broken ice; a breath splash just
+  outside the rim damages without a fight flag. Watch in the GUI test.
+- **UI headroom:** the flight warning has 4 px of headroom under the banner
+  subtitle at 720p and GUI scale 1; 10 survival tabs at 1280 × 720.
+- **Small notes:** a profession vendor outside a settlement would serve
+  everyone (none exists); Mend ticks continue after the helper's flag ends
+  (allowed by ruling 6); the enchant masks keep their source texture's
+  licence (CC BY-SA derivatives); Smite keeps its name for now.
 
 ### Seed-dependent POI placement (user, 2026-10-03; decide before the next round)
 
