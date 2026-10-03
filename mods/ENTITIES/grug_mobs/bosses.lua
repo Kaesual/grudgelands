@@ -36,9 +36,10 @@ local RACES = {
 }
 
 -- The fortress Generals: per faction its seat race, the race its fortress
--- registers as, whose king's chassis and kit the General fights with. Their
--- names come from data/pvp_names.json (pvp_garrison.lua).
-local GENERALS = {accord = "human", throng = "orc"}
+-- registers as (lane S's catalogue, read through pvp_garrison.lua), whose
+-- king's chassis and kit the General fights with. Their names come from
+-- data/pvp_names.json (pvp_garrison.lua).
+local GENERALS = grug_mobs.pvp_garrison.catalog.SEAT_RACE
 
 local DRAGONS = {
 	wyrmglass = {
