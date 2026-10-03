@@ -19,7 +19,7 @@ return function(source, sha256_hex)
 		fail("SHA-256 seam differs")
 	end
 	if type(source) ~= "table" or type(source.anchors) ~= "table" or
-			type(source.zones) ~= "table" or #source.anchors ~= 100 or
+			type(source.zones) ~= "table" or #source.anchors ~= 118 or
 			#source.zones ~= 38 or type(source.rare_patrol_offsets) ~= "table" or
 			#source.rare_patrol_offsets ~= 10 then
 		fail("source population differs")

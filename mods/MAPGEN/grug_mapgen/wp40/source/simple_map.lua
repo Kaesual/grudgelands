@@ -337,6 +337,33 @@ local anchor_rows = {
 	{23,"rare_ashmaw","rare_route","layout_fixed",2,152,2084},
 	{35,"rare_captain_bonerattle","rare_route","layout_fixed",2,-568,64},
 	{36,"rare_captain_bonerattle","rare_route","layout_fixed",1,600,-80},
+	-- Round 31 PvP POIs (pvp-plan rulings 17-22), anchors 101..118 in the
+	-- order of `r31_pvp_catalog.lua` (slot and template id = the catalogue
+	-- row's slot and kind). The fortresses stand on the middle road's axis
+	-- (x = 0), so the road bends round them on every seed and their gate
+	-- faces their own continent; the camps sit on their own faction's side
+	-- of the Battlegrounds, the lower camp toward the own frontier and the
+	-- higher toward the middle, where the zone's level field gives their
+	-- bands (`tools/r31_m/candidates.lua` and `pick.lua` chose them on the
+	-- six quest-lane seeds; `tools/r31_m/spacing_check.lua` checks them).
+	{10,"pvp_fortress","pvp_fortress","layout_fixed",1,0,-928},
+	{26,"pvp_fortress","pvp_fortress","layout_fixed",1,0,952},
+	{34,"pvp_accord_low","pvp_camp_low","layout_fixed",1,-2144,-264},
+	{34,"pvp_accord_high","pvp_camp_high","layout_fixed",1,-1888,-72},
+	{34,"pvp_throng_low","pvp_camp_low","layout_fixed",1,-1520,240},
+	{34,"pvp_throng_high","pvp_camp_high","layout_fixed",1,-1464,24},
+	{35,"pvp_accord_low","pvp_camp_low","layout_fixed",1,-912,-360},
+	{35,"pvp_accord_high","pvp_camp_high","layout_fixed",1,-728,-64},
+	{35,"pvp_throng_low","pvp_camp_low","layout_fixed",1,-896,368},
+	{35,"pvp_throng_high","pvp_camp_high","layout_fixed",1,-216,40},
+	{36,"pvp_accord_low","pvp_camp_low","layout_fixed",1,512,-288},
+	{36,"pvp_accord_high","pvp_camp_high","layout_fixed",1,944,-16},
+	{36,"pvp_throng_low","pvp_camp_low","layout_fixed",1,1216,288},
+	{36,"pvp_throng_high","pvp_camp_high","layout_fixed",1,648,48},
+	{37,"pvp_accord_low","pvp_camp_low","layout_fixed",1,2304,-256},
+	{37,"pvp_accord_high","pvp_camp_high","layout_fixed",1,2080,-56},
+	{37,"pvp_throng_low","pvp_camp_low","layout_fixed",1,2376,304},
+	{37,"pvp_throng_high","pvp_camp_high","layout_fixed",1,2384,40},
 }
 
 source.anchors = {}
@@ -437,10 +464,14 @@ source.anchor_profiles = {
 	{id="dragon",shape="arena_terrace",building_core_width=82,arena_radius=40,bowl_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="apex_mine",shape="mine_terrace",building_core_width=32,fitting_width=96,blend_width=160,force_native_dungeon=false},
 	{id="rare_route",shape="patrol_route",building_core_width=12,fitting_width=32,blend_width=64,force_native_dungeon=false},
-	-- Round 31 PvP POIs (r31_pvp_catalog.lua): each core is one node wider
-	-- than the centred blueprint box (r7_settlement BOUNDS), so the half-open
-	-- core square holds it.
-	{id="pvp_fortress",shape="gentle_grade",building_core_width=50,fitting_width=112,blend_width=176,force_native_dungeon=false},
+	-- Round 31 PvP POIs (r31_pvp_catalog.lua): each core holds the centred
+	-- blueprint box (r7_settlement BOUNDS) in its half-open square; a camp's
+	-- is one node wider. The fortress's is 64, a flat 7-node field round its
+	-- 49-node walls: the road router keeps a circle of core / 2 + 10 nodes
+	-- round a POI core (road_layout.lua inputs), and with this core the
+	-- middle road, which bends round the fortress, passes its corner towers
+	-- at least 8 nodes off.
+	{id="pvp_fortress",shape="gentle_grade",building_core_width=64,fitting_width=128,blend_width=192,force_native_dungeon=false},
 	{id="pvp_camp_low",shape="gentle_grade",building_core_width=24,fitting_width=64,blend_width=112,force_native_dungeon=false},
 	{id="pvp_camp_high",shape="gentle_grade",building_core_width=28,fitting_width=72,blend_width=120,force_native_dungeon=false},
 }

@@ -29,11 +29,11 @@
 --   6. each kind's fitting core (source/simple_map.lua) holds its box;
 --   7. the catalogue: 2 fortresses and 16 camps (per Battlegrounds zone and
 --      faction one low and one high), unique keys and slots, level bands;
---   8. the real source has no PvP anchor yet, so no roster row is added;
---      with synthetic anchors for every row `r7_settlement.pvp_profiles`
---      binds all 18 (template, gate turn rule) and each builds, prepares and
---      registers as the runtime does it, a camp under the race it rolled;
---      anchors for only some rows are refused;
+--   8. the real source binds all 18 rows to its anchors 101..118 (lane M)
+--      and the roster carries them; on the source without them, synthetic
+--      anchors for every row bind all 18 (template, gate turn rule) and each
+--      builds, prepares and registers as the runtime does it, a camp under
+--      the race it rolled; anchors for only some rows, or none, are refused;
 --   9. the camp race roll is deterministic, always of the camp's faction,
 --      and reaches all three races over anchors and seeds.
 -- Prints "R31 S PORTABLE PASS checks=<n>" or raises.
@@ -272,16 +272,25 @@ for _, f in ipairs({"accord", "throng"}) do
 		counts["pvp_camp_high/" .. f] == 4, f .. ": one fortress and 8 camps")
 end
 
--- 8. the binding
-check(#settlement.pvp_profiles(source) == 0, "the source has no PvP anchor yet")
+-- 8. the binding: the source's anchors 101..118 (lane M) bind every row,
+-- and the roster carries them; on the source without them (the first 100
+-- anchors) synthetic positions bind, and a missing anchor is refused.
+local bound = settlement.pvp_profiles(source)
+check(#bound == 18, "the source binds all 18 PvP rows")
+local in_roster = 0
 for _, profile in ipairs(settlement.roster) do
-	check(profile.blueprint_file ~= "r31_pvp_poi_blueprint.lua", "no roster row before the anchors")
+	if profile.blueprint_file == "r31_pvp_poi_blueprint.lua" then in_roster = in_roster + 1 end
+end
+check(in_roster == 18, "the roster carries the 18 PvP POIs")
+for i, profile in ipairs(bound) do
+	check(profile.numeric_id == 100 + i and source.anchors[100 + i].slot_id == profile.slot,
+		profile.key .. ": source anchor " .. (100 + i))
 end
 local function with_anchors(rows)
 	local copy = {}
 	for k, v in pairs(source) do copy[k] = v end
 	copy.anchors = {}
-	for i, a in ipairs(source.anchors) do copy.anchors[i] = a end
+	for i = 1, 100 do copy.anchors[i] = source.anchors[i] end
 	for i, row in ipairs(rows) do
 		local z = zone_of[row.zone_id]
 		local n = #copy.anchors + 1
@@ -294,6 +303,7 @@ local function with_anchors(rows)
 end
 local partial = {catalog.rows[1], catalog.rows[3]}
 check(not pcall(settlement.pvp_profiles, with_anchors(partial)), "a partial anchor set is refused")
+check(not pcall(settlement.pvp_profiles, with_anchors({})), "no anchors at all is refused")
 local profiles = settlement.pvp_profiles(with_anchors(catalog.rows))
 check(#profiles == 18, "all 18 rows bind their anchors")
 for i, profile in ipairs(profiles) do

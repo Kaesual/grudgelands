@@ -434,9 +434,8 @@ for _, art in ipairs(round20_catalog) do
 end
 
 -- The Round 31 PvP POIs (`r31_pvp_catalog.lua`) bind the anchors their zone
--- and slot name in the source (lane M adds those anchor rows, template id =
--- the row's kind). All rows or none: before the anchors exist nothing
--- registers; a partial set is an authoring error.
+-- and slot name in the source (anchors 101..118, template id = the row's
+-- kind). Every row has its anchor; a missing one is an authoring error.
 --
 -- The one gate faces where players come from: a fortress's faces the middle
 -- road along x = 0 (west when the fortress stands east of it, east when
@@ -463,28 +462,23 @@ function M.pvp_profiles(source)
 		local zone = zone_numeric[row.zone_id]
 		if not zone then error("WP13 PvP POI zone differs: " .. row.key, 0) end
 		local a = anchor_of[zone .. "/" .. row.slot]
-		if a then
-			if a.template_id ~= row.kind then
-				error("WP13 PvP POI template differs: " .. row.key, 0)
-			end
-			local stem = "grug_r31_" .. row.key
-			profiles[#profiles + 1] = {key = row.key, label = row.label,
-				race = pvp_catalog.SEAT_RACE[row.faction], slot = row.slot,
-				bounds = row.kind, lazy = true, zone_id = row.zone_id,
-				anchor_id = a.id, numeric_id = a.numeric_id,
-				x = a.position.x, z = a.position.z,
-				blueprint_file = "r31_pvp_poi_blueprint.lua",
-				art = {kind = row.kind, faction = row.faction, band = row.band,
-					turns = M.pvp_gate_turns(row, a.position.x)},
-				blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
-				config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
-				metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
-				reserve_anchor_root = true}
+		if not a then error("WP13 PvP POI anchor missing: " .. row.key, 0) end
+		if a.template_id ~= row.kind then
+			error("WP13 PvP POI template differs: " .. row.key, 0)
 		end
-	end
-	if #profiles > 0 and #profiles ~= #pvp_catalog.rows then
-		error("WP13 PvP POIs: " .. #profiles .. " of " .. #pvp_catalog.rows ..
-			" catalogue rows have an anchor", 0)
+		local stem = "grug_r31_" .. row.key
+		profiles[#profiles + 1] = {key = row.key, label = row.label,
+			race = pvp_catalog.SEAT_RACE[row.faction], slot = row.slot,
+			bounds = row.kind, lazy = true, zone_id = row.zone_id,
+			anchor_id = a.id, numeric_id = a.numeric_id,
+			x = a.position.x, z = a.position.z,
+			blueprint_file = "r31_pvp_poi_blueprint.lua",
+			art = {kind = row.kind, faction = row.faction, band = row.band,
+				turns = M.pvp_gate_turns(row, a.position.x)},
+			blueprint_schema = stem .. "_v1", identity_schema = stem .. "_identity_v1",
+			config_schema = stem .. "_config_v1", ledger_schema = stem .. "_ledger_v1",
+			metrics_schema = stem .. "_metrics_v1", delta_schema = stem .. "_delta_v1",
+			reserve_anchor_root = true}
 	end
 	return profiles
 end

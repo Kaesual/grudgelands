@@ -1,5 +1,14 @@
 -- Closed R7 activation roster derived from the authenticated R4 anchors and
 -- their authenticated R3 functional-surface tuples.
+--
+-- Only capitals and outposts (a guard banner) and the bandit camps (a camp
+-- fire) carry an activation node; villages, mines, clash sites and the other
+-- POIs carry none. The Round 31 PvP POIs (anchors 101..118) carry none
+-- either: both nodes start a garrison of their own (`grug_mobs/camps.lua`:
+-- a fire spawns bandits, a banner off an outpost raises the territory's
+-- watch, the Accord's on contested land), while a fortress's and a camp's
+-- garrison stands on their blueprint's sockets. Their faction banners are
+-- blueprint cells (`r31_pvp_poi_blueprint.lua`).
 
 return function(source, zones_session, planner_source, raw_sha256)
 	local function fail(message)
@@ -11,7 +20,7 @@ return function(source, zones_session, planner_source, raw_sha256)
 		end))
 	end
 	if type(source) ~= "table" or type(source.anchors) ~= "table" or
-			#source.anchors ~= 100 or type(source.zones) ~= "table" or
+			#source.anchors ~= 118 or type(source.zones) ~= "table" or
 			type(zones_session) ~= "table" or type(zones_session.anchor) ~= "function" or
 			type(planner_source) ~= "table" or
 			type(planner_source.column_values_at) ~= "function" or
