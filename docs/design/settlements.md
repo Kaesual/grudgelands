@@ -564,8 +564,8 @@ a player's Claim Stone can be an additional travel-home target
 
 ## Waypoint pads
 
-Round 29 (WP17; rules in [world.md](world.md) §6). Every start and every
-capital has one waypoint pad with a **waystone** (`grug_mapgen:waystone`,
+Round 29 (WP17; rules in [world.md](world.md) §6). Every start, every
+capital and (Round 31) each PvP fortress has one waypoint pad with a **waystone** (`grug_mapgen:waystone`,
 registered in `grug_mapgen/world_nodes.lua` so the settlement content resolves
 it) at its centre, in the cell of the settlement's `travel_waypoint` socket
 (role `waypoint`; no NPC stands there). Players arrive beside the stone.
@@ -573,6 +573,9 @@ it) at its centre, in the cell of the settlement's `travel_waypoint` socket
 - **Capitals:** the existing kerbed plaza with the stone cross and diamond
   (reach 6, Lethariel 5, Kezamba a cross only) gets the waystone at the cross's
   centre; nothing else stands on the plaza.
+- **PvP fortresses:** the capitals' stone cross and diamond at reach 3 in
+  the fortress's south-east yard (`r31_pvp_poi_blueprint.lua`); the socket
+  has no arrival side, so a traveller arrives on the stone's +x side first.
 - **Starts:** a pad in the capitals' style at reach 3, drawn into the ground
   course (`dressing.waypoint_pad`): a cross and the diamond round it in the
   start palette's signature stone, the diamond's inside paved with the lane

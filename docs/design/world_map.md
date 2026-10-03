@@ -71,7 +71,8 @@ Map tab and the minimap alike; the quest givers' states still come from
 one `grug_quests.marker_states` call.
 
 Round 29 (WP17): every **discovered** waystone of the player's own network
-(three starts, three capitals; [world.md](world.md) §6) is a marker of kind
+(three starts, three capitals and, since Round 31, the faction's PvP
+fortress; [world.md](world.md) §6) is a marker of kind
 `waypoint` at the stone, labelled "<settlement> Waystone", with the icon
 `grug_map_waypoint.png` (a grey standing stone with a blue rune, by GPT-6
 Astra). Undiscovered and enemy waystones are not shown. The provider is
