@@ -64,6 +64,21 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 32 complete locally, 2026-10-03 (not pushed).** "Fixes,
+preparation and research": the minimap zoomed ×2, hostile camps marked on
+the Map tab, zone names coloured by the territory at the position with a
+territory line (`grug_pvp.territory_at`); one LMB hold state machine (gather
+may become combat and back); quest kill labels with the zone's mob names
+and two validator rules; combat and personal notices in the message feed,
+the quest log in one text field; the Map tab, party HUD and camp/leader
+tick spread over server steps; three read-only studies
+([performance](docs/research/perf-review-2026-10-r32.md),
+[sound](docs/research/sound-research-2026-10.md),
+[items and professions](docs/research/items-professions-analysis-2026-10.md)).
+Sound is V1; WP9 moved to a later round. Next: the GUI test, the seven sound
+decisions and the items design session (BACKLOG).
+[Plan, completion and GUI checklist](docs/planning/round32-plan.md#completion-2026-10-03).
+
 **Round 31 complete locally, 2026-10-03 (not pushed).** "PvP, appearance and
 clean-up": geographic PvP (WP41: `grug_pvp`'s per-player flag, the PvP tab,
 icons, banner and target frame, PvP from depth T4), the NPC faction filter
@@ -73,8 +88,8 @@ named captains, 24 fortress quests from level 40), character looks at
 creation and NPC look rolls, enchant colours on gear, the dragon arenas
 redesigned (round leash arenas with hazards and the dragon's wrath), the
 Round 30 clean-up items and a fixture runner. Rules: [pvp.md](docs/design/pvp.md).
-Next: fresh world and the two-client GUI test (Round 30's is still open),
-the seed-dependent POI placement decision, then Round 32 (WP9).
+Next: fresh world and the two-client GUI test (Round 30's is still open);
+seed-dependent POI placement was set aside.
 [Plan, completion and playtest checklist](docs/planning/round31-plan.md#completion-2026-10-03).
 
 **Round 30 complete locally, 2026-10-02 (not pushed).** "Performance and
@@ -576,6 +591,33 @@ current state). It is **derived, never authoritative**:
   looks and `engine.sh`, `b` enchant colours, masks and `engine.sh`, `s`
   PvP blueprints, `m` placement, `spacing_check.lua` and `engine.sh`, `g`
   garrisons, `q` fortress quests and `run.sh`, `da2` dragon arenas).
+
+### Input, notices and per-player passes (since Round 32)
+
+- **The LMB hold is one state machine** (`grug_abilities/input.lua`,
+  rules [classes.md](docs/design/classes.md#left-click-and-held-input)
+  §2b): gather or combat locked on a foe; a new hold rule changes that
+  machine and its fixture (`tools/r32_f2`), never adds a second lock.
+  Self and support skills fire only on a fresh press.
+- **The territory a position belongs to** comes from
+  `grug_pvp.territory_at` (the flag's own rule), never from the player's
+  flag; the zone banner and minimap line use it.
+- **Personal notices go to the message feed** (`grug_core.feed` with a key
+  per notice group, so a repeat refreshes its line), never to chat; chat
+  keeps deaths, rare sightings, boss and dragon warnings and text too long
+  for the feed's 2.5 s.
+- **Quest kill labels** use the zone's mob name; `validate.py`
+  (`E-label-name`, `E-item-source-drop`) keeps quest data so.
+- **No pass handles every player or zone in one step:** a periodic
+  per-player or per-zone pass spreads its work over slots or a per-pass
+  budget (the quest tracker and party HUD's five slots, the Map tab's 2
+  builds per 0.1 s pass, the spawner's zone slices); measure it with
+  stand-ins before and after (the performance review's probe).
+- Round 32 fixtures and probes live in `tools/r32_<lane>/` (`f1` territory
+  line and hostile camps, `engine.sh` the minimap traffic and location
+  probe; `f2` the hold machine and the quest labels; `f4` the Map tab poll
+  budget and party HUD slots); the zoom geometry is checked in
+  `tools/r27_minimap`, the spawner's zone slices in `tools/r28_s1`.
 
 ## Task-specific implementation references
 
