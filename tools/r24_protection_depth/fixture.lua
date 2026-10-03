@@ -25,7 +25,13 @@
 --      below the floor (anchor_075's island shore on seed 4242424242); and
 --      the same cave answer from mapgen and runtime renewal on anchor
 --      centres and rings (Round 25 removed the housing masks this sample
---      used to tally).
+--      used to tally);
+--   5. Round 31 contested depth (user ruling: from depth tier T4): under
+--      every start town, capital and peaceful zone hub, at y = -500 only the
+--      home faction may dig and place, the enemy is flagged by enemy
+--      territory and the home player is not (no fight unless the home player
+--      presses the button), and at y = -501 both factions may dig and place
+--      and both are flagged (grug_pvp/rules.lua on the session's answers).
 -- Prints the bound table and "R24 PROTECTION DEPTH FIXTURE PASS checks=<n>",
 -- or raises on the first failure. The engine counterpart (ores and digging
 -- at the floor under the Orc start) is `run.sh OUT_DIR [TIMEOUT]`; its
@@ -236,6 +242,63 @@ end
 -- ---------------------------------------------------------------------------
 -- 3. Mapgen: the P8 floor of every anchor envelope, and the column predicate
 -- ---------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- 5. Round 31: the contested deep from depth tier T4 (y = -501)
+-- ---------------------------------------------------------------------------
+local pvp_rules = dofile(repo .. "/mods/PLAYER/grug_pvp/rules.lua")
+local function contested_depth_checks(W)
+	local Z, source = W.overlay, W.source
+	local compat = Z.compatibility
+	local columns = {}
+	for index = 1, 12 do
+		local a = source.anchors[index]
+		columns[#columns + 1] = {label = a.id .. " " .. a.slot_id,
+			x = a.position.x, z = a.position.z}
+	end
+	for _, zone in ipairs(source.zones) do
+		if zone.pvp_rule == "peaceful" and
+				Z.water_class_at(zone.hub.x, zone.hub.z) == "land" then
+			columns[#columns + 1] = {label = zone.id .. " hub", x = zone.hub.x, z = zone.hub.z}
+		end
+	end
+	local function flag(pos, own)
+		local rule = Z.pvp_rule_at(pos)
+		local here = rule == "peaceful" and Z.faction_at(pos) or nil
+		local rec = pvp_rules.new_record()
+		rec.loc = pvp_rules.location(false, rule, here, own)
+		return rec
+	end
+	for _, c in ipairs(columns) do
+		local home = Z.faction_at({x = c.x, y = 0, z = c.z})
+		check(home == "accord" or home == "throng", c.label .. " has a home faction")
+		local enemy = home == "accord" and "throng" or "accord"
+		local shallow = {x = c.x, y = -500, z = c.z}
+		local deep = {x = c.x, y = -501, z = c.z}
+		check(Z.territory_rule_at(shallow) == home .. "_home", c.label .. " home territory at -500")
+		check(not compat.world_protected_for_faction(shallow, home),
+			c.label .. " the home faction digs and places at -500")
+		check(compat.world_protected_for_faction(shallow, enemy),
+			c.label .. " the enemy may not dig or place at -500")
+		check(Z.territory_rule_at(deep) == "contested_land", c.label .. " contested land at -501")
+		check(not compat.world_protected_for_faction(deep, home) and
+			not compat.world_protected_for_faction(deep, enemy),
+			c.label .. " both factions dig and place at -501")
+		local own_rec, enemy_rec = flag(shallow, home), flag(shallow, enemy)
+		check(own_rec.loc == false and enemy_rec.loc == "enemy",
+			c.label .. " at -500 the enemy is flagged, the home player not")
+		check(not pvp_rules.can_harm(own_rec, enemy_rec, 1000),
+			c.label .. " no fight at -500 while the home player is unflagged")
+		pvp_rules.press_button(own_rec, 1000)
+		check(pvp_rules.can_harm(own_rec, enemy_rec, 1000),
+			c.label .. " a fight at -500 once the home player presses the button")
+		own_rec, enemy_rec = flag(deep, home), flag(deep, enemy)
+		check(own_rec.loc == "contested" and enemy_rec.loc == "contested" and
+			pvp_rules.can_harm(own_rec, enemy_rec, 1000),
+			c.label .. " both flagged at -501")
+	end
+	lines[#lines + 1] = ("contested depth: %d peaceful columns checked at -500/-501"):format(#columns)
+end
+
 local function mapgen_checks(W)
 	local S, P, source = W.session, W.planner_source, W.source
 	local anchor_by_id = {}
@@ -649,6 +712,7 @@ for _, seed in ipairs(seeds) do
 	check(W.overlay.r7_functional_anchor_overlay.schema ==
 		"grug_wp40_r7_functional_anchor_protection_v2", "overlay schema v2")
 	runtime_checks(W)
+	contested_depth_checks(W)
 	mapgen_checks(W)
 	addendum_checks(W, seed)
 end
