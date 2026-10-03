@@ -20,6 +20,23 @@ authorize restoring removed systems, migrations or old test campaigns.
 - [Reference project registry](../reference_projects.md): pins, purposes and licenses.
 - [Module implementation guide](../technical/module-guide.md): task-specific seams.
 
+## Recent studies
+
+Read-only reviews that feed planning; their findings are proposals until
+the user decides, and their open items are tracked in BACKLOG.
+
+- [Performance review, Round 29](perf-review-2026-10.md): 22 findings,
+  probes and method; it became Round 30.
+- [Performance review, Round 32](perf-review-2026-10-r32.md): the October
+  baselines re-measured, 50 and 100 stand-ins, findings R1–R13 (R1–R3
+  fixed in Round 32 lane F4).
+- [Sound research](sound-research-2026-10.md): today's sounds, the silent
+  events and their hooks, licence-clean sources, calm music, an effort
+  estimate for the V1 sound lanes.
+- [Items and professions analysis](items-professions-analysis-2026-10.md):
+  the loot, vendor, crafting and money loop per tier, dead ends, options 1–5
+  and 16 questions for a design session.
+
 ## Plans and evidence
 
 `round*`, `r10-*`, completion/review files and evidence subdirectories retain the
