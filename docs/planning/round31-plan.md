@@ -221,7 +221,7 @@ need no GUI check.
 
 ## 7. Orchestration notes (for the coordinator)
 
-- **Start state:** main `ff4ee432` plus this plan's approval commit (local,
+- **Start state:** main `4b06f9c9` or later (local,
   not pushed; Round 30 synced, the user's Round 30 GUI test pending → lane F).
 - **Worktrees** `.claude/worktrees/r31-<lane>` on branch `r31-<lane>`, copy
   `tools/bin/` into each (ignored by git). Two-stage lanes keep their
