@@ -19,15 +19,26 @@ in Round 31 (with WP42's PvP-POI part). The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
-  complete locally** (2026-10-03, not pushed): WP41 geographic PvP (the
+  [Round 32 "Fixes, preparation and research"](docs/planning/round32-plan.md#completion-2026-10-03)
+  complete locally** (2026-10-03, not pushed): the minimap zoom ×2, hostile
+  camps on the Map tab, zone names coloured by territory with a territory
+  line (F1); one LMB hold state machine and quest kill labels with the
+  zone's mob names (F2); combat and personal notices in the message feed
+  and the quest log in one text field (F3); the Map tab, party HUD and
+  camp/leader tick spread over steps (F4); three read-only studies
+  (performance at 50/100 stand-ins, sound, items and professions). Next:
+  the GUI test, the seven sound decisions and the items design session
+  ([Round 32](#round-32--fixes-preparation-and-research),
+  [carry-overs](#round-32-carry-overs), [sound](#sound-v1-user-2026-10-03),
+  [items](#items-and-professions-design-session-user-2026-10-03)).
+- [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
+  (2026-10-03, not pushed, GUI test open): WP41 geographic PvP (the
   per-player flag, the PvP tab and markers, the NPC faction filter, PvP from
   depth tier T4), WP42's PvP-POI part (a fortress per faction, 16
   Battlegrounds war camps, garrisons with Generals and named captains, 24
   fortress quests), the appearance package (looks at creation, NPC look
   rolls, enchant colours), the dragon arena redesign and the Round 31
-  clean-up lane. Next: fresh world and the two-client GUI test, the
-  seed-dependent placement decision, then Round 32 (WP9)
+  clean-up lane; needs a fresh world and the two-client GUI test
   ([Round 31](#round-31--pvp-appearance-and-clean-up),
   [carry-overs](#round-31-carry-overs)).
 - [Round 30 "Performance and clean-up"](docs/planning/round30-plan.md#completion-2026-10-02)
@@ -76,7 +87,8 @@ example E5) are cited below.
 - **V1 scope** ([ROADMAP](ROADMAP.md#v1-scope)): WP17 boats and waypoints (starts,
   capitals and, since Round 31, the PvP fortresses), WP41 geographic PvP and
   WP9's story levels 41–60 with the finale are V1; WP42's scripted NPC
-  battles come after V1, its small PvP POIs shipped in Round 31.
+  battles come after V1, its small PvP POIs shipped in Round 31. **Sound is
+  V1** (the user, 2026-10-03; [Sound](#sound-v1-user-2026-10-03)).
 - **Removed systems** (never to be built): renewable ores and camp sockets
   (E5), natural out-of-combat HP regeneration and rested XP (WP21: food is the
   recovery system), carried torch light (C5), the dragon hoard chest (E11) and
@@ -99,12 +111,12 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP2 | First territory mapgen (superseded by WP40) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP3 | Character creation and original classes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP4 | Original ability framework | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Round 29's per-band payout calibration completes the loot/demand audit. Cultural/PvP finishes and masterwork (item-level-70 upgrade, D3) open. Named rares drop no trophies (D4). | WP1 ✅, WP3 ✅, WP43 ✅ |
+| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Round 29's per-band payout calibration completes the loot/demand audit. Cultural/PvP finishes and masterwork (item-level-70 upgrade, D3) open. Named rares drop no trophies (D4). Round 32's [analysis](docs/research/items-professions-analysis-2026-10.md) prepares a [design session](#items-and-professions-design-session-user-2026-10-03). | WP1 ✅, WP3 ✅, WP43 ✅ |
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
 | WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total). **V1:** the main storyline 41–60 and the finale remain open. | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
-| WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; Round 28 makes every profession self-contained (no metal fittings; enchant inputs = own material + tier loot + a mined or gathered item). Cultural finishing and helper NPC services remain (cultural masters later, D11). | WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total); Round 32 names kill targets by their zone's mob name. **V1:** the main storyline 41–60 and the finale remain open, moved out of Round 32 to a round of its own after the sound and items work. | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
+| WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; Round 28 makes every profession self-contained (no metal fittings; enchant inputs = own material + tier loot + a mined or gathered item). Cultural finishing and helper NPC services remain (cultural masters later, D11). Round 32's [analysis](docs/research/items-professions-analysis-2026-10.md): three primaries craft only enchants, 67 of 94 signatures without a recipe use; the [design session](#items-and-professions-design-session-user-2026-10-03) decides. | WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
 | WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -517,7 +529,8 @@ Also in Round 30 beside the performance lanes (user, 2026-10-02):
 
 Planned next (user, 2026-10-02): Round 31 PvP (WP41 with enemy-guard quest
 objectives and small PvP POIs from WP42, planned in its own design session),
-Round 32 the WP9 main storyline 41–60 and the finale.
+Round 32 the WP9 main storyline 41–60 and the finale. (Round 32 became
+fixes and studies; WP9 moved to a later round, 2026-10-03.)
 
 **Dragon arena design iteration** (user, 2026-10-02; next round, a small
 design step first; **done in Round 31, lanes DA and DA2**:
@@ -635,6 +648,148 @@ none blocks the fresh-world GUI test. Numbers are comparisons, never targets.
   (allowed by ruling 6); the enchant masks keep their source texture's
   licence (CC BY-SA derivatives); Smite keeps its name for now.
 
+### Round 32 — fixes, preparation and research
+
+**Delivered locally 2026-10-03**
+([completion](docs/planning/round32-plan.md#completion-2026-10-03), plan
+[round32-plan.md](docs/planning/round32-plan.md)); every code lane
+independently reviewed by Opus (F3's third pass and F2's last small commit
+checked by the coordinator), 66 fixtures pass, no mapgen change:
+
+- **Minimap zoom ×2** (F1): a 440-node window, the base map unchanged; a
+  cell grid of 2 base pixels at normal and 8 at high.
+- **Hostile camps** (F1): the bandit camps (start zones and frontier) and
+  the Mirefolk camps draw a red "X" on the Map tab.
+- **Territory colours and line** (F1): the zone banner and the minimap line
+  in green, yellow or red by the territory at the position
+  (`grug_pvp.territory_at`), "Friendly Territory" / "Contested Territory
+  (PvP)" / "Enemy Territory (PvP)" in place of Round 31's subtitle, a banner
+  on a zone or status change (y −501 too).
+- **LMB hold** (F2): one gather/combat state machine; gather turns into
+  combat on a hostile in the crosshair and reach (neutral mobs too, players
+  when both are flagged) while an attacking skill is selected, back when
+  the foe is gone; self and support skills only on a fresh press
+  ([classes.md](docs/design/classes.md#left-click-and-held-input)).
+- **Quest kill labels** (F2): the zone's mob name; `validate.py`
+  `E-label-name` and `E-item-source-drop`.
+- **Feed and quest window** (F3): combat notices and the personal notices
+  in the message feed (only deaths, rare sightings, boss and dragon
+  warnings and the one-time no-weapon hint stay in chat); the quest log in
+  one text field with Track on HUD and Abandon in one row.
+- **Performance** (F4, perf review R1–R3): the Map tab at most 2 builds and
+  8 signature reads per 0.1 s pass, the party HUD in five slots, camps and
+  leaders in 20 zone slices.
+- **Studies:** [performance review](docs/research/perf-review-2026-10-r32.md),
+  [sound research](docs/research/sound-research-2026-10.md),
+  [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
+
+### Round 32 carry-overs
+
+**Noted 2026-10-03** ([completion](docs/planning/round32-plan.md#completion-2026-10-03));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Minimap at normal quality** (F1, GUI test): the bezel is 239 px at
+  1080p instead of 265 and changes in steps of about 40 px with the window
+  (768p 186 → 159, 1440p 345 → 358); high quality keeps its size but draws
+  a base pixel about one screen pixel wide at 1080p and shows less detail
+  than it could (`REDUCE.high` stays 2). The user decides after the test.
+- **Location sample** (F1 review): 34.7 → 53.9 µs per player and second;
+  the territory status repeats two zone queries `grug_pvp`'s own location
+  tick already makes (could share them). Standing exactly at y −501 can
+  flicker the banner, which is the rule itself.
+- **Map tab poll** (F4 review): the interval stays 2 s while fewer than
+  about 40 viewers' maps change at once and stretches beyond (about N/20 s
+  for N changing viewers); the true 2.0 s cadence sends about 20 % more
+  per open tab than the old rounded 2.5 s. One run read `page.lua`
+  2.4 → 4.2 ms/s at 50 stand-ins, and R3's gain was not visible at 100 in
+  one run (run-to-run spread up to about 40 %).
+- **F4 fixture gaps:** the Map tab's scroll quiet interval and the party
+  HUD's `slot_of` clean-up on leave are not covered by
+  `tools/r32_f4/portable_test.lua`.
+- **Performance review "later" list**
+  ([R6–R13](docs/research/perf-review-2026-10-r32.md#later)): R6 ability
+  input and crosshair every step (20–34 ms/s at 100) and R7 the minimap
+  glide (13–25 ms/s) — re-measure both first, F2 and F1 changed those files;
+  R8 the quest-marker memo's 1 s expiry; R9 the tracker's bag scan; R10
+  vegetation renewal bursts; R11 the discovery scan; R12 tag carriers in
+  crowded places; R13 royal and garrison NPC steps.
+- **Playtest server operations** (R4, R5): serve media through
+  `remote_media` (about 13.8 MB per first join); give the server at least
+  4 GB of RAM and swap (2.9–3.3 GB after the first mapgen). Later: the two
+  dragon models (2.3 MB together) and the 405 KB quiver texture.
+- **Mapgen-environment memory** (R5, investigation): the emerge thread's
+  mapgen Lua environment holds 630–745 MiB live after a collection and
+  grows with generated chunks; find what it keeps (a heap walk there) and
+  whether its world-query caches are bounded.
+- **`tools/r29_e4/income.py --check` fails on main** since Round 31's
+  fortress quests changed the income estimate: Expert Riding 1g37s against
+  an estimate of 1g31s, Master 7g33s against 7g25s, respec 41–50 6s against
+  5s50c. Whether the prices follow is the user's call (the items session
+  touches money too).
+- **Real-client performance test:** stand-ins do not cover the engine's
+  block and object sending, physics or client work; a short test with a
+  handful of real clients, perhaps at the end of the next round.
+
+### Sound (V1; user, 2026-10-03)
+
+Sound is part of V1. The [sound research](docs/research/sound-research-2026-10.md)
+(Round 32 R2) proposes two lanes: **S1 effects** (a small play helper, about
+30 central hooks, one formspec click style, mob sounds by archetype, about
+120–150 files) and **S2 ambience and music** (a per-player player on the
+2 s atmosphere tick, music and ambience gains through `core.sound_fade`,
+8–12 calm tracks, no combat switch), each followed by a listening review by
+the user; every file gets a `LICENSE-media.md` row, and a top-level
+`CREDITS.md` becomes worthwhile. The user's seven decisions come first:
+
+1. Effect sources: CC0 packs first, CC BY where clearly better and own
+   generated UI cues, or packs only.
+2. NPC dialogs: neutral cues (book, coins, chime) or voiced greetings (no
+   good free source).
+3. Music mode: one playlist everywhere or pools per region group, and the
+   pause between tracks.
+4. Which tracks (candidates M1–M6 and their alternates).
+5. Music delivery: shipped with the game (+15–25 MB per first join) or sent
+   only to players who turn music on.
+6. Ambience: continuous beds per region with sparse calls, or sparse calls
+   only.
+7. Weather: leave rain and thunder out of V1 (no weather system exists) or
+   add a small weather system as its own package.
+
+Notes from the research: the TenPlus1 ambience mod's sounds are not all
+under CC licences (Pixabay, unmapped and NC files), so only its code is a
+reference ([shopping list](docs/research/assets/sounds_ambience.md)); the
+telegraph wind-up growl (`grug_mobs/telegraph.lua`) and the panther that
+must stay without a war cry wait for S1; mobs_redo falls back to a missing
+`tnt_explode` sound (harmless today).
+
+### Items and professions design session (user, 2026-10-03)
+
+The [items and professions analysis](docs/research/items-professions-analysis-2026-10.md)
+(Round 32 R3) decides nothing; it prepares a design session with the user.
+Options (§4): 1 close the dead ends and fix progression (S–M), 2 a value
+pass so stats and item level mean something (M; the
+[enchantment revision](#enchantment-and-item-level-revision-user-2026-10-03-a-later-round)),
+3 a crafter's market (M), 4 every profession makes something per tier (L),
+5 the endgame layer of WP5/WP10 (XL). The 16 questions (§5): player
+payments; trinkets, spellbooks and large bags outside professions; quest
+gear; the 67 signatures without a recipe use; enchant-only professions;
+equal stat values; item-level scaling; found-gear sell value; masterwork;
+cultural finishes and materials; PvP counters and the Warding Draught; money
+at level 60; late starters; throwaway progression crafts; the small
+promises (×5 leather, bandages, apothecary gear, gem blocks, reagents); the
+vendor Uncommon.
+
+Side findings to settle there:
+
+- **The vendor Uncommon is live** at ×3 the Common price (one rotation in
+  five) since the enchant roller exists, although `items_crafting.md` §3.8
+  wanted it lit only after an economy pass.
+- **Royal guards drop no gear** (`grug_quality/init.lua`, like the
+  Generals' bodyguards, `items_crafting.md` §5.1), while §5.4 says their
+  loot is ordinary level-60 elite loot.
+- **No shields from vendors or mobs:** shields are Basics crafts only;
+  mob gear drops cover no shields, spellbooks or trinkets.
+
 ### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
 
 Set aside by the user (2026-10-03): optional, not planned for now; POIs and
@@ -680,6 +835,11 @@ drops clearly stronger. How it works today (`grug_gear/init.lua`,
 - Idea: scale affix values with item level (linear or finer bands) so king
   and dragon drops carry noticeably stronger enchantments; part of the
   enchantment rework, with a balance pass over all nine stats.
+- Round 32's [analysis](docs/research/items-professions-analysis-2026-10.md)
+  measures the gap (§2.2, §2.3: attack speed +4–14 % per enchant against
+  strength about 2.6 % and crit at most 1.2 %) as its option 2; the
+  [design session](#items-and-professions-design-session-user-2026-10-03)
+  decides.
 
 ### Round 26 capital wall follow-ups
 

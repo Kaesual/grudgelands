@@ -106,7 +106,8 @@ Earlier delivery narratives are preserved in the
   it in parallel without becoming allies.
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. The WP9 story from level 41 remains unfinished; WP41 PvP and
+running code. The WP9 story from level 41 remains unfinished and V1's
+sound is researched (Round 32), not built; WP41 PvP and
 the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
 boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
 
@@ -120,7 +121,10 @@ B1–B7) settle the rest:
 
 - **In V1:** WP17 boats (the only access to the dragon islands and their
   camps) and waypoints at every start, capital and PvP fortress (no zone hubs, no
-  `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale.
+  `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale;
+  **sound** (the user, 2026-10-03): effects for the game's events, mob
+  voices, ambience and calm background music without a combat switch
+  ([sound research](docs/research/sound-research-2026-10.md)).
 - **After V1:** WP42's scripted NPC battles on the war front. The small PvP
   POIs shipped in V1 (Round 31).
 - **Not V1:** the walkable Nether, the first expansion (V2).
@@ -219,20 +223,44 @@ B1–B7) settle the rest:
   arenas** redesigned (round leash arenas, ice and ember hazards, the
   dragon's wrath); the Round 30 clean-up items and a fixture runner. Local,
   not pushed. Next: fresh world and the two-client GUI test.
+- [x] **Round 32 "Fixes, preparation and research"**
+  ([completion](docs/planning/round32-plan.md#completion-2026-10-03)): the
+  minimap zoomed ×2, hostile camps marked on the Map tab, zone names
+  coloured by the territory at the player's position with a territory line;
+  one LMB hold state machine (mining turns into combat when a hostile comes
+  into the crosshair, and back); quest kill labels with the zone's mob
+  names; combat and personal notices in the message feed, the quest log in
+  one text field; three performance fixes for many players (Map tab
+  rebuild budget, party HUD slots, camp and leader slices). Read-only
+  studies: a [performance review](docs/research/perf-review-2026-10-r32.md)
+  at 50 and 100 stand-ins, the [sound research](docs/research/sound-research-2026-10.md),
+  the [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
+  Local, not pushed. Next: the GUI test.
 
 ### Remaining work
 
 - [ ] **Seed-dependent POI placement** (optional, set aside 2026-10-03):
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
-  ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-decide-before-the-next-round)).
-- [ ] **WP9 (V1), Round 32:** the level-41–60 main questline and the finale. Round 29's
-  front quests and bounties carry the 41–60 leveling; the main storyline and
-  the finale are reassessed on top of them.
-- [ ] **WP5 / WP10 items and professions:** an enchantment and item-level
-  revision (stronger boss drops), cultural/PvP finishes, masterwork
-  (an item-level-70 upgrade), then cultural finishing and helper services.
-  Selected enchanting, ordinary gear, found-item loot, loot by band, seven
+  ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
+- [ ] **Sound (V1)** (the user, 2026-10-03): researched in Round 32
+  ([sound research](docs/research/sound-research-2026-10.md)); two lanes,
+  S1 effects (a play helper, about 30 hooks, formspec clicks, mob voices by
+  archetype) and S2 ambience and music (a per-player player on the
+  atmosphere tick, volume settings, 8–12 calm tracks). Seven decisions by
+  the user come first ([BACKLOG](BACKLOG.md#sound-v1-user-2026-10-03)).
+- [ ] **WP9 (V1):** the level-41–60 main questline and the finale, moved
+  out of Round 32 to a round of its own after the sound and items work.
+  Round 29's front quests and bounties carry the 41–60 leveling; the main
+  storyline and the finale are reassessed on top of them.
+- [ ] **WP5 / WP10 items and professions:** the Round 32
+  [analysis](docs/research/items-professions-analysis-2026-10.md) is done;
+  a design session with the user on its options and 16 questions comes
+  next ([BACKLOG](BACKLOG.md#items-and-professions-design-session-user-2026-10-03)).
+  Then an enchantment and item-level revision (stronger boss drops),
+  cultural/PvP finishes, masterwork (an item-level-70 upgrade), cultural
+  finishing and helper services, as the session decides. Selected
+  enchanting, ordinary gear, found-item loot, loot by band, seven
   self-contained profession catalogs and the loot/demand audit (Round 29's
   price calibration) already exist.
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
@@ -274,10 +302,11 @@ ends fresh-server development mode.
 
 ## Phase 3 — Polish
 
-- [ ] Original textures, sounds and animated models with complete provenance.
+- [ ] Original textures, sounds and animated models with complete provenance
+  (V1's sound pass uses licence-clean sources first, Phase 1).
 - [ ] Localization through Luanti's translation system; German first.
-- [ ] Balance, accessibility, onboarding and a measured 100-player
-  performance pass.
+- [ ] Balance, accessibility, onboarding and a 100-player performance pass
+  with real clients (Round 32 measured 50 and 100 stand-ins).
 
 ## Deliberately outside the target
 
