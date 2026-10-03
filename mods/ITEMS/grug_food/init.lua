@@ -248,14 +248,13 @@ function grug_food.eat(itemstack, user, tier, kind, role)
 		return itemstack
 	end
 	local allowed, required = grug_core.can_use_item_level(user, itemstack)
+	-- Refusals go to the message feed, one keyed line (never to chat).
 	if not allowed then
-		core.chat_send_player(user:get_player_name(),
-			"Requires level " .. required .. ".")
+		grug_core.feed(user, "notice", "Requires level " .. required .. ".", "food")
 		return itemstack
 	end
 	if effect.regen.mana and grug_classes.get_max_mana(user) <= 0 then
-		core.chat_send_player(user:get_player_name(),
-			"Mana food has no effect without a mana pool.")
+		grug_core.feed(user, "notice", "Mana food has no effect without a mana pool.", "food")
 		return itemstack
 	end
 	if start_food_status(user, tier, effect, itemstack:get_definition()) then
