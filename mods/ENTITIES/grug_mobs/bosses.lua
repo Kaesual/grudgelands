@@ -37,6 +37,11 @@ local DRAGONS = {
 	},
 }
 
+local function dragon_pos(row, dx, dz)
+	local x, z = row.x + (dx or 0), row.z + (dz or 0)
+	return {x = x, y = grug_zones.terrain_height_at(x, z) + 1, z = z}
+end
+
 local function player_enemy_of(player, faction)
 	local own = grug_core.get_player_faction(player:get_player_name())
 	return own ~= nil and (not faction or own == grug_core.opposing_faction(faction))
@@ -284,7 +289,25 @@ local function hit_players(self, radius, multiplier, cone, knockback, faction)
 	end
 end
 
+-- A dragon's arena (Round 31 DA2): its spawn point and the arena radius,
+-- by boss id ("dragon:<id>"); nil for any other id. Cached once the zone
+-- authority answers terrain heights.
+local arenas = {}
+local function dragon_arena(boss_id)
+	local cached = arenas[boss_id]
+	if cached then return cached end
+	local id = type(boss_id) == "string" and boss_id:match("^dragon:(.+)$")
+	local row = id and DRAGONS[id]
+	if not row or not rawget(_G, "grug_zones") then return nil end
+	local pos = dragon_pos(row)
+	cached = {x = pos.x, y = pos.y, z = pos.z,
+		radius = grug_mobs.dragon_arena_rules.RADIUS}
+	arenas[boss_id] = cached
+	return cached
+end
+
 grug_mobs.register_dragon_bosses({
+	arena = dragon_arena,
 	storage = storage,
 	settle = settle_boss,
 	player_enemy_of = player_enemy_of,
@@ -558,11 +581,6 @@ for race, row in pairs(RACES) do
 	end
 	guard.on_die = function(self) grug_mobs.royal_guard_died(self) end
 	grug_mobs.register_mob("grug_mobs:royal_guard_" .. race_id, guard)
-end
-
-local function dragon_pos(row, dx, dz)
-	local x, z = row.x + (dx or 0), row.z + (dz or 0)
-	return {x = x, y = grug_zones.terrain_height_at(x, z) + 1, z = z}
 end
 
 -- Static authored navigation locations; no live entity or respawn information.

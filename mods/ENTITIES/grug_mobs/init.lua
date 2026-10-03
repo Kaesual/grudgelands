@@ -861,9 +861,12 @@ function grug_mobs.register_mob(name, def)
 				end
 				-- A player this mob gave up as unreachable, still on the
 				-- same node (aggro.lua give_up_target).
+				-- A bespoke actor's own veto: a dragon ignores players
+				-- outside its arena (boss_dragons.lua).
 				return grug_mobs.gave_up_on(s, player)
 					or (night_truce and truce_active(s, player))
 					or faction_veto(player)
+					or (s._grug_target_veto ~= nil and s._grug_target_veto(s, player))
 			end
 		end
 		if night_truce then
