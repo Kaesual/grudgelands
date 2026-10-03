@@ -11,8 +11,8 @@ named-zone WP9 story remains open.
 ## 1. Leveling pace
 
 - **Level 60 in ~10–20 played hours** (2–3 evenings) — deliberately much
-  faster than WoW. The endgame (PvP, apex bosses, housing, jobs) is the
-  game; leveling is the on-ramp.
+  faster than classic MMOs. The endgame (PvP, apex bosses, housing, jobs) is
+  the game; leveling is the on-ramp.
 - The curve is measured in **kill equivalents** (Round 28 rulings 30–32,
   2026-10-01; section "XP units and level curve" below): early levels need
   8 same-level kills' worth of XP, rising linearly to about 25 at level 59.

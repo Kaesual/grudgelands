@@ -243,7 +243,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
     and the rating budgets that `combat_stats.md` §2 uses for the tank/squishy
     spread collapse into "everyone wears the best armor they can afford".
 
-## 3. Bags (WoW model, LotT implementation pattern)
+## 3. Bags (classic MMO model, LotT implementation pattern)
 
 - **Base inventory stays 32 slots** (must not feel cramped); **4 bag
   slots** extend it. Cloth and leather each have four named variants, one per

@@ -32,7 +32,7 @@ under its original licence. Compatibility matrix:
    look with the game — no client-side install, no texture pack. We do not use
    it yet.
 4. **Only ~4 texture packs are both licence-clean and stylistically right for
-   a WoW-inspired game** (hand-painted, not photorealistic): Hand Painted Pack
+   an MMO-inspired game** (hand-painted, not photorealistic): Hand Painted Pack
    (CC0), Hand Painted Pack Expanded (CC0), Artelhum (MIT), Dungeon Soup
    (CC0-1.0, 32px). CC0/MIT matters here: those we may *vendor and modify*,
    BY-SA ones we may ship but must keep under BY-SA per file.
@@ -153,7 +153,7 @@ already have:
   saturation + strong shadow tint underground;
 - per **faction continent** — Kragmar cooler/harsher, Elandor warmer;
 - per **combat state** — `grug_core.mark_in_combat` already exists; a short
-  saturation/exposure nudge on entering combat is a genuinely WoW-ish cue;
+  saturation/exposure nudge on entering combat is a genuinely classic-MMO cue;
 - per **event** (elite telegraph, night truce in WP19) — the WP6 telegraph
   system already has the hooks.
 
@@ -190,7 +190,7 @@ GPL-3.0-or-later code; media licence kept per file.
 | [FaceDeer/footprints](https://content.luanti.org/packages/FaceDeer/footprints/) | MIT / CC-BY-SA-3.0 | ✅ | Footprints in snow/sand | writes nodes on movement — moderate, watch it |
 | [RealBadAngel/framedglass](https://content.luanti.org/packages/RealBadAngel/framedglass/) | LGPL-2.1-or-later | ✅ | Connected/framed glass — capital windows | free (drawtype only) |
 | [Codiac/mcl_small_3d_plants](https://content.luanti.org/packages/Codiac/mcl_small_3d_plants/) | MIT / MIT | ✅ | Mesh nodes for small plants instead of flat crosses. VoxeLibre-targeted → reference, not drop-in | mesh nodes cost more vertices than `plantlike` |
-| [sofar/emote](https://content.luanti.org/packages/sofar/emote/) | LGPL-2.1-only / CC-BY-3.0 | ✅ | Player emotes/animations (`/sit`, `/lay`) — WoW-flavoured social layer | negligible |
+| [sofar/emote](https://content.luanti.org/packages/sofar/emote/) | LGPL-2.1-only / CC-BY-3.0 | ✅ | Player emotes/animations (`/sit`, `/lay`) — MMO-flavoured social layer | negligible |
 | [niwla23/visible_sneak](https://content.luanti.org/packages/niwla23/visible_sneak/) | MIT / MIT | ✅ | Crouch is visible to others | negligible |
 | [erlehmann/bushy_leaves](https://content.luanti.org/packages/erlehmann/bushy_leaves/) | AGPL-3.0-or-later | ⚠️ | Bushy instead of boxy leaves — nice, but AGPL adds a **network source-offer obligation** that would attach to a public server. Combinable with GPLv3 per FSF, but it changes our obligations; prefer reimplementing the idea (it is a drawtype/nodebox change) | free |
 | [LMD/texgen](https://content.luanti.org/packages/LMD/texgen/) | MIT / "Other (Free/Open)" | ⚠️ media unclear | Dynamically generated texture packs — a *tool*, not a shipped dependency. Interesting next to our own `tools/gen_mob_item_textures.py` | n/a |
@@ -286,9 +286,9 @@ Verdicts against GPL-3.0-or-later code + per-file media licences. The
 under BY-SA with attribution, and adaptations stay BY-SA (3.0) or may go
 BY-SA 4.0/GPLv3 one-way (4.0).
 
-| Pack | Res. | Licence | Ship? | Vendor+modify? | Style fit for a WoW-like |
+| Pack | Res. | Licence | Ship? | Vendor+modify? | Style fit for an MMO-like |
 |---|---|---|---|---|---|
-| [drummyfish/drummyfish — Hand Painted Pack](https://content.luanti.org/packages/drummyfish/drummyfish/) | 128px | **CC0-1.0** | ✅ | ✅ **free rein** | ★★★ hand-painted, the closest thing to WoW's art direction on ContentDB |
+| [drummyfish/drummyfish — Hand Painted Pack](https://content.luanti.org/packages/drummyfish/drummyfish/) | 128px | **CC0-1.0** | ✅ | ✅ **free rein** | ★★★ hand-painted, the closest thing to a classic MMO's art direction on ContentDB |
 | [shaft/hand_painted_expanded](https://content.luanti.org/packages/shaft/hand_painted_expanded/) | 128px | **CC0-1.0** | ✅ | ✅ | ★★★ extends the above with more mod coverage |
 | [AndrOn/artelhum](https://content.luanti.org/packages/AndrOn/artelhum/) | 128px | **MIT** | ✅ | ✅ | ★★☆ cartoon, vibrant, wide mod support |
 | [sirrobzeroone/dungeonsoup](https://content.luanti.org/packages/sirrobzeroone/dungeonsoup/) | **32px** | **CC0-1.0** | ✅ | ✅ | ★★★ dungeon/fantasy themed **and** at exactly the resolution we should target |

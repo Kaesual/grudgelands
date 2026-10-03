@@ -8,7 +8,7 @@ SWEEP 4 mods/ENTITIES/grug_mobs/bandit.lua:2:-- humanoid; camps placed by §1.4,
 mods/ENTITIES/grug_mobs/bandit.lua:3:-- camp (leashes to camp, group) | 24 h | 4.4 | linen cloth 1/1 x1-2 (inner
 mods/ENTITIES/grug_mobs/bandit.lua:109:		-- this: "Linen cloth | 10-30 | bandit camps", "Heavy cloth | 25-45 |
 mods/ENTITIES/grug_mobs/eagle.lua:118:-- §4 row "Crag Eagle/Vulture | gravel, mesa_clay | 20 | 2000 | 3 | min 10 |
-mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'murloc memory') | swarms
+mods/ENTITIES/grug_mobs/mirefolk.lua:2:-- (fish-folk humanoid, camps at swamp pools; the 'classic-MMO fish-folk memory') | swarms
 mods/ENTITIES/grug_mobs/mirefolk.lua:3:-- (camp group aggro, all rush at once) | 24 h | 4.4 | linen cloth 1/2;
 mods/ENTITIES/grug_mobs/crocodile.lua:105:-- §4 row "Crocodile | mud, water at mud | 20 | 1800 | 3 | any | outer".
 mods/ENTITIES/grug_mobs/jungle_lynx.lua:63:	-- Wolf table (§3.2: "wolf table | Wolf | ... Raptor*"): meat and leather

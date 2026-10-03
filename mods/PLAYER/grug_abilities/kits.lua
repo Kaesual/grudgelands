@@ -255,7 +255,7 @@ function grug_abilities.swing_stats(player, equipped)
 end
 
 -- Working title kept from the design file. Deliberately a plain English verb,
--- not a Blizzard ability name.
+-- not an ability name from an existing commercial game.
 local strike_description = "A full melee swing with your equipped weapon. " ..
 	"Hold LMB and keep a hostile in your crosshair; the shared weapon clock " ..
 	"prevents click spam."

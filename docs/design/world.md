@@ -767,7 +767,7 @@ territory.
 | Throng | Trolls | jungle/swamp |
 | Throng | Undead | dark forest/blight |
 
-(Own names/flavor later — no 1:1 Blizzard copies.)
+(Own names/flavor later — no 1:1 copies from existing games.)
 
 - The authored layout (hubs and anchors, `world_zones.md` §7.1) fixes every
   race's approximate compass position, starting zone and capital. Seed

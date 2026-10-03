@@ -12,7 +12,7 @@ The single most important finding: **Lord-of-the-Test renders ALL of its humanoi
 rigged character mesh (we already ship `mods/BASE/player_api/models/character.b3d`) covers all 6
 races as mobs_redo NPCs *and* as player_api race models; per-race skins do the differentiation.
 Undead get real monster meshes from mobs_mc/22i (GPLv3 — we already use the 22i zombie in
-`mods/ENTITIES/grug_mobs`). Gaps: no ready-made WoW-style green orc, lanky troll, or night-elf
+`mods/ENTITIES/grug_mobs`). Gaps: no ready-made classic-MMO-style green orc, lanky troll, or purple-skinned elf
 skins exist — those are recolors/edits of CC BY-SA LOTT skins or new paint jobs on the standard
 skin template (cheap, 2D pixel work only).
 
@@ -59,8 +59,8 @@ directly usable in mobs_redo (`stand_start/walk_start/punch_start`, see lottmobs
 - **Player race visuals**: keep one `character.b3d` in player_api; register per-race skins;
   dwarves via `visual_size`/`set_properties` scaling (lottmobs precedent: y=0.85). lottarmor's
   multiskin shows how to composite skin + clothes + armor into one texture at runtime.
-- **WoW-style gaps** (own 2D work, cheap): green orc recolor of `lottmobs_orc*.png`, blue/purple
-  troll and night-elf recolors of elf skins, Forsaken player skin (zombie-tinted human).
+- **Classic-MMO-style gaps** (own 2D work, cheap): green orc recolor of `lottmobs_orc*.png`, blue/purple
+  troll and purple-skinned elf recolors of elf skins, undead player skin (zombie-tinted human).
   Derivatives of CC BY-SA skins stay CC BY-SA — document in per-file attribution.
 - lottmobs guard/trader implementation (`trader.lua`, `functions.lua`: `lottmobs.guard`,
   `do_custom_guard`, trader formspec) is a proven mobs_redo pattern matching our embedded fork.

@@ -640,7 +640,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 |-----|------|-----------|-------|-------|-------|
 | Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.6, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
 | Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
-| Mirefolk (fish-folk humanoid, camps at swamp pools; the "murloc memory") | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
+| Mirefolk (fish-folk humanoid, camps at swamp pools; the classic-MMO fish-folk memory) | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 | **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
 
 **Sandy sea shore (neutral — attack only when provoked):**

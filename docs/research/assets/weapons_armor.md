@@ -45,7 +45,7 @@ robe templates is the fastest path.
    as bases; VoxeLibre armor textures (CC BY-SA 4.0, Pixel Perfection) as alternative.
    Quality tiers via engine texture modifiers (e.g. `^[multiply:` color tint) — no extra art.
 3. **Item icons** (swords, wands, staves, daggers): DCSS tiles / DungeonSoup, CC0 —
-   zero license friction, huge coverage, WoW-like icon feel.
+   zero license friction, huge coverage, classic-MMO icon feel.
 4. **Bows (later)**: x_bows (LGPL-2.1-or-later) — modern raycast arrows + charge API.
 
 ## Candidate table

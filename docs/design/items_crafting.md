@@ -63,7 +63,7 @@ ladders are independent; §2.1 spells out how they meet.
 - Cultural finishing is crafter-culture-bound but finished items remain
   tradeable and wearable by anyone; target-race PvP specials are a separate
   channel (§4).
-- Material tiers mirror WoW: vendor supplies (thread/vials) as
+- Material tiers mirror classic MMOs: vendor supplies (thread/vials) as
   small gold sink; world materials tiered by source level. Authored city/POI
   stations are personal workspaces; crafted player-placed stations are shared.
   Bags have parallel Tailor and Leatherworker lines.

@@ -29,7 +29,7 @@ surface-following preparation are independently reviewed. Final technical gates
 PASS; merged to main, synchronized locally and pushed. [GUI playtest](../../../docs/research/round16-playtest.md)
 remains separate. This increment does not change shipped-WP counts.
 
-Grudgelands is a standalone, WoW-inspired voxel RPG for Luanti. It combines
+Grudgelands is a standalone, MMO-inspired voxel RPG for Luanti. It combines
 two factions, races, classes, fast leveling, threat-based combat, professions,
 an item economy, open-world housing and geographic PvP in an authored but
 procedurally detailed world.
