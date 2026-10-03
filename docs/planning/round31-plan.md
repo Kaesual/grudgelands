@@ -230,7 +230,9 @@ need no GUI check.
 7. **Enchant colours (B) need another design round:** the items, armour
    most of all, look too colourfully pixelated. Smaller pixel groups
    throughout and the colours overlaid at **50 %** strength; a new preview
-   before stage 2 (GPT-6 Astra may help with the art if needed).
+   before stage 2 (GPT-6 Astra may help with the art if needed). The
+   colours are visual **accents, never a redesign** of the base item; a
+   narrow stripe is usually enough.
 8. **Mounted hitbox:** every tier-2 mount gets the same collision and
    selection box (fairness, as §2.1.4).
 9. **Healer fallback:** support that is not allowed on the aimed ally (an
