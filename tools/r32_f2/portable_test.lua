@@ -6,23 +6,24 @@
 -- Loads the REAL grug_abilities/input.lua on a fake engine and the REAL
 -- grug_quests/labels.lua and grug_core/item_names.lua over the shipped data.
 -- Checks:
---   G  the LMB hold state machine (the user's rule and its ruling of
---      2026-10-03): every hold starts as gather, a key-down on a valid
---      hostile (a neutral mob too) starts it in combat with that foe; a held
---      gather switches to combat on a threat in the crosshair and in reach
---      (an aggressive mob, a mob fighting the player, a PvP-harmable player;
---      never a neutral mob or critter, a protected player, an NPC or a
---      hostile out of reach) and only while an attacking skill is selected
---      (Ward and Blink never fire because a mob walked in, nor on a later
---      air step); combat hits whatever hostile is in the crosshair, never
---      digs beside a living foe, and the last hostile it aimed at is its foe;
---      the foe dead, despawned, no longer fightable (a PvP flag dropped, a
---      mob evading after a leash reset) or fled beyond 2 x reach returns it
---      to gather
---      (briefly out of reach keeps the lock); a hostile in sight then keeps
---      combat without a range rewrite; release and a slot change reset; a
---      key-down on air is gather; cost: no combat ray while the crosshair
---      rests on a solid node, one per step behind a plant, loot or an actor.
+--   G  the LMB hold state machine (the user's rule and rulings of
+--      2026-10-03): every hold starts as gather, a key-down on a fightable
+--      hostile starts it in combat with that foe; a held gather switches to
+--      combat on any fightable hostile in the crosshair and in reach (a
+--      neutral mob and a critter too, a PvP-harmable player; never a
+--      protected player, an NPC, an ally or a hostile out of reach), and only
+--      while an attacking skill is selected; Ward, Blink and Heal never fire
+--      from a hold on their own (a mob or an ally walking in, a later air
+--      step), a fresh press on an ally heals it and keeps healing that ally
+--      only; combat hits whatever hostile is in the crosshair, never digs
+--      beside a living foe, and the last hostile it aimed at is its foe; the
+--      foe dead, despawned, no longer fightable (a PvP flag dropped, a mob
+--      evading after a leash reset) or fled beyond 2 x reach returns it to
+--      gather (briefly out of reach keeps the lock), and the same foe back in
+--      reach locks it again; a hostile in sight then keeps combat without a
+--      range rewrite; release and a slot change reset; a key-down on air is
+--      gather; cost: no combat ray while the crosshair rests on a solid node,
+--      one per step behind a plant, loot or an actor.
 --   L  quest labels: every shipped kill objective names each target by its
 --      zone display name (a leader's zone, else the area's zone, else the
 --      quest's zone); how many quests and zones that changes (30 and 13 at
@@ -98,6 +99,13 @@ local npc = {kind = "npc"}
 function npc:get_pos() return vector.new(0, 1, 2) end
 function npc:is_player() return false end
 function npc:get_luaentity() return {name = "test:npc", _cmi_is_mob = true, health = 10} end
+local ally = {kind = "ally"}
+function ally:get_pos() return vector.new(0, 1, 2) end
+function ally:is_player() return true end
+function ally:get_hp() return 20 end
+function ally:get_luaentity() return nil end
+local ally2 = {kind = "ally"}
+for k, v in pairs(ally) do if type(v) == "function" then ally2[k] = v end end
 local drop = {kind = "drop"}
 function drop:get_pos() return vector.new(0, 1, 1) end
 function drop:is_player() return false end
@@ -215,12 +223,16 @@ local defs = {
 	loose = {id = "loose", kind = "cast", target_kind = "hostile", name = "Loose"},
 	blink = {id = "blink", kind = "cast", target_kind = "self", name = "Blink", repeat_policy = "once"},
 	ward = {id = "ward", kind = "cast", target_kind = "self", name = "Ward"},
+	heal = {id = "heal", kind = "cast", target_kind = "friendly", name = "Heal"},
 }
 grug_abilities = {
 	registered = defs,
 	is_unlocked = function() return true end,
 	get_range = function(_, def) return def.id == "fireball" and 20 or 3 end,
-	valid_target = function(_, ref, kind) return kind == "hostile" and hostile(ref) end,
+	valid_target = function(_, ref, kind)
+		if kind == "friendly" then return ref.kind == "ally" end
+		return kind == "hostile" and hostile(ref)
+	end,
 	support_refused = function() return false end,
 	flash = function() end,
 	cancel_bow_draw = function() end,
@@ -288,7 +300,7 @@ local function range0() return main[wield_index].meta.range == "0" end
 local function can_dig() return input.can_dig(player, NODE.under, core.get_node_or_nil(NODE.under)) end
 local function swung_since(n) return #swings > n end
 
-do -- G1 a gather hold switches to combat on a threat in the crosshair and reach.
+do -- G1 a gather hold switches to combat on a hostile in the crosshair and reach.
 	select("strike")
 	aim(NODE)
 	press()
@@ -401,23 +413,43 @@ do -- G9 what never switches a gather hold, and what does.
 	aim(at(new_mob("far"), 10), NODE) -- 10 m: beyond Strike's reach (hand reach 4 m)
 	hold(3)
 	check(not range0() and #swings == 0, "G9 a hostile out of reach: no switch")
-	local neutral = new_mob("neutral", "neutral")
-	aim(at(neutral), NODE)
+	aim(at(ally), NODE)
 	hold(3)
-	check(not range0() and #swings == 0, "G9 a passing neutral mob is not pulled")
-	aim(at(new_mob("rabbit", "critter")), NODE)
-	hold(3)
-	check(not range0() and #swings == 0, "G9 a critter is not pulled")
-	neutral.attack = player -- it fights this player now
-	aim(at(neutral), NODE)
+	check(not range0() and #swings == 0, "G9 an ally: no switch")
+	aim(at(new_mob("neutral", "neutral")), NODE)
 	hold()
-	check(range0() and #swings == 1, "G9 a neutral mob fighting the player: switch and hit")
+	check(range0() and #swings == 1, "G9 a neutral mob: switch and hit (the user, 2026-10-03)")
+	release()
+	aim(NODE)
+	press()
+	aim(at(new_mob("rabbit", "critter")), NODE)
+	hold()
+	check(range0() and #swings == 2, "G9 a critter combat accepts: switch and hit")
 	release()
 	aim(NODE)
 	press()
 	aim(at(new_player(true)), NODE)
 	hold()
-	check(range0() and #swings == 2, "G9 a player PvP allows: switch and hit")
+	check(range0() and #swings == 3, "G9 a player PvP allows: switch and hit")
+	release()
+end
+
+do -- G14 the same foe back in reach after it fled locks the hold again.
+	select("strike")
+	aim(NODE)
+	press()
+	local m = new_mob("runner")
+	aim(at(m), NODE)
+	hold()
+	check(range0(), "G14 combat with the runner")
+	m.z = 9 -- fled beyond 8 m
+	aim(NODE)
+	hold()
+	check(not range0() and can_dig(), "G14 fled: gather")
+	m.z = 2 -- back in reach and in the crosshair
+	aim(at(m), NODE)
+	hold()
+	check(range0(), "G14 the same foe back: combat again")
 	release()
 end
 
@@ -508,6 +540,29 @@ do -- G11 a self or support skill never fires because a mob walked in.
 	hold(2)
 	check(#casts == 0 and not range0(), "G11 Blink: a miner is never teleported")
 	release()
+	-- An ally passing the crosshair of a held gather press is never healed,
+	-- nor does Ward or Blink fire at it.
+	for _, id in ipairs({"heal", "ward", "blink"}) do
+		select(id)
+		aim(NODE)
+		press()
+		aim(at(ally), NODE)
+		hold(5)
+		check(#casts == 0, "G11 " .. id .. ": an ally walking into a gather hold gets nothing")
+		release()
+	end
+	-- A fresh press on an ally heals it, held on that ally only.
+	select("heal")
+	aim(at(ally), NODE)
+	press()
+	check(#casts == 1, "G11 a fresh press on an ally heals it")
+	hold(3)
+	check(#casts == 4, "G11 held on the same ally: today's repeats (" .. #casts .. ")")
+	aim(at(ally2), NODE)
+	hold(3)
+	check(#casts == 4, "G11 no retarget to another ally mid-hold")
+	release()
+	select("blink")
 	aim() -- a key-down on air still casts the self skill once
 	press()
 	check(#casts == 1, "G11 a fresh press on air casts Blink once")

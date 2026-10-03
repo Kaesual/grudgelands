@@ -193,10 +193,10 @@ return function(api)
 	-- the hold aimed at). Every hold starts as gather; at key-down a valid
 	-- hostile the combat ray finds (plants and dropped loot never hide a mob)
 	-- within max(hand reach, skill range) makes it combat at once. Later in
-	-- the hold only a threat does -- a PvP-harmable player, an aggressive mob
-	-- or one fighting this player, never a passing neutral mob -- and only
-	-- while the selected skill attacks hostiles (a self or support skill
-	-- never fires because a mob walked into the crosshair). Combat returns to
+	-- the hold any such hostile does, a neutral mob or critter too, but only
+	-- while the selected skill attacks hostiles: a self or support skill
+	-- never fires from a hold on its own, only from a fresh press at its
+	-- target (or held at the ally that press began on). Combat returns to
 	-- gather once its foe is gone: dead, despawned or unloaded, no longer a
 	-- valid target (a PvP flag dropped, evading home), or farther than
 	-- FLEE_REACH times the reach (a foe briefly stepping out of reach keeps
@@ -216,16 +216,10 @@ return function(api)
 		local ent = ref:get_luaentity()
 		return not (ent and ent.temp and ent.temp.grug_evading)
 	end
-	local function threatens(player, ref)
-		if ref:is_player() then return true end -- valid_target asked grug_pvp.can_harm
-		local ent = ref:get_luaentity()
-		return ent ~= nil and (ent.attack == player or grug_mobs.disposition(ent) == "aggressive")
-	end
-	-- The valid hostile the crosshair finds within `reach` (only a threat
-	-- unless `any`), or nil. `hit` is the step's hand ray, which reaches at
+	-- The fightable hostile the crosshair finds within `reach`, or nil. `hit` is the step's hand ray, which reaches at
 	-- least as far: a walkable node first (or nothing) hides every actor, so
 	-- the combat ray runs only behind plants, loot and actors.
-	local function hostile_ahead(player, reach, hit, any)
+	local function hostile_ahead(player, reach, hit)
 		if not hit then return nil end
 		if hit.type == "node" then
 			local node = core.get_node_or_nil(hit.under)
@@ -234,7 +228,7 @@ return function(api)
 		end
 		local r = grug_core.combat_ray(player, reach)
 		local target = r.status == "target" and fightable(player, r.target) and r.target
-		return target and (any or threatens(player, target)) and target or nil
+		return target or nil
 	end
 	-- Dead, despawned or unloaded, no longer fightable (a PvP flag dropped,
 	-- evading), or fled beyond FLEE_REACH times the reach.
@@ -349,8 +343,14 @@ return function(api)
 		end
 		if hit and hit.type == "object" then
 			s.dig = nil
+			-- A support skill acts on the ally a fresh press aims at, and while
+			-- held on that same ally only; an ally passing the crosshair of a
+			-- held press is never healed.
 			if Q.valid_target(player, hit.ref, "friendly") then
-				if support(def) and not def.offensive then cast(player, def, s, hit, fresh) end
+				if fresh then s.ally = hit.ref end
+				if support(def) and not def.offensive and s.ally == hit.ref then
+					cast(player, def, s, hit, fresh)
+				end
 				return
 			end
 			if Q.valid_target(player, hit.ref, "hostile") then
@@ -369,7 +369,7 @@ return function(api)
 			-- An ally the PvP flag forbids: the cast refuses (and reports) at
 			-- no cost, never healing the caster instead (Round 31 ruling 9).
 			if Q.support_refused(player, hit.ref) then
-				if def.target_kind == "friendly" then cast(player, def, s, hit, fresh) end
+				if fresh and def.target_kind == "friendly" then cast(player, def, s, hit, fresh) end
 				return
 			end
 			-- Actors block action on anything behind them, including drops after
@@ -400,11 +400,8 @@ return function(api)
 			return
 		end
 		-- Nothing to act on (air, out of reach, a node bare hands cannot dig):
-		-- one self/support activation per press, at key-down or in combat.
-		if (fresh or s.mode == "combat") and not s.empty_used and support(def) then
-			s.empty_used = true
-			cast(player, def, s, nil, true)
-		end
+		-- a self/support skill activates on the fresh press only.
+		if fresh and support(def) then cast(player, def, s, nil, true) end
 	end
 	local M = {}
 	local stepping = {} -- player name -> true while that player's step runs
@@ -472,11 +469,9 @@ return function(api)
 			local starting = not s.mode
 			if starting then s.mode, s.mode_at = "gather", core.get_us_time() end
 			if s.mode == "gather" and (starting or def.target_kind == "hostile") then
-				local foe = hostile_ahead(player, reach, hit, starting)
+				local foe = hostile_ahead(player, reach, hit)
 				if foe then
 					s.mode, s.foe, s.pending, s.dig = "combat", foe, nil, nil
-					-- A switch mid-hold never brings an empty-space self cast along.
-					if not starting then s.empty_used = true end
 					hold_range(player, "combat", true)
 				end
 			end
@@ -492,7 +487,7 @@ return function(api)
 			end
 		end
 		if down and not s.down then
-			s.used, s.empty_used, s.cast_press = false, false, false
+			s.used, s.cast_press, s.ally = false, false, nil
 			if def then activate(player, s, def, hit, distance, true) end
 		elseif down and def then
 			activate(player, s, def, hit, distance, false)

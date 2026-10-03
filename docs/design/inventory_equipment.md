@@ -105,11 +105,12 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   for the bare-handed baseline. **Weapons are therefore no longer hotbar
   items** — a sword lying in the hotbar drives no skill and no skin.
   - Ability stacks preserve native held-LMB hand digging and animation while
-    publishing zero native combat damage. At key-down the server locks the
-    press to combat or gathering (hand digging, pickup) from the crosshair;
-    abilities never borrow tool digging power. A held combat press never
-    digs and a held gathering press never attacks; switching needs a new
-    press.
+    publishing zero native combat damage. A held press is gathering (hand
+    digging, pickup) or combat locked on a foe; a press on a hostile starts
+    in combat, and a gathering hold turns into combat when a hostile comes
+    into the crosshair and reach while an attacking skill is selected, and
+    back once that foe is gone (Round 32); abilities never borrow tool
+    digging power. Combat never digs and gathering never attacks.
     The equipped weapon supplies combat damage and cadence; the skill token
     takes no equipment wear. See `classes.md` §2b for click arbitration,
     cooldown fallback, right-click actions and accepted engine limits.
