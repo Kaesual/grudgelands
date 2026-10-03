@@ -11,10 +11,10 @@
 --      list clearance holds; it follows window size and HUD scaling;
 --   B  base: quality setting and fallback, tiles (<= 512 px, cover the image
 --      exactly), the Map tab's combined texture, the round mask;
---   G  geometry (glide): window ~880 nodes per quality; the cell texture
---      covers the hole wherever the player is in the cell and the bezel
---      covers its overhang; the bezel fits the native box at usual window
---      sizes; walks along every axis keep the player's pixel on the centre
+--   G  geometry (glide): window ~440 nodes per quality (Round 32; 880
+--      before); the cell texture covers the hole wherever the player is in
+--      the cell and the bezel covers its overhang; the bezel fits the
+--      native box at usual window sizes; walks along every axis keep the player's pixel on the centre
 --      and every cell swap lines the new texture up with the old one to the
 --      pixel (seam-free); every texture needs at most 4 tiles; distinct
 --      textures per walk (the bounded client texture cache); rim arrows;
@@ -263,9 +263,9 @@ for quality, spec in pairs(base.QUALITY) do
 		tiles = base.tiles(spec.width, spec.height)}
 	local v = V.new(info, bounds)
 	views[quality] = v
-	local expected = quality == "normal" and 132 or 440
+	local expected = quality == "normal" and 66 or 220
 	check(v.crop == expected, "G " .. quality .. " window " .. v.crop .. " px")
-	check(near(v.crop * v.npp, 880, 5), "G " .. quality .. " window ~880 nodes")
+	check(near(v.crop * v.npp, 440, 5), "G " .. quality .. " window ~440 nodes")
 	check(v.texture % v.grid == 0 and v.texture <= base.TILE,
 		"G " .. quality .. " texture " .. v.texture .. " px, whole cells, fits a tile")
 	-- the disc covers the hole at the worst offset; the bezel covers the disc
@@ -302,7 +302,9 @@ for quality, spec in pairs(base.QUALITY) do
 			(v.texture / 2 + v.d) * frame.f + 1 <= V.BEZEL_OPAQUE * frame.diameter / 2
 	end
 	check(frames_ok, "G " .. quality .. " frames fit the box top-right, whole pixels")
-	check(smallest >= 0.85, ("G %s bezel at least 85 %% of the box (%.2f)"):format(quality, smallest))
+	-- Round 32: at normal the 440-node window's 2-px grid steps the scale by
+	-- half a pixel, so a small window (1024 x 600) keeps 0.79 of the box.
+	check(smallest >= 0.78, ("G %s bezel at least 78 %% of the box (%.2f)"):format(quality, smallest))
 	-- walks: the player's pixel on the centre; at every cell swap each
 	-- screen pixel of the hole shows the same base pixel in the old and the
 	-- new texture (emulated sampling, so a resize that shifts texels fails)
@@ -579,7 +581,7 @@ local mx1, my1 = screen(map, me)
 check(map.text == map_text and compass.position.x == compass_x and mx1 < mx0 and
 	math.abs((bx1 - bx0) - (mx1 - mx0)) <= 1 + 1e-6 and near(by1 - by0, my1 - my0, 1 + 1e-6),
 	"R walking east: arrow stays, map and markers glide west together")
-me.pos.x = me.pos.x + 200
+me.pos.x = me.pos.x + 100
 step(0.09)
 check(map.text ~= map_text, "R new cell: new texture")
 do
