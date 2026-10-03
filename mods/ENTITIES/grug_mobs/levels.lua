@@ -85,6 +85,11 @@ local TIERS = {
 		tint = nil, prefix = "Boss "},
 }
 
+-- Named leaders (subtypes.lua, design frame §2.4) and the Round 31 camp
+-- captains (guard.lua): one size factor and 1.5 times the HP of their level
+-- and tier (user, 2026-10-02: 2x was too strong). The one place for both.
+grug_mobs.LEADER = {size = 1.15, hp = 1.5}
+
 local function tier_def(tier)
 	return TIERS[tier] or TIERS.normal
 end
@@ -217,7 +222,7 @@ grug_mobs.nearest_player_d2 = nearest_player_d2
 -- the current HP percentage (tier promotion of a wounded mob); otherwise
 -- the mob ends up at full HP.
 -- The derived stats of a live mob: its level and tier, and a definition's
--- HP factor on top (named leaders, subtypes.lua grug_mobs.LEADER.hp).
+-- HP factor on top (named leaders and camp captains, grug_mobs.LEADER.hp).
 local function derived_stats(self)
 	local hp, damage, xp = grug_mobs.stats_for(self._grug_level or 1, self._grug_tier)
 	local cfg = level_cfg[self.name]

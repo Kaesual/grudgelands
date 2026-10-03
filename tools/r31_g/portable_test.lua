@@ -12,8 +12,9 @@
 --      at level 60 elite, the General, 2 bodyguards; quest givers, the
 --      Quartermaster and the waystone are no garrison) and both camp layouts
 --      of every catalogue row in every race of its faction (4 or 5 guards in
---      the camp's 3-level band, never elite, and the named captain, elite at
---      the top level); levels per band, respawn intervals, the mixed look of
+--      the camp's 3-level band, never elite, and the named captain at the top
+--      level, no elite but a leader: grug_mobs.LEADER's 1.15 size and 1.5 HP
+--      in his definition, once, nothing per entity); levels per band, respawn intervals, the mixed look of
 --      the fortress guards and bodyguards (lane A's npc_race contract), quest
 --      areas; a camp race of the other faction is refused;
 --   P  placement through the REAL start_npcs.lua, guard.lua and bosses.lua
@@ -210,7 +211,7 @@ for _, row in ipairs(catalog.rows) do
 					captains = captains + 1
 					eq(spec.entity, "grug_mobs:captain_" .. row.faction, where .. " entity")
 					check(spec.level_min == high and spec.level_max == high, where .. " the top level")
-					eq(spec.tier, "elite", where .. " elite")
+					eq(spec.tier, "normal", where .. " no elite")
 					check(spec.respawn[1] == 270 and spec.respawn[2] == 330, where .. " about 5 min")
 					eq(spec.name, names.captains[row.key][race], where .. " named")
 					check(not spec.mixed, where .. " the camp's race")
@@ -324,6 +325,8 @@ _G.grug_mobs = {
 	face_yaw = noop,
 	clear_boss_activity = noop,
 	register_dragon_bosses = noop,
+	-- levels.lua's leader factors (the real values; levels.lua is not loaded).
+	LEADER = {size = 1.15, hp = 1.5},
 	-- levels.lua's two seams the garrison install calls, reduced to the fields.
 	set_tier = function(entity, tier) entity._grug_tier = tier end,
 	relevel = function(entity, level) entity._grug_level = level end,
@@ -442,6 +445,28 @@ do
 	eq(high.captain.description, names.captains.pvp_camp_shattered_line_throng_high.troll,
 		"P the troll captain's name")
 	eq(high.captain._grug_mixed_race, nil, "P the captain is drawn as his camp's race")
+	-- The leader: normal tier, the leader factors in the definition once
+	-- (levels.lua derives HP from `_grug_hp_scale` on every activation, so a
+	-- reload neither loses nor doubles them), nothing scaled per entity.
+	local real_levels = read(repo .. "/mods/ENTITIES/grug_mobs/levels.lua")
+	check(real_levels:find("grug_mobs.LEADER = {size = 1.15, hp = 1.5}", 1, true) ~= nil,
+		"P the harness's leader factors are levels.lua's")
+	local guard_def = core.registered_entities["grug_mobs:guard_throng"]
+	for _, faction in ipairs({"accord", "throng"}) do
+		local def = core.registered_entities["grug_mobs:captain_" .. faction]
+		check(math.abs(def.visual_size.x - 1.15) < 1e-9 and math.abs(def.visual_size.y - 1.15) < 1e-9,
+			"P a " .. faction .. " captain is drawn at 1.15")
+		check(math.abs(def.collisionbox[5] - guard_def.collisionbox[5] * 1.15) < 1e-9 and
+			math.abs(def.collisionbox[1] - guard_def.collisionbox[1] * 1.15) < 1e-9,
+			"P ...his box at 1.15 of a guard's")
+		eq(def._grug_hp_scale, 1.5, "P ...and 1.5 times the HP of his level")
+		eq(def._grug_tier, nil, "P ...on the normal tier")
+	end
+	for _, captain in ipairs({camp.captain, high.captain}) do
+		eq(captain._grug_tier or "normal", "normal", "P a placed captain stays normal")
+		eq(captain._grug_elite_checked, true, "P ...and is never promoted (a level-60 one included)")
+		eq(rawget(captain, "visual_size"), nil, "P ...with no size of his own")
+	end
 	local look = fortress.general.name and core.registered_entities[fortress.general.name]._grug_visual
 	local spec = look(fortress.general)
 	check(spec.race == "human" and spec.royal == "guard" and type(spec.look) == "table",
@@ -488,6 +513,7 @@ do
 	check(captain2 ~= nil and captain2 ~= captain, "T a fresh captain after about 5 min")
 	eq(captain2 and captain2.description, captain.description, "T ...with the same name")
 	eq(captain2 and captain2._grug_level, 43, "T ...at the top of the band")
+	eq(captain2 and (captain2._grug_tier or "normal"), "normal", "T ...a leader, no elite")
 	check(holders("pvp_fortress_accord").gate_east ~= nil, "T the fortress guard is back within 6 min")
 
 	-- The General's group, the king rule.

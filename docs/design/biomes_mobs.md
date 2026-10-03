@@ -1201,7 +1201,8 @@ gate, protected surface).
   column may be another's), and any leader set on blight dirt is sunproof:
   Mortuary-Clerk Hush survives the day (Round 28 S2b). Every leader sub-type is
   1.15× the base model's size (whatever the catalogue's `size`) with 1.5×
-  the HP of its level and tier (`grug_mobs.LEADER`, `subtypes.lua`). A
+  the HP of its level and tier (`grug_mobs.LEADER`, `levels.lua`); a Round 31
+  PvP camp captain is the same leader on the guard chassis, normal tier. A
   leader spawns when a player is within 48 nodes of its spot (inside the
   player's active blocks: `active_block_range` − 1 mapblocks, so the unsaved
   leader is never dropped and re-added), none within 24, and its timer has

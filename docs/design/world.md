@@ -490,7 +490,9 @@ visible:
   `combat_stats.md` §3). A Round 31 PvP garrison sets level and tier at
   placement instead: fortress guards level 60 elite, a Battlegrounds camp's
   guards a level of the camp's three-level band and never elite, its captain
-  an elite at the band's top (`grug_mobs/pvp_garrison.lua`).
+  no elite either but a named leader at the band's top: 1.15× size and 1.5×
+  the HP of his level, like the start zones' leaders (`grug_mobs.LEADER`;
+  `grug_mobs/pvp_garrison.lua`).
 - Each named zone reserves its required outposts, patrols and special camps
   explicitly. The old fixed minimum of 24 ring outposts is not a target
   budget; the complete zone catalog must replace it with equivalent faction
@@ -514,7 +516,9 @@ visible:
   Battlegrounds zones, one lower and one higher camp per faction, 16 camps.
   Positions, spacing (at least 120 nodes between PvP POIs) and protection
   (the blueprint plus a 10-node margin): `world_zones.md` §16. Each fortress
-  has a waystone (§6).
+  has a waystone (§6). A camp holds 4 (lower) or 5 (higher) guards of its
+  race and band and its named captain, a leader of the band's top level, not
+  an elite; a fortress 12 level-60 elite guards and its General's group.
 - War-front squads use fixed population caps, place-bound respawn slots and
   fixed clash points. Their fights are ambient life only and do not capture a
   zone or move the faction boundary in the MVP (`world_zones.md` §5).

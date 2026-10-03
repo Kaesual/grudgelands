@@ -19,8 +19,9 @@
 --             bodyguard                 the General's guard, level 60 elite
 --   camp      guard_post (gate, camp)   the faction guard at a level of the
 --                                       camp's 3-level band, never elite
---             captain                   the named captain, elite at the top
---                                       of the band
+--             captain                   the named captain at the top of the
+--                                       band: no elite, a leader's size and
+--                                       HP (grug_mobs.LEADER, guard.lua)
 -- Looks (round31-plan §1, lane A's contract at grug_visuals.npc_race): a
 -- camp's people are of the camp's race and the General of his fortress's seat
 -- race, both the race their settlement registered as; fortress guards and
@@ -176,7 +177,7 @@ function M.new(catalog, names)
 		if role == "captain" then
 			spec.entity = M.captain_entity(faction)
 			spec.level_min, spec.level_max = high, high
-			spec.tier, spec.respawn = "elite", M.RESPAWN.captain
+			spec.tier, spec.respawn = "normal", M.RESPAWN.captain
 			spec.name = G.captain_name(key, race_id)
 			if not spec.name then fail(key .. ": no captain name for " .. tostring(race_id)) end
 		else
