@@ -741,6 +741,33 @@ local function arena_veto(self, player)
 	return arena ~= nil and not arena_rules.inside(arena, player:get_pos())
 end
 
+-- Forget every player outside the arena (Round 31 DA2): their threat and
+-- their engagement, so no threat switch, heal threat or taunt from outside
+-- can hand one back (grug_core combat.lua also honours the veto).
+local function prune_outside(self, arena)
+	local temp = self.temp
+	local threat = temp and temp.grug_threat
+	if threat then
+		for name in pairs(threat) do
+			local player = core.get_player_by_name(name)
+			if not player or not arena_rules.inside(arena, player:get_pos()) then
+				threat[name] = nil
+			end
+		end
+	end
+	local edges = temp and temp.grug_engaged
+	if edges then
+		local outside = {}
+		for name in pairs(edges) do
+			local player = core.get_player_by_name(name)
+			if player and not arena_rules.inside(arena, player:get_pos()) then
+				outside[#outside + 1] = player
+			end
+		end
+		for index = 1, #outside do grug_core.disengage_target(self, outside[index]) end
+	end
+end
+
 -- The arena reset (Round 31 DA2): the encounter reset every leashed mob gets
 -- (threat, loot tag, the boss attempt with its whelps and enrage, full
 -- health), then the flight back to the spawn point.
@@ -769,6 +796,7 @@ local function dragon_tick(self, dtime, moveresult, opts)
 		state.arena_clock = (state.arena_clock or 0) + dtime
 		if state.arena_clock >= 1 then
 			state.arena_clock = 0
+			prune_outside(self, arena)
 			if state.engaged and arena_rules.should_reset(state.engaged,
 					hostiles_inside(arena)) then
 				reset_fight(self, state)
@@ -871,8 +899,12 @@ local function whelp_tick(self, dtime, moveresult)
 		state = {mode = self.fly and "air" or "ground"}
 		self.temp.grug_whelp = state
 	end
+	local arena = arena_of(self)
+	if arena then self._grug_target_veto = arena_veto end
 	local target_pos, horizontal = valid_target(self, self.attack)
 	if not target_pos then
+		-- A target outside the boss's arena (or gone) is dropped.
+		if self.attack and self.stop_attack then self:stop_attack() end
 		if state.mode ~= "ground" then
 			state.mode = "landing"
 			set_flight(self, false)

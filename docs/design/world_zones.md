@@ -646,7 +646,7 @@ replaced; git history before this rewrite records that model.
   POIs on steep slopes), a small calm bowl in the terrain field first turns
   the slope or summit into a shelf at the local ground's mean height, with an
   irregular edge. There are no square plates. Vegetation is kept off only
-  the core and a 4-node margin.
+  the core and a 4-node margin (a dragon arena: a circle of its radius + 4).
 - **No housing masks** (Round 25 ruling 4). The former authored housing
   masks and the four coastal housing areas are removed from the layout and
   the zone data. Claim eligibility is `housing.md` §2 only: the whole claim

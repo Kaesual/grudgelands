@@ -44,7 +44,9 @@ relief is already −53..+21 nodes on the checked seeds.
   `arena_writer.lua` (the last pass of the R7 successor, after the
   settlements): the hazards follow the floor's height. Rim stones (stone on
   Wyrmglass, mossy cobble on Stormscale; about one in five ring columns, a
-  third of them two high) mark the radius. Hazard nodes are registered in
+  third of them two high) mark the radius. Vegetation is kept off a circle
+  of radius 44 (the floor's widest edge + 1); on both islands the coast
+  envelope keeps mapgen vegetation off the whole island anyway (measured). Hazard nodes are registered in
   `world_nodes.lua`, tinted default textures, not diggable.
 
 ### 0.3 The arena is the leash (`grug_mobs/boss_dragons.lua`, `dragon_arena.lua`)
@@ -57,13 +59,18 @@ relief is already −53..+21 nodes on the checked seeds.
 - A punch, shot or ability from a player outside is cancelled in `do_punch`
   (dragon and whelps), so nobody can hurt the dragon without being
   targetable. A hit from inside engages it.
+- Threat follows the same rule (review fix): once a second the dragon drops
+  the threat and engagement of every player outside, and grug_core's threat
+  code honours the veto (`combat.lua` `valid_target`, `add_threat`,
+  `taunt`), so no forced switch, heal threat or taunt from outside hands the
+  dragon to such a player. Whelps carry the veto and drop outside targets.
 - Once a second an engaged dragon counts hostile living players inside; at
   zero it resets: the ordinary encounter reset (`leash_reset`: threat, loot
   tag, `boss_leash_reset` with whelps, enrage and participation, full
   health), then it flies to 6 above its spawn and lands. A re-pull is a fresh
   attempt. Stepping out and back in only gives the dragon its health back.
   Dragons now carry `_grug_no_leash` (no drag or contact leash), and the
-  evade run skips no-leash actors. Its flight stays 4 nodes inside the edge.
+  evade run skips the dragons (they fly home). Its flight stays 4 nodes inside the edge.
 - The Round 30 pathing rule is unchanged (dragons never give up, they only
   wait); the arena rule is what ends a fight.
 
@@ -91,12 +98,15 @@ dragon's breath patches stay possible there, as before.
 
 ### 0.6 Checks
 
-- `tools/r31_da2/portable_test.lua` (7407 checks): layout, rules, and the
+- `tools/r31_da2/portable_test.lua` (7423 checks): layout, rules, and the
   real `boss_dragons.lua` on a fake engine (high player targeted, outside
   player vetoed and harmless, one reset when the last hostile leaves with
   full health and cleared enrage, the flight home and landing, a clean
-  re-pull, 250/350 per second through set_hp, the slow, ice breaking).
-- `tools/run_fixtures.sh`: all 56 pass (`tools/r24_density_xp/roster.lua`'s
+  re-pull, 250/350 per second through set_hp, the slow, ice breaking, the
+  threat prune, the whelps' veto; the real `combat.lua` refusing threat,
+  heal threat, taunt and a forced switch to a vetoed player; the evade skip
+  limited to dragons).
+- `tools/run_fixtures.sh`: all pass (`tools/r24_density_xp/roster.lua`'s
   stub now maps `grug_mapgen` for the arena layout file).
 - Engine: headless boots on seeds 42 and 1234 (about 1 min each) with a
   probe that dumped both arenas; arena floor −2..0, hazards and rim stones

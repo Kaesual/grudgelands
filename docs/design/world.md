@@ -587,7 +587,9 @@ combat damage for the ordinary five-second combat window.
   protected POI core; the dragon's own breath patches stay possible in it.
 - **The arena edge is the leash.** A hostile player inside the arena (within
   the radius, 10 below to 24 above the floor) is a target at any height and
-  distance; a player outside it is never acquired or targeted, and a punch,
+  distance; a player outside it is never acquired or targeted (nor by the
+  whelps), holds no threat or engagement on the dragon (dropped once a
+  second), cannot taunt it or hand it over through heal threat, and a punch,
   shot or ability from outside does not hurt the dragon or its whelps. When
   an engaged dragon has no hostile living player left inside its arena, the
   fight ends: the encounter resets (participation, whelps, enrage, full

@@ -179,6 +179,9 @@ core = {
 	get_node_or_nil = function(p) return {name = nodes[nkey(p)] or "air"} end,
 	set_node = function(p, n) nodes[nkey(p)] = n.name; set_nodes[#set_nodes + 1] = nkey(p) end,
 	get_node_timer = function() return {start = function() end} end,
+	get_player_by_name = function(name)
+		for _, p in ipairs(players) do if p.name == name then return p end end
+	end,
 	hash_node_position = function(p) return nkey(p) end,
 	line_of_sight = function() return true end,
 	add_particlespawner = function() end, add_particle = function() end,
@@ -188,7 +191,12 @@ core = {
 vector = {round = function(p) return {x = round(p.x), y = round(p.y), z = round(p.z)} end}
 mobs = {has_priv = function() return false end}
 local statuses, slows, combat_marks = {}, {}, 0
+local disengaged = {}
 grug_core = {
+	disengage_target = function(mob, player)
+		disengaged[#disengaged + 1] = player.name
+		if mob.temp.grug_engaged then mob.temp.grug_engaged[player.name] = nil end
+	end,
 	ground_effect_protected = function() return false end,
 	mark_in_combat = function() combat_marks = combat_marks + 1 end,
 	set_status = function(_, id) statuses[#statuses + 1] = id end,
@@ -253,6 +261,15 @@ check(def.do_punch(dragon, high) == nil, "C2 a punch from inside lands")
 dragon.attack = away
 tick()
 check(dragon.attack == nil, "C2 an outside player is dropped as a target")
+-- the arena tick forgets the outside player's threat and engagement
+dragon.temp.grug_threat = {away = 5000, high = 10}
+dragon.temp.grug_engaged = {away = true, high = true}
+for _ = 1, 10 do tick(0.1) end
+check(dragon.temp.grug_threat.away == nil and dragon.temp.grug_threat.high == 10,
+	"C2 outside threat dropped, inside threat kept")
+check(dragon.temp.grug_engaged.away == nil and dragon.temp.grug_engaged.high == true and
+	disengaged[1] == "away", "C2 outside engagement dropped")
+dragon.attack = nil
 -- C3 the last hostile leaves: one reset, the flight home, the landing
 dragon.health = 40000
 dragon.object.pos = {x = ARENA.x + 20, y = ARENA.y + 6, z = ARENA.z}
@@ -311,5 +328,133 @@ check(nodes[nkey({x = 30, y = 5, z = 30})] == N.ice_water and
 	nodes[nkey({x = 31, y = 5, z = 30})] == N.ice_water and
 	nodes[nkey({x = 31, y = 5, z = 31})] == N.thin_ice, "C6 it breaks under and beside the player")
 check(skater.hp == 5000, "C6 standing on thin ice costs nothing")
+
+-- C7 whelps drop outside players and veto them
+do
+	local wdef = defs["grug_mobs:ice_whelp"]
+	local whelp = {
+		_grug_boss_summon = "dragon:wyrmglass", fly = false,
+		object = {pos = {x = ARENA.x + 38, y = ARENA.y, z = ARENA.z},
+			get_pos = function(self) return self.pos end,
+			set_velocity = function() end, set_acceleration = function() end,
+			set_properties = function() end},
+		set_animation = function() end, yaw_to_pos = function() end,
+		stop_attack = function(self) self.attack = nil; self.stopped = true end,
+		run_velocity = 6.5,
+	}
+	players = {away, high}
+	whelp.attack = away
+	wdef.do_custom(whelp, 0.1, {})
+	check(whelp.attack == nil and whelp.stopped, "C7 a whelp drops an outside target")
+	check(whelp._grug_target_veto and whelp._grug_target_veto(whelp, away) == true and
+		whelp._grug_target_veto(whelp, high) == false, "C7 whelps veto outside players")
+	check(wdef.do_punch(whelp, away) == true, "C7 a whelp cannot be hit from outside")
+end
+
+-- ---------------------------------------------------------------------------
+-- D. grug_core combat.lua, the real file: the veto rules out threat, heal
+--    threat, taunt and the forced target switch.
+-- ---------------------------------------------------------------------------
+do
+	local us = 1000000
+	local cplayers = {}
+	local CP = {}
+	CP.__index = CP
+	function CP:is_player() return true end
+	function CP:get_player_name() return self.name end
+	function CP:get_pos() return self.pos end
+	function CP:get_hp() return 100 end
+	local function cp(name, x, outside)
+		local p = setmetatable({name = name, pos = {x = x, y = 0, z = 0}, outside = outside}, CP)
+		cplayers[#cplayers + 1] = p
+		return p
+	end
+	local mob_obj
+	core = setmetatable({
+		registered_items = {}, registered_entities = {}, registered_nodes = {},
+		get_us_time = function() return us end,
+		get_item_group = function() return 0 end,
+		get_connected_players = function() return cplayers end,
+		get_player_by_name = function(n) for _, p in ipairs(cplayers) do if p.name == n then return p end end end,
+		is_player = function(o) return type(o) == "table" and getmetatable(o) == CP end,
+		get_objects_inside_radius = function() return {mob_obj} end,
+		chat_send_player = function() end, chat_send_all = function() end,
+		colorize = function(_, t) return t end, add_particlespawner = function() end,
+		after = function() end, log = function() end,
+		global_exists = function(n) return rawget(_G, n) ~= nil end,
+		get_modpath = function() return repo .. "/mods/CORE/grug_core" end,
+		get_current_modname = function() return "grug_core" end,
+	}, {__index = function(_, key)
+		if type(key) == "string" and key:match("^register_") then return function() end end
+	end})
+	vector = {distance = function(a, b)
+		local dx, dy, dz = a.x - b.x, a.y - b.y, a.z - b.z
+		return math.sqrt(dx * dx + dy * dy + dz * dz)
+	end, new = function(x, y, z) return {x = x, y = y, z = z} end}
+	grug_mobs = nil
+	grug_core = {}
+	dofile(repo .. "/mods/CORE/grug_core/combat_ray.lua")
+	dofile(repo .. "/mods/CORE/grug_core/combat.lua")
+	grug_core.get_talent_bonus = grug_core.get_talent_bonus or function() return 0 end
+	local tank = cp("tank", 5, false)
+	local outsider = cp("outsider", 8, true)
+	local healer = cp("healer", 9, true)
+	local mob = {_grug_level = 70, temp = {},
+		_grug_target_veto = function(_, p) return p.outside == true end}
+	mob.object = {get_pos = function() return {x = 0, y = 0, z = 0} end,
+		get_luaentity = function() return mob end}
+	mob_obj = mob.object
+	function mob:do_attack(p) self.attack = p; self.forced = (self.forced or 0) + 1 end
+	mob.attack = tank
+	grug_core.add_threat(mob, tank, 10)
+	grug_core.add_threat(mob, outsider, 100000)
+	check((mob.temp.grug_threat or {}).outsider == nil, "D no threat from a vetoed player")
+	check(mob.attack == tank and not mob.forced, "D no forced switch to a vetoed player")
+	check(grug_core.taunt(mob, outsider) == false, "D a vetoed player cannot taunt")
+	grug_core.add_heal_threat(healer, tank, 100000)
+	check(mob.temp.grug_threat.healer == nil, "D no heal threat from a vetoed healer")
+	-- a stale entry (the player left the arena after it was written) never wins
+	mob.temp.grug_threat.outsider = 1e9
+	grug_core.add_threat(mob, tank, 1)
+	check(mob.attack == tank and not mob.forced, "D a stale outside entry is never picked")
+	tank.outside = true
+	check(grug_core.taunt(mob, tank) == false, "D the tank stepping out cannot taunt")
+end
+
+-- ---------------------------------------------------------------------------
+-- E. aggro.lua leash_reset (cut out): the evade run is skipped only for the
+--    dragons, not for other no-leash actors.
+-- ---------------------------------------------------------------------------
+do
+	local f = assert(io.open(repo .. "/mods/ENTITIES/grug_mobs/aggro.lua", "rb"))
+	local src = f:read("*a")
+	f:close()
+	local block = src:match("\n(function grug_mobs.leash_reset%(self%).-\nend\n)")
+	check(block ~= nil, "E leash_reset block found")
+	local env = {
+		grug_mobs = {LEASH_RANGE = 40, damage_pursuit = function() return false end},
+		grug_core = {clear_threat = function() end, mono_time = function() return 1 end},
+	}
+	local chunk = assert(loadstring(block))
+	setfenv(chunk, setmetatable(env, {__index = _G}))
+	chunk()
+	local function far(fields)
+		local m = {hp_max = 10, health = 1, _grug_home = {x = 0, y = 0, z = 0},
+			object = {get_pos = function() return {x = 100, y = 0, z = 0} end}}
+		for k, v in pairs(fields) do m[k] = v end
+		return m
+	end
+	local guard = far({})
+	env.grug_mobs.leash_reset(guard)
+	check(guard.temp and guard.temp.grug_evading, "E an ordinary mob far from home evades")
+	local royal = far({_grug_no_leash = true})
+	env.grug_mobs.leash_reset(royal)
+	check(royal.temp and royal.temp.grug_evading, "E another no-leash actor still evades")
+	local dragon_reset = far({_grug_no_leash = true, _grug_boss_id = "dragon:wyrmglass"})
+	env.grug_mobs.leash_reset(dragon_reset)
+	check(not (dragon_reset.temp and dragon_reset.temp.grug_evading),
+		"E a dragon flies home instead of evading")
+	check(dragon_reset.health == 10, "E the dragon is healed")
+end
 
 print(("R31 DA2 PORTABLE PASS checks=%d"):format(checks))
