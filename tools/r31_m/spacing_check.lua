@@ -24,7 +24,7 @@
 --   7. no road or trail surface comes within ROAD_GAP (6) nodes of what a
 --      PvP POI builds (its blueprint box, `r7_settlement.BOUNDS`);
 --   8. each fortress stands on the Battlegrounds half of its zone, beside
---      the middle road (Highcourt - Gor Drazhak: within NEAR (120) nodes of
+--      the middle road (Highcourt - Gor Drazhak: within NEAR (200) nodes of
 --      its walls) without bending it: no routing cell the middle road runs
 --      through lies within the router's round reserve (core / 2 + 10); and a
 --      trail leaves the fortress through its gate (its first point straight
@@ -42,7 +42,7 @@ local repo = arg[1] or "."
 local seeds = {}
 for i = 2, #arg do seeds[#seeds + 1] = arg[i] end
 if #seeds == 0 then seeds = {"42", "7", "2026", "1234", "99999", "314159"} end
-local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, NEAR, RELIEF = 120, 16, 128, 6, 120, 40
+local SPACING, ANCHOR_GAP, BOAT_GAP, ROAD_GAP, NEAR, RELIEF = 120, 16, 128, 6, 200, 40
 local checks = 0
 local function check(ok, label)
 	checks = checks + 1

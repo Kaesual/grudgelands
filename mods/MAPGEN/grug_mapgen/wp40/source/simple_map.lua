@@ -347,9 +347,11 @@ local anchor_rows = {
 	-- their own faction's side of the Battlegrounds, the lower camp toward the
 	-- own frontier and the higher toward the middle, where the zone's level
 	-- field gives their bands. Every core's natural relief stays at most 40
-	-- nodes on the six quest-lane seeds (`tools/r31_m/candidates.lua` and
+	-- nodes and every fortress core is dry on the six quest-lane seeds; a
+	-- fortress stands as near the Battlegrounds as that allows, the road
+	-- distance only a soft wish (`tools/r31_m/candidates.lua` and
 	-- `pick.lua` chose them; `tools/r31_m/spacing_check.lua` checks them).
-	{10,"pvp_fortress","pvp_fortress","layout_fixed",1,104,-496},
+	{10,"pvp_fortress","pvp_fortress","layout_fixed",1,136,-488},
 	{26,"pvp_fortress","pvp_fortress","layout_fixed",1,-80,632},
 	{34,"pvp_accord_low","pvp_camp_low","layout_fixed",1,-2144,-264},
 	{34,"pvp_accord_high","pvp_camp_high","layout_fixed",1,-1896,-80},

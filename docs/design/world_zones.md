@@ -1991,14 +1991,22 @@ players as hostile until the `grug_pvp` seam exists.
 17–22).** Anchors 101–118 (`source/simple_map.lua`, the rows of
 `r31_pvp_catalog.lua`), fixed on every seed like every anchor:
 
-- **Fortresses:** Ashenward Bastion (Accord) at (104, −496) in Ashenward
+- **Fortresses:** Ashenward Bastion (Accord) at (136, −488) in Ashenward
   March and Bannerbreak Warhold (Throng) at (−80, 632) in Bannerbreak Mesa,
   on the Battlegrounds half of their zone beside the middle road (§9.2).
+  Placement priorities (user, after the second preview): no lake, river or
+  sea under the core and its apron on any of the six seeds; low relief
+  (preferably at most about 25, at most 40); as close to the Battlegrounds
+  as the zone allows; the distance to the road is a soft wish (up to about
+  200 nodes; the gate trail connects it). No dry spot on Ashenward's
+  Battlegrounds half within 200 nodes of the road stays under 25, so
+  Ashenward Bastion takes the flattest dry one nearest the Battlegrounds
+  (relief at most 33 on the six seeds).
   **The road has priority** (user ruling after the first preview): no
   routing cell the middle road uses lies within the router's reserve round
   a fortress (core / 2 + 10), so the road keeps the course it has without
   the fortress (checked against that course on the six seeds); its surface
-  passes 19–107 nodes from the walls (Bannerbreak 20–45, Ashenward 19–107).
+  passes 20–134 nodes from the walls (Bannerbreak 20–45, Ashenward 51–134).
   The one gate faces the road's axis and a trail (§9.3) joins it to the
   road. Each fortress has a waystone (`world.md` §6).
 - **Camps:** per Battlegrounds zone and faction one lower and one higher
