@@ -121,3 +121,62 @@ push; the user pushes.
 F1/F2/F3: fixtures (`tools/run_fixtures.sh`), one engine boot each, an
 independent review. Studies: the coordinator reads and summarizes them for
 the user. End: sync and the user's GUI check of the fixes.
+
+## 6. Orchestration notes (for the coordinator)
+
+- **Start state:** main `2b87c15f` or later (local; Rounds 30 and 31 not
+  pushed, both GUI tests running). Worktrees `.claude/worktrees/r32-<lane>`
+  on branch `r32-<lane>`, `tools/bin/` copied into each.
+- **Briefs** in `~/projects/grudgelands-orchestration/r32/`: start from
+  `r31/common-brief.md` and `r31/review-common.md` (update round, base
+  commit, plan path; keep every rule, including "no commercial-game
+  references"); copy `r31/engine_run.sh` with its lock path changed. Log in
+  `~/projects/grudgelands-orchestration/r28/HANDOVER.md` under "ROUND 32".
+  Read-only lanes (R1–R3) get a read-only brief: no commits to game code,
+  reports and pages in the orchestration folder, the coordinator publishes
+  pages as private artifacts.
+- **Code facts gathered before the round** (verify, they are hints):
+  - Minimap zoom: one constant `V.WINDOW_NODES = 880` in
+    `grug_map/minimap_view.lua` (~24); cell size `GRID`, `COVER`, `REDUCE`,
+    `BEZEL_HOLE` nearby. Base map tiles (512 px PNG, `base.lua`) and their
+    cache key do not depend on the zoom.
+  - Hostile camp "!": `grug_map/page.lua` ~102 (`bandit_camp` → kind
+    `hostile`) and ~250–255 (symbols and colours; "!" is also the quest
+    giver's "available" symbol).
+  - Zone banner and subtitle: `grug_map/location.lua`, `location_view.lua`,
+    `grug_core/hud_layout.lua` (Round 31 lane P2); the zone line under the
+    minimap in `grug_map/minimap.lua`/`minimap_view.lua`; territory status
+    from `grug_pvp.state`/`pvp_rule_at`/`faction_at` (`CONTESTED_DEPTH_Y`
+    in `grug_mapgen/wp40/zones.lua`).
+  - LMB hold: `grug_abilities/input.lua` — `decide_mode` (~204–220), mode
+    set once at ~434–438, `end_mode`/`reset`/`cancel`, `combat_hit`
+    (~222–227) re-casts the crosshair ray each 0.05 s step, `M.can_dig`
+    refuses digging in combat mode; rule text `docs/design/classes.md`
+    ~187–205 (Round 28 ruling 14, "Mode lock") — F2 rewrites it.
+  - Quest labels: `grug_quests/labels.lua` `mob_label`/`objective_subject`
+    (~11–39) use the entity's generic `description`; the zone name lives in
+    `grug_mobs/subtypes.lua` `display_by_zone` (`apply_zone_variant`
+    ~181–204); `Q.placeholder_target` (~186) already does the zone lookup
+    for leaders. 30 quests and 4 item objectives in 13 zones are affected;
+    `tools/r28_design/validate.py` `kill_objective` (~1112) is where a rule
+    fits.
+  - Performance baseline: `docs/research/perf-review-2026-10.md`; probes and
+    evidence in `~/projects/grudgelands-orchestration/r29/perf-evidence/`
+    (helpers A mobs/pathing, B combat/UI with fake players, C scheduled code
+    and memory, D regions and boot) and `r30/p1-evidence/`; Round 31 lane
+    probes under `tools/r31_*`.
+  - Items and professions (for R3): the data/loot integration is done (Round
+    28/29 recipe updates; no recipe needs an unobtainable item); 67 of 94
+    signature drops have no recipe use (34 used nowhere but traders);
+    Emberglass Shard, Cut Citrine and Feather have no consumer; band-3
+    outliers and band 6 at 0.80; none of the WP5/WP10 features (cultural and
+    PvP finishes, masterwork ilvl 70, helper services, affix scaling by item
+    level) exists in code; BACKLOG "Enchantment and item-level revision".
+  - Underground mob level: `mob_level_at` = max(surface level, depth level),
+    depth level continuous (≈ 3 levels per 50 nodes: −100 ≈ 6, −500 ≈ 30,
+    ≤ −992 = 60) — why the banner shows no level range.
+- **Merge order:** F1 and F2 independent; F3 after them; D last. Every code
+  lane gets an independent Opus review; findings are hypotheses until
+  verified.
+- **End:** `tools/run_fixtures.sh` on main, sync with
+  `tools/sync_to_luanti.sh`, the user's GUI check; the user pushes.
