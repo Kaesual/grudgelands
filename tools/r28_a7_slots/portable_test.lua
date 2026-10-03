@@ -626,8 +626,8 @@ do
 	eq(m.inv:get_stack(W, 1):get_name(), "grug_gear:staff_bronze", "mage starter staff")
 end
 
--- The raw-weapon hint (a weapon swung from the hotbar): two message-feed
--- lines on a fresh press, none in chat, at most once per 3 s (Round 32 F3).
+-- The raw-weapon hint (a weapon swung from the hotbar): one message-feed
+-- line on a fresh press, none in chat, at most once per 3 s (Round 32 F3).
 do
 	local p = new_player("raw", "warrior", 30)
 	join(p)
@@ -643,19 +643,19 @@ do
 	feed_lines = {}
 	mono = 100
 	step(true)
-	eq(#feed_lines, 2, "raw weapon press: two feed lines")
+	eq(#feed_lines, 1, "raw weapon press: one feed line")
 	check(feed_lines[1] and feed_lines[1].text:find("hand slots", 1, true) and
-		feed_lines[1].kind == "notice" and feed_lines[2].key ~= feed_lines[1].key,
-		"raw weapon hint: notice lines with their own keys")
+		feed_lines[1].kind == "notice" and feed_lines[1].key == "weapon_hint" and
+		#feed_lines[1].text <= 66, "raw weapon hint: one short keyed notice line")
 	step(true)
 	step(false)
 	mono = 101
 	step(true)
-	eq(#feed_lines, 2, "raw weapon hint: no repeat within 3 s")
+	eq(#feed_lines, 1, "raw weapon hint: no repeat within 3 s")
 	step(false)
 	mono = 104
 	step(true)
-	eq(#feed_lines, 4, "raw weapon hint: a fresh press after 3 s repeats it")
+	eq(#feed_lines, 2, "raw weapon hint: a fresh press after 3 s repeats it")
 	eq(#chat, chat_before, "raw weapon hint: nothing in chat")
 	connected = {}
 end

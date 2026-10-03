@@ -1083,12 +1083,10 @@ core.register_globalstep(function(dtime)
 		if pressed and not row.pressed and not wielded:is_empty() and
 				core.get_item_group(wielded:get_name(), "grug_equip_weapon") > 0 and
 				now - row.warned >= RAW_WEAPON_HINT_INTERVAL then
-			-- Two message-feed lines (never chat), each short enough to read.
+			-- One short message-feed line, never chat.
 			grug_core.feed(player, "notice",
-				"Weapons work from the hand slots on the Character page.", "weapon_hint:1")
-			grug_core.feed(player, "notice",
-				"Equip this weapon there, then use a combat skill from your hotbar.",
-				"weapon_hint:2")
+				"Weapons go in the hand slots (Character page); fight with skills.",
+				"weapon_hint")
 			row.warned = now
 		end
 		row.pressed = pressed
