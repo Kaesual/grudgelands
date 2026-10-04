@@ -741,7 +741,7 @@ core.register_chatcommand("char", {
 		local class = grug_classes.get_class_def(player)
 		local a = grug_classes.get_attributes(player)
 		return true, ("%s %s %s, level %d | Str %d Int %d Dex %d | " ..
-			"HP %d/%d, mana %d | melee +%d, spell +%d, crit %.1f%%, dodge %.1f%%"):format(
+			"HP %d/%d, mana %d | melee +%.1f, spell +%.1f, crit %.1f%%, dodge %.1f%%"):format(
 			faction and faction.name or "factionless",
 			race and race.name or "raceless",
 			class and class.name or "classless",

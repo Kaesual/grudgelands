@@ -215,7 +215,7 @@ end
 -- Verified against the §3.8 row: ilvl 3/10/20/30/40/50 -> 5/8/11/15/18/22.
 --
 -- How damage reaches a mob (WP38): a swing ability builds one authoritative
--- full hit from this fleshy value + floor(Str/10) at this interval, then armor
+-- full hit from this fleshy value + Str/10 at this interval, then armor
 -- and one crit roll. Ordinary wielded tools/fists keep mobs_redo's proportional
 -- `clamp(tflp/fpi, 0, 1)` path. `full_punch_interval` is therefore both the
 -- ability clock and the ordinary path's damage-scaler denominator;

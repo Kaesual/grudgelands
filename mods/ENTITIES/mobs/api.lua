@@ -3301,7 +3301,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 			-- GRUG PATCH (player melee, WP38): the melee path adds the
 			-- attacker's Strength bonus (combat_stats.md §2: melee damage =
-			-- weapon damage + floor(Str/10)), added to the melee damage
+			-- weapon damage + Str/10), added to the melee damage
 			-- group BEFORE the armor scaling so a tough mob's armor reduces
 			-- the whole hit, exactly like it does for the ability damage
 			-- that arrives through the same loop. `tmp` above keeps vanilla
@@ -3357,7 +3357,7 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 		end
 	end
 
-	-- GRUG PATCH (player melee): melee crit — ×1.5 plus the same particle
+	-- GRUG PATCH (player melee): melee crit — ×2 plus the same particle
 	-- burst ability crits use (combat_stats.md §2). Damage is rolled here after
 	-- the armor scaling (a factor
 	-- commutes) and, crucially, AFTER the `immune_to` loop above: that loop

@@ -1561,7 +1561,7 @@ where their answers now live:
 | Warrior rage calibration | ruling 25 — option (b), lower income and add decay | §2.2's note, §7 task 8 |
 | the movement aggregator's arithmetic | ruling 26 — additive per axis, one clamp | §3.9 |
 | the Scout's tree names | ruling 27 — Quarry / Veil | §1.1, §2.7, §2.8 |
-| what feeds a bow's damage | ruling 28 — `weapon damage + floor(Dex/10)` | [scout.md](scout.md) §1, §7 task 9 |
+| what feeds a bow's damage | ruling 28 — `weapon damage + Dex/10` (fractions count since Round 33) | [scout.md](scout.md) §1, §7 task 9 |
 | Sprint's percentage and cooldown | user amendment 2026-09-20 — +50 % / 10 s / 300 s | [scout.md](scout.md) §2, §7 task 1 |
 
 ---

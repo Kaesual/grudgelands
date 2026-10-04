@@ -366,7 +366,7 @@ function grug_core.notify_equipment_change(player, listname, reason)
 end
 
 -- Flat weapon-damage bonus from Strength (combat_stats.md §2:
--- melee damage = weapon damage + floor(Str/10)). Consumed by the
+-- melee damage = weapon damage + Str/10, the fraction included). Consumed by the
 -- native melee patch in mobs/api.lua on_punch.
 function grug_core.get_melee_bonus(player)
 	return 0
@@ -982,7 +982,7 @@ function grug_core.run_player_hit_mob(player, mob_ent, damage, applied, fraction
 end
 
 --
--- Dealing ability damage. Rolls the attacker's crit (×1.5) and — against
+-- Dealing ability damage. Rolls the attacker's crit (×2) and — against
 -- players — the target's dodge, then applies the result via object:punch
 -- with a full punch interval (factor 1), so armor groups, knockback and
 -- mob death handling (XP/loot via on_death) keep working.
@@ -991,6 +991,9 @@ end
 -- effects use opts.on_accepted(amount, critical, action_id), called exactly
 -- once after the matching mob acceptance or actual player HP loss.
 --
+
+-- A crit doubles damage and heals (item_tiers.md §1.0).
+local CRIT_MULTIPLIER = 2
 
 local function crit_particles(pos)
 	core.add_particlespawner({
@@ -1019,22 +1022,22 @@ end
 -- weapon interval instead of gating on it.
 --
 
--- Crit roll for a player melee punch (combat_stats.md §2): same ×1.5 and
+-- Crit roll for a player melee punch (combat_stats.md §2): same ×2 and
 -- the same particle burst as ability crits above — player melee was the one
 -- damage source that could never crit. Resolution is deliberately pure so a
 -- mobs_redo caller can defer the visual until do_punch and CMI accept.
 --
 -- Deliberately NOT floored here: on the proportional path (WP38) the
 -- remainder accumulator floors at application time, so flooring the crit
--- would double-round — a ×1.5 on a 0.4-damage swing is 0.6, and both the
+-- would double-round — a ×2 on a 0.3-damage swing is 0.6, and both the
 -- pre-crit and the post-crit fraction have to ride the SAME accumulator.
--- Only the plain ×1.5 is rolled; the `damage <= 0` guard below keeps an
+-- Only the plain ×2 is rolled; the `damage <= 0` guard below keeps an
 -- immunity-zeroed hit from rolling at all.
 function grug_core.roll_melee_crit(player, damage)
 	if damage <= 0 or math.random() >= grug_core.get_crit_chance(player) then
 		return damage, 1, false
 	end
-	return damage * 1.5, 1.5, true
+	return damage * CRIT_MULTIPLIER, CRIT_MULTIPLIER, true
 end
 
 function grug_core.emit_melee_crit(pos)
@@ -1450,7 +1453,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	end
 	local critical = math.random() < grug_core.get_crit_chance(attacker)
 	if critical then
-		amount = math.floor(amount * 1.5)
+		amount = math.floor(amount * CRIT_MULTIPLIER)
 		crit_particles(target:get_pos())
 	end
 	-- PvP and untracked targets arm the attacker's timer up front, as before.
@@ -1524,7 +1527,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 end
 
 --
--- Healing a player. Rolls the healer's crit (×1.5), clamps to max HP and
+-- Healing a player. Rolls the healer's crit (×2), clamps to max HP and
 -- reports heal threat. Returns the effective healing done.
 --
 -- opts.no_crit skips only the crit roll. Ability and consumable amounts arrive
@@ -1552,7 +1555,7 @@ function grug_core.heal_player(healer, target, amount, opts)
 		amount = math.floor(grug_core.trinket_outgoing_heal(healer, amount))
 	end
 	if not opts.no_crit and math.random() < grug_core.get_crit_chance(healer) then
-		amount = math.floor(amount * 1.5)
+		amount = math.floor(amount * CRIT_MULTIPLIER)
 		crit_particles(target:get_pos())
 	end
 	local max_hp = target:get_properties().hp_max

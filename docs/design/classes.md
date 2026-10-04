@@ -493,7 +493,7 @@ it, including one that has not picked a class yet.
 
 | Ability | Cost | Charge | Effect |
 |---------|------|--------|--------|
-| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + floor(melee attribute/10) (Scout Dex, otherwise Str), crit ×1.5, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
+| Strike | free | none — it is the plain attack | Native melee (3 m) with the item in the melee slot (the Scout's Melee offhand, otherwise the Weapon slot): weapon damage + melee attribute/10 (Scout Dex, otherwise Str; fractions count), crit ×2, threat ×1. Grants the Warrior 8 rage per landed swing (§1, §3). Hold or click LMB. |
 
 - **Granted to every class and to a classless character**, and placed
   **first in the hotbar** so it lands on key 1 for everyone — a fresh

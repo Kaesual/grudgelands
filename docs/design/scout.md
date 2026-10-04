@@ -52,7 +52,8 @@ the dodge windows of §2.
 The same growth gives Int `10 + 59 = 69`, while the class-neutral mana rule
 gives the Scout the same **2696** base mana as every level-60 caster before
 mana-percent gear/talents. Intelligence contributes spell power only. What
-scales an **arrow** is ruling 28: `weapon damage + floor(Dex/10)`, through a
+scales an **arrow** is ruling 28: `weapon damage + Dex/10` (fractions count
+since Round 33), through a
 new `grug_classes.get_ranged_bonus` (`skill_trees.md` §7, task 9).
 
 Ruling 12 rules out poison and traps outright, and ruling 7 already did for

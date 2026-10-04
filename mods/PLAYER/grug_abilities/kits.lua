@@ -599,8 +599,7 @@ grug_abilities.register_ability({
 				damage = fireball_values(user).damage,
 				splash = grug_classes.get_talent_bonus(user, "fireball_splash"),
 				splash_damage = spell_damage_value(user, grug_classes.get_talent_bonus(user,
-					"fireball_splash") + math.floor(
-					grug_classes.get_spell_power_bonus(user) / 2)),
+					"fireball_splash") + grug_classes.get_spell_power_bonus(user) / 2),
 				action_id = repair_receipt or action_id,
 			},
 		})
@@ -626,7 +625,7 @@ local function nova_values(user)
 	local power = grug_classes.get_spell_power_bonus(user)
 	return {damage = spell_damage_value(user,
 		(grug_core.baseline_weapon_damage(grug_core.get_player_level(user)) + power) / 4
-		+ control + (control > 0 and math.floor(power / 2) or 0))}
+		+ control + (control > 0 and power / 2 or 0))}
 end
 
 grug_abilities.register_ability({
