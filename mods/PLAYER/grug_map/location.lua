@@ -289,15 +289,23 @@ local function territory(player, pos)
 	return pvp and pvp.territory_at(pos, grug_factions.get_faction(player)) or nil
 end
 
+-- Whether the player stood inside a start town or capital city at the last
+-- sample (grug_ambience, Round 34: the Town music pool and a quieter bed).
+function M.in_town(name)
+	local rec = players[name]
+	return rec ~= nil and rec.town == true
+end
+
 -- Returns the location text (nil for none) and the territory status.
 local function sample(player, rec)
 	local started = core.get_us_time()
 	local pos = player:get_pos()
-	local text = M.text_at(pos)
+	local text, town = "", false
+	if resolve then text, town = resolve(pos.x, pos.z) end
 	local status = territory(player, pos)
 	M.stats.samples = M.stats.samples + 1
 	M.stats.us = M.stats.us + (core.get_us_time() - started)
-	rec.text, rec.status = text, status
+	rec.text, rec.status, rec.town = text, status, town == true
 	return text ~= "" and text or nil, status
 end
 

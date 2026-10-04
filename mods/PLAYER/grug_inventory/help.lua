@@ -1,6 +1,8 @@
--- Help page: a short player guide in five sub-pages, selected by buttons at
+-- Help page: a short player guide in six sub-pages, selected by buttons at
 -- the top of the page. Every sub-page is static text, so each one is built
--- once at load time; opening the page only concatenates the button row.
+-- once at load time; opening the page only concatenates the button row. The
+-- Sound sub-page adds the music and ambience controls of grug_ambience
+-- (Round 34) above its text, built per player.
 --
 -- Legacy coordinates (see ui.lua): the button row sits at y = 0 and the
 -- text area ends above the shared inventory boundary at y = 7.0. The body is
@@ -134,11 +136,19 @@ local SECTIONS = {
 		"• Mana regeneration is 1 + 0.15 x level per second out of combat. The Troll multiplier applies only out of combat. In combat you regenerate the larger of one quarter of that rate and 0.25% of your maximum mana per second; Cold Focus multiplies that combat rate.",
 		"• Food regeneration pauses while you are in combat; its other bonuses stay active.",
 	})},
-	{id = "about", label = "About & Feedback", x = 7.8, w = 2.6, text = body({
+	{id = "about", label = "About", x = 7.8, w = 1.4, text = body({
 		heading("About Grudgelands"),
 		"Grudgelands is open source and in active development. Use Discord for questions and feedback, GitHub issues for concrete bugs.",
 		"",
 		"Copy a link (desktop): click into it, press Ctrl+A, then Ctrl+C. Open asks before starting your browser.",
+	})},
+	{id = "sound", label = "Sound", x = 9.2, w = 1.2, text = body({
+		heading("Music and ambience"),
+		"• Music: calm pieces now and then, chosen by where you are: the lands, the front and the sea, the underground, or the towns. After each piece a few minutes of quiet.",
+		"• Each piece is downloaded once while music is on, a little before it plays. With music off nothing is downloaded.",
+		"• Ambience: the sound of the land around you by day and night (so far in the human lands), running water, and the forges and hearths of the settlements.",
+		"• In chat: /music on, /music off or /music 50 (volume in percent); /ambience works the same.",
+		"• Your client's own volume setting still applies on top of these.",
 	})},
 }
 
@@ -165,6 +175,8 @@ local BUTTON_Y, BUTTON_H = 0.0, 0.7
 local BODY_X, BODY_Y, BODY_W = 0.2, 0.85, 10.2
 local BODY_H = 6.8          -- full-height sub-pages
 local ABOUT_BODY_H = 2.4    -- About: text above the link rows (ends 3.15 S)
+local SOUND_BODY_Y = 2.75   -- Sound: text below the two control rows
+local SOUND_BODY_H = 4.6
 local LINK_Y, LINK_STEP = 2.95, 0.95
 local LINK_FIELD_W, LINK_BUTTON_X, LINK_BUTTON_W, LINK_H = 7.7, 8.1, 2.1, 0.65
 
@@ -172,9 +184,11 @@ local SECTION_BY_ID = {}
 local BODIES = {}
 for _, section in ipairs(SECTIONS) do
 	SECTION_BY_ID[section.id] = section
-	local height = section.id == "about" and ABOUT_BODY_H or BODY_H
+	local y, height = BODY_Y, BODY_H
+	if section.id == "about" then height = ABOUT_BODY_H end
+	if section.id == "sound" then y, height = SOUND_BODY_Y, SOUND_BODY_H end
 	local fs = {("hypertext[%.2f,%.2f;%.2f,%.2f;;%s]"):format(
-		BODY_X, BODY_Y, BODY_W, height, esc(section.text))}
+		BODY_X, y, BODY_W, height, esc(section.text))}
 	if section.id == "about" then
 		for index, link in ipairs(LINKS) do
 			local y = LINK_Y + (index - 1) * LINK_STEP
@@ -190,7 +204,14 @@ for _, section in ipairs(SECTIONS) do
 	BODIES[section.id] = table.concat(fs)
 end
 
-local function help_content(context)
+-- The Sound sub-page's controls: grug_ambience builds them per player.
+local function sound_controls(player)
+	local ambience = rawget(_G, "grug_ambience")
+	if not ambience then return "" end
+	return ambience.settings_formspec(player, BODY_X, BODY_Y + 0.15)
+end
+
+local function help_content(player, context)
 	local selected = SECTION_BY_ID[context.grug_help_section] and
 		context.grug_help_section or DEFAULT_SECTION
 	local fs = {}
@@ -201,6 +222,7 @@ local function help_content(context)
 		fs[#fs + 1] = ("button[%.2f,%.2f;%.2f,%.2f;%s;%s]"):format(
 			section.x, BUTTON_Y, section.w, BUTTON_H, field, esc(section.label))
 	end
+	if selected == "sound" then fs[#fs + 1] = sound_controls(player) end
 	fs[#fs + 1] = BODIES[selected]
 	return table.concat(fs)
 end
@@ -208,7 +230,7 @@ end
 sfinv.register_page(PAGE, {
 	title = "Help",
 	get = function(self, player, context)
-		return sfinv.make_formspec(player, context, help_content(context), true)
+		return sfinv.make_formspec(player, context, help_content(player, context), true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		for _, section in ipairs(SECTIONS) do
@@ -217,6 +239,12 @@ sfinv.register_page(PAGE, {
 				sfinv.set_page(player, PAGE)
 				return true
 			end
+		end
+		local ambience = rawget(_G, "grug_ambience")
+		if context.grug_help_section == "sound" and ambience and
+				ambience.handle_settings_fields(player, fields) then
+			sfinv.set_page(player, PAGE)
+			return true
 		end
 	end,
 })

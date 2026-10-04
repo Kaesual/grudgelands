@@ -29,7 +29,8 @@ L.OPEN_SEA = "Open sea"
 --   footprint_at(x, z) -> id of the hard footprint holding the column, or
 --                      nil (grug_zones.hard_footprint_in on the one column)
 -- Returns function(x, z) -> the text: the town's name inside a start town or
--- a capital city, else the zone's display name, else OPEN_SEA.
+-- a capital city, else the zone's display name, else OPEN_SEA; and true as a
+-- second value inside a town (grug_ambience's Town music pool, Round 34).
 function L.resolver(opts)
 	local zone_at, names, towns = opts.zone_at, opts.names, opts.towns
 	local reach, footprint_at = opts.reach, opts.footprint_at
@@ -42,7 +43,7 @@ function L.resolver(opts)
 				-- Inside one town's box: one exact query decides. Towns are far
 				-- apart, so no other box can hold the point too.
 				local name = by_footprint[footprint_at(x, z) or false]
-				if name then return name end
+				if name then return name, true end
 				break
 			end
 		end
