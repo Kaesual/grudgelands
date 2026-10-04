@@ -13,8 +13,10 @@ local function grid(inputs)
 	return result
 end
 
--- Quartz and the six depth-tiered gems (economy plan §6): each cuts at the
--- tier it is mined at, and its raw and cut forms are ingredients of that tier.
+-- The six depth-tiered gems (economy plan §6): each cuts at the tier it is
+-- mined at, and its raw and cut forms are ingredients of that tier. Raw
+-- Quartz is a T1 enchant input, a mineral without a cut form (Round 33).
+A.register_ingredient(M .. "quartz", 1)
 local gem_by_tier = {}
 for _, resource in ipairs(grug_materials.RESOURCES) do
 	if resource.cut_item then
@@ -90,10 +92,9 @@ local trinkets = {
 -- collision key for the input-authoritative station registry. Replace them
 -- with station output selection or one authored per-identity ingredient.
 
--- T1 takes Cut Quartz, the common T1 jewelry mineral; from T2 the cut gem of
--- the recipe tier, plus the T4 gem at T5 and the T5 and T4 gems at T6.
+-- The cut gem of the recipe tier (Citrine at T1 ... Diamond at T6, as in the
+-- mines), plus the T4 gem at T5 and the T5 and T4 gems at T6.
 local function trinket_gems(tier)
-	if tier == 1 then return {M .. "cut_quartz"} end
 	local gems = {gem_by_tier[tier]}
 	for lower = tier - 1, 4, -1 do gems[#gems + 1] = gem_by_tier[lower] end
 	return gems
@@ -101,12 +102,6 @@ end
 
 for tier = 1, 6 do
 	local setting = settings[tier].item
-	local book = "grug_gear:spellbook_" ..
-		({"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"})[tier]
-	A.register_recipe("goldsmith", {tier = tier,
-		station = "jewellers_bench", inputs = {{setting, "grug_professions:parchment"}},
-		output = book,
-		mastery_required = 2, hint = "Bind at a Jeweller's Bench"})
 	for identity_index = 1, #trinkets do
 		local row = trinkets[identity_index]
 		local inputs = {}
@@ -118,24 +113,6 @@ for tier = 1, 6 do
 			output = grug_gear.trinket_item(row.key, tier),
 			hint = "Assemble at a Jeweller's Bench"})
 	end
-end
-
-local ornament_reagents = {
-	[3] = "grug_mobs:slime_gel", [4] = "grug_mobs:croc_tooth",
-	[5] = "grug_gathering:stormkelp", [6] = "grug_mobs:stone_core",
-}
-for tier = 3, 6 do
-	local setting = settings[tier].item
-	local reagent = ornament_reagents[tier]
-	A.register_ingredient(reagent, tier)
-	local ornament = A.register_item(C .. "ornament_components_t" .. tier,
-		"Tier " .. tier .. " Ornament Components",
-		"default_gold_ingot.png^[colorize:#a77a42:105",
-		{grug_profession_material = 1, grug_ornament_components = tier})
-	A.register_recipe("goldsmith", {tier = tier,
-		station = "jewellers_bench",
-		inputs = {{setting, M .. "gold_bar", reagent}}, output = ornament,
-		progress = false, hint = "Form at a Jeweller's Bench"})
 end
 
 function grug_artisans.settle_goldsmith_bonus(event, roll)

@@ -127,7 +127,8 @@ local function preview(ctx, player)
 	local recipe = selected(ctx)
 	if recipe then
 		local plan = grug_items.operation_plan(recipe, list, player)
-		return plan and plan.output or ItemStack(""), plan and recipe or nil
+		return plan and plan.output or ItemStack(""), plan and recipe or nil,
+			plan and plan.warning
 	end
 	recipe = grug_jobs.recipe_for_craft(ctx.station, ItemStack(""), list)
 	if not qualified(player, recipe) then return ItemStack("") end
@@ -206,6 +207,12 @@ local function formspec(ctx)
 			result = result .. grug_items.enchant_legend_formspec(5, 4.65)
 		end
 		if ctx.operation then result = result .. "button[7.3,2.3;2,0.8;apply;Apply]" end
+		-- A weaker enchant over a stronger one ("Replaces T7 Strength with T6
+		-- Strength", grug_quality enchant_plan).
+		if ctx.operation and ctx.warning then
+			result = result .. "label[5,3.45;" ..
+				core.formspec_escape(core.colorize("#FF9A40", ctx.warning)) .. "]"
+		end
 	end
 	-- A station inside an active Claim Stone claim also repairs (grug_repair).
 	local repair = rawget(_G, "grug_repair")
@@ -223,8 +230,11 @@ refresh = function(ctx, show)
 		return
 	end
 	if not ctx.automatic and not ctx.produced then
-		local output, recipe = preview(ctx, player)
+		local output, recipe, warning = preview(ctx, player)
 		ctx.recipe = recipe
+		-- The warning is formspec text: a change redraws the open form.
+		if warning ~= ctx.warning then show = true end
+		ctx.warning = warning
 		set_output(ctx, output)
 	end
 	if show then core.show_formspec(ctx.name, FORM, formspec(ctx)) end
