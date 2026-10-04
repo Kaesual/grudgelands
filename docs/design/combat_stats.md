@@ -82,15 +82,15 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Weapon item level has exactly one damage axis:** the authored weapon curve
   `round(4 + 0.35 × ilvl)` (then the weapon-family factor). Combat applies no
   second ilvl multiplier. Character level still supplies the shared damage fit.
-- **Endgame headroom**: own-level quest/craft gear is the baseline. Level-60
-  dungeon, raid and final-boss rewards use ilvl **65 / 70 / 75**. At L60 the
-  1H weapon values are 25 / 27 / 29 / 30 damage for ilvl 60 / 65 / 70 / 75.
-  Eight equipped slots budget approximately +5% each in damage-equivalent
-  enchant value. A fully offensive +40% allocation yields effective hits
-  **515 / 526** with ilvl 70 / 75 against the baseline's **337**: +52.8% /
-  +56.1%, the intended +50–60% ceiling. Pool-focused allocation may instead
-  spend that budget on about +40% HP/mana. These are itemization ceilings, not
-  extra level-curve terms.
+- **Endgame headroom**: own-level quest/craft gear is the baseline. Boss
+  drops and crowned items reach item level **65 / 70** (Kings and the
+  General 65, dragons 70, a crowned T6 item 65; round33-plan.md §2.1, §2.5).
+  At L60 the 1H weapon values are 25 / 27 / 29 damage for ilvl 60 / 65 / 70.
+  Enchant values grow with item level ([item_tiers.md](item_tiers.md) §1.1):
+  a fully damage-enchanted level-60 Warrior gains about **+47 % / +57 % /
+  +69 %** at item level 60 / 65 / 70, the order of the intended +50–60 %
+  ceiling (the Scout's set reaches +55 % / +82 %, item_tiers §1.3). These
+  are itemization ceilings, not extra level-curve terms.
 - **Higher-mob-level damage malus**: against a mob more than five levels above
   the player, multiply player damage by `max(0.10, 1 − 0.10×(mob level −
   player level − 5))`. It is part of the same final damage multiplication and
@@ -144,13 +144,13 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   - **Rounding: the reduced damage rounds up**, so armor alone can never
     turn a landed hit into 0 — however much of it a tank stacks, the hit
     still costs at least 1 HP.
-- **The hand slots enforce a weapon's current generated `_grug_ilvl`
-  directly as its minimum character level** (the Weapon slot, and the
-  Scout's Melee offhand for its sword or dagger). The documented future ilvl
-  65/70/75 endgame items instead carry a level-60 requirement when created.
-  Items without a positive `_grug_ilvl`
-  remain unrestricted, and no shield, spellbook or armor slot has this level
-  gate (`grug_inventory/equipment.lua`, the allow callback);
+- **Every equipment slot enforces the item's level requirement**
+  min(item level, 60) (Round 33, round33-plan.md §2.2): weapons, the
+  Scout's Melee offhand, armour, shields, spellbooks and trinkets alike; T1
+  bases require level 1, boss drops at item level 65/70 level 60. The
+  definition carries `_grug_req_level`, a dropped, upgraded or crowned stack
+  its own `grug_req_level` (`grug_inventory/equipment.lua`, the allow
+  callback; `grug_quality`);
   weapon base damage ≈ 4 + 0.35×level (level-60 weapon ≈ 25; itemization
   details → items/crafting design).
 - **Consumables use the same `_grug_ilvl` decision helper.** Food, potions and

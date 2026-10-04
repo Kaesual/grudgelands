@@ -11,12 +11,13 @@ price bands as proposed, Ornament Components removed, Cut Citrine is the T1
 trinket gem (the Cut Quartz recipe goes). The user's rulings are
 [round33-plan.md](../planning/round33-plan.md) §2; this file turns them into
 the numbers lanes C4 (enchant tiers, upgrades, crown) and C5 (vendors,
-potions, economy) implement verbatim once the user approves the DS preview.
+potions, economy) implemented in Round 33; where the shipped game differs,
+an "As built" note says so.
 Every table between `generated` markers is printed by a script in
 [`tools/r33_ds/`](../../tools/r33_ds/) and refreshed by
 `python3 tools/r33_ds/build_doc.py` (`--check` fails when this file is stale).
 
-On implementation this file replaces the fixed crafted values and the found
+Since Round 33 this file replaces the fixed crafted values and the found
 roll windows of [items_crafting.md](items_crafting.md) §6.3, §6b.2 and
 [crafting_equipment_revision.md](crafting_equipment_revision.md#enchanting),
 the alchemy table of items_crafting.md §3.6, the 20 % repair factor of
@@ -580,7 +581,7 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
 | Goldsmith | trinket | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets |
 <!-- end generated -->
 
-### 3.4 Two Goldsmith leftovers (v2, proposed)
+### 3.4 Two Goldsmith leftovers (v2, approved: user choices 11A, 12A)
 
 - **Ornament Components T3–T6** are removed (item, recipe, ingredient-tier
   registrations): an intermediate without a consumer that sells for nothing
@@ -603,8 +604,10 @@ Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
   level (boss drops at 65/70, an already crowned item).
 - **Fee: one hour of band-6 net solo income**, rounded by
   [economy.md](economy.md) §4.1, from the same income estimate as the mount
-  prices (`tools/r29_e4/income.py`): **1g 45s** on today's estimate. The
-  Fallen Crown stays unsellable.
+  prices (`tools/r29_e4/income.py`): 1g 45s on the estimate before Round 33.
+  **As built: 1g 47s** (`grug_traders.CROWN_FEE`), the same rule on the
+  estimate with the Round 33 terms (column "after" below; accepted by the
+  coordinator). The Fallen Crown stays unsellable.
 - Re-enchanting a crowned item uses T1–T6 recipes only; the station preview
   names a weaker replacement, e.g. "replaces T7 Strength with T6 Strength".
 
@@ -700,6 +703,10 @@ Potion check: amount against half the base pool at the tier's top level.
 | 6 | 1350 | 1348 | 42 % / 50 % / 56 % |
 <!-- end generated -->
 
+**As built** (Round 33 C5, accepted by the coordinator): Elixir of Precision
+II takes **Dragonweed + Ridged Boar Tusk**, because Dragonweed + Fang is the
+Swiftness Draught's recipe ([items_crafting.md](items_crafting.md) §3.6).
+
 ## 6. Money
 
 ### 6.1 Sale values of dropped gear
@@ -753,7 +760,8 @@ about 6–9 minutes of the band's income:
 ### 6.4 The culture vendor
 
 One culture vendor in every capital sells cosmetic, non-craftable blocks and
-lights (plan §2.6); lane C5 picks the concrete items by licence. Fixed prices,
+lights (plan §2.6); the items as built are listed in
+[economy.md](economy.md) §4 (the Decor Merchant). Fixed prices,
 the same at every level, ordinary vendor rules (5 % buy-back):
 
 | Band | Kinds | Price each | Band-6 income time |
@@ -804,11 +812,11 @@ All from the shipped code (Round 33 survey, verified by hand):
   second; the fight's mana is the pool plus 60 s of in-combat regeneration
   `max(0.25 (1 + 0.15 L), 0.0025 × max mana)` (`kits.lua:545-620`,
   `init.lua:131-145`).
-- **Priest:** Heal `25 % P(L) × (1 + Int/1000)`, 8 % P(L), heals crit ×1.5;
+- **Priest:** Heal `25 % P(L) × (1 + Int/1000)`, 8 % P(L), heals crit ×2 (v2);
   Smite `1.5 (Bw + Int/10)`, 5 %, every 2 s (`kits.lua:737-850`,
   `grug_core/combat.lua:1554`).
 - **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
-  and heal (v2; today 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
+  and heal (v2; before Round 33 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
   `min(0.70, R / (R + K))`, `K(L) = 20 + 0.5 min(L, 60) + 8.5 max(L − 60, 0)`
   ([combat_stats.md](combat_stats.md) §2).
 - **Effective HP** `= HP / ((1 − dodge)(1 − armor reduction))` against a

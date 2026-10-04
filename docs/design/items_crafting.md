@@ -51,11 +51,13 @@ ladders are independent; §2.1 spells out how they meet.
   plain base item is the same item the vendor sells (§3.0.3).
 - Items are **upgradeable via crafting within limits**: an upgraded
   mediocre item never becomes a top item. No upgrade failure chance.
-- **The harder the enemy, the better the loot** — boss/elite multipliers
-  act on the enchant roll ranges, same mechanic everywhere.
+- **The harder the enemy, the better the loot** — elites and named mobs
+  drop more often and in better quality, bosses always drop two blue or gold
+  items at a higher item level with T7 enchants (§5.1), same mechanic
+  everywhere.
 - **Rare patrol mobs** with special loot as raid incentive into enemy
   territory; each of the six race **Kings** is a heavily guarded raid boss
-  with top-tier rolls.
+  whose drops reach item level 65.
 - **Class/profession synergy intended** (Warrior+Weaponsmith or Armorsmith,
   Priest/Mage+Tailor, …).
 - Gems are depth-tiered and the same everywhere (§3.0.1, Round 29).
@@ -291,11 +293,12 @@ universal pick.
 - **Emberglass** is a real `grug_materials` item/node family. Fresh-server
   development uses its canonical names directly, with no old Mese or
   Emberstone migration aliases or parallel player-facing materials.
-- **Abyssal Steel** is the ordinary craftable T6 metal. **Grudgeforged** is an
-  optional final masterwork state: it upgrades an existing equipment item to
-  item level 70 (user decision 2026-09-29, [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
-  D3). WP5 settles its inputs; named rares drop no trophies (D4). No Crown
-  enters an Abyssal Steel bar or pick.
+- **Abyssal Steel** is the ordinary craftable T6 metal. The optional final
+  masterwork state is **the crown** (Round 33, [item_tiers.md](item_tiers.md)
+  §4): a Crownbinder applies one Fallen Crown to one item, its item level
+  becomes its tier's top + 5 and every enchant gains one tier; it replaces
+  the Grudgeforged item-level-70 upgrade of the WP audit's D3. Named rares
+  drop no trophies (D4). No Crown enters an Abyssal Steel bar or pick.
 - Mundane Stone, Copper, Tin, Iron ore, Coal and Gold may retain stable
   upstream itemstrings. Reinterpreted fantastic materials, processed outputs
   and all gems use the Grudgelands namespace. `grug_materials` owns
@@ -322,8 +325,9 @@ never shipped; with engine-native tier gating every T1 pick, the Wood and
 Stone starters included, digs every T1 resource. The ladder stays
 non-circular: starter pick → Copper + Tin → dual furnace → Bronze pick.
 
-Quartz is the universal T1 jewelry mineral at every depth. Gems use **Rough
-<Gem> → Cut <Gem>**. Emberglass and Abyssal Crystal are universal fantastic
+Quartz is a universal T1 mineral at every depth and a raw T1 enchant input;
+it has no cut form (Round 33: Cut Citrine is the T1 trinket gem). Gems use
+**Rough <Gem> → Cut <Gem>**. Emberglass and Abyssal Crystal are universal fantastic
 progression resources and are never called gems.
 
 **Gems are depth-tiered, not regional** (Round 29, economy plan §6). Each of
@@ -795,9 +799,10 @@ Basics recipes; Woodcarver owns their enchantments. Bows are likewise
 universal plain Basics, with the Leatherworker owning their improvement
 operations (Round 33).
 
-For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
-for the Weapon slot. The slot filter enforces it directly; a weapon without an
-item level has no level requirement. This gate does not apply to tools, which
+Every equipment item requires min(item level, 60) as its minimum character
+level (Round 33, round33-plan.md §2.2; `_grug_req_level`, per stack
+`grug_req_level`); T1 bases require level 1. Every equipment slot enforces it
+(`inventory_equipment.md`). This gate does not apply to tools, which
 carry their own material-tier level requirement instead (§3.0.4 "Tool level
 requirement").
 
@@ -1176,7 +1181,7 @@ main profession slot (professions.md §1).
 
 - **Vendor stock**: the level-independent core (small bag, weak healing
   potion, torches, wooden/stone tools, bronze pick, player arrows, job
-  supplies — thread/parchment/vial) plus the **bracket catalogs** of §3.8.
+  supplies — thread/parchment/vial) plus the **T1 catalog** of §3.8.
   Profession shelves carry their trade's supplies, food and T1 basics
   ([economy plan](../planning/economy-vendor-plan.md) §2.3); no shelf sells
   an enchant input or an ingredient above T1, which a load audit enforces.
@@ -1285,10 +1290,8 @@ changes:
     is mechanically identical to the Common beside it while costing
     more than the Common beside it — a blue-named trap, not a luxury. The
     quality/description machinery ships regardless; WP5 lights it up only
-    after the economy/loot pass fixes the multiplier. **As built:** the
-    enchant roller exists, so the Uncommon is offered today at ×3
-    (`grug_traders/stock.lua`); whether it stays is a question for the
-    items design session (BACKLOG).
+    after the economy/loot pass fixes the multiplier. Round 33 removed
+    the rotation and the Uncommon with it.
   - The rotation is **deterministic**: a pure function of (real hour,
     vendor, bracket). Two players at the same vendor in the same hour
     see the same shelf, and a restart does not re-roll it.
@@ -1392,7 +1395,7 @@ One roll per kill decides, so a kill drops **at most one** gear item:
 | Source | White (Common) | Blue (Uncommon) | Gold (Rare) | Total |
 |---|---:|---:|---:|---:|
 | Normal mob | 5% | 2% | 1% | 8% |
-| Elite and named rare | 10% | 10% | 5% | 25% |
+| Elite, named rare, zone leader, war-camp captain | 10% | 10% | 5% | 25% |
 | Critter | — | — | — | 0% |
 
 **Bosses** — the six race Kings and the two dragons through their personal
@@ -1471,14 +1474,14 @@ invulnerable.
 - A successful award starts that King's rolling 24-hour wall-clock Crown
   lockout for the character. Other enemy Kings remain independently rewarding;
   repeat kills during one lockout may proceed but grant no Crown.
-- The Crown is a masterwork input candidate for the Grudgeforged upgrade to
-  item level 70 (§2); WP5 settles that recipe. Royal provenance supplies
-  visual identity.
+- The Crown is the Crownbinder's input for crowning one item (§2,
+  [item_tiers.md](item_tiers.md) §4); it stays unsellable. Royal provenance
+  supplies visual identity.
 - No universal bar, pick, profession-level advancement or ordinary base gear requires a
   Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
   level-60 elite loot and never substitutes for a Crown. **As built,** royal
   guards drop no gear (§5.1; `grug_quality/init.lua`), so this sentence and
-  §5.1 disagree; the items design session settles it (BACKLOG). Rewards enter the
+  §5.1 disagree; Round 33 left it open (BACKLOG). Rewards enter the
   ledger only if their sellable items are later sold.
 
 ### 5.5 Contested-front reward hook
@@ -1490,7 +1493,7 @@ non-loot quest-interaction slot for WP9; it is not a free material source.
 The two endpoint apex camps add no renewable gem sockets: renewable ores are
 removed entirely, camps included (user decision 2026-09-29, WP audit E5).
 
-## 6. Quality tiers & enchant roll ranges (WP5 numbers)
+## 6. Quality tiers & enchant values
 
 ### 6.1 Meta model
 
@@ -1597,8 +1600,8 @@ The pools make nine possible completed prefix/suffix pairs and structurally
 prevent duplicate stats. Armor, Dodge and attack speed are excluded. Goldsmiths
 craft the base item with empty channels, then select fixed-tier enchantments at
 the Jeweller's Bench, just like other professions. Either channel may be filled
-first or replaced; target tier must be at least enchant tier. No crafted roll is
-random. Found-item random rolls remain separate loot behavior.
+first or replaced; target tier must be at least enchant tier. No enchant value
+is random: a found item rolls only which stats it carries (§5.1).
 
 A trinket has no separate base-stat line, armor, durability or refinement state.
 Its material tier scales the authored special; enchanting does not change that
@@ -1654,14 +1657,7 @@ when equipment changes. Hot mana, heal, hit, kill and potion paths read that
 cache and never rescan equipment per tick or event. It enforces the
 same-identity-per-character exclusion and every cap/cooldown above.
 
-### 6.3 Found-item roll ranges by item level
-
-These random ranges apply only to found/vendor loot. Their band is chosen by
-the concrete item's level, with ilvl61–75 retaining the final band. The four
-roll bands are independent of the six material tiers. No crafter mastery or
-character-level rule determines a found roll. A found value is uniform in its
-band's range, `roll = min + frac × (max − min)` with frac uniform in 0–1,
-whatever the source.
+### 6.3 Found-item enchant tier and value
 
 **Enchant tier of a found item** (Round 33, round33-plan.md §2.3): item level
 1–10 is T1, 11–20 T2 … 51–60 T6, above 60 (boss drops) T7
@@ -1671,14 +1667,11 @@ its item level and tier, like a crafted one of that tier. The four flat roll
 bands that stood here are gone. A T2 enchant cannot be applied to a T1 item;
 mastery never unlocks a suffix or scales a crafted value.
 
-The endgame ordinary-affix budget is therefore approximately **+5% per
-equipped slot × eight slots = +40%** when every slot is dedicated to one
-axis. An offensive allocation may spend all eight damage-equivalent
-contributions. At level 60, the damage curve gives a 1H weapon 25 / 29 / 30
-damage at ilvl 60 / 70 / 75. With the Warrior's 18-point melee bonus and the
-shared damage fit, the +40% allocation produces 515 / 526 effective damage at
-ilvl 70 / 75 against the ilvl-60 baseline's 337: **+52.8% / +56.1%**, the
-intended +50–60% fully equipped ceiling.
+The endgame budget follows [item_tiers.md](item_tiers.md) §1.1: one enchant
+is worth about 1.6 % + 0.04 % × L in its kind, and a fully damage-enchanted
+level-60 Warrior gains about **+47 % / +57 % / +69 %** at item level 60 / 65 /
+70 (Scout +55 % / +68 % / +82 %), the order of the intended +50–60 % fully
+equipped ceiling ([combat_stats.md](combat_stats.md) §2).
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
 prefixes/suffixes, attributes and base equipment all add
@@ -1694,8 +1687,7 @@ At T6, two trinkets can therefore add at most two direct Crit suffixes, while
 the six ordinary combat stacks retain their family pools. These maxima can
 intentionally push a same-level build to the 70% reduction
 cap. Surplus rating remains useful against higher-level attackers. The
-cap/demand audit evaluates all three source channels together and verifies at
-least two desirable finish cells per culture.
+cap/demand audit evaluates all three source channels together.
 
 ### 6.4 Crafted quality
 
@@ -1933,7 +1925,8 @@ consumer are active:
   (2c after the same-race discount) at every race vendor and the Bowyer;
   traders do not buy them back, because the basic craft makes a full stack
   from one bar (economy.md §2).
-- **Plain production is Basics; Woodcarver owns enchantments.** The
+- **Plain production is Basics; the Leatherworker owns enchantments and
+  upgrades** (Round 33, [item_tiers.md](item_tiers.md) §3.3). The
   Scout consumes the family in V1. Shots draw from the Scout's quiver slot
   first, then `main`.
 

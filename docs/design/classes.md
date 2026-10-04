@@ -144,7 +144,7 @@ Core principles:
 ## 2. Damage pipeline (grug_core)
 
 - Ability damage/heals go through `grug_core` helpers that roll **crit**
-  (attacker's chance, ×1.5) and — for player targets — **dodge**
+  (attacker's chance, ×2 since Round 33, for damage and heals) and — for player targets — **dodge**
   (combat_stats §2), then apply via `object:punch` so armor groups and mob
   death handling (XP, loot) keep working. Ability (cast) punches carry no
   knockback; only Strike and the melee swing skills push a normal mob back

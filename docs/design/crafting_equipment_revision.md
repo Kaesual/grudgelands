@@ -230,3 +230,7 @@ and Stoneskin (4) total 181 before specialization. Against L70, K=135:
 Protection reaches 298.65 rating / 68.87% reduction, or 313.65 / 69.91% in its
 emergency window. The same equipment/sources without Unbroken reach 57.28%.
 This calibration changes only the Protection multiplier, not plain item bases.
+It used the values of its time; since Round 33 the top item level is 70, a T6
+armor enchant gives 4.8 and Stoneskin Elixir VI +4.8
+([item_tiers.md](item_tiers.md) §1.1, §5), and the multiplier was not
+recalibrated.

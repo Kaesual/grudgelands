@@ -639,7 +639,7 @@ coast, 38–60) + grug_jungle_edge inner (10–25):
 | Mob | Verb | Day/Night | Speed | Drops | Model |
 |-----|------|-----------|-------|-------|-------|
 | Crocodile | ambushes (lurks still, burst on approach) | 24 h | **4.6, one speed** — the water bonus is dropped (see §4) | scaled hide 1/1 `[leather]`; meat; croc tooth 1/3 | animalworld crocodile |
-| Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (alchemy reagent); vendor trash | mobs_mc_slime retint |
+| Bog Ooze | engulfs (slow tank: touch damage aura, **flat 2 damage**, radius 2 — the one hand-written damage number in the roster; its melee is level-scaled as usual) | 24 h | 2.6 | slime gel 1/1 ×1–2 (no recipe use since Round 33); vendor trash | mobs_mc_slime retint |
 | Mirefolk (fish-folk humanoid, camps at swamp pools; the classic-MMO fish-folk memory) | swarms (camp group aggro, all rush at once) | 24 h | 4.6 | linen cloth 1/2; fish 1/1; shiny scale 1/4 | character.b3d small scale + custom skin (2D work) — decided: include |
 | **Bog Fowl** — the swamp critter; universal biome, so the one new critter both continents share | flees (**critter**, §3.0) | day | 3.4 | meat 1/1 — food only (**not** its upstream's feather) | mobs_mc_chicken, marsh tint |
 
@@ -720,7 +720,7 @@ spawn row or palette membership.
 | Wyrmglass Ice Dragon | any | Wyrmglass dragon anchor, fixed L70 boss | three perches in a round arena of radius 40 that is its leash (`world.md` §4b); 2 s breath-line / ground-slam telegraphs; persistent 30 min wall-clock respawn with 60 s warning | draconis ice dragon, sapphire, MIT |
 | Stormscale Jungle Wyvern | any | Stormscale dragon anchor, fixed L70 boss | same shared encounter chassis, storm breath variant | draconis jungle wyvern, jade, MIT |
 | Six race Kings | any | authored `king` socket in each capital, fixed L65 elite | one race-specific signature each; four fixed L60 elite royal guards; group reset and persistent 15 min wall-clock respawn | `character.b3d`, drawn from the race look layers with the royal tabard and crown ([character_visuals.md](character_visuals.md) §1.1) |
-| Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus a gear roll at item level 65 with raised chances (`items_crafting.md`), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
+| Two fortress Generals (Round 31) | any | authored `general` socket of each PvP fortress, fixed L65 elite | the king chassis without a crown: the seat race's king's signature (Accord Rally, Throng Cleave); two fixed L60 elite bodyguards; the king's group reset and 15 min respawn; guard drops (war trophies to an enemy player's kill) plus two gear items at item level 65, each blue or gold at even odds (`items_crafting.md` §5.1), no reward ledger | `character.b3d`, one fixed look of the seat race with the royal tabard and no crown; the bodyguards any race of the faction in guard armour ([character_visuals.md](character_visuals.md) §1.1) |
 
 The current gear catalogue has sword, dagger, greataxe and staff visuals only;
 bosses do not create a second weapon-art system. The encounter kits remain the
@@ -1248,7 +1248,7 @@ The universal metal/pick spine is available on both faction sides and never
 requires a gem: Bronze (Copper + Tin), Iron,
 Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
 (Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
-Quartz is the universal T1 jewelry mineral. Emberglass and Abyssal Crystal are
+Quartz is a universal T1 mineral and enchant input without a cut form. Emberglass and Abyssal Crystal are
 universal fantastic progression resources rather than gems.
 
 Gems are depth-tiered and the same in every region (Round 29,
@@ -1296,7 +1296,7 @@ nodes there. The signature wood follows the owning `race_region` column:
 | Spices T1 (everyone gathers; Alchemy + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
 | Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
-| Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
+| Alchemy reagents (mob) | 25–60 | venom gland/sac, bear claw (slime gel, one faction, has no recipe use since Round 33) | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
 | Gems | depth axis (one per tier rock) | all six, each in its own tier rock | same |

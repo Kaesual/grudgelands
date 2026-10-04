@@ -534,8 +534,9 @@ want lived-in settlements without paying for it in server load"):
   T1 basics (the vendor supply rule of [professions.md](professions.md) §4;
   shelves in the [economy plan](../planning/economy-vendor-plan.md) §2.3) and
   serves its settlement's faction (no race restriction, and therefore no
-  kinship discount); only the smith and the armourer also sell the equipment
-  ladder, the bowyer and the tanner its bows and leather armour.
+  kinship discount); only the smith and the armourer also sell the T1 gear
+  (since Round 33 the T1 catalog only), the bowyer and the tanner its bows
+  and leather armour.
   The six starts keep their single race vendor.
 - **A peaceful NPC's nametag is culled like a guard's** (per-viewer mechanism
   adopted 2026-09-18). Villagers, elders and vendors use the same independent
@@ -610,6 +611,24 @@ resident of that capital's tailor service plot:
 
 It serves only its capital's faction and shows a "+" marker on that
 faction's map.
+
+## Crownbinders and Decor Merchants (Round 33)
+
+In every capital the **Crownbinder** ([economy.md](economy.md) §4,
+[item_tiers.md](item_tiers.md) §4) is the gate resident of the goldsmith
+service plot and the **Decor Merchant** (the culture vendor) the gate resident
+of the woodcarver service plot, taken over like the Housing Steward's; no
+blueprint or mapgen output changes. Both serve only their capital's faction.
+Neither has a map marker yet.
+
+| Capital | Crownbinder (goldsmith plot) | Decor Merchant (woodcarver plot) |
+|---|---|---|
+| Highcourt | `lore_archive` | `martial_wain_shed` |
+| Dur Brannoc | `forge_ore_yard` | `deep_carvers` |
+| Lethariel | `mere_lore_hall` | `market_bowyer` |
+| Nhal Veyr | `market_bone_store` | `vigil_candle_works` |
+| Gor Drazhak | `bazaar_armourer` | `bazaar_carver` |
+| Kezamba | `totem_scriptorium` | `shore_carvers` |
 
 ## Round 20 authored regional places
 
