@@ -260,8 +260,9 @@ end
 
 -- The hit sound of a player's melee swing (Round 34 S1b): the grug_sounds
 -- event of the equipped melee weapon's kind, the bare hand's punch without
--- one. Swords, daggers and battle axes cut; staffs and wands strike blunt.
-local HIT_SOUNDS = {sword = "hit_blade", dagger = "hit_blade",
+-- one. Swords and battle axes cut, daggers cut lighter; staffs and wands
+-- strike blunt.
+local HIT_SOUNDS = {sword = "hit_blade", dagger = "hit_dagger",
 	greataxe = "hit_blade", staff = "hit_blunt", wand = "hit_blunt"}
 
 function grug_core.melee_hit_sound(player)
@@ -1055,11 +1056,9 @@ function grug_core.roll_melee_crit(player, damage)
 	return damage * CRIT_MULTIPLIER, CRIT_MULTIPLIER, true
 end
 
--- `target` (the hit object) carries the crit sound; nil falls back to pos.
-function grug_core.emit_melee_crit(pos, target)
+function grug_core.emit_melee_crit(pos)
 	if pos then
 		crit_particles(pos)
-		grug_sounds.play("crit", target or pos)
 	end
 end
 
@@ -1473,7 +1472,6 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 	if critical then
 		amount = math.floor(amount * CRIT_MULTIPLIER)
 		crit_particles(target:get_pos())
-		grug_sounds.play("crit", target)
 	end
 	-- PvP and untracked targets arm the attacker's timer up front, as before.
 	-- A tracked mob engages only when it ACCEPTS the hit (run_player_hit_mob),

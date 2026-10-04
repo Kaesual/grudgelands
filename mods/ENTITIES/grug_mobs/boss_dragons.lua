@@ -704,6 +704,8 @@ local function begin_action(self, state, kind, target, target_pos, left)
 		left = left,
 	}
 	stop_object(self)
+	-- The wind-up growl (Round 34 S1b, dragons only); its spec spaces it out.
+	grug_sounds.play("telegraph", self.object)
 	if self.set_animation then
 		self:set_animation(kind == "breath" and "shoot" or "punch", true)
 	end

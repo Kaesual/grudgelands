@@ -14,7 +14,8 @@
 -- mobs_redo plays war_cry when a mob takes a target (90 %) and when its path
 -- finder finds a route during a chase, damage on every health loss, death
 -- once, random on 1 % of its one-second ticks. Random calls are the layer
--- most likely to become noise, so only the Carrion Crow has one.
+-- most likely to become noise, so no family has one. A family's `telegraph`
+-- is its elite wind-up cue (telegraph.lua); without one the wind-up is silent.
 --
 -- Felines carry no war_cry: they stalk silently (panther.lua; the stalker
 -- verb, verbs.lua). The boars share the stalker's pounce but charge loudly.
@@ -49,9 +50,9 @@ local VOICES = {
 	-- Stags, rams, ibexes, zebras, tapirs and the plains runner.
 	grazer = {damage = "voice_grazer_damage", death = "voice_grazer_death"},
 	bird = {damage = "voice_bird_damage", death = "voice_bird_death"},
-	-- The Carrion Crow flees by design: a call when it is hit and takes flight,
-	-- and a rare call while it roams.
-	crow = {damage = "voice_crow_damage", random = "voice_crow_random"},
+	-- The Carrion Crow flees by design: a call when it is hit and takes flight
+	-- (no roaming call, the user's choice).
+	crow = {damage = "voice_crow_damage"},
 	-- Rabbits, hares, rats and bats.
 	critter = {damage = "voice_critter_damage", death = "voice_critter_death"},
 	-- Spiders, crawlers, weevils, mites, scorpions and the glowwing.

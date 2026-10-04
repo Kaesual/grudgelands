@@ -607,8 +607,9 @@ Normal tier at level L:
   gold `^[colorize:#ffa800:80`, nametag prefix `Elite `; rare ×2,
   violet `#a64dff:90`, nametag prefix `★ ` — plus the `!! ` prefix while
   a wind-up runs. **Elites AND rares telegraph** (both tiers, no def
-  opt-in): 2 s wind-up (stop, `!!` nametag, particle burst and the wind-up
-  growl, sound event `telegraph`) then a ×3 damage hit into a
+  opt-in): 2 s wind-up (stop, `!!` nametag, particle burst; a sound only
+  where the mob's voice family names one — the user keeps it to humanoid
+  specials, and the dragons growl at their own wind-ups) then a ×3 damage hit into a
   **90° frontal cone** of **reach + 1.5 m** (normally **4.5 m**) that requires **line of
   sight** — stepping aside, out of range or behind cover is a clean miss.
   Cadence: the first wind-up needs **4 s of MELEE engagement** (a fight

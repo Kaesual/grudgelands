@@ -20,7 +20,7 @@ local D = {}
 -- LUFS, calls peak -3 dBFS). The bed starts well below the listening page's
 -- level: the user found the beds too present there.
 D.gains = {
-	bed = 0.25,
+	bed = 0.2,
 	-- Factor on the bed inside start towns and capitals.
 	town_bed = 0.5,
 	call = 0.35,
