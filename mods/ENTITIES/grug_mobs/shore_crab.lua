@@ -27,7 +27,7 @@ local function crab_def(description, tier, spawn_check, drop_scale)
 		attack_type = "dogfight", group_attack = false, reach = 3,
 		pathfinding = 1, walk_velocity = 1.5, run_velocity = 3.4,
 		jump = false, jump_height = 0, stepheight = 1, fear_height = 2,
-		view_range = 8, floats = 0,
+		view_range = 8, floats = true,
 		visual = "mesh", mesh = "grug_mobs_shore_crab.b3d",
 		textures = {{"grug_mobs_shore_crab.png"}},
 		visual_size = {x = 1, y = 1},
