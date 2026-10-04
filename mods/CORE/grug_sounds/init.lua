@@ -52,6 +52,45 @@ grug_sounds.HOOKS = {
 	"travel", "pvp_on",
 	-- Fishing.
 	"fishing_cast", "fishing_catch",
+	-- Combat (Round 34 S1b, plan §4.3): the swing into the air (an item sound
+	-- of the swing skills' tools, played by the client), a player's hit by the
+	-- kind of the equipped melee weapon, an absorb shield taking a hit, crit,
+	-- dodge and a player's death.
+	"swing", "hit_blade", "hit_blunt", "hit_fist", "block", "crit", "dodge",
+	"player_death",
+	-- Abilities: one cue per theme at the caster (grug_abilities.CAST_SOUNDS);
+	-- a projectile sounds at launch and at its hit (grug_projectiles.register).
+	"cast_charge", "cast_taunt", "cast_guard", "cast_frost_nova",
+	"cast_frost_ward", "cast_blink", "cast_cinderfall", "cast_holy", "cast_heal",
+	"cast_shield", "cast_shadow", "cast_evade", "cast_sprint",
+	"fireball_launch", "fireball_hit", "bow_shot", "arrow_hit",
+	-- Mob voices by family (grug_mobs.VOICES), played by mobs_redo's mob_sound.
+	"voice_humanoid_damage", "voice_humanoid_death",
+	"voice_goblin_war_cry", "voice_goblin_damage", "voice_goblin_death",
+	"voice_undead_war_cry", "voice_undead_damage", "voice_undead_death",
+	"voice_mummy_damage", "voice_mummy_death",
+	"voice_skeleton_damage", "voice_skeleton_death",
+	"voice_spirit_damage", "voice_spirit_death",
+	"voice_giant_war_cry", "voice_giant_damage", "voice_giant_death",
+	"voice_elemental_damage", "voice_elemental_death",
+	"voice_canine_war_cry", "voice_canine_damage", "voice_canine_death",
+	"voice_feline_damage", "voice_feline_death",
+	"voice_boar_war_cry", "voice_boar_damage", "voice_boar_death",
+	"voice_beast_war_cry", "voice_beast_damage", "voice_beast_death",
+	"voice_grazer_damage", "voice_grazer_death",
+	"voice_bird_damage", "voice_bird_death",
+	"voice_crow_damage", "voice_crow_random",
+	"voice_critter_damage", "voice_critter_death",
+	"voice_insect_damage", "voice_insect_death",
+	"voice_slime_damage", "voice_slime_death",
+	"voice_reptile_war_cry", "voice_reptile_damage", "voice_reptile_death",
+	"voice_aquatic_damage", "voice_aquatic_death",
+	"voice_dragon_war_cry", "voice_dragon_damage", "voice_dragon_death",
+	"voice_kraken_war_cry", "voice_kraken_damage", "voice_kraken_death",
+	-- Bosses: the elite wind-up, the dragons' breath, lightning, enrage and
+	-- wrath, the breaking arena ice, the kings' signature attack.
+	"telegraph", "dragon_breath_frost", "dragon_breath_fire", "dragon_lightning",
+	"dragon_enrage", "dragon_wrath", "ice_break", "king_signature",
 }
 -- Silent by the user's choice (plan §2.2a), so without a call site: quest
 -- progress, talent, achievement, drops, mount summon and dismount, respawn,
@@ -100,6 +139,14 @@ local EVENTS = {
 	pvp_on = {name = "grug_sounds_pvp_on", gain = 0.7, personal = true},
 	fishing_cast = {name = "grug_sounds_splash", gain = 0.4, distance = 10, pitch = 0.1},
 	fishing_catch = {name = "grug_sounds_splash", gain = 0.6, distance = 12},
+	-- Combat and creatures (S1b, tools/r34_s1b/approved.txt). Hits, voices
+	-- and spells follow their target or caster; voices carry a per-mob
+	-- interval so a mob taking several hits a second grunts once.
+	-- The existing mobs_redo punch stays for fists (R32 3.5, CC0).
+	hit_fist = {name = "mobs_punch", distance = 8},
+	-- The thin arena ice keeps minetest_game's glass break until the user's
+	-- pick (C5.4) lands.
+	ice_break = {name = "default_break_glass", gain = 0.6, distance = 24},
 }
 grug_sounds.EVENTS = EVENTS
 
@@ -143,6 +190,13 @@ function grug_sounds.play(event, target)
 	if spec.pitch then params.pitch = 1 + (math.random() * 2 - 1) * spec.pitch end
 	core.sound_play(spec.name, params, true)
 	return true
+end
+
+-- The SimpleSoundSpec of `event` for an item definition's `sound` table
+-- (the client plays it, e.g. punch_use_air), or nil without a spec.
+function grug_sounds.item_sound(event)
+	local spec = EVENTS[event]
+	return spec and {name = spec.name, gain = spec.gain or 1} or nil
 end
 
 grug_sounds.CLICK_STYLE = EVENTS.click and

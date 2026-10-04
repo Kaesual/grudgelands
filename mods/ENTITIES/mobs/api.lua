@@ -281,6 +281,13 @@ function mob_class:mob_sound(sound)
 
 	if not sound or not self.sounds then return end
 
+	-- GRUG PATCH (Round 34 S1b): a grug_mobs voice is a grug_sounds event
+	-- name (grug_mobs/voices.lua); it plays through its spec, which carries
+	-- gain, pitch spread, distance and a per-mob interval.
+	if grug_sounds and grug_sounds.EVENTS[sound] then
+		grug_sounds.play(sound, self.object) ; return
+	end
+
 	if type(sound) == "string" then sound = {name = sound} end
 
 	sound.pitch = (sound.pitch or 1.0) + random(-10, 10) * 0.005 -- random differences
@@ -3663,10 +3670,20 @@ function mob_class:on_punch(hitter, tflp, tool_capabilities, dir, damage)
 
 	if feedback then
 
-		-- select tool use sound if found, or fallback to default
-		local snd = weapon_def.sound and weapon_def.sound.use or "mobs_punch"
+		-- GRUG PATCH (Round 34 S1b): a player's hit sounds by the kind of the
+		-- equipped melee weapon (grug_core.melee_hit_sound); an ability punch
+		-- plays its own cue at the cast or projectile instead. Every other
+		-- hitter keeps the vanilla sound.
+		if grug_mob_hit then
+			if not grug_core.in_ability_punch then
+				grug_sounds.play(grug_core.melee_hit_sound(hitter), self.object)
+			end
+		else
+			-- select tool use sound if found, or fallback to default
+			local snd = weapon_def.sound and weapon_def.sound.use or "mobs_punch"
 
-		core.sound_play(snd, {object = self.object, max_hear_distance = 8}, true)
+			core.sound_play(snd, {object = self.object, max_hear_distance = 8}, true)
+		end
 
 		local prop = self.object:get_properties()
 
