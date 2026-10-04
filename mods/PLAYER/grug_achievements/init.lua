@@ -140,6 +140,9 @@ local function wanted(counter, list)
 end
 
 function grug_achievements.kill_counters(name)
+	if type(name) ~= "string" then
+		return EMPTY
+	end
 	local list = kill_counters[name]
 	if list then
 		return list
