@@ -267,22 +267,6 @@ function grug_materials.processed(key)
 	return grug_materials.PROCESSED_BY_KEY[key]
 end
 
-grug_materials.CULTURAL_MATERIALS = {
-	sunwax = {race = "human", key = "sunwax", name = "Sunwax", item = "grug_materials:sunwax",
-		source = "wild waxcomb or apiary cache"},
-	runeslate = {race = "dwarf", key = "runeslate", name = "Runeslate", item = "grug_materials:runeslate",
-		source = "slate inscription seam"},
-	moonresin = {race = "elf", key = "moonresin", name = "Moonresin", item = "grug_materials:moonresin",
-		source = "resin root or fossil-resin nodule"},
-	red_ochre = {race = "orc", key = "red_ochre", name = "Red Ochre", item = "grug_materials:red_ochre",
-		source = "ochre clay or outcrop deposit"},
-	spirit_resin = {race = "troll", key = "spirit_resin", name = "Spirit Resin",
-		item = "grug_materials:spirit_resin",
-		source = "resinous root or amber nodule"},
-	gravesalt = {race = "undead", key = "gravesalt", name = "Gravesalt",
-		item = "grug_materials:gravesalt", source = "salt crust or crystal seam"},
-}
-
 -- Existing wood registrations remain owned by default/grug_trees. These ids
 -- are the material-side mapping WP40 consumes with the race-region row.
 grug_materials.SIGNATURE_WOODS = {
@@ -300,18 +284,12 @@ grug_materials.SIGNATURE_WOODS = {
 }
 
 grug_materials.RACE_REGIONS = {
-	human = {race = "human", faction = "accord", cultural = "sunwax",
-		signature_wood = "oak"},
-	dwarf = {race = "dwarf", faction = "accord", cultural = "runeslate",
-		signature_wood = "mountain_pine"},
-	elf = {race = "elf", faction = "accord", cultural = "moonresin",
-		signature_wood = "silverwood"},
-	orc = {race = "orc", faction = "throng", cultural = "red_ochre",
-		signature_wood = "spikethorn_acacia"},
-	troll = {race = "troll", faction = "throng", cultural = "spirit_resin",
-		signature_wood = "kapok"},
-	undead = {race = "undead", faction = "throng", cultural = "gravesalt",
-		signature_wood = "gravewood"},
+	human = {race = "human", faction = "accord", signature_wood = "oak"},
+	dwarf = {race = "dwarf", faction = "accord", signature_wood = "mountain_pine"},
+	elf = {race = "elf", faction = "accord", signature_wood = "silverwood"},
+	orc = {race = "orc", faction = "throng", signature_wood = "spikethorn_acacia"},
+	troll = {race = "troll", faction = "throng", signature_wood = "kapok"},
+	undead = {race = "undead", faction = "throng", signature_wood = "gravewood"},
 }
 
 grug_materials.DENSITY = {
@@ -484,10 +462,8 @@ local function validate_registry()
 	local race_count = 0
 	for race, row in pairs(grug_materials.RACE_REGIONS) do
 		race_count = race_count + 1
-		local cultural = grug_materials.CULTURAL_MATERIALS[row.cultural]
 		local wood = grug_materials.SIGNATURE_WOODS[row.signature_wood]
-		if row.race ~= race or not cultural or cultural.race ~= race or
-				not wood or wood.race ~= race then
+		if row.race ~= race or not wood or wood.race ~= race then
 			registry_error("incomplete race-region row " .. race)
 		end
 	end

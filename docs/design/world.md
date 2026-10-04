@@ -351,8 +351,8 @@ occupying a position (`world_zones.md` §7):
   capped/rounded depth level alone.
 - **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
   declared outer bay-mouth caps, immutable at every y. This remains the
-  deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
-  drops or XP). It has no ordinary surface, guard or mob-level result: the
+  deliberately deadly open sea patrolled by the Kraken Guard, a level-70
+  elite (no drops or XP). It has no ordinary surface, guard or mob-level result: the
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
   summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.
@@ -895,12 +895,9 @@ territory.
   - Both are the *bonus* on top of the visible passive, in line with the
     rule above that a perk must be FELT from level 1: the passive does
     the felt work, the vendor is the flavor that pays off later.
-- Universal base recipes and professions are never race-exclusive. Cultural
-  Finishing is the identity seam: the profession owning an item family may
-  apply only the player crafter's own character culture, while an allied
-  cultural-master service offers the same supplied-material operation. WP10
-  owns those workstation/service paths; WP5 owns the per-stack finish/effect
-  channel. Finished equipment remains tradeable and wearable by every race.
+- Universal base recipes and professions are never race-exclusive; there is
+  no cultural finishing (removed in Round 33). Equipment remains tradeable
+  and wearable by every race.
 - **No class restrictions per race in the MVP** (only 3 classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.

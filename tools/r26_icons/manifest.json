@@ -347,18 +347,6 @@
       "bytes": 3742
     },
     {
-      "id": "warding_draught",
-      "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One stout SILVER flask with a large embossed HEATER-SHIELD emblem on its front and a faint white ward aura around it. Short wide flattened flask, silver and white, obvious shield emblem.",
-      "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-e9c7a736-e917-4be3-af88-119d0f6cd64e.png",
-      "kind": "status",
-      "frame": "buff",
-      "file": "grug_status_warding_draught.png",
-      "path": "mods/CORE/grug_core/textures/grug_status_warding_draught.png",
-      "source_sha256": "d769ce4898ca9067dd84d69e9cb9b3662c1872a5648c638395ddfe3f03881a90",
-      "sha256": "864e986c5397619292605655c2cf38dd30b40b4a08b62d1b3189264a13fb7f72",
-      "bytes": 4787
-    },
-    {
       "id": "warrior",
       "prompt": "Use case: stylized-concept. Asset type: ONE square fantasy RPG HUD icon for Grudgelands, readable at 32x32 pixels. Style: bold hand-painted pixel-art-inspired fantasy game icon matching chunky painted RPG skill emblems, crisp silhouette, extremely simplified few large shapes, high contrast. Composition: one centered emblem occupying 75% of the square, generous empty outer margin at least 8% on all sides. Background: perfectly flat uniform opaque dark charcoal-blue #151f2d covering entire square. No frame or border. No text, letters, digits, UI, watermark, tiny detail, multiple panels. Output a single square PNG. Subject: One heavy notched steel BROADSWORD crossed diagonally over one round BROWN LEATHER shield. Class accent #a66a3f brown dominates shield. Shield surface is PLAIN brown leather with steel boss, NO paint, NO runes, NO symbols, NO markings or decoration. Broad blunt sword, brown leather hilt. Compact centered weapon-and-shield emblem within central 75% of square.",
       "source": "/home/jan/.codex/generated_images/01a0ee2f-bb03-7033-bb39-552732625de8/exec-fc89ae79-ac58-4b16-8bb5-1d28ce9ab575.png",

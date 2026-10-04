@@ -71,8 +71,8 @@ eq(M.RESOURCE_BY_KEY.quartz.harvest_tier, 1, "Quartz stays T1")
 eq(M.GEM_GRADES, nil, "no gem grades")
 for race, row in pairs(M.RACE_REGIONS) do
 	check(row.g1 == nil and row.g2 == nil, race .. " region has no gem columns")
-	check(row.cultural ~= nil and row.signature_wood ~= nil,
-		race .. " region keeps culture and wood")
+	check(row.cultural == nil and row.signature_wood ~= nil,
+		race .. " region keeps its wood and has no cultural material")
 end
 eq(M.DENSITY.g1, nil, "no G1 density")
 eq(M.DENSITY.g2, nil, "no G2 density")
@@ -147,7 +147,7 @@ content_fails(function() B.projection.density.gem.host_nodes_per_ore = 256 end,
 check(pcall(B.content), "R6 content accepts the restored rows")
 
 -- 5. Goldsmith -----------------------------------------------------------------
-local recipes, ingredient_tiers, harvest_callbacks = {}, {}, {}
+local recipes, ingredient_tiers, harvest_callbacks, crafts = {}, {}, {}, {}
 local A = {}
 function A.register_ingredient(item, tier)
 	check(ingredient_tiers[item] == nil or ingredient_tiers[item] == tier,
@@ -165,7 +165,8 @@ local env = setmetatable({
 	grug_gear = {trinket_item = function(key, tier) return "trinket:" .. key .. ":" .. tier end},
 	grug_jobs = {has = function() return true end},
 	grug_items = {mastery_band = function() return 1 end},
-	core = {add_item = function() end},
+	core = {add_item = function() end,
+		register_craft = function(def) crafts[#crafts + 1] = def end},
 }, {__index = _G})
 local chunk = assert(loadfile(repo .. "/mods/ITEMS/grug_artisans/goldsmith.lua"))
 setfenv(chunk, env)
@@ -191,6 +192,23 @@ for _, resource in ipairs(M.RESOURCES) do
 		eq(cuts[resource.cut_item], resource.harvest_tier, resource.key .. " cuts at its tier")
 		eq(ingredient_tiers[resource.raw_item], resource.harvest_tier,
 			resource.key .. " raw ingredient tier")
+	end
+end
+-- Round 33: every cut-gem storage block packs from nine cut gems and back.
+local packs, unpacks = {}, {}
+for _, craft in ipairs(crafts) do
+	local flat = {}
+	for _, row in ipairs(craft.recipe) do
+		for _, item in ipairs(row) do flat[#flat + 1] = item end
+	end
+	if #flat == 9 then packs[craft.output] = flat[1]
+	elseif #flat == 1 then unpacks[flat[1]] = craft.output end
+end
+eq(#crafts, 12, "six gem blocks, two crafts each")
+for _, resource in ipairs(M.RESOURCES) do
+	if resource.gem then
+		eq(packs[resource.block_node], resource.cut_item, resource.key .. " block packs nine cut gems")
+		eq(unpacks[resource.block_node], resource.cut_item .. " 9", resource.key .. " block unpacks")
 	end
 end
 local EXPECTED_TRINKET = {"quartz", "jade", "garnet", "sapphire", "ruby,sapphire",

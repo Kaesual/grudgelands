@@ -48,8 +48,7 @@ in this file as of commit `082982da`.
   range, PvP rule, allowed biome
   list, signature terrain/property, mob and gathering palette, and reserved
   POI slots. `race_region` means cultural/geological provenance;
-  it selects architecture, regional loot, one cultural material and one
-  signature wood (gems are depth-tiered and the same everywhere, §11), but
+  it selects architecture, regional loot and one signature wood (gems are depth-tiered and the same everywhere, §11), but
   does not
   make a contested zone safe or politically controlled. `territory_rule`
   separately controls building and digging. Later quests and post-MVP POIs
@@ -438,11 +437,11 @@ replaced; git history before this rewrite records that model.
   water as authored lakes (below). Inland and
   bay water belong to the zone around them: a wet river or lake column has the
   zone-owned class `planned_water` (like a bay), its dry banks stay land.
-  Shelf, bay water and every road/POI exclusion are excluded from cultural
-  reservations and gathering sources. So are wet river and lake columns and
+  Shelf, bay water and every road/POI exclusion are excluded from gathering
+  sources. So are wet river and lake columns and
   their **water bank**, dry land within two nodes of such a column
   (exclusion kinds `inland_water` and `water_bank`, reason `route_or_water`,
-  Round 22 Phase 5): no cultural reservation or gathering source stands in
+  Round 22 Phase 5): no gathering source stands in
   or right beside inland water, except content that seeks it (shore rows on
   the bank, freshwater plants in the water). Decorations are not claims and
   may grow on banks. Deep ocean and dragon channels are immutable at every y.
@@ -1221,21 +1220,21 @@ graph requirement may shape a zone, and nothing may require a graph to be
 
 ## 10. Race-region character
 
-| Race region | Cultural material / wood | Geographic and content language |
+| Race region | Signature wood | Geographic and content language |
 |---|---|---|
-| Dwarf | Runeslate / Mountain Pine | pine shelves, granite, snow ridges, quarries, golems, feathers, heavy leather and gravemoss/dragonweed |
-| Human | Sunwax / Oak | fields, oak woods, river forks, marsh roads, boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
-| Elf | Moonresin / Silverwood | silverwood, pale cliffs, lakes, canopy paths, forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
-| Undead | Gravesalt / Gravewood | blight basins, bone ridges, salt cliffs, drowned roads, undead/forest families, cloth, leather and gravemoss/dragonweed |
-| Orc | Red Ochre / Spikethorn Acacia | ochre grass, dry rivers, red mesas, siege earthworks, savanna/mountain families, feathers, leather and golem materials |
-| Troll | Spirit Resin / Kapok | kapok basins, rivers, reed mazes, storm jungle, swamp/jungle families, silk, scaled hide, marshbloom and high-tier lotus |
+| Dwarf | Mountain Pine | pine shelves, granite, snow ridges, quarries, golems, feathers, heavy leather and gravemoss/dragonweed |
+| Human | Oak | fields, oak woods, river forks, marsh roads, boars, wolves, stags, bandits, leather/cloth, food and sunleaf |
+| Elf | Silverwood | silverwood, pale cliffs, lakes, canopy paths, forest/jungle predators, silk, scaled hide, berries and high-tier lotus |
+| Undead | Gravewood | blight basins, bone ridges, salt cliffs, drowned roads, undead/forest families, cloth, leather and gravemoss/dragonweed |
+| Orc | Spikethorn Acacia | ochre grass, dry rivers, red mesas, siege earthworks, savanna/mountain families, feathers, leather and golem materials |
+| Troll | Kapok | kapok basins, rivers, reed mazes, storm jungle, swamp/jungle families, silk, scaled hide, marshbloom and high-tier lotus |
 
 Race visuals may use different trophies and building materials, while the
 paired base drop tables remain economically equivalent.
 
 Gems are not regional (Round 29, economy plan §6): every race region holds
 all six, each in the tier rock of its own tier (§11). The six universal
-metal/pick tiers never consume gems or cultural materials.
+metal/pick tiers never consume gems.
 
 ## 11. Resource, loot and POI budgets
 
@@ -1318,8 +1317,7 @@ code, not by this document.
   their normal rules below its floor: world-content cave rows (cave cap,
   ember moss) at the cave voxel's y; P9G gathering roots at the root y (the
   dragon islands' coast envelopes stay nonblocking on dry land, as always);
-  world-content surface rows at the plant's y; cultural reservations when
-  the whole reservation box (root .. root + 7) lies below the floor; strata
+  world-content surface rows at the plant's y; strata
   bands and the near-surface nests and cliff layers per voxel. This matters
   for POI envelopes on steep ground: an envelope 112 nodes wide can reach
   shore or valley ground 100–300 nodes below its anchor. Start towns and
@@ -1339,34 +1337,6 @@ code, not by this document.
   accessible host volume, counting all resources (every one is universal).
   Placed natural nodes are a separate density concern.
   Spot-checked on representative seeds.
-- Every race region supplies its cultural material ordinarily at the surface
-  for its own architecture, trade and quests and supplies one concentrated T4
-  source in exactly one race-frontier zone. Foreign cultural material is
-  optional PvP-counter input and never a universal progression requirement.
-  Ordinary opportunity density is exactly one per 4,096 eligible logical-
-  biome columns; the listed concentrated zone uses one per 1,024. No
-  Battlegrounds zone receives the concentrated rate.
-
-  | Race | Cultural material | Eligible logical biomes | Concentrated T4 zone |
-  |---|---|---|---|
-  | Human | Sunwax | `grug_meadows`, `grug_deep_forest` | `elandor_ashenward_march` |
-  | Dwarf | Runeslate | `grug_pine_hills`, `grug_crags`, `grug_crags_snowy` | `elandor_stormvault_heights` |
-  | Elf | Moonresin | `grug_elf_forest`, `grug_deep_forest`, `grug_jungle_fringe` | `elandor_glassroot_wilds` |
-  | Undead | Gravesalt | `grug_blight`, `grug_bone_forest`, `grug_swamp`, `grug_beach` | `kragmar_blackwind_rise` |
-  | Orc | Red Ochre | `grug_savanna`, `grug_badlands` | `kragmar_bannerbreak_mesa` |
-  | Troll | Spirit Resin | `grug_jungle_edge`, `grug_deep_jungle`, `grug_swamp`, `grug_badlands_east` | `kragmar_thunderroot_wilds` |
-
-  R6 selects and records deterministic invisible opportunity slots; WP33
-  registers and realizes their visible source features through the same WP40
-  writer. Every slot reserves the centred 5 by 5 horizontal square from
-  `surface_y - 1` through `surface_y + 7`. A registration may occupy any
-  subset of that envelope; a larger footprint is rejected. Slots never move,
-  retry or search for fallback ground, and the envelope is collision space,
-  not a structure, yield promise or R6 world mutation. The ratified WP33
-  registration is exactly one source cell at `(0, 1, 0)` with
-  `lower_two_policy = "preserve_p7"`; it replaces neither P7 top nor filler.
-  No production world is generated with permanently empty cultural
-  reservations.
 - Every level-31–60 frontier and dragon-island zone has no home-faction
   construction owner. Both factions may dig and place ordinary terrain there,
   subject to tools, explicit hard-protected capital or functional-anchor
@@ -1740,7 +1710,7 @@ numeric-truncated seed.
   (`surface_mob_level_at`) with the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
-  separate fixed level-100 entity.
+  separate fixed entity (a level-70 elite).
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's

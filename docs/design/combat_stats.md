@@ -99,8 +99,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   level. It is not itself a percentage; endgame plate and shields remain useful
   against enemies above level 60.
 - **How armor resolves** (rating model adopted 2026-09-20): armor rating sums
-  over head/chest/legs/feet, an equipped shield, affixes, cultural
-  finish, statuses and talents. Which armor a
+  over head/chest/legs/feet, an equipped shield, affixes, statuses and
+  talents. Which armor a
   character may wear at all is the class rank of
   `inventory_equipment.md` §2.
   - For attacker level `L >= 1`, `K(L) = 20 + 0.5×min(L,60) +
@@ -122,7 +122,7 @@ anything). Item enchants (+Str etc.) are the player-driven part.
     and starvation are never reduced by a breastplate.
   - **Resolution order** for an ordinary punch in the central hp-change
     modifier: **dodge (cancels the hit entirely) → Grudgelands-mob pressure
-    fit → armor → applicable target-race Warding Draught → absorb shield.**
+    fit → armor → absorb shield.**
     Foreign entities without a Grudgelands level bypass the pressure fit.
     Authoritative swing abilities assemble gear, the class melee attribute and a selected proc,
     then apply the level scalar and mob-level malus once before crit and armor.
@@ -166,7 +166,7 @@ Crit/dodge are server-side rolls in our own damage pipeline (`grug_core`,
 mcl_damage-style, unified damage reasons). Flat caps, no
 diminishing-returns curves.
 
-Equipment sources, ordinary affixes and cultural finishes add before final
+Equipment sources and ordinary affixes add before final
 consumer caps. Crit and Dodge remain capped at 30%; armor reduction is capped
 at 70% after the attacker-level formula. Raw armor rating is never discarded.
 The Character UI exposes effective Crit/Dodge, resulting armor rating and
@@ -196,22 +196,8 @@ and open Character page refresh. `spell_damage_percent` is consumed only by
 hostile spell damage formulas; unlike Intelligence spell power, it has no
 effect on support formulas.
 
-Two optional target-race systems use the central pipeline:
-
-- A permanent T4/T5/T6 weapon-counter special adds **+1/+2/+3 flat damage**
-  against the selected race. Only the equipped weapon contributes. Add it
-  after ordinary crit has resolved and before armor/absorb, so armor mitigates
-  it and Crit never multiplies it. It applies to hostile players and
-  combat-capable NPCs/mobs with that race identity; passive invulnerable
-  service NPCs are never valid targets. No percentage target-race damage ships
-  in the MVP.
-- A five-minute T4/T5/T6 Warding Draught reduces incoming damage from the
-  selected race by **5%/7.5%/10%** after armor and before absorb. Only one
-  target-race ward may be active; a new one replaces the old one. It affects
-  hostile players and combat-capable NPCs/mobs carrying that race identity,
-  shares the 60-second potion-use cooldown and is not modified by Apothecary
-  Loop. The ward has its own PvP-buff category and may coexist with one
-  ordinary elixir and the food restore buff.
+There are no target-race systems: the PvP weapon counter and the Warding
+Draught were removed in Round 33.
 
 ### Environmental damage, deaths and shore movement
 
@@ -598,9 +584,7 @@ Normal tier at level L:
   callback, animation or smoke fallback (`mods/ENTITIES/mobs/api.lua:887-975`).
 - **Death never removes XP** (Round 18), regardless of level or cause.
 - **Player-tag drop rule** (decided 2026-08-06, WP6): a mob drops loot
-  only if a player damaged it (`do_punch` sets a tag; the tag stores
-  the attacker's professions for loot-table hooks like the
-  Leatherworker ×5, professions.md §3) — **the tag expires after ~60 s
+  only if a player damaged it (`do_punch` sets a tag) — **the tag expires after ~60 s
   without further player contact** (no "seeding" a wolf and letting
   guards farm it). Faction NPCs drop only when killed by ENEMY players
   (PvP); NPC-vs-mob kills never drop. Kills LotT's armor-litter
@@ -656,8 +640,8 @@ Normal tier at level L:
   remains nil and permits no guard post. Ordinary and royal guards inside
   remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
   mechanism and bypasses positional and post-role fields only for a deliberately
-  designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
-  every WP13 king at L65. No second king-specific fixed-level path exists.
+  designed fixed entity. Its implemented uses are the Kraken Guard (an elite)
+  at L70 and every WP13 king at L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|
@@ -721,7 +705,7 @@ the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
 at normalized y < 0; deep ocean and immutable channels have no ordinary mob-
-level result. The fixed level-100 Kraken is the explicit deep-ocean exception
+level result. The fixed level-70 elite Kraken is the explicit deep-ocean exception
 and bypasses the resolver. **Depth axis**
 (decided 2026-08-06,
 WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —
@@ -993,7 +977,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **12 servings per hour**.
-- **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemist
+- **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemy
   craft; weak 15% variant sold by vendors). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
   more in total, but only out of combat and over seconds. Each food tick
@@ -1010,9 +994,6 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4 armor rating
   for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
-  Each worn Apothecary piece adds 10% duration to timed potions and elixirs
-  and one percentage point to a stat elixir, with at most two pieces counted;
-  instant potions are unchanged.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll
   `ooc_regen_mult` perk. In combat the untalented base rate is

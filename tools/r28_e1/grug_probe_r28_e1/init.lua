@@ -59,7 +59,6 @@ local TINTS = {}
 for _, row in ipairs(read_catalog("tints.json")) do TINTS[row.id] = row end
 local ENCHANTS = {}
 for _, row in ipairs(read_catalog("enchants.json")) do ENCHANTS[row.tier] = row end
-local REAGENTS = read_catalog("reagents.json")
 
 local function band_range(band) return (band - 1) * 10 + 1, band * 10 end
 local function expected_tier(row)
@@ -227,7 +226,6 @@ local function enchant_checks()
 			inputs = inputs + 1
 		end
 	end
-	check(#REAGENTS == 0, "the catalogue has no universal reagent")
 	local sword = grug_jobs.station_operation("enchant:sword:prefix:str:t1")
 	log("sample: sword T1 Strength = " .. table.concat(sword and sword.flat_inputs or {}, " + "))
 	log(("enchants: %d operations, %d catalogue bindings checked"):format(#operations, inputs))

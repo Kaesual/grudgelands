@@ -106,7 +106,7 @@ local function final_grid_craft(itemstack, player, old_craft_grid)
 	if quality_api and type(quality_api.crafted_output) == "function" then
 		quality_api.crafted_output(itemstack, player, recipe)
 	end
-	grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+	grug_jobs.award_progress(player, recipe)
 	return itemstack
 end
 

@@ -691,28 +691,6 @@ function grug_mobs.tag_player(self, player)
 end
 
 --
--- Drop hooks (professions.md §3, consumed by WP10's Leatherworker ×5).
--- fn(self, drops_copy, tagger_name) may mutate the COPY in place or return a
--- replacement list. Nothing is registered today — the pipeline just exists.
---
-
-grug_mobs.registered_drop_hooks = {}
-
-function grug_mobs.register_drop_hook(fn)
-	table.insert(grug_mobs.registered_drop_hooks, fn)
-end
-
-function grug_mobs.run_drop_hooks(self, drops, tagger_name)
-	for _, fn in ipairs(grug_mobs.registered_drop_hooks) do
-		local out = fn(self, drops, tagger_name)
-		if out then
-			drops = out
-		end
-	end
-	return drops
-end
-
---
 -- Participant drop hooks (Round 28 ruling 41: quest-only drops).
 -- fn(self, participants, death_pos) runs once per kill that has at least one
 -- participant eligible for kill credit: the names of the players the quest
@@ -749,7 +727,7 @@ end
 -- Loot gate, called from the GRUG PATCH in mobs/api.lua item_drop (only for
 -- mobs registered through grug_mobs, i.e. `_grug_drop_rule`), also when the
 -- definition has no static drops. Returns the drop list to roll — a COPY, so
--- the hooks can never corrupt the def's own table — or nil when this mob must
+-- the roll can never corrupt the def's own table — or nil when this mob must
 -- not drop anything at all. The list is the mob's family table for its level
 -- band (Round 28 ruling 36, subtypes.lua band_drop_rows) where one exists,
 -- else the definition's static drops.
@@ -790,5 +768,5 @@ function grug_mobs._item_drop_filter(self, drops)
 			copy[i] = table.copy(drops[i])
 		end
 	end
-	return grug_mobs.run_drop_hooks(self, copy, tagger)
+	return copy
 end

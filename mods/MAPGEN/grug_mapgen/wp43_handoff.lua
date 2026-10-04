@@ -136,7 +136,6 @@ local PUBLIC_SYMBOL_TYPES = {
 	PROCESSED_MATERIALS = "table",
 	PROCESSED_BY_KEY = "table",
 	processed = "function",
-	CULTURAL_MATERIALS = "table",
 	SIGNATURE_WOODS = "table",
 	RACE_REGIONS = "table",
 	DENSITY = "table",
@@ -175,7 +174,6 @@ function handoff.project(materials)
 		natural_ground_nodes = copy_array(materials.NATURAL_GROUND_NODES),
 		resources = copy_graph(materials.RESOURCES),
 		processed_materials = copy_graph(materials.PROCESSED_MATERIALS),
-		cultural_materials = sorted_rows(materials.CULTURAL_MATERIALS),
 		signature_woods = sorted_rows(materials.SIGNATURE_WOODS),
 		race_regions = sorted_rows(materials.RACE_REGIONS),
 		density = project_density(materials.DENSITY),
@@ -282,9 +280,6 @@ function handoff.validate_registrations(projection, registered_items,
 		if (block.groups or {}).grug_natural then
 			fail("processed block is natural " .. material.block_node)
 		end
-	end
-	for _, material in ipairs(projection.cultural_materials) do
-		expect_registration(registered_items, material.item, "cultural material")
 	end
 	for _, wood in ipairs(projection.signature_woods) do
 		expect_registration(registered_nodes, wood.tree, "signature tree")

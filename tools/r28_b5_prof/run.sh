@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Round 28 Lane B5 engine probe: enchant operations from data/enchants.json,
-# no metal fittings, the six furnace-only dishes, two sample universal
-# reagents through the real loader and the cross-profession check, against the
-# real registry.
+# no metal fittings, the six furnace-only dishes and the cross-profession
+# check, against the real registry.
 #
 # The portable proof is portable_test.lua next to this file (LuaJIT).
 #

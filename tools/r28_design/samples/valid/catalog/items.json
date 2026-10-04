@@ -35,16 +35,5 @@
       "enchant:int:t1"
     ],
     "icon": "A grey tuft of fur."
-  },
-  {
-    "id": "grug_materials:glittering_tin",
-    "name": "Glittering Tin",
-    "tier": 1,
-    "kind": "reagent",
-    "description": "Tin with a quartz sparkle.",
-    "uses": [
-      "enchant family_input"
-    ],
-    "icon": "A sparkly tin nugget."
   }
 ]

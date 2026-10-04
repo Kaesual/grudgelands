@@ -128,7 +128,7 @@ local function current_rows(player)
 	for i = 1, size do
 		local stack = inv:get_stack("main", i)
 		if not stack:is_empty() then
-			local unit = grug_traders.sell_price(stack:get_name())
+			local unit = grug_traders.stack_sell_price(stack)
 			if unit > 0 then
 				rows[#rows + 1] = {
 					index = i,
@@ -442,7 +442,7 @@ local function do_sell(player, session, index, sell_all)
 		return
 	end
 	-- Price recomputed from the item, never read from the form.
-	local unit = grug_traders.sell_price(stack:get_name())
+	local unit = grug_traders.stack_sell_price(stack)
 	if unit <= 0 then
 		show(player, "The vendor does not want that.")
 		return

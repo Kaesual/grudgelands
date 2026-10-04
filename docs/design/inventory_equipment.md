@@ -133,9 +133,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger. The
     hand-slot table above says which slot takes which family. Level and
-    occupied-hand checks also apply; the level check covers a weapon in
-    either hand.
-    Ordinary T1 weapons require level 1 despite base-stat item level 3;
+    occupied-hand checks also apply; the level check covers every slot (below).
+    Ordinary T1 items require level 1 despite base-stat item level 3;
     elevated found-item levels retain their own requirement. Common `Usable by`
     tooltip text lists permitted classes; it never changes with the viewer.
     Broken items remain visibly equipped but provide no usable combat weapon.
@@ -174,8 +173,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   attribute prefix channel, one selectable HP/Mana/Crit suffix channel and
   one authored trinket special** (items_crafting.md §6.2). Goldsmith base items have empty enchant channels;
   applications have fixed tier values. It has no base-stat line, armor,
-  durability, refinement state, cultural finish or extra ordinary-special
-  channel. Trinkets carry **no armor class and no class
+  durability, refinement state or extra ordinary-special channel. Trinkets carry **no armor class and no class
   rank binding** — every class wears both slots, and they add no armor
   rating (combat_stats.md §2), so they do not contribute to armor. The
   Unique quality tier keeps the
@@ -184,24 +182,13 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   different identities may, with each special's authored two-slot stacking
   rule controlling their combined effect.
 - **Equipment effect channels are separate per stack** (integrated
-  2026-08-12):
-  - Ordinary equipment has at most one prefix and one
-    suffix, with no repeated stat. Trinkets retain their fixed exception.
-  - Exactly the six combat families weapon, offhand, head, chest, legs and feet
-    may additionally carry one **cultural finish**. The finish is an in-place,
-    deterministic culture/family effect; trinkets are never eligible. Different
-    cultures may be mixed freely across the six slots.
-  - An item may also carry at most one **PvP special**, independent of its
-    prefix/suffix and cultural-finish data. Applying another target-race special
-    overwrites that channel at full cost; applying the identical target again
-    is rejected before consuming anything.
-  - A cultural finish and a PvP special may coexist on the same eligible item.
-    Neither consumes an affix slot, changes the base identity/material tier,
-    nor creates a parallel registered-item catalog. Ordinary stat caps apply
-    after all equipment sources have been summed; Character displays effective
-    Crit/Dodge and armor rating/reduction, with formulas and caps explained in Help.
+  2026-08-12; cultural finishes and PvP specials removed in Round 33):
+  ordinary equipment has at most one prefix and one suffix, with no repeated
+  stat; trinkets retain their fixed exception. Ordinary stat caps apply
+  after all equipment sources have been summed; Character displays effective
+  Crit/Dodge and armor rating/reduction, with formulas and caps explained in Help.
   The complete effect, replacement, recipe and tooltip rules live in
-  `items_crafting.md` §4/§6.
+  `items_crafting.md` §6.
 - No ring/neck/shoulder slots in the MVP.
 - Slots are **player-inventory lists** with group-filtered `allow_put`
   (decided during WP15 — auto-persisted, simpler than the 3d_armor
@@ -211,12 +198,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   them, and the open Character page refreshes exactly once. Join uses that
   notification after `sfinv` and `player_api`; a genuine nested equipment
   write may cause the documented second notification pass.
-- **Weapon level requirement is implemented here:** the same `allow_put`
-  filter reads a weapon's generated `_grug_ilvl` (or `_grug_req_level`)
-  directly in either hand slot, rejects it when that value exceeds the
-  character's level, and says so in the message feed, naming the slot
-  (`grug_inventory/equipment.lua`). Items without a positive level, shields,
-  spellbooks and the armor slots are unrestricted. Rejecting
+- **The level requirement is implemented here** (Round 33, every equipment
+  slot): the same `allow_put` filter asks `grug_core.can_use_item_level` —
+  the stack's own `grug_req_level`, else the definition's `_grug_req_level`
+  (min(item level, 60); 1 for T1 items) — in every equipment slot, rejects
+  the item when that value exceeds the character's level, and says so in the
+  message feed, naming the slot (`grug_inventory/equipment.lua`). Items
+  without a positive level are unrestricted. The tooltip ends with
+  "Requires level N" above level 1 (`items_crafting.md` §6.1). Rejecting
   the equip is deliberate — letting the item sit in the slot without effect
   would be an invisible failure.
 - **Armor classes are bound to the character class** (decided
@@ -283,7 +272,7 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - Everyone uses the familiar 3×3 layouts to make plain weapons, tools and
   metal, cloth or leather armor. Plain feedstock preparation for cloth, leather
   and processed wood is also profession-free. Professional components such as
-  grips and settings are never base-item inputs.
+  settings are never base-item inputs.
 - Named enchant application and replacement use the owning profession station.
   Weaponsmith and Armorsmith share one Forge; Leatherworker uses the Tanning
   Rack, Tailor the Tailor Bench and Woodcarver the Carving Bench. These are
@@ -352,8 +341,7 @@ the Round 19 top-centre text list:
   (Round 31, `grug_pvp/hud.lua`, a status source read from
   `grug_pvp.state`): "Contested Territory" or "Enemy Territory" (untimed)
   while the location flags the player, "PvP flagged" with the countdown while
-  the button or PvP contact does. Registered but not set by anything yet: the
-  Warding Draught (a buff, green; WP5).
+  the button or PvP contact does.
 - **The combat state is not a status.** It never takes a row slot or appears
   on the Effects tab: `grug_core/combat_hud.lua` draws a 32 px gold-framed
   crossed-swords icon right of the health bar, where the "Combat" text was.
@@ -370,7 +358,7 @@ the Round 19 top-centre text list:
   "Effects": icon,
   name, remaining time and a detail line per status, refreshed about once a
   minute or on change while that tab is open, and "Professions" (Round 28
-  ruling 23): per known profession (primary slots, then Cooking) its tier,
+  ruling 23): per known profession (primary slots, then Cooking and Alchemy) its tier,
   "Crafts: n/m toward tier N+1" (`professions.md` §1 counts; "Highest tier
   reached." at T6) and, while the character's ten-level band caps the tier,
   the note "Capped by your level: reach level 10N+1, then craft once more

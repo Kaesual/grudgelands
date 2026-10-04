@@ -68,9 +68,6 @@ icons.STATUS = {
 		art("alchemy_swiftness")),
 	alchemy_cave = def("buff", "Cave Draught", "Night vision",
 		art("alchemy_cave")),
-	-- Planned (items_crafting.md Warding Draught); art delivered, no caller yet.
-	warding_draught = def("buff", "Warding Draught",
-		"Less damage from one race", art("warding_draught")),
 
 	-- Movement and mounts.
 	mount = def("buff", "Mount", "", art("mount_land"), {

@@ -226,7 +226,7 @@ node of it.
 **Capital service presentation (2026-09-20).** Each profession premise has
 at least one readable protected exterior product frame/sign and one interior
 fixed product stand/rack. Weaponsmith and Armorsmith retain separate identities
-inside their shared forge; Alchemist, Tailor, Leatherworker, Woodcarver,
+inside their shared forge; Alchemy, Tailor, Leatherworker, Woodcarver,
 Goldsmith and Cooking each have their own representative products. Displays
 have fixed identities, no mutable inventory, no collectible item entity and no
 punch/take/drop path; current-version activation restores them deterministically.

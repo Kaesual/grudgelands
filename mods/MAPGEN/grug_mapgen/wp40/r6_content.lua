@@ -120,22 +120,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		silver = {3, 4, {false, false, 256, 128, 256, 512}},
 		tin = {1, 8, {96, 192, 384, 384, 384, 384}},
 	}
-	local CULTURAL_EXPECTED = {
-		dwarf = {"runeslate", "elandor_stormvault_heights",
-			{"grug_pine_hills", "grug_crags", "grug_crags_snowy"}},
-		elf = {"moonresin", "elandor_glassroot_wilds",
-			{"grug_elf_forest", "grug_deep_forest", "grug_jungle_fringe"}},
-		human = {"sunwax", "elandor_ashenward_march",
-			{"grug_meadows", "grug_deep_forest"}},
-		orc = {"red_ochre", "kragmar_bannerbreak_mesa",
-			{"grug_savanna", "grug_badlands"}},
-		troll = {"spirit_resin", "kragmar_thunderroot_wilds",
-			{"grug_jungle_edge", "grug_deep_jungle", "grug_swamp",
-				"grug_badlands_east"}},
-		undead = {"gravesalt", "kragmar_blackwind_rise",
-			{"grug_blight", "grug_bone_forest", "grug_swamp", "grug_beach"}},
-	}
-
 	local function fail(prefix, message)
 		error(prefix .. ": " .. message, 0)
 	end
@@ -221,7 +205,7 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	exact_fields(manifest_values, {
 		schema = true, contract_sha256 = true, r5_manifest_values = true,
 		input_sha256 = true, input_bytes = true, surfaces = true,
-		resources = true, cultural = true, decorations = true,
+		resources = true, decorations = true,
 		r2_layout_body_sha256 = true,
 	}, "manifest values", "fail_manifest")
 	if manifest_values.schema ~= "grug_wp40_r6_manifest_values_v1" or
@@ -311,34 +295,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 			fail("fail_resource_manifest", "resource rows are not ASCII ordered")
 		end
 		resources[index], resource_by_key[row.key] = deep_copy(row), deep_copy(row)
-	end
-
-	local cultural, cultural_by_race, cultural_by_key = {}, {}, {}
-	if dense(manifest_values.cultural, "cultural catalog",
-			"fail_cultural_registration") ~= 6 then
-		fail("fail_cultural_registration", "cultural catalog population differs")
-	end
-	for index = 1, #manifest_values.cultural do
-		local row = manifest_values.cultural[index]
-		exact_fields(row, {race = true, key = true, ordinary_denominator = true,
-			concentrated_denominator = true, biomes = true, concentrated_zone = true},
-			"cultural row", "fail_cultural_registration")
-		local expected = CULTURAL_EXPECTED[text(row.race, "cultural race",
-			"fail_cultural_registration")]
-		if not expected or cultural_by_race[row.race] or cultural_by_key[row.key] or
-				row.key ~= expected[1] or row.ordinary_denominator ~= 4096 or
-				row.concentrated_denominator ~= 1024 or
-				row.concentrated_zone ~= expected[2] or
-				dense(row.biomes, "cultural biomes", "fail_cultural_registration") ~= #expected[3] or
-				not equal_array(row.biomes, expected[3]) then
-			fail("fail_cultural_registration", "cultural row differs at " .. row.race)
-		end
-		if index > 1 and not less_bytes(manifest_values.cultural[index - 1].key,
-				row.key) then
-			fail("fail_cultural_registration", "cultural rows are not key ordered")
-		end
-		cultural[index] = deep_copy(row)
-		cultural_by_race[row.race], cultural_by_key[row.key] = deep_copy(row), deep_copy(row)
 	end
 
 	local decorations, decoration_by_id = {}, {}
@@ -582,7 +538,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 	function module.required_inputs() return deep_copy(REQUIRED_INPUTS) end
 	function module.surfaces() return deep_copy(surfaces) end
 	function module.resources() return deep_copy(resources) end
-	function module.cultural() return deep_copy(cultural) end
 	function module.decorations() return deep_copy(decorations) end
 	function module.surface(id) return deep_copy(surface_by_id[id]) end
 	-- Fresh-world quality revision: coherent patches refine the base catalog.
@@ -949,8 +904,6 @@ local function content_factory(manifest_values, content_contract, wp43_projectio
 		end
 	end
 	function module.resource(key) return deep_copy(resource_by_key[key]) end
-	function module.cultural_for_race(race) return deep_copy(cultural_by_race[race]) end
-	function module.cultural_for_key(key) return deep_copy(cultural_by_key[key]) end
 	function module.decoration(id) return deep_copy(decoration_by_id[id]) end
 	function module.content_ref(name) return content_ref_by_name[name] end
 	function module.param2_kind(content_ref)

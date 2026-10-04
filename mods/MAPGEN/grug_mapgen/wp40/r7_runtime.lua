@@ -455,7 +455,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 				delta_schema = row.profile.delta_schema,
 				blueprints = settlement_config.identities}
 		end
-		local cultural = catalog.cultural_registrations()
 		local gathering_manifest = catalog.manifest()
 		local heightmap_fetches = 0
 		local mapgen_context = {schema = "grug_wp40_r5_mapgen_context_v1"}
@@ -492,7 +491,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		if authority_only then
 			zones_session, r6_identity = r6_module.new_authority(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
-				template_source, cultural)
+				template_source)
 			if type(zones_session) ~= "table" or type(r6_identity) ~= "table" or
 					r6_identity.schema ~= "grug_wp40_r6_authority_identity_v1" or
 					type(r6_identity.planner_source) ~= "table" or
@@ -510,7 +509,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			session, writer, zones_session, settlement_fixture, r6_identity =
 				constructor(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
-				template_source, cultural, successor)
+				template_source, successor)
 			if type(session) ~= "table" or type(writer) ~= "table" or
 					type(zones_session) ~= "table" then
 				fail("production session assembly differs")
@@ -557,7 +556,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			settlement_blueprints = settlement_identities,
 			anchor_roster = anchor_roster.copy_rows(),
 			anchor_roster_sha256 = anchor_roster.sha256,
-			cultural_registrations = cultural,
 			decoded_templates = r6_identity.template_records,
 			consumer_payload = consumer_payload,
 			protection_depth_below_placement = source.protection_depth_below_placement})
@@ -578,9 +576,6 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					p9g_rows = catalog.p9g_sources(),
 					extra_natural_names = (function()
 						local names = {}
-						for _, row in ipairs(catalog.cultural_sources()) do
-							names[#names + 1] = row.source_node
-						end
 						for _, name in ipairs(world_catalog.names) do names[#names + 1] = name end
 						return names
 					end)(),
@@ -603,7 +598,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 					surface_mob_level_at = public_zones_session.surface_mob_level_at,
 				}),
 				preparation_source = dofile(wp40_directory .. "/preparation_source.lua")(
-					r6_identity.planner_source, r6_identity.template_records, cultural,
+					r6_identity.planner_source, r6_identity.template_records,
 					settlements, public_zones_session, anchor_roster,
 					full_seed .. ":" .. manifest.values.source_projection_sha256 .. ":" ..
 						dofile(wp40_directory .. "/preparation_identity.lua")(
@@ -615,7 +610,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 		-- preparation authority, for the Round 23 air-chunk fast path
 		-- (air_chunks.lua). Its identity string is not used here.
 		local writer_bounds = dofile(wp40_directory .. "/preparation_source.lua")(
-			r6_identity.planner_source, r6_identity.template_records, cultural,
+			r6_identity.planner_source, r6_identity.template_records,
 			settlements, public_zones_session, anchor_roster, "emerge", sha256_hex)
 		local direct_session, direct_fixture
 		if evidence_mode == true then
@@ -623,7 +618,7 @@ return function(core_api, wp40_directory, schematic_directory, projection, catal
 			direct_session, ignored_writer, ignored_zones, direct_fixture =
 				constructor(full_seed, 1,
 				r6_manifest, content_set.production, mapgen_context, projection,
-				template_source, cultural)
+				template_source)
 		elseif evidence_mode == "horizontal" then
 			direct_fixture = r6_identity.direct_evidence_fixture
 		end

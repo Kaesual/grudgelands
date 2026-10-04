@@ -48,7 +48,9 @@ at commit. Partial output transfers retain already-produced remainder without
 another material debit or progress award. Closing a UI loses no contents.
 
 All automatic furnace, dual-furnace and brewing completion is universal and
-gives no profession progress. Only qualified cooks assemble profession dishes.
+gives no profession progress, and neither does crafting a station or an
+intermediate (Round 33, `items_crafting.md` §2.3). Only qualified cooks
+assemble profession dishes.
 Only qualified alchemists assemble potion mixtures, in the player's own 3x3
 grid; anyone may finish those mixtures at a Brewing Stand. Direct grid dishes
 still require Cooking and grant progress once; the six Hearty dishes that have
@@ -116,8 +118,8 @@ equipment family F and stat S consumes three items:
    the setting;
 2. the tier's **stat loot** item for S, a mob loot item of the tier band;
 3. the tier's **family input** for F, a mining or gathering item (it may come
-   from an earlier tier, be a raw gem, an alloy ingredient such as a tin or
-   copper bar, or a universal reagent).
+   from an earlier tier, be a raw gem or an alloy ingredient such as a tin or
+   copper bar).
 
 Prefix and suffix of one stat share these inputs; the trinket's prefix pool
 (Strength/Intelligence/Dexterity) and suffix pool (maximum HP/maximum
@@ -148,15 +150,7 @@ These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);
 UI selection distinguishes operations without manufacturing ambiguous grid recipes.
 
-**Universal reagents.** A few crafted enchant inputs (about two per tier at
-most) anyone can make: one shapeless crafting-grid recipe or one furnace
-recipe from loot, mining or gathering items, never from a profession product.
-They are listed in `mods/ITEMS/grug_professions/data/reagents.json` (`id`,
-`name`, `tier`, `method` grid or furnace, `inputs`, `output_count`; design
-frame §4.5), register as new craft items (in grug_professions or a mod it
-depends on, never replacing an existing item) with their tier as ingredient
-tier, and appear in the Basics book. Every input must be a registered item. The Round 28
-catalogue defines none (the shipped list is empty).
+There are no universal reagents (removed in Round 33).
 
 ## Equipment and lifetime
 

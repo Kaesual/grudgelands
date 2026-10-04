@@ -65,6 +65,7 @@ for identity_index = 1, #identities do
 			groups = {grug_gear = 1, grug_equip_trinket = 1},
 			stack_max = 1,
 			_grug_ilvl = ILVLS[tier],
+			_grug_req_level = grug_gear.bracket_required_level(tier, ILVLS[tier]),
 			_grug_bracket = tier,
 			_grug_quality = 1,
 			_grug_quality_family = "trinket",

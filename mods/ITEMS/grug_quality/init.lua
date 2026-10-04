@@ -8,9 +8,8 @@
 --   grug_quality       integer 1 Common / 2 Uncommon / 3 Rare / 4 reserved
 --   grug_ench          ordered {channel, stat, value, tier?} affixes
 --   grug_ilvl          per-stack item level; absent falls back to _grug_ilvl
---   grug_req_level     per-stack weapon requirement, absent without an ilvl
+--   grug_req_level     per-stack equip requirement, absent without an ilvl
 --   grug_base_name     uncolored, unaffixed definition name used on rebuild
---   grug_roll_window   last §6.3 source window (diagnostic/provenance)
 --   grug_roll_seed     exact PcgRandom seed used for the last affix roll
 --   grug_trinket_special authored passive text preserved across regeneration
 --
@@ -90,25 +89,40 @@ local BANDS = {
 	}},
 }
 
-local WINDOWS = {
-	world = {0.00, 0.60},
-	elite = {0.30, 0.90},
-	rare = {0.50, 1.00},
-	boss = {0.80, 1.00},
+-- Gear drops per kill (round33-plan.md §2.1), percent of a white, a blue and
+-- a gold item. One roll decides, so a kill drops at most one item. Named
+-- rares (tier "rare") share the elite row; a critter drops no gear.
+local ELITE_DROPS = {white = 10, blue = 10, gold = 5}
+grug_items.DROP_CHANCES = {
+	normal = {white = 5, blue = 2, gold = 1},
+	elite = ELITE_DROPS,
+	rare = ELITE_DROPS,
 }
 
--- Percentages are independent. The named-rare Uncommon and Rare rows are
--- intentionally additive, not an upgrade ladder.
-grug_items.DROP_CHANCES = {
-	normal = {uncommon = 3, rare = 0, window = "world"},
-	elite = {uncommon = 20, rare = 3, window = "elite"},
-	rare = {uncommon = 100, rare = 25, window = "rare"},
-	boss = {uncommon = 0, rare = 100, window = "boss"},
-	-- A PvP fortress General (Round 31, user ruling): no reward ledger, but
-	-- every enemy player's kill of him rolls his level's gear at a raised
-	-- chance and in the named rares' value window.
-	general = {uncommon = 60, rare = 25, window = "rare"},
-}
+-- Bosses: the Kings and the dragons through their reward ledger, a fortress
+-- General on every enemy player's kill of him (Round 31: he has no ledger).
+-- Always `count` items, each gold at `gold` percent, else blue, at a fixed
+-- item level. Their other loot (Fallen Crown, Scaled Hide, war trophies)
+-- comes from their own code.
+grug_items.BOSS_DROPS = {count = 2, gold = 50,
+	ilvl = {king = 65, general = 65, dragon = 70}}
+
+-- A bag from any mob, independent of the gear roll: `chance` percent per
+-- kill, the size by the mob's level.
+grug_items.BAG_DROPS = {chance = 0.1, sizes = {
+	{maximum = 15, item = "grug_inventory:bag_small"},
+	{maximum = 30, item = "grug_inventory:bag_medium"},
+	{maximum = 45, item = "grug_inventory:bag_large"},
+	{item = "grug_inventory:bag_great"},
+}}
+
+-- The enchant tier of an item level (round33-plan.md §2.3): 1-10 is T1 ...
+-- 51-60 T6; above 60 (boss drops) T7.
+function grug_items.enchant_tier(ilvl)
+	ilvl = math.floor(tonumber(ilvl) or 1)
+	if ilvl > 60 then return 7 end
+	return math.max(1, math.ceil(ilvl / 10))
+end
 
 local ENCHANT_VALUES = {
 	attribute = {2, 3, 5, 7, 9, 10},
@@ -138,7 +152,6 @@ function grug_items.enchant_pool(family, channel)
 	return POOLS[family == "trinket" and ("trinket_" .. channel) or family]
 end
 grug_items.BANDS = BANDS
-grug_items.WINDOWS = WINDOWS
 
 local DERIVED_KEYS = {
 	"_grug_strength", "_grug_dexterity", "_grug_intelligence",
@@ -220,19 +233,23 @@ local function effective_ilvl(stack, supplied)
 	return value and clamp(math.floor(value), 1, 75) or nil
 end
 
+-- Every equipment family carries the requirement min(ilvl, 60), or its
+-- definition's up to the definition's own item level, so a first-bracket
+-- item stays level 1 up to its item level 3 (round33-plan.md §2.2).
+-- Callers pass equipment stacks only (family_for is not "tool").
 local function write_item_level_meta(stack, meta, ilvl)
 	meta:set_int("grug_ilvl", ilvl)
-	local groups = (stack:get_definition() or {}).groups or {}
-	if (groups.grug_equip_weapon or 0) > 0 then
-		local definition = stack:get_definition() or {}
-		local authored = ilvl == tonumber(definition._grug_ilvl) and
-			tonumber(definition._grug_req_level) or nil
-		meta:set_int("grug_req_level", authored or math.min(ilvl, 60))
-	else
-		-- The requirement is weapon-only (§6.1). Clearing this also makes a
-		-- rebuilt armor/offhand stack fail closed against stale derived meta.
-		meta:set_string("grug_req_level", "")
-	end
+	local definition = stack:get_definition() or {}
+	local authored = ilvl <= (tonumber(definition._grug_ilvl) or 0) and
+		tonumber(definition._grug_req_level) or nil
+	meta:set_int("grug_req_level", authored or math.min(ilvl, 60))
+end
+
+-- A stack's equip requirement: its own, else its definition's; nil for none.
+local function required_level(stack)
+	local value = stack:get_meta():get_int("grug_req_level")
+	if value > 0 then return value end
+	return tonumber((stack:get_definition() or {})._grug_req_level)
 end
 
 function grug_items.effective_ilvl(stack)
@@ -308,14 +325,19 @@ local function rounded_value(stat, raw)
 	return math.floor(raw * factor + 0.5) / factor
 end
 
-local function roll_value(stat, ilvl, window, rng)
+-- The value of one found enchant at its item's level and enchant tier: a
+-- uniform roll in the level's band range (the tier caps nothing yet).
+local function found_value(stat, ilvl, tier, rng)
 	local range = range_for(stat, ilvl)
-	local source = WINDOWS[window]
-	if not source then error("grug_quality: unknown roll window " .. tostring(window), 0) end
-	local window_fraction = source[1] + random_fraction(rng) *
-		(source[2] - source[1])
-	return rounded_value(stat, range[1] + window_fraction *
+	return rounded_value(stat, range[1] + random_fraction(rng) *
 		(range[2] - range[1]))
+end
+
+-- One found enchant (a drop, a boss reward, a vendor's rolled item): every
+-- found roll comes here with its item's enchant tier.
+local function found_affix(channel, stat, ilvl, rng)
+	return {channel = channel, stat = stat,
+		value = found_value(stat, ilvl, grug_items.enchant_tier(ilvl), rng)}
 end
 
 local function read_affixes(meta)
@@ -508,6 +530,9 @@ function grug_items.regenerate_description(stack, player)
 	for index = 1, #inherited do lines[#lines + 1] = inherited[index] end
 	for index = 1, #affixes do lines[#lines + 1] = affix_line(affixes[index], player) end
 	lines[#lines + 1] = grug_gear.usable_by(stack)
+	local requirement = family ~= "tool" and
+		grug_gear.requirement_line(required_level(stack))
+	if requirement then lines[#lines + 1] = requirement end
 	local repair = rawget(_G, "grug_repair")
 	if repair then
 		local durability = repair.durability_line(stack)
@@ -549,12 +574,6 @@ local function apply_capabilities(stack, totals)
 	end
 end
 
-local function rolled_count(quality, rng)
-	if quality == 2 then return 1 end
-	if quality == 3 then return 2 end
-	return 0
-end
-
 local function choose_unique(pool, count, rng)
 	local choices = {}
 	for index = 1, #pool do choices[index] = pool[index] end
@@ -567,7 +586,11 @@ local function choose_unique(pool, count, rng)
 	return out
 end
 
-function grug_items.roll_enchants(stack, ilvl, window, count, seed)
+-- A found item at item level `ilvl` with `count` (0, 1 or 2) random enchants;
+-- without a count, the stack's preset quality decides it. Zero makes a plain
+-- Common at that item level. A trinket's prefix and suffix draw from their own
+-- pools, so its single enchant takes either channel at even odds.
+function grug_items.roll_enchants(stack, ilvl, count, seed)
 	if not stack or stack:is_empty() then return false, "empty item" end
 	local family = family_for(stack)
 	if not family or (family ~= "trinket" and not POOLS[family]) then
@@ -575,32 +598,29 @@ function grug_items.roll_enchants(stack, ilvl, window, count, seed)
 	end
 	ilvl = effective_ilvl(stack, ilvl)
 	if not ilvl then return false, "item has no item level" end
-	if not WINDOWS[window] then return false, "unknown roll window" end
 	local meta = stack:get_meta()
-	local rng, used_seed = rng_for(seed, stack:get_name() .. ":" .. window)
-	local quality = meta:get_int("grug_quality")
-	if quality < 1 or quality > 4 then quality = 1 end
-	local stats = {}
-	if family == "trinket" then
-		stats[1] = POOLS.trinket_prefix[rng:next(1, #POOLS.trinket_prefix)]
-		stats[2] = POOLS.trinket_suffix[rng:next(1, #POOLS.trinket_suffix)]
-		if quality < 2 then quality = 2 end
-	else
-		local wanted = count == nil and rolled_count(quality, rng) or
-			clamp(math.floor(tonumber(count) or 0), 0, 2)
-		if wanted == 0 then return false, "quality has no affix budget" end
-		stats = choose_unique(POOLS[family], wanted, rng)
-		if #stats == 1 then quality = 2 else quality = 3 end
-	end
+	local rng, used_seed = rng_for(seed, stack:get_name())
+	-- Quality is the enchant count plus one (Common 1, Uncommon 2, Rare 3).
+	local wanted = count == nil and meta:get_int("grug_quality") - 1 or count
+	wanted = clamp(math.floor(tonumber(wanted) or 0), 0, 2)
 	local affixes = {}
-	for index = 1, #stats do
-		affixes[index] = {channel = index == 1 and "prefix" or "suffix", stat = stats[index],
-			value = roll_value(stats[index], ilvl, window, rng)}
+	if family == "trinket" then
+		local channels = wanted == 2 and {"prefix", "suffix"} or
+			(wanted == 1 and {rng:next(1, 2) == 1 and "prefix" or "suffix"} or {})
+		for index, channel in ipairs(channels) do
+			local pool = POOLS["trinket_" .. channel]
+			affixes[index] = found_affix(channel, pool[rng:next(1, #pool)], ilvl, rng)
+		end
+	else
+		local stats = choose_unique(POOLS[family], wanted, rng)
+		for index = 1, #stats do
+			affixes[index] = found_affix(index == 1 and "prefix" or "suffix",
+				stats[index], ilvl, rng)
+		end
 	end
-	meta:set_int("grug_quality", quality)
+	meta:set_int("grug_quality", #affixes + 1)
 	write_item_level_meta(stack, meta, ilvl)
-	meta:set_string("grug_ench", core.serialize(affixes))
-	meta:set_string("grug_roll_window", window)
+	meta:set_string("grug_ench", #affixes > 0 and core.serialize(affixes) or "")
 	meta:set_int("grug_roll_seed", used_seed)
 	local totals = write_derived(meta, affixes)
 	apply_capabilities(stack, totals)
@@ -707,7 +727,7 @@ function grug_items.crafted_output(stack, player)
 	meta:set_int("grug_quality", 1)
 	meta:set_string("grug_ench", "")
 	local ilvl = effective_ilvl(stack)
-	if ilvl then write_item_level_meta(stack, meta, ilvl) end
+	if ilvl and family_for(stack) ~= "tool" then write_item_level_meta(stack, meta, ilvl) end
 	local totals = write_derived(meta, {})
 	apply_capabilities(stack, totals)
 	grug_items.regenerate_description(stack, player)
@@ -717,58 +737,71 @@ function grug_items.crafted_output(stack, player)
 	return true
 end
 
-local function gear_stack(itemname, ilvl, quality, window, rng, seed)
+local function gear_stack(itemname, ilvl, quality, rng, seed)
 	local stack = ItemStack(itemname)
-	local meta = stack:get_meta()
-	meta:set_int("grug_quality", quality)
-	write_item_level_meta(stack, meta, ilvl)
 	-- A child seed keeps each independently dropped stack reproducible without
 	-- sharing mutable RNG state with its affix sequence.
 	local child_seed = seed + rng:next(1, 1000000)
-	grug_items.roll_enchants(stack, ilvl, window, nil, child_seed)
+	grug_items.roll_enchants(stack, ilvl, quality - 1, child_seed)
 	return stack
 end
 
+-- "king", "dragon" or "general" for a boss that rolls BOSS_DROPS, else nil.
+-- The General leads a "general:" encounter; his bodyguards share the id but
+-- are no leader, and a King's royal guards share his.
+local function boss_kind(self)
+	local id = self._grug_boss_id
+	if type(id) ~= "string" then return nil end
+	if id:match("^dragon:") then return "dragon" end
+	if not self._grug_royal_king then return nil end
+	if id:match("^king:") then return "king" end
+	if id:match("^general:") then return "general" end
+	return nil
+end
+
+local function bag_for(level)
+	for _, row in ipairs(grug_items.BAG_DROPS.sizes) do
+		if not row.maximum or level <= row.maximum then return row.item end
+	end
+end
+
+-- What one kill drops (round33-plan.md §2.1): at most one gear item by the
+-- mob's tier at its level, two at a boss's fixed item level, and,
+-- independently, a bag. A list of ItemStacks and the seed used.
 function grug_items.roll_mob_gear(self, seed)
 	if not self or self._grug_no_quality_loot then return {} end
-	local tier = self and self._grug_tier or "normal"
-	if tier == "critter" then return {} end
-	local boss_id = self._grug_boss_id
-	local ledger_boss = type(boss_id) == "string" and
-		(boss_id:match("^king:") or boss_id:match("^dragon:"))
-	-- The General leads a "general:" encounter; his bodyguards share the id
-	-- but are no leader.
-	local general = type(boss_id) == "string" and boss_id:match("^general:") and
-		self._grug_royal_king and true or false
-	local source = general and "general" or
-		((ledger_boss or self._grug_royal_king) and "boss" or tier)
-	if not grug_items.DROP_CHANCES[source] then source = "normal" end
-	local row = grug_items.DROP_CHANCES[source]
-	local ilvl
-	if type(boss_id) == "string" and boss_id:match("^king:") then
-		ilvl = 70
-	elseif type(boss_id) == "string" and boss_id:match("^dragon:") then
-		ilvl = 75
-	elseif general then
-		-- His own level (65), above the ordinary mob ceiling of 60.
-		ilvl = clamp(math.floor(tonumber(self._grug_level) or 1), 1, 70)
-	else
-		ilvl = clamp(math.floor(tonumber(self._grug_level) or 1), 1, 60)
-	end
-	local material_tier = clamp(math.floor((ilvl - 1) / 10) + 1, 1, 6)
-	local catalog = grug_gear.catalog[material_tier]
-	local items = catalog and catalog.all or {}
-	if #items == 0 then return {} end
+	local tier = self._grug_tier or "normal"
+	local boss = boss_kind(self)
+	local level = math.max(1, math.floor(tonumber(self._grug_level) or 1))
+	local ilvl = boss and grug_items.BOSS_DROPS.ilvl[boss] or math.min(level, 60)
+	-- The pool of the item level's material tier; boss drops above 60 are T6.
+	local items = grug_gear.drop_pool[grug_items.enchant_tier(math.min(ilvl, 60))]
 	local rng, used_seed = rng_for(seed,
-		(self.name or "mob") .. ":" .. source .. ":" .. ilvl)
+		(self.name or "mob") .. ":" .. (boss or tier) .. ":" .. ilvl)
 	local out = {}
 	local function add(quality)
 		local itemname = items[rng:next(1, #items)]
-		out[#out + 1] = gear_stack(itemname, ilvl, quality, row.window, rng,
+		out[#out + 1] = gear_stack(itemname, ilvl, quality, rng,
 			used_seed + #out * 104729)
 	end
-	if random_chance(rng, row.uncommon) then add(2) end
-	if random_chance(rng, row.rare) then add(3) end
+	if boss then
+		for _ = 1, grug_items.BOSS_DROPS.count do
+			add(random_chance(rng, grug_items.BOSS_DROPS.gold) and 3 or 2)
+		end
+	elseif tier ~= "critter" then
+		local row = grug_items.DROP_CHANCES[tier] or grug_items.DROP_CHANCES.normal
+		local roll = rng:next(1, 10000)
+		if roll <= row.white * 100 then
+			add(1)
+		elseif roll <= (row.white + row.blue) * 100 then
+			add(2)
+		elseif roll <= (row.white + row.blue + row.gold) * 100 then
+			add(3)
+		end
+	end
+	if random_chance(rng, grug_items.BAG_DROPS.chance) then
+		out[#out + 1] = ItemStack(bag_for(level))
+	end
 	return out, used_seed
 end
 

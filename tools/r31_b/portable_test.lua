@@ -357,7 +357,7 @@ do
 	-- A loot roll (roll_enchants) writes the image too.
 	local rolled = ItemStack("grug_gear:chest_leather_cured")
 	rolled:get_meta():set_int("grug_quality", 3)
-	local ok = grug_items.roll_enchants(rolled, 20, "world", 2, 4242)
+	local ok = grug_items.roll_enchants(rolled, 20, 2, 4242)
 	local prefix, suffix = grug_visuals.affix_pair(grug_items.get_affixes(rolled))
 	check(ok and prefix and suffix, "loot roll gives two affixes")
 	check(rolled:get_meta():get_string("inventory_image") ==

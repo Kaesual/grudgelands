@@ -228,7 +228,7 @@ function factory.install_jobs(jobs)
 		local recipe = station_recipes[index]
 		jobs.register_recipe({
 			profession = recipe.profession, tier = 3, station = "grid",
-			inputs = recipe.inputs, output = recipe.output,
+			inputs = recipe.inputs, output = recipe.output, progress = false,
 			hint = "Craft in the inventory grid",
 		})
 	end

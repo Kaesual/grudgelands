@@ -92,8 +92,6 @@ local function registration_checks()
 	check(core.registered_items["grug_mobs:crop_ledger"] ~= nil, "quest item registered")
 	local tusk = core.registered_items["grug_mobs:boar_tusk"]
 	check(tusk and tusk.description == "Boar Tusk", "existing boar tusk untouched")
-	check(core.registered_items["grug_materials:glittering_tin"] == nil,
-		"reagent not registered by grug_mobs")
 end
 
 ------------------------------------------------------------------------------

@@ -26,7 +26,7 @@ STATUS_IDS = """food elixir_vigor elixir_focus elixir_precision elixir_stoneskin
 elixir_deepwater alchemy_swiftness alchemy_cave mount_land mount_flight shield
 move_immune talent_unbroken talent_ruination talent_whitehot talent_turn_aside
 talent_last_word talent_untouchable poisoned slowed rooted stunned scorched
-in_combat pvp_tagged pvp_contested warding_draught""".split()
+in_combat pvp_tagged pvp_contested""".split()
 CLASS_IDS = ["warrior", "mage", "priest", "scout"]
 DEBUFFS = {"poisoned", "slowed", "rooted", "stunned", "scorched"}
 NEUTRALS = {"in_combat", "pvp_tagged", "pvp_contested"}
