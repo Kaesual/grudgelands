@@ -937,7 +937,10 @@ drop no gear by design (Round 34 ruling 7).
 ### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
 
 Set aside by the user (2026-10-03): optional, not planned for now; POIs and
-the fortresses stay at their fixed positions. If they move,
+the fortresses stay at their fixed positions. Confirmed by the user
+(2026-10-04, after the Round 34 seed failure): the map stays as it is; robustness comes
+from testing (a seed fleet before merging world-generation changes and at the end of
+such rounds), not from moving POIs. If they move,
 the zone's mob-level distribution must be respected too (a POI's level band
 must fit the level field where it lands).
 
