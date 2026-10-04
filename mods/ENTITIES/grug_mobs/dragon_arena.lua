@@ -67,32 +67,37 @@ function M.hazard(nodes, name)
 	return nil
 end
 
--- Thin ice (user ruling 2026-10-04, Round 34): every thin-ice node a player
--- steps on breaks, with its four neighbours, ICE_BREAK_DELAY seconds later,
--- whether the player is still there or not. A node holds at most one pending
--- break, server-wide: stepping on it again, or on a neighbour, never resets
--- or postpones it (the earlier break wins).
-M.ICE_CROSS = {{0, 0}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}}
+-- Thin ice (user ruling 2026-10-04, Round 34, refined the same day): each
+-- sample of the 0.25 s hazard pass marks every thin-ice node in the 3x3x3
+-- cube around a player's feet, and a marked node breaks ICE_BREAK_DELAY
+-- seconds later, whether the player is still there or not. The cube covers
+-- the gap between two samples, so the path between them is not walked. A
+-- node holds at most one pending break, server-wide: marking it again never
+-- resets or postpones it (the earlier break wins).
 
--- A step on the thin-ice node `at` at time `now`: claims the node and those
--- of its four neighbours without a pending break (`pending`: node key ->
--- true; `key_of(pos)` the key) and returns their break event {due, at,
--- nodes}, or nil when all five were pending already.
-function M.ice_step(pending, at, now, key_of)
+-- A sample at `feet` (a rounded node position) at time `now`: marks every
+-- node of the cube that `is_thin_ice(pos)` and has no pending break
+-- (`pending`: node key -> true; `key_of(pos)` the key) and returns their
+-- break event {due, at, nodes}, or nil when nothing new was marked.
+function M.ice_step(pending, feet, now, key_of, is_thin_ice)
 	local nodes = {}
-	for _, d in ipairs(M.ICE_CROSS) do
-		local pos = {x = at.x + d[1], y = at.y, z = at.z + d[2]}
-		local key = key_of(pos)
-		if not pending[key] then
-			pending[key] = true
-			nodes[#nodes + 1] = pos
+	for dy = -1, 1 do
+		for dx = -1, 1 do
+			for dz = -1, 1 do
+				local pos = {x = feet.x + dx, y = feet.y + dy, z = feet.z + dz}
+				local key = key_of(pos)
+				if not pending[key] and is_thin_ice(pos) then
+					pending[key] = true
+					nodes[#nodes + 1] = pos
+				end
+			end
 		end
 	end
 	if #nodes == 0 then return nil end
-	return {due = now + M.ICE_BREAK_DELAY, at = at, nodes = nodes}
+	return {due = now + M.ICE_BREAK_DELAY, at = feet, nodes = nodes}
 end
 
--- The events at the head of `queue` (kept in step order) that are due at
+-- The events at the head of `queue` (kept in sample order) that are due at
 -- `now`, removed from it.
 function M.ice_due(queue, now)
 	local due = {}
@@ -100,24 +105,6 @@ function M.ice_due(queue, now)
 		due[#due + 1] = table.remove(queue, 1)
 	end
 	return due
-end
-
--- The positions on a player's path from the last hazard sample `from` to
--- `to` (`to` included, `from` not), at most ICE_PATH_STEP apart, so a fast
--- player skips no node between two samples; only `to` without a previous
--- sample or after a jump longer than ICE_PATH_MAX steps (a teleport).
-M.ICE_PATH_STEP, M.ICE_PATH_MAX = 0.5, 16
-function M.path_points(from, to)
-	if not from then return {to} end
-	local dx, dy, dz = to.x - from.x, to.y - from.y, to.z - from.z
-	local steps = math.ceil(math.sqrt(dx * dx + dy * dy + dz * dz) / M.ICE_PATH_STEP)
-	if steps <= 1 or steps > M.ICE_PATH_MAX then return {to} end
-	local points = {}
-	for i = 1, steps do
-		local f = i / steps
-		points[i] = {x = from.x + dx * f, y = from.y + dy * f, z = from.z + dz * f}
-	end
-	return points
 end
 
 return M

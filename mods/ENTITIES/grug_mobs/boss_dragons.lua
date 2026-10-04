@@ -278,25 +278,16 @@ local function effect_node_at_feet(pos)
 end
 
 -- Thin ice (Round 34 ruling 9, dragon_arena.lua): the breaks pending
--- server-wide (node key -> true) and their events in step order, on the
+-- server-wide (node key -> true) and their events in sample order, on the
 -- hazard pass's own clock. Only the Wyrmglass arena lays thin ice
--- (arena_layout.hazard_at); inside it each player's path since the last
--- sample is walked, so a fast runner skips no node.
+-- (arena_layout.hazard_at), so only players inside it are sampled.
 local ICE_ARENA = "dragon:wyrmglass"
 local ice_clock = 0
 local ice_pending, ice_queue = {}, {}
-local ice_last = {} -- player name -> position of the last sample in the arena
 
--- The thin-ice node a position stands on (the node below the feet, else the
--- feet node), or nil.
-local function thin_ice_under(pos)
-	local feet = vector.round(pos)
-	local below = {x = feet.x, y = feet.y - 1, z = feet.z}
-	local node = core.get_node_or_nil(below)
-	if node and node.name == ARENA_NODES.thin_ice then return below end
-	node = core.get_node_or_nil(feet)
-	if node and node.name == ARENA_NODES.thin_ice then return feet end
-	return nil
+local function is_thin_ice(pos)
+	local node = core.get_node_or_nil(pos)
+	return node ~= nil and node.name == ARENA_NODES.thin_ice
 end
 
 -- One break event: its nodes that are still thin ice turn to ice water (it
@@ -318,10 +309,6 @@ local function break_ice(event)
 	end
 end
 
-core.register_on_leaveplayer(function(player)
-	ice_last[player:get_player_name()] = nil
-end)
-
 core.register_globalstep(function(dtime)
 	effect_clock = effect_clock + dtime
 	scorch_clock = scorch_clock + dtime
@@ -340,20 +327,14 @@ core.register_globalstep(function(dtime)
 		local pname = player:get_player_name()
 		if pos and player:get_hp() > 0 then
 			local node = effect_node_at_feet(pos)
-			-- Arena hazards (Round 31 DA2): thin ice breaks 1 s after a step
-			-- on it (Round 34); ice water and ember fissures hurt once a
+			-- Arena hazards (Round 31 DA2): thin ice around the feet breaks
+			-- 1 s after a sample (Round 34); ice water and ember fissures hurt once a
 			-- second, a fixed amount armour does not reduce (set_hp, never a
 			-- punch, so never PvP contact either).
 			if ice_arena and arena_rules.inside(ice_arena, pos) then
-				for _, point in ipairs(arena_rules.path_points(ice_last[pname], pos)) do
-					local at = thin_ice_under(point)
-					local event = at and arena_rules.ice_step(ice_pending, at,
-						ice_clock, core.hash_node_position)
-					if event then ice_queue[#ice_queue + 1] = event end
-				end
-				ice_last[pname] = {x = pos.x, y = pos.y, z = pos.z}
-			else
-				ice_last[pname] = nil
+				local event = arena_rules.ice_step(ice_pending, vector.round(pos),
+					ice_clock, core.hash_node_position, is_thin_ice)
+				if event then ice_queue[#ice_queue + 1] = event end
 			end
 			local dps, slows = arena_rules.hazard(ARENA_NODES, node and node.name)
 			if dps then
@@ -386,8 +367,6 @@ core.register_globalstep(function(dtime)
 					type = "node_damage", node = SCORCH,
 				})
 			end
-		else
-			ice_last[pname] = nil
 		end
 	end
 end)

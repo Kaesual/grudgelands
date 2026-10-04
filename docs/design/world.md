@@ -621,16 +621,16 @@ combat damage for the ordinary five-second combat window.
   chat warning on leaving, a "Dragon's Wrath" status and its own death
   message. The flags end together, at once, when the dragon dies or resets;
   a participant's death or logout drops only that player.
-- **Wyrmglass hazards:** patches of thin ice flush with the floor. Every
-  thin-ice node a player steps on breaks into ice water, with its four
-  neighbours, **1 s later, always**, also when the player has moved on
-  (Round 34), so the ice gets dangerous for those behind. A node keeps at
-  most one pending break, server-wide: stepping on it again, or on a
-  neighbour, never resets or postpones it. The hazard pass samples each
-  player's path inside the arena every 0.5 nodes, so a fast runner skips no
-  node; one breaking sound per step's break. The water freezes again 20 s
-  after nobody stands in it; ice water deals **250 damage per second** and
-  slows. Three flat frost-stone
+- **Wyrmglass hazards:** patches of thin ice flush with the floor. Each
+  0.25 s sample of the hazard pass marks every thin-ice node in the 3×3×3
+  cube around a player's feet inside the arena, and a marked node breaks
+  into ice water **1 s later, always**, also when the player has moved on
+  (Round 34), so the ice gets dangerous for those behind. The cube covers
+  the gap between two samples, so a sprinter leaves no unbroken node in his
+  band. A node keeps at most one pending break, server-wide: marking it
+  again never resets or postpones it. One breaking sound per sample's break.
+  The water freezes again 20 s after nobody stands in it; ice water deals
+  **250 damage per second** and slows. Three flat frost-stone
   terraces one and two nodes high, clearly distinct from the ice.
 - **Stormscale hazards:** six glowing ember fissures one node deep and one or
   two wide, framed by basalt, dealing **350 damage per second**, no slow; five
