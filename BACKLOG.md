@@ -9,28 +9,39 @@ not additional current contracts. No behavior changes are authorized by this cle
 ## Readiness
 
 There are **54 identities**: WP0–WP50 and WP-Scout/WP-HUD/WP-Speed.
-**43 delivered**, **3 canceled** (WP16, WP37, WP49), **8 open or partial**.
+**45 delivered**, **3 canceled** (WP16, WP37, WP49), **6 open or partial**.
 The 2026-09-29
 [WP audit](docs/planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
 closed WP14, WP21, WP22, WP23, WP27, WP29, WP31 and WP32 as delivered, merged WP7's rebase, WP11, WP30 and the price parts of WP22 and
 WP31 into WP44 (WP11 and WP30 count as delivered), and canceled WP37 and WP49.
 WP28 followed in Round 26, WP50 in Round 27, WP17 and WP44 in Round 29, WP41
-in Round 31 (with WP42's PvP-POI part). The audit's letters and numbers (for
+in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33. The audit's letters and numbers (for
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 32 "Fixes, preparation and research"](docs/planning/round32-plan.md#completion-2026-10-03)
-  complete locally** (2026-10-03, not pushed): the minimap zoom ×2, hostile
+  [Round 33 "Items, professions and achievements"](docs/planning/round33-plan.md#completion-2026-10-04)
+  complete locally** (2026-10-04, not pushed; needs a fresh world): the
+  items design session's rulings and their data
+  ([item_tiers.md](docs/design/item_tiers.md), DS); drops by quality with
+  boss double drops, bag drops and the level requirement on all gear (C1);
+  Alchemy as a secondary, progress from real recipes and the removals (C2);
+  per-character achievements and cloaks (C3); enchant values by item level
+  with tiers, profession upgrades, the crown and the profession families
+  (C4); crit ×2, T1-only vendors, repair ×1.00, potions I–VI, the
+  Crownbinder and the Decor Merchant, the income model green (C5). WP5 and
+  WP10 delivered. Next: the GUI test, then Round 34 (sound)
+  ([Round 33](#round-33--items-professions-and-achievements),
+  [carry-overs](#round-33-carry-overs), [sound](#sound-v1-user-2026-10-03)).
+- [Round 32 "Fixes, preparation and research"](docs/planning/round32-plan.md#completion-2026-10-03)
+  (2026-10-03, not pushed, GUI test open): the minimap zoom ×2, hostile
   camps on the Map tab, zone names coloured by territory with a territory
   line (F1); one LMB hold state machine and quest kill labels with the
   zone's mob names (F2); combat and personal notices in the message feed
   and the quest log in one text field (F3); the Map tab, party HUD and
   camp/leader tick spread over steps (F4); three read-only studies
-  (performance at 50/100 stand-ins, sound, items and professions). Next:
-  the GUI test, the seven sound decisions and the items design session
+  (performance at 50/100 stand-ins, sound, items and professions)
   ([Round 32](#round-32--fixes-preparation-and-research),
-  [carry-overs](#round-32-carry-overs), [sound](#sound-v1-user-2026-10-03),
-  [items](#items-and-professions-design-session-user-2026-10-03)).
+  [carry-overs](#round-32-carry-overs)).
 - [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
   (2026-10-03, not pushed, GUI test open): WP41 geographic PvP (the
   per-player flag, the PvP tab and markers, the NPC faction filter, PvP from
@@ -111,12 +122,12 @@ technical evidence certifies its recorded bytes, never an arbitrary later head.
 | WP2 | First territory mapgen (superseded by WP40) | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP3 | Character creation and original classes | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP4 | Original ability framework | Delivered; historical receipt below. Current rules: topic design. | — |
-| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | Found-item loot and selected enchanting delivered; Round 28 adds loot by level band (family drop tables, 119 catalogue items) and data-driven enchant inputs. Round 29's per-band payout calibration completes the loot/demand audit. Cultural/PvP finishes and masterwork (item-level-70 upgrade, D3) open. Named rares drop no trophies (D4). Round 32's [analysis](docs/research/items-professions-analysis-2026-10.md) prepares a [design session](#items-and-professions-design-session-user-2026-10-03). | WP1 ✅, WP3 ✅, WP43 ✅ |
+| WP5 | [Loot, found-item affixes and cultural/PvP finishes](docs/planning/work-package-scopes.md#wp5) | **Delivered in Round 33** ([completion](docs/planning/round33-plan.md#completion-2026-10-04)): drops by quality (normal 5/2/1 %, named and elite 10/10/5 %), boss double drops at item level 65/70 with T7 enchants, shields, spellbooks and trinkets in the pool, bag world drops, the level requirement on all gear; enchant values by item level with a tier cap ([item_tiers.md](docs/design/item_tiers.md)). The cultural and PvP finishes were removed by the user (round33-plan §2.8); the crown (a Fallen Crown lifts an item to its tier's top + 5, enchants +1 tier) takes the place of the Grudgeforged masterwork (D3). Named rares drop no trophies (D4). Round 28's loot by band and Round 29's payout calibration came before. | WP1 ✅, WP3 ✅, WP43 ✅ |
 | WP6 | Mob roster, threat, guards and combat feel | Delivered; historical receipt below. Round 28 adds sub-types (195 incl. 49 named leaders) and rule-based spawn regions for all 38 zones ([spawn_regions.md](docs/design/spawn_regions.md)); Round 29 sets leader HP to 1.5×; Round 30 lets mobs give up unreachable targets, merges the spawn ABMs and fixes the start-NPC duplication. Round 31 adds NPC look rolls, the PvP garrisons (Generals, bodyguards, camp captains) and the round dragon arenas. Current rules: topic design. | — |
 | WP7 | Ledger currency and traders | Delivered; Round 29 (WP44) replaced its price curve and 25% buy-back. | — |
 | WP8 | Quest framework | Framework delivered; Round 20: 240 quests with talk handoffs. Round 28: per-zone quest data, area, item-group, multi-objective and quest-drop objectives, repeatables, travel credit on accept, load-time validation, target level ranges in the log. Round 29: text placeholders filled per seed, the compass-word check, copper from weight. Round 30: the legacy fields removed (unknown fields stop the load), the decoded-state cache and markers that follow held items and levels. Round 31: givers serve only their faction, PvP garrison kill objectives, PvP POIs as placeholder targets. Broader story remains WP9. | — |
-| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total); Round 32 names kill targets by their zone's mob name. **V1:** the main storyline 41–60 and the finale remain open, moved out of Round 32 to a round of its own after the sound and items work. | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
-| WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | Framework and seven catalogs delivered; Round 28 makes every profession self-contained (no metal fittings; enchant inputs = own material + tier loot + a mined or gathered item). Cultural finishing and helper NPC services remain (cultural masters later, D11). Round 32's [analysis](docs/research/items-professions-analysis-2026-10.md): three primaries craft only enchants, 67 of 94 signatures without a recipe use; the [design session](#items-and-professions-design-session-user-2026-10-03) decides. | WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44 |
+| WP9 | [Named-zone story and questlines](docs/planning/work-package-scopes.md#wp9) | Round 29 replaces Round 20's 240 quests with 491 on the Round 28 framework: one track per race to 30, the contested 31–40 zones, front quests 41–60 with repeatable and island bounties; Round 31 adds 24 PvP fortress quests (515 in total); Round 32 names kill targets by their zone's mob name. **V1:** the main storyline 41–60 and the finale remain open, moved to a round of its own after Round 34 (sound). | WP6 ✅, WP8 ✅, WP40 ✅, WP41 ✅ |
+| WP10 | [Profession content and priced integration](docs/planning/work-package-scopes.md#wp10) | **Delivered in Round 33** ([completion](docs/planning/round33-plan.md#completion-2026-10-04)): six primaries and the secondaries Cooking and Alchemy; progress only from real recipes; enchant recipes per channel and tier and one upgrade per profession and tier give 68 of 94 signatures a use; two professions dress each class (bows with the Leatherworker, spellbooks with the Tailor); fixed potions and elixirs T1–T6. Cultural finishing and its helper NPCs were removed by the user (round33-plan §2.8). Round 28 made every profession self-contained. | WP5 ✅, WP26 ✅, WP33 ✅, WP43 ✅, WP44 ✅ |
 | WP11 | [Talent trees](docs/planning/work-package-scopes.md#wp11) | Delivered; closed 2026-09-29, respec price merged into WP44 (C2) and set in Round 29. | WP3 ✅, WP4 ✅, WP-Speed ✅ |
 | WP-Scout | Scout class and talent trees | Delivered; historical receipt below. Current rules: topic design. | — |
 | WP-HUD | Exact health/resource HUD | Delivered; historical receipt below. Current rules: topic design. | — |
@@ -722,17 +733,109 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   grows with generated chunks; find what it keeps (a heap walk there) and
   whether its world-query caches are bounded.
 - **`tools/r29_e4/income.py --check` fails on main** since Round 31's
-  fortress quests changed the income estimate: Expert Riding 1g37s against
-  an estimate of 1g31s, Master 7g33s against 7g25s, respec 41–50 6s against
-  5s50c. Whether the prices follow is the user's call (the items session
-  touches money too).
+  fortress quests changed the income estimate. **Done in Round 33 Lane
+  C5:** the estimate carries the Round 33 terms (gear sales, repair ×1.00)
+  and the prices follow (Apprentice Riding and the boat 1s5c, Expert
+  Riding 1g32s, Master 7g37s, respec 41–50 5s50c, the crown fee 1g47s);
+  the check passes.
 - **Real-client performance test:** stand-ins do not cover the engine's
   block and object sending, physics or client work; a short test with a
   handful of real clients, perhaps at the end of the next round.
 
+### Round 33 — items, professions and achievements
+
+**Delivered locally 2026-10-04**
+([completion](docs/planning/round33-plan.md#completion-2026-10-04), plan
+[round33-plan.md](docs/planning/round33-plan.md), numbers in
+[item_tiers.md](docs/design/item_tiers.md)); every code lane independently
+reviewed by Opus, the data lane approved by the user, 72 fixtures pass;
+needs a fresh world:
+
+- **Item data** (DS): enchant values by item level up to the tier's cap
+  (T7 to 70), enchant loot per channel, one upgrade per profession and
+  tier, the crown, fixed potions and elixirs, drop sale values, repair,
+  culture prices; 68 of 94 signatures with a use.
+- **Drops** (C1): normal 5/2/1 %, named and elite 10/10/5 %, at most one
+  item; bosses two blue or gold items at item level 65/70; shields,
+  spellbooks and trinkets in the pool, trinkets 0/1/2 enchants; bags at
+  0.1 % by mob level; min(item level, 60) required in every slot; blue ×3,
+  gold ×6; the Kraken Guard a level-70 elite without XP or drops.
+- **Professions** (C2, C4): Alchemy a secondary with its own book slot;
+  progress only from real recipes; the removals of plan §2.8; cut-gem
+  blocks 9 ↔ 1; enchant tiers stored and shown, the weaker-overwrite
+  warning, profession upgrades, the crown operation; bows to the
+  Leatherworker, spellbooks to the Tailor; Ornament Components and the Cut
+  Quartz recipe gone, Cut Citrine the T1 trinket gem; zone leaders and
+  war-camp captains on the elite row.
+- **Economy and combat** (C5): crit ×2 with 0.05 % per Dexterity point and
+  attribute fractions; T1-only vendor shelves, buy-back for all gear,
+  repair ×1.00; potions I–VI with one 60 s cooldown; the Crownbinder and
+  the Decor Merchant in every capital; `income.py --check` green.
+- **Cloaks and achievements** (C3): 17 per-character achievements, 41
+  cloaks by GPT-6 Astra, the Achievements tab and cloak dropdown, the
+  player cloak model.
+
+### Round 33 carry-overs
+
+**Noted 2026-10-04** ([completion](docs/planning/round33-plan.md#completion-2026-10-04));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Map markers for the capital services:** the Crownbinder and the Decor
+  Merchant have no map or minimap marker yet.
+- **Scout damage set above the ceiling:** a full damage set gives the Scout
+  +55 % at item level 60 and +82 % at 70, above the +50–60 % the stat
+  check aims for (Warrior +47 %, Mage +45 %; item_tiers §1.2).
+- **Priest heals barely use Intelligence** (user choice 2A): Heal scales
+  with `1 + Int/1000`; a heal-formula change (2B) would be a later round.
+- **Ruination under ×2 crits:** the capstone's window rises from +9 % to
+  +18 % damage, a hit at its 50 % cap averages ×1.5 instead of ×1.25; a
+  playtest number. Whitehot fires a little later (less crit from
+  Dexterity).
+- **Damage-fit reference floors attributes:** `baseline_melee_total` in
+  `grug_core/combat.lua` (~99–102) still floors Strength/10 while live
+  damage keeps the fraction, so same-level damage is about +1.6 % at level
+  60 and up to about +5 % at levels 2–9 (C5 review).
+- **Decor Merchant's light bands** hold one item each (lantern, hanging
+  lantern); no Candle, which the Embalmer sells at 4c (C5 review).
+- **Sell-only loot:** the 20 one-faction signatures stay sell-only (user
+  choice); Slime Gel, Crocodile Tooth (one faction) and Stone Core (no
+  placed source) have no recipe use (item_tiers §2.4, §3.4).
+- **Royal guards drop no gear** (`grug_quality`), like the Generals'
+  bodyguards, while `items_crafting.md` §5.4 calls their loot ordinary
+  level-60 elite loot; Round 33 did not settle it.
+- **C3 review notes (theoretical, not measured):** one small table per
+  kill on the achievement path; noted for a later performance pass, no
+  action now.
+
+### Money withdraw and deposit: Bag of Coins (user, 2026-10-04; planned)
+
+Planned for the next round as a small lane (for example with fixes from the
+user's GUI test), not part of Round 34's sound scope. A deliberate design
+change: players can give money to each other for the first time (a
+high-level character can fund an alt; acceptable without a market).
+
+- **Bag of Coins:** a new item holding any amount of money (`stack_max` 1,
+  the amount in item meta, shown in the tooltip).
+- **Withdraw:** a "Withdraw" button on the Character page opens a small
+  dialog with number fields for gold, silver and copper; on confirm the
+  server validates (whole numbers, > 0, ≤ balance), takes the amount and
+  creates one Bag of Coins in the inventory in one transaction
+  (`grug_money.take_with_inventory`); refused when the inventory is full.
+- **Deposit:** a deposit slot accepts only Bags of Coins; the bag is
+  destroyed and its amount credited, refused if the balance would exceed
+  `grug_money.MAX`.
+- Traders neither buy nor sell Bags of Coins. A bag can be dropped on the
+  ground or stored in a chest; items do not drop on death, so a carried bag
+  is as safe as the balance.
+- User rulings: no extra log line for transfers; no longer ground lifetime
+  (a dropped bag despawns like any item after the engine's item TTL, and
+  lava or fire destroy it).
+
 ### Sound (V1; user, 2026-10-03)
 
-Sound is part of V1. The [sound research](docs/research/sound-research-2026-10.md)
+Sound is part of V1 and the content of **Round 34** (planned in a parallel
+session on branch `r34-plan`, not merged yet). The
+[sound research](docs/research/sound-research-2026-10.md)
 (Round 32 R2) proposes two lanes: **S1 effects** (a small play helper, about
 30 central hooks, one formspec click style, mob sounds by archetype, about
 120–150 files) and **S2 ambience and music** (a per-player player on the
@@ -764,6 +867,11 @@ must stay without a war cry wait for S1; mobs_redo falls back to a missing
 
 ### Items and professions design session (user, 2026-10-03)
 
+**Done:** held with the user 2026-10-03/04; its rulings are
+[round33-plan.md](docs/planning/round33-plan.md) §2 and became Round 33
+([completion](docs/planning/round33-plan.md#completion-2026-10-04)). Kept
+for its record:
+
 The [items and professions analysis](docs/research/items-professions-analysis-2026-10.md)
 (Round 32 R3) decides nothing; it prepares a design session with the user.
 Options (§4): 1 close the dead ends and fix progression (S–M), 2 a value
@@ -779,16 +887,9 @@ at level 60; late starters; throwaway progression crafts; the small
 promises (×5 leather, bandages, apothecary gear, gem blocks, reagents); the
 vendor Uncommon.
 
-Side findings to settle there:
-
-- **The vendor Uncommon is live** at ×3 the Common price (one rotation in
-  five) since the enchant roller exists, although `items_crafting.md` §3.8
-  wanted it lit only after an economy pass.
-- **Royal guards drop no gear** (`grug_quality/init.lua`, like the
-  Generals' bodyguards, `items_crafting.md` §5.1), while §5.4 says their
-  loot is ordinary level-60 elite loot.
-- **No shields from vendors or mobs:** shields are Basics crafts only;
-  mob gear drops cover no shields, spellbooks or trinkets.
+Side findings: the vendor Uncommon is gone and shields, spellbooks and
+trinkets drop from mobs (Round 33); the royal guards' missing gear stays
+open ([Round 33 carry-overs](#round-33-carry-overs)).
 
 ### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
 
@@ -818,6 +919,12 @@ The proposal, if chosen:
   seeds and the region-map cache must follow.
 
 ### Enchantment and item-level revision (user, 2026-10-03; a later round)
+
+**Done in Round 33** (lanes DS and C4): enchant values grow continuously
+with item level up to their tier's cap, bosses drop item level 65/70 with
+T7 enchants, the crown adds five more levels and one tier
+([item_tiers.md](docs/design/item_tiers.md) §1, §4). The note below is the
+state before it.
 
 The user plans to rework enchantments; item level should then make boss
 drops clearly stronger. How it works today (`grug_gear/init.lua`,

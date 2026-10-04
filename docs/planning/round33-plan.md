@@ -472,7 +472,10 @@ fraction (same-level damage about +1.6 % at level 60, up to about +5 % at
 levels 2–9); the Decor Merchant's light bands hold one item each (no
 Candle; the Embalmer sells one at 4c); the 20 one-faction signatures stay
 sell-only; Slime Gel, Crocodile Tooth and Stone Core have no recipe use;
-C3's theoretical notes (one small classification table per kill). The
+C3's theoretical review notes (one small table per kill); royal guards
+still drop no gear against `items_crafting.md` §5.4. Planned for the next round as a
+small lane (the user, 2026-10-04): money withdraw and deposit as a Bag of
+Coins. The
 Round 32 carry-overs that remain (R1's later list R6–R13, `remote_media`
 and at least 4 GB RAM, the minimap bezel size) stay. Next: the user's GUI
 test (with Rounds 30–32), then **Round 34, sound** (planned in a parallel

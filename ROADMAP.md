@@ -107,7 +107,8 @@ Earlier delivery narratives are preserved in the
 
 **Scope versus delivery:** this vision includes approved future systems, not just
 running code. The WP9 story from level 41 remains unfinished and V1's
-sound is researched (Round 32), not built; WP41 PvP and
+sound is researched (Round 32) and planned as Round 34, not built; the items
+and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
 the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
 boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
 
@@ -145,7 +146,8 @@ B1–B7) settle the rest:
   2026-09-29); boats reach their islands since Round 29 (WP17).
 - [x] Currency/traders, inventory/bags, Skills recovery, ordinary equipment/offhands,
   fixed-tier enchanting, wear/repair, profession workspaces, food, farming and fishing.
-  The WP44 economy is delivered in Round 29; broader item/loot scope remains separate.
+  The WP44 economy is delivered in Round 29; the items and professions revision
+  (WP5, WP10) in Round 33.
 - [x] Quest framework; Round 20 extends the catalog to 240 quests and all 100 anchor art slots,
   persistent same-faction parties and optional HUDs. Since Round 28 quests are
   per-zone data with area, item-group and quest-drop objectives and repeatables;
@@ -236,6 +238,19 @@ B1–B7) settle the rest:
   at 50 and 100 stand-ins, the [sound research](docs/research/sound-research-2026-10.md),
   the [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
   Local, not pushed. Next: the GUI test.
+- [x] **Round 33 "Items, professions and achievements"**
+  ([completion](docs/planning/round33-plan.md#completion-2026-10-04)), the
+  items design session's rulings (**WP5 and WP10 delivered**): gear drops by
+  quality with more from elites and named mobs and two blue or gold items
+  from every boss, bags as world drops, a level requirement on all gear;
+  enchant values that grow with item level up to their tier and show it,
+  profession upgrades, the crown (a Fallen Crown lifts an item beyond its
+  tier), two professions per class; Alchemy beside Cooking, progress only
+  from real recipes, the cultural finishes and other dead ends removed;
+  crit ×2, T1-only vendor gear, dearer repair, fixed potions, a Crownbinder
+  and a Decor Merchant in every capital; per-character achievements that
+  unlock cosmetic cloaks ([item_tiers.md](docs/design/item_tiers.md)).
+  Local, not pushed. Next: the GUI test on a fresh world.
 
 ### Remaining work
 
@@ -243,26 +258,23 @@ B1–B7) settle the rest:
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
-- [ ] **Sound (V1)** (the user, 2026-10-03): researched in Round 32
+- [ ] **Sound (V1), Round 34** (the user, 2026-10-03; planned in a parallel
+  session on branch `r34-plan`, not merged yet): researched in Round 32
   ([sound research](docs/research/sound-research-2026-10.md)); two lanes,
   S1 effects (a play helper, about 30 hooks, formspec clicks, mob voices by
   archetype) and S2 ambience and music (a per-player player on the
   atmosphere tick, volume settings, 8–12 calm tracks). Seven decisions by
   the user come first ([BACKLOG](BACKLOG.md#sound-v1-user-2026-10-03)).
 - [ ] **WP9 (V1):** the level-41–60 main questline and the finale, moved
-  out of Round 32 to a round of its own after the sound and items work.
+  out of Round 32 to a round of its own after Round 34 (sound).
   Round 29's front quests and bounties carry the 41–60 leveling; the main
   storyline and the finale are reassessed on top of them.
-- [ ] **WP5 / WP10 items and professions:** the Round 32
-  [analysis](docs/research/items-professions-analysis-2026-10.md) is done;
-  a design session with the user on its options and 16 questions comes
-  next ([BACKLOG](BACKLOG.md#items-and-professions-design-session-user-2026-10-03)).
-  Then an enchantment and item-level revision (stronger boss drops),
-  cultural/PvP finishes, masterwork (an item-level-70 upgrade), cultural
-  finishing and helper services, as the session decides. Selected
-  enchanting, ordinary gear, found-item loot, loot by band, seven
-  self-contained profession catalogs and the loot/demand audit (Round 29's
-  price calibration) already exist.
+- [ ] **Small next lane** (the user, 2026-10-04): money withdraw and deposit
+  as a Bag of Coins, with fixes from the GUI test
+  ([BACKLOG](BACKLOG.md#money-withdraw-and-deposit-bag-of-coins-user-2026-10-04-planned));
+  Round 33's open notes (map markers for the capital services, Priest
+  healing and Intelligence, the playtest's crit numbers) in its
+  [carry-overs](BACKLOG.md#round-33-carry-overs).
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are
