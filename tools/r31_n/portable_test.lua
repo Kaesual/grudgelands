@@ -69,7 +69,10 @@ core = {
 	get_player_by_name = function(name) return players[name] end,
 	global_exists = function(name) return rawget(_G, name) ~= nil end,
 	get_current_modname = function() return "grug_map" end,
-	get_modpath = function(name) return repo .. "/mods/PLAYER/" .. name end,
+	get_modpath = function(name)
+		if name == "grug_mapgen" then return repo .. "/mods/MAPGEN/grug_mapgen" end
+		return repo .. "/mods/PLAYER/" .. name
+	end,
 	serialize = function(value) return value end,
 	deserialize = function() return nil end,
 	log = function() end,
@@ -157,6 +160,8 @@ grug_core = {
 	register_tag_visibility = function(fn) grug_core.tag_visibility = fn end,
 	feed_item = function() end,
 	feed = function() end,
+	-- vendors.lua's capital services (Round 33) take over gate residents.
+	assign_service_socket = function() end,
 }
 dofile(repo .. "/mods/CORE/grug_core/item_names.lua")
 

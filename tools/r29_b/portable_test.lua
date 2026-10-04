@@ -516,7 +516,7 @@ check(not ok, "not enough money")
 money = 5000
 ok, message = grug_mounts.purchase(bo, 5)
 check(ok and message == "Boat bought. Open Inventory > Skills to use it.", "Boat bought: " .. tostring(message))
-eq(money, 4890, "Boat price taken")
+eq(money, 5000 - grug_mounts.PRICES[5], "Boat price taken")
 eq(boat_states(), "owned,buy", "Improved Boat for sale after the Boat")
 level = 29
 eq(boat_states(), "owned,level", "level 29: Requires level 30")
@@ -543,7 +543,7 @@ check(grug_mounts.open_trainer(cy, shipwright), "own-faction Shipwright opens")
 local fs = shown[#shown].fs
 check(fs:find("label[0.4,0.4;Shipwright]", 1, true) ~= nil, "Shipwright title")
 check(fs:find("Boat (L15)", 1, true) and fs:find("Improved Boat (L30)", 1, true), "two rows")
-check(fs:find("buy_5;Buy 110 copper", 1, true) ~= nil, "Buy button with the price")
+check(fs:find("buy_5;Buy " .. grug_mounts.PRICES[5] .. " copper", 1, true) ~= nil, "Buy button with the price")
 check(fs:find("Learn Boat first", 1, true) ~= nil, "Learn Boat first")
 check(not fs:find("Riding", 1, true), "no riding tier in the Shipwright dialogue")
 money = 1000
