@@ -675,6 +675,30 @@ end
 -- bar displays the running cooldown.
 --
 
+-- The cue of each ability (Round 34 S1b, plan §4.3), one per theme. A cast
+-- skill's event plays at the caster when try_cast succeeds; "projectile"
+-- abilities sound through their projectile's launch and hit
+-- (grug_projectiles.register); "weapon" skills are swings: their tool plays
+-- the swing into the air on the client and the hit sounds by weapon kind
+-- (grug_core.melee_hit_sound). tools/r34_s1b/portable_test.lua checks every
+-- registered ability is here.
+grug_abilities.CAST_SOUNDS = {
+	strike = "weapon", mighty_blow = "weapon", hamstring = "weapon",
+	opening = "weapon",
+	fireball = "projectile", loose = "projectile", snare_shot = "projectile",
+	pinning_shot = "projectile",
+	-- Warrior.
+	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
+	-- Mage: frost, the arcane blink, fire.
+	ice_nova = "cast_frost_nova", glacial_ward = "cast_frost_ward",
+	blink = "cast_blink", cinderfall = "cast_cinderfall",
+	-- Priest: holy, healing, the shield, shadow.
+	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",
+	shield_spell = "cast_shield", word_of_ruin = "cast_shadow",
+	-- Scout.
+	sidestep = "cast_evade", sprint = "cast_sprint",
+}
+
 function grug_abilities.register_ability(def)
 	def.repeat_policy = def.repeat_policy or "repeat"
 	assert(def.repeat_policy == "repeat" or def.repeat_policy == "once")
@@ -783,6 +807,10 @@ function grug_abilities.register_ability(def)
 		damage_groups = {fleshy = 0},
 	}
 	tool_def.after_use = function(stack) return stack end
+	-- A swing into the air (the client plays it; hits sound on the server).
+	if def.kind == "swing" then
+		tool_def.sound = {punch_use_air = grug_sounds.item_sound("swing")}
+	end
 
 	core.register_tool(itemname, tool_def)
 end
@@ -1487,6 +1515,8 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		return
 	end
 	spend(user, effective_cost)
+	local cue = grug_abilities.CAST_SOUNDS[def.id]
+	if cue ~= "weapon" and cue ~= "projectile" then grug_sounds.play(cue, user) end
 	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))
@@ -2273,7 +2303,7 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 		end
 		if landed then
 			if critical then
-				grug_core.emit_melee_crit(player:get_pos())
+				grug_core.emit_melee_crit(player:get_pos(), player)
 			end
 			if player:get_hp() > 0 then
 				grug_abilities.set_target(hitter, player, false)
@@ -2293,7 +2323,7 @@ core.register_on_punchplayer(function(player, hitter, tflp, tool_capabilities, d
 	-- accumulates, armor resolves on the full equivalent, and rage is credited
 	-- only when the integer commit actually lowers HP.
 	if critical then
-		grug_core.emit_melee_crit(player:get_pos())
+		grug_core.emit_melee_crit(player:get_pos(), player)
 	end
 	local accumulation = grug_core.prepare_accumulated_melee(
 		hitter, player, raw, fraction)

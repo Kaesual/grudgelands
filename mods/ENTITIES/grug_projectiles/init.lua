@@ -161,6 +161,12 @@ function grug_projectiles.register(id, def)
 	assert(def.orient_to_velocity == nil or
 		type(def.orient_to_velocity) == "boolean",
 		"projectile orient_to_velocity must be a boolean")
+	-- Optional grug_sounds events (Round 34 S1b): `sound_launch` plays at the
+	-- owner when the projectile leaves, `sound_hit` at the target it hits.
+	assert(def.sound_launch == nil or type(def.sound_launch) == "string",
+		"projectile sound_launch must be an event name")
+	assert(def.sound_hit == nil or type(def.sound_hit) == "string",
+		"projectile sound_hit must be an event name")
 	definitions[id] = def
 end
 
@@ -249,6 +255,7 @@ local function spawn_one(id, params)
 		return false
 	end
 	debug_event(owner_name, "spawn", id, speed, max_distance)
+	if def.sound_launch then grug_sounds.play(def.sound_launch, owner) end
 	return object
 end
 
@@ -326,6 +333,7 @@ local function settle_hit(self, owner, hit, def)
 	release_projectile(self)
 	debug_event(self._grug_owner_name, "hit", self._grug_projectile_id,
 		self._grug_travelled + hit.distance)
+	if def.sound_hit then grug_sounds.play(def.sound_hit, hit.target) end
 	local ok, err = pcall(def.on_hit, owner, hit.target,
 		self._grug_data, hit.point, self._grug_attacker_level)
 	if not ok then
