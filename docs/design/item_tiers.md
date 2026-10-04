@@ -615,9 +615,9 @@ eight King kills, next to Master Riding's five hours.
 <!-- generated: crown -->
 | Sink | Rule | Price (today's band-6 income) | Price (after) |
 |---|---|---:|---:|
-| Crown fee (option 1, not chosen) | 30 min of band-6 income | 73s | 74s |
-| Crown fee (option 2, chosen) | 1 h of band-6 income | 1g 45s | 1g 47s |
-| Crown fee (option 3, not chosen) | 2 h of band-6 income | 2g 90s | 2g 95s |
+| Crown fee (option 1) | 30 min of band-6 income | 73s | 74s |
+| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 45s | 1g 47s |
+| Crown fee (option 3) | 2 h of band-6 income | 2g 90s | 2g 95s |
 <!-- end generated -->
 
 ## 5. Potions and elixirs
