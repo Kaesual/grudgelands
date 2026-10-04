@@ -29,18 +29,19 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   separate bands; combat statistics belong to Character. Both chains use equally
   sized available/locked controls and wrapped tooltips. Clicking an available
   talent buys one rank immediately. Respec retains confirmation and its price.
-- Help is a short player guide in five sub-pages chosen by buttons at its top
+- Help is a short player guide in six sub-pages chosen by buttons at its top
   (the selection lives in the sfinv context; Start is the default): **Start**
   (first steps, levels and zones, capitals, protected ground), **Quests &
   Professions**, **Basics** (ores by depth and pick tier, smelting, recipe
   discovery, skills, bags, food, repair, riding, home travel, death, groups),
   **Formulas** (the general pool/attribute/armor/mana formulas and the
-  B/C/G/T/S legend) and **About & Feedback** (Discord, GitHub issues and
-  repository, support link). Body text is a scrolling `hypertext[]`; links are
-  read-only `textarea[]` rows the player can select and copy, each with a
-  `button_url[]` that asks before opening a browser. Starter recipes are
-  visible immediately; acquiring their main material reveals later recipes
-  without restricting crafting permission.
+  B/C/G/T/S legend), **About** (Discord, GitHub issues and repository,
+  support link) and **Sound** (music and ambience on/off and volume per
+  player, the same as `/music` and `/ambience`; Round 34). Body text is a
+  scrolling `hypertext[]`; links are read-only `textarea[]` rows the player
+  can select and copy, each with a `button_url[]` that asks before opening a
+  browser. Starter recipes are visible immediately; acquiring their main
+  material reveals later recipes without restricting crafting permission.
 - Creative includes a searchable, paged Food category derived from registered
   edible-food groups, including raw ingredients and cooked results.
 - **Every equipment slot says what it is, without hovering** (decided
