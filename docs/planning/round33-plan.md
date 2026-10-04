@@ -147,6 +147,18 @@ each half is about half a pure Crit or pure Dodge enchant. Casters: the same
 principle for Intelligence, Crit and Mana. No stat should be the only sensible
 pick (today Attack speed is: +4 to +14 % damage against Crit's +0.2 to +1.2 %).
 
+### 2.9a Crit, Dexterity and profession families (rulings 2026-10-04)
+- **Crit** = 5 % + 0.05 % per Dexterity point, **dodge** = 0.1 % per point
+  (caps 30 % unchanged); a crit deals **×2** (damage and heals) instead of
+  ×1.5. Crit enchants need fewer points, so the cap allows about four of them.
+- **Two professions per class** cover armour, weapon and offhand:
+  Leatherworker leather armour **and bows**; Tailor cloth armour **and
+  spellbooks**; Woodcarver staves and wands only; Weaponsmith all metal
+  weapons (incl. the Scout's melee weapon); Armorsmith metal armour and
+  shields; Goldsmith trinkets for everyone. §2.4's families follow.
+- **Zone leaders and war-camp captains** use the named/elite drop row
+  (10 / 10 / 5 %).
+
 ### 2.10 Cloaks and achievements
 - **Cloaks are cosmetic and not items:** each character has its own unlocked
   list (stored per character). The Character page shows a dropdown under the
