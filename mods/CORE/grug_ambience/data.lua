@@ -120,18 +120,18 @@ D.emitter_limit = 2
 -- Music. Tracks: id -> file (in music/) and length in seconds (the shipped
 -- file's; the scheduler has no other way to know when a track ends).
 D.tracks = {
-	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 330},
-	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 134},
-	soliloquy = {file = "grug_music_soliloquy.ogg", seconds = 224},
+	memories_of_stone = {file = "grug_music_memories_of_stone.ogg", seconds = 331},
+	achaidh_cheide = {file = "grug_music_achaidh_cheide.ogg", seconds = 135},
+	soliloquy = {file = "grug_music_soliloquy.ogg", seconds = 225},
 	fantasy_orchestral_theme = {file = "grug_music_fantasy_orchestral_theme.ogg",
 		seconds = 192},
 	forest_walk = {file = "grug_music_forest_walk.ogg", seconds = 218},
-	town_theme = {file = "grug_music_town_theme.ogg", seconds = 97},
-	thatched_villagers = {file = "grug_music_thatched_villagers.ogg", seconds = 245},
+	town_theme = {file = "grug_music_town_theme.ogg", seconds = 98},
+	thatched_villagers = {file = "grug_music_thatched_villagers.ogg", seconds = 246},
 	minstrel_guild = {file = "grug_music_minstrel_guild.ogg", seconds = 186},
-	master_of_the_feast = {file = "grug_music_master_of_the_feast.ogg", seconds = 228},
+	master_of_the_feast = {file = "grug_music_master_of_the_feast.ogg", seconds = 229},
 	folk_round = {file = "grug_music_folk_round.ogg", seconds = 184},
-	teller_of_the_tales = {file = "grug_music_teller_of_the_tales.ogg", seconds = 212},
+	teller_of_the_tales = {file = "grug_music_teller_of_the_tales.ogg", seconds = 213},
 	village_consort = {file = "grug_music_village_consort.ogg", seconds = 215},
 }
 
