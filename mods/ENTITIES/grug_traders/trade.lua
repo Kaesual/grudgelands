@@ -22,8 +22,8 @@
 --   4. prices, item names and counts are recomputed SERVER-SIDE. The field
 --      name carries an index and nothing else; that index is re-resolved
 --      against a freshly computed offer/row list and cross-checked against the
---      snapshot the player was actually shown. A mismatch (the hourly rotation
---      flipped, the stack moved) aborts the action and re-renders.
+--      snapshot the player was actually shown. A mismatch (the stack moved,
+--      a shelf changed) aborts the action and re-renders.
 
 local FORMNAME = "grug_traders:trade"
 
@@ -32,7 +32,6 @@ local GRID_COLS = 6
 local SELL_ROWS = 8 -- rows per page
 
 local FORM_W, FORM_H = 14, 10.2
-local UNCOMMON_COLOR = "#4A90FF"
 
 -- player name -> {vendor, faction, pos, mode, tab, page, offer, rows}
 local sessions = {}
@@ -102,7 +101,7 @@ local function current_offer(player, session, vendor, discount)
 		return offer
 	end
 	local bracket = tonumber(session.tab)
-	if not bracket or bracket < 1 or bracket > grug_traders.max_bracket(player) then
+	if not bracket or bracket < 1 or bracket > grug_traders.max_bracket() then
 		return offer
 	end
 	for _, entry in ipairs(grug_traders.vendor_bracket_stock(vendor, bracket)) do
@@ -111,7 +110,6 @@ local function current_offer(player, session, vendor, discount)
 			base = entry.price,
 			price = grug_traders.apply_discount(entry.price, discount),
 			ilvl = entry.ilvl,
-			uncommon = entry.uncommon,
 		}
 	end
 	return offer
@@ -164,9 +162,9 @@ local function header(parts, player, session, vendor, discount)
 end
 
 local function render_buy(parts, player, session, vendor, discount)
-	-- Tab row: the level-independent core stock plus every bracket the player
-	-- has unlocked (items_crafting.md §3.8: own bracket and every one below).
-	local max_bracket = grug_traders.max_bracket(player)
+	-- Tab row: the level-independent core stock plus the T1 gear shelf
+	-- (round33-plan.md §2.6: vendors sell T1 bases only, at every level).
+	local max_bracket = grug_traders.max_bracket()
 	local tabs = {{id = "general", label = "General"}}
 	-- A profession vendor without bracket stock shows ONE tab: it sells no
 	-- equipment, and a row of bracket buttons that all answer "nothing on this
@@ -196,10 +194,6 @@ local function render_buy(parts, player, session, vendor, discount)
 			:format(x, y, entry.item, i)
 		local price_text = grug_money.format(entry.price)
 		local tip = full_desc(entry.item) .. "\nPrice: " .. price_text
-		if entry.uncommon then
-			price_text = core.colorize(UNCOMMON_COLOR, price_text .. " *")
-			tip = tip .. "\nUncommon - the vendor's find of the hour"
-		end
 		if entry.base ~= entry.price then
 			tip = tip .. "\n(normally " .. grug_money.format(entry.base) .. ")"
 		end
@@ -209,8 +203,8 @@ local function render_buy(parts, player, session, vendor, discount)
 	if #offer == 0 then
 		parts[#parts + 1] = "label[0.6,3.0;The vendor has nothing on this shelf.]"
 	end
-	-- Required form height. The full bracket shelf is 17 entries (13 fixed + 4
-	-- rotating); filtered profession views are smaller. General-tab supplies
+	-- Required form height. The full gear shelf is 18 entries (six weapon
+	-- families and twelve armour pieces); filtered profession views are smaller. General-tab supplies
 	-- may also extend to a third row, so derive the window from the actual view.
 	local grid_rows = math.ceil(#offer / GRID_COLS)
 	return 2.9 + grid_rows * 2.5 + 1.2
@@ -369,7 +363,7 @@ local function validate(player)
 	if session.tab ~= "general" then
 		local bracket = tonumber(session.tab)
 		if not bracket or bracket < 1 or
-				bracket > grug_traders.max_bracket(player) or
+				bracket > grug_traders.max_bracket() or
 				-- ... or a bracket tab at a vendor that has none at all: a
 				-- client may submit any field name it likes, so the tab a
 				-- session is ON is validated here and not only where the
@@ -387,16 +381,15 @@ end
 
 local function do_buy(player, session, vendor, index)
 	-- Point 4: recompute the offer from the catalog and cross-check the index
-	-- against the snapshot the player was shown. The hourly rotation can flip
-	-- between the render and the click; buying "slot 11" must never silently
-	-- become a different, more expensive item.
+	-- against the snapshot the player was shown. A shelf can change between
+	-- the render and the click; buying "slot 11" must never silently become a
+	-- different, more expensive item.
 	local offer = current_offer(player, session, vendor,
 		grug_traders.has_discount(player, vendor))
 	local entry = offer[index]
 	local shown = session.offer and session.offer[index]
 	if not entry or not shown or entry.item ~= shown.item or
-			entry.price ~= shown.price or
-			(entry.uncommon or false) ~= (shown.uncommon or false) then
+			entry.price ~= shown.price then
 		show(player, "The vendor's stock has changed.")
 		return
 	end
@@ -407,7 +400,7 @@ local function do_buy(player, session, vendor, index)
 		show(player, "Not enough money.")
 		return
 	end
-	local stack = grug_traders.make_stack(entry)
+	local stack = ItemStack(entry.item)
 	-- The trader writes directly with add_item, so no engine inventory-action
 	-- callback sees this acquisition. Use the same one-stack initializer as
 	-- crafting and dropped-item pickup before the stack reaches `main`.
@@ -536,7 +529,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 		show(player)
 		return true
 	end
-	local max_bracket = grug_traders.max_bracket(player)
+	local max_bracket = grug_traders.max_bracket()
 	for b = 1, max_bracket do
 		if fields["tab_" .. b] then
 			session.tab = tostring(b)

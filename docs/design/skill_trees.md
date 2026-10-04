@@ -1496,7 +1496,8 @@ undecided any more.**
     `grug_classes.get_ranged_bonus` beside `get_melee_bonus`
     (`grug_classes/stats.lua:34-36`). *(One accessor, and one sentence added
     to `combat_stats.md` §2 — §7 task 9. It is what makes the Scout's
-    Dexterity-led growth mean something.)*
+    Dexterity-led growth mean something.)* Since Round 33 the term is `Dex/10` with its
+    fraction ([combat_stats.md](combat_stats.md) §2).
 29. **Historical ruling: Sprint is +25 % for 10 s on a 300 s cooldown.**
     **The user amended the speed to +50% on 2026-09-20; duration, cooldown
     and the existing movement cap remain unchanged.** *(The amended value
@@ -1561,7 +1562,7 @@ where their answers now live:
 | Warrior rage calibration | ruling 25 — option (b), lower income and add decay | §2.2's note, §7 task 8 |
 | the movement aggregator's arithmetic | ruling 26 — additive per axis, one clamp | §3.9 |
 | the Scout's tree names | ruling 27 — Quarry / Veil | §1.1, §2.7, §2.8 |
-| what feeds a bow's damage | ruling 28 — `weapon damage + floor(Dex/10)` | [scout.md](scout.md) §1, §7 task 9 |
+| what feeds a bow's damage | ruling 28 — `weapon damage + Dex/10` (fractions count since Round 33) | [scout.md](scout.md) §1, §7 task 9 |
 | Sprint's percentage and cooldown | user amendment 2026-09-20 — +50 % / 10 s / 300 s | [scout.md](scout.md) §2, §7 task 1 |
 
 ---

@@ -1,6 +1,6 @@
--- Vendor bracket gear (docs/design/items_crafting.md §3.8, curves §3.1/§3.2,
--- prices §8.2). Six catalogs, one per ten character levels; a player sees
--- their own bracket and every bracket below it.
+-- Bracket gear (docs/design/items_crafting.md §3.8, curves §3.1/§3.2,
+-- prices §8.2). Six catalogs, one per material tier; vendors sell the first
+-- (round33-plan.md §2.6), the others come from Basics crafting and drops.
 --
 -- Everything in here is GENERATED from the design curves, never hand-listed:
 -- 6 weapon families x 6 brackets = 36 tools, plus 3 armor lines x 4 slots x
@@ -215,7 +215,7 @@ end
 -- Verified against the §3.8 row: ilvl 3/10/20/30/40/50 -> 5/8/11/15/18/22.
 --
 -- How damage reaches a mob (WP38): a swing ability builds one authoritative
--- full hit from this fleshy value + floor(Str/10) at this interval, then armor
+-- full hit from this fleshy value + Str/10 at this interval, then armor
 -- and one crit roll. Ordinary wielded tools/fists keep mobs_redo's proportional
 -- `clamp(tflp/fpi, 0, 1)` path. `full_punch_interval` is therefore both the
 -- ability clock and the ordinary path's damage-scaler denominator;
@@ -235,7 +235,7 @@ end
 -- counts as one-handed, which is what keeps the rule additive for shields and
 -- every future offhand item.
 local WEAPONS = {
-	-- `fixed` = always on sale; the rest are the rotation pool of §3.8.
+	-- `fixed` families lead the catalog order, the rest follow.
 	{key = "sword",    noun = "Sword",    fpi = 1.0, factor = 1.0, hands = 1, group = "sword", fixed = true},
 	{key = "dagger",   noun = "Dagger",   fpi = 0.7, factor = 0.7, hands = 1, group = "sword"},
 	{key = "greataxe", noun = "Battle Axe", fpi = 1.4, factor = 1.5, hands = 2, group = "axe"},
@@ -392,8 +392,9 @@ function grug_gear.describe_stack_base(stack, ilvl)
 end
 
 --
--- Prices. `get_price` is what the player pays a vendor; the vendor's buy-back
--- (5% of it, rounded up) is grug_traders' price module.
+-- Prices. `get_price` is an item's reference purchase price: what a vendor
+-- asks for a T1 base, and for every tier the base of its buy-back (5% of it,
+-- rounded up, grug_traders' price module) and of its repair.
 --
 
 local buy_price = {}
@@ -615,8 +616,9 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		end
 	end
 
-	-- `all` = the full bracket (15 items), the pool the Uncommon roll of
-	-- §3.8 draws from; fixed first so the order stays stable for the UI.
+	-- `all` = the bracket's weapons and armour (18 items): the T1 vendor
+	-- shelf and the core of the drop pool; fixed first so the order stays
+	-- stable for the UI.
 	for _, itemname in ipairs(cat.fixed) do
 		table.insert(cat.all, itemname)
 	end
@@ -635,6 +637,13 @@ core.register_craftitem("grug_gear:arrow", {
 	groups = {grug_arrow = 1}, stack_max = 100,
 })
 dofile(core.get_modpath("grug_gear") .. "/trinkets.lua")
+-- A trinket's reference price is its tier's "other" slot price (item_tiers.md
+-- §6.1), like a shield's or a spellbook's: it sets the buy-back.
+for _, identity in ipairs(grug_gear.TRINKETS) do
+	for tier, br in ipairs(grug_gear.BRACKETS) do
+		buy_price[grug_gear.trinket_item(identity.key, tier)] = br.price.other
+	end
+end
 
 -- The gear-drop pool of each material tier (round33-plan.md §2.1): every
 -- equippable item of the tier -- the catalog's weapons and armour, its shield

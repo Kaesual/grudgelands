@@ -1,17 +1,15 @@
--- Weak Healing Potion (items_crafting.md §3.6 + §8.2).
+-- Weak Healing Potion (items_crafting.md §3.6 + §8.2, item_tiers.md §5).
 --
--- "Healing Potion (instant 30% HP — the combat_stats standard; vendor's weak
--- 15% stays the floor)": this is that floor. 15% of max HP, 8c at the vendor,
--- and the ONLY potion of WP7 — the Alchemist's 30% version and everything
--- above it is WP10 (professions.md §4: the vendor sells the lowest tier of a
--- category, nothing more).
+-- The vendor's potion: a fixed 35 HP, half of the Alchemist's Healing Potion
+-- I, 8c at the vendor (professions.md §4: the vendor sells the lowest tier of
+-- a category, nothing more).
 
-grug_traders.POTION_HEAL_FRACTION = 0.15 -- §3.6 "vendor's weak 15%"
+grug_traders.POTION_HEAL_AMOUNT = 35
 
 --
--- SHARED instant-potion cooldown (§3.6: "One shared 60 s cooldown for instant
--- potions"). It is shared on purpose: WP10's alchemy healing/mana potions must
--- gate on the SAME clock, so they call grug_traders.potion_cooldown_left() and
+-- SHARED instant-potion cooldown (item_tiers.md §5: "one shared 60-second
+-- potion cooldown for every potion"). The alchemy potions and draughts gate on
+-- the SAME clock, so they call grug_traders.potion_cooldown_left() and
 -- grug_traders.start_potion_cooldown() instead of opening a second timer.
 -- (The "one elixir buff at a time" half of §3.6 is a WP10 concern — an elixir
 -- is not an instant potion and must not touch this cooldown.)
@@ -57,14 +55,13 @@ function grug_traders.potion_cooldown_left(player)
 	return left
 end
 
--- Starts the shared cooldown (default: the full 60 s).
-function grug_traders.start_potion_cooldown(player, seconds)
+-- Starts the shared cooldown (the full 60 s).
+function grug_traders.start_potion_cooldown(player)
 	if not player or not player.is_player or not player:is_player() then
 		return
 	end
-	seconds = tonumber(seconds) or grug_traders.POTION_COOLDOWN
 	player:get_meta():set_string(META_POTION_CD,
-		tostring(os.time() + math.floor(seconds)))
+		tostring(os.time() + grug_traders.POTION_COOLDOWN))
 end
 
 --
@@ -73,11 +70,8 @@ end
 --
 
 core.register_craftitem("grug_traders:potion_healing_weak", {
-	-- Keep this stackable plain item definition-only: a current-level absolute
-	-- would require rewriting every potion stack on each level/pool change.
-	-- The percentage is the complete rule and settlement derives the exact
-	-- current max-HP amount below.
-	description = "Weak Healing Potion\nRestores 15% of your maximum health",
+	description = "Weak Healing Potion\nRestores " ..
+		grug_traders.POTION_HEAL_AMOUNT .. " HP at once",
 	inventory_image = "grug_traders_item_potion_healing_weak.png",
 	stack_max = 20,
 	-- Group dispatch (AGENTS.md): WP10's potions join this group instead of
@@ -108,15 +102,14 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 			core.chat_send_player(name, "You are already at full health.")
 			return
 		end
-		local amount = math.max(1,
-			math.floor(max_hp * grug_traders.POTION_HEAL_FRACTION + 0.5))
+		local amount = grug_traders.POTION_HEAL_AMOUNT
 		if grug_core.trinket_instant_potion then
 			amount = math.max(1, math.floor(
 				grug_core.trinket_instant_potion(user, amount) + 0.5))
 		end
 		-- The central heal path: clamps to max HP and reports heal threat.
 		-- no_crit because its first argument is the healer, so without the flag
-		-- the DRINKER's crit chance would turn §3.6's flat 15% into 22.5%.
+		-- the DRINKER's crit chance would double the potion's fixed amount.
 		grug_core.heal_player(user, user, amount, {no_crit = true})
 		grug_traders.start_potion_cooldown(user)
 		-- ItemStack copy semantics: on_use gets a COPY, so the modified stack

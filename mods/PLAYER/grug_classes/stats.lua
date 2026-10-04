@@ -92,22 +92,26 @@ function grug_classes.get_max_mana(player)
 	return grug_classes.get_pool_breakdown(player, "mana").final
 end
 
+-- Attribute terms keep their fractions (Round 33, item_tiers.md §1.0): an
+-- attribute point counts at once instead of at the next multiple of ten. The
+-- damage they enter is floored once where it settles, as before.
+
 -- Flat melee bonus: Scouts use Dexterity, other classes use Strength.
 function grug_classes.get_melee_bonus(player)
 	local attributes = grug_classes.get_attributes(player)
-	return math.floor((grug_classes.get_class(player) == "scout" and
-		attributes.dex or attributes.str) / 10)
+	return (grug_classes.get_class(player) == "scout" and
+		attributes.dex or attributes.str) / 10
 end
 
 -- Flat bonus added to bow damage (Scout ruling 28).
 function grug_classes.get_ranged_bonus(player)
-	return math.floor(grug_classes.get_attributes(player).dex / 10)
+	return grug_classes.get_attributes(player).dex / 10
 end
 
 -- Intelligence-derived spell power is a flat damage term and a percentage
 -- bonus on pool-derived healing/absorb values.
 function grug_classes.get_spell_power_bonus(player)
-	return math.floor(grug_classes.get_attributes(player).int / 10)
+	return grug_classes.get_attributes(player).int / 10
 end
 
 -- Timed spell-damage modifiers multiply hostile spell formulas only. They do
@@ -120,8 +124,10 @@ end
 -- above the ordinary cap rather than making them look lost. Combat continues
 -- to consume the capped accessors below. Lane X3 owns the time-limited cap
 -- overrides and will make those consumers use their raised caps.
+-- Dexterity gives 0.05 points of Crit and 0.1 of Dodge per point
+-- (item_tiers.md §1.0).
 function grug_classes.get_crit_chance_raw(player)
-	return 0.05 + 0.001 * grug_classes.get_attributes(player).dex
+	return 0.05 + 0.0005 * grug_classes.get_attributes(player).dex
 		+ 0.01 * (grug_classes.get_talent_bonus(player, "crit_chance_add")
 			+ grug_classes.get_talent_bonus(player, "crit_chance_add_window")
 			+ grug_core.status_modifier_sum(player, "crit_percent"))

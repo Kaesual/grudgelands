@@ -364,7 +364,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
   `grug_brewing.register_public_position(pos)` delegates the brewing stand.
   No fixed capital-core position is authoritative. Potions share
-  `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
+  `grug_traders`' persistent 60 s clock (every potion and draught);
   elixirs replace status id `elixir`, stack with status id `food`, and never
   touch that clock.
   `grug_gathering`'s herb authorizer delegates to
@@ -768,12 +768,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     vendors (butcher, smith, fishmonger, baker, tailor, mason, brewer,
     bowyer, herbalist, armourer, tanner, embalmer) are socket-only, carry no
     race of their own — the settlement key answers that — and only `smith`
-    and `armourer` reach the gear-bracket tabs.
-  - **Rotation is deterministic**: seed = `floor(os.time()/3600)` +
-    per-vendor salt + bracket, fed into **`PcgRandom`** — never
-    `math.random`/`table.shuffle`, whose sequence depends on what else
-    called them since startup. Two players at one vendor in one hour
-    must see the same shelf, and a restart must not re-roll it.
+    and `armourer` reach the full T1 gear tab (Bowyer and Tanner filtered
+    views). Since Round 33 the gear shelf is the T1 catalog only, with no
+    rotation; the buy-back of unsold gear comes from its reference price
+    (`prices.lua` `reference_prices`).
+  - **Capital services on gate residents** (Round 33): the Crownbinder
+    (`grug_traders:crownbinder`, `crown.lua`) and the Decor Merchant
+    (`grug_traders:vendor_culture`, shelf `culture`) take over the gate
+    resident of each capital's goldsmith and woodcarver service plot through
+    `grug_core.assign_service_socket` (roles `crownbinder`,
+    `culture_vendor`), as the Housing Steward does. The crown operation is
+    one call, `grug_traders.crown_operation` → `grug_items.apply_crown`;
+    the payment is one `grug_money.take_with_inventory` with the fee, one
+    Fallen Crown and the crowned item.
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached

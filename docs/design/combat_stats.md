@@ -50,7 +50,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
 - **Mana** = `round(P(L) × (1 + gear% + talent%))` for Mage/Priest.
   The Warrior uses flat Rage 0–100. Strength never adds HP and Intelligence
   never adds mana.
-- **Melee damage** = weapon damage + floor(melee attribute/10), where the
+- **Melee damage** = weapon damage + melee attribute/10 (fractions included
+  since Round 33; the assembled damage is floored once at settlement), where the
   attribute is Dexterity for Scout and Strength for other classes. Since 2026-08-08,
   **"weapon damage" has a source: the melee weapon** — the item in the
   WEAPON SLOT, or for the Scout the Melee offhand (Round 28 ruling 25;
@@ -58,14 +59,16 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   sword-type skill, with **no fallback to the wielded item**. An empty slot
   swings for the **bare-handed baseline**: the hand's own damage and its
   own interval, read from the registered hand item rather than assumed.
-- **Spell power** = floor(Int/10). It is a flat term for damaging spells and
-  a percentage bonus for pool-derived healing and absorbs.
+- **Spell power** = Int/10, fractions included (Round 33). It is a flat term
+  for damaging spells and a percentage bonus for pool-derived healing and
+  absorbs; a spell's damage is rounded once where its formula settles.
 - **Timed spell damage** is a separate percentage multiplier on the fully
   assembled hostile spell formula. It never enters spell power and therefore
   never raises healing or absorbs.
 - **Damage level scalar** = `P(L) / (8 × B(L))`, where
   `B(L) = round(4 + 0.35L) + floor((10 + 3(L−1))/10)` is the own-level
-  baseline sword plus Warrior melee bonus. Damage assembles weapon/ability,
+  baseline sword plus Warrior melee bonus (this calibration reference keeps
+  its floor; Round 33 left the scalar unchanged). Damage assembles weapon/ability,
   attribute and flat talent terms before this scalar and floors once at
   settlement; a positive authored damage value settles to at least 1.
 - **Support values are already level-derived and are never level-scaled a
@@ -93,7 +96,8 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   player level − 5))`. It is part of the same final damage multiplication and
   is floored only once with the level scalar
   (`mods/CORE/grug_core/combat.lua:29-65`).
-- **Crit** = 5% + 0.1%×Dex, **cap 30%**; a crit deals ×1.5 damage
+- **Crit** = 5% + 0.05%×Dex, **cap 30%**; a crit deals **×2** damage, and a
+  healing crit heals ×2 (Round 33, [item_tiers.md](item_tiers.md) §1.0)
 - **Dodge** = 0.1%×Dex, **cap 30%**; a dodge avoids the hit entirely
 - Player armor is a numerical **rating** evaluated against the attacker's
   level. It is not itself a percentage; endgame plate and shields remain useful
@@ -977,22 +981,24 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   - Dishes read their HP, mana or split regeneration plus secondary modifiers
     from tier data. Current cooked fish and meat are T1 HP dishes.
   - The natural replacement cadence is about **12 servings per hour**.
-- **Healing potion**: instant **30% max HP, 60 s cooldown** (Alchemy
-  craft; weak 15% variant sold by vendors). The potion holds the
+- **Healing potion**: instant fixed amount, **60 s shared cooldown**
+  (Alchemy craft, 70 to 1350 HP by tier; the vendors' Weak Healing Potion
+  heals 35 HP). The potion holds the
   in-combat monopoly and is paid for in cooldown; a dish may restore
   more in total, but only out of combat and over seconds. Each food tick
   due during combat is skipped while the 300-second buff keeps running.
-- **Alchemy v1** (2026-09-18): Healing and Mana Potions restore 30% of their
-  current maximum pool and share one persistent 60-second clock. Their Greater
-  T3 pair retains the 30% amount but starts that same clock for 45 seconds;
+- **Alchemy** (2026-09-18, tiers since Round 33, [item_tiers.md](item_tiers.md)
+  §5): Healing and Mana Potions I–VI restore **70 / 200 / 400 / 650 / 1000 /
+  1350** and every potion and draught shares one persistent 60-second clock;
   the mana half may be consumed at full mana. Every successfully consumed
   potion, draught or elixir plays the shared drinking sound; a refused use is
   silent. Antivenom clears poison,
   Swiftness grants +10% speed for 5 seconds, and Cave Draught grants night
   vision for 10 minutes. One elixir status is active at a time and stacks with
-  food: Vigor grants +5/10/15/20% maximum HP at T3–T6, Focus the same maximum
-  mana, and Precision +1/2/3/4 percentage points crit. Stoneskin is +4 armor rating
-  for 30 minutes and Deepwater grants water breathing for 10 minutes. Ordinary
+  food: at T1–T6 Vigor grants +4.0/4.8/5.6/6.4/7.2/8.0% maximum HP, Focus
+  +5.0/5.6/6.2/6.8/7.4/8.0% maximum mana, Precision +4.2/5.2/6.0/7.0/7.8/8.6
+  percentage points crit, Stoneskin +0.8/1.6/2.4/3.2/4.0/4.8 armor rating for
+  30 minutes; Deepwater grants water breathing for 10 minutes. Ordinary
   stat elixirs last 15 minutes. None of the elixirs touches the potion clock.
 - Mana regeneration is **`1 + 0.15 × level` mana/s** out of combat (1.15 at
   L1, 2.5 at L10, 5.5 at L30, 10 at L60), multiplied by the Troll

@@ -61,6 +61,9 @@ end
 --   classified[item] = {class = <CLASS_VALUE key>, tier = 1..6}  loot, gathered
 --   processed[item]  = true        payout = the cheapest recipe's inputs
 --   sold[item]       = copper      the lowest price any vendor asks
+--   reference[item]  = copper      the reference price of gear no vendor
+--                                  sells (T2+ bases, shields, spellbooks,
+--                                  trinkets): the same buy-back as if sold
 --   free[item]       = true        a free world material (wood, stone, sand,
 --                                  glass ...): known, worth 0
 --   discounted(price)              the same-race purchase price
@@ -74,12 +77,14 @@ end
 --   * a classified item pays the formula; a processed one never more than its
 --     cheapest recipe (Leather that a Leatherworker refines from cheaper
 --     leather, ruling 5);
---   * a sold item that has no class pays the 5 % buy-back, capped by its
---     cheapest recipe: the 5 % is a ceiling, and a craft never prints money;
+--   * a sold or reference-priced item that has no class pays the 5 %
+--     buy-back, capped by its cheapest recipe: the 5 % is a ceiling, and a
+--     craft never prints money;
 --   * a recipe counts only when every input is known; a group input counts
 --     its cheapest known member. An unknown input makes that recipe unknown,
 --     not free.
 function M.resolve(data)
+	local reference = data.reference or {}
 	local values, state = {}, {}
 	local depth, cuts = 0, 0 -- cuts: recipe cycles met so far
 	local value
@@ -134,16 +139,17 @@ function M.resolve(data)
 		depth = depth + 1
 		local cuts_before = cuts
 		local class = data.classified[item]
+		local price = data.sold[item] or reference[item]
 		local base
 		if class then
 			base = M.payout(class.class, class.tier)
-		elseif data.sold[item] then
-			base = M.buyback(data.sold[item], data.discounted(data.sold[item]))
+		elseif price then
+			base = M.buyback(price, data.discounted(price))
 		elseif data.free[item] then
 			base = 0
 		end
 		local result = base
-		if data.processed[item] or (data.sold[item] and not class) then
+		if data.processed[item] or (price and not class) then
 			local cap = recipe_value(item)
 			if cap and (not result or cap < result) then
 				result = cap
@@ -165,6 +171,7 @@ function M.resolve(data)
 	for item in pairs(data.classified) do names[#names + 1] = item end
 	for item in pairs(data.processed) do names[#names + 1] = item end
 	for item in pairs(data.sold) do names[#names + 1] = item end
+	for item in pairs(reference) do names[#names + 1] = item end
 	for item in pairs(data.free) do names[#names + 1] = item end
 	table.sort(names) -- one fixed walk order
 	for _, item in ipairs(names) do

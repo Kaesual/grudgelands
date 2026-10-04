@@ -326,7 +326,9 @@ end
 -- placement: the socket keeps its terrain-resolved position and only changes
 -- its role, so no blueprint or mapgen output changes. The roles are closed:
 -- the innkeeper (grug_home) and the Housing Steward (grug_housing).
-local SERVICE_ROLES = {innkeeper = true, housing_manager = true}
+-- Round 33 adds the Crownbinder and the culture vendor (grug_traders).
+local SERVICE_ROLES = {innkeeper = true, housing_manager = true,
+	crownbinder = true, culture_vendor = true}
 
 function grug_core.assign_service_socket(settlement_key, socket_id, role)
  if not SERVICE_ROLES[role] then fail("service role differs: " .. tostring(role)) end

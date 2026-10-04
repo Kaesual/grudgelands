@@ -124,7 +124,7 @@ Decided 2026-09-14.
   PvP ruling 13). An NPC's faction is that of its race (a quest giver added
   by a zone quest file may name its own race; a profession vendor takes its
   settlement's race). Quest givers, vendors, profession and Riding trainers,
-  the Shipwright, innkeepers, Housing Stewards and waystones serve only
+  the Shipwright, innkeepers, Housing Stewards, Crownbinders and waystones serve only
   their own faction; the other faction, and a character without a faction
   yet, get one line, "<NPC> I serve only The Accord." (the Throng's
   likewise), at most once every two seconds. Plain residents are no service

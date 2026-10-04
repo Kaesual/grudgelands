@@ -96,7 +96,7 @@ eligibility and flag".
   of enemy peaceful land; a kited guard is accepted. They give no quests.
 - **The NPC's faction decides service, not the place:** quest givers,
   vendors, profession and riding trainers, the Shipwright, innkeepers,
-  Housing Stewards and waystones serve only their own faction; everyone else
+  Housing Stewards, Crownbinders and waystones serve only their own faction; everyone else
   hears "<NPC> I serve only The Accord." (or The Throng), at most once every
   two seconds ([settlements.md](settlements.md)).
 - **Map and minimap** show only the own faction's NPC markers, plus every

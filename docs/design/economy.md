@@ -35,11 +35,10 @@ axis (D2).
 - Physical Gold is a separate universal luxury/jewelry/build material. Gold
   ore, ingots and blocks never add to the money balance, and a ledger payment
   never consumes inventory Gold.
-- The vendor floor moves with the player. Six Common gear catalogs cover
-  levels 1–10 through 51–60; a player sees the current and all lower brackets.
-  Fixed stock and ordinary rotations are Common and unenchanted. The sole
-  exception is the expensive one-in-five rotating Uncommon defined in
-  `items_crafting.md` §3.8; vendors never offer Rare or higher gear.
+- Vendors sell the T1 Common bases only (Round 33): every weapon family and
+  armour piece of the first material tier, Common and unenchanted, at every
+  level. From T2 the bases come from Basics crafting or drops; there is no
+  rotation and no vendor Uncommon (`items_crafting.md` §3.8).
 
 ## 2. Ordinary price axis and buy-back
 
@@ -61,16 +60,17 @@ precedence over preserving the exact mathematical ratio.
   supplies, consumables, tools, the Common gear floor and a few T1 basics,
   never an enchant input and never a crafting ingredient above T1.
 - A vendor's **buy-back is capped at 5%** of the item's purchase price,
-  **rounded up to the next copper**, and applies only to goods a vendor also
-  sells (gear, supplies). Thus a T1 Common weapon returns 2c and a T6 Common
+  **rounded up to the next copper**, and applies to goods a vendor also
+  sells (gear, supplies) and to every equippable of the gear catalog by the
+  reference price of its slot and tier (T2+ bases, shields, spellbooks and
+  trinkets in the "other" slot; Round 33, [item_tiers.md](item_tiers.md) §6.1). Thus a T1 Common weapon returns 2c and a T6 Common
   weapon returns 1s25c. The same-race purchase discount never increases
   buy-back; a 1–2c supply (thread, torch, stick) is not sellable at all,
   because 5% rounded up would equal its discounted price. Sticks are crafted
   from free wood, so no mob drops them and fishing does not catch them.
 - **Quality** (Round 33): a vendor buys a blue (Uncommon) item at **×3** and a
   gold (Rare) item at **×6** of its Common buy-back, per stack
-  (`grug_traders.stack_sell_price`). An item without a Common buy-back
-  (today shields, spellbooks and trinkets) sells for nothing at any quality.
+  (`grug_traders.stack_sell_price`); item level 61+ sells as T6.
 - **Loot and gathered goods** pay one formula, `max(1, round(class value ×
   tier factor))`, with tier factors **1 / 2.6 / 6.4 / 16 / 40 / 100** (the
   weapon axis ÷ 25c) and the class values below, tuned once so the median kill
@@ -131,7 +131,12 @@ precedence over preserving the exact mathematical ratio.
 
   | Bracket | 1–10 | 11–20 | 21–30 | 31–40 | 41–50 | 51–60 |
   |---|---:|---:|---:|---:|---:|---:|
-  | Net solo income per hour | 1s77c | 4s35c | 9s18c | 24s39c | 68s66c | 1g46s68c |
+  | Net solo income per hour | 1s72c | 4s28c | 9s11c | 24s40c | 66s3c | 1g47s35c |
+
+  Since Round 33 the estimate also counts every normal kill's gear drop sold
+  (white 5 % / blue 2 % / gold 1 % at ×1 / ×3 / ×6, an upper bound) and repair
+  at factor 1.00 ([item_tiers.md](item_tiers.md) §6.5); `income.py` prints
+  the change per band (−3.1 % at 1–10 to +1.6 % at 51–60).
 
 ## 4. Sinks
 
@@ -139,8 +144,9 @@ precedence over preserving the exact mathematical ratio.
   consumables.
 - **Repair:** broken gear is never destroyed; at zero durability its effects
   stop until repaired with ledger money at any city profession trainer, including
-  Cooking. The V1 cost is `ceil(0.20 × reference purchase price × missing
-  durability fraction)` per item, from the §2 purchase table; intact items are
+  Cooking. The cost is `ceil(1.00 × reference purchase price × missing
+  durability fraction)` per item (Round 33: wearing an item out once costs
+  its price), from the §2 purchase table; intact items are
   free. Anyone may repair any eligible item, with no profession or material
   requirement. Crafting stations inside an active Claim Stone claim offer the
   same repair at the same trader price, as a convenience (D7). The precise
@@ -151,9 +157,23 @@ precedence over preserving the exact mathematical ratio.
   `progression.md` §2). The price is **five minutes of measured reliable net
   solo income** at the character's own bracket, rounded by §4.1's rule
   (ruling 22), and **the first respec of a character is free**: **15c, 35c,
-  75c, 2s, 6s and 12s** for the brackets 1–10 to 51–60
+  75c, 2s, 5s50c and 12s** for the brackets 1–10 to 51–60
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
+- **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
+  Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
+  hour of band-6 income, **1g 47s** (`grug_traders.CROWN_FEE`, checked by
+  `income.py`). Once per item; the operation refuses where it would change
+  nothing.
+- **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the
+  Decor Merchant at the gate of every capital's woodcarver hall sells
+  cosmetic blocks and lights nobody can craft — accent blocks 25c (marble,
+  marble tile, serpentine, slate tile, old red sandstone brick, basalt brick,
+  chalked brick, paving stone, round and square glass, wooden frame, iron
+  grille), small lights 1s (lantern), large lights 10s (hanging lantern),
+  showpieces 1g (wagon wheel, four paintings) — at every level, with the
+  ordinary 5 % buy-back. All are grug_decor's harvested kit, licensed per
+  file in its `LICENSE-media.md`.
 - **No profession-replacement services:** cultural finishes, the PvP weapon
   counter and the Warding Draught were removed (Round 33), and with them the
   cultural masters and helper NPCs that would have performed them.
@@ -161,7 +181,7 @@ precedence over preserving the exact mathematical ratio.
 ### 4.1 Income-derived price rounding; housing has no price
 
 Every price derived from measured reliable net solo income (respec, mounts,
-boats) rounds its copper result with the coarsest denomination in
+boats, the crown fee) rounds its copper result with the coarsest denomination in
 `1s / 25c / 5c / 1c` whose nearest multiple stays within 5% of the target;
 exact midpoints round upward.
 
@@ -184,11 +204,11 @@ Apprentice Riding and the Improved Boat as much as Journeyman Riding
 
 | Purchase | Level | Income time | Price |
 |---|---:|---|---:|
-| Apprentice Riding | 15 | 15 min | 1s10c |
+| Apprentice Riding | 15 | 15 min | 1s5c |
 | Journeyman Riding | 30 | 45 min | 7s |
-| Expert Riding | 45 | 2 h | 1g37s |
-| Master Riding | 60 | 5 h | 7g33s |
-| Boat | 15 | as Apprentice | 1s10c |
+| Expert Riding | 45 | 2 h | 1g32s |
+| Master Riding | 60 | 5 h | 7g37s |
+| Boat | 15 | as Apprentice | 1s5c |
 | Improved Boat | 30 | as Journeyman | 7s |
 
 This replaces the obsolete fixed 1s/8s/30s/60s table; the fast level-60

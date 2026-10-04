@@ -14,11 +14,15 @@ function grug_repair.eligible(stack)
 	return false
 end
 
+-- Repair cost = ceil(FACTOR x reference price x missing durability): wearing
+-- an item out once costs what buying it again would (item_tiers.md §6.2).
+grug_repair.FACTOR = 1.00
+
 function grug_repair.cost(stack)
 	if not grug_repair.eligible(stack) then return nil end
 	local price = grug_gear.reference_purchase_price(stack)
 	if not price or price <= 0 then return nil, "This item's repair price is unavailable." end
-	return math.ceil(price * stack:get_wear() / (5 * 65535))
+	return math.ceil(grug_repair.FACTOR * price * stack:get_wear() / 65535)
 end
 
 -- providers.lua registers the city trainers and the claim stations. Merely

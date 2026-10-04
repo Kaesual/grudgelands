@@ -8,8 +8,9 @@
 -- runtime. The ordinary kit is diggable; capital service props are intrinsically
 -- immutable and have no item/drop route (capital.lua).
 --
--- Traders do not buy decor (no loot class in grug_traders/prices.lua);
--- decorative crafting is owned by a later work package.
+-- The capital Decor Merchant sells part of this kit (grug_traders/stock.lua,
+-- round33-plan.md §2.6); traders buy back only what a vendor sells.
+-- Decorative crafting is owned by a later work package.
 
 grug_decor = {}
 

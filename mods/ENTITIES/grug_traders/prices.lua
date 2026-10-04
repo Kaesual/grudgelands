@@ -7,6 +7,9 @@
 --                            ruling 5)
 --   goods a vendor sells     5 % of the price, rounded up (§3.4), never more
 --                            than their cheapest recipe's inputs
+--   gear no vendor sells     the same, from its reference price (T2+ bases,
+--                            shields, spellbooks, trinkets; item_tiers.md
+--                            §6.1)
 --   free world materials     0, and they count 0 in a recipe (wood, stone,
 --                            sand, glass, flowers and their dyes ...), so
 --                            nothing made only from them pays
@@ -253,7 +256,7 @@ local payouts -- item -> copper (0 = known, not sellable); nil before load
 local sold = {} -- item -> lowest vendor price, filled with the payouts
 
 -- Lowest price any vendor asks for each item: the core stock, the profession
--- shelves and the six gear catalogs.
+-- shelves and the T1 gear shelf.
 local function sold_prices()
 	local sold = {}
 	local function note(item, price)
@@ -263,12 +266,23 @@ local function sold_prices()
 	for _, shelf in pairs(grug_traders.profession_stock) do
 		for _, entry in ipairs(shelf) do note(entry.item, entry.price) end
 	end
-	for bracket = 1, #grug_gear.BRACKETS do
-		for _, item in ipairs(grug_gear.catalog[bracket].all) do
-			note(item, grug_gear.get_price(item))
-		end
+	for _, entry in ipairs(grug_traders.bracket_stock(grug_traders.GEAR_BRACKET)) do
+		note(entry.item, entry.price)
 	end
 	return sold
+end
+
+-- The reference price of every equippable no vendor sells (grug_gear's drop
+-- pool of each tier): it pays the buy-back a sold base would.
+local function reference_prices(sold)
+	local reference = {}
+	for bracket = 1, #grug_gear.BRACKETS do
+		for _, item in ipairs(grug_gear.drop_pool[bracket]) do
+			local price = grug_gear.get_price(item)
+			if price and not sold[item] then reference[item] = price end
+		end
+	end
+	return reference
 end
 
 function grug_traders.resolve_prices()
@@ -302,6 +316,7 @@ function grug_traders.resolve_prices()
 		classified = classified,
 		processed = processed,
 		sold = sold,
+		reference = reference_prices(sold),
 		free = free,
 		discounted = grug_traders.discounted_price,
 		recipes_for = recipes_for,

@@ -57,8 +57,12 @@ For an item's missing durability fraction `w` and regular reference purchase
 price `P` in copper:
 
 ```
-repair_cost = ceil(0.20 * P * w)
+repair_cost = ceil(1.00 * P * w)
 ```
+
+The factor is `grug_repair.FACTOR`; it rose from 0.20 to 1.00 in Round 33
+([item_tiers.md](item_tiers.md) §6.2): wearing an item out once costs what
+buying it again would.
 
 Intact items cost zero. Repair-all sums individual rounded quotes and provides
 no discount. Reference **purchase** price is never the buy-back/sale price or

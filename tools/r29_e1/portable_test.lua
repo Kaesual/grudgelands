@@ -246,20 +246,33 @@ local SHELVES = {
 		"grug_mobs:zombie_flesh"},
 	mason = {"default:cobble", "default:gravel", "default:clay_brick",
 		"default:stonebrick", "default:sandstonebrick", "default:stone_block"},
+	-- Round 33: the capital Decor Merchant (tools/r33_c5 checks its bands).
+	culture = {"grug_decor:darkage_marble", "grug_decor:darkage_marble_tile",
+		"grug_decor:darkage_serpentine", "grug_decor:darkage_slate_tile",
+		"grug_decor:darkage_ors_brick", "grug_decor:darkage_basalt_brick",
+		"grug_decor:darkage_chalked_bricks", "grug_decor:castle_pavement_brick",
+		"grug_decor:darkage_glass_round", "grug_decor:darkage_glass_square",
+		"grug_decor:darkage_wood_frame", "grug_decor:darkage_iron_grille",
+		"grug_decor:xdecor_lantern", "grug_decor:xdecor_lantern_hanging",
+		"grug_decor:cottages_wagon_wheel", "grug_decor:xdecor_painting_1",
+		"grug_decor:xdecor_painting_2", "grug_decor:xdecor_painting_3",
+		"grug_decor:xdecor_painting_4"},
 }
 local kinds = 0
 for kind in pairs(grug_traders.profession_stock) do
 	kinds = kinds + 1
 	check(SHELVES[kind] ~= nil, "unexpected shelf " .. kind)
 end
-eq(kinds, 12, "twelve profession shelves")
+eq(kinds, 13, "thirteen profession shelves")
 for kind, expected_items in pairs(SHELVES) do
 	eq(items(grug_traders.profession_stock[kind] or {}), sorted(expected_items), kind .. " shelf")
 end
--- A supply registered for every vendor reaches every shelf.
+-- A supply registered for every vendor reaches every trade's shelf; the
+-- Decor Merchant carries none.
 grug_traders.register_all_vendor_stock({item = "x:vial", price = 3})
 for kind, shelf in pairs(grug_traders.profession_stock) do
-	check(shelf[#shelf].item == "x:vial", "all-vendor supply on " .. kind)
+	check((shelf[#shelf].item == "x:vial") == (kind ~= "culture"),
+		"all-vendor supply on " .. kind)
 end
 eq(grug_traders.stock[#grug_traders.stock].item, "x:vial", "all-vendor supply in the core stock")
 
