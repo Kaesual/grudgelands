@@ -1,7 +1,7 @@
 -- grug_sounds: the game's sound events (Round 34, docs/planning/round34-plan.md
 -- §4.1). A call site is one line that names an event and who hears it:
 --
---   grug_sounds.play("quest_accept", player)  -- a player ObjectRef
+--   grug_sounds.play("quest_page", player)    -- a player ObjectRef
 --   grug_sounds.play("mount_gallop", object)  -- any other ObjectRef: the sound follows it
 --   grug_sounds.play("drop_gold", pos)        -- a position
 --
@@ -36,7 +36,7 @@ grug_sounds.HOOKS = {
 	"npc_quest", "npc_vendor", "npc_trainer", "npc_innkeeper", "npc_stable",
 	"npc_shipwright", "npc_steward", "npc_crownbinder",
 	-- Quests.
-	"quest_page", "quest_accept", "quest_abandon", "quest_complete",
+	"quest_page", "quest_abandon", "quest_complete",
 	-- Trade and money (the Bag of Coins deposit).
 	"vendor_buy", "vendor_sell", "money",
 	-- Progression.
@@ -54,15 +54,15 @@ grug_sounds.HOOKS = {
 	"fishing_cast", "fishing_catch",
 	-- Combat (Round 34 S1b, plan §4.3): the swing into the air (an item sound
 	-- of the swing skills' tools, played by the client), a player's hit by the
-	-- kind of the equipped melee weapon, an absorb shield taking a hit, crit,
-	-- dodge and a player's death.
-	"swing", "hit_blade", "hit_blunt", "hit_fist", "block", "crit", "dodge",
+	-- kind of the equipped melee weapon, an absorb shield taking a hit, dodge
+	-- and a player's death.
+	"swing", "hit_blade", "hit_dagger", "hit_blunt", "hit_fist", "block", "dodge",
 	"player_death",
 	-- Abilities: one cue per theme at the caster (grug_abilities.CAST_SOUNDS);
 	-- a projectile sounds at launch and at its hit (grug_projectiles.register).
 	"cast_charge", "cast_taunt", "cast_guard", "cast_frost_nova",
-	"cast_frost_ward", "cast_blink", "cast_cinderfall", "cast_holy", "cast_heal",
-	"cast_shield", "cast_shadow", "cast_evade", "cast_sprint",
+	"cast_frost_ward", "cast_cinderfall", "cast_holy", "cast_heal",
+	"cast_shield", "cast_shadow", "cast_evade",
 	"fireball_launch", "fireball_hit", "bow_shot", "arrow_hit",
 	-- Mob voices by family (grug_mobs.VOICES), played by mobs_redo's mob_sound.
 	"voice_humanoid_damage", "voice_humanoid_death",
@@ -79,7 +79,7 @@ grug_sounds.HOOKS = {
 	"voice_beast_war_cry", "voice_beast_damage", "voice_beast_death",
 	"voice_grazer_damage", "voice_grazer_death",
 	"voice_bird_damage", "voice_bird_death",
-	"voice_crow_damage", "voice_crow_random",
+	"voice_crow_damage",
 	"voice_critter_damage", "voice_critter_death",
 	"voice_insect_damage", "voice_insect_death",
 	"voice_slime_damage", "voice_slime_death",
@@ -87,15 +87,16 @@ grug_sounds.HOOKS = {
 	"voice_aquatic_damage", "voice_aquatic_death",
 	"voice_dragon_war_cry", "voice_dragon_damage", "voice_dragon_death",
 	"voice_kraken_war_cry", "voice_kraken_damage", "voice_kraken_death",
-	-- Bosses: the elite wind-up, the dragons' breath, lightning, enrage and
-	-- wrath, the breaking arena ice, the kings' signature attack.
+	-- Bosses: the dragons' wind-up growl, breath, lightning, enrage and
+	-- wrath, the breaking arena ice, the kings' and Generals' signature attack.
 	"telegraph", "dragon_breath_frost", "dragon_breath_fire", "dragon_lightning",
 	"dragon_enrage", "dragon_wrath", "ice_break", "king_signature",
 }
 -- Silent by the user's choice (plan §2.2a), so without a call site: quest
--- progress, talent, achievement, drops, mount summon and dismount, respawn,
--- zone banner, PvP off and any automatic PvP flag change. Enchant keeps its
--- hook without a sound.
+-- accept and progress, talent, achievement, drops, mount summon and dismount,
+-- respawn, zone banner, PvP off and any automatic PvP flag change; in combat
+-- crit, Blink, Sprint, the Carrion Crow's roaming call and the wind-up of
+-- every elite but the humanoids (S1b). Enchant keeps its hook without a sound.
 
 -- The user's picks (tools/r34_s1a/approved.txt). Files are peak-normalised
 -- to -3 dBFS; the gains set the balance (quiet, frequent cues lower). UI and
@@ -112,7 +113,6 @@ local EVENTS = {
 	npc_steward = {name = "grug_sounds_npc_steward", gain = 0.6, personal = true},
 	npc_crownbinder = {name = "grug_sounds_npc_crownbinder", gain = 0.6, personal = true},
 	quest_page = {name = "grug_sounds_quest_page", gain = 0.5, personal = true},
-	quest_accept = {name = "grug_sounds_quest_accept", gain = 0.7, personal = true},
 	quest_abandon = {name = "grug_sounds_quest_abandon", gain = 0.6, personal = true},
 	quest_complete = {name = "grug_sounds_quest_complete", gain = 0.7, personal = true},
 	vendor_buy = {name = "grug_sounds_coins", gain = 0.6, personal = true, pitch = 0.05},
@@ -140,13 +140,92 @@ local EVENTS = {
 	fishing_cast = {name = "grug_sounds_splash", gain = 0.4, distance = 10, pitch = 0.1},
 	fishing_catch = {name = "grug_sounds_splash", gain = 0.6, distance = 12},
 	-- Combat and creatures (S1b, tools/r34_s1b/approved.txt). Hits, voices
-	-- and spells follow their target or caster; voices carry a per-mob
-	-- interval so a mob taking several hits a second grunts once.
+	-- and spells follow their target or caster. Voices carry a per-mob
+	-- interval, so a mob hit several times a second grunts once and a chase
+	-- does not repeat its war cry; frequent cues sit lower.
+	swing = {name = "grug_sounds_swing", gain = 0.5},
+	hit_blade = {name = "grug_sounds_hit_blade", gain = 0.7, distance = 12, pitch = 0.05},
+	hit_dagger = {name = "grug_sounds_hit_dagger", gain = 0.7, distance = 12, pitch = 0.05},
+	hit_blunt = {name = "grug_sounds_hit_blunt", gain = 0.7, distance = 12, pitch = 0.05},
 	-- The existing mobs_redo punch stays for fists (R32 3.5, CC0).
 	hit_fist = {name = "mobs_punch", distance = 8},
-	-- The thin arena ice keeps minetest_game's glass break until the user's
-	-- pick (C5.4) lands.
-	ice_break = {name = "default_break_glass", gain = 0.6, distance = 24},
+	block = {name = "grug_sounds_block", gain = 0.6, distance = 12, interval = 0.4},
+	dodge = {name = "grug_sounds_dodge", gain = 0.5, distance = 10, interval = 0.3},
+	player_death = {name = "grug_sounds_player_death", gain = 0.8, distance = 16},
+	cast_guard = {name = "grug_sounds_cast_guard", gain = 0.7},
+	cast_frost_ward = {name = "grug_sounds_cast_frost_ward", gain = 0.6},
+	cast_cinderfall = {name = "grug_sounds_cast_cinderfall", gain = 0.8, distance = 20},
+	cast_holy = {name = "grug_sounds_cast_holy", gain = 0.7},
+	cast_heal = {name = "grug_sounds_cast_heal", gain = 0.6},
+	cast_shield = {name = "grug_sounds_cast_shield", gain = 0.6},
+	cast_shadow = {name = "grug_sounds_cast_shadow", gain = 0.7},
+	cast_evade = {name = "grug_sounds_cast_evade", gain = 0.6},
+	fireball_launch = {name = "grug_sounds_fireball_launch", gain = 0.6, pitch = 0.05},
+	fireball_hit = {name = "grug_sounds_fireball_hit", gain = 0.7, pitch = 0.05},
+	bow_shot = {name = "grug_sounds_bow_shot", gain = 0.6, pitch = 0.05},
+	arrow_hit = {name = "grug_sounds_arrow_hit", gain = 0.7, distance = 12, pitch = 0.05},
+	-- Voices. Humans, zombies and mummies share one hurt sound (R34 C7.1).
+	voice_humanoid_damage = {name = "grug_sounds_voice_humanoid_damage", gain = 0.6, interval = 1.5, pitch = 0.08},
+	voice_goblin_war_cry = {name = "grug_sounds_voice_goblin_war_cry", gain = 0.6, interval = 8},
+	voice_goblin_damage = {name = "grug_sounds_voice_goblin_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_goblin_death = {name = "grug_sounds_voice_goblin_death", gain = 0.7},
+	voice_undead_war_cry = {name = "grug_sounds_voice_undead_war_cry", gain = 0.6, interval = 8},
+	voice_undead_damage = {name = "grug_sounds_voice_humanoid_damage", gain = 0.6, interval = 1.5, pitch = 0.08},
+	voice_undead_death = {name = "grug_sounds_voice_undead_death", gain = 0.7},
+	voice_mummy_damage = {name = "grug_sounds_voice_humanoid_damage", gain = 0.6, interval = 1.5, pitch = 0.08},
+	voice_mummy_death = {name = "grug_sounds_voice_mummy_death", gain = 0.7},
+	voice_skeleton_damage = {name = "grug_sounds_voice_skeleton_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_skeleton_death = {name = "grug_sounds_voice_skeleton_death", gain = 0.7},
+	voice_spirit_damage = {name = "grug_sounds_voice_spirit_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_spirit_death = {name = "grug_sounds_voice_spirit_death", gain = 0.7},
+	voice_giant_war_cry = {name = "grug_sounds_voice_giant_war_cry", gain = 0.7, distance = 24, interval = 10},
+	voice_giant_damage = {name = "grug_sounds_voice_giant_damage", gain = 0.6, distance = 20, interval = 2},
+	voice_giant_death = {name = "grug_sounds_voice_giant_death", gain = 0.8, distance = 24},
+	voice_elemental_damage = {name = "grug_sounds_voice_elemental_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_elemental_death = {name = "grug_sounds_voice_elemental_death", gain = 0.7, distance = 20},
+	voice_canine_war_cry = {name = "grug_sounds_voice_canine_war_cry", gain = 0.6, interval = 8, pitch = 0.05},
+	voice_canine_damage = {name = "grug_sounds_voice_canine_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_canine_death = {name = "grug_sounds_voice_canine_death", gain = 0.7},
+	voice_feline_damage = {name = "grug_sounds_voice_feline_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_feline_death = {name = "grug_sounds_voice_feline_death", gain = 0.7},
+	voice_boar_war_cry = {name = "grug_sounds_voice_boar_war_cry", gain = 0.6, interval = 8},
+	voice_boar_damage = {name = "grug_sounds_voice_boar_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_boar_death = {name = "grug_sounds_voice_boar_death", gain = 0.7},
+	voice_beast_war_cry = {name = "grug_sounds_voice_beast_war_cry", gain = 0.7, distance = 20, interval = 10},
+	voice_beast_damage = {name = "grug_sounds_voice_beast_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
+	voice_beast_death = {name = "grug_sounds_voice_beast_death", gain = 0.7, distance = 20},
+	voice_grazer_damage = {name = "grug_sounds_voice_grazer_damage", gain = 0.5, interval = 1.5, pitch = 0.08},
+	voice_grazer_death = {name = "grug_sounds_voice_grazer_death", gain = 0.6},
+	voice_bird_damage = {name = "grug_sounds_voice_bird_damage", gain = 0.5, interval = 1.5, pitch = 0.08},
+	voice_bird_death = {name = "grug_sounds_voice_bird_death", gain = 0.6},
+	voice_crow_damage = {name = "grug_sounds_voice_crow_damage", gain = 0.5, interval = 2, pitch = 0.05},
+	voice_critter_damage = {name = "grug_sounds_voice_critter_damage", gain = 0.5, interval = 1.5, pitch = 0.08},
+	voice_critter_death = {name = "grug_sounds_voice_critter_death", gain = 0.5},
+	voice_insect_damage = {name = "grug_sounds_voice_insect_damage", gain = 0.5, interval = 1.5, pitch = 0.08},
+	voice_insect_death = {name = "grug_sounds_voice_insect_death", gain = 0.6},
+	voice_slime_damage = {name = "grug_sounds_voice_slime_damage", gain = 0.5, interval = 1.5, pitch = 0.05},
+	voice_slime_death = {name = "grug_sounds_voice_slime_death", gain = 0.6},
+	voice_reptile_war_cry = {name = "grug_sounds_voice_reptile_war_cry", gain = 0.5, interval = 8},
+	voice_reptile_damage = {name = "grug_sounds_voice_reptile_damage", gain = 0.5, interval = 1.5, pitch = 0.05},
+	voice_reptile_death = {name = "grug_sounds_voice_reptile_death", gain = 0.6},
+	voice_aquatic_damage = {name = "grug_sounds_voice_aquatic_damage", gain = 0.5, interval = 1.5, pitch = 0.08},
+	voice_aquatic_death = {name = "grug_sounds_voice_aquatic_death", gain = 0.5},
+	voice_dragon_war_cry = {name = "grug_sounds_voice_dragon_war_cry", gain = 0.9, distance = 64, interval = 15},
+	voice_dragon_damage = {name = "grug_sounds_voice_dragon_damage", gain = 0.7, distance = 48, interval = 6},
+	voice_dragon_death = {name = "grug_sounds_voice_dragon_death", gain = 1, distance = 80},
+	voice_kraken_war_cry = {name = "grug_sounds_voice_kraken_war_cry", gain = 0.8, distance = 40, interval = 15},
+	voice_kraken_damage = {name = "grug_sounds_voice_kraken_damage", gain = 0.7, distance = 32, interval = 3},
+	voice_kraken_death = {name = "grug_sounds_voice_kraken_death", gain = 0.9, distance = 48},
+	-- Bosses. The dragon's wind-up growl at most every 10 s (a breath or
+	-- lightning wind-up comes every 6-8 s); enrage is the 11.1 roar again.
+	telegraph = {name = "grug_sounds_telegraph", gain = 0.8, distance = 48, interval = 10},
+	dragon_breath_frost = {name = "grug_sounds_dragon_breath_frost", gain = 0.8, distance = 40},
+	dragon_breath_fire = {name = "grug_sounds_dragon_breath_fire", gain = 0.8, distance = 40},
+	dragon_lightning = {name = "grug_sounds_dragon_lightning", gain = 0.9, distance = 48},
+	dragon_enrage = {name = "grug_sounds_voice_dragon_war_cry", gain = 1, distance = 80},
+	dragon_wrath = {name = "grug_sounds_dragon_wrath", gain = 0.7, personal = true},
+	ice_break = {name = "grug_sounds_ice_break", gain = 0.6, distance = 24},
+	king_signature = {name = "grug_sounds_king_signature", gain = 0.8, distance = 24},
 }
 grug_sounds.EVENTS = EVENTS
 
