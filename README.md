@@ -301,8 +301,9 @@ Mobs Redo, Animalia, Animal World and many others.
 
 The [reference-project list](docs/reference_projects.md) links to the projects
 we study; [VENDOR.md](VENDOR.md) records the code we ship and our changes.
-Media authors, sources and licenses are documented alongside the assets in
-per-mod license files.
+[CREDITS.md](CREDITS.md) thanks the composers, sound designers and artists
+whose work the game uses; media authors, sources and licenses are documented
+alongside the assets in per-mod license files.
 
 ## Support development
 
@@ -329,6 +330,7 @@ investigations and delivery records.
 | Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
+| Sound | [Sound](docs/design/sound.md): effects, creature voices, ambience, music and the sound settings. |
 | Decision routing | [Round 18 decisions](docs/design/playtest_quality_revision.md): where the Round 18 playtest-quality rules now live. |
 | Hosting | [World preparation](docs/design/world_preparation.md): generating starting areas or the full world. |
 
