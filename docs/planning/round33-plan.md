@@ -269,6 +269,14 @@ check.
   - Character page tabs: `grug_inventory/pages.lua` ~263–275 (Stats,
     Effects).
   - Guard kills: `grug_pvp` `stats`/`count_npc_kill`.
+- **Previews and Astra:** DS and C3 stage 1 each write a German preview page
+  (`r33/previews/<lane>/index.html`); the coordinator publishes them as
+  private artifacts and collects the user's picks. Astra for C3 in two calls:
+  first the achievement and cloak proposals (texts, conditions, tiers, cloak
+  descriptions) for the preview, then — after the user's picks and the
+  technique study fixed the texture format — the cloak textures. Astra also
+  names the crown NPC (C5). The user's GUI tests of Rounds 30–32 are still
+  open; findings may become a small fix lane.
 - **Merge order:** C1, C2, C3 independent; C4 after C1; C5 after C2 (and after
   C4 where both touch prices); D last.
 - **End:** `tools/run_fixtures.sh` on main, sync with
