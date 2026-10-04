@@ -3,8 +3,12 @@
 --   luajit tools/r34_f3/portable_test.lua [REPO] [SEED ...]
 --
 -- Per SEED (default the three seeds that stopped at load before this lane,
--- "planner anchor tuple differs at 29", and 12345) the inland water layout is
--- built through the real height session (water_inputs, no roads), then:
+-- "planner anchor tuple differs at 29"; 4282870288782723, whose river must
+-- go round anchors 72 and 101 with only a narrow gap between their
+-- clearances; 2996858566870034, whose tributary joined its parent across
+-- anchor 31's core after the parent went round it; and 12345) the inland
+-- water layout is built through the real height session (water_inputs, no
+-- roads), then:
 --   1. the build passes: its guard (`water_layout.wet_core`) found no core
 --      within a river's wet limit;
 --   2. checked here again, every POI core keeps a margin >= 0 to every wet
@@ -19,7 +23,8 @@ local repo = arg[1] or "."
 local seeds = {}
 for i = 2, #arg do seeds[#seeds + 1] = arg[i] end
 if #seeds == 0 then
-	seeds = {"17713522922938657774", "5575844014311305038", "6410640627505506314", "12345"}
+	seeds = {"17713522922938657774", "5575844014311305038", "6410640627505506314",
+		"4282870288782723", "2996858566870034", "12345"}
 end
 -- the water layout text of seed 12345 on main f6d11c95 (before this lane)
 local PINNED = {["12345"] = "f140b58b8913b6a01e2313d4f2563b7e425be89564ac6a2c9ce11aa71e9a1d54"}

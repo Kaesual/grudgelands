@@ -729,10 +729,12 @@ return function(P)
 		-- the path into a neighbour's). Where the course still enters a core's
 		-- clearance after that (two cores closer than the river needs to pass
 		-- between them: each detour swings it back onto the other), that core
-		-- and every core whose clearance overlaps it (at the river's widest
-		-- reach) become one obstacle, and the detour runs again from the
-		-- undetoured course, so the river goes round both on one side. A
-		-- course without such a conflict keeps the per-core detour exactly.
+		-- and every core whose clearance overlaps it or leaves less than
+		-- POI_PAD between them (at the river's widest reach; a smoothed course
+		-- cannot thread a narrower gap) become one obstacle, and the detour
+		-- runs again from the undetoured course, so the river goes round both
+		-- on one side. A course without such a conflict keeps the per-core
+		-- detour exactly.
 		local pois = opts.pois or {}
 		local function core_detour(src, reach)
 			local n = #src
@@ -814,7 +816,7 @@ return function(P)
 					local p = pois[k]
 					for j, q in ipairs(pois) do
 						local dx, dz = q.x - p.x, q.z - p.z
-						local lim = p.r + q.r + 2 * (rmax + P.POI_PAD)
+						local lim = p.r + q.r + 2 * (rmax + P.POI_PAD) + P.POI_PAD
 						if j ~= k and dx * dx + dz * dz < lim * lim and
 								(not group[k] or group[j] ~= group[k]) then
 							local g, old = group[k] or k, group[j]
@@ -989,10 +991,40 @@ return function(P)
 				reach[i] = gully[i] and P.GULLY_A0 or band[i] + P.WET_X + P.WET_B
 			end
 			out = core_detour(out, reach)
-			-- a tributary's junction end snaps onto the parent's final centreline
+			-- a tributary's junction end snaps onto the parent's final
+			-- centreline; where the parent went round a core on the far side,
+			-- so that the last stretch would cross the core's clearance, onto
+			-- the nearest parent vertex the stretch reaches clear of every core
 			if rv.parent then
 				local par = S.rivers[rv.parent]
 				local jx, jz, ji = nearest_on(par.pts, out[n][1], out[n][2])
+				if n > 1 then
+					local ax, az = out[n - 1][1], out[n - 1][2]
+					local rr = max(reach[n - 1], reach[n]) + P.POI_PAD
+					local function clear_to(x, z)
+						local vx, vz = x - ax, z - az
+						local l2 = vx * vx + vz * vz
+						for _, p in ipairs(pois) do
+							local ox, oz = p.x - ax, p.z - az
+							local t = l2 > 0 and (ox * vx + oz * vz) / l2 or 0
+							if t < 0 then t = 0 elseif t > 1 then t = 1 end
+							local ex, ez = ox - t * vx, oz - t * vz
+							local r = p.r + rr
+							if ex * ex + ez * ez < r * r then return false end
+						end
+						return true
+					end
+					if not clear_to(jx, jz) then
+						local bd, ex, ez = math.huge, out[n][1], out[n][2]
+						for k, q in ipairs(par.pts) do
+							local rx, rz = q[1] - ex, q[2] - ez
+							local d = rx * rx + rz * rz
+							if d < bd and clear_to(q[1], q[2]) then
+								bd, jx, jz, ji = d, q[1], q[2], min(k, #par.pts - 1)
+							end
+						end
+					end
+				end
 				out[n] = {jx, jz}
 				rv.junction_index = ji
 			end
