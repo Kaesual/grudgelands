@@ -529,9 +529,11 @@ replaced; git history before this rewrite records that model.
   round both on one side (Round 34 F3); cores join when their clearances
   overlap or leave less than the pad between them, and a course without
   such a conflict keeps its per-core arcs. A tributary joins its parent at
-  the nearest point of the parent's final course, or, where that stretch
-  would cross a core's clearance (the parent went round the core on the far
-  side), at the nearest parent vertex it reaches clear of every core. A core
+  the nearest point of the parent's final course, or, where that last
+  stretch would enter a core's clearance (the parent went round the core on
+  the far side), at the nearest parent vertex close by (within about the
+  core's clearance arc) whose stretch stays clear; with none, its last
+  vertices bend round the core to the junction in an arc. A core
   a river's water could still reach stops the world's creation with the
   river and the POI named. Rivers and lakes
   may cross the rest of a capital's reserved area: plots or lanes standing in

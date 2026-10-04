@@ -736,6 +736,7 @@ return function(P)
 		-- on one side. A course without such a conflict keeps the per-core
 		-- detour exactly.
 		local pois = opts.pois or {}
+		local JOIN_ARC = 4
 		local function core_detour(src, reach)
 			local n = #src
 			local rmax = 0
@@ -750,6 +751,11 @@ return function(P)
 			-- exit of that ray from a member's clearance disc, so the outline
 			-- holds every member's disc and whatever lies between a disc and
 			-- the centre (where a narrow stretch's discs no longer overlap).
+			-- Cores joined across a gap below POI_PAD (discs apart): a ray from
+			-- the centre through the gap misses every disc and gets clearance
+			-- 0, so the course may still pass there; each core's own clearance
+			-- is checked again afterwards, and the build's guard checks the
+			-- cores' water.
 			local function joined(members)
 				local sx, sz, sw = 0, 0, 0
 				for _, p in ipairs(members) do
@@ -992,16 +998,21 @@ return function(P)
 			end
 			out = core_detour(out, reach)
 			-- a tributary's junction end snaps onto the parent's final
-			-- centreline; where the parent went round a core on the far side,
-			-- so that the last stretch would cross the core's clearance, onto
-			-- the nearest parent vertex the stretch reaches clear of every core
+			-- centreline. Where the parent went round a core on the far side,
+			-- so that the last stretch to that point would enter the core's
+			-- clearance, it snaps instead to the nearest parent vertex near
+			-- that point (within about the core's clearance arc) whose stretch
+			-- stays clear; if there is none, the last vertices bend round the
+			-- core to the junction in an arc.
 			if rv.parent then
 				local par = S.rivers[rv.parent]
 				local jx, jz, ji = nearest_on(par.pts, out[n][1], out[n][2])
-				if n > 1 then
+				if n > 2 then
 					local ax, az = out[n - 1][1], out[n - 1][2]
-					local rr = max(reach[n - 1], reach[n]) + P.POI_PAD
-					local function clear_to(x, z)
+					local rr = max(reach[n - 1], reach[n])
+					-- the core whose clearance (as the core detour's) the stretch
+					-- from out[n - 1] to (x, z) enters
+					local function blocked(x, z)
 						local vx, vz = x - ax, z - az
 						local l2 = vx * vx + vz * vz
 						for _, p in ipairs(pois) do
@@ -1009,18 +1020,41 @@ return function(P)
 							local t = l2 > 0 and (ox * vx + oz * vz) / l2 or 0
 							if t < 0 then t = 0 elseif t > 1 then t = 1 end
 							local ex, ez = ox - t * vx, oz - t * vz
-							local r = p.r + rr
-							if ex * ex + ez * ez < r * r then return false end
+							local r = p.r + rr + P.POI_PAD
+							if ex * ex + ez * ez < r * r then return p end
 						end
-						return true
+						return nil
 					end
-					if not clear_to(jx, jz) then
-						local bd, ex, ez = math.huge, out[n][1], out[n][2]
+					local p = blocked(jx, jz)
+					if p then
+						local lim = 2 * (p.r + rr + P.POI_PAD) + P.SEG
+						local bd, ox, oz = lim * lim, jx, jz
+						local found = false
 						for k, q in ipairs(par.pts) do
-							local rx, rz = q[1] - ex, q[2] - ez
+							local rx, rz = q[1] - ox, q[2] - oz
 							local d = rx * rx + rz * rz
-							if d < bd and clear_to(q[1], q[2]) then
-								bd, jx, jz, ji = d, q[1], q[2], min(k, #par.pts - 1)
+							if d < bd and not blocked(q[1], q[2]) then
+								bd, jx, jz, ji, found = d, q[1], q[2], min(k, #par.pts - 1), true
+							end
+						end
+						if not found then
+							-- the last JOIN_ARC vertices on the short arc round
+							-- the core to the junction (as the core detour: the
+							-- radius at least the clearance)
+							local j0 = max(1, n - JOIN_ARC)
+							local ax0, az0 = out[j0][1] - p.x, out[j0][2] - p.z
+							local bx0, bz0 = jx - p.x, jz - p.z
+							local t0 = math.atan2(az0, ax0)
+							local dt = math.atan2(bz0, bx0) - t0
+							while dt > math.pi do dt = dt - 2 * math.pi end
+							while dt < -math.pi do dt = dt + 2 * math.pi end
+							local r0 = sqrt(ax0 * ax0 + az0 * az0)
+							local r1 = sqrt(bx0 * bx0 + bz0 * bz0)
+							for q = j0 + 1, n - 1 do
+								local f = (q - j0) / (n - j0)
+								local t = t0 + dt * f
+								local rad = max(p.r + reach[q] + P.POI_PAD, r0 + (r1 - r0) * f)
+								out[q] = {p.x + rad * math.cos(t), p.z + rad * math.sin(t)}
 							end
 						end
 					end

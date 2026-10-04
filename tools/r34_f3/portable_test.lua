@@ -5,7 +5,7 @@
 -- Per SEED (default the three seeds that stopped at load before this lane,
 -- "planner anchor tuple differs at 29"; 4282870288782723, whose river must
 -- go round anchors 72 and 101 with only a narrow gap between their
--- clearances; 2996858566870034, whose tributary joined its parent across
+-- clearances; 2996858566870034, whose tributary would join its parent across
 -- anchor 31's core after the parent went round it; and 12345) the inland
 -- water layout is built through the real height session (water_inputs, no
 -- roads), then:
@@ -16,7 +16,9 @@
 --   3. seed 12345 has no detour conflict, so its layout text is the one main
 --      built before this lane (sha256 pinned below): a course without a
 --      conflict keeps the per-core detour exactly;
---   4. the guard names the river and core: on the built layout a stand-in
+--   4. every tributary's junction stretch (its last segment) is at most 320
+--      nodes (the reason at tools/seed_fleet/seed.lua JOIN_MAX);
+--   5. the guard names the river and core: on the built layout a stand-in
 --      core put on a wet vertex is reported with a river; the real cores pass.
 -- Prints "R34 F3 PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
@@ -113,6 +115,17 @@ for _, seed in ipairs(seeds) do
 	check(type(pois) == "table" and #pois > 90, "seed " .. seed .. ": the POI cores reached the build")
 	local margin, at = closest(layout, pois)
 	check(margin >= 0, ("seed %s: %s keeps its core dry (margin %.1f)"):format(seed, at, margin))
+	-- a tributary's junction stretch stays short (bound and reason:
+	-- tools/seed_fleet/seed.lua JOIN_MAX)
+	local join = 0
+	for _, r in ipairs(layout.rivers) do
+		local n = #r.x
+		if r.parent and n > 1 then
+			local dx, dz = r.x[n] - r.x[n - 1], r.z[n] - r.z[n - 1]
+			join = math.max(join, math.sqrt(dx * dx + dz * dz))
+		end
+	end
+	check(join <= 320, ("seed %s: junction stretches at most 320 nodes (%.1f)"):format(seed, join))
 	local digest = common.hex(sha(text))
 	if PINNED[seed] then
 		check(digest == PINNED[seed], ("seed %s: layout text unchanged (%s)"):format(seed, digest))
@@ -132,7 +145,7 @@ for _, seed in ipairs(seeds) do
 		("seed %s: the guard names a river and the stand-in core"):format(seed))
 	check(module.wet_core(module.deserialize(text), pois) == nil,
 		"seed " .. seed .. ": the guard passes the real cores")
-	print(("seed %s: closest core %s margin %.1f, layout %s, %.1f s"):format(seed, at, margin,
-		digest:sub(1, 16), os.clock() - t0))
+	print(("seed %s: closest core %s margin %.1f, longest junction stretch %.1f, layout %s, %.1f s")
+		:format(seed, at, margin, join, digest:sub(1, 16), os.clock() - t0))
 end
 print(("R34 F3 PORTABLE PASS checks=%d"):format(checks))
