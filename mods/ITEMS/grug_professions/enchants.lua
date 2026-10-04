@@ -99,7 +99,7 @@ core.register_on_mods_loaded(function()
 		end
 	end
 	-- Goal 3: every profession recipe and enchant operation uses only its own
-	-- profession's products; universal reagents use none.
+	-- profession's products.
 	local checked = {}
 	for index = 1, #grug_jobs.recipes do
 		local recipe = grug_jobs.recipes[index]
@@ -122,7 +122,7 @@ core.register_on_mods_loaded(function()
 		error("grug_professions: enchant inputs above their tier:\n" ..
 			table.concat(too_high, "\n"), 0)
 	end
-	local offences = data.foreign_inputs(P.profession_products(), checked, P.REAGENTS)
+	local offences = data.foreign_inputs(P.profession_products(), checked)
 	if #offences > 0 then
 		error("grug_professions: cross-profession inputs:\n" ..
 			table.concat(offences, "\n"), 0)

@@ -15,10 +15,10 @@ leash; bound actors: leash and give-up distance).
 
 ## 1. Riding is a universal skill
 
-- **Riding does not cost a main profession slot.** Like **Cooking** and
-  **First Aid** (`professions.md` §1) it is universal — every character
-  can learn it, and the two main profession slots stay free for the seven
-  crafting professions.
+- **Riding does not cost a main profession slot.** Like the secondaries
+  **Cooking** and **Alchemy** (`professions.md` §1) it is universal — every
+  character can learn it, and the two main profession slots stay free for the
+  six crafting professions.
 - Riding is learned **from a dedicated Riding Trainer in every race capital**, in four
   steps at character levels 15, 30, 45 and 60 (D20 decided 2026-08-13:
   the earlier job-trainer rule is superseded). There is no Riding Trainer in a

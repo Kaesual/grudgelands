@@ -82,15 +82,6 @@ silver|3|-;-;256;128;256;512|4
 tin|1|96;192;384;384;384;384|8
 ]]
 
-local CULTURAL_ROWS = [[
-undead|gravesalt|grug_blight;grug_bone_forest;grug_swamp;grug_beach|kragmar_blackwind_rise
-elf|moonresin|grug_elf_forest;grug_deep_forest;grug_jungle_fringe|elandor_glassroot_wilds
-orc|red_ochre|grug_savanna;grug_badlands|kragmar_bannerbreak_mesa
-dwarf|runeslate|grug_pine_hills;grug_crags;grug_crags_snowy|elandor_stormvault_heights
-troll|spirit_resin|grug_jungle_edge;grug_deep_jungle;grug_swamp;grug_badlands_east|kragmar_thunderroot_wilds
-human|sunwax|grug_meadows;grug_deep_forest|elandor_ashenward_march
-]]
-
 local DECORATION_ROWS = [[
 badlands_dry_shrub|grug_badlands;grug_badlands_east|simple|default:dry_shrub|grug_nodes:mesa_clay|1|125|param2_4|4
 badlands_large_cactus|grug_badlands;grug_badlands_east|template|large_cactus.mts|grug_nodes:mesa_clay|1|1000|center_xz;quarter_turn_rotation|1
@@ -189,12 +180,6 @@ return function()
 			deep_1500_1999_numerator = 5, deep_1500_1999_denominator = 4,
 			deep_2000_floor_numerator = 3, deep_2000_floor_denominator = 2}
 	end)
-	local cultural = {}
-	lines(CULTURAL_ROWS, function(row)
-		cultural[#cultural + 1] = {race = row[1], key = row[2],
-			ordinary_denominator = 4096, concentrated_denominator = 1024,
-			biomes = array(row[3]), concentrated_zone = row[4]}
-	end)
 	local decorations = {}
 	lines(DECORATION_ROWS, function(row)
 		decorations[#decorations + 1] = {id = row[1], biomes = array(row[2]),
@@ -220,8 +205,7 @@ return function()
 			force_native_dungeon = false,
 		},
 		input_sha256 = input_sha256, input_bytes = input_bytes,
-		surfaces = surfaces, resources = resources, cultural = cultural,
-		decorations = decorations,
+		surfaces = surfaces, resources = resources, decorations = decorations,
 		r2_layout_body_sha256 =
 			"1a819192fa40254aa6da1ebf5f3fa5286790ef907abe09750455e5e24c881a8b",
 	}

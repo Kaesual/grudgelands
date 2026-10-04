@@ -81,7 +81,6 @@ class Ledger:
         self.subtypes = design.subtype_map()
         self.catalog_items = design.item_map()
         self.drop_tables = design.drop_map()
-        self.reagents = {row.get("id"): row for row in design.reagents or [] if isinstance(row, dict)}
         self.inventory = defaultdict(float)
         self.warnings = []
         self.kill_rows = []
@@ -194,18 +193,14 @@ class Ledger:
         if gathering and gathering.get("kind") in C.GATHER_RATIO:
             return [(gathering["kind"], gathering.get("tier") or 1, 1.0)]
         inputs = None
-        per = 1.0
         if entry.get("alloy_inputs"):
             inputs = entry["alloy_inputs"]
         elif entry.get("furnace_inputs"):
             inputs = entry["furnace_inputs"][0]
-        elif item in self.reagents:
-            inputs = self.reagents[item].get("inputs") or []
-            per = 1.0 / max(1, self.reagents[item].get("output_count", 1))
         out = []
         for source in inputs or []:
             for kind, tier, qty in self.gather_units(source, depth + 1):
-                out.append((kind, tier, qty * per))
+                out.append((kind, tier, qty))
         return out
 
     def drop_source(self, item, zone):

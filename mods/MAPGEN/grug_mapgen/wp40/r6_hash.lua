@@ -5,8 +5,6 @@ return function(raw_sha256)
 	local UINT32 = 4294967296
 	local PREFIX = "grug_wp40_r6_hash_v1"
 	local DOMAIN_VALUES = {
-		"cultural_budget_remainder_v1",
-		"cultural_candidate_rank_v1",
 		"decoration_budget_remainder_v1",
 		"decoration_candidate_rank_v1",
 		"decoration_rotation_v1",

@@ -4,21 +4,6 @@ grug_alchemy.POTION_COOLDOWN = 60
 grug_alchemy.GREATER_COOLDOWN = 45
 grug_alchemy.ELIXIR_DURATION = 900
 
-local function equipment_bonus(player)
-	local inventory = player:get_inventory()
-	local count = 0
-	for _, slot in ipairs(grug_inventory.equipment_slots) do
-		if count >= 2 then break end
-		local stack = inventory:get_stack(slot.list, 1)
-		if core.get_item_group(stack:get_name(), "grug_apothecary") > 0 then
-			count = count + 1
-		end
-	end
-	return count
-end
-
-grug_alchemy.apothecary_bonus = equipment_bonus
-
 local function consume(itemstack, player)
 	itemstack:take_item(1)
 	core.sound_play("grug_alchemy_drink", {
@@ -87,10 +72,6 @@ end
 local function utility_use(kind, duration)
 	return function(itemstack, player)
 		if not player_ready(itemstack, player) then return end
-		local effective_duration = duration
-		if duration > 0 then
-			effective_duration = duration * (1 + equipment_bonus(player) * 0.10)
-		end
 		local accepted = true
 		if kind == "antivenom" then
 			accepted = grug_mobs.clear_poison(player)
@@ -100,14 +81,14 @@ local function utility_use(kind, duration)
 			end
 		elseif kind == "swiftness" then
 			grug_core.set_move_modifier(player, "alchemy_swiftness", {speed = 0.10},
-				effective_duration)
+				duration)
 			grug_core.set_status(player, "alchemy_swiftness", {
-				label = "Swiftness Draught", duration = effective_duration,
+				label = "Swiftness Draught", duration = duration,
 			})
 		elseif kind == "cave" then
 			grug_core.set_night_vision(player, grug_core.NIGHT_VISION_RATIO)
 			grug_core.set_status(player, "alchemy_cave", {
-				label = "Cave Draught", duration = effective_duration,
+				label = "Cave Draught", duration = duration,
 				on_expire = function(target)
 					grug_core.set_night_vision(target, nil)
 				end,
@@ -128,8 +109,7 @@ local ELIXIR_VARIANT = {
 	deepwater = "deepwater",
 }
 
--- The Effects tab detail line: the value actually granted (with the
--- equipment bonus), not the recipe's base value.
+-- The Effects tab detail line: the value the elixir grants.
 local ELIXIR_DETAIL = {
 	hp_pool_percent = "+%d%% maximum HP",
 	mana_pool_percent = "+%d%% maximum Mana",
@@ -154,14 +134,13 @@ local function elixir_use(definition)
 			refuse(player, "Requires level " .. required .. ".")
 			return
 		end
-		local pieces = equipment_bonus(player)
-		local duration = definition.duration * (1 + pieces * 0.10)
 		local modifiers = {}
 		if definition.modifier then
-			modifiers[definition.modifier] = definition.value + pieces
+			modifiers[definition.modifier] = definition.value
 		end
 		local status = {
-			label = definition.label, duration = duration, modifiers = modifiers,
+			label = definition.label, duration = definition.duration,
+			modifiers = modifiers,
 			variant = ELIXIR_VARIANT[definition.kind or definition.modifier],
 			detail = elixir_detail(definition, modifiers),
 		}

@@ -895,12 +895,9 @@ territory.
   - Both are the *bonus* on top of the visible passive, in line with the
     rule above that a perk must be FELT from level 1: the passive does
     the felt work, the vendor is the flavor that pays off later.
-- Universal base recipes and professions are never race-exclusive. Cultural
-  Finishing is the identity seam: the profession owning an item family may
-  apply only the player crafter's own character culture, while an allied
-  cultural-master service offers the same supplied-material operation. WP10
-  owns those workstation/service paths; WP5 owns the per-stack finish/effect
-  channel. Finished equipment remains tradeable and wearable by every race.
+- Universal base recipes and professions are never race-exclusive; there is
+  no cultural finishing (removed in Round 33). Equipment remains tradeable
+  and wearable by every race.
 - **No class restrictions per race in the MVP** (only 3 classes — locks
   would frustrate more than they flavor); revisit in Phase 2 with 7
   classes.

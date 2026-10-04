@@ -88,9 +88,10 @@ end
 --
 -- Including the two `kind = "resource"` rows (Emberglass, Abyssal Crystal),
 -- whose storage input is the mined item itself, and the Gold Block sentence of
--- §3.0.1. Rough gems cannot pack and cut-gem blocks belong to WP10, so no gem
--- appears here; `grug_materials:emberglass_shard` is a WP43 migration target
--- and deliberately gets no recipe.
+-- §3.0.1. Rough gems cannot pack and the cut-gem blocks pack in
+-- grug_artisans (goldsmith.lua), so no gem appears here;
+-- `grug_materials:emberglass_shard` is a WP43 migration target and
+-- deliberately gets no recipe.
 --
 for _, material in ipairs(PROCESSED) do
 	core.register_craft({
@@ -132,7 +133,7 @@ core.register_craft({
 -- two tables above are that comparison's left-hand side, so what is left to
 -- prove at startup is that the engine and the registry agree with them -- every
 -- input and output really registered, every alloy really in `RECIPES`, and no
--- gem, cultural or trophy material anywhere in the surface.
+-- gem or trophy material anywhere in the surface.
 --
 
 local function fail(message)
@@ -148,9 +149,6 @@ local function forbidden_inputs()
 			set[resource.cut_item] = "gem"
 			set[resource.block_node] = "gem"
 		end
-	end
-	for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do
-		set[material.item] = "cultural material"
 	end
 	return set
 end

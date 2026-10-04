@@ -1010,7 +1010,7 @@ local function settlement_factory()
 		exact_fields(dependencies, {
 			full_seed_string = true, r5_adapter = true, content = true,
 			templates = true, hash = true, horizontal = true, planner_source = true,
-			construction_identity = true, cultural_registrations = true, source = true,
+			construction_identity = true, source = true,
 			counting_allocator = true, successor_tail = "optional",
 			planner_stable_refs = "optional",
 		}, "settlement dependencies", "fail_settlement")
@@ -1021,7 +1021,6 @@ local function settlement_factory()
 		local hash = dependencies.hash
 		local horizontal = dependencies.horizontal
 		local planner_source = dependencies.planner_source
-		local cultural_registrations = dependencies.cultural_registrations
 		local source = dependencies.source
 		local r8_strata = new_r8_strata(full_seed, source)
 		local r24_layers = new_r24_fill_layers(full_seed)
@@ -1091,7 +1090,6 @@ local function settlement_factory()
 		local surfaces = content.surfaces()
 		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
-		local cultural = content.cultural()
 		local decorations = content.decorations()
 		-- Shrub templates (Round 23 Phase 2, world_zones.md §7.6) place like the
 		-- engine's own schematics (mg_schematic.cpp blitToVManip): a non-force
@@ -1111,11 +1109,6 @@ local function settlement_factory()
 		local surface_by_id = {}
 		for index = 1, #surfaces do surface_by_id[surfaces[index].id] = surfaces[index] end
 		local tier_by_y = projection.tiers
-		local cultural_registration = {}
-		for index = 1, #cultural_registrations do
-			cultural_registration[cultural_registrations[index].cultural_key] =
-				cultural_registrations[index]
-		end
 		local evidence_stable_ref = {}
 		if planner_stable_refs ~= nil then
 			if type(planner_stable_refs) ~= "table" or #planner_stable_refs < 1 then
@@ -1260,7 +1253,6 @@ local function settlement_factory()
 			"r6_settlement_census_column_allowed", 256, false)
 		local stable_state = {
 			resource = retained_array("r6_settlement_stable_resource", #resources, 0),
-			cultural = retained_array("r6_settlement_stable_cultural", #cultural, 0),
 			decoration = retained_array("r6_settlement_stable_decoration", #decorations, 0),
 			bound = false,
 		}
@@ -1798,12 +1790,10 @@ local function settlement_factory()
 		-- stratum/surface/air population.  Only aggregate ledgers escape.
 		-- Evidence-only analytic mirror of the writer (not used in production);
 		-- it lacks the Round 22 Phase 6 ground-body rule for force-placed cells.
-		local function scan_horizontal_owner(owner_x, owner_z,
-				cultural_candidates, decoration_candidates)
+		local function scan_horizontal_owner(owner_x, owner_z, decoration_candidates)
 			integer(owner_x, "evidence owner x", -30912, 30927, "fail_ledger")
 			integer(owner_z, "evidence owner z", -30912, 30927, "fail_ledger")
-			local result = {cultural = {}, decorations = {}, rejections = {},
-				witnesses = {}}
+			local result = {decorations = {}, rejections = {}}
 			local occupied, occupied_positions, written = {}, {}, {}
 			local evidence_air_cid, air_kind, air_param2 =
 				contract.r5.resolve(1, 0, 0)
@@ -1853,78 +1843,6 @@ local function settlement_factory()
 				local key = subsystem .. "\0" .. id .. "\0" .. reason
 				result.rejections[key] = (result.rejections[key] or 0) + 1
 			end
-			for candidate_index = 1, #cultural_candidates do
-				local candidate = cultural_candidates[candidate_index]
-				local row = cultural[candidate.catalog]
-				local rate = candidate.denominator == 1024 and "concentrated" or "ordinary"
-				local aggregate_key = row.key .. "\0" .. rate
-				local aggregate = result.cultural[aggregate_key]
-				if not aggregate then
-					aggregate = {accepted = 0, reserved = 0}
-					result.cultural[aggregate_key] = aggregate
-				end
-				local oy = owner_minimum(candidate.y)
-				local flags = {}
-				for z = candidate.z - 2, candidate.z + 2 do
-					for y = candidate.y - 1, candidate.y + 7 do
-						for x = candidate.x - 2, candidate.x + 2 do
-							if not inside(x, y, z, oy) then flags.clipped_owner = true
-							else
-								local excluded = exclusion_reason(x, z)
-								if excluded then flags[excluded] = true end
-								if occupied[occupied_key(x, y, z)] == 1 then
-									flags.cultural_collision = true
-								end
-							end
-						end
-					end
-				end
-				if not analytic_p7_support_ref(candidate.x, candidate.y, candidate.z) then
-					flags.wrong_support = true
-				end
-				local reason = primary_reason(flags, {"clipped_owner",
-					"fixed_or_protected", "route_or_water", "content_ignore",
-					"wrong_support", "cultural_collision"})
-				if reason then reject("cultural", row.key, reason)
-				else
-					aggregate.accepted = aggregate.accepted + 1
-					aggregate.reserved = aggregate.reserved + 225
-					if not result.witnesses[aggregate_key] then
-						local _, _, zone_id = planner_source.column_values_at(candidate.x,
-							candidate.z)
-						result.witnesses[aggregate_key] = {zone_id = zone_id,
-							x = candidate.x, y = candidate.y, z = candidate.z}
-					end
-					for z = candidate.z - 2, candidate.z + 2 do
-						for y = candidate.y - 1, candidate.y + 7 do
-							for x = candidate.x - 2, candidate.x + 2 do
-								local key = occupied_key(x, y, z)
-								occupied[key] = 1
-								occupied_positions[key] = {x, y, z}
-							end
-						end
-					end
-					local registration = cultural_registration[row.key]
-					if registration then
-						local feature = evidence_stable_ref[row.key]
-						if not feature then fail("fail_ledger", "cultural stable ref differs") end
-						for part = 1, #registration.cells do
-							local cell = registration.cells[part]
-							local x, y, z = candidate.x + cell.x,
-								candidate.y + cell.y, candidate.z + cell.z
-							local lower = cell.y == -1 or cell.y == 0
-							local exact_p7 = analytic_p7_material_ref(x, y, z) ~= nil
-							if not (lower and exact_p7 and
-									registration.lower_two_policy == "preserve_p7") then
-								evidence_write(x, y, z, cell.content_ref, cell.param2, 34,
-									feature, registration.template_or_simple_kind == "template" and
-										feature or 0, 1)
-							end
-						end
-					end
-				end
-			end
-
 			local function prospective(x, y, z)
 				local _, _, zone_id, biome, _, terrain_y, water_y =
 					planner_source.column_values_at(x, z)
@@ -2039,7 +1957,7 @@ local function settlement_factory()
 										local excluded = exclusion_reason(x, z, "vegetation")
 										if excluded then flags[excluded] = true end
 										local occupant = occupied[occupied_key(x, y, z)]
-										if occupant == 1 then flags.cultural_collision = true
+										if occupant == 1 then flags.occupied_collision = true
 										elseif occupant == -1 then flags.decoration_collision = true end
 									end
 								end
@@ -2066,7 +1984,7 @@ local function settlement_factory()
 						end
 						local reason = primary_reason(flags, {"clipped_owner",
 							"content_ignore", "fixed_or_protected", "route_or_water",
-							"wrong_host", "insufficient_clearance", "cultural_collision",
+							"wrong_host", "insufficient_clearance", "occupied_collision",
 							"resource_collision", "decoration_collision",
 							"forbidden_old_class"})
 						local aggregate = result.decorations[row.id]
@@ -2454,7 +2372,7 @@ local function settlement_factory()
 			r8_cave_writer_disabled = r8_cave_writer_disabled,
 			r5_adapter = r5_adapter,
 			r8_templates = templates, r8_full_seed = full_seed,
-			r8_hash = hash, r8_cultural_registration = cultural_registration,
+			r8_hash = hash,
 			template_rotation = runtime_mode and (templates.rotation_runtime or
 				templates.rotation) or
 				templates.rotation}
@@ -2534,7 +2452,6 @@ local function settlement_factory()
 					end
 				end
 				bind(resources, "key", stable_state.resource)
-				bind(cultural, "key", stable_state.cultural)
 				bind(decorations, "id", stable_state.decoration)
 				stable_state.bound = true
 			end
@@ -2619,9 +2536,8 @@ local function settlement_factory()
 			end
 
 			local ledger = not transaction_state.runtime_mode and
-				{rejections = {}, resources = {}, cultural = {}, decorations = {},
+				{rejections = {}, resources = {}, decorations = {},
 					successor_runs = 0} or false
-			local accepted_cultural = {}
 			local x_count = max_x - min_x + 1
 			local function column_index(x, z)
 				return (z - min_z) * x_count + (x - min_x) + 1
@@ -2957,78 +2873,6 @@ local function settlement_factory()
 					plan.candidate_values[base + 5], plan.candidate_values[base + 6]
 			end
 
-			-- Invisible cultural reservation settlement precedes P8.
-			for cell = 1, plan.candidate_cell_count do
-				local cell_base = (cell - 1) * CELL_STRIDE
-				for candidate = plan.candidate_cell_values[cell_base + 3],
-						plan.candidate_cell_values[cell_base + 4] - 1 do
-					local kind, catalog, denominator, root_x, root_y, root_z =
-						candidate_fields(candidate)
-					if kind == 1 and root_x >= min_x and root_x <= max_x and
-							root_y >= min_y and root_y <= max_y and
-							root_z >= min_z and root_z <= max_z then
-						local row = cultural[catalog]
-						local flags = {}
-						for z = root_z - 2, root_z + 2 do
-							for y = root_y - 1, root_y + 7 do
-								for x = root_x - 2, root_x + 2 do
-									if not inside_owner(x, y, z) then flags.clipped_owner = true
-									else
-										local excluded = helpers.exclusion_reason(x, z)
-										-- ruling 30 addendum: below the floor the
-										-- reservation box is on ordinary ground
-										if excluded == "fixed_or_protected" and
-												y < protected_only_floor(x, z) then
-											excluded = nil
-										end
-										if excluded then flags[excluded] = true end
-										local index = index_at(x, y, z)
-										if original_data[index] == contract.ignore_cid then
-											flags.content_ignore = true
-										elseif occupancy[index] == 1 then
-											flags.cultural_collision = true
-										end
-									end
-								end
-							end
-						end
-						local support_index = inside_owner(root_x, root_y, root_z) and
-							index_at(root_x, root_y, root_z) or nil
-						if not support_index or (intent_opcode[support_index] ~= 3 and
-								intent_opcode[support_index] ~= 4) then
-							flags.wrong_support = true
-						end
-						local reason = helpers.primary_reason(flags, {"clipped_owner",
-							"fixed_or_protected", "route_or_water", "content_ignore",
-							"wrong_support", "cultural_collision"})
-						local rate = denominator == 1024 and "concentrated" or "ordinary"
-						local aggregate
-						if ledger then
-							aggregate = ledger.cultural[row.key .. "\0" .. rate] or
-								{accepted = 0, reserved = 0}
-							ledger.cultural[row.key .. "\0" .. rate] = aggregate
-						end
-						if reason then
-							metric_rejection(ledger, "cultural", row.key, reason)
-						else
-							if aggregate then
-								aggregate.accepted = aggregate.accepted + 1
-								aggregate.reserved = aggregate.reserved + 225
-							end
-							for z = root_z - 2, root_z + 2 do
-								for y = root_y - 1, root_y + 7 do
-									for x = root_x - 2, root_x + 2 do
-										occupancy[index_at(x, y, z)] = 1
-									end
-								end
-							end
-							accepted_cultural[#accepted_cultural + 1] = {row = row,
-								catalog = catalog, x = root_x, y = root_y, z = root_z}
-						end
-					end
-				end
-			end
-
 			for z = min_z, max_z do
 				for x = min_x, max_x do
 					local column = column_index(x, z)
@@ -3080,7 +2924,7 @@ local function settlement_factory()
 					rbase and plan.r5_plan.run_values[rbase + 3],
 					rbase and plan.r5_plan.run_values[rbase + 4], host_cid, fill_stone_cid)
 				-- P8 only creates resource claims (occupancy >= 2, opcode 24),
-				-- which preserve this predicate. Cultural claims and R5 runs are
+				-- which preserve this predicate. Occupied cells and R5 runs are
 				-- fixed before P8. Root/frontier occupancy checks remain live.
 				if resource_host_base then resource_host_base[cache_index] = eligible and 1 or 2 end
 				return eligible
@@ -3282,62 +3126,6 @@ local function settlement_factory()
 				end
 			end
 
-			-- P9 cultural output is visible only after P8.  The reservation itself
-			-- remains the earlier occupancy authority.  Validate every cell before
-			-- committing any cell so one registration cannot partially settle.
-			for accepted_index = 1, #accepted_cultural do
-				local accepted = accepted_cultural[accepted_index]
-				local registration = helpers.r8_cultural_registration[accepted.row.key]
-				if registration then
-					local allowed = true
-					for part = 1, #registration.cells do
-						local cell_record = registration.cells[part]
-						local x, y, z = accepted.x + cell_record.x,
-							accepted.y + cell_record.y, accepted.z + cell_record.z
-						local index = inside_owner(x, y, z) and index_at(x, y, z) or nil
-						if not index or original_data[index] == contract.ignore_cid or
-								occupancy[index] >= 2 then
-							allowed = false break
-						end
-						local target = contract.content_cids[cell_record.content_ref]
-						local class_id = classify(final_data[index], final_param2[index])
-						local lower = cell_record.y == -1 or cell_record.y == 0
-						local exact_p7 = intent_opcode[index] >= 1 and intent_opcode[index] <= 4
-						local preserves_p7 = lower and exact_p7 and
-							registration.lower_two_policy == "preserve_p7"
-						if not preserves_p7 and final_data[index] ~= target and
-								class_id ~= CLASS_AIR and
-								class_id ~= CLASS_NATURAL_VEGETATION and
-								not (lower and registration.lower_two_policy ==
-									"replace_exact_p7" and exact_p7) then
-							allowed = false break
-						end
-					end
-					if allowed then
-						for part = 1, #registration.cells do
-							local cell_record = registration.cells[part]
-							local x, y, z = accepted.x + cell_record.x,
-								accepted.y + cell_record.y, accepted.z + cell_record.z
-							local index = index_at(x, y, z)
-							local lower = cell_record.y == -1 or cell_record.y == 0
-							local exact_p7 = intent_opcode[index] >= 1 and
-								intent_opcode[index] <= 4
-							if not (lower and exact_p7 and
-									registration.lower_two_policy == "preserve_p7") then
-								write_intent(x, y, z, cell_record.content_ref,
-									cell_record.param2, 34,
-									stable_state.cultural[accepted.catalog],
-									registration.template_or_simple_kind == "template" and
-										stable_state.cultural[accepted.catalog] or 0, 16, 1)
-							end
-						end
-					else
-						metric_rejection(ledger, "cultural", accepted.row.key,
-							"wrong_support")
-					end
-				end
-			end
-
 			-- P9 decorations, globally ordered by class, cell z/x and planned rank.
 			for class = 1, 4 do
 				for cell = 1, plan.candidate_cell_count do
@@ -3434,7 +3222,7 @@ local function settlement_factory()
 											end
 											local excluded = helpers.exclusion_reason(x, z, "vegetation")
 											if excluded then flags[excluded] = true end
-											if occupancy[index] == 1 then flags.cultural_collision = true
+											if occupancy[index] == 1 then flags.occupied_collision = true
 											elseif occupancy[index] >= 2 and
 													occupancy[index] <= #resources + 1 then
 												flags.resource_collision = true
@@ -3484,7 +3272,7 @@ local function settlement_factory()
 							end
 							local reason = helpers.primary_reason(flags, {"clipped_owner",
 								"content_ignore", "fixed_or_protected", "route_or_water",
-								"wrong_host", "insufficient_clearance", "cultural_collision",
+								"wrong_host", "insufficient_clearance", "occupied_collision",
 								"resource_collision", "decoration_collision",
 								"forbidden_old_class"})
 							local aggregate
@@ -4044,10 +3832,8 @@ local function settlement_factory()
 		function fixture.scan_census_cube(record)
 			return copy_map(scan_census_cube(record))
 		end
-		function fixture.scan_horizontal_owner(owner_x, owner_z,
-				cultural_candidates, decoration_candidates)
-			return copy_map(scan_horizontal_owner(owner_x, owner_z,
-				cultural_candidates, decoration_candidates))
+		function fixture.scan_horizontal_owner(owner_x, owner_z, decoration_candidates)
+			return copy_map(scan_horizontal_owner(owner_x, owner_z, decoration_candidates))
 		end
 		local capture_state = transaction_state.private_capture
 		if capture_state then

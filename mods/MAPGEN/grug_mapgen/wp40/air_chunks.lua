@@ -16,7 +16,7 @@
 --    place there: the preparation surface/content envelope
 --    (preparation_source.lua) of the owner columns and their decoded content
 --    reach (terrain, water, functional surfaces, waterfalls, road decks and
---    rails, the tallest decoded template and cultural cell) and the fitted
+--    rails and the tallest decoded template) and the fitted
 --    settlement, POI and anchor boxes over the owner.
 --
 -- Under both, the writer's final owner content equals its native input: the

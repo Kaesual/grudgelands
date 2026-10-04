@@ -175,7 +175,6 @@ class Design:
         self.items = self._catalog(catalog / "items.json", ("items",))
         self.drops = self._catalog(catalog / "drops.json", ("drops", "families"))
         self.enchants = self._catalog(catalog / "enchants.json", ("enchants", "tiers"))
-        self.reagents = self._catalog(catalog / "reagents.json", ("reagents",))
         self.tints = self._tints(catalog / "tints.json")
         # Where each catalogue row comes from: (file name, zone or None).
         # Zone catalogues (zones/<zone>.catalog.json) add leader roles and

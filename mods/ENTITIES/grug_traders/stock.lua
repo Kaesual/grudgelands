@@ -476,8 +476,7 @@ profession_shelf("tanner", {
 	{"grug_mobs:light_leather", 6},
 })
 
--- The embalmer: the undead capital's own trade. Gravesalt, that region's
--- cultural material, is gathered, not sold.
+-- The embalmer: the undead capital's own trade.
 profession_shelf("embalmer", {
 	{"grug_mobs:bone", 3},
 	{"grug_decor:xdecor_candle", 4},

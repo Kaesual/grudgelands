@@ -39,14 +39,14 @@ function grug_jobs.profession_overview(player)
 end
 
 local NOTE_COLOR = "#f0c75e"
-local ROW_Y, ROW_STEP = 1.0, 1.45
+local ROW_Y, ROW_STEP = 1.0, 1.3
 
 local function esc(value)
 	return core.formspec_escape(tostring(value or ""))
 end
 
 -- The tab body in sfinv's legacy coordinates (content ends before y = 7.0;
--- three rows -- two primaries and Cooking -- end at about 4.5). Pure.
+-- four rows -- two primaries, Cooking and Alchemy -- end at about 5.7). Pure.
 function grug_jobs.professions_formspec(rows)
 	if #rows == 0 then
 		return "label[0.2,1.0;" .. esc("No professions learned yet. Profession " ..

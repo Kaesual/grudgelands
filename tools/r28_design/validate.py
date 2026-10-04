@@ -41,7 +41,6 @@ LEVEL_SLACK = 3
 MAX_GIVERS_PER_HUB = 2
 MAX_LINES_PER_GIVER = 2
 MAX_SIGNATURE_PER_BAND = 2
-MAX_REAGENTS_PER_TIER = 2
 SIZE_RANGE = (0.75, 1.3)
 
 SUBTYPE_KEYS = {"role", "family", "base", "display", "display_by_zone", "tint_by_zone", "size",
@@ -49,8 +48,7 @@ SUBTYPE_KEYS = {"role", "family", "base", "display", "display_by_zone", "tint_by
 SUBTYPE_REQUIRED = ("role", "family", "base", "display", "size", "disposition", "levels", "drops")
 ITEM_KEYS = {"id", "name", "tier", "family", "kind", "description", "uses", "icon", "notes"}
 ITEM_REQUIRED = ("id", "name", "tier", "kind", "description")
-ITEM_KINDS = ("signature", "generic", "reagent", "quest")
-REAGENT_KEYS = {"id", "name", "tier", "method", "inputs", "output_count", "uses", "notes"}
+ITEM_KINDS = ("signature", "generic", "quest")
 QUEST_KEYS = {"id", "line", "giver", "turnin", "min_level", "level", "requires", "title", "text",
               "objectives", "rewards", "quest_drops", "repeatable", "lesson", "duration_min",
               "optional", "climax", "group", "notes"}
@@ -414,30 +412,6 @@ class Validator:
                 if row.get("drops") not in self.drop_families:
                     self.E("E-unknown-family", where / "subtypes.json", "subtypes.json[%s]" % role,
                            "drop family %r is not in catalog/drops.json" % row.get("drops"))
-        reagent_tiers = {}
-        for i, row in enumerate(d.reagents or []):
-            file = where / "reagents.json"
-            path = "reagents.json[%d]" % i
-            if not isinstance(row, dict):
-                self.E("E-type", file, path, "entry must be an object")
-                continue
-            self.unknown_keys(row, REAGENT_KEYS, file, path)
-            self.required(row, ("id", "name", "tier", "method", "inputs", "output_count"), file, path)
-            if row.get("method") not in ("grid", "furnace"):
-                self.E("E-enum", file, path, "method %r must be grid or furnace" % row.get("method"))
-            for j, item in enumerate(row.get("inputs") or []):
-                self.check_item_ref(item, file, "%s.inputs[%d]" % (path, j), "input")
-            if not is_int(row.get("output_count"), 1):
-                self.E("E-type", file, path, "output_count must be an integer >= 1")
-            if (self.catalog_items.get(row.get("id")) or {}).get("kind") != "reagent":
-                self.E("E-reagent-item", file, path, "reagent %s needs an items.json entry of kind reagent"
-                       % row.get("id"))
-            reagent_tiers.setdefault(row.get("tier"), []).append(row.get("id"))
-        for tier, ids in reagent_tiers.items():
-            if len(ids) > MAX_REAGENTS_PER_TIER:
-                self.W("W-reagent-limit", where / "reagents.json", "tier %s" % tier,
-                       "%d universal reagents (about %d per tier): %s" % (len(ids), MAX_REAGENTS_PER_TIER,
-                                                                         ", ".join(map(str, ids))))
         for i, row in enumerate(d.enchants or []):
             file = where / "enchants.json"
             path = "enchants.json[%d]" % i

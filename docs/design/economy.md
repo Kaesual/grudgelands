@@ -82,13 +82,13 @@ precedence over preserving the exact mathematical ratio.
   | Class | T1 value | Members |
   |---|---:|---|
   | Trash / food | 1c | raw meat, bone, feather, linen scrap, stolen purse, war trophy, raw fish, apples, rotting flesh, papyrus |
-  | Raw material | 1c | ore lumps, coal, quartz, gold, silver, emberglass, abyssal crystal, herbs, gathered plants, band fish, cultural materials |
+  | Raw material | 1c | ore lumps, coal, quartz, gold, silver, emberglass, abyssal crystal, herbs, gathered plants, band fish |
   | Generic material | 2c | leathers, cloth, teeth, hides, silk and other `generic` catalogue loot |
   | Signature loot | 7c | every `signature` item of the loot catalogue |
   | Gem | 4c | rough gem; a cut gem pays the same as its rough gem |
 
 - **Processed goods** (bars, leather grades, cloth bolts and bundles, jewellery
-  settings, wood grades, reagents) pay the summed payout of their cheapest
+  settings, wood grades) pay the summed payout of their cheapest
   recipe's inputs; a vendor supply counts 0 in that sum. A leather grade that
   is also loot pays the lower of both.
 - **Free world materials** (wood and logs, leaves, saplings, stone, cobble,
@@ -154,19 +154,9 @@ precedence over preserving the exact mathematical ratio.
   75c, 2s, 6s and 12s** for the brackets 1–10 to 51–60
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
-- **Profession-replacement services:** allied passive helper NPCs perform
-  supplied-material cultural finishes, weapon-counter operations and Warding
-  Draught crafts when the relevant player crafter is absent. They never create
-  the supplied regional material. Cultural masters charge the fixed table
-  below; the weapon helper charges the matching weapon entry; an Alchemist
-  helper charges 50% of the draught's authoritative reference price. Ordinary
-  same-race vendor discounts do not apply.
-
-| Cultural-master service | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Weapon | 15c | 35c | 80c | 2s | 5s | 12s50c |
-| Chest | 10c | 25c | 65c | 1s60c | 4s | 10s |
-| Offhand/head/legs/feet | 10c | 20c | 40c | 1s | 2s50c | 6s25c |
+- **No profession-replacement services:** cultural finishes, the PvP weapon
+  counter and the Warding Draught were removed (Round 33), and with them the
+  cultural masters and helper NPCs that would have performed them.
 
 ### 4.1 Income-derived price rounding; housing has no price
 

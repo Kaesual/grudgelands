@@ -521,10 +521,7 @@ check(same(drops_at("grug_mobs:giant_rat", 2), rat.drops), "giant rat is not in 
 local first = drops_at("grug_mobs:small_boar", 2)
 first[1].min = 99
 check(drops_at("grug_mobs:small_boar", 2)[1].min == 1, "rows are fresh copies")
-local hooked
-grug_mobs.register_drop_hook(function(_, list) hooked = #list end)
-drops_at("grug_mobs:rat_king_odo", 10)
-check(hooked == 2, "profession drop hooks see the band rows")
+check(#drops_at("grug_mobs:rat_king_odo", 10) == 2, "the filter returns the band rows")
 
 -- Family alert.
 local function ent(name)
@@ -653,7 +650,6 @@ check(w.items["grug_mobs:boar_tusk"] == nil
 local band_items = grug_mobs.band_drop_items()
 check(band_items["grug_mobs:rat_fur_patch"] and band_items["grug_mobs:rat_fur_patch"].rat
 	and band_items["grug_mobs:rat_tail"].rat, "band drop items: band rows and leader bonus")
-check(w.items["grug_materials:glittering_tin"] == nil, "reagent left to its own lane")
 check(w.item_calls == 3, "exactly three new items")
 
 ------------------------------------------------------------------------------
@@ -689,7 +685,7 @@ bad_world({drops = '[{"family": "boar", "bands": {"1": [{"item": "grug_mobs:nope
 	"unknown drop item", "unknown item grug_mobs:nope")
 bad_world({drops = '[{"family": "boar", "bands": {"7": []}}]'}, "band key out of range", "is not 1..6")
 bad_world({items = '[{"id": "grug_mobs:x_item", "name": "X", "kind": "trophy"}]'}, "unknown item kind",
-	"kind must be signature, generic, reagent or quest")
+	"kind must be signature, generic or quest")
 -- The rabbit (critter) has no attack_type: an aggressive sub-type of it would
 -- acquire players and never strike.
 bad_world({subtypes = st():gsub("grug_mobs:boar", "grug_mobs:rabbit")},

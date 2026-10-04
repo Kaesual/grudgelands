@@ -1,11 +1,10 @@
 -- Disposable engine probe (Round 28 Lane B5). Never shipped:
 -- tools/r28_b5_prof/run.sh stages it through tools/luanti_headless.sh.
 --
--- Registers two sample universal reagents through the real loader (the
--- shipped reagents.json is empty: the Round 28 catalogue has none), then, once every mod has
--- loaded, audits the real registry: enchant operations built from
--- data/enchants.json, no metal fittings anywhere, the six furnace-only
--- dishes, the sample reagents' crafts and the cross-profession check.
+-- Once every mod has loaded, audits the real registry: enchant operations
+-- built from data/enchants.json, no metal fittings anywhere, the six
+-- furnace-only dishes and the cross-profession check. (Universal reagents
+-- were removed in Round 33.)
 
 local P = "[r28_b5_probe] "
 local failures, checks = 0, 0
@@ -18,23 +17,6 @@ local function check(ok, msg)
 	end
 	return ok
 end
-
-local GLITTER = "grug_professions:probe_glittering_tin"
-local CINDER = "grug_materials:probe_cinder_flint"
-grug_professions.register_reagents({
-	{id = GLITTER, name = "Probe Glittering Tin", tier = 1, method = "grid",
-		inputs = {"grug_materials:tin_bar", "grug_materials:quartz"}, output_count = 2},
-	{id = CINDER, name = "Probe Cinder Flint", tier = 2, method = "furnace",
-		inputs = {"default:flint"}, output_count = 1},
-})
-
--- A data row may never replace an existing item or land in a foreign mod.
-local replaced_ok, replaced_err = pcall(grug_professions.register_reagents, {
-	{id = "grug_materials:tin_bar", name = "Bad", tier = 1, method = "grid",
-		inputs = {"grug_materials:quartz"}, output_count = 1}})
-local foreign_ok, foreign_err = pcall(grug_professions.register_reagents, {
-	{id = "grug_mapgen:probe_bad", name = "Bad", tier = 1, method = "grid",
-		inputs = {"grug_materials:quartz"}, output_count = 1}})
 
 local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"}
 local OWN = {
@@ -146,26 +128,7 @@ local function run()
 		items = {"grug_cooking:raw_stew_pot"}})
 	check(raw.item:get_name() == "grug_cooking:hearty_stew", "Raw Hearty Stew bakes into Hearty Stew")
 
-	-- 4. Sample reagents: items, tiers and real crafts.
-	check(core.registered_items[GLITTER] and core.registered_items[CINDER], "reagent items")
-	check(grug_jobs.ingredient_tier(GLITTER) == 1 and grug_jobs.ingredient_tier(CINDER) == 2,
-		"reagent ingredient tiers")
-	local made = core.get_craft_result({method = "normal", width = 3,
-		items = {"grug_materials:quartz", "", "", "", "grug_materials:tin_bar"}})
-	check(made.item:get_name() == GLITTER and made.item:get_count() == 2,
-		"grid reagent crafts 2 (got " .. made.item:to_string() .. ")")
-	local cooked = core.get_craft_result({method = "cooking", width = 1, items = {"default:flint"}})
-	check(cooked.item:get_name() == CINDER, "furnace reagent (got " .. cooked.item:to_string() .. ")")
-	check(#grug_professions.REAGENTS == 2, "two sample reagents recorded")
-	check(core.get_item_group(GLITTER, "grug_reagent") == 1, "reagent group")
-	check(not replaced_ok and tostring(replaced_err):find("already a registered item", 1, true),
-		"existing id refused (" .. tostring(replaced_err) .. ")")
-	check(not foreign_ok and tostring(foreign_err):find("does not depend on", 1, true),
-		"foreign mod refused (" .. tostring(foreign_err) .. ")")
-	check(core.registered_items["grug_materials:tin_bar"].description ~= "Bad",
-		"tin bar untouched")
-
-	-- 5. Products per profession, and the cross-profession check catching a
+	-- 4. Products per profession, and the cross-profession check catching a
 	-- foreign input.
 	local products = grug_professions.profession_products()
 	local by_profession = {}
@@ -185,8 +148,8 @@ local function run()
 	local offences = grug_professions.enchant_data.foreign_inputs(products, {
 		{profession = "weaponsmith", label = "probe", inputs = {"grug_artisans:setting_tin"}},
 		{profession = "goldsmith", label = "own", inputs = {"grug_artisans:setting_tin"}},
-	}, {{id = "probe:reagent", inputs = {"grug_materials:cut_quartz"}}})
-	check(#offences == 2, "foreign inputs found (" .. table.concat(offences, "; ") .. ")")
+	})
+	check(#offences == 1, "foreign input found (" .. table.concat(offences, "; ") .. ")")
 
 	log(("RESULT %s (%d checks, %d failures)"):format(failures == 0 and "PASS" or "FAIL",
 		checks, failures))

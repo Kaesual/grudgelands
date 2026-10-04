@@ -42,15 +42,8 @@ core.register_craftitem("grug_mobs:war_trophy", {
 --
 -- Groups:
 --   grug_material = 1 — "this is a crafting material from a mob"
---   grug_leather  = 1 — the [leather] flag of §6/§3.1. The WP10 Leatherworker
---                       hook multiplies the dropped stack (professions.md §3
---                       "Leatherworker x5") for every drop-list entry in this
---                       group, so it must sit on the ITEM, not on the mob.
---                       NB mobs_redo's own `mobs:leather` is in our drop
---                       tables too and cannot carry the group without
---                       overriding a vendored item — the hook therefore has
---                       to special-case that one id (documented in VENDOR.md
---                       when WP10 lands).
+--   grug_leather  = 1 — the [leather] flag of §6/§3.1: this item is leather
+--                       (the design catalogue tools/r28_design reads it).
 --   grug_leather_grade = N — one rung of the Leatherworker's leather ladder
 --                       (grug_professions/leatherworker.lua), so the price
 --                       module pays it no more than the leather it is
