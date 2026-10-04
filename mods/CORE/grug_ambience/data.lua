@@ -8,19 +8,19 @@
 -- Page numbers in the comments: "R32 x.y" the Round 32 listening page,
 -- "R34 x.y" the Round 34 page, "S2 x.y" this lane's preview page.
 --
--- Round 34 ships the ambience as a pilot (round34-plan.md §2.2a): beds for
--- the human region only, no ambient calls but distant thunder on the dragon
--- islands. The code reads everything from these tables, so a later zone is
--- a bed list plus a `region` row (and a listening page), nothing else.
+-- Round 34 (round34-plan.md §2.2a): after the human pilot the user picked a
+-- bed for every zone, all at one quiet gain; no ambient calls but distant
+-- thunder on the dragon islands. The code reads everything from these
+-- tables, so another bed is a name here (and a listening page), nothing else.
 
 local D = {}
 
 -- Base gains before the player's volume (tuned in the user's GUI check; the
 -- files are levelled to one reference: beds and loops -20 LUFS, music -18
--- LUFS, calls peak -3 dBFS). The bed starts well below the listening page's
--- level: the user found the beds too present there.
+-- LUFS, calls peak -3 dBFS). Beds play well below the listening page's
+-- level (the user: the pilot was good at 0.25, "maybe minimally quieter").
 D.gains = {
-	bed = 0.25,
+	bed = 0.2,
 	-- Factor on the bed inside start towns and capitals.
 	town_bed = 0.5,
 	call = 0.35,
@@ -40,16 +40,39 @@ D.volume_fade = 0.5
 -- Beds: key -> sound names; one is picked at random each time the bed
 -- starts and loops until the state changes. Keys rules.lua knows besides
 -- the region rows: underwater, underground, underground_deep, sea, stream
--- (none ships this round, so those states are silent).
+-- (no stream and no underwater bed ships: those states fall back to the
+-- region bed resp. stay silent; flowing water has its own loop below).
 D.beds = {
 	human = {"grug_ambience_human_meadow"}, -- S2 B1.1
-	night = {"grug_ambience_night_forest"}, -- S2 B9.1
+	elf = {"grug_ambience_elf_blackbirds", "grug_ambience_elf_forest"}, -- S2 B2.1, B2.3
+	troll = {"grug_ambience_elf_birdsong", "grug_ambience_troll_jungle"}, -- S2 B2.2, B3.1
+	orc = {"grug_ambience_orc_steppe"}, -- S2 B4.4
+	dwarf = {"grug_ambience_orc_wind", "grug_ambience_dwarf_storm"}, -- S2 B4.2, B5.2
+	undead = {"grug_ambience_undead_graveyard", "grug_ambience_undead_lake"}, -- S2 B6.1, B6.3
+	battlegrounds = {"grug_ambience_battlegrounds_gusts"}, -- S2 B7.2
+	dragon_island = {"grug_ambience_dragon_island_coast"}, -- S2 B8.2
+	-- S2 B11.1: the open ocean, and sea water near the player anywhere.
+	ocean = {"grug_ambience_sea_waves"},
+	sea = {"grug_ambience_sea_waves"},
+	night = {"grug_ambience_night_forest", "grug_ambience_night_crickets"}, -- S2 B9.1, B9.2
+	underground = {"grug_ambience_underground_dungeon", "grug_ambience_underground_dark",
+		"grug_ambience_underground_creepy"}, -- S2 B10.1, B10.3, B10.4
+	underground_deep = {"grug_ambience_underground_crystal"}, -- S2 B10.5, below deep_y only
 }
 
 -- Region beds by atmosphere mood: the day bed and, optionally, the night
--- bed. A mood without a row has no bed.
+-- bed (crickets for the humans, elves, trolls and orcs; the other regions
+-- keep their own bed at night). A mood without a row has no bed.
 D.region = {
 	human = {day = "human", night = "night"},
+	elf = {day = "elf", night = "night"},
+	troll = {day = "troll", night = "night"},
+	orc = {day = "orc", night = "night"},
+	dwarf = {day = "dwarf"},
+	undead = {day = "undead"},
+	battlegrounds = {day = "battlegrounds"},
+	dragon_island = {day = "dragon_island"},
+	ocean = {day = "ocean"},
 }
 
 -- Below this y the underground bed is the deep one (the Silversteel tier,

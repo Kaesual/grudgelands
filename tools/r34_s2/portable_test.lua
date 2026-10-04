@@ -248,20 +248,31 @@ do
 	check(math.abs(R.bed_gain(D, 100, true) - D.gains.bed * D.gains.town_bed) < 1e-9 and
 		math.abs(R.bed_gain(D, 50, false) - D.gains.bed * 0.5) < 1e-9, "B gain: volume and town")
 
-	-- the shipped pilot (round34-plan.md §2.2a): the human region only
+	-- the shipped beds (round34-plan.md §2.2a): one row per zone, night beds
+	-- for four regions, the deep cave bed only below deep_y
 	local function real(s) return R.pick_bed(D, R.bed_keys(D, s), AVAILABLE) end
-	check(real({mood = "human"}) == "human" and real({mood = "human", night = true}) == "night",
-		"B pilot: human day and night")
-	local silent = true
-	for _, m in ipairs({"elf", "troll", "orc", "dwarf", "undead", "battlegrounds",
-			"dragon_island", "ocean", "underground"}) do
-		if real({mood = m}) ~= false or real({mood = m, night = true}) ~= false then silent = false end
+	local day = {human = "human", elf = "elf", troll = "troll", orc = "orc", dwarf = "dwarf",
+		undead = "undead", battlegrounds = "battlegrounds", dragon_island = "dragon_island",
+		ocean = "ocean"}
+	local night = {human = "night", elf = "night", troll = "night", orc = "night", dwarf = "dwarf",
+		undead = "undead", battlegrounds = "battlegrounds", dragon_island = "dragon_island",
+		ocean = "ocean"}
+	for m, key in pairs(day) do
+		check(real({mood = m}) == key, "B day bed for " .. m)
+		check(real({mood = m, night = true}) == night[m], "B night bed for " .. m)
 	end
-	check(silent, "B pilot: every other mood is silent")
-	check(real({mood = "human", underwater = true}) == false and
-		real({mood = "underground", deep = true}) == false, "B pilot: under water and caves silent")
-	check(real({mood = "human", water = "sea"}) == "human", "B pilot: no sea or stream bed")
-	check(D.gains.bed <= 0.3, "B pilot: the bed starts well below the page level")
+	check(real({mood = "underground"}) == "underground" and
+		real({mood = "underground", night = true}) == "underground", "B caves: the cave beds")
+	check(real({mood = "underground", deep = true}) == "underground_deep", "B deep: the crystal cave")
+	local deep_only = true
+	for _, n in ipairs(D.beds.underground) do
+		if n == "grug_ambience_underground_crystal" then deep_only = false end
+	end
+	check(deep_only and #D.beds.underground_deep == 1, "B the crystal cave plays only deep down")
+	check(real({mood = "elf", water = "sea"}) == "sea" and real({mood = "elf", water = "stream"}) == "elf",
+		"B sea water near the player: the sea bed; no stream bed")
+	check(real({mood = "human", underwater = true}) == false, "B under water: silent")
+	check(D.gains.bed == 0.2, "B every bed at gain 0.2")
 end
 
 -- ---------------------------------------------------------------------------
@@ -576,12 +587,20 @@ do
 	beds = plays_to("ana", is_bed)
 	check(#beds == count + 1 and beds[#beds].spec.name == "grug_ambience_night_forest",
 		"R surfacing: the night bed again")
-	-- another region: no bed this round
+	-- at night the elf zone shares the night bed: nothing restarts; the
+	-- dwarf zone keeps its own bed at night: a crossfade after two passes
 	mood.ana = "elf"
 	fades = {}
 	run(4)
-	check(#fades >= 1 and fades[#fades].gain == 0 and #plays_to("ana", is_bed) == count + 1,
-		"R an elf zone: the human bed fades, nothing else starts")
+	check(#fades == 0 and #plays_to("ana", is_bed) == count + 1,
+		"R into an elf zone at night: the same night bed goes on")
+	mood.ana = "dwarf"
+	run(4)
+	beds = plays_to("ana", is_bed)
+	check(#fades >= 1 and fades[#fades].gain == 0 and #beds == count + 2 and
+		(beds[#beds].spec.name == "grug_ambience_orc_wind" or
+			beds[#beds].spec.name == "grug_ambience_dwarf_storm"),
+		"R into a dwarf zone at night: a crossfade to the dwarf bed")
 	mood.ana = "human"
 	timeofday = 0.5
 	run(4)

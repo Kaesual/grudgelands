@@ -23,9 +23,8 @@
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
--- Round 34 ships a pilot (round34-plan.md §2.2a): beds for the human region
--- only, every other state is silent; data.lua holds every name, so a later
--- zone is data only.
+-- Round 34 (round34-plan.md §2.2a): a bed per zone, no stream and no
+-- underwater bed; data.lua holds every name, so another bed is data only.
 --
 -- Cost: one pass per player every 2 s, spread over eight slots of 0.25 s
 -- (AGENTS.md Round 32): a mood and town lookup, one get_node_raw read for
