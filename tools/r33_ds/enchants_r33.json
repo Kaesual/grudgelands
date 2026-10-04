@@ -1,0 +1,230 @@
+[
+  {
+    "tier": 1,
+    "prefix_loot": {
+      "str": "grug_mobs:boar_tusk",
+      "dex": "grug_mobs:rat_tail",
+      "int": "grug_mobs:crab_eye",
+      "max_hp_percent": "grug_mobs:tattered_flesh",
+      "max_mana_percent": "grug_mobs:crab_eye",
+      "crit_percent": "grug_mobs:bandit_talisman",
+      "attack_speed_percent": "grug_mobs:rat_tail",
+      "dodge_percent": "grug_mobs:rat_fur_patch",
+      "armor_rating": "grug_mobs:rat_fur_patch"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:crab_leg",
+      "dex": "grug_mobs:fine_sinew",
+      "int": "grug_mobs:crab_eye",
+      "max_hp_percent": "grug_mobs:fine_sinew",
+      "max_mana_percent": "grug_mobs:bandit_talisman",
+      "crit_percent": "grug_mobs:boar_tusk",
+      "attack_speed_percent": "grug_mobs:rat_tail",
+      "dodge_percent": "grug_mobs:rat_tail",
+      "armor_rating": "grug_mobs:crab_leg"
+    },
+    "family_input": {
+      "sword": "grug_materials:tin_bar",
+      "dagger": "grug_materials:quartz",
+      "greataxe": "grug_materials:copper_bar",
+      "metal_armor": "grug_materials:copper_bar",
+      "shield": "grug_materials:tin_bar",
+      "leather_armor": "grug_materials:quartz",
+      "cloth_armor": "grug_materials:quartz",
+      "bow": "grug_materials:quartz",
+      "caster_weapon": "grug_materials:quartz",
+      "spellbook": "grug_materials:quartz",
+      "trinket": "grug_materials:copper_bar"
+    }
+  },
+  {
+    "tier": 2,
+    "prefix_loot": {
+      "str": "grug_mobs:ridged_boar_tusk",
+      "dex": "grug_mobs:sinewy_rat_tail",
+      "int": "grug_mobs:clear_crab_eye",
+      "max_hp_percent": "grug_mobs:foul_flesh",
+      "max_mana_percent": "grug_mobs:clear_crab_eye",
+      "crit_percent": "grug_mobs:ridged_boar_tusk",
+      "attack_speed_percent": "grug_mobs:sinewy_rat_tail",
+      "dodge_percent": "grug_mobs:dense_rat_fur",
+      "armor_rating": "grug_mobs:dense_rat_fur"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:fang",
+      "dex": "grug_mobs:tough_sinew",
+      "int": "grug_mobs:knotted_talisman",
+      "max_hp_percent": "grug_mobs:tough_sinew",
+      "max_mana_percent": "grug_mobs:knotted_talisman",
+      "crit_percent": "grug_mobs:fang",
+      "attack_speed_percent": "grug_mobs:sinewy_rat_tail",
+      "dodge_percent": "grug_mobs:sinewy_rat_tail",
+      "armor_rating": "grug_mobs:ridged_crab_shell"
+    },
+    "family_input": {
+      "sword": "grug_materials:copper_bar",
+      "dagger": "grug_materials:rough_jade",
+      "greataxe": "grug_materials:iron_bar",
+      "metal_armor": "default:coal_lump",
+      "shield": "grug_materials:iron_bar",
+      "leather_armor": "grug_materials:copper_bar",
+      "cloth_armor": "grug_materials:quartz",
+      "bow": "grug_materials:rough_jade",
+      "caster_weapon": "grug_materials:rough_citrine",
+      "spellbook": "grug_materials:rough_citrine",
+      "trinket": "grug_materials:rough_jade"
+    }
+  },
+  {
+    "tier": 3,
+    "prefix_loot": {
+      "str": "grug_mobs:stubborn_molar",
+      "dex": "grug_mobs:balanced_weapon_strap",
+      "int": "grug_mobs:coded_talisman",
+      "max_hp_percent": "grug_mobs:pickled_flesh",
+      "max_mana_percent": "grug_mobs:bound_wisp_mote",
+      "crit_percent": "grug_mobs:serrated_fang",
+      "attack_speed_percent": "grug_mobs:balanced_weapon_strap",
+      "dodge_percent": "grug_mobs:coarse_spider_silk",
+      "armor_rating": "grug_mobs:layered_crab_shell"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:gnarled_boar_tusk",
+      "dex": "grug_mobs:braided_sinew",
+      "int": "grug_mobs:bound_wisp_mote",
+      "max_hp_percent": "grug_mobs:braided_sinew",
+      "max_mana_percent": "grug_mobs:clouded_reed_pearl",
+      "crit_percent": "grug_mobs:shearing_cat_claw",
+      "attack_speed_percent": "grug_mobs:barbed_feather",
+      "dodge_percent": "grug_mobs:shearing_cat_claw",
+      "armor_rating": "grug_mobs:layered_crab_shell"
+    },
+    "family_input": {
+      "sword": "default:coal_lump",
+      "dagger": "grug_materials:rough_garnet",
+      "greataxe": "grug_materials:iron_bar",
+      "metal_armor": "default:coal_lump",
+      "shield": "grug_materials:iron_bar",
+      "leather_armor": "grug_materials:rough_jade",
+      "cloth_armor": "grug_materials:rough_citrine",
+      "bow": "grug_materials:rough_garnet",
+      "caster_weapon": "grug_materials:rough_citrine",
+      "spellbook": "grug_materials:rough_citrine",
+      "trinket": "grug_materials:rough_jade"
+    }
+  },
+  {
+    "tier": 4,
+    "prefix_loot": {
+      "str": "grug_mobs:gritted_teeth",
+      "dex": "grug_mobs:reinforced_weapon_strap",
+      "int": "grug_mobs:campaign_talisman",
+      "max_hp_percent": "grug_mobs:leathery_flesh",
+      "max_mana_percent": "grug_mobs:campaign_talisman",
+      "crit_percent": "grug_mobs:gritted_teeth",
+      "attack_speed_percent": "grug_mobs:reinforced_weapon_strap",
+      "dodge_percent": "grug_mobs:layered_spider_web",
+      "armor_rating": "grug_mobs:marching_bone"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:warpack_fang",
+      "dex": "grug_mobs:ape_hair",
+      "int": "grug_mobs:storm_feather",
+      "max_hp_percent": "grug_mobs:ironbound_sinew",
+      "max_mana_percent": "grug_mobs:storm_feather",
+      "crit_percent": "grug_mobs:razor_cat_claw",
+      "attack_speed_percent": "grug_mobs:warpack_fang",
+      "dodge_percent": "grug_mobs:razor_cat_claw",
+      "armor_rating": "grug_mobs:storm_crab_shell"
+    },
+    "family_input": {
+      "sword": "grug_materials:silver_bar",
+      "dagger": "grug_materials:rough_garnet",
+      "greataxe": "grug_materials:silver_bar",
+      "metal_armor": "grug_materials:silver_bar",
+      "shield": "grug_materials:rough_sapphire",
+      "leather_armor": "grug_materials:rough_jade",
+      "cloth_armor": "grug_materials:rough_sapphire",
+      "bow": "grug_materials:rough_garnet",
+      "caster_weapon": "grug_materials:rough_sapphire",
+      "spellbook": "grug_materials:rough_sapphire",
+      "trinket": "grug_materials:rough_sapphire"
+    }
+  },
+  {
+    "tier": 5,
+    "prefix_loot": {
+      "str": "grug_mobs:clenched_jaw",
+      "dex": "grug_mobs:siege_weapon_strap",
+      "int": "grug_mobs:siege_talisman",
+      "max_hp_percent": "grug_mobs:scorched_flesh",
+      "max_mana_percent": "grug_mobs:siege_talisman",
+      "crit_percent": "grug_mobs:clenched_jaw",
+      "attack_speed_percent": "grug_mobs:siege_weapon_strap",
+      "dodge_percent": "grug_mobs:siege_weapon_strap",
+      "armor_rating": "grug_mobs:siege_bone"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:siegepack_fang",
+      "dex": "grug_mobs:siege_weapon_strap",
+      "int": "grug_mobs:ash_feather",
+      "max_hp_percent": "grug_mobs:scorched_flesh",
+      "max_mana_percent": "grug_mobs:siege_talisman",
+      "crit_percent": "grug_mobs:siegepack_fang",
+      "attack_speed_percent": "grug_mobs:scorch_venom",
+      "dodge_percent": "grug_mobs:ash_feather",
+      "armor_rating": "grug_mobs:clenched_jaw"
+    },
+    "family_input": {
+      "sword": "grug_materials:emberglass",
+      "dagger": "grug_materials:rough_ruby",
+      "greataxe": "grug_materials:emberglass",
+      "metal_armor": "grug_materials:emberglass",
+      "shield": "grug_materials:rough_ruby",
+      "leather_armor": "grug_gathering:rock_salt",
+      "cloth_armor": "grug_gathering:stormkelp",
+      "bow": "grug_materials:emberglass",
+      "caster_weapon": "grug_materials:emberglass",
+      "spellbook": "grug_materials:rough_sapphire",
+      "trinket": "grug_materials:rough_ruby"
+    }
+  },
+  {
+    "tier": 6,
+    "prefix_loot": {
+      "str": "grug_mobs:last_laugh_dentures",
+      "dex": "grug_mobs:unbroken_weapon_strap",
+      "int": "grug_mobs:last_pay_talisman",
+      "max_hp_percent": "grug_mobs:salt_cured_flesh",
+      "max_mana_percent": "grug_mobs:last_pay_talisman",
+      "crit_percent": "grug_mobs:last_laugh_dentures",
+      "attack_speed_percent": "grug_mobs:unbroken_weapon_strap",
+      "dodge_percent": "grug_mobs:glass_spider_silk",
+      "armor_rating": "grug_mobs:unbroken_weapon_strap"
+    },
+    "suffix_loot": {
+      "str": "grug_mobs:unquiet_bone",
+      "dex": "grug_mobs:silver_ape_hair",
+      "int": "grug_mobs:last_hex_shard",
+      "max_hp_percent": "grug_mobs:salt_cured_flesh",
+      "max_mana_percent": "grug_mobs:salt_barbed_feather",
+      "crit_percent": "grug_mobs:glass_cat_claw",
+      "attack_speed_percent": "grug_mobs:glass_venom",
+      "dodge_percent": "grug_mobs:glass_cat_claw",
+      "armor_rating": "grug_mobs:unquiet_bone"
+    },
+    "family_input": {
+      "sword": "grug_materials:abyssal_crystal",
+      "dagger": "grug_materials:rough_diamond",
+      "greataxe": "grug_materials:abyssal_crystal",
+      "metal_armor": "grug_materials:abyssal_crystal",
+      "shield": "grug_materials:rough_diamond",
+      "leather_armor": "grug_gathering:rock_salt",
+      "cloth_armor": "grug_gathering:stormkelp",
+      "bow": "grug_materials:emberglass",
+      "caster_weapon": "grug_materials:abyssal_crystal",
+      "spellbook": "grug_materials:abyssal_crystal",
+      "trinket": "grug_materials:rough_diamond"
+    }
+  }
+]
