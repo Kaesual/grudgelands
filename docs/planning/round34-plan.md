@@ -34,8 +34,12 @@ last.
 the user approved that exact file on a listening page.** "Sometimes no sound
 is better than a bad sound." So:
 
-- Every sound the user picked on the two earlier pages (§2.2) counts as
-  approved in the cut stated there.
+- Every sound the user picked on the two earlier pages (§2.2) is an
+  approved **recording**. Its final cut goes on the lane's page once more
+  for a quick confirmation: the 30 s bed loops (the pages played 16 s
+  excerpts), and the trims the user asked for (C2.1 at 2 s, C5.2 without
+  its first 0.3–0.5 s, B.6 first 5 s, the rebuilt C13.1 forge loop). A short
+  effect used exactly as heard needs no second look.
 - A lane proposes everything else on its own German preview page
   (`~/projects/grudgelands-orchestration/r34/previews/<lane>/index.html`):
   per event 2–4 candidates in the final cut (mono Ogg rendered as MP3 for
@@ -196,10 +200,10 @@ short and focused, with the cut starting at the event itself.
 - **Names:** `grug_sounds_<event>[.<n>]` and `grug_ambience_<mood>_<what>`
   (`.1`, `.2` … variants are picked at random by the engine). Music
   `grug_music_<slug>.ogg` in `grug_ambience/music/` (not `sounds/`).
-- **Loudness:** each lane normalises its set to one reference (effects by
-  peak, beds and music by integrated loudness), so the gains in the code mean
-  the same thing across lanes; S1a writes the reference into the module
-  guide and S1b/S2 follow it.
+- **Loudness:** one reference for all lanes, the one the user judged the
+  listening pages at: effects peak-normalised to −3 dBFS, beds −20 LUFS,
+  music −18 LUFS integrated. Gains in the code then mean the same thing
+  across lanes; the in-game balance is tuned in the GUI check.
 - **Licence:** one `LICENSE-media.md` row per file (file, title, author,
   source URL, exact licence and version, modifications such as "converted to
   mono Ogg, trimmed, loop crossfade"); licence verified on the source page
@@ -238,9 +242,7 @@ short and focused, with the cut starting at the event itself.
   gained; equip; mount summon and dismount
   plus gallop, wing beats and boat movement; travel (waystone, hearth,
   home); zone banner (soft, rare); PvP flag on/off; respawn; fishing cast and
-  catch (the splash, user); smithy and fire sounds at forges and hearths in
-  settlements (positional, cheapest existing trigger — node timer or a
-  nearby-node check on S2's tick; measure and report).
+  catch (the splash, user).
 - **Round 33 hooks** (names only; R33 is merged before this round starts —
   find each function on main): achievement unlocked (the feed announcement
   in `grug_achievements`), cloak chosen (Character page picker), enchant
@@ -269,6 +271,10 @@ short and focused, with the cut starting at the event itself.
   `core.sound_fade` on change; night variants; water near the player and
   underwater override the region bed; in towns a quiet bed or none, the
   Town music pool carries the mood (user: music instead of market noise).
+- **Smithy and fire** (10.2, 10.3, the forge loop): positional sounds at
+  forges and hearths in settlements, through the cheapest trigger — an
+  existing node timer, or one small nearby-node check in S2's own
+  per-player slot (measured before and after).
 - **Calls:** sparse one-shots per region (owl at night, crows over the
   undead, birds of prey in the mountains, distant thunder on dragon islands
   and the front), a per-player timer, never more often than every few
@@ -377,12 +383,10 @@ starts after joining, volume and off switches, a town).
   `~/projects/grudgelands-orchestration/r32/r2-evidence/` (`dl/`,
   `clips.json`, `scripts/`) and `r34/listen/` (`dl/`, `info.json`,
   `clips.json`, `scripts/fs_search.py` with backoff — Freesound answers 429
-  to parallel searches, so search serially). Previews are 128 kbit MP3; a
-  lane fetches the original file (WAV/FLAC needs a Freesound login — the
-  user's account, or use the HQ preview only where the original is not
-  reachable and note it in the row). Default (coordinator, 2026-10-04): the
-  HQ previews are used for effects and beds (CC0 allows it; mono Ogg hides
-  the difference); the user may fetch originals for the beds if wanted.
+  to parallel searches, so search serially). Freesound originals (WAV/FLAC)
+  need a login; **the source is the HQ preview** (128 kbit MP3; CC0 allows
+  it, mono Ogg hides the difference), noted in the licence row. The user may
+  fetch originals for the beds later.
   Music needs no account: all set tracks and the town pieces are full-length
   files from the composers' own pages (Buckley, MacLeod 256–327 kbit/s;
   joth, Pablo, cynicmusic 108–199 kbit/s), already in `r32/r2-evidence/dl/music/`
@@ -440,7 +444,13 @@ starts after joining, volume and off switches, a town).
 - **Merge order:** S1a and S2 independent (different mods; both may touch
   `grug_inventory` only if S2 puts its settings block there and S1a hooks
   the cloak picker — S1a merges first, S2 rebases). S1b after S1a and the
-  S1a listening review. D last.
+  S1a listening review. D last. Smithy and fire sounds belong to S2 (its
+  per-player slot), not to S1a.
+- **Review extras** (for `review-common.md`): every shipped `.ogg` is on
+  the lane's `approved.txt` and has a licence row with source URL; no event
+  plays a file that is not shipped; one-shots ephemeral; the panther has no
+  `war_cry`; the ambience and music pass allocates nothing per step beyond
+  need and spreads players over slots; music off means no pushes.
 - **Previews:** each lane writes its German page as in Round 33 (content
   only, data-URI audio, under about 10 MB, decisions first, numbered,
   informal "du"); the coordinator publishes and collects the picks.
