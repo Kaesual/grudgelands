@@ -397,12 +397,12 @@ before Round 33.
 | 2 | Brush Fox Tail | 3/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 2 | Clear Crab Eye | 3/3/0 | common | enchant Int prefix; enchant Mana prefix; upgrade goldsmith; Elixir of Focus II | 5.0 | enchant |
 | 2 | Dense Rat Fur | 3/3/0 | common | enchant Dodge prefix; enchant Armor prefix; upgrade armorsmith; upgrade leatherworker | 6.5 | enchant |
-| 2 | Fang | 6/2/0 | common | enchant Str suffix; enchant Crit suffix; upgrade weaponsmith; Elixir of Precision II; Swiftness Draught | 6.0 | recipe |
+| 2 | Fang | 6/2/0 | common | enchant Str suffix; enchant Crit suffix; upgrade weaponsmith; Swiftness Draught | 5.0 | recipe |
 | 2 | Foul Flesh | 6/6/0 | common | enchant HP prefix; upgrade leatherworker | 4.0 | enchant |
 | 2 | Hooked Cat Claw | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
 | 2 | Knotted Talisman | 6/6/0 | common | enchant Int suffix; enchant Mana suffix; upgrade tailor; upgrade goldsmith | 6.5 | — |
 | 2 | Reed Pearl | 0/1/0 | one faction | sell-only: one faction (Throng only) | 0.0 | — |
-| 2 | Ridged Boar Tusk | 3/3/0 | common | enchant Str prefix; enchant Crit prefix; upgrade weaponsmith; upgrade woodcarver | 5.5 | enchant |
+| 2 | Ridged Boar Tusk | 3/3/0 | common | enchant Str prefix; enchant Crit prefix; upgrade weaponsmith; upgrade woodcarver; Elixir of Precision II | 6.5 | enchant |
 | 2 | Ridged Crab Shell | 3/3/0 | regular | enchant Armor suffix; upgrade armorsmith; Stoneskin Elixir II | 4.2 | — |
 | 2 | Sinewy Rat Tail | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix; enchant Speed suffix; enchant Dodge suffix; upgrade tailor | 5.5 | enchant |
 | 2 | Stolen Purse | 1/0/0 | one faction | sell-only: one faction (Accord only); a trash-class purse | 0.0 | — |
@@ -660,7 +660,7 @@ eight King kills, next to Master Riding's five hours.
 | 2 | 11 | Mana Potion II | restores 200 Mana at once | Dragonweed + Sugar Cane |
 | 2 | 11 | Elixir of Vigor II | +4.8 % maximum HP, 15 min | Dragonweed + Tough Sinew |
 | 2 | 11 | Elixir of Focus II | +5.6 % maximum Mana, 15 min | Dragonweed + Clear Crab Eye |
-| 2 | 11 | Elixir of Precision II | +5.2 percentage points Crit, 15 min | Dragonweed + Fang |
+| 2 | 11 | Elixir of Precision II | +5.2 percentage points Crit, 15 min | Dragonweed + Ridged Boar Tusk |
 | 2 | 11 | Stoneskin Elixir II | +1.6 armor rating, 30 min | Dragonweed + Ridged Crab Shell |
 | 2 | 11 | Antivenom | clears all poison (unchanged) | Dragonweed + Venom Gland |
 | 2 | 11 | Swiftness Draught | +10 % movement speed for 5 s (unchanged) | Dragonweed + Fang |
@@ -702,10 +702,6 @@ Potion check: amount against half the base pool at the tier's top level.
 | 5 | 1000 | 960 | 43 % / 52 % / 58 % |
 | 6 | 1350 | 1348 | 42 % / 50 % / 56 % |
 <!-- end generated -->
-
-**As built** (Round 33 C5, accepted by the coordinator): Elixir of Precision
-II takes **Dragonweed + Ridged Boar Tusk**, because Dragonweed + Fang is the
-Swiftness Draught's recipe ([items_crafting.md](items_crafting.md) §3.6).
 
 ## 6. Money
 

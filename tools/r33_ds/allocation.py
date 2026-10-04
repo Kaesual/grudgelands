@@ -202,7 +202,7 @@ ALCHEMY = {
         "Mana Potion II": (G + "dragonweed", K + "sugar_cane"),
         "Elixir of Vigor II": (G + "dragonweed", "tough_sinew"),
         "Elixir of Focus II": (G + "dragonweed", "clear_crab_eye"),
-        "Elixir of Precision II": (G + "dragonweed", "fang"),
+        "Elixir of Precision II": (G + "dragonweed", "ridged_boar_tusk"),
         "Stoneskin Elixir II": (G + "dragonweed", "ridged_crab_shell"),
         "Antivenom": (G + "dragonweed", "venom_gland"),
         "Swiftness Draught": (G + "dragonweed", "fang")},

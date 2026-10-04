@@ -21,7 +21,7 @@ not yet implemented remains a target; this document does not certify the code.
 
 **Dependencies:** WP1 ✅, WP3 ✅, WP43 ✅.
 
-**Status:** open, partly delivered. Found-item loot (one-prefix/one-suffix family pools, level/quality metadata, tier-correct drops, boss reward hook), the vendor Uncommon and the named fixed-tier enchanting of Round 13 are delivered. Round 28 adds loot by level band; the found-loot versus crafted-demand audit is done with Round 29's per-band payout calibration (economy plan §3.2 and §10.1). The task card `docs/research/wp5-task-card.md` is from the refinement era and is stale; do not execute it. Specs: `items_crafting.md` §§4–7, `crafting_equipment_revision.md`.
+**Status:** **closed as delivered 2026-10-04** (Round 33). Its remaining scope went with Round 33: the cultural and PvP finishes were removed by the user (round33-plan.md §2.8) and the Grudgeforged masterwork is replaced by the crown (`docs/design/item_tiers.md` §4). History: found-item loot (one-prefix/one-suffix family pools, level/quality metadata, tier-correct drops, boss reward hook), the vendor Uncommon and the named fixed-tier enchanting of Round 13 are delivered. Round 28 adds loot by level band; the found-loot versus crafted-demand audit is done with Round 29's per-band payout calibration (economy plan §3.2 and §10.1). The task card `docs/research/wp5-task-card.md` is from the refinement era and is stale; do not execute it. Specs: `items_crafting.md` §§4–7, `crafting_equipment_revision.md`.
 
 Remaining: one per-stack cultural-finish channel and one separate target-race PvP-special channel (including the Warding Draught) with their fixed caps and overwrite rules, universal affixes staying independent; **masterwork** as the Grudgeforged upgrade of an existing equipment item to item level 70 (D3; this WP settles its inputs, the Fallen Crown being the candidate). Named rares drop **no** trophies (D4). WP41 only consumes the PvP-special hooks, so it does not wait for this WP
 
@@ -37,7 +37,7 @@ Remaining: the level-41–60 faction main questline on top of Round 29's front q
 
 **Dependencies:** WP5, WP26 ✅, WP33 ✅, WP43 ✅, WP44.
 
-**Status:** open, partly delivered. Seven primaries plus Cooking, books, universal base recipes, enchant catalogs, gem cutting, the herb authorizer and money-only trainer repair are delivered (Rounds 10–13).
+**Status:** **closed as delivered 2026-10-04** (Round 33). Round 33 restructured the professions (six primaries, Cooking and Alchemy as secondaries, two professions per class) and removed the cultural finishes and helper services the remaining scope below named; the cut-gem storage blocks have their 9 ↔ 1 recipe. History: seven primaries plus Cooking, books, universal base recipes, enchant catalogs, gem cutting, the herb authorizer and money-only trainer repair are delivered (Rounds 10–13).
 
 Remaining, after WP5's cultural channel: cultural-finish workstation operations and the cultural-master, weapon-counter and Alchemist helper NPC services (`economy.md` §4, `world.md` §7). The cultural-master NPCs come later, with this WP (D11), and need capital sockets; their fees come from the WP44 tables. Optional: recipes for the cut-gem storage blocks. The buff/debuff icon framework formerly listed here is the separate status-icon package (D10), delivered in Round 26 Lane I.
 
