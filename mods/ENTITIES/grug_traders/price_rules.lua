@@ -36,6 +36,14 @@ function M.buyback(price, discounted)
 	return back
 end
 
+-- A blue (Uncommon) item pays ×3, a gold (Rare) one ×6 of its Common payout
+-- (round33-plan.md §2.1); any other quality pays the Common payout.
+M.QUALITY_FACTOR = {[2] = 3, [3] = 6}
+
+function M.quality_payout(payout, quality)
+	return payout * (M.QUALITY_FACTOR[quality] or 1)
+end
+
 -- "group:a,b" -> {"a", "b"}; nil for a plain item name.
 local function groups_of(name)
 	local list = name:match("^group:(.+)$")

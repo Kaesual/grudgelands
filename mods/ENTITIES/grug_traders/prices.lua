@@ -12,6 +12,9 @@
 --                            nothing made only from them pays
 --   everything else          0: not sellable
 --
+-- A concrete stack sells at its item's payout times its quality factor
+-- (stack_sell_price: blue ×3, gold ×6).
+--
 -- The rules themselves are pure (price_rules.lua); this file only reads the
 -- registries. An item's TIER is read from its own registration, so a tier
 -- change there (e.g. a gem's harvest tier) moves its price with no edit here.
@@ -311,6 +314,13 @@ end
 -- Vendor payout of an item in COPPER; 0 = the vendor does not buy it.
 function grug_traders.sell_price(itemname)
 	return payouts and payouts[itemname] or 0
+end
+
+-- Vendor payout of one concrete stack's unit in COPPER: the item's payout
+-- times its quality factor (a blue or gold drop sells above a Common one).
+function grug_traders.stack_sell_price(stack)
+	return rules.quality_payout(grug_traders.sell_price(stack:get_name()),
+		stack:get_meta():get_int("grug_quality"))
 end
 
 -- Whether the item has a value at all (a sum may count it, 0 included).
