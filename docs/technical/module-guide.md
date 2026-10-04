@@ -96,7 +96,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `award_progress(player, recipe)`, which checks the recipe's flag;
   `register_on_award_progress(fn(player, recipe))` (Round 33) runs after each
   counted award (grug_achievements counts dishes and potions there, i.e. at
-  their preparation). `profession_level` returns 0 when
+  their preparation; fixture `tools/r33_c2`: roster, book slots, progress
+  flags of the shipped recipe corpus). `profession_level` returns 0 when
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft. Authored workspaces have persistent per-player/per-station data;
   player-placed stations share inputs with individually qualified output views.
@@ -182,7 +183,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   shared 120-second cooldown and maximum shield lifetime.
 - **Combat/classes**: damage = damage_groups × armor_groups (÷100) ×
   punch-interval factor. **Damage pipeline lives in `grug_core/combat.lua`**
-  (WP4): `deal_ability_damage` (crit ×1.5, applied via `object:punch` with
+  (WP4): `deal_ability_damage` (crit ×`CRIT_MULTIPLIER` = 2 since Round 33,
+  also for melee and heals; applied via `object:punch` with
   full punch interval so armor/XP keep working; knockback requires an explicit
   `damage_groups.knockback` override), `heal_player`,
   central dodge roll (hp-change modifier), `in_combat` (mob engagement via
@@ -191,7 +193,11 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   §5). The PvP seam `grug_core.pvp_can_harm`/`pvp_hit_landed` is installed by
   `grug_pvp` (impact re-check, crosshair ray, landed-hit contact), threat stubs `add_threat`/`add_heal_threat` (WP6 fills
   them). Crit/dodge accessors are grug_core stubs overridden by
-  grug_classes. Abilities = hotbar tools in `grug_abilities` (item `range` =
+  grug_classes (`get_crit_chance_raw`: 5 % + 0.05 % per Dexterity point
+  since Round 33; dodge 0.1 % per point). Attributes enter damage with their
+  fraction (`Str/10`, floored once at the end); the damage-fit reference
+  `baseline_melee_total` still floors its Strength/10 (BACKLOG Round 33
+  carry-overs). Abilities = hotbar tools in `grug_abilities` (item `range` =
   targeting range, wear bar = cooldown display for cast skills, charge
   bar for swing skills since WP38); kits/numbers:
   `docs/design/classes.md`. WP19 added the 8 s target-memory store (separate
@@ -348,7 +354,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   combat is refused before consumption; accepted food heals instantly, and its
   regeneration pauses during later combat while secondary modifiers persist. The
   latest food replaces the previous one. `grug_core.can_use_item_level` is the
-  shared `_grug_ilvl` gate for the Weapon slot and all consumables. Potions
+  shared level gate (`_grug_req_level`, else `_grug_ilvl`) for every
+  equipment slot (Round 33) and all consumables; `grug_quality` wraps it so
+  a stack's own `grug_req_level` (drops, upgrades, the crown) wins. Potions
   retain their instant channel and shared persistent cooldown.
   `grug_cooking` owns the mapgen-free plant items, the 18 grid dishes, the six
   raw assembled dishes and their furnace routes. `grug_fishing.table_for(pos)`
@@ -364,7 +372,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `grug_jobs.register_public_position(station, pos)` owns the shared registry;
   `grug_brewing.register_public_position(pos)` delegates the brewing stand.
   No fixed capital-core position is authoritative. Potions share
-  `grug_traders`' persistent 60 s clock (every potion and draught);
+  `grug_traders`' persistent clock (`grug_traders.POTION_COOLDOWN` = 60 s in
+  `potion.lua`, which also owns the vendor's Weak Healing Potion; every
+  potion and draught); Healing and Mana Potions I–VI are fixed amounts
+  (`grug_alchemy/recipes.lua`, item_tiers §5);
   elixirs replace status id `elixir`, stack with status id `food`, and never
   touch that clock.
   `grug_gathering`'s herb authorizer delegates to
@@ -642,7 +653,19 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   operation kinds (`grug_jobs.register_station_operation`: "enchant" and
   "upgrade"); a plan's `warning` names a replaced higher-tier enchant.
   `grug_items.crown_item(stack, player)` / `crown_preview(stack)` apply the
-  Fallen Crown (the crown NPC owns the fee and the crown item). Family
+  Fallen Crown (the crown NPC owns the fee and the crown item). Gear drops
+  (Round 33) are data in `grug_quality/init.lua`: `grug_items.DROP_CHANCES`
+  (normal, elite and rare rows; zone leaders and war-camp captains roll the
+  elite row), `BOSS_DROPS` (two items at 65/70), `BAG_DROPS` (0.1 % by mob
+  level) and `grug_items.enchant_tier(ilvl)` (T7 above 60); the pool is
+  `grug_gear.drop_pool` (every equippable item of the tier). Every stack
+  with an item level carries `grug_req_level` = min(ilvl, 60), written by
+  `write_item_level_meta` (a first-bracket item keeps level 1 up to its own
+  item level). Fixtures `tools/r33_c1` (drop rates, bosses, bags, pool,
+  requirement, sale value; `drop_income.py` the income per band),
+  `tools/r33_c4` (values, tiers, upgrades, crown, families),
+  `tools/r33_c5` (crit, attributes, vendors, repair, potions, Crownbinder,
+  culture shelf); the value rule and its data in `tools/r33_ds`. Family
   eligibility and replacement rules belong to the gear design. Per-stack appearance keys (`inventory_image`, `inventory_overlay`,
   `wield_image`, `wield_overlay`, `wield_scale`, `color`, `range`, `description`)
   override item definitions. Build texture modifier strings in one helper:
@@ -778,9 +801,15 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     resident of each capital's goldsmith and woodcarver service plot through
     `grug_core.assign_service_socket` (roles `crownbinder`,
     `culture_vendor`), as the Housing Steward does. The crown operation is
-    one call, `grug_traders.crown_operation` → `grug_items.apply_crown`;
-    the payment is one `grug_money.take_with_inventory` with the fee, one
-    Fallen Crown and the crowned item.
+    one call, `grug_traders.crown_operation` → `grug_items.crown_item`
+    (the window shows `grug_items.crown_preview`; a worn item the wearer
+    could no longer wear afterwards is not offered); the payment is one
+    `grug_money.take_with_inventory` with the fee `grug_traders.CROWN_FEE`
+    (14 700c, checked by `income.py --check`), one Fallen Crown and the
+    crowned item. The Decor Merchant's shelf is `grug_decor`'s harvested kit
+    (`stock.lua` `culture`, four price bands); vendors sell blue ×3 and gold
+    ×6 of the Common payout (`grug_traders.stack_sell_price`,
+    `price_rules.QUALITY_FACTOR`).
   - **No detached inventories in trade UIs.** The reference
     implementations (VoxeLibre `mobs_mc/villager.lua`, LotT
     `lottmobs/trader.lua`) move items through detached

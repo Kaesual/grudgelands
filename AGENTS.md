@@ -64,6 +64,21 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
+**Round 33 complete locally, 2026-10-04 (not pushed).** "Items,
+professions and achievements", the items design session's rulings: drops by
+quality (normal 5/2/1 %, named, elite, leaders and captains 10/10/5 %,
+bosses two blue or gold items at item level 65/70), the level requirement on
+all gear; enchant values by item level up to the tier's cap with the tier
+shown and T7, profession upgrades and the crown (the Crownbinder); bows to
+the Leatherworker, spellbooks to the Tailor; Alchemy a secondary, progress
+from real recipes, the cultural materials and finishes, grips, reagents and
+the Warding Draught removed; crit ×2 with 0.05 % per Dexterity point;
+T1-only vendor gear, repair ×1.00, potions I–VI with one cooldown, the Decor
+Merchant; per-character achievements that unlock cloaks. Numbers:
+[item_tiers.md](docs/design/item_tiers.md). Needs a fresh world. Next: the
+GUI test, then Round 34 (sound), then WP9.
+[Plan, completion and GUI checklist](docs/planning/round33-plan.md#completion-2026-10-04).
+
 **Round 32 complete locally, 2026-10-03 (not pushed).** "Fixes,
 preparation and research": the minimap zoomed ×2, hostile camps marked on
 the Map tab, zone names coloured by the territory at the position with a
@@ -75,8 +90,8 @@ tick spread over server steps; three read-only studies
 ([performance](docs/research/perf-review-2026-10-r32.md),
 [sound](docs/research/sound-research-2026-10.md),
 [items and professions](docs/research/items-professions-analysis-2026-10.md)).
-Sound is V1; WP9 moved to a later round. Next: the GUI test, the seven sound
-decisions and the items design session (BACKLOG).
+Sound is V1; WP9 moved to a later round; the items design session became
+Round 33.
 [Plan, completion and GUI checklist](docs/planning/round32-plan.md#completion-2026-10-03).
 
 **Round 31 complete locally, 2026-10-03 (not pushed).** "PvP, appearance and
@@ -618,6 +633,50 @@ current state). It is **derived, never authoritative**:
   probe; `f2` the hold machine and the quest labels; `f4` the Map tab poll
   budget and party HUD slots); the zoom geometry is checked in
   `tools/r27_minimap`, the spawner's zone slices in `tools/r28_s1`.
+
+### Items, professions and achievements (since Round 33)
+
+- **One source per item number:** enchant values, upgrade and enchant
+  inputs, the crown, potions and elixirs, drop sale values, repair and the
+  culture prices live in [item_tiers.md](docs/design/item_tiers.md); its
+  generated tables come from `tools/r33_ds/` (`build_doc.py --check` fails
+  when the file is stale). Change the data or the script, never a generated
+  table by hand; drop rates are data in `grug_quality/init.lua`
+  (`DROP_CHANCES`, `BOSS_DROPS`, `BAG_DROPS`).
+- **An enchant's value is never stored as a free number:** every enchant
+  carries stat, channel and tier, and `grug_items.enchant_value(stat, ilvl,
+  tier)` derives the value through grug_quality's one store path whenever
+  the item level or tier changes (rolls, enchants, upgrades, the crown).
+  Station work is a `grug_jobs.register_station_operation` kind
+  ("enchant", "upgrade"); the crown is `grug_items.crown_item` /
+  `crown_preview`, called by the Crownbinder (`grug_traders/crown.lua`).
+- **Professions:** two professions dress each class
+  (`grug_professions.FAMILY_OWNERS`); progress comes only from recipes whose
+  `progress` flag is set, through `grug_jobs.award_progress`; Alchemy and
+  Cooking are secondaries with their own book slots.
+- **Money:** `tools/r29_e4/income.py --check` passes again and covers the
+  mount, boat and respec prices and the crown fee
+  (`grug_traders.CROWN_FEE`); a change to loot, repair or quest copper
+  re-runs it. Vendors sell T1 gear only; blue sells ×3, gold ×6
+  (`price_rules.QUALITY_FACTOR`).
+- **Achievements and cloaks** (`mods/PLAYER/grug_achievements`, rules
+  [character_visuals.md](docs/design/character_visuals.md) §5b): an
+  achievement is catalog data on an existing counter; tier N of `<id>`
+  unlocks cloak `<id>_N`; everything is stored per character. Counters
+  come from hooks, never a second kill, craft or boss path
+  (`grug_mobs.register_on_boss_kill`, `grug_pvp.register_on_stat`,
+  `grug_jobs.register_on_award_progress`). Cloak textures are 32×32 (outer
+  face left, lining right), each with a `LICENSE-media.md` row; the player
+  model comes from `tools/r33_c3/gen_cloak_model.py --check`.
+- **Capital services** take over an existing gate resident through
+  `grug_core.assign_service_socket` (closed roles: innkeeper,
+  housing_manager, crownbinder, culture_vendor); no blueprint or mapgen
+  change.
+- Round 33 fixtures live in `tools/r33_<lane>/` (`ds` the value rule against
+  the doc, `c1` drops, bosses, bags, requirement and `drop_income.py`, `c2`
+  professions and progress, `c3` achievements, cloaks and the cloak model,
+  `c4` enchant tiers, upgrades, crown and families, `c5` crit, vendors,
+  repair, potions and the capital services).
 
 ## Task-specific implementation references
 
