@@ -199,7 +199,6 @@ local function dismount(player, reason, hard, skip_animation, teardown)
 	end
 	if object and object:is_valid() then object:remove() end
 	if record.visual and record.visual:is_valid() then record.visual:remove() end
-	if not teardown then grug_sounds.play("mount_dismount", player) end
 	-- Mount notices go to the message feed (never chat), one keyed line.
 	if reason and reason ~= "manual" then
 		grug_core.feed(player, "notice", reason, "mount")
@@ -629,7 +628,6 @@ function grug_mounts.spawn_entity(player, tier_id, pos, skip_animation)
 	end
 	active[name].visual = visual
 	set_animation(entity, "stand")
-	grug_sounds.play("mount_summon", player)
 	local bonus = math.floor((tier.speed / 4 - 1) * 100 + 0.5)
 	grug_core.set_status(player, STATUS_ID, {
 		label = tier.name,

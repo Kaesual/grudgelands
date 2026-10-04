@@ -66,7 +66,9 @@ sfinv.register_page(PAGE, {
 	end,
 	on_player_receive_fields = function(_, player, context, fields)
 		if fields[FLAG_FIELD] then
-			grug_pvp.flag_now(player)
+			-- The only PvP sound: the player's own press (user, Round 34);
+			-- automatic flag changes stay silent.
+			if grug_pvp.flag_now(player) then grug_sounds.play("pvp_on", player) end
 			refresh(player)
 			return true
 		end

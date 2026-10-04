@@ -332,7 +332,6 @@ local function display(player, rec, text)
 	end
 	show(player, rec, text, rec.state.shown_status)
 	busy[name] = true
-	grug_sounds.play("zone_banner", player)
 end
 
 -- Players joining one after another sample in different phases.

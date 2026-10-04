@@ -73,7 +73,6 @@ local function announce(player, rows)
 		grug_core.feed(player, "notice", text, "achievement:" ..
 			row.achievement.id .. ":" .. row.tier)
 	end
-	if rows[1] then grug_sounds.play("achievement", player) end
 	-- The dropdown on the Stats tab and the list on this tab both changed.
 	grug_inventory.refresh_character(player)
 end

@@ -1132,7 +1132,6 @@ function grug_classes.spend_talent(player, talent_id)
 	end
 	ranks[talent_id] = (ranks[talent_id] or 0) + 1
 	commit(player, ranks)
-	grug_sounds.play("talent", player)
 	return true
 end
 

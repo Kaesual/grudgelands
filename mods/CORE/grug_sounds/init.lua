@@ -22,7 +22,8 @@
 -- (tools/r34_s1a/portable_test.lua checks the call sites and the specs
 -- against it).
 --
--- Formspec clicks: the "click" spec's file is added to every formspec through
+-- Formspec clicks: the "click" spec's file (no gain: the client plays it
+-- from the style at the file's level) is added to every formspec through
 -- the formspec prepend (style_type, played by the client), and CLICK_STYLE
 -- carries it into the two formspecs that drop the prepend (no_prepend[]).
 
@@ -35,28 +36,69 @@ grug_sounds.HOOKS = {
 	"npc_quest", "npc_vendor", "npc_trainer", "npc_innkeeper", "npc_stable",
 	"npc_shipwright", "npc_steward", "npc_crownbinder",
 	-- Quests.
-	"quest_page", "quest_accept", "quest_abandon", "quest_complete", "quest_progress",
-	-- Trade and money.
+	"quest_page", "quest_accept", "quest_abandon", "quest_complete",
+	-- Trade and money (the Bag of Coins deposit).
 	"vendor_buy", "vendor_sell", "money",
 	-- Progression.
-	"level_up", "profession_learned", "profession_tier", "talent", "achievement",
+	"level_up", "profession_learned", "profession_tier",
 	-- Crafting, station operations, the crown and repair.
 	"craft", "craft_smithy", "craft_cooking", "craft_alchemy", "enchant",
 	"upgrade", "crown", "repair",
 	-- Items.
-	"equip", "cloak", "potion_drink", "drop_blue", "drop_gold", "drop_bag", "drop_boss",
-	-- Mounts and boats.
-	"mount_summon", "mount_dismount", "mount_gallop", "mount_wings", "boat_splash",
-	-- Travel and the world.
-	"travel", "respawn", "zone_banner", "pvp_on", "pvp_off",
+	"equip", "cloak", "potion_drink",
+	-- Mounts and boats, repeated while moving (their interval is the clip).
+	"mount_gallop", "mount_wings", "boat_splash",
+	-- Travel and the PvP button.
+	"travel", "pvp_on",
 	-- Fishing.
 	"fishing_cast", "fishing_catch",
 }
+-- Silent by the user's choice (plan §2.2a), so without a call site: quest
+-- progress, talent, achievement, drops, mount summon and dismount, respawn,
+-- zone banner, PvP off and any automatic PvP flag change. Enchant keeps its
+-- hook without a sound; quest_complete waits for the user's confirmed cut.
 
--- Filled with the user's picks (tools/r34_s1a/approved.txt).
+-- The user's picks (tools/r34_s1a/approved.txt). Files are peak-normalised
+-- to -3 dBFS; the gains set the balance (quiet, frequent cues lower). UI and
+-- dialog cues are personal; crafting, mounts, fishing and travel are heard
+-- nearby.
 local EVENTS = {
+	click = {name = "grug_sounds_click"},
+	npc_quest = {name = "grug_sounds_npc_quest", gain = 0.6, personal = true},
+	npc_vendor = {name = "grug_sounds_coins", gain = 0.5, personal = true},
+	npc_trainer = {name = "grug_sounds_npc_trainer", gain = 0.6, personal = true},
+	npc_innkeeper = {name = "grug_sounds_npc_innkeeper", gain = 0.6, personal = true},
+	npc_stable = {name = "grug_sounds_npc_stable", gain = 0.6, personal = true},
+	npc_shipwright = {name = "grug_sounds_npc_shipwright", gain = 0.6, personal = true},
+	npc_steward = {name = "grug_sounds_npc_steward", gain = 0.6, personal = true},
+	npc_crownbinder = {name = "grug_sounds_npc_crownbinder", gain = 0.6, personal = true},
+	quest_page = {name = "grug_sounds_quest_page", gain = 0.5, personal = true},
+	quest_accept = {name = "grug_sounds_quest_accept", gain = 0.7, personal = true},
+	quest_abandon = {name = "grug_sounds_quest_abandon", gain = 0.6, personal = true},
+	vendor_buy = {name = "grug_sounds_coins", gain = 0.6, personal = true, pitch = 0.05},
+	vendor_sell = {name = "grug_sounds_coins", gain = 0.6, personal = true, pitch = 0.05},
+	money = {name = "grug_sounds_money", gain = 0.7, personal = true},
+	level_up = {name = "grug_sounds_level_up", gain = 0.8, personal = true},
+	profession_learned = {name = "grug_sounds_profession_learned", gain = 0.7, personal = true},
+	profession_tier = {name = "grug_sounds_profession_tier", gain = 0.8, personal = true},
+	craft = {name = "grug_sounds_craft", gain = 0.5, distance = 10, pitch = 0.05},
+	craft_smithy = {name = "grug_sounds_craft_smithy", gain = 0.6, distance = 16},
+	craft_cooking = {name = "grug_sounds_craft_cooking", gain = 0.5, distance = 10},
+	craft_alchemy = {name = "grug_sounds_craft_alchemy", gain = 0.5, distance = 10},
+	upgrade = {name = "grug_sounds_upgrade", gain = 0.6, distance = 16},
+	crown = {name = "grug_sounds_crown", gain = 0.7, personal = true},
+	repair = {name = "grug_sounds_repair", gain = 0.6, distance = 16},
+	equip = {name = "grug_sounds_equip", gain = 0.4, personal = true, pitch = 0.05},
+	cloak = {name = "grug_sounds_cloak", gain = 0.5, personal = true},
 	-- The existing drinking sound of grug_alchemy (VoxeLibre, CC0).
 	potion_drink = {name = "grug_alchemy_drink", personal = true},
+	mount_gallop = {name = "grug_sounds_mount_gallop", gain = 0.5, distance = 24, interval = 2.35},
+	mount_wings = {name = "grug_sounds_mount_wings", gain = 0.5, distance = 24, interval = 1.5},
+	boat_splash = {name = "grug_sounds_splash", gain = 0.3, distance = 16, interval = 1.6, pitch = 0.1},
+	travel = {name = "grug_sounds_travel", gain = 0.7, distance = 16},
+	pvp_on = {name = "grug_sounds_pvp_on", gain = 0.7, personal = true},
+	fishing_cast = {name = "grug_sounds_splash", gain = 0.4, distance = 10, pitch = 0.1},
+	fishing_catch = {name = "grug_sounds_splash", gain = 0.6, distance = 12},
 }
 grug_sounds.EVENTS = EVENTS
 

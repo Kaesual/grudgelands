@@ -95,14 +95,11 @@ local function notify(player)
 	if not rec then
 		return
 	end
-	local state, before = R.state(rec, now()), reported[name]
-	if R.same_state(before, state) then
+	local state = R.state(rec, now())
+	if R.same_state(reported[name], state) then
 		return
 	end
 	reported[name] = state
-	if before and before.flagged ~= state.flagged then
-		grug_sounds.play(state.flagged and "pvp_on" or "pvp_off", player)
-	end
 	for index = 1, #change_callbacks do
 		change_callbacks[index](player, state)
 	end

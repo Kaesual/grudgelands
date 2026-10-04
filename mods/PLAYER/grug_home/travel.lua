@@ -140,7 +140,6 @@ local function request(player, respawn)
   -- The check below releases the hold on every path.
   grug_core.hold_movement(player, RESPAWN_HOLD)
   teleport(player, row.arrival)
-  grug_sounds.play("respawn", player)
  end
  local function land(p, arrival)
   -- A respawned player already waits at the arrival; it is not moved again.

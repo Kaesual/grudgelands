@@ -13,8 +13,10 @@
 --   C  the call sites: every grug_sounds.play("...") in mods/ names a declared
 --      hook, and every declared hook appears as a string in some hooked file
 --      (a typo in an indirect name, e.g. a craft or drop helper, leaves the
---      right name without a site); the click is the formspec style, "money"
---      waits for the Bag of Coins deposit (Lane F2);
+--      right name without a site); the click is the formspec style; the
+--      events the user chose to keep silent have neither a spec nor a hook
+--      (plan §2.2a), enchant keeps its hook without a spec and quest_complete
+--      waits for the user's confirmed cut;
 --   P  play: a player target hears it positionally on its object or, for a
 --      personal spec, alone; an object target carries the object, a position
 --      the position; an event without a spec and a nil target are silent;
@@ -156,7 +158,7 @@ end
 ------------------------------------------------------------------------------
 -- C: the call sites.
 ------------------------------------------------------------------------------
-local PENDING = {click = "the formspec style", money = "Lane F2's Bag of Coins deposit"}
+local PENDING = {click = "the formspec style"}
 local seen = {}
 local calls = 0
 for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'grug_sounds.play' '" .. ROOT .. "/mods'")) do
@@ -169,7 +171,16 @@ for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'grug_sounds.play' '" 
 		for literal in text:gmatch('"([%l_]+)"') do seen[literal] = true end
 	end
 end
-check(calls >= 30, "C at least 30 literal call sites (got " .. calls .. ")")
+check(calls >= 25, "C at least 25 literal call sites (got " .. calls .. ")")
+-- The user's choices (plan §2.2a): no spec, and no hook where no sound may come.
+for _, name in ipairs({"quest_progress", "talent", "achievement", "drop_blue", "drop_gold",
+		"drop_bag", "drop_boss", "mount_summon", "mount_dismount", "respawn", "zone_banner",
+		"pvp_off"}) do
+	check(not hooks[name] and not EVENTS[name], "C silent by choice, no hook: " .. name)
+end
+for _, name in ipairs({"enchant", "quest_complete"}) do
+	check(hooks[name] and not EVENTS[name], "C hook without a sound for now: " .. name)
+end
 for _, name in ipairs(S.HOOKS) do
 	check(seen[name] or PENDING[name], "C declared hook has a call site: " .. name)
 end
@@ -183,14 +194,14 @@ for event, spec in pairs(EVENTS) do saved[event] = spec end
 EVENTS.quest_accept = {name = "test_accept", gain = 0.5, distance = 8}
 EVENTS.level_up = {name = "test_level", personal = true, pitch = 0.1}
 EVENTS.mount_gallop = {name = "test_gallop", interval = 2}
-EVENTS.drop_gold = {name = "test_gold"}
+EVENTS.fishing_cast = {name = "test_cast"}
 
 local alice, bob, mount = player("alice"), player("bob"), entity()
 local function last() return played[#played] end
 
 played = {}
-EVENTS.quest_abandon = nil
-eq(S.play("quest_abandon", alice), false, "P an event without a spec is silent")
+EVENTS.quest_complete = nil
+eq(S.play("quest_complete", alice), false, "P an event without a spec is silent")
 eq(S.play("quest_accept", nil), false, "P a nil target is silent")
 eq(S.play(nil, alice), false, "P a nil event is silent")
 eq(#played, 0, "P nothing reached the engine")
@@ -217,7 +228,7 @@ S.play("mount_gallop", mount)
 eq(last().params.object, mount, "P an object target carries the object")
 eq(last().params.pitch, nil, "P no pitch without a spread")
 local pos = {x = 4, y = 5, z = 6}
-S.play("drop_gold", pos)
+S.play("fishing_cast", pos)
 eq(last().params.pos, pos, "P a position target carries the position")
 eq(last().params.object, nil, "P a position is not an object")
 
@@ -244,8 +255,8 @@ eq(S.play("mount_gallop", mount), false, "R a spec interval (2 s) drops the repe
 clock_us = clock_us + 600000
 eq(S.play("mount_gallop", mount), true, "R the repeat plays at 2.1 s")
 
-eq(S.play("drop_gold", {x = 0, y = 0, z = 0}), true, "R a position plays")
-eq(S.play("drop_gold", {x = 9, y = 9, z = 9}), false, "R positions share one limit per event")
+eq(S.play("fishing_cast", {x = 0, y = 0, z = 0}), true, "R a position plays")
+eq(S.play("fishing_cast", {x = 9, y = 9, z = 9}), false, "R positions share one limit per event")
 
 clock_us = 300 * 1000000
 eq(S.play("quest_accept", bob), true, "R bob plays")
