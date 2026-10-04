@@ -333,7 +333,7 @@ local function height_factory(dependencies)
 						end
 					end
 					pois[#pois + 1] = {x = x, z = z, r = core * 0.75, id = a.id,
-						ground = g < math.huge and g or nil}
+						slot = a.slot_id, ground = g < math.huge and g or nil}
 				end
 			end
 			-- An authored lake outside every start and capital (Moonfall's
