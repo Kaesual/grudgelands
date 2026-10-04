@@ -238,7 +238,11 @@ short and focused, with the cut starting at the event itself.
    the players behind and asks the group to coordinate. Each node keeps at
    most one pending break: walking over it again, or over a neighbour, never
    resets or postpones its timer (an earlier pending time wins). The refreeze
-   after 20 s stays.
+   after 20 s stays. *Refined by the user (2026-10-04):* each sample of the
+   0.25 s hazard pass marks every thin-ice node in the 3×3×3 cube around the
+   player's feet (instead of the node plus its four neighbours); a marked node
+   breaks 1 s later. The wider mark covers the gap between two samples, so no
+   path sampling is needed.
 
 ## 3. Shared conventions (both wave-1 lanes and S1b)
 
@@ -420,12 +424,11 @@ short and focused, with the cut starting at the event itself.
   bodyguards in the kill-loot hook's early return (`grug_quality`
   ~913–917); fixture case; `items_crafting.md` §5.4 corrected.
 - Wyrmglass thin ice (ruling 9): a pending break per node (keyed by node
-  position, server-wide, not per player), set when a player steps on thin
-  ice for that node and its four neighbours, fired 1 s later; a node that
-  already has a pending break keeps it. A fast player must not skip a node
-  between two samples of the 0.25 s hazard pass (sample the path since the
-  last sample, or sample thin ice more often — the cheaper one). The break
-  sound plays once per break, not once per node. `dragon_arena.lua`
+  position, server-wide, not per player); each 0.25 s sample marks every
+  thin-ice node in the 3×3×3 cube around the player's feet, fired 1 s later;
+  a node that already has a pending break keeps it. No path sampling (the
+  cube covers the gap between samples). The break sound plays once per
+  break, not once per node. `dragon_arena.lua`
   `ice_step` and its fixture case (`tools/r31_da2/portable_test.lua`)
   follow the new rule; `docs/design/world.md` (Wyrmglass hazards) updated.
 - The user's GUI-test findings of Round 33 may add small items here.
@@ -463,7 +466,7 @@ clicks, a quest, a fight, a mount ride, one region bed per mood, music
 starts after joining, volume and off switches, a town; a mob following
 across a stream, the trainer and crafting text boxes, a Bag of Coins
 withdrawn, dropped, picked up by a second player and deposited, the new map
-markers, a run across Wyrmglass thin ice that breaks 1 s behind the runner).
+markers, a run across Wyrmglass thin ice that breaks 1 s behind the runner in a 3×3 band).
 
 ## 7. Orchestration notes (for the coordinator)
 
