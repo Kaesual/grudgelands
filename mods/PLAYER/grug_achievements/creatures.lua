@@ -51,6 +51,31 @@ C.OTHERS = set({
 	"war_construct", "wisp",
 })
 
+-- Families an achievement counts, by base role (a sub-type joins its base's
+-- family): kill:family:<family>.
+C.FAMILIES = {
+	boar = set({"boar", "plague_boar", "jungle_boar"}),
+	rat = set({"giant_rat"}),
+	skeleton = set({"skeleton_archer", "skeleton_raider", "frost_stray", "bog_witch"}),
+	golem = set({"stone_golem", "mesa_golem"}),
+	construct = set({"war_construct"}),
+}
+
+-- Named leaders by their own sub-type role: kill:group:<group>.
+C.ROLE_GROUPS = {
+	-- the six level-29 leaders outside the capitals
+	final_notice = set({"ore_factor_brakk", "tollmaster_penn", "bough_counter_rusk",
+		"mortuary_clerk_hush", "ration_broker_garr", "offering_broker_takka"}),
+	-- the two level-58 leaders
+	last_word = set({"watch_captain_huskell", "paymaster_chirr"}),
+}
+
+-- Named rares by their registry id (`_grug_rare_id`, rares.lua):
+-- kill:rare:<group>.
+C.RARE_GROUPS = {
+	bonerattle = set({"bonerattle_south", "bonerattle_north"}),
+}
+
 -- Settlement and faction NPCs, by role name.
 local NPC_ROLES = {"^guard_", "^royal_guard_", "^king_", "^villager_",
 	"^elder_", "^captain_", "^general_", "^bodyguard_", "^land_guard$"}
@@ -59,19 +84,50 @@ local function role_of(name)
 	return type(name) == "string" and name:match("^grug_mobs:(.+)$") or nil
 end
 
--- The base role of an entity name and its family: a sub-type answers with its
--- base mob's role and its own family, any other mob with its own role twice.
--- nil for anything grug_mobs did not register.
-function C.base_and_family(name, subtype_of)
+-- The base role of an entity name: a sub-type answers with its base mob's
+-- role, any other mob with its own. nil for anything grug_mobs did not
+-- register.
+function C.base_of(name, subtype_of)
 	local role = role_of(name)
 	if not role then
 		return nil
 	end
 	local sub = subtype_of and subtype_of(name)
 	if sub then
-		return role_of(sub.base) or role, sub.family or role
+		return role_of(sub.base) or role
 	end
-	return role, role
+	return role
+end
+
+-- The achievement family of a base role, or nil.
+function C.family_of(base)
+	for family, bases in pairs(C.FAMILIES) do
+		if bases[base] then
+			return family
+		end
+	end
+	return nil
+end
+
+-- The role group of an entity's own role, or nil.
+function C.role_group(name)
+	local role = role_of(name)
+	for group, roles in pairs(C.ROLE_GROUPS) do
+		if role and roles[role] then
+			return group
+		end
+	end
+	return nil
+end
+
+-- The rare group of a rare registry id, or nil.
+function C.rare_group(id)
+	for group, ids in pairs(C.RARE_GROUPS) do
+		if ids[id] then
+			return group
+		end
+	end
+	return nil
 end
 
 -- "animal", "zombie" or nil.
@@ -98,7 +154,7 @@ end
 function C.unclassified(names, subtype_of)
 	local out = {}
 	for _, name in ipairs(names) do
-		local base = C.base_and_family(name, subtype_of)
+		local base = C.base_of(name, subtype_of)
 		if base and not (C.ANIMALS[base] or C.ZOMBIES[base] or C.OTHERS[base]
 				or is_npc_role(base)) then
 			out[#out + 1] = name

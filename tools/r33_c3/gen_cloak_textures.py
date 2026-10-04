@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Stage-1 cloak textures for grug_achievements (Round 33 lane C3).
+"""Placeholder cloak textures for grug_achievements (Round 33 lane C3).
 
 Simple generated art, CC0 1.0 like every other own-art generator of this
-project; GPT-6 Astra's painted cloaks replace these files in stage 2. The
+project, in each cloak's palette from GPT-6 Astra's proposals
+(cloak_palettes.json next to this file): cloth in the base colour, lining in
+the shadow colour, a plain emblem block in the motif colour and one hem
+stripe per tier. Astra's painted cloaks replace these files. The
 format is the one tools/r33_c3/gen_cloak_model.py documents: 32x32 RGBA,
 columns 0-15 the outer face seen from behind (shoulder at the top), columns
 16-31 the lining seen from the front; the outer face's border pixels are also
@@ -12,6 +15,7 @@ the cloak's edges.
 
 Requires Pillow. Deterministic (seed 20261004): a re-run reproduces every PNG.
 """
+import json
 import random
 from pathlib import Path
 
@@ -53,88 +57,47 @@ def put(img, x, y, rgb):
     img.putpixel((x, y), tuple(rgb) + (255,))
 
 
-def crown(img):
-    gold, dark, gem = hex_rgb("#e0b23a"), hex_rgb("#9a7218"), hex_rgb("#c8323a")
-    rows = ["#...##...#",
-            "##..##..##",
-            "##########",
-            "#o##o##o##",
-            "##########",
-            ".########."]
-    for dy, row in enumerate(rows):
-        for dx, ch in enumerate(row):
-            if ch == "#":
-                put(img, 3 + dx, 9 + dy, gold if dy < 3 else shade(gold, 0.92))
-            elif ch == "o":
-                put(img, 3 + dx, 9 + dy, gem)
-    for dx in range(1, 9):
-        put(img, 3 + dx, 15, dark)
+PALETTES = Path(__file__).with_name("cloak_palettes.json")
 
 
-def crossed_swords(img):
-    blade, edge = hex_rgb("#d8dce2"), hex_rgb("#8a9098")
-    guard, grip = hex_rgb("#d6a83a"), hex_rgb("#5a3a1c")
-    for i in range(10):
-        put(img, 3 + i, 6 + i, blade)        # tip top-left, grip bottom-right
-        put(img, 12 - i, 6 + i, blade)       # tip top-right, grip bottom-left
-        if i < 8:
-            put(img, 4 + i, 6 + i, edge)
-            put(img, 11 - i, 6 + i, edge)
-    for x, y in ((12, 15), (13, 14), (11, 16), (3, 15), (2, 14), (4, 16)):
-        put(img, x, y, guard)                # crossguards
-    for x, y in ((13, 17), (14, 18), (2, 17), (1, 18)):
-        put(img, x, y, grip)
+def emblem(img, colour, trim):
+    """A plain 6x8 block with a 1-px trim frame, centred on the upper back."""
+    for y in range(7, 15):
+        for x in range(5, 11):
+            edge = x in (5, 10) or y in (7, 14)
+            put(img, x, y, trim if edge else colour)
 
 
-SCALE = ["BBBB",
-         "BLBB",
-         "DBBD",
-         ".DD."]
-
-
-def scales(img, rng, base):
-    """Overlapping scales, rounded edge down; upper rows lie over lower ones."""
-    light, dark = shade(base, 1.35), shade(base, 0.62)
-    rows = list(range(2, 31, 3))
-    for row_index in reversed(range(len(rows))):
-        top = rows[row_index]
-        offset = 2 if row_index % 2 else 0
-        for left in range(-offset, 16, 4):
-            for dy, line in enumerate(SCALE):
-                for dx, ch in enumerate(line):
-                    x, y = left + dx, top + dy
-                    if ch == "." or not (1 <= x <= 14 and 2 <= y <= 30):
-                        continue
-                    colour = {"B": shade(base, 1.0 + rng.uniform(-0.04, 0.04)),
-                              "L": light, "D": dark}[ch]
-                    put(img, x, y, colour)
-
-
-CLOAKS = {
-    "grey": dict(base="#7c7c78", lining="#5a5a56"),
-    "hunter": dict(base="#2c4a26", lining="#3d3020"),
-    "kingslayer": dict(base="#5b1f3a", lining="#3a1426", motif=crown),
-    "wyvernslayer": dict(base="#2f6e34", lining="#1f3a20", motif="scales"),
-    "dragonslayer": dict(base="#2d508f", lining="#1c2c4a", motif="scales"),
-    "honored": dict(base="#7a1616", lining="#4a1010", motif=crossed_swords),
-}
+def hem_stripes(img, count, colour):
+    for index in range(count):
+        y = 29 - 2 * index
+        for x in range(1, 15):
+            put(img, x, y, colour)
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     rng = random.Random(SEED)
-    for name, spec in CLOAKS.items():
+    rows = [{"id": "plain_grey", "palette": ["#7c7c78", "#5a5a56"]}] + \
+        json.loads(PALETTES.read_text())
+    wanted = set()
+    for row in rows:
+        palette = [hex_rgb(c) for c in row["palette"]]
         img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
-        cloth(img, rng, 0, hex_rgb(spec["base"]))
-        cloth(img, rng, 16, hex_rgb(spec["lining"]), folds=False)
-        motif = spec.get("motif")
-        if motif == "scales":
-            scales(img, rng, hex_rgb(spec["base"]))
-        elif motif:
-            motif(img)
-        path = OUT / ("grug_achievements_cloak_%s.png" % name)
-        img.save(path)
-        print("wrote", path.relative_to(REPO))
+        cloth(img, rng, 0, palette[0])
+        cloth(img, rng, 16, palette[1], folds=False)
+        if len(palette) > 2:
+            emblem(img, palette[2], palette[-1])
+            tier = int(row["id"].rsplit("_", 1)[1])
+            hem_stripes(img, tier, palette[-1])
+        name = "grug_achievements_cloak_%s.png" % row["id"]
+        wanted.add(name)
+        img.save(OUT / name)
+    for stale in OUT.glob("grug_achievements_cloak_*.png"):
+        if stale.name not in wanted:
+            stale.unlink()
+            print("removed", stale.relative_to(REPO))
+    print("wrote %d cloak textures to %s" % (len(wanted), OUT.relative_to(REPO)))
 
 
 if __name__ == "__main__":

@@ -8,15 +8,20 @@
 -- Pure rules: core.lua (counters, tiers, unlocks, selection) and
 -- creatures.lua (which kill counts as what).
 --
--- Counters come from three hooks, each O(1) per event:
+-- Counters come from five hooks, each O(1) per event:
 --   * grug_mobs' eligible kill (every credited participant of a mob death):
---     kill:animal, kill:zombie, and kill:family:<family> while an
---     achievement asks for that family; the counters of an entity name are
---     looked up once and cached;
+--     kill:animal and kill:zombie, kill:family:<family>, kill:group:<group>
+--     (named leaders by role) and kill:rare:<group> (named rares by registry
+--     id), the last three only while an achievement asks for them; the
+--     counters of an entity name are looked up once and cached;
 --   * the boss ledger (grug_mobs.register_on_boss_kill): boss:king,
 --     boss:dragon and boss:<boss id>;
 --   * grug_pvp's counters (grug_pvp.register_on_stat): pvp:<stat>, read from
---     grug_pvp.stats, never copied.
+--     grug_pvp.stats, never copied;
+--   * grug_jobs' counted crafts (grug_jobs.register_on_award_progress):
+--     craft:<profession> by the recipe's output count (cooking: dishes,
+--     alchemist: potions and elixirs, both counted at their preparation);
+--   * deaths: death:<reason type>, e.g. death:fall.
 -- Every achievement is also settled once at join, so a counter that moved
 -- without a hook (an admin edit) still earns its tier.
 --
@@ -128,20 +133,31 @@ local function subtype_of(name)
 	return mobs_mod and mobs_mod.subtype and mobs_mod.subtype(name) or nil
 end
 
+local function wanted(counter, list)
+	if book.by_counter[counter] then
+		list[#list + 1] = counter
+	end
+end
+
 function grug_achievements.kill_counters(name)
 	local list = kill_counters[name]
 	if list then
 		return list
 	end
 	list = {}
-	local base, family = C.base_and_family(name, subtype_of)
+	local base = C.base_of(name, subtype_of)
 	if base then
 		local class = C.class_of(base)
 		if class then
 			list[#list + 1] = "kill:" .. class
 		end
-		if book.by_counter["kill:family:" .. family] then
-			list[#list + 1] = "kill:family:" .. family
+		local family = C.family_of(base)
+		if family then
+			wanted("kill:family:" .. family, list)
+		end
+		local group = C.role_group(name)
+		if group then
+			wanted("kill:group:" .. group, list)
 		end
 	end
 	kill_counters[name] = list
@@ -154,6 +170,10 @@ if core.global_exists("grug_mobs") then
 		for index = 1, #list do
 			grug_achievements.add(player, list[index], 1)
 		end
+		local rare = ent and ent._grug_rare_id and C.rare_group(ent._grug_rare_id)
+		if rare and book.by_counter["kill:rare:" .. rare] then
+			grug_achievements.add(player, "kill:rare:" .. rare, 1)
+		end
 	end)
 
 	grug_mobs.register_on_boss_kill(function(player, id)
@@ -164,6 +184,22 @@ if core.global_exists("grug_mobs") then
 		grug_achievements.add(player, "boss:" .. id, 1)
 	end)
 end
+
+if core.global_exists("grug_jobs") and grug_jobs.register_on_award_progress then
+	grug_jobs.register_on_award_progress(function(player, recipe)
+		local counter = "craft:" .. tostring(recipe.profession)
+		if book.by_counter[counter] then
+			grug_achievements.add(player, counter, ItemStack(recipe.output):get_count())
+		end
+	end)
+end
+
+core.register_on_dieplayer(function(player, reason)
+	local counter = "death:" .. tostring(reason and reason.type or "unknown")
+	if book.by_counter[counter] then
+		grug_achievements.add(player, counter, 1)
+	end
+end)
 
 if core.global_exists("grug_pvp") then
 	grug_pvp.register_on_stat(function(player, key)
@@ -232,7 +268,7 @@ end
 local COLUMNS_X = {0.2, 5.3}
 local ROW_Y, ROW_STEP, ROWS = 0.95, 0.95, 6
 local PER_PAGE = ROWS * #COLUMNS_X
-local TEXT_CHARS = 36
+local TEXT_CHARS = 38
 
 local function clip(text, limit)
 	if #text <= limit then
@@ -259,7 +295,10 @@ function grug_achievements.row(player, ach)
 		status = core.colorize(PROGRESS_COLOR,
 			math.min(value, next_tier.at) .. "/" .. next_tier.at)
 	end
-	local text = ach.text:find("%%d") and ach.text:format(next_tier.at) or ach.text
+	local text = next_tier.at == 1 and ach.text_one or ach.text
+	if text:find("%%d") then
+		text = text:format(next_tier.at)
+	end
 	-- The picture: the cloak of the next (or last) tier, dimmed until earned.
 	local cloak = next_tier.cloak and book.cloak[next_tier.cloak]
 	local image = cloak and cloak.texture and
@@ -267,7 +306,15 @@ function grug_achievements.row(player, ach)
 	if image and earned < tiers then
 		image = image .. "^[multiply:#5a5a5a"
 	end
-	return title, status, text, image
+	-- The tooltip: the whole condition, the flavour line and the cloak.
+	local tip = text
+	if ach.flavour then
+		tip = tip .. "\n\"" .. ach.flavour .. "\""
+	end
+	if cloak then
+		tip = tip .. "\nCloak: " .. cloak.name
+	end
+	return title, status, text, image, tip
 end
 
 local function page_count()
@@ -288,7 +335,11 @@ function grug_achievements.character_achievements_formspec(player, context)
 		local column = math.floor((slot - 1) / ROWS) + 1
 		local x = COLUMNS_X[column]
 		local y = ROW_Y + ((slot - 1) % ROWS) * ROW_STEP
-		local title, status, text, image = grug_achievements.row(player, ach)
+		local title, status, text, image, tip = grug_achievements.row(player, ach)
+		-- Legacy tooltip[] rects are in spacing units (pages.lua TOOLTIP_W):
+		-- 4.0 x 0.8 covers the row's picture and both lines.
+		fs[#fs + 1] = ("tooltip[%.2f,%.2f;4.0,0.8;%s]"):format(x, y,
+			core.formspec_escape(tip))
 		if image then
 			fs[#fs + 1] = ("image[%.2f,%.2f;0.42,0.84;%s]"):format(x, y,
 				core.formspec_escape(image))
@@ -336,7 +387,7 @@ core.register_on_mods_loaded(function()
 	end
 	local animals, zombies = 0, 0
 	for _, name in ipairs(names) do
-		local class = C.class_of((C.base_and_family(name, subtype_of)))
+		local class = C.class_of(C.base_of(name, subtype_of))
 		if class == "animal" then
 			animals = animals + 1
 		elseif class == "zombie" then

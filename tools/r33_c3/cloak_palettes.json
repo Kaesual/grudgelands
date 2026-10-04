@@ -1,0 +1,481 @@
+[
+ {
+  "id": "hunter_1",
+  "ach": "U1",
+  "astra": "C-U1.1",
+  "name": "Hunter's Green",
+  "palette": [
+   "#203B29",
+   "#14261B",
+   "#34543B"
+  ]
+ },
+ {
+  "id": "hunter_2",
+  "ach": "U1",
+  "astra": "C-U1.2",
+  "name": "Trail Green",
+  "palette": [
+   "#203B29",
+   "#14261B",
+   "#648052",
+   "#A8AD78"
+  ]
+ },
+ {
+  "id": "hunter_3",
+  "ach": "U1",
+  "astra": "C-U1.3",
+  "name": "Deepwood Green",
+  "palette": [
+   "#203B29",
+   "#14261B",
+   "#648052",
+   "#D5C88B"
+  ]
+ },
+ {
+  "id": "kingslayer_1",
+  "ach": "U2",
+  "astra": "C-U2.1",
+  "name": "Fallen Crown",
+  "palette": [
+   "#342A46",
+   "#1D1929",
+   "#C6A45C",
+   "#EEE0AE"
+  ]
+ },
+ {
+  "id": "kingslayer_2",
+  "ach": "U2",
+  "astra": "C-U2.2",
+  "name": "Heavy Crown",
+  "palette": [
+   "#342A46",
+   "#1D1929",
+   "#C6A45C",
+   "#EEE0AE"
+  ]
+ },
+ {
+  "id": "kingslayer_3",
+  "ach": "U2",
+  "astra": "C-U2.3",
+  "name": "Empty Throne",
+  "palette": [
+   "#342A46",
+   "#1D1929",
+   "#C6A45C",
+   "#EEE0AE"
+  ]
+ },
+ {
+  "id": "wyvernslayer_1",
+  "ach": "U3",
+  "astra": "C-U3.1",
+  "name": "Stormscale",
+  "palette": [
+   "#216343",
+   "#113828",
+   "#44905A",
+   "#A7C970"
+  ]
+ },
+ {
+  "id": "wyvernslayer_2",
+  "ach": "U3",
+  "astra": "C-U3.2",
+  "name": "Stormscale Crest",
+  "palette": [
+   "#216343",
+   "#113828",
+   "#44905A",
+   "#A7C970"
+  ]
+ },
+ {
+  "id": "wyvernslayer_3",
+  "ach": "U3",
+  "astra": "C-U3.3",
+  "name": "Stormscale Mantle",
+  "palette": [
+   "#216343",
+   "#113828",
+   "#44905A",
+   "#D9D68D"
+  ]
+ },
+ {
+  "id": "dragonslayer_1",
+  "ach": "U4",
+  "astra": "C-U4.1",
+  "name": "Wyrmglass",
+  "palette": [
+   "#245D96",
+   "#142E55",
+   "#62AAD0",
+   "#D5F1F3"
+  ]
+ },
+ {
+  "id": "dragonslayer_2",
+  "ach": "U4",
+  "astra": "C-U4.2",
+  "name": "Wyrmglass Edge",
+  "palette": [
+   "#245D96",
+   "#142E55",
+   "#62AAD0",
+   "#D5F1F3"
+  ]
+ },
+ {
+  "id": "dragonslayer_3",
+  "ach": "U4",
+  "astra": "C-U4.3",
+  "name": "Wyrmglass Mantle",
+  "palette": [
+   "#245D96",
+   "#142E55",
+   "#62AAD0",
+   "#D5F1F3"
+  ]
+ },
+ {
+  "id": "honored_1",
+  "ach": "U5",
+  "astra": "C-U5.1",
+  "name": "Honored Red",
+  "palette": [
+   "#9A303A",
+   "#531E29",
+   "#D1D4CD",
+   "#BDA063"
+  ]
+ },
+ {
+  "id": "honored_2",
+  "ach": "U5",
+  "astra": "C-U5.2",
+  "name": "Honored Steel",
+  "palette": [
+   "#9A303A",
+   "#531E29",
+   "#D1D4CD",
+   "#BDA063"
+  ]
+ },
+ {
+  "id": "honored_3",
+  "ach": "U5",
+  "astra": "C-U5.3",
+  "name": "Honored Gold",
+  "palette": [
+   "#9A303A",
+   "#531E29",
+   "#D1D4CD",
+   "#E1C16C"
+  ]
+ },
+ {
+  "id": "zombie_slayer_1",
+  "ach": "A1",
+  "astra": "C1.1",
+  "name": "Quiet Earth",
+  "palette": [
+   "#51455F",
+   "#2B2534",
+   "#B8AD91",
+   "#DBD4BA"
+  ]
+ },
+ {
+  "id": "zombie_slayer_2",
+  "ach": "A1",
+  "astra": "C1.2",
+  "name": "Settled Earth",
+  "palette": [
+   "#51455F",
+   "#2B2534",
+   "#B8AD91",
+   "#DBD4BA"
+  ]
+ },
+ {
+  "id": "zombie_slayer_3",
+  "ach": "A1",
+  "astra": "C1.3",
+  "name": "Last Goodnight",
+  "palette": [
+   "#51455F",
+   "#2B2534",
+   "#B8AD91",
+   "#DBD4BA"
+  ]
+ },
+ {
+  "id": "boaring_work_1",
+  "ach": "A2",
+  "astra": "C2.1",
+  "name": "Snout",
+  "palette": [
+   "#8B623D",
+   "#463423",
+   "#D8AB88",
+   "#F1E2BF"
+  ]
+ },
+ {
+  "id": "boaring_work_2",
+  "ach": "A2",
+  "astra": "C2.2",
+  "name": "Tusks",
+  "palette": [
+   "#8B623D",
+   "#463423",
+   "#D8AB88",
+   "#F1E2BF"
+  ]
+ },
+ {
+  "id": "boaring_work_3",
+  "ach": "A2",
+  "astra": "C2.3",
+  "name": "All Boar",
+  "palette": [
+   "#8B623D",
+   "#463423",
+   "#D8AB88",
+   "#F1E2BF"
+  ]
+ },
+ {
+  "id": "suppers_ready_1",
+  "ach": "A7",
+  "astra": "C7.1",
+  "name": "Warm Bowl",
+  "palette": [
+   "#B07646",
+   "#68442E",
+   "#F0D7A2",
+   "#7C8D58"
+  ]
+ },
+ {
+  "id": "suppers_ready_2",
+  "ach": "A7",
+  "astra": "C7.2",
+  "name": "Second Helpings",
+  "palette": [
+   "#B07646",
+   "#68442E",
+   "#F0D7A2",
+   "#7C8D58"
+  ]
+ },
+ {
+  "id": "suppers_ready_3",
+  "ach": "A7",
+  "astra": "C7.3",
+  "name": "Everyone Eats",
+  "palette": [
+   "#B07646",
+   "#68442E",
+   "#F0D7A2",
+   "#7C8D58"
+  ]
+ },
+ {
+  "id": "bottle_service_1",
+  "ach": "A8",
+  "astra": "C8.1",
+  "name": "Corked",
+  "palette": [
+   "#315B58",
+   "#1D3433",
+   "#A8D3BC",
+   "#CEAC70"
+  ]
+ },
+ {
+  "id": "bottle_service_2",
+  "ach": "A8",
+  "astra": "C8.2",
+  "name": "Well Stocked",
+  "palette": [
+   "#315B58",
+   "#1D3433",
+   "#A8D3BC",
+   "#CEAC70"
+  ]
+ },
+ {
+  "id": "bottle_service_3",
+  "ach": "A8",
+  "astra": "C8.3",
+  "name": "House Reserve",
+  "palette": [
+   "#315B58",
+   "#1D3433",
+   "#D5E8CE",
+   "#E0BE74"
+  ]
+ },
+ {
+  "id": "rat_race_1",
+  "ach": "A10",
+  "astra": "C10.1",
+  "name": "Small Problem",
+  "palette": [
+   "#827449",
+   "#49432F",
+   "#C8BEA1",
+   "#CB9292"
+  ]
+ },
+ {
+  "id": "rat_race_2",
+  "ach": "A10",
+  "astra": "C10.2",
+  "name": "Bigger Problem",
+  "palette": [
+   "#827449",
+   "#49432F",
+   "#C8BEA1",
+   "#CB9292"
+  ]
+ },
+ {
+  "id": "loose_bones_1",
+  "ach": "A12",
+  "astra": "C12.1",
+  "name": "Spare Rib",
+  "palette": [
+   "#3F5156",
+   "#243136",
+   "#D9D5B7",
+   "#A7AD9D"
+  ]
+ },
+ {
+  "id": "loose_bones_2",
+  "ach": "A12",
+  "astra": "C12.2",
+  "name": "Missing Pieces",
+  "palette": [
+   "#3F5156",
+   "#243136",
+   "#D9D5B7",
+   "#A7AD9D"
+  ]
+ },
+ {
+  "id": "loose_bones_3",
+  "ach": "A12",
+  "astra": "C12.3",
+  "name": "Flat Pack",
+  "palette": [
+   "#3F5156",
+   "#243136",
+   "#D9D5B7",
+   "#A7AD9D"
+  ]
+ },
+ {
+  "id": "stone_deaf_1",
+  "ach": "A16",
+  "astra": "C16.1",
+  "name": "Hairline Crack",
+  "palette": [
+   "#6D716C",
+   "#3B413D",
+   "#C9C8B4",
+   "#AA8257"
+  ]
+ },
+ {
+  "id": "stone_deaf_2",
+  "ach": "A16",
+  "astra": "C16.2",
+  "name": "Fault Line",
+  "palette": [
+   "#6D716C",
+   "#3B413D",
+   "#C9C8B4",
+   "#AA8257"
+  ]
+ },
+ {
+  "id": "final_notice_1",
+  "ach": "A17",
+  "astra": "C17.1",
+  "name": "Account Closed",
+  "palette": [
+   "#D2C09A",
+   "#806D51",
+   "#913F3E",
+   "#F0E4C7"
+  ]
+ },
+ {
+  "id": "rust_in_peace_1",
+  "ach": "A19",
+  "astra": "C19.1",
+  "name": "Loose Rivet",
+  "palette": [
+   "#744B36",
+   "#3D2B23",
+   "#B9C3BE",
+   "#D5A56D"
+  ]
+ },
+ {
+  "id": "rust_in_peace_2",
+  "ach": "A19",
+  "astra": "C19.2",
+  "name": "Missing Tooth",
+  "palette": [
+   "#744B36",
+   "#3D2B23",
+   "#B9C3BE",
+   "#D5A56D"
+  ]
+ },
+ {
+  "id": "no_more_orders_1",
+  "ach": "A20",
+  "astra": "C20.1",
+  "name": "Quiet Captain",
+  "palette": [
+   "#414966",
+   "#242A40",
+   "#DED8BD",
+   "#A8845D"
+  ]
+ },
+ {
+  "id": "last_word_1",
+  "ach": "A22",
+  "astra": "C22.1",
+  "name": "Final Seal",
+  "palette": [
+   "#65465C",
+   "#362635",
+   "#D2B682",
+   "#ECE0C5"
+  ]
+ },
+ {
+  "id": "grounded_1",
+  "ach": "A24",
+  "astra": "C24.1",
+  "name": "Hard Landing",
+  "palette": [
+   "#94724F",
+   "#503C2D",
+   "#D9C6A0",
+   "#6E858C"
+  ]
+ }
+]

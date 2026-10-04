@@ -52,6 +52,8 @@ function R.build(catalog)
 			"grug_achievements: " .. ach.id .. " needs 1.." .. #ROMAN .. " tiers")
 		local last = 0
 		for t, tier in ipairs(ach.tiers) do
+			assert(type(tier.at == 1 and ach.text_one or ach.text) == "string",
+				"grug_achievements: " .. ach.id .. " tier " .. t .. " has no condition text")
 			assert(type(tier.at) == "number" and tier.at > last,
 				"grug_achievements: " .. ach.id .. " tier " .. t .. " must rise")
 			assert(tier.cloak == nil or (book.cloak[tier.cloak] and
