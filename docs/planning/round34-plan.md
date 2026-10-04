@@ -440,12 +440,18 @@ starts after joining, volume and off switches, a town).
   `clips.json`, `scripts/fs_search.py` with backoff — Freesound answers 429
   to parallel searches, so search serially). Freesound originals (WAV/FLAC)
   need a login; **the source is the HQ preview** (128 kbit MP3; CC0 allows
-  it, mono Ogg hides the difference), noted in the licence row. The user has
-  a Freesound account (2026-10-04) and may download originals by hand into
-  `~/projects/grudgelands-orchestration/r34/originals/` (list of the 56
-  picked recordings in its `README.md`); a lane takes the original where
-  one is there. No Freesound credentials go to agents, briefs or the
-  repository.
+  it, mono Ogg hides the difference), noted in the licence row. **Agents work
+  only with the previews** (user, 2026-10-04); if a listening review shows a
+  file needs its original, the user downloads it by hand into
+  `~/projects/grudgelands-orchestration/r34/originals/` and the lane swaps it
+  in. No Freesound credentials go to agents, briefs or the repository.
+- **Freesound is rate-limited (HTTP 429) and slow.** Lanes first reuse what
+  is already downloaded (`r32/r2-evidence/dl/`, `r34/listen/dl/`, their
+  `clips.json`/`info.json`). New searches and downloads go through one shared
+  lock, `~/projects/grudgelands-orchestration/r34/fs_run.sh` (one slot,
+  `flock`, like `engine_run.sh`), with the backoff of
+  `r34/listen/scripts/fs_search.py`; never two lanes against the API at once.
+  Future multi-agent sound research runs serially, not in parallel.
   Music needs no account: all set tracks and the town pieces are full-length
   files from the composers' own pages (Buckley, MacLeod 256–327 kbit/s;
   joth, Pablo, cynicmusic 108–199 kbit/s), already in `r32/r2-evidence/dl/music/`
