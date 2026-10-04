@@ -121,6 +121,14 @@ end
 ItemStack = function() return {get_name = function() return "" end,
 	get_meta = function() return new_meta() end, to_string = function() return "" end} end
 
+-- Builtin's table.copy (grug_visuals copies player_api's model definition).
+function table.copy(value)
+	if type(value) ~= "table" then return value end
+	local out = {}
+	for k, v in pairs(value) do out[k] = table.copy(v) end
+	return out
+end
+
 -- player_api (the vendored base) first, as the dependency order loads it:
 -- the model registry the boxes come from, and its join hook runs first.
 player_api = nil

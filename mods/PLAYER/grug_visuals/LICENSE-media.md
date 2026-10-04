@@ -170,3 +170,11 @@ source's shapes and shading, so it keeps the **overlay's licence and
 attribution** (see "Armor overlays" above and `grug_gear/LICENSE-media.md`):
 metal and leather CC BY-SA 4.0 bases with CC BY 4.0 trims, cloth CC BY-SA 3.0.
 The modification is "pixel-group mask derived by the generator".
+
+## Round 33 player model with a cloak — CC BY-SA 3.0
+
+| File | Author | License | Notes |
+|------|--------|---------|-------|
+| `models/grug_visuals_character.b3d` | celeron55, MirceaKitsune, Jordach et al. (player_api `character.b3d`); cloak by the Grudgelands project | CC BY-SA 3.0 (<https://creativecommons.org/licenses/by-sa/3.0/>), as its source | derived from `mods/BASE/player_api/models/character.b3d` (licence: `mods/BASE/player_api/license.txt`) by `tools/r33_c3/gen_cloak_model.py`: a cloak box (second mesh buffer, the model's second texture) and a `Cloak` bone under `Body` with generated keyframes appended; the original mesh, bones and keys are unchanged. The technique follows VoxeLibre's capes; no VoxeLibre data is copied. Players only (character_visuals.md §5b) |
+
+The "No cloak" texture is the engine's builtin `blank.png`.
