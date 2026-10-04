@@ -769,5 +769,19 @@ behavior from an old completion report or source-line citation.
   launcher that falls back to the personal folder when `LUANTI_USER_PATH` is
   empty is a defect. The WP40 profiler (`tools/wp40/profile/run.sh`) sets
   its own scratch user path; pass it a launcher that forwards it.
+- **Seed fleet (user decision 2026-10-04: POIs stay at fixed anchors, so
+  robustness across seeds comes from testing):** `tools/seed_fleet/run.sh`
+  builds the portable world (`tools/r28_zone_atlas/world.lua`, the load
+  path up to the R7 anchor roster) for a fixed list of seeds
+  (`tools/seed_fleet/seeds.txt`: the seeds that once failed, then seeds below
+  and above 2^53), 8 in parallel under idle scheduling, never with a
+  wall-clock kill; it prints every failed seed with its error and exits 1.
+  `quick` (100 seeds, about 4 minutes on this workstation) is required
+  before merge for every lane that touches world generation (`mods/MAPGEN`,
+  the anchors, water, roads, capitals, zones); `full` (about 300 seeds,
+  about 13 minutes) once at the end of every round that changed world
+  generation. An optional count of random extra seeds follows the size.
+  The reviewer checks the run's summary line (all seeds build) and that a
+  changed seed list is explained.
 - Take `strict.lua` warnings (undeclared global) seriously — usually typos.
 - Server log via `core.log("action"|"warning"|"error", msg)`.

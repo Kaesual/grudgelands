@@ -520,7 +520,22 @@ replaced; git history before this rewrite records that model.
   margin, about 100-130 nodes, with an irregular edge); a capital's own lake
   (Lethariel's crown lake, Kezamba's cenote) keeps natural water off within
   its bounds. Water routes around every keep-out (a river may skirt a core in
-  an arc). Rivers and lakes
+  an arc). Every other POI's building core stays dry: a lake's level drops
+  below the core's ground, and a river's course bends round the core in a
+  short arc, its clearance the core's radius plus how far the river's water
+  may stand from its centreline plus a 12-node pad. Where two cores stand
+  closer than a river needs to pass between them (a detour round one would
+  push it onto the other), those cores become one obstacle and the river goes
+  round both on one side (Round 34 F3); cores join when their clearances
+  overlap or leave less than the pad between them, and a course without
+  such a conflict keeps its per-core arcs. A tributary joins its parent at
+  the nearest point of the parent's final course, or, where that last
+  stretch would enter a core's clearance (the parent went round the core on
+  the far side), at the nearest parent vertex close by (within about the
+  core's clearance arc) whose stretch stays clear; with none, its last
+  vertices bend round the core to the junction in an arc. A core
+  a river's water could still reach stops the world's creation with the
+  river and the POI named. Rivers and lakes
   may cross the rest of a capital's reserved area: plots or lanes standing in
   water there are allowed until the capital planner (plan D60) builds the
   capital around its water, and the capital's and a start's terrace grading

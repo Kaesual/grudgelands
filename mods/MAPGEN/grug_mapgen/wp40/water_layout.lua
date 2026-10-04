@@ -616,9 +616,11 @@ return function(P)
 		end
 		-- Keep-out discs: routing already goes around them (lifted routing
 		-- surface), so only meander excursions enter; they are pushed radially
-		-- onto the keep-out's irregular outline. POI cores: a one-sided detour.
-		-- `reach` is how far water may stand from the centreline.
-		local function detour(out, reach)
+		-- onto the keep-out's irregular outline. POI cores: a one-sided detour
+		-- around each obstacle of `obstacles` ({x, z, clear(i, x, z)}: the
+		-- clearance at vertex i in the direction of (x, z)). `reach` is how far
+		-- water may stand from the centreline.
+		local function detour(out, reach, obstacles)
 			local n = #out
 			-- A few smoothing passes over a replaced or pushed run and its
 			-- lead-in (the ends fixed), then the radial clearance again, so the
@@ -678,17 +680,17 @@ return function(P)
 			-- short arc round the core between the run's ends (angle
 			-- interpolated in order along the run), so the course never folds
 			-- back on itself.
-			for _, p in ipairs(opts.pois or {}) do
-				local function clear(i) return p.r + reach[i] + P.POI_PAD end
+			for _, p in ipairs(obstacles) do
+				local clear = p.clear
 				local i = 1
 				while i <= n do
 					local dx, dz = out[i][1] - p.x, out[i][2] - p.z
-					local cr = clear(i)
+					local cr = clear(i, out[i][1], out[i][2])
 					if dx * dx + dz * dz < cr * cr then
 						local i1 = i
 						while i1 < n do
 							local ex, ez = out[i1 + 1][1] - p.x, out[i1 + 1][2] - p.z
-							local cr1 = clear(i1 + 1)
+							local cr1 = clear(i1 + 1, out[i1 + 1][1], out[i1 + 1][2])
 							if ex * ex + ez * ez >= cr1 * cr1 then break end
 							i1 = i1 + 1
 						end
@@ -708,8 +710,9 @@ return function(P)
 							for q = j0, j1 do
 								local f = (q - j0) / (j1 - j0)
 								local t = t0 + dt * f
-								local rad = max(clear(q), r0 + (r1 - r0) * f)
-								o[q] = {p.x + rad * math.cos(t), p.z + rad * math.sin(t)}
+								local ct, st = math.cos(t), math.sin(t)
+								local rad = max(clear(q, p.x + ct, p.z + st), r0 + (r1 - r0) * f)
+								o[q] = {p.x + rad * ct, p.z + rad * st}
 							end
 							for q = j0, j1 do out[q] = o[q] end
 							smooth_clear(j0, j1, p.x, p.z, clear)
@@ -720,6 +723,121 @@ return function(P)
 					end
 				end
 			end
+		end
+
+		-- POI cores: the detour runs twice (a detour around one core can push
+		-- the path into a neighbour's). Where the course still enters a core's
+		-- clearance after that (two cores closer than the river needs to pass
+		-- between them: each detour swings it back onto the other), that core
+		-- and every core whose clearance overlaps it or leaves less than
+		-- POI_PAD between them (at the river's widest reach; a smoothed course
+		-- cannot thread a narrower gap) become one obstacle, and the detour
+		-- runs again from the undetoured course, so the river goes round both
+		-- on one side. A course without such a conflict keeps the per-core
+		-- detour exactly.
+		local pois = opts.pois or {}
+		local JOIN_ARC = 4
+		local function core_detour(src, reach)
+			local n = #src
+			local rmax = 0
+			for i = 1, n do if reach[i] > rmax then rmax = reach[i] end end
+			local function single(p)
+				return {x = p.x, z = p.z,
+					clear = function(i) return p.r + reach[i] + P.POI_PAD end}
+			end
+			-- Joined cores: centred inside every member's clearance where they
+			-- overlap (weights 1 / clearance: for two cores their inner
+			-- similitude centre); the outline in a direction is the farthest
+			-- exit of that ray from a member's clearance disc, so the outline
+			-- holds every member's disc and whatever lies between a disc and
+			-- the centre (where a narrow stretch's discs no longer overlap).
+			-- Cores joined across a gap below POI_PAD (discs apart): a ray from
+			-- the centre through the gap misses every disc and gets clearance
+			-- 0, so the course may still pass there; each core's own clearance
+			-- is checked again afterwards, and the build's guard checks the
+			-- cores' water.
+			local function joined(members)
+				local sx, sz, sw = 0, 0, 0
+				for _, p in ipairs(members) do
+					local wt = 1 / (p.r + rmax + P.POI_PAD)
+					sx, sz, sw = sx + p.x * wt, sz + p.z * wt, sw + wt
+				end
+				local cx, cz = sx / sw, sz / sw
+				return {x = cx, z = cz, clear = function(i, x, z)
+					local ux, uz = x - cx, z - cz
+					local ul = sqrt(ux * ux + uz * uz)
+					if ul < 1e-9 then ux, uz, ul = 1, 0, 1 end
+					ux, uz = ux / ul, uz / ul
+					local far = 0
+					for _, p in ipairs(members) do
+						local ox, oz = p.x - cx, p.z - cz
+						local b = ox * ux + oz * uz
+						local r = p.r + reach[i] + P.POI_PAD
+						local disc = b * b - (ox * ox + oz * oz) + r * r
+						if disc >= 0 and b + sqrt(disc) > far then far = b + sqrt(disc) end
+					end
+					return far
+				end}
+			end
+			-- `group[k]`: the joined obstacle of core k (labelled by a member)
+			local group = {}
+			local function run()
+				local list, done = {}, {}
+				for k, p in ipairs(pois) do
+					local g = group[k]
+					if not g then
+						list[#list + 1] = single(p)
+					elseif not done[g] then
+						done[g] = true
+						local members = {}
+						for j, q in ipairs(pois) do
+							if group[j] == g then members[#members + 1] = q end
+						end
+						list[#list + 1] = joined(members)
+					end
+				end
+				local out = {}
+				for i = 1, n do out[i] = src[i] end
+				detour(out, reach, list)
+				detour(out, reach, list)
+				return out
+			end
+			-- the cores whose clearance the course still enters
+			local function entered(out)
+				local hit = {}
+				for k, p in ipairs(pois) do
+					for i = 1, n do
+						local dx, dz = out[i][1] - p.x, out[i][2] - p.z
+						local cr = p.r + reach[i] + P.POI_PAD - 0.01
+						if dx * dx + dz * dz < cr * cr then hit[#hit + 1] = k; break end
+					end
+				end
+				return hit
+			end
+			local out = run()
+			local hit = entered(out)
+			while #hit > 0 do
+				local grew = false
+				for _, k in ipairs(hit) do
+					local p = pois[k]
+					for j, q in ipairs(pois) do
+						local dx, dz = q.x - p.x, q.z - p.z
+						local lim = p.r + q.r + 2 * (rmax + P.POI_PAD) + P.POI_PAD
+						if j ~= k and dx * dx + dz * dz < lim * lim and
+								(not group[k] or group[j] ~= group[k]) then
+							local g, old = group[k] or k, group[j]
+							for m = 1, #pois do
+								if old and group[m] == old then group[m] = g end
+							end
+							group[k], group[j], grew = g, g, true
+						end
+					end
+				end
+				if not grew then break end
+				out = run()
+				hit = entered(out)
+			end
+			return out
 		end
 
 		local coast = opts.field.coast_signed
@@ -872,19 +990,75 @@ return function(P)
 				o[n] = out[n]
 				out = o
 			end
-			-- twice: a detour around one core can push the path into a
-			-- neighbour's. Water may stand up to W + WET_X + WET_B from the
-			-- centreline (the sampler's wet limit), the gully not at all.
+			-- Water may stand up to W + WET_X + WET_B from the centreline (the
+			-- sampler's wet limit), the gully not at all.
 			local reach = {}
 			for i = 1, n do
 				reach[i] = gully[i] and P.GULLY_A0 or band[i] + P.WET_X + P.WET_B
 			end
-			detour(out, reach)
-			detour(out, reach)
-			-- a tributary's junction end snaps onto the parent's final centreline
+			out = core_detour(out, reach)
+			-- a tributary's junction end snaps onto the parent's final
+			-- centreline. Where the parent went round a core on the far side,
+			-- so that the last stretch to that point would enter the core's
+			-- clearance, it snaps instead to the nearest parent vertex near
+			-- that point (within about the core's clearance arc) whose stretch
+			-- stays clear; if there is none, the last vertices bend round the
+			-- core to the junction in an arc.
 			if rv.parent then
 				local par = S.rivers[rv.parent]
 				local jx, jz, ji = nearest_on(par.pts, out[n][1], out[n][2])
+				if n > 2 then
+					local ax, az = out[n - 1][1], out[n - 1][2]
+					local rr = max(reach[n - 1], reach[n])
+					-- the core whose clearance (as the core detour's) the stretch
+					-- from out[n - 1] to (x, z) enters
+					local function blocked(x, z)
+						local vx, vz = x - ax, z - az
+						local l2 = vx * vx + vz * vz
+						for _, p in ipairs(pois) do
+							local ox, oz = p.x - ax, p.z - az
+							local t = l2 > 0 and (ox * vx + oz * vz) / l2 or 0
+							if t < 0 then t = 0 elseif t > 1 then t = 1 end
+							local ex, ez = ox - t * vx, oz - t * vz
+							local r = p.r + rr + P.POI_PAD
+							if ex * ex + ez * ez < r * r then return p end
+						end
+						return nil
+					end
+					local p = blocked(jx, jz)
+					if p then
+						local lim = 2 * (p.r + rr + P.POI_PAD) + P.SEG
+						local bd, ox, oz = lim * lim, jx, jz
+						local found = false
+						for k, q in ipairs(par.pts) do
+							local rx, rz = q[1] - ox, q[2] - oz
+							local d = rx * rx + rz * rz
+							if d < bd and not blocked(q[1], q[2]) then
+								bd, jx, jz, ji, found = d, q[1], q[2], min(k, #par.pts - 1), true
+							end
+						end
+						if not found then
+							-- the last JOIN_ARC vertices on the short arc round
+							-- the core to the junction (as the core detour: the
+							-- radius at least the clearance)
+							local j0 = max(1, n - JOIN_ARC)
+							local ax0, az0 = out[j0][1] - p.x, out[j0][2] - p.z
+							local bx0, bz0 = jx - p.x, jz - p.z
+							local t0 = math.atan2(az0, ax0)
+							local dt = math.atan2(bz0, bx0) - t0
+							while dt > math.pi do dt = dt - 2 * math.pi end
+							while dt < -math.pi do dt = dt + 2 * math.pi end
+							local r0 = sqrt(ax0 * ax0 + az0 * az0)
+							local r1 = sqrt(bx0 * bx0 + bz0 * bz0)
+							for q = j0 + 1, n - 1 do
+								local f = (q - j0) / (n - j0)
+								local t = t0 + dt * f
+								local rad = max(p.r + reach[q] + P.POI_PAD, r0 + (r1 - r0) * f)
+								out[q] = {p.x + rad * math.cos(t), p.z + rad * math.sin(t)}
+							end
+						end
+					end
+				end
 				out[n] = {jx, jz}
 				rv.junction_index = ji
 			end
@@ -1666,7 +1840,45 @@ return function(P)
 		end
 		layout.grid = {nx = S.nx, nz = S.nz, cell = P.C, x0 = P.GX0, z0 = P.GZ0,
 			height = S.H, land = S.land}
+		-- a core the detours could not keep dry stops the build here, with
+		-- the river and the core named, before the planner meets the wet anchor
+		local rid, p = M.wet_core(layout, opts.pois)
+		if rid then
+			error(("WP40 water layout: river %d covers the core of POI %s (%s)"):format(
+				rid, tostring(p.id), tostring(p.slot)), 0)
+		end
 		return layout
+	end
+
+	-- The first river (id) and POI core ({x, z, r}) where the river's water
+	-- may stand on the core: within a segment's wet limit (the sampler's
+	-- rule, the larger of its two ends) of the core's disc. Nil when every
+	-- core is dry. `layout`: built or deserialized.
+	function M.wet_core(layout, pois)
+		for _, r in ipairs(layout.rivers) do
+			local x, z, w, R = r.x, r.z, r.w, r.R
+			for i = 1, #x - 1 do
+				local wa, wb = w[i], w[i + 1]
+				if wa ~= 0 and wb ~= 0 and (wa > 0 or wb > 0) then
+					local lim = max(wa > 0 and min(R[i], wa + P.WET_X) or 0,
+						wb > 0 and min(R[i + 1], wb + P.WET_X) or 0) + P.WET_B
+					local ax, az = x[i], z[i]
+					local vx, vz = x[i + 1] - ax, z[i + 1] - az
+					local l2 = vx * vx + vz * vz
+					for _, p in ipairs(pois or {}) do
+						local reach = p.r + lim
+						local ox, oz = p.x - ax, p.z - az
+						if abs(ox) < reach + abs(vx) and abs(oz) < reach + abs(vz) then
+							local t = l2 > 0 and (ox * vx + oz * vz) / l2 or 0
+							if t < 0 then t = 0 elseif t > 1 then t = 1 end
+							local ex, ez = ox - t * vx, oz - t * vz
+							if ex * ex + ez * ez < reach * reach then return r.id, p end
+						end
+					end
+				end
+			end
+		end
+		return nil
 	end
 
 	---------------------------------------------------------------------------

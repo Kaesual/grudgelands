@@ -24,6 +24,20 @@ through its `run.sh` (seeds 12345 and 42, two processes, a scratch world each).
 A new fixture follows the same contract: it takes the repository path as
 `arg[1]` and exits non-zero on failure.
 
+## Seed fleet
+
+`tools/seed_fleet/run.sh` builds the portable world (`r28_zone_atlas/world.lua`,
+the load path up to the R7 anchor roster) for the fixed seeds of
+`tools/seed_fleet/seeds.txt`, eight at a time under idle scheduling and without
+a wall-clock limit, prints each failed seed with its error and a summary, and
+exits 1 on any failure (AGENTS.md says when each size is required).
+
+```sh
+tools/seed_fleet/run.sh quick         # the first 100 seeds (about 4 minutes)
+tools/seed_fleet/run.sh full          # every seed, about 300 (about 13 minutes)
+tools/seed_fleet/run.sh quick 20      # plus 20 random seeds (printed)
+```
+
 ## Other checks
 
 - `tools/check_lua.sh <files>`: plain Lua 5.1 parser, `SETGLOBAL` list and the
