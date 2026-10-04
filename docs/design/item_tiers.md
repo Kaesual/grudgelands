@@ -1,8 +1,14 @@
 # Item tiers: enchant values, recipes, upgrades, the crown, potions and money
 
-**Status: proposed, version 2** (Round 33 lane DS, 2026-10-04; version 2
-follows the user's rulings of the same day on Crit and Dexterity, profession
-families and two leftovers, marked "(v2)"). The user's rulings are
+**Status: approved by the user, version 2** (Round 33 lane DS, 2026-10-04;
+version 2 follows the user's rulings of the same day on Crit and Dexterity,
+profession families and two leftovers, marked "(v2)"). The user accepted every
+recommended option of the preview: Intelligence stays weak for Priest heals,
+attribute fractions count, repair factor ×1.0, crown fee 1 h of band-6 income,
+no money fee for upgrades, elixirs worth two enchants, the Weak Healing Potion
+heals a fixed 35 HP, one-faction signatures stay sell-only, the culture vendor
+price bands as proposed, Ornament Components removed, Cut Citrine is the T1
+trinket gem (the Cut Quartz recipe goes). The user's rulings are
 [round33-plan.md](../planning/round33-plan.md) §2; this file turns them into
 the numbers lanes C4 (enchant tiers, upgrades, crown) and C5 (vendors,
 potions, economy) implement verbatim once the user approves the DS preview.
@@ -609,9 +615,9 @@ eight King kills, next to Master Riding's five hours.
 <!-- generated: crown -->
 | Sink | Rule | Price (today's band-6 income) | Price (after) |
 |---|---|---:|---:|
-| Crown fee (option 1) | 30 min of band-6 income | 73s | 74s |
-| Crown fee (option 2, proposed) | 1 h of band-6 income | 1g 45s | 1g 47s |
-| Crown fee (option 3) | 2 h of band-6 income | 2g 90s | 2g 95s |
+| Crown fee (option 1, not chosen) | 30 min of band-6 income | 73s | 74s |
+| Crown fee (option 2, chosen) | 1 h of band-6 income | 1g 45s | 1g 47s |
+| Crown fee (option 3, not chosen) | 2 h of band-6 income | 2g 90s | 2g 95s |
 <!-- end generated -->
 
 ## 5. Potions and elixirs
