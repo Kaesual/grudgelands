@@ -23,6 +23,7 @@
 --    `shipwright` socket beside the Riding Trainer, clear of the mount
 --    lanes, and the socket registry accepts the role.
 -- Prints "R29 W PORTABLE PASS checks=<n>" or raises on the first failure.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks = 0
 local function check(ok, label)

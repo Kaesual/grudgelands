@@ -904,6 +904,25 @@ function grug_items.roll_mob_gear(self, seed)
 	return out, used_seed
 end
 
+-- The sound of a kill's drop (Round 34): gold over blue over a bag; white
+-- gear and nothing at all stay silent.
+local BAG_ITEMS = {}
+for _, row in ipairs(grug_items.BAG_DROPS.sizes) do BAG_ITEMS[row.item] = true end
+local function drop_sound(rolled)
+	local sound
+	for index = 1, #rolled do
+		local stack = rolled[index]
+		local quality = stack:get_meta():get_int("grug_quality")
+		if quality >= 3 then return "drop_gold" end
+		if quality == 2 then
+			sound = "drop_blue"
+		elseif not sound and BAG_ITEMS[stack:get_name()] then
+			sound = "drop_bag"
+		end
+	end
+	return sound
+end
+
 -- The existing grug_mobs death hook is reached only after its shared
 -- player-tag/enemy-kill predicate. It drops concrete ItemStacks so their meta
 -- survives, including on bosses whose ordinary string-drop list is empty.
@@ -929,6 +948,7 @@ grug_mobs.register_kill_loot_hook(function(self, tagger_name)
 				z = random_fraction(rng) - 0.5})
 		end
 	end
+	grug_sounds.play(drop_sound(rolled), pos)
 end)
 
 grug_mobs.register_boss_reward_hook(function(self, id, player)
@@ -945,6 +965,7 @@ grug_mobs.register_boss_reward_hook(function(self, id, player)
 			grug_items.regenerate_description(stack, player)
 		end
 	end
+	if rewards[1] then grug_sounds.play("drop_boss", player) end
 	return rewards
 end)
 

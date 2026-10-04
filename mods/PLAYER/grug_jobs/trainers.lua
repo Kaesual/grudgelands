@@ -78,6 +78,7 @@ function grug_jobs.open_trainer(player, profession, position, entity)
 	sessions[name] = {profession = profession, entity = entity,
 		position = {x = position.x, y = position.y, z = position.z}}
 	log_action("open", player, profession, grug_jobs.has(player, profession))
+	grug_sounds.play("npc_trainer", player)
 	core.show_formspec(name, FORMNAME, trainer_formspec(player, profession, false))
 	return true
 end

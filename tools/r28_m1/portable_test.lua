@@ -24,6 +24,7 @@
 --      per-sample cost is measured by the engine probe
 --      (tools/r28_m1/probe.sh), not on this fake world.
 -- Prints "R28 M1 PORTABLE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)

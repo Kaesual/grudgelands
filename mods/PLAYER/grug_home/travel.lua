@@ -140,6 +140,7 @@ local function request(player, respawn)
   -- The check below releases the hold on every path.
   grug_core.hold_movement(player, RESPAWN_HOLD)
   teleport(player, row.arrival)
+  grug_sounds.play("respawn", player)
  end
  local function land(p, arrival)
   -- A respawned player already waits at the arrival; it is not moved again.
@@ -151,6 +152,7 @@ local function request(player, respawn)
   if actual and vector.distance(actual, arrival) < 0.1 then
    if not respawn then
     p:get_meta():set_string("grug_home:ready_at", tostring(os.time() + COOLDOWN))
+    grug_sounds.play("travel", p)
    end
   end
  end
@@ -229,6 +231,7 @@ function grug_home.travel(player, trip)
    local arrival = not failed and trip.arrival(p)
    if not arrival then return notify(p, trip.unavailable) end
    teleport(p, arrival)
+   grug_sounds.play("travel", p)
   end,
   timeout=function(p) notify(p, trip.unavailable) end})
  return true

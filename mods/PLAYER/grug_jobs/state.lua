@@ -79,6 +79,7 @@ function grug_jobs.learn(player, profession)
 	set_int(meta, META_CRAFTS .. profession, 0)
 	local text = "Learned " .. definition.name .. "."
 	message(player, text)
+	grug_sounds.play("profession_learned", player)
 	if grug_inventory and grug_inventory.refresh then grug_inventory.refresh(player, true) end
 	return true, text
 end
@@ -158,6 +159,7 @@ end
 -- when that tab is the open view (Round 28 ruling 23); otherwise nothing.
 function grug_jobs.record_craft(player, profession, tier)
 	local advanced, level = record_craft(player, profession, tier)
+	if advanced then grug_sounds.play("profession_tier", player) end
 	if grug_inventory.refresh_character_tab then
 		grug_inventory.refresh_character_tab(player, "professions")
 	end
@@ -170,6 +172,15 @@ end
 -- (enchants; profession upgrades join them) are flagged when they register.
 local award_callbacks = {}
 
+-- Every finished craft passes award_progress, so its sound plays there
+-- (Round 34): station operations by kind, cooking, alchemy and the two smiths
+-- by profession, everything else the plain craft.
+local CRAFT_SOUNDS = {enchant = "enchant", upgrade = "upgrade", cooking = "craft_cooking",
+	alchemy = "craft_alchemy", weaponsmith = "craft_smithy", armorsmith = "craft_smithy"}
+local function craft_sound(recipe)
+	return CRAFT_SOUNDS[recipe.operation or ""] or CRAFT_SOUNDS[recipe.profession or ""] or "craft"
+end
+
 -- fn(player, recipe) after every finished craft award_progress counts
 -- (grug_achievements counts dishes and potions from it).
 function grug_jobs.register_on_award_progress(fn)
@@ -177,7 +188,9 @@ function grug_jobs.register_on_award_progress(fn)
 end
 
 function grug_jobs.award_progress(player, recipe)
-	if type(recipe) ~= "table" or not recipe.progress then return false end
+	if type(recipe) ~= "table" then return false end
+	grug_sounds.play(craft_sound(recipe), player)
+	if not recipe.progress then return false end
 	local advanced, level = grug_jobs.record_craft(player, recipe.profession, recipe.tier)
 	for index = 1, #award_callbacks do
 		award_callbacks[index](player, recipe)

@@ -24,6 +24,7 @@
 --      every other slot is not.
 -- Prints "R32 F1 PORTABLE PASS checks=<n>", or the failures and raises an
 -- error (exit status 1).
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)

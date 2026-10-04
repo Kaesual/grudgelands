@@ -10,6 +10,7 @@
 --
 -- Usage (repo root): luajit tools/r28_a7_slots/portable_test.lua [ROOT]
 
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local ROOT = arg and arg[1] or "."
 local failures, checks = 0, 0
 local function check(ok, label)

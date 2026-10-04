@@ -107,6 +107,8 @@ function grug_mounts.open_trainer(player, entity)
 	serial = serial + 1
 	local formname = "grug_mounts:service:" .. serial
 	sessions[name] = {entity = entity, formname = formname, service = service}
+	grug_sounds.play(entity._grug_socket_role == "shipwright" and "npc_shipwright" or
+		"npc_stable", player)
 	core.show_formspec(name, formname, formspec(player, service))
 	return true
 end

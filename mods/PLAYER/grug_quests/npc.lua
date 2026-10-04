@@ -28,6 +28,9 @@ function Q.open_npc(player, entity, selected, notice)
 		entries[#entries + 1] = esc(row.title .. (row.repeatable and " [Repeatable]" or "") ..
 			" (" .. row.status .. ")")
 	end
+	-- The first open of the dialog plays its cue; a redraw (another quest
+	-- chosen, after Accept or Complete) does not.
+	local redraw = selected ~= nil
 	selected = math.min(math.max(tonumber(selected) or 1, 1), #rows)
 	local row = rows[selected]
 	local def = Q.registered_quests[row.id]
@@ -53,6 +56,7 @@ function Q.open_npc(player, entity, selected, notice)
 	if row.status == "available" then form = form .. "button[4.7,8;2,0.7;accept;Accept]" end
 	if row.status == "ready" then form = form .. "button[4.7,8;2,0.7;turnin;Complete]" end
 	sessions[player:get_player_name()] = {entity = entity, npc = id, rows = rows, selected = selected}
+	if not redraw then grug_sounds.play("npc_quest", player) end
 	core.show_formspec(player:get_player_name(), FORM, form)
 	return true
 end
@@ -68,7 +72,10 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 	end
 	if fields.quests then
 		local event = core.explode_textlist_event(fields.quests)
-		if event.index and session.rows[event.index] then Q.open_npc(player, session.entity, event.index) end
+		if event.index and session.rows[event.index] then
+			if event.index ~= session.selected then grug_sounds.play("quest_page", player) end
+			Q.open_npc(player, session.entity, event.index)
+		end
 		return true
 	end
 	local row = session.rows[session.selected]

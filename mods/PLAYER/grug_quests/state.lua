@@ -273,6 +273,7 @@ function Q.accept(player, id)
 	if #state.tracked < Q.MAX_TRACKED then state.tracked[#state.tracked + 1] = id end
 	save(player, state)
 	changed(player)
+	grug_sounds.play("quest_accept", player)
 	return true
 end
 local function untrack(state, id)
@@ -287,6 +288,7 @@ function Q.abandon(player, id)
 	untrack(state, id)
 	save(player, state)
 	changed(player)
+	grug_sounds.play("quest_abandon", player)
 	return true
 end
 function Q.set_tracked(player, id, enabled)
@@ -441,6 +443,7 @@ function Q.turn_in(player, id)
 	-- The state is saved: the markers and the tracker follow it even when a
 	-- reward observer failed.
 	changed(player)
+	grug_sounds.play("quest_complete", player)
 	if not money_ok then error(money_error, 0) end
 	if not xp_ok then error(xp_error, 0) end
 	return true

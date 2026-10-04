@@ -103,6 +103,7 @@ function grug_xp.set_xp(player, xp)
 			-- Round 28 ruling 20: a large centre announcement, no chat line.
 			grug_core.banner(player, "Reached level " .. new_level .. "!",
 				grug_core.hud_layout.COLOR.xp)
+			grug_sounds.play("level_up", player)
 			local pos = player:get_pos()
 			if pos then
 				core.add_particlespawner({

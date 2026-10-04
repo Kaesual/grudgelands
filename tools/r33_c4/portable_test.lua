@@ -35,6 +35,7 @@
 --   luajit tools/r33_c4/portable_test.lua [REPO]
 -- Prints "R33 C4 PORTABLE PASS checks=<n>" or the failures (exit 1).
 
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local ROOT = arg and arg[1] or "."
 local failures, checks = 0, 0
 local function check(ok, label)

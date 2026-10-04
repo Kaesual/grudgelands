@@ -25,6 +25,7 @@
 --      or credit; leaving outside PvP combat, or at shutdown, is no death;
 --   R  change callbacks fire once per change (and once at join).
 -- Usage (repo root): luajit tools/r31_pvp/portable_test.lua [REPO]
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 
 local checks, failures = 0, 0

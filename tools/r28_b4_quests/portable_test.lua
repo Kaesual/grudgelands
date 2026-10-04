@@ -17,6 +17,7 @@
 -- target on every seed) and the engine probe's boot (run.sh).
 --
 -- Usage (repo root): luajit tools/r28_b4_quests/portable_test.lua
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local json = dofile("tools/r28_b4_quests/json.lua")
 local FIXTURE = "tools/r28_b4_quests/fixture"
 

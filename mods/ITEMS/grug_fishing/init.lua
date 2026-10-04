@@ -218,8 +218,7 @@ local function reel(player, cast, itemstack)
 	-- Return the worn callback stack; a separate set_wielded_item followed by
 	-- returning the old on_place stack would silently undo the wear.
 	itemstack:add_wear(ROD_WEAR)
-	core.sound_play("default_water_footstep",
-		{pos = cast.pos, gain = 0.5, max_hear_distance = 12}, true)
+	grug_sounds.play("fishing_catch", cast.pos)
 	-- Round 24 ruling 28: a caught fish pays gathering XP from the top of its
 	-- water's zone band (0.33 kill equivalents, Round 28 ruling 32; grug_xp
 	-- owns the formula, gather_xp); junk pays nothing. The
@@ -279,8 +278,7 @@ function cast_or_reel(itemstack, player, pointed_thing)
 	cast = {pos={x=pos.x,y=pos.y,z=pos.z},bobber=bobber}
 	next_bite(cast)
 	casts[name] = cast
-	core.sound_play("default_water_footstep",
-		{pos = pos, gain = 0.3, max_hear_distance = 8}, true)
+	grug_sounds.play("fishing_cast", pos)
 	return itemstack
 end
 core.register_on_leaveplayer(function(player) stop(player:get_player_name()) end)

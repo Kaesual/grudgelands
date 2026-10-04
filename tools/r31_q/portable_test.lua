@@ -25,6 +25,7 @@
 --      fortress quest giver, a solo quest; 3-5 ordinary fortress quests; every quest of
 --      the fortress givers from level 40; no objective names a player.
 -- Prints "R31 Q PORTABLE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local function path(p) return repo .. "/" .. p end
 local json = dofile(path("tools/r28_b4_quests/json.lua"))

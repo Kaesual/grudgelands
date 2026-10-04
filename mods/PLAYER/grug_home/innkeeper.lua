@@ -25,6 +25,7 @@ function grug_home.open_innkeeper(player,entity)
  serial = serial + 1
  local formname = "grug_home:innkeeper:" .. serial
  dialogs[name] = {entity=entity,formname=formname}
+ grug_sounds.play("npc_innkeeper", player)
  core.show_formspec(name,formname,form(player,row))
  return true
 end

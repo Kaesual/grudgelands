@@ -110,6 +110,7 @@ local function post_progress(player, journal)
 	for _, quest in ipairs(changed) do
 		grug_core.feed(player, "quest", grug_quests.feed_text(quest), "quest:" .. quest.id)
 	end
+	if changed[1] then grug_sounds.play("quest_progress", player) end
 end
 
 -- The journal is built only when its key (Q.journal_key: the raw quest

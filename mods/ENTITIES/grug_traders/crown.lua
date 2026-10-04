@@ -136,6 +136,7 @@ function grug_traders.crown_apply(player, row)
 	if grug_inventory.is_equipment_list(row.list) then
 		grug_inventory.equipment_changed(player)
 	end
+	grug_sounds.play("crown", player)
 	return true, "Crowned: " .. (crowned:get_short_description() or crowned:get_name()) .. "."
 end
 
@@ -214,6 +215,7 @@ function grug_traders.open_crownbinder(player, nametag, pos, faction)
 	local session = {pos = vector.new(pos), faction = faction, page = 1,
 		formname = FORM_PREFIX .. serial, rows = grug_traders.crown_rows(player)}
 	sessions[player:get_player_name()] = session
+	grug_sounds.play("npc_crownbinder", player)
 	show(player, session)
 end
 
