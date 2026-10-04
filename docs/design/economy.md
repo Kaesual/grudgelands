@@ -32,6 +32,18 @@ axis (D2).
   world node drops money or a physical coin item. Currency enters or moves
   only through explicit transactions: quest rewards, NPC purchases of
   sellable loot, NPC/player sales and player-to-player trade.
+- **Bag of Coins** (Round 34): the one way money leaves the balance as an
+  item, so players can give money to each other. **Withdraw** on the
+  Character page opens a dialog with gold, silver and copper fields; a whole
+  amount from 1c up to the balance is taken and one Bag of Coins holding it
+  is put into the first empty main slot in one transaction
+  (`grug_money.take_with_inventory`), refused when the main inventory is
+  full. The **deposit slot** beside it takes only a filled bag, destroys it
+  and credits its amount, refused if the balance would exceed the clamp
+  above. One bag per stack, the amount in its item meta and tooltip. Traders
+  neither sell nor buy it (no price class: payout 0). It drops, is picked up
+  and stored like any item, despawns on the ground after the engine's item
+  lifetime and burns in lava or fire; no transfer is logged.
 - Physical Gold is a separate universal luxury/jewelry/build material. Gold
   ore, ingots and blocks never add to the money balance, and a ledger payment
   never consumes inventory Gold.

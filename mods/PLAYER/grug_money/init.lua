@@ -1,8 +1,8 @@
 grug_money = {}
 
 -- Money is ONE integer in copper units in player meta (economy.md §1):
--- 100c = 1s, 100s = 1g. The conversion is display-only, there are no
--- physical coin items.
+-- 100c = 1s, 100s = 1g. The conversion is display-only; the one coin item
+-- is the Bag of Coins (coins.lua), a withdrawn amount in an item's meta.
 grug_money.KEY = "grug_money:copper"
 
 -- Upper clamp. PlayerMetaRef stores ints as 32-bit signed values, so
@@ -231,3 +231,5 @@ core.register_chatcommand("money", {
 		return true, target_name .. " now carries " .. grug_money.format(new_balance) .. "."
 	end,
 })
+
+dofile(core.get_modpath("grug_money") .. "/coins.lua")

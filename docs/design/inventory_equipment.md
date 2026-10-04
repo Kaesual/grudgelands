@@ -17,6 +17,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
 - Character separates the model, concise live HP/resource/armor values and
   equipment into three columns. The current money balance is shown here, with
   balance changes updating the cached Character view; money has no gameplay HUD.
+  Beside the balance a **Withdraw** button and a **deposit slot** handle the
+  Bag of Coins (Round 34, [economy.md](economy.md) §1).
   Round 19 removes the pool/armor derivation section. Character shows concise
   effective Crit and Dodge alongside armor rating, **Damage reduction** (the
   armor's reduction against an enemy of the character's own level; its tooltip

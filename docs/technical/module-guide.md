@@ -747,6 +747,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     the clamp, the HUD refresh and the change callbacks all live in
     those functions. `PlayerMetaRef:set_int` is a real 32-bit signed
     store, hence the hard ceiling `grug_money.MAX`.
+  - **The Bag of Coins** (`grug_money/coins.lua`, Round 34) is the only
+    money item: `withdraw` goes through `take_with_inventory`, the deposit
+    slot is a per-player detached list that destroys the bag in `on_put`;
+    the amount is item meta (`bag_amount`), never a price class.
   - **One price module owns every payout** (`grug_traders/prices.lua`,
     pure rules in `price_rules.lua`; Round 29): loot and gathered goods by
     class × tier factor, processed goods by their cheapest recipe, sold

@@ -14,7 +14,9 @@
 --      markers scale with the level; zooming keeps the view centre; scroll
 --      values clamp to the 8x range;
 --   H  (Round 32) hostile camps, bandits and Mirefolk by their slot, draw a
---      red "X", never the quest giver's "!"; a village keeps its "+".
+--      red "X", never the quest giver's "!"; a village keeps its "+";
+--   C  (Round 34) the Crownbinder and the Decor Merchant have service
+--      markers with their own icons, on the map and the minimap.
 -- Prints "R26 MAP PORTABLE PASS checks=<n>" or the failures.
 local repo = arg[1] or "."
 local checks, failures = 0, {}
@@ -66,6 +68,11 @@ local sockets = {highcourt = {
 		role = "housing_manager", pos = STEWARD_POS},
 	{id = "riding", role = "riding_trainer", pos = {x = 1180, y = 30, z = -940}},
 	{id = "throne", role = "king", pos = {x = 1190, y = 30, z = -930}},
+	-- Round 34: the capital services (grug_traders/vendors.lua).
+	{id = "goldsmith_hall/goldsmith_hall_gate_idle", role = "crownbinder",
+		pos = {x = 1250, y = 30, z = -960}},
+	{id = "woodcarver_yard/woodcarver_yard_gate_idle", role = "culture_vendor",
+		pos = {x = 1260, y = 30, z = -970}},
 }}
 rawset(_G, "grug_core", {
 	settlement_socket_settlements = function() return settlements end,
@@ -142,6 +149,39 @@ do
 	if file then file:close() end
 	check(text:find(TEXTURE, 1, true) and text:find("render_steward_icon.py", 1, true)
 		and text:find("CC0", 1, true), "S LICENSE-media row")
+end
+
+-- C (Round 34): the Crownbinder and the Decor Merchant, kind "service" on
+-- the Steward's layer, with their own icons (16x16, LICENSE-media row), and
+-- the minimap shows the kind.
+do
+	local found, order = {}, {}
+	for index, marker in ipairs(atlas.collect_markers(player)) do
+		found[marker.label] = marker
+		order[marker.kind] = index
+	end
+	for label, texture in pairs({Crownbinder = "grug_map_crownbinder.png",
+			["Decor Merchant"] = "grug_map_decor_merchant.png"}) do
+		local marker = found[label] or {}
+		check(marker.kind == "service" and marker.texture == texture and
+			marker.faction == "accord", "C " .. label .. " marker, kind and faction")
+		local sw, sh = png_size(repo .. "/mods/PLAYER/grug_map/textures/" .. texture)
+		check(sw == 16 and sh == 16, "C " .. texture .. " is a 16x16 PNG")
+		local file = io.open(repo .. "/mods/PLAYER/grug_map/LICENSE-media.md", "rb")
+		local text = file and file:read("*a") or ""
+		if file then file:close() end
+		check(text:find(texture, 1, true) and text:find("tools/r34_f2/render_icons.py", 1, true),
+			"C " .. texture .. " LICENSE-media row")
+	end
+	check(order.service and order.trainer and order.service > order.trainer,
+		"C services draw above a trainer")
+	local file = io.open(repo .. "/mods/PLAYER/grug_map/minimap.lua", "rb")
+	local minimap = file and file:read("*a") or ""
+	if file then file:close() end
+	local shown = minimap:match("local SHOWN = (%b{})") or ""
+	local priority = minimap:match("local PRIORITY = (%b{})") or ""
+	check(shown:find("service = true", 1, true) and priority:find("service = 2", 1, true),
+		"C the minimap shows the services with the Steward's priority")
 end
 
 local function button_at(fs, texture)
