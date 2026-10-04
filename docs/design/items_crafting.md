@@ -1409,6 +1409,10 @@ Generals item level 65, dragons item level 70. Their other loot (Fallen Crown,
 Scaled Hide, the General's war trophies) stays. The General has no reward
 ledger: his two items drop on the kill, like any mob gear, and only an enemy
 player's kill drops them; his bodyguards, like royal guards, drop no gear.
+**Encounter adds drop no gear and no bag** (Round 34): royal guards, the
+General's bodyguards, the dragons' whelps and the raiders a King calls in his
+fight. Their ordinary drops stay (the guards' war trophies and heavy cloth on
+an enemy player's kill; the raiders' skeleton materials; whelps have none).
 
 **Bags** drop from any mob at **0.1%** per kill (not from the Kraken Guard and
 the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
@@ -1482,11 +1486,10 @@ invulnerable.
   [item_tiers.md](item_tiers.md) §4); it stays unsellable. Royal provenance
   supplies visual identity.
 - No universal bar, pick, profession-level advancement or ordinary base gear requires a
-  Crown, and no power-bearing recipe is Crown-only. Guard loot is ordinary
-  level-60 elite loot and never substitutes for a Crown. **As built,** royal
-  guards drop no gear (§5.1; `grug_quality/init.lua`), so this sentence and
-  §5.1 disagree; Round 33 left it open (BACKLOG). Rewards enter the
-  ledger only if their sellable items are later sold.
+  Crown, and no power-bearing recipe is Crown-only. Royal guards drop no gear
+  and no bag (encounter adds, §5.1), only a guard's war trophies and heavy
+  cloth on an enemy player's kill; nothing they drop substitutes for a Crown.
+  Rewards enter the ledger only if their sellable items are later sold.
 
 ### 5.5 Contested-front reward hook
 

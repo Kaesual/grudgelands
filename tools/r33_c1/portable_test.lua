@@ -10,6 +10,7 @@
 --   B. bosses: a King, a dragon and a General always drop two items, blue or
 --      gold at about even odds, at item level 65 / 70 / 65; the kill-loot hook
 --      leaves Kings and royal guards to the ledger and drops the General's;
+--      encounter adds (whelps, summoned raiders) drop no gear and no bag;
 --   C. deep sea: the Kraken (no quality loot) drops nothing;
 --   D. bags: about 0.1 % per kill, the size by mob level (8/16/24/32 slots,
 --      read from grug_inventory's bags.lua);
@@ -279,6 +280,18 @@ do
 	check(hook_drops({name = "grug_mobs:bodyguard_accord", _grug_boss_id = "general:accord",
 		_grug_tier = "elite", _grug_level = 60}, 50) == 0, "B a bodyguard drops no gear")
 	check(hook_drops(bosses[3].mob, 20) >= 40, "B the kill hook drops the General's two items")
+	-- Encounter adds (Round 34 ruling 7): a dragon's whelps and a King's
+	-- summoned raiders drop no gear and no bag, even with the bag chance at
+	-- 100 %; the same mob without the encounter mark does.
+	local saved_bag = grug_items.BAG_DROPS.chance
+	grug_items.BAG_DROPS.chance = 100
+	check(hook_drops({name = "grug_mobs:ice_whelp", _grug_boss_summon = "dragon:wyrmglass",
+		_grug_tier = "normal", _grug_level = 20}, 50) == 0, "B a dragon's whelp drops no gear and no bag")
+	check(hook_drops({name = "grug_mobs:skeleton_raider", _grug_royal_summon = "king:undead",
+		_grug_tier = "normal", _grug_level = 60}, 50) == 0, "B a King's summoned raider drops no gear and no bag")
+	check(hook_drops({name = "grug_mobs:ice_whelp", _grug_tier = "normal", _grug_level = 20}, 50) >= 50,
+		"B ...an unmarked whelp still drops its bag")
+	grug_items.BAG_DROPS.chance = saved_bag
 	local rewards = reward_hook(bosses[2].mob, "dragon:ice", nil)
 	local gear = 0
 	for _, stack in ipairs(rewards) do if not is_bag(stack) then gear = gear + 1 end end

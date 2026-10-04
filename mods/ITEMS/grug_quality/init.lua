@@ -915,6 +915,9 @@ grug_mobs.register_kill_loot_hook(function(self, tagger_name)
 	local general = type(self._grug_boss_id) == "string" and
 		self._grug_boss_id:match("^general:") and self._grug_royal_king
 	if (self._grug_boss_id or self._grug_royal_king) and not general then return end
+	-- Encounter adds drop no gear and no bag (Round 34 ruling 7): a dragon's
+	-- whelps and the raiders a King calls, like royal guards and bodyguards.
+	if self._grug_boss_summon or self._grug_royal_summon then return end
 	local rolled = grug_items.roll_mob_gear(self)
 	local pos = self.object and self.object:get_pos()
 	if not pos then return end
