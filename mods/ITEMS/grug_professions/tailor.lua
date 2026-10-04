@@ -50,7 +50,7 @@ local woven_bundle = P.register_item(C .. "woven_bolt_bundle",
 P.register_ingredient(woven_bundle, 2)
 P.register_recipe("tailor", {tier = 2, station = "tailor_bench",
 	inputs = {{C .. "bolt_woven", C .. "bolt_woven", C .. "bolt_woven"},
-		{C .. "bolt_woven", "", ""}}, output = woven_bundle,
+		{C .. "bolt_woven", "", ""}}, output = woven_bundle, material = true,
 	hint = "Bundle at a Tailor Bench"})
 
 local heavy_bundle = P.register_item(C .. "heavy_bolt_bundle",
@@ -60,7 +60,7 @@ P.register_ingredient(heavy_bundle, 3)
 P.register_recipe("tailor", {tier = 3, station = "tailor_bench",
 	inputs = {{C .. "bolt_heavy", C .. "bolt_heavy", C .. "bolt_heavy"},
 		{C .. "bolt_heavy", C .. "bolt_heavy", ""}}, output = heavy_bundle,
-	hint = "Bundle at a Tailor Bench"})
+	material = true, hint = "Bundle at a Tailor Bench"})
 
 P.register_recipe("tailor", {tier = 1, station = "tailor_bench",
 	inputs = {{C .. "bolt_patch", C .. "bolt_patch", C .. "bolt_patch"},

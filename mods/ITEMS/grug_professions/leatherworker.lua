@@ -35,15 +35,6 @@ for tier = 1, #tiers do
 		P.register_ingredient("grug_mobs:sleek_pelt", tier)
 	end
 	core.register_craft({output = row.output, recipe = {row.inputs}})
-
-	local grip = P.register_item(C .. "weapon_grip_" .. row.key,
-		row.name .. " Leather Weapon Grip",
-		"mobs_leather.png^[colorize:#3d291d:105",
-		{grug_profession_material = 1, grug_weapon_grip = tier})
-	P.register_ingredient(grip, tier)
-	P.register_recipe("leatherworker", {tier = tier, station = "tanning_rack",
-		inputs = {{row.output, row.output}}, output = grip,
-		hint = "Tan at a Tanning Rack"})
 end
 
 local bag_outputs = {

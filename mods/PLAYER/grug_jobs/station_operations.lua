@@ -26,6 +26,8 @@ function grug_jobs.register_station_operation(definition)
 	assert(#recipe.flat_inputs >= 2, "station operation materials missing")
 	recipe.output_name = recipe.output
 	recipe.in_place = true
+	-- Every operation is a real recipe and awards progress (state.lua).
+	recipe.progress = true
 	recipe.enchant_value = grug_items.enchant_value(recipe.enchant_stat, recipe.tier)
 	operations[#operations + 1] = recipe
 	by_id[recipe.id] = recipe

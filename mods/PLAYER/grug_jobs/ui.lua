@@ -437,14 +437,16 @@ local function book_knows(player, book, item, station)
 end
 
 -- Every book the player can open from the crafting page, in slot order:
--- Basics, the primary professions, then Cooking.
+-- Basics, the primary professions, then the secondaries (Cooking, Alchemy).
 local function openable_books(player)
 	local books = {"general"}
 	for slot = 1, grug_jobs.PRIMARY_SLOTS do
 		local profession = grug_jobs.primary_at(player, slot)
 		if profession then books[#books + 1] = profession end
 	end
-	if grug_jobs.has(player, "cooking") then books[#books + 1] = "cooking" end
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
+		if grug_jobs.has(player, profession) then books[#books + 1] = profession end
+	end
 	return books
 end
 
@@ -902,11 +904,16 @@ function grug_jobs.crafting_page_content(player)
 		grug_jobs.primary_at(player, 1), "Primary slot 1 — learn at a trainer")
 	slot_button(fs, 0.10, 1.48, "grug_jobs_book_primary_2",
 		grug_jobs.primary_at(player, 2), "Primary slot 2 — learn at a trainer")
-	local cooking = grug_jobs.has(player, "cooking") and "cooking" or nil
-	slot_button(fs, 0.10, 2.41, "grug_jobs_book_cooking", cooking,
-		"Cooking — learn at a trainer")
-	fs[#fs + 1] = ("image_button[0.10,3.34;0.82,0.82;%s;" ..
-		"grug_jobs_book_general;]"):format(BOOK_TEXTURE)
+	-- One fixed slot per secondary profession below the primaries, then Basics.
+	local y = 2.41
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
+		slot_button(fs, 0.10, y, "grug_jobs_book_" .. profession,
+			grug_jobs.has(player, profession) and profession or nil,
+			grug_jobs.PROFESSIONS[profession].name .. " — learn at a trainer")
+		y = y + 0.93
+	end
+	fs[#fs + 1] = ("image_button[0.10,%.2f;0.82,0.82;%s;" ..
+		"grug_jobs_book_general;]"):format(y, BOOK_TEXTURE)
 	fs[#fs + 1] = "tooltip[grug_jobs_book_general;Basics — profession-free recipes]"
 	return table.concat(fs)
 end
@@ -919,9 +926,11 @@ local function crafting_fields(player, fields)
 			return true
 		end
 	end
-	if fields.grug_jobs_book_cooking then
-		if grug_jobs.has(player, "cooking") then grug_jobs.open_book(player, "cooking") end
-		return true
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
+		if fields["grug_jobs_book_" .. profession] then
+			if grug_jobs.has(player, profession) then grug_jobs.open_book(player, profession) end
+			return true
+		end
 	end
 	if fields.grug_jobs_book_general then
 		grug_jobs.open_book(player, "general")

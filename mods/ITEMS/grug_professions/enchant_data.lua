@@ -1,5 +1,5 @@
--- Pure checks and lookups for the data-driven enchant and reagent catalogs
--- (Round 28 ruling 28; design frame §4.4/§4.5). No engine calls: the mod and
+-- Pure checks and lookups for the data-driven enchant catalog (Round 28
+-- ruling 28; design frame §4.4). No engine calls: the mod and
 -- the portable test (tools/r28_b5_prof) load this file with dofile.
 --
 -- enchants.json is a list with one entry per tier 1..6:
@@ -134,78 +134,6 @@ function M.referenced_items(by_tier)
 	return result
 end
 
--- Validates the decoded reagents.json (frame §4.5). Grid recipes are
--- shapeless with one to nine inputs; furnace recipes cook exactly one input.
-function M.validate_reagents(rows)
-	if rows == nil then return {} end
-	if type(rows) ~= "table" then fail("reagents.json must be a list") end
-	local seen = {}
-	for index = 1, #rows do
-		local row = rows[index]
-		local where = "reagents.json[" .. index .. "]"
-		if type(row) ~= "table" then fail(where .. " must be an object") end
-		if not is_item(row.id) then fail(where .. " id is not an item name") end
-		where = "reagent " .. row.id
-		if seen[row.id] then fail(where .. " is listed twice") end
-		seen[row.id] = true
-		if type(row.name) ~= "string" or row.name == "" then fail(where .. " needs a name") end
-		local tier = row.tier
-		if type(tier) ~= "number" or tier % 1 ~= 0 or tier < 1 or tier > 6 then
-			fail(where .. " tier must be an integer 1..6")
-		end
-		if row.method ~= "grid" and row.method ~= "furnace" then
-			fail(where .. " method must be grid or furnace")
-		end
-		if type(row.inputs) ~= "table" or #row.inputs == 0 then fail(where .. " needs inputs") end
-		if row.method == "furnace" and #row.inputs ~= 1 then
-			fail(where .. " furnace recipe takes exactly one input")
-		end
-		if #row.inputs > 9 then fail(where .. " grid recipe takes at most nine inputs") end
-		for input_index = 1, #row.inputs do
-			local input = row.inputs[input_index]
-			if not is_item(input) then
-				fail(where .. " input " .. input_index .. " is not an item name")
-			end
-			if input == row.id then fail(where .. " consumes itself") end
-		end
-		local count = row.output_count
-		if type(count) ~= "number" or count % 1 ~= 0 or count < 1 then
-			fail(where .. " output_count must be an integer >= 1")
-		end
-	end
-	return rows
-end
-
--- A reagent id must be new and live in a mod this one may register into
--- (`allowed_mods`: grug_professions and the mods it depends on), so a data
--- row can never replace an existing item. Checked before anything registers.
-function M.check_reagent_ids(rows, allowed_mods, registered)
-	for index = 1, #rows do
-		local id = rows[index].id
-		local mod = id:match("^([^:]+):")
-		if not allowed_mods[mod] then
-			fail("reagent " .. id .. " is in mod " .. mod ..
-				", which grug_professions does not depend on")
-		end
-		if registered[id] then fail("reagent " .. id .. " is already a registered item") end
-	end
-end
-
--- Reagent inputs that are not registered items, as readable offences.
-function M.unregistered_reagent_inputs(reagents, registered)
-	local offences = {}
-	for index = 1, #(reagents or {}) do
-		local row = reagents[index]
-		for input_index = 1, #row.inputs do
-			if not registered[row.inputs[input_index]] then
-				offences[#offences + 1] = "reagent " .. row.id .. " input " ..
-					row.inputs[input_index] .. " is not a registered item"
-			end
-		end
-	end
-	return offences
-end
-
 -- Operation inputs whose declared ingredient tier is above the operation's
 -- tier (the rule profession recipes already follow). `tier_of` is
 -- grug_jobs.ingredient_tier; undeclared items have no tier and pass.
@@ -227,9 +155,8 @@ end
 
 -- `products` maps an item to the profession whose recipes make it. Returns a
 -- list of offences: an operation or recipe of profession P whose input is a
--- product of another profession, and a universal reagent that needs any
--- profession product (anyone must be able to make it).
-function M.foreign_inputs(products, recipes, reagents)
+-- product of another profession.
+function M.foreign_inputs(products, recipes)
 	local offences = {}
 	for index = 1, #recipes do
 		local recipe = recipes[index]
@@ -239,16 +166,6 @@ function M.foreign_inputs(products, recipes, reagents)
 			if maker and maker ~= recipe.profession then
 				offences[#offences + 1] = recipe.profession .. " " .. recipe.label ..
 					" needs " .. input .. ", a " .. maker .. " product"
-			end
-		end
-	end
-	for index = 1, #(reagents or {}) do
-		local row = reagents[index]
-		for input_index = 1, #row.inputs do
-			local maker = products[row.inputs[input_index]]
-			if maker then
-				offences[#offences + 1] = "universal reagent " .. row.id .. " needs " ..
-					row.inputs[input_index] .. ", a " .. maker .. " product"
 			end
 		end
 	end

@@ -3,8 +3,8 @@
 --
 --   loot and gathered goods  formula: class value × tier factor (§3.1)
 --   processed goods          the inputs of their cheapest recipe (bars,
---                            leather grades, bolts, settings, wood grades,
---                            reagents; ruling 5)
+--                            leather grades, bolts, settings, wood grades;
+--                            ruling 5)
 --   goods a vendor sells     5 % of the price, rounded up (§3.4), never more
 --                            than their cheapest recipe's inputs
 --   free world materials     0, and they count 0 in a recipe (wood, stone,
@@ -43,11 +43,11 @@ local GATHERED = {["default:blueberries"] = true,
 -- Tiers no registration carries: a shard is Emberglass, harvest tier 4.
 local TIERS = {["grug_materials:emberglass_shard"] = 4}
 
--- Processed goods: the leather/bolt/wood/setting ladders and reagents, by
--- group; bars come from grug_materials.PROCESSED_MATERIALS.
+-- Processed goods: the leather/bolt/wood/setting ladders, by group; bars come
+-- from grug_materials.PROCESSED_MATERIALS.
 local PROCESSED_GROUPS = {"grug_leather_grade", "grug_tailor_bolt",
 	"grug_tailor_bundle", "grug_wood_grade", "grug_jewellery_setting",
-	"grug_reagent", "grug_metal_rod"}
+	"grug_metal_rod"}
 
 -- Free world materials: anyone digs or chops them without limit, so traders
 -- pay nothing for them and a recipe counts them 0. Without this a vendor good

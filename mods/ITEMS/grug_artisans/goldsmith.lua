@@ -29,6 +29,18 @@ for _, resource in ipairs(grug_materials.RESOURCES) do
 	end
 end
 
+-- Cut-gem storage blocks (Round 33): a plain 9 <-> 1 Basics recipe anyone may
+-- use, so the blocks serve as building accents. The unpack is no second
+-- route to a cut gem (grug_jobs registry.lua storage_unpack).
+for _, resource in ipairs(grug_materials.RESOURCES) do
+	if resource.gem and resource.cut_item and resource.block_node then
+		local cut = resource.cut_item
+		core.register_craft({output = resource.block_node,
+			recipe = {{cut, cut, cut}, {cut, cut, cut}, {cut, cut, cut}}})
+		core.register_craft({output = cut .. " 9", recipe = {{resource.block_node}}})
+	end
+end
+
 local settings = {
 	{key = "tin", name = "Tin Setting", inputs = {M .. "tin_bar", M .. "tin_bar"}},
 	{key = "iron", name = "Iron Setting", inputs = {M .. "iron_bar", M .. "iron_bar"}},
@@ -123,7 +135,7 @@ for tier = 3, 6 do
 	A.register_recipe("goldsmith", {tier = tier,
 		station = "jewellers_bench",
 		inputs = {{setting, M .. "gold_bar", reagent}}, output = ornament,
-		hint = "Form at a Jeweller's Bench"})
+		progress = false, hint = "Form at a Jeweller's Bench"})
 end
 
 function grug_artisans.settle_goldsmith_bonus(event, roll)

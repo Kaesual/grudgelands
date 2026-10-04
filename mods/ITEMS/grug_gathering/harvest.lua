@@ -114,9 +114,9 @@ return function(dependencies)
 
 	local function failure_message(reason, row)
 		if reason == "no_alchemist" then
-			return "Requires the Alchemist profession."
+			return "Requires the Alchemy profession."
 		elseif reason == "book_group_locked" then
-			return "Requires Alchemist book group T" .. row.required_group .. "."
+			return "Requires Alchemy book group T" .. row.required_group .. "."
 		elseif reason == "profession_unavailable" then
 			return "Profession service unavailable."
 		elseif reason == "zone_authority_unavailable" then

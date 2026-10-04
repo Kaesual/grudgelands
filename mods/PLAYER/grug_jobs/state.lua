@@ -164,6 +164,15 @@ function grug_jobs.record_craft(player, profession, tier)
 	return advanced, level
 end
 
+-- The one place a finished craft or station operation awards progress (Round
+-- 33): only a recipe flagged `progress` counts (registry.lua: end products,
+-- never stations, intermediates or automatic finishes). Station operations
+-- (enchants; profession upgrades join them) are flagged when they register.
+function grug_jobs.award_progress(player, recipe)
+	if type(recipe) ~= "table" or not recipe.progress then return false end
+	return grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+end
+
 -- Shared progression authority for recipe books and the actual craft gate.
 -- Station-specific access is checked separately at the point of crafting.
 function grug_jobs.recipe_progress_unlocked(player, recipe)

@@ -25,10 +25,8 @@ for f in subtypes items drops tints; do
 	cmp -s "$catalog/$f.json" "$repo/mods/ENTITIES/grug_mobs/data/$f.json" ||
 		{ echo "out of sync: mods/ENTITIES/grug_mobs/data/$f.json"; synced=0; }
 done
-for f in enchants reagents; do
-	cmp -s "$catalog/$f.json" "$repo/mods/ITEMS/grug_professions/data/$f.json" ||
-		{ echo "out of sync: mods/ITEMS/grug_professions/data/$f.json"; synced=0; }
-done
+cmp -s "$catalog/enchants.json" "$repo/mods/ITEMS/grug_professions/data/enchants.json" ||
+	{ echo "out of sync: mods/ITEMS/grug_professions/data/enchants.json"; synced=0; }
 if [[ $synced -eq 0 ]]; then
 	echo "r28 e1 probe: FAIL (shipped data differs from the catalogue)"
 	exit 1
@@ -38,7 +36,7 @@ probe="$out/grug_probe_r28_e1"
 rm -rf "$probe"
 cp -r "$here/grug_probe_r28_e1" "$probe"
 mkdir -p "$probe/catalog"
-cp "$catalog"/{subtypes,items,drops,tints,enchants,reagents}.json "$probe/catalog/"
+cp "$catalog"/{subtypes,items,drops,tints,enchants}.json "$probe/catalog/"
 
 set +e
 PROBE="$probe" KEEP=1 "$repo/tools/luanti_headless.sh" "$timeout_s" >"$out/headless.txt" 2>&1
