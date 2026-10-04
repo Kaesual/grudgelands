@@ -623,6 +623,7 @@ do
 		"G both are service roles")
 end
 
-print(("R33 C5 %s checks=%d failures=%d"):format(failures == 0 and "PASS" or "FAIL",
-	checks, failures))
-os.exit(failures == 0 and 0 or 1)
+if failures > 0 then
+	error(("R33 C5 FAIL checks=%d failures=%d"):format(checks, failures), 0)
+end
+print(("R33 C5 PASS checks=%d"):format(checks))
