@@ -791,26 +791,19 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   +18 % damage, a hit at its 50 % cap averages ×1.5 instead of ×1.25; a
   playtest number. Whitehot fires a little later (less crit from
   Dexterity).
-- **Damage-fit reference floors attributes:** `baseline_melee_total` in
-  `grug_core/combat.lua` (~99–102) still floors Strength/10 while live
-  damage keeps the fraction, so same-level damage is about +1.6 % at level
-  60 and up to about +5 % at levels 2–9 (C5 review).
 - **Decor Merchant's light bands** hold one item each (lantern, hanging
   lantern); no Candle, which the Embalmer sells at 4c (C5 review).
 - **Sell-only loot:** the 20 one-faction signatures stay sell-only (user
   choice); Slime Gel, Crocodile Tooth (one faction) and Stone Core (no
   placed source) have no recipe use (item_tiers §2.4, §3.4).
-- **Royal guards drop no gear** (`grug_quality`), like the Generals'
-  bodyguards, while `items_crafting.md` §5.4 calls their loot ordinary
-  level-60 elite loot; Round 33 did not settle it.
 - **C3 review notes (theoretical, not measured):** one small table per
   kill on the achievement path; noted for a later performance pass, no
   action now.
 
-### Money withdraw and deposit: Bag of Coins (user, 2026-10-04; planned)
+### Money withdraw and deposit: Bag of Coins (user, 2026-10-04; done in Round 34 F2)
 
-Planned for the next round as a small lane (for example with fixes from the
-user's GUI test), not part of Round 34's sound scope. A deliberate design
+Delivered in Round 34 lane F2 (`grug_money/coins.lua`); kept here as the
+design record until the round's docs lane folds it into the design docs. A deliberate design
 change: players can give money to each other for the first time (a
 high-level character can fund an alt; acceptable without a market).
 
@@ -888,8 +881,8 @@ promises (×5 leather, bandages, apothecary gear, gem blocks, reagents); the
 vendor Uncommon.
 
 Side findings: the vendor Uncommon is gone and shields, spellbooks and
-trinkets drop from mobs (Round 33); the royal guards' missing gear stays
-open ([Round 33 carry-overs](#round-33-carry-overs)).
+trinkets drop from mobs (Round 33); royal guards and other encounter adds
+drop no gear by design (Round 34 ruling 7).
 
 ### Seed-dependent POI placement (user, 2026-10-03; optional, set aside)
 
