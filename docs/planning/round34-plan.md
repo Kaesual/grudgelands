@@ -23,9 +23,12 @@ replacement, a client-side music channel (the engine has none).
 | **S1a** Effects: play helper and events | 1 | code + media | new mod `grug_sounds`: play helper and event table; formspec click style; NPC, quest, progression, UI, crafting, travel, mount and world events; the Round 33 hooks (§4.1) |
 | **S2** Ambience and music | 1 | code + media | new mod `grug_ambience`: per-player ambience beds and sparse calls on the existing per-player tick, music pools with on-demand delivery, music and ambience volume per player (§4.2) |
 | **S1b** Combat and creatures | 2 | code + media | weapon and ability sounds, mob voices by archetype, bosses and dragons, the telegraph growl (§4.3) — uses S1a's helper |
+| **F1** Mobs in water | 1 | code | mobs follow their target through water in combat; ambient roaming still avoids water (§2.3, §4.5) |
+| **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, money withdraw and deposit with a Bag of Coins (§2.3, §4.6) |
 | **D** Documentation and credits | 3 | docs | completion, design doc `docs/design/sound.md`, top-level `CREDITS.md`, BACKLOG/ROADMAP/STATUS/README (§4.4) |
 
-S1a and S2 start together; they share no files (§7). S1b starts after S1a is
+S1a, S2, F1 and F2 start together; F1 and F2 are small and merge first
+(§7). S1b starts after S1a is
 merged **and** the user's listening review of S1a, so the helper, the gain
 conventions and the naming are settled before the largest file set lands. D
 last.
@@ -191,6 +194,28 @@ traffic, microphone wind or steady hiss under a bed; no animals the game
 does not have (frogs); no monster voices inside an ambience bed; effects
 short and focused, with the cut starting at the event itself.
 
+### 2.3 Fixes and the Bag of Coins (user, 2026-10-04, after Round 33)
+
+1. **Mobs in water.** Today mobs_redo treats water as unsafe ground even in
+   combat (`ENTITIES/mobs/api.lua` ~1070), so a mob at a water edge that only
+   needs a sidestep stops and never moves again. Ruling: **every mob that does
+   not fly can swim; mobs do not roam into water, but in combat they follow
+   their target into water and cross it to reach it.** Preferring a faster
+   land route is welcome where it is cheap, not required (mobs move straight
+   at their target; there is no route search). Lava and other damaging
+   liquids stay forbidden.
+2. **Text boxes too low:** the trainer dialog's "Known: Cooking" box and the
+   crafting UI's "Start with Basics …" text show a scrollbar although the
+   dialog has room — the same fault the quest tab had before Round 32.
+3. **Cooking balance:** within a tier, a stronger dish must cost more to make,
+   never less (today Sweetroot Mash is far cheaper than Hearty Stew and
+   stronger).
+4. **Bag of Coins** (BACKLOG "Money withdraw and deposit"): withdraw on the
+   Character page through a small dialog (gold, silver, copper) into a Bag of
+   Coins item; a deposit slot destroys the bag and credits its amount;
+   traders neither buy nor sell it; it can be dropped or stored, so players
+   can give money to each other. No log line; no longer ground lifetime.
+
 ## 3. Shared conventions (both wave-1 lanes and S1b)
 
 - **Format:** Ogg Vorbis. Positional sounds and every effect mono
@@ -336,6 +361,36 @@ short and focused, with the cut starting at the event itself.
 - Fix the dangling `tnt_explode` fallback only if a mob can reach it
   (today none can; note, not a task).
 
+### 4.5 F1 Mobs in water (wave 1)
+
+- In combat states (attack, follow a target, flee and return home) liquid
+  that does not hurt the mob counts as passable for every mob that floats and
+  does not fly; ambient stand/walk keeps avoiding water. One small GRUG PATCH
+  in the vendored probe with a `VENDOR.md` note, or a grug-side override —
+  the cheaper one.
+- Check the neighbours: the leash and soft de-aggro, evaders that park at
+  obstacles (`grug_mobs/aggro.lua` ~342), swimmers and the Kraken
+  (`_grug_swimmer`), mounts, guards and bosses (arenas), mobs that must not
+  leave their zone. A mob swimming home after combat must reach land.
+- Fixture for the probe rule per state; one engine run at a real water edge
+  (a small region, ≤ 5 min) with a probe that pulls a mob across a stream.
+  Report before/after per-step cost of the probe.
+
+### 4.6 F2 Small fixes and the Bag of Coins (wave 1)
+
+- Text boxes: size the trainer's "Known" box and the crafting UI's Basics
+  text to their content where the dialog has room (the quest tab fix of
+  Round 32 is the pattern).
+- Cooking: a cost-versus-effect table per tier; raise or swap inputs so the
+  stronger dish costs more; the report shows the table before and after.
+- Bag of Coins as §2.3 ruling 4: one transaction for withdraw
+  (`grug_money.take_with_inventory`), refused when the inventory is full or
+  the amount is not a whole number between 1 and the balance; the deposit
+  clamps at `grug_money.MAX` (refuse above); the amount lives in item meta,
+  `stack_max = 1`, the tooltip shows it; the sell path refuses the bag.
+  Fixture for withdraw, deposit, refusals and the sell refusal.
+- The user's GUI-test findings of Round 33 may add small items here.
+
 ### 4.4 D Documentation and credits (wave 3)
 
 `docs/design/sound.md` (events, pools, beds, settings, conventions of §3),
@@ -370,9 +425,9 @@ starts after joining, volume and off switches, a town).
 
 ## 7. Orchestration notes (for the coordinator)
 
-- **Start state:** main after Round 33 is complete (this plan was written
-  against `f135b29c`; C4 and C5 were still open). Worktrees
-  `.claude/worktrees/r34-<lane>` (`s1a`, `s2`, `s1b`, `d`), `tools/bin/`
+- **Start state:** main after Round 33 is complete (`46130d06` or later;
+  this plan was written against `f135b29c`, before C4 and C5 merged). Worktrees
+  `.claude/worktrees/r34-<lane>` (`s1a`, `s2`, `f1`, `f2`, `s1b`, `d`), `tools/bin/`
   copied. Briefs in `~/projects/grudgelands-orchestration/r34/` from
   `r33/common-brief.md` and `r33/review-common.md` (round number, worktree
   names, base commit, preview path, this plan; drop the Astra paragraph);
@@ -445,6 +500,13 @@ starts after joining, volume and off switches, a town).
     `grug_map/location.lua:62` (start towns and capitals, `kind == "town"`).
   - Existing sound calls to keep: drink `grug_alchemy/effects.lua:9`, eating
     `grug_food/init.lua`, furnace and chest sounds in `BASE/default`.
+- **F1 and F2** merge first (small); S1a and S2 rebase. F2 touches
+  `grug_money`, the Character page and the trainer/crafting formspecs, which
+  S1a hooks for sounds (money gained, clicks) and S2 may use for its settings
+  block.
+- **Downloaded sound material is read-only** (user, 2026-10-04): lanes copy
+  from `r32/r2-evidence/dl/`, `r34/listen/` and `r34/originals/` and never
+  delete or move anything there.
 - **Merge order:** S1a and S2 independent (different mods; both may touch
   `grug_inventory` only if S2 puts its settings block there and S1a hooks
   the cloak picker — S1a merges first, S2 rebases). S1b after S1a and the
