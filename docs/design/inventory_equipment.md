@@ -353,8 +353,8 @@ the Round 19 top-centre text list:
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
 - **Character page tabs:** "Stats" (the view as before; since Round 30 it
-  also carries the **Return home** button with its m:ss cooldown, re-sent
-  each second while the text changes, [home_travel.md](home_travel.md)),
+  also carries the **Return home** button with its cooldown in whole
+  minutes, re-sent when the text changes, [home_travel.md](home_travel.md)),
   "Effects": icon,
   name, remaining time and a detail line per status, refreshed about once a
   minute or on change while that tab is open, and "Professions" (Round 28

@@ -151,16 +151,19 @@ local function quiver_content(player)
 end
 
 -- Return home (Round 30 ruling, moved here from the Map tab): the travel
--- home's name and the cooldown as m:ss, "Preparing arrival" while a return
--- is under way, else "Ready"; nil without grug_home or a home. grug_home
--- does not depend on this mod, so it is read at build time.
+-- home's name and the cooldown in whole minutes, rounded up ("30 min" ..
+-- "1 min"), "Preparing arrival" while a return is under way, else "Ready";
+-- nil without grug_home or a home. Minutes, not m:ss (Round 33): the poll
+-- below re-sends the page whenever this text changes, and a re-send every
+-- second would close an open dropdown (the cloak picker) each second.
+-- grug_home does not depend on this mod, so it is read at build time.
 local function home_button_text(player)
 	local home_mod = rawget(_G, "grug_home")
 	local home = home_mod and home_mod.get(player)
 	if not home then return nil end
 	local remaining = home_mod.remaining(player)
 	local state = home_mod.is_pending(player) and "Preparing arrival" or
-		(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
+		(remaining > 0 and ("%d min"):format(math.ceil(remaining / 60)) or "Ready")
 	return ("Return home: %s (%s)"):format(home.label, state)
 end
 
@@ -443,8 +446,9 @@ sfinv.register_page(CHARACTER_PAGE, {
 -- selected view AND its printed text changed: an effect came or went, a
 -- shield value moved, or a coarse remaining time ticked (whole minutes, so
 -- about once a minute). On the Stats tab it is re-sent when the Return home
--- text changed: each second of a running cooldown or arrival, and once when
--- it becomes Ready. Nothing is re-sent for other pages.
+-- text changed: once a minute of a running cooldown, when an arrival starts
+-- or ends, and once when it becomes Ready. Nothing is re-sent for other
+-- pages.
 local effects_elapsed = 0
 core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed + dtime

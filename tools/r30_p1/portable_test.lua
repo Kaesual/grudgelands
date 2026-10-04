@@ -938,17 +938,20 @@ do
 	home_left = 90
 	second()
 	eq(kay.sends, 1, "K a cooldown starts: re-sent")
-	check(kay.form:find(button .. "Return home: Inn (1:30)]", 1, true), "K ...as m:ss")
+	check(kay.form:find(button .. "Return home: Inn (2 min)]", 1, true), "K ...in whole minutes")
 	second()
 	eq(kay.sends, 1, "K the same text is not re-sent")
 	home_left = 89
 	second()
-	eq(kay.sends, 2, "K each new second is re-sent")
-	check(kay.form:find("Return home: Inn (1:29)", 1, true), "K ...with the new value")
+	eq(kay.sends, 1, "K a new second in the same minute is not re-sent (Round 33)")
+	home_left = 60
+	second()
+	eq(kay.sends, 2, "K a new minute is re-sent")
+	check(kay.form:find("Return home: Inn (1 min)", 1, true), "K ...with the new value")
 	character_step(0.5)
-	home_left = 88
+	home_left = 1
 	character_step(0.4)
-	eq(kay.sends, 2, "K at most once per second")
+	eq(kay.sends, 2, "K at most once per second, and only on a new minute")
 	home_left = 0
 	second()
 	eq(kay.sends, 3, "K once when it becomes Ready")

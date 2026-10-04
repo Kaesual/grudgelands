@@ -498,7 +498,7 @@ do
  local character = pages["grug_inventory:character"]
  local context = {page="grug_inventory:character"}
  check(character.get(character, player, context):find(
-  "grug_character_home;Return home: Claim Stone (1:17)]", 1, true), "M Character page button")
+  "grug_character_home;Return home: Claim Stone (2 min)]", 1, true), "M Character page button")
  data["grug_home:ready_at"] = tostring(clock)
  check(character.get(character, player, context):find("Return home: Claim Stone (Ready)]", 1, true),
   "M Character page button ready")
