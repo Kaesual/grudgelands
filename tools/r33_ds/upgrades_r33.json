@@ -1,0 +1,500 @@
+[
+  {
+    "tier": 1,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:boar_tusk",
+      "grug_mobs:rat_tail"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 1,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:crab_leg",
+      "grug_mobs:rat_fur_patch"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 1,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:fine_sinew",
+      "grug_mobs:boar_tusk"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 1,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:rat_fur_patch",
+      "grug_mobs:tattered_flesh"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 1,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:rat_tail",
+      "grug_mobs:tattered_flesh"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 1,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:crab_eye",
+      "grug_mobs:bandit_talisman"
+    ],
+    "target_item_level": 10
+  },
+  {
+    "tier": 2,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:ridged_boar_tusk",
+      "grug_mobs:fang"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 2,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:ridged_crab_shell",
+      "grug_mobs:dense_rat_fur"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 2,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:tough_sinew",
+      "grug_mobs:ridged_boar_tusk"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 2,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:dense_rat_fur",
+      "grug_mobs:foul_flesh"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 2,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:knotted_talisman",
+      "grug_mobs:sinewy_rat_tail"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 2,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:clear_crab_eye",
+      "grug_mobs:knotted_talisman"
+    ],
+    "target_item_level": 20
+  },
+  {
+    "tier": 3,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:serrated_fang",
+      "grug_mobs:gnarled_boar_tusk"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 3,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:layered_crab_shell",
+      "grug_mobs:braided_sinew"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 3,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:braided_sinew",
+      "grug_mobs:bound_wisp_mote"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 3,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:coarse_spider_silk",
+      "grug_mobs:braided_sinew"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 3,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:coarse_spider_silk",
+      "grug_mobs:clouded_reed_pearl"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 3,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:clasped_purse",
+      "grug_mobs:clouded_reed_pearl"
+    ],
+    "target_item_level": 30
+  },
+  {
+    "tier": 4,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:scarred_bear_claw",
+      "grug_mobs:marching_bone"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 4,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:storm_crab_shell",
+      "grug_mobs:ironbound_sinew"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 4,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:bitter_resin",
+      "grug_mobs:storm_feather"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 4,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:ape_hair",
+      "grug_mobs:leathery_flesh"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 4,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:layered_spider_web",
+      "grug_mobs:campaign_talisman"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 4,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:campaign_purse",
+      "grug_mobs:campaign_talisman"
+    ],
+    "target_item_level": 40
+  },
+  {
+    "tier": 5,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:siege_cat_claw",
+      "grug_mobs:scorch_venom"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 5,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:siege_bone",
+      "grug_mobs:siege_weapon_strap"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 5,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:ash_feather",
+      "grug_mobs:siegepack_fang"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 5,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:siege_weapon_strap",
+      "grug_mobs:scorched_flesh"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 5,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:siege_talisman",
+      "grug_mobs:scorch_venom"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 5,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:clenched_jaw",
+      "grug_mobs:siege_talisman"
+    ],
+    "target_item_level": 50
+  },
+  {
+    "tier": 6,
+    "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:salt_bear_claw",
+      "grug_mobs:unquiet_bone"
+    ],
+    "target_item_level": 60
+  },
+  {
+    "tier": 6,
+    "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:unquiet_bone",
+      "grug_mobs:unbroken_weapon_strap"
+    ],
+    "target_item_level": 60
+  },
+  {
+    "tier": 6,
+    "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:salt_barbed_feather",
+      "grug_mobs:rime_sinew"
+    ],
+    "target_item_level": 60
+  },
+  {
+    "tier": 6,
+    "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:silver_ape_hair",
+      "grug_mobs:salt_cured_flesh"
+    ],
+    "target_item_level": 60
+  },
+  {
+    "tier": 6,
+    "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:glass_spider_silk",
+      "grug_mobs:glass_venom"
+    ],
+    "target_item_level": 60
+  },
+  {
+    "tier": 6,
+    "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
+    "own_material_count": 2,
+    "signatures": [
+      "grug_mobs:last_hex_shard",
+      "grug_mobs:last_pay_talisman"
+    ],
+    "target_item_level": 60
+  }
+]
