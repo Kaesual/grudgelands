@@ -161,14 +161,19 @@ precedence over preserving the exact mathematical ratio.
   (`grug_classes.RESPEC_PRICES`). This retires "repeatable at the class
   trainer, rising with level".
 - **The crown** (Round 33, [item_tiers.md](item_tiers.md) §4): the
-  Crownbinder in every capital applies one Fallen Crown to one item for one
+  Crownbinder at the gate of every capital's goldsmith hall applies one Fallen Crown to one item for one
   hour of band-6 income, **1g 47s** (`grug_traders.CROWN_FEE`, checked by
   `income.py`). Once per item; the operation refuses where it would change
   nothing.
 - **Culture vendor** (Round 33, [item_tiers.md](item_tiers.md) §6.4): the
-  Decor Merchant in every capital sells cosmetic blocks and lights nobody can
-  craft — accent blocks 25c, small lights 1s, large lights 10s, showpieces 1g
-  — at every level, with the ordinary 5 % buy-back.
+  Decor Merchant at the gate of every capital's woodcarver hall sells
+  cosmetic blocks and lights nobody can craft — accent blocks 25c (marble,
+  marble tile, serpentine, slate tile, old red sandstone brick, basalt brick,
+  chalked brick, paving stone, round and square glass, wooden frame, iron
+  grille), small lights 1s (lantern), large lights 10s (hanging lantern),
+  showpieces 1g (wagon wheel, four paintings) — at every level, with the
+  ordinary 5 % buy-back. All are grug_decor's harvested kit, licensed per
+  file in its `LICENSE-media.md`.
 - **No profession-replacement services:** cultural finishes, the PvP weapon
   counter and the Warding Draught were removed (Round 33), and with them the
   cultural masters and helper NPCs that would have performed them.
