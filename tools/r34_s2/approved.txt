@@ -1,0 +1,27 @@
+# Round 34 lane S2: files the user approved (file name, page number, source).
+# As heard on earlier pages (plan §1: picks used unchanged need no second look), added by the coordinator 2026-10-04:
+grug_ambience_call_thunder.1.ogg, R34 C11.1, https://freesound.org/people/Fission9/sounds/534023/
+grug_ambience_call_thunder.2.ogg, R34 C11.2, https://freesound.org/people/TRP/sounds/567945/
+grug_ambience_call_thunder.3.ogg, R34 C11.3, https://freesound.org/people/cognito%20perceptu/sounds/347853/
+grug_ambience_call_thunder.4.ogg, R34 C11.4, https://freesound.org/people/Yoyodaman234/sounds/267550/
+grug_music_achaidh_cheide.ogg, R32 M2, https://incompetech.com/music/royalty-free/
+grug_music_fantasy_orchestral_theme.ogg, R32 M6, https://opengameart.org/content/fantasy-orchestral-theme
+grug_music_folk_round.ogg, R34 D.5, https://incompetech.com/music/royalty-free/
+grug_music_forest_walk.ogg, R32 M3, https://creatorchords.com/music/forest-walk/
+grug_music_master_of_the_feast.ogg, R34 D.4, https://incompetech.com/music/royalty-free/
+grug_music_memories_of_stone.ogg, R32 M1, https://www.scottbuckley.com.au/library/memories-of-stone/
+grug_music_minstrel_guild.ogg, R34 D.3, https://incompetech.com/music/royalty-free/
+grug_music_soliloquy.ogg, R32 M4, https://opengameart.org/content/soliloquy
+grug_music_teller_of_the_tales.ogg, R34 D.6, https://incompetech.com/music/royalty-free/
+grug_music_thatched_villagers.ogg, R34 D.2, https://incompetech.com/music/royalty-free/
+grug_music_town_theme.ogg, R34 D.1, https://opengameart.org/content/town-theme-rpg
+grug_music_village_consort.ogg, R34 D.7, https://incompetech.com/music/royalty-free/
+# Calls crow/crows/hawk/owl removed by the user (no calls this round; the crow goes to the Carrion Crow in S1b). Thunder stays (dragon islands only).
+# Picks from the S2 pages (Ub5tRbwuRgBSB81arFKL5D, GnBoi4bxXr7tEhQDnPSSZg), user 2026-10-04; file as in previews/s2/build/manifest.json:
+grug_ambience_human_meadow.ogg, S2 B1.1, https://freesound.org/people/Garuda1982/sounds/692048/ (Garuda1982, CC0 1.0)
+grug_ambience_night_forest.ogg, S2 B9.1, https://freesound.org/people/fribergmusic2024/sounds/719558/ (fribergmusic2024, CC0 1.0)
+grug_ambience_stream_pond.ogg, S2 B12.2, https://freesound.org/people/mhtaylor67/sounds/236981/ (mhtaylor67, CC0 1.0)
+# Shipped as grug_ambience_forge.ogg (the only forge loop, so no variant suffix; coordinator, phase 2), same bytes as the approved grug_ambience_forge.e2.ogg:
+grug_ambience_forge.ogg, S2 E1.2, https://freesound.org/people/Duasun/sounds/321889/ (Duasun, CC0 1.0)
+grug_ambience_fire.ogg, S2 E2.1, https://freesound.org/people/Sauron974/sounds/204348/ (Sauron974, CC0 1.0)
+# Pending: music picks M7-M12 and the main-menu theme.
