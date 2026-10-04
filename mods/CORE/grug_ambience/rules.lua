@@ -307,12 +307,13 @@ end
 
 -- The emitters to play near `pos`. `found` is find_nodes_in_area's grouped
 -- result (node name -> positions), `kinds` node name -> kind, `limits` kind
--- -> how many play at once, `active` key -> true for the emitters playing
+-- -> how many play at once, `hears` kind -> hearing distance (a node farther
+-- away is no candidate), `active` key -> true for the emitters playing
 -- now and `key(pos)` their key. Per kind: a playing emitter stays while it
 -- is among the nearest 2 * limit, so walking along a river does not restart
 -- loops every pass; the free places go to the nearest others. Returns a
 -- list of {pos, kind, d2}, sorted by kind, then distance.
-function R.choose_emitters(found, kinds, pos, limits, active, key)
+function R.choose_emitters(found, kinds, pos, limits, hears, active, key)
 	-- Per kind only the nearest 2 * limit are kept, by insertion into a short
 	-- sorted list: a river bank can return hundreds of flowing nodes, and
 	-- they are neither all sorted nor each given a table.
@@ -329,12 +330,14 @@ function R.choose_emitters(found, kinds, pos, limits, active, key)
 			local rows = best[kind] or {}
 			best[kind] = rows
 			local keep = 2 * (limits[kind] or 1)
+			local hear = hears[kind] or math.huge
+			local hear2 = hear * hear
 			for index = 1, #list do
 				local p = list[index]
 				local dx, dy, dz = p.x - pos.x, p.y - pos.y, p.z - pos.z
 				local d2 = dx * dx + dy * dy + dz * dz
 				local n = #rows
-				if n < keep or before(d2, p, rows[n]) then
+				if d2 <= hear2 and (n < keep or before(d2, p, rows[n])) then
 					local at = n + 1
 					while at > 1 and before(d2, p, rows[at - 1]) do at = at - 1 end
 					table.insert(rows, at, {pos = p, kind = kind, d2 = d2})

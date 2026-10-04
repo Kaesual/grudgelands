@@ -216,15 +216,15 @@ local function census_report()
 			local D, R = ambience.data, ambience.rules
 			local names, kinds = {}, {}
 			for node, kind in pairs(D.emitter_nodes) do names[#names + 1] = node; kinds[node] = kind end
-			local limits = {}
-			for kind, spec in pairs(D.emitters) do limits[kind] = spec.limit end
+			local limits, hears = {}, {}
+			for kind, spec in pairs(D.emitters) do limits[kind], hears[kind] = spec.limit, spec.hear end
 			local reach = D.emitter_reach
 			local us, got, n_at = 0, 0, 0
 			for i = 1, #fpos, math.max(1, math.floor(#fpos / 20)) do
 				local p = fpos[i]
 				local t = core.get_us_time()
 				local found = core.find_nodes_in_area(vector.subtract(p, reach), vector.add(p, reach), names, true)
-				local rows = R.choose_emitters(found, kinds, p, limits, {}, core.hash_node_position)
+				local rows = R.choose_emitters(found, kinds, p, limits, hears, {}, core.hash_node_position)
 				us = us + core.get_us_time() - t
 				for _, list in pairs(found) do got = got + #list end
 				n_at = n_at + 1

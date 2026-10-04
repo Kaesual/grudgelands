@@ -57,24 +57,28 @@ D.region = {
 D.deep_y = -500
 
 -- Calls: one-shots placed at a random point `distance` nodes from the
--- player (positional, heard up to `hear` nodes), `time` "day", "night" or
+-- player (positional, to that player only), `time` "day", "night" or
 -- "any". Thunder has four variants (.1-.4, picked by the engine; R34
 -- C11.1-C11.4).
 D.calls = {
 	thunder = {sound = "grug_ambience_call_thunder", time = "any",
-		moods = {dragon_island = true}, distance = {40, 56}, hear = 96},
+		moods = {dragon_island = true}, distance = {40, 56}},
 }
 
 -- Loops at nodes near the player (positional, to that player only): node
--- name -> kind, kind -> sound, hearing distance and how many of that kind
--- play at once (the nearest; a playing one stays while it is in reach and
+-- name -> kind, kind -> sound, hearing distance (the engine ignores
+-- max_hear_distance for a to_player sound, so init.lua drops nodes farther
+-- than `hear` itself; the search box below bounds it too) and how many of
+-- that kind play at once (the nearest; a playing one stays while it is in reach and
 -- among the nearest few, so walking along a river does not restart them).
 -- init.lua adds every other registered flowing liquid whose source is one
 -- of the two waters to "water" (never a source node).
 D.emitter_nodes = {
 	["grug_jobs:forge"] = "forge",
 	["grug_decor:cottages_anvil"] = "forge",
-	["grug_decor:xdecor_cauldron"] = "fire",
+	-- A burning furnace: the public town hearths are default:furnace and
+	-- turn into this node while they burn (grug_jobs station_nodes.lua).
+	["default:furnace_active"] = "fire",
 	["grug_nodes:camp_fire"] = "fire",
 	["default:water_flowing"] = "water",
 	["default:river_water_flowing"] = "water",

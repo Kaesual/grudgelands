@@ -312,12 +312,14 @@ end
 -- ---------------------------------------------------------------------------
 do
 	local limits = {forge = 2, fire = 2, water = 2}
+	local hears = {forge = 16, fire = 10, water = 14}
 	local key = function(p) return p.x .. "," .. p.y .. "," .. p.z end
 	local found = {
 		["grug_jobs:forge"] = {{x = 10, y = 0, z = 0}},
 		["grug_decor:cottages_anvil"] = {{x = 3, y = 0, z = 0}, {x = 6, y = 0, z = 0}},
-		["grug_decor:xdecor_cauldron"] = {{x = 0, y = 0, z = 2}, {x = 0, y = 0, z = 9},
+		["default:furnace_active"] = {{x = 0, y = 0, z = 2}, {x = 0, y = 0, z = 9},
 			{x = 0, y = 0, z = 5}},
+		["grug_decor:xdecor_cauldron"] = {{x = 0, y = 0, z = 1}},
 		["default:stone"] = {{x = 1, y = 0, z = 0}},
 		["default:water_source"] = {{x = 0, y = 0, z = -1}},
 	}
@@ -326,15 +328,19 @@ do
 		for _, row in ipairs(rows) do t[#t + 1] = row.kind .. "@" .. row.pos.x .. "," .. row.pos.z end
 		return table.concat(t, " ")
 	end
-	local rows = R.choose_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {}, key)
+	local rows = R.choose_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {}, key)
 	check(text(rows) == "fire@0,2 fire@0,5 forge@3,0 forge@6,0",
-		"E the nearest two per kind, sources and other nodes ignored: " .. text(rows))
+		"E the nearest two per kind, sources, cold cauldrons and other nodes ignored: " .. text(rows))
+	rows = R.choose_emitters({["default:furnace_active"] = {{x = 11, y = 0, z = 0}},
+		["grug_jobs:forge"] = {{x = 11, y = 0, z = 0}}}, D.emitter_nodes, {x = 0, y = 0, z = 0},
+		limits, hears, {}, key)
+	check(text(rows) == "forge@11,0", "E a node beyond its kind's hearing distance is no candidate")
 	-- flowing water along a river: a playing loop stays while among the nearest 2 * limit
 	local river = {["default:water_flowing"] = {}}
 	for x = 1, 8 do table.insert(river["default:water_flowing"], {x = x, y = 0, z = 0}) end
-	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {["3,0,0"] = true}, key)
+	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {["3,0,0"] = true}, key)
 	check(text(rows) == "water@1,0 water@3,0", "E a playing loop near enough stays: " .. text(rows))
-	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {["6,0,0"] = true}, key)
+	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {["6,0,0"] = true}, key)
 	check(text(rows) == "water@1,0 water@2,0", "E a playing loop too far behind is replaced: " .. text(rows))
 	-- a river bank with hundreds of flowing nodes: the same choice as a full sort
 	local many, brute = {["default:water_flowing"] = {}}, {}
@@ -351,10 +357,10 @@ do
 		if a.y ~= b.y then return a.y < b.y end
 		return a.z < b.z
 	end)
-	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {}, key)
+	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears, {}, key)
 	check(#rows == 2 and rows[1].pos == brute[1] and rows[2].pos == brute[2],
 		"E 300 flowing nodes: the two nearest, as a full sort")
-	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits,
+	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, hears,
 		{[key(brute[4])] = true}, key)
 	check(#rows == 2 and rows[1].pos == brute[1] and rows[2].pos == brute[4],
 		"E 300 flowing nodes: the fourth nearest still playing stays")
@@ -430,7 +436,7 @@ do
 			["default:lava_flowing"] = {liquidtype = "flowing",
 				liquid_alternative_source = "default:lava_source"},
 			["grug_jobs:forge"] = {}, ["grug_decor:cottages_anvil"] = {},
-			["grug_decor:xdecor_cauldron"] = {}, ["grug_nodes:camp_fire"] = {}},
+			["default:furnace_active"] = {}, ["grug_nodes:camp_fire"] = {}},
 		get_content_id = function(name) return CID[name] end,
 		get_node_raw = function(x, y, z) return node_at[x .. "," .. y .. "," .. z] or 0 end,
 		find_nodes_in_area = function(minp, maxp, names, grouped)
@@ -594,7 +600,7 @@ do
 	-- emitters: an anvil, a cauldron and flowing water near the player, a
 	-- forge far away, a water source next to the player (never a loop)
 	found_nodes = {["grug_decor:cottages_anvil"] = {{x = 4, y = 10, z = 0}},
-		["grug_decor:xdecor_cauldron"] = {{x = 0, y = 10, z = 5}},
+		["default:furnace_active"] = {{x = 0, y = 10, z = 5}},
 		["grug_jobs:forge"] = {{x = 60, y = 10, z = 0}},
 		["default:water_source"] = {{x = 1, y = 9, z = 0}},
 		["default:river_water_flowing"] = {{x = -3, y = 9, z = 0}},
@@ -663,6 +669,18 @@ do
 	check(fs:find("checkbox%[[^]]*grug_ambience_music;Music;true%]") ~= nil and
 		fs:find("grug_ambience_music_volume;[^;]*;6;true%]") ~= nil,
 		"R Help controls show the current state")
+	-- "on" after a volume of 0 is never silent
+	commands.music.func("ana", "0")
+	check(not A.get(ana, "music").on and A.get(ana, "music").volume == 0, "R /music 0 switches off")
+	commands.music.func("ana", "on")
+	check(A.get(ana, "music").on and A.get(ana, "music").volume == R.DEFAULT_VOLUME,
+		"R /music on after 0 restores the default volume")
+	commands.ambience.func("ana", "0")
+	A.handle_settings_fields(ana, {grug_ambience_ambience = "true"})
+	check(A.get(ana, "ambience").on and A.get(ana, "ambience").volume == R.DEFAULT_VOLUME,
+		"R the ambience checkbox after 0 restores the default volume")
+	commands.music.func("ana", "50")
+	run(2)
 	-- ambience off: the bed fades, nothing new plays
 	fades, sounds = {}, {}
 	commands.ambience.func("ana", "off")
@@ -714,7 +732,7 @@ do
 	end
 	check(moods == 10, "F ten atmosphere moods found (" .. moods .. ")")
 	for id, call in pairs(D.calls) do
-		check(call.distance[1] >= 8 and call.hear > call.distance[2], "F call " .. id .. " heard at its distance")
+		check(call.distance[1] >= 8 and call.distance[2] >= call.distance[1], "F call " .. id .. " distance")
 	end
 	check(D.call_gap[1] >= 5, "F calls never more often than every few seconds")
 	for _, name in pairs(D.emitter_nodes) do check(D.emitters[name] ~= nil, "F emitter kind " .. name) end

@@ -158,6 +158,11 @@ local function emitter_gain(st, kind)
 	return D.gains[kind] * st.ambience_volume / 100
 end
 
+-- Kind -> hearing distance. The engine ignores max_hear_distance for a
+-- to_player sound, so the choice below drops nodes farther than this.
+local emitter_hears = {}
+for kind, spec in pairs(D.emitters) do emitter_hears[kind] = spec.hear end
+
 -- Node name -> emitter kind and the names searched, filled once every node
 -- is registered: data.lua's nodes plus every other flowing liquid whose
 -- source is default or river water (a grug liquid joins by itself).
@@ -194,7 +199,7 @@ local function update_emitters(name, st, pos)
 		local active = {}
 		for hash in pairs(st.emitters) do active[hash] = true end
 		for _, row in ipairs(R.choose_emitters(found, emitter_kinds, pos, emitter_limits,
-				active, core.hash_node_position)) do
+				emitter_hears, active, core.hash_node_position)) do
 			local spec = D.emitters[row.kind]
 			if available[spec.sound] then
 				local hash = core.hash_node_position(row.pos)
@@ -204,7 +209,7 @@ local function update_emitters(name, st, pos)
 					st.emitters[hash] = {kind = row.kind, gain = gain,
 						handle = core.sound_play({name = spec.sound, gain = gain},
 							{to_player = name, pos = row.pos, loop = true,
-								max_hear_distance = spec.hear, fade = gain / D.crossfade}, false)}
+								fade = gain / D.crossfade}, false)}
 					stats.plays = stats.plays + 1
 				end
 			end
@@ -228,7 +233,7 @@ local function play_call(name, st, pos, id)
 	local distance = random(call.distance[1], call.distance[2])
 	core.sound_play({name = call.sound,
 			gain = D.gains.call * st.ambience_volume / 100 * distance / 3},
-		{to_player = name, max_hear_distance = call.hear,
+		{to_player = name,
 			pos = {x = pos.x + math.cos(angle) * distance, y = pos.y + 6,
 				z = pos.z + math.sin(angle) * distance}}, true)
 	stats.plays = stats.plays + 1
@@ -442,6 +447,11 @@ function grug_ambience.set(player, channel, on, volume)
 	local meta = player:get_meta()
 	local key_on, key_volume = channel .. "_on", channel .. "_volume"
 	local was_audible = R.audible(st[key_on], st[key_volume])
+	-- Switching on a channel left at volume 0 restores the default volume,
+	-- so "on" is never silent.
+	if on == true and volume == nil and st[key_volume] == 0 then
+		volume = R.DEFAULT_VOLUME
+	end
 	if on ~= nil then
 		st[key_on] = on
 		meta:set_int(META[channel .. "_off"], on and 0 or 1)
