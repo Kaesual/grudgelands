@@ -24,7 +24,7 @@ replacement, a client-side music channel (the engine has none).
 | **S1a** Effects: play helper and events | 1 | code + media | new mod `grug_sounds`: play helper and event table; formspec click style; NPC, quest, progression, UI, crafting, travel, mount and world events; the Round 33 hooks (§4.1) |
 | **S2** Ambience and music | 1 | code + media | new mod `grug_ambience`: per-player ambience beds and sparse calls on the existing per-player tick, music pools with on-demand delivery, music and ambience volume per player (§4.2) |
 | **F1** Mobs in water | 1 | code | mobs follow their target through water in combat; ambient roaming still avoids water (§2.3, §4.5) |
-| **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, Bag of Coins, map markers for the capital services, damage-fit fractions, no gear from encounter adds (§2.3, §4.6) |
+| **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, Bag of Coins, map markers for the capital services, damage-fit fractions, no gear from encounter adds, thin ice breaking behind the player (§2.3, §4.6) |
 | **S1b** Combat and creatures | 2 | code + media | weapon and ability sounds, mob voices by archetype, bosses and dragons, the telegraph growl (§4.3) — uses S1a's helper |
 | **D** Documentation and credits | 3 | docs | completion, design doc `docs/design/sound.md`, top-level `CREDITS.md`, BACKLOG/ROADMAP/STATUS/README (§4.4) |
 
@@ -229,6 +229,16 @@ short and focused, with the cut starting at the event itself.
 8. **Watch in the playtest, no change now:** the Scout's full damage set
    (+55 % / +82 % at item level 60 / 70). **Optional at the round's end:** a
    real-client performance test with several clients.
+9. **Wyrmglass thin ice breaks behind the player** (user, 2026-10-04, after
+   the push of Rounds 30–33). Today a node breaks only after a player stood
+   1.5 s on the same node (`ICE_BREAK_TIME`, a per-player timer that resets
+   when the player moves). New: **every thin-ice node a player steps on
+   breaks, together with its four neighbours, 1 s later, always** — also
+   when the player has already moved on. This makes the ice dangerous for
+   the players behind and asks the group to coordinate. Each node keeps at
+   most one pending break: walking over it again, or over a neighbour, never
+   resets or postpones its timer (an earlier pending time wins). The refreeze
+   after 20 s stays.
 
 ## 3. Shared conventions (both wave-1 lanes and S1b)
 
@@ -409,6 +419,15 @@ short and focused, with the cut starting at the event itself.
 - Encounter adds drop nothing (ruling 7): whelps join the royal guards and
   bodyguards in the kill-loot hook's early return (`grug_quality`
   ~913–917); fixture case; `items_crafting.md` §5.4 corrected.
+- Wyrmglass thin ice (ruling 9): a pending break per node (keyed by node
+  position, server-wide, not per player), set when a player steps on thin
+  ice for that node and its four neighbours, fired 1 s later; a node that
+  already has a pending break keeps it. A fast player must not skip a node
+  between two samples of the 0.25 s hazard pass (sample the path since the
+  last sample, or sample thin ice more often — the cheaper one). The break
+  sound plays once per break, not once per node. `dragon_arena.lua`
+  `ice_step` and its fixture case (`tools/r31_da2/portable_test.lua`)
+  follow the new rule; `docs/design/world.md` (Wyrmglass hazards) updated.
 - The user's GUI-test findings of Round 33 may add small items here.
 
 ### 4.4 D Documentation and credits (wave 3)
@@ -444,7 +463,7 @@ clicks, a quest, a fight, a mount ride, one region bed per mood, music
 starts after joining, volume and off switches, a town; a mob following
 across a stream, the trainer and crafting text boxes, a Bag of Coins
 withdrawn, dropped, picked up by a second player and deposited, the new map
-markers).
+markers, a run across Wyrmglass thin ice that breaks 1 s behind the runner).
 
 ## 7. Orchestration notes (for the coordinator)
 
@@ -534,7 +553,8 @@ markers).
 - **F1 and F2** merge first (small); S1a and S2 rebase. F2 touches
   `grug_money`, the Character page and the trainer/crafting formspecs, which
   S1a hooks for sounds (money gained, clicks) and S2 may use for its settings
-  block.
+  block; F2's thin-ice change moves the break sound call that S1b later
+  swaps (C5.4).
 - **Downloaded sound material is read-only** (user, 2026-10-04): lanes copy
   from `r32/r2-evidence/dl/`, `r34/listen/` and `r34/originals/` and never
   delete or move anything there.
