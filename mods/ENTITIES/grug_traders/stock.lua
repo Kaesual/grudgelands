@@ -138,8 +138,8 @@ end
 --
 -- The Uncommon stack.
 --
--- WP5 SEAM — WP7 has no enchant roller of its own. §6.3's world window
--- (frac 0.00-0.60) is grug_items' job, and an Uncommon WITHOUT enchants is
+-- WP5 SEAM — WP7 has no enchant roller of its own. The roll is
+-- grug_items' job, and an Uncommon WITHOUT enchants is
 -- mechanically identical to the Common next to it (Common is enchant-free by
 -- definition, §3.8) while costing x3. So the whole Uncommon offer is gated on
 -- the roller EXISTING: while it does not, the rotating slots simply hold the
@@ -172,7 +172,7 @@ function grug_traders.make_stack(entry)
 	meta:set_string("description", core.colorize(UNCOMMON_COLOR, desc))
 	local roll = enchant_roller()
 	if roll then
-		roll(stack, entry.ilvl, "world") -- §6.3 world window
+		roll(stack, entry.ilvl) -- one enchant: the preset quality 2
 	end
 	return stack
 end

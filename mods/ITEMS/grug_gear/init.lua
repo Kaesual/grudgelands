@@ -10,11 +10,13 @@
 -- ---------------------------------------------------------------------------
 -- ITEM-LEVEL INTERFACE
 -- ---------------------------------------------------------------------------
---   _grug_ilvl     The item level of the bracket. grug_inventory enforces it
---                  as the minimum level for the weapon slot
---                  (inventory_equipment.md §2, items_crafting.md §6.1).
---                  Items without an ilvl, including the starter weapons and
---                  tool-ladder axes, remain unrestricted.
+--   _grug_ilvl     The item level of the bracket.
+--   _grug_req_level The minimum character level to equip it, for every
+--                  item here (round33-plan.md §2.2): the item level, but 1
+--                  in the first bracket (the starter kit and the level-1
+--                  vendor floor). grug_inventory enforces it in every
+--                  equipment slot (inventory_equipment.md §2,
+--                  items_crafting.md §6.1); a dropped stack carries its own.
 --   _grug_quality  1 = Common for every item registered here. WP5 owns
 --                  quality > 1, the enchant roll ranges behind it (§6.2/§6.3)
 --                  and the colored display names that come with it. Nothing
@@ -50,6 +52,21 @@ grug_gear.BRACKETS = {
 }
 
 local NUM_BRACKETS = #grug_gear.BRACKETS
+
+-- The equip requirement of a bracket's items (round33-plan.md §2.2): the item
+-- level, capped at 60, except the first bracket, which a level-1 character
+-- wears.
+function grug_gear.bracket_required_level(bracket, ilvl)
+	if bracket == 1 then return 1 end
+	return math.min(ilvl, 60)
+end
+
+-- The tooltip line of an equip requirement, or nil for none (level 1).
+function grug_gear.requirement_line(level)
+	level = tonumber(level)
+	if level and level > 1 then return "Requires level " .. level end
+	return nil
+end
 
 -- Bracket for a character level: ceil(level/10), clamped to the table.
 function grug_gear.bracket_for_level(level)
@@ -459,6 +476,8 @@ function grug_gear.armor_item(slot, line, bracket)
 end
 
 local tool_count, craftitem_count = 0, 0
+-- bracket -> the offhands, then (below) the catalog and the trinkets
+local drop_pool = {}
 
 for bracket, br in ipairs(grug_gear.BRACKETS) do
 	local cat = {fixed = {}, extras = {}, all = {}}
@@ -496,7 +515,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 			},
 			_grug_weapon_family = w.key,
 			_grug_ilvl = br.ilvl,
-			_grug_req_level = bracket == 1 and 1 or br.ilvl,
+			_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
 			_grug_bracket = bracket,
 			_grug_quality = 1,
 			_grug_hands = w.hands,
@@ -528,6 +547,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		inventory_image = SHIELD_IMAGE[bracket], _grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1},
 		stack_max = 1, _grug_armor = shield_rating, _grug_ilvl = br.ilvl,
+		_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
 		_grug_quality_family = "shield",
 	})
@@ -543,10 +563,12 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 		_grug_enchant_masks = true,
 		groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1},
 		stack_max = 1, _grug_max_mana_percent = mana, _grug_ilvl = br.ilvl,
+		_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
 		_grug_bracket = bracket, _grug_quality = 1, _grug_hands = 1,
 		_grug_quality_family = "spellbook",
 	})
 	buy_price[book] = br.price.other
+	drop_pool[bracket] = {shield, book}
 
 	for _, line in ipairs(ARMOR_LINES) do
 		if line.register then
@@ -582,6 +604,7 @@ for bracket, br in ipairs(grug_gear.BRACKETS) do
 					stack_max = 1,
 					_grug_armor = armor,
 					_grug_ilvl = br.ilvl,
+					_grug_req_level = grug_gear.bracket_required_level(bracket, br.ilvl),
 					_grug_bracket = bracket,
 					_grug_quality = 1,
 				})
@@ -613,15 +636,38 @@ core.register_craftitem("grug_gear:arrow", {
 })
 dofile(core.get_modpath("grug_gear") .. "/trinkets.lua")
 
+-- The gear-drop pool of each material tier (round33-plan.md §2.1): every
+-- equippable item of the tier -- the catalog's weapons and armour, its shield
+-- and spellbook, and the six trinkets. grug_quality draws one uniformly.
+grug_gear.drop_pool = {}
+for bracket = 1, NUM_BRACKETS do
+	local pool = {}
+	for _, itemname in ipairs(grug_gear.catalog[bracket].all) do
+		pool[#pool + 1] = itemname
+	end
+	for _, itemname in ipairs(drop_pool[bracket]) do pool[#pool + 1] = itemname end
+	for _, identity in ipairs(grug_gear.TRINKETS) do
+		pool[#pool + 1] = grug_gear.trinket_item(identity.key, bracket)
+	end
+	grug_gear.drop_pool[bracket] = pool
+end
+
 core.log("action", "[grug_gear] " .. NUM_BRACKETS .. " bracket catalogs: " ..
 	tool_count .. " weapons + " .. craftitem_count .. " armor pieces")
+
+-- "Usable by" and the equip requirement, the closing tooltip lines.
+local function usable_lines(itemname, def)
+	local requirement = grug_gear.requirement_line(def._grug_req_level)
+	return grug_gear.usable_by(ItemStack(itemname)) ..
+		(requirement and "\n" .. requirement or "")
+end
 
 -- Refresh weapon descriptions after all item registrations.
 core.register_on_mods_loaded(function()
 	for itemname, def in pairs(core.registered_items) do
 		if def.groups and (def.groups.grug_gear or 0) > 0 then
 			core.override_item(itemname, {description = (def.description or itemname) ..
-				"\n" .. grug_gear.usable_by(ItemStack(itemname))})
+				"\n" .. usable_lines(itemname, def)})
 		end
 		if def.groups and def.groups.grug_equip_weapon then
 			local caps = def.tool_capabilities or {}
@@ -634,7 +680,7 @@ core.register_on_mods_loaded(function()
 					"\n" .. grug_gear.equip_hint(def._grug_weapon_family)
 				core.override_item(itemname, {
 					description = describe(label, nil, def._grug_ilvl, stat_line) ..
-					"\n" .. grug_gear.usable_by(ItemStack(itemname)),
+					"\n" .. usable_lines(itemname, def),
 				})
 			end
 		end
