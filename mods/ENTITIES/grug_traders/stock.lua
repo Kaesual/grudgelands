@@ -1,5 +1,6 @@
 -- What a vendor offers: the level-independent core stock (items_crafting.md
--- §3.7 / §8.2) and the six bracket catalogs with their hourly rotation (§3.8).
+-- §3.7 / §8.2), the T1 gear shelf (round33-plan.md §2.6) and the profession
+-- shelves.
 
 --
 -- Same-race discount (world.md §7: "one race-exclusive vendor per race" plus
@@ -25,8 +26,8 @@ end
 -- register_all_vendor_stock below, so they reach every shelf.
 --
 -- Every vendor offers this list, in every territory and at every level --
--- that is what "level-independent" means. The bracket catalogs of §3.8 sit on
--- top of it, on their own tabs.
+-- that is what "level-independent" means. The T1 gear shelf sits on top of
+-- it, on its own tab.
 --
 
 grug_traders.stock = {} -- ordered; the UI renders it in registration order
@@ -65,219 +66,37 @@ grug_traders.register_stock({item = "grug_materials:axe_stone", price = 10, cate
 grug_traders.register_stock({item = "grug_materials:pick_bronze", price = 40, category = "tools"})
 
 --
--- Bracket catalogs & the hourly rotation (§3.8)
+-- The gear shelf (round33-plan.md §2.6, item_tiers.md §6). Vendors sell the
+-- T1 bases only: every weapon family and armour piece of the first material
+-- tier, Common, at its slot price. From T2 the bases come from Basics
+-- crafting or drops; buy-back of every tier stays with prices.lua.
 --
--- A player sees their own bracket and every bracket below it. Per (vendor
--- kind, bracket) the offer is:
---   * the 13 FIXED items (sword + four pieces from each armor class);
---   * 4 ROTATING conceptual families drawn from dagger, greataxe, staff,
---     caster 1H and bow. The active caster 1H family is the wand.
---     for this vendor/hour/bracket. One conceptual family is withheld;
---     Withholding is
---     what makes it a rotation at all — with one slot per extra the whole
---     catalog would be on the shelf every hour and the roll would only
---     permute the display order. §3.8's "guaranteed, but expensive … the
---     floor, not the ceiling" is a promise about the fixed floor above,
---     which is untouched by this;
---   * one rotation in five, one of those four slots is replaced by a single
---     UNCOMMON item drawn from grug_gear.catalog[b].all and priced x3 —
---     "today the trader had something good". Until WP5's enchant roller
---     exists, no Uncommon is offered at all (see the WP5 SEAM below).
---
--- DETERMINISM IS THE POINT. Two players standing at the same vendor in the
--- same hour must see the same shelf, and a server restart must not re-roll it.
--- So the roll is a pure function of (real hour, vendor kind, bracket), fed
--- into a PcgRandom — never math.random, whose sequence depends on how many
--- times anything else in the game called it since startup.
---
+grug_traders.GEAR_BRACKET = 1
 
-local ROTATION_SECONDS = 3600 -- §3.8 "re-rolled hourly"; real hours
--- Exactly one of the five conceptual extra families stays withheld.
-local ROTATING_SLOTS = 4
-local UNCOMMON_EVERY = 5 -- "roughly one rotation in five"
-local UNCOMMON_PRICE_FACTOR = 3 -- §3.8 "priced x3"
-local UNCOMMON_COLOR = "#4A90FF"
+local gear_shelf -- built on first use; grug_gear's catalog is final by then
 
--- The current rotation index. os.time() is wall clock and sandbox-whitelisted
--- (docs/research/luanti-lua.md), so this number is identical on every restart
--- and identical for every player.
-function grug_traders.rotation_index()
-	return math.floor(os.time() / ROTATION_SECONDS)
-end
-
--- Seed for one (vendor kind, bracket) shelf in one hour.
---
--- Packed by DECIMAL arithmetic, not by bit shifts: `bit.*` is 32-bit and the
--- rotation index alone (os.time()/3600 is ~490000 today and climbing) would
--- start colliding with the low fields once shifted. The layout is
---   rotation * 1000 + salt * 10 + bracket
--- with salt <= 99 and bracket <= 6, so the low three decimal digits are the
--- shelf identity and cannot bleed into the hour. `rotation % 1000000` keeps
--- the product inside the +-(2^53-1) exact-integer range with room to spare and
--- inside the 32-bit range PcgRandom takes (999999 * 1000 + 999 < 2^31).
--- The modulo wraps every ~114 years of real time; a wrap only means two very
--- distant hours share a shelf.
-local function rotation_seed(salt, bracket, rotation)
-	return (rotation % 1000000) * 1000 + (salt % 100) * 10 + bracket
-end
-
--- Fisher-Yates on a COPY, driven by the PcgRandom above. table.shuffle would
--- use math.random and destroy the reproducibility this whole file is built on.
-local function shuffled(list, rng)
-	local out = {}
-	for i = 1, #list do
-		out[i] = list[i]
-	end
-	for i = #out, 2, -1 do
-		local j = rng:next(1, i)
-		out[i], out[j] = out[j], out[i]
-	end
-	return out
-end
-
---
--- The Uncommon stack.
---
--- WP5 SEAM — WP7 has no enchant roller of its own. The roll is
--- grug_items' job, and an Uncommon WITHOUT enchants is
--- mechanically identical to the Common next to it (Common is enchant-free by
--- definition, §3.8) while costing x3. So the whole Uncommon offer is gated on
--- the roller EXISTING: while it does not, the rotating slots simply hold the
--- normal extras and nothing is sold at a x3 premium for nothing.
---
--- Every line of the Uncommon machinery stays in place — the x3 price, the
--- grug_quality = 2 meta, the blue description, the roll call. The moment
--- grug_items.roll_enchants exists, Uncommons light up automatically: WP5
--- needs NO edit in this file.
---
--- core.global_exists is the only way to probe a global without tripping
--- strict.lua (docs/research/luanti-lua.md).
---
-local function enchant_roller()
-	if core.global_exists("grug_items") and grug_items.roll_enchants then
-		return grug_items.roll_enchants
-	end
-	return nil
-end
-
-function grug_traders.make_stack(entry)
-	local stack = ItemStack(entry.item)
-	if not entry.uncommon then
-		return stack
-	end
-	local meta = stack:get_meta()
-	meta:set_int("grug_quality", 2)
-	local def = core.registered_items[entry.item]
-	local desc = (def and def.description) or entry.item
-	meta:set_string("description", core.colorize(UNCOMMON_COLOR, desc))
-	local roll = enchant_roller()
-	if roll then
-		roll(stack, entry.ilvl) -- one enchant: the preset quality 2
-	end
-	return stack
-end
-
---
--- Computation + cache. No timer and no globalstep: the shelf is recomputed
--- lazily on the first access after the hour changed, which for a shelf nobody
--- visits means never.
---
-
-local shelf_cache = {} -- salt -> bracket -> {rotation = n, entries = {...}}
-
-local function compute(salt, bracket, rotation)
-	local cat = grug_gear.catalog[bracket]
-	local ilvl = grug_gear.BRACKETS[bracket].ilvl
-	local entries = {}
-	for _, itemname in ipairs(cat.fixed) do
-		entries[#entries + 1] = {
-			item = itemname,
-			price = grug_gear.get_price(itemname),
-			ilvl = ilvl,
-			fixed = true,
-		}
-	end
-
-	local rng = PcgRandom(rotation_seed(salt, bracket, rotation))
-	local caster = {"wand"}
-	local caster_family = caster[rng:next(1, #caster)]
-	local conceptual = {
-		grug_gear.weapon_item("dagger", bracket),
-		grug_gear.weapon_item("greataxe", bracket),
-		grug_gear.weapon_item("staff", bracket),
-		grug_gear.weapon_item(caster_family, bracket),
-		grug_gear.weapon_item("bow", bracket),
-	}
-	local pool = shuffled(conceptual, rng)
-	local rotating = {}
-	for i = 1, ROTATING_SLOTS do
-		-- The shuffle decides WHICH extras are on the shelf: taking the first
-		-- ROTATING_SLOTS of the shuffled pool leaves the rest withheld until
-		-- the next hour. The modulo only guards the degenerate case of a pool
-		-- SMALLER than the slot count (never today: 5 extras, 4 slots).
-		local itemname = pool[((i - 1) % #pool) + 1]
-		rotating[i] = {
-			item = itemname,
-			price = grug_gear.get_price(itemname),
-			ilvl = ilvl,
-		}
-	end
-
-	-- The three rolls below are drawn in a FIXED order even when the first one
-	-- says "no Uncommon this hour" — a conditional draw would make the stream
-	-- position depend on the outcome, which is fine here (nothing is drawn
-	-- afterwards) but is the classic way to make a deterministic roll fragile.
-	local uncommon_roll = rng:next(1, UNCOMMON_EVERY)
-	local slot = rng:next(1, ROTATING_SLOTS)
-	local pick = rng:next(1, #cat.all)
-	-- The WP5 seam (see make_stack): no roller, no Uncommon. Drawing the three
-	-- rolls above unconditionally keeps this gate out of the RNG stream, so
-	-- WP5 changes WHAT is on the shelf, not the rotation of everything else.
-	if uncommon_roll == 1 and enchant_roller() then
-		local itemname = cat.all[pick]
-		rotating[slot] = {
-			item = itemname,
-			price = grug_gear.get_price(itemname) * UNCOMMON_PRICE_FACTOR,
-			ilvl = ilvl,
-			uncommon = true,
-		}
-	end
-
-	for i = 1, ROTATING_SLOTS do
-		entries[#entries + 1] = rotating[i]
-	end
-	return entries
-end
-
--- The shelf of one vendor kind for one bracket. `salt` is the per-vendor-kind
--- constant from vendors.lua: it is what makes the race vendor roll its own
--- rotation while every player at THAT vendor sees the same one.
-function grug_traders.bracket_stock(salt, bracket)
-	bracket = math.floor(tonumber(bracket) or 0)
-	if bracket < 1 or bracket > #grug_gear.BRACKETS then
+function grug_traders.bracket_stock(bracket)
+	if tonumber(bracket) ~= grug_traders.GEAR_BRACKET then
 		return {}
 	end
-	local rotation = grug_traders.rotation_index()
-	local per_salt = shelf_cache[salt]
-	if not per_salt then
-		per_salt = {}
-		shelf_cache[salt] = per_salt
+	if not gear_shelf then
+		gear_shelf = {}
+		local tier = grug_traders.GEAR_BRACKET
+		local ilvl = grug_gear.BRACKETS[tier].ilvl
+		for _, itemname in ipairs(grug_gear.catalog[tier].all) do
+			gear_shelf[#gear_shelf + 1] = {
+				item = itemname,
+				price = grug_gear.get_price(itemname),
+				ilvl = ilvl,
+			}
+		end
 	end
-	local cached = per_salt[bracket]
-	if cached and cached.rotation == rotation then
-		return cached.entries
-	end
-	local entries = compute(salt, bracket, rotation)
-	per_salt[bracket] = {rotation = rotation, entries = entries}
-	return entries
+	return gear_shelf
 end
 
--- Profession equipment shops are views over the one authoritative bracket
--- shelf above. This preserves its price, hourly rotation and quality roll;
--- in particular, Tanner does not own a copied list of the leather ladder.
--- A Bowyer hour may omit bows because bows are one of the five rotating extra
--- families and only four are offered (§3.8). An Uncommon survives a filtered
--- view only when the rolled item belongs to that shop's family.
+-- Profession equipment shops are views over the one authoritative gear
+-- shelf above; in particular, Tanner does not own a copied list of the
+-- leather ladder.
 local BRACKET_FILTERS = {
 	bow = function(def)
 		return ((def.groups or {}).grug_bow or 0) > 0
@@ -299,7 +118,7 @@ grug_traders.PROFESSION_BRACKETS = {
 
 function grug_traders.vendor_bracket_stock(vendor, bracket)
 	if not vendor then return {} end
-	local entries = grug_traders.bracket_stock(vendor.salt, bracket)
+	local entries = grug_traders.bracket_stock(bracket)
 	local filter = BRACKET_FILTERS[vendor.bracket_filter]
 	if not filter then return entries end
 	local result = {}
@@ -312,10 +131,9 @@ function grug_traders.vendor_bracket_stock(vendor, bracket)
 	return result
 end
 
--- Highest bracket a player may shop in (§3.8: "their own bracket and every
--- bracket below").
-function grug_traders.max_bracket(player)
-	return grug_gear.bracket_for_level(grug_xp.get_level(player))
+-- Highest bracket a vendor shows: the T1 gear shelf, at every level.
+function grug_traders.max_bracket()
+	return grug_traders.GEAR_BRACKET
 end
 
 -- UI label of a bracket ("1-10", "11-20", ...).
@@ -347,12 +165,11 @@ end
 -- items (an unregistered one renders as a buyable "unknown item" button): a
 -- failing entry is DROPPED from its shelf and reported as an error.
 --
--- The SMITH and ARMOURER keep the full bracket tabs. Bowyer and Tanner expose
--- filtered views of those same tabs for bows and leather armor respectively,
--- so the gear ladder itself comes from `grug_gear`'s own catalog
--- (items_crafting.md section 3.0.3: the vendor bracket catalog and the base
--- craft ladder are the same items). The other eight sell no equipment and
--- carry no bracket tab.
+-- The SMITH and ARMOURER keep the full T1 gear tab. Bowyer and Tanner expose
+-- filtered views of that same tab for bows and leather armor respectively,
+-- so the gear itself comes from `grug_gear`'s own catalog (items_crafting.md
+-- section 3.0.3: the vendor catalog and the base craft ladder are the same
+-- items). The others sell no equipment and carry no gear tab.
 --
 -- Prices are in COPPER (economy.md section 1) and sit above what the vendor
 -- pays for the same item as loot (prices.lua), so buying from a profession
@@ -420,8 +237,8 @@ profession_shelf("tailor", {
 	{"wool:brown", 6},
 })
 
--- The smith: the T1 bar and the bronze tools. The LADDER is the bracket tabs
--- this one vendor keeps (see the note above), not a list here.
+-- The smith: the T1 bar and the bronze tools. The GEAR is the T1 gear tab
+-- this vendor keeps (see the note above), not a list here.
 profession_shelf("smith", {
 	{"grug_materials:bronze_bar", 7},
 	{"grug_materials:pick_bronze", 40, "tools"},
@@ -463,14 +280,14 @@ profession_shelf("herbalist", {
 	{"grug_traders:potion_healing_weak", 8},
 })
 
--- The armourer: the T1 bar. Its distinguishing offer is the BRACKET TABS
--- (vendors.lua's GEAR_KINDS), so the general shelf is not a hand-copied ladder.
+-- The armourer: the T1 bar. Its distinguishing offer is the T1 gear tab, so
+-- the general shelf is not a hand-copied list.
 profession_shelf("armourer", {
 	{"grug_materials:bronze_bar", 7},
 })
 
--- The tanner: the plain hides on General; its bracket tabs filter the shared
--- gear catalog to the four pieces of the matching leather grade.
+-- The tanner: the plain hides on General; its gear tab filters the shared T1
+-- gear shelf to the four pieces of the matching leather grade.
 profession_shelf("tanner", {
 	{"mobs:leather", 8},
 	{"grug_mobs:light_leather", 6},

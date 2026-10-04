@@ -55,14 +55,8 @@
 -- Registry
 --
 
--- entity name -> {name, kind, faction, race, nametag, salt}
+-- entity name -> {name, kind, faction, race, nametag}
 grug_traders.vendors = {}
-
--- Per-vendor-kind constant that seeds the hourly rotation (stock.lua). Fixed
--- integers, never a table address or an iteration order: the shelf must be
--- reproducible across restarts.
-local SALT_GENERAL = {accord = 1, throng = 2}
-local RACE_SALT_BASE = 10
 
 -- Nametag adjectives. The race IDS come from the grug_classes registry (never
 -- hardcoded); only the English adjective is data, and an unknown race falls
@@ -76,8 +70,7 @@ local RACE_ADJECTIVE = {
 	undead = "Undead",
 }
 
--- Sorted race ids: pairs() order over the registry is not reproducible, and
--- the salts below must be.
+-- Sorted race ids: pairs() order over the registry is not reproducible.
 local race_ids = {}
 for id in pairs(grug_classes.registered_races) do
 	race_ids[#race_ids + 1] = id
@@ -390,19 +383,17 @@ for _, faction_id in ipairs(grug_core.faction_ids) do
 		kind = "general",
 		faction = faction_id,
 		nametag = (grug_core.factions[faction_id].name) .. " Quartermaster",
-		salt = SALT_GENERAL[faction_id],
 	}, GUARD_TEXTURE[faction_id])
 end
 
 -- One race-exclusive vendor per race (world.md §7).
-for index, race_id in ipairs(race_ids) do
+for _, race_id in ipairs(race_ids) do
 	local def = grug_classes.registered_races[race_id]
 	register_vendor({
 		name = "grug_traders:vendor_race_" .. race_id,
 		kind = "race",
 		race = race_id,
 		nametag = (RACE_ADJECTIVE[race_id] or def.name) .. " Quartermaster",
-		salt = RACE_SALT_BASE + index,
 	}, GUARD_TEXTURE[def.faction])
 end
 
@@ -422,25 +413,16 @@ end
 --   * is DRAWN as the race of the settlement it stands in (`settlement_race`
 --     above), because one butcher entity serves Hearthpine and Sunscar;
 --   * offers its own shelf on the General tab (`stock.lua`'s
---     `profession_stock`), with bracket tabs where stock.lua declares them.
---
--- The salts continue the race vendors' block (RACE_SALT_BASE + 1..6), so no
--- two vendor kinds share an hourly rotation.
---
+--     `profession_stock`), with the T1 gear tab where stock.lua declares it.
 --
 -- WAVE 2 (2026-09-15) ADDS SEVEN MORE, contract section 8.4's second row:
--- mason, brewer, bowyer, herbalist, armourer, tanner and embalmer. They are
--- appended, never interleaved, because the salt is POSITIONAL
--- (`PROFESSION_SALT_BASE + index`) and re-ordering this list would re-roll
--- every existing shop's hourly shelf.
+-- mason, brewer, bowyer, herbalist, armourer, tanner and embalmer.
 --
--- Smith and Armourer retain the full equipment ladder. Round 11 adds filtered
+-- Smith and Armourer keep the full T1 gear shelf. Round 11 adds filtered
 -- views for Bowyer (bow) and Tanner (leather); stock.lua owns that declaration
 -- and the filtering so these entities cannot drift from the shared catalog.
 --
-local PROFESSION_SALT_BASE = 20
--- Ordered, because the salts are positional and must be reproducible across
--- restarts; the nametag is the shop and not the shopkeeper.
+-- The nametag is the shop and not the shopkeeper.
 local PROFESSIONS = {
 	{kind = "butcher", nametag = "Butcher"},
 	{kind = "smith", nametag = "Blacksmith"},
@@ -457,12 +439,11 @@ local PROFESSIONS = {
 	{kind = "embalmer", nametag = "Embalmer"},
 }
 
-for index, row in ipairs(PROFESSIONS) do
+for _, row in ipairs(PROFESSIONS) do
 	register_vendor({
 		name = "grug_traders:vendor_" .. row.kind,
 		kind = row.kind,
 		nametag = row.nametag,
-		salt = PROFESSION_SALT_BASE + index,
 		-- The General tab's shelf. `nil` for the two original families, which
 		-- is what makes them keep the level-independent core stock.
 		stock = row.kind,

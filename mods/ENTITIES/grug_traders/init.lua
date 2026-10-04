@@ -7,8 +7,8 @@
 --   prices.lua  the one price module: every vendor payout (price_rules.lua
 --               holds its pure rules)
 --   potion.lua  the weak healing potion and the shared instant-potion cooldown
---   stock.lua   the level-independent core stock, the six bracket catalogs and
---               the hourly rotation
+--   stock.lua   the level-independent core stock, the T1 gear shelf and the
+--               profession shelves
 --   vendors.lua the eight vendor entities, their access rules and their
 --               deterministic placement at the six race capitals
 --   trade.lua   the trade formspec (buy/sell) and its re-validation
@@ -69,10 +69,8 @@ function grug_traders.audit_sell_buy_prices()
 			check(entry.item, entry.price)
 		end
 	end
-	for bracket = 1, #grug_gear.BRACKETS do
-		for _, itemname in ipairs(grug_gear.catalog[bracket].all) do
-			check(itemname, grug_gear.get_price(itemname))
-		end
+	for _, entry in ipairs(grug_traders.bracket_stock(grug_traders.GEAR_BRACKET)) do
+		check(entry.item, entry.price)
 	end
 	return failures
 end
