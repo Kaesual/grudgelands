@@ -8,7 +8,8 @@ files, all from minetest_game, mobs_redo and two food/drink cues
 ([sound research](../research/sound-research-2026-10.md), Round 32 R2). This
 round adds effects at the central hooks, mob voices, ambience per region and
 calm music, following the user's seven decisions (§2.1) and the user's picks
-from two listening pages (§2.2). Routing as before: Claude orchestrates, Opus
+from two listening pages (§2.2), plus two small fix lanes from the user's
+Round 33 findings (§2.3). Routing as before: Claude orchestrates, Opus
 implements and reviews (independent review per code lane). GPT-6 Astra has
 no task this round (no art, no quest text).
 
@@ -22,9 +23,9 @@ replacement, a client-side music channel (the engine has none).
 |---|---|---|---|
 | **S1a** Effects: play helper and events | 1 | code + media | new mod `grug_sounds`: play helper and event table; formspec click style; NPC, quest, progression, UI, crafting, travel, mount and world events; the Round 33 hooks (§4.1) |
 | **S2** Ambience and music | 1 | code + media | new mod `grug_ambience`: per-player ambience beds and sparse calls on the existing per-player tick, music pools with on-demand delivery, music and ambience volume per player (§4.2) |
-| **S1b** Combat and creatures | 2 | code + media | weapon and ability sounds, mob voices by archetype, bosses and dragons, the telegraph growl (§4.3) — uses S1a's helper |
 | **F1** Mobs in water | 1 | code | mobs follow their target through water in combat; ambient roaming still avoids water (§2.3, §4.5) |
 | **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, Bag of Coins, map markers for the capital services, damage-fit fractions, no gear from encounter adds (§2.3, §4.6) |
+| **S1b** Combat and creatures | 2 | code + media | weapon and ability sounds, mob voices by archetype, bosses and dragons, the telegraph growl (§4.3) — uses S1a's helper |
 | **D** Documentation and credits | 3 | docs | completion, design doc `docs/design/sound.md`, top-level `CREDITS.md`, BACKLOG/ROADMAP/STATUS/README (§4.4) |
 
 S1a, S2, F1 and F2 start together; F1 and F2 are small and merge first
@@ -433,14 +434,17 @@ is not used. Particle budgets are untouched (no new particles this round).
 
 Each code lane: its fixture and the existing fixtures it touches
 (`tools/run_fixtures.sh`), one engine smoke boot (no missing-sound
-warnings for our names in the log), the preview page and the user's
-picks before any file lands (§1 approval gate), an independent Opus review
-that also checks every shipped sound file against
+warnings for our names in the log), and an independent Opus review. Sound
+lanes also: the preview page and the user's picks before any file lands
+(§1 approval gate), and the review checks every shipped sound file against
 `tools/r34_<lane>/approved.txt` and the licence row. S2 also reports the
 per-player pass before and after with stand-ins. End: one boot of main,
 `tools/sync_to_luanti.sh`, the user's GUI check (desktop and web build:
 clicks, a quest, a fight, a mount ride, one region bed per mood, music
-starts after joining, volume and off switches, a town).
+starts after joining, volume and off switches, a town; a mob following
+across a stream, the trainer and crafting text boxes, a Bag of Coins
+withdrawn, dropped, picked up by a second player and deposited, the new map
+markers).
 
 ## 7. Orchestration notes (for the coordinator)
 
@@ -498,9 +502,11 @@ starts after joining, volume and off switches, a town).
   - Round 33 on main: achievement announcement
     `grug_achievements/init.lua:67-73` (`announce` → `grug_core.feed`);
     cloak picker `grug_inventory/pages.lua:420-421`
-    (`choose_cloak_by_name`). Enchant tiers, upgrades, the crown, vendors,
-    culture vendor, Crownbinder and potions were in `r33-c4`/`r33-c5` at
-    planning time.
+    (`choose_cloak_by_name`). Enchant tiers, upgrades, the crown
+    (`grug_items.crown_item`), vendors, the Decor Merchant, the Crownbinder
+    (`grug_traders/crown.lua`) and potions I–VI merged after this plan was
+    written (main `16c498b9`): find their functions on main and refresh all
+    line numbers above when writing the briefs.
   - Mounts: `dismount` `grug_mounts/entity.lua:162`, `land_step` `:358`,
     `flight_step` `:384`, `water_step` `:406`. Travel: `teleport`
     `grug_home/travel.lua:12`, `grug_home.respawn` `:243`. PvP flag
