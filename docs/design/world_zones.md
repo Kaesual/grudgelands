@@ -526,9 +526,14 @@ replaced; git history before this rewrite records that model.
   may stand from its centreline plus a 12-node pad. Where two cores stand
   closer than a river needs to pass between them (a detour round one would
   push it onto the other), those cores become one obstacle and the river goes
-  round both on one side (Round 34 F3); a course without such a conflict
-  keeps its per-core arcs. A core a river's water could still reach stops
-  the world's creation with the river and the POI named. Rivers and lakes
+  round both on one side (Round 34 F3); cores join when their clearances
+  overlap or leave less than the pad between them, and a course without
+  such a conflict keeps its per-core arcs. A tributary joins its parent at
+  the nearest point of the parent's final course, or, where that stretch
+  would cross a core's clearance (the parent went round the core on the far
+  side), at the nearest parent vertex it reaches clear of every core. A core
+  a river's water could still reach stops the world's creation with the
+  river and the POI named. Rivers and lakes
   may cross the rest of a capital's reserved area: plots or lanes standing in
   water there are allowed until the capital planner (plan D60) builds the
   capital around its water, and the capital's and a start's terrace grading
