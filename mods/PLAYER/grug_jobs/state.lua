@@ -168,9 +168,21 @@ end
 -- 33): only a recipe flagged `progress` counts (registry.lua: end products,
 -- never stations, intermediates or automatic finishes). Station operations
 -- (enchants; profession upgrades join them) are flagged when they register.
+local award_callbacks = {}
+
+-- fn(player, recipe) after every finished craft award_progress counts
+-- (grug_achievements counts dishes and potions from it).
+function grug_jobs.register_on_award_progress(fn)
+	award_callbacks[#award_callbacks + 1] = fn
+end
+
 function grug_jobs.award_progress(player, recipe)
 	if type(recipe) ~= "table" or not recipe.progress then return false end
-	return grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+	local advanced, level = grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+	for index = 1, #award_callbacks do
+		award_callbacks[index](player, recipe)
+	end
+	return advanced, level
 end
 
 -- Shared progression authority for recipe books and the actual craft gate.
