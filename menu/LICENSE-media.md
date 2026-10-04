@@ -1,8 +1,9 @@
 # Media Origin & Licenses (menu)
 
-The game's menu icon. Luanti reads `<game>/menu/icon.png` for the game bar of
-the main menu; header, background and footer images are not part of this
-directory yet.
+The game's menu icon and menu music. Luanti reads `<game>/menu/icon.png` for
+the game bar of the main menu and plays `<game>/menu/theme.ogg` there
+(`doc/lua_api.md` "Menu music"); header, background and footer images are not
+part of this directory yet.
 
 ## `icon.png` — CC0 1.0
 
@@ -25,6 +26,15 @@ with an oak and a sun (Elandor) and a rust-red half with three black peaks
 * Modifications: background removed, padded to a transparent square, scaled.
   The PNG keeps the `zTXt parameters` chunk ImageMagick copied from the source
   render, i.e. the generation prompt travels inside the file.
+
+## `theme.ogg` — CC0 1.0
+
+"Fantasy Orchestral Theme" by joth
+([OpenGameArt](https://opengameart.org/content/fantasy-orchestral-theme),
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/), licence checked
+on the page 2026-10-04), the user's pick for the main menu (Round 34, R32 M6).
+The same file as `mods/CORE/grug_ambience/music/grug_music_fantasy_orchestral_theme.ogg`:
+converted to Ogg Vorbis (stereo, q1) and levelled to -18 LUFS; no cut.
 
 ## AI disclosure
 

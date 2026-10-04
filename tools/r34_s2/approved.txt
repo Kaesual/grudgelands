@@ -24,4 +24,9 @@ grug_ambience_stream_pond.ogg, S2 B12.2, https://freesound.org/people/mhtaylor67
 # Shipped as grug_ambience_forge.ogg (the only forge loop, so no variant suffix; coordinator, phase 2), same bytes as the approved grug_ambience_forge.e2.ogg:
 grug_ambience_forge.ogg, S2 E1.2, https://freesound.org/people/Duasun/sounds/321889/ (Duasun, CC0 1.0)
 grug_ambience_fire.ogg, S2 E2.1, https://freesound.org/people/Sauron974/sounds/204348/ (Sauron974, CC0 1.0)
-# Pending: music picks M7-M12 and the main-menu theme.
+# Music picks (user 2026-10-04): M7, M8 (first 2:00), M10 (first 3:20), M11; M6 also as the main-menu theme (menu/theme.ogg):
+grug_music_a_dragons_lullaby.ogg, S2 M7, https://www.scottbuckley.com.au/library/a-dragons-lullaby-2023/ (Scott Buckley, CC BY 4.0)
+grug_music_the_great_sea.ogg, S2 M8, https://www.scottbuckley.com.au/library/the-great-sea/ (Scott Buckley, CC BY 4.0)
+grug_music_katabasis_i.ogg, S2 M10, https://www.scottbuckley.com.au/library/katabasis-i/ (Scott Buckley, CC BY 4.0)
+grug_music_permafrost.ogg, S2 M11, https://www.scottbuckley.com.au/library/permafrost/ (Scott Buckley, CC BY 4.0)
+theme.ogg (menu/), R32 M6, https://opengameart.org/content/fantasy-orchestral-theme (joth, CC0 1.0; same cut as grug_music_fantasy_orchestral_theme.ogg)

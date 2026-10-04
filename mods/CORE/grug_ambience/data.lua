@@ -103,14 +103,20 @@ D.tracks = {
 	folk_round = {file = "grug_music_folk_round.ogg", seconds = 184}, -- R34 D.5
 	teller_of_the_tales = {file = "grug_music_teller_of_the_tales.ogg", seconds = 213}, -- R34 D.6
 	village_consort = {file = "grug_music_village_consort.ogg", seconds = 215}, -- R34 D.7
+	a_dragons_lullaby = {file = "grug_music_a_dragons_lullaby.ogg", seconds = 169}, -- S2 M7
+	-- S2 M8: the first 2:00 (the calm part) with a fade-out.
+	the_great_sea = {file = "grug_music_the_great_sea.ogg", seconds = 120},
+	-- S2 M10: the first 3:20 with a fade-out.
+	katabasis_i = {file = "grug_music_katabasis_i.ogg", seconds = 200},
+	permafrost = {file = "grug_music_permafrost.ogg", seconds = 449}, -- S2 M11
 }
 
 -- Pools (§2.1 ruling 3 and 4; a track may sit in several).
 D.pools = {
 	land = {"memories_of_stone", "achaidh_cheide", "soliloquy",
 		"fantasy_orchestral_theme"},
-	front = {"forest_walk"},
-	underground = {},
+	front = {"forest_walk", "a_dragons_lullaby", "the_great_sea"},
+	underground = {"katabasis_i", "permafrost"},
 	town = {"town_theme", "thatched_villagers", "minstrel_guild",
 		"master_of_the_feast", "folk_round", "teller_of_the_tales",
 		"village_consort", "achaidh_cheide"},

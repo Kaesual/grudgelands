@@ -711,7 +711,7 @@ do
 		end
 	end
 	for _, file in ipairs(ls(repo .. "/menu")) do
-		if file:match("%.ogg$") then oggs[#oggs + 1] = "menu/" .. file end
+		if file:match("%.ogg$") then oggs[#oggs + 1] = file end
 	end
 	local approved = {}
 	local list = io.open(repo .. "/tools/r34_s2/approved.txt")
@@ -737,6 +737,13 @@ do
 			check(shipped[track.file:match("^(.-)%.ogg$")] == true, "F track not shipped: " .. id)
 		end
 	end
+	local menu = io.open(repo .. "/menu/theme.ogg", "rb")
+	local twin = io.open(MOD .. "/music/grug_music_fantasy_orchestral_theme.ogg", "rb")
+	if menu and twin then
+		check(menu:read("*a") == twin:read("*a"), "F menu/theme.ogg is the same cut as the M6 track")
+	end
+	if menu then menu:close() end
+	if twin then twin:close() end
 	print(("R34 S2 files: %d shipped .ogg, approved list %s"):format(#oggs,
 		list and "present" or "absent (phase 1: no file may ship)"))
 end
