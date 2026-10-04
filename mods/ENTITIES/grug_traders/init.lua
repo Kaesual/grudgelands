@@ -7,6 +7,8 @@
 --   prices.lua  the one price module: every vendor payout (price_rules.lua
 --               holds its pure rules)
 --   potion.lua  the weak healing potion and the shared instant-potion cooldown
+--   crown.lua   the Crownbinder's window, fee and payment (the crown operation
+--               itself is grug_items')
 --   stock.lua   the level-independent core stock, the T1 gear shelf and the
 --               profession shelves
 --   vendors.lua the eight vendor entities, their access rules and their
@@ -22,6 +24,7 @@ local modpath = core.get_modpath(core.get_current_modname())
 dofile(modpath .. "/prices.lua")
 dofile(modpath .. "/potion.lua")
 dofile(modpath .. "/stock.lua")
+dofile(modpath .. "/crown.lua")
 dofile(modpath .. "/vendors.lua")
 dofile(modpath .. "/trade.lua")
 

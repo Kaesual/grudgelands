@@ -354,8 +354,12 @@ local function vendor_def(vendor, texture)
 		end,
 
 		on_rightclick = function(self, clicker)
-			grug_traders.open(clicker, vendor.name, self.object:get_pos(),
-				grug_traders.vendor_faction(vendor, self._grug_start))
+			local faction = grug_traders.vendor_faction(vendor, self._grug_start)
+			if vendor.open then
+				vendor.open(clicker, vendor.nametag, self.object:get_pos(), faction)
+				return
+			end
+			grug_traders.open(clicker, vendor.name, self.object:get_pos(), faction)
 		end,
 	}
 end
@@ -437,6 +441,8 @@ local PROFESSIONS = {
 	{kind = "armourer", nametag = "Armourer"},
 	{kind = "tanner", nametag = "Tanner"},
 	{kind = "embalmer", nametag = "Embalmer"},
+	-- Round 33: the capital culture vendor (cosmetic blocks and lights).
+	{kind = "culture", nametag = "Decor Merchant"},
 }
 
 for _, row in ipairs(PROFESSIONS) do
@@ -455,6 +461,45 @@ for _, row in ipairs(PROFESSIONS) do
 	-- vendor has no faction, so it falls back to the Accord guard texture and
 	-- the visuals mod replaces it with the settlement's race at activation.
 	}, GUARD_TEXTURE.accord)
+end
+
+-- The Crownbinder (round33-plan.md §2.5): a capital NPC that serves its
+-- settlement's faction like a profession vendor, but opens the crown window
+-- (crown.lua) instead of a shelf.
+register_vendor({
+	name = "grug_traders:crownbinder",
+	kind = "crownbinder",
+	nametag = "Crownbinder",
+	open = grug_traders.open_crownbinder,
+}, GUARD_TEXTURE.accord)
+
+--
+-- THE CAPITAL SERVICES (Round 33): the Crownbinder at the goldsmith's hall and
+-- the Decor Merchant at the woodcarver's, in every capital. Each takes over
+-- the gate resident of that service plot, as the Housing Steward does
+-- (grug_housing/manager.lua): service plots are required plots, so the
+-- capital planner always places them, and no mapgen changes. The role only
+-- changes before grug_mobs builds its rows at mods-loaded; a missing socket
+-- fails the load.
+--
+local capital_services = dofile(core.get_modpath("grug_mapgen") ..
+	"/wp13/capital_services.lua")
+local CAPITAL_SERVICES = {
+	{role = "crownbinder", plot = "goldsmith", entity = "grug_traders:crownbinder"},
+	{role = "culture_vendor", plot = "woodcarver", entity = "grug_traders:vendor_culture"},
+}
+local capital_keys = {}
+for key in pairs(capital_services.PLOTS) do capital_keys[#capital_keys + 1] = key end
+table.sort(capital_keys)
+for _, service in ipairs(CAPITAL_SERVICES) do
+	for _, key in ipairs(capital_keys) do
+		local plot = capital_services.PLOTS[key][service.plot]
+		grug_core.assign_service_socket(key, plot .. "/" .. plot .. "_gate_idle",
+			service.role)
+	end
+	grug_mobs.register_start_socket_role(service.role, function()
+		return service.entity
+	end)
 end
 
 --

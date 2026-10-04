@@ -199,13 +199,17 @@ end
 
 -- Supplies used by every profession belong on both the core shelf and every
 -- profession-only shelf, because those vendors do not merge the two lists.
+-- The Decor Merchant is no trade's shop and carries none.
+local NO_SUPPLIES = {culture = true}
 function grug_traders.register_all_vendor_stock(def)
 	grug_traders.register_stock(def)
 	local source = grug_traders.stock[#grug_traders.stock]
-	for _, shelf in pairs(grug_traders.profession_stock) do
-		shelf[#shelf + 1] = {
-			item = source.item, price = source.price, category = source.category,
-		}
+	for kind, shelf in pairs(grug_traders.profession_stock) do
+		if not NO_SUPPLIES[kind] then
+			shelf[#shelf + 1] = {
+				item = source.item, price = source.price, category = source.category,
+			}
+		end
 	end
 end
 
@@ -299,6 +303,33 @@ profession_shelf("embalmer", {
 	{"grug_decor:xdecor_candle", 4},
 	{"grug_mobs:linen_scrap", 3},
 	{"grug_mobs:zombie_flesh", 5},
+})
+
+-- The Decor Merchant, the capital culture vendor (round33-plan.md §2.6,
+-- item_tiers.md §6.4): cosmetic blocks and lights nobody can craft, at fixed
+-- prices in four bands -- accent blocks 25c, small lights 1s, large lights
+-- 10s, showpieces 1g. A gold sink; the 5 % buy-back of any sold good applies.
+-- Every item is grug_decor's harvested kit, licensed per file there.
+profession_shelf("culture", {
+	{"grug_decor:darkage_marble", 25},
+	{"grug_decor:darkage_marble_tile", 25},
+	{"grug_decor:darkage_serpentine", 25},
+	{"grug_decor:darkage_slate_tile", 25},
+	{"grug_decor:darkage_ors_brick", 25},
+	{"grug_decor:darkage_basalt_brick", 25},
+	{"grug_decor:darkage_chalked_bricks", 25},
+	{"grug_decor:castle_pavement_brick", 25},
+	{"grug_decor:darkage_glass_round", 25},
+	{"grug_decor:darkage_glass_square", 25},
+	{"grug_decor:darkage_wood_frame", 25},
+	{"grug_decor:darkage_iron_grille", 25},
+	{"grug_decor:xdecor_lantern", 100},
+	{"grug_decor:xdecor_lantern_hanging", 1000},
+	{"grug_decor:cottages_wagon_wheel", 10000},
+	{"grug_decor:xdecor_painting_1", 10000},
+	{"grug_decor:xdecor_painting_2", 10000},
+	{"grug_decor:xdecor_painting_3", 10000},
+	{"grug_decor:xdecor_painting_4", 10000},
 })
 
 --
