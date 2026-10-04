@@ -2,6 +2,11 @@
   {
     "tier": 1,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:boar_tusk",
@@ -12,6 +17,10 @@
   {
     "tier": 1,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:crab_leg",
@@ -22,6 +31,9 @@
   {
     "tier": 1,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:fine_sinew",
@@ -32,6 +44,10 @@
   {
     "tier": 1,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:rat_fur_patch",
@@ -42,6 +58,10 @@
   {
     "tier": 1,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:rat_tail",
@@ -52,6 +72,9 @@
   {
     "tier": 1,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:crab_eye",
@@ -62,6 +85,11 @@
   {
     "tier": 2,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:ridged_boar_tusk",
@@ -72,6 +100,10 @@
   {
     "tier": 2,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:ridged_crab_shell",
@@ -82,6 +114,9 @@
   {
     "tier": 2,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:tough_sinew",
@@ -92,6 +127,10 @@
   {
     "tier": 2,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:dense_rat_fur",
@@ -102,6 +141,10 @@
   {
     "tier": 2,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:knotted_talisman",
@@ -112,6 +155,9 @@
   {
     "tier": 2,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:clear_crab_eye",
@@ -122,6 +168,11 @@
   {
     "tier": 3,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:serrated_fang",
@@ -132,6 +183,10 @@
   {
     "tier": 3,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:layered_crab_shell",
@@ -142,6 +197,9 @@
   {
     "tier": 3,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:braided_sinew",
@@ -152,6 +210,10 @@
   {
     "tier": 3,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:coarse_spider_silk",
@@ -162,6 +224,10 @@
   {
     "tier": 3,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:coarse_spider_silk",
@@ -172,6 +238,9 @@
   {
     "tier": 3,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:clasped_purse",
@@ -182,6 +251,11 @@
   {
     "tier": 4,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:scarred_bear_claw",
@@ -192,6 +266,10 @@
   {
     "tier": 4,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:storm_crab_shell",
@@ -202,6 +280,9 @@
   {
     "tier": 4,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:bitter_resin",
@@ -212,6 +293,10 @@
   {
     "tier": 4,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:ape_hair",
@@ -222,6 +307,10 @@
   {
     "tier": 4,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:layered_spider_web",
@@ -232,6 +321,9 @@
   {
     "tier": 4,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:campaign_purse",
@@ -242,6 +334,11 @@
   {
     "tier": 5,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:siege_cat_claw",
@@ -252,6 +349,10 @@
   {
     "tier": 5,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:siege_bone",
@@ -262,6 +363,9 @@
   {
     "tier": 5,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:ash_feather",
@@ -272,6 +376,10 @@
   {
     "tier": 5,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:siege_weapon_strap",
@@ -282,6 +390,10 @@
   {
     "tier": 5,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:siege_talisman",
@@ -292,6 +404,9 @@
   {
     "tier": 5,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:clenched_jaw",
@@ -302,6 +417,11 @@
   {
     "tier": 6,
     "profession": "weaponsmith",
+    "families": [
+      "dagger",
+      "greataxe",
+      "sword"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:salt_bear_claw",
@@ -312,6 +432,10 @@
   {
     "tier": 6,
     "profession": "armorsmith",
+    "families": [
+      "metal_armor",
+      "shield"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:unquiet_bone",
@@ -322,6 +446,9 @@
   {
     "tier": 6,
     "profession": "woodcarver",
+    "families": [
+      "caster_weapon"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:salt_barbed_feather",
@@ -332,6 +459,10 @@
   {
     "tier": 6,
     "profession": "leatherworker",
+    "families": [
+      "bow",
+      "leather_armor"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:silver_ape_hair",
@@ -342,6 +473,10 @@
   {
     "tier": 6,
     "profession": "tailor",
+    "families": [
+      "cloth_armor",
+      "spellbook"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:glass_spider_silk",
@@ -352,6 +487,9 @@
   {
     "tier": 6,
     "profession": "goldsmith",
+    "families": [
+      "trinket"
+    ],
     "own_material_count": 2,
     "signatures": [
       "grug_mobs:last_hex_shard",

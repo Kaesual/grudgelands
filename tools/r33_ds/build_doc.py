@@ -47,12 +47,18 @@ def blocks():
     full = full_set_lines()
     return {
         "values": stat_values.value_tables() + [""] + full,
+        "dexsplit": stat_values.dex_split(),
+        "coefficients": stat_values.coefficient_table(),
+        "basechange": stat_values.base_change(),
+        "talents": stat_values.talent_check(),
         "classcheck": _trim(check),
         "enchantloot": ["#### Enchant loot per channel (prefix / suffix)", ""] + alloc["Enchant loot per channel"],
         "signatures": alloc["Every signature and its uses"],
         "upgrades": ["#### Upgrade inputs (plus 2 × own material)", ""] + alloc[
             "Upgrade recipes (each also takes 2 × the own material of the tier)"] + [
-            "", "#### Own material", ""] + alloc["Own material of the upgrade"],
+            "", "#### Own material (upgrades and enchants)", ""] + alloc[
+            "Own material of the upgrade and of its enchants"],
+        "progression": alloc["Counting recipes per profession and tier"],
         "crown": money.sinks(bands, after),
         "alchemy": alchemy.tables(),
         "sale": money.sale_table(),
@@ -71,7 +77,7 @@ def full_set_lines():
         v = lambda s: stat_values.enchant_value(s, ilvl, tier)
         warrior = M.warrior_dps(60, ilvl, {"str": 8 * v("str"), "crit_percent": 2 * v("crit_percent"),
                                            "attack_speed_percent": v("attack_speed_percent")}) / M.warrior_dps(60, 60)
-        scout = M.scout_dps(60, ilvl, {"dex": 8 * v("dex"), "crit_percent": v("crit_percent"),
+        scout = M.scout_dps(60, ilvl, {"dex": 8 * v("dex"), "crit_percent": 2 * v("crit_percent"),
                                        "attack_speed_percent": v("attack_speed_percent")}) / M.scout_dps(60, 60)
         short = M.mage_damage(60, ilvl, {"int": 8 * v("int"), "crit_percent": 2 * v("crit_percent")}) / M.mage_damage(60, 60)
         bound = M.mage_damage(60, ilvl, {"int": 8 * v("int"), "crit_percent": 2 * v("crit_percent"),
@@ -79,10 +85,10 @@ def full_set_lines():
         hp = M.ehp("warrior", 60, ilvl, {"max_hp_percent": 5 * v("max_hp_percent")}) / M.ehp("warrior", 60, 60)
         rows.append("| %d | %+.0f %% | %+.0f %% | %+.0f %% / %+.0f %% | %+.0f %% |" % (
             ilvl, 100 * (warrior - 1), 100 * (scout - 1), 100 * (short - 1), 100 * (bound - 1), 100 * (hp - 1)))
-    rows += ["", "Damage sets: an attribute on every one of the eight items, Crit up to the "
-             "cap (two for Warrior and Mage, one for the Scout), Attack speed on the weapon; "
-             "the Mage's remaining six channels Mana. Against the same character in plain "
-             "item-level-60 gear (Appendix A)."]
+    rows += ["", "Damage sets: an attribute on every one of the eight items, two Crit "
+             "enchants, Attack speed on the weapon (Warrior, Scout); the Mage's remaining six "
+             "channels Mana. Against the same character in plain item-level-60 gear "
+             "(Appendix A)."]
     return rows
 
 

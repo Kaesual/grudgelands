@@ -91,12 +91,33 @@ ENCHANT = {
 # Profession upgrades: tier -> profession -> (signature A, signature B).
 # Each also takes two of the profession's own material of the tier.
 PROFESSIONS = ("weaponsmith", "armorsmith", "woodcarver", "leatherworker", "tailor", "goldsmith")
-FAMILIES = {"weaponsmith": "sword, dagger, battle axe",
-            "armorsmith": "metal armour, shield",
-            "woodcarver": "bow, staff, wand",
-            "leatherworker": "leather armour",
-            "tailor": "cloth armour",
-            "goldsmith": "trinket, spellbook"}
+# Who enchants and upgrades which family (user ruling 2026-10-04: two
+# professions dress every class in armour, weapon and offhand). Bows move from
+# the Woodcarver to the Leatherworker, spellbooks from the Goldsmith to the
+# Tailor.
+OWNER = {"sword": "weaponsmith", "dagger": "weaponsmith", "greataxe": "weaponsmith",
+         "metal_armor": "armorsmith", "shield": "armorsmith",
+         "caster_weapon": "woodcarver",
+         "leather_armor": "leatherworker", "bow": "leatherworker",
+         "cloth_armor": "tailor", "spellbook": "tailor",
+         "trinket": "goldsmith"}
+FAMILY_LABEL = {"sword": "sword", "dagger": "dagger", "greataxe": "battle axe",
+                "metal_armor": "metal armour", "shield": "shield",
+                "caster_weapon": "staff, wand", "leather_armor": "leather armour",
+                "bow": "bow", "cloth_armor": "cloth armour", "spellbook": "spellbook",
+                "trinket": "trinket"}
+FAMILIES = {prof: ", ".join(FAMILY_LABEL[f] for f in OWNER if OWNER[f] == prof)
+            for prof in set(OWNER.values())}
+# Profession products that count as progression crafts, besides enchants and
+# upgrades (grug_professions/tailor.lua, leatherworker.lua,
+# grug_artisans/goldsmith.lua; the spellbook moves to the Tailor).
+PRODUCTS = {
+    "weaponsmith": {}, "armorsmith": {}, "woodcarver": {},
+    "leatherworker": {1: "8-slot bag", 2: "16-slot bag", 4: "24-slot bag", 5: "32-slot bag"},
+    "tailor": dict((t, "spellbook" + {1: ", 8-slot bag", 2: ", 16-slot bag", 4: ", 24-slot bag",
+                                         5: ", 32-slot bag"}.get(t, "")) for t in range(1, 7)),
+    "goldsmith": dict((t, "six trinkets") for t in range(1, 7)),
+}
 OWN_MATERIAL = {
     "weaponsmith": ("Bronze Bar", "Iron Bar", "Steel Bar", "Silversteel Bar", "Embersteel Bar", "Abyssal Steel Bar"),
     "armorsmith": ("Bronze Bar", "Iron Bar", "Steel Bar", "Silversteel Bar", "Embersteel Bar", "Abyssal Steel Bar"),
@@ -197,7 +218,7 @@ ALCHEMY = {
         "Elixir of Vigor IV": (G + "crimson_lotus", "ironbound_sinew"),
         "Elixir of Focus IV": (G + "crimson_lotus", "campaign_talisman"),
         "Elixir of Precision IV": (G + "crimson_lotus", "razor_cat_claw"),
-        "Stoneskin Elixir IV": (G + "crimson_lotus", "storm_crab_shell")},
+        "Stoneskin Elixir IV": (G + "crimson_lotus", "shiny_scale")},
     5: {"Healing Potion V": (K + "ember_moss", G + "crimson_lotus"),
         "Mana Potion V": (G + "stormkelp", G + "crimson_lotus"),
         "Elixir of Vigor V": (K + "ember_moss", "scorched_flesh"),
@@ -242,8 +263,29 @@ def uses():
     return out
 
 
+def progression_table():
+    out = ["| Profession | Families | " + " | ".join("T%d" % t for t in range(1, 7)) + " |",
+           "|---|---|" + "---|" * 6]
+    for prof in PROFESSIONS:
+        cells = []
+        for tier in range(1, 7):
+            parts = ["enchants", "upgrade"]
+            if PRODUCTS[prof].get(tier):
+                parts.append(PRODUCTS[prof][tier])
+            cells.append(", ".join(parts))
+        out.append("| %s | %s | %s |" % (prof.capitalize(), FAMILIES[prof], " | ".join(cells)))
+    return out
+
+
 def check():
     problems = []
+    for prof in PROFESSIONS:
+        if not any(OWNER[f] == prof for f in OWNER):
+            problems.append("%s owns no enchant family" % prof)
+    for family in ("sword", "dagger", "greataxe", "metal_armor", "shield", "caster_weapon",
+                   "leather_armor", "bow", "cloth_armor", "spellbook", "trinket"):
+        if family not in OWNER:
+            problems.append("family %s has no owner" % family)
     items = C.mob_items()
     avail = A.item_availability()
     used = uses()
@@ -317,7 +359,9 @@ def upgrades_json():
     for tier in range(1, 7):
         for prof in PROFESSIONS:
             a, b = UPGRADE[tier][prof]
-            out.append({"tier": tier, "profession": prof, "own_material_count": 2,
+            out.append({"tier": tier, "profession": prof,
+                        "families": sorted(f for f in OWNER if OWNER[f] == prof),
+                        "own_material_count": 2,
                         "signatures": [M + a, M + b], "target_item_level": 10 * tier})
     return out
 
@@ -348,7 +392,8 @@ def tables():
     for prof in PROFESSIONS:
         cells = ["%s + %s" % (name(UPGRADE[t][prof][0]), name(UPGRADE[t][prof][1])) for t in range(1, 7)]
         out.append("| %s (%s) | %s |" % (prof.capitalize(), FAMILIES[prof], " | ".join(cells)))
-    out += ["", "### Own material of the upgrade", "",
+    out += ["", "### Counting recipes per profession and tier", ""] + progression_table()
+    out += ["", "### Own material of the upgrade and of its enchants", "",
             "| Profession | " + " | ".join("T%d" % t for t in range(1, 7)) + " |", "|---|" + "---|" * 6]
     for prof in PROFESSIONS:
         out.append("| %s | %s |" % (prof.capitalize(), " | ".join(OWN_MATERIAL[prof])))

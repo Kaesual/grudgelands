@@ -29,8 +29,8 @@ end
 local CURVES = {
 	str = {0.8, 0.15, 0.0025, 0, 1},
 	int = {0.8, 0.15, 0.0025, 0, 1},
-	dex = {0.6, 0.1, 0.0018, 0, 1},
-	crit_percent = {3.6, 0.08, 0, 1, 0},
+	dex = {0.8, 0.13, 0.0019, 0, 1},
+	crit_percent = {1.7, 0.044, 0, 1, 0},
 	attack_speed_percent = {1.6, 0.04, 0, 1, 0},
 	max_hp_percent = {1.6, 0.04, 0, 1, 0},
 	max_mana_percent = {2.2, 0.03, 0, 1, 0},
@@ -53,9 +53,9 @@ end
 -- item_tiers.md section 1.1, "Values at the tier tops": T1..T6, T7 65, T7 70.
 local TOPS = {
 	str = {3, 5, 8, 11, 15, 19, 21, 24},
-	dex = {2, 3, 5, 7, 10, 13, 15, 16},
+	dex = {2, 4, 6, 9, 12, 15, 17, 19},
 	int = {3, 5, 8, 11, 15, 19, 21, 24},
-	crit_percent = {4.4, 5.2, 6.0, 6.8, 7.6, 8.4, 8.8, 9.2},
+	crit_percent = {2.1, 2.6, 3.0, 3.5, 3.9, 4.3, 4.6, 4.8},
 	attack_speed_percent = {2.0, 2.4, 2.8, 3.2, 3.6, 4.0, 4.2, 4.4},
 	max_hp_percent = {2.0, 2.4, 2.8, 3.2, 3.6, 4.0, 4.2, 4.4},
 	max_mana_percent = {2.5, 2.8, 3.1, 3.4, 3.7, 4.0, 4.2, 4.3},
@@ -65,8 +65,8 @@ local TOPS = {
 -- "Values on plain bases": item level 3/10/20/30/40/50 with the base's tier.
 local BASES = {
 	str = {1, 3, 5, 8, 11, 15},
-	dex = {1, 2, 3, 5, 7, 10},
-	crit_percent = {3.8, 4.4, 5.2, 6.0, 6.8, 7.6},
+	dex = {1, 2, 4, 6, 9, 12},
+	crit_percent = {1.8, 2.1, 2.6, 3.0, 3.5, 3.9},
 	max_mana_percent = {2.3, 2.5, 2.8, 3.1, 3.4, 3.7},
 	armor_rating = {0.5, 0.8, 1.6, 2.4, 3.2, 4.0},
 }

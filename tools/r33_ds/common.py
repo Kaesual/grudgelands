@@ -80,8 +80,24 @@ def attributes(cls, level):
             "dex": 10 + g[2] * (level - 1)}
 
 
-def crit_chance(dex, extra_pp=0.0):
-    return min(0.30, 0.05 + 0.001 * dex + extra_pp / 100.0)
+# Crit and Dexterity (user ruling 2026-10-04, Round 33 DS rework): Dexterity
+# gives 0.05 % crit (was 0.1 %) and 0.1 % dodge per point; a crit deals x2
+# (was x1.5) for damage and heals. TODAY_* keep the shipped values for the
+# before/after comparison.
+CRIT_PER_DEX = 0.0005
+CRIT_MULT = 2.0
+TODAY_CRIT_PER_DEX = 0.001
+TODAY_CRIT_MULT = 1.5
+
+
+def crit_chance(dex, extra_pp=0.0, per_dex=None):
+    per_dex = CRIT_PER_DEX if per_dex is None else per_dex
+    return min(0.30, 0.05 + per_dex * dex + extra_pp / 100.0)
+
+
+def crit_factor(crit, mult=None):
+    """Expected damage or healing factor of a crit chance."""
+    return 1 + ((CRIT_MULT if mult is None else mult) - 1) * crit
 
 
 def dodge_chance(dex, extra_pp=0.0):

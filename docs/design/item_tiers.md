@@ -1,6 +1,8 @@
 # Item tiers: enchant values, recipes, upgrades, the crown, potions and money
 
-**Status: proposed** (Round 33 lane DS, 2026-10-04). The user's rulings are
+**Status: proposed, version 2** (Round 33 lane DS, 2026-10-04; version 2
+follows the user's rulings of the same day on Crit and Dexterity, profession
+families and two leftovers, marked "(v2)"). The user's rulings are
 [round33-plan.md](../planning/round33-plan.md) §2; this file turns them into
 the numbers lanes C4 (enchant tiers, upgrades, crown) and C5 (vendors,
 potions, economy) implement verbatim once the user approves the DS preview.
@@ -11,14 +13,53 @@ Every table between `generated` markers is printed by a script in
 On implementation this file replaces the fixed crafted values and the found
 roll windows of [items_crafting.md](items_crafting.md) §6.3, §6b.2 and
 [crafting_equipment_revision.md](crafting_equipment_revision.md#enchanting),
-the alchemy table of items_crafting.md §3.6, and the 20 % repair factor of
+the alchemy table of items_crafting.md §3.6, the 20 % repair factor of
 [durability_repair.md](durability_repair.md#price) and
-[economy.md](economy.md) §4.
+[economy.md](economy.md) §4, the crit rules of
+[combat_stats.md](combat_stats.md) §2 (§1.0 below) and the bow and spellbook
+ownership of [professions.md](professions.md) §2 (§3.3 below).
 
 Tiers: T1 = item or character level 1–10 … T6 = 51–60, T7 = 61–70 (boss
 drops and crowned items only).
 
 ## 1. Enchant values
+
+### 1.0 Crit and Dexterity (v2, user ruling 2026-10-04)
+
+- **Dexterity gives 0.05 percentage points of Crit** (was 0.1) and, unchanged,
+  0.1 points of Dodge per point. Base Crit stays 5 %; both caps stay 30 %.
+- **A crit deals ×2** (was ×1.5), for damage and for heals (`grug_core/combat.lua`
+  melee, ability and heal crit rolls; `grug_classes/stats.lua`
+  `get_crit_chance_raw`).
+- Without gear every class deals and heals about **+2.4 %** more on average
+  (the expected factor goes from `1.025 + 0.0005 Dex` to `1.05 + 0.0005 Dex`):
+
+<!-- generated: basechange -->
+| Level | Warrior | Scout | Mage | Priest (heal) | Priest (Smite) |
+|---:|---:|---:|---:|---:|---:|
+| 1 | +2.4 % | +2.4 % | +2.4 % | +2.4 % | +2.4 % |
+| 10 | +2.4 % | +2.4 % | +2.4 % | +2.4 % | +2.4 % |
+| 30 | +2.4 % | +2.4 % | +2.4 % | +2.4 % | +2.4 % |
+| 60 | +2.4 % | +2.3 % | +2.4 % | +2.4 % | +2.4 % |
+<!-- end generated -->
+
+- **Crit talents** keep their numbers and are worth about twice as much: each
+  crit point now adds about 1 % damage instead of 0.5 %. The Warrior's
+  Ruination window (+20 points, cap 50 %, 10 s every 120 s) rises from +9 % to
+  +18 % damage while it lasts; a capstone burst, still bounded by its 50 %
+  cap. Whitehot (triggered by a Fireball crit) fires a little later on
+  average, because base crit from Dexterity is lower. No talent needs a
+  change; at its 50 % cap a Ruination hit averages ×1.5 instead of ×1.25,
+  the one number to watch in a playtest.
+
+<!-- generated: talents -->
+| Talent | Effect | Class | Gain today (×1.5) | Gain new (×2) |
+|---|---|---|---:|---:|
+| Keen Edge 5/5 | +5 crit points | Warrior | +2.4 % | +4.6 % |
+| Firebrand 4/4 | +4 crit points | Mage | +1.9 % | +3.7 % |
+| Cold Eye 4/4 | +4 crit points | Scout | +1.8 % | +3.6 % |
+| Ruination window | +20 crit points, cap 50 %, 10 s per 120 s | Warrior | +9.4 % | +18.4 % |
+<!-- end generated -->
 
 ### 1.1 The rule
 
@@ -40,15 +81,19 @@ value is recomputed whenever the item level or the enchant tier changes
   what the formula gives at its item level.
 - **The crown** raises every enchant on the item by one tier (§4).
 
+<!-- generated: coefficients -->
 | Stat | a | b | c | decimals | minimum |
 |---|---:|---:|---:|---:|---:|
-| Strength, Intelligence | 0.8 | 0.15 | 0.0025 | 0 | 1 |
-| Dexterity | 0.6 | 0.1 | 0.0018 | 0 | 1 |
-| Crit % | 3.6 | 0.08 | 0 | 1 | 0 |
-| Attack speed %, Max HP % | 1.6 | 0.04 | 0 | 1 | 0 |
+| Strength | 0.8 | 0.15 | 0.0025 | 0 | 1 |
+| Dexterity | 0.8 | 0.13 | 0.0019 | 0 | 1 |
+| Intelligence | 0.8 | 0.15 | 0.0025 | 0 | 1 |
+| Crit % | 1.7 | 0.044 | 0 | 1 | 0 |
+| Attack speed % | 1.6 | 0.04 | 0 | 1 | 0 |
+| Max HP % | 1.6 | 0.04 | 0 | 1 | 0 |
 | Max Mana % | 2.2 | 0.03 | 0 | 1 | 0 |
 | Dodge % | 1.5 | 0.032 | 0 | 1 | 0 |
 | Armor rating | 0 | 0.08 | 0 | 1 | 0.5 |
+<!-- end generated -->
 
 The percentage stats, armor rating included, are shown and summed with one
 decimal (today HP, Mana, attack speed and armor are whole numbers); without
@@ -61,8 +106,8 @@ about 2 % at level 10 to 4 % at 60 and 4.4 % at 70:
 damage-enchanted level-60 Warrior gains about +47 % damage at item level 60
 and +69 % at 70 (table "A full set at level 60"), the order of the design's
 +50–60 % endgame ceiling
-([combat_stats.md](combat_stats.md) §2). Dexterity has its own, lower curve
-because it also gives Crit and Dodge (§1.4).
+([combat_stats.md](combat_stats.md) §2). Crit follows a crit point's ×2 worth
+(about 1 % damage per point); Dexterity has its own curve (§1.4).
 
 <!-- generated: values -->
 ### Values at the tier tops (upgraded or found at the top)
@@ -70,9 +115,9 @@ because it also gives Crit and Dodge (§1.4).
 | Stat | Formula | T1 (10) | T2 (20) | T3 (30) | T4 (40) | T5 (50) | T6 (60) | T7 (65) | T7 (70) | Today T1 → T6 |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
 | Strength | 0.8 + 0.15 × L + 0.0025 × L², whole number, at least 1 | 3 | 5 | 8 | 11 | 15 | 19 | 21 | 24 | 2 / 3 / 5 / 7 / 9 / 10 |
-| Dexterity | 0.6 + 0.1 × L + 0.0018 × L², whole number, at least 1 | 2 | 3 | 5 | 7 | 10 | 13 | 15 | 16 | 2 / 3 / 5 / 7 / 9 / 10 |
+| Dexterity | 0.8 + 0.13 × L + 0.0019 × L², whole number, at least 1 | 2 | 4 | 6 | 9 | 12 | 15 | 17 | 19 | 2 / 3 / 5 / 7 / 9 / 10 |
 | Intelligence | 0.8 + 0.15 × L + 0.0025 × L², whole number, at least 1 | 3 | 5 | 8 | 11 | 15 | 19 | 21 | 24 | 2 / 3 / 5 / 7 / 9 / 10 |
-| Crit % | 3.6 + 0.08 × L, one decimal | 4.4 | 5.2 | 6.0 | 6.8 | 7.6 | 8.4 | 8.8 | 9.2 | 0.5 / 0.8 / 1.2 / 1.6 / 2 / 2.5 |
+| Crit % | 1.7 + 0.044 × L, one decimal | 2.1 | 2.6 | 3.0 | 3.5 | 3.9 | 4.3 | 4.6 | 4.8 | 0.5 / 0.8 / 1.2 / 1.6 / 2 / 2.5 |
 | Attack speed % | 1.6 + 0.04 × L, one decimal | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 | 4.0 | 4.2 | 4.4 | 4 / 6 / 8 / 10 / 12 / 14 |
 | Max HP % | 1.6 + 0.04 × L, one decimal | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 | 4.0 | 4.2 | 4.4 | 1 / 2 / 2 / 3 / 4 / 5 |
 | Max Mana % | 2.2 + 0.03 × L, one decimal | 2.5 | 2.8 | 3.1 | 3.4 | 3.7 | 4.0 | 4.2 | 4.3 | 1 / 2 / 2 / 3 / 4 / 5 |
@@ -84,9 +129,9 @@ because it also gives Crit and Dodge (§1.4).
 | Stat | T1 (3) | T2 (10) | T3 (20) | T4 (30) | T5 (40) | T6 (50) |
 |---|---:|---:|---:|---:|---:|---:|
 | Strength | 1 | 3 | 5 | 8 | 11 | 15 |
-| Dexterity | 1 | 2 | 3 | 5 | 7 | 10 |
+| Dexterity | 1 | 2 | 4 | 6 | 9 | 12 |
 | Intelligence | 1 | 3 | 5 | 8 | 11 | 15 |
-| Crit % | 3.8 | 4.4 | 5.2 | 6.0 | 6.8 | 7.6 |
+| Crit % | 1.8 | 2.1 | 2.6 | 3.0 | 3.5 | 3.9 |
 | Attack speed % | 1.7 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
 | Max HP % | 1.7 | 2.0 | 2.4 | 2.8 | 3.2 | 3.6 |
 | Max Mana % | 2.3 | 2.5 | 2.8 | 3.1 | 3.4 | 3.7 |
@@ -97,11 +142,11 @@ because it also gives Crit and Dodge (§1.4).
 
 | Item level | Warrior, damage set | Scout, damage set | Mage, damage set (short fight / mana-bound) | Warrior, 5 × HP |
 |---:|---:|---:|---:|---:|
-| 60 | +47 % | +40 % | +45 % / +80 % | +20 % |
-| 65 | +57 % | +51 % | +50 % / +88 % | +27 % |
-| 70 | +69 % | +59 % | +56 % / +97 % | +32 % |
+| 60 | +47 % | +55 % | +45 % / +80 % | +20 % |
+| 65 | +57 % | +68 % | +50 % / +88 % | +27 % |
+| 70 | +69 % | +82 % | +57 % / +97 % | +32 % |
 
-Damage sets: an attribute on every one of the eight items, Crit up to the cap (two for Warrior and Mage, one for the Scout), Attack speed on the weapon; the Mage's remaining six channels Mana. Against the same character in plain item-level-60 gear (Appendix A).
+Damage sets: an attribute on every one of the eight items, two Crit enchants, Attack speed on the weapon (Warrior, Scout); the Mage's remaining six channels Mana. Against the same character in plain item-level-60 gear (Appendix A).
 <!-- end generated -->
 
 ### 1.2 The class check
@@ -120,20 +165,20 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 
 | Point | Target | damage: Str | damage: Crit | damage: Attack speed | damage (battle axe): Str | damage (battle axe): Crit | damage (battle axe): Attack speed | survival: HP | survival: Armor (2H) | survival: Armor (shield) | survival: Armor (shield, foe +5) | Dex rider: Dex → damage | Dex rider: Dex → EHP |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| T1 mid | 1.8 | 2.1 | 1.9 | 1.7 | 1.5 | 1.9 | 1.7 | 1.8 | 1.5 | 1.2 | 1.1 | 0.0 | 0.1 |
-| T1 top | 2.0 | 2.2 | 2.1 | 1.9 | 1.6 | 2.1 | 1.9 | 2.0 | 2.1 | 1.5 | 1.4 | 0.1 | 0.2 |
+| T1 mid | 1.8 | 2.1 | 1.8 | 1.7 | 1.5 | 1.8 | 1.7 | 1.8 | 1.5 | 1.2 | 1.1 | 0.0 | 0.1 |
+| T1 top | 2.0 | 2.2 | 2.0 | 1.9 | 1.6 | 2.0 | 1.9 | 2.0 | 2.1 | 1.5 | 1.4 | 0.1 | 0.2 |
 | T2 mid | 2.2 | 2.5 | 2.3 | 2.1 | 1.8 | 2.3 | 2.1 | 2.2 | 2.6 | 1.8 | 1.8 | 0.1 | 0.3 |
-| T2 top | 2.4 | 2.5 | 2.5 | 2.3 | 1.8 | 2.5 | 2.3 | 2.4 | 3.0 | 2.1 | 2.0 | 0.1 | 0.3 |
-| T3 mid | 2.6 | 2.5 | 2.7 | 2.5 | 1.8 | 2.7 | 2.5 | 2.6 | 3.4 | 2.3 | 2.2 | 0.2 | 0.4 |
-| T3 top | 2.8 | 2.9 | 2.9 | 2.7 | 2.1 | 2.9 | 2.7 | 2.8 | 3.6 | 2.4 | 2.4 | 0.2 | 0.5 |
-| T4 mid | 3.0 | 2.9 | 3.1 | 2.9 | 2.2 | 3.1 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.6 |
-| T4 top | 3.2 | 3.2 | 3.2 | 3.1 | 2.4 | 3.2 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.3 | 0.7 |
-| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.5 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.0 |
-| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.7 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.4 | 1.1 |
-| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.8 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.5 | 1.3 |
-| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.9 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.4 |
-| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 3.0 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.7 | 1.6 |
-| T7 70 | 4.4 | 4.5 | 4.3 | 4.3 | 3.3 | 4.3 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.7 | 1.7 |
+| T2 top | 2.4 | 2.5 | 2.4 | 2.3 | 1.8 | 2.4 | 2.3 | 2.4 | 3.0 | 2.1 | 2.0 | 0.2 | 0.4 |
+| T3 mid | 2.6 | 2.5 | 2.6 | 2.5 | 1.8 | 2.6 | 2.5 | 2.6 | 3.4 | 2.3 | 2.2 | 0.2 | 0.5 |
+| T3 top | 2.8 | 2.9 | 2.8 | 2.7 | 2.1 | 2.8 | 2.7 | 2.8 | 3.6 | 2.4 | 2.4 | 0.3 | 0.6 |
+| T4 mid | 3.0 | 2.9 | 3.0 | 2.9 | 2.2 | 3.0 | 2.9 | 3.0 | 3.8 | 2.5 | 2.5 | 0.3 | 0.8 |
+| T4 top | 3.2 | 3.2 | 3.3 | 3.1 | 2.4 | 3.3 | 3.1 | 3.2 | 4.0 | 2.7 | 2.6 | 0.4 | 1.0 |
+| T5 mid | 3.4 | 3.4 | 3.4 | 3.3 | 2.5 | 3.4 | 3.2 | 3.4 | 4.1 | 2.7 | 2.7 | 0.4 | 1.1 |
+| T5 top | 3.6 | 3.5 | 3.6 | 3.5 | 2.7 | 3.6 | 3.4 | 3.6 | 4.3 | 2.8 | 2.7 | 0.5 | 1.3 |
+| T6 mid | 3.8 | 3.8 | 3.8 | 3.7 | 2.8 | 3.8 | 3.6 | 3.8 | 4.3 | 1.8 | 2.8 | 0.6 | 1.5 |
+| T6 top | 4.0 | 3.9 | 4.0 | 3.9 | 2.9 | 4.0 | 3.8 | 4.0 | 4.4 | 0.4 | 2.3 | 0.6 | 1.6 |
+| T7 65 | 4.2 | 4.1 | 4.2 | 4.1 | 3.0 | 4.2 | 4.0 | 4.2 | 4.6 | 0.0 | 2.4 | 0.7 | 1.9 |
+| T7 70 | 4.4 | 4.5 | 4.4 | 4.3 | 3.3 | 4.4 | 4.2 | 4.4 | 4.8 | 0.0 | 2.5 | 0.8 | 2.1 |
 
 #### Scout
 
@@ -141,20 +186,20 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 
 | Point | Target | damage: Dex | damage: Crit | damage: Attack speed | survival: HP | survival: Dodge | Dex rider: Dex → EHP |
 |---|---|---:|---:|---:|---:|---:|---:|
-| T1 mid | 1.8 | 1.3 | 1.9 | 1.8 | 1.8 | 1.8 | 0.1 |
-| T1 top | 2.0 | 1.9 | 2.1 | 2.0 | 2.0 | 1.9 | 0.2 |
-| T2 mid | 2.2 | 2.5 | 2.3 | 2.2 | 2.2 | 2.1 | 0.3 |
-| T2 top | 2.4 | 2.0 | 2.5 | 2.4 | 2.4 | 2.3 | 0.3 |
-| T3 mid | 2.6 | 2.3 | 2.7 | 2.6 | 2.6 | 2.5 | 0.4 |
-| T3 top | 2.8 | 2.5 | 2.8 | 2.8 | 2.8 | 2.8 | 0.5 |
-| T4 mid | 3.0 | 2.8 | 3.0 | 3.0 | 3.0 | 2.9 | 0.7 |
-| T4 top | 3.2 | 2.9 | 3.2 | 3.2 | 3.2 | 3.2 | 0.8 |
-| T5 mid | 3.4 | 3.5 | 3.4 | 3.4 | 3.4 | 3.3 | 1.0 |
-| T5 top | 3.6 | 3.5 | 3.5 | 3.6 | 3.6 | 3.6 | 1.1 |
-| T6 mid | 3.8 | 4.0 | 3.7 | 3.8 | 3.8 | 3.9 | 1.4 |
-| T6 top | 4.0 | 4.1 | 3.9 | 4.0 | 4.0 | 4.1 | 1.5 |
-| T7 65 | 4.2 | 4.5 | 4.0 | 4.2 | 4.2 | 4.3 | 1.8 |
-| T7 70 | 4.4 | 4.6 | 4.2 | 4.4 | 4.4 | 4.4 | 1.9 |
+| T1 mid | 1.8 | 1.3 | 1.8 | 1.8 | 1.8 | 1.8 | 0.1 |
+| T1 top | 2.0 | 1.9 | 2.0 | 2.0 | 2.0 | 1.9 | 0.2 |
+| T2 mid | 2.2 | 2.5 | 2.2 | 2.2 | 2.2 | 2.1 | 0.3 |
+| T2 top | 2.4 | 2.7 | 2.4 | 2.4 | 2.4 | 2.3 | 0.4 |
+| T3 mid | 2.6 | 2.9 | 2.6 | 2.6 | 2.6 | 2.5 | 0.5 |
+| T3 top | 2.8 | 3.0 | 2.8 | 2.8 | 2.8 | 2.8 | 0.6 |
+| T4 mid | 3.0 | 3.7 | 2.9 | 3.0 | 3.0 | 2.9 | 0.9 |
+| T4 top | 3.2 | 3.8 | 3.2 | 3.2 | 3.2 | 3.2 | 1.0 |
+| T5 mid | 3.4 | 3.8 | 3.4 | 3.4 | 3.4 | 3.3 | 1.1 |
+| T5 top | 3.6 | 4.2 | 3.5 | 3.6 | 3.6 | 3.6 | 1.4 |
+| T6 mid | 3.8 | 4.7 | 3.7 | 3.8 | 3.8 | 3.9 | 1.6 |
+| T6 top | 4.0 | 4.7 | 3.9 | 4.0 | 4.0 | 4.1 | 1.8 |
+| T7 65 | 4.2 | 5.1 | 4.1 | 4.2 | 4.2 | 4.3 | 2.0 |
+| T7 70 | 4.4 | 5.4 | 4.3 | 4.4 | 4.4 | 4.4 | 2.2 |
 
 #### Mage
 
@@ -162,20 +207,20 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 
 | Point | Target | damage: Int | damage: Crit | damage: Mana | survival: HP |
 |---|---|---:|---:|---:|---:|
-| T1 mid | 1.8 | 2.4 | 1.9 | 1.7 | 1.8 |
-| T1 top | 2.0 | 2.6 | 2.1 | 2.0 | 2.0 |
+| T1 mid | 1.8 | 2.4 | 1.8 | 1.7 | 1.8 |
+| T1 top | 2.0 | 2.6 | 2.0 | 2.0 | 2.0 |
 | T2 mid | 2.2 | 2.8 | 2.3 | 2.3 | 2.2 |
-| T2 top | 2.4 | 2.8 | 2.5 | 2.4 | 2.4 |
-| T3 mid | 2.6 | 2.8 | 2.7 | 3.0 | 2.6 |
-| T3 top | 2.8 | 3.2 | 2.9 | 3.1 | 2.8 |
-| T4 mid | 3.0 | 3.3 | 3.1 | 3.3 | 3.0 |
-| T4 top | 3.2 | 3.6 | 3.2 | 3.4 | 3.2 |
+| T2 top | 2.4 | 2.8 | 2.4 | 2.4 | 2.4 |
+| T3 mid | 2.6 | 2.8 | 2.6 | 3.0 | 2.6 |
+| T3 top | 2.8 | 3.2 | 2.8 | 3.1 | 2.8 |
+| T4 mid | 3.0 | 3.3 | 3.0 | 3.3 | 3.0 |
+| T4 top | 3.2 | 3.6 | 3.3 | 3.4 | 3.2 |
 | T5 mid | 3.4 | 3.8 | 3.4 | 3.6 | 3.4 |
 | T5 top | 3.6 | 4.0 | 3.6 | 3.7 | 3.6 |
 | T6 mid | 3.8 | 4.2 | 3.8 | 3.9 | 3.8 |
 | T6 top | 4.0 | 4.3 | 4.0 | 4.0 | 4.0 |
 | T7 65 | 4.2 | 4.8 | 4.2 | 4.2 | 4.2 |
-| T7 70 | 4.4 | 5.5 | 4.3 | 4.3 | 4.4 |
+| T7 70 | 4.4 | 5.5 | 4.4 | 4.3 | 4.4 |
 
 #### Priest
 
@@ -183,20 +228,20 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
 
 | Point | Target | healing: Int | healing: Crit | healing: Mana | damage (Smite): Int | damage (Smite): Crit | damage (Smite): Mana | survival: HP |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| T1 mid | 1.8 | 0.2 | 1.9 | 1.7 | 2.6 | 1.9 | 1.7 | 1.8 |
-| T1 top | 2.0 | 0.3 | 2.1 | 2.0 | 2.8 | 2.1 | 2.0 | 2.0 |
+| T1 mid | 1.8 | 0.2 | 1.8 | 1.7 | 2.6 | 1.8 | 1.7 | 1.8 |
+| T1 top | 2.0 | 0.3 | 2.0 | 2.0 | 2.8 | 2.0 | 2.0 | 2.0 |
 | T2 mid | 2.2 | 0.4 | 2.3 | 2.3 | 3.1 | 2.3 | 2.3 | 2.2 |
-| T2 top | 2.4 | 0.5 | 2.5 | 2.4 | 3.2 | 2.5 | 2.4 | 2.4 |
-| T3 mid | 2.6 | 0.6 | 2.7 | 3.0 | 3.2 | 2.7 | 3.0 | 2.6 |
-| T3 top | 2.8 | 0.7 | 2.9 | 3.1 | 3.7 | 2.9 | 3.1 | 2.8 |
-| T4 mid | 3.0 | 0.8 | 3.1 | 3.3 | 3.8 | 3.1 | 3.3 | 3.0 |
-| T4 top | 3.2 | 1.0 | 3.2 | 3.4 | 4.1 | 3.2 | 3.4 | 3.2 |
+| T2 top | 2.4 | 0.5 | 2.4 | 2.4 | 3.2 | 2.4 | 2.4 | 2.4 |
+| T3 mid | 2.6 | 0.6 | 2.6 | 3.0 | 3.2 | 2.6 | 3.0 | 2.6 |
+| T3 top | 2.8 | 0.7 | 2.8 | 3.1 | 3.7 | 2.8 | 3.1 | 2.8 |
+| T4 mid | 3.0 | 0.8 | 3.0 | 3.3 | 3.8 | 3.0 | 3.3 | 3.0 |
+| T4 top | 3.2 | 1.0 | 3.3 | 3.4 | 4.1 | 3.3 | 3.4 | 3.2 |
 | T5 mid | 3.4 | 1.2 | 3.4 | 3.6 | 4.4 | 3.4 | 3.6 | 3.4 |
 | T5 top | 3.6 | 1.4 | 3.6 | 3.7 | 4.6 | 3.6 | 3.7 | 3.6 |
 | T6 mid | 3.8 | 1.5 | 3.8 | 3.9 | 4.9 | 3.8 | 3.9 | 3.8 |
 | T6 top | 4.0 | 1.7 | 4.0 | 4.0 | 5.0 | 4.0 | 4.0 | 4.0 |
 | T7 65 | 4.2 | 1.9 | 4.2 | 4.2 | 5.6 | 4.2 | 4.2 | 4.2 |
-| T7 70 | 4.4 | 2.1 | 4.3 | 4.3 | 6.3 | 4.3 | 4.3 | 4.4 |
+| T7 70 | 4.4 | 2.1 | 4.4 | 4.3 | 6.3 | 4.4 | 4.3 | 4.4 |
 <!-- end generated -->
 
 ### 1.3 What the check shows
@@ -206,10 +251,10 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   Warrior; Dexterity, Crit and Attack speed for the Scout; Intelligence,
   Crit and Mana for the Mage; Crit and Mana for the Priest's healing; HP,
   Armor and Dodge for survival. Attack speed falls from today's 4–14 % to
-  1.7–4.4 %, Crit rises from 0.5–2.5 to 3.8–9.2 percentage points.
-- **Crit reaches its 30 % cap after one or two enchants** (Warrior and Mage
-  about two, Scout about one and a half at level 60); further crit enchants
-  are wasted, so the cap keeps Crit from being the only pick.
+  1.7–4.4 %, Crit moves from 0.5–2.5 to 1.8–4.8 percentage points (v2).
+- **Crit reaches its 30 % cap after about five enchants** at level 60
+  (Warrior and Mage five, Scout four, v2); the cap no longer decides the
+  Crit choice in an ordinary set.
 - **Battle axe:** Strength adds a flat amount per swing, and the axe swings
   every 1.4 s, so for a two-handed Warrior one Strength enchant is worth
   about 0.7 of a Crit or Attack speed enchant. On armour Strength competes
@@ -230,18 +275,37 @@ Gain in % of one enchant at the point's item level (damage, healing or effective
   at all in a short fight. A fully damage-enchanted level-60 Mage gains +45 %
   in short fights and +80 % in mana-bound ones (table "A full set at level
   60").
+- **The Scout's full damage set** gains +55 % at item level 60 (Warrior +47 %):
+  its Dexterity on all eight items also raises Crit (§1.4).
 
-### 1.4 Dexterity
+### 1.4 Dexterity (v2)
 
 Dexterity is three things for a Scout (bow and blade damage, Crit, Dodge) and
-two small things for everyone else (0.1 percentage points of Crit and of
-Dodge per point). Its curve is set so that, for the Scout, one Dexterity
-enchant is worth about one Crit or Attack speed enchant in damage plus a small
-dodge bonus (1.4 % effective HP at T6). For a Warrior, Mage or Priest one
-Dexterity enchant then gives about a third of a Dodge enchant and a seventh
-of a Crit enchant. One number cannot give both halves of the plan's "half a
-Crit and half a Dodge enchant": a Crit enchant is about 2.5 times as many
-percentage points as a Dodge enchant, and Dexterity converts 1:1 into both.
+two small things for everyone else (0.05 points of Crit and 0.1 of Dodge per
+point). Its curve is the largest that keeps the Scout's check: a Scout's
+Dexterity enchant is worth 1.0–1.26 Crit enchants in damage, plus its dodge.
+For a Warrior, Mage or Priest it then gives about **half a Dodge enchant**
+from level 60 (a third at 40) and a sixth of a Crit enchant:
+
+<!-- generated: dexsplit -->
+| Item level | Dexterity | Crit points (share of a Crit enchant) | Dodge points (share of a Dodge enchant) | Scout: damage vs a Crit enchant |
+|---:|---:|---:|---:|---:|
+| 10 | 2 | 0.10 (0.05) | 0.2 (0.11) | ×0.99 |
+| 20 | 4 | 0.20 (0.08) | 0.4 (0.19) | ×1.12 |
+| 30 | 6 | 0.30 (0.10) | 0.6 (0.24) | ×1.10 |
+| 40 | 9 | 0.45 (0.13) | 0.9 (0.32) | ×1.18 |
+| 50 | 12 | 0.60 (0.15) | 1.2 (0.39) | ×1.20 |
+| 60 | 15 | 0.75 (0.17) | 1.5 (0.44) | ×1.21 |
+| 70 | 19 | 0.95 (0.20) | 1.9 (0.51) | ×1.26 |
+<!-- end generated -->
+
+The plan's "half a Crit plus half a Dodge enchant" holds for the Dodge half
+only. Both halves need the crit points per Dexterity point to stand to the
+dodge points as a Crit enchant's points stand to a Dodge enchant's; under ×2
+a Crit enchant has about 1.25 times a Dodge enchant's points, so the rates
+would have to be about 0.125 % crit to 0.1 % dodge, not 0.05 to 0.1. With the
+ruled rates, a Dexterity enchant large enough for half a Crit enchant (about
+43 points at level 60) would be worth three Crit enchants to a Scout.
 
 ## 2. Enchant recipes T1–T6
 
@@ -251,7 +315,7 @@ An enchant of tier T on family F for stat S in channel K costs three items,
 as today, with one change: the loot item depends on the channel.
 
 ```
-own material of the profession, tier T          (bar, leather, bolt, wood, setting)
+own material of the owning profession, tier T   (bar, leather, bolt, wood, setting)
 prefix_loot[S]  or  suffix_loot[S]  of tier T   (a signature drop of the tier)
 family_input[F] of tier T                        (mined or gathered; unchanged)
 ```
@@ -261,7 +325,9 @@ family_input[F] of tier T                        (mined or gathered; unchanged)
 trinket's prefix pool uses `prefix_loot`, its suffix pool `suffix_loot`).
 The full file is
 [`tools/r33_ds/enchants_r33.json`](../../tools/r33_ds/enchants_r33.json);
-`family_input` is today's, unchanged.
+`family_input` is today's, unchanged. The owning profession of each family
+and its own material are §3.3 (v2: bow enchants take the Leatherworker's
+leather grade, spellbook enchants the Tailor's bolt).
 
 *Rationale:* separate prefix and suffix loot doubles the signature slots per
 tier (9 → 18) and gives each suffix its animal where a signature fits it
@@ -372,7 +438,7 @@ before Round 33.
 | 4 | Reinforced Weapon Strap | 3/3/0 | common | enchant Dex prefix; enchant Speed prefix | 1.8 | enchant |
 | 4 | Flickering Wisp Mote | 2/0/0 | one faction | sell-only: one faction (Accord only) | 0.0 | — |
 | 4 | Scarred Bear Claw | 2/1/0 | scarce | upgrade weaponsmith | 1.5 | — |
-| 4 | Storm Crab Shell | 2/2/0 | regular | enchant Armor suffix; upgrade armorsmith; Stoneskin Elixir IV | 4.2 | — |
+| 4 | Storm Crab Shell | 2/2/0 | regular | enchant Armor suffix; upgrade armorsmith | 3.2 | — |
 | 4 | Storm Feather | 2/1/0 | common | enchant Int suffix; enchant Mana suffix; upgrade woodcarver | 4.0 | — |
 | 4 | Veined Core | 1/0/0 | one faction | sell-only: no regular source (one unique elite) | 0.0 | — |
 | 4 | Warpack Fang | 3/2/0 | common | enchant Str suffix; enchant Speed suffix | 2.0 | — |
@@ -422,8 +488,8 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 
 ### 3.1 The rule
 
-- A profession upgrades the items of its families at its station (Forge,
-  Carving Bench, Tanning Rack, Tailor Bench, Jeweller's Bench).
+- A profession upgrades the items of its families (§3.3) at its station
+  (Forge, Carving Bench, Tanning Rack, Tailor Bench, Jeweller's Bench).
 - The upgrade's tier is the item's material tier T (`_grug_bracket`); the
   crafter's profession tier must be at least T, as for an enchant of tier T.
 - Eligible when the item's level is below `10 × T`; the result's item level
@@ -437,9 +503,7 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 - Inputs: **2 × the profession's own material of tier T + one each of two
   signatures of tier T**, no money. Data:
   [`tools/r33_ds/upgrades_r33.json`](../../tools/r33_ds/upgrades_r33.json).
-- **The Goldsmith also upgrades spellbooks.** It is the only profession that
-  makes and enchants them; without it a caster's offhand would be the only
-  item stuck at its base item level while the Armorsmith upgrades shields.
+- One upgrade recipe per profession and tier covers all its families.
 
 <!-- generated: upgrades -->
 #### Upgrade inputs (plus 2 × own material)
@@ -448,12 +512,12 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 |---|---|---|---|---|---|---|
 | Weaponsmith (sword, dagger, battle axe) | Boar Tusk + Rat Tail | Ridged Boar Tusk + Fang | Serrated Fang + Gnarled Boar Tusk | Scarred Bear Claw + Marching Bone | Siege Cat Claw + Scorch Venom | Salt Bear Claw + Unquiet Bone |
 | Armorsmith (metal armour, shield) | Crab Leg + Rat Fur Patch | Ridged Crab Shell + Dense Rat Fur | Layered Crab Shell + Braided Sinew | Storm Crab Shell + Ironbound Sinew | Siege Bone + Siege Weapon Strap | Unquiet Bone + Unbroken Weapon Strap |
-| Woodcarver (bow, staff, wand) | Fine Sinew + Boar Tusk | Tough Sinew + Ridged Boar Tusk | Braided Sinew + Bound Wisp Mote | Bitter Resin + Storm Feather | Ash Feather + Siegepack Fang | Salt-Barbed Feather + Rime Sinew |
-| Leatherworker (leather armour) | Rat Fur Patch + Tattered Flesh | Dense Rat Fur + Foul Flesh | Coarse Spider Silk + Braided Sinew | Ape Hair + Leathery Flesh | Siege Weapon Strap + Scorched Flesh | Silver Ape Hair + Salt-Cured Flesh |
-| Tailor (cloth armour) | Rat Tail + Tattered Flesh | Knotted Talisman + Sinewy Rat Tail | Coarse Spider Silk + Clouded Reed Pearl | Layered Spider Web + Campaign Talisman | Siege Talisman + Scorch Venom | Glass Spider Silk + Glass Venom |
-| Goldsmith (trinket, spellbook) | Crab Eye + Bandit Talisman | Clear Crab Eye + Knotted Talisman | Clasped Purse + Clouded Reed Pearl | Campaign Purse + Campaign Talisman | Clenched Jaw + Siege Talisman | Last-Hex Shard + Last-Pay Talisman |
+| Woodcarver (staff, wand) | Fine Sinew + Boar Tusk | Tough Sinew + Ridged Boar Tusk | Braided Sinew + Bound Wisp Mote | Bitter Resin + Storm Feather | Ash Feather + Siegepack Fang | Salt-Barbed Feather + Rime Sinew |
+| Leatherworker (leather armour, bow) | Rat Fur Patch + Tattered Flesh | Dense Rat Fur + Foul Flesh | Coarse Spider Silk + Braided Sinew | Ape Hair + Leathery Flesh | Siege Weapon Strap + Scorched Flesh | Silver Ape Hair + Salt-Cured Flesh |
+| Tailor (cloth armour, spellbook) | Rat Tail + Tattered Flesh | Knotted Talisman + Sinewy Rat Tail | Coarse Spider Silk + Clouded Reed Pearl | Layered Spider Web + Campaign Talisman | Siege Talisman + Scorch Venom | Glass Spider Silk + Glass Venom |
+| Goldsmith (trinket) | Crab Eye + Bandit Talisman | Clear Crab Eye + Knotted Talisman | Clasped Purse + Clouded Reed Pearl | Campaign Purse + Campaign Talisman | Clenched Jaw + Siege Talisman | Last-Hex Shard + Last-Pay Talisman |
 
-#### Own material
+#### Own material (upgrades and enchants)
 
 | Profession | T1 | T2 | T3 | T4 | T5 | T6 |
 |---|---|---|---|---|---|---|
@@ -470,9 +534,58 @@ Signatures: 94; with a use: 68 (today 27); newly used: 41; sell-only: 26.
 A plain base sits at the bottom of its tier (item level 3/10/20/30/40/50) and
 an upgrade lifts it to the top (10/20/…/60). Example, an Embersteel sword (T5)
 with two T5 enchants: item level 40 → 50, damage 18 → 22, a Strength enchant
-11 → 15, a Crit enchant 6.8 → 7.6 %. An upgraded T(n) weapon or armour piece
+11 → 15, a Crit enchant 3.5 → 3.9 %. An upgraded T(n) weapon or armour piece
 equals a plain T(n+1) one in base stats; the upgrade keeps its enchants, which
 a new base would have to buy again.
+
+### 3.3 Profession families (v2, user ruling 2026-10-04)
+
+Two professions dress every class in armour, weapon and offhand:
+
+| Profession | Makes, enchants and upgrades | Class pairs |
+|---|---|---|
+| Weaponsmith | swords, daggers, battle axes (also the Scout's melee blade) | Warrior, Scout |
+| Armorsmith | metal armour, shields | Warrior |
+| Woodcarver | staves, wands | Mage, Priest |
+| Leatherworker | leather armour, **bows** (from the Woodcarver) | Scout |
+| Tailor | cloth armour, **spellbooks** (from the Goldsmith) | Mage, Priest |
+| Goldsmith | trinkets for everyone; gems and settings | all |
+
+Warrior: Armorsmith + Weaponsmith. Scout: Leatherworker + Weaponsmith.
+Mage and Priest: Tailor + Woodcarver. The Goldsmith serves every class.
+
+- **The Tailor's spellbook** (replaces the Goldsmith's Setting + Parchment):
+  `2 × the bolt of tier T + 1 Parchment` at the Tailor Bench, Journeyman
+  mastery as today; it counts as a progression craft. Item, tier and stats of
+  the six spellbooks are unchanged.
+- Bow enchants and upgrades take the Leatherworker's leather grade of the
+  tier; spellbook enchants and upgrades the Tailor's bolt. Family inputs and
+  signatures are unchanged.
+- Every profession keeps a counting recipe at every tier:
+
+<!-- generated: progression -->
+| Profession | Families | T1 | T2 | T3 | T4 | T5 | T6 |
+|---|---|---|---|---|---|---|---|
+| Weaponsmith | sword, dagger, battle axe | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade |
+| Armorsmith | metal armour, shield | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade |
+| Woodcarver | staff, wand | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade | enchants, upgrade |
+| Leatherworker | leather armour, bow | enchants, upgrade, 8-slot bag | enchants, upgrade, 16-slot bag | enchants, upgrade | enchants, upgrade, 24-slot bag | enchants, upgrade, 32-slot bag | enchants, upgrade |
+| Tailor | cloth armour, spellbook | enchants, upgrade, spellbook, 8-slot bag | enchants, upgrade, spellbook, 16-slot bag | enchants, upgrade, spellbook | enchants, upgrade, spellbook, 24-slot bag | enchants, upgrade, spellbook, 32-slot bag | enchants, upgrade, spellbook |
+| Goldsmith | trinket | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets | enchants, upgrade, six trinkets |
+<!-- end generated -->
+
+### 3.4 Two Goldsmith leftovers (v2, proposed)
+
+- **Ornament Components T3–T6** are removed (item, recipe, ingredient-tier
+  registrations): an intermediate without a consumer that sells for nothing
+  and is made from one-faction reagents.
+- **Cut Citrine becomes the T1 trinket gem** in place of Cut Quartz, so the
+  gem ladder runs Citrine (T1) to Diamond (T6) in the trinket recipes as in
+  the mines; the Cut Quartz recipe goes with it (Quartz stays a raw T1 enchant
+  input; it is a mineral, not a gem, and has no storage block).
+- After both, the generic loot Slime Gel and Crocodile Tooth (one faction)
+  and Stone Core (no placed source) keep no recipe use; they stay vendor
+  loot. Shiny Scale moves to Stoneskin Elixir IV.
 
 ## 4. The crown
 
@@ -521,7 +634,7 @@ eight King kills, next to Master Riding's five hours.
   Potion I) at its 8c price; today it heals 15 % of maximum HP at every level.
 - Recipes avoid one-faction reagents: Slime Gel and Crocodile Tooth (Throng
   only) leave the Cave Draught, Deepwater Elixir, Elixir of Vigor IV and
-  Stoneskin Elixir.
+  Stoneskin Elixir (v2: Stoneskin IV takes Shiny Scale).
 - Removed with lane C2 (plan §2.8): the Warding Draught, apothecary gear,
   imbuing oils, the Sovereign's Flask.
 
@@ -532,13 +645,13 @@ eight King kills, next to Master Riding's five hours.
 | 1 | 1 | Mana Potion I | restores 70 Mana at once | Gravemoss + a root vegetable (Carrot, Cassava ...) |
 | 1 | 1 | Elixir of Vigor I | +4.0 % maximum HP, 15 min | Sunleaf + Tattered Flesh |
 | 1 | 1 | Elixir of Focus I | +5.0 % maximum Mana, 15 min | Gravemoss + Crab Eye |
-| 1 | 1 | Elixir of Precision I | +8.8 percentage points Crit, 15 min | Sunleaf + Boar Tusk |
+| 1 | 1 | Elixir of Precision I | +4.2 percentage points Crit, 15 min | Sunleaf + Boar Tusk |
 | 1 | 1 | Stoneskin Elixir I | +0.8 armor rating, 30 min | Gravemoss + Crab Leg |
 | 2 | 11 | Healing Potion II | restores 200 HP at once | Dragonweed + Sunleaf |
 | 2 | 11 | Mana Potion II | restores 200 Mana at once | Dragonweed + Sugar Cane |
 | 2 | 11 | Elixir of Vigor II | +4.8 % maximum HP, 15 min | Dragonweed + Tough Sinew |
 | 2 | 11 | Elixir of Focus II | +5.6 % maximum Mana, 15 min | Dragonweed + Clear Crab Eye |
-| 2 | 11 | Elixir of Precision II | +10.4 percentage points Crit, 15 min | Dragonweed + Fang |
+| 2 | 11 | Elixir of Precision II | +5.2 percentage points Crit, 15 min | Dragonweed + Fang |
 | 2 | 11 | Stoneskin Elixir II | +1.6 armor rating, 30 min | Dragonweed + Ridged Crab Shell |
 | 2 | 11 | Antivenom | clears all poison (unchanged) | Dragonweed + Venom Gland |
 | 2 | 11 | Swiftness Draught | +10 % movement speed for 5 s (unchanged) | Dragonweed + Fang |
@@ -546,27 +659,27 @@ eight King kills, next to Master Riding's five hours.
 | 3 | 21 | Mana Potion III | restores 400 Mana at once | Crimson Lotus + Sugar Cane |
 | 3 | 21 | Elixir of Vigor III | +5.6 % maximum HP, 15 min | Crimson Lotus + Bear Claw |
 | 3 | 21 | Elixir of Focus III | +6.2 % maximum Mana, 15 min | Crimson Lotus + Cave Cap |
-| 3 | 21 | Elixir of Precision III | +12.0 percentage points Crit, 15 min | Crimson Lotus + Serrated Fang |
+| 3 | 21 | Elixir of Precision III | +6.0 percentage points Crit, 15 min | Crimson Lotus + Serrated Fang |
 | 3 | 21 | Stoneskin Elixir III | +2.4 armor rating, 30 min | Crimson Lotus + Layered Crab Shell |
 | 3 | 21 | Cave Draught | night vision for 10 min (unchanged) | Cave Cap + Bound Wisp Mote |
 | 4 | 31 | Healing Potion IV | restores 650 HP at once | Crimson Lotus + Leathery Flesh |
 | 4 | 31 | Mana Potion IV | restores 650 Mana at once | Crimson Lotus + Venom Sac |
 | 4 | 31 | Elixir of Vigor IV | +6.4 % maximum HP, 15 min | Crimson Lotus + Ironbound Sinew |
 | 4 | 31 | Elixir of Focus IV | +6.8 % maximum Mana, 15 min | Crimson Lotus + Campaign Talisman |
-| 4 | 31 | Elixir of Precision IV | +13.6 percentage points Crit, 15 min | Crimson Lotus + Razor Cat Claw |
-| 4 | 31 | Stoneskin Elixir IV | +3.2 armor rating, 30 min | Crimson Lotus + Storm Crab Shell |
+| 4 | 31 | Elixir of Precision IV | +7.0 percentage points Crit, 15 min | Crimson Lotus + Razor Cat Claw |
+| 4 | 31 | Stoneskin Elixir IV | +3.2 armor rating, 30 min | Crimson Lotus + Shiny Scale |
 | 5 | 41 | Healing Potion V | restores 1000 HP at once | Ember Moss + Crimson Lotus |
 | 5 | 41 | Mana Potion V | restores 1000 Mana at once | Stormkelp + Crimson Lotus |
 | 5 | 41 | Elixir of Vigor V | +7.2 % maximum HP, 15 min | Ember Moss + Scorched Flesh |
 | 5 | 41 | Elixir of Focus V | +7.4 % maximum Mana, 15 min | Ember Moss + Cave Cap |
-| 5 | 41 | Elixir of Precision V | +15.2 percentage points Crit, 15 min | Ember Moss + Siegepack Fang |
+| 5 | 41 | Elixir of Precision V | +7.8 percentage points Crit, 15 min | Ember Moss + Siegepack Fang |
 | 5 | 41 | Stoneskin Elixir V | +4.0 armor rating, 30 min | Stormkelp + Siege Bone |
 | 5 | 41 | Deepwater Elixir | water breathing for 10 min (unchanged) | Stormkelp + Cave Cap |
 | 6 | 51 | Healing Potion VI | restores 1350 HP at once | Wild Cocoa + Ember Moss |
 | 6 | 51 | Mana Potion VI | restores 1350 Mana at once | Wild Cocoa + Stormkelp |
 | 6 | 51 | Elixir of Vigor VI | +8.0 % maximum HP, 15 min | Wild Cocoa + Salt-Cured Flesh |
 | 6 | 51 | Elixir of Focus VI | +8.0 % maximum Mana, 15 min | Wild Cocoa + Last-Hex Shard |
-| 6 | 51 | Elixir of Precision VI | +16.8 percentage points Crit, 15 min | Ember Moss + Sharp Feather |
+| 6 | 51 | Elixir of Precision VI | +8.6 percentage points Crit, 15 min | Ember Moss + Sharp Feather |
 | 6 | 51 | Stoneskin Elixir VI | +4.8 armor rating, 30 min | Wild Cocoa + Unquiet Bone |
 
 Potion check: amount against half the base pool at the tier's top level.
@@ -688,8 +801,8 @@ All from the shipped code (Round 33 survey, verified by hand):
 - **Priest:** Heal `25 % P(L) × (1 + Int/1000)`, 8 % P(L), heals crit ×1.5;
   Smite `1.5 (Bw + Int/10)`, 5 %, every 2 s (`kits.lua:737-850`,
   `grug_core/combat.lua:1554`).
-- **Crit** `5 % + 0.1 % Dex + gear`, cap 30 %, ×1.5 on every swing, spell, arrow
-  and heal; **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
+- **Crit** `5 % + 0.05 % Dex + gear`, cap 30 %, ×2 on every swing, spell, arrow
+  and heal (v2; today 0.1 % and ×1.5); **Dodge** `0.1 % Dex + gear`, cap 30 %; **armor**
   `min(0.70, R / (R + K))`, `K(L) = 20 + 0.5 min(L, 60) + 8.5 max(L − 60, 0)`
   ([combat_stats.md](combat_stats.md) §2).
 - **Effective HP** `= HP / ((1 − dodge)(1 − armor reduction))` against a
@@ -702,7 +815,7 @@ All from the shipped code (Round 33 survey, verified by hand):
 
 | Script | Prints |
 |---|---|
-| `tools/r33_ds/stat_values.py [--check] [--dex-b]` | §1 tables and class check (`--dex-b`: Dexterity on Strength's curve) |
+| `tools/r33_ds/stat_values.py [--check]` | §1 tables, class check, Dexterity split, base change and crit talents |
 | `tools/r33_ds/availability.py` | where every mob loot item drops, per faction |
 | `tools/r33_ds/allocation.py [--check] [--json]` | §2–§3 inputs, signature uses, the two JSON files |
 | `tools/r33_ds/alchemy.py` | §5 |

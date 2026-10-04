@@ -10,7 +10,6 @@ relative gain within its kind for the class that wants it (section 2.9):
 
 Usage:
   stat_values.py            print the value tables and the class check (Markdown)
-  stat_values.py --dex-b    the same with Dexterity on Strength's curve (option B)
   stat_values.py --check    also exit 1 when a kind spreads beyond SPREAD
 """
 import argparse
@@ -23,15 +22,14 @@ import models as M
 CURVES = {
     "str": (0.8, 0.15, 0.0025, 0, 1),
     "int": (0.8, 0.15, 0.0025, 0, 1),
-    "dex": (0.6, 0.1, 0.0018, 0, 1),
-    "crit_percent": (3.6, 0.08, 0.0, 1, 0),
+    "dex": (0.8, 0.13, 0.0019, 0, 1),
+    "crit_percent": (1.7, 0.044, 0.0, 1, 0),
     "attack_speed_percent": (1.6, 0.04, 0.0, 1, 0),
     "max_hp_percent": (1.6, 0.04, 0.0, 1, 0),
     "max_mana_percent": (2.2, 0.03, 0.0, 1, 0),
     "dodge_percent": (1.5, 0.032, 0.0, 1, 0),
     "armor_rating": (0.0, 0.08, 0.0, 1, 0.5),
 }
-DEX_OPTION_B = (0.8, 0.15, 0.0025, 0, 1)  # Dexterity on Strength's curve
 ORDER = ("str", "dex", "int", "crit_percent", "attack_speed_percent",
          "max_hp_percent", "max_mana_percent", "dodge_percent", "armor_rating")
 LABEL = {"str": "Strength", "dex": "Dexterity", "int": "Intelligence",
@@ -67,6 +65,14 @@ def enchant_value(stat, ilvl, tier):
 
 def fmt(stat, value):
     return ("%d" % value) if CURVES[stat][3] == 0 else ("%.1f" % value)
+
+
+def coefficient_table():
+    out = ["| Stat | a | b | c | decimals | minimum |", "|---|---:|---:|---:|---:|---:|"]
+    for stat in ORDER:
+        a, b, c, decimals, minimum = CURVES[stat]
+        out.append("| %s | %g | %g | %g | %d | %g |" % (LABEL[stat], a, b, c, decimals, minimum))
+    return out
 
 
 def value_tables():
@@ -185,16 +191,82 @@ def class_check():
     return out, problems
 
 
+def dex_split():
+    """Dexterity measured in other enchants: its crit and dodge points as a
+    share of a Crit and a Dodge enchant of the same item level, and the
+    Scout's damage from it against a Crit enchant."""
+    out = ["| Item level | Dexterity | Crit points (share of a Crit enchant) | "
+           "Dodge points (share of a Dodge enchant) | Scout: damage vs a Crit enchant |",
+           "|---:|---:|---:|---:|---:|"]
+    for ilvl in (10, 20, 30, 40, 50, 60, 70):
+        tier = C.tier_of_level(ilvl)
+        dex = enchant_value("dex", ilvl, tier)
+        crit = enchant_value("crit_percent", ilvl, tier)
+        dodge = enchant_value("dodge_percent", ilvl, tier)
+        level = min(ilvl, 60)
+        scout = M.gain(M.scout_dps, level, ilvl, "dex", dex) / M.gain(
+            M.scout_dps, level, ilvl, "crit_percent", crit)
+        out.append("| %d | %d | %.2f (%.2f) | %.1f (%.2f) | ×%.2f |" % (
+            ilvl, dex, 100 * C.CRIT_PER_DEX * dex, 100 * C.CRIT_PER_DEX * dex / crit,
+            0.1 * dex, 0.1 * dex / dodge, scout))
+    return out
+
+
+def base_change():
+    """Damage or healing without gear: the new crit rules against today's."""
+    import models
+
+    def run(fn, level, per_dex, mult):
+        saved = (C.CRIT_PER_DEX, C.CRIT_MULT)
+        C.CRIT_PER_DEX, C.CRIT_MULT = per_dex, mult
+        try:
+            return fn(level, level)
+        finally:
+            C.CRIT_PER_DEX, C.CRIT_MULT = saved
+
+    rows = ["| Level | Warrior | Scout | Mage | Priest (heal) | Priest (Smite) |",
+            "|---:|---:|---:|---:|---:|---:|"]
+    fns = (models.warrior_dps, models.scout_dps, models.mage_damage,
+           models.priest_healing, models.priest_smite)
+    for level in (1, 10, 30, 60):
+        cells = []
+        for fn in fns:
+            new = run(fn, level, C.CRIT_PER_DEX, C.CRIT_MULT)
+            old = run(fn, level, C.TODAY_CRIT_PER_DEX, C.TODAY_CRIT_MULT)
+            cells.append("%+.1f %%" % (100 * (new / old - 1)))
+        rows.append("| %d | %s |" % (level, " | ".join(cells)))
+    return rows
+
+
+def talent_check():
+    """The shipped crit talents under the new rules: a level-60 Warrior,
+    Mage or Scout without crit gear; damage gain of the talent."""
+    rows = ["| Talent | Effect | Class | Gain today (×1.5) | Gain new (×2) |",
+            "|---|---|---|---:|---:|"]
+    base = {"warrior": 69, "mage": 69, "scout": 128}
+    cases = (("Keen Edge 5/5", "+5 crit points", "warrior", 5, 30),
+             ("Firebrand 4/4", "+4 crit points", "mage", 4, 30),
+             ("Cold Eye 4/4", "+4 crit points", "scout", 4, 30),
+             ("Ruination window", "+20 crit points, cap 50 %, 10 s per 120 s", "warrior", 20, 50))
+    for name, effect, cls, pp, cap in cases:
+        cells = []
+        for per_dex, mult in ((C.TODAY_CRIT_PER_DEX, C.TODAY_CRIT_MULT), (C.CRIT_PER_DEX, C.CRIT_MULT)):
+            crit = min(0.30, 0.05 + per_dex * base[cls])
+            boosted = min(cap / 100.0, 0.05 + per_dex * base[cls] + pp / 100.0)
+            cells.append("%+.1f %%" % (100 * ((1 + (mult - 1) * boosted) / (1 + (mult - 1) * crit) - 1)))
+        rows.append("| %s | %s | %s | %s |" % (name, effect, cls.capitalize(), " | ".join(cells)))
+    return rows
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--check", action="store_true")
-    ap.add_argument("--dex-b", action="store_true", help="option B: Dexterity on Strength's curve")
     args = ap.parse_args(argv)
-    if args.dex_b:
-        CURVES["dex"] = DEX_OPTION_B
     lines = value_tables()
     check, problems = class_check()
-    print("\n".join(lines + [""] + check))
+    print("\n".join(lines + [""] + check + ["", "#### Dexterity in other enchants", ""] + dex_split()
+                     + ["", "#### Without gear: new crit rules against today's", ""] + base_change()
+                     + ["", "#### Crit talents", ""] + talent_check()))
     if args.check:
         for line in problems:
             print("SPREAD FAIL " + line)

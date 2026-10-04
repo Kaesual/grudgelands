@@ -35,7 +35,7 @@ def warrior_dps(level, ilvl, add=None, family="sword"):
     procs = min(swings, (8 * swings + 3 * taken) / 25.0)
     extra = math.floor(1.5 * weapon) - weapon
     crit = C.crit_chance(dex, _add(add, "crit_percent"))
-    return (swings * (weapon + melee) + procs * extra) * (1 + 0.5 * crit)
+    return (swings * (weapon + melee) + procs * extra) * C.crit_factor(crit)
 
 
 def scout_dps(level, ilvl, add=None):
@@ -45,7 +45,7 @@ def scout_dps(level, ilvl, add=None):
     shots = (1 + _add(add, "attack_speed_percent") / 100.0) / C.BOW_DRAW
     hit = (C.weapon_damage(ilvl, "bow") + dex / 10.0) * C.FULL_DRAW
     crit = C.crit_chance(dex, _add(add, "crit_percent"))
-    return shots * hit * (1 + 0.5 * crit)
+    return shots * hit * C.crit_factor(crit)
 
 
 def _fight_mana(level, add):
@@ -69,17 +69,17 @@ def mage_damage(level, ilvl, add=None):
     casts = min(FIGHT, _fight_mana(level, add) / _cost(level, 6))
     hit = C.baseline_weapon(level) + (a["int"] + _add(add, "int")) / 10.0
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
-    return casts * hit * (1 + 0.5 * crit)
+    return casts * hit * C.crit_factor(crit)
 
 
 def priest_healing(level, ilvl, add=None):
     """Heal until the fight's mana runs out: 25 % P x (1 + Int/1000), 8 % P
-    per cast, heals crit x1.5 (kits.lua:797-850, combat.lua:1554)."""
+    per cast, heals crit like damage (kits.lua:797-850, combat.lua:1554)."""
     a = C.attributes("priest", level)
     casts = _fight_mana(level, add) / _cost(level, 8)
     amount = 0.25 * C.pool(level) * (1 + (a["int"] + _add(add, "int")) / 1000.0)
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
-    return casts * amount * (1 + 0.5 * crit)
+    return casts * amount * C.crit_factor(crit)
 
 
 def priest_smite(level, ilvl, add=None):
@@ -89,7 +89,7 @@ def priest_smite(level, ilvl, add=None):
     casts = min(FIGHT / 2.0, _fight_mana(level, add) / _cost(level, 5))
     hit = 1.5 * (C.baseline_weapon(level) + (a["int"] + _add(add, "int")) / 10.0)
     crit = C.crit_chance(a["dex"] + _add(add, "dex"), _add(add, "crit_percent"))
-    return casts * hit * (1 + 0.5 * crit)
+    return casts * hit * C.crit_factor(crit)
 
 
 def ehp(cls, level, ilvl, add=None, shield=False, attacker=None):
