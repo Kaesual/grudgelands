@@ -1,0 +1,4 @@
+# Round 34 Lane S1a: the sound files the user approved on a listening page
+# (copy of ~/projects/grudgelands-orchestration/r34/approved/s1a.txt).
+# One line per shipped file in mods/CORE/grug_sounds/sounds:
+#   file name, page number, source
