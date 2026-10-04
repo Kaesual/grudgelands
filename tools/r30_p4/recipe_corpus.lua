@@ -213,7 +213,12 @@ return {
 			inputs = {
 				[1] = {
 					[1] = "group:grug_cooking_root",
-					[2] = "group:grug_cooking_staple",
+					[2] = "group:grug_cooking_root",
+					[3] = "group:grug_cooking_staple",
+				},
+				[2] = {
+					[1] = "grug_cooking:wild_grain",
+					[2] = "",
 					[3] = "",
 				},
 			},
@@ -252,7 +257,12 @@ return {
 				[1] = {
 					[1] = "group:grug_cooking_berry",
 					[2] = "group:grug_cooking_berry",
-					[3] = "grug_cooking:sugar_cane",
+					[3] = "group:grug_cooking_berry",
+				},
+				[2] = {
+					[1] = "grug_cooking:pumpkin",
+					[2] = "grug_cooking:sugar_cane",
+					[3] = "",
 				},
 			},
 			material = false,
@@ -328,7 +338,7 @@ return {
 				[1] = {
 					[1] = "grug_mobs:raw_fish",
 					[2] = "grug_gathering:marshbloom",
-					[3] = "",
+					[3] = "grug_gathering:marshbloom",
 				},
 			},
 			material = false,
@@ -370,8 +380,13 @@ return {
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:stormkelp",
-					[2] = "grug_mobs:raw_fish",
-					[3] = "grug_gathering:melon",
+					[2] = "grug_gathering:stormkelp",
+					[3] = "grug_mobs:raw_fish",
+				},
+				[2] = {
+					[1] = "grug_gathering:rock_salt",
+					[2] = "",
+					[3] = "",
 				},
 			},
 			material = false,
