@@ -276,10 +276,8 @@ B1–B7) settle the rest:
   round of its own after Round 34 (sound).
   Round 29's front quests and bounties carry the 41–60 leveling; the main
   storyline and the finale are reassessed on top of them.
-- [ ] **Seed failures:** about 1 % of random seeds fail at load (a wide
-  river detours around two close POIs separately), diagnosed after Round
-  34; the fix waits for the user's choice
-  ([BACKLOG](BACKLOG.md#round-34-carry-overs)). Round 33's and 34's other
+- Round 34's late fix: the ~1 % seed load failure is fixed (F3, rivers never
+  cover a POI core; a seed fleet guards world-generation changes). Round 33's and 34's other
   open notes (Priest healing and Intelligence, the playtest's crit numbers,
   sound balance) are in the
   [Round 33](BACKLOG.md#round-33-carry-overs) and

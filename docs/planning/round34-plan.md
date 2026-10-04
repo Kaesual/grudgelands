@@ -715,6 +715,30 @@ files, 5.23 MB; together the shipped sounds 94 files / 1.33 MB → 238 files
 `grug_ambience/music` (30.03 MB), never joins the first download; each
 track is pushed to one player while music is on. `menu/theme.ogg`: 1.52 MB.
 
+### Late additions (after Lane D)
+
+- **F3 — rivers never cover a POI core** (user: fix now, option B). About
+  1 % of random seeds failed at load since at least Round 29 ("planner
+  anchor tuple differs at 29": a wide river was detoured around each POI
+  separately and ended over a close neighbour). `water_layout.lua` now joins
+  POI cores whose clearances overlap or leave less than `POI_PAD` into one
+  obstacle and detours round both; a tributary junction that would cross a
+  core moves only within that core's clearance arc, else bends round it; a
+  guard (`wet_core`) stops a build with a named error if a core is still
+  wet. Fleet of 504 seeds: main 4 load failures plus 35 seeds with water on
+  a core; branch 0 and 0 (minimum margin 5.2 after the review fix); 69
+  seeds' rivers changed, seed 12345 byte-identical; water build 0.840 s vs
+  0.841 s. Review found unbounded junction moves (1.5–1.8 km straight
+  canyons on 2 seeds), fixed before the merge (longest junction stretch
+  114 nodes; main 110). Fixture `tools/r34_f3`.
+- **Seed fleet** (user: the map keeps fixed POIs; robustness from testing):
+  `tools/seed_fleet/run.sh quick` (100 seeds, about 4 min) before merging
+  any world-generation change, `full` (303 seeds, about 13 min) at the end
+  of every round that changed world generation; rule in AGENTS.md.
+- **Wisp blink** never lands in a liquid (a player saw a Wisp under water:
+  its blink treated water as open, and a Wisp has no collision and takes
+  no water damage). Fixture `tools/r34_wisp`.
+
 ### The user's choices during the round
 
 1. **Thin ice** marks the 3 × 3 × 3 cube around the feet each sample, no
@@ -771,10 +795,6 @@ GUI test. Numbers are comparisons, never targets.
   per step for a floating mob in water (could be cached).
 - **F2:** the Money label may overlap at a very large balance (GUI check).
 - **Scout** full damage set above the ceiling: watch in the playtest.
-- **Seeds:** about 1 % of random seeds fail at load ("planner anchor tuple
-  differs at 29": a wide river detours around two close POIs separately and
-  ends over the first), at least since Round 29; diagnosed after the
-  merges, the fix is the user's choice.
 - Optional: a real-client performance test with several clients.
 
 ### GUI playtest checklist
@@ -845,3 +865,9 @@ Fixes (F1, F2):
     Basics hint show without a scrollbar.
 21. **Map markers** for the Crownbinder and the Decor Merchant on the Map
     tab and the minimap.
+
+Late additions:
+
+22. **A new world with a random seed** loads (the Round 34 seed fix); rivers
+    near outposts and camps run around them, not through.
+23. **A Wisp** chasing you while you swim stays above the water.

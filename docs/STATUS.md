@@ -28,9 +28,10 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
     between players); map markers for the Crownbinder and the Decor
     Merchant; the damage fit keeps attribute fractions; encounter adds drop
     no gear; Wyrmglass thin ice breaks 1 s behind a runner.
-  - Next: the user's GUI test (desktop and web build); about 1 % of random
-    seeds fail to load (a river detour, diagnosed, fix pending the user's
-    choice); then WP9.
+  - Late fixes: rivers never cover a POI core (about 1 % of random seeds
+    failed to load since Round 29), a reusable seed fleet
+    (`tools/seed_fleet/run.sh`), the Wisp's blink never lands in water.
+  - Next: the user's GUI test (desktop and web build); then WP9.
 
 - **Round 33 "Items, professions and achievements" delivered locally**
   (2026-10-04, [plan, completion and GUI checklist](planning/round33-plan.md#completion-2026-10-04)).

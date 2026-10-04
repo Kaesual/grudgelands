@@ -841,14 +841,6 @@ approval list, 77 fixtures pass, no mapgen change:
 **Noted 2026-10-04** ([completion](docs/planning/round34-plan.md#completion-2026-10-04));
 none blocks the GUI test. Numbers are comparisons, never targets.
 
-- **Seed failures (diagnosed, fix pending the user's choice):** about 1 % of
-  random seeds fail at load ("planner anchor tuple differs at 29"; 2 of
-  240 portable runs, e.g. 17713522922938657774), at least since Round 29:
-  `water_layout.lua` detours a wide river around each POI separately, and
-  with two POIs close together (anchors 29 and 91, 93 nodes apart; others
-  26/61, 41/98, 72/101, 80/110) the river ends over one. Options: move an
-  anchor, or let the detour avoid every nearby POI's clearance (with a seed
-  fleet, a fixture and a guard).
 - **Sound balance:** gains and pacing are tuned from the user's GUI check;
   the formspec click plays at the file's level (a style has no gain).
 - **Public town furnaces** use the vendored furnace form, so taking a dish
