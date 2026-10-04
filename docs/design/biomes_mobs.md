@@ -36,8 +36,7 @@ content requirements remain explicitly separate from delivered behavior.
   elites **and rares** telegraph (2 s wind-up, combat_stats §3); named
   rares broadcast. Implementation: `mods/ENTITIES/grug_mobs/levels.lua:70-118`.
 - **Player-tag drop rule** (combat_stats §3) applies to every drop
-  table below; the tag carries professions → **Leatherworker ×5** on
-  every mob flagged `[leather]`.
+  table below.
 - Identical base drops cross-continent: universal biomes are literally
   shared; race-flavored mirror biomes share drop tables ("same loot,
   different look" via trees/woods/tints — §3.2 lists the pairs). "Shared
@@ -175,8 +174,8 @@ split in two**:
 |---|---|---|
 | `[food]` | everyone | yes — becomes a crop with the farming package |
 | `[food found-only]` | everyone | **never** — found in the world, never grown |
-| `[herb Tn]` | **healing herb** — Alchemist only, tier n | **never** |
-| `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by the Alchemist **and** by Cooking | yes |
+| `[herb Tn]` | **healing herb** — Alchemy only, tier n | **never** |
+| `[spice Tn]` | **spice**, tier n — everyone gathers it, *used* by Alchemy **and** by Cooking | yes |
 
 Both plant lines keep the same ring tiers: T1 inner (10–25), T2 outer
 (25–45), T3 coast/deep (45–60), and each line has exactly one plant per
@@ -194,8 +193,8 @@ ever touching alchemy's.
 world integration summary in `world.md` §5) only the owner and players with
 the Everything permission can dig or harvest a crop; harvesting counts as
 digging. Only cooking ingredients are cultivated: the
-`[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]`, cultural
-resource or `[food found-only]`. The "Farmable later" column above is therefore
+`[food]` and `[spice Tn]` lines of this section, never a `[herb Tn]` or
+`[food found-only]`. The "Farmable later" column above is therefore
 also the cultivated plant set.
 
 The table describes biome vegetation identity. Exact gathering sources and
@@ -280,9 +279,9 @@ settled entry per named variant at the displayed fill.
 Candidate cells are globally anchored 16-column squares. Deterministic
 per-world placement and rotation, with a neighbor halo large enough for
 rotated footprints, replace engine randomness and the legacy emergent-tree
-`sidelen = 80`; the code specifies the hashing and ranking. Cultural
-reservations settle first, followed by emergent/other large templates,
-ordinary trees, simple multi-node trunks and ground cover. Wrong hosts,
+`sidelen = 80`; the code specifies the hashing and ranking. Emergent/other
+large templates settle first, followed by ordinary trees, simple multi-node
+trunks and ground cover. Wrong hosts,
 exclusions, clearance or collisions reject without movement, retry or
 fallback placement.
 
@@ -298,7 +297,7 @@ WP33 adds exactly twelve one-cell natural sources through WP40's `P9G` tail.
 P9G runs after R6 P9 in the same private buffers and single VoxelManip commit.
 It never overwrites, moves, retries or refills a rejected root. Every accepted
 source is a low hand-gathered node and drops exactly one stable raw item; the
-three healing herbs first pass the fail-closed Alchemist authorization below.
+three healing herbs first pass the fail-closed Alchemy authorization below.
 The exact named-zone and host rosters are `world_zones.md` Section 11; density
 is over eligible root columns, not all map columns.
 Rock Salt retains exactly Gravesalt, Stormscale and Wyrmglass. Its dry cardinal
@@ -322,19 +321,19 @@ gathering source set, density or harvest rule changes.
 | Wild Cocoa | 1/1024 | universal found-only food | no |
 | Rock Salt | 1/1024 | universal found-only food | no |
 
-The complete gathering population is closed at **26 identities**: these twelve
-new P9G sources, eight existing R6 sources (Apple, Blueberries, Oak, Mountain
-Pine, Silverwood, Spikethorn Acacia, Kapok and Gravewood), and the six R6
-cultural slots in `items_crafting.md` Section 4.1. A reused tree or bush is not
-placed a second time.
+The complete gathering population is closed at **20 identities**: these twelve
+new P9G sources and eight existing R6 sources (Apple, Blueberries, Oak, Mountain
+Pine, Silverwood, Spikethorn Acacia, Kapok and Gravewood); the six cultural
+sources were removed in Round 33. A reused tree or bush is not placed a second
+time.
 
 `grug_gathering` owns exactly one registration seam for healing herbs. Before
 WP10 provides it, all three herbs are visible but cannot be removed or yield an
 item. Later only `grug_jobs` may register the authorizer and read profession or
 recipe-book state. Missing, throwing or malformed authorization fails closed;
-spices, foods and cultural sources never call this seam.
+spices and foods never call this seam.
 
-**Healing herbs** (Alchemist only, never farmable; both continents reach
+**Healing herbs** (Alchemy only, never farmable; both continents reach
 every tier — see §6): **gravemoss T1** (pine hills, blight),
 **dragonweed T2** (crags, badlands, deep forest, bone forest),
 **crimson lotus T3** (deep jungle, jungle fringe). All three sit on
@@ -347,7 +346,7 @@ T3 healing herb**. Biomes now follow the zone palettes of `world_zones.md`
 §8, and the fringe's lotus comes from The Skyglass Canopy (`world_zones.md`
 §11).
 
-**Spices** (gathered by everyone, used by both the Alchemist and
+**Spices** (gathered by everyone, used by both Alchemy and
 Cooking — which costs no main slot — and farmable once farming ships):
 **sunleaf T1** (meadows, savanna, elf forest, jungle edge),
 **marshbloom T2** (swamp), **stormkelp T3** (the exact cardinal dry-shore
@@ -382,7 +381,7 @@ the region an ingredient comes from):
 ## 3. Mob roster
 
 Per family: ONE verb, level = `mob_level_at(spawn)`, stats from
-formulas, speed per combat_stats. `[leather]` = Leatherworker ×5 hook.
+formulas, speed per combat_stats. `[leather]` marks a leather drop.
 Drop chances in mobs_redo format (chance N = 1/N). Working item names —
 final naming in items_crafting.md. All aggressive mobs:
 `pathfinding = 1`, `group_attack` per verb. Disengagement follows
@@ -1244,7 +1243,7 @@ license-clean, keep attribution.
 ## 6. Base-material map (both continents feed all base recipes)
 
 The universal metal/pick spine is available on both faction sides and never
-requires a gem or cultural material: Bronze (Copper + Tin), Iron,
+requires a gem: Bronze (Copper + Tin), Iron,
 Steel (Iron Bar + mined Coal), Silversteel (Steel + Silver), Embersteel
 (Silversteel + Emberglass) and Abyssal Steel (Embersteel + Abyssal Crystal).
 Quartz is the universal T1 jewelry mineral. Emberglass and Abyssal Crystal are
@@ -1253,24 +1252,18 @@ universal fantastic progression resources rather than gems.
 Gems are depth-tiered and the same in every region (Round 29,
 `items_crafting.md` §3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
 T5 Ruby, T6 Diamond, each only in its own tier rock, about one per 512 host
-nodes there. Cultural material and signature wood follow the owning
-`race_region` column:
+nodes there. The signature wood follows the owning `race_region` column:
 
-| Faction | Race region | Cultural material | Signature wood |
-|---|---|---|---|
-| Accord | Human | Sunwax | Oak |
-| Accord | Dwarf | Runeslate | Mountain Pine |
-| Accord | Elf | Moonresin | Silverwood |
-| Throng | Orc | Red Ochre | Spikethorn Acacia |
-| Throng | Troll | Spirit Resin | Kapok |
-| Throng | Undead | Gravesalt | Gravewood |
+| Faction | Race region | Signature wood |
+|---|---|---|
+| Accord | Human | Oak |
+| Accord | Dwarf | Mountain Pine |
+| Accord | Elf | Silverwood |
+| Throng | Orc | Spikethorn Acacia |
+| Throng | Troll | Kapok |
+| Throng | Undead | Gravewood |
 
-- Every culture has an ordinary home-region surface source sufficient for
-  architecture, decoration, quests and trade. A concentrated T4 source also
-  exists in its contested level-31+ zones or projected deep column. Foreign
-  cultural material is optional PvP-counter input, never base progression.
-- At y = −501 and below, territory is contested but the surface race region
-  continues to select cultural deposits. Players can mine through
+- At y = −501 and below, territory is contested. Players can mine through
   opposing deep columns without gaining ownership of the surface above.
 - Abyssal Crystal begins in T5 on both sides before a T6 pick is required. The
   initial density target is approximately one crystal per 2,048 eligible host
@@ -1295,17 +1288,16 @@ nodes there. Cultural material and signature wood follow the owning
 | Raw silk (`grug_mobs:spider_silk`; Tailor T3+ — silkweave, silk and stormweave bolts) | 25–60 | deep-forest/fringe spiders | bone-forest/jungle spiders |
 | Food plants (everyone, farmable later) | all | potatoes/corn (meadows), berries (hills, elf forest), apples, melon (fringe), meat/fish everywhere | corn (savanna), melon (jungle), berries via forest patches, meat/fish |
 | Food plants, **found-only** (everyone, never farmable) | 25–60 (wild cocoa 51–60) | mushrooms (deep forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front, §2), rock salt (coast beaches) | mushrooms (bone forest/swamp), wild cocoa (The Skyglass Canopy — shared contested front; Stormscale Summit — offshore island bonus, §2), rock salt (coast beaches) |
-| Healing herbs T1 (Alchemist) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
+| Healing herbs T1 (Alchemy) | 10–25 | gravemoss (pine hills) | gravemoss (blight) |
 | Healing herbs T2 | 25–45 | dragonweed (crags, deep forest) | dragonweed (badlands, bone forest) |
 | Healing herbs T3 | 45–60 | crimson lotus (jungle fringe, The Skyglass Canopy) | crimson lotus (deep jungle) |
-| Spices T1 (everyone gathers; Alchemist + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
+| Spices T1 (everyone gathers; Alchemy + Cooking use) | 10–25 | sunleaf (meadows, elf forest) | sunleaf (savanna, jungle edge) |
 | Spices T2 | 25–45 | marshbloom (swamp) | marshbloom (swamp) |
 | Spices T3 (stormkelp also weaves the Tailor's T6 stormweave bolt, `items_crafting.md` §3.5) | 45–60 | stormkelp (coast) | stormkelp (coast) |
 | Alchemy reagents (mob) | 25–60 | venom gland/sac, slime gel, bear claw | identical (shared tables) |
 | Woods | all | oak, pine, silverwood (+jungle at fringe) | acacia, kapok, gravewood — all `group:wood` |
 | Universal ores/progression crystals | depth axis | own-side continental underground + applicable generic drops | same base density |
 | Gems | depth axis (one per tier rock) | all six, each in its own tier rock | same |
-| Cultural materials | surface + contested concentration | Sunwax, Runeslate, Moonresin | Red Ochre, Spirit Resin, Gravesalt |
 
 Every row has at least one source per continent. Race woods are
 deliberately asymmetric (identity); base recipes accept `group:wood`.
@@ -1502,8 +1494,7 @@ Signature items are mob materials (`grug_material`); their catalogue `tier`
 (registered by `grug_professions`, so recipe books show it and no enchant
 takes one above its own tier). Quest items have no price and no tier. The
 trader drop audit covers the band tables too. `generic` items are
-existing ones; `reagent` items belong to `grug_professions`. Any other kind is
-a load error.
+existing ones. Any other kind is a load error.
 
 **Loot by band.** A mob's drop family is its sub-type's `drops` (default its
 family), else its role. The band is `floor((level − 1) / 10) + 1` (1–10 → 1,

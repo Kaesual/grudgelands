@@ -20,8 +20,9 @@ item, tier, depth or economy rules.
 non-circular pick/depth spine. Since Round 24 (2026-09-29) the pick tier is
 checked against the tier of the rock or resource, not against y (§3.0.4). Emberglass and Abyssal Steel replace the old
 Emberstone/Mese and Grudgesteel targets. Six depth-tiered gems (Round 29),
-cultural finishes, a separate PvP-special channel, the final Goldsmith/trinket model and
-the rebased 25c→25s Common-price axis are authoritative below. Private housing
+the final Goldsmith/trinket model and the rebased 25c→25s Common-price axis
+are authoritative below; cultural finishes, the cultural materials and the
+PvP-special channel were removed in Round 33. Private housing
 isles, guild systems, finder items and the Amplifier are absent from the target
 design. Historical decisions in §10 remain design history only.
 
@@ -57,12 +58,8 @@ ladders are independent; §2.1 spells out how they meet.
   with top-tier rolls.
 - **Class/profession synergy intended** (Warrior+Weaponsmith or Armorsmith,
   Priest/Mage+Tailor, …).
-- Gems are depth-tiered and the same everywhere (§3.0.1, Round 29); cultural
-  materials stay regional and make optional target-race counters trade goods.
-  Universal picks never require a gem, cultural material or trophy.
-- Cultural finishing is crafter-culture-bound but finished items remain
-  tradeable and wearable by anyone; target-race PvP specials are a separate
-  channel (§4).
+- Gems are depth-tiered and the same everywhere (§3.0.1, Round 29).
+  Universal picks never require a gem or trophy.
 - Material tiers mirror classic MMOs: vendor supplies (thread/vials) as
   small gold sink; world materials tiered by source level. Authored city/POI
   stations are personal workspaces; crafted player-placed stations are shared.
@@ -136,11 +133,11 @@ new rule, all three were implicit before:
 |---|---|
 | Weaponsmith | Physical-weapon enchantments |
 | Armorsmith | Metal-armor and shield enchantments |
-| Leatherworker | Weapon grips; 8/16/24/32-slot leather bags; leather enchants |
+| Leatherworker | 8/16/24/32-slot leather bags; leather enchants |
 | Tailor | 8/16/24/32-slot cloth bags; cloth enchants |
 | Woodcarver | Staff, wand and bow enchantments |
 | Goldsmith | Rough→Cut gems; Settings; trinkets; spellbooks; ornaments; named enchants |
-| Alchemist | Profession-gated mixtures for universal Brewing Stand finishing |
+| Alchemy (secondary) | Profession-gated mixtures for universal Brewing Stand finishing |
 
 Fixed enchant tier bonuses/costs follow §6b and
 [the current contract](crafting_equipment_revision.md#enchanting). Removed
@@ -158,10 +155,10 @@ Imbue/Temper recipes do not survive as mastery unlocks.
   recipes ("T3: 4 locked"); Basics keeps its per-tier "Undiscovered" count.
   A station's book button lists only what the player can craft there.
   Greyed recipes are browsable but are never ingredient-navigation targets.
-- The crafting page carries two primary book slots, one slot for every
-  framework secondary (Cooking today), and the always-open **Basics** book.
-  Empty learnable slots say **learn at a trainer**. First Aid and Riding do not
-  acquire book slots.
+- The crafting page carries two primary book slots, one fixed slot for each
+  framework secondary (Cooking, then Alchemy; Round 33), and the always-open
+  **Basics** book below them. Empty learnable slots say **learn at a
+  trainer**. Riding does not acquire a book slot.
 - The Basics book derives its entries from existing non-profession engine and
   dual-furnace recipes. Those recipes remain registered by their owning mods
   and are not re-registered by the profession framework.
@@ -190,7 +187,7 @@ Imbue/Temper recipes do not survive as mastery unlocks.
   3×3 grid.
 - **Ingredient navigation (decided 2026-09-28):** an ingredient cell of the
   selected recipe is clickable when the ingredient has a recipe the player's
-  books already list (Basics, the primary professions, Cooking); its tooltip
+  books already list (Basics, the primary professions, Cooking, Alchemy); its tooltip
   gains "Click to view recipe". A group ingredient uses the item the cell
   shows. The click keeps the current book when that view lists the
   ingredient; otherwise it opens the first of those books that does, and a
@@ -215,6 +212,13 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 - Every profession starts at T1. Successful crafts of the **current** tier
   advance the fixed counter in `professions.md` §1; lower-tier crafts count
   nothing and above-tier crafts are refused.
+- **Only real recipes count (Round 33):** enchants, upgrades and the
+  profession's own end products (potion and elixir mixtures, dishes and raw
+  dish assemblies, bags, trinkets, spellbooks). Stations and intermediates
+  (settings, cut gems, bolt bundles, ornament components) and every automatic
+  furnace or brewing finish count nothing. A recipe registers as such with
+  `material = true` or `progress = false`; every craft path and station
+  operation awards progress through `grug_jobs.award_progress`.
 - Character level caps the effective profession tier to the material bands of
   §3.0.1. Profession and item-use gates are independent: item-level requirements remain separate from profession qualification.
   Ordinary T1 weapons explicitly require level 1 through `_grug_req_level`;
@@ -238,8 +242,7 @@ redemption item or discovery grind. A pure fighter instead buys enchanted gear f
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
 rewards + 3% world drops between the six material tiers, §3.0),
 and at 60 the professions stay load-bearing via consumables
-(elixirs/bandages/potions) and named enchant application/replacement (§7).
-Broader masterwork and cultural services remain future WP5 work. V1 repair is universal and gold-only at every profession
+(elixirs/potions) and named enchant application/replacement (§7). V1 repair is universal and gold-only at every profession
 trainer; material/profession repair remains later work (§8 and
 [durability_repair.md](durability_repair.md)).
 
@@ -339,17 +342,17 @@ equals its tier, so it needs the pick of its layer:
 *Why:* one depth ladder for ores and gems; no contested route is needed for a
 gem, and no enchant waits on another region's gem.
 
-Each surface/depth column has exactly one cultural race region. It chooses the
-cultural source independently of political territory or PvP state:
+Each surface/depth column has exactly one race region, independent of
+political territory or PvP state; it selects the region's signature wood:
 
-| Faction | Race region | Cultural material | Signature wood |
-|---|---|---|---|
-| Accord | Human | Sunwax | Oak |
-| Accord | Dwarf | Runeslate | Mountain Pine |
-| Accord | Elf | Moonresin | Silverwood |
-| Throng | Orc | Red Ochre | Spikethorn Acacia |
-| Throng | Troll | Spirit Resin | Kapok |
-| Throng | Undead | Gravesalt | Gravewood |
+| Faction | Race region | Signature wood |
+|---|---|---|
+| Accord | Human | Oak |
+| Accord | Dwarf | Mountain Pine |
+| Accord | Elf | Silverwood |
+| Throng | Orc | Spikethorn Acacia |
+| Throng | Troll | Kapok |
+| Throng | Undead | Gravewood |
 
 **Density shape and calibration targets:**
 
@@ -374,8 +377,9 @@ Crafted material blocks are storage/building nodes, never natural resources.
 **The pack/unpack recipes shipped 2026-09-16** (WP26): all twelve processed
 rows, 9 ↔ 1, both directions, derived from `grug_materials.PROCESSED_MATERIALS`
 so the Gold Block and the two resource-form blocks are covered by construction.
-Rough gems and cut-gem blocks remain WP10's and still have no recipe.
-They have no harvest tier, any real pick recovers them wherever territory
+The six cut-gem blocks pack and unpack the same way since Round 33 (a plain
+Basics recipe in `grug_artisans/goldsmith.lua`, building accents); rough gems
+have no block. Storage blocks have no harvest tier, any real pick recovers them wherever territory
 permission allows, and they always drop themselves. Mapgen never places a
 craftable nine-unit storage block. Citrine, Garnet, Jade, Diamond, Sapphire and
 Ruby each pack from **9 Cut Gems** into one matching non-luminous luxury block
@@ -423,7 +427,7 @@ the **dual furnace** (ported from LotT, §1.1) does two-input alloys.
 Steel has two material inputs. Mined Coal occupies the second material slot;
 burning Coal or Charcoal as fuel never substitutes for it. The dual furnace
 therefore keeps two material slots plus fuel. No universal bar consumes a
-gem, cultural material or trophy.
+gem or trophy.
 
 The dual furnace itself is crafted from one normal furnace plus the first
 alloy's two metals — **2 Copper Bars and 1 Tin Bar** in LotT's T-arrangement
@@ -673,7 +677,7 @@ anti-cheat check.
 `grug_materials` remains the sole public owner of the tier and harvest
 taxonomy: `TIERS`, `tier_at(y)`, `stratum_node_for(y)`, `level_for_tier(tier)`,
 `required_pick_tier(node)`, `DECORATIVE_ROCKS`, `PICK_PROFILES` /
-`build_pick_capabilities`, `tool_tier_for_stack`, the read-only
+`build_pick_capabilities`, the read-only
 `mining_decision` and `register_on_harvest`. Its `core.node_dig` wrapper
 re-checks the engine rule server-side for natural nodes, records protection
 violations and settles harvest callbacks after a successful resource dig. The
@@ -808,8 +812,8 @@ craftable by everyone. What each section now lists is three things —
 3. its **exclusive recipes**, a handful per mastery tier: things nobody
    else can make at all.
 
-Coverage across the seven professions is complete and overlap-free
-(professions.md §2).
+Coverage across the six primaries and the two secondaries is complete and
+overlap-free (professions.md §2).
 
 ### 3.3 Weaponsmith and Armorsmith (shared Forge)
 
@@ -830,7 +834,6 @@ the former Weaponsmith metal fittings are removed (Round 28 ruling 28).
 
 **Exclusive recipes**: named family-legal enchantments.
 Plain shields use their universal Basics grid; Armorsmith owns their enchants.
-Cultural/PvP operations remain separate future delivery.
 
 Ore access follows §3.0.4: territory/protection, then the pick tier against
 the ore's harvest tier, at any depth. Natural distribution comes
@@ -855,15 +858,12 @@ the §3.1 shapes at jerkin 8 / pants 7 / hood 5 / boots 4 leather. Its MVP
 wearers are the **Warrior** (light avoidance set, §3.8 — decided
 2026-08-13) and the **Scout**.
 
-**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): **weapon
-grips** at Apprentice — 2 leather of the item's tier, retained as a component
-without a current enchant consumer; named leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes
+**Exclusive recipes** (mastery cut decided 2026-08-13, §2.1): named
+leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes
 the 8-slot Leather Pouch. (The quiver item and its recipe were removed in
 Round 28; the quiver is a Scout-only slot, `inventory_equipment.md` §3.) Its 16/24/32-slot leather bags follow at
 Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
 
-Supply loop as decided: the ×5 leather tag (professions.md §3), Tailors
-buy leather for bags, Alchemists for apothecary gear. No enchant consumes grips.
 
 ### 3.5 Tailor (tailor bench) — cloth and cloth bags
 
@@ -893,14 +893,17 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
   is the Master-tier addition of 2026-08-07. Bags are the one signature
   recipe line that is fully decided.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
+- The woven and heavy bolt bundles are bag inputs (intermediates, no
+  profession progress).
 
-### 3.6 Alchemist (brewing stand) — potions and elixirs
+### 3.6 Alchemy (brewing stand) — potions and elixirs
 
-**Implemented 2026-09-18.** Herbalism is part of the Alchemist rather than a
-separate profession. Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are
+**Implemented 2026-09-18; a secondary profession since Round 33** (no primary
+slot, its own book slot beside Cooking, `professions.md` §1). Herbalism is
+part of Alchemy rather than a separate profession. Gravemoss, Dragonweed, Crimson Lotus and Ember Moss are
 fail-closed scenery for everyone who has not learned Alchemy; learning the
 profession authorizes all four. Cave Cap remains food-grade and universal.
-Recipe access is the Alchemist's effective profession tier (§2.2), not a herb
+Recipe access is the effective Alchemy tier (§2.2), not a herb
 or keystone book gate. Every tier-N recipe contains a declared tier-N reagent.
 
 Alchemists assemble a potion mixture from its reagents and vial in their own
@@ -908,7 +911,8 @@ inventory 3x3 grid; that qualified preparation awards current-tier progress.
 The **Brewing Stand** accepts one mixture, fuel and finished outputs. Its
 automatic completion and extraction are universal and grant no further progress.
 Capital stations are personal workspaces; all player-placed copies are shared
-stations subject to area access. The stand is a T3 Alchemist grid recipe:
+stations subject to area access. The stand is a T3 Alchemy grid recipe (a
+station: it awards no profession progress):
 three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 
 Potions restore or act immediately and share the persistent potion clock.
@@ -919,10 +923,7 @@ Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
 consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
 never touch the potion clock: exactly one `elixir` status may run, the newest
 replaces it, and it stacks with the separate food status. Pool and crit values
-are percentage points. Apothecary equipment carrying `grug_apothecary` adds
-10% duration to timed potions and elixirs, and +1 percentage point to a stat
-elixir, per worn piece, with at most two pieces counted. Instant potions are
-unchanged. Consumables require the first character level of
+are percentage points. Consumables require the first character level of
 their recipe tier: **1, 11, 21, 31, 41, 51**.
 
 | Tier | Product | Reagent 1 | Reagent 2 | Effect |
@@ -949,10 +950,8 @@ their recipe tier: **1, 11, 21, 31, 41, 51**.
 | T6 | Elixir of Focus VI | Ember Moss | Wild Cocoa | +20% maximum mana for 15 min |
 | T6 | Elixir of Precision VI | Ember Moss | Sharp Feather | +4 percentage points crit for 15 min |
 
-Every row also consumes one Glass Bottle. Sovereign's Flask remains reserved
-for the Human signature line in §4 and is not registered until that signature
-effect exists. Apothecary armor items and imbuing oils remain later catalog
-work; the two-piece runtime seam above is already authoritative.
+Every row also consumes one Glass Bottle. There is no apothecary gear, no
+imbuing oil and no Sovereign's Flask (removed in Round 33).
 
 ### 3.6a Woodcarver (carving bench) — wood, bows and caster weapons
 
@@ -964,13 +963,13 @@ The exact shapes and six-component ladder are defined in
 [`crafting_equipment_revision.md`](crafting_equipment_revision.md#plain-caster-weapons-and-bows).
 
 **Material chain**: wood, including the per-race woods of biomes_mobs §5 —
-silverwood and gravewood among them. Signature woods remain cultural inputs,
-not a mandatory universal tier ladder. The six processed grades are decided
+silverwood and gravewood among them. Signature woods are not a mandatory
+universal tier ladder. The six processed grades are decided
 (2026-08-13): **Seasoned → Polished → Hardened → Inlaid → Lacquered →
 Heartwood** (T1→T6), retained for enchanting rather than plain weapon recipes,
 each craftable from any `group:wood` — both continents
-reach every grade by construction, and the per-race woods stay a cosmetic/
-cultural skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
+reach every grade by construction, and the per-race woods stay a cosmetic
+skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
 for example Steel Staff (§3.8).
 
 **Enchants**: staves, wands and bows.
@@ -992,7 +991,9 @@ survives; the private-island Gem Detector does not.
 depth-tiered gems (§3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
 T5 Ruby, T6 Diamond. Natural gem nodes drop Rough Gems. The Goldsmith alone
 refines Rough → Cut, at the gem's tier; every storage block and equipment
-recipe consumes Cut Gems where a gem is required.
+recipe consumes Cut Gems where a gem is required. Cut gems, settings and
+ornament components are intermediates: they award no profession progress
+(§2.3).
 
 **Owns exclusively:**
 
@@ -1038,7 +1039,8 @@ trophy or cross-profession component.
 
 ### 3.7 Universal secondaries & vendor floor
 
-Neither of these costs a main profession slot (professions.md §1).
+Cooking and Alchemy (§3.6) are the two secondary professions; neither costs a
+main profession slot (professions.md §1).
 
 - **Cooking** (trainer, free) uses the profession framework. Learning it opens
   T1 and shows the complete T1–T6 catalog; profession level gates crafting and
@@ -1080,7 +1082,7 @@ Neither of these costs a main profession slot (professions.md §1).
   | Bamboo Shoot | T1 | T1 | raw HP food | jungle and swamp shores |
   | Cave Cap | T3 | T3 | raw HP food | caves at y −100…−500 |
   | Salt Crust | T5 | T5 | inedible salt | The Shattered Line, level 41–50 |
-  | Ember Moss | T5 | T5 | inedible Alchemist reagent | T5 stone (`grug_materials:t5_stone`) at y ≤ −701 |
+  | Ember Moss | T5 | T5 | inedible Alchemy reagent | T5 stone (`grug_materials:t5_stone`) at y ≤ −701 |
 
   Existing raw-food tiers are Apple T1, Blueberries T1, raw meat T1, ordinary
   Raw Fish T1, Corn T1, Potato T1, Melon T1, Mushroom T3 and Wild Cocoa T6.
@@ -1138,10 +1140,6 @@ Neither of these costs a main profession slot (professions.md §1).
   profession or lure system is introduced. The rod is an early T1 Basics
   craft: three sticks and two thread (user decision, Round 29).
 
-- **First Aid** (trainer, free): Linen/Heavy/Silk Bandage — channel
-  6 s (damage interrupts), restores 15%/30%/45% HP, then 30 s
-  "recently bandaged". Cloth competes with Tailoring demand — intended.
-  **No book** — all recipes at once, materials are the only gate.
 - **Vendor stock**: the level-independent core (small bag, weak healing
   potion, torches, wooden/stone tools, bronze pick, player arrows, job
   supplies — thread/parchment/vial) plus the **bracket catalogs** of §3.8.
@@ -1275,261 +1273,23 @@ Every craft output follows the **anti-loop rule: the payout of a crafted
 item is at most the summed payout of its ingredients** (economy.md §2) —
 vendors are a floor, never a factory profit.
 
-## 4. Cultural materials, finishing and PvP counters
+## 4. Material art contract
 
-The old six fixed ilvl-60 race-signature recipes are retired. Cultural identity
-now scales across T1–T6 as an in-place finish on universal base equipment. A
-separate PvP-special channel represents deliberate preparation against a
-target race; cultural appearance never implies that the item counters its own
-culture.
-
-### 4.1 Cultural resources and ownership
-
-| Culture | Material | Ordinary cultural/architectural uses | Concentrated contested form |
-|---|---|---|---|
-| Human | Sunwax | candles, seals, polish, gilded accents | wild waxcomb/apiary cache |
-| Dwarf | Runeslate | tablets, hearths, carved inlay | slate inscription seam |
-| Elf | Moonresin | varnish, bows, pale wood ornament | resin root/fossil-resin nodule |
-| Orc | Red Ochre | pigment, adobe decoration, war paint | ochre clay/outcrop deposit |
-| Troll | Spirit Resin | totem lacquer, incense, masks | resinous root/amber nodule |
-| Undead | Gravesalt | grave lights, urns, wards, markers | salt crust/crystal seam |
-
-- Each culture has an ordinary home-region surface source sufficient for its
-  architecture, quests and trade, plus a concentrated surface source in
-  exactly the one race-frontier zone listed for it in `world_zones.md` §11.
-  No Battlegrounds zone receives that concentrated rate. The concentrated
-  source requires T4 harvesting; an ordinary surface source retains its
-  natural axe/shovel/hand-gathering behavior.
-- Ordinary opportunity density is exactly 1/4096 eligible logical-biome
-  columns; the concentrated zone uses 1/1024. Both forms drop exactly one
-  material per node: concentration is the fourfold opportunity density, never
-  a second per-node yield multiplier.
-- A material is not forced into every cultural object: Gravewood furniture
-  need not consume Gravesalt. Moonresin uses a cool silver-blue/pearlescent
-  palette; Spirit Resin uses warm amber or toxic green.
-- Foreign cultural materials are used almost exclusively for optional
-  level-40+ PvP counters. They never enter universal bars/tools, ordinary
-  recovery consumables, solo-leveling requirements or profession-level
-  advancement. Gem demand and optional cultural-counter demand are
-  independent economies.
-- Signature woods remain universal `group:wood` inputs. Their distinct value
-  is cultural builds, furniture and optional recipes, never mandatory tool
-  progression.
-
-The concentrated harvesting families are exact:
-
-| Material | Required family at T4+ | Ordinary source behavior |
-|---|---|---|
-| Sunwax | axe | hand |
-| Runeslate | pick | hand |
-| Moonresin | axe | axe |
-| Red Ochre | shovel | shovel |
-| Spirit Resin | axe | axe |
-| Gravesalt | pick | shovel |
-
-`grug_materials` is the sole tool-family tier authority. Its public resolver
-`tool_tier_for_stack(stack, family)` accepts exactly `pick`, `axe` or `shovel`
-and reads the matching integer group `grug_pick_tier`, `grug_axe_tier` or
-`grug_shovel_tier` in 1..6. Every ladder pick, axe and shovel carries its
-group (Round 24 added `grug_axe_tier`; before that an axe reported unavailable
-tier authority), so the concentrated axe sources need a T4+ axe. Missing/malformed authority, the wrong family or a tier below four
-fails closed without removing the node, wearing the tool or granting a drop;
-WP33 creates no temporary T4 tool or duplicate tier taxonomy.
-
-### 4.2 Cultural finishing
-
-A cultural finish is a permanent per-stack workstation operation. It preserves
-the base item, material tier, quality, durability, ordinary
-prefixes/suffixes, masterwork state and PvP-special data; it creates no kit or
-parallel registered item.
-
-- Eligible families are exactly **weapon, offhand, head, chest, legs and
-  feet**. Trinkets are excluded. Each eligible stack carries at most one
-  cultural finish, while a character may freely mix any number of cultures
-  across its six slots.
-- Every culture has one fixed deterministic effect for each eligible family.
-  The user never chooses a culture-local random/smart stat, and a sword and
-  hammer do not select different signatures merely because their visual
-  subtype differs.
-- Direct player production requires the base family's owning Weaponsmith, Armorsmith,
-  Leatherworker, Tailor or other explicitly assigned profession at the
-  matching tier, and the crafter may apply only their own culture's finish.
-  Finished stacks are tradeable and function for any wearer without race or
-  faction restriction.
-- Each culture's passive, invulnerable cultural master offers the identical
-  operation to allied players who supply all inputs and pay §8.4's ledger fee.
-  The customer needs no owning profession. An enemy master refuses service;
-  foreign finishes arrive through trade or transferred finished items.
-- A different cultural finish overwrites the old finish and appearance at full
-  material/service cost without refund; the preview shows old effect, new
-  effect and complete cost. Reapplying the same culture is rejected before any
-  consumption.
-
-Direct inputs by item family and material tier:
-
-| Eligible family | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Weapon | 1 | 2 | 3 | 4 | 4 | 5 |
-| Offhand | 1 | 2 | 2 | 3 | 4 | 4 |
-| Chest / legs | 1 | 2 | 2 | 2 | 3 | 3 |
-| Head / feet | 1 | 1 | 1 | 2 | 2 | 2 |
-
-The number is units of the selected culture's material. Weapon and offhand
-also consume one unit of that culture's signature wood for a grip/core/focus;
-armor consumes no wood. The operation adds no gem, universal bar or
-trophy because the base item has already paid its ordinary recipe.
-
-The fixed effect matrix is:
-
-| Culture | Weapon | Offhand | Head | Chest | Legs | Feet |
-|---|---|---|---|---|---|---|
-| Human | Strength | Intelligence | Mana | HP | Armor | Dexterity |
-| Dwarf | HP | Armor | Strength | HP | Armor | Strength |
-| Elf | Crit | Dodge | Crit | Dexterity | Dexterity | Dodge |
-| Orc | Strength | HP | Crit | HP | Strength | Crit |
-| Troll | Intelligence | Mana | HP | HP | Dodge | Dodge |
-| Undead | Intelligence | Crit | Mana | Mana | Intelligence | Crit |
-
-Effects consume normalized value points. A point is a balancing unit with an
-explicit conversion, not a generic +1%:
-
-| Family | T6 point budget |
-|---|---:|
-| One- or two-handed weapon | 5 |
-| Offhand | 4 |
-| Chest | 3 |
-| Legs | 3 |
-| Head | 2 |
-| Feet | 2 |
-
-| Material tier | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Share of T6 budget | 20% | 35% | 50% | 65% | 80% | 100% |
-
-| Effect | Per value point after tier scaling |
-|---|---:|
-| Strength / Intelligence / Dexterity | +3 |
-| Maximum HP | +1% of the base pool |
-| Maximum Mana | +1% of the base pool |
-| Crit / Dodge | +1 percentage point |
-| Armor | +1 raw armor rating |
-
-Primary attributes and the current-level absolute values of HP/Mana
-percentages round half-up to whole numbers. HP/Mana lines show both the
-percentage and that absolute value. Crit, Dodge and armor show one decimal
-where needed. Every tier must be strictly stronger
-in effective and displayed value; if a conversion would collapse two adjacent
-tiers, its display/conversion quantum changes. A two-handed weapon retains the
-five-point weapon budget and receives no compensation for its unavailable
-offhand.
-
-The resulting T6 per-stack values are:
-
-| Culture | Weapon | Offhand | Head | Chest | Legs | Feet |
-|---|---|---|---|---|---|---|
-| Human | +15 Str | +12 Int | +2% Mana | +3% HP | +3 armor | +6 Dex |
-| Dwarf | +5% HP | +4 armor | +6 Str | +3% HP | +3 armor | +6 Str |
-| Elf | +5% Crit | +4% Dodge | +2% Crit | +9 Dex | +9 Dex | +2% Dodge |
-| Orc | +15 Str | +4% HP | +2% Crit | +3% HP | +9 Str | +2% Crit |
-| Troll | +15 Int | +4% Mana | +2% HP | +3% HP | +3% Dodge | +2% Dodge |
-| Undead | +15 Int | +4% Crit | +2% Mana | +3% Mana | +9 Int | +2% Crit |
-
-All finish, affix, attribute and base-equipment sources add before their final
-consumers. Crit and Dodge cap at 30%. Armor remains uncapped as raw rating;
-attacker-level mitigation alone caps at 70%. Character displays armor
-rating and Damage reduction (same-level); there is no reroll or overflow
-conversion.
-The theoretical T6
-cultural-only mixed-set maxima are approximately +14.8 Crit percentage points
-(including compatible Dexterity), +9.9 Dodge points and +7 armor points.
-
-Every cell grants exactly one existing central stat. Cultural finishes add no
-proc engine, periodic step, regeneration, steal/execute/control effect,
-cooldown reduction or knockback resistance. Cells are intentionally not
-class-adaptive: some are unattractive to a particular build, while each culture
-retains at least two economically desirable cells and each faction's three
-cultures collectively cover damage, mitigation and healing/casting roles.
-
-### 4.3 PvP-special channel and target-race recipes
-
-Every item may carry at most one **PvP special**, stored independently of
-ordinary affixes and the cultural finish. Identical target-race specials never
-stack; if two legal sources affect one action, use the highest value. Applying
-a new target overwrites the old special at full material/service cost and no
-refund; applying the identical target is rejected as a no-op.
-
-The MVP ships exactly two data-driven families, parameterized by the six target
-cultures:
-
-1. **Weapon counter finish.** A permanent in-place operation on an equipped
-   weapon, owned by the profession that owns that weapon family.
-
-   | Weapon tier | Target cultural material | Target-race damage |
-   |---|---:|---:|
-   | T4 | 1 | +1 flat |
-   | T5 | 2 | +2 flat |
-   | T6 | 3 | +3 flat |
-
-   It consumes no additional bar, gem, wood or trophy. Only an accepted attack
-   sourced from the currently equipped weapon contributes counter damage; a
-   spell does not inherit it from the equipped weapon's in-hand appearance. Add
-   the flat amount after the ordinary Crit result and before armor and absorb,
-   so armor mitigates it and Crit never multiplies it. It affects hostile
-   players and combat-capable
-   NPCs/mobs with the matching race identity, never passive invulnerable
-   service NPCs. An allied passive profession helper performs the same
-   supplied-material operation for 50% of that tier's Common weapon reference
-   price (§8.4); it supplies no foreign material.
-
-2. **Warding Draught.** An Alchemist-only T4–T6 recipe reducing incoming
-   damage from one selected target race for five minutes.
-
-   | Tier | Mitigation | Cultural material | Complete recipe |
-   |---|---:|---:|---|
-   | T4 | 5% | 1 | 1 Vial + 1 Dragonweed + 1 Marshbloom + 1 target material |
-   | T5 | 7.5% | 2 | 1 Vial + 1 Crimson Lotus + 1 Stormkelp + 2 target materials |
-   | T6 | 10% | 3 | 1 Vial + 2 Crimson Lotus + 2 Stormkelp + 3 target materials |
-
-   Apply its multiplier after armor and before absorb. Only one target-race
-   ward is active; a new draught replaces the old ward and its remaining
-   duration. It is its own PvP-buff category and may coexist with one ordinary
-   elixir and the food restore buff, but it shares the global 60-second
-   potion-use clock and does not require missing HP/Mana. Apothecary Loop
-   changes neither its
-   percentage nor duration. An allied passive Alchemist helper consumes the
-   same supplied ingredients and charges 50% of the draught's authoritative
-   reference price. The ward recognizes hostile players and combat-capable
-   NPCs/mobs carrying the selected race identity; passive invulnerable service
-   NPCs never enter the damage interaction.
-
-Armor-wide counter stacking, percentage counter damage, coatings, counter-kit
-items, taunt trinkets, effigies and other race gadgets are outside the MVP and
-receive no placeholder registrations or recipes.
-All six target cultures use the same tier/effect budget. Population statistics
-never make a currently common race's permanent counter stronger.
-
-### 4.4 Material art contract
+Cultural materials, cultural finishing, the PvP weapon counter and the
+Warding Draught were removed in Round 33 (fresh-server mode: no items, nodes,
+mapgen placement, recipes or services remain).
 
 Use a hybrid source strategy: derive mundane bases/tree palettes from
-license-cleared references, adapt the proven per-stack trim/meta technique, and
-author Grudgelands' six cultural motifs plus fantastic-material language. Every
-reused asset records file provenance, author, exact license, pinned source
-commit and modifications in the owning `LICENSE-media.md`.
+license-cleared references and adapt the proven per-stack trim/meta
+technique. Every reused asset records file provenance, author, exact license,
+pinned source commit and modifications in the owning `LICENSE-media.md`.
 
 Each of the six gems has exactly four visual roles: natural ore node,
 Rough Gem, Cut Gem and polished non-luminous storage block — **24 roles total**
-before equipment overlays. Each cultural material has an inventory identity
-and at least one source-node/gather presentation. Signature woods receive a
-full tree/build palette only where an existing licensed wood cannot carry the
-culture cleanly.
-
-Before bulk production, one 16×16 art spike verifies: a complete gem family
-through trinket use; Emberglass → Embersteel item/bar/block language; one armor
-base with two cultural trims and a separate PvP-special marker; one cultural
-material in ordinary architecture and a counter recipe; and the complete
-sheet at native resolution plus nearest-neighbor enlargement. AI-generated
-concepts/variants require manual limited-palette, hard-edge and pixel-cluster
-cleanup before they become final game art.
+before equipment overlays. Signature woods receive a full tree/build palette
+only where an existing licensed wood cannot carry the race region cleanly.
+AI-generated concepts/variants require manual limited-palette, hard-edge and
+pixel-cluster cleanup before they become final game art.
 
 ## 5. Loot zones — what drops where
 
@@ -1562,7 +1322,7 @@ becoming a side door around the pick-tier gate of §3.0.4.
 | Contested approaches 31–40 | equivalent T4 access | T4, improved windows on qualifying elites | all six race approaches are contested |
 | Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
 | High front 51–60 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
-| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); race-region columns select the cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
+| Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
 **The depth axis pays in materials, and gets no drop layer of its own**
@@ -1640,7 +1400,7 @@ elite royal guards. Essential service NPCs are separate, passive and
 invulnerable.
 
 - **Fallen Crown** is one registered item with per-stack defeated-race
-  provenance, cultural overlay and generated name, not six currencies.
+  provenance and generated name, not six currencies.
 - Every eligible participant receives exactly one Crown entitlement. Personal
   allocation replaces a shared ground drop; the killing blow has no special
   ownership. All six Kings use the same quantity, reference-value budget and
@@ -1678,10 +1438,9 @@ removed entirely, camps included (user decision 2026-09-29, WP audit E5).
 ### 6.1 Meta model
 
 Item meta carries `grug_quality` (1 Common / 2 Uncommon / 3 Rare / 4
-Unique-reserved), one serialized ordinary-affix table (`grug_ench`),
-and separate structured cultural-finish and PvP-special state where applicable. These
-channels never overwrite one another. Exact storage keys are implementation
-owned; one idempotent description/stat regeneration path reads them all.
+Unique-reserved) and one serialized ordinary-affix table (`grug_ench`). Exact
+storage keys are implementation owned; one idempotent description/stat
+regeneration path reads them all.
 
 **Weapon level requirement.** Ordinary base weapons require levels
 **1 / 10 / 20 / 30 / 40 / 50** across the six material tiers. T1 uses an explicit
@@ -1725,8 +1484,7 @@ suffix count of §6b. Found/vendor Uncommon sources receive one affix and Rare
 sources receive both channels. Crafted results use the same exact shape;
 the chosen channels determine the count (§6b.5).
 
-Cultural finish and PvP-special lines are displayed separately, naming their
-culture/target and exact value. Trinkets are the exception to the ordinary
+Trinkets are the exception to the ordinary
 base-stat model: §6.2 gives them no base-stat line or durability, but two selectable enchant channels and an authored special.
 
 The base-stat line uses the concrete item's level. Chosen affixes add only
@@ -1756,9 +1514,8 @@ preserves the requirement while rebuilding the description.
 | Bags | none |
 
 Ordinary equipment keeps the no-duplicate-stat rule across its prefix and
-suffix. Either channel draws from the same family pool. Cultural finish and
-PvP-special stats are separate named
-sources and may match an ordinary affix; all sources add before final caps.
+suffix. Either channel draws from the same family pool; all sources add
+before final caps.
 Every HP/Mana affix is stored as a percentage: HP uses the current-level base
 pool after the HP class factor, while Mana uses the class-neutral base pool.
 Even when its name is shortened to "+HP" or "+Mana", its tooltip always shows
@@ -1820,8 +1577,7 @@ the same specials; it remains subject to that special's authored two-slot rule.
   cooldown first, then restores HP plus maximum-Mana percentage for Mage/
   Priest or HP plus flat Rage for Warrior. Gray kills grant nothing.
 - Apothecary Loop increases only the restored amount of instant HP/Mana
-  potions. It neither shortens nor resets the shared 60-second cooldown and
-  does not modify Warding Draughts.
+  potions. It neither shortens nor resets the shared 60-second cooldown.
 
 Direct damage procs, ability cooldown reduction, movement speed, gathering
 yield, durability and vendor bonuses are excluded from the six-special MVP.
@@ -1874,7 +1630,7 @@ intended +50–60% fully equipped ceiling.
 | boss | 0.80–1.00 | dragon rewards, race Kings |
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
-prefixes/suffixes, cultural finishes, attributes and base equipment all add
+prefixes/suffixes, attributes and base equipment all add
 before their consumers. Crit and Dodge cap at 30%. Armor sources add uncapped
 raw rating; `combat_stats.md` §2 converts that rating against attacker level
 and caps only final reduction at 70%. Character shows effective Crit/Dodge
@@ -1884,10 +1640,8 @@ and caps.
 The old eight-identical-affix-slot calculation is retired: each trinket now has
 one primary prefix and one HP/Mana/Crit suffix rather than four ordinary slots.
 At T6, two trinkets can therefore add at most two direct Crit suffixes, while
-the six ordinary combat stacks retain their family pools. Cultural finishes
-add at most approximately +14.8 Crit points (including compatible Dexterity),
-+9.9 Dodge points or +7 armor points across a freely mixed T6 six-slot set.
-These maxima can intentionally push a same-level build to the 70% reduction
+the six ordinary combat stacks retain their family pools. These maxima can
+intentionally push a same-level build to the 70% reduction
 cap. Surplus rating remains useful against higher-level attackers. The
 cap/demand audit evaluates all three source channels together and verifies at
 least two desirable finish cells per culture.
@@ -1932,9 +1686,7 @@ the family's own material of tier T, the tier's loot item for the chosen stat
 
 Prefix and suffix of a stat share the inputs; both trinket pools use the same
 `stat_loot`. No input may be another profession's product (a Cut gem is a
-Goldsmith product, so other families use raw gems); the few universal
-reagents anyone can craft are the exception that keeps a family input
-varied. Load fails on a missing entry, an unregistered item, an input declared
+Goldsmith product, so other families use raw gems). Load fails on a missing entry, an unregistered item, an input declared
 above the enchant tier or a foreign
 product.
 
@@ -1979,8 +1731,7 @@ not alter its independently defined prefix/suffix/special structure.
 ### 6b.7 Special variants
 
 No third ordinary enchant slot is included. Existing trinket specials remain.
-Future cultural/PvP finishes and masterwork scope stay in WP5 and require their
-own delivery; the removed refinement workflow is not a prerequisite.
+There are no cultural or PvP finishes (removed in Round 33).
 
 ## 7. Upgrade mechanics
 
@@ -2053,24 +1804,9 @@ rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
   rounded by §8.1's money axis and `economy.md` §4.1, and **the first respec
   of a character is free** (ruling 22). Retires "repeatable at the class
   trainer and rising with level".
-- Job supplies, vendor consumables and profession-helper fees provide the
-  ordinary steady drain.
+- Job supplies and vendor consumables provide the ordinary steady drain.
 
 ### 8.4 Services, claims and mounts
-
-Cultural masters charge 50% of the matching Common slot price, rounded to the
-confirmed clean table. The normal same-race vendor discount does not apply:
-
-| Cultural-master service | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Weapon | 15c | 35c | 80c | 2s | 5s | 12s50c |
-| Chest | 10c | 25c | 65c | 1s60c | 4s | 10s |
-| Offhand/head/legs/feet | 10c | 20c | 40c | 1s | 2s50c | 6s25c |
-
-The allied weapon-counter helper uses the weapon row. The allied Alchemist
-helper charges 50% of the Warding Draught's authoritative reference price.
-Both consume the player's complete physical inputs and create no regional
-material.
 
 Private housing isles, paid depth rights and the complete guild system are
 retired. Housing has no money price, tiers, upgrades or additional stones

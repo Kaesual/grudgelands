@@ -80,7 +80,7 @@ Repair never changes buy-back, income, mount or Housing prices.
 At application time revalidate the provider's identity, distance and service
 access, sufficient ledger funds, and every exact quoted stack and its wear.
 A stale form or changed item aborts without debit or inventory mutation.
-Commit the ledger payment and inventory restoration together. Preserve affixes, cultural information and item identity. No partial repair-all,
+Commit the ledger payment and inventory restoration together. Preserve affixes and item identity. No partial repair-all,
 duplication, stack destruction or unnoticed metadata replacement is allowed.
 
 Material-based self repair and differentiated profession repair are possible

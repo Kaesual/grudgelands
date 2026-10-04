@@ -68,12 +68,17 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `quest_reward(level, weight)` turns a quest weight into XP; kill XP
   (`mob_xp × tier`) lives in `grug_mobs/levels.lua`. Positive grants feed
   `grug_core.feed_xp` unless the caller passes `quiet`.
-- **Professions**: `grug_jobs` owns the exact seven primaries — Weaponsmith,
-  Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith — plus Cooking,
-  two primary slots, player-meta progression and the UI-only recipe books.
+- **Professions**: `grug_jobs` owns the exact six primaries — Weaponsmith,
+  Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith — plus the
+  secondaries Cooking and Alchemy (`alchemist`; Round 33), two primary slots,
+  one fixed book slot per secondary, player-meta progression and the UI-only
+  recipe books.
   Content mods first call `register_ingredient_tier(item, tier)`, then
   `register_recipe{profession, tier, station, inputs, output, hint}`; every
-  gear recipe must contain a declared ingredient of its own tier. For an
+  gear recipe must contain a declared ingredient of its own tier. A recipe's
+  `progress` flag (Round 33) says whether it awards profession progress: end
+  products do; `material = true`, `progress = false` (stations,
+  intermediates) and automatic finishes do not. For an
   intermediate-material conversion, the output tier is the recipe tier; it
   does not invent a same-tier input solely to satisfy the gear rule. **Basics** is the
   exclusive profession-free category; every recipe route appears in exactly
@@ -85,7 +90,9 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   station install its engine adapter and optional per-player gate; registrations
   made before that adapter are replayed. Player APIs are `learn`, `unlearn`,
   `has`, `profession_level`, `crafts_in_tier`, `character_tier`,
-  `record_craft` and `can_craft_recipe`. `profession_level` returns 0 when
+  `record_craft`, `award_progress` and `can_craft_recipe`; every craft path and
+  station operation (enchants, profession upgrades) awards progress through
+  `award_progress(player, recipe)`, which checks the recipe's flag. `profession_level` returns 0 when
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft. Authored workspaces have persistent per-player/per-station data;
   player-placed stations share inputs with individually qualified output views.
@@ -355,8 +362,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   No fixed capital-core position is authoritative. Potions share
   `grug_traders`' persistent clock (60 s, or 45 s for the Greater pair);
   elixirs replace status id `elixir`, stack with status id `food`, and never
-  touch that clock. Apothecary gear extends timed potions and elixirs by 10%
-  per piece (maximum two), but does not change instant potions.
+  touch that clock.
   `grug_gathering`'s herb authorizer delegates to
   `grug_jobs.has(player, "alchemist")`; Cave Cap remains universal food.
   The former real-code Lua 5.1 regressions under `tools/wp39/` were retired in
@@ -634,9 +640,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   server logs. Equipment changes must notify the shared equipment seam.
   Since Round 28 the inputs are data: `grug_professions/data/enchants.json`
   (own material + stat loot + a mined or gathered family input per tier),
-  checked by the pure `enchant_data.lua`; universal reagents come from
-  `data/reagents.json` through `reagents.lua`
-  (`grug_professions/data/README.md`).
+  checked by the pure `enchant_data.lua` (`grug_professions/data/README.md`).
 - **Materials & tier-rock gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
   - **Contract (WP43, Round 24):** Bronze, Iron, Steel, Silversteel,
@@ -650,7 +654,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     race-region assignment.
   - Registry consumers use `RESOURCES`, `RESOURCE_BY_KEY`,
     `RESOURCE_BY_NODE`, `PROCESSED_MATERIALS`,
-    `CULTURAL_MATERIALS`, `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
+    `SIGNATURE_WOODS`, `RACE_REGIONS` and `DENSITY`,
     with the `resource`, `resource_for_node`, `resource_node` and `processed`
     accessors. `CURRENT_SCATTER_RESOURCES` is only the pre-WP40 placement
     roster. WP40 replaces its geometry with race-region columns; it does not
@@ -1136,7 +1140,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   25); bounded functional anchors keep their hard protection; the remaining camp shells, tents, fences and battlefield
   dressing are mutable.
   Material design owns the complete `race_region` mapping of
-  cultural material and signature wood (gems are depth-tiered, not
+  signature wood (gems are depth-tiered, not
   regional); map code stores only the
   region identity and placement data needed to consume that mapping. Each
   endpoint apex camp has no renewable sockets (renewable ores are removed,
