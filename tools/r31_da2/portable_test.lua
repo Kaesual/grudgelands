@@ -13,8 +13,8 @@
 --    only on the radius, sparse.
 -- B. The rules (grug_mobs/dragon_arena.lua): inside at any height of the
 --    band, never beyond the radius; the flight clamp; the reset decision;
---    the hazards' damage per second and slow; thin ice breaking after
---    standing still on one node.
+--    the hazards' damage per second and slow; thin ice claims and breaks
+--    (Round 34: 1 s after a step, never postponed) and the path samples.
 -- C. boss_dragons.lua, the real file, on a fake engine: a player inside the
 --    arena is a target at a height the old 8-node rule refused; a player
 --    outside is neither acquired nor a target and cannot hurt the dragon; an
@@ -22,7 +22,9 @@
 --    reset) and flies home, lands, and a re-pull starts a fresh, engaged
 --    fight; the hazard tick deals 250 (ice water, with a slow) and 350
 --    (ember) once a second through set_hp, never a punch, and thin ice
---    breaks into ice water under a player who stands on it.
+--    breaks into ice water with its four neighbours 1 s after a step on it,
+--    behind a player who moved on, for every node of a fast runner's path,
+--    with one sound per break and no postponement.
 -- Prints "R31 DA2 PORTABLE PASS checks=<n>" or raises.
 local repo = arg[1] or "."
 local checks = 0
@@ -127,14 +129,29 @@ do
 	check(dps == 350 and slow == false, "B ember 350/s, no slow")
 	check(rules.hazard(N, N.thin_ice) == nil and rules.hazard(N, "default:stone") == nil,
 		"B no damage elsewhere")
-	local entry, breaks = rules.ice_step(nil, 7, 0.5)
-	check(entry and not breaks, "B ice: 0.5 s")
-	entry, breaks = rules.ice_step(entry, 7, 0.5)
-	check(entry and not breaks, "B ice: 1 s")
-	local moved = rules.ice_step(entry, 8, 0.5)
-	check(moved.time == 0.5, "B ice: a new node starts again")
-	entry, breaks = rules.ice_step(entry, 7, 0.5)
-	check(entry == nil and breaks, "B ice breaks after 1.5 s on one node")
+	-- Thin ice (Round 34): a step claims the node and its four neighbours
+	-- for a break 1 s later; a pending node is never claimed again.
+	local function key_of(p) return p.x .. "," .. p.z end
+	local pending, queue = {}, {}
+	local first = rules.ice_step(pending, {x = 0, y = 0, z = 0}, 10, key_of)
+	check(first and first.due == 11 and #first.nodes == 5, "B ice: a step claims five nodes, due 1 s later")
+	queue[#queue + 1] = first
+	check(rules.ice_step(pending, {x = 0, y = 0, z = 0}, 10.5, key_of) == nil,
+		"B ice: stepping on it again changes nothing")
+	local second = rules.ice_step(pending, {x = 1, y = 0, z = 0}, 10.5, key_of)
+	check(second and #second.nodes == 3 and second.due == 11.5,
+		"B ice: a neighbour's step claims only its unclaimed nodes")
+	queue[#queue + 1] = second
+	check(#rules.ice_due(queue, 10.75) == 0, "B ice: nothing due before 1 s")
+	local due = rules.ice_due(queue, 11)
+	check(#due == 1 and due[1] == first and queue[1] == second, "B ice: the first step's break at 1 s")
+	due = rules.ice_due(queue, 11.5)
+	check(#due == 1 and due[1] == second and #queue == 0, "B ice: the second step's break at 1.5 s")
+	local path = rules.path_points({x = 0, y = 0, z = 0}, {x = 3, y = 0, z = 0})
+	check(#path == 6 and path[6].x == 3 and path[1].x == 0.5, "B ice: a 3-node move samples every 0.5")
+	check(#rules.path_points(nil, {x = 3, y = 0, z = 0}) == 1 and
+		#rules.path_points({x = 0, y = 0, z = 0}, {x = 30, y = 0, z = 0}) == 1,
+		"B ice: no previous sample or a teleport samples only the end")
 end
 
 -- ---------------------------------------------------------------------------
@@ -327,17 +344,68 @@ local wader_slowed = 0
 for _, n in ipairs(slows) do if n == "wader" then wader_slowed = wader_slowed + 1 end end
 check(wader_slowed >= 4, "C5 ice water slows every tick")
 for _, n in ipairs(slows) do check(n ~= "burner", "C5 embers do not slow") end
--- thin ice: a player standing on it breaks it within 1.5 s
-local skater = new_player("skater", {x = 30, y = 6, z = 30})
-for dx = -1, 1 do for dz = -1, 1 do nodes[nkey({x = 30 + dx, y = 5, z = 30 + dz})] = N.thin_ice end end
-players = {skater}
-for _ = 1, 5 do step(0.25) end
-check(nodes[nkey({x = 30, y = 5, z = 30})] == N.thin_ice, "C6 thin ice holds for 1.25 s")
-step(0.25)
-check(nodes[nkey({x = 30, y = 5, z = 30})] == N.ice_water and
-	nodes[nkey({x = 31, y = 5, z = 30})] == N.ice_water and
-	nodes[nkey({x = 31, y = 5, z = 31})] == N.thin_ice, "C6 it breaks under and beside the player")
-check(skater.hp == 5000, "C6 standing on thin ice costs nothing")
+-- C6 thin ice (Round 34): every node a player steps on breaks with its four
+-- neighbours 1 s later, also behind a player who moved on; a pending break
+-- is never postponed; a fast runner skips no node; one sound per break.
+do
+	local FY = ARENA.y - 1 -- the floor the ice lies in
+	local X0, Z0 = ARENA.x + 20, ARENA.z
+	for dx = -2, 12 do for dz = -2, 2 do
+		nodes[nkey({x = X0 + dx, y = FY, z = Z0 + dz})] = N.thin_ice
+	end end
+	local function ice(dx, dz) return nodes[nkey({x = X0 + dx, y = FY, z = Z0 + dz})] end
+	local sounds = 0
+	core.sound_play = function() sounds = sounds + 1 end
+	local skater = new_player("skater", {x = X0, y = ARENA.y, z = Z0})
+	players = {skater}
+	step(0.25) -- the step on (0, 0)
+	-- off the ice, ten nodes away (a jump: only its end is sampled)
+	skater.pos = {x = X0, y = ARENA.y, z = Z0 + 10}
+	step(0.25)
+	step(0.25)
+	step(0.25)
+	check(ice(0, 0) == N.thin_ice, "C6 thin ice holds for 0.75 s")
+	step(0.25)
+	check(ice(0, 0) == N.ice_water and ice(1, 0) == N.ice_water and ice(-1, 0) == N.ice_water and
+		ice(0, 1) == N.ice_water and ice(0, -1) == N.ice_water and ice(1, 1) == N.thin_ice,
+		"C6 1 s after the step: the node and its four neighbours, though the player moved on")
+	check(sounds == 1, "C6 one sound for the five nodes")
+	check(skater.hp == 5000, "C6 stepping on thin ice costs nothing")
+	-- a fast runner: 3 nodes per sample along z = -1 from x = 2 to x = 11
+	sounds = 0
+	for _, x in ipairs({2, 5, 8, 11}) do
+		skater.pos = {x = X0 + x, y = ARENA.y, z = Z0 - 1}
+		step(0.25)
+	end
+	for _ = 1, 4 do step(0.25) end
+	local all = true
+	for dx = 2, 11 do
+		-- (dx, -2) breaks only through a step on (dx, -1) itself
+		if ice(dx, -1) ~= N.ice_water or ice(dx, -2) ~= N.ice_water then all = false end
+	end
+	check(all, "C6 a runner 3 nodes per sample breaks every node of the path")
+	check(sounds == 10, "C6 ...with one sound per stepped node (" .. sounds .. ")")
+	-- a pending break is never postponed: a step on (12, 0), then one on its
+	-- neighbour (11, 0); (12, 0) breaks 1 s after the first step, (10, 0),
+	-- claimed only by the second, 0.25 s later
+	for _, dx in ipairs({10, 11, 12, 13}) do
+		nodes[nkey({x = X0 + dx, y = FY, z = Z0})] = N.thin_ice
+	end
+	skater.pos = {x = X0 + 12, y = ARENA.y, z = Z0}
+	step(0.25)
+	skater.pos = {x = X0 + 11, y = ARENA.y, z = Z0}
+	step(0.25)
+	step(0.25)
+	step(0.25)
+	check(ice(12, 0) == N.thin_ice, "C6 no break before 1 s")
+	step(0.25)
+	check(ice(12, 0) == N.ice_water and ice(13, 0) == N.ice_water and ice(11, 0) == N.ice_water and
+		ice(10, 0) == N.thin_ice, "C6 a step on a neighbour does not postpone the pending break")
+	step(0.25)
+	check(ice(10, 0) == N.ice_water, "C6 ...and the neighbour's own claims break 1 s after it")
+	core.sound_play = function() end
+	players = {}
+end
 
 -- C7 whelps drop outside players and veto them
 do
