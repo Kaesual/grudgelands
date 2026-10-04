@@ -478,6 +478,13 @@ do
 		check(meta:get_string("description"):find("\nRequires level " .. row[3], 1, true) ~= nil,
 			"H ...and its tooltip says Requires level " .. row[3])
 	end
+	-- A first-bracket drop stays level 1 up to the item's own level 3.
+	for _, row in ipairs({{1, 1}, {2, 1}, {3, 1}, {4, 4}, {7, 7}}) do
+		local stack = ItemStack("grug_gear:chest_metal_bronze")
+		grug_items.roll_enchants(stack, row[1], 0, 7)
+		check(stack:get_meta():get_int("grug_req_level") == row[2],
+			("H a Bronze Chestplate at item level %d requires %d"):format(row[1], row[2]))
+	end
 	-- A plain vendor stack: the definition's requirement and tooltip line.
 	local helm = ItemStack("grug_gear:head_metal_steel")
 	check(grug_core.can_use_item_level({level = 19}, helm) == false and
