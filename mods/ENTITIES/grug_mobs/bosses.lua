@@ -193,6 +193,15 @@ local function lockout_key(id)
 	return "grug_boss_lockout:" .. id
 end
 
+-- fn(player, boss_id) for every player the ledger credits with a King's or a
+-- dragon's kill, whether or not the loot lockout lets them loot it
+-- (grug_achievements counts the kills).
+local boss_kill_callbacks = {}
+
+function grug_mobs.register_on_boss_kill(fn)
+	boss_kill_callbacks[#boss_kill_callbacks + 1] = fn
+end
+
 local function settle_boss(id, self, race)
 	local row = ledgers[id]
 	local pos = self.object and self.object:get_pos()
@@ -212,6 +221,9 @@ local function settle_boss(id, self, race)
 			near = dx * dx + dy * dy + dz * dz <= LEDGER_RANGE * LEDGER_RANGE
 		end
 		if player and (near or death_ok) then
+			for index = 1, #boss_kill_callbacks do
+				boss_kill_callbacks[index](player, id)
+			end
 			local meta = player:get_meta()
 			local key = lockout_key(id)
 			if meta:get_int(key) <= now then
