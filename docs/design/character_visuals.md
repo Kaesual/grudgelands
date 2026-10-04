@@ -279,21 +279,41 @@ none. A new character owns **No cloak** and the **Plain grey cloak** and wears
 No cloak. Every other cloak is unlocked only by an **achievement**. Both lists
 are kept per character, and so is the choice.
 
-- **Achievements** count something the character did. The first five:
-  **Hunter** (kill 100 wild animals), **Kingslayer** (kill a King),
-  **Wyvernslayer** (kill the Stormscale Jungle Wyvern), **Dragonslayer** (kill
-  the Wyrmglass Ice Dragon) and **Honored** (kill 50 guards of the enemy
-  faction). Each unlocks its own cloak. An achievement may have tiers, each
-  earned once and never taken back. "Wild animals" are every animal mob,
-  critters and hostile beasts included, but no humanoid, construct, spirit or
-  slime, and not the dragons or their whelps (bosses and boss adds); the
-  Kraken Guard counts (user ruling 2026-10-04). A sub-type counts
-  as its base mob. Zombies have their own counter. A kill counts for every
+- **Achievements** count something the character did; each tier is earned
+  once, never taken back, and unlocks its own cloak (tier N of achievement
+  `<id>` unlocks cloak `<id>_N`). The set (user's picks, 2026-10-04; names,
+  flavour and cloak names by GPT-6 Astra):
+
+  | Achievement | Condition | Tiers |
+  | --- | --- | --- |
+  | Hunter | kill wild animals | 50 / 150 / 500 |
+  | Kingslayer | kill enemy Kings (any of the three) | 1 / 5 / 20 |
+  | Wyvernslayer | kill the Stormscale Jungle Wyvern | 1 / 5 / 20 |
+  | Dragonslayer | kill the Wyrmglass Ice Dragon | 1 / 5 / 20 |
+  | Honored | kill guards of the enemy faction (the PvP counter) | 50 / 150 / 500 |
+  | Zombie Slayer | kill zombies (zombie family, husks included) | 50 / 150 / 500 |
+  | Boaring Work | kill boars (regional boars included) | 10 / 50 / 200 |
+  | Supper's Ready | cook dishes (counted at preparation, by output) | 50 / 150 / 500 |
+  | Bottle Service | brew potions or elixirs (counted at preparation) | 50 / 150 / 500 |
+  | Rat Race | kill rats | 25 / 100 |
+  | Loose Bones | kill skeletons (bog witches included) | 50 / 150 / 500 |
+  | Stone Deaf | kill golems | 5 / 50 |
+  | Final Notice | kill one of the six level-29 leaders near the capitals | 1 |
+  | Rust in Peace | kill war constructs | 5 / 50 |
+  | No More Orders | kill the rare Captain Bonerattle (either one) | 1 |
+  | Last Word | kill Watch-Captain Huskell or Paymaster Chirr | 1 |
+  | Grounded | die from a fall | 1 |
+
+  "Wild animals" are every animal mob, critters and hostile beasts included,
+  but no humanoid, construct, spirit or slime, and not the dragons or their
+  whelps (bosses and boss adds); the Kraken Guard counts (user ruling
+  2026-10-04). A sub-type counts as its base mob. A kill counts for every
   character the kill credits (the XP rule's participants). A King or a dragon
   counts for every character the boss ledger credits, whatever the loot
-  lockout says. Guards are the PvP counter.
+  lockout says.
 - The Character page has an **Achievements** tab: each achievement with its
-  cloak (dimmed until earned), its condition and its progress. Under the
+  next cloak (dimmed until earned), its condition and its progress, a
+  tooltip with the flavour line, two columns of six per page. Under the
   model on the Stats view, a **dropdown** lists the owned cloaks. Earning a
   tier posts a line to the message feed.
 - **On the model:** a cloak hangs from the shoulders to just above the knee.
