@@ -1,7 +1,10 @@
 # Round 34 — Sound: round plan
 
-Coordinator: Claude (Opus 5.5), planned 2026-10-04. Status: **approved by the
-user (2026-10-04).**
+Coordinator: Claude (Opus 5.5), planned 2026-10-04. Status: **complete
+locally 2026-10-04** ([completion and GUI checklist](#completion-2026-10-04));
+approved by the user 2026-10-04. The user's choices during the round
+(§2.2a, the ruling-9 refinement in §2.3) win over the earlier sections;
+the design as built is [sound.md](../design/sound.md).
 
 Sound is part of V1 (user, 2026-10-03). The game is almost silent today: 94
 files, all from minetest_game, mobs_redo and two food/drink cues
@@ -616,3 +619,229 @@ markers, a run across Wyrmglass thin ice that breaks 1 s behind the runner in a 
   informal "du"); the coordinator publishes and collects the picks.
 - **End:** `tools/run_fixtures.sh` on main, sync, the user's GUI check; the
   user pushes.
+
+## Completion (2026-10-04)
+
+Every lane below is merged on local main (last lane S1b, `b0d648f5`); not
+pushed. Each code lane was independently reviewed by Opus once: F1 and F2
+merged as reviewed (F2 then took the user's 3×3×3 refinement, checked by
+the coordinator), S1a after three fixes, S2 and S1b with small fixes the
+coordinator verified. Every shipped `.ogg` is on its lane's
+`tools/r34_<lane>/approved.txt` with a licence row, and each sound lane's
+fixture fails on an unlisted file. After each merge the coordinator ran the
+portable fixtures (`tools/run_fixtures.sh`, **77 of 77** on `b0d648f5`,
+re-run on this lane's branch), `check_fresh_server.py` and a smoke boot (no
+missing-sound warning). No mapgen change: a world of Round 33 or later
+serves the GUI test.
+
+### Shipped, by lane
+
+Numbers are each lane's own probe or fixture, same seed and method before
+and after (comparisons, never targets). Sizes measured on `b0d648f5`.
+
+- **F1 mobs in water** (merge `18802160`; [combat_stats.md](../design/combat_stats.md)
+  §3, VENDOR.md "Round 34 F1"): a floating mob that does not fly wades in
+  the attack state, while fleeing, on the evade run home and whenever it
+  already swims; idle roaming keeps treating water as a drop; lava and every
+  damaging liquid stay a boundary. A swimming mob facing a bank one node up
+  hops onto it (`GRUG_CLIMB_RISE` 3 nodes/s); an idle mob in water swims home
+  on the 1 Hz leash tick (`shore_check`). Four `GRUG PATCH` markers (120 in
+  `mobs/api.lua`). Engine probe (seed 12345, a Wolf at two real stream
+  crossings): ambient roaming 0 of 74 samples in water at both; the chase
+  enters the water after 0.8–1.4 s, crosses in 4.7–5.2 s and reaches its
+  target; the evade run ends on land after 12.6–18.4 s, a mob stranded in
+  water stands on land after 8.3–11.8 s; the cliff probe costs 4.45 µs and
+  the leash tick 2.10 µs per call. Fixture 93 checks.
+- **F2 small fixes and the Bag of Coins** (merge `217590b2`, refinement
+  `b9ceea6a`, `0522c99b`; [economy.md](../design/economy.md) §1,
+  [world.md](../design/world.md) Wyrmglass,
+  [items_crafting.md](../design/items_crafting.md) §5): the trainer's text
+  box is three lines high, the crafting Basics hint five, neither scrolls.
+  **Cooking:** each tier's Caster dish now costs more input (vendor value)
+  than its Hearty and Hunter dishes — T1 Sweetroot Mash 2c → 4c (Hearty Stew
+  3c), T2 Berry Preserve 3c → 7c (Pumpkin Stew 5c), T4 Marshbloom Chowder
+  17c → 33c (Marsh Roast 23c), T5 Stormkelp Broth 42c → 121c (Kelp-Wrapped
+  Roast 81c); T3 (12c over 8c) and T6 (240c over 142c) already held.
+  **Damage fit:** `baseline_melee_total` keeps Strength/10 unfloored, so a
+  same-level fight meets the pool again (before: up to +15 % at level 4,
+  +1.6 % at level 60). **Bag of Coins** (`grug_money/coins.lua`): Withdraw on
+  the Character page (gold, silver, copper; one transaction; refused for a
+  non-whole amount, more than the balance or a full inventory), a deposit
+  slot that destroys the bag and credits it (refused above
+  `grug_money.MAX`), traders pay nothing for it. **Map markers** for the
+  Crownbinder and the Decor Merchant (kind `service`). **Encounter adds**
+  (royal guards, bodyguards, dragon whelps, a King's raiders) drop no gear
+  and no bag. **Wyrmglass thin ice:** each 0.25 s sample marks the thin ice
+  in the 3 × 3 × 3 cube around the feet, which breaks 1 s later, never reset
+  or postponed. Fixture 104 checks.
+- **S1a effects** (merge `d1e93752`, `fa2af74e`; [sound.md](../design/sound.md)
+  §3): `mods/CORE/grug_sounds` with `grug_sounds.play(event, target)`, the
+  hook list and the formspec click; NPC role cues, quest text, abandon and
+  complete, buy, sell, money, level-up, profession learned and tier, crafts
+  by kind (also on taking a dish or potion out of a furnace or brewing
+  stand), upgrade, crown, repair, equip, cloak, potions, gallop, wing beats,
+  boat, travel, fishing and the Enable PvP button; 30 files. Fixture 1410
+  checks.
+- **S2 ambience and music** (merges `2dc2e726`, `1b668339`;
+  [sound.md](../design/sound.md) §4–§6): `mods/CORE/grug_ambience` with the
+  eight-slot per-player pass, beds by mood, night, depth, sea and town,
+  dragon-island thunder, forge, fire and flowing-water loops, music pools
+  pushed on demand, the main-menu theme, the Help page's Sound sub-page and
+  `/music`, `/ambience`; `grug_map.location.in_town`. 19 beds, 3 loops and 4
+  thunder variants (26 files) in `sounds/`, 16 tracks in `music/`, plus
+  `menu/theme.ogg`. **Pass cost** (40 stand-ins at the human start, seed
+  12345, the human pilot): ambience 512 µs/s, 23.3 µs per evaluation of
+  which the node search is 18.4 µs; the atmosphere, location and ambience
+  passes together 684 → 1245 µs/s (the town flag adds to the location
+  sample). The all-zones beds were not re-measured. **Flowing water** is
+  rare: 374 flowing nodes in twelve sampled regions, 6 of 768 16 × 16
+  columns (0.8 %); the node search and choice at a river bank 128 → 48 µs.
+  Fixture 266 checks.
+- **S1b combat and creatures** (merge `b0d648f5`; [sound.md](../design/sound.md)
+  §3.2–§3.5, VENDOR.md "Round 34 S1b"): the swing into the air, hits by
+  weapon kind on mobs and players, block, dodge, player death; one cue per
+  ability theme (`grug_abilities.CAST_SOUNDS`), projectile launch and hit;
+  22 voice families (`grug_mobs/voices.lua`, `_grug_voice` on every mob)
+  through two `GRUG PATCH` call-outs (122 in `mobs/api.lua`); dragon breath,
+  lightning, enrage, wrath and wind-up, the breaking ice, the kings' and
+  Generals' signature attack; 88 files. Fixture 1029 checks.
+- **D:** [sound.md](../design/sound.md), [CREDITS.md](../../CREDITS.md),
+  this section, the status files, the module guide and AGENTS.
+
+**Sizes.** `grug_sounds`: 118 files, 1.49 MB; `grug_ambience/sounds`: 26
+files, 5.23 MB; together the shipped sounds 94 files / 1.33 MB → 238 files
+/ 8.04 MB. **First-join media** (every file under the mods' `textures`,
+`sounds`, `models` and `locale`): 14.10 → 20.82 MB. Music, 16 tracks in
+`grug_ambience/music` (30.03 MB), never joins the first download; each
+track is pushed to one player while music is on. `menu/theme.ogg`: 1.52 MB.
+
+### The user's choices during the round
+
+1. **Thin ice** marks the 3 × 3 × 3 cube around the feet each sample, no
+   path sampling (§2.3 ruling 9).
+2. **A King's skeleton raiders** drop no gear either (F2's call, accepted).
+3. **Cooking ranking:** the Caster dish is the strongest of a tier, Hearty
+   and Hunter count as equal.
+4. **Ambience:** a pilot with the human beds, then every zone after hearing
+   it ("surprisingly good, maybe minimally quieter"), all beds at gain 0.2;
+   no stream and no underwater bed.
+5. **No ambient calls** but distant thunder on the dragon islands; the crow
+   recording becomes the **Carrion Crow's** voice.
+6. **Quest accept is silent**, and so are quest progress, talent,
+   achievement, enchant, the drops, mount summon and dismount, respawn, the
+   zone banner, PvP off and automatic flag changes, crit, Blink and Sprint;
+   the PvP cue only on the Enable PvP button; money on the Bag of Coins
+   deposit; no refusal cue.
+7. **Wind-up sounds** only for the dragons (P2.1) and the humanoid special
+   attack (R2.3, also the kings' and Generals' signature); every other
+   elite winds up silently.
+8. **Music:** M7 *A Dragon's Lullaby* and M8 *The Great Sea* (first 2:00) for
+   Front and sea, M10 *Katabasis I* (first 3:20) and M11 *Permafrost* for
+   the Underground; M6 *Fantasy Orchestral Theme* also as the main-menu
+   theme.
+9. **Effect and voice picks** from the S1a, S2 and S1b pages and their
+   second pages (Ice Nova, Taunt, Charge, the human death), including the
+   families S1b added (goblin, mummy, skeleton, spirit, elemental, grazer,
+   crow, kraken); the lists are `tools/r34_<lane>/approved.txt`.
+
+### Open notes
+
+In the [BACKLOG](../../BACKLOG.md#round-34-carry-overs); none blocks the
+GUI test. Numbers are comparisons, never targets.
+
+- **Public town furnaces** use the vendored furnace form, so taking a dish
+  out of one plays no cooking cue (the profession stations do).
+- **The formspec click** plays at the file's level (a style has no gain).
+- **Music push cost** is unmeasured: the engine hashes the file on the main
+  thread, a few milliseconds per push.
+- **Town pool under capitals:** the town flag is by x/z only, so a cave
+  below a capital plays the Town pool and the half-gain bed.
+- **Volume rounding:** a `/music` or `/ambience` volume off the 10 % grid
+  shows rounded on the Help page's dropdown.
+- **Licence URLs:** the incompetech rows point at the catalogue, not at
+  each track's page.
+- **Water probe:** since the sea bed ships, the probe reads 33 nodes per
+  evaluation instead of 1 (not re-measured; a code comment in
+  `grug_ambience/init.lua` still says no sea bed exists).
+- **S1a review notes:** the gallop follows the requested speed; a clip's
+  tail plays after a stop; position sounds of one event within 0.1 s fold
+  into one.
+- **F1:** an idle mob facing a two-node bank may stay in water (no
+  regression); animals following food do not wade; `grug_bank_ahead` runs
+  per step for a floating mob in water (could be cached).
+- **F2:** the Money label may overlap at a very large balance (GUI check).
+- **Scout** full damage set above the ceiling: watch in the playtest.
+- **Seeds:** about 1 % of random seeds fail at load ("planner anchor tuple
+  differs at 29": a wide river detours around two close POIs separately and
+  ends over the first), at least since Round 29; diagnosed after the
+  merges, the fix is the user's choice.
+- Optional: a real-client performance test with several clients.
+
+### GUI playtest checklist
+
+Desktop client and the web build, a world of Round 33 or later; helpers
+`/xp give`, `/teleport`, `/giveme` (privileges `server`, `give`). Say what
+is too loud, too quiet, too frequent or wrong; gains are tuned from your
+notes.
+
+UI, NPCs and progression (S1a):
+
+1. **Clicks** in every window (inventory tabs, Character, Help, Map, a
+   vendor, a trainer, the quest dialog, crafting).
+2. **Quests:** a quest giver's dialog opens with a book cue, selecting a
+   quest turns a page; **accept is silent**; abandon and turn-in each play
+   their cue.
+3. **Buy and sell** at a vendor (coins).
+4. **Role cues:** a profession trainer, an innkeeper, the stable (riding
+   trainer), the Shipwright, the Housing Steward, the Crownbinder.
+5. **Level-up** fanfare; **profession learned** and a **tier** reached.
+6. **Crafting:** at the smithy (hammer), cooking, alchemy at the brewing
+   stand, a plain craft; take a finished dish out of a profession furnace;
+   **repair**, an **upgrade**, a **crown**; choose a **cloak**; equip gear.
+7. **Bag of Coins:** withdraw (no sound), deposit (the money cue); a second
+   player picks up a dropped bag and deposits it.
+8. **Enable PvP** button plays a cue; walking into contested land does not.
+9. **Mounts and travel:** gallop on a land mount, wing beats in flight, the
+   boat's splash; fishing cast and catch; travel by waystone and home.
+
+Ambience and music (S2):
+
+10. **Music after joining** (30–90 s) on desktop **and** in the web build;
+    a few minutes of quiet between pieces; Help → **Sound**, `/music` and
+    `/ambience` (on, off, a volume) apply at once.
+11. **Beds per zone** by day and night in each region (crickets at night
+    for humans, elves, trolls and orcs), a **town** (half gain, the Town
+    pool), a **cave**, **deep underground** (below y −500), the **sea**, and
+    silence under water.
+12. **Loops:** a forge and anvil, a burning hearth or camp fire, flowing
+    water (a stream or waterfall, not a still lake).
+13. **Dragon-island thunder:** rare, distant.
+
+Combat and creatures (S1b):
+
+14. **Melee hits** by weapon kind (sword or greataxe, dagger, staff or
+    wand, fist), on mobs and on a flagged player; dodge; an absorb shield
+    taking a hit; your own death.
+15. **Abilities** of each class: Warrior Charge, Taunt, Hold Ground;
+    Mage Fireball, Ice Nova, Glacial Ward, Cinderfall (Blink silent);
+    Priest Smite, Heal, Mend, Shield, Word of Ruin; Scout Loose, Snare and
+    Pinning Shot, Sidestep (Sprint silent).
+16. **Voices** across families (a wolf, a boar, a bear, a goblin, a zombie,
+    a skeleton, a wisp, a slime, a spider, a crocodile, a crab): war cry,
+    hurt, death; the **panther** charges without a war cry; the **Carrion
+    Crow** calls when hit.
+17. **Dragons:** the wind-up growl, fire and frost breath, enrage, the
+    wrath outside the arena, the arena lightning; on Wyrmglass, **thin ice
+    breaking 1 s behind a runner** in a 3 × 3 band, one breaking sound at a
+    time.
+18. **A King's** (or a General's) special attack; other elites wind up
+    silently.
+
+Fixes (F1, F2):
+
+19. **A mob following across a stream** and swimming back to land after
+    the fight.
+20. **Text boxes:** the trainer's "Known:" box and the crafting page's
+    Basics hint show without a scrollbar.
+21. **Map markers** for the Crownbinder and the Decor Merchant on the Map
+    tab and the minimap.
