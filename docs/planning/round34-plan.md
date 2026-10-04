@@ -30,14 +30,30 @@ merged **and** the user's listening review of S1a, so the helper, the gain
 conventions and the naming are settled before the largest file set lands. D
 last.
 
-**Listening steps.** Every media lane ends its own work with a German preview
-page (`~/projects/grudgelands-orchestration/r34/previews/<lane>/index.html`):
-each event with the file the lane chose, its gain, source and licence. The
-coordinator publishes it as a private artifact; the user marks what to swap.
-The swaps are a short fix pass in the same lane before merge. After the merge
-the user listens in the game (GUI check) and may ask for a second fix pass.
-Look-and-feel rule: the lane picks by ear-proxy and the user's picks; the user
-corrects afterwards (no pre-approval round for every single cue).
+**Approval gate (user ruling, 2026-10-04): no sound enters the game unless
+the user approved that exact file on a listening page.** "Sometimes no sound
+is better than a bad sound." So:
+
+- Every sound the user picked on the two earlier pages (§2.2) counts as
+  approved in the cut stated there.
+- A lane proposes everything else on its own German preview page
+  (`~/projects/grudgelands-orchestration/r34/previews/<lane>/index.html`):
+  per event 2–4 candidates in the final cut (mono Ogg rendered as MP3 for
+  listening), numbered, with source and licence. The coordinator publishes
+  it as a private artifact and records the user's picks in
+  `~/projects/grudgelands-orchestration/r34/approved/<lane>.txt` (one line
+  per shipped file: file name, page number, source); the lane copies it to
+  `tools/r34_<lane>/approved.txt`.
+- The lane ships only files on that list, and its fixture fails on any
+  `.ogg` in its mod that the list does not name. **An event without an approved
+  file stays silent**: its hook is either not added or added without a
+  sound name, never with a placeholder. A changed cut (shorter, trimmed,
+  re-looped) is a new file and needs a new approval.
+- Code may be built while the page waits; files land in the branch only
+  after the picks. A second page in the same lane covers what the user
+  rejected (or the event stays silent; the user may say so directly).
+- After the merge the user listens in the game (GUI check): gains and
+  pacing are tuned then; swapping a file again goes through a page.
 
 ## 2. User rulings
 
@@ -338,7 +354,9 @@ is not used. Particle budgets are untouched (no new particles this round).
 Each code lane: its fixture and the existing fixtures it touches
 (`tools/run_fixtures.sh`), one engine smoke boot (no missing-sound
 warnings for our names in the log), the preview page and the user's
-listening review, an independent Opus review. S2 also reports the
+picks before any file lands (§1 approval gate), an independent Opus review
+that also checks every shipped sound file against
+`tools/r34_<lane>/approved.txt` and the licence row. S2 also reports the
 per-player pass before and after with stand-ins. End: one boot of main,
 `tools/sync_to_luanti.sh`, the user's GUI check (desktop and web build:
 clicks, a quest, a fight, a mount ride, one region bed per mood, music
