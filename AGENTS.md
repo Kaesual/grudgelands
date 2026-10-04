@@ -64,7 +64,21 @@ Research and historical evidence: **[docs/research/README.md](docs/research/READ
 
 ## Active work and game status
 
-**Round 33 complete locally, 2026-10-04 (not pushed).** "Items,
+**Round 34 complete locally, 2026-10-04 (not pushed).** "Sound", V1's
+sound: every file picked by the user on a listening page (the approval
+gate); `grug_sounds` (one-line play helper, formspec click, cues at the
+game's events, many silent by choice), hits by weapon kind, one cue per
+ability theme, mob voices in 22 families, dragon and King cues;
+`grug_ambience` (beds per region, night, cave, deep and sea, dragon-island
+thunder, forge, hearth and flowing-water loops, four music pools pushed on
+demand, the menu theme, Help → Sound, `/music`, `/ambience`); fix lanes for
+mobs in water and the Round 33 findings (Bag of Coins, service markers,
+cooking costs, thin ice). Rules: [sound.md](docs/design/sound.md), credits:
+[CREDITS.md](CREDITS.md). Next: the GUI test (desktop and web build), the
+seed failures (about 1 % of random seeds), then WP9.
+[Plan, completion and GUI checklist](docs/planning/round34-plan.md#completion-2026-10-04).
+
+**Round 33 complete, 2026-10-04 (pushed with Rounds 30–32).** "Items,
 professions and achievements", the items design session's rulings: drops by
 quality (normal 5/2/1 %, named, elite, leaders and captains 10/10/5 %,
 bosses two blue or gold items at item level 65/70), the level requirement on
@@ -76,10 +90,10 @@ the Warding Draught removed; crit ×2 with 0.05 % per Dexterity point;
 T1-only vendor gear, repair ×1.00, potions I–VI with one cooldown, the Decor
 Merchant; per-character achievements that unlock cloaks. Numbers:
 [item_tiers.md](docs/design/item_tiers.md). Needs a fresh world. Next: the
-GUI test, then Round 34 (sound), then WP9.
+GUI test; its findings fed Round 34.
 [Plan, completion and GUI checklist](docs/planning/round33-plan.md#completion-2026-10-04).
 
-**Round 32 complete locally, 2026-10-03 (not pushed).** "Fixes,
+**Round 32 complete, 2026-10-03 (pushed 2026-10-04).** "Fixes,
 preparation and research": the minimap zoomed ×2, hostile camps marked on
 the Map tab, zone names coloured by the territory at the position with a
 territory line (`grug_pvp.territory_at`); one LMB hold state machine (gather
@@ -94,7 +108,7 @@ Sound is V1; WP9 moved to a later round; the items design session became
 Round 33.
 [Plan, completion and GUI checklist](docs/planning/round32-plan.md#completion-2026-10-03).
 
-**Round 31 complete locally, 2026-10-03 (not pushed).** "PvP, appearance and
+**Round 31 complete, 2026-10-03 (pushed 2026-10-04).** "PvP, appearance and
 clean-up": geographic PvP (WP41: `grug_pvp`'s per-player flag, the PvP tab,
 icons, banner and target frame, PvP from depth T4), the NPC faction filter
 for services and map markers, WP42's PvP-POI part (a fortress per faction
@@ -107,7 +121,7 @@ Next: fresh world and the two-client GUI test (Round 30's is still open);
 seed-dependent POI placement was set aside.
 [Plan, completion and playtest checklist](docs/planning/round31-plan.md#completion-2026-10-03).
 
-**Round 30 complete locally, 2026-10-02 (not pushed).** "Performance and
+**Round 30 complete, 2026-10-02 (pushed 2026-10-04).** "Performance and
 clean-up" from the [performance review](docs/research/perf-review-2026-10.md):
 the quest-state cache and the Map tab at most every 2 s (P1, with Return home
 moved to the Character page and quest markers that follow held items and
@@ -677,6 +691,35 @@ current state). It is **derived, never authoritative**:
   professions and progress, `c3` achievements, cloaks and the cloak model,
   `c4` enchant tiers, upgrades, crown and families, `c5` crit, vendors,
   repair, potions and the capital services).
+
+### Sound (since Round 34)
+
+- **Approval gate (user ruling):** no sound file ships unless the user
+  picked that exact file on a listening page; the pick is recorded in
+  `tools/r34_<lane>/approved.txt` (or a later round's list) and the
+  fixture fails on an unlisted `.ogg`. An event without an approved file
+  stays silent (no spec or no call site), never a placeholder. A changed cut
+  is a new file and needs a new pick. Every file has a `LICENSE-media.md`
+  row; CC BY and CC BY-SA authors also go into [CREDITS.md](CREDITS.md).
+  Rules and conventions: [sound.md](docs/design/sound.md).
+- **One play path:** effects go through `grug_sounds.play(event, target)`
+  with a spec in `grug_sounds/init.lua` `EVENTS` and the event in `HOOKS`;
+  no new `core.sound_play` for game events. Mob voices are a family in
+  `_grug_voice` (every mob names one, or `false`); ability cues are
+  `grug_abilities.CAST_SOUNDS`. Beds, loops, calls and music are data in
+  `grug_ambience/data.lua`; a new zone bed is a name there plus a pick.
+- **Music stays out of `sounds/`:** tracks live in `grug_ambience/music/` and
+  are pushed per player on demand, so the first join does not grow with
+  them.
+- **Freesound and downloads:** sound research reuses what is downloaded
+  first, accesses Freesound serially (rate-limited) and uses the public HQ
+  previews only; downloaded source material is never deleted or moved.
+- Round 34 fixtures and probes live in `tools/r34_<lane>/` (`s1a` events,
+  specs, call sites and the approval list; `s1b` voices, ability cues and
+  its approval list; `s2` ambience and music rules, the approval list and
+  `engine.sh`, the pass cost and flowing-water census; `f1` the wading rule
+  and `engine.sh`, a mob at real water crossings; `f2` the Bag of Coins, the
+  sell refusal, the damage fit, the cooking order and `render_icons.py`).
 
 ## Task-specific implementation references
 
