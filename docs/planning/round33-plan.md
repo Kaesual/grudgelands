@@ -40,8 +40,8 @@ alchemy data) are merged. D last.
 - **Item level of a drop = the mob's level.** Drop enchantments roll the
   item's tier (§2.3).
 - **Kraken Guard** (ruling 2026-10-04): a level-70 elite instead of the
-  hand-set level 100 (the dragons are 70 too); it gives XP but drops nothing,
-  no bag either.
+  hand-set level 100 (the dragons are 70 too); still no XP and no drops, no
+  bag either.
 - **Pool:** everything equippable of the tier — weapons, armour, shields,
   spellbooks, trinkets.
 - **Chances per kill, at most one item per kill:**
