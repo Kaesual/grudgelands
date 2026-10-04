@@ -24,7 +24,7 @@ replacement, a client-side music channel (the engine has none).
 | **S2** Ambience and music | 1 | code + media | new mod `grug_ambience`: per-player ambience beds and sparse calls on the existing per-player tick, music pools with on-demand delivery, music and ambience volume per player (§4.2) |
 | **S1b** Combat and creatures | 2 | code + media | weapon and ability sounds, mob voices by archetype, bosses and dragons, the telegraph growl (§4.3) — uses S1a's helper |
 | **F1** Mobs in water | 1 | code | mobs follow their target through water in combat; ambient roaming still avoids water (§2.3, §4.5) |
-| **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, money withdraw and deposit with a Bag of Coins (§2.3, §4.6) |
+| **F2** Small fixes and the Bag of Coins | 1 | code | text boxes at the trainer and in the crafting UI, cooking recipe balance, Bag of Coins, map markers for the capital services, damage-fit fractions, no gear from encounter adds (§2.3, §4.6) |
 | **D** Documentation and credits | 3 | docs | completion, design doc `docs/design/sound.md`, top-level `CREDITS.md`, BACKLOG/ROADMAP/STATUS/README (§4.4) |
 
 S1a, S2, F1 and F2 start together; F1 and F2 are small and merge first
@@ -215,6 +215,19 @@ short and focused, with the cut starting at the event itself.
    Coins item; a deposit slot destroys the bag and credits its amount;
    traders neither buy nor sell it; it can be dropped or stored, so players
    can give money to each other. No log line; no longer ground lifetime.
+5. **Map markers** for the Crownbinder and the Decor Merchant (map page and
+   minimap, like the other capital services).
+6. **Damage-fit reference with fractions:** `baseline_melee_total`
+   (`grug_core/combat.lua` ~99–102) keeps the Strength/10 fraction like live
+   damage since Round 33, so same-level damage returns to the fit (today about
+   +1.6 % at level 60, up to +5 % at levels 2–9).
+7. **No gear from encounter adds:** royal guards (already none in code; fix
+   `items_crafting.md` §5.4, which promises them elite loot) and the dragons'
+   whelps (`_grug_boss_summon`; today they roll gear and bags like ordinary
+   mobs) drop no gear and no bag.
+8. **Watch in the playtest, no change now:** the Scout's full damage set
+   (+55 % / +82 % at item level 60 / 70). **Optional at the round's end:** a
+   real-client performance test with several clients.
 
 ## 3. Shared conventions (both wave-1 lanes and S1b)
 
@@ -389,6 +402,12 @@ short and focused, with the cut starting at the event itself.
   clamps at `grug_money.MAX` (refuse above); the amount lives in item meta,
   `stack_max = 1`, the tooltip shows it; the sell path refuses the bag.
   Fixture for withdraw, deposit, refusals and the sell refusal.
+- Map markers for the Crownbinder and the Decor Merchant (ruling 5).
+- The damage-fit reference keeps attribute fractions (ruling 6); re-run the
+  fixtures that pin the fit and report the same-level damage before/after.
+- Encounter adds drop nothing (ruling 7): whelps join the royal guards and
+  bodyguards in the kill-loot hook's early return (`grug_quality`
+  ~913–917); fixture case; `items_crafting.md` §5.4 corrected.
 - The user's GUI-test findings of Round 33 may add small items here.
 
 ### 4.4 D Documentation and credits (wave 3)
