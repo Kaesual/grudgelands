@@ -22,8 +22,10 @@
 --
 
 local VOICES = {
-	-- Bandits, poachers, mirefolk, the bog witch, guards, kings and generals.
-	humanoid = {damage = "voice_humanoid_damage", death = "voice_humanoid_death"},
+	-- Bandits, poachers, mirefolk, the bog witch, guards, kings and generals;
+	-- an elite's wind-up is the humanoid special attack.
+	humanoid = {damage = "voice_humanoid_damage", death = "voice_humanoid_death",
+		telegraph = "king_signature"},
 	goblin = {war_cry = "voice_goblin_war_cry", damage = "voice_goblin_damage",
 		death = "voice_goblin_death"},
 	-- Zombies.

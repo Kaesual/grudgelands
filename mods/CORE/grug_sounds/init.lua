@@ -88,7 +88,8 @@ grug_sounds.HOOKS = {
 	"voice_dragon_war_cry", "voice_dragon_damage", "voice_dragon_death",
 	"voice_kraken_war_cry", "voice_kraken_damage", "voice_kraken_death",
 	-- Bosses: the dragons' wind-up growl, breath, lightning, enrage and
-	-- wrath, the breaking arena ice, the kings' and Generals' signature attack.
+	-- wrath, the breaking arena ice, the humanoid special attack (the kings'
+	-- and Generals' signature, the humanoid elites' wind-up).
 	"telegraph", "dragon_breath_frost", "dragon_breath_fire", "dragon_lightning",
 	"dragon_enrage", "dragon_wrath", "ice_break", "king_signature",
 }
@@ -96,7 +97,7 @@ grug_sounds.HOOKS = {
 -- accept and progress, talent, achievement, drops, mount summon and dismount,
 -- respawn, zone banner, PvP off and any automatic PvP flag change; in combat
 -- crit, Blink, Sprint, the Carrion Crow's roaming call and the wind-up of
--- every elite but the humanoids (S1b). Enchant keeps its hook without a sound.
+-- every elite but the humanoids and the dragons (S1b). Enchant keeps its hook without a sound.
 
 -- The user's picks (tools/r34_s1a/approved.txt). Files are peak-normalised
 -- to -3 dBFS; the gains set the balance (quiet, frequent cues lower). UI and
@@ -152,7 +153,10 @@ local EVENTS = {
 	block = {name = "grug_sounds_block", gain = 0.6, distance = 12, interval = 0.4},
 	dodge = {name = "grug_sounds_dodge", gain = 0.5, distance = 10, interval = 0.3},
 	player_death = {name = "grug_sounds_player_death", gain = 0.8, distance = 16},
+	cast_charge = {name = "grug_sounds_cast_charge", gain = 0.7},
+	cast_taunt = {name = "grug_sounds_cast_taunt", gain = 0.8, distance = 20},
 	cast_guard = {name = "grug_sounds_cast_guard", gain = 0.7},
+	cast_frost_nova = {name = "grug_sounds_cast_frost_nova", gain = 0.7},
 	cast_frost_ward = {name = "grug_sounds_cast_frost_ward", gain = 0.6},
 	cast_cinderfall = {name = "grug_sounds_cast_cinderfall", gain = 0.8, distance = 20},
 	cast_holy = {name = "grug_sounds_cast_holy", gain = 0.7},
@@ -166,6 +170,7 @@ local EVENTS = {
 	arrow_hit = {name = "grug_sounds_arrow_hit", gain = 0.7, distance = 12, pitch = 0.05},
 	-- Voices. Humans, zombies and mummies share one hurt sound (R34 C7.1).
 	voice_humanoid_damage = {name = "grug_sounds_voice_humanoid_damage", gain = 0.6, interval = 1.5, pitch = 0.08},
+	voice_humanoid_death = {name = "grug_sounds_voice_humanoid_death", gain = 0.7},
 	voice_goblin_war_cry = {name = "grug_sounds_voice_goblin_war_cry", gain = 0.6, interval = 8},
 	voice_goblin_damage = {name = "grug_sounds_voice_goblin_damage", gain = 0.6, interval = 1.5, pitch = 0.05},
 	voice_goblin_death = {name = "grug_sounds_voice_goblin_death", gain = 0.7},
@@ -227,7 +232,9 @@ local EVENTS = {
 	-- A run over thin ice breaks a band every 0.25 s; one clip a second keeps
 	-- it one continuous breaking instead of a stack of 2 s clips.
 	ice_break = {name = "grug_sounds_ice_break", gain = 0.6, distance = 24, interval = 1},
-	king_signature = {name = "grug_sounds_king_signature", gain = 0.8, distance = 24},
+	-- A king's or General's signature attack and a humanoid elite's wind-up
+	-- (the humanoid voice's telegraph); a king does both, so once in 3 s.
+	king_signature = {name = "grug_sounds_king_signature", gain = 0.8, distance = 24, interval = 3},
 }
 grug_sounds.EVENTS = EVENTS
 

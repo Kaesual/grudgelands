@@ -20,8 +20,8 @@
 --      route voices and player hits through grug_sounds;
 --   F  files: every S1b spec names an existing file; every file on
 --      tools/r34_s1b/approved.txt ships in grug_sounds/sounds, is mono and is
---      played by a spec; every S1b hook has a spec except the ones waiting for
---      the second page; the user's silent choices have neither hook nor spec.
+--      played by a spec; every S1b hook has a spec; the user's silent choices
+--      have neither hook nor spec.
 -- Prints "R34 S1B PORTABLE PASS checks=<n>" or the failures.
 
 local ROOT = arg and arg[1] or "."
@@ -278,16 +278,9 @@ for file in pairs(approved) do
 	check(played[base], "F approved file is played by an S1b spec: " .. file)
 end
 
--- Every lane hook has a sound except the four the second page decides; the
--- user's silent choices have neither hook nor spec (the S1a convention).
-local PENDING = {cast_frost_nova = true, cast_taunt = true, cast_charge = true,
-	voice_humanoid_death = true}
+-- Every lane hook has the user's pick.
 for _, event in ipairs(lane_hooks) do
-	if PENDING[event] then
-		check(EVENTS[event] == nil, "F silent until the second page: " .. event)
-	else
-		check(EVENTS[event] ~= nil, "F hook has the user's pick: " .. event)
-	end
+	check(EVENTS[event] ~= nil, "F hook has the user's pick: " .. event)
 end
 for _, name in ipairs({"crit", "cast_blink", "cast_sprint", "voice_crow_random"}) do
 	check(not hooks[name] and not EVENTS[name], "F silent by choice, no hook: " .. name)
@@ -295,16 +288,17 @@ end
 check(EVENTS.hit_fist and EVENTS.hit_fist.name == "mobs_punch", "F the fist keeps mobs_punch")
 check(EVENTS.dragon_enrage and EVENTS.dragon_enrage.name == "grug_sounds_voice_dragon_war_cry",
 	"F the enrage is the 11.1 roar again (E4.1)")
--- The telegraph growl is the dragons' alone: no family carries it to the
--- elite wind-up (telegraph.lua) yet.
+-- The dragons growl at their own wind-ups; of the elites only the humanoids
+-- have a wind-up cue (telegraph.lua), the special attack the kings share.
 for family, voice in pairs(VOICES) do
 	check(voice.telegraph == nil or family == "humanoid", "F no elite wind-up cue for " .. family)
 end
+check(VOICES.humanoid.telegraph == "king_signature", "F the humanoid wind-up is the special attack")
 check(read(MOBS .. "boss_dragons.lua"):find('grug_sounds.play("telegraph", self.object)', 1, true) ~= nil,
 	"F the dragon's wind-up plays the telegraph growl")
 local approved_count = 0
 for _ in pairs(approved) do approved_count = approved_count + 1 end
-check(approved_count == 82, "F 82 approved files (" .. approved_count .. ")")
+check(approved_count == 88, "F 88 approved files (" .. approved_count .. ")")
 
 if failures > 0 then
 	print(("R34 S1B PORTABLE FAIL %d of %d checks"):format(failures, checks))
