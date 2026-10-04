@@ -528,9 +528,13 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   - **`aoc` is per entity NAME**, counted in a 128-node sphere — two
     rows of one name share a budget, per-biome tints do not. Spawn
     calibration reference: **`docs/research/wp6_spawn_budget.md`**.
-  - **62 `GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** — the
-    inventory and rationale live in VENDOR.md; re-apply them on any
-    mobs_redo update. The 41st to 43rd (mob pressure, 2026-09-16) are the
+  - **`GRUG PATCH` sites in `mods/ENTITIES/mobs/api.lua`** (122 counted
+    2026-10-04 after Round 34) — the inventory and rationale live in
+    VENDOR.md; re-apply them on any mobs_redo update. Round 34 F1's four
+    water sites (`grug_may_wade` in the support probe, `grug_bank_ahead` and
+    `GRUG_CLIMB_RISE` in `falling()`) and S1b's two sound call-outs
+    (`mob_sound` routes a `grug_sounds` event through `grug_sounds.play`;
+    `on_punch` plays `grug_core.melee_hit_sound`) are the newest. The 41st to 43rd (mob pressure, 2026-09-16) are the
     attack-cadence patch of `combat_stats.md` §4 and user ruling 1: the
     cadence advances during the CHASE with the backlog capped at one, the
     in-reach branch runs to a contact distance of `reach × 0.6` instead of
@@ -639,12 +643,34 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   POI as its own settlement kind and books the respawn slots (the General's
   group on the royal path). `dragon_arena.lua` holds the pure arena rules
   (radius from the mapgen profile, inside band, 250/350/500 per second,
-  the 1.5 s ice break, the reset test); `boss_dragons.lua` applies them:
+  the reset test; since Round 34 the thin ice: `ice_step` marks every thin-ice
+  node of the 3×3×3 cube around a sampled player's feet as one break event
+  due `ICE_BREAK_DELAY` (1 s) later, keyed server-wide by node position, a
+  pending node never reset or postponed; `ice_due` pops the events that are
+  due); `boss_dragons.lua` applies them (one `ice_break` sound per event):
   `_grug_target_veto` (a hook in the `init.lua` acquisition veto, honoured by
   `grug_core`'s `valid_target`, `add_threat` and `taunt`), the once-a-second
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`.
+- **Mob voices (Round 34 S1b):** `grug_mobs/voices.lua` holds `VOICES`, the
+  families (humanoid, goblin, undead, mummy, skeleton, spirit, giant,
+  elemental, canine, feline, boar, beast, grazer, bird, crow, critter,
+  insect, slime, reptile, aquatic, dragon, kraken), each mapping
+  `war_cry`/`damage`/`death`/`telegraph` to `grug_sounds` events.
+  `grug_mobs.register_mob` calls `apply_voice`, which turns the definition's
+  `_grug_voice` into the mobs_redo `sounds` table with only the events that
+  have a spec (explicit `def.sounds` entries win); a definition without
+  `_grug_voice` is a load error, `false` means no voice, and a sub-type
+  copies its base's field. No family has a `random` call; felines have no
+  `war_cry`. `telegraph.lua` plays the family's `telegraph` cue at a
+  wind-up (only the humanoids have one); the dragons play `telegraph` from
+  `boss_dragons.lua`. Fixture `tools/r34_s1b`.
+- **Mobs in water (Round 34 F1):** the wading rule lives in the vendored
+  probe (`grug_may_wade`, see the `GRUG PATCH` list); the way back to land is
+  `grug_mobs/aggro.lua` `shore_check` in the 1 Hz leash tick (an idle
+  floating mob in water swims toward its home). `floats` is a boolean in
+  every definition. Fixture and engine probe `tools/r34_f1`.
 - **Enchantments**: every enchant stores its stat, channel and tier (1–7) in
   `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
   (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
@@ -1003,7 +1029,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   (`grug_pvp.territory_at`, the PvP flag's own rule, never the flag): it
   colours the minimap line and the banner, the banner's second line
   ("Friendly Territory", …) replaces the PvP subtitle, and a status change
-  shows the banner like a zone change (fixture `tools/r32_f1`).
+  shows the banner like a zone change (fixture `tools/r32_f1`). Since
+  Round 34 the sample also records whether the player stands in a start
+  town or capital (`location.in_town(name)`, by x/z only), which
+  `grug_ambience` reads for the Town music pool and the quieter bed.
   Round 31: NPC markers carry their NPC's faction and the service and
   quest-giver lists are split per viewer faction once at load (the kings and
   dragons stay for everyone); `settlement_icons.lua` (pure, `HIDDEN`) decides
@@ -1201,6 +1230,53 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
 - **World atlas**: `docs/design/world_map.md` governs the cartographic Map tab,
   with no fog of war and independent future-interactive markers. It needs no
   generated-terrain bitmap and never unlocks waypoint travel.
+- **Sound (Round 34; rules [sound.md](../design/sound.md)):**
+  - **`grug_sounds`** (`mods/CORE/grug_sounds/init.lua`) is the one play
+    path for effects: `grug_sounds.play(event, target)` with a player, an
+    object or a position; `EVENTS` maps an event to its spec (name, gain,
+    pitch, distance, `personal`, `interval`) and an event without a spec is
+    a silent no-op (the approval gate: no spec until the user picked a
+    file). The rate limit is checked before anything is allocated (per
+    event and target: a player name, an ObjectRef with weak keys, or
+    `"pos"`). `HOOKS` lists every event a call site may name; a new call
+    site adds its event there and its mod depends on `grug_sounds`.
+    `item_sound(event)` gives an item definition's sound table (the swing
+    skills' `punch_use_air`). `CLICK_STYLE` extends the formspec prepend on
+    join (after `default`'s) and is pasted into the two `no_prepend[]`
+    formspecs. Call sites by kind: crafts through `grug_jobs.award_progress`
+    (`CRAFT_SOUNDS` by operation or profession; `automatic_take_sound` for a
+    furnace or brewing-stand take), abilities through
+    `grug_abilities.CAST_SOUNDS` in `try_cast` (every registered ability
+    must be listed: a cue, `"weapon"`, `"projectile"` or `"silent"`),
+    projectiles through `sound_launch`/`sound_hit` on
+    `grug_projectiles.register`, melee hits through
+    `grug_core.melee_hit_sound(player)` (by `_grug_weapon_family`), voices
+    through `voices.lua`. Fixtures `tools/r34_s1a`, `tools/r34_s1b` (they
+    check call sites, specs, files and `approved.txt`); fixtures that load a
+    hooked file get a silent stub.
+  - **`grug_ambience`** (`mods/CORE/grug_ambience`): `rules.lua` is pure
+    (bed choice and hysteresis, calls, the music scheduler, the emitter
+    choice, settings words; the fixture loads the real file), `data.lua` is
+    data (bed, loop and call names, gains, pools, track lengths, timings),
+    `init.lua` the runtime: an eight-slot pass of 0.25 s per player
+    (`states[name].slot`, assigned on join), one `get_node_raw` probe for
+    under water (33 reads while a sea or stream bed exists), one
+    `find_nodes_in_area` above ground for the forge, fire and flowing-water
+    loops (node names from `D.emitter_nodes` plus every flowing liquid whose
+    source is default or river water, filled on `register_on_mods_loaded`).
+    Only names with a shipped file play (`available` from the `sounds/`
+    listing, pools filtered by `music/`), so data may name a file that does
+    not ship. Music files live in `music/` (never `sounds/`) and are pushed
+    per player with `core.dynamic_add_media` (`to_player`, not ephemeral,
+    `client_cache`), playing in the callback through `music_delivered`; the
+    scheduler never cuts a playing track. Settings are player meta
+    (`grug_ambience:music_off`, `…_volume`, `ambience_off`, `…_volume`);
+    `grug_ambience.set/get` is the one entry for the Help page's Sound
+    sub-page (`settings_formspec`, `handle_settings_fields`, called from
+    `grug_inventory/help.lua`) and `/music`, `/ambience`. A personal
+    positional sound ignores `max_hear_distance`, so the emitter choice
+    drops far nodes itself. `grug_ambience.stats` holds comparison figures
+    for the engine probe `tools/r34_s2/engine.sh`; fixture `tools/r34_s2`.
 - **UI**: formspecs (`core.show_formspec` +
   `register_on_player_receive_fields`), set `formspec_version` +
   coordinate mode deliberately. Map retains the shared legacy outer window and

@@ -19,8 +19,17 @@ in Round 31 (with WP42's PvP-POI part), WP5 and WP10 in Round 33. The audit's le
 example E5) are cited below.
 
 - **Latest delivery:
-  [Round 33 "Items, professions and achievements"](docs/planning/round33-plan.md#completion-2026-10-04)
-  complete locally** (2026-10-04, not pushed; needs a fresh world): the
+  [Round 34 "Sound"](docs/planning/round34-plan.md#completion-2026-10-04)
+  complete locally** (2026-10-04, not pushed; GUI test open): V1's sound
+  ([sound.md](docs/design/sound.md), [CREDITS.md](CREDITS.md)), every file
+  picked by the user — effects, hits, ability cues and mob voices (S1a,
+  S1b), ambience beds for every zone, loops, dragon-island thunder, music
+  pools pushed on demand and the settings (S2); mobs in water (F1); text
+  boxes, cooking costs, the Bag of Coins, service markers, the damage fit,
+  encounter adds, thin ice (F2). Next: the GUI test, then WP9
+  ([Round 34](#round-34--sound), [carry-overs](#round-34-carry-overs)).
+- [Round 33 "Items, professions and achievements"](docs/planning/round33-plan.md#completion-2026-10-04)
+  (2026-10-04, pushed with Rounds 30–32 on 2026-10-04; needs a fresh world): the
   items design session's rulings and their data
   ([item_tiers.md](docs/design/item_tiers.md), DS); drops by quality with
   boss double drops, bag drops and the level requirement on all gear (C1);
@@ -29,11 +38,11 @@ example E5) are cited below.
   with tiers, profession upgrades, the crown and the profession families
   (C4); crit ×2, T1-only vendors, repair ×1.00, potions I–VI, the
   Crownbinder and the Decor Merchant, the income model green (C5). WP5 and
-  WP10 delivered. Next: the GUI test, then Round 34 (sound)
+  WP10 delivered; the user's test findings fed Round 34
   ([Round 33](#round-33--items-professions-and-achievements),
-  [carry-overs](#round-33-carry-overs), [sound](#sound-v1-user-2026-10-03)).
+  [carry-overs](#round-33-carry-overs)).
 - [Round 32 "Fixes, preparation and research"](docs/planning/round32-plan.md#completion-2026-10-03)
-  (2026-10-03, not pushed, GUI test open): the minimap zoom ×2, hostile
+  (2026-10-03, pushed 2026-10-04, GUI test open): the minimap zoom ×2, hostile
   camps on the Map tab, zone names coloured by territory with a territory
   line (F1); one LMB hold state machine and quest kill labels with the
   zone's mob names (F2); combat and personal notices in the message feed
@@ -43,7 +52,7 @@ example E5) are cited below.
   ([Round 32](#round-32--fixes-preparation-and-research),
   [carry-overs](#round-32-carry-overs)).
 - [Round 31 "PvP, appearance and clean-up"](docs/planning/round31-plan.md#completion-2026-10-03)
-  (2026-10-03, not pushed, GUI test open): WP41 geographic PvP (the
+  (2026-10-03, pushed 2026-10-04, GUI test open): WP41 geographic PvP (the
   per-player flag, the PvP tab and markers, the NPC faction filter, PvP from
   depth tier T4), WP42's PvP-POI part (a fortress per faction, 16
   Battlegrounds war camps, garrisons with Generals and named captains, 24
@@ -53,7 +62,7 @@ example E5) are cited below.
   ([Round 31](#round-31--pvp-appearance-and-clean-up),
   [carry-overs](#round-31-carry-overs)).
 - [Round 30 "Performance and clean-up"](docs/planning/round30-plan.md#completion-2026-10-02)
-  (2026-10-02, not pushed, GUI test still open): the
+  (2026-10-02, pushed 2026-10-04, GUI test still open): the
   [performance review](docs/research/perf-review-2026-10.md)'s lanes P1–P4
   (quest-state cache and Map tab every 2 s, the region-map file cache and boot
   memory, the per-step A* budget with the give-up of unreachable targets and
@@ -99,7 +108,8 @@ example E5) are cited below.
   capitals and, since Round 31, the PvP fortresses), WP41 geographic PvP and
   WP9's story levels 41–60 with the finale are V1; WP42's scripted NPC
   battles come after V1, its small PvP POIs shipped in Round 31. **Sound is
-  V1** (the user, 2026-10-03; [Sound](#sound-v1-user-2026-10-03)).
+  V1** (the user, 2026-10-03), delivered in Round 34
+  ([Sound](#sound-v1-user-2026-10-03-delivered-in-round-34)).
 - **Removed systems** (never to be built): renewable ores and camp sockets
   (E5), natural out-of-combat HP regeneration and rested XP (WP21: food is the
   recovery system), carried torch light (C5), the dragon hoard chest (E11) and
@@ -780,8 +790,8 @@ needs a fresh world:
 **Noted 2026-10-04** ([completion](docs/planning/round33-plan.md#completion-2026-10-04));
 none blocks the GUI test. Numbers are comparisons, never targets.
 
-- **Map markers for the capital services:** the Crownbinder and the Decor
-  Merchant have no map or minimap marker yet.
+- **Map markers for the capital services:** done in Round 34 F2 (kind
+  `service` on the Map tab and the minimap).
 - **Scout damage set above the ceiling:** a full damage set gives the Scout
   +55 % at item level 60 and +82 % at 70, above the +50–60 % the stat
   check aims for (Warrior +47 %, Mage +45 %; item_tiers §1.2).
@@ -800,63 +810,103 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   kill on the achievement path; noted for a later performance pass, no
   action now.
 
+### Round 34 — sound
+
+**Delivered locally 2026-10-04**
+([completion](docs/planning/round34-plan.md#completion-2026-10-04), plan
+[round34-plan.md](docs/planning/round34-plan.md), rules
+[sound.md](docs/design/sound.md), credits [CREDITS.md](CREDITS.md)); every
+code lane independently reviewed by Opus, every shipped sound on its lane's
+approval list, 77 fixtures pass, no mapgen change:
+
+- **Effects** (S1a): `grug_sounds` (play helper, hook list, formspec
+  click); NPC role cues, quests, trade, money, progression, crafts by kind,
+  upgrade, crown, repair, equip, cloak, potions, mounts, boats, travel,
+  fishing, the Enable PvP button; 30 files.
+- **Combat and creatures** (S1b): swing, hits by weapon kind, block, dodge,
+  death; one cue per ability theme and projectile sounds; 22 voice families
+  (`grug_mobs/voices.lua`), the dragons' and kings' cues; 88 files.
+- **Ambience and music** (S2): `grug_ambience`, beds per region, night,
+  cave, deep and sea (half gain in towns), dragon-island thunder, forge,
+  fire and flowing-water loops, four music pools with 16 tracks pushed on
+  demand, the main-menu theme, Help → Sound, `/music`, `/ambience`.
+- **Mobs in water** (F1): combat follows through harmless water, idle mobs
+  swim home, a one-node bank is climbed.
+- **Fixes and the Bag of Coins** (F2): text boxes, cooking costs per tier,
+  the Bag of Coins, service markers, the damage-fit fractions, no gear from
+  encounter adds, thin ice breaking 1 s behind a runner (3 × 3 × 3).
+
+### Round 34 carry-overs
+
+**Noted 2026-10-04** ([completion](docs/planning/round34-plan.md#completion-2026-10-04));
+none blocks the GUI test. Numbers are comparisons, never targets.
+
+- **Seed failures (diagnosed, fix pending the user's choice):** about 1 % of
+  random seeds fail at load ("planner anchor tuple differs at 29"; 2 of
+  240 portable runs, e.g. 17713522922938657774), at least since Round 29:
+  `water_layout.lua` detours a wide river around each POI separately, and
+  with two POIs close together (anchors 29 and 91, 93 nodes apart; others
+  26/61, 41/98, 72/101, 80/110) the river ends over one. Options: move an
+  anchor, or let the detour avoid every nearby POI's clearance (with a seed
+  fleet, a fixture and a guard).
+- **Sound balance:** gains and pacing are tuned from the user's GUI check;
+  the formspec click plays at the file's level (a style has no gain).
+- **Public town furnaces** use the vendored furnace form, so taking a dish
+  out of one plays no cooking cue.
+- **Music push cost** is unmeasured (the engine hashes the file on the main
+  thread, a few milliseconds per push).
+- **Town pool under capitals:** the town flag is by x/z only, so a cave
+  below a capital plays the Town pool and the half-gain bed.
+- **Volume rounding:** a `/music` or `/ambience` volume off the 10 % grid
+  shows rounded on the Help page's dropdown.
+- **Licence rows** of the incompetech tracks point at the catalogue, not at
+  each track's page.
+- **Water probe:** with the sea bed shipped it reads 33 nodes per
+  evaluation instead of 1 (not re-measured); a comment in
+  `grug_ambience/init.lua` still says no sea bed exists.
+- **S1a review notes:** the gallop follows the requested speed, a clip's
+  tail plays after a stop, position sounds of one event within 0.1 s fold
+  into one.
+- **F1:** an idle mob facing a two-node bank may stay in water (no
+  regression); animals following food do not wade; `grug_bank_ahead` runs
+  per step for a floating mob in water (could be cached on the 0.25 s
+  probe).
+- **F2:** the Character page's Money label may overlap at a very large
+  balance (GUI check).
+- mobs_redo still falls back to a missing `tnt_explode` sound; no mob can
+  reach it today (note, not a task).
+- The Round 32 real-client performance test stays optional.
+
 ### Money withdraw and deposit: Bag of Coins (user, 2026-10-04; done in Round 34 F2)
 
-Delivered in Round 34 lane F2 (`grug_money/coins.lua`); kept here as the
-design record until the round's docs lane folds it into the design docs. A deliberate design
-change: players can give money to each other for the first time (a
-high-level character can fund an alt; acceptable without a market).
+**Done:** delivered in Round 34 lane F2 (`grug_money/coins.lua`); the rules
+are [economy.md](docs/design/economy.md) §1 (withdraw on the Character page,
+the deposit slot, no vendor price, no transfer log, the engine's item
+lifetime). A deliberate design change: players can give money to each other
+for the first time (a high-level character can fund an alt; acceptable
+without a market).
 
-- **Bag of Coins:** a new item holding any amount of money (`stack_max` 1,
-  the amount in item meta, shown in the tooltip).
-- **Withdraw:** a "Withdraw" button on the Character page opens a small
-  dialog with number fields for gold, silver and copper; on confirm the
-  server validates (whole numbers, > 0, ≤ balance), takes the amount and
-  creates one Bag of Coins in the inventory in one transaction
-  (`grug_money.take_with_inventory`); refused when the inventory is full.
-- **Deposit:** a deposit slot accepts only Bags of Coins; the bag is
-  destroyed and its amount credited, refused if the balance would exceed
-  `grug_money.MAX`.
-- Traders neither buy nor sell Bags of Coins. A bag can be dropped on the
-  ground or stored in a chest; items do not drop on death, so a carried bag
-  is as safe as the balance.
-- User rulings: no extra log line for transfers; no longer ground lifetime
-  (a dropped bag despawns like any item after the engine's item TTL, and
-  lava or fire destroy it).
+### Sound (V1; user, 2026-10-03; delivered in Round 34)
 
-### Sound (V1; user, 2026-10-03)
+**Done:** Round 34
+([completion](docs/planning/round34-plan.md#completion-2026-10-04)) built
+V1's sound after the user's seven decisions (round34-plan.md §2.1: CC0
+sources first with CC BY where clearly better; neutral cues per NPC role;
+music pools by region group; the picked tracks; music pushed on demand,
+on by default; quiet beds per region; no weather in V1) and the user's
+picks on the listening pages. Rules: [sound.md](docs/design/sound.md);
+credits: [CREDITS.md](CREDITS.md). The ambience pilot (human beds only) was
+extended to every zone in the same round, so no zone waits for a bed.
+Every new or changed sound goes through a listening page (sound.md §1).
 
-Sound is part of V1 and the content of **Round 34** (planned in a parallel
-session on branch `r34-plan`, not merged yet). The
-[sound research](docs/research/sound-research-2026-10.md)
-(Round 32 R2) proposes two lanes: **S1 effects** (a small play helper, about
-30 central hooks, one formspec click style, mob sounds by archetype, about
-120–150 files) and **S2 ambience and music** (a per-player player on the
-2 s atmosphere tick, music and ambience gains through `core.sound_fade`,
-8–12 calm tracks, no combat switch), each followed by a listening review by
-the user; every file gets a `LICENSE-media.md` row, and a top-level
-`CREDITS.md` becomes worthwhile. The user's seven decisions come first:
+### Weather (optional; user, 2026-10-04)
 
-1. Effect sources: CC0 packs first, CC BY where clearly better and own
-   generated UI cues, or packs only.
-2. NPC dialogs: neutral cues (book, coins, chime) or voiced greetings (no
-   good free source).
-3. Music mode: one playlist everywhere or pools per region group, and the
-   pause between tracks.
-4. Which tracks (candidates M1–M6 and their alternates).
-5. Music delivery: shipped with the game (+15–25 MB per first join) or sent
-   only to players who turn music on.
-6. Ambience: continuous beds per region with sparse calls, or sparse calls
-   only.
-7. Weather: leave rain and thunder out of V1 (no weather system exists) or
-   add a small weather system as its own package.
-
-Notes from the research: the TenPlus1 ambience mod's sounds are not all
-under CC licences (Pixabay, unmapped and NC files), so only its code is a
-reference ([shopping list](docs/research/assets/sounds_ambience.md)); the
-telegraph wind-up growl (`grug_mobs/telegraph.lua`) and the panther that
-must stay without a war cry wait for S1; mobs_redo falls back to a missing
-`tnt_explode` sound (harmless today).
+Not V1 (round34-plan.md §2.1 ruling 7): no weather system exists; distant
+thunder plays as a rare ambience call on the dragon islands without one. An
+optional later package: a small weather system with its own sky, particles
+within the web budget (hundreds, never thousands) and a rain bed, which
+would also be the place for the rain recordings the user turned down as bed
+backgrounds. Not planned yet.
 
 ### Items and professions design session (user, 2026-10-03)
 
