@@ -1,134 +1,215 @@
+-- Potions and elixirs T1-T6 (item_tiers.md §5): healing and mana potions
+-- restore fixed amounts, elixirs give two enchants' worth of their stat at the
+-- tier's top level (Stoneskin one armor enchant). Ingredients are herbs and
+-- signatures of both factions' zones, never above the recipe tier.
+
 local VIAL = "vessels:glass_bottle"
 local G = "grug_gathering:"
 local C = "grug_cooking:"
 local M = "grug_mobs:"
 local ROOT = "group:grug_cooking_root"
 
+-- Herb tiers; the cooking goods carry theirs from grug_cooking, the mob loot
+-- its catalogue tier (registered below).
 local ingredients = {
 	[G .. "gravemoss"] = 1,
 	[G .. "sunleaf"] = 1,
-	[M .. "venom_gland"] = 2,
-	[M .. "fang"] = 2,
 	[G .. "dragonweed"] = 2,
 	[G .. "crimson_lotus"] = 3,
-	[G .. "wild_cocoa"] = 6,
-	[M .. "slime_gel"] = 3,
-	[M .. "bear_claw"] = 3,
-	["grug_materials:steel_bar"] = 3,
-	[M .. "croc_tooth"] = 4,
-	[M .. "venom_sac"] = 4,
-	[M .. "shiny_scale"] = 4,
 	[G .. "stormkelp"] = 5,
-	[M .. "stone_core"] = 6,
-	[M .. "sharp_feather"] = 6,
+	[G .. "wild_cocoa"] = 6,
 }
+
+local ROMAN = {"I", "II", "III", "IV", "V", "VI"}
+grug_alchemy.POTION_AMOUNTS = {70, 200, 400, 650, 1000, 1350}
+
+-- Elixir values per tier (item_tiers.md §5): Vigor, Focus and Precision two
+-- enchants at the tier's top level, Stoneskin one armor enchant.
+local ELIXIRS = {
+	{key = "vigor", name = "Elixir of Vigor", modifier = "hp_pool_percent",
+		values = {4.0, 4.8, 5.6, 6.4, 7.2, 8.0}, duration = 900,
+		text = "+%.1f%% maximum HP for 15 minutes",
+		colors = {"#c4483e", "#b43a32", "#a52c29", "#922221", "#82201f", "#761a1c"}},
+	{key = "focus", name = "Elixir of Focus", modifier = "mana_pool_percent",
+		values = {5.0, 5.6, 6.2, 6.8, 7.4, 8.0}, duration = 900,
+		text = "+%.1f%% maximum Mana for 15 minutes",
+		colors = {"#4269c4", "#375cb8", "#2c4da1", "#233f91", "#203886", "#1c337c"}},
+	{key = "precision", name = "Elixir of Precision", modifier = "crit_percent",
+		values = {4.2, 5.2, 6.0, 7.0, 7.8, 8.6}, duration = 900,
+		text = "+%.1f percentage points Crit for 15 minutes",
+		colors = {"#e19a3d", "#d28a31", "#be7627", "#a96720", "#9c5e1c", "#925618"}},
+	{key = "stoneskin", name = "Stoneskin Elixir", modifier = "armor",
+		values = {0.8, 1.6, 2.4, 3.2, 4.0, 4.8}, duration = 1800,
+		text = "+%.1f armor rating for 30 minutes",
+		colors = {"#8a8a8a", "#808080", "#747474", "#686868", "#5c5c5c", "#505050"}},
+}
+local HEALING_COLORS = {"#d13b45", "#c3313b", "#b42631", "#a81729", "#961222", "#850e1c"}
+local MANA_COLORS = {"#356ed1", "#2f63c2", "#2a57b2", "#253ea3", "#203893", "#1b3184"}
+
+-- The two ingredients (plus a Glass Bottle) of every product per tier.
+local RECIPES = {
+	{healing = {G .. "gravemoss", G .. "sunleaf"},
+		mana = {G .. "gravemoss", ROOT},
+		vigor = {G .. "sunleaf", M .. "tattered_flesh"},
+		focus = {G .. "gravemoss", M .. "crab_eye"},
+		precision = {G .. "sunleaf", M .. "boar_tusk"},
+		stoneskin = {G .. "gravemoss", M .. "crab_leg"}},
+	-- Precision II takes the Ridged Boar Tusk: Dragonweed + Fang is the
+	-- Swiftness Draught's recipe, and two grid recipes cannot share inputs.
+	{healing = {G .. "dragonweed", G .. "sunleaf"},
+		mana = {G .. "dragonweed", C .. "sugar_cane"},
+		vigor = {G .. "dragonweed", M .. "tough_sinew"},
+		focus = {G .. "dragonweed", M .. "clear_crab_eye"},
+		precision = {G .. "dragonweed", M .. "ridged_boar_tusk"},
+		stoneskin = {G .. "dragonweed", M .. "ridged_crab_shell"}},
+	{healing = {G .. "crimson_lotus", G .. "gravemoss"},
+		mana = {G .. "crimson_lotus", C .. "sugar_cane"},
+		vigor = {G .. "crimson_lotus", M .. "bear_claw"},
+		focus = {G .. "crimson_lotus", C .. "cave_cap"},
+		precision = {G .. "crimson_lotus", M .. "serrated_fang"},
+		stoneskin = {G .. "crimson_lotus", M .. "layered_crab_shell"}},
+	{healing = {G .. "crimson_lotus", M .. "leathery_flesh"},
+		mana = {G .. "crimson_lotus", M .. "venom_sac"},
+		vigor = {G .. "crimson_lotus", M .. "ironbound_sinew"},
+		focus = {G .. "crimson_lotus", M .. "campaign_talisman"},
+		precision = {G .. "crimson_lotus", M .. "razor_cat_claw"},
+		stoneskin = {G .. "crimson_lotus", M .. "shiny_scale"}},
+	{healing = {C .. "ember_moss", G .. "crimson_lotus"},
+		mana = {G .. "stormkelp", G .. "crimson_lotus"},
+		vigor = {C .. "ember_moss", M .. "scorched_flesh"},
+		focus = {C .. "ember_moss", C .. "cave_cap"},
+		precision = {C .. "ember_moss", M .. "siegepack_fang"},
+		stoneskin = {G .. "stormkelp", M .. "siege_bone"}},
+	{healing = {G .. "wild_cocoa", C .. "ember_moss"},
+		mana = {G .. "wild_cocoa", G .. "stormkelp"},
+		vigor = {G .. "wild_cocoa", M .. "salt_cured_flesh"},
+		focus = {G .. "wild_cocoa", M .. "last_hex_shard"},
+		precision = {C .. "ember_moss", M .. "sharp_feather"},
+		stoneskin = {G .. "wild_cocoa", M .. "unquiet_bone"}},
+}
+
+-- The draughts with an effect of their own; tiers and effects unchanged.
+local UTILITY = {
+	[2] = {
+		{kind = "utility", id = "potion_antivenom", name = "Antivenom",
+			inputs = {G .. "dragonweed", M .. "venom_gland"}, effect_kind = "antivenom",
+			duration = 0, text = "Cures poison", color = "#63ba52"},
+		{kind = "utility", id = "potion_swiftness", name = "Swiftness Draught",
+			inputs = {G .. "dragonweed", M .. "fang"}, effect_kind = "swiftness",
+			duration = 5, text = "+10% movement speed for 5 seconds", color = "#e9c83b"},
+	},
+	[3] = {
+		{kind = "utility", id = "potion_cave", name = "Cave Draught",
+			inputs = {C .. "cave_cap", M .. "bound_wisp_mote"}, effect_kind = "cave",
+			duration = 600, text = "Night vision for 10 minutes", color = "#804db5"},
+	},
+	[5] = {
+		{kind = "elixir", id = "elixir_deepwater", name = "Deepwater Elixir",
+			inputs = {G .. "stormkelp", C .. "cave_cap"}, effect_kind = "deepwater",
+			duration = 600, text = "Water breathing for 10 minutes", color = "#269ca7"},
+	},
+}
+
+-- The mob loot's tier is its catalogue tier (grug_mobs/data/items.json), so
+-- a recipe's tier check reads the same number as every other profession.
+local catalogue_tier = {}
+local catalogue = grug_mobs.read_data_json("items.json") or {}
+for _, row in ipairs(catalogue.items or catalogue) do
+	if type(row) == "table" and type(row.id) == "string" then
+		catalogue_tier[row.id] = tonumber(row.tier)
+	end
+end
+
+local function note_inputs(inputs)
+	for _, item in ipairs(inputs) do
+		if item:sub(1, #M) == M then
+			ingredients[item] = assert(catalogue_tier[item],
+				"grug_alchemy: " .. item .. " has no catalogue tier")
+		end
+	end
+end
+
+local function requirement(tier)
+	local level = grug_alchemy.TIER_LEVELS[tier]
+	return level > 1 and ("\nRequires level " .. level) or ""
+end
+
+local function potion(tier, kind)
+	local name = (kind == "health" and "Healing Potion " or "Mana Potion ") .. ROMAN[tier]
+	local amount = grug_alchemy.POTION_AMOUNTS[tier]
+	local effect = "Restores " .. amount .. (kind == "health" and " HP" or " Mana")
+	local id = (kind == "health" and "potion_healing_t" or "potion_mana_t") .. tier
+	local inputs = RECIPES[tier][kind == "health" and "healing" or "mana"]
+	grug_alchemy.register_consumable(id, {
+		family = "potion", tier = tier,
+		color = (kind == "health" and HEALING_COLORS or MANA_COLORS)[tier],
+		description = name .. "\n" .. effect .. " at once. Shared " ..
+			grug_traders.POTION_COOLDOWN .. " second potion cooldown." ..
+			requirement(tier),
+		on_use = grug_alchemy.potion_use(kind, amount),
+	})
+	return {id = id, name = name, tier = tier, inputs = {inputs[1], inputs[2], VIAL},
+		effect = effect, family = "potion", amount = amount}
+end
+
+local function elixir(tier, def)
+	local name = def.name .. " " .. ROMAN[tier]
+	local value = def.values[tier]
+	local effect = def.text:format(value)
+	local id = "elixir_" .. def.key .. "_t" .. tier
+	local inputs = RECIPES[tier][def.key]
+	grug_alchemy.register_consumable(id, {
+		family = "elixir", tier = tier, color = def.colors[tier],
+		description = name .. "\n" .. effect .. ". Replaces your current elixir." ..
+			requirement(tier),
+		on_use = grug_alchemy.elixir_use({label = name, modifier = def.modifier,
+			value = value, duration = def.duration}),
+	})
+	return {id = id, name = name, tier = tier, inputs = {inputs[1], inputs[2], VIAL},
+		effect = effect, family = "elixir", modifier = def.modifier, value = value,
+		duration = def.duration}
+end
+
+local function special(tier, def)
+	if def.kind == "elixir" then
+		grug_alchemy.register_consumable(def.id, {
+			family = "elixir", tier = tier, color = def.color,
+			description = def.name .. "\n" .. def.text ..
+				". Replaces your current elixir." .. requirement(tier),
+			on_use = grug_alchemy.elixir_use({label = def.name, value = 0,
+				duration = def.duration, kind = def.effect_kind}),
+		})
+	else
+		grug_alchemy.register_consumable(def.id, {
+			family = "potion", tier = tier, color = def.color,
+			description = def.name .. "\n" .. def.text .. ". Shared " ..
+				grug_traders.POTION_COOLDOWN .. " second potion cooldown." ..
+				requirement(tier),
+			on_use = grug_alchemy.utility_use(def.effect_kind, def.duration),
+		})
+	end
+	return {id = def.id, name = def.name, tier = tier,
+		inputs = {def.inputs[1], def.inputs[2], VIAL}, effect = def.text,
+		family = def.kind == "elixir" and "elixir" or "potion",
+		duration = def.duration}
+end
+
+local catalog = {}
+for tier = 1, 6 do
+	catalog[#catalog + 1] = potion(tier, "health")
+	catalog[#catalog + 1] = potion(tier, "mana")
+	for _, def in ipairs(ELIXIRS) do
+		catalog[#catalog + 1] = elixir(tier, def)
+	end
+	for _, def in ipairs(UTILITY[tier] or {}) do
+		catalog[#catalog + 1] = special(tier, def)
+	end
+end
+for _, row in ipairs(catalog) do note_inputs(row.inputs) end
 
 for item, tier in pairs(ingredients) do
 	grug_jobs.register_ingredient_tier(item, tier)
 end
-
-local function potion(id, name, tier, first, second, kind, cooldown, color)
-	local cooldown_text = cooldown == grug_alchemy.GREATER_COOLDOWN and "45" or "60"
-	grug_alchemy.register_consumable(id, {
-		family = "potion", tier = tier, color = color,
-		description = name .. "\nRestores 30% instantly. Shared " ..
-			cooldown_text .. " second potion cooldown.",
-		on_use = grug_alchemy.potion_use(kind, cooldown),
-	})
-	return {id = id, name = name, tier = tier, inputs = {first, second, VIAL},
-		effect = "30% " .. (kind == "health" and "HP" or "Mana"),
-		family = "potion"}
-end
-
-local function utility(id, name, tier, first, second, kind, duration, effect,
-		color)
-	grug_alchemy.register_consumable(id, {
-		family = "potion", tier = tier, color = color,
-		description = name .. "\n" .. effect .. ". Shared 60 second potion cooldown.",
-		on_use = grug_alchemy.utility_use(kind, duration),
-	})
-	return {id = id, name = name, tier = tier, inputs = {first, second, VIAL},
-		effect = effect, family = "potion"}
-end
-
-local function elixir(id, name, tier, first, second, modifier, value, duration,
-		effect, color, kind)
-	grug_alchemy.register_consumable(id, {
-		family = "elixir", tier = tier, color = color,
-		description = name .. "\n" .. effect .. ". Replaces your current elixir.",
-		on_use = grug_alchemy.elixir_use({label = name, modifier = modifier,
-			value = value, duration = duration, kind = kind}),
-	})
-	return {id = id, name = name, tier = tier, inputs = {first, second, VIAL},
-		effect = effect, family = "elixir", modifier = modifier, value = value,
-		duration = duration}
-end
-
-local catalog = {
-	potion("potion_healing", "Healing Potion", 1, G .. "gravemoss",
-		G .. "sunleaf", "health", grug_alchemy.POTION_COOLDOWN, "#d13b45"),
-	potion("potion_mana", "Mana Potion", 1, G .. "gravemoss",
-		ROOT, "mana", grug_alchemy.POTION_COOLDOWN, "#356ed1"),
-	utility("potion_antivenom", "Antivenom", 2, G .. "dragonweed",
-		M .. "venom_gland", "antivenom", 0, "Cures poison", "#63ba52"),
-	utility("potion_swiftness", "Swiftness Draught", 2, G .. "dragonweed",
-		M .. "fang", "swiftness", 5, "+10% movement speed for 5 seconds",
-		"#e9c83b"),
-	potion("potion_greater_healing", "Greater Healing Potion", 3,
-		G .. "crimson_lotus", G .. "gravemoss", "health",
-		grug_alchemy.GREATER_COOLDOWN, "#a81729"),
-	potion("potion_greater_mana", "Greater Mana Potion", 3,
-		G .. "crimson_lotus", C .. "sugar_cane", "mana",
-		grug_alchemy.GREATER_COOLDOWN, "#253ea3"),
-	utility("potion_cave", "Cave Draught", 3, C .. "cave_cap",
-		M .. "slime_gel", "cave", 600, "Night vision for 10 minutes", "#804db5"),
-
-	elixir("elixir_vigor_t3", "Elixir of Vigor III", 3,
-		G .. "crimson_lotus", M .. "bear_claw", "hp_pool_percent", 5,
-		900, "+5% maximum HP for 15 minutes", "#b43a32"),
-	elixir("elixir_focus_t3", "Elixir of Focus III", 3,
-		G .. "crimson_lotus", C .. "cave_cap", "mana_pool_percent", 5,
-		900, "+5% maximum Mana for 15 minutes", "#375cb8"),
-	elixir("elixir_precision_t3", "Elixir of Precision III", 3,
-		G .. "crimson_lotus", M .. "fang", "crit_percent", 1,
-		900, "+1 percentage point Crit for 15 minutes", "#d28a31"),
-
-	elixir("elixir_vigor_t4", "Elixir of Vigor IV", 4,
-		G .. "crimson_lotus", M .. "croc_tooth", "hp_pool_percent", 10,
-		900, "+10% maximum HP for 15 minutes", "#a52c29"),
-	elixir("elixir_focus_t4", "Elixir of Focus IV", 4,
-		G .. "crimson_lotus", M .. "venom_sac", "mana_pool_percent", 10,
-		900, "+10% maximum Mana for 15 minutes", "#2c4da1"),
-	elixir("elixir_precision_t4", "Elixir of Precision IV", 4,
-		G .. "crimson_lotus", M .. "shiny_scale", "crit_percent", 2,
-		900, "+2 percentage points Crit for 15 minutes", "#be7627"),
-	elixir("elixir_stoneskin", "Stoneskin Elixir", 4,
-		M .. "shiny_scale", M .. "croc_tooth", "armor", 4,
-		1800, "+4% armor for 30 minutes", "#747474"),
-
-	elixir("elixir_vigor_t5", "Elixir of Vigor V", 5,
-		G .. "crimson_lotus", C .. "ember_moss", "hp_pool_percent", 15,
-		900, "+15% maximum HP for 15 minutes", "#922221"),
-	elixir("elixir_focus_t5", "Elixir of Focus V", 5,
-		C .. "cave_cap", C .. "ember_moss", "mana_pool_percent", 15,
-		900, "+15% maximum Mana for 15 minutes", "#233f91"),
-	elixir("elixir_precision_t5", "Elixir of Precision V", 5,
-		M .. "shiny_scale", C .. "ember_moss", "crit_percent", 3,
-		900, "+3 percentage points Crit for 15 minutes", "#a96720"),
-	elixir("elixir_deepwater", "Deepwater Elixir", 5,
-		G .. "stormkelp", M .. "slime_gel", nil, 0,
-		600, "Water breathing for 10 minutes", "#269ca7", "deepwater"),
-
-	elixir("elixir_vigor_t6", "Elixir of Vigor VI", 6,
-		C .. "ember_moss", M .. "stone_core", "hp_pool_percent", 20,
-		900, "+20% maximum HP for 15 minutes", "#761a1c"),
-	elixir("elixir_focus_t6", "Elixir of Focus VI", 6,
-		C .. "ember_moss", G .. "wild_cocoa", "mana_pool_percent", 20,
-		900, "+20% maximum Mana for 15 minutes", "#1c337c"),
-	elixir("elixir_precision_t6", "Elixir of Precision VI", 6,
-		C .. "ember_moss", M .. "sharp_feather", "crit_percent", 4,
-		900, "+4 percentage points Crit for 15 minutes", "#925618"),
-}
 
 grug_alchemy.CATALOG = catalog
 grug_alchemy.INGREDIENT_TIERS = ingredients

@@ -1,8 +1,4 @@
 grug_alchemy.TIER_LEVELS = {1, 11, 21, 31, 41, 51}
-grug_alchemy.POTION_PERCENT = 30
-grug_alchemy.POTION_COOLDOWN = 60
-grug_alchemy.GREATER_COOLDOWN = 45
-grug_alchemy.ELIXIR_DURATION = 900
 
 local function consume(itemstack, player)
 	itemstack:take_item(1)
@@ -12,8 +8,8 @@ local function consume(itemstack, player)
 	return itemstack
 end
 
-local function instant_potion_amount(player, maximum)
-	local amount = maximum * grug_alchemy.POTION_PERCENT / 100
+-- A potion restores its fixed amount; an instant-potion trinket scales it.
+local function instant_potion_amount(player, amount)
 	if grug_core.trinket_instant_potion then
 		amount = grug_core.trinket_instant_potion(player, amount)
 	end
@@ -42,29 +38,27 @@ local function player_ready(itemstack, player)
 	return true
 end
 
-local function potion_use(kind, cooldown)
+local function potion_use(kind, amount)
 	return function(itemstack, player)
 		if not player_ready(itemstack, player) then return end
 		if kind == "health" then
-			local maximum = grug_classes.get_max_hp(player)
-			if player:get_hp() >= maximum then
+			if player:get_hp() >= grug_classes.get_max_hp(player) then
 				refuse(player, "You are already at full health.")
 				return
 			end
-			local amount = instant_potion_amount(player, maximum)
-			grug_core.heal_player(player, player, amount, {no_crit = true})
+			grug_core.heal_player(player, player,
+				instant_potion_amount(player, amount), {no_crit = true})
 		else
-			local maximum = grug_classes.get_max_mana(player)
-			if maximum <= 0 then
+			if grug_classes.get_max_mana(player) <= 0 then
 				refuse(player, "Mana potions have no effect without a mana pool.")
 				return
 			end
 			-- Deliberately consume at full mana: the ruling removes the
 			-- full-resource refusal from the mana half.
 			grug_abilities.restore_mana(player,
-				instant_potion_amount(player, maximum))
+				instant_potion_amount(player, amount))
 		end
-		grug_traders.start_potion_cooldown(player, cooldown)
+		grug_traders.start_potion_cooldown(player)
 		return consume(itemstack, player)
 	end
 end
@@ -94,7 +88,7 @@ local function utility_use(kind, duration)
 				end,
 			})
 		end
-		grug_traders.start_potion_cooldown(player, grug_alchemy.POTION_COOLDOWN)
+		grug_traders.start_potion_cooldown(player)
 		return consume(itemstack, player)
 	end
 end
@@ -111,10 +105,10 @@ local ELIXIR_VARIANT = {
 
 -- The Effects tab detail line: the value the elixir grants.
 local ELIXIR_DETAIL = {
-	hp_pool_percent = "+%d%% maximum HP",
-	mana_pool_percent = "+%d%% maximum Mana",
-	crit_percent = "+%d Crit",
-	armor = "+%d%% armor",
+	hp_pool_percent = "+%.1f%% maximum HP",
+	mana_pool_percent = "+%.1f%% maximum Mana",
+	crit_percent = "+%.1f Crit",
+	armor = "+%.1f armor rating",
 }
 local function elixir_detail(definition, modifiers)
 	if definition.kind == "deepwater" then
