@@ -105,15 +105,18 @@ local EARLY_SPICE = "group:grug_cooking_early_spice"
 
 -- A dish without grid inputs comes only from its raw assembly (below) in the
 -- furnace (Round 28 ruling 27: no direct grid route duplicates that line).
+-- Within a tier a stronger dish costs more to make (Round 34 ruling 3): the
+-- Caster dish, which adds mana regeneration to the same HP terms, needs more
+-- input value (vendor payouts) than the Hearty and Hunter dishes of its tier.
 local DISHES = {
 	dish("hearty_stew", "Hearty Stew", 1, "hearty"),
 	dish("sweetroot_mash", "Sweetroot Mash", 1, "caster",
-		{ROOT, STAPLE}),
+		{ROOT, ROOT, STAPLE, C .. "wild_grain"}),
 	dish("corn_crusted_fish", "Corn-Crusted Fish", 1, "hunter",
 		{FISH, G .. "corn"}),
 	dish("pumpkin_stew", "Pumpkin Stew", 2, "hearty"),
 	dish("berry_preserve", "Berry Preserve", 2, "caster",
-		{BERRY, BERRY, C .. "sugar_cane"}),
+		{BERRY, BERRY, BERRY, C .. "pumpkin", C .. "sugar_cane"}),
 	dish("fruit_glazed_roast", "Fruit-Glazed Roast", 2, "hunter",
 		{MEAT, FRUIT}),
 	dish("foragers_pot", "Forager's Pot", 3, "hearty"),
@@ -123,12 +126,12 @@ local DISHES = {
 		{MEAT, EARLY_SPICE, G .. "mushroom"}),
 	dish("marsh_roast", "Marsh Roast", 4, "hearty"),
 	dish("marshbloom_chowder", "Marshbloom Chowder", 4, "caster",
-		{FISH, G .. "marshbloom"}),
+		{FISH, G .. "marshbloom", G .. "marshbloom"}),
 	dish("hunters_feast", "Hunter's Feast", 4, "hunter",
 		{MEAT, MEAT, G .. "melon", G .. "mushroom"}),
 	dish("kelp_wrapped_roast", "Kelp-Wrapped Roast", 5, "hearty"),
 	dish("stormkelp_broth", "Stormkelp Broth", 5, "caster",
-		{G .. "stormkelp", FISH, G .. "melon"}),
+		{G .. "stormkelp", G .. "stormkelp", FISH, G .. "rock_salt"}),
 	dish("salt_crusted_fish", "Salt-Crusted Fish", 5, "hunter",
 		{FISH, G .. "rock_salt"}),
 	dish("grand_feast", "Grand Feast", 6, "hearty"),

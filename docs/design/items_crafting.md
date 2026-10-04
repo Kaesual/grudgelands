@@ -1131,19 +1131,23 @@ main profession slot (professions.md §1).
   **Cooking book.** Every row is a profession recipe at the crafting grid and
   contains at least one ingredient registered at its own recipe tier. The
   Hearty dishes have no direct grid route (Round 28 ruling 27): they come only
-  from their raw assembly in the furnace (below).
+  from their raw assembly in the furnace (below). Within a tier a stronger
+  dish costs more to make, never less (Round 34): the Caster dish (HP and mana
+  regeneration) needs more input value, counted in vendor payouts, than the
+  Hearty and Hunter dishes of its tier (HP only; their secondaries differ in
+  kind and count as equal).
 
   | Tier | Role | Inputs | Output |
   |---|---|---|---|
-  | T1 | Caster | carrot or cassava + potato or corn | Sweetroot Mash |
+  | T1 | Caster | 2 carrot or cassava + potato or corn + Wild Grain | Sweetroot Mash |
   | T1 | Hunter | raw fish + corn | Corn-Crusted Fish |
-  | T2 | Caster | 2 berries + Sugar Cane | Berry Preserve |
+  | T2 | Caster | 3 berries + Pumpkin + Sugar Cane | Berry Preserve |
   | T2 | Hunter | raw meat + apple or berries | Fruit-Glazed Roast |
   | T3 | Caster | 2 mushrooms | Mushroom Skewer |
   | T3 | Hunter | raw meat + Wild Onion or Fire Pepper + mushroom | Onion-Seared Steak |
-  | T4 | Caster | raw fish + Marshbloom | Marshbloom Chowder |
+  | T4 | Caster | raw fish + 2 Marshbloom | Marshbloom Chowder |
   | T4 | Hunter | 2 raw meat + melon + mushroom | Hunter's Feast |
-  | T5 | Caster | Stormkelp + raw fish + melon | Stormkelp Broth |
+  | T5 | Caster | 2 Stormkelp + raw fish + Rock Salt | Stormkelp Broth |
   | T5 | Hunter | raw fish + Rock Salt | Salt-Crusted Fish |
   | T6 | Caster | 2 Wild Cocoa + Rock Salt | Jungle Cocoa |
   | T6 | Hunter | raw meat + Wild Cocoa + Fire Pepper or Wild Onion | Cocoa-Rubbed Game |
