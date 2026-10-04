@@ -69,6 +69,16 @@ local function find_crown(inv)
 	return nil
 end
 
+-- A worn item must stay wearable: the crown raises its level requirement, and
+-- the level gate runs only on equip. Returns the refusal, or nil.
+local function worn_refusal(player, list, crowned)
+	if not grug_inventory.is_equipment_list(list) then return nil end
+	local ok, required = grug_core.can_use_item_level(player, crowned)
+	if ok then return nil end
+	return "The crowned item needs level " .. tostring(required) ..
+		"; take it off first."
+end
+
 -- Every gear item the player owns, with the operation's preview: a row with
 -- `result` and `text` can be crowned, a row with only `reason` cannot.
 function grug_traders.crown_rows(player)
@@ -78,6 +88,11 @@ function grug_traders.crown_rows(player)
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			if not stack:is_empty() and is_gear(stack) then
 				local text, reason = grug_traders.crown_preview(stack)
+				if text and grug_inventory.is_equipment_list(list) then
+					local crowned = grug_traders.crown_operation(stack, player)
+					reason = crowned and worn_refusal(player, list, crowned) or nil
+					if reason then text = nil end
+				end
 				rows[#rows + 1] = {list = list, index = index,
 					expected = ItemStack(stack), result = text ~= nil,
 					text = text, reason = reason}
@@ -99,6 +114,8 @@ function grug_traders.crown_apply(player, row)
 	end
 	local crowned, reason = grug_traders.crown_operation(current, player)
 	if not crowned then return false, reason end
+	local worn = worn_refusal(player, row.list, crowned)
+	if worn then return false, worn end
 	-- crown_item rebuilds the description; a weapon's "Effective at level"
 	-- line is grug_gear's own.
 	grug_gear.initialize_weapon_tooltip(crowned, player)
@@ -150,7 +167,7 @@ local function form(player, session)
 			(crown and "yes" or "none")) .. "]"}
 	local first = (session.page - 1) * PAGE_SIZE + 1
 	for i = first, math.min(#rows, first + PAGE_SIZE - 1) do
-		local row, y = rows[i], 2.5 + (i - first) * 0.95
+		local row, y = rows[i], 2.4 + (i - first) * 0.9
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y, esc(row.expected:get_name()))
 		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.2, esc(first_line(row.expected)))
 		-- A read-only textarea wraps the preview ("Item level 50 becomes 55.
@@ -165,11 +182,11 @@ local function form(player, session)
 		fs[#fs + 1] = "label[0.4,2.8;You carry no equipment.]"
 	end
 	if session.status then
-		fs[#fs + 1] = "label[0.4,8.3;" .. esc(session.status) .. "]"
+		fs[#fs + 1] = "label[0.4,8.55;" .. esc(session.status) .. "]"
 	end
-	fs[#fs + 1] = "button[4.2,8.0;0.7,0.7;previous;<]button[6.6,8.0;0.7,0.7;next;>]"
-	fs[#fs + 1] = ("label[5.25,8.35;%d / %d]"):format(session.page, pages)
-	fs[#fs + 1] = "button_exit[9.6,8.0;2,0.7;close;Close]"
+	fs[#fs + 1] = "button[4.2,8.2;0.7,0.7;previous;<]button[6.6,8.2;0.7,0.7;next;>]"
+	fs[#fs + 1] = ("label[5.25,8.55;%d / %d]"):format(session.page, pages)
+	fs[#fs + 1] = "button_exit[9.6,8.2;2,0.7;close;Close]"
 	return table.concat(fs)
 end
 

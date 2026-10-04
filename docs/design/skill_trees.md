@@ -1496,7 +1496,8 @@ undecided any more.**
     `grug_classes.get_ranged_bonus` beside `get_melee_bonus`
     (`grug_classes/stats.lua:34-36`). *(One accessor, and one sentence added
     to `combat_stats.md` §2 — §7 task 9. It is what makes the Scout's
-    Dexterity-led growth mean something.)*
+    Dexterity-led growth mean something.)* Since Round 33 the term is `Dex/10` with its
+    fraction ([combat_stats.md](combat_stats.md) §2).
 29. **Historical ruling: Sprint is +25 % for 10 s on a 300 s cooldown.**
     **The user amended the speed to +50% on 2026-09-20; duration, cooldown
     and the existing movement cap remain unchanged.** *(The amended value

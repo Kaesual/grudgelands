@@ -500,8 +500,16 @@ do
 	local none, why = grug_traders.crown_operation(ItemStack(grug_gear.weapon_item("sword", 5)))
 	check(none == nil and type(why) == "string", "F no crown operation: a refusal, no error")
 	-- The real operation (grug_quality/init.lua, lane C4).
+	local wearer_level = 60
 	grug_core = permissive({level_scale = function() return 1 end,
-		get_player_level = function() return 60 end})
+		get_player_level = function() return wearer_level end})
+	-- The real level gate of grug_core (combat.lua), which grug_quality wraps.
+	do
+		local source = read_file("mods/CORE/grug_core/combat.lua")
+		local body = source:match("(function grug_core%.can_use_item_level%(player, item%).-\nend)\n")
+		check(body ~= nil, "F can_use_item_level found in combat.lua")
+		assert(loadstring(body))()
+	end
 	grug_classes = permissive({get_melee_bonus = function() return 0 end})
 	grug_mobs = permissive({})
 	grug_jobs = permissive({})
@@ -595,6 +603,31 @@ do
 	ok, message = grug_traders.crown_apply(p, rows[1])
 	check(not ok and grug_money.get(p) == 5300 and p.lists.main[2]:get_name() ==
 		"grug_mobs:fallen_crown", "F ...and crowning it again changes nothing")
+	-- A worn item must stay wearable: a level-55 Warrior's worn T6 sword
+	-- (requirement 60 once crowned) is not offered, and the apply path
+	-- refuses it as a guard; the same sword in the bag is offered.
+	wearer_level = 55
+	local w = new_player(20000)
+	w.lists.grug_weapon[1] = ItemStack(grug_gear.weapon_item("sword", 6))
+	w.lists.main[1] = ItemStack(grug_gear.weapon_item("sword", 6))
+	w.lists.main[2] = ItemStack("grug_mobs:fallen_crown")
+	local worn_rows = grug_traders.crown_rows(w)
+	local worn, carried
+	for _, row in ipairs(worn_rows) do
+		if row.list == "grug_weapon" then worn = row else carried = row end
+	end
+	check(worn and not worn.result and worn.reason ==
+		"The crowned item needs level 60; take it off first.",
+		"F a worn item the wearer could no longer wear gets no Crown button (" ..
+		tostring(worn and worn.reason) .. ")")
+	check(carried and carried.result, "F ...the same item in the bag is offered")
+	ok, message = grug_traders.crown_apply(w, {list = worn.list, index = worn.index,
+		expected = worn.expected, result = true})
+	check(not ok and message == "The crowned item needs level 60; take it off first." and
+		grug_money.get(w) == 20000 and w.lists.main[2]:get_name() == "grug_mobs:fallen_crown" and
+		w.lists.grug_weapon[1]:get_meta():get_int("grug_crowned") == 0,
+		"F crown_apply refuses it too and nothing changes")
+	wearer_level = 60
 	-- A boss drop above the crown's target is refused (never lowering).
 	local drop = ItemStack(grug_gear.weapon_item("sword", 6))
 	grug_items.roll_enchants(drop, 70, 1, 7)
