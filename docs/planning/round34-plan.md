@@ -206,6 +206,13 @@ the GUI check, and the other zones follow later with quieter recordings
 ("a soft surface, no single sounds in front"). S2's code stays
 region-independent, so more zones are data plus a page. Other choices:
 
+- **Pilot extended to all zones (user, same day, after hearing it in the
+  game: "surprisingly good, maybe minimally quieter"):** every bed at gain
+  0.2; elves B2.1, B2.3; trolls B2.2, B3.1; orcs B4.4; dwarves B4.2, B5.2;
+  undead B6.1, B6.3; Battlegrounds B7.2; dragon islands B8.2; night (humans,
+  elves, trolls, orcs) B9.1, B9.2; underground B10.1, B10.3, B10.4, B10.5
+  (deep only); sea and coast B11.1. No stream bed (B12.2 stays the
+  flowing-water loop), no underwater bed.
 - **No ambient calls** (owl, crows, hawk, wolf): fewer layers, so the user
   can tell sounds apart in the game. The crow recording (B.3/B.4) becomes
   the **Carrion Crow's** voice in S1b (war cry or an occasional call while
@@ -214,8 +221,7 @@ region-independent, so more zones are data plus a page. Other choices:
 - **Forge** E1.2 only (the rebuilt hammer loop), **fire/hearth** E2.1.
 - **Flowing water** B12.2, positional at *flowing* water nodes only (water or
   river water that runs off somewhere), not at sources; S2 checks how often
-  our worlds have flowing water and reports. No sea, coast, stream-source,
-  underwater or cave beds this round.
+  our worlds have flowing water and reports.
 - **Music** as planned (§2.1 rulings 3–5).
 - **Effects (S1a page):** E1.1 quest complete about 0.5 s shorter at the end
   (new cut, confirm), E2.1 smithy craft, E3.1 repair, E4.1 cooking (E4.2
