@@ -7,12 +7,13 @@
 --     the player, under water, the underground and its deep band; in start
 --     towns and capitals the bed plays at half gain and the Town music pool
 --     carries the mood. A change crossfades (core.sound_fade);
---   * sparse calls (owl and wolf at night, crows over the blight, a hawk in
---     the mountains, distant thunder on the dragon islands and the front), a
---     per-player timer of 40-150 s, placed at a point around the player;
---   * forge and fire loops at forges, anvils, hearths and camp fires near
---     the player: one find_nodes_in_area per pass above ground, the nearest
---     two of each kind, positional, to that player only;
+--   * sparse calls by mood and time of day, a per-player timer, placed at a
+--     point around the player (Round 34: distant thunder on the dragon
+--     islands only);
+--   * loops at forges and anvils, hearths and camp fires, and flowing water
+--     (never at a water source) near the player: one find_nodes_in_area per
+--     pass above ground, the nearest two of each kind, positional, to that
+--     player only;
 --   * calm music now and then from the pool of the player's region group
 --     (rules.lua music_step). Music files live in music/, outside every
 --     sounds/ folder, so the first join downloads none of them; each track is
@@ -22,10 +23,14 @@
 --   * music and ambience on/off and volume per player in player meta, applied
 --     at once; the Help page's Sound sub-page and /music, /ambience.
 --
+-- Round 34 ships a pilot (round34-plan.md §2.2a): beds for the human region
+-- only, every other state is silent; data.lua holds every name, so a later
+-- zone is data only.
+--
 -- Cost: one pass per player every 2 s, spread over eight slots of 0.25 s
--- (AGENTS.md Round 32): a mood and town lookup, up to 33 get_node_raw reads
--- for water, one find_nodes_in_area above ground, a few sound packets when
--- something changes. grug_ambience.stats holds comparison figures for the
+-- (AGENTS.md Round 32): a mood and town lookup, one get_node_raw read for
+-- under water (33 when sea or stream beds exist), one find_nodes_in_area
+-- above ground, a few sound packets when something changes. grug_ambience.stats holds comparison figures for the
 -- report (tools/r34_s2 probe).
 --
 -- A /atmosphere preset (atmosphere.lua, admin A/B test) pauses the zone
@@ -74,9 +79,11 @@ end
 -- Read by the engine probe (tools/r34_s2), which may mark names available.
 grug_ambience.available, grug_ambience.pools = available, pools
 
--- Comparison figures: passes, their summed microseconds, the node searches
--- and their microseconds, sounds started, pushes.
-local stats = {passes = 0, us = 0, finds = 0, find_us = 0, plays = 0, pushes = 0}
+-- Comparison figures: passes, their summed microseconds, the node searches,
+-- their microseconds and the positions they returned, sounds started,
+-- pushes.
+local stats = {passes = 0, us = 0, finds = 0, find_us = 0, found = 0, plays = 0,
+	pushes = 0}
 grug_ambience.stats = stats
 
 local function now_seconds()
@@ -124,7 +131,7 @@ end
 local function stop_bed(st)
 	local bed = st.bed
 	if bed.handle then fade(bed.handle, bed.gain, 0, D.crossfade) end
-	bed.handle, bed.key, bed.gain, bed.want, bed.seen = nil, nil, 0, nil, 0
+	bed.handle, bed.key, bed.gain, bed.want, bed.seen, bed.underwater = nil, nil, 0, nil, 0, nil
 end
 
 -- Crossfades to bed `key` (false: silence).
@@ -151,11 +158,27 @@ local function emitter_gain(st, kind)
 	return D.gains[kind] * st.ambience_volume / 100
 end
 
--- The forge and fire loops near `pos`: start the nearest, fade out the rest.
-local emitter_names = {}
-for node in pairs(D.emitter_nodes) do emitter_names[#emitter_names + 1] = node end
-table.sort(emitter_names)
+-- Node name -> emitter kind and the names searched, filled once every node
+-- is registered: data.lua's nodes plus every other flowing liquid whose
+-- source is default or river water (a grug liquid joins by itself).
+local emitter_kinds, emitter_names, emitter_limits = {}, {}, {}
+for kind, spec in pairs(D.emitters) do emitter_limits[kind] = spec.limit end
+core.register_on_mods_loaded(function()
+	for node, kind in pairs(D.emitter_nodes) do emitter_kinds[node] = kind end
+	for node, def in pairs(core.registered_nodes) do
+		local source = def.liquid_alternative_source
+		if def.liquidtype == "flowing" and (source == "default:water_source" or
+				source == "default:river_water_source") then
+			emitter_kinds[node] = "water"
+		end
+	end
+	for node in pairs(emitter_kinds) do
+		if core.registered_nodes[node] then emitter_names[#emitter_names + 1] = node end
+	end
+	table.sort(emitter_names)
+end)
 
+-- The loops near `pos`: start the chosen ones, fade out the rest.
 local function update_emitters(name, st, pos)
 	local reach = D.emitter_reach
 	local started = core.get_us_time()
@@ -167,7 +190,11 @@ local function update_emitters(name, st, pos)
 	stats.find_us = stats.find_us + (core.get_us_time() - started)
 	local keep = {}
 	if next(found) then
-		for _, row in ipairs(R.nearest_emitters(found, D.emitter_nodes, pos, D.emitter_limit)) do
+		for _, list in pairs(found) do stats.found = stats.found + #list end
+		local active = {}
+		for hash in pairs(st.emitters) do active[hash] = true end
+		for _, row in ipairs(R.choose_emitters(found, emitter_kinds, pos, emitter_limits,
+				active, core.hash_node_position)) do
 			local spec = D.emitters[row.kind]
 			if available[spec.sound] then
 				local hash = core.hash_node_position(row.pos)
@@ -226,7 +253,8 @@ end)
 -- Sixteen columns round the player (eight directions at 3 and 7 nodes),
 -- read one and two nodes below the feet: a bank one or two nodes above the
 -- water still hears it. Thresholds: a sixth of the 32 reads sea, or three
--- river reads, make the water bed.
+-- river reads, make the water bed. Read only when a sea or stream bed
+-- exists (none this round).
 local RING = {}
 for _, radius in ipairs({3, 7}) do
 	for step = 0, 7 do
@@ -236,6 +264,7 @@ for _, radius in ipairs({3, 7}) do
 	end
 end
 local SEA_READS, STREAM_READS = 6, 3
+local WATER_BEDS = D.beds.sea ~= nil or D.beds.stream ~= nil
 local EYE_HEIGHT = 1.625
 local get_node_raw = core.get_node_raw
 
@@ -246,6 +275,7 @@ local function probe_water(pos)
 	if water_kind[get_node_raw(x, floor(pos.y + EYE_HEIGHT + 0.5), z)] then
 		return nil, true
 	end
+	if not WATER_BEDS then return nil, false end
 	local sea, stream = 0, 0
 	for index = 1, #RING do
 		local offset = RING[index]
@@ -339,7 +369,7 @@ local function evaluate(name, st, now, night)
 		scratch.underwater, scratch.deep = underwater, pos.y < D.deep_y
 		local wanted = R.pick_bed(D, R.bed_keys(D, scratch), available)
 		local gain = R.bed_gain(D, st.ambience_volume, town)
-		if wanted ~= nil and R.bed_should_change(st.bed, wanted) then
+		if wanted ~= nil and R.bed_should_change(st.bed, wanted, underwater) then
 			switch_bed(name, st, wanted, gain)
 		elseif st.bed.handle and gain ~= st.bed.gain then
 			fade(st.bed.handle, st.bed.gain, gain, D.crossfade)

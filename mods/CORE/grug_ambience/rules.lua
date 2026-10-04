@@ -52,11 +52,12 @@ end
 -- Beds
 -- ---------------------------------------------------------------------------
 
--- The bed keys to try for a state, best first, or nil when the state names
--- no mood the bed table knows (a manual non-mood /atmosphere preset such as
--- `godrays`, or `default` before the zone driver ran): the caller then keeps
--- the bed it has. `s`: mood (string or nil), night, water ("sea", "stream" or
--- nil), underwater, deep (the deep underground band).
+-- The bed keys to try for a state, best first (an empty list: silence), or
+-- nil when the state names no mood at all (a manual non-mood /atmosphere
+-- preset such as `godrays`, or `default` before the zone driver ran): the
+-- caller then keeps the bed it has. A mood without a data.region row has no
+-- bed. `s`: mood (an atmosphere mood or nil), night, water ("sea", "stream"
+-- or nil), underwater, deep (the deep underground band).
 --   underwater beats everything; the underground mood has no day or night
 --   (deep first, then the plain cave beds); sea and stream water near the
 --   player override the region bed; the region bed has a night variant where
@@ -74,7 +75,7 @@ function R.bed_keys(data, s)
 	if row then
 		if s.night and row.night then keys[#keys + 1] = row.night end
 		keys[#keys + 1] = row.day
-	elseif #keys == 0 then
+	elseif not s.mood and #keys == 0 then
 		return nil
 	end
 	return keys
@@ -110,17 +111,21 @@ function R.bed_sound(data, key, available, rand)
 	end
 end
 
--- Hysteresis: a new bed (other than diving in or coming up) must be wanted
--- on two passes in a row before it replaces the playing one, so walking
--- along a river bank or a town edge does not swap beds every pass. `b` is
--- the player's bed state {key, want, seen}; `wanted` a key or false.
--- Returns true when the bed should change to `wanted` now.
-function R.bed_should_change(b, wanted)
+-- Hysteresis: a new bed must be wanted on two passes in a row before it
+-- replaces the playing one, so walking along a river bank or a town edge
+-- does not swap beds every pass; diving in or coming up changes at once.
+-- `b` is the player's bed state {key, want, seen, underwater}; `wanted` a
+-- key or false (silence); `underwater` this pass's flag. Returns true when
+-- the bed should change to `wanted` now.
+function R.bed_should_change(b, wanted, underwater)
+	underwater = underwater == true
+	local flipped = underwater ~= (b.underwater == true)
+	b.underwater = underwater
 	if wanted == b.key then
 		b.want, b.seen = nil, 0
 		return false
 	end
-	if b.key == nil or wanted == "underwater" or b.key == "underwater" then
+	if b.key == nil or flipped then
 		b.want, b.seen = nil, 0
 		return true
 	end
@@ -300,10 +305,14 @@ end
 -- Forge and fire emitters
 -- ---------------------------------------------------------------------------
 
--- The nearest `limit` positions of each emitter kind. `found` is
--- find_nodes_in_area's grouped result (node name -> positions), `kinds` node
--- name -> kind. Returns a list of {pos, kind, d2}, nearest first per kind.
-function R.nearest_emitters(found, kinds, pos, limit)
+-- The emitters to play near `pos`. `found` is find_nodes_in_area's grouped
+-- result (node name -> positions), `kinds` node name -> kind, `limits` kind
+-- -> how many play at once, `active` key -> true for the emitters playing
+-- now and `key(pos)` their key. Per kind: a playing emitter stays while it
+-- is among the nearest 2 * limit, so walking along a river does not restart
+-- loops every pass; the free places go to the nearest others. Returns a
+-- list of {pos, kind, d2}, sorted by kind, then distance.
+function R.choose_emitters(found, kinds, pos, limits, active, key)
 	local by_kind = {}
 	for name, list in pairs(found) do
 		local kind = kinds[name]
@@ -329,7 +338,19 @@ function R.nearest_emitters(found, kinds, pos, limit)
 			if a.pos.y ~= b.pos.y then return a.pos.y < b.pos.y end
 			return a.pos.z < b.pos.z
 		end)
-		for index = 1, math.min(limit, #rows) do out[#out + 1] = rows[index] end
+		local limit, chosen, picked = limits[kind] or 1, 0, {}
+		for index = 1, math.min(2 * limit, #rows) do
+			if chosen < limit and active[key(rows[index].pos)] then
+				picked[index], chosen = true, chosen + 1
+			end
+		end
+		for index = 1, #rows do
+			if chosen >= limit then break end
+			if not picked[index] then picked[index], chosen = true, chosen + 1 end
+		end
+		for index = 1, #rows do
+			if picked[index] then out[#out + 1] = rows[index] end
+		end
 	end
 	return out
 end

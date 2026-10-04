@@ -13,7 +13,10 @@
 -- grug_ambience's data is marked shipped, so the run plays what the shipped
 -- game would. Logged: microseconds per second of each pass and per player
 -- evaluation, the node searches, sounds started and pushes per player and
--- minute. Then the server shuts down.
+-- minute. With grug_ambience present it then counts flowing water (the
+-- nodes the water loop hangs on) round the six start towns after the
+-- liquids had 20 s to settle: nodes, sources, and the share of 16 x 16
+-- columns holding flowing water. Then the server shuts down.
 
 local P = "[r34s2_probe] "
 local NFAKE = tonumber(core.settings:get("r34s2_fakes") or "") or 40
@@ -65,7 +68,7 @@ local PASSES = {
 	{key = "ambience", file = "grug_ambience/init.lua"},
 }
 local timing = {}
-local sound_counts = {plays = 0, fades = 0, pushes = 0}
+local sound_counts = {plays = 0, fades = 0, pushes = 0, by_name = {}}
 
 local function wrap(fn, key)
 	timing[key] = {us = 0, calls = 0, max = 0}
@@ -79,8 +82,10 @@ local function wrap(fn, key)
 		core.get_player_window_information = function()
 			return {size = {x = 1920, y = 1080}, real_gui_scaling = 1, real_hud_scaling = 1}
 		end
-		core.sound_play = function()
+		core.sound_play = function(spec)
 			sound_counts.plays = sound_counts.plays + 1
+			local n = type(spec) == "table" and spec.name or tostring(spec)
+			sound_counts.by_name[n] = (sound_counts.by_name[n] or 0) + 1
 			return sound_counts.plays
 		end
 		core.sound_fade = function() sound_counts.fades = sound_counts.fades + 1 end
@@ -156,6 +161,52 @@ local function move_fakes()
 	end
 end
 
+-- ---------------------------------------------------------------- census
+local CENSUS_HALF, CENSUS_UP, CENSUS_DOWN = 64, 24, 24
+local census = {}
+
+local function census_start()
+	for _, row in ipairs(grug_core.start_identities()) do
+		local c = grug_core.start_position(row.faction_id, row.race_id)
+		if c then
+			local r = {race = row.race_id, c = c, done = false}
+			census[#census + 1] = r
+			core.emerge_area({x = c.x - CENSUS_HALF, y = c.y - CENSUS_DOWN, z = c.z - CENSUS_HALF},
+				{x = c.x + CENSUS_HALF - 1, y = c.y + CENSUS_UP, z = c.z + CENSUS_HALF - 1},
+				function(_, _, remaining) if remaining == 0 then r.done = true end end)
+		end
+	end
+end
+
+local function census_report()
+	local flowing = {"default:water_flowing", "default:river_water_flowing"}
+	local sources = {"default:water_source", "default:river_water_source"}
+	local total_cells, wet_cells, total_flowing = 0, 0, 0
+	for _, r in ipairs(census) do
+		local c = r.c
+		local minp = {x = c.x - CENSUS_HALF, y = c.y - CENSUS_DOWN, z = c.z - CENSUS_HALF}
+		local maxp = {x = c.x + CENSUS_HALF - 1, y = c.y + CENSUS_UP, z = c.z + CENSUS_HALF - 1}
+		local fpos, fcount = core.find_nodes_in_area(minp, maxp, flowing)
+		local _, scount = core.find_nodes_in_area(minp, maxp, sources)
+		local cells = {}
+		for _, p in ipairs(fpos) do
+			cells[math.floor((p.x - minp.x) / 16) .. ":" .. math.floor((p.z - minp.z) / 16)] = true
+		end
+		local wet = 0
+		for _ in pairs(cells) do wet = wet + 1 end
+		local n = (2 * CENSUS_HALF / 16) * (2 * CENSUS_HALF / 16)
+		total_cells, wet_cells, total_flowing = total_cells + n, wet_cells + wet, total_flowing + #fpos
+		log(("CENSUS %-7s %s emerged=%s flowing water %d, flowing river water %d, sources %d + %d; " ..
+			"16x16 columns with flowing water %d of %d"):format(r.race, core.pos_to_string(c),
+			tostring(r.done), fcount["default:water_flowing"] or 0,
+			fcount["default:river_water_flowing"] or 0, scount["default:water_source"] or 0,
+			scount["default:river_water_source"] or 0, wet, n))
+	end
+	log(("CENSUS total flowing %d in %d regions of %dx%dx%d; %d of %d 16x16 columns (%.1f %%)"):format(
+		total_flowing, #census, 2 * CENSUS_HALF, CENSUS_DOWN + CENSUS_UP + 1, 2 * CENSUS_HALF,
+		wet_cells, total_cells, total_cells > 0 and 100 * wet_cells / total_cells or 0))
+end
+
 local function report()
 	local seconds = state.phase_t
 	local total = 0
@@ -177,9 +228,14 @@ local function report()
 	local ambience = rawget(_G, "grug_ambience")
 	if ambience then
 		local s = ambience.stats
-		log(("ambience evaluations %d, %.1f us each; node searches %d, %.1f us each"):format(
+		log(("ambience evaluations %d, %.1f us each; node searches %d, %.1f us each, " ..
+			"%.1f positions returned each"):format(
 			s.passes, s.passes > 0 and s.us / s.passes or 0, s.finds,
-			s.finds > 0 and s.find_us / s.finds or 0))
+			s.finds > 0 and s.find_us / s.finds or 0, s.finds > 0 and s.found / s.finds or 0))
+		local names = {}
+		for n, c in pairs(sound_counts.by_name) do names[#names + 1] = n .. "=" .. c end
+		table.sort(names)
+		log("ambience sounds by name: " .. table.concat(names, " "))
 		local per = seconds / 60 * NFAKE
 		log(("ambience sounds started %d (%.2f per player-minute), fades %d (%.2f), " ..
 			"pushes %d (%.2f)"):format(sound_counts.plays, sound_counts.plays / per,
@@ -231,6 +287,21 @@ core.register_globalstep(function(dtime)
 		end
 		if state.phase_t >= RUN then
 			report()
+			if rawget(_G, "grug_ambience") then
+				census_start()
+				state.phase, state.phase_t = "census", 0
+			else
+				log("RESULT DONE")
+				state.phase = "done"
+				core.request_shutdown("r34 s2 probe done", false, 0)
+			end
+		end
+	elseif state.phase == "census" then
+		local all = true
+		for _, r in ipairs(census) do all = all and r.done end
+		if (all and not state.settle_at) then state.settle_at = state.phase_t end
+		if (state.settle_at and state.phase_t >= state.settle_at + 20) or state.phase_t > 200 then
+			census_report()
 			log("RESULT DONE")
 			state.phase = "done"
 			core.request_shutdown("r34 s2 probe done", false, 0)

@@ -186,43 +186,51 @@ do
 end
 
 -- ---------------------------------------------------------------------------
--- B  beds
+-- B  beds: the rules on a several-zone test table, then the shipped pilot
 -- ---------------------------------------------------------------------------
+local TD = {gains = D.gains,
+	beds = {human = {"h1"}, night = {"n1"}, elf = {"e1", "e2", "e3"}, dwarf = {"d1"},
+		undead = {"u1"}, ocean = {"s1"}, sea = {"s1"}, stream = {"st1"}, underwater = {"w1"},
+		underground = {"c1"}, underground_deep = {"c2"}},
+	region = {human = {day = "human", night = "night"}, elf = {day = "elf", night = "night"},
+		dwarf = {day = "dwarf"}, undead = {day = "undead"}, ocean = {day = "ocean"}},
+	calls = {owl = {sound = "o", time = "night", moods = {human = true, elf = true}},
+		crow = {sound = "c", time = "day", moods = {undead = true}},
+		thunder = {sound = "t", time = "any", moods = {dragon_island = true}}},
+}
+local TA = {}
+for _, names in pairs(TD.beds) do for _, n in ipairs(names) do TA[n] = true end end
+for _, call in pairs(TD.calls) do TA[call.sound] = true end
 do
-	local function keys(s) return R.bed_keys(D, s) end
-	local function first(s) return R.pick_bed(D, keys(s), AVAILABLE) end
+	local function keys(s) return R.bed_keys(TD, s) end
+	local function first(s) return R.pick_bed(TD, keys(s), TA) end
 	check(first({mood = "human", underwater = true, water = "sea"}) == "underwater",
 		"B underwater beats everything")
 	check(first({mood = "underground", night = true}) == "underground", "B underground, no night")
 	check(first({mood = "underground", deep = true}) == "underground_deep", "B deep underground")
 	check(first({mood = "human", water = "sea"}) == "sea", "B sea near the player")
 	check(first({mood = "elf", water = "stream", night = true}) == "stream", "B stream beats night")
-	check(first({mood = "human", night = true}) == "night", "B human night bed")
-	check(first({mood = "human"}) == "human", "B human day bed")
-	check(first({mood = "dwarf", night = true}) == "dwarf", "B dwarf keeps its bed at night")
-	check(first({mood = "undead", night = true}) == "undead", "B undead keeps its bed at night")
+	check(first({mood = "human", night = true}) == "night", "B night bed")
+	check(first({mood = "human"}) == "human", "B day bed")
+	check(first({mood = "dwarf", night = true}) == "dwarf", "B a region without a night row keeps its bed")
 	check(first({mood = "ocean"}) == "ocean", "B open ocean")
-	check(R.bed_keys(D, {mood = nil}) == nil, "B non-mood preset keeps the bed")
+	check(first({mood = "orc"}) == false, "B a mood without a region row: silence")
+	check(R.bed_keys(TD, {mood = nil}) == nil, "B non-mood preset keeps the bed")
 	check(first({mood = nil, water = "sea"}) == "sea", "B non-mood preset still hears the sea")
-	-- fallback to a shipped bed
 	local some = {}
-	for k, v in pairs(AVAILABLE) do some[k] = v end
-	for _, n in ipairs(D.beds.night) do some[n] = nil end
-	for _, n in ipairs(D.beds.underground_deep) do some[n] = nil end
-	check(R.pick_bed(D, keys({mood = "elf", night = true}), some) == "elf",
+	for k, v in pairs(TA) do some[k] = v end
+	some.n1, some.c2 = nil, nil
+	check(R.pick_bed(TD, keys({mood = "elf", night = true}), some) == "elf",
 		"B no night file: the day bed")
-	check(R.pick_bed(D, keys({mood = "underground", deep = true}), some) == "underground",
+	check(R.pick_bed(TD, keys({mood = "underground", deep = true}), some) == "underground",
 		"B no deep file: the cave bed")
-	check(R.pick_bed(D, keys({mood = "human", underwater = true}), {}) == false,
+	check(R.pick_bed(TD, keys({mood = "human", underwater = true}), {}) == false,
 		"B nothing shipped: silence")
-	-- random variant only among shipped names
-	local only = {grug_ambience_elf_forest = true}
 	local ok = true
 	for seed = 1, 20 do
-		if R.bed_sound(D, "elf", only, seeded(seed)) ~= "grug_ambience_elf_forest" then ok = false end
+		if R.bed_sound(TD, "elf", {e2 = true}, seeded(seed)) ~= "e2" then ok = false end
 	end
 	check(ok, "B variant picked among shipped names only")
-	-- hysteresis
 	local b = {seen = 0}
 	check(R.bed_should_change(b, "human") == true, "B first bed starts at once")
 	b.key = "human"
@@ -231,34 +239,57 @@ do
 	check(R.bed_should_change(b, "stream") == false and R.bed_should_change(b, "stream") == true,
 		"B two passes of stream: change")
 	b.key = "stream"
-	check(R.bed_should_change(b, "underwater") == true, "B diving changes at once")
+	check(R.bed_should_change(b, "underwater", true) == true, "B diving changes at once")
 	b.key = "underwater"
-	check(R.bed_should_change(b, "stream") == true, "B surfacing changes at once")
+	check(R.bed_should_change(b, "stream", false) == true, "B surfacing changes at once")
+	b.key = "human"
+	check(R.bed_should_change(b, false, true) == true and b.underwater == true,
+		"B diving into silence changes at once")
 	check(math.abs(R.bed_gain(D, 100, true) - D.gains.bed * D.gains.town_bed) < 1e-9 and
 		math.abs(R.bed_gain(D, 50, false) - D.gains.bed * 0.5) < 1e-9, "B gain: volume and town")
+
+	-- the shipped pilot (round34-plan.md §2.2a): the human region only
+	local function real(s) return R.pick_bed(D, R.bed_keys(D, s), AVAILABLE) end
+	check(real({mood = "human"}) == "human" and real({mood = "human", night = true}) == "night",
+		"B pilot: human day and night")
+	local silent = true
+	for _, m in ipairs({"elf", "troll", "orc", "dwarf", "undead", "battlegrounds",
+			"dragon_island", "ocean", "underground"}) do
+		if real({mood = m}) ~= false or real({mood = m, night = true}) ~= false then silent = false end
+	end
+	check(silent, "B pilot: every other mood is silent")
+	check(real({mood = "human", underwater = true}) == false and
+		real({mood = "underground", deep = true}) == false, "B pilot: under water and caves silent")
+	check(real({mood = "human", water = "sea"}) == "human", "B pilot: no sea or stream bed")
+	check(D.gains.bed <= 0.3, "B pilot: the bed starts well below the page level")
 end
 
 -- ---------------------------------------------------------------------------
 -- C  calls
 -- ---------------------------------------------------------------------------
 do
-	local function ids(s) return table.concat(R.eligible_calls(D, s, AVAILABLE), ",") end
-	check(ids({mood = "human", night = true}) == "owl,wolf", "C human night: owl, wolf")
-	check(ids({mood = "human", night = false}) == "", "C human day: none")
-	check(ids({mood = "undead", night = false}) == "crow,crows", "C undead day: crows")
-	check(ids({mood = "dwarf", night = false}) == "hawk", "C dwarf day: hawk")
-	check(ids({mood = "dragon_island", night = true}) == "thunder" and
-		ids({mood = "battlegrounds"}) == "thunder", "C thunder on the islands and the front")
+	local function ids(s) return table.concat(R.eligible_calls(TD, s, TA), ",") end
+	check(ids({mood = "human", night = true}) == "owl", "C night call by mood")
+	check(ids({mood = "human", night = false}) == "", "C day: none")
+	check(ids({mood = "undead", night = false}) == "crow", "C day call by mood")
 	check(ids({mood = "human", night = true, underwater = true}) == "", "C none under water")
 	check(ids({mood = "underground", night = true}) == "", "C none underground")
-	check(table.concat(R.eligible_calls(D, {mood = "human", night = true}, {}), ",") == "",
+	check(table.concat(R.eligible_calls(TD, {mood = "human", night = true}, {}), ",") == "",
 		"C no shipped file: no call")
+	local function real(s) return table.concat(R.eligible_calls(D, s, AVAILABLE), ",") end
+	check(real({mood = "dragon_island"}) == "thunder" and real({mood = "dragon_island", night = true}) == "thunder",
+		"C pilot: thunder on the dragon islands, day and night")
+	local others = ""
+	for _, m in ipairs({"human", "elf", "troll", "orc", "dwarf", "undead", "battlegrounds", "ocean"}) do
+		others = others .. real({mood = m}) .. real({mood = m, night = true})
+	end
+	check(others == "", "C pilot: no other call anywhere")
 	local lo, hi = math.huge, -math.huge
 	for seed = 1, 200 do
 		local d = R.next_call_delay(D, seeded(seed))
 		lo, hi = math.min(lo, d), math.max(hi, d)
 	end
-	check(lo >= 40 and hi <= 150, "C call gap 40-150 s")
+	check(lo >= 90 and hi <= 240, "C thunder is rare: 90-240 s apart")
 end
 
 -- ---------------------------------------------------------------------------
@@ -280,18 +311,33 @@ end
 -- E  emitters
 -- ---------------------------------------------------------------------------
 do
+	local limits = {forge = 2, fire = 2, water = 2}
+	local key = function(p) return p.x .. "," .. p.y .. "," .. p.z end
 	local found = {
 		["grug_jobs:forge"] = {{x = 10, y = 0, z = 0}},
 		["grug_decor:cottages_anvil"] = {{x = 3, y = 0, z = 0}, {x = 6, y = 0, z = 0}},
 		["grug_decor:xdecor_cauldron"] = {{x = 0, y = 0, z = 2}, {x = 0, y = 0, z = 9},
 			{x = 0, y = 0, z = 5}},
 		["default:stone"] = {{x = 1, y = 0, z = 0}},
+		["default:water_source"] = {{x = 0, y = 0, z = -1}},
 	}
-	local rows = R.nearest_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, 2)
-	local text = {}
-	for _, row in ipairs(rows) do text[#text + 1] = row.kind .. "@" .. row.pos.x .. "," .. row.pos.z end
-	check(table.concat(text, " ") == "fire@0,2 fire@0,5 forge@3,0 forge@6,0",
-		"E the nearest two per kind, unknown nodes ignored: " .. table.concat(text, " "))
+	local function text(rows)
+		local t = {}
+		for _, row in ipairs(rows) do t[#t + 1] = row.kind .. "@" .. row.pos.x .. "," .. row.pos.z end
+		return table.concat(t, " ")
+	end
+	local rows = R.choose_emitters(found, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {}, key)
+	check(text(rows) == "fire@0,2 fire@0,5 forge@3,0 forge@6,0",
+		"E the nearest two per kind, sources and other nodes ignored: " .. text(rows))
+	-- flowing water along a river: a playing loop stays while among the nearest 2 * limit
+	local river = {["default:water_flowing"] = {}}
+	for x = 1, 8 do table.insert(river["default:water_flowing"], {x = x, y = 0, z = 0}) end
+	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {["3,0,0"] = true}, key)
+	check(text(rows) == "water@1,0 water@3,0", "E a playing loop near enough stays: " .. text(rows))
+	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {["6,0,0"] = true}, key)
+	check(text(rows) == "water@1,0 water@2,0", "E a playing loop too far behind is replaced: " .. text(rows))
+	check(D.emitter_nodes["default:water_source"] == nil and D.emitter_nodes["default:river_water_source"] == nil,
+		"E never a water source")
 end
 
 -- ---------------------------------------------------------------------------
@@ -325,6 +371,7 @@ do
 	local node_at = {} -- "x,y,z" -> content id
 	local found_nodes = {}
 	local finds = 0
+	local searched
 	local timeofday = 0.5
 	local shipped = {}
 	for name in pairs(AVAILABLE) do shipped[#shipped + 1] = name .. ".ogg" end
@@ -349,21 +396,37 @@ do
 		get_player_by_name = function(name) return players[name] end,
 		get_us_time = function() return us end,
 		get_timeofday = function() return timeofday end,
-		registered_nodes = {["default:water_source"] = {}, ["default:water_flowing"] = {},
-			["default:river_water_source"] = {}, ["default:river_water_flowing"] = {}},
+		registered_nodes = {
+			["default:water_source"] = {liquidtype = "source"},
+			["default:water_flowing"] = {liquidtype = "flowing",
+				liquid_alternative_source = "default:water_source"},
+			["default:river_water_source"] = {liquidtype = "source"},
+			["default:river_water_flowing"] = {liquidtype = "flowing",
+				liquid_alternative_source = "default:river_water_source"},
+			["grug_test:bog_flowing"] = {liquidtype = "flowing",
+				liquid_alternative_source = "default:river_water_source"},
+			["default:lava_flowing"] = {liquidtype = "flowing",
+				liquid_alternative_source = "default:lava_source"},
+			["grug_jobs:forge"] = {}, ["grug_decor:cottages_anvil"] = {},
+			["grug_decor:xdecor_cauldron"] = {}, ["grug_nodes:camp_fire"] = {}},
 		get_content_id = function(name) return CID[name] end,
 		get_node_raw = function(x, y, z) return node_at[x .. "," .. y .. "," .. z] or 0 end,
 		find_nodes_in_area = function(minp, maxp, names, grouped)
 			finds = finds + 1
 			assert(grouped == true)
+			searched = names
+			local wanted = {}
+			for _, n in ipairs(names) do wanted[n] = true end
 			local out = {}
 			for name, list in pairs(found_nodes) do
+				if wanted[name] then
 				for _, p in ipairs(list) do
 					if p.x >= minp.x and p.x <= maxp.x and p.y >= minp.y and p.y <= maxp.y and
 							p.z >= minp.z and p.z <= maxp.z then
 						out[name] = out[name] or {}
 						table.insert(out[name], p)
 					end
+				end
 				end
 			end
 			return out
@@ -472,19 +535,28 @@ do
 		if f.handle == day_handle and f.gain == 0 then faded = true end
 	end
 	check(faded, "R the day bed fades out (crossfade)")
-	-- under water: the eye node is water
+	-- under water: the eye node is water; no underwater bed ships, so silence
 	node_at["0,12,0"] = 10
+	fades = {}
+	local count = #plays_to("ana", is_bed)
+	run(2)
+	local night_off = false
+	for _, f in ipairs(fades) do if f.handle == beds[2].handle and f.gain == 0 then night_off = true end end
+	check(night_off and #plays_to("ana", is_bed) == count, "R under water: the bed stops at once, silence")
+	node_at["0,12,0"] = nil
 	run(2)
 	beds = plays_to("ana", is_bed)
-	check(beds[#beds].spec.name == "grug_ambience_underwater", "R under water at once")
-	node_at["0,12,0"] = nil
-	-- a stream two nodes below, on the ring
-	for _, o in ipairs({{3, 0}, {-3, 0}, {0, 3}, {0, -3}}) do node_at[o[1] .. ",8," .. o[2]] = 12 end
+	check(#beds == count + 1 and beds[#beds].spec.name == "grug_ambience_night_forest",
+		"R surfacing: the night bed again")
+	-- another region: no bed this round
+	mood.ana = "elf"
+	fades = {}
 	run(4)
-	beds = plays_to("ana", is_bed)
-	check(beds[#beds].spec.name:find("^grug_ambience_stream_"), "R stream near the player")
-	for k in pairs(node_at) do node_at[k] = nil end
+	check(#fades >= 1 and fades[#fades].gain == 0 and #plays_to("ana", is_bed) == count + 1,
+		"R an elf zone: the human bed fades, nothing else starts")
+	mood.ana = "human"
 	timeofday = 0.5
+	run(4)
 
 	-- town: the bed fades to the town gain
 	in_town.ana = true
@@ -497,28 +569,39 @@ do
 	check(town_fade, "R in town the bed is quieter")
 	in_town.ana = nil
 
-	-- emitters: an anvil and a cauldron near the player, a forge far away
+	-- emitters: an anvil, a cauldron and flowing water near the player, a
+	-- forge far away, a water source next to the player (never a loop)
 	found_nodes = {["grug_decor:cottages_anvil"] = {{x = 4, y = 10, z = 0}},
 		["grug_decor:xdecor_cauldron"] = {{x = 0, y = 10, z = 5}},
-		["grug_jobs:forge"] = {{x = 60, y = 10, z = 0}}}
+		["grug_jobs:forge"] = {{x = 60, y = 10, z = 0}},
+		["default:water_source"] = {{x = 1, y = 9, z = 0}},
+		["default:river_water_flowing"] = {{x = -3, y = 9, z = 0}},
+		["grug_test:bog_flowing"] = {{x = -6, y = 9, z = 0}, {x = -9, y = 9, z = 0}},
+		["default:lava_flowing"] = {{x = 2, y = 9, z = 2}}}
 	local f0 = finds
 	run(2)
 	check(finds - f0 == 1, "R one node search per pass")
+	local want = {}
+	for _, n in ipairs(searched) do want[n] = true end
+	check(want["default:water_flowing"] and want["grug_test:bog_flowing"] and
+		not want["default:water_source"] and not want["default:river_water_source"] and
+		not want["default:lava_flowing"], "R searched: flowing water of any registered kind, never a source")
 	local loops = plays_to("ana", function(s) return s.params.loop and s.params.pos end)
 	local names = {}
-	for _, s in ipairs(loops) do names[#names + 1] = s.spec.name end
+	for _, s in ipairs(loops) do names[#names + 1] = s.spec.name .. "@" .. s.params.pos.x end
 	table.sort(names)
-	check(table.concat(names, " ") == "grug_ambience_fire grug_ambience_forge" and
-		loops[1].params.to_player == "ana", "R forge and fire loops at their nodes")
+	check(table.concat(names, " ") == "grug_ambience_fire@0 grug_ambience_forge@4 " ..
+		"grug_ambience_stream_pond@-3 grug_ambience_stream_pond@-6" and
+		loops[1].params.to_player == "ana", "R forge, fire and flowing-water loops: " .. table.concat(names, " "))
 	run(2)
-	check(#plays_to("ana", function(s) return s.params.loop and s.params.pos end) == 2,
+	check(#plays_to("ana", function(s) return s.params.loop and s.params.pos end) == 4,
 		"R running loops are not restarted")
 	found_nodes = {}
 	fades = {}
 	run(2)
 	local loop_fades = 0
 	for _, f in ipairs(fades) do if f.gain == 0 then loop_fades = loop_fades + 1 end end
-	check(loop_fades == 2, "R loops fade out when out of reach")
+	check(loop_fades == 4, "R loops fade out when out of reach")
 
 	-- music: first push (during the first 90 s), delivery, play
 	sounds = {}
@@ -569,16 +652,19 @@ do
 	commands.ambience.func("ana", "on")
 	run(2)
 	check(#plays_to("ana", is_bed) == 1, "R ambience on: the bed returns at once")
-	-- calls happen, at a distance, minutes apart
+	-- calls: none in the human region, rare thunder on a dragon island
 	timeofday = 0.95
 	sounds = {}
 	run(1800)
+	check(#plays_to("ana", function(s) return s.ephemeral end) == 0, "R no calls in the human region")
+	mood.ana = "dragon_island"
+	run(1800)
 	local calls = plays_to("ana", function(s) return s.ephemeral end)
-	local spread_ok = #calls >= 8 and #calls <= 50
+	local spread_ok = #calls >= 6 and #calls <= 22
 	for _, s in ipairs(calls) do
-		if not s.params.pos then spread_ok = false end
+		if not s.params.pos or s.spec.name ~= "grug_ambience_call_thunder" then spread_ok = false end
 	end
-	check(spread_ok, "R calls at night: positional, minutes apart (" .. #calls .. " in 30 min)")
+	check(spread_ok, "R thunder on a dragon island: positional, minutes apart (" .. #calls .. " in 30 min)")
 	-- leave: state gone, later callback harmless
 	players.ana = nil
 	for _, fn in ipairs(leaves) do fn(ana) end
@@ -597,16 +683,12 @@ do
 		check(D.beds[row.day] ~= nil and (row.night == nil or D.beds[row.night] ~= nil),
 			"F region " .. mood .. " beds exist")
 	end
-	for _, key in ipairs({"underwater", "underground", "underground_deep", "sea", "stream"}) do
-		check(D.beds[key] ~= nil, "F bed " .. key)
-	end
 	-- every atmosphere mood has a bed row and a music group
 	local zones = io.open(repo .. "/mods/CORE/grug_core/atmosphere_zones.lua"):read("*a")
 	local moods = 0
 	for m in zones:gmatch('\nmood%("([%w_]+)"') do
 		moods = moods + 1
 		check(D.music_groups[m] ~= nil, "F mood " .. m .. " has a music group")
-		check(m == "underground" or D.region[m] ~= nil, "F mood " .. m .. " has a region bed")
 	end
 	check(moods == 10, "F ten atmosphere moods found (" .. moods .. ")")
 	for id, call in pairs(D.calls) do
