@@ -46,3 +46,10 @@ and dark terrain. Generated with OpenAI's built-in `image_gen.imagegen`,
 then exported with nearest-neighbour sampling, a reduced palette without
 dithering and binary alpha. No third-party source images; the project
 dedicates any rights it holds in this original to CC0-1.0.
+
+# Capital service markers (Round 34)
+
+`textures/grug_map_crownbinder.png` (a gold crown over a dark anvil) and
+`textures/grug_map_decor_merchant.png` (a hanging lantern): original 16×16
+RGBA pixel art drawn from character grids by `tools/r34_f2/render_icons.py`
+for Grudgelands, CC0-1.0. No third-party source images.
