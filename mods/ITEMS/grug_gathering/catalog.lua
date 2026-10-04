@@ -5,11 +5,11 @@ local SCHEMA = "grug_wp33_gathering_catalog_v3"
 local NODE_SOURCE = "mods/ITEMS/grug_gathering/nodes.lua"
 local HARVEST_SOURCE = "mods/ITEMS/grug_gathering/harvest.lua"
 local NODE_SOURCE_SHA256 =
-	"df082b58d7d41276dcbec163603f95181d64d258ca1464233bac672dda1cb354"
+	"55d0cf0e17f72e4f400bf62a3b5d74cee952998c18ec7d214761ae45d55a56a5"
 local HARVEST_SOURCE_SHA256 =
-	"3fe1a5ffdb4ae5119a6952561d1975b020cf435b32978758676f29f61b0ad11a"
+	"23cec2bdb27a8aaf85652515326b5f2d688ff8a806a37ca1bf1cf631b82a10fe"
 local EXPECTED_MANIFEST_SHA256 =
-	"ad4d5ea64a408ea2dde27ccfeacd3338df9b1a79f63bbe5bbd1be657e2b2dfe9"
+	"56a3daf013148e997ac6b3386e2fd406dd97dc63d092e5b571349e9f3039633c"
 
 local PLACEMENT = {
 	schema = "P9G-1",
@@ -263,77 +263,6 @@ local REUSE = {
 		farmable = false},
 }
 
-local function cultural(key, material, biomes, zone, ordinary_family,
-		ordinary_group, concentrated_family, image, digest)
-	local id = "wp33_" .. key .. "_source_v1"
-	local node = "grug_gathering:" .. key .. "_source"
-	return {
-		placement_class = "r6_cultural_slot",
-		id = id,
-		key = key,
-		name = material,
-		raw_item = "grug_materials:" .. key,
-		source_node = node,
-		eligible_biomes = biomes,
-		ordinary_fill_numerator = 1,
-		ordinary_fill_denominator = 4096,
-		concentrated_fill_numerator = 1,
-		concentrated_fill_denominator = 1024,
-		concentrated_zone = zone,
-		ordinary_family = ordinary_family,
-		ordinary_group = ordinary_group,
-		concentrated_family = concentrated_family,
-		concentrated_tier = 4,
-		drop_count = 1,
-		image = image,
-		source_file = NODE_SOURCE,
-		source_file_sha256 = NODE_SOURCE_SHA256,
-		registration = {
-			schema = "grug_wp40_r6_cultural_registration_v1",
-			cultural_key = key,
-			id = id,
-			template_or_simple_kind = "simple",
-			footprint_min_x = 0, footprint_max_x = 0,
-			footprint_min_y = 1, footprint_max_y = 1,
-			footprint_min_z = 0, footprint_max_z = 0,
-			lower_two_policy = "preserve_p7",
-			cells = {{x = 0, y = 1, z = 0, node = node, param2 = 0,
-				force_place = false}},
-			digest = digest,
-		},
-	}
-end
-
-local CULTURAL = {
-	cultural("gravesalt", "Gravesalt", {"grug_beach", "grug_blight",
-		"grug_bone_forest", "grug_swamp"}, "kragmar_blackwind_rise",
-		"shovel", "crumbly", "pick",
-		"default_clay.png^[colorize:#ddd8c8:145",
-		"a2c5e9ccc3728b45a20e09b7b745132b8671384d74e53f9b069cc3a4571ab8e0"),
-	cultural("moonresin", "Moonresin", {"grug_deep_forest", "grug_elf_forest",
-		"grug_jungle_fringe"}, "elandor_glassroot_wilds", "axe", "choppy",
-		"axe", "default_tree.png^[colorize:#a9c9ee:130",
-		"3d849bf5fdc17cc888b050fd11e46f18170e9621e6cffdf8e114bd1c212789bd"),
-	cultural("red_ochre", "Red Ochre", {"grug_badlands", "grug_savanna"},
-		"kragmar_bannerbreak_mesa", "shovel", "crumbly", "shovel",
-		"default_clay.png^[colorize:#a54122:150",
-		"065bb11cfae02e288513dd0b88274b937637e6049394dfee15bab13be356b515"),
-	cultural("runeslate", "Runeslate", {"grug_crags", "grug_crags_snowy",
-		"grug_pine_hills"}, "elandor_stormvault_heights", "hand",
-		"oddly_breakable_by_hand", "pick",
-		"default_stone.png^[colorize:#64758a:110",
-		"1225bd16c920a85a6cca65a1f13d13df05910a5f32889bfdecbab301267098a8"),
-	cultural("spirit_resin", "Spirit Resin", {"grug_badlands_east",
-		"grug_deep_jungle", "grug_jungle_edge", "grug_swamp"},
-		"kragmar_thunderroot_wilds", "axe", "choppy", "axe",
-		"default_tree.png^[colorize:#8ca833:130",
-		"266533b8cafb2f39a02164448fec5ad6ef21bdad9bcf40f783574b36ea672418"),
-	cultural("sunwax", "Sunwax", {"grug_deep_forest", "grug_meadows"},
-		"elandor_ashenward_march", "hand", "oddly_breakable_by_hand", "axe",
-		"default_tree.png^[colorize:#f0c45a:120",
-		"1b2c9ca121f67e9c939e048163f25fda7cfac59f7d3f70e9c737d38a8d41737e"),
-}
-
 local function copy(value, active)
 	if type(value) ~= "table" then return value end
 	active = active or {}
@@ -431,33 +360,6 @@ local function canonical_bytes()
 		append(parts, row.harvest_kind)
 		append(parts, row.farmable)
 	end
-	append(parts, "r6_cultural_slot")
-	append(parts, #CULTURAL)
-	for index = 1, #CULTURAL do
-		local row = CULTURAL[index]
-		for _, field in ipairs({"placement_class", "id", "key", "name", "raw_item",
-				"source_node"}) do append(parts, row[field]) end
-		append_array(parts, row.eligible_biomes)
-		for _, field in ipairs({"ordinary_fill_numerator",
-				"ordinary_fill_denominator", "concentrated_fill_numerator",
-				"concentrated_fill_denominator", "concentrated_zone",
-				"ordinary_family", "ordinary_group", "concentrated_family",
-				"concentrated_tier", "drop_count", "image", "source_file",
-				"source_file_sha256"}) do append(parts, row[field]) end
-		local registration = row.registration
-		for _, field in ipairs({"schema", "cultural_key", "id",
-				"template_or_simple_kind", "footprint_min_x", "footprint_max_x",
-				"footprint_min_y", "footprint_max_y", "footprint_min_z",
-				"footprint_max_z", "lower_two_policy"}) do
-			append(parts, registration[field])
-		end
-		append(parts, #registration.cells)
-		local cell = registration.cells[1]
-		for _, field in ipairs({"x", "y", "z", "node", "param2", "force_place"}) do
-			append(parts, cell[field])
-		end
-		append(parts, registration.digest)
-	end
 	return table.concat(parts)
 end
 
@@ -474,18 +376,11 @@ function module.manifest()
 			{path = HARVEST_SOURCE, sha256 = HARVEST_SOURCE_SHA256},
 		},
 		placement = copy(PLACEMENT),
-		population = {new_p9g_source = 12, reuse_r6_source = 8,
-			r6_cultural_slot = 6},
+		population = {new_p9g_source = 12, reuse_r6_source = 8},
 	}
 end
 
 function module.p9g_sources() return copy(P9G) end
 function module.reuse_sources() return copy(REUSE) end
-function module.cultural_sources() return copy(CULTURAL) end
-function module.cultural_registrations()
-	local result = {}
-	for index = 1, #CULTURAL do result[index] = copy(CULTURAL[index].registration) end
-	return result
-end
 
 return module

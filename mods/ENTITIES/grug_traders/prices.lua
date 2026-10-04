@@ -275,7 +275,6 @@ function grug_traders.resolve_prices()
 	local gathering = rawget(_G, "grug_gathering")
 	if gathering then
 		for _, row in ipairs(gathering.p9g_sources()) do gathered[row.raw_item] = true end
-		for _, row in ipairs(gathering.cultural_sources()) do gathered[row.raw_item] = true end
 	end
 	local classified, processed, free = {}, {}, {}
 	for itemname in pairs(core.registered_items) do

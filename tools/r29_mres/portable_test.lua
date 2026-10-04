@@ -71,8 +71,8 @@ eq(M.RESOURCE_BY_KEY.quartz.harvest_tier, 1, "Quartz stays T1")
 eq(M.GEM_GRADES, nil, "no gem grades")
 for race, row in pairs(M.RACE_REGIONS) do
 	check(row.g1 == nil and row.g2 == nil, race .. " region has no gem columns")
-	check(row.cultural ~= nil and row.signature_wood ~= nil,
-		race .. " region keeps culture and wood")
+	check(row.cultural == nil and row.signature_wood ~= nil,
+		race .. " region keeps its wood and has no cultural material")
 end
 eq(M.DENSITY.g1, nil, "no G1 density")
 eq(M.DENSITY.g2, nil, "no G2 density")

@@ -590,7 +590,7 @@ local function addendum_checks(W, seed)
 			local a = anchor_by_id[exclusion.source_id]
 			if a.slot_id ~= "capital" and a.slot_id ~= "start" then
 				local half = exclusion.total_width / 2
-				local surface, cultural, kept, p9g = 0, 0, 0, 0
+				local surface, kept, p9g = 0, 0, 0
 				for x = exclusion.center.x - half, exclusion.center.x + half - 1 do
 					for z = exclusion.center.z - half, exclusion.center.z + half - 1 do
 						local _, id = P.static_exclusion_values_at(x, z)
@@ -618,14 +618,13 @@ local function addendum_checks(W, seed)
 								check(floor == P.protected_floor_at(x, z),
 									exclusion.id .. " protected-only floor is the floor")
 								if terrain_y + 1 < floor then surface = surface + 1 end
-								if terrain_y + 7 < floor then cultural = cultural + 1 end
 							end
 						end
 					end
 				end
 				if surface > 0 or p9g > 0 then
 					report[#report + 1] = {id = a.id, surface = surface,
-						cultural = cultural, kept = kept, p9g = p9g}
+						kept = kept, p9g = p9g}
 				end
 			end
 		end
@@ -637,8 +636,7 @@ local function addendum_checks(W, seed)
 	local parts = {}
 	for index = 1, math.min(10, #report) do
 		local r = report[index]
-		parts[#parts + 1] = ("%s p9g %d surface %d cultural %d"):format(r.id, r.p9g,
-			r.surface, r.cultural)
+		parts[#parts + 1] = ("%s p9g %d surface %d"):format(r.id, r.p9g, r.surface)
 	end
 	lines[#lines + 1] = ("seed %s: envelope land columns whose surface lies below the" ..
 		" floor: %s"):format(seed, table.concat(parts, "; "))

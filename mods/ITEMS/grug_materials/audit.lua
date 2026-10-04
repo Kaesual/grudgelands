@@ -119,15 +119,11 @@ local function check_registry()
 		end
 	end
 
-	for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do
-		if not core.registered_items[material.item] then
-			fail("missing cultural material for " .. material.race)
-		end
-		local row = grug_materials.RACE_REGIONS[material.race]
-		local wood = row and grug_materials.SIGNATURE_WOODS[row.signature_wood]
+	for race, row in pairs(grug_materials.RACE_REGIONS) do
+		local wood = grug_materials.SIGNATURE_WOODS[row.signature_wood]
 		if not wood or not core.registered_nodes[wood.tree] or
 				not core.registered_nodes[wood.wood] then
-			fail("missing signature wood registration for " .. material.race)
+			fail("missing signature wood registration for " .. race)
 		end
 	end
 

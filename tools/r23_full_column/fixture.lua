@@ -163,7 +163,7 @@ do
   return nil,nil,nil,nil,nil,20 -- land
  end
  local s=envelope({column_values_at=function(x) return tuple(x) end},
-  {{rotations={{min_x=-2,max_x=2,min_y=-3,max_y=10,min_z=-2,max_z=2}}}},{},{},{},
+  {{rotations={{min_x=-2,max_x=2,min_y=-3,max_y=10,min_z=-2,max_z=2}}}},{},{},
   {copy_rows=function() return {} end},"fixture",function(b) return tostring(#b) end)
  local low,high=s.column_bounds(0,0)
  check(low==-62 and high==12,"deep seabed is the bottom surface, water surface the top")

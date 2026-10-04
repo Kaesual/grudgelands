@@ -108,8 +108,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 			hex(raw_sha256(manifest.canonical_bytes)) ~= manifest.sha256 or
 			type(manifest.population) ~= "table" or
 			manifest.population.new_p9g_source ~= 12 or
-			manifest.population.reuse_r6_source ~= 8 or
-			manifest.population.r6_cultural_slot ~= 6 then
+			manifest.population.reuse_r6_source ~= 8 then
 		fail("gathering manifest identity differs")
 	end
 	dense(rows, 12, "P9G catalog")
@@ -225,7 +224,7 @@ return function(catalog, p9g_content, raw_sha256, habitat)
 				type(dependencies.zones_session.surface_mob_level_at) ~= "function" or
 				type(production) ~= "table" or
 				production.schema ~= "grug_wp40_r7_production_r6_content_v1" or
-				#production.content_names ~= 93 then
+				#production.content_names ~= 87 then
 			fail("successor production identity differs")
 		end
 		local air_cid, air_kind, air_param2 = production.r5.resolve(1, 0, 0)
