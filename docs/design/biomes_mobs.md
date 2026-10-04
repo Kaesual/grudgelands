@@ -697,7 +697,7 @@ zone. Giant Rat also occupies the entrance and middle caves from y −40 to
 **Round 8 level-11+ night families:** Goblin Raider Hounds are members of
 the Goblin Raider family, not an independent zone cast. The raider group is
 leashless and alerts nearby members; one ranged Slinger and one hound row
-give it mixed silhouettes. Wisp blink destinations must have two open nodes.
+give it mixed silhouettes. Wisp blink destinations must have two open nodes, never a liquid (Round 34: a blink after a swimming target left it under water).
 
 | Mob | Verb | Clock | Zones / level band | Drops | Visual source |
 |-----|------|-------|--------------------|-------|---------------|

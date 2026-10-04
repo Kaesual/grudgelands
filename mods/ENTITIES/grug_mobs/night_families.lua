@@ -127,11 +127,14 @@ mobs:spawn({name = "grug_mobs:snow_leopard",
 	interval = 20, chance = 2100, active_object_count = 3,
 	min_height = 0, max_height = 600})
 
+-- The blink never lands in a liquid (Round 34): water is not walkable
+-- either, and a wisp has no collision and takes no water damage, so a blink
+-- after a swimming target would leave it under water.
 local function open_node(pos)
 	local node = core.get_node_or_nil(pos)
 	if not node then return false end
 	local def = core.registered_nodes[node.name]
-	return not def or not def.walkable
+	return not def or (not def.walkable and (def.liquidtype or "none") == "none")
 end
 
 local wisp = {
