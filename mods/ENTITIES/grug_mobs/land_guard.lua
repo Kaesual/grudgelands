@@ -2,6 +2,7 @@
 
 local guard = {
 	description = "Land Guard", clock = "any", type = "monster",
+	_grug_voice = "giant",
 	_grug_tier = "elite", _grug_spawn_domains = {"underground"},
 	attack_type = "dogfight", attack_players = true, group_attack = false,
 	reach = 3, pathfinding = 1, walk_velocity = 1.5, run_velocity = 4.6,

@@ -436,6 +436,7 @@ local function king_tick(self, dtime, race, boss_id)
 	if self.attack and self.attack:get_pos() and self.temp.grug_royal_cooldown <= 0 then
 		self.temp.grug_royal_cast = {target = self.attack, left = 2,
 			health = self.health}
+		grug_sounds.play("king_signature", self.object)
 		self:set_animation(RACES[race].kit == "volley" and "shoot" or "punch", true)
 		self:set_velocity(0)
 	end
@@ -446,6 +447,7 @@ local function king_def(race, row)
 		row.kit == "regrowth"
 	return {
 		description = row.name, clock = "any", type = "npc",
+		_grug_voice = "humanoid",
 		_grug_faction = row.faction, _grug_fixed_level = 65,
 		_grug_tier = "elite", _grug_leash_range = 30,
 		attack_type = ranged and "dogshoot" or "dogfight",

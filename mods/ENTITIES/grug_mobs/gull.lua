@@ -16,6 +16,7 @@
 
 local gull = {
 	description = "Gull",
+	_grug_voice = "bird",
 	clock = "day",
 	type = "animal",
 	passive = true,

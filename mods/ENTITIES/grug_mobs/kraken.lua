@@ -27,6 +27,7 @@ end
 
 grug_mobs.register_mob("grug_mobs:kraken", {
 	description = "Kraken Guard",
+	_grug_voice = "kraken",
 	clock = "any",
 	type = "monster",
 	passive = false,

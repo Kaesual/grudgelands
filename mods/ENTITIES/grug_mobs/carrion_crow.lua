@@ -26,6 +26,7 @@
 
 local crow = {
 	description = "Carrion Crow",
+	_grug_voice = "crow",
 	clock = "any",
 	type = "animal",
 	-- The war coast is NOT its own biome (§1.2 / §8.1): it uses the local

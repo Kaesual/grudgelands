@@ -13,6 +13,7 @@
 local function stag_def(description, texture)
 	local def = {
 		description = description,
+		_grug_voice = "grazer",
 		clock = "day",
 		type = "animal",
 		-- Stats engine-owned (levels.lua) — normal tier, so level, HP, damage

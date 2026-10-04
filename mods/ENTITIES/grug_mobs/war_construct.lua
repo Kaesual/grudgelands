@@ -3,6 +3,7 @@
 
 local construct = {
 	description = "War Construct", clock = "any", type = "monster",
+	_grug_voice = "elemental",
 	_grug_tier = "elite", attack_type = "dogfight", attack_players = true,
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 1.5, run_velocity = 4.6, jump = true, jump_height = 4,

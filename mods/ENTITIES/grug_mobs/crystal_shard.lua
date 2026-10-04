@@ -8,6 +8,7 @@ grug_mobs.register_simple_arrow("grug_mobs:crystal_shard_entity", {
 
 local shard = {
 	description = "Crystal Shard", clock = "any", type = "monster",
+	_grug_voice = "elemental",
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogshoot", attack_players = true, group_attack = false,
 	reach = 3, pathfinding = 1, walk_velocity = 1.5, run_velocity = 4.6,

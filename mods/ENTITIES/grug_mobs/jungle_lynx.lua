@@ -22,6 +22,7 @@
 
 local lynx = {
 	description = "Jungle Lynx",
+	_grug_voice = "feline",
 	clock = "day",
 	type = "monster",
 	-- From band 2 of Kapok's start-zone gradient (L4+, Round 24 ruling 31;

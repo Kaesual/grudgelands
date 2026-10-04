@@ -16,6 +16,7 @@
 
 local bog_ooze = {
 	description = "Bog Ooze",
+	_grug_voice = "slime",
 	clock = "any",
 	type = "monster",
 	-- §4 row zones: "outer" (swamp pockets, §1.2 row 13 -> L25-45).

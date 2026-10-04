@@ -14,6 +14,7 @@
 
 local crawler = {
 	description = "Cave Crawler",
+	_grug_voice = "insect",
 	clock = "any",
 	type = "animal",
 	passive = true,

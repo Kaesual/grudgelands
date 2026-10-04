@@ -2,6 +2,7 @@
 
 local flan = {
 	description = "Lava Flan", clock = "any", type = "monster",
+	_grug_voice = "spirit",
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogfight", attack_players = true, group_attack = true,
 	reach = 3, pathfinding = 1, walk_velocity = 1, run_velocity = 3.4,

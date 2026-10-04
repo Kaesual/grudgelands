@@ -7,6 +7,7 @@ end
 
 local tiger = {
 	description = "Speargrass Tiger", clock = "day", type = "monster",
+	_grug_voice = "feline",
 	_grug_tier = "normal", attack_type = "dogfight", attack_players = true,
 	_grug_spawn_check = speargrass_band,
 	group_attack = false, reach = 3, pathfinding = 1,

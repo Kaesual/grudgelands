@@ -3,6 +3,7 @@
 
 grug_mobs.register_mob("grug_mobs:zombie", {
 	description = "Zombie",
+	_grug_voice = "undead",
 	clock = {settled = "night", war = "night", blight = "any"},
 	type = "monster",
 	-- "underground" is the T7 addition: §3.1's cave paragraph reuses Zombie,

@@ -12,6 +12,7 @@ local animation = {
 local function miner_def(description, texture, ranged)
 	local def = {
 		description = description, clock = "any", type = "monster",
+		_grug_voice = "goblin",
 		_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 		attack_type = ranged and "dogshoot" or "dogfight",
 		attack_players = true, group_attack = true,

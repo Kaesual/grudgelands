@@ -29,6 +29,7 @@ grug_mobs.register_simple_arrow("grug_mobs:arrow_entity", {
 
 local skeleton = {
 	description = "Skeleton Archer",
+	_grug_voice = "skeleton",
 	clock = "night",
 	type = "monster",
 	-- Zones: the bone forest sits in the outer ring, and the war coast is

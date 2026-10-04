@@ -69,6 +69,7 @@ mobs:spawn({
 -- Frost Stray: Skeleton Archer numbers and projectile, cold-blue bones.
 local frost_stray = common_ground({
 	description = "Frost Stray",
+	_grug_voice = "skeleton",
 	clock = "night",
 	type = "monster",
 	reach = 3,
@@ -125,6 +126,7 @@ mobs:spawn({
 -- It does not burn in sunlight; its family exists only in the night cast.
 local husk = common_ground({
 	description = "Sun-Dried Husk",
+	_grug_voice = "mummy",
 	clock = "night",
 	type = "monster",
 	_grug_min_level = 3,
@@ -178,6 +180,7 @@ mobs:spawn({
 -- Song Bird: the gull chassis in a bright forest tint, fixed critter tier.
 local song_bird = {
 	description = "Song Bird",
+	_grug_voice = "bird",
 	clock = "day",
 	type = "animal",
 	passive = true,
@@ -222,6 +225,7 @@ mobs:spawn({
 -- Spiderling: half-size cave spider with a weaker web.
 local spiderling = common_ground({
 	description = "Spiderling",
+	_grug_voice = "insect",
 	clock = "any",
 	type = "monster",
 	_grug_spawn_domains = {"underground"},
@@ -265,6 +269,7 @@ mobs:spawn({
 -- Blood Bat: hostile cave-bat tint and swarm dive.
 local blood_bat = {
 	description = "Blood Bat",
+	_grug_voice = "critter",
 	clock = "any",
 	type = "monster",
 	_grug_spawn_domains = {"underground"},
@@ -311,6 +316,7 @@ mobs:spawn({
 -- Stone Mite: deep hostile crawler swarm.
 local stone_mite = common_ground({
 	description = "Stone Mite",
+	_grug_voice = "insect",
 	clock = "any",
 	type = "monster",
 	_grug_spawn_domains = {"underground"},

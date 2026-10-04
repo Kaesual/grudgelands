@@ -34,6 +34,7 @@
 
 local crocodile = {
 	description = "Crocodile",
+	_grug_voice = "reptile",
 	clock = "any",
 	type = "monster",
 	-- §4 row zones: "outer". The swamp is a low-terrain pocket biome of the

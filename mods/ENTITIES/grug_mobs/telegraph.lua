@@ -74,8 +74,8 @@ local function start_windup(self)
 		self:update_tag() -- levels.lua tag_text prefixes "!! "
 	end
 	windup_particles(self)
-	-- TODO(WP6 sounds): a wind-up growl belongs here; all WP6 mob sounds are
-	-- deferred to one pass, see BACKLOG.
+	-- The wind-up growl (Round 34 S1b): one cue for every elite and rare.
+	grug_sounds.play("telegraph", self.object)
 	self.temp.grug_tg_left = WINDUP
 end
 

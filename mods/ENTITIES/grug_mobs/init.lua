@@ -316,7 +316,7 @@ function grug_mobs.accepted_player_punch(self, hitter, damage, applied, fraction
 		crit_pos)
 	-- The multiplier was already resolved before the custom/CMI gates; only
 	-- its captured visual waits for acceptance.
-	grug_core.emit_melee_crit(crit_pos)
+	grug_core.emit_melee_crit(crit_pos, self.object)
 	-- Provocation memory (runtime only, self.temp is never persisted): the
 	-- undead night truce excludes players who attacked this mob.
 	self.temp = self.temp or {}
@@ -639,6 +639,9 @@ end
 
 function grug_mobs.register_mob(name, def)
 	base_defs[name] = table.copy(def)
+	-- The family voice (voices.lua); a sub-type copies `_grug_voice` with its
+	-- base definition and gets the same voice here.
+	grug_mobs.apply_voice(name, def)
 	local hp_bar_presentation = def._grug_hp_bar_presentation
 	if not def._grug_fixed_level and
 			(def.walk_velocity or 1) > grug_mobs.CALM_WALK_MAX then
@@ -952,6 +955,7 @@ dofile(modpath .. "/swimmer.lua")
 dofile(modpath .. "/env_damage.lua")
 dofile(modpath .. "/separation.lua")
 dofile(modpath .. "/verbs.lua")
+dofile(modpath .. "/voices.lua")
 dofile(modpath .. "/disposition.lua")
 dofile(modpath .. "/telegraph.lua")
 dofile(modpath .. "/patrol.lua")

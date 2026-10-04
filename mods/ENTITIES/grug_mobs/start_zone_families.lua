@@ -34,6 +34,7 @@ end
 
 local fox = ground_defaults({
 	description = "Fox", clock = "day", type = "monster",
+	_grug_voice = "canine",
 	attack_players = true, group_attack = false, view_range = 12,
 	_grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_fox.b3d",
@@ -81,6 +82,7 @@ mobs:spawn({
 
 local ibex = ground_defaults({
 	description = "Ibex", clock = "day", type = "animal",
+	_grug_voice = "grazer",
 	attack_players = false, attack_npcs = false, group_attack = false,
 	view_range = 14, _grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_ibex.b3d",
@@ -133,6 +135,7 @@ local turkey = critter("Wild Turkey", "grug_mobs_wild_turkey.b3d",
 	})
 -- Rotated selection box = measured mesh bounds (Round 28, tools/r28_a3).
 turkey.selectionbox = {-0.65, -0.05, -0.65, 0.65, 1.55, 0.95, rotate = true}
+turkey._grug_voice = "bird"
 grug_mobs.register_mob("grug_mobs:wild_turkey", turkey)
 mobs:spawn({name = "grug_mobs:wild_turkey",
 	nodes = {"default:dirt_with_grass"}, interval = 20, chance = 2100,
@@ -143,6 +146,7 @@ mobs:spawn({name = "grug_mobs:wild_turkey",
 -- band 1. Normal tier: level, HP, damage and XP follow the zone field.
 local runner = ground_defaults({
 	description = "Plains Runner", clock = "day", type = "animal",
+	_grug_voice = "grazer",
 	attack_players = false, attack_npcs = false, view_range = 12,
 	visual = "mesh", mesh = "grug_mobs_plains_runner.b3d",
 	textures = {{"grug_mobs_plains_runner.png"}}, visual_size = {x = 1, y = 1},
@@ -167,6 +171,7 @@ mobs:spawn({name = "grug_mobs:plains_runner",
 
 local tapir = ground_defaults({
 	description = "Tapir", clock = "day", type = "animal",
+	_grug_voice = "grazer",
 	attack_players = false, attack_npcs = false, view_range = 12,
 	_grug_spawn_check = start_band(4),
 	visual = "mesh", mesh = "grug_mobs_tapir.b3d",
@@ -196,6 +201,7 @@ mobs:spawn({name = "grug_mobs:tapir",
 
 local rat = ground_defaults({
 	description = "Giant Rat", clock = "night", type = "monster",
+	_grug_voice = "critter",
 	attack_players = true, group_attack = true, view_range = 10,
 	visual = "mesh", mesh = "grug_mobs_giant_rat.b3d",
 	textures = {{"grug_mobs_giant_rat.png"}}, visual_size = {x = 1.6, y = 1.6},
@@ -256,6 +262,7 @@ local scorpion = poison_family("Scorpion", "grug_mobs_scorpion.b3d",
 	-- the day row below; start_band keeps both rows to band 2 and up.
 	}, start_band(4), {scorpion = "night",
 		["zone:kragmar_sunscar_flats"] = "any", sunscar_day = "day"})
+scorpion._grug_voice = "insect"
 grug_mobs.register_mob("grug_mobs:scorpion", scorpion)
 mobs:spawn({name = "grug_mobs:scorpion", _grug_clock_palette = "scorpion",
 	nodes = {"default:dry_dirt_with_dry_grass", "grug_nodes:mesa_clay"},
@@ -282,6 +289,7 @@ local viper = poison_family("Viper", "grug_mobs_viper.b3d",
 	-- same two-row pattern as the Scorpion.
 	}, start_band(4), {viper = "night",
 		["zone:kragmar_kapok_cradle"] = "any", kapok_day = "day"})
+viper._grug_voice = "reptile"
 grug_mobs.register_mob("grug_mobs:viper", viper)
 mobs:spawn({name = "grug_mobs:viper", _grug_clock_palette = "viper",
 	nodes = {"default:dirt_with_rainforest_litter"},

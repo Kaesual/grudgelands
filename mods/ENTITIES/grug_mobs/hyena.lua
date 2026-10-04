@@ -12,6 +12,7 @@
 
 local hyena = {
 	description = "Hyena",
+	_grug_voice = "canine",
 	clock = "any",
 	type = "monster",
 	-- Level floor per §3.1 ("from L10"), same reasoning as wolf.lua: the

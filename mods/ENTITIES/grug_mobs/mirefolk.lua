@@ -16,6 +16,7 @@
 
 local mirefolk = {
 	description = "Mirefolk",
+	_grug_voice = "humanoid",
 	clock = "any",
 	type = "monster",
 	-- No _grug_spawn_domains — no spawn ABM to gate (bandit.lua explains).

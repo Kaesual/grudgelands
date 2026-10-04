@@ -3,6 +3,7 @@
 
 local glowwing = {
 	description = "Glowwing", clock = "any", type = "monster",
+	_grug_voice = "insect",
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogfight", attack_players = true, group_attack = true,
 	reach = 2, fly = true, fly_in = {"air"}, physical = false,

@@ -19,6 +19,7 @@
 
 local ram = {
 	description = "Mountain Ram",
+	_grug_voice = "grazer",
 	clock = "day",
 	type = "animal",
 	-- HP/damage/XP/armor: engine-owned (levels.lua), normal tier.
