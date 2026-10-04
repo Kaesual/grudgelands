@@ -7,9 +7,9 @@
 --   2. operations generated from a complete sample catalogue: exact costs,
 --      prefix and suffix share inputs, the trinket's two pools share stat loot;
 --   3. load errors for missing or wrong entries (stat_loot, family_input,
---      tiers, unknown keys, non-item values) and for bad reagents;
---   4. the cross-profession check: a foreign product in an operation or a
---      universal reagent is reported, an own product is not;
+--      tiers, unknown keys, non-item values);
+--   4. the cross-profession check: a foreign product in an operation is
+--      reported, an own product is not;
 --   5. cooking (grug_cooking/init.lua + grug_jobs/basics_routes.lua): the six
 --      raw-assembly dishes have no grid route, only "Raw X" in the furnace;
 --      the other twelve keep their grid route;
@@ -40,12 +40,6 @@ local function read(path)
 	local text = file:read("*a")
 	file:close()
 	return text
-end
-local function deep_copy(value)
-	if type(value) ~= "table" then return value end
-	local out = {}
-	for k, v in pairs(value) do out[k] = deep_copy(v) end
-	return out
 end
 
 -- A small JSON decoder (objects, arrays, strings, numbers, booleans, null)
@@ -183,8 +177,6 @@ for _, family in ipairs(families) do
 end
 eq(total, 588, "588 operations from the shipped data")
 eq(#data.referenced_items(by_tier), 6 * (9 + 11), "referenced items listed per tier")
-eq(#data.validate_reagents(decode_json(read("mods/ITEMS/grug_professions/data/reagents.json"))),
-	0, "shipped reagents.json is empty (the catalogue has no reagent)")
 
 -- ---------------------------------------------------------------------------
 -- 2. A complete sample catalogue: distinct items per stat, family and tier.
@@ -264,43 +256,6 @@ end, "tier 1 has no stat_loot entry", "design sample is incomplete")
 fails_with(function() return data.operation_inputs(sample_tiers, "sword", "dex", 1, nil) end,
 	"sword T1 has no own material", "missing own material")
 
-local sample_reagents = decode_json(read("tools/r28_design/samples/valid/catalog/reagents.json"))
-eq(#data.validate_reagents(sample_reagents), 1, "design sample reagent validates")
-eq(#data.validate_reagents(nil), 0, "missing reagents file is no reagents")
-local function bad_reagent(edit)
-	local rows = deep_copy(sample_reagents)
-	edit(rows[1], rows)
-	return function() return data.validate_reagents(rows) end
-end
-fails_with(bad_reagent(function(row) row.method = "furnace" end),
-	"furnace recipe takes exactly one input", "furnace with two inputs")
-fails_with(bad_reagent(function(row) row.method = "anvil" end), "method must be grid or furnace",
-	"unknown method")
-fails_with(bad_reagent(function(row) row.output_count = 0 end), "output_count", "zero output")
-fails_with(bad_reagent(function(row) row.tier = 7 end), "tier must be", "tier 7")
-fails_with(bad_reagent(function(row) row.inputs = {} end), "needs inputs", "no inputs")
-fails_with(bad_reagent(function(row) row.inputs[2] = row.id end), "consumes itself", "self input")
-fails_with(bad_reagent(function(row, rows) rows[2] = deep_copy(row) end), "listed twice",
-	"duplicate reagent")
-
--- Reagent ids: only new items in this mod or a dependency.
-local allowed = {grug_professions = true, grug_materials = true}
-local registered_now = {["grug_materials:tin_bar"] = {}}
-check(pcall(data.check_reagent_ids, sample_reagents, allowed, registered_now),
-	"sample reagent id in a dependency is accepted")
-fails_with(function()
-	return data.check_reagent_ids({{id = "grug_mapgen:glitter"}}, allowed, registered_now)
-end, "which grug_professions does not depend on", "reagent in a foreign mod")
-fails_with(function()
-	return data.check_reagent_ids({{id = "grug_materials:tin_bar"}}, allowed, registered_now)
-end, "grug_materials:tin_bar is already a registered item", "reagent replaces an item")
--- Reagent inputs must be registered.
-local missing = data.unregistered_reagent_inputs(sample_reagents, registered_now)
-eq(#missing, 1, "one unregistered reagent input")
-check(missing[1] and missing[1]:find("input grug_materials:quartz is not a registered item", 1, true),
-	"unregistered input text")
-eq(#data.unregistered_reagent_inputs(sample_reagents, {["grug_materials:tin_bar"] = {},
-	["grug_materials:quartz"] = {}}), 0, "registered reagent inputs pass")
 -- Enchant inputs above the operation tier.
 local tiers = {["grug_materials:iron_bar"] = 2, ["loot:dex_t2"] = 2, ["mine:sword_t2"] = 3}
 local over = data.over_tier_inputs({
@@ -321,12 +276,10 @@ local products = {["grug_artisans:setting_tin"] = "goldsmith",
 local offences = data.foreign_inputs(products, {
 	{profession = "goldsmith", label = "own", inputs = {"grug_artisans:setting_tin", "loot:a"}},
 	{profession = "woodcarver", label = "enchant:bow", inputs = {"grug_artisans:setting_tin"}},
-}, {{id = "x:reagent", inputs = {"grug_professions:woven_bolt_bundle"}},
-	{id = "x:clean", inputs = {"grug_materials:tin_bar"}}})
-eq(#offences, 2, "two cross-profession offences")
+})
+eq(#offences, 1, "one cross-profession offence")
 check(offences[1] and offences[1]:find("woodcarver enchant:bow needs grug_artisans:setting_tin, " ..
 	"a goldsmith product", 1, true), "operation offence text")
-check(offences[2] and offences[2]:find("universal reagent x:reagent", 1, true), "reagent offence text")
 
 -- ---------------------------------------------------------------------------
 -- 5. Cooking routes (the real grug_cooking/init.lua and Basics catalogue).

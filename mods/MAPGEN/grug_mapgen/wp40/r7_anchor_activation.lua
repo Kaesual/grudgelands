@@ -161,10 +161,8 @@ return function(roster_factory, anchor_content)
 							--
 							-- 3 (shore) and 4 (top) are R6's own two SURFACE opcodes, and
 							-- they are already this tree's spelling of "this cell is ground
-							-- a thing may stand on": `r6_settlement.lua`'s cultural
-							-- placement refuses any root whose support is not one of those
-							-- two (`wrong_support`). An anchor is held to the same rule,
-							-- plus the untouched case its POI and bandit rows still show.
+							-- a thing may stand on". An anchor is held to that rule, plus
+							-- the untouched case its POI and bandit rows still show.
 							-- Every other opcode -- a decoration, a bridge deck, a path
 							-- surface, a foundation -- stays refused.
 							local natural_support = support_opcode == 0 or

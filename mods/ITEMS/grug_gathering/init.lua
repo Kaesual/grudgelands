@@ -5,10 +5,7 @@ grug_gathering = {}
 
 local modpath = core.get_modpath(core.get_current_modname())
 local catalog = dofile(modpath .. "/catalog.lua")
-local harvest = dofile(modpath .. "/harvest.lua")({
-	core = core,
-	materials = grug_materials,
-})
+local harvest = dofile(modpath .. "/harvest.lua")({core = core})
 local registered_nodes = dofile(modpath .. "/nodes.lua")(core, catalog, harvest)
 
 function grug_gathering.manifest()
@@ -21,14 +18,6 @@ end
 
 function grug_gathering.reuse_sources()
 	return catalog.reuse_sources()
-end
-
-function grug_gathering.cultural_sources()
-	return catalog.cultural_sources()
-end
-
-function grug_gathering.cultural_registrations()
-	return catalog.cultural_registrations()
 end
 
 -- Share the existing authorization path with Cooking-owned wild sources.
@@ -44,7 +33,7 @@ local manifest = catalog.manifest()
 if core.sha256(manifest.canonical_bytes) ~= manifest.sha256 then
 	error("grug_gathering: catalog manifest digest differs", 0)
 end
-if #registered_nodes ~= 18 then
+if #registered_nodes ~= 12 then
 	error("grug_gathering: source node population differs", 0)
 end
 
@@ -79,18 +68,6 @@ core.register_on_mods_loaded(function()
 		if not core.registered_items[row.raw_item] or not definition or
 				definition.drop ~= row.raw_item or not family_ok then
 			error("grug_gathering: P9G target differs " .. row.key, 0)
-		end
-	end
-	local cultural = catalog.cultural_sources()
-	for index = 1, #cultural do
-		local row = cultural[index]
-		local definition = core.registered_nodes[row.source_node]
-		local groups = definition and definition.groups or {}
-		if not core.registered_items[row.raw_item] or
-				not definition or definition.drop ~= row.raw_item or
-				groups.grug_cultural_source ~= 1 or
-				groups[row.ordinary_group] ~= 3 then
-			error("grug_gathering: cultural target differs " .. row.key, 0)
 		end
 	end
 	local reuse = catalog.reuse_sources()

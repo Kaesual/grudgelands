@@ -9,7 +9,7 @@
     "family_input": {
       "sword": "grug_materials:tin_bar",
       "bow": "grug_materials:quartz",
-      "leather_armor": "grug_materials:glittering_tin"
+      "leather_armor": "grug_materials:quartz"
     }
   }
 ]

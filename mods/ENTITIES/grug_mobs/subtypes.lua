@@ -206,10 +206,10 @@ end
 --
 -- Loot items (frame §4.2). Kinds `signature` and `quest` are registered here
 -- unless the id already exists (an existing item used as signature loot keeps
--- its registration); `generic` items are existing ones and `reagent` items
--- belong to grug_professions. The inventory image is the item's own icon
--- `<mod>_<name>.png` from this mod's textures/ (the Round 28 art set), else a
--- tinted placeholder; the `icon` text is kept as `_grug_icon_brief`.
+-- its registration); `generic` items are existing ones. The inventory image
+-- is the item's own icon `<mod>_<name>.png` from this mod's textures/ (the
+-- Round 28 art set), else a tinted placeholder; the `icon` text is kept as
+-- `_grug_icon_brief`.
 -- A new signature item's `tier` (1-6) is its ingredient tier, which
 -- grug_professions registers with grug_jobs (grug_mobs loads before it), and
 -- with its kind sets its vendor payout (grug_traders/prices.lua). A quest item
@@ -239,7 +239,7 @@ local new_items = {} -- ids this file registered or expects from their own mod
 -- New signature item id -> tier, for the ingredient tiers (grug_professions).
 grug_mobs.loot_item_tiers = {}
 
-local ITEM_KINDS = {signature = true, quest = true, generic = true, reagent = true}
+local ITEM_KINDS = {signature = true, quest = true, generic = true}
 
 for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) do
 	if type(row) ~= "table" or type(row.id) ~= "string"
@@ -247,7 +247,7 @@ for i, row in ipairs(records(grug_mobs.read_data_json("items.json"), "items")) d
 		fail("items.json", i, "needs an id 'mod:name'")
 	end
 	if not ITEM_KINDS[row.kind] then
-		fail("items.json", row.id, "kind must be signature, generic, reagent or quest")
+		fail("items.json", row.id, "kind must be signature, generic or quest")
 	end
 	if PLACEHOLDER_IMAGE[row.kind] and not core.registered_items[row.id] then
 		if row.id:sub(1, 10) ~= "grug_mobs:" then

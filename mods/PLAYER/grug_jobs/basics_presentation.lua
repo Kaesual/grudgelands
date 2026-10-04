@@ -10,9 +10,8 @@ function M.route_key(recipe)
 		signature}, "\0")
 end
 
--- Adds one route to the catalog. Content registered from data files (the
--- Round 28 universal reagents) declares its routes here at load time, in the
--- same shape as a basics_routes.lua row.
+-- Adds one route to the catalog. Content registered at load time declares its
+-- routes here, in the same shape as a basics_routes.lua row.
 function M.declare(declaration)
 	local key = M.route_key({station = declaration.station,
 		output_name = declaration.output, method = declaration.method,

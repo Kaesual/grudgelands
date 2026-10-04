@@ -164,7 +164,7 @@ grug_jobs.register_recipe({
 		{"", "default:furnace", ""},
 		{"", "grug_materials:steel_bar", ""},
 	},
-	output = grug_brewing.NODE,
+	output = grug_brewing.NODE, progress = false,
 	hint = "Craft in the inventory grid",
 })
 

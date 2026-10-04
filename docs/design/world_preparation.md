@@ -59,7 +59,7 @@ the air-chunk fast path decided 2026-09-28 (Round 23, WP48).
   bed of sea, lake and river water on the bottom side (players dive to any bed;
   user ruling 2026-09-28) and the water surface on the top side, functional
   surfaces, waterfalls,
-  road decks and rails, decoded template and cultural-cell reach, fitted
+  road decks and rails, decoded template reach, fitted
   settlement/POI/anchor boxes. Start readiness envelopes still apply over their
   tiles.
 
@@ -152,7 +152,7 @@ Water columns contribute their real bed, however deep, to the bottom side and
 their water surface to the top side. Functional
 crossings and waterfall upper/lower heights join the same local envelope.
 
-Decoded tree rotations and cultural cells provide conservative content height
+Decoded tree rotations provide conservative content height
 allowances. Fitted settlement blueprints contribute their actual world boxes;
 terrain-relative plots use the writer's reference-column height. Capital avenues
 also include their authored neighboring-ground reach. Every start's full readiness

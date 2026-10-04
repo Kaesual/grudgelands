@@ -83,7 +83,6 @@ dofile(modpath .. "/base_recipes.lua")
 dofile(modpath .. "/smiths.lua")
 dofile(modpath .. "/leatherworker.lua")
 dofile(modpath .. "/tailor.lua")
-dofile(modpath .. "/reagents.lua")
 dofile(modpath .. "/enchants.lua")
 
 core.register_on_mods_loaded(function()
@@ -114,4 +113,4 @@ core.register_on_mods_loaded(function()
 end)
 
 core.log("action", "[grug_professions] registered Weaponsmith, Armorsmith, " ..
-	"Leatherworker and Tailor catalogs, " .. #grug_professions.REAGENTS .. " universal reagents")
+	"Leatherworker and Tailor catalogs")

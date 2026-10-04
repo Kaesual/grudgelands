@@ -204,7 +204,9 @@ local function openable(player)
 		local profession = grug_jobs.primary_at(player, slot)
 		if profession then books[#books + 1] = profession end
 	end
-	if grug_jobs.has(player, "cooking") then books[#books + 1] = "cooking" end
+	for _, profession in ipairs(grug_jobs.SECONDARY_PROFESSIONS) do
+		if grug_jobs.has(player, profession) then books[#books + 1] = profession end
+	end
 	return books
 end
 
@@ -242,7 +244,8 @@ local SCENARIOS = {
 	{label = "fresh", setup = {}},
 	{label = "crafter", setup = {primaries = {"weaponsmith", "woodcarver"},
 		secondaries = {"cooking"}}},
-	{label = "alchemist", setup = {primaries = {"alchemist", "leatherworker"}}},
+	{label = "alchemist", setup = {primaries = {"leatherworker"},
+		secondaries = {"alchemist"}}},
 	{label = "outfitter", setup = {primaries = {"armorsmith", "tailor"}}},
 	{label = "goldsmith", setup = {primaries = {"goldsmith"}}},
 }

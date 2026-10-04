@@ -121,7 +121,6 @@ local function planner_factory()
 		local surfaces = content.surfaces()
 		local select_surface = content.new_surface_selector(full_seed, planner_source)
 		local resources = content.resources()
-		local cultural = content.cultural()
 		local decorations = content.decorations()
 		local surface_by_id, biome_ref, race_ref, stable_ref = {}, {}, {}, {}
 		local stable_refs = {}
@@ -136,7 +135,6 @@ local function planner_factory()
 			add_ref(surfaces[index].id)
 		end
 		for index = 1, #resources do add_ref(resources[index].key) end
-		for index = 1, #cultural do add_ref(cultural[index].key) end
 		for index = 1, #decorations do add_ref(decorations[index].id) end
 		for index = 1, #(source.zones or {}) do
 			local zone = source.zones[index]
@@ -156,12 +154,6 @@ local function planner_factory()
 			if race then race_ref[race] = stable_ref[race] end
 		end
 
-		local cultural_biome = {}
-		for index = 1, #cultural do
-			local set = {}
-			for b = 1, #cultural[index].biomes do set[cultural[index].biomes[b]] = true end
-			cultural_biome[index] = set
-		end
 		-- Decoration site rules (biomes_mobs.md §2.1). Two manifest tokens keep
 		-- their flat-world names while meaning the Round 22 rules (D37); the
 		-- digest pin that froze them was removed in Phase 5, so a later change
@@ -227,10 +219,8 @@ local function planner_factory()
 			zone_numeric = retained_array("r6_planner_scratch_zone_numeric", 256, false),
 			zone_id = retained_array("r6_planner_scratch_zone_id", 256, false),
 			biome = retained_array("r6_planner_scratch_biome", 256, false),
-			race = retained_array("r6_planner_scratch_race", 256, false),
 			terrain_y = retained_array("r6_planner_scratch_terrain_y", 256, false),
 			water_y = retained_array("r6_planner_scratch_water_y", 256, false),
-			excluded = retained_array("r6_planner_scratch_excluded", 256, false),
 			surface_kind = retained_array("r6_planner_scratch_surface_kind", 256, false),
 			support_name = retained_array("r6_planner_scratch_support_name", 256, false),
 			p7_support = retained_array("r6_planner_scratch_p7_support", 256, false),
@@ -249,9 +239,9 @@ local function planner_factory()
 		for index = 1, 256 do
 			rank_scratch[index] = {digest = false, x = 0, y = 0, z = 0}
 		end
-		local cultural_candidates, decoration_candidates = {}, {}
+		local decoration_candidates = {}
 		local group_scratch = {}
-		for index = 1, #cultural * 2 + #decorations do
+		for index = 1, #decorations do
 			group_scratch[index] = {kind = 0, catalog = 0, parameter = 0,
 				eligible = 0, budget = 0, candidates = 0}
 		end
@@ -260,8 +250,6 @@ local function planner_factory()
 			coverage_scratch[index] = {zone_id = false, biome = false, count = 0}
 		end
 		for index = 1, candidate_capacity do
-			cultural_candidates[index] = {catalog = 0, parameter = 0, x = 0, y = 0,
-				z = 0, digest = false}
 			decoration_candidates[index] = {catalog = 0, parameter = 0, x = 0, y = 0,
 				z = 0, digest = false}
 		end
@@ -351,19 +339,8 @@ local function planner_factory()
 			-- (planner.lua).
 			local wet_bed
 			if river_id ~= nil and wet then wet_bed = terrain_y end
-			-- The cultural candidates' exclusion (scratch.excluded): a column
-			-- whose claim exclusion is protection only admits a reservation box
-			-- (root y .. root y + 7, root = terrain y) that lies wholly below
-			-- the protected floor (Round 24 ruling 30 addendum).
-			local cultural_excluded = excluded
-			if excluded then
-				local floor = planner_source.protected_only_floor_at(x, z)
-				if floor and terrain_y + 7 < floor then cultural_excluded = false end
-			end
 			return water_class, zone_numeric, zone_id, biome, race, terrain_y,
-				water_y, surface_kind, surface, support_name,
-				cultural_excluded, p7_support,
-				wet_bed
+				water_y, surface_kind, surface, support_name, p7_support, wet_bed
 		end
 
 		local function load_cell(cell_x, cell_z)
@@ -379,16 +356,16 @@ local function planner_factory()
 				for x = start_x, start_x + 15 do
 					if x >= -3740 and x <= 3740 and z >= -3340 and z <= 3340 then
 						count = count + 1
-						local water_class, zone_numeric, zone_id, biome, race, terrain_y,
-							water_y, surface_kind, surface, support_name, excluded, p7_support,
+						local water_class, zone_numeric, zone_id, biome, _, terrain_y,
+							water_y, surface_kind, surface, support_name, p7_support,
 							wet_bed = column_tuple(x, z)
 						scratch.x[count], scratch.z[count] = x, z
 						scratch.water_class[count] = water_class
 						scratch.zone_numeric[count], scratch.zone_id[count] = zone_numeric or false,
 							zone_id or false
-						scratch.biome[count], scratch.race[count] = biome or false, race or false
+						scratch.biome[count] = biome or false
 						scratch.terrain_y[count], scratch.water_y[count] = terrain_y, water_y or false
-						scratch.excluded[count], scratch.surface_kind[count] = excluded, surface_kind
+						scratch.surface_kind[count] = surface_kind
 						scratch.support_name[count], scratch.p7_support[count] = support_name,
 							p7_support
 						scratch.snowy[count] = surface and surface.dust_ref ~= 0 or false
@@ -482,7 +459,7 @@ local function planner_factory()
 
 		local function build_cell(cell_x, cell_z, capture_groups)
 			local column_count = load_cell(cell_x, cell_z)
-			local cultural_count, decoration_count = 0, 0
+			local decoration_count = 0
 			local group_count = 0
 			local coverage_count = 0
 			if capture_groups then
@@ -504,48 +481,6 @@ local function planner_factory()
 								scratch.biome[column], 0
 						end
 						found.count = found.count + 1
-					end
-				end
-			end
-			for catalog = 1, #cultural do
-				local row = cultural[catalog]
-				for _, denominator in ipairs({1024, 4096}) do
-					local eligible = 0
-					for column = 1, column_count do
-						local concentrated = scratch.zone_id[column] == row.concentrated_zone
-						if (denominator == 1024) == concentrated and
-								scratch.race[column] == row.race and
-								cultural_biome[catalog][scratch.biome[column]] and
-								scratch.surface_kind[column] ~= 3 and
-								scratch.p7_support[column] and
-								scratch.terrain_y[column] >= 1 and not scratch.excluded[column] then
-							eligible = eligible + 1
-							local ranked = rank_scratch[eligible]
-							ranked.x, ranked.y, ranked.z = scratch.x[column],
-								scratch.terrain_y[column], scratch.z[column]
-							ranked.digest = hash.digest("cultural_candidate_rank_v1", full_seed,
-								{row.key, cell_x, cell_z, denominator, ranked.x, ranked.z})
-						end
-					end
-					local budget = 0
-					if eligible > 0 then
-						local remainder_digest = hash.digest("cultural_budget_remainder_v1",
-							full_seed, {row.key, cell_x, cell_z, denominator})
-						budget = hash.budget(eligible, 1, denominator, 1, 1,
-							remainder_digest)
-						sort_prefix(rank_scratch, eligible, rank_less)
-						for chosen = 1, budget do
-							local ranked = rank_scratch[chosen]
-							cultural_count = append_candidate(cultural_candidates,
-								cultural_count, catalog, denominator, ranked.x, ranked.y,
-								ranked.z, ranked.digest)
-						end
-					end
-					if capture_groups then
-						group_count = group_count + 1
-						local group = group_scratch[group_count]
-						group.kind, group.catalog, group.parameter = 1, catalog, denominator
-						group.eligible, group.budget, group.candidates = eligible, budget, budget
 					end
 				end
 			end
@@ -630,13 +565,6 @@ local function planner_factory()
 					group.eligible, group.budget, group.candidates = eligible, budget, budget
 				end
 			end
-			sort_prefix(cultural_candidates, cultural_count, function(left, right)
-				if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
-				if left.z ~= right.z then return left.z < right.z end
-				if left.x ~= right.x then return left.x < right.x end
-				return hash.less_bytes(cultural[left.catalog].key,
-					cultural[right.catalog].key)
-			end)
 			sort_prefix(decoration_candidates, decoration_count, function(left, right)
 				if left.parameter ~= right.parameter then return left.parameter < right.parameter end
 				if left.digest ~= right.digest then return hash.less_bytes(left.digest, right.digest) end
@@ -645,8 +573,7 @@ local function planner_factory()
 				return hash.less_bytes(decorations[left.catalog].id,
 					decorations[right.catalog].id)
 			end)
-			return cultural_count, decoration_count, group_count, coverage_count,
-				column_count
+			return decoration_count, group_count, coverage_count, column_count
 		end
 
 		-- Candidate rows of a cell, memoized. `build_cell` is a pure function
@@ -663,13 +590,12 @@ local function planner_factory()
 			local key = cell_x * 65536 + cell_z
 			local rows = cell_cache[key]
 			if rows then return rows end
-			local cc, dc = build_cell(cell_x, cell_z, false)
-			rows = {count = cc + dc}
+			local dc = build_cell(cell_x, cell_z, false)
+			rows = {count = dc}
 			local base = 0
-			for index = 1, cc + dc do
-				local kind, record = 1, cultural_candidates[index]
-				if index > cc then kind, record = 2, decoration_candidates[index - cc] end
-				rows[base + 1] = kind
+			for index = 1, dc do
+				local record = decoration_candidates[index]
+				rows[base + 1] = 2 -- the candidate kind: a decoration
 				rows[base + 2] = record.catalog
 				rows[base + 3] = record.parameter
 				rows[base + 4] = record.x
@@ -824,14 +750,9 @@ local function planner_factory()
 		function fixture.build_cell(cell_x, cell_z)
 			integer(cell_x, "fixture cell x", -1932, 1932)
 			integer(cell_z, "fixture cell z", -1932, 1932)
-			local cc, dc, group_count, coverage_count, column_count =
+			local dc, group_count, coverage_count, column_count =
 				build_cell(cell_x, cell_z, true)
-			local ccopy, dcopy = {}, {}
-			for index = 1, cc do
-				local row = cultural_candidates[index]
-				ccopy[index] = {catalog = row.catalog, denominator = row.parameter,
-					x = row.x, y = row.y, z = row.z, digest = hash.hex(row.digest)}
-			end
+			local dcopy = {}
 			for index = 1, dc do
 				local row = decoration_candidates[index]
 				dcopy[index] = {catalog = row.catalog, class = row.parameter,
@@ -850,7 +771,7 @@ local function planner_factory()
 				coverage[index] = {zone_id = row.zone_id, biome = row.biome,
 					count = row.count}
 			end
-			return ccopy, dcopy, groups, coverage, column_count
+			return dcopy, groups, coverage, column_count
 		end
 		function fixture.stable_refs() return copy_array(stable_refs) end
 		allocator:seal_construction()

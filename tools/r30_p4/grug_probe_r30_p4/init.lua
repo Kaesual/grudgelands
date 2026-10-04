@@ -30,7 +30,7 @@ end
 
 local FIELDS = {"profession", "tier", "station", "inputs", "output_name", "hint",
 	"time", "in_place", "material", "operation", "family", "shapeless",
-	"mastery_required", "existing_engine_recipe"}
+	"mastery_required", "existing_engine_recipe", "progress"}
 
 local function dump()
 	local recipes, items, groups = {}, {}, {}

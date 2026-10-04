@@ -68,7 +68,6 @@ says 29; only the explicitly requested IDs are included.
 | `textures/grug_status_in_combat.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_pvp_tagged.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_pvp_contested.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
-| `textures/grug_status_warding_draught.png` | Own work; OpenAI-generated emblem; export treatment above | CC0-1.0 |
 | `textures/grug_status_frame_buff.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |
 | `textures/grug_status_frame_debuff.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |
 | `textures/grug_status_frame_neutral.png` | Own work; procedural Pillow overlay; reproduce with frames.py | CC0-1.0 |

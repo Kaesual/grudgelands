@@ -64,6 +64,14 @@ return function(canonical, raw_sha256, settlement_order)
 	-- moves. Was `f1bba63f699c3fd0...`.
 	-- Round 29 E1: dead iron-bar sell_price removed from PROCESSED_MATERIALS;
 	-- only the WP43 projection moves. Was `a47e73fe75fa8de8...`.
+	-- Round 33 C2: the six cultural materials, their gather sources and the
+	-- R6 cultural slot are removed. The cultural limb leaves this roll-up
+	-- (was `263b9bf0a470295b...`); the production rows shrink 93 -> 87, which
+	-- moves the production semantics (was `292188ba50f8788d...`) and the
+	-- decoded templates, whose cells carry production content refs (was
+	-- `172726bfb439774d...`); the WP43 projection loses its cultural rows (was
+	-- `f1d238b3248a84ed...`) and the gathering catalog its cultural section (was
+	-- `ad4d5ea64a408ea2...`).
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -73,7 +81,7 @@ return function(canonical, raw_sha256, settlement_order)
 		"native_schema", "native_sha256", "gathering_schema",
 		"gathering_sha256", "production_r6_content_schema",
 		"production_r6_content_sha256", "production_r6_semantic_sha256",
-		"cultural_registration_sha256", "p9g_content_schema",
+		"p9g_content_schema",
 		"p9g_content_sha256", "p9g_semantic_sha256", "p9g_delta_schema",
 		"p9g_delta_sha256", "p9g_world_rules_sha256", "anchor_content_schema", "anchor_content_sha256",
 		"anchor_semantic_sha256", "anchor_roster_schema", "anchor_roster_sha256",
@@ -289,7 +297,7 @@ return function(canonical, raw_sha256, settlement_order)
 			anchor_content = true, anchor_roster = true,
 			anchor_roster_sha256 = true,
 			settlement_content = true, settlement_blueprints = true,
-			cultural_registrations = true, decoded_templates = true,
+			decoded_templates = true,
 			consumer_payload = true, protection_depth_below_placement = true,
 		}
 		for key in pairs(inputs) do
@@ -330,12 +338,12 @@ return function(canonical, raw_sha256, settlement_order)
 		local gathering = inputs.gathering_manifest
 		if gathering.schema ~= "grug_wp33_gathering_catalog_v3" or
 			gathering.sha256 ~=
-				"ad4d5ea64a408ea2dde27ccfeacd3338df9b1a79f63bbe5bbd1be657e2b2dfe9" or
+				"56a3daf013148e997ac6b3386e2fd406dd97dc63d092e5b571349e9f3039633c" or
 			sha256_hex(gathering.canonical_bytes) ~= gathering.sha256 then
 			fail("gathering identity differs")
 		end
 		if inputs.production_content.semantic_digest ~=
-				"292188ba50f8788d1349c3572db5ce28d28680a155bcd52b8ce424c92f41d8ad" or
+				"4ddd35d62aa98d1f51daf438f9ee0d18ebb8b918d134e350335d8c772b9d3804" or
 				inputs.p9g_content.semantic_digest ~=
 				"b4ca49bd01c47cd9915c07a57a7cdfc5346c2f49a7916e7834cb5b5056250cb0" then
 			fail("frozen content semantics differ: production=" ..
@@ -454,24 +462,12 @@ return function(canonical, raw_sha256, settlement_order)
 				end
 			end
 		end
-		local cultural = inputs.cultural_registrations
-		if #cultural ~= 6 then fail("cultural population differs") end
-		local cultural_digests = {}
-		for index = 1, 6 do
-			local row = cultural[index]
-			if type(row) ~= "table" or type(row.digest) ~= "string" or
-					#row.digest ~= 64 then
-				fail("cultural registration digest differs")
-			end
-			cultural_digests[index] = row.digest
-		end
 		if type(inputs.decoded_templates) ~= "table" or
 				#inputs.decoded_templates ~= 24 then
 			fail("decoded template population differs")
 		end
 		local r6_catalog = graph_digest({surfaces = r6.surfaces,
-			resources = r6.resources, cultural = r6.cultural,
-			decorations = r6.decorations})
+			resources = r6.resources, decorations = r6.decorations})
 		local frozen = {
 			schema = "grug_wp40_r7_source_projection_v1",
 			accepted_r6_content = graph_digest(inputs.accepted_r6_rows),
@@ -483,26 +479,23 @@ return function(canonical, raw_sha256, settlement_order)
 			native_noise = native.noise_digest,
 			native_allowlist = native.native_digest,
 			gathering = gathering.sha256,
-			cultural = graph_digest(cultural),
 			consumer_payload = graph_digest(inputs.consumer_payload),
 		}
 		if frozen.accepted_r6_content ~=
 				"8e98cd41632dd59f247ebccd139d7d3a021be149d21bc5ea030839a7a6c38e30" or
 			frozen.decoded_templates ~=
-				"172726bfb439774d50dded5d98c807712599b8a23a79669ce8e7ec63dabf17cb" or
+				"766f28cc566f8c55b6512ce8fdc1342d9819228a2e39065fb2eb728ad6fab683" or
 			frozen.wp43_projection ~=
-				"f1d238b3248a84ed129ff6d241c2d9eb940fdf15a679144253b47a7013b2bc22" or
-			frozen.cultural ~=
-				"263b9bf0a470295b62791f85effd59eee9090c82d5f4d050e4f97ba88bb79fb6" or
+				"6c55f273e3dbfd0f8b93445d9bf526d17f071f629a3a6036a83984091899d6e9" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..
 				frozen.accepted_r6_content .. " decoded=" .. frozen.decoded_templates ..
-				" wp43=" .. frozen.wp43_projection .. " cultural=" .. frozen.cultural ..
+				" wp43=" .. frozen.wp43_projection ..
 				" consumer=" .. frozen.consumer_payload ..
 				" projection=" .. graph_digest(frozen))
 		end
-		local windows = successor_windows(#inputs.accepted_r6_rows + 6,
+		local windows = successor_windows(#inputs.accepted_r6_rows,
 			settlement_content.count)
 		local p9g_delta = {
 			world_rules_sha256 = graph_digest(inputs.world_content_rules),
@@ -582,7 +575,6 @@ return function(canonical, raw_sha256, settlement_order)
 			production_r6_content_schema = inputs.production_content.schema,
 			production_r6_content_sha256 = inputs.production_content.digest,
 			production_r6_semantic_sha256 = inputs.production_content.semantic_digest,
-			cultural_registration_sha256 = table.concat(cultural_digests, ","),
 			p9g_content_schema = inputs.p9g_content.schema,
 			p9g_content_sha256 = inputs.p9g_content.digest,
 			p9g_semantic_sha256 = inputs.p9g_content.semantic_digest,

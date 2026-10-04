@@ -318,7 +318,7 @@ end
 -- 4. Planner: tree line, shrub band, snow, seams, density ------------------
 out("-- planner")
 local function cell_rows(planner_fixture, cx, cz)
-	local _, decorations = planner_fixture.build_cell(cx, cz)
+	local decorations = planner_fixture.build_cell(cx, cz)
 	return decorations
 end
 do

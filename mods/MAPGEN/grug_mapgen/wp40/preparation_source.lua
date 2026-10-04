@@ -3,7 +3,7 @@
 local path = assert(debug.getinfo(1, "S").source:sub(2):match("^(.*)[/\\]"))
 local plot_approach = dofile(path .. "/../wp13/plot_approach.lua")
 local settlement_module = dofile(path .. "/r7_settlement.lua")
-return function(columns, templates, cultural, settlements, zones, anchors, identity, sha256)
+return function(columns, templates, settlements, zones, anchors, identity, sha256)
 	assert(type(columns.column_values_at) == "function" and #templates > 0)
 	local reach, below, above = 1, -1, 1
 	local function include(x, y, z)
@@ -15,9 +15,6 @@ return function(columns, templates, cultural, settlements, zones, anchors, ident
 			include(rotation.min_x, rotation.min_y+1, rotation.min_z)
 			include(rotation.max_x, rotation.max_y+1, rotation.max_z)
 		end
-	end
-	for _, row in ipairs(cultural) do
-		for _, cell in ipairs(row.cells) do include(cell.x,cell.y+1,cell.z) end
 	end
 	-- Settlement boxes: a start or a civic core at its fitted anchor, a
 	-- capital's placed plots and its city edge from this world's capital

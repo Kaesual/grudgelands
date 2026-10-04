@@ -136,7 +136,7 @@ local layout = grug_core.hud_layout
 --
 local EXPECTED_KIND = {
 	food = "buff", elixir = "buff", alchemy_swiftness = "buff",
-	alchemy_cave = "buff", warding_draught = "buff", mount = "buff",
+	alchemy_cave = "buff", mount = "buff",
 	move_immune = "buff", scout_sprint = "buff", sidestep = "buff",
 	mend = "buff", shield = "buff",
 	talent_unbroken = "buff", talent_ruination = "buff",

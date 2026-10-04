@@ -47,7 +47,7 @@ local function stage_items()
 	check(plain:get_meta():to_table().fields.inventory_image == nil, "plain: no image key")
 	local sword = ItemStack("grug_gear:sword_steel")
 	sword:get_meta():set_int("grug_quality", 3)
-	check(grug_items.roll_enchants(sword, 30, "world", 2, 777), "roll on a real stack")
+	check(grug_items.roll_enchants(sword, 30, 2, 777), "roll on a real stack")
 	local affixes = grug_items.get_affixes(sword)
 	local prefix, suffix = grug_visuals.affix_pair(affixes)
 	local def = core.registered_items["grug_gear:sword_steel"]
@@ -85,7 +85,7 @@ local function stage_body(done)
 			feet = "grug_gear:feet_metal_iron"}) do
 		local stack = ItemStack(item)
 		stack:get_meta():set_int("grug_quality", 3)
-		grug_items.roll_enchants(stack, 30, "world", 2, 900 + #item)
+		grug_items.roll_enchants(stack, 30, 2, 900 + #item)
 		worn[slot] = {name = item, affixes = grug_items.get_affixes(stack)}
 		armor[slot] = item
 	end

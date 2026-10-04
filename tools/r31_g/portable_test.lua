@@ -38,8 +38,8 @@
 --      role title as nametag and as its own name (`description`), also after
 --      a reload;
 --   L  the General's loot (user ruling): grug_quality's REAL kill-loot hook
---      and gear roll give him his level's gear (ilvl 65) at the raised
---      `general` chances (60 % uncommon, 25 % rare, the rare window) and his
+--      and gear roll give him a boss's drop (Round 33: two items at item
+--      level 65, each blue or gold at even odds) and his
 --      bodyguards, kings and royal guards none; the hook only runs for a
 --      kill aggro.lua's REAL player_drop_tagger credits, which for a faction
 --      NPC is an enemy player's (the war trophies' rule).
@@ -691,8 +691,8 @@ do
 		register_kill_loot_hook = function(fn) loot_hook = fn end,
 	}, {__index = function() return noop end})
 	_G.grug_mobs = quality_mobs
-	_G.grug_gear = {catalog = {}}
-	for tier = 1, 6 do grug_gear.catalog[tier] = {all = {"grug_gear:test_" .. tier}} end
+	_G.grug_gear = {drop_pool = {}}
+	for tier = 1, 6 do grug_gear.drop_pool[tier] = {"grug_gear:test_" .. tier} end
 	local saved_items = rawget(_G, "grug_items")
 	_G.grug_items = nil
 	setmetatable(_G, {__index = function(_, name)
@@ -703,15 +703,14 @@ do
 	dofile(repo .. "/mods/ITEMS/grug_quality/init.lua")
 	setmetatable(_G, nil)
 	local rolled = {}
-	grug_items.roll_enchants = function(stack, ilvl, window)
-		rolled[#rolled + 1] = {quality = stack.meta_store.grug_quality, ilvl = ilvl, window = window}
+	grug_items.roll_enchants = function(stack, ilvl, count)
+		rolled[#rolled + 1] = {quality = count + 1, ilvl = ilvl}
 	end
 	check(loot_hook ~= nil, "L grug_quality hooks the kill loot")
-	local row = grug_items.DROP_CHANCES.general
-	check(row and row.uncommon == 60 and row.rare == 25 and row.window == "rare",
-		"L the General's chances: 60 % uncommon, 25 % rare, the rare window")
-	local elite = grug_items.DROP_CHANCES.elite
-	check(row.uncommon > elite.uncommon and row.rare > elite.rare, "L ...above an elite's")
+	-- Round 33 (round33-plan.md §2.1): a boss's two items, each blue or gold.
+	local row = grug_items.BOSS_DROPS
+	check(row and row.count == 2 and row.gold == 50 and row.ilvl.general == 65,
+		"L the General drops two items, gold at 50 %, item level 65")
 
 	local general = {name = "grug_mobs:general_accord", _grug_boss_id = "general:accord",
 		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 65,
@@ -722,22 +721,23 @@ do
 		_grug_royal_king = true, _grug_tier = "elite", _grug_level = 65, object = general.object}
 	local royal = {name = "grug_mobs:royal_guard_human", _grug_boss_id = "king:human",
 		_grug_tier = "elite", _grug_level = 60, object = general.object}
-	-- 2000 seeded rolls: the item level and the rates.
+	-- 2000 seeded rolls: the item level, the count and the split.
 	local uncommon, rare, n = 0, 0, 2000
-	local ilvl_ok, window_ok = true, true
+	local ilvl_ok, count_ok = true, true
 	for seed = 1, n do
 		rolled = {}
 		grug_items.roll_mob_gear(general, seed * 7919)
+		count_ok = count_ok and #rolled == 2
 		for _, roll in ipairs(rolled) do
 			ilvl_ok = ilvl_ok and roll.ilvl == 65
-			window_ok = window_ok and roll.window == "rare"
 			if roll.quality == 2 then uncommon = uncommon + 1 else rare = rare + 1 end
 		end
 	end
 	check(ilvl_ok, "L the General's gear is item level 65")
-	check(window_ok, "L ...rolled in the rare window")
-	check(math.abs(uncommon / n - 0.60) < 0.05, ("L uncommon about 60 %% (%.1f %%)"):format(100 * uncommon / n))
-	check(math.abs(rare / n - 0.25) < 0.05, ("L rare about 25 %% (%.1f %%)"):format(100 * rare / n))
+	check(count_ok, "L ...always two items")
+	check(math.abs(uncommon / (2 * n) - 0.50) < 0.05,
+		("L blue about 50 %% (%.1f %%)"):format(50 * uncommon / n))
+	check(uncommon + rare == 2 * n, "L ...the rest gold")
 	-- The hook: the General drops gear (over many kills), his bodyguards,
 	-- kings and royal guards none.
 	local function drops_over(entity, kills)
@@ -745,7 +745,7 @@ do
 		for _ = 1, kills do loot_hook(entity, "org") end
 		return #dropped
 	end
-	check(drops_over(general, 50) > 20, "L the kill-loot hook drops the General's gear")
+	check(drops_over(general, 50) >= 100, "L the kill-loot hook drops the General's gear")
 	eq(drops_over(bodyguard, 50), 0, "L a bodyguard drops no gear")
 	eq(drops_over(king, 50), 0, "L a king's gear stays in his reward ledger")
 	eq(drops_over(royal, 50), 0, "L a royal guard drops no gear")

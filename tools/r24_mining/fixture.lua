@@ -423,10 +423,6 @@ for tier = 1, 6 do
 			"T" .. tier .. " axe faster on tree")
 	end
 end
-check(M.tool_tier_for_stack(ItemStack("grug_materials:axe_silversteel"), "axe") == 4,
-	"axe tier resolves (concentrated cultural rule)")
-check(select(2, M.tool_tier_for_stack(ItemStack("grug_materials:pick_steel"), "axe")) ==
-	"wrong_family", "a pick is not an axe")
 
 -- ---------------------------------------------------------------------------
 -- 3. Transaction and hints

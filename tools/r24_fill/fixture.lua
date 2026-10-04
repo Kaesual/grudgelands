@@ -60,7 +60,7 @@ for _, priority in ipairs({2, 3, 4, 6}) do
 end
 check(not host(STONE, DIRT, 2, 0, 5, 27, STONE, STONE), "filler over native stone")
 check(host(STONE, COAL, 24, 3, 5, 27, STONE, STONE), "claimed native host keeps its base")
-check(not host(STONE, STONE, 0, 1, 5, 27, STONE, STONE), "cultural reservation")
+check(not host(STONE, STONE, 0, 1, 5, 27, STONE, STONE), "occupied cell")
 check(host(T2, T2, 0, 0, nil, nil, T2, STONE), "native tier rock stays a host")
 -- fill host
 check(host(AIR, STONE, 0, 0, 5, 27, STONE, STONE), "fill stone is a default:stone host")

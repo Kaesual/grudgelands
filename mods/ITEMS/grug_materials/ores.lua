@@ -130,22 +130,6 @@ core.register_craftitem("grug_materials:emberglass_shard", {
 	inventory_image = "default_mese_crystal_fragment.png^[colorize:#ff7a2e:45",
 })
 
-local cultural_images = {
-	human = "default_mese_crystal_fragment.png^[colorize:#f0c45a:120",
-	dwarf = "default_stone.png^[colorize:#64758a:110",
-	elf = "default_mese_crystal_fragment.png^[colorize:#a9c9ee:130",
-	orc = "default_clay_lump.png^[colorize:#a54122:150",
-	troll = "default_mese_crystal_fragment.png^[colorize:#8ca833:130",
-	undead = "default_mese_crystal_fragment.png^[colorize:#ddd8c8:145",
-}
-
-for _, material in pairs(grug_materials.CULTURAL_MATERIALS) do
-	core.register_craftitem(material.item, {
-		description = material.name,
-		inventory_image = cultural_images[material.race],
-	})
-end
-
 core.register_node("grug_materials:emberglass_lamp", {
 	description = "Emberglass Lamp",
 	drawtype = "glasslike",

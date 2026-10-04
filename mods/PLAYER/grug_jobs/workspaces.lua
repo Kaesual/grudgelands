@@ -298,7 +298,7 @@ local function callbacks(ctx)
 					ingredient:take_item(count)
 					source:set_stack("craft", slot, ingredient)
 				end
-				grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+				grug_jobs.award_progress(player, recipe)
 				ctx.produced = not inv:is_empty("output")
 			elseif ctx.produced then ctx.produced = not inv:is_empty("output") end
 			changed(ctx)
@@ -364,7 +364,8 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 			end
 			local rest = player:get_inventory():add_item("main", plan.output)
 			assert(rest:is_empty(), "station operation destination changed during commit")
-			grug_jobs.record_craft(player, recipe.profession, recipe.tier)
+			-- Progress hook for every station operation (enchants and upgrades).
+			grug_jobs.award_progress(player, recipe)
 			changed(ctx)
 		else core.chat_send_player(ctx.name, reason or "Make room in your inventory.") end
 	end

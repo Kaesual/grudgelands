@@ -5,7 +5,7 @@ end
 grug_jobs.PROFESSIONS = {
 	weaponsmith = {name = "Weaponsmith", class = "primary"},
 	armorsmith = {name = "Armorsmith", class = "primary"},
-	alchemist = {name = "Alchemist", class = "primary"},
+	alchemist = {name = "Alchemy", class = "secondary"},
 	tailor = {name = "Tailor", class = "primary"},
 	leatherworker = {name = "Leatherworker", class = "primary"},
 	woodcarver = {name = "Woodcarver", class = "primary"},
@@ -14,10 +14,12 @@ grug_jobs.PROFESSIONS = {
 }
 
 grug_jobs.PRIMARY_PROFESSIONS = {
-	"weaponsmith", "armorsmith", "alchemist", "tailor", "leatherworker",
-	"woodcarver", "goldsmith",
+	"weaponsmith", "armorsmith", "tailor", "leatherworker", "woodcarver",
+	"goldsmith",
 }
-grug_jobs.SECONDARY_PROFESSIONS = {"cooking"}
+-- Secondaries take no primary slot; every character may learn both (Round
+-- 33: Alchemy joined Cooking). The crafting page has one fixed book slot each.
+grug_jobs.SECONDARY_PROFESSIONS = {"cooking", "alchemist"}
 grug_jobs.STATIONS = {
 	grid = {display_name = "Crafting Grid"},
 	furnace = {display_name = "Furnace", node = "default:furnace"},
@@ -564,6 +566,23 @@ local function contains_upgrade_kit(inputs)
 	return false
 end
 
+-- A storage unpack (Round 33: the cut-gem blocks) turns one block into nine
+-- of a profession output, and that block's own recipe packs nine of them: it
+-- only returns what was packed, so it is no second route to the output.
+local function storage_unpack(corpus, candidate_inputs, output)
+	if #candidate_inputs ~= 1 then return false end
+	local packs = corpus.by_output[candidate_inputs[1]] or {}
+	for index = 1, #packs do
+		local packed = flatten_inputs(packs[index].items or {})
+		local only_output = #packed == 9
+		for input_index = 1, #packed do
+			if packed[input_index] ~= output then only_output = false end
+		end
+		if only_output then return true end
+	end
+	return false
+end
+
 function grug_jobs.register_ingredient_tier(item, tier)
 	local name = item_name(item)
 	if name == "" then fail("an ingredient needs an itemstring") end
@@ -595,7 +614,7 @@ end
 -- before the station exists are retained and replayed exactly once. A custom
 -- station owns its take path: before output leaves it MUST call
 -- `grug_jobs.can_craft_recipe(player, recipe)`, and after a successful take it
--- MUST call `grug_jobs.record_craft(player, recipe.profession, recipe.tier)`.
+-- MUST call `grug_jobs.award_progress(player, recipe)`.
 -- Merely supplying `can_use` does not gate or settle a station inventory.
 -- grug_jobs finalizes craft authority on the first server step. Later calls to
 -- the engine's craft-callback registration APIs remain supported: grug_jobs
@@ -652,6 +671,9 @@ function grug_jobs.register_recipe(definition)
 	end
 	if definition.material ~= nil and type(definition.material) ~= "boolean" then
 		fail(profession .. " T" .. tier .. " material flag differs")
+	end
+	if definition.progress ~= nil and type(definition.progress) ~= "boolean" then
+		fail(profession .. " T" .. tier .. " progress flag differs")
 	end
 	if definition.existing_engine_recipe ~= nil and
 			type(definition.existing_engine_recipe) ~= "boolean" then
@@ -742,6 +764,8 @@ function grug_jobs.register_recipe(definition)
 		fail(output .. " needs a station hint")
 	end
 
+	local automatic_finish = station == "furnace" or station == "dual_furnace" or
+		station == "brewing_stand"
 	local recipe = {
 		profession = profession,
 		tier = tier,
@@ -760,8 +784,13 @@ function grug_jobs.register_recipe(definition)
 		operation_reagent = definition.operation_reagent,
 		mastery_required = definition.mastery_required,
 		existing_engine_recipe = definition.existing_engine_recipe == true,
-		automatic_finish = station == "furnace" or station == "dual_furnace" or
-			station == "brewing_stand",
+		automatic_finish = automatic_finish,
+		-- Only real recipes award profession progress (Round 33): the
+		-- profession's own end products. A station or an intermediate
+		-- (`material`, or `progress = false`) and every automatic finish count
+		-- nothing; a potion or dish counts once, at its preparation.
+		progress = definition.progress ~= false and definition.material ~= true and
+			not automatic_finish,
 		universal_output_routes = universal_routes,
 		shapeless = definition.shapeless == true,
 		shaped = definition.shapeless ~= true and
@@ -877,7 +906,7 @@ function grug_jobs.validate_recipe_collisions()
 		local expected_engine = output_route_count(recipe.output_name, "grid") +
 			output_route_count(recipe.output_name, "furnace") +
 			(in_place_universal_routes[recipe.output_name] or 0)
-		local late_self_upgrade = 0
+		local late_self_upgrade, unpack = 0, 0
 		if #engine > expected_engine then
 			for engine_index = 1, #engine do
 				local candidate = engine[engine_index]
@@ -885,14 +914,16 @@ function grug_jobs.validate_recipe_collisions()
 				if contains_exact_input(candidate_inputs, recipe.output_name) and
 						contains_upgrade_kit(candidate_inputs) then
 					late_self_upgrade = late_self_upgrade + 1
+				elseif storage_unpack(corpus, candidate_inputs, recipe.output_name) then
+					unpack = unpack + 1
 				end
 			end
 		end
-		if #engine ~= expected_engine + late_self_upgrade then
+		if #engine ~= expected_engine + late_self_upgrade + unpack then
 			fail("profession output " .. recipe.output_name ..
 				" collides with a universal engine recipe (engine=" .. #engine ..
 				", expected=" .. expected_engine .. ", upgrade=" ..
-				late_self_upgrade .. ")")
+				late_self_upgrade .. ", unpack=" .. unpack .. ")")
 		end
 		if recipe.station == "grid" or recipe.station == "furnace" then
 			local wanted_method = recipe.station == "grid" and "normal" or "cooking"

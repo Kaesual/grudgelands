@@ -1,8 +1,8 @@
--- Closed R7 production content resolvers. The accepted 87-row R8 terrain
--- namespace remains separate from the 93-row production-R6 namespace and the
--- 36-row P9G suffix. Round 24 renamed the five tier strata to
--- grug_materials:t2_stone..t6_stone and added the three decorative rocks
--- (slate, basalt, granite) as surface-role rows (84 -> 87 rows).
+-- Closed R7 production content resolvers: the 87-row production-R6
+-- namespace (the accepted R8 terrain rows) and the 36-row P9G suffix. Round 24
+-- renamed the five tier strata to grug_materials:t2_stone..t6_stone and added
+-- the three decorative rocks (slate, basalt, granite) as surface-role rows
+-- (84 -> 87 rows); Round 33 removed the six cultural source rows (93 -> 87).
 
 return function(core_api, projection, raw_sha256, settlement_palette)
 	local MAX_SAFE = 9007199254740991
@@ -98,14 +98,6 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		{"grug_trees:gravewood_tree", 8},
 		{"grug_trees:silverwood_leaves", 8},
 		{"grug_trees:silverwood_tree", 8},
-	}
-	local CULTURAL_NAMES = {
-		"grug_gathering:gravesalt_source",
-		"grug_gathering:moonresin_source",
-		"grug_gathering:red_ochre_source",
-		"grug_gathering:runeslate_source",
-		"grug_gathering:spirit_resin_source",
-		"grug_gathering:sunwax_source",
 	}
 	local P9G_NAMES = {
 		"grug_gathering:corn_source",
@@ -211,11 +203,8 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 	for index = 1, #ACCEPTED_R6_ROWS do
 		rows[index] = {ACCEPTED_R6_ROWS[index][1], ACCEPTED_R6_ROWS[index][2]}
 	end
-	for index = 1, #CULTURAL_NAMES do
-		rows[#rows + 1] = {CULTURAL_NAMES[index], 16}
-	end
 	table.sort(rows, function(left, right) return less_bytes(left[1], right[1]) end)
-	if #ACCEPTED_R6_ROWS ~= 87 or #rows ~= 93 or #P9G_NAMES ~= 36 then
+	if #ACCEPTED_R6_ROWS ~= 87 or #P9G_NAMES ~= 36 then
 		fail("closed population differs")
 	end
 
@@ -233,9 +222,7 @@ return function(core_api, projection, raw_sha256, settlement_palette)
 		names[index], cids[index], masks[index], ref_by_name[name] = name, cid, mask, index
 		if math.floor(mask / 1) % 2 == 1 then surface_set[name] = true end
 		if math.floor(mask / 4) % 2 == 1 then resource_set[name] = true end
-		if math.floor(mask / 8) % 2 == 1 or math.floor(mask / 16) % 2 == 1 then
-			vegetation_set[name] = true
-		end
+		if math.floor(mask / 8) % 2 == 1 then vegetation_set[name] = true end
 	end
 	for index = 1, #projection.tiers do stratum_set[projection.tiers[index].node] = true end
 	for index = 1, #projection.resources do

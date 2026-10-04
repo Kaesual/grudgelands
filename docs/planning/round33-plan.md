@@ -37,8 +37,11 @@ alchemy data) are merged. D last.
 - **Quality stays as built:** the number of enchantments sets it — none =
   Common (white), one = Uncommon (blue), two = Rare (gold). Trinkets roll
   0/1/2 like every other item (today a rolled trinket always gets two).
-- **Item level of a drop = the mob's level** (level-100 deep-sea enemies drop
-  nothing). Drop enchantments roll the item's tier (§2.3).
+- **Item level of a drop = the mob's level.** Drop enchantments roll the
+  item's tier (§2.3).
+- **Kraken Guard** (ruling 2026-10-04): a level-70 elite instead of the
+  hand-set level 100 (the dragons are 70 too); still no XP and no drops, no
+  bag either.
 - **Pool:** everything equippable of the tier — weapons, armour, shields,
   spellbooks, trinkets.
 - **Chances per kill, at most one item per kill:**
@@ -165,7 +168,8 @@ pick (today Attack speed is: +4 to +14 % damage against Crit's +0.2 to +1.2 %).
   cloaks** a player collects on the way to level 60 (cloak design round,
   §4.3); the user picks.
 - "Wild animals" = every animal mob, critters and hostile beasts included, no
-  humanoids (coordinator proposal).
+  humanoids (coordinator proposal); the Kraken Guard counts, dragons and young
+  dragons do not (bosses and boss adds; the user, 2026-10-04).
 
 ## 3. Lane DS — item data design (wave 1)
 Delivers data tables and a German preview page; the user approves before

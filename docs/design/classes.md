@@ -153,15 +153,6 @@ Core principles:
   velocity override no longer survives a player hit.
 - Mob→player punches roll the player's dodge centrally (hp change
   modifier in `grug_core`).
-- **Target-race equipment effects use the same central transaction.** A
-  weapon's T4/T5/T6 counter finish adds +1/+2/+3 flat damage to an accepted
-  attack sourced from that equipped weapon, after the one ordinary Crit result
-  and before armor/absorb; Crit never multiplies it. It does not ride on a
-  spell merely because the held skill uses the weapon's appearance. An
-  active Warding Draught applies its 5/7.5/10% target-race reduction after
-  armor and before absorb. Both require matching race identity on a hostile
-  player or combat-capable NPC/mob and ignore passive invulnerable service
-  NPCs. Stacking and recipe rules: `items_crafting.md` §4.3.
 - **Melee carries the melee bonus and rolls crit** (combat_stats §2). Swing
   ability stacks mirror the equipped weapon's interval for native
   animation/interaction but publish zero damage; their combat packets are
@@ -692,7 +683,7 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
   [party contract](parties.md).
 - The Scout has no player poison mechanic and no player poison stat. Its Veil
   tree uses existing dodge, crit, slow and escape mechanics. Mob poison and
-  Alchemist Antivenom remain separate world mechanics. Stealth is deferred in
+  Alchemy's Antivenom remain separate world mechanics. Stealth is deferred in
   [scout.md](scout.md) §8; the current Veil capstone is Untouchable.
 - PvP tuning of roots/taunt (diminishing returns etc.) → balancing pass.
 
