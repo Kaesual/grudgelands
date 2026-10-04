@@ -82,8 +82,11 @@ end
 -- How much of `stack` the deposit slot accepts from `player`: 1 for a bag
 -- whose amount fits the balance, else 0 and a reason.
 function grug_money.deposit_allowed(player, stack)
+	if not stack or stack:get_name() ~= BAG then
+		return 0, "Only a Bag of Coins can be deposited."
+	end
 	local copper = grug_money.bag_amount(stack)
-	if copper < 1 then return 0, "Only a Bag of Coins can be deposited." end
+	if copper < 1 then return 0, "This Bag of Coins is empty." end
 	if grug_money.get(player) + copper > grug_money.MAX then
 		return 0, "You cannot carry that much money."
 	end

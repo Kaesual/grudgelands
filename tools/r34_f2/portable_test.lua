@@ -208,7 +208,10 @@ do
 	local cb = inv.callbacks
 	check(cb.allow_put(inv, list, 1, bag, p) == 0, "A another player cannot use the slot")
 	check(cb.allow_put(inv, list, 1, ItemStack("default:dirt"), q) == 0, "A only a bag is taken")
-	check(cb.allow_put(inv, list, 1, ItemStack(BAG), q) == 0, "A an empty bag is refused")
+	check(cb.allow_put(inv, list, 1, ItemStack("default:dirt"), q) == 0 and
+		feed[#feed] == "Only a Bag of Coins can be deposited.", "A ...with its reason")
+	check(cb.allow_put(inv, list, 1, ItemStack(BAG), q) == 0 and
+		feed[#feed] == "This Bag of Coins is empty.", "A an empty bag is refused as empty")
 	check(cb.allow_take(inv, list, 1, bag, q) == 0 and cb.allow_move(inv, list, 1, list, 1, 1, q) == 0,
 		"A nothing can be taken or moved")
 	check(cb.allow_put(inv, list, 1, bag, q) == 1, "A a filled bag is taken")
