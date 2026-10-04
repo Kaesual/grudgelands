@@ -918,37 +918,63 @@ three Steel Bars, one Furnace and one Glass Bottle. Glass Bottles cost 3 copper.
 Potions restore or act immediately and share the persistent potion clock.
 Every successfully consumed potion or elixir plays one shared drinking sound;
 refused uses play no sound.
-Ordinary potions use 60 seconds; the Greater Healing and Greater Mana pair use
-45 seconds on that same clock. A full-health healing potion is refused without
-consumption or cooldown. A mana potion may be consumed at full mana. Elixirs
-never touch the potion clock: exactly one `elixir` status may run, the newest
-replaces it, and it stacks with the separate food status. Pool and crit values
-are percentage points. Consumables require the first character level of
-their recipe tier: **1, 11, 21, 31, 41, 51**.
+Since Round 33 ([item_tiers.md](item_tiers.md) §5) healing and mana potions
+restore **fixed amounts**, about half a Priest's base pool at the tier's top
+level: **70 / 200 / 400 / 650 / 1000 / 1350** for tiers I–VI. Every potion and
+draught starts the one shared **60-second** clock; the vendor's Weak Healing
+Potion (8c) heals a fixed **35 HP** on the same clock. A full-health healing
+potion is refused without consumption or cooldown. A mana potion may be
+consumed at full mana. Elixirs give two enchants' worth of their stat at the
+tier's top level (Stoneskin one armor enchant) and never touch the potion
+clock: exactly one `elixir` status may run, the newest replaces it, and it
+stacks with the separate food status. Pool and crit values are percentage
+points, armor a rating. Consumables require the first character level of
+their recipe tier: **1, 11, 21, 31, 41, 51**. No recipe uses a reagent that
+drops in only one faction's zones; Elixir of Precision II takes the Ridged
+Boar Tusk because Dragonweed and Fang are the Swiftness Draught's recipe.
 
 | Tier | Product | Reagent 1 | Reagent 2 | Effect |
 |---:|---|---|---|---|
-| T1 | Healing Potion | Gravemoss | Sunleaf | 30% maximum HP instantly; 60 s shared cooldown |
-| T1 | Mana Potion | Gravemoss | Carrot or Cassava | 30% maximum mana instantly; 60 s shared cooldown |
-| T2 | Antivenom | Dragonweed | Venom Gland | Clears all active poison; 60 s shared cooldown |
-| T2 | Swiftness Draught | Dragonweed | Fang | +10% movement speed for 5 s; 60 s shared cooldown |
-| T3 | Greater Healing Potion | Crimson Lotus | Gravemoss | 30% maximum HP instantly; 45 s shared cooldown |
-| T3 | Greater Mana Potion | Crimson Lotus | Sugar Cane | 30% maximum mana instantly; 45 s shared cooldown |
-| T3 | Cave Draught | Cave Cap | Slime Gel | Night vision for 10 min; 60 s shared cooldown |
-| T3 | Elixir of Vigor III | Crimson Lotus | Bear Claw | +5% maximum HP for 15 min |
-| T3 | Elixir of Focus III | Crimson Lotus | Cave Cap | +5% maximum mana for 15 min |
-| T3 | Elixir of Precision III | Crimson Lotus | Fang | +1 percentage point crit for 15 min |
-| T4 | Elixir of Vigor IV | Crimson Lotus | Crocodile Tooth | +10% maximum HP for 15 min |
-| T4 | Elixir of Focus IV | Crimson Lotus | Venom Sac | +10% maximum mana for 15 min |
-| T4 | Elixir of Precision IV | Crimson Lotus | Shiny Scale | +2 percentage points crit for 15 min |
-| T4 | Stoneskin Elixir | Shiny Scale | Crocodile Tooth | +4 armor rating for 30 min |
-| T5 | Elixir of Vigor V | Crimson Lotus | Ember Moss | +15% maximum HP for 15 min |
-| T5 | Elixir of Focus V | Cave Cap | Ember Moss | +15% maximum mana for 15 min |
-| T5 | Elixir of Precision V | Shiny Scale | Ember Moss | +3 percentage points crit for 15 min |
-| T5 | Deepwater Elixir | Stormkelp | Slime Gel | Water breathing for 10 min |
-| T6 | Elixir of Vigor VI | Ember Moss | Stone Core | +20% maximum HP for 15 min |
-| T6 | Elixir of Focus VI | Ember Moss | Wild Cocoa | +20% maximum mana for 15 min |
-| T6 | Elixir of Precision VI | Ember Moss | Sharp Feather | +4 percentage points crit for 15 min |
+| T1 | Healing Potion I | Gravemoss | Sunleaf | Restores 70 HP at once; 60 s shared cooldown |
+| T1 | Mana Potion I | Gravemoss | Carrot or Cassava | Restores 70 Mana at once; 60 s shared cooldown |
+| T1 | Elixir of Vigor I | Sunleaf | Tattered Flesh | +4.0% maximum HP for 15 minutes |
+| T1 | Elixir of Focus I | Gravemoss | Crab Eye | +5.0% maximum Mana for 15 minutes |
+| T1 | Elixir of Precision I | Sunleaf | Boar Tusk | +4.2 percentage points Crit for 15 minutes |
+| T1 | Stoneskin Elixir I | Gravemoss | Crab Leg | +0.8 armor rating for 30 minutes |
+| T2 | Healing Potion II | Dragonweed | Sunleaf | Restores 200 HP at once; 60 s shared cooldown |
+| T2 | Mana Potion II | Dragonweed | Sugar Cane | Restores 200 Mana at once; 60 s shared cooldown |
+| T2 | Elixir of Vigor II | Dragonweed | Tough Sinew | +4.8% maximum HP for 15 minutes |
+| T2 | Elixir of Focus II | Dragonweed | Clear Crab Eye | +5.6% maximum Mana for 15 minutes |
+| T2 | Elixir of Precision II | Dragonweed | Ridged Boar Tusk | +5.2 percentage points Crit for 15 minutes |
+| T2 | Stoneskin Elixir II | Dragonweed | Ridged Crab Shell | +1.6 armor rating for 30 minutes |
+| T2 | Antivenom | Dragonweed | Venom Gland | Cures poison; 60 s shared cooldown |
+| T2 | Swiftness Draught | Dragonweed | Fang | +10% movement speed for 5 seconds; 60 s shared cooldown |
+| T3 | Healing Potion III | Crimson Lotus | Gravemoss | Restores 400 HP at once; 60 s shared cooldown |
+| T3 | Mana Potion III | Crimson Lotus | Sugar Cane | Restores 400 Mana at once; 60 s shared cooldown |
+| T3 | Elixir of Vigor III | Crimson Lotus | Bear Claw | +5.6% maximum HP for 15 minutes |
+| T3 | Elixir of Focus III | Crimson Lotus | Cave Cap | +6.2% maximum Mana for 15 minutes |
+| T3 | Elixir of Precision III | Crimson Lotus | Serrated Fang | +6.0 percentage points Crit for 15 minutes |
+| T3 | Stoneskin Elixir III | Crimson Lotus | Layered Crab Shell | +2.4 armor rating for 30 minutes |
+| T3 | Cave Draught | Cave Cap | Bound Wisp Mote | Night vision for 10 minutes; 60 s shared cooldown |
+| T4 | Healing Potion IV | Crimson Lotus | Leathery Flesh | Restores 650 HP at once; 60 s shared cooldown |
+| T4 | Mana Potion IV | Crimson Lotus | Venom Sac | Restores 650 Mana at once; 60 s shared cooldown |
+| T4 | Elixir of Vigor IV | Crimson Lotus | Ironbound Sinew | +6.4% maximum HP for 15 minutes |
+| T4 | Elixir of Focus IV | Crimson Lotus | Campaign Talisman | +6.8% maximum Mana for 15 minutes |
+| T4 | Elixir of Precision IV | Crimson Lotus | Razor Cat Claw | +7.0 percentage points Crit for 15 minutes |
+| T4 | Stoneskin Elixir IV | Crimson Lotus | Shiny Scale | +3.2 armor rating for 30 minutes |
+| T5 | Healing Potion V | Ember Moss | Crimson Lotus | Restores 1000 HP at once; 60 s shared cooldown |
+| T5 | Mana Potion V | Stormkelp | Crimson Lotus | Restores 1000 Mana at once; 60 s shared cooldown |
+| T5 | Elixir of Vigor V | Ember Moss | Scorched Flesh | +7.2% maximum HP for 15 minutes |
+| T5 | Elixir of Focus V | Ember Moss | Cave Cap | +7.4% maximum Mana for 15 minutes |
+| T5 | Elixir of Precision V | Ember Moss | Siegepack Fang | +7.8 percentage points Crit for 15 minutes |
+| T5 | Stoneskin Elixir V | Stormkelp | Siege Bone | +4.0 armor rating for 30 minutes |
+| T5 | Deepwater Elixir | Stormkelp | Cave Cap | Water breathing for 10 minutes |
+| T6 | Healing Potion VI | Wild Cocoa | Ember Moss | Restores 1350 HP at once; 60 s shared cooldown |
+| T6 | Mana Potion VI | Wild Cocoa | Stormkelp | Restores 1350 Mana at once; 60 s shared cooldown |
+| T6 | Elixir of Vigor VI | Wild Cocoa | Salt-Cured Flesh | +8.0% maximum HP for 15 minutes |
+| T6 | Elixir of Focus VI | Wild Cocoa | Last-Hex Shard | +8.0% maximum Mana for 15 minutes |
+| T6 | Elixir of Precision VI | Ember Moss | Sharp Feather | +8.6 percentage points Crit for 15 minutes |
+| T6 | Stoneskin Elixir VI | Wild Cocoa | Unquiet Bone | +4.8 armor rating for 30 minutes |
 
 Every row also consumes one Glass Bottle. There is no apothecary gear, no
 imbuing oil and no Sovereign's Flask (removed in Round 33).
@@ -1148,6 +1174,15 @@ main profession slot (professions.md §1).
   an enchant input or an ingredient above T1, which a load audit enforces.
 
 ### 3.8 Vendor bracket catalogs (decided 2026-08-07)
+
+**Round 33 ([round33-plan.md](../planning/round33-plan.md) §2.6): vendors sell
+the T1 catalog only** — all six weapon families and the three armour lines
+at their T1 slot prices, at every level, with no rotation and no rotating
+Uncommon item. From T2 the bases come from Basics crafting (mined and
+gathered materials) or drops. The six catalogs below stay the craft ladder,
+the drop pool and the reference prices of buy-back and repair (§8.2). The
+historical reading that follows (a moving floor, hourly rotation) is
+superseded where it says vendors sell a bracket.
 
 Revises the old "one floor at ilvl ≤ 5" model. The vendor floor rule
 stands — vendors sell the lowest tier of each category — but **the floor
@@ -1798,12 +1833,14 @@ The exact unenchanted Common slot ladder is:
 | Offhand/head/legs/feet | 15c | 35c | 80c | 2s | 5s | 12s50c |
 
 The table prices slots, not weapon families. Quality/enchanted gear costs more
-than Common, but no premium may alter these baseline references. The rotating
-Uncommon shelf remains a luxury source and must be priced against its final
-quality multiplier before activation.
+than Common, but no premium may alter these baseline references. Vendors sell
+only the T1 column (Round 33); the other columns are reference prices.
 
 Vendor buy-back is capped at **5% of the purchase price, rounded up to the
-next copper**, and applies only to goods a vendor sells. A T1 Common weapon
+next copper**, and applies to goods a vendor sells and, since Round 33, to
+every equippable of the gear catalog by its reference price — T2+ bases,
+shields, spellbooks and trinkets (the "other" slot; [item_tiers.md](item_tiers.md)
+§6.1); a blue item pays ×3, a gold one ×6. A T1 Common weapon
 therefore returns 2c and a T6 weapon returns 1s25c; a crafted good never
 returns more than its cheapest recipe's inputs. Same-race purchase discounts
 never raise buy-back. Loot and gathered goods are paid by the formula of
@@ -1818,7 +1855,15 @@ rows are deleted; no Dowsing Rod or Gem Detector is sold or crafted.
 - **Repair:** [durability_repair.md](durability_repair.md) is authoritative for
   eligible identities, exact wear events, non-destruction, the current
   tier-specific lifetime tables, all-trainer service and the money-only
-  20%-of-reference-price quote.
+  quote: since Round 33 the full reference price times the missing
+  durability (factor 1.00).
+- **The crown:** the Crownbinder in every capital applies one Fallen Crown to
+  one item for one hour of band-6 income, **1g 47s** (`grug_traders.CROWN_FEE`,
+  checked by `tools/r29_e4/income.py`; [item_tiers.md](item_tiers.md) §4).
+- **Culture vendor:** the Decor Merchant in every capital sells cosmetic,
+  non-craftable blocks and lights in four bands: accent blocks 25c, small
+  lights 1s, large lights 10s, showpieces 1g ([item_tiers.md](item_tiers.md)
+  §6.4; the shelf is in `grug_traders/stock.lua`).
 - **Respec:** repeatable **in the talent UI, with no class trainer and no
   NPC** (ruling 4 of 2026-09-16, `skill_trees.md` §5). It costs **five
   minutes of measured reliable net solo income** at the character's bracket,
@@ -1844,8 +1889,8 @@ retired. Housing has no money price, tiers, upgrades or additional stones
   returns only the whole unburnt lumps.
 
 Mounts at levels 15/30/45/60 cost **15 minutes / 45 minutes / 2 hours /
-5 hours** of reliable tier-appropriate net solo income: **1s10c, 7s, 1g37s and
-7g33s**; the Boat costs 1s10c and the Improved Boat 7s, like the two land
+5 hours** of reliable tier-appropriate net solo income: **1s5c, 7s, 1g32s and
+7g37s**; the Boat costs 1s5c and the Improved Boat 7s, like the two land
 tiers (`economy.md` §4.2). The retired fixed 1s/8s/30s/60s table is not a
 fallback.
 

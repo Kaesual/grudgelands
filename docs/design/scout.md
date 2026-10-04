@@ -355,7 +355,7 @@ conflicts if version 1 had stealth (§8).
 | **Arrows** | the player arrow item and Round-17 **homing** `grug_projectiles` entity; the Basics craft is 1 Bronze Bar + 2 diagonal Sticks → 100, one stack (Round 21 calibration, Round 28 stack size); the physics reference and its licence are §4.1 | `items_crafting.md` §9; reference entity `skeleton_archer.lua:18` |
 | **Leather armour** | consume the delivered 24-item leather family and its dedicated inventory/worn art; armor rank remains 2 | `inventory_equipment.md` §2; `character_visuals.md` §3 |
 | **Professions** | none created. Leatherworker owns the leather grades; Woodcarver owns bow quality operations | `professions.md` §2–§3 |
-| **Traders** | the bowyer shelf exposes bows and player arrows; the tanner shelf exposes the leather grades through the existing rotation and quality paths | `grug_traders/stock.lua` |
+| **Traders** | the bowyer shelf exposes the T1 bow and player arrows; the tanner shelf the T1 leather pieces (vendors sell T1 bases only since Round 33) | `grug_traders/stock.lua` |
 | **Character visuals** | consume the delivered leather family and bow pose without new Scout-specific art | `character_visuals.md` §§3, 6 |
 | **Combat stat consumers** | the ranged damage term, Scout dodge consumer and shared cap overrides are delivered | `combat_stats.md` §2; `skill_trees.md` §3.2 |
 | **PvP (WP41)** | nothing in version 1. Sprint and Sidestep are ordinary buffs under the PvP flag rules | [pvp.md](pvp.md) |
