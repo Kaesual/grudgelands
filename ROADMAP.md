@@ -106,8 +106,8 @@ Earlier delivery narratives are preserved in the
   it in parallel without becoming allies.
 
 **Scope versus delivery:** this vision includes approved future systems, not just
-running code. The WP9 story from level 41 remains unfinished and V1's
-sound is researched (Round 32) and planned as Round 34, not built; the items
+running code. The WP9 story from level 41 remains unfinished; V1's sound is
+delivered in Round 34 (GUI test pending); the items
 and professions revision (WP5, WP10) is delivered in Round 33; WP41 PvP and
 the PvP POIs of WP42 are delivered (Round 31, GUI test pending), WP17
 boats/waypoints and the WP44 economy too (Round 29, tested by the user). [BACKLOG](BACKLOG.md) distinguishes them.
@@ -125,7 +125,7 @@ B1–B7) settle the rest:
   `/unstuck`); WP41 geographic PvP; WP9's story levels 41–60 and the finale;
   **sound** (the user, 2026-10-03): effects for the game's events, mob
   voices, ambience and calm background music without a combat switch
-  ([sound research](docs/research/sound-research-2026-10.md)).
+  (delivered in Round 34, [sound.md](docs/design/sound.md)).
 - **After V1:** WP42's scripted NPC battles on the war front. The small PvP
   POIs shipped in V1 (Round 31).
 - **Not V1:** the walkable Nether, the first expansion (V2).
@@ -211,8 +211,8 @@ B1–B7) settle the rest:
   crafting lookups, crosshair and name tags; Return home on the Character
   page; piers and beaches at the dragon-island landings; the legacy quest
   fields removed and the Dawnmere NPC duplication fixed; band-4/5 loot
-  smoothing with recomputed prices. Local, not pushed. Next: fresh world and
-  GUI test.
+  smoothing with recomputed prices. Pushed 2026-10-04. Next: fresh world
+  and GUI test.
 - [x] **Round 31 "PvP, appearance and clean-up"**
   ([completion](docs/planning/round31-plan.md#completion-2026-10-03)):
   **WP41 geographic PvP** (the per-player flag, the PvP tab, icons, banner
@@ -223,8 +223,8 @@ B1–B7) settle the rest:
   package** (character looks chosen at creation, NPC look rolls, helmet
   face window, equal hitboxes, enchant colours on gear); the **dragon
   arenas** redesigned (round leash arenas, ice and ember hazards, the
-  dragon's wrath); the Round 30 clean-up items and a fixture runner. Local,
-  not pushed. Next: fresh world and the two-client GUI test.
+  dragon's wrath); the Round 30 clean-up items and a fixture runner. Pushed
+  2026-10-04. Next: fresh world and the two-client GUI test.
 - [x] **Round 32 "Fixes, preparation and research"**
   ([completion](docs/planning/round32-plan.md#completion-2026-10-03)): the
   minimap zoomed ×2, hostile camps marked on the Map tab, zone names
@@ -237,7 +237,7 @@ B1–B7) settle the rest:
   studies: a [performance review](docs/research/perf-review-2026-10-r32.md)
   at 50 and 100 stand-ins, the [sound research](docs/research/sound-research-2026-10.md),
   the [items and professions analysis](docs/research/items-professions-analysis-2026-10.md).
-  Local, not pushed. Next: the GUI test.
+  Pushed 2026-10-04. Next: the GUI test.
 - [x] **Round 33 "Items, professions and achievements"**
   ([completion](docs/planning/round33-plan.md#completion-2026-10-04)), the
   items design session's rulings (**WP5 and WP10 delivered**): gear drops by
@@ -250,7 +250,21 @@ B1–B7) settle the rest:
   crit ×2, T1-only vendor gear, dearer repair, fixed potions, a Crownbinder
   and a Decor Merchant in every capital; per-character achievements that
   unlock cosmetic cloaks ([item_tiers.md](docs/design/item_tiers.md)).
-  Local, not pushed. Next: the GUI test on a fresh world.
+  Pushed 2026-10-04; the user's findings fed Round 34.
+- [x] **Round 34 "Sound"**
+  ([completion](docs/planning/round34-plan.md#completion-2026-10-04)), V1's
+  sound ([sound.md](docs/design/sound.md), [credits](CREDITS.md)): every
+  file picked by the user on a listening page; effects at the game's events
+  with many left silent by choice, hits by weapon kind, ability cues, mob
+  voices in 22 families, dragon and King cues; quiet ambience beds per
+  region, night, cave, deep and sea, thunder on the dragon islands, loops at
+  forges, hearths and flowing water; four music pools pushed to a player
+  only while music is on, a main-menu theme, volume and off switches per
+  player. Two fix lanes from the Round 33 test: mobs follow through water
+  in combat; text boxes, cooking costs, the Bag of Coins, service map
+  markers, the damage fit, no gear from encounter adds, thin ice breaking
+  behind a runner. Local, not pushed. Next: the GUI test on desktop and in
+  the web build.
 
 ### Remaining work
 
@@ -258,23 +272,18 @@ B1–B7) settle the rest:
   whether POIs, camps, outposts, mines and the PvP fortresses are placed per
   world instead of at fixed positions
   ([BACKLOG](BACKLOG.md#seed-dependent-poi-placement-user-2026-10-03-optional-set-aside)).
-- [ ] **Sound (V1), Round 34** (the user, 2026-10-03; planned in a parallel
-  session on branch `r34-plan`, not merged yet): researched in Round 32
-  ([sound research](docs/research/sound-research-2026-10.md)); two lanes,
-  S1 effects (a play helper, about 30 hooks, formspec clicks, mob voices by
-  archetype) and S2 ambience and music (a per-player player on the
-  atmosphere tick, volume settings, 8–12 calm tracks). Seven decisions by
-  the user come first ([BACKLOG](BACKLOG.md#sound-v1-user-2026-10-03)).
-- [ ] **WP9 (V1):** the level-41–60 main questline and the finale, moved
-  out of Round 32 to a round of its own after Round 34 (sound).
+- [ ] **WP9 (V1), next:** the level-41–60 main questline and the finale, a
+  round of its own after Round 34 (sound).
   Round 29's front quests and bounties carry the 41–60 leveling; the main
   storyline and the finale are reassessed on top of them.
-- [ ] **Small next lane** (the user, 2026-10-04): money withdraw and deposit
-  as a Bag of Coins, with fixes from the GUI test
-  ([BACKLOG](BACKLOG.md#money-withdraw-and-deposit-bag-of-coins-user-2026-10-04-planned));
-  Round 33's open notes (map markers for the capital services, Priest
-  healing and Intelligence, the playtest's crit numbers) in its
-  [carry-overs](BACKLOG.md#round-33-carry-overs).
+- [ ] **Seed failures:** about 1 % of random seeds fail at load (a wide
+  river detours around two close POIs separately), diagnosed after Round
+  34; the fix waits for the user's choice
+  ([BACKLOG](BACKLOG.md#round-34-carry-overs)). Round 33's and 34's other
+  open notes (Priest healing and Intelligence, the playtest's crit numbers,
+  sound balance) are in the
+  [Round 33](BACKLOG.md#round-33-carry-overs) and
+  [Round 34](BACKLOG.md#round-34-carry-overs) carry-overs.
 - [ ] **WP13:** a separate walk of the Round 20 POI art (its GUI acceptance).
 - [ ] **WP34 depth pulse** (kept, for later): placement and the deep servant
   roster stay open in TODO-design-depth.md. Renewable camp resources are
@@ -315,7 +324,10 @@ ends fresh-server development mode.
 ## Phase 3 — Polish
 
 - [ ] Original textures, sounds and animated models with complete provenance
-  (V1's sound pass uses licence-clean sources first, Phase 1).
+  (V1's sound pass, Round 34, uses licence-clean sources first).
+- [ ] Optional: a small weather system (sky, particles within the web
+  budget, a rain bed); not V1 (Round 34 ruling 7,
+  [BACKLOG](BACKLOG.md#weather-optional-user-2026-10-04)).
 - [ ] Localization through Luanti's translation system; German first.
 - [ ] Balance, accessibility, onboarding and a 100-player performance pass
   with real clients (Round 32 measured 50 and 100 stand-ins).

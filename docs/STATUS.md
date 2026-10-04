@@ -2,12 +2,42 @@
 
 Updated 2026-10-04. This is the delivery pointer, not another game specification.
 
+- **Round 34 "Sound" delivered locally**
+  (2026-10-04, [plan, completion and GUI checklist](planning/round34-plan.md#completion-2026-10-04)).
+  Every lane is merged on local main (last lane S1b, `b0d648f5`), each code
+  lane independently reviewed by Opus; every shipped sound was picked by the
+  user on a listening page; 77 fixtures pass; not pushed. No mapgen change.
+  Rules: [sound.md](design/sound.md); credits: [CREDITS.md](../CREDITS.md).
+  - **Effects (S1a, S1b):** `grug_sounds` with a one-line play helper and
+    the formspec click; cues for NPC roles, quests, trade, progression,
+    crafting, items, mounts, travel, fishing and the Enable PvP button; hits
+    by weapon kind, dodge, block, death, one cue per ability theme, mob
+    voices in 22 families, dragon and King cues. Many events stay silent by
+    the user's choice (quest accept, drops, crit and others). 118 files,
+    1.49 MB.
+  - **Ambience and music (S2):** `grug_ambience`: a quiet bed per region,
+    night, cave, deep underground and sea (towns at half gain), distant
+    thunder on the dragon islands, loops at forges, hearths and flowing
+    water; four music pools (Land, Front and sea, Underground, Town) whose
+    16 tracks are pushed to a player only while music is on; a main-menu
+    theme; Help → Sound, `/music`, `/ambience`. First-join media 14.10 →
+    20.82 MB; the music (30 MB) is never part of it.
+  - **Fixes (F1, F2):** mobs follow their target through water in combat and
+    swim back to land; text boxes sized to their text; each tier's Caster
+    dish costs the most; the Bag of Coins (withdraw and deposit, money
+    between players); map markers for the Crownbinder and the Decor
+    Merchant; the damage fit keeps attribute fractions; encounter adds drop
+    no gear; Wyrmglass thin ice breaks 1 s behind a runner.
+  - Next: the user's GUI test (desktop and web build); about 1 % of random
+    seeds fail to load (a river detour, diagnosed, fix pending the user's
+    choice); then WP9.
+
 - **Round 33 "Items, professions and achievements" delivered locally**
   (2026-10-04, [plan, completion and GUI checklist](planning/round33-plan.md#completion-2026-10-04)).
   Every lane is merged on local main (last lane C5, `16c498b9`), each code
   lane independently reviewed by Opus; the data lane DS approved by the user
   through its preview; 72 fixtures pass, `income.py --check` passes again;
-  not pushed. **A fresh world is required** (the cultural materials leave
+  pushed by the user on 2026-10-04 with Rounds 30–32. **A fresh world is required** (the cultural materials leave
   the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
   - **Drops (C1):** at most one item per kill, normal 5/2/1 % white/blue/gold,
     named, elite, zone leaders and war-camp captains 10/10/5 %; Kings,
@@ -32,16 +62,14 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
     41 cosmetic cloaks painted by GPT-6 Astra; an Achievements tab and a
     cloak dropdown on the Character page; the cloak swings on the player
     model ([character_visuals.md](design/character_visuals.md) §5b).
-  - Next: the user's GUI test (with Rounds 30–32) on a fresh world; Round
-    34 (sound, planned on branch `r34-plan`); a small lane with GUI-test
-    fixes and the Bag of Coins (money withdraw and deposit, BACKLOG); then
-    WP9.
+  - Next was the user's GUI test (with Rounds 30–32); its findings and the
+    Bag of Coins became Round 34's fix lanes beside sound.
 
 - **Round 32 "Fixes, preparation and research" delivered locally**
   (2026-10-03, [plan, completion and GUI checklist](planning/round32-plan.md#completion-2026-10-03)).
   Every code lane is merged on local main (last lane F4, `2f709fbc`), each
   independently reviewed by Opus (F3's third pass and F2's last small
-  commit checked by the coordinator); 66 fixtures pass; not pushed. No
+  commit checked by the coordinator); 66 fixtures pass; pushed 2026-10-04. No
   mapgen change: the Round 31 fresh world serves the GUI test.
   - **Map and HUD (F1):** the minimap zoomed ×2 (a 440-node window; the base
     map unchanged); hostile camps (bandit and Mirefolk) as a red "X" on the
@@ -79,7 +107,7 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).
   Every lane is merged on local main (last lane Q, `699a2002`), each
   independently reviewed by Opus except the small follow-ups M2 and G2
-  (checked by the coordinator); not pushed. WP41 delivered and WP42's
+  (checked by the coordinator); pushed 2026-10-04. WP41 delivered and WP42's
   PvP-POI part; rules in [pvp.md](design/pvp.md). A fresh world is required.
   - **Geographic PvP (P1, P2, P1b, P1c; WP41):** PvP only between two
     flagged enemy players; the flag comes from contested ground or enemy
@@ -130,7 +158,7 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
 - **Round 30 "Performance and clean-up" delivered locally** (2026-10-02,
   [plan, completion and playtest checklist](planning/round30-plan.md#completion-2026-10-02)).
   Every lane is merged on local main (last lane P2, `b64709d7`), each
-  independently reviewed by Opus; not pushed. Numbers are each lane's
+  independently reviewed by Opus; pushed 2026-10-04. Numbers are each lane's
   before/after comparison on its own probe, never targets.
   - **Quest state and map UI (P1, P1b):** a decoded quest-state cache and one
     marker pass for all givers (minimap 55.8 → 9.3 ms/s, quest HUD 17.1 →
@@ -392,10 +420,11 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
 - **Documentation consolidation:** complete with independent Astra PASS;
   [receipt and coverage](maintenance/documentation-round.md). Remaining decisions
   and code/design discrepancies: [findings](maintenance/findings.md).
-- **Latest game:** local main carries Round 30, which includes Rounds 20–29
-  and the 2026-09-28 playtest fixes. Round 29 is the latest pushed state,
-  tested by the user on a fresh world (2026-10-02); Round 24 is the latest
-  formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
+- **Latest game:** local main carries Round 34, which includes Rounds 20–33
+  and the 2026-09-28 playtest fixes. Round 33 is the latest pushed state
+  (with Rounds 30–32, 2026-10-04); Round 29 was tested by the user on a
+  fresh world (2026-10-02), the user's Round 33 findings became Round 34's
+  fix lanes; Round 24 is the latest formally accepted one. The 2026-09-30 playtest with friends fed Round 28,
   the 2026-10-02 spawn playtest Round 29. Fresh-world development
   remains in force.
 - **Technical reviews/gates:** recorded PASS for those delivered candidates;
@@ -410,7 +439,11 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   [full-speed follow-up](research/pregen-fullspeed.md). No remote deployment
   claimed. Prior measurement: [scan-budget follow-up](research/pregen-scan-budget.md).
 - **GUI acceptance:** user-run and pending where not explicitly accepted.
-  The [Round 30 checklist](planning/round30-plan.md#playtest-checklist)
+  The [Round 34 checklist](planning/round34-plan.md#gui-playtest-checklist)
+  covers sound (desktop and web build), mobs in water, the text boxes, the
+  Bag of Coins, the service markers and the thin ice; the Round 31–33
+  checklists are linked from their entries above; the
+  [Round 30 checklist](planning/round30-plan.md#playtest-checklist)
   covers the Map tab rate, quest markers, Return home on the Character page,
   mobs giving up, spawns, crafting, the crosshair, island landings, prices
   and the faster second start; the
@@ -426,8 +459,9 @@ Updated 2026-10-04. This is the delivery pointer, not another game specification
   [Round 25 checklist](planning/round25-housing-plan.md#playtest-checklist-fresh-world)
   the rest of housing; earlier rounds keep their own checklists. The
   user wants a separate walk of the Round 20 POI art (audit E2).
-- **Remote observation:** Round 29 is pushed complete (`e512bb5c`,
-  2026-10-02), including Rounds 27 and 28. Round 30 is local only.
+- **Remote observation:** Rounds 30–33 are pushed (origin/main
+  `35af4ede`, 2026-10-04, which also carries the Round 34 plan); Round 34 is
+  local only.
 - **Release:** unreleased fresh-server development. The Nether is expansion
   content. [First-public-release gates](../BACKLOG.md#first-public-release-gates)
   remain open.

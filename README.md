@@ -46,6 +46,10 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   party with up to ten players of your
   faction. Party health displays and atlas markers help you stay together
   while exploring and fighting.
+- **A world you can hear.** Creatures, spells, crafting and the people you
+  talk to have their own sounds; every region has a quiet ambience by day
+  and night, forges ring and rivers run, and calm music plays now and then,
+  with volume settings for both.
 - **Fight the other faction when you choose to.** Contested lands and enemy
   territory flag you for PvP, a button flags you anywhere, and only two
   flagged players can harm each other. Each faction holds a fortress at the
@@ -61,8 +65,18 @@ to fear. Their story will grow as more regions and encounters are completed.
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 34](docs/planning/round34-plan.md#completion-2026-10-04), "Sound", is
+complete locally and awaits a listening playtest on desktop and in the
+browser. The game now has sound: clicks and cues when you talk to people,
+trade, craft and level up, hits that sound like the weapon you swing, spells,
+creature voices and roaring dragons, a quiet ambience for every region by
+day and night, and calm music that changes with where you are and is only
+downloaded while music is on ([sound](docs/design/sound.md),
+[credits](CREDITS.md)). Creatures now follow you across streams, a Bag of
+Coins lets you hand money to another player, and the Crownbinder and Decor
+Merchant show on the map.
 [Round 33](docs/planning/round33-plan.md#completion-2026-10-04), "Items,
-professions and achievements", is complete locally and awaits a playtest on
+professions and achievements", is complete and pushed and awaits a playtest on
 a fresh world. Gear now drops in white, blue and gold, named creatures and
 elites drop more, and every boss gives two blue or gold pieces; you can wear
 gear only once you reach its level. Enchantments grow with the item's level and
@@ -73,7 +87,7 @@ potions heal a fixed amount per tier, critical hits deal double, and a Decor
 Merchant sells blocks and lights for your home. Alchemy is learned next to
 Cooking, and achievements unlock cloaks that swing on your character.
 [Round 32](docs/planning/round32-plan.md#completion-2026-10-03), "Fixes,
-preparation and research", is complete locally and awaits a playtest. The
+preparation and research", is complete and pushed and awaits a playtest. The
 minimap zooms in twice as far, so quest givers and trainers are easier to
 tell apart, and hostile camps get their own red mark on the world map. Zone
 names now show in green, yellow or red for friendly, contested or enemy
@@ -86,7 +100,7 @@ players at once more evenly, and three studies prepare the next steps:
 performance with 50 to 100 players, sound and music for the first release,
 and items and professions.
 [Round 31](docs/planning/round31-plan.md#completion-2026-10-03), "PvP,
-appearance and clean-up", is complete locally and awaits a two-player test
+appearance and clean-up", is complete and pushed and awaits a two-player test
 on a fresh world. Players of the two factions can fight each other only when
 both are flagged: contested lands and enemy territory flag you, and a button
 flags you for a minute anywhere ([PvP rules](docs/design/pvp.md)). Each
@@ -96,7 +110,7 @@ face, hair and features at creation, townsfolk and guards look different
 from each other, enchantments show as coloured accents on your gear, and
 both dragons fight in round arenas with ice or ember hazards.
 [Round 30](docs/planning/round30-plan.md#completion-2026-10-02), "Performance
-and clean-up", is complete locally and awaits a playtest on a fresh world.
+and clean-up", is complete and pushed and awaits a playtest on a fresh world.
 Quest markers, the world map, the minimap, crafting and the crosshair cost
 the server much less, a second start of a world takes about half as long,
 and mobs give up a player they cannot reach and walk home. Return home now
@@ -174,13 +188,16 @@ canceled and 6 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 33](docs/planning/round33-plan.md#completion-2026-10-04)
+[Round 34](docs/planning/round34-plan.md#completion-2026-10-04)
+(sound effects, creature voices, ambience and music, mobs in water, the Bag
+of Coins), independently reviewed and merged locally, after Round 33
 (drops, enchant tiers and upgrades, the crown, vendors, potions, cloaks and
-achievements), independently reviewed and merged locally, after Round 32
-(map and HUD fixes, the held left click, notices in the feed), Round 31
-(PvP, looks, dragon arenas) and Round 30 (performance); Round 29 is the
-latest pushed state and Round 24 the latest formally accepted one.
+achievements), Round 32 (map and HUD fixes, the held left click, notices in
+the feed), Round 31 (PvP, looks, dragon arenas) and Round 30 (performance);
+Round 33 is the latest pushed state and Round 24 the latest formally
+accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 34](docs/planning/round34-plan.md#gui-playtest-checklist),
 [Round 33](docs/planning/round33-plan.md#gui-playtest-checklist),
 [Round 32](docs/planning/round32-plan.md#gui-playtest-checklist),
 [Round 31](docs/planning/round31-plan.md#gui-playtest-checklist),
@@ -191,22 +208,23 @@ latest pushed state and Round 24 the latest formally accepted one.
 [Round 26](docs/planning/round26-capitals-housing-cleanup-plan.md#playtest-checklist-fresh-world)
 playtests remain separate.
 
-**Ready for further work:** the first release still needs sound and calm
-background music (Round 34, being planned) and the main story from level 41
-to 60 with its finale. A small lane follows with fixes from the playtest
-and a Bag of Coins for handing money to other players; map markers for the
-capital services and a later look at Priest healing are noted, and the deep
-spawn pulse stays for later. Points of interest stay at fixed positions (per-world
+**Ready for further work:** the first release still needs the main story
+from level 41 to 60 with its finale (WP9, next). A rare world-generation
+failure on about 1 % of random seeds is diagnosed and waits for a fix; a
+later look at Priest healing is noted, and the deep spawn pulse stays for
+later. Points of interest stay at fixed positions (per-world
 placement set aside); the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 33 needs a fresh world. Quests never ask you to kill
+**Caveats:** Round 33 needs a fresh world (Round 34 plays on it); the
+sound's volume balance is tuned after the listening playtest. Quests never ask you to kill
 players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Round 32's [performance review](docs/research/perf-review-2026-10-r32.md)
 measured 50 and 100 simulated players; a test with real clients and
 first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round33-plan.md#gui-playtest-checklist),
+the [latest playtest checklist](docs/planning/round34-plan.md#gui-playtest-checklist),
+the [Round 33 checklist](docs/planning/round33-plan.md#gui-playtest-checklist),
 the [Round 32 checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
 the [Round 31 checklist](docs/planning/round31-plan.md#gui-playtest-checklist),
 the [Round 30 checklist](docs/planning/round30-plan.md#playtest-checklist),
@@ -223,8 +241,8 @@ and the [Round 24 checks](docs/planning/round24-mining-underground-mobs-plan.md#
 The [full roadmap](ROADMAP.md) separates planned features from delivered work.
 There are no fixed release dates yet.
 
-- **Toward the first release:** sound effects, ambience and calm
-  background music, and the main story up to level 60 and its finale.
+- **Toward the first release:** the main story up to level 60 and its
+  finale.
   Performance with many players, balance and reliable everyday play are
   part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
