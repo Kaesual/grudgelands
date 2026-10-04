@@ -66,9 +66,11 @@ corrects afterwards (no pre-approval round for every single cue).
    *Achaidh Cheide* (Kevin MacLeod, CC BY 4.0; the user hears it as tavern
    music, so it also goes to the Town pool), M4 *Soliloquy* (Matthew Pablo, CC
    BY 3.0), M6 *Fantasy Orchestral Theme* (joth, CC0) are set; M3 *Forest
-   Walk* (Alexander Nakarada, CC BY 4.0) is possible (front); M5 is out. S2
-   proposes 4–6 more from the same catalogues on its preview page. Optional:
-   one main-menu theme (`menu/theme.ogg`, engine feature).
+   Walk* (Alexander Nakarada, CC BY 4.0) is possible (front); M5 is out. The
+   Town pool takes D.1–D.7 of the Round 34 page (§2.2) and M2. S2 proposes
+   2–4 more on its preview page where a pool is thin (Front and sea,
+   Underground). Optional: one main-menu theme (`menu/theme.ogg`, engine
+   feature).
 5. **Music delivery: on demand.** Music files stay out of every `sounds/`
    folder and are pushed per player with `core.dynamic_add_media` after
    joining, one track at a time during the pause before it plays, only to
@@ -115,9 +117,59 @@ numbers as on the page; 2026-10-04):
   11.4 telegraph roar.
 - **Music:** all six liked; the in-game effect is the real test.
 
-From the Round 34 page (more ambience per region, calls, the missing
-effects, town music): **pending** — the user's numbers go here before
-approval.
+From the Round 34 page ([artifact](https://claude.ai/artifact/Co1PWHqx3SJPAmZAMxpSur),
+2026-10-04; sources and cut points in `r34/listen/clips.json`):
+
+- **Ambience beds** (by atmosphere mood):
+  - human: A1.1 (good), A1.3 (slight hiss)
+  - elf: A2.2, A2.3 (also fits jungle or wooded steppe), 8.1
+  - troll: A3.1, A3.4 (rainforest with rain), A2.3
+  - orc: A4.1, 8.5, A4.3 (wind only); A3.3 is steppe
+  - dwarf: A5.3 (sharp, gusty wind), A5.4 (light rain), 8.5 (ice desert)
+  - undead: A6.1 (dark, windy, eerie), A6.2 (eerie swamp, clear water), 8.4
+  - Battlegrounds: A7.1 (quiet background), A7.2 (wind only)
+  - dragon islands: A8.2, A8.3
+  - underground: A9.1 ("dark dungeon", drips on stone — very good), 8.7;
+    A4.4 sounds like a crystal cave (deep underground); A6.3 a dark cave at
+    a forest edge
+  - night (over every region): A10.1 (crickets and owl), A10.2, A10.3
+  - sea and coast: A11.2 (best), A11.3
+  - streams and rivers: A12.1, A12.2 (also a small waterfall)
+  - underwater: 8.8
+  - dark forest: A9.3 (= 8.3)
+- **Not used:** A1.2, A2.4 (rain), A1.4 (cars), A2.1, A3.2, A5.1, A5.2,
+  A8.1 (hiss, microphone wind), A4.2, A6.4 (frogs — the game has none),
+  A7.3 (close, fluttering fire), A9.2 (monster noises), A11.1 (too loud),
+  A11.4.
+- **Calls:** owl B.1; crows B.3 (great) and B.4 (crows at dusk); wolf B.6
+  (only the first 5 s); hawk B.8 (very good); distant thunder C11.1–C11.4
+  (all good).
+- **Effects:**
+  - quest accept C1.3; quest complete C2.1 cut to its first 2 s
+  - **no refusal or error cue** (the user: not needed; C3 all rejected)
+  - fire: C4.1 fireball, C4.2 fire beam, C4.3 big fireball (long, mighty)
+  - frost: C5.2 without its first 0.3–0.5 s (the spreading frost wave),
+    C5.1; C5.4 for the frost dragon's breaking ice
+  - shield spell C6.2, heal C6.3
+  - mob hurt: C7.1 humanoids and zombies; C7.3 mid-sized strange creatures
+    (ghosts, wisps, the underground lava monsters)
+  - mob death: C8.1 and C8.4 a ghost vanishing, C8.2 a mummy
+  - voices: C9.2 ogres, trolls and the Land Guard; C9.3 wolf or hyena attack, C9.5
+    wolf or hyena death; C9.4 (dragon growl 2) good but long
+  - arena lightning C10.1, C10.2
+  - cooking C12.1, C12.2; alchemy C12.4 (top), C12.1
+  - forge: C13.1's first two blows are good, but blows 3 and 4 run together
+    (rebuild an evenly spaced loop from the good blows); C13.2 one blow for
+    repair; C13.3
+- **Not used:** C1.1, C1.2, C1.4, C2.2–C2.4, C3, C4.4, C5.3, C6.1, C6.4,
+  C7.2, C8.3 (a whetstone, not a death), C9.1, C10.3, C10.4, C12.3.
+- **Town music:** D.1–D.7 all very good (D.6 *Teller of the Tales* is the
+  one melancholic piece).
+
+**What the picks teach about sources** (rules for the lanes): no rain,
+traffic, microphone wind or steady hiss under a bed; no animals the game
+does not have (frogs); no monster voices inside an ambience bed; effects
+short and focused, with the cut starting at the event itself.
 
 ## 3. Shared conventions (both wave-1 lanes and S1b)
 
@@ -155,7 +207,8 @@ approval.
   `LICENSE-media.md`, and one global `grug_sounds` with a small play helper:
   an event name maps to a sound spec (name, gain, pitch spread, distance,
   positional or `to_player`); a call site is one line. Hooked mods add
-  `grug_sounds` to their dependencies.
+  `grug_sounds` to their dependencies. No refusal or error cue (user,
+  §2.2): refusals stay silent.
 - **Formspec clicks:** one `style_type[button,image_button,…;sound=…]` for
   every formspec (the prepend is set in vendored `BASE/default/init.lua`,
   so a `-- GRUG PATCH` with a `VENDOR.md` note, or a grug mod that extends
@@ -163,10 +216,10 @@ approval.
   local `style_type` lines in our formspecs do not drop the sound.
 - **Events** (the study's table §3, re-checked on main; Round 33 additions
   at the end): quest-giver dialog and quest text; vendor open, buy, sell;
-  trainer and other villager services; faction refusal; quest accept,
+  trainer and other villager services; quest accept,
   abandon, turn-in, objective progress; level-up (fanfare); profession
-  learned and tier-up; talent learned; craft finished; repair; refusals
-  through `grug_core.flash`; money gained; equip; mount summon and dismount
+  learned and tier-up; talent learned; craft finished; repair; money
+  gained; equip; mount summon and dismount
   plus gallop, wing beats and boat movement; travel (waystone, hearth,
   home); zone banner (soft, rare); PvP flag on/off; respawn; fishing cast and
   catch (the splash, user); smithy and fire sounds at forges and hearths in
@@ -221,9 +274,10 @@ approval.
   on an existing page (the Help page `grug_inventory/help.lua` or the
   Character page — the lane picks the one with room) and `/music`,
   `/ambience` commands.
-- **Tracks:** the set tracks plus 4–6 proposals (Scott Buckley,
-  incompetech, Alexander Nakarada, OpenGameArt) on the preview page; trim to
-  the calm part where CC BY allows it (modification noted).
+- **Tracks:** the set tracks, the seven town pieces, plus 2–4 proposals
+  for the thin pools (Scott Buckley, incompetech, Alexander Nakarada,
+  OpenGameArt) on the preview page; trim to the calm part where CC BY allows
+  it (modification noted).
 - **Fixture:** scheduler and pools (no cut on a group change, the pause
   range, first-track delay, music off stops pushes), bed selection by
   state, `tools/r34_s2/portable_test.lua`. Before/after numbers of the
@@ -234,19 +288,27 @@ approval.
 - **Combat:** swing into the air (item `sound.punch_use_air`), hit by
   weapon kind (blade, blunt; `mobs_punch` stays for fists), block, crit,
   dodge; player death and respawn (death_messages hook).
-- **Abilities:** a cast and an impact per ability theme (fire, frost,
-  holy/heal, shadow, nature, physical) for the 21 registrations, at
+- **Abilities:** a cast and an impact per ability theme for the 21
+  registrations (picked: C4.1–C4.3 fire, C5.1/C5.2 frost, C6.2 shield, C6.3
+  heal; the other themes are S1b proposals), at
   `grug_abilities.try_cast` and `grug_core.deal_ability_damage`; projectile
   launch and impact at `grug_projectiles.spawn` / `settle_hit`.
 - **Mob voices by archetype** (beast, canine, feline, boar, insect, slime,
   undead, humanoid, ogre/giant, bird, reptile, aquatic, dragon): a `sounds`
   table set at registration by family (random, war cry, damage, death,
   distance); the 89 `grug_mobs` registrations share them. **The panther
-  keeps no war cry** (`grug_mobs/panther.lua:7-13`). Giant voice 11.3 for
-  ogre and giant damage (user).
+  keeps no war cry** (`grug_mobs/panther.lua:7-13`). The user's picks
+  (§2.2) seed the families: 11.3 ogre and giant damage, C9.2 ogre, troll and
+  Land Guard (`grug_mobs/land_guard.lua`) voices, C9.3 and C9.5 wolf and hyena attack and death, C7.1
+  humanoid and zombie hurt, C7.3 ghosts, wisps and lava creatures, C8.1/C8.4
+  ghost death, C8.2 mummy death. The other families (bear, boar, feline,
+  insect, slime, bird, reptile, aquatic, critters) have no pick yet: S1b
+  proposes them on its preview page.
 - **Bosses:** dragon roar and growl (11.1, 11.2), breath, wrath, enrage,
-  arena lightning (short and punchy), Kraken, Kings; the **telegraph
-  wind-up growl** at `grug_mobs/telegraph.lua` (the TODO there).
+  arena lightning C10.1/C10.2, the frost dragon's breaking ice C5.4,
+  Kraken, Kings; the **telegraph wind-up growl** at
+  `grug_mobs/telegraph.lua` (the TODO there; C9.4 cut to the 2 s wind-up or
+  the family's own war cry, S1b proposes).
 - **Fixture:** every mob family has a sound table, the panther has no
   `war_cry`, every referenced file exists; `tools/r34_s1b/portable_test.lua`.
 - Fix the dangling `tnt_explode` fallback only if a mob can reach it
