@@ -224,7 +224,9 @@ local EVENTS = {
 	dragon_lightning = {name = "grug_sounds_dragon_lightning", gain = 0.9, distance = 48},
 	dragon_enrage = {name = "grug_sounds_voice_dragon_war_cry", gain = 1, distance = 80},
 	dragon_wrath = {name = "grug_sounds_dragon_wrath", gain = 0.7, personal = true},
-	ice_break = {name = "grug_sounds_ice_break", gain = 0.6, distance = 24},
+	-- A run over thin ice breaks a band every 0.25 s; one clip a second keeps
+	-- it one continuous breaking instead of a stack of 2 s clips.
+	ice_break = {name = "grug_sounds_ice_break", gain = 0.6, distance = 24, interval = 1},
 	king_signature = {name = "grug_sounds_king_signature", gain = 0.8, distance = 24},
 }
 grug_sounds.EVENTS = EVENTS

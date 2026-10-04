@@ -1,8 +1,9 @@
 # Media Origin and Licenses (grug_sounds)
 
 Every file in `sounds/` was approved by the user on a listening page (Round
-34 approval gate, `docs/planning/round34-plan.md` §1); the list with page
-numbers is `tools/r34_s1a/approved.txt`. Licences were checked on each
+34 approval gate, `docs/planning/round34-plan.md` §1); the lists with page
+numbers are `tools/r34_s1a/approved.txt` (lane S1a, events) and
+`tools/r34_s1b/approved.txt` (lane S1b, combat and creatures). Licences were checked on each
 source page: the Kenney packs' `License.txt` (CC0), the OpenGameArt entries
 of rubberduck and artisticdude (CC0) and Little Robot Sound Factory (CC BY
 3.0), and each Freesound page (CC0, no GenAI tag). Freesound sources are the

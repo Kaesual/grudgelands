@@ -1894,7 +1894,9 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		end
 		hp_change = -remaining
 		absorb_particles(player:get_pos())
-		grug_sounds.play("block", player)
+		-- The shield's clang marks a hit (melee, ability, projectile), not a
+		-- damage-over-time tick.
+		if reason.type == "punch" then grug_sounds.play("block", player) end
 		if next(entries) == nil then absorbs[name] = nil end
 	end
 	-- PvP contact (pvp-plan ruling 7a): a player's hit that cost HP or absorb.
