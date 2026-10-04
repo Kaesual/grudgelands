@@ -69,7 +69,7 @@ The public lookup surface is `RESOURCES`, `RESOURCE_BY_KEY`,
 | `copper` | universal | `default:stone_with_copper` | `default:copper_lump` | — | 1 |
 | `tin` | universal | `default:stone_with_tin` | `default:tin_lump` | — | 1 |
 | `iron` | universal | `default:stone_with_iron` | `default:iron_lump` | — | 1 |
-| `quartz` | universal | `grug_materials:stone_with_quartz` | `grug_materials:quartz` | `grug_materials:cut_quartz` | 1 |
+| `quartz` | universal | `grug_materials:stone_with_quartz` | `grug_materials:quartz` | — (cut form removed, Round 33) | 1 |
 | `gold` | universal | `default:stone_with_gold` | `default:gold_lump` | — | 2 |
 | `citrine` | regional G1 | `grug_materials:stone_with_citrine` | `grug_materials:rough_citrine` | `grug_materials:cut_citrine` | 2 |
 | `garnet` | regional G1 | `grug_materials:stone_with_garnet` | `grug_materials:rough_garnet` | `grug_materials:cut_garnet` | 2 |

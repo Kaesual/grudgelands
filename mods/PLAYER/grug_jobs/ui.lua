@@ -367,7 +367,7 @@ local function shaping_routes()
 			local recipe = source[index]
 			local ingredient, slots = single_ingredient(recipe)
 			local product = recipe.output_name
-			if ingredient and recipe.operation ~= "enchant" and type(product) == "string" then
+			if ingredient and not recipe.station_operation and type(product) == "string" then
 				local by_ingredient = shaping_cache[product] or {}
 				shaping_cache[product] = by_ingredient
 				by_ingredient[ingredient] = math.max(by_ingredient[ingredient] or 0, slots)
@@ -393,8 +393,8 @@ end
 
 -- Navigable output lookup per unfiltered book, built once like the Basics
 -- catalog and the per-recipe record cache (cleared by
--- grug_jobs._reset_book_cache). Enchant operations are keyed by id in the book
--- list, not by their preview output, so they never count as a recipe for an
+-- grug_jobs._reset_book_cache). Station operations (enchants, upgrades) are
+-- keyed by id in the book list, not by their preview output, so they never count as a recipe for an
 -- ingredient; inverse routes (above) are left out as well.
 local function book_output_index(book)
 	local cached = output_index_cache[book]
@@ -405,7 +405,7 @@ local function book_output_index(book)
 	for index = 1, #source do
 		local recipe = source[index]
 		local name = recipe.output_name
-		if recipe.operation ~= "enchant" and type(name) == "string" and name ~= "" then
+		if not recipe.station_operation and type(name) == "string" and name ~= "" then
 			if not is_inverse_route(recipe, shaping) then
 				local list = cached[name]
 				if not list then list = {} cached[name] = list end
@@ -484,7 +484,7 @@ end
 local function output_groups(records)
 	local order, groups = {}, {}
 	for index = 1, #records do
-		local name = records[index].operation == "enchant" and records[index].id or
+		local name = records[index].station_operation and records[index].id or
 			records[index].output_name
 		if not groups[name] then groups[name] = {} order[#order + 1] = name end
 		groups[name][#groups[name] + 1] = records[index]
@@ -692,6 +692,8 @@ local function append_recipe(fs, recipe, alternative, alternative_count, clickab
 	local hint = recipe.hint or ""
 	if recipe.operation == "enchant" then
 		hint = "Select this enchant at the station. Add your equipment and these materials. " .. hint
+	elseif recipe.operation == "upgrade" then
+		hint = "Select this upgrade at the station. Add your equipment and these materials. " .. hint
 	end
 	if locked then hint = locked .. " " .. hint end
 	fs[#fs + 1] = ("textarea[1.25,8.45;8.1,1.0;;;%s]"):format(esc(hint))

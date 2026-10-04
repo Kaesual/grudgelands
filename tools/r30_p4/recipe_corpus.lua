@@ -939,22 +939,125 @@ return {
 		},
 		[40] = {
 			existing_engine_recipe = false,
-			hint = "Cut at a Jeweller's Bench",
+			hint = "Bind at a Tailor Bench",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_materials:quartz",
+					[1] = "grug_professions:bolt_patch",
+					[2] = "grug_professions:bolt_patch",
+					[3] = "grug_professions:parchment",
 				},
 			},
-			material = true,
-			output_name = "grug_materials:cut_quartz",
-			profession = "goldsmith",
-			progress = false,
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_bronze",
+			profession = "tailor",
+			progress = true,
 			shapeless = false,
-			station = "jewellers_bench",
+			station = "tailor_bench",
 			tier = 1,
 		},
 		[41] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_woven",
+					[2] = "grug_professions:bolt_woven",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_iron",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 2,
+		},
+		[42] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_heavy",
+					[2] = "grug_professions:bolt_heavy",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_steel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 3,
+		},
+		[43] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_silkweave",
+					[2] = "grug_professions:bolt_silkweave",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_silversteel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 4,
+		},
+		[44] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_silk",
+					[2] = "grug_professions:bolt_silk",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_embersteel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 5,
+		},
+		[45] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_stormweave",
+					[2] = "grug_professions:bolt_stormweave",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_abyssal_steel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 6,
+		},
+		[46] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -971,7 +1074,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[42] = {
+		[47] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -988,7 +1091,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[43] = {
+		[48] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1005,7 +1108,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[44] = {
+		[49] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1022,7 +1125,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[45] = {
+		[50] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1039,7 +1142,7 @@ return {
 			station = "jewellers_bench",
 			tier = 5,
 		},
-		[46] = {
+		[51] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1056,7 +1159,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[47] = {
+		[52] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1074,7 +1177,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[48] = {
+		[53] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1092,7 +1195,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[49] = {
+		[54] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1110,7 +1213,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[50] = {
+		[55] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1128,7 +1231,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[51] = {
+		[56] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1146,7 +1249,7 @@ return {
 			station = "jewellers_bench",
 			tier = 5,
 		},
-		[52] = {
+		[57] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1164,33 +1267,14 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[53] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_bronze",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 1,
-		},
-		[54] = {
+		[58] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_materials:cut_quartz",
+					[2] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1201,7 +1285,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[55] = {
+		[59] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1209,7 +1293,7 @@ return {
 				[1] = {
 					[1] = "grug_artisans:setting_tin",
 					[2] = "grug_artisans:setting_tin",
-					[3] = "grug_materials:cut_quartz",
+					[3] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1220,7 +1304,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[56] = {
+		[60] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1231,7 +1315,7 @@ return {
 					[3] = "grug_artisans:setting_tin",
 				},
 				[2] = {
-					[1] = "grug_materials:cut_quartz",
+					[1] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1242,7 +1326,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[57] = {
+		[61] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1254,7 +1338,7 @@ return {
 				},
 				[2] = {
 					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_materials:cut_quartz",
+					[2] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1265,7 +1349,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[58] = {
+		[62] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1278,7 +1362,7 @@ return {
 				[2] = {
 					[1] = "grug_artisans:setting_tin",
 					[2] = "grug_artisans:setting_tin",
-					[3] = "grug_materials:cut_quartz",
+					[3] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1289,7 +1373,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[59] = {
+		[63] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1305,7 +1389,7 @@ return {
 					[3] = "grug_artisans:setting_tin",
 				},
 				[3] = {
-					[1] = "grug_materials:cut_quartz",
+					[1] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1316,26 +1400,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[60] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_iron",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_iron",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 2,
-		},
-		[61] = {
+		[64] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1353,7 +1418,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[62] = {
+		[65] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1372,7 +1437,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[63] = {
+		[66] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1394,7 +1459,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[64] = {
+		[67] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1417,7 +1482,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[65] = {
+		[68] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1441,7 +1506,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[66] = {
+		[69] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1468,26 +1533,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[67] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_copper_inlaid_steel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_steel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 3,
-		},
-		[68] = {
+		[70] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1505,7 +1551,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[69] = {
+		[71] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1524,7 +1570,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[70] = {
+		[72] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1546,7 +1592,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[71] = {
+		[73] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1569,7 +1615,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[72] = {
+		[74] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1593,7 +1639,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[73] = {
+		[75] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1620,26 +1666,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[74] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_silversteel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 4,
-		},
-		[75] = {
+		[76] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1657,7 +1684,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[76] = {
+		[77] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1676,7 +1703,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[77] = {
+		[78] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1698,7 +1725,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[78] = {
+		[79] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1721,7 +1748,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[79] = {
+		[80] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1745,7 +1772,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[80] = {
+		[81] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1771,25 +1798,6 @@ return {
 			shapeless = false,
 			station = "jewellers_bench",
 			tier = 4,
-		},
-		[81] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_embersteel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_embersteel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 5,
 		},
 		[82] = {
 			existing_engine_recipe = false,
@@ -1936,25 +1944,6 @@ return {
 		},
 		[88] = {
 			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_abyssal_steel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_abyssal_steel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 6,
-		},
-		[89] = {
-			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
 			inputs = {
@@ -1975,7 +1964,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[90] = {
+		[89] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1998,7 +1987,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[91] = {
+		[90] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2022,7 +2011,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[92] = {
+		[91] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2049,7 +2038,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[93] = {
+		[92] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2077,7 +2066,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[94] = {
+		[93] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2106,83 +2095,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[95] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_copper_inlaid_steel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:slime_gel",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t3",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 3,
-		},
-		[96] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:croc_tooth",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t4",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 4,
-		},
-		[97] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_embersteel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_gathering:stormkelp",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t5",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 5,
-		},
-		[98] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_abyssal_steel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:stone_core",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t6",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 6,
-		},
-		[99] = {
+		[94] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2201,7 +2114,7 @@ return {
 			station = "grid",
 			tier = 1,
 		},
-		[100] = {
+		[95] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2217,7 +2130,7 @@ return {
 			tier = 1,
 			time = 5,
 		},
-		[101] = {
+		[96] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2236,7 +2149,7 @@ return {
 			station = "grid",
 			tier = 1,
 		},
-		[102] = {
+		[97] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2252,7 +2165,7 @@ return {
 			tier = 1,
 			time = 5,
 		},
-		[103] = {
+		[98] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2271,7 +2184,7 @@ return {
 			station = "grid",
 			tier = 2,
 		},
-		[104] = {
+		[99] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2287,7 +2200,7 @@ return {
 			tier = 2,
 			time = 5,
 		},
-		[105] = {
+		[100] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2306,7 +2219,7 @@ return {
 			station = "grid",
 			tier = 2,
 		},
-		[106] = {
+		[101] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2322,7 +2235,7 @@ return {
 			tier = 2,
 			time = 5,
 		},
-		[107] = {
+		[102] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2341,7 +2254,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[108] = {
+		[103] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2357,7 +2270,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[109] = {
+		[104] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2376,7 +2289,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[110] = {
+		[105] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2392,7 +2305,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[111] = {
+		[106] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2411,7 +2324,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[112] = {
+		[107] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2427,7 +2340,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[113] = {
+		[108] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2446,7 +2359,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[114] = {
+		[109] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2462,7 +2375,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[115] = {
+		[110] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2481,7 +2394,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[116] = {
+		[111] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2497,7 +2410,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[117] = {
+		[112] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2516,7 +2429,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[118] = {
+		[113] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2532,7 +2445,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[119] = {
+		[114] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2551,7 +2464,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[120] = {
+		[115] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2567,7 +2480,7 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[121] = {
+		[116] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2586,7 +2499,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[122] = {
+		[117] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2602,7 +2515,7 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[123] = {
+		[118] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2621,7 +2534,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[124] = {
+		[119] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2637,7 +2550,7 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[125] = {
+		[120] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2656,7 +2569,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[126] = {
+		[121] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2672,7 +2585,7 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[127] = {
+		[122] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2691,7 +2604,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[128] = {
+		[123] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2707,7 +2620,7 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[129] = {
+		[124] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2726,7 +2639,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[130] = {
+		[125] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2742,7 +2655,7 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[131] = {
+		[126] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2761,7 +2674,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[132] = {
+		[127] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2777,7 +2690,7 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[133] = {
+		[128] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2796,7 +2709,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[134] = {
+		[129] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2812,7 +2725,7 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[135] = {
+		[130] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2831,7 +2744,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[136] = {
+		[131] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2847,7 +2760,7 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[137] = {
+		[132] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2866,7 +2779,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[138] = {
+		[133] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2882,7 +2795,7 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[139] = {
+		[134] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2901,7 +2814,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[140] = {
+		[135] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2917,7 +2830,7 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[141] = {
+		[136] = {
 			existing_engine_recipe = false,
 			hint = "Craft in the inventory grid",
 			in_place = false,
@@ -3029,7 +2942,6 @@ return {
 		["grug_materials:cut_diamond"] = 6,
 		["grug_materials:cut_garnet"] = 3,
 		["grug_materials:cut_jade"] = 2,
-		["grug_materials:cut_quartz"] = 1,
 		["grug_materials:cut_ruby"] = 5,
 		["grug_materials:cut_sapphire"] = 4,
 		["grug_materials:embersteel_bar"] = 5,

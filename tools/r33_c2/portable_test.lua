@@ -221,7 +221,7 @@ local STATION_OUTPUTS = {["grug_jobs:forge"] = true, ["grug_jobs:tanning_rack"] 
 	["grug_jobs:jewellers_bench"] = true, ["grug_brewing:brewing_stand"] = true}
 local function intermediate(name)
 	return name:find("^grug_artisans:setting_") or name:find("^grug_materials:cut_") or
-		name:find("_bolt_bundle$") or name:find("^grug_artisans:ornament_components_")
+		name:find("_bolt_bundle$")
 end
 local function end_product(name)
 	return name:find("^grug_alchemy:mixture_") or name:find("^grug_cooking:") or

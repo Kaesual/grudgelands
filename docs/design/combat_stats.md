@@ -1079,7 +1079,7 @@ playtest rulings); owned by `grug_core` (`in_combat`).
   slot).
 - **The offhand is per class** (Round 28 ruling 25): **Warrior** — a shield
   (only Warriors equip shields); **Mage and Priest** — the "Caster offhand",
-  a Goldsmith spellbook; **Scout** — its **melee weapon** (sword or dagger),
+  a Tailor spellbook; **Scout** — its **melee weapon** (sword or dagger),
   shown as "Melee", while its Weapon slot is shown as "Ranged" and takes the
   bow. **Both hand items always count toward stats for every class.** Strike,
   Opening and every melee skill swing the Scout's Melee item (bare hand when

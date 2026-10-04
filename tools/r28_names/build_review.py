@@ -399,8 +399,9 @@ def stat_section(d, icons, bi):
          '<th>Stat</th><th>Input</th><th>Drops from</th>%s</tr></thead><tbody>' % (
              bi, "".join('<th class="trk">%s</th>' % t.title() for t in TRACKS))]
     missing = 0
-    for stat in STATS:
-        iid = ench["stat_loot"].get(stat)
+    # Round 33: each stat has its own loot per channel (prefix / suffix).
+    for stat, channel in [(s, c) for s in STATS for c in ("prefix", "suffix")]:
+        iid = (ench.get(channel + "_loot") or {}).get(stat)
         if not iid:
             continue
         fams = sorted(f for f, fam in d.drops.items()
@@ -418,7 +419,7 @@ def stat_section(d, icons, bi):
                 cells.append('<td class="miss">&ndash;</td>')
         uri = icons.lookup(d, iid)[0]
         h.append('<tr><td>%s</td><td class="name">%s %s</td><td>%s</td>%s</tr>' % (
-            esc(STAT_LABEL[stat]), icon_html(uri, d.item_name(iid)), esc(d.item_name(iid)),
+            esc(STAT_LABEL[stat] + " (" + channel + ")"), icon_html(uri, d.item_name(iid)), esc(d.item_name(iid)),
             esc(", ".join(fams)), "".join(cells)))
     h.append('</tbody></table></div>')
     h.append('<p class="note">A tick means a sub-type of that drop family lives at this band&rsquo;s levels in '

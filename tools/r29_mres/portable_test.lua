@@ -11,8 +11,9 @@
 --      out of its band or a different gem density;
 --   5. the Goldsmith (goldsmith.lua under stubs): every cut at its mining
 --      tier, trinket gems by recipe tier, the bonus yield only for gems;
---   6. enchants.json: every gem input at or below the enchant tier, and the
---      families that used a gem before Round 29 still use one;
+--   6. enchants.json: every gem input at or below the enchant tier, the
+--      families that used a gem before Round 29 still use one, and the file
+--      equals the Round 33 data design;
 --   7. the map source: no apex sockets, no exact-column hard recipe, the 12
 --      start and capital hard footprints only, no region_resources table.
 --
@@ -211,7 +212,8 @@ for _, resource in ipairs(M.RESOURCES) do
 		eq(unpacks[resource.block_node], resource.cut_item .. " 9", resource.key .. " block unpacks")
 	end
 end
-local EXPECTED_TRINKET = {"quartz", "jade", "garnet", "sapphire", "ruby,sapphire",
+-- Round 33 (item_tiers.md §3.4): Cut Citrine is the T1 trinket gem.
+local EXPECTED_TRINKET = {"citrine", "jade", "garnet", "sapphire", "ruby,sapphire",
 	"diamond,ruby,sapphire"}
 for tier = 1, 6 do
 	eq(trinket_gems[tier], EXPECTED_TRINKET[tier], "T" .. tier .. " trinket gems")
@@ -256,9 +258,10 @@ for t, families in pairs(GEM_FAMILIES) do
 			("T%d %s keeps a gem"):format(t, family))
 	end
 end
+-- Round 33: the source is the item data design (tools/r33_ds).
 eq(read("mods/ITEMS/grug_professions/data/enchants.json"),
-	read("docs/planning/round28/design/catalog/enchants.json"),
-	"shipped enchants.json equals the catalogue copy")
+	read("tools/r33_ds/enchants_r33.json"),
+	"shipped enchants.json equals the item data design")
 
 -- 7. Map source -------------------------------------------------------------------
 local source = dofile(wp40 .. "/source/simple_map.lua")
