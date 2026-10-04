@@ -10,7 +10,7 @@
 --   B. bosses: a King, a dragon and a General always drop two items, blue or
 --      gold at about even odds, at item level 65 / 70 / 65; the kill-loot hook
 --      leaves Kings and royal guards to the ledger and drops the General's;
---   C. deep sea: the level-100 Kraken (no quality loot) drops nothing;
+--   C. deep sea: the Kraken (no quality loot) drops nothing;
 --   D. bags: about 0.1 % per kill, the size by mob level (8/16/24/32 slots,
 --      read from grug_inventory's bags.lua);
 --   E. the pool: every equippable item of the tier (weapons, armour, shield,
@@ -21,7 +21,10 @@
 --   H. the requirement: every equipment definition carries min(ilvl, 60) (1 in
 --      the first bracket); dropped armour, offhands and trinkets carry their
 --      own, capped at 60, refuse a lower character and show "Requires level";
---   I. sale value: blue x3, gold x6 of the Common payout, per stack.
+--   I. sale value: blue x3, gold x6 of the Common payout, per stack;
+--   J. the Kraken (user ruling, Round 33): the REAL kraken.lua definition is
+--      a level-70 elite; it drops no item and no bag, and the REAL level
+--      engine (levels.lua, grug_xp) pays no kill XP for it.
 --
 --   luajit tools/r33_c1/portable_test.lua [REPO]
 -- Prints "R33 C1 PORTABLE PASS checks=<n>" or the failures (exit 1).
@@ -286,15 +289,11 @@ end
 -- C. Deep sea.
 ------------------------------------------------------------------------------
 do
-	local kraken = {name = "grug_mobs:kraken", _grug_tier = "elite", _grug_level = 100,
+	local kraken = {name = "grug_mobs:kraken", _grug_tier = "elite", _grug_level = 70,
 		_grug_no_quality_loot = true}
 	local any = 0
 	for index = 1, 20000 do any = any + #grug_items.roll_mob_gear(kraken, seed_of(index)) end
-	check(any == 0, "C the level-100 Kraken drops nothing (no gear, no bag)")
-	local source = read_file(ROOT .. "/mods/ENTITIES/grug_mobs/kraken.lua")
-	check(source:find("_grug_no_quality_loot = true", 1, true) ~= nil and
-		source:find("_grug_fixed_level = 100", 1, true) ~= nil,
-		"C the real Kraken is level 100 without quality loot")
+	check(any == 0, "C a mob without quality loot drops nothing (no gear, no bag)")
 end
 
 ------------------------------------------------------------------------------
@@ -533,6 +532,46 @@ do
 	local _, uses = trade:gsub("grug_traders%.stack_sell_price%(stack%)", "")
 	check(uses == 2 and not trade:find("sell_price%(stack:get_name%(%)%)"),
 		"I the sell tab and the sale price each stack")
+end
+
+------------------------------------------------------------------------------
+-- J. The Kraken.
+------------------------------------------------------------------------------
+do
+	local def
+	grug_mobs.register_mob = function(name, d)
+		if name == "grug_mobs:kraken" then def = d end
+	end
+	mobs = {spawn = function() end}
+	grug_zones = {water_class_at = function() return "deep_ocean" end}
+	dofile(ROOT .. "/mods/ENTITIES/grug_mobs/kraken.lua")
+	check(def ~= nil and def._grug_fixed_level == 70 and def._grug_tier == "elite",
+		"J the Kraken is a level-70 elite")
+	check(def and def.armor == nil, "J ...with the elite tier's armor")
+	check(def and def._grug_no_quality_loot == true and #def.drops == 0,
+		"J ...and nothing to drop")
+	-- No item and no bag, even with the bag chance forced to 100 %.
+	local saved = grug_items.BAG_DROPS.chance
+	grug_items.BAG_DROPS.chance = 100
+	local mob = {name = "grug_mobs:kraken", _grug_tier = def._grug_tier,
+		_grug_level = def._grug_fixed_level, _grug_no_quality_loot = def._grug_no_quality_loot,
+		object = {get_pos = function() return {x = 0, y = 0, z = 0} end}}
+	local any = 0
+	for index = 1, 2000 do any = any + #grug_items.roll_mob_gear(mob, seed_of(index)) end
+	added = {}
+	for _ = 1, 200 do loot_hook(mob, "org") end
+	grug_items.BAG_DROPS.chance = saved
+	check(any == 0 and #added == 0, "J the Kraken drops no item and no bag")
+	-- Its kill XP through the real level engine.
+	core.settings = {get = function() return nil end}
+	dofile(ROOT .. "/mods/PLAYER/grug_xp/init.lua")
+	dofile(ROOT .. "/mods/ENTITIES/grug_mobs/levels.lua")
+	grug_mobs.register_level_cfg("grug_mobs:kraken", def)
+	check(grug_mobs.kill_xp(mob, 60) == 0 and grug_mobs.kill_xp(mob, 30) == 0,
+		"J its kill XP is 0")
+	-- (an ordinary level-70 elite pays, so the 0 is the Kraken's own)
+	check(grug_mobs.kill_xp({name = "grug_mobs:other", _grug_level = 70,
+		_grug_tier = "elite"}, 60) == 4 * grug_xp.mob_xp(65), "J ...an ordinary elite's is not")
 end
 
 if failures > 0 then
