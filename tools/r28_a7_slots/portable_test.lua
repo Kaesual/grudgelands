@@ -250,6 +250,16 @@ core.registered_items["grug_gear:shield_bronze"] = {description = "Shield",
 	stack_max = 1, groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1}}
 core.registered_items["grug_gear:spellbook_bronze"] = {description = "Spellbook",
 	stack_max = 1, groups = {grug_gear = 1, grug_equip_offhand = 1, grug_spellbook = 1}}
+-- Round 33 (round33-plan.md §2.2): every equipment slot holds the level gate.
+core.registered_items["grug_gear:head_metal_steel"] = {description = "Steel Helm",
+	stack_max = 1, _grug_req_level = 20,
+	groups = {grug_gear = 1, grug_equip_head = 1, grug_armor_class = 3}}
+core.registered_items["grug_gear:shield_steel"] = {description = "Steel Shield",
+	stack_max = 1, _grug_req_level = 20,
+	groups = {grug_gear = 1, grug_equip_offhand = 1, grug_shield = 1}}
+core.registered_items["grug_gear:manawell_t3"] = {description = "Steel Manawell Pendant",
+	stack_max = 1, _grug_req_level = 20, _grug_trinket_identity = "manawell",
+	groups = {grug_gear = 1, grug_equip_trinket = 1}}
 core.registered_items["grug_gear:arrow"] = {description = "Arrow", stack_max = 100,
 	groups = {grug_arrow = 1}}
 core.registered_items["t:apple"] = {description = "Apple", stack_max = 99, groups = {}}
@@ -440,6 +450,19 @@ do
 	check(feed_lines[#feed_lines].text:find("Melee slot", 1, true) ~= nil,
 		"level refusal names the slot")
 	eq(#chat, chat_before, "equip refusals: nothing in chat")
+	-- Armour, offhand and trinket slots: the same gate (Round 33).
+	for _, row in ipairs({{"grug_gear:head_metal_steel", "grug_head", "Head slot"},
+			{"grug_gear:shield_steel", O, "Shield slot"},
+			{"grug_gear:manawell_t3", "grug_trinket1", "Trinket slot"}}) do
+		local young = new_player("lv_" .. row[2], "warrior", 19)
+		join(young)
+		check(not equip(young, row[1], row[2]), "level gate: " .. row[1] .. " at level 19")
+		check(feed_lines[#feed_lines].text:find("requires level 20 for the " .. row[3], 1, true)
+			~= nil, "level refusal names the " .. row[3])
+		local ready = new_player("lv20_" .. row[2], "warrior", 20)
+		join(ready)
+		check(equip(ready, row[1], row[2]), "level gate: " .. row[1] .. " at level 20")
+	end
 	-- Broken melee weapon: bare hand.
 	local broken = new_player("s4", "scout", 30)
 	join(broken)

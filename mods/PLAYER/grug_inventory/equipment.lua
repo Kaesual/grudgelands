@@ -132,9 +132,10 @@ function grug_inventory.hand_list(player, slot)
 	return slot == "offhand" and OFFHAND_LIST or WEAPON_LIST
 end
 
-local slot_group = {}
+local slot_group, slot_name = {}, {}
 for _, slot in ipairs(grug_inventory.equipment_slots) do
 	slot_group[slot.list] = slot.group
+	slot_name[slot.list] = slot.label
 end
 
 -- The armor-bearing slots. Offhand is excluded on purpose (shields and their
@@ -244,7 +245,7 @@ local WARN_BURST = 2
 -- feed (grug_core/feed.lua, never chat). Each refusal is one feed line keyed
 -- by its reason, so a repeat after the window refreshes its own line.
 --
--- ONE channel for every equip refusal (armor rank, weapon level and two-handed
+-- ONE channel for every equip refusal (armor rank, item level and two-handed
 -- rule), not one budget per rule: a drag is a single gesture, and
 -- per-rule budgets would just spam at N times the rate the moment the stack
 -- crosses two slots on its way.
@@ -306,7 +307,7 @@ local function warn_armor_class(player, rank)
 		"equip:" .. reason)
 end
 
-local function warn_weapon_level(player, stack, label, required, current)
+local function warn_item_level(player, stack, label, required, current)
 	local reason = "level:" .. stack:get_name() .. ":" .. required
 	if not claim_warn(player, reason) then
 		return
@@ -457,17 +458,15 @@ core.register_allow_player_inventory_action(function(player, action, inventory, 
 				warn_hand_item(player, to_list, stack)
 				return 0
 			end
-			if core.get_item_group(stack:get_name(), "grug_equip_weapon") > 0 then
-				local allowed, required, current =
-					grug_core.can_use_item_level(player, stack)
-				if not allowed then
-					warn_weapon_level(player, stack,
-						grug_inventory.slot_label(class_id, to_list) or "Weapon",
-						required, current)
-					return 0
-				end
-			end
 		elseif core.get_item_group(stack:get_name(), group) == 0 then
+			return 0
+		end
+		-- The level requirement holds in every slot (round33-plan.md §2.2).
+		local allowed, required, current = grug_core.can_use_item_level(player, stack)
+		if not allowed then
+			warn_item_level(player, stack, grug_inventory.slot_label(
+				grug_classes.get_class(player), to_list) or slot_name[to_list],
+				required, current)
 			return 0
 		end
 		if is_armor_list[to_list] then
