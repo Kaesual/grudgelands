@@ -788,6 +788,19 @@ A core combat pillar — mobs choose targets by **threat**, not proximity:
   untouchable and without reacquiring targets. Arriving ends evade; a blocked
   return teleports home after about 40 seconds. Bound actors keep their prior
   return thresholds. Incoming NPC damage does not create player reward credit.
+- **Mobs in water** (Round 34): every mob that floats and does not fly swims.
+  Idle roaming on land keeps treating water as a drop; in combat (attacking,
+  fleeing, the evade run home) a mob follows its target into harmless water
+  and crosses it, straight at the target (no route search). Lava and every
+  damaging liquid stay a boundary, also for an immune mob; water that hurts a
+  mob stays one for it. A swimming mob climbs onto a bank up to one node
+  above the water; a higher wall stays a wall (the evade keeps its 40-second
+  teleport). A mob idle in water (a fight that ended mid-lake, a reset close
+  to home) swims toward its home once a second until it stands on land.
+  Leashes, contact timeouts and arena edges are unchanged. Fliers,
+  the water swimmers (Kraken, Reed Angelfish) and the dragons and their
+  whelps keep their own movement (`mobs/api.lua` `grug_may_wade`,
+  `grug_mobs/aggro.lua` `shore_check`).
 - **Catching up must be enough to hit** (decided 2026-08-13): a mob that has
   closed to within its `reach` lands its attacks on a target fleeing at full
   speed. The **attack cadence therefore runs during the chase**, not only
