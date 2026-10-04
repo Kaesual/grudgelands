@@ -311,6 +311,10 @@ local function callbacks(ctx)
 				grug_jobs.award_progress(player, recipe)
 				ctx.produced = not inv:is_empty("output")
 			elseif ctx.produced then ctx.produced = not inv:is_empty("output") end
+			if ctx.automatic and (list == "dst" or list == "output") then
+				grug_sounds.play(grug_jobs.automatic_take_sound(
+					grug_jobs.recipe_for_output(stack, ctx.station)), player)
+			end
 			changed(ctx)
 		end,
 	}

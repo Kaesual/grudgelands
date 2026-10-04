@@ -104,6 +104,7 @@ function grug_repair.apply(player, quote)
 	local ok, reason = grug_money.take_with_inventory(player, quote.total, changes)
 	if not ok then return false, reason end
 	if equipment then grug_inventory.equipment_changed(player) end
+	if changes[1] then grug_sounds.play("repair", player) end
 	return true, #changes == 0 and "Nothing needs repair." or
 		("Repaired " .. #changes .. " item(s) for " .. grug_money.format(quote.total) .. ".")
 end

@@ -41,6 +41,7 @@
 --      0.5 s, not every step; held objective items and a level-up re-ask
 --      its static markers on the next step.
 -- Prints "R30 P1 PORTABLE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)

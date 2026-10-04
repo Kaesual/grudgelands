@@ -2,9 +2,7 @@ grug_alchemy.TIER_LEVELS = {1, 11, 21, 31, 41, 51}
 
 local function consume(itemstack, player)
 	itemstack:take_item(1)
-	core.sound_play("grug_alchemy_drink", {
-		to_player = player:get_player_name(),
-	}, true)
+	grug_sounds.play("potion_drink", player)
 	return itemstack
 end
 

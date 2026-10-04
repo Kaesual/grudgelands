@@ -379,6 +379,8 @@ local function land_step(self, control, yaw, dtime)
 		z = input_z * horizontal})
 	self.object:set_acceleration({x = 0, y = -9.81, z = 0})
 	set_animation(self, input_scale == 0 and "stand" or "move")
+	-- The gallop's interval paces it: one clip per stride sequence.
+	if horizontal > tier.speed * 0.5 then grug_sounds.play("mount_gallop", self.object) end
 end
 
 local function flight_step(self, control, yaw)
@@ -398,6 +400,7 @@ local function flight_step(self, control, yaw)
 	self.object:set_velocity({x = input_x * tier.speed * input_scale,
 		y = vertical, z = input_z * tier.speed * input_scale})
 	set_animation(self, input_scale == 0 and vertical == 0 and "stand" or "move")
+	if input_scale > 0 or vertical ~= 0 then grug_sounds.play("mount_wings", self.object) end
 end
 
 -- A boat glides toward the requested velocity (accelerating and braking alike)
@@ -430,6 +433,7 @@ local function water_step(self, control, yaw, dtime)
 	self.object:set_yaw(0)
 	self.object:set_velocity({x = velocity.x + dx, y = y_velocity, z = velocity.z + dz})
 	self.object:set_acceleration({x = 0, y = y_acceleration, z = 0})
+	if input_scale > 0 and y_acceleration == 0 then grug_sounds.play("boat_splash", self.object) end
 end
 
 -- Ruling 8: a boat whose own node and the node below hold no water is gone.

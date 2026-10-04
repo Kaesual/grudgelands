@@ -151,6 +151,7 @@ local function request(player, respawn)
   if actual and vector.distance(actual, arrival) < 0.1 then
    if not respawn then
     p:get_meta():set_string("grug_home:ready_at", tostring(os.time() + COOLDOWN))
+    grug_sounds.play("travel", p)
    end
   end
  end
@@ -229,6 +230,7 @@ function grug_home.travel(player, trip)
    local arrival = not failed and trip.arrival(p)
    if not arrival then return notify(p, trip.unavailable) end
    teleport(p, arrival)
+   grug_sounds.play("travel", p)
   end,
   timeout=function(p) notify(p, trip.unavailable) end})
  return true

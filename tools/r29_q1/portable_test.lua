@@ -16,6 +16,7 @@
 --   5. the shipped quest files carry no fixed compass word.
 --
 -- Usage (repo root): luajit tools/r29_q1/portable_test.lua
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local json = dofile("tools/r28_b4_quests/json.lua")
 local FIXTURE = "tools/r29_q1/fixture"
 -- The Q0 fixture's spawn recipe and catalogue: Dawnmere with the open kinds

@@ -22,6 +22,7 @@
 --
 -- Usage (repo root): luajit tools/r33_c2/portable_test.lua [REPO]
 
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local failures, checks = 0, 0
 local function check(ok, label)

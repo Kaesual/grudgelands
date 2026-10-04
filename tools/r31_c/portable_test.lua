@@ -22,6 +22,7 @@
 --      encode assert is inside the pcall); an ordinary world stores the file
 --      and the next start reads it back.
 -- Prints "R31 C PORTABLE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local seed = arg[2] or "42"
 local checks, failures = 0, {}

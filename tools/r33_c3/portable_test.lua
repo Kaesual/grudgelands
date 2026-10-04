@@ -38,6 +38,7 @@
 --      exists in the source, every catalogue counter is one a hook produces,
 --      every cloak has its texture file and the 41 Astra ids are exactly the
 --      catalogue's textured cloaks.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 
 local checks, failures = 0, 0

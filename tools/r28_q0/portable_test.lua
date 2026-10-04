@@ -20,6 +20,7 @@
 --      bandit and leader) in the dialogue text and the tracker line.
 --
 -- Usage (repo root): luajit tools/r28_q0/portable_test.lua
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local json = dofile("tools/r28_b4_quests/json.lua")
 local FIXTURE = "tools/r28_q0/fixture"
 local DASH = "\226\128\147" -- the en dash of "level 1–4"

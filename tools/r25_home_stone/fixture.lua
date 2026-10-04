@@ -21,6 +21,7 @@
 --   M  the Map marker/button for a claim home;
 --   D  no mod.conf dependency path leads from grug_home back to itself.
 -- Prints "R25 HOME STONE FIXTURE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)

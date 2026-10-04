@@ -522,6 +522,7 @@ core.register_on_player_inventory_action(function(player, action, inventory, inf
 		-- also where the equipment-change hook fires for a normal equip/swap
 		-- (see grug_inventory.equipment_changed).
 		grug_inventory.equipment_changed(player, listname)
+		grug_sounds.play("equip", player)
 	end
 end)
 

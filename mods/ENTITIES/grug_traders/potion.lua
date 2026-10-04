@@ -112,6 +112,7 @@ core.register_craftitem("grug_traders:potion_healing_weak", {
 		-- the DRINKER's crit chance would double the potion's fixed amount.
 		grug_core.heal_player(user, user, amount, {no_crit = true})
 		grug_traders.start_potion_cooldown(user)
+		grug_sounds.play("potion_drink", user)
 		-- ItemStack copy semantics: on_use gets a COPY, so the modified stack
 		-- has to be returned for the engine to write it back.
 		itemstack:take_item(1)

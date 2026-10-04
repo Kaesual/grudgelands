@@ -45,6 +45,7 @@
 --      NPC is an enemy player's (the war trophies' rule).
 -- Prints "R31 G PORTABLE PASS checks=<n>" or the failures.
 
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg and arg[1] or "."
 local checks, failures = 0, 0
 local function check(ok, label)

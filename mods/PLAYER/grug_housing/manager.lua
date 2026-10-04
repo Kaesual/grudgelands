@@ -118,6 +118,7 @@ function grug_housing.open_manager(player, entity)
 	local name = player:get_player_name()
 	local session = {entity = entity}
 	sessions[name] = session
+	grug_sounds.play("npc_steward", player)
 	core.show_formspec(name, FORMNAME, formspec(session))
 	return true
 end

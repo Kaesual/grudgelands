@@ -121,6 +121,7 @@ core.register_on_joinplayer(function(player)
 			local copper = grug_money.bag_amount(stack)
 			inv:set_stack(listname, index, ItemStack(""))
 			grug_money.add(actor, copper)
+			grug_sounds.play("money", actor)
 			grug_core.feed(actor, "notice", "Deposited " .. grug_money.format(copper) .. ".",
 				"grug_money_bag")
 		end,

@@ -23,7 +23,8 @@ local FACTION_FORM = grug_factions.SELECTION_FORM
 -- start teleport.
 local META_PENDING_CLASS = "grug_classes:pending_class"
 local STASIS_CHECK_INTERVAL = 0.1
-local DARK_BACKGROUND = "no_prepend[]" ..
+-- no_prepend drops the formspec prepend, so the click style comes along.
+local DARK_BACKGROUND = "no_prepend[]" .. grug_sounds.CLICK_STYLE ..
 	"bgcolor[#080808FF;both;#000000FF]"
 
 local CREATION_FORMS = {

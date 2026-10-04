@@ -330,6 +330,7 @@ function grug_traders.open(clicker, vendor_name, pos, faction)
 		tab = "general",
 		page = 1,
 	}
+	grug_sounds.play("npc_vendor", clicker)
 	show(clicker)
 end
 
@@ -415,6 +416,7 @@ local function do_buy(player, session, vendor, index)
 		return
 	end
 	inv:add_item("main", stack)
+	grug_sounds.play("vendor_buy", player)
 	show(player, "Bought " .. short_desc(entry.item) .. " for " ..
 		grug_money.format(entry.price) .. ".")
 end
@@ -469,6 +471,7 @@ local function do_sell(player, session, index, sell_all)
 	-- actually taken so the credit can never exceed what the check cleared.
 	local total = sold * unit
 	grug_money.add(player, total)
+	grug_sounds.play("vendor_sell", player)
 	show(player, "Sold " .. sold .. "x " .. short_desc(shown.item) .. " for " ..
 		grug_money.format(total) .. ".")
 end

@@ -227,6 +227,7 @@ function grug_achievements.select_cloak(player, id)
 		return false
 	end
 	grug_visuals.apply(player)
+	grug_sounds.play("cloak", player)
 	return true
 end
 

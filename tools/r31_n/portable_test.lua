@@ -26,6 +26,7 @@
 --      an enemy giver never shows even with a state in marker_states;
 --   T  the NPC tags' quest marker: an enemy observer gets none.
 -- Prints "R31 N PORTABLE PASS checks=<n>" or the failures.
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg[1] or "."
 local checks, failures = 0, {}
 local function check(ok, label)

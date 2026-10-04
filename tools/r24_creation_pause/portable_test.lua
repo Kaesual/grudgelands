@@ -7,6 +7,7 @@
 -- Usage (repo root): luajit tools/r24_creation_pause/portable_test.lua [repo]
 -- Prints "R24 CREATION PAUSE PORTABLE PASS checks=<n>" or the failures.
 
+grug_sounds = {play = function() return false end, CLICK_STYLE = ""} -- Round 34 sound hooks: silent here
 local repo = arg and arg[1] or "."
 local failures, checks = 0, 0
 local function check(ok, label)

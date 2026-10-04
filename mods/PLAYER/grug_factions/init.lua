@@ -297,7 +297,7 @@ function grug_factions.selection_formspec()
 	return table.concat({
 		"formspec_version[4]",
 		"size[8.6,4.6]",
-		"no_prepend[]",
+		"no_prepend[]", grug_sounds.CLICK_STYLE,
 		"bgcolor[#080808FF;both;#000000FF]",
 		"label[0.5,0.7;", core.formspec_escape("Choose your faction!"), "]",
 		"label[0.5,1.3;", core.formspec_escape("This decision is final."), "]",
