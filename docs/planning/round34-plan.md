@@ -1,7 +1,7 @@
 # Round 34 — Sound: round plan
 
-Coordinator: Claude (Opus 5.5), planned 2026-10-04. Status: **draft for the
-user's approval.**
+Coordinator: Claude (Opus 5.5), planned 2026-10-04. Status: **approved by the
+user (2026-10-04).**
 
 Sound is part of V1 (user, 2026-10-03). The game is almost silent today: 94
 files, all from minetest_game, mobs_redo and two food/drink cues
@@ -380,7 +380,13 @@ starts after joining, volume and off switches, a town).
   to parallel searches, so search serially). Previews are 128 kbit MP3; a
   lane fetches the original file (WAV/FLAC needs a Freesound login — the
   user's account, or use the HQ preview only where the original is not
-  reachable and note it in the row).
+  reachable and note it in the row). Default (coordinator, 2026-10-04): the
+  HQ previews are used for effects and beds (CC0 allows it; mono Ogg hides
+  the difference); the user may fetch originals for the beds if wanted.
+  Music needs no account: all set tracks and the town pieces are full-length
+  files from the composers' own pages (Buckley, MacLeod 256–327 kbit/s;
+  joth, Pablo, cynicmusic 108–199 kbit/s), already in `r32/r2-evidence/dl/music/`
+  and `r34/listen/dl/`.
 - **Code facts** (checked on `f135b29c`; verify, they are hints):
   - Quests: `Q.open_npc` `grug_quests/npc.lua:15`; `Q.accept`, `Q.abandon`,
     `Q.turn_in` `grug_quests/state.lua:261,283,402`; `post_progress`
