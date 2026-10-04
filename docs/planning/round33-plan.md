@@ -1,7 +1,7 @@
 # Round 33 — Items, professions and achievements: round plan
 
-Coordinator: Claude (Opus 5.5), 2026-10-04. Status: **draft for the user's
-approval.**
+Coordinator: Claude (Opus 5.5), 2026-10-04. Status: **approved by the user
+(2026-10-04).**
 
 The items and professions revision the Round 32 study R3
 ([items-professions-analysis-2026-10.md](../research/items-professions-analysis-2026-10.md))
