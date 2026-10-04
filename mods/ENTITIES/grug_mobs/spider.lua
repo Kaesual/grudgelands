@@ -11,6 +11,7 @@ local WEB_FACTOR = 0.6 -- "40% slow" (§3.1)
 local function spider_def(description, texture)
 	return {
 		description = description,
+		_grug_voice = "insect",
 		clock = "night",
 		type = "monster",
 		-- Underground is already in the list although T5 registers no cave

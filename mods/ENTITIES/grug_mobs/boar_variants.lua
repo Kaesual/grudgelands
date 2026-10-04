@@ -15,6 +15,7 @@
 local function boar_def(description, texture)
 	local def = {
 		description = description,
+		_grug_voice = "boar",
 		clock = "day",
 		type = "monster",
 		-- HP/damage/XP and armor come from the level engine (levels.lua):

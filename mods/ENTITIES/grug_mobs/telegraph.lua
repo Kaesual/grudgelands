@@ -74,8 +74,11 @@ local function start_windup(self)
 		self:update_tag() -- levels.lua tag_text prefixes "!! "
 	end
 	windup_particles(self)
-	-- TODO(WP6 sounds): a wind-up growl belongs here; all WP6 mob sounds are
-	-- deferred to one pass, see BACKLOG.
+	-- The wind-up cue of the mob's voice family (voices.lua, Round 34 S1b);
+	-- the user keeps every family but the humanoids silent here (the dragons
+	-- growl at their own wind-ups, boss_dragons.lua).
+	local cue = self.sounds and self.sounds.telegraph
+	if cue then grug_sounds.play(cue, self.object) end
 	self.temp.grug_tg_left = WINDUP
 end
 

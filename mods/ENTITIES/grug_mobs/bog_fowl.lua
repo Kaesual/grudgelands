@@ -13,6 +13,7 @@
 
 local fowl = {
 	description = "Bog Fowl",
+	_grug_voice = "bird",
 	clock = "day",
 	type = "animal",
 	passive = true,

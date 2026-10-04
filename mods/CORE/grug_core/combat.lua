@@ -258,6 +258,19 @@ function grug_core.get_melee_weapon(player)
 	return grug_core.get_equipped_weapon(player)
 end
 
+-- The hit sound of a player's melee swing (Round 34 S1b): the grug_sounds
+-- event of the equipped melee weapon's kind, the bare hand's punch without
+-- one. Swords and battle axes cut, daggers cut lighter; staffs and wands
+-- strike blunt.
+local HIT_SOUNDS = {sword = "hit_blade", dagger = "hit_dagger",
+	greataxe = "hit_blade", staff = "hit_blunt", wand = "hit_blunt"}
+
+function grug_core.melee_hit_sound(player)
+	local weapon = grug_core.get_melee_weapon(player)
+	local def = weapon and not weapon:is_empty() and weapon:get_definition()
+	return def and HIT_SOUNDS[def._grug_weapon_family] or "hit_fist"
+end
+
 -- Fired whenever a player's equipment MAY have changed: an equip/swap through
 -- the character screen, a server-side write to one of the lists (the
 -- class-change unequip), and (re-)join.
@@ -1449,6 +1462,7 @@ function grug_core.deal_ability_damage(attacker, target, amount, opts)
 		-- modifier skips the roll while in_ability_punch is set.
 		if math.random() < grug_core.get_dodge_chance(target) then
 			grug_core.feed(target, "combat", "You dodge!", "combat:dodge")
+			grug_sounds.play("dodge", target)
 			grug_core.mark_in_combat(attacker)
 			grug_core.mark_player_hit(target, attacker)
 			return 0
@@ -1782,6 +1796,7 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		if not grug_core.in_ability_punch and
 				math.random() < grug_core.get_dodge_chance(player) then
 			grug_core.feed(player, "combat", "You dodge!", "combat:dodge")
+			grug_sounds.play("dodge", player)
 			return 0
 		end
 	end
@@ -1879,6 +1894,9 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 		end
 		hp_change = -remaining
 		absorb_particles(player:get_pos())
+		-- The shield's clang marks a hit (melee, ability, projectile), not a
+		-- damage-over-time tick.
+		if reason.type == "punch" then grug_sounds.play("block", player) end
 		if next(entries) == nil then absorbs[name] = nil end
 	end
 	-- PvP contact (pvp-plan ruling 7a): a player's hit that cost HP or absorb.
@@ -1887,6 +1905,12 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
 			grug_core.pvp_hit_landed and reason.object and
 			reason.object ~= player and reason.object:is_player() then
 		grug_core.pvp_hit_landed(reason.object, player)
+	end
+	-- A player's melee hit on a player sounds by weapon kind, like a hit on a
+	-- mob (mobs_redo's on_punch); an ability punch plays its own cue.
+	if hp_change < 0 and reason.type == "punch" and not grug_core.in_ability_punch and
+			reason.object and reason.object ~= player and reason.object:is_player() then
+		grug_sounds.play(grug_core.melee_hit_sound(reason.object), player)
 	end
 	return hp_change
 end, true)

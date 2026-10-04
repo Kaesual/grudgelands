@@ -19,6 +19,7 @@
 
 local bat = {
 	description = "Cave Bat",
+	_grug_voice = "critter",
 	clock = "any",
 	type = "animal",
 	passive = true,

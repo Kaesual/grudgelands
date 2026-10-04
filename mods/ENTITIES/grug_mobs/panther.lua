@@ -18,6 +18,7 @@
 
 local panther = {
 	description = "Panther",
+	_grug_voice = "feline",
 	clock = "night",
 	type = "monster",
 	-- HP/damage/XP/armor: engine-owned (levels.lua). Outer ring plus the

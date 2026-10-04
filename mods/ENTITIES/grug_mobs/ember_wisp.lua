@@ -10,6 +10,7 @@ grug_mobs.register_simple_arrow("grug_mobs:ember_entity", {
 
 local wisp = {
 	description = "Ember Wisp", clock = "any", type = "monster",
+	_grug_voice = "spirit",
 	_grug_tier = "normal", _grug_spawn_domains = {"underground"},
 	attack_type = "dogshoot", attack_players = true, group_attack = false,
 	reach = 2, fly = true, fly_in = {"air"}, physical = false,

@@ -38,6 +38,7 @@ grug_mobs.register_homing_arrow("grug_mobs:hex_bottle", {
 
 local witch = {
 	description = "Bog Witch", clock = "night", type = "monster",
+	_grug_voice = "humanoid",
 	_grug_tier = "normal", attack_type = "dogshoot", attack_players = true,
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 1.5, run_velocity = 4.0, jump = true, jump_height = 4,

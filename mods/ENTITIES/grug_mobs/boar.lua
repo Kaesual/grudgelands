@@ -3,6 +3,7 @@
 
 local boar = {
 	description = "Boar",
+	_grug_voice = "boar",
 	clock = "day",
 	type = "monster",
 	-- HP/damage/XP and armor come from the level engine (levels.lua):

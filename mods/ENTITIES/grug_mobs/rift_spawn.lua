@@ -76,6 +76,7 @@ end
 
 local rift = {
 	description = "Rift Spawn", clock = "night", type = "monster",
+	_grug_voice = "spirit",
 	_grug_tier = "normal", attack_type = "explode", attack_players = true,
 	group_attack = false, reach = 3, pathfinding = 1,
 	walk_velocity = 1.5, run_velocity = 4.6, jump = true, jump_height = 4,

@@ -16,6 +16,7 @@ end
 
 grug_mobs.register_mob("grug_mobs:reed_angelfish", {
 	description = "Reed Angelfish",
+	_grug_voice = false,
 	clock = "any",
 	type = "animal",
 	passive = true,

@@ -46,6 +46,7 @@ end
 local function golem_def(description, texture)
 	return {
 		description = description,
+		_grug_voice = "elemental",
 		clock = "any",
 		type = "monster",
 		-- Elite by design (§3.1). Everything the tier implies is engine-owned

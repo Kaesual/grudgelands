@@ -145,6 +145,7 @@ end
 local function guard_def(faction, description, texture)
 	return {
 		description = description,
+		_grug_voice = "humanoid",
 		clock = "any",
 		type = "npc",
 		_grug_faction = faction,

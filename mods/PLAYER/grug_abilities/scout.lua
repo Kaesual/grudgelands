@@ -118,6 +118,8 @@ end)
 
 grug_projectiles.register(ARROW_PROJECTILE, {
 	speed = ARROW_SPEED,
+	sound_launch = "bow_shot",
+	sound_hit = "arrow_hit",
 	max_distance = 25,
 	active_limit = 8,
 	orient_to_velocity = true,

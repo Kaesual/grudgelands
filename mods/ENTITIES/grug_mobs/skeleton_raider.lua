@@ -13,6 +13,7 @@
 
 local raider = {
 	description = "Skeleton Raider",
+	_grug_voice = "skeleton",
 	clock = "night",
 	type = "monster",
 	-- The war coast is not its own biome (§1.2 / §8.1), so the zone does all

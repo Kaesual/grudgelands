@@ -23,6 +23,7 @@ end
 local function crab_def(description, tier, spawn_check, drop_scale)
 	local def = {
 		description = description, clock = "any", type = "animal",
+		_grug_voice = "aquatic",
 		_grug_tier = tier, _grug_spawn_check = spawn_check,
 		attack_type = "dogfight", group_attack = false, reach = 3,
 		pathfinding = 1, walk_velocity = 1.5, run_velocity = 3.4,

@@ -8,7 +8,8 @@
 --      that exists in some mod's sounds/ (the name itself or its .1, .2 ...
 --      variants); every grug_sounds_* file is played by a spec (as itself or
 --      as a variant); every .ogg in grug_sounds/sounds is mono and on
---      tools/r34_s1a/approved.txt (the user's picks; '#' lines are comments),
+--      tools/r34_s1a/approved.txt or tools/r34_s1b/approved.txt (the user's
+--      picks; '#' lines are comments),
 --      and every listed file ships;
 --   C  the call sites (and grug_jobs' craft-sound table: real professions
 --      and operation kinds): every grug_sounds.play("...") in mods/ names a declared
@@ -117,14 +118,18 @@ for event, spec in pairs(EVENTS) do
 	played_names[spec.name] = true
 end
 
+-- Both sound lanes ship into this mod: lane S1b's picks (combat and
+-- creatures) are listed in tools/r34_s1b/approved.txt.
 local approved = {}
-local approved_text = read(ROOT .. "/tools/r34_s1a/approved.txt")
-check(approved_text ~= nil, "E tools/r34_s1a/approved.txt exists")
-for line in (approved_text or ""):gmatch("[^\n]+") do
-	if not line:match("^%s*#") and line:match("%S") then
-		local file = line:match("^%s*([^,%s]+%.ogg)")
-		if check(file ~= nil, "E approved line starts with a file name: " .. line) then
-			approved[file] = true
+for _, lane in ipairs({"r34_s1a", "r34_s1b"}) do
+	local approved_text = read(ROOT .. "/tools/" .. lane .. "/approved.txt")
+	check(approved_text ~= nil, "E tools/" .. lane .. "/approved.txt exists")
+	for line in (approved_text or ""):gmatch("[^\n]+") do
+		if not line:match("^%s*#") and line:match("%S") then
+			local file = line:match("^%s*([^,%s]+%.ogg)")
+			if check(file ~= nil, "E approved line starts with a file name: " .. line) then
+				approved[file] = true
+			end
 		end
 	end
 end
@@ -161,7 +166,9 @@ end
 local PENDING = {click = "the formspec style"}
 local seen = {}
 local calls = 0
-for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'grug_sounds.play' '" .. ROOT .. "/mods'")) do
+-- A hooked file plays an event, or (Round 34 S1b) registers a projectile
+-- with its launch and hit events (grug_projectiles.register).
+for _, path in ipairs(lines_of("grep -rlE --include=*.lua 'grug_sounds[.]play|sound_launch' '" .. ROOT .. "/mods'")) do
 	if not path:find("/grug_sounds/init.lua", 1, true) then
 		local text = read(path)
 		for event in text:gmatch('grug_sounds%.play%(%s*"([^"]+)"') do
@@ -175,7 +182,7 @@ check(calls >= 25, "C at least 25 literal call sites (got " .. calls .. ")")
 -- The user's choices (plan §2.2a): no spec, and no hook where no sound may come.
 for _, name in ipairs({"quest_progress", "talent", "achievement", "drop_blue", "drop_gold",
 		"drop_bag", "drop_boss", "mount_summon", "mount_dismount", "respawn", "zone_banner",
-		"pvp_off"}) do
+		"pvp_off", "quest_accept"}) do
 	check(not hooks[name] and not EVENTS[name], "C silent by choice, no hook: " .. name)
 end
 check(hooks.enchant and not EVENTS.enchant, "C hook without a sound for now: enchant")
@@ -208,7 +215,7 @@ end
 -- Test specs on top of the shipped table (restored at the end).
 local saved = {}
 for event, spec in pairs(EVENTS) do saved[event] = spec end
-EVENTS.quest_accept = {name = "test_accept", gain = 0.5, distance = 8}
+EVENTS.quest_abandon = {name = "test_accept", gain = 0.5, distance = 8}
 EVENTS.level_up = {name = "test_level", personal = true, pitch = 0.1}
 EVENTS.mount_gallop = {name = "test_gallop", interval = 2}
 EVENTS.fishing_cast = {name = "test_cast"}
@@ -219,11 +226,11 @@ local function last() return played[#played] end
 played = {}
 EVENTS.enchant = nil
 eq(S.play("enchant", alice), false, "P an event without a spec is silent")
-eq(S.play("quest_accept", nil), false, "P a nil target is silent")
+eq(S.play("quest_abandon", nil), false, "P a nil target is silent")
 eq(S.play(nil, alice), false, "P a nil event is silent")
 eq(#played, 0, "P nothing reached the engine")
 
-eq(S.play("quest_accept", alice), true, "P a player target plays")
+eq(S.play("quest_abandon", alice), true, "P a player target plays")
 eq(last().spec, "test_accept", "P the spec's name")
 eq(last().params.object, alice, "P positional on the player's object")
 eq(last().params.to_player, nil, "P not personal")
@@ -254,13 +261,13 @@ eq(last().params.object, nil, "P a position is not an object")
 ------------------------------------------------------------------------------
 clock_us = 100 * 1000000
 played = {}
-eq(S.play("quest_accept", bob), true, "R first play")
-eq(S.play("quest_accept", bob), false, "R the same step folds (default 0.1 s)")
+eq(S.play("quest_abandon", bob), true, "R first play")
+eq(S.play("quest_abandon", bob), false, "R the same step folds (default 0.1 s)")
 clock_us = clock_us + 50000
-eq(S.play("quest_accept", bob), false, "R 0.05 s later still inside")
+eq(S.play("quest_abandon", bob), false, "R 0.05 s later still inside")
 clock_us = clock_us + 60000
-eq(S.play("quest_accept", bob), true, "R after the interval it plays")
-eq(S.play("quest_accept", alice), true, "R another player is limited apart")
+eq(S.play("quest_abandon", bob), true, "R after the interval it plays")
+eq(S.play("quest_abandon", alice), true, "R another player is limited apart")
 eq(S.play("level_up", bob), true, "R another event is limited apart")
 
 clock_us = 200 * 1000000
@@ -276,9 +283,9 @@ eq(S.play("fishing_cast", {x = 0, y = 0, z = 0}), true, "R a position plays")
 eq(S.play("fishing_cast", {x = 9, y = 9, z = 9}), false, "R positions share one limit per event")
 
 clock_us = 300 * 1000000
-eq(S.play("quest_accept", bob), true, "R bob plays")
+eq(S.play("quest_abandon", bob), true, "R bob plays")
 for _, fn in ipairs(leaves) do fn(bob) end
-eq(S.play("quest_accept", bob), true, "R a player who left and returns starts fresh")
+eq(S.play("quest_abandon", bob), true, "R a player who left and returns starts fresh")
 
 for event in pairs(EVENTS) do EVENTS[event] = nil end
 for event, spec in pairs(saved) do EVENTS[event] = spec end

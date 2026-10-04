@@ -148,4 +148,5 @@ core.register_on_dieplayer(function(player, reason)
 	end
 	local _, message = grug_core.death_message(player:get_player_name(), reason)
 	core.chat_send_all(message)
+	grug_sounds.play("player_death", player)
 end)

@@ -13,6 +13,7 @@
 
 local zebra = {
 	description = "Zebra",
+	_grug_voice = "grazer",
 	clock = "day",
 	type = "animal",
 	-- Stats engine-owned (levels.lua), normal tier.

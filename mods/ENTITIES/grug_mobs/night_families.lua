@@ -32,6 +32,7 @@ local goblin_animation = {
 local function goblin_def(description, texture, ranged)
 	local def = ground({
 		description = description,
+		_grug_voice = "goblin",
 		attack_type = ranged and "dogshoot" or "dogfight",
 		group_attack = true,
 		view_range = ranged and 16 or 12,
@@ -67,6 +68,7 @@ grug_mobs.register_mob("grug_mobs:goblin_slinger",
 
 local goblin_hound = ground({
 	description = "Goblin Raider Hound", attack_type = "dogfight",
+	_grug_voice = "canine",
 	group_attack = true, view_range = 15,
 	visual = "mesh", mesh = "grug_mobs_goblin_hound.b3d",
 	textures = {{"grug_mobs_goblin_hound.png"}}, visual_size = {x = 1, y = 1},
@@ -97,6 +99,7 @@ end
 
 local snow_leopard = ground({
 	description = "Snow Leopard", attack_type = "dogfight",
+	_grug_voice = "feline",
 	group_attack = false, view_range = 12,
 	visual = "mesh", mesh = "grug_mobs_panther.b3d",
 	textures = {grug_mobs.atlas_textures("grug_mobs_snow_leopard.png", 17)},
@@ -133,6 +136,7 @@ end
 
 local wisp = {
 	description = "Wisp", clock = "night", type = "monster",
+	_grug_voice = "spirit",
 	attack_type = "dogfight", attack_players = true, group_attack = false,
 	reach = 2, view_range = 14, fly = true, fly_in = "air", physical = false,
 	walk_velocity = 2.5, run_velocity = 4.6, jump = false, fear_height = 0,
@@ -181,6 +185,7 @@ mobs:spawn({name = "grug_mobs:wisp",
 local function treant_def(description, tint)
 	return ground({
 		description = description, attack_type = "dogfight",
+		_grug_voice = "giant",
 		group_attack = false, view_range = 12,
 		visual = "mesh", mesh = "grug_mobs_treant.b3d",
 		textures = {{"grug_mobs_treant.png^[multiply:" .. tint}},

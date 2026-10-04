@@ -628,7 +628,8 @@ combat damage for the ordinary five-second combat window.
   (Round 34), so the ice gets dangerous for those behind. The cube covers
   the gap between two samples, so a sprinter leaves no unbroken node in his
   band. A node keeps at most one pending break, server-wide: marking it
-  again never resets or postpones it. One breaking sound per sample's break.
+  again never resets or postpones it. One breaking sound per sample's
+  break, at most one a second while a run keeps breaking ice.
   The water freezes again 20 s after nobody stands in it; ice water deals
   **250 damage per second** and slows. Three flat frost-stone
   terraces one and two nodes high, clearly distinct from the ice.

@@ -273,7 +273,6 @@ function Q.accept(player, id)
 	if #state.tracked < Q.MAX_TRACKED then state.tracked[#state.tracked + 1] = id end
 	save(player, state)
 	changed(player)
-	grug_sounds.play("quest_accept", player)
 	return true
 end
 local function untrack(state, id)

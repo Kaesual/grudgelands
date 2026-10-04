@@ -675,6 +675,30 @@ end
 -- bar displays the running cooldown.
 --
 
+-- The cue of each ability (Round 34 S1b, plan §4.3), one per theme. A cast
+-- skill's event plays at the caster when try_cast succeeds; "projectile"
+-- abilities sound through their projectile's launch and hit
+-- (grug_projectiles.register); "weapon" skills are swings: their tool plays
+-- the swing into the air on the client and the hit sounds by weapon kind
+-- (grug_core.melee_hit_sound); "silent" is the user's choice (Blink, Sprint).
+-- tools/r34_s1b/portable_test.lua checks every registered ability is here.
+grug_abilities.CAST_SOUNDS = {
+	strike = "weapon", mighty_blow = "weapon", hamstring = "weapon",
+	opening = "weapon",
+	fireball = "projectile", loose = "projectile", snare_shot = "projectile",
+	pinning_shot = "projectile",
+	-- Warrior.
+	charge = "cast_charge", taunt = "cast_taunt", hold_ground = "cast_guard",
+	-- Mage: frost, the arcane blink, fire.
+	ice_nova = "cast_frost_nova", glacial_ward = "cast_frost_ward",
+	blink = "silent", cinderfall = "cast_cinderfall",
+	-- Priest: holy, healing, the shield, shadow.
+	smite = "cast_holy", heal = "cast_heal", mend = "cast_heal",
+	shield_spell = "cast_shield", word_of_ruin = "cast_shadow",
+	-- Scout.
+	sidestep = "cast_evade", sprint = "silent",
+}
+
 function grug_abilities.register_ability(def)
 	def.repeat_policy = def.repeat_policy or "repeat"
 	assert(def.repeat_policy == "repeat" or def.repeat_policy == "once")
@@ -783,6 +807,10 @@ function grug_abilities.register_ability(def)
 		damage_groups = {fleshy = 0},
 	}
 	tool_def.after_use = function(stack) return stack end
+	-- A swing into the air (the client plays it; hits sound on the server).
+	if def.kind == "swing" then
+		tool_def.sound = {punch_use_air = grug_sounds.item_sound("swing")}
+	end
 
 	core.register_tool(itemname, tool_def)
 end
@@ -1487,6 +1515,10 @@ function grug_abilities.try_cast(user, def, pointed_thing, notify)
 		return
 	end
 	spend(user, effective_cost)
+	local cue = grug_abilities.CAST_SOUNDS[def.id]
+	if cue ~= "weapon" and cue ~= "projectile" and cue ~= "silent" then
+		grug_sounds.play(cue, user)
+	end
 	arm_cast_interval(user, def)
 	grug_abilities.arm_cooldown(user, def,
 		grug_abilities.effective_cooldown(user, def))

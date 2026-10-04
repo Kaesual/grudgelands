@@ -27,6 +27,7 @@
 
 local weevil = {
 	description = "Bone Weevil",
+	_grug_voice = "insect",
 	clock = "day",
 	type = "animal",
 	passive = true,

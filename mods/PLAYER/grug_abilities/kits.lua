@@ -506,6 +506,8 @@ end
 
 grug_projectiles.register("fireball", {
 	speed = 20,
+	sound_launch = "fireball_launch",
+	sound_hit = "fireball_hit",
 	max_distance = 20,
 	-- A flight lasts one second and the server accepts at most one cast per
 	-- second. Eight leaves room for latency/session overlap while still bounding

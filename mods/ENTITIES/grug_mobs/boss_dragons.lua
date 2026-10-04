@@ -131,6 +131,7 @@ local function wrath_tick(boss_id, arena)
 		else
 			if not entry.warned then
 				entry.warned = true
+				grug_sounds.play("dragon_wrath", player)
 				core.chat_send_player(name, core.colorize and core.colorize("#ff5a3c",
 					"You left the dragon's arena during the fight: its wrath burns you until " ..
 					"you return (" .. arena_rules.WRATH_DPS .. " damage per second).") or
@@ -304,8 +305,7 @@ local function break_ice(event)
 		end
 	end
 	if broke then
-		core.sound_play("default_break_glass", {pos = event.at, gain = 0.6,
-			max_hear_distance = 24}, true)
+		grug_sounds.play("ice_break", event.at)
 	end
 end
 
@@ -584,6 +584,8 @@ local function shoot_breath(self, action, opts)
 			end
 		end
 	end
+	grug_sounds.play(opts.effect == "rime" and "dragon_breath_frost" or
+		"dragon_breath_fire", self.object)
 	burst(from, 54, opts.effect == "rime" and
 		"default_snow.png^[colorize:#8ee8ff:120" or
 		"default_item_smoke.png^[colorize:#ff7338:210", 10, 2, 3, 0.35)
@@ -613,6 +615,7 @@ local function lightning_impact(self, snapshot)
 				damage_groups = {fleshy = self.damage * 2}}, nil)
 		end
 	end
+	grug_sounds.play("dragon_lightning", snapshot)
 	burst(snapshot, 96, "grug_mobs_rock.png^[colorize:#fff27a:230", 14,
 		2, 8, 0.25)
 end
@@ -686,6 +689,7 @@ local function enrage(self, state, opts)
 				opts.description .. " roars and becomes enraged!")
 		end
 	end
+	grug_sounds.play("dragon_enrage", self.object)
 	burst(pos, 180, "default_item_smoke.png^[colorize:#ff341f:210", 12,
 		7, 10, 0.8)
 	spawn_whelps(self, opts)
@@ -700,6 +704,8 @@ local function begin_action(self, state, kind, target, target_pos, left)
 		left = left,
 	}
 	stop_object(self)
+	-- The wind-up growl (Round 34 S1b, dragons only); its spec spaces it out.
+	grug_sounds.play("telegraph", self.object)
 	if self.set_animation then
 		self:set_animation(kind == "breath" and "shoot" or "punch", true)
 	end
@@ -1078,6 +1084,7 @@ end
 local function whelp_def(opts)
 	return {
 		description = opts.description .. " Whelp",
+		_grug_voice = "reptile",
 		clock = "any", type = "monster",
 		_grug_fixed_level = TUNING.whelp_level, _grug_tier = "normal",
 		attack_type = "dogfight", attack_players = true,
@@ -1101,6 +1108,7 @@ end
 local function dragon_def(id, opts, callbacks)
 	return {
 		description = opts.description,
+		_grug_voice = "dragon",
 		clock = "any", type = "monster",
 		_grug_fixed_level = 70, _grug_tier = "boss",
 		_grug_no_far_despawn = true,
