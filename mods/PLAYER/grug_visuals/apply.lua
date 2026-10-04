@@ -279,6 +279,40 @@ function grug_visuals.set_look(player, look)
 	return true
 end
 
+--
+-- THE PLAYER MODEL WITH A CLOAK (character_visuals.md §5b). Players wear
+-- `grug_visuals_character.b3d`: player_api's `character.b3d` with a cloak box
+-- on its own bone and its own mesh buffer appended
+-- (tools/r33_c3/gen_cloak_model.py), so its texture list is {skin, cloak}.
+-- NPCs keep `character.b3d`. Same animations, boxes and eye height as the
+-- base model, read from player_api's own registration.
+--
+grug_visuals.PLAYER_MODEL = "grug_visuals_character.b3d"
+-- The engine's builtin transparent texture: the cloak buffer alpha-tests to
+-- nothing, the "No cloak" look.
+grug_visuals.CLOAK_NONE = "blank.png"
+
+do
+	local base = player_api.registered_models["character.b3d"]
+	player_api.register_model(grug_visuals.PLAYER_MODEL, {
+		animation_speed = base.animation_speed,
+		textures = {base.textures[1], grug_visuals.CLOAK_NONE},
+		animations = table.copy(base.animations),
+		collisionbox = table.copy(base.collisionbox),
+		stepheight = base.stepheight,
+		eye_height = base.eye_height,
+	})
+end
+
+-- The one source of the cloak texture a player wears: a function(player) ->
+-- texture or nil (grug_achievements installs it). Read on every apply; the
+-- texture is part of the redraw key below.
+local cloak_source = nil
+
+function grug_visuals.register_cloak_source(fn)
+	cloak_source = fn
+end
+
 -- What this player currently IS, in compose's vocabulary.
 function grug_visuals.player_spec(player)
 	local armor, armor_broken, worn = {}, {}, {}
@@ -354,12 +388,15 @@ function grug_visuals.apply(player)
 	local result = grug_visuals.compose(grug_visuals.player_spec(player))
 	-- Remembered for the poll below, which has no composed result of its own.
 	entry.stature = result.stature
-	if entry.key ~= result.key then
-		entry.key = result.key
+	local cloak = cloak_source and cloak_source(player) or grug_visuals.CLOAK_NONE
+	local key = result.key .. ";" .. cloak
+	if entry.key ~= key then
+		entry.key = key
 		-- player_api owns the texture list of the player model; going through
 		-- it is what keeps its own bookkeeping (and the character-page preview,
-		-- which reads the live object properties) correct.
-		player_api.set_textures(player, result.textures)
+		-- which reads the live object properties) correct. A new table: the
+		-- composed one is compose's read-only cache entry.
+		player_api.set_textures(player, {result.textures[1], cloak})
 	end
 	if result.visual_size then
 		-- VISUAL ONLY. collisionbox and eye_height stay with player_api's
@@ -411,8 +448,9 @@ end)
 
 core.register_on_joinplayer(function(player)
 	-- After player_api's own join hook (this mod depends on it, so its
-	-- callbacks are registered first and run first): the model exists by now
-	-- and set_textures has somewhere to write.
+	-- callbacks are registered first and run first): its record exists by now,
+	-- so the switch to the cloak model and set_textures have somewhere to write.
+	player_api.set_model(player, grug_visuals.PLAYER_MODEL)
 	grug_visuals.apply(player)
 end)
 

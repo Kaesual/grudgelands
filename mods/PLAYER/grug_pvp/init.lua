@@ -25,6 +25,8 @@
 --   grug_pvp.register_on_change(fn(player, state)): whenever `flagged`,
 --     `reason` or `pvp_combat` changes, and once at join. `state` is shared
 --     by the callbacks: read it, never write it.
+--   grug_pvp.register_on_stat(fn(player, key, value)): after a counter of
+--     grug_pvp.stats went up (grug_achievements' Honored reads `guards`).
 --   grug_pvp.count_npc_kill(player, kind): kind "guard" | "captain" |
 --     "general" | "king"; enemy guards, royal guards and kings are counted
 --     here already (grug_mobs' eligible-kill hook).
@@ -200,9 +202,19 @@ function grug_pvp.stats(player)
 	return copy
 end
 
+local stat_callbacks = {}
+
+function grug_pvp.register_on_stat(fn)
+	stat_callbacks[#stat_callbacks + 1] = fn
+end
+
 local function add_stat(player, key)
 	local meta = player:get_meta()
-	meta:set_int(META_STAT .. key, meta:get_int(META_STAT .. key) + 1)
+	local value = meta:get_int(META_STAT .. key) + 1
+	meta:set_int(META_STAT .. key, value)
+	for index = 1, #stat_callbacks do
+		stat_callbacks[index](player, key, value)
+	end
 end
 
 function grug_pvp.count_npc_kill(player, kind)

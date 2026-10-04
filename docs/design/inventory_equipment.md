@@ -353,8 +353,8 @@ the Round 19 top-centre text list:
   changes a HUD element only when its content changed; an idle player
   generates no repeated HUD packets. A poison chain ends on death.
 - **Character page tabs:** "Stats" (the view as before; since Round 30 it
-  also carries the **Return home** button with its m:ss cooldown, re-sent
-  each second while the text changes, [home_travel.md](home_travel.md)),
+  also carries the **Return home** button with its cooldown in whole
+  minutes, re-sent when the text changes, [home_travel.md](home_travel.md)),
   "Effects": icon,
   name, remaining time and a detail line per status, refreshed about once a
   minute or on change while that tab is open, and "Professions" (Round 28
@@ -364,6 +364,9 @@ the Round 19 top-centre text list:
   the note "Capped by your level: reach level 10N+1, then craft once more
   for tier N+1" when the count is full and only the character level blocks
   the next tier. A counted craft refreshes the tab while it is open.
+  Since Round 33 a tab "Achievements" sits between Effects and Professions,
+  and the Stats view has the **cloak picker** under the model
+  ([character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Group page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects

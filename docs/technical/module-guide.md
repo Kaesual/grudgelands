@@ -39,7 +39,8 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   API in its header (`flagged`, `can_harm`, `can_support`, `contact`,
   `support_contact`, `flag_now`, `state`, `territory_at`, `stats`,
   `register_on_change`, which also fires once at join, before any HUD
-  exists, and `count_npc_kill`). `grug_core` must not depend on it: `grug_pvp` installs
+  exists, `register_on_stat(fn(player, key, value))` after a `stats` counter
+  went up (Round 33, grug_achievements' Honored), and `count_npc_kill`). `grug_core` must not depend on it: `grug_pvp` installs
   `grug_core.pvp_can_harm` (the impact re-check in `deal_ability_damage`
   and the crosshair's `protected` class) and `grug_core.pvp_hit_landed`
   (contact from the hp-change modifier, so absorbed hits count);
@@ -92,7 +93,10 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `has`, `profession_level`, `crafts_in_tier`, `character_tier`,
   `record_craft`, `award_progress` and `can_craft_recipe`; every craft path and
   station operation (enchants, profession upgrades) awards progress through
-  `award_progress(player, recipe)`, which checks the recipe's flag. `profession_level` returns 0 when
+  `award_progress(player, recipe)`, which checks the recipe's flag;
+  `register_on_award_progress(fn(player, recipe))` (Round 33) runs after each
+  counted award (grug_achievements counts dishes and potions there, i.e. at
+  their preparation). `profession_level` returns 0 when
   unlearned and effective T1–T6 when learned. Grid output is vetoed before the
   engine craft. Authored workspaces have persistent per-player/per-station data;
   player-placed stations share inputs with individually qualified output views.
@@ -1192,4 +1196,28 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   `armor_layers`; NPC specs may carry `weapon_colors` (kings, Generals).
   Fixtures `tools/r31_a` (incl. the equal hitbox), `tools/r31_b`; rules
   [character_visuals.md](../design/character_visuals.md).
+- **Cloaks and achievements (Round 33):** players wear
+  `grug_visuals/models/grug_visuals_character.b3d`, `character.b3d` with a
+  cloak box on a keyed `Cloak` bone and its own mesh buffer appended
+  (`tools/r33_c3/gen_cloak_model.py`, `--check` rebuilds and compares and the
+  build proves the legs never cross the cloak); NPCs keep `character.b3d`.
+  The player texture list is `{skin, cloak}`: `grug_visuals.apply` writes it
+  with the cloak from the one `register_cloak_source(fn)` (no cloak:
+  builtin `blank.png`), the cloak part of the redraw key. `mods/PLAYER/
+  grug_achievements` owns the rest: `core.lua` (pure: counters, tiers,
+  unlocked cloaks and the selected cloak in player meta, i.e. per
+  character), `catalog.lua` (data: 17 achievements, tier N of `<id>`
+  unlocks cloak `<id>_N`, defaults `none` and `plain_grey`), `creatures.lua`
+  (pure: wild animals, zombies, families, named leaders by role, rares by
+  registry id; a load audit logs any unclassified mob) and `init.lua` (the
+  hooks, the Achievements tab body and the cloak dropdown that
+  `grug_inventory/pages.lua` reads at build time). Counters come from
+  grug_mobs' eligible-kill hook (cached per entity name),
+  `grug_mobs.register_on_boss_kill(fn(player, boss_id))` (every player the
+  boss ledger credits, independent of the loot lockout; `bosses.lua`
+  `settle_boss`), `grug_pvp.register_on_stat`,
+  `grug_jobs.register_on_award_progress` and `register_on_dieplayer`; each
+  is O(1) per event. Cloak textures are 32×32 (outer face left, lining
+  right). Fixture `tools/r33_c3`; rules
+  [character_visuals.md](../design/character_visuals.md) §5b.
 

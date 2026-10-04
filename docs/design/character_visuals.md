@@ -12,7 +12,7 @@ the settlement side that populates the starts with those NPCs is
 ## 1. One model, six peoples
 
 Every humanoid — player, guard, bandit, vendor, mirefolk — uses the engine's
-`character.b3d`. A humanoid of a race is **composed** from layers on the one
+`character.b3d` (players wear it with a cloak appended, §5b). A humanoid of a race is **composed** from layers on the one
 64×32 skin, in this order (decided 2026-10-03, Round 31):
 
 1. **skin** — the skin tone, then the race's body: face, shading and the race's
@@ -270,6 +270,67 @@ item:
 
 The masks are generated (`tools/r31_b/gen_enchant_masks.py`, one two-frame
 `<texture>_ench.png` per texture, each under its source texture's licence).
+
+## 5b. Cloaks and achievements (Round 33)
+
+Decided 2026-10-04 (round33-plan.md §2.10). A cloak is a **cosmetic badge**,
+never an item: each character owns a list of cloaks and wears one of them or
+none. A new character owns **No cloak** and the **Plain grey cloak** and wears
+No cloak. Every other cloak is unlocked only by an **achievement**. Both lists
+are kept per character, and so is the choice.
+
+- **Achievements** count something the character did; each tier is earned
+  once, never taken back, and unlocks its own cloak (tier N of achievement
+  `<id>` unlocks cloak `<id>_N`). The set (user's picks, 2026-10-04; names,
+  flavour and cloak names by GPT-6 Astra):
+
+  | Achievement | Condition | Tiers |
+  | --- | --- | --- |
+  | Hunter | kill wild animals | 50 / 150 / 500 |
+  | Kingslayer | kill enemy Kings (any of the three) | 1 / 5 / 20 |
+  | Wyvernslayer | kill the Stormscale Jungle Wyvern | 1 / 5 / 20 |
+  | Dragonslayer | kill the Wyrmglass Ice Dragon | 1 / 5 / 20 |
+  | Honored | kill guards of the enemy faction (the PvP counter) | 50 / 150 / 500 |
+  | Zombie Slayer | kill zombies (zombie family, husks included) | 50 / 150 / 500 |
+  | Boaring Work | kill boars (regional boars included) | 10 / 50 / 200 |
+  | Supper's Ready | cook dishes (counted at preparation, by output) | 50 / 150 / 500 |
+  | Bottle Service | brew potions or elixirs (counted at preparation) | 50 / 150 / 500 |
+  | Rat Race | kill rats | 25 / 100 |
+  | Loose Bones | kill skeletons (bog witches included) | 50 / 150 / 500 |
+  | Stone Deaf | kill golems | 5 / 50 |
+  | Final Notice | kill one of the six level-29 leaders near the capitals | 1 |
+  | Rust in Peace | kill war constructs | 5 / 50 |
+  | No More Orders | kill the rare Captain Bonerattle (either one) | 1 |
+  | Last Word | kill Watch-Captain Huskell or Paymaster Chirr | 1 |
+  | Grounded | die from a fall | 1 |
+
+  "Wild animals" are every animal mob, critters and hostile beasts included,
+  but no humanoid, construct, spirit or slime, and not the dragons or their
+  whelps (bosses and boss adds); the Kraken Guard counts (user ruling
+  2026-10-04). A sub-type counts as its base mob. A kill counts for every
+  character the kill credits (the XP rule's participants). A King or a dragon
+  counts for every character the boss ledger credits, whatever the loot
+  lockout says.
+- The Character page has an **Achievements** tab: each achievement with its
+  next cloak (dimmed until earned), its condition and its progress, a
+  tooltip with the flavour line, two columns of six per page. Under the
+  model on the Stats view, a **dropdown** lists the owned cloaks. Earning a
+  tier posts a line to the message feed.
+- **On the model:** a cloak hangs from the shoulders to just above the knee.
+  It is a thin box behind the body on its own bone, keyed per animation
+  frame, the technique of VoxeLibre's capes. It sways a little standing,
+  swings out up to 30 degrees with the legs while walking (and never through
+  them) and lies back over the seat when sitting. It costs nothing per step,
+  every player sees it, and it scales with the race's stature. Players wear
+  `grug_visuals_character.b3d`, which is `character.b3d` with the cloak
+  appended (`tools/r33_c3/gen_cloak_model.py`, which also checks the leg
+  clearance). The cloak is the model's **second texture**, so the skin
+  composition is unchanged. NPCs keep `character.b3d`.
+- **Texture format:** 32×32. Columns 0–15 are the outer face seen from
+  behind (the image's left is the character's left), shoulder at the top.
+  Columns 16–31 are the lining seen from the front. The cloak's thin edges
+  take the outer face's border pixels. No cloak is the transparent
+  `blank.png`.
 
 ## 6. Round 11 item and station presentation
 

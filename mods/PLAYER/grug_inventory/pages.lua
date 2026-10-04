@@ -151,16 +151,19 @@ local function quiver_content(player)
 end
 
 -- Return home (Round 30 ruling, moved here from the Map tab): the travel
--- home's name and the cooldown as m:ss, "Preparing arrival" while a return
--- is under way, else "Ready"; nil without grug_home or a home. grug_home
--- does not depend on this mod, so it is read at build time.
+-- home's name and the cooldown in whole minutes, rounded up ("30 min" ..
+-- "1 min"), "Preparing arrival" while a return is under way, else "Ready";
+-- nil without grug_home or a home. Minutes, not m:ss (Round 33): the poll
+-- below re-sends the page whenever this text changes, and a re-send every
+-- second would close an open dropdown (the cloak picker) each second.
+-- grug_home does not depend on this mod, so it is read at build time.
 local function home_button_text(player)
 	local home_mod = rawget(_G, "grug_home")
 	local home = home_mod and home_mod.get(player)
 	if not home then return nil end
 	local remaining = home_mod.remaining(player)
 	local state = home_mod.is_pending(player) and "Preparing arrival" or
-		(remaining > 0 and ("%d:%02d"):format(math.floor(remaining / 60), remaining % 60) or "Ready")
+		(remaining > 0 and ("%d min"):format(math.ceil(remaining / 60)) or "Ready")
 	return ("Return home: %s (%s)"):format(home.label, state)
 end
 
@@ -180,7 +183,7 @@ local function character_content(player, context)
 
 	local mesh, textures = preview_model(player)
 	local fs = {
-		("model[0,1.6;2.4,5.2;grug_preview;%s;%s;0,160]"):format(
+		("model[0,1.4;2.4,4.8;grug_preview;%s;%s;0,160]"):format(
 			esc(mesh), esc_texture_list(textures)),
 		("label[2.75,1.25;Maximum HP: %d]"):format(hp.final),
 		("label[2.75,1.70;%s]"):format(esc(mana and
@@ -212,6 +215,13 @@ local function character_content(player, context)
 	context.grug_home_text = home_text
 	if home_text then
 		fs[#fs + 1] = ("button[2.75,6.25;5.55,0.7;grug_character_home;%s]"):format(esc(home_text))
+	end
+
+	-- The cloak picker under the model (Round 33, §2.10): grug_achievements
+	-- depends on this mod, so it is read at build time like grug_jobs.
+	local achievements = rawget(_G, "grug_achievements")
+	if achievements then
+		fs[#fs + 1] = achievements.cloak_dropdown(player, 0, 6.3, 2.6)
 	end
 
 	local class_id = grug_classes.get_class(player)
@@ -267,13 +277,16 @@ end
 -- below it, the choice kept in the sfinv context. "Professions" (Round 28
 -- ruling 23) shows each known profession's tier and progress; grug_jobs
 -- builds that body (it depends on this mod, so it is read at build time).
+-- "Achievements" (Round 33) lists the character's achievements and the cloak
+-- each unlocks; grug_achievements builds it the same way.
 --
 
 local CHARACTER_PAGE = "grug_inventory:character"
 local TABS = {
 	{id = "stats", label = "Stats", x = 0.0, w = 1.5},
 	{id = "effects", label = "Effects", x = 1.5, w = 1.5},
-	{id = "professions", label = "Professions", x = 3.0, w = 2.0},
+	{id = "achievements", label = "Achievements", x = 3.0, w = 2.2},
+	{id = "professions", label = "Professions", x = 5.2, w = 2.0},
 }
 local TAB_Y, TAB_H = 0.0, 0.7
 -- Two columns of six rows fit between the tab row and the inventory at 7.0.
@@ -347,6 +360,14 @@ local function effects_content(player, context)
 	return table.concat(fs)
 end
 
+local function achievements_content(player, context)
+	local achievements = rawget(_G, "grug_achievements")
+	if achievements then
+		return achievements.character_achievements_formspec(player, context)
+	end
+	return ""
+end
+
 local function professions_content(player)
 	local jobs = rawget(_G, "grug_jobs")
 	if jobs and jobs.character_professions_formspec then
@@ -382,6 +403,8 @@ sfinv.register_page(CHARACTER_PAGE, {
 		local body
 		if tab == "effects" then
 			body = effects_content(player, context)
+		elseif tab == "achievements" then
+			body = achievements_content(player, context)
 		elseif tab == "professions" then
 			body = professions_content(player)
 		else
@@ -390,6 +413,19 @@ sfinv.register_page(CHARACTER_PAGE, {
 		return sfinv.make_formspec(player, context, tab_row(tab) .. body, true)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
+		local achievements = rawget(_G, "grug_achievements")
+		if achievements then
+			-- A new cloak redraws the character first, then the page, whose
+			-- preview reads the live model.
+			if fields.grug_cloak and
+					achievements.choose_cloak_by_name(player, fields.grug_cloak) then
+				sfinv.set_player_inventory_formspec(player, context)
+				return true
+			end
+			if achievements.handle_tab_fields(player, context, fields) then
+				return true
+			end
+		end
 		if fields.grug_character_home then
 			local home_mod = rawget(_G, "grug_home")
 			if home_mod then home_mod.return_home(player) end
@@ -410,8 +446,9 @@ sfinv.register_page(CHARACTER_PAGE, {
 -- selected view AND its printed text changed: an effect came or went, a
 -- shield value moved, or a coarse remaining time ticked (whole minutes, so
 -- about once a minute). On the Stats tab it is re-sent when the Return home
--- text changed: each second of a running cooldown or arrival, and once when
--- it becomes Ready. Nothing is re-sent for other pages.
+-- text changed: once a minute of a running cooldown, when an arrival starts
+-- or ends, and once when it becomes Ready. Nothing is re-sent for other
+-- pages.
 local effects_elapsed = 0
 core.register_globalstep(function(dtime)
 	effects_elapsed = effects_elapsed + dtime
