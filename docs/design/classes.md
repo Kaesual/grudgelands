@@ -673,7 +673,8 @@ the offhand shield items. Mend's display name lives on its Mercy keystone
 
 ## 6. Explicitly deferred
 
-- Cast times / cast-bar spells, ability sounds → Phase 3 polish.
+- Cast times / cast-bar spells → Phase 3 polish. (Ability sounds landed in
+  Round 34: one cue per ability theme, `grug_abilities.CAST_SOUNDS`.)
   (**Ability icons are no longer deferred**: Round 18 separates action icons from held weapon art; historically an ability
   item shows the equipped weapon plus its own color — §2c.)
 - Warrior shield abilities → after WP14 (offhand/shields).

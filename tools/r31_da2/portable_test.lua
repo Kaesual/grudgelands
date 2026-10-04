@@ -236,6 +236,8 @@ grug_mobs = {
 	stamp_arrow_damage = function() end,
 	boss_attempt_reset = function() end,
 }
+-- Round 34 S1b: the dragon and ice cues go through grug_sounds.
+grug_sounds = {play = function() return false end}
 dofile(repo .. "/mods/ENTITIES/grug_mobs/boss_dragons.lua")
 -- the encounter reset: what aggro.lua's leash_reset does for a dragon
 -- (boss_leash_reset -> cancel_dragon_action, stop, full health)
@@ -358,7 +360,7 @@ do
 	fill()
 	local function ice(dx, dz) return nodes[nkey({x = X0 + dx, y = FY, z = Z0 + dz})] end
 	local sounds = 0
-	core.sound_play = function() sounds = sounds + 1 end
+	grug_sounds.play = function(event) if event == "ice_break" then sounds = sounds + 1 end end
 	local skater = new_player("skater", {x = X0, y = ARENA.y, z = Z0})
 	players = {skater}
 	step(0.25) -- the sample at (0, 0)
@@ -404,7 +406,7 @@ do
 		ice(7, 0) == N.thin_ice, "C6 standing beside a pending break does not postpone it")
 	step(0.25)
 	check(ice(7, 0) == N.ice_water, "C6 ...and the second sample's own marks break 1 s after it")
-	core.sound_play = function() end
+	grug_sounds.play = function() return false end
 	players = {}
 end
 

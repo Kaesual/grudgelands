@@ -8,7 +8,8 @@
 --      that exists in some mod's sounds/ (the name itself or its .1, .2 ...
 --      variants); every grug_sounds_* file is played by a spec (as itself or
 --      as a variant); every .ogg in grug_sounds/sounds is mono and on
---      tools/r34_s1a/approved.txt (the user's picks; '#' lines are comments),
+--      tools/r34_s1a/approved.txt or tools/r34_s1b/approved.txt (the user's
+--      picks; '#' lines are comments),
 --      and every listed file ships;
 --   C  the call sites (and grug_jobs' craft-sound table: real professions
 --      and operation kinds): every grug_sounds.play("...") in mods/ names a declared
@@ -117,14 +118,18 @@ for event, spec in pairs(EVENTS) do
 	played_names[spec.name] = true
 end
 
+-- Both sound lanes ship into this mod: lane S1b's picks (combat and
+-- creatures) are listed in tools/r34_s1b/approved.txt.
 local approved = {}
-local approved_text = read(ROOT .. "/tools/r34_s1a/approved.txt")
-check(approved_text ~= nil, "E tools/r34_s1a/approved.txt exists")
-for line in (approved_text or ""):gmatch("[^\n]+") do
-	if not line:match("^%s*#") and line:match("%S") then
-		local file = line:match("^%s*([^,%s]+%.ogg)")
-		if check(file ~= nil, "E approved line starts with a file name: " .. line) then
-			approved[file] = true
+for _, lane in ipairs({"r34_s1a", "r34_s1b"}) do
+	local approved_text = read(ROOT .. "/tools/" .. lane .. "/approved.txt")
+	check(approved_text ~= nil, "E tools/" .. lane .. "/approved.txt exists")
+	for line in (approved_text or ""):gmatch("[^\n]+") do
+		if not line:match("^%s*#") and line:match("%S") then
+			local file = line:match("^%s*([^,%s]+%.ogg)")
+			if check(file ~= nil, "E approved line starts with a file name: " .. line) then
+				approved[file] = true
+			end
 		end
 	end
 end
@@ -161,7 +166,9 @@ end
 local PENDING = {click = "the formspec style"}
 local seen = {}
 local calls = 0
-for _, path in ipairs(lines_of("grep -rlF --include=*.lua 'grug_sounds.play' '" .. ROOT .. "/mods'")) do
+-- A hooked file plays an event, or (Round 34 S1b) registers a projectile
+-- with its launch and hit events (grug_projectiles.register).
+for _, path in ipairs(lines_of("grep -rlE --include=*.lua 'grug_sounds[.]play|sound_launch' '" .. ROOT .. "/mods'")) do
 	if not path:find("/grug_sounds/init.lua", 1, true) then
 		local text = read(path)
 		for event in text:gmatch('grug_sounds%.play%(%s*"([^"]+)"') do

@@ -1,0 +1,3 @@
+# Round 34 lane S1b: files the user approved (file name, page number, source).
+# Copied from ~/projects/grudgelands-orchestration/r34/approved/s1b.txt after
+# the user's picks on the S1b listening page (phase 2).
