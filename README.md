@@ -31,16 +31,19 @@ from the Luanti community's games and mods into a shared fantasy adventure.
   contested borderlands to the war front at level 60, with repeatable
   bounties, a journal, quest tracker, world atlas and minimap to help you
   find your way.
-- **Crafting and equipment.** Make basic gear, choose two of seven primary
-  professions, and improve your equipment with enchantments. Weaponsmith,
-  Armorsmith, Alchemist, Tailor, Leatherworker, Woodcarver and Goldsmith each
-  have their own recipes; Cooking is available alongside them.
+- **Crafting and equipment.** Make basic gear, choose two of six primary
+  professions, and improve your equipment with enchantments and upgrades.
+  Weaponsmith, Armorsmith, Tailor, Leatherworker, Woodcarver and Goldsmith
+  each have their own recipes; Cooking and Alchemy are available alongside
+  them. Creatures drop white, blue and gold gear, bosses always two pieces,
+  and a Fallen Crown lifts an item beyond its tier.
 - **Life between adventures.** Grow crops, go fishing, prepare food, visit
   vendors and save for a mount or a boat. Bind your home at an innkeeper so
   you can return after a journey, and travel between the waystones of your
   faction's towns.
 - **Adventure together.** Choose one of two factions and six peoples, shape
-  your character's look, then form a party with up to ten players of your
+  your character's look, earn cloaks through achievements, then form a
+  party with up to ten players of your
   faction. Party health displays and atlas markers help you stay together
   while exploring and fighting.
 - **Fight the other faction when you choose to.** Contested lands and enemy
@@ -54,10 +57,21 @@ to fear. Their story will grow as more regions and encounters are completed.
 
 ## Current State
 
-*Last updated: 2026-10-03. Based on [BACKLOG.md](BACKLOG.md) and
+*Last updated: 2026-10-04. Based on [BACKLOG.md](BACKLOG.md) and
 [ROADMAP.md](ROADMAP.md).*
 
 The systems above are implemented and installed in the local development build.
+[Round 33](docs/planning/round33-plan.md#completion-2026-10-04), "Items,
+professions and achievements", is complete locally and awaits a playtest on
+a fresh world. Gear now drops in white, blue and gold, named creatures and
+elites drop more, and every boss gives two blue or gold pieces; you can wear
+gear only once you reach its level. Enchantments grow with the item's level and
+show their tier, each profession can upgrade the items it makes, and a
+Crownbinder in every capital crowns one item beyond its tier for a Fallen
+Crown and a fee. Vendors sell only first-tier gear, repairs cost more,
+potions heal a fixed amount per tier, critical hits deal double, and a Decor
+Merchant sells blocks and lights for your home. Alchemy is learned next to
+Cooking, and achievements unlock cloaks that swing on your character.
 [Round 32](docs/planning/round32-plan.md#completion-2026-10-03), "Fixes,
 preparation and research", is complete locally and awaits a playtest. The
 minimap zooms in twice as far, so quest givers and trainers are easier to
@@ -155,18 +169,19 @@ quests.
 <details>
 <summary>Development tracking and known caveats</summary>
 
-**Delivered:** 43 of 54 tracked work-package identities are complete, 3 are
-canceled and 8 are open, several with playable portions (after the
+**Delivered:** 45 of 54 tracked work-package identities are complete, 3 are
+canceled and 6 are open, several with playable portions (after the
 2026-09-29 [work-package audit](docs/planning/wp-audit-2026-09-29.md)). This
 is a tracking count, not a percentage of game completion. The latest delivered
 increment is
-[Round 32](docs/planning/round32-plan.md#completion-2026-10-03)
-(map and HUD fixes, the held left click that turns from mining into combat,
-notices in the message feed, performance fixes and three studies),
-independently reviewed and merged locally, after Round 31 (PvP, looks,
-dragon arenas) and Round 30 (performance); Round 29 is the latest pushed
-state and Round 24 the latest formally accepted one.
+[Round 33](docs/planning/round33-plan.md#completion-2026-10-04)
+(drops, enchant tiers and upgrades, the crown, vendors, potions, cloaks and
+achievements), independently reviewed and merged locally, after Round 32
+(map and HUD fixes, the held left click, notices in the feed), Round 31
+(PvP, looks, dragon arenas) and Round 30 (performance); Round 29 is the
+latest pushed state and Round 24 the latest formally accepted one.
 [Project status](docs/STATUS.md) records acceptance, and the
+[Round 33](docs/planning/round33-plan.md#gui-playtest-checklist),
 [Round 32](docs/planning/round32-plan.md#gui-playtest-checklist),
 [Round 31](docs/planning/round31-plan.md#gui-playtest-checklist),
 [Round 30](docs/planning/round30-plan.md#playtest-checklist),
@@ -177,21 +192,22 @@ state and Round 24 the latest formally accepted one.
 playtests remain separate.
 
 **Ready for further work:** the first release still needs sound and calm
-background music (researched in Round 32, the user's choices pending) and
-the main story from level 41 to 60 with its finale. Items and professions
-get a design session on the Round 32 analysis first; an enchantment and
-item-level revision, crafting finishes and masterwork and the deep spawn
-pulse follow. Points of interest stay at fixed positions (per-world
+background music (Round 34, being planned) and the main story from level 41
+to 60 with its finale. A small lane follows with fixes from the playtest
+and a Bag of Coins for handing money to other players; map markers for the
+capital services and a later look at Priest healing are noted, and the deep
+spawn pulse stays for later. Points of interest stay at fixed positions (per-world
 placement set aside); the [roadmap](ROADMAP.md) records the V1 scope and order.
 
-**Caveats:** Round 31 needs a fresh world. Quests never ask you to kill
+**Caveats:** Round 33 needs a fresh world. Quests never ask you to kill
 players; PvP quests target enemy camp garrisons. The confusing Cooking feedback now has a distinct success message;
 the trainer flows still need in-game acceptance. Friendly-guard healing remains
 deferred. Round 32's [performance review](docs/research/perf-review-2026-10-r32.md)
 measured 50 and 100 simulated players; a test with real clients and
 first-release validation are still open. Optional
 full-world preparation can take many hours; the atlas does not require it. See
-the [latest playtest checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
+the [latest playtest checklist](docs/planning/round33-plan.md#gui-playtest-checklist),
+the [Round 32 checklist](docs/planning/round32-plan.md#gui-playtest-checklist),
 the [Round 31 checklist](docs/planning/round31-plan.md#gui-playtest-checklist),
 the [Round 30 checklist](docs/planning/round30-plan.md#playtest-checklist),
 the [Round 29 checklist](docs/planning/round29-plan.md#playtest-checklist),
@@ -209,8 +225,8 @@ There are no fixed release dates yet.
 
 - **Toward the first release:** sound effects, ambience and calm
   background music, and the main story up to level 60 and its finale.
-  Rewarding items and professions across all tiers, performance with many
-  players, balance and reliable everyday play are part of that work too.
+  Performance with many players, balance and reliable everyday play are
+  part of that work too.
 - **Later adventures:** a walkable underworld expansion with its own story,
   creatures and terrain, and scripted faction clashes on the war front. Other
   plans include further classes, dungeons, regional bosses, reputation and
@@ -308,9 +324,9 @@ investigations and delivery records.
 | Area | Design documents |
 |------|------------------|
 | World and places | [World](docs/design/world.md): geography and world rules; [zones](docs/design/world_zones.md): regions and level ranges; [settlements](docs/design/settlements.md): towns and capitals; [story](docs/design/story.md): factions and the campaign. |
-| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples and equipment appearance. |
+| Characters and combat | [Classes](docs/design/classes.md): abilities and resources; [Scout](docs/design/scout.md): bow and blade; [combat](docs/design/combat_stats.md): damage and defenses; [PvP](docs/design/pvp.md): the PvP flag, fortresses and war camps; [visuals](docs/design/character_visuals.md): peoples, equipment appearance, cloaks and achievements. |
 | Progression and quests | [Progression](docs/design/progression.md): levels and rewards; [talents](docs/design/skill_trees.md): character builds; [quests](docs/design/quests.md): objectives, journal and credit. |
-| Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
+| Items and crafting | [Items](docs/design/items_crafting.md): materials and recipes; [item tiers](docs/design/item_tiers.md): enchant values, upgrades, the crown, potions and drop prices; [professions](docs/design/professions.md): trades; [stations and enchantments](docs/design/crafting_equipment_revision.md): current crafting rules; [equipment](docs/design/inventory_equipment.md): slots and bags; [durability](docs/design/durability_repair.md): wear and repair; [economy](docs/design/economy.md): money, prices and services. |
 | Wildlife and everyday life | [Biomes and mobs](docs/design/biomes_mobs.md): habitats and creatures; [spawn regions](docs/design/spawn_regions.md): where each zone's creatures live and at which level; [farming](docs/design/farming.md): crops; [housing](docs/design/housing.md): Claim Stone homes. |
 | Travel and playing together | [Mounts](docs/design/mounts.md): riding; [boats](docs/design/boats.md): water travel and the way to the dragon islands; [home travel](docs/design/home_travel.md): innkeepers and return; [parties](docs/design/parties.md): groups; [atlas](docs/design/world_map.md): maps, minimap and markers. |
 | Decision routing | [Round 18 decisions](docs/design/playtest_quality_revision.md): where the Round 18 playtest-quality rules now live. |

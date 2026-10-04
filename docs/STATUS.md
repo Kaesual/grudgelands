@@ -1,6 +1,41 @@
 # Project status
 
-Updated 2026-10-03. This is the delivery pointer, not another game specification.
+Updated 2026-10-04. This is the delivery pointer, not another game specification.
+
+- **Round 33 "Items, professions and achievements" delivered locally**
+  (2026-10-04, [plan, completion and GUI checklist](planning/round33-plan.md#completion-2026-10-04)).
+  Every lane is merged on local main (last lane C5, `16c498b9`), each code
+  lane independently reviewed by Opus; the data lane DS approved by the user
+  through its preview; 72 fixtures pass, `income.py --check` passes again;
+  not pushed. **A fresh world is required** (the cultural materials leave
+  the mapgen). Numbers in [item_tiers.md](design/item_tiers.md).
+  - **Drops (C1):** at most one item per kill, normal 5/2/1 % white/blue/gold,
+    named, elite, zone leaders and war-camp captains 10/10/5 %; Kings,
+    dragons and the General two blue or gold items at item level 65/70 with
+    T7 enchants; bags as 0.1 % world drops; shields, spellbooks and trinkets
+    in the pool; every equipment slot requires min(item level, 60); blue
+    sells ×3, gold ×6; the Kraken Guard a level-70 elite without XP or drops.
+  - **Professions (C2, C4):** Alchemy is a secondary beside Cooking with its
+    own book slot; progress only from real recipes; enchant values grow with
+    item level up to the tier's cap, the tier shows in the tooltip, T7 from
+    boss drops and the crown; a weaker overwrite is warned; each profession
+    upgrades its families to the tier's top; bows go to the Leatherworker,
+    spellbooks to the Tailor; removed: cultural materials and finishes, the
+    PvP counter, the Warding Draught, grips, reagents, apothecary gear,
+    Ornament Components ([professions.md](design/professions.md)).
+  - **Vendors, combat and capitals (C5):** vendors sell T1 bases only and buy
+    back all gear; repair ×1.00; Healing and Mana Potions I–VI with one 60 s
+    cooldown; crit ×2 with 0.05 % per Dexterity point; the Crownbinder (crown
+    1g 47s plus a Fallen Crown) and the Decor Merchant in every capital
+    ([economy.md](design/economy.md), [combat_stats.md](design/combat_stats.md)).
+  - **Cloaks and achievements (C3):** 17 per-character achievements unlock
+    41 cosmetic cloaks painted by GPT-6 Astra; an Achievements tab and a
+    cloak dropdown on the Character page; the cloak swings on the player
+    model ([character_visuals.md](design/character_visuals.md) §5b).
+  - Next: the user's GUI test (with Rounds 30–32) on a fresh world; Round
+    34 (sound, planned on branch `r34-plan`); a small lane with GUI-test
+    fixes and the Bag of Coins (money withdraw and deposit, BACKLOG); then
+    WP9.
 
 - **Round 32 "Fixes, preparation and research" delivered locally**
   (2026-10-03, [plan, completion and GUI checklist](planning/round32-plan.md#completion-2026-10-03)).
@@ -37,9 +72,8 @@ Updated 2026-10-03. This is the delivery pointer, not another game specification
     [sound research](research/sound-research-2026-10.md) (sound is V1; seven
     decisions open), [items and professions analysis](research/items-professions-analysis-2026-10.md)
     (16 questions for a design session).
-  - Next: the user's GUI test (with Rounds 30 and 31); the sound decisions
-    and the items design session; Round 33 as proposed by the coordinator
-    (sound lanes, items options 1 and 2, a small fix lane), then WP9.
+  - Next: the user's GUI test (with Rounds 30 and 31); the items design
+    session became Round 33, sound Round 34.
 
 - **Round 31 "PvP, appearance and clean-up" delivered locally** (2026-10-03,
   [plan, completion and two-client GUI checklist](planning/round31-plan.md#completion-2026-10-03)).

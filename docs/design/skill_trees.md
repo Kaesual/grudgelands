@@ -795,12 +795,13 @@ Every other numeric talent sits at the line its table names, inside a function
 body with the player in scope. Two worked examples:
 
 ```lua
--- grug_classes/stats.lua:45 today (the body of the function at :44)
-return math.min(0.30, 0.05 + 0.001 * grug_classes.get_attributes(player).dex)
+-- grug_classes/stats.lua:45 at the time (the body of the function at :44);
+-- since Round 33 Dexterity gives 0.0005 per point (combat_stats.md §2)
+return math.min(0.30, 0.05 + 0.0005 * grug_classes.get_attributes(player).dex)
 -- with talents, cap-aware (§2.10; ruling 10)
 local cap = math.max(0.30,
     0.01 * grug_classes.get_talent_bonus(player, "crit_cap_override"))
-return math.min(cap, 0.05 + 0.001 * grug_classes.get_attributes(player).dex
+return math.min(cap, 0.05 + 0.0005 * grug_classes.get_attributes(player).dex
     + 0.01 * grug_classes.get_talent_bonus(player, "crit_chance_add"))
 
 -- kits.lua:342 today

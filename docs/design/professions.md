@@ -208,10 +208,10 @@ stay. (Also anchored in economy.md §2.)
 
 The gear floor (revised 2026-08-07 twice over):
 
-- The floor is not frozen at the starter set — it **moves with the
-  player** through six bracket catalogs, one per material tier
-  (`items_crafting.md` §3.8). Bands are 1-based: bracket 1 is levels
-  1–10.
+- Since Round 33 vendors sell the **T1 catalog only**, at every level
+  (`items_crafting.md` §3.8); from T2 the bases come from Basics crafting or
+  drops. The six bracket catalogs (one per material tier, 1-based: bracket 1
+  is levels 1–10) stay the craft ladder and the reference prices.
 - Vendors sell plain base equipment, never professionally enchanted gear.
   Base and enchanted items have the same material lifetime; enchantments add
   the explicitly chosen stats, with no hidden refinement bonus.

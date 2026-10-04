@@ -55,9 +55,10 @@ or travel. Overworld foreshadowing does not unlock or include that expansion.
   purchase of underground rights ([housing.md](housing.md)).
 - Each race still has its own king, for six kings total. Kings and their royal
   guards are killable high-end raid combatants, unlike passive service NPCs.
-  Their Fallen Crowns are optional personal masterwork trophies with race
-  provenance, never housing deeds or universal progression ingredients
-  (`items_crafting.md` §5.4).
+  Their Fallen Crowns are optional personal trophies with race provenance
+  that a Crownbinder uses to crown one item (Round 33,
+  [item_tiers.md](item_tiers.md) §4), never housing deeds or universal
+  progression ingredients (`items_crafting.md` §5.4).
 - Phase 2 payoff: the Nether becomes walkable through its own later travel
   contract, and its
   **world bosses are demonic lords** behind challenges
