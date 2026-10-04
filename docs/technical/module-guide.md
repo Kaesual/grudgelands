@@ -118,7 +118,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   Discovery changes visibility only. Bread, Cooked Meat and Cooked Fish are
   universal Basics roasting; protected Cooking dishes keep their book provenance.
   `docs/design/crafting_equipment_revision.md` governs current stations, named
-  fixed-tier enchantments (including trinkets), equipment separation and wear.
+  tiered enchantments (including trinkets), equipment separation and wear.
   Station icons appear below the recipe arrow, outside ingredient slots.
   `grug_jobs.open_trainer(player, profession, pos)` serves the six primaries,
   Cooking and Alchemy. The Character page's Professions tab (Round 28 ruling 23) is
@@ -634,17 +634,25 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
   arena tick (threat prune, reset and flight home, hazards and the wrath
   through `set_hp`; `grug_core.bypasses_absorb` covers the wrath), the
   participants table per dragon. Fixtures `tools/r31_g`, `tools/r31_da2`.
-- **Enchantments**: chosen named prefix/suffix recipes use fixed bonuses by
-  enchantment tier, including jewelry; there is no refinement step or random
-  crafted bonus. Family eligibility and replacement rules belong to the gear
-  design. Per-stack appearance keys (`inventory_image`, `inventory_overlay`,
+- **Enchantments**: every enchant stores its stat, channel and tier (1–7) in
+  `grug_ench`; its value is `grug_items.enchant_value(stat, ilvl, tier)`
+  (`docs/design/item_tiers.md` §1.1), derived on write by grug_quality's one
+  store path (rolls, enchants, upgrades, the crown; nothing else writes an
+  item level), never rolled. `grug_items.operation_plan` handles both station
+  operation kinds (`grug_jobs.register_station_operation`: "enchant" and
+  "upgrade"); a plan's `warning` names a replaced higher-tier enchant.
+  `grug_items.crown_item(stack, player)` / `crown_preview(stack)` apply the
+  Fallen Crown (the crown NPC owns the fee and the crown item). Family
+  eligibility and replacement rules belong to the gear design. Per-stack appearance keys (`inventory_image`, `inventory_overlay`,
   `wield_image`, `wield_overlay`, `wield_scale`, `color`, `range`, `description`)
   override item definitions. Build texture modifier strings in one helper:
   malformed modifiers produce client-side image errors that may not appear in
   server logs. Equipment changes must notify the shared equipment seam.
   Since Round 28 the inputs are data: `grug_professions/data/enchants.json`
-  (own material + stat loot + a mined or gathered family input per tier),
-  checked by the pure `enchant_data.lua` (`grug_professions/data/README.md`).
+  (own material + the channel's loot + a mined or gathered family input per
+  tier) and, since Round 33, `upgrades.json`, checked by the pure
+  `enchant_data.lua` (`grug_professions/data/README.md`); the family owners
+  are `grug_professions.FAMILY_OWNERS`.
 - **Materials & tier-rock gating** (`items_crafting.md` §3.0,
   `world.md` §2 R6):
   - **Contract (WP43, Round 24):** Bronze, Iron, Steel, Silversteel,

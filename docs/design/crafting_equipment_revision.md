@@ -72,7 +72,8 @@ mandatory; no old-world migrations are introduced.
 ## Enchanting
 
 Remove the refined state, +15% refinement bonuses, doubled lifetime, refinement
-recipes and the separate Imbue/Temper upgrade paths. Ordinary enchantable
+recipes and the separate Imbue/Temper upgrade paths (the Round 33 profession
+upgrade, [item_tiers.md](item_tiers.md) §3, only raises the item level). Ordinary enchantable
 weapons, armor and offhands have one prefix and one suffix from T1 through T6.
 There is no new T6 special slot. Trinkets retain their authored identity special,
 but follow the same deterministic craft/enchant workflow (user correction during
@@ -81,32 +82,32 @@ and applies prefix/suffix separately. Empty channels are permitted before
 application. Prefix choices are Strength/Intelligence/Dexterity; suffix choices
 are maximum HP/maximum Mana/Crit. Values, tier legality, replacement and progress
 follow the same rules as ordinary equipment. Trinkets remain non-wearing.
-Found-item random rolls remain a separate loot rule; no crafted item rolls stats.
+Found items roll which stats they carry; no crafted item rolls stats.
 
 Each legal family/stat/channel combination has one named recipe at every
 enchant tier. Application occurs at the owning profession's station, acts on
 the concrete equipment stack, preserves other metadata/wear and leaves the
 other channel intact. It may replace an occupied channel with material cost
-and an exact result preview. Reapplying an identical enchant is not a paid craft
-and grants no progression. The same stat cannot occupy both channels.
+and an exact result preview; the preview warns when the replaced enchant has a
+higher tier ("Replaces T7 Strength with T6 Strength."). Reapplying an
+identical enchant (same stat and tier) is not a paid craft and grants no
+progression. The same stat cannot occupy both channels.
 
-The enchant tier must not exceed the target tier. Its fixed bonus never scales
-to a higher-tier target. Qualification and progress use the enchant recipe's
-tier, not target tier; suffix application has no separate level-16 mastery gate.
-Names and family pools retain the nine existing stat-specific prefix/suffix pairs.
-Found-item random value windows remain distinct from fixed crafted enchants.
+The enchant tier must not exceed the target's material tier. Every enchant
+stores its tier (1–7) and its value follows the item's level up to its tier's
+top, `f(min(item level, 10 × tier))` ([item_tiers.md](item_tiers.md) §1.1, Round
+33); the tooltip names the tier. A crafted enchant has the recipe's tier, a
+found one the item's tier, with exactly the rule's value. Qualification and
+progress use the enchant recipe's tier, not target tier; suffix application
+has no separate level-16 mastery gate. Names and family pools retain the nine
+existing stat-specific prefix/suffix pairs.
 Each stat has a fixed colour that the enchanted item shows as a small accent
 (prefix) and fitting (suffix) on its icon, in hand and on the body; every
 enchanting station shows the legend of the nine colours
 ([character_visuals.md](character_visuals.md) §5a, Round 31).
 
-| Bonus | T1 | T2 | T3 | T4 | T5 | T6 |
-|---|---:|---:|---:|---:|---:|---:|
-| Strength, Dexterity, Intelligence | 2 | 3 | 5 | 7 | 9 | 10 |
-| Maximum HP or Mana (%) | 1 | 2 | 2 | 3 | 4 | 5 |
-| Crit or Dodge (percentage points) | 0.5 | 0.8 | 1.2 | 1.6 | 2 | 2.5 |
-| Attack speed (%) | 4 | 6 | 8 | 10 | 12 | 14 |
-| Armor rating | 1 | 2 | 3 | 4 | 5 | 6 |
+The values per stat, tier and item level are the tables of
+[item_tiers.md](item_tiers.md) §1.1.
 
 **Enchant inputs (Round 28 ruling 28).** Professions are self-contained: no
 operation needs another profession's product. An enchant of tier T for
@@ -115,36 +116,35 @@ equipment family F and stat S consumes three items:
 1. the family's **own material** of tier T: Weaponsmith and Armorsmith the
    metal bar (Bronze … Abyssal Steel), Leatherworker the leather grade, Tailor
    the cloth bolt, Woodcarver the graded wood (Seasoned … Heartwood), Goldsmith
-   the setting;
-2. the tier's **stat loot** item for S, a mob loot item of the tier band;
+   the setting; bows belong to the Leatherworker and spellbooks to the Tailor
+   (Round 33, [item_tiers.md](item_tiers.md) §3.3);
+2. the tier's **loot** item for S in the enchant's channel (`prefix_loot` or
+   `suffix_loot`), a signature drop of the tier;
 3. the tier's **family input** for F, a mining or gathering item (it may come
    from an earlier tier, be a raw gem or an alloy ingredient such as a tin or
    copper bar).
 
-Prefix and suffix of one stat share these inputs; the trinket's prefix pool
-(Strength/Intelligence/Dexterity) and suffix pool (maximum HP/maximum
-Mana/Crit) differ but use the same stat loot. The Weaponsmith metal fittings
-are removed (user decision 2026-10-01). The table lives in
+Prefix and suffix of one stat take different loot (Round 33); the trinket's
+prefix pool (Strength/Intelligence/Dexterity) uses `prefix_loot`, its suffix
+pool (maximum HP/maximum Mana/Crit) `suffix_loot`. The Weaponsmith metal
+fittings are removed (user decision 2026-10-01). The table lives in
 `mods/ITEMS/grug_professions/data/enchants.json` (one entry per tier,
-`stat_loot` per stat and `family_input` per family; format in the Round 28
-design frame §4.4) and is checked at load: every tier present, every stat of
-every family pool has stat loot, every family has an input, every item is
-registered, no input has a declared ingredient tier above the enchant tier,
-and no profession recipe or enchant operation uses an item that another
-profession's recipe makes. The shipped table is the reviewed Round 28
-catalogue (`docs/planning/round28/design/catalog/enchants.json`, its README
-lists the stat loot per tier): five mob signatures per tier at T1/T2 (tusk,
-tail, eye, flesh, fur) and four from T3 (tooth, strap, talisman, flesh; the
-strap also covers Armor), and per family a mined or gathered input (bar,
-quartz, raw gem, coal, emberglass, crystal, rock salt or stormkelp). Since
-Round 29 every gem input is the depth-tiered gem of the enchant tier or a
-lower one (`items_crafting.md` §3.0.1); the catalogue copy changed with it.
+`prefix_loot` and `suffix_loot` per stat and `family_input` per family; format
+in that folder's README) and is checked at load: every tier present, every
+stat of every family pool has loot in both channels, every family has an
+input, every item is registered, no input has a declared ingredient tier
+above the enchant tier, and no profession recipe or enchant operation uses an
+item that another profession's recipe makes. The shipped table is the Round
+33 data design (`tools/r33_ds/enchants_r33.json`, [item_tiers.md](item_tiers.md)
+§2): two signatures of the tier per stat, and per family a mined or gathered
+input (bar, quartz, raw gem, coal, emberglass, crystal, rock salt or
+stormkelp). Since Round 29 every gem input is the depth-tiered gem of the
+enchant tier or a lower one (`items_crafting.md` §3.0.1).
 
 **Sources.** The catalogue's sub-types spawn from the zone spawn recipes,
-which all 38 zones have since Round 28; every stat loot item of T1–T6 drops
-from at least one role a recipe places (measured 2026-10-02 from the
-recipes, the sub-type level ranges and the drop tables), so none of the 588
-operations lacks its stat loot.
+which all 38 zones have since Round 28; every loot input drops for both
+factions (`tools/r33_ds/allocation.py --check`), so none of the 588
+operations lacks its loot.
 
 These are 552 ordinary family/stat/channel/tier operations plus 36 Goldsmith
 trinket operations (three choices per channel across six tiers);

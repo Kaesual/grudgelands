@@ -120,9 +120,10 @@ character levels, matching the six vendor brackets of §3.8 exactly:
 Three statements close the 4-vs-6 question for good — none of them is a
 new rule, all three were implicit before:
 
-1. **Found-item roll bands follow item level.** The four roll bands in §6.3
-   apply to loot, not crafted enchantments. Crafts use the six fixed enchant
-   tiers irrespective of the crafter's mastery or a higher target-item level.
+1. **Enchant values follow item level up to their tier** (Round 33,
+   [item_tiers.md](item_tiers.md) §1.1): a crafted enchant has its recipe's
+   tier, a found one its item's tier; neither depends on the crafter's
+   mastery.
 2. **Profession tier gates enchant operations.** Every legal prefix and suffix
    is available in each T1–T6 tier; no mastery suffix gate or temper step remains.
 3. **Mastery retains specialist recipes**, such as bag capacities and spellbooks;
@@ -133,13 +134,13 @@ new rule, all three were implicit before:
 |---|---|
 | Weaponsmith | Physical-weapon enchantments |
 | Armorsmith | Metal-armor and shield enchantments |
-| Leatherworker | 8/16/24/32-slot leather bags; leather enchants |
-| Tailor | 8/16/24/32-slot cloth bags; cloth enchants |
-| Woodcarver | Staff, wand and bow enchantments |
-| Goldsmith | Rough→Cut gems; Settings; trinkets; spellbooks; ornaments; named enchants |
+| Leatherworker | 8/16/24/32-slot leather bags; leather armour and bow enchants |
+| Tailor | 8/16/24/32-slot cloth bags; spellbooks; cloth armour and spellbook enchants |
+| Woodcarver | Staff and wand enchantments |
+| Goldsmith | Rough→Cut gems; Settings; trinkets; trinket enchants |
 | Alchemy (secondary) | Profession-gated mixtures for universal Brewing Stand finishing |
 
-Fixed enchant tier bonuses/costs follow §6b and
+Enchant values and costs follow §6b, [item_tiers.md](item_tiers.md) and
 [the current contract](crafting_equipment_revision.md#enchanting). Removed
 Imbue/Temper recipes do not survive as mastery unlocks.
 
@@ -215,7 +216,7 @@ Imbue/Temper recipes do not survive as mastery unlocks.
 - **Only real recipes count (Round 33):** enchants, upgrades and the
   profession's own end products (potion and elixir mixtures, dishes and raw
   dish assemblies, bags, trinkets, spellbooks). Stations and intermediates
-  (settings, cut gems, bolt bundles, ornament components) and every automatic
+  (settings, cut gems, bolt bundles) and every automatic
   furnace or brewing finish count nothing. A recipe registers as such with
   `material = true` or `progress = false`; every craft path and station
   operation awards progress through `grug_jobs.award_progress`.
@@ -788,10 +789,11 @@ also generates the vendor bracket weapons of §3.8.
 2H DPS ≈ 1.07× of 1H — pays for the empty offhand.
 
 The active caster roster is the two-handed staff or the one-handed wand plus a
-Goldsmith spellbook. Scepters and orbs are absent on fresh servers: no item,
+Tailor spellbook. Scepters and orbs are absent on fresh servers: no item,
 recipe, loot or vendor identity remains. Staves and wands use universal plain
 Basics recipes; Woodcarver owns their enchantments. Bows are likewise
-universal plain Basics, with Woodcarver owning their improvement operations.
+universal plain Basics, with the Leatherworker owning their improvement
+operations (Round 33).
 
 For weapons, the catalogue's `_grug_ilvl` is also the minimum character level
 for the Weapon slot. The slot filter enforces it directly; a weapon without an
@@ -862,7 +864,8 @@ wearers are the **Warrior** (light avoidance set, §3.8 — decided
 leather-armor enchantments across T1–T6 (§6b). At Apprentice it also makes
 the 8-slot Leather Pouch. (The quiver item and its recipe were removed in
 Round 28; the quiver is a Scout-only slot, `inventory_equipment.md` §3.) Its 16/24/32-slot leather bags follow at
-Journeyman/Expert/Master. Plain bows are Basics; Woodcarver owns their quality.
+Journeyman/Expert/Master. Plain bows are Basics; the Leatherworker enchants
+and upgrades them with its leather grade (Round 33, [item_tiers.md](item_tiers.md) §3.3).
 
 
 ### 3.5 Tailor (tailor bench) — cloth and cloth bags
@@ -893,6 +896,9 @@ robe 8 / leggings 7 / cowl 5 / slippers 4 bolts.
   is the Master-tier addition of 2026-08-07. Bags are the one signature
   recipe line that is fully decided.
 - **Named cloth enchantments** across all six tiers (§6b); no separate kit line.
+- **Spellbooks** (Round 33, from the Goldsmith): two bolts of the tier and a
+  Parchment at the Tailor Bench, Journeyman mastery; the Tailor also enchants
+  and upgrades them with its bolt ([item_tiers.md](item_tiers.md) §3.3).
 - The woven and heavy bolt bundles are bag inputs (intermediates, no
   profession progress).
 
@@ -953,10 +959,12 @@ their recipe tier: **1, 11, 21, 31, 41, 51**.
 Every row also consumes one Glass Bottle. There is no apothecary gear, no
 imbuing oil and no Sovereign's Flask (removed in Round 33).
 
-### 3.6a Woodcarver (carving bench) — wood, bows and caster weapons
+### 3.6a Woodcarver (carving bench) — wood and caster weapons
 
-Woodcarver owns named enchant operations for the active wooden weapon families:
-staff, wand and bow. Their plain recipes remain universal Basics.
+Woodcarver owns named enchant and upgrade operations for the caster weapon
+families: staff and wand (bows belong to the Leatherworker since Round 33,
+[item_tiers.md](item_tiers.md) §3.3). Their plain recipes remain universal
+Basics.
 Plain weapons use ordinary sticks and matching-tier metal bars. Wands and
 staves additionally use the tier's ordinary mob component; bows use Thread.
 The exact shapes and six-component ladder are defined in
@@ -972,9 +980,9 @@ reach every grade by construction, and the per-race woods stay a cosmetic
 skin on top, never a tier gate. These are component names; finished weapons follow the shared tier names,
 for example Steel Staff (§3.8).
 
-**Enchants**: staves, wands and bows.
+**Enchants and upgrades**: staves and wands.
 
-**Exclusive operations:** named staff, wand and bow enchants across T1–T6.
+**Exclusive operations:** named staff and wand enchants and upgrades across T1–T6.
 
 **Self-contained (Round 28 ruling 28).** The Woodcarver enchants with its
 own graded wood of the enchant tier plus the tier's loot and mining inputs
@@ -987,19 +995,19 @@ New profession, 2026-08-07 (professions.md §2). **Gem Hunter is merged
 into it** and disappears as a separate profession. The useful gathering hook
 survives; the private-island Gem Detector does not.
 
-**Material chain:** physical **Gold**, universal Quartz, and the six
-depth-tiered gems (§3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire,
-T5 Ruby, T6 Diamond. Natural gem nodes drop Rough Gems. The Goldsmith alone
-refines Rough → Cut, at the gem's tier; every storage block and equipment
-recipe consumes Cut Gems where a gem is required. Cut gems, settings and
-ornament components are intermediates: they award no profession progress
-(§2.3).
+**Material chain:** physical **Gold** and the six depth-tiered gems
+(§3.0.1): T1 Citrine, T2 Jade, T3 Garnet, T4 Sapphire, T5 Ruby, T6 Diamond.
+Natural gem nodes drop Rough Gems. The Goldsmith alone refines Rough → Cut,
+at the gem's tier; every storage block and equipment recipe consumes Cut Gems
+where a gem is required. Quartz is a mineral without a cut form (Round 33);
+raw Quartz stays an enchant input. Cut gems and settings are intermediates:
+they award no profession progress (§2.3).
 
 **Owns exclusively:**
 
 - both generic trinket slots and the six core trinket identities of §6.2;
 - Rough → Cut gem refinement;
-- jewelry Settings, ornament components and trinket assembly;
+- jewelry Settings and trinket assembly; trinket enchants and upgrades;
 - one bonus-yield roll after a **successfully harvested** natural
   gem node: **10% base chance at Apprentice, 20% from Journeyman onward**. A
   success grants exactly one additional raw gem item of the harvested species.
@@ -1007,19 +1015,19 @@ ornament components are intermediates: they award no profession progress
   dig the ore at all) and never converts one gem into another.
 
 Rough→Cut conversion, Settings, trinket assembly and named enchantments use
-profession-tier qualification. Spellbooks retain their Journeyman prerequisite;
-ornament components remain T3–T6. Imbue/Temper kits are removed.
+profession-tier qualification. Spellbooks moved to the Tailor and Ornament
+Components were removed (Round 33). Imbue/Temper kits are removed.
 
 The Gem Detector and Dowsing Rod are retired. Continental mining remains
 exploration rather than direction/radar gameplay, and the Goldsmith already
-has trinkets, cutting, components and real-node bonus yield as its complete
+has trinkets, cutting, settings and real-node bonus yield as its complete
 identity.
 
 Use **Setting** consistently for the tiered jewelry component:
 
 | Tier | Setting | Gem use per core trinket |
 |---|---|---|
-| T1 | Tin Setting | 1 Cut Quartz |
+| T1 | Tin Setting | 1 Cut Citrine |
 | T2 | Iron Setting | 1 Cut Jade |
 | T3 | Copper-inlaid Steel Setting | 1 Cut Garnet |
 | T4 | Gold Setting | 1 Cut Sapphire |
@@ -1027,8 +1035,8 @@ Use **Setting** consistently for the tiered jewelry component:
 | T6 | Gold-filigreed Abyssal Steel Setting | 1 Cut Diamond + 1 Cut Ruby + 1 Cut Sapphire |
 
 Copper-inlaid Steel and the two filigree Settings are Goldsmith components,
-not universal bars or tool materials. From T2 every core trinket takes the
-gem of its recipe tier (T5 and T6 add the gems one and two tiers below); the
+not universal bars or tool materials. Every core trinket takes the gem of its
+recipe tier (T5 and T6 add the gems one and two tiers below); the
 six identities differ only by their Setting count. The complete tier list is
 visible in the matching book group: all six T4 recipes become craftable with
 profession T4, so mining depth rather than recipe rarity remains the
@@ -1213,7 +1221,7 @@ changes:
 - **Rotation**: the core stock is fixed; each bracket additionally shows
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
   rotation in five carries a single Uncommon item**, rolled like a found
-  item (§6.3; crafted enchantments instead have fixed tier values) and priced above the Common
+  item (§6.3: the enchant has the item level's tier and the rule's value) and priced above the Common
   baseline by the authoritative quality multiplier. That is
   the "today the trader had something good" moment, without a second
   gear source.
@@ -1293,12 +1301,12 @@ pixel-cluster cleanup before they become final game art.
 ## 5. Loot zones — what drops where
 
 Drops obey the player-tag rule (combat_stats §3), the chances of §5.1 and
-the roll ranges of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
+the enchant values of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
 Bosses are the exception (Round 33): the race Kings and the fortress Generals
 drop item level **65**, the dragons item level **70** (§5.1). Their ilvl above
 60 feeds the same weapon base-damage curve as every other weapon, not a second
 combat multiplier, and their enchants are tier T7 (§6.3). The
-Kraken Guard (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the roll range and the
+Kraken Guard (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the enchant value and the
 enchant tier follow the item's ilvl, that one number is all a drop needs: a
 drop has no crafter whose mastery could be read instead. Named zone → materials is
 binding through each zone's fixed biome/gathering palette; the level band adds
@@ -1378,10 +1386,9 @@ items, with no slot pre-selection and no per-family weighting.
 Adding a registered family therefore changes the resulting proportions; no
 fixed family count or weighted table exists anywhere in this design.
 
-Found enchant values roll uniformly in the §6.3 range of the item's level;
-there are no source windows any more. Every found enchant also knows its
-enchant tier (§6.3). Crafted enchantments instead use the fixed tier table in
-[the current contract](crafting_equipment_revision.md#enchanting).
+A found enchant has its item's enchant tier and is worth exactly the rule of
+[item_tiers.md](item_tiers.md) §1.1 at the item's level, like a crafted
+enchant of that tier (§6.3); only its stats are rolled.
 
 Vendors buy a blue item at **×3** and a gold item at **×6** of its Common
 buy-back ([economy.md](economy.md) §2).
@@ -1497,8 +1504,8 @@ when its bytes change. Attack speed applies via `tool_capabilities.
 full_punch_interval` meta override; stats recompute on equip change
 (WP15 hook). **The conversion is `fpi_new = fpi_base / (1 + p)`** for a
 rolled `+p` (2026-08-13): "attack speed +16%" means sixteen percent more
-swings per second, which is the only reading under which §6.3's 3–16%
-band is a linear DPS gain; `fpi × (1 − p)` would pay more than it says.
+swings per second, which is the only reading under which an attack speed
+enchant is a linear DPS gain; `fpi × (1 − p)` would pay more than it says.
 The override must be written as a **complete** tool-capability table — a
 plain meta float named `full_punch_interval` is not read by the engine —
 and every other capability of the base item is preserved unchanged. Enchant count: **Uncommon rolls exactly one affix; Rare rolls exactly one prefix and one suffix** — the decided budgets, and from 2026-08-07 also the prefix and
@@ -1530,7 +1537,7 @@ preserves the requirement while rebuilding the description.
 | Bow | +Dex, +crit%, +attack/draw speed%, +max HP%, +max Mana% |
 | Staff, wand | +Int, +max Mana%, +crit%, +max HP% |
 | Shield | +Str, +Dex, +max HP%, +armor rating |
-| Goldsmith spellbook | +Int, +max Mana%, +crit%, +max HP% |
+| Spellbook (Tailor) | +Int, +max Mana%, +crit%, +max HP% |
 | Metal armor | +Str, +max HP%, +armor rating |
 | Leather armor | +Dex, +max HP%, +max Mana%, +crit%, +dodge% |
 | Cloth armor | +Int, +max Mana%, +max HP%, +crit% |
@@ -1623,23 +1630,11 @@ whatever the source.
 
 **Enchant tier of a found item** (Round 33, round33-plan.md §2.3): item level
 1–10 is T1, 11–20 T2 … 51–60 T6, above 60 (boss drops) T7
-(`grug_items.enchant_tier`). Every found roll is made with its item's tier; the
-tier-capped values replacing the four bands below come with the enchant-tier
-work of Round 33 (lane C4).
-
-Crafted enchantments instead use fixed T1–T6 values from
-[the current contract](crafting_equipment_revision.md#enchanting). A T1 enchant
-on a T6 item retains its T1 bonus. A T2 enchant cannot be applied to a T1 item;
+(`grug_items.enchant_tier`). Since Round 33 a found enchant has no random
+value: it is worth exactly the rule of [item_tiers.md](item_tiers.md) §1.1 at
+its item level and tier, like a crafted one of that tier. The four flat roll
+bands that stood here are gone. A T2 enchant cannot be applied to a T1 item;
 mastery never unlocks a suffix or scales a crafted value.
-
-| Enchant | 1–15 | 16–30 | 31–45 | 46–75 |
-|---|---|---|---|---|
-| +Str / +Int / +Dex | 1–3 | 2–5 | 4–8 | 6–12 |
-| +Max HP% | 1–2 | 2–3 | 3–4 | 4–5 |
-| +Max Mana% | 1–2 | 2–3 | 3–4 | 4–5 |
-| +Crit% / +Dodge% | 0.5–1.0 | 0.5–1.5 | 1.0–2.0 | 1.5–3.0 |
-| +Attack speed% | 3–6 | 4–8 | 6–12 | 8–16 |
-| +Armor rating (armor/shield families) | 1–2 | 1–3 | 2–4 | 3–6 |
 
 The endgame ordinary-affix budget is therefore approximately **+5% per
 equipped slot × eight slots = +40%** when every slot is dedicated to one
@@ -1672,9 +1667,9 @@ least two desirable finish cells per culture.
 Base recipes produce Common gear and are universally craftable. One enchant
 makes ordinary equipment Uncommon; one prefix plus one suffix makes it Rare.
 There is no refinement prerequisite, bonus or separate Imbue/Temper path.
-Crafted values are fixed by enchant tier, as specified in
-[the current enchanting contract](crafting_equipment_revision.md#enchanting).
-Found-item random rolls and trinket authored specials retain their own rules.
+Enchant values follow the item level up to the enchant's tier
+([item_tiers.md](item_tiers.md) §1.1). Trinket authored specials retain their
+own rules.
 
 ## 6b. Enchantments
 
@@ -1684,29 +1679,32 @@ Apply enchantments at the owning profession station to the concrete stack.
 Everyone can craft base gear; qualified professionals can apply or replace its
 legal enchants. Tools are not weapons and receive no ordinary combat enchants.
 
-### 6b.2 Fixed tier bonuses
+### 6b.2 Tier bonuses (Round 33)
 
-The nine stat curves, material costs and 588 operations are defined in
-[the current contract](crafting_equipment_revision.md#enchanting). Bonuses depend
-on enchant tier, never a higher target tier. No extra base-damage or lifetime
-multiplier exists.
+The nine stat curves and their tier caps are [item_tiers.md](item_tiers.md)
+§1.1; the 588 operations and their inputs
+[the current contract](crafting_equipment_revision.md#enchanting) and
+item_tiers.md §2. A bonus grows with the item's level up to `10 × tier`; an
+upgrade (item_tiers.md §3) or the crown (§4) raises it accordingly. No extra
+base-damage or lifetime multiplier exists.
 
-**Enchant inputs** (Round 28 ruling 28): every operation of tier T consumes
-the family's own material of tier T, the tier's loot item for the chosen stat
-(`stat_loot`) and the tier's mining or gathering item for the equipment family
-(`family_input`), from `grug_professions/data/enchants.json`:
+**Enchant inputs** (Round 28 ruling 28, Round 33): every operation of tier T
+consumes the family's own material of tier T, the tier's loot item for the
+chosen stat in its channel (`prefix_loot` / `suffix_loot`) and the tier's
+mining or gathering item for the equipment family (`family_input`), from
+`grug_professions/data/enchants.json`:
 
 | Family (`family_input` key) | Profession | Own material T1 → T6 |
 |---|---|---|
 | sword, dagger, greataxe | Weaponsmith | Bronze → Abyssal Steel Bar |
 | metal_armor, shield | Armorsmith | Bronze → Abyssal Steel Bar |
-| leather_armor | Leatherworker | Light → Nightscale Leather |
-| cloth_armor | Tailor | Patch → Stormweave Bolt |
-| bow, caster_weapon | Woodcarver | Seasoned → Heartwood Wood |
-| spellbook, trinket | Goldsmith | Tin → Gold-filigreed Abyssal Steel Setting |
+| leather_armor, bow | Leatherworker | Light → Nightscale Leather |
+| cloth_armor, spellbook | Tailor | Patch → Stormweave Bolt |
+| caster_weapon | Woodcarver | Seasoned → Heartwood Wood |
+| trinket | Goldsmith | Tin → Gold-filigreed Abyssal Steel Setting |
 
-Prefix and suffix of a stat share the inputs; both trinket pools use the same
-`stat_loot`. No input may be another profession's product (a Cut gem is a
+Prefix and suffix of a stat take different loot; the trinket's prefix pool
+uses `prefix_loot`, its suffix pool `suffix_loot`. No input may be another profession's product (a Cut gem is a
 Goldsmith product, so other families use raw gems). Load fails on a missing entry, an unregistered item, an input declared
 above the enchant tier or a foreign
 product.
@@ -1731,7 +1729,8 @@ family pools in §6.2 decide legal stats; a stat cannot occupy both channels.
 | Dodge (percentage points) | Elusive | of the Cat |
 | Armor rating | Stalwart | of the Tortoise |
 
-Words are identical across tiers; the tooltip states the concrete fixed value.
+Words are identical across tiers; the tooltip states the concrete value and
+the enchant's tier, e.g. "+15 Strength (T5)".
 Examples: *Bronze Sword of the Ox*, *Lucky Bronze Sword of the Bear*. No refined
 state or marker exists.
 
@@ -1741,12 +1740,14 @@ Qualification and progression use the enchant recipe tier. Both channels are
 available at every tier; mastery does not gate suffix access. Select the named
 operation, inspect the exact preview, then apply it with its material cost.
 Replacement preserves the other channel, wear and unrelated stack metadata.
-An identical no-op is refused without cost or progress.
+An identical no-op (same stat and tier) is refused without cost or progress.
+Overwriting a higher tier is allowed; the preview warns ("Replaces T7
+Strength with T6 Strength.").
 
 ### 6b.6 Quality follows slot count
 
-Zero/one/two ordinary affixes correspond to Common/Uncommon/Rare. Found-item
-random rolls stay separate from fixed crafted values. Trinket quality does
+Zero/one/two ordinary affixes correspond to Common/Uncommon/Rare. Found items
+roll which stats they carry, never their values. Trinket quality does
 not alter its independently defined prefix/suffix/special structure.
 
 ### 6b.7 Special variants
@@ -1756,8 +1757,13 @@ There are no cultural or PvP finishes (removed in Round 33).
 
 ## 7. Upgrade mechanics
 
-Use the explicit named enchant replacement workflow in §6b.5. There are no
-Imbue/Temper kits, random crafted application rolls or separate refinement steps.
+Enchants change through the named replacement workflow in §6b.5. Since Round
+33 a profession **upgrade** (one per profession and tier, at its station)
+lifts an item of its families and material tier T below item level `10 × T`
+to `10 × T`, never lower, and its enchants follow; a **Fallen Crown** lifts
+an item to `10 × T + 5` and its enchants one tier, once
+([item_tiers.md](item_tiers.md) §3, §4). There are no Imbue/Temper kits,
+random crafted application rolls or separate refinement steps.
 
 ## 8. Prices and money pacing
 
