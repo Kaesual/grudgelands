@@ -102,7 +102,7 @@ tiles use the raw-item chain without `^[brighten`.
 
 | Material | Raw runtime item | Cut runtime item | Block runtime node | Vendored original and raw modifier |
 |---|---|---|---|---|
-| Quartz | `grug_materials:quartz` | `grug_materials:cut_quartz` | — | `default_diamond.png^[colorize:#eaf6ff:120` |
+| Quartz | `grug_materials:quartz` | — | — | `default_diamond.png^[colorize:#eaf6ff:120` |
 | Silver | `grug_materials:silver_lump` | — | — | `default_iron_lump.png^[colorize:#e8edf2:200` |
 | Citrine | `grug_materials:rough_citrine` | `grug_materials:cut_citrine` | `grug_materials:citrine_block` | `default_diamond.png^[colorize:#d9a21b:190` |
 | Garnet | `grug_materials:rough_garnet` | `grug_materials:cut_garnet` | `grug_materials:garnet_block` | `default_diamond.png^[colorize:#9e1526:210` |

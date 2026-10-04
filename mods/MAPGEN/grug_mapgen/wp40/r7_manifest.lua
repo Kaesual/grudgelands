@@ -72,6 +72,9 @@ return function(canonical, raw_sha256, settlement_order)
 	-- `172726bfb439774d...`); the WP43 projection loses its cultural rows (was
 	-- `f1d238b3248a84ed...`) and the gathering catalog its cultural section (was
 	-- `ad4d5ea64a408ea2...`).
+	-- Round 33 C4: Quartz loses its cut form (the Cut Quartz recipe goes,
+	-- Cut Citrine is the T1 trinket gem); only the WP43 projection moves. Was
+	-- `6c55f273e3dbfd0f...`.
 	local FIELD_HEAD = {
 		"schema", "full_seed", "r5_schema", "r5_manifest_sha256",
 		"r5_artifact_sha256", "r6_schema", "r6_contract_sha256",
@@ -486,7 +489,7 @@ return function(canonical, raw_sha256, settlement_order)
 			frozen.decoded_templates ~=
 				"766f28cc566f8c55b6512ce8fdc1342d9819228a2e39065fb2eb728ad6fab683" or
 			frozen.wp43_projection ~=
-				"6c55f273e3dbfd0f8b93445d9bf526d17f071f629a3a6036a83984091899d6e9" or
+				"d30874df59b16e251f5a84d1a57ab70fbf86692416ad257e00153afb661d3e1f" or
 			frozen.consumer_payload ~=
 				"c6132247f268c6def7d5f8c60a1de7d93e52d99c5da9367526182c0d89d902b7" then
 			fail("frozen source projection differs: accepted=" ..
