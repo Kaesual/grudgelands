@@ -195,6 +195,40 @@ traffic, microphone wind or steady hiss under a bed; no animals the game
 does not have (frogs); no monster voices inside an ambience bed; effects
 short and focused, with the cut starting at the event itself.
 
+### 2.2a Picks from the lane pages and the ambience pilot (user, 2026-10-04)
+
+**Ambience is a pilot this round.** Listening to the final bed loops, the
+user found many beds too present for a zone background. Rather than ship
+all and remove them later, this round ships beds for **one zone only, the
+humans**: B1.1 by day, B9.1 at night (B1.2 and B9.3 have too much hiss),
+at a base gain clearly below the page level; the user judges the pilot in
+the GUI check, and the other zones follow later with quieter recordings
+("a soft surface, no single sounds in front"). S2's code stays
+region-independent, so more zones are data plus a page. Other choices:
+
+- **No ambient calls** (owl, crows, hawk, wolf): fewer layers, so the user
+  can tell sounds apart in the game. The crow recording (B.3/B.4) becomes
+  the **Carrion Crow's** voice in S1b (war cry or an occasional call while
+  it fights). **Distant thunder** C11.1–C11.4 stays, as a rare sound on the
+  dragon islands only.
+- **Forge** E1.2 only (the rebuilt hammer loop), **fire/hearth** E2.1.
+- **Flowing water** B12.2, positional at *flowing* water nodes only (water or
+  river water that runs off somewhere), not at sources; S2 checks how often
+  our worlds have flowing water and reports. No sea, coast, stream-source,
+  underwater or cave beds this round.
+- **Music** as planned (§2.1 rulings 3–5).
+- **Effects (S1a page):** E1.1 quest complete about 0.5 s shorter at the end
+  (new cut, confirm), E2.1 smithy craft, E3.1 repair, E4.1 cooking (E4.2
+  out), E5.1 alchemy, E6.1 gallop, E7.1 wing beats; one cue per villager
+  role F1.1, F2.1, F3.1, F4.2, F5.1, F6.2; quest abandon G1.2; profession
+  learned H1.3, profession tier H2.3; craft J1.3, upgrade J3.1, crown J4.3,
+  cloak J5.3, money (Bag of Coins deposit) J6.2; travel L1.2; PvP L4.1
+  **only on the Enable PvP button**.
+- **Silent by choice:** quest progress, talent, achievement, enchant (may
+  get a sound later), blue/gold/bag/boss drops, mount summon and dismount,
+  respawn, zone banner, PvP off, and any automatic PvP flag change.
+  Approved lists: `~/projects/grudgelands-orchestration/r34/approved/`.
+
 ### 2.3 Fixes and the Bag of Coins (user, 2026-10-04, after Round 33)
 
 1. **Mobs in water.** Today mobs_redo treats water as unsafe ground even in
