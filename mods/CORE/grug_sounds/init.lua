@@ -118,20 +118,10 @@ end
 function grug_sounds.play(event, target)
 	local spec = EVENTS[event]
 	if not spec or target == nil then return false end
-	local params = {gain = spec.gain or 1, max_hear_distance = spec.distance or DEFAULT_DISTANCE}
-	local key
-	if target.get_pos then
-		if target:is_player() then
-			key = target:get_player_name()
-			if spec.personal then params.to_player = key else params.object = target end
-		else
-			key = target
-			params.object = target
-		end
-	else
-		key = "pos"
-		params.pos = target
-	end
+	-- The limit first: a dropped call (a mount's step) allocates nothing.
+	local object = target.get_pos ~= nil
+	local player = object and target:is_player()
+	local key = player and target:get_player_name() or object and target or "pos"
 	local times = last[event]
 	if not times then
 		times = setmetatable({}, {__mode = "k"})
@@ -141,6 +131,14 @@ function grug_sounds.play(event, target)
 	local previous = times[key]
 	if previous and now - previous < (spec.interval or DEFAULT_INTERVAL) then return false end
 	times[key] = now
+	local params = {gain = spec.gain or 1, max_hear_distance = spec.distance or DEFAULT_DISTANCE}
+	if not object then
+		params.pos = target
+	elseif player and spec.personal then
+		params.to_player = key
+	else
+		params.object = target
+	end
 	if spec.pitch then params.pitch = 1 + (math.random() * 2 - 1) * spec.pitch end
 	core.sound_play(spec.name, params, true)
 	return true

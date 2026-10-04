@@ -10,7 +10,8 @@
 --      as a variant); every .ogg in grug_sounds/sounds is mono and on
 --      tools/r34_s1a/approved.txt (the user's picks; '#' lines are comments),
 --      and every listed file ships;
---   C  the call sites: every grug_sounds.play("...") in mods/ names a declared
+--   C  the call sites (and grug_jobs' craft-sound table: real professions
+--      and operation kinds): every grug_sounds.play("...") in mods/ names a declared
 --      hook, and every declared hook appears as a string in some hooked file
 --      (a typo in an indirect name, e.g. a craft or drop helper, leaves the
 --      right name without a site); the click is the formspec style; the
@@ -183,6 +184,24 @@ for _, name in ipairs({"enchant", "quest_complete"}) do
 end
 for _, name in ipairs(S.HOOKS) do
 	check(seen[name] or PENDING[name], "C declared hook has a call site: " .. name)
+end
+
+-- The craft sounds of grug_jobs/state.lua (read from the source): every
+-- profession key is a profession of registry.lua, every operation key a
+-- station operation kind, every value a declared hook.
+local jobs = ROOT .. "/mods/PLAYER/grug_jobs/"
+local professions = {}
+local block = read(jobs .. "registry.lua"):match("grug_jobs%.PROFESSIONS = (%b{})")
+for key in (block or ""):gmatch("\n%s*([%w_]+) = {") do professions[key] = true end
+check(professions.cooking and professions.alchemist, "C registry.lua professions read")
+local kinds = {}
+for kind in read(jobs .. "station_operations.lua"):gmatch('recipe%.operation == "([%w_]+)"') do kinds[kind] = true end
+check(kinds.enchant and kinds.upgrade, "C station operation kinds read")
+local sounds = read(jobs .. "state.lua"):match("local CRAFT_SOUNDS = (%b{})")
+check(sounds ~= nil, "C CRAFT_SOUNDS found in grug_jobs/state.lua")
+for key, event in (sounds or ""):gmatch('([%w_]+) = "([%w_]+)"') do
+	check(professions[key] or kinds[key], "C CRAFT_SOUNDS key is a profession or operation kind: " .. key)
+	check(hooks[event], "C CRAFT_SOUNDS value is a declared hook: " .. event)
 end
 
 ------------------------------------------------------------------------------

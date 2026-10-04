@@ -176,9 +176,17 @@ local award_callbacks = {}
 -- (Round 34): station operations by kind, cooking, alchemy and the two smiths
 -- by profession, everything else the plain craft.
 local CRAFT_SOUNDS = {enchant = "enchant", upgrade = "upgrade", cooking = "craft_cooking",
-	alchemy = "craft_alchemy", weaponsmith = "craft_smithy", armorsmith = "craft_smithy"}
+	alchemist = "craft_alchemy", weaponsmith = "craft_smithy", armorsmith = "craft_smithy"}
 local function craft_sound(recipe)
 	return CRAFT_SOUNDS[recipe.operation or ""] or CRAFT_SOUNDS[recipe.profession or ""] or "craft"
+end
+
+-- A product taken out of a furnace or brewing stand (workspaces.lua, which
+-- finish without award_progress): only the cooking and alchemy cues, so
+-- smelting stays silent. Nil for anything else.
+function grug_jobs.automatic_take_sound(recipe)
+	local sound = recipe and craft_sound(recipe)
+	return (sound == "craft_cooking" or sound == "craft_alchemy") and sound or nil
 end
 
 -- fn(player, recipe) after every finished craft award_progress counts
