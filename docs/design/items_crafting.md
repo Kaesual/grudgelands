@@ -236,7 +236,7 @@ roughly 100–200 minutes. The five current-tier craft thresholds are
 questing has a predictable craft goal in every band without a separate
 redemption item or discovery grind. A pure fighter instead buys enchanted gear from crafters; both paths remain inside the 10–20 h envelope.
 **Intended gear cadence: a visible upgrade every 45–90 min** (quest
-rewards + 3% world drops between the six material tiers, §3.0),
+rewards + the world drops of §5.1 between the six material tiers, §3.0),
 and at 60 the professions stay load-bearing via consumables
 (elixirs/bandages/potions) and named enchant application/replacement (§7).
 Broader masterwork and cultural services remain future WP5 work. V1 repair is universal and gold-only at every profession
@@ -1214,9 +1214,8 @@ changes:
   crafter's edge is enchantments (§6b), not a base number.
 - **Rotation**: the core stock is fixed; each bracket additionally shows
   a handful of **rotating gear slots**, re-rolled hourly. Roughly **one
-  rotation in five carries a single Uncommon item**, rolled in the
-  **world window** (frac 0.00–0.60, §6.3 — the weakest rolls in the
-  game; crafted enchantments instead have fixed tier values) and priced above the Common
+  rotation in five carries a single Uncommon item**, rolled like a found
+  item (§6.3; crafted enchantments instead have fixed tier values) and priced above the Common
   baseline by the authoritative quality multiplier. That is
   the "today the trader had something good" moment, without a second
   gear source.
@@ -1533,16 +1532,15 @@ cleanup before they become final game art.
 
 ## 5. Loot zones — what drops where
 
-Drops obey the player-tag rule (combat_stats §3), quality/roll windows
-per §6.3, and ordinarily use **gear-drop ilvl = min(mob level, 60)**.
-Authored level-60 endgame rewards are the exception: dungeon gear is ilvl
-**65**, raid/King gear ilvl **70**, and apex/final-boss gear ilvl **75**.
-All three use §6.3's top roll band; their ilvl above 60 feeds the same weapon
-base-damage curve as every other weapon, not a second combat multiplier or a
-fifth enchant band. The
-level-100 Kraken Guard still drops nothing. Since the roll band is chosen by
-the item's ilvl, that one number is all a drop needs: a drop
-has no crafter whose mastery could be read instead. Named zone → materials is
+Drops obey the player-tag rule (combat_stats §3), the chances of §5.1 and
+the roll ranges of §6.3, and use **gear-drop ilvl = min(mob level, 60)**.
+Bosses are the exception (Round 33): the race Kings and the fortress Generals
+drop item level **65**, the dragons item level **70** (§5.1). Their ilvl above
+60 feeds the same weapon base-damage curve as every other weapon, not a second
+combat multiplier, and their enchants are tier T7 (§6.3). The
+Kraken Guard (a level-70 elite of the deep sea) drops nothing, not even a bag. Since the roll range and the
+enchant tier follow the item's ilvl, that one number is all a drop needs: a
+drop has no crafter whose mastery could be read instead. Named zone → materials is
 binding through each zone's fixed biome/gathering palette; the level band adds
 the gear/special layer.
 
@@ -1556,12 +1554,12 @@ becoming a side door around the pick-tier gate of §3.0.4.
 
 | Named-zone band | Materials | Gear drops | Special |
 |---|---|---|---|
-| Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, source windows per §5.1 | no PvP objective |
-| Peaceful home zones 11–20 | equivalent T2 access | T2, source windows per §5.1 | first named rares; no contested zone |
-| Peaceful heartland 21–30 | equivalent T3 access | T3, source windows per §5.1 | preparation for the central frontier |
-| Contested approaches 31–40 | equivalent T4 access | T4, improved windows on qualifying elites | all six race approaches are contested |
-| Front 41–50 | equivalent T5 access | T5, improved windows on qualifying elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
-| High front 51–60 / endpoints 60 | equivalent T6 access | T6, improved windows; elites common | two contested dragons and the apex camps |
+| Peaceful starts 1–10 | equivalent T1 access on both faction sides | T1, chances per §5.1 | no PvP objective |
+| Peaceful home zones 11–20 | equivalent T2 access | T2, chances per §5.1 | first named rares; no contested zone |
+| Peaceful heartland 21–30 | equivalent T3 access | T3, chances per §5.1 | preparation for the central frontier |
+| Contested approaches 31–40 | equivalent T4 access | T4, elite chances on elites | all six race approaches are contested |
+| Front 41–50 | equivalent T5 access | T5, elite chances on elites | The Broken Causeway and The Shattered Line; war-front objectives and quest hooks; no free supply crates |
+| High front 51–60 / endpoints 60 | equivalent T6 access | T6; elites common | two contested dragons and the apex camps |
 | Depth axis | six tier rocks gated by pick tier (§3.0.4); Iron is reachable in T1, mined Coal by T2, Silver by T3, Emberglass by T4, Abyssal Crystal by T5; one gem per tier rock (§3.0.1); race-region columns select the cultural species and deep T6 adds bounded density | cave mobs as per surface tier | **no gear-drop layer of its own**, at any depth (below) |
 | Enemy faction | equivalent tier budgets, not necessarily identical palettes | same tier/source rules | enemy named rares and any raid-enabled king remain incentives |
 
@@ -1572,8 +1570,7 @@ for a T6 gear layer — and deliberately does not become one. Underground
 mobs keep dropping exactly what their families drop on the surface (the
 Gear drops column above); nothing is added for being deep. Two reasons,
 both structural: **the best items come from crafting and from hard
-bosses** (§0, §6.4 — §6.3's two top windows, crafted-masterwork 0.60–1.00
-and boss 0.80–1.00, are exactly those two), and a depth layer would be a third top source with neither a
+bosses** (§0, §6.4), and a depth layer would be a third top source with neither a
 crafter nor a boss behind it; and the depth already pays the endgame
 *material*, which is the input the crafted endgame item is made of.
 Depth buys danger and volume; the gear it feeds is made, not found.
@@ -1586,30 +1583,48 @@ item; **found items keep their own enchants**. A mob drop arrives
 pre-enchanted from this table and is worn as it fell, with no crafter
 involved. The two systems never meet.
 
-| Source | Uncommon | Rare | Roll window (§6.3) |
-|---|---|---|---|
-| Normal mob | 3% | — | world |
-| Elite (armor 80) | 20% | 3% | elite |
-| Named rare (armor 70) | 100% | 25% | rare |
-| Apex boss / race King | — | 100% | boss |
-| PvP fortress General (Round 31; item level = his level, 65) | 60% | 25% | rare |
+Round 33 (user ruling, [round33-plan.md](../planning/round33-plan.md) §2.1).
+One roll per kill decides, so a kill drops **at most one** gear item:
 
-The General has no reward ledger: his roll drops on the kill, like any mob
-gear, and only an enemy player's kill drops it (with his war trophies); his
-bodyguards, like royal guards, drop no gear.
+| Source | White (Common) | Blue (Uncommon) | Gold (Rare) | Total |
+|---|---:|---:|---:|---:|
+| Normal mob | 5% | 2% | 1% | 8% |
+| Elite and named rare | 10% | 10% | 5% | 25% |
+| Critter | — | — | — | 0% |
 
-Found enchantments do not imply a separate refined state.
+**Bosses** — the six race Kings and the two dragons through their personal
+reward (§5.3, §5.4), the two PvP fortress Generals on every enemy player's kill
+— always drop **two** items, each blue or gold at even odds: Kings and
+Generals item level 65, dragons item level 70. Their other loot (Fallen Crown,
+Scaled Hide, the General's war trophies) stays. The General has no reward
+ledger: his two items drop on the kill, like any mob gear, and only an enemy
+player's kill drops them; his bodyguards, like royal guards, drop no gear.
 
-**Which item drops is one uniform draw over the concrete registered base
-items of the mob's own tier** (stated 2026-08-13) — the bracket's whole
-current item list, with no slot pre-selection and no per-family weighting.
+**Bags** drop from any mob at **0.1%** per kill (not from the Kraken Guard and
+the Reed Angelfish, which drop no quality loot at all), independent of the gear roll,
+sized by the mob's level: 1–15 → 8 slots, 16–30 → 16, 31–45 → 24, 46+ → 32
+(the cloth bag line of `grug_inventory`). The 8-slot bag stays on sale; larger
+bags otherwise come only from the Tailor or the Leatherworker.
+
+Found enchantments do not imply a separate refined state. A found item's
+quality is its enchant count: white none, blue one, gold two. Trinkets roll
+0/1/2 like every other item; a single trinket enchant takes either channel
+from that channel's pool (§6.2).
+
+**Which item drops is one uniform draw over every equippable item of the
+mob's own tier** (`grug_gear.drop_pool`, Round 33): the tier's six weapons and
+twelve armour pieces, its shield and spellbook, and its six trinkets — 26
+items, with no slot pre-selection and no per-family weighting.
 Adding a registered family therefore changes the resulting proportions; no
 fixed family count or weighted table exists anywhere in this design.
 
-Found source windows have expected fractions world 0.30, elite 0.60,
-rare 0.75 and boss 0.90. They overlap; a single lower-source roll can exceed a
-higher-source roll. Crafted enchantments instead use the fixed tier table in
+Found enchant values roll uniformly in the §6.3 range of the item's level;
+there are no source windows any more. Every found enchant also knows its
+enchant tier (§6.3). Crafted enchantments instead use the fixed tier table in
 [the current contract](crafting_equipment_revision.md#enchanting).
+
+Vendors buy a blue item at **×3** and a gold item at **×6** of its Common
+buy-back ([economy.md](economy.md) §2).
 
 WP5 still owes the loot/economy audit: found gear must not erase demand for
 crafted gear. No removed masterwork/temper workflow is assumed by that audit.
@@ -1617,8 +1632,8 @@ crafted gear. No removed masterwork/temper workflow is assumed by that audit.
 
 ### 5.2 Named rares (spawn rules decided in biomes_mobs §3.3)
 
-2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill:
-guaranteed Uncommon (rare window) + 25% Rare. Named rares drop **no
+2–4 h respawn, patrol routes, faction-wide broadcast. Loot per kill: the
+elite row of §5.1 (10% white, 10% blue, 5% gold). Named rares drop **no
 signature trophy** (user decision 2026-09-29, WP audit D4). Anti-camping:
 patrol routes + broadcast + the 2–4 h jitter (already decided) — no
 extra mechanic needed.
@@ -1628,7 +1643,7 @@ extra mechanic needed.
 The two offshore dragons are separate contested encounters and use personal
 boss rewards with independent per-character 24-hour loot lockouts. Their
 participation and reset accounting matches the king ledger below. A boss
-reward may include Rare gear in the boss window and authored materials, but it
+reward is two blue-or-gold items at item level 70 (§5.1) and authored materials, but it
 never pays ledger money directly and no universal bar/pick depends on it:
 continental T5 Abyssal Crystal is the ordinary T6 entry. There is no hoard
 chest (WP audit E11) and no renewable gem socket on the islands (E5).
@@ -1683,14 +1698,21 @@ and separate structured cultural-finish and PvP-special state where applicable. 
 channels never overwrite one another. Exact storage keys are implementation
 owned; one idempotent description/stat regeneration path reads them all.
 
-**Weapon level requirement.** Ordinary base weapons require levels
-**1 / 10 / 20 / 30 / 40 / 50** across the six material tiers. T1 uses an explicit
-level-1 requirement while retaining item level 3 for base stats. Elevated found
-weapons require their actual item level up to the character cap. The Weapon slot
-enforces level and the class-family permissions in `inventory_equipment.md`. Wood/Stone weapons
-are absent; gathering tools cannot be equipped there. Armor, offhands and
-trinkets are not level-gated by this weapon-only rule. Higher-level weapons remain lootable and tradeable, just not
-equippable yet. Endgame ilvl 65/70/75 weapons all require level 60. The
+**Level requirement** (Round 33, [round33-plan.md](../planning/round33-plan.md)
+§2.2). **Every** equipment item — weapons, armour, shields, spellbooks,
+trinkets; dropped, crafted or bought — requires the character level
+**min(item level, 60)**. Ordinary base items therefore require levels
+**1 / 10 / 20 / 30 / 40 / 50** across the six material tiers: T1 uses an
+explicit level-1 requirement (`_grug_req_level`) while retaining item level 3
+for base stats, so the starter kit and the first vendor bracket fit a new
+character. A found item requires its own item level up to the character cap,
+stored per stack (`grug_req_level`); boss drops at item level 65/70 require
+level 60. Every equipment slot refuses an item above the character's level
+and says so in the message feed, naming the slot; the tooltip ends with
+"Requires level N" above level 1. The hand slots also enforce the
+class-family permissions in `inventory_equipment.md`. Wood/Stone weapons
+are absent; gathering tools cannot be equipped there. Higher-level items remain lootable and tradeable, just not
+equippable yet. The
 description is regenerated from meta on every change
 (name colorized: white `#FFFFFF`,
 blue `#4A90FF`, yellow `#FFD700`, orange `#FF8000`; one line per
@@ -1733,9 +1755,10 @@ The base-stat line uses the concrete item's level. Chosen affixes add only
 their explicit values; there is no hidden damage/armor/lifetime multiplier.
 
 **Hand-off from the vendor catalogs** (WP7 → WP5, 2026-08-07): vendor
-gear ships with the item-def fields **`_grug_ilvl`, `_grug_bracket` and
-`_grug_quality = 1`**. The Weapon-slot filter reads `_grug_ilvl` directly,
-so a bracket catalog needs no second list of levels or per-stack duplicate.
+gear ships with the item-def fields **`_grug_ilvl`, `_grug_req_level`,
+`_grug_bracket` and `_grug_quality = 1`**. The slot filter reads the
+requirement directly, so a bracket catalog needs no second list of levels or
+per-stack duplicate.
 The later quality/enchant pipeline derives its rolls from these fields and
 preserves the requirement while rebuilding the description.
 
@@ -1833,12 +1856,20 @@ when equipment changes. Hot mana, heal, hit, kill and potion paths read that
 cache and never rescan equipment per tick or event. It enforces the
 same-identity-per-character exclusion and every cap/cooldown above.
 
-### 6.3 Found-item roll ranges by item level and source window
+### 6.3 Found-item roll ranges by item level
 
 These random ranges apply only to found/vendor loot. Their band is chosen by
 the concrete item's level, with ilvl61–75 retaining the final band. The four
 roll bands are independent of the six material tiers. No crafter mastery or
-character-level rule determines a found roll.
+character-level rule determines a found roll. A found value is uniform in its
+band's range, `roll = min + frac × (max − min)` with frac uniform in 0–1,
+whatever the source.
+
+**Enchant tier of a found item** (Round 33, round33-plan.md §2.3): item level
+1–10 is T1, 11–20 T2 … 51–60 T6, above 60 (boss drops) T7
+(`grug_items.enchant_tier`). Every found roll is made with its item's tier; the
+tier-capped values replacing the four bands below come with the enchant-tier
+work of Round 33 (lane C4).
 
 Crafted enchantments instead use fixed T1–T6 values from
 [the current contract](crafting_equipment_revision.md#enchanting). A T1 enchant
@@ -1862,16 +1893,6 @@ damage at ilvl 60 / 70 / 75. With the Warrior's 18-point melee bonus and the
 shared damage fit, the +40% allocation produces 515 / 526 effective damage at
 ilvl 70 / 75 against the ilvl-60 baseline's 337: **+52.8% / +56.1%**, the
 intended +50–60% fully equipped ceiling.
-
-**Source window** (the decided "same mechanic, only ranges differ"):
-`roll = min + frac × (max − min)`, frac uniform in the window:
-
-| Window | frac | Used by |
-|---|---|---|
-| world | 0.00–0.60 | normal-mob drops |
-| elite | 0.30–0.90 | elite drops, dungeon/crate loot |
-| rare | 0.50–1.00 | named-rare drops |
-| boss | 0.80–1.00 | dragon rewards, race Kings |
 
 **Combined cap policy (revised 2026-09-20).** Ordinary affixes, trinket
 prefixes/suffixes, cultural finishes, attributes and base equipment all add
@@ -1899,7 +1920,7 @@ makes ordinary equipment Uncommon; one prefix plus one suffix makes it Rare.
 There is no refinement prerequisite, bonus or separate Imbue/Temper path.
 Crafted values are fixed by enchant tier, as specified in
 [the current enchanting contract](crafting_equipment_revision.md#enchanting).
-Found-item random windows and trinket authored specials retain their own rules.
+Found-item random rolls and trinket authored specials retain their own rules.
 
 ## 6b. Enchantments
 
@@ -1973,7 +1994,7 @@ An identical no-op is refused without cost or progress.
 ### 6b.6 Quality follows slot count
 
 Zero/one/two ordinary affixes correspond to Common/Uncommon/Rare. Found-item
-random windows stay separate from fixed crafted values. Trinket quality does
+random rolls stay separate from fixed crafted values. Trinket quality does
 not alter its independently defined prefix/suffix/special structure.
 
 ### 6b.7 Special variants

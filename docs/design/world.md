@@ -351,8 +351,8 @@ occupying a position (`world_zones.md` §7):
   capped/rounded depth level alone.
 - **Deep ocean:** every ordinary ocean column beyond the shelf plus the four
   declared outer bay-mouth caps, immutable at every y. This remains the
-  deliberately deadly open sea patrolled by the level-100 Kraken Guard (no
-  drops or XP). It has no ordinary surface, guard or mob-level result: the
+  deliberately deadly open sea patrolled by the Kraken Guard, a level-70
+  elite (no drops or XP). It has no ordinary surface, guard or mob-level result: the
   Kraken is a hand-set fixed entity outside those resolvers. Boat acquisition,
   summoning, movement and damage are decided in [boats.md](boats.md);
   what this world-geometry rule owns is the pursuit contract below.

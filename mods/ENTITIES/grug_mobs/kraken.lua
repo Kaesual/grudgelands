@@ -1,8 +1,9 @@
 -- Kraken Guard: the deep-sea deterrent of the open sea (world.md §2b,
--- biomes_mobs.md §3.1). Level 100 is HAND-SET — the one exception to the
+-- biomes_mobs.md §3.1). A level-70 elite, HAND-SET — the one exception to the
 -- level field (grug_zones.mob_level_at returns nil on the open water
--- surface). It exists to make sea travel a bad idea, not as content:
--- no drops, no XP, and it never leaves the open sea (leash below).
+-- surface; user ruling, Round 33). It exists to make sea travel a bad idea,
+-- not as content: no drops, no XP, and it never leaves the open sea (leash
+-- below).
 
 local function in_deep_ocean(pos)
 	return grug_zones.water_class_at(pos.x, pos.z) == "deep_ocean"
@@ -30,7 +31,7 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	type = "monster",
 	passive = false,
 	-- A deterrent, not content: killing it must never be an XP or loot
-	-- farm at the world edge.
+	-- farm at the world edge (no gear, no bag, no drop list below).
 	_grug_xp_reward = 0,
 	_grug_no_quality_loot = true,
 	_grug_spawn_check = in_deep_ocean,
@@ -41,14 +42,11 @@ grug_mobs.register_mob("grug_mobs:kraken", {
 	_grug_no_leash = true,
 	_grug_soft_deaggro = false,
 
-	-- The one hand-set level in the game: grug_zones.mob_level_at returns
-	-- nil on the open water surface. The level engine derives the same
-	-- numbers the def used to spell out (515 HP, 42 damage) from it.
-	_grug_fixed_level = 100,
-	-- Tier "normal", but rare-grade armor: the engine only owns armor when
-	-- the tier sets it (elite 80 / rare 70) or the def leaves it nil, so
-	-- this explicit value survives (levels.lua contract).
-	armor = 70,
+	-- The hand-set level: grug_zones.mob_level_at returns nil on the open
+	-- water surface. The elite tier owns HP, damage, armor (80), scale, tint
+	-- and the wind-up (levels.lua, telegraph.lua).
+	_grug_fixed_level = 70,
+	_grug_tier = "elite",
 	reach = 4, -- huge model, tentacles
 	attack_type = "dogfight",
 	attack_players = true,

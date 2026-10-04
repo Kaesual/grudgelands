@@ -1740,7 +1740,7 @@ numeric-truncated seed.
   (`surface_mob_level_at`) with the independent depth floor on land and zone-owned planned water. Exterior shelf returns nil
   at y >= 0 and the depth floor alone below y = 0. Deep ocean and dragon
   channels have no ordinary mob-level result; the Kraken Guard remains a
-  separate fixed level-100 entity.
+  separate fixed entity (a level-70 elite).
 - `guard_level_at(pos)` is nil for every exterior class. Inside a capital's
   protected city (§12: inside the wall line, the edge and its band) it is
   exactly 60 inside the capital's protected volume (from the capital anchor's

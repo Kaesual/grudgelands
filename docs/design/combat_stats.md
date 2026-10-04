@@ -656,8 +656,8 @@ Normal tier at level L:
   remains nil and permits no guard post. Ordinary and royal guards inside
   remain exactly 60. `_grug_fixed_level` is the sole explicit fixed-entity
   mechanism and bypasses positional and post-role fields only for a deliberately
-  designed fixed entity. Its implemented uses are the Kraken Guard at L100 and
-  every WP13 king at L65. No second king-specific fixed-level path exists.
+  designed fixed entity. Its implemented uses are the Kraken Guard (an elite)
+  at L70 and every WP13 king at L65. No second king-specific fixed-level path exists.
 
 | Mob level | HP | Dmg/hit | Kill XP (normal, solo) | Elite / rare XP |
 |-----------|----|---------|-----------------------:|----------------:|
@@ -721,7 +721,7 @@ the separate positional `guard_level_at` contract above; the depth formula
 does not affect that guard base. Every exterior class has no surface level.
 Shelf `mob_level_at` is nil at normalized y >= 0 and uses the depth term alone
 at normalized y < 0; deep ocean and immutable channels have no ordinary mob-
-level result. The fixed level-100 Kraken is the explicit deep-ocean exception
+level result. The fixed level-70 elite Kraken is the explicit deep-ocean exception
 and bypasses the resolver. **Depth axis**
 (decided 2026-08-06,
 WP6, rate recalibrated 2026-08-08): overworld caves scale with depth —

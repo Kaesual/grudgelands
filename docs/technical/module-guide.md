@@ -423,7 +423,7 @@ Related technical references: [Lua/engine constraints](../research/luanti-lua.md
     multipliers on the first active tick. `_grug_fixed_level` is the sole
     explicit fixed-entity mechanism: it bypasses positional/role fields only
     for deliberately designed fixed entities. Its implemented uses are the
-    Kraken L100, the island dragons L70, the capital kings L65 and their royal
+    Kraken L70 (elite), the island dragons L70, the capital kings L65 and their royal
     guards L60. There is no second king-specific level path.
     Everything else (speeds, view_range, drops, visuals) stays def-owned.
     **Four tiers since WP36**: `critter` (added for the small animals —

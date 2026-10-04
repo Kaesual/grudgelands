@@ -16,7 +16,7 @@
 --     A def that hand-sets them is overridden — do not write them.
 --   * armor is engine-owned only when the tier says so (elite 80 / rare
 --     70) or when the def leaves it nil (then: normal = 100). An explicit
---     def armor at tier "normal" is kept (Kraken: 70).
+--     def armor at tier "normal" is kept.
 --   * Everything else (speeds, view_range, drops, visuals) stays def-owned;
 --     the tier visuals (scale/tint) are layered on top of them at runtime.
 --   * ONE tier extends that list, and it is spelled out in the TIERS table
@@ -25,7 +25,7 @@
 --
 -- THE `critter` TIER (biomes_mobs.md §3.0, decided 2026-08-08) is the SECOND
 -- documented exception to "stats derived, never hand-rolled" — after the
--- Kraken's `_grug_fixed_level` L100 — and, unlike that one, it is a TIER in
+-- Kraken's `_grug_fixed_level` L70 — and, unlike that one, it is a TIER in
 -- this engine and never a hand-set stat in a def:
 --   * always level 1 and always 1 HP, whatever the level field says at the
 --     mob's position (`level = 1`, `hp_flat = 1` below);
@@ -58,7 +58,7 @@ grug_mobs.MAX_LEVEL = MAX_LEVEL
 -- Hard ceilings per level source. The mob field is the 1..60 progression
 -- axis; grug_zones.guard_level_at is documented 20..70 (world.md §1: the
 -- capital watch is 60+), so capping guards at 60 would silently delete the
--- elite city watch. `_grug_fixed_level` bypasses both (Kraken = 100).
+-- elite city watch. `_grug_fixed_level` bypasses both (Kraken = 70).
 local LEVEL_CAP = {mob = MAX_LEVEL, guard = 70}
 
 -- The multiplier model is `hp`/`dmg`/`xp`; the critter row opts out of two
@@ -364,7 +364,7 @@ local function resolve_level(self, cfg, tier)
 	end
 	if cfg.fixed then
 		-- Hand-set level: bypasses the field AND the source cap on purpose
-		-- (the Kraken is L100, kraken.lua).
+		-- (the Kraken is L70, kraken.lua).
 		return math.max(1, cfg.fixed)
 	end
 	local cap = LEVEL_CAP[cfg.source] or MAX_LEVEL
