@@ -484,7 +484,8 @@ do
   get_pool_breakdown=function() return {final=20} end, get_crit_chance=function() return 0 end,
   get_dodge_chance=function() return 0 end, get_class=function() return "warrior" end})
  rawset(_G, "grug_money", {format=function(c) return c .. "c" end, get=function() return 0 end,
-  register_on_change=function() end})
+  register_on_change=function() end,
+  deposit_location=function() return "detached:grug_money_deposit_x", "deposit" end})
  rawset(_G, "grug_xp", {register_on_level_change=function() end})
  grug_core.get_armor_rating = function() return 0 end
  grug_core.armor_reduction = function() return 0 end

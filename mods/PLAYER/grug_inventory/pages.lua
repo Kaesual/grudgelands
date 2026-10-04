@@ -69,6 +69,8 @@ local SLOT_POS = {
 	grug_trinket2 = {9.3, 5.45},
 }
 local QUIVER_POS = {7.3, 1.85}
+-- The Bag of Coins deposit slot (Round 34), below the quiver's total.
+local DEPOSIT_POS = {7.3, 3.75}
 local QUIVER_GHOST = "grug_inventory_quiver.png^[resize:64x64^[multiply:#666666"
 
 -- Ghost icon per slot: drawn under an EMPTY slot's item (inventory_equipment.md
@@ -201,6 +203,18 @@ local function character_content(player, context)
 		("label[2.75,3.95;Money: %s]"):format(esc(grug_money.format(grug_money.get(player)))),
 		"label[8.3,1.25;Armor]label[9.3,1.25;Gear]",
 	}
+	-- The Bag of Coins (Round 34): Withdraw opens grug_money's dialog; the
+	-- slot beside it takes a bag and credits it at once, so it always shows
+	-- its ghost. Button, label and slot share the money line's centre.
+	local deposit, deposit_list = grug_money.deposit_location(player)
+	fs[#fs + 1] = "button[5.6,3.83;1.55,0.7;grug_money_withdraw;Withdraw]"
+	fs[#fs + 1] = ("list[%s;%s;%.1f,%.2f;1,1;]"):format(deposit, deposit_list,
+		DEPOSIT_POS[1], DEPOSIT_POS[2])
+	fs[#fs + 1] = ("image[%.1f,%.2f;1,1;grug_money_bag_of_coins.png^[multiply:#666666]")
+		:format(DEPOSIT_POS[1], DEPOSIT_POS[2])
+	fs[#fs + 1] = ("tooltip[%.1f,%.2f;%.4f,%.4f;%s]"):format(DEPOSIT_POS[1],
+		DEPOSIT_POS[2], TOOLTIP_W, TOOLTIP_H,
+		esc("Deposit — put a Bag of Coins here to add its money to your balance"))
 	-- Claim Stone status (Round 25 ruling 14). Neither mod depends on the
 	-- other, so grug_housing is read at build time; it returns "" until the
 	-- player has received a stone and keeps the cached page current itself.
@@ -425,6 +439,10 @@ sfinv.register_page(CHARACTER_PAGE, {
 			if achievements.handle_tab_fields(player, context, fields) then
 				return true
 			end
+		end
+		if fields.grug_money_withdraw then
+			grug_money.show_withdraw(player)
+			return true
 		end
 		if fields.grug_character_home then
 			local home_mod = rawget(_G, "grug_home")

@@ -72,6 +72,14 @@ core.register_on_mods_loaded(function()
 			elseif socket.role == "housing_manager" then
 				label, texture = "Housing Steward", "grug_map_housing_steward.png"
 				kind = "steward"
+			-- The capital services of Round 33 (grug_traders/vendors.lua),
+			-- marked like the Steward (Round 34 ruling 5).
+			elseif socket.role == "crownbinder" then
+				label, texture = "Crownbinder", "grug_map_crownbinder.png"
+				kind = "service"
+			elseif socket.role == "culture_vendor" then
+				label, texture = "Decor Merchant", "grug_map_decor_merchant.png"
+				kind = "service"
 			elseif socket.role == "king" then
 				-- Round 28 M1: the King marker carries the city's display name.
 				local def = assert(core.registered_entities["grug_mobs:king_" .. settlement.race_id])

@@ -66,9 +66,10 @@ anything). Item enchants (+Str etc.) are the player-driven part.
   assembled hostile spell formula. It never enters spell power and therefore
   never raises healing or absorbs.
 - **Damage level scalar** = `P(L) / (8 × B(L))`, where
-  `B(L) = round(4 + 0.35L) + floor((10 + 3(L−1))/10)` is the own-level
-  baseline sword plus Warrior melee bonus (this calibration reference keeps
-  its floor; Round 33 left the scalar unchanged). Damage assembles weapon/ability,
+  `B(L) = round(4 + 0.35L) + (10 + 3(L−1))/10` is the own-level
+  baseline sword plus Warrior melee bonus (the Strength term keeps its
+  fraction like live damage, Round 34, so same-level damage meets the fit
+  exactly). Damage assembles weapon/ability,
   attribute and flat talent terms before this scalar and floors once at
   settlement; a positive authored damage value settles to at least 1.
 - **Support values are already level-derived and are never level-scaled a

@@ -15,10 +15,10 @@ M.RADIUS = 40
 -- protection box's 10 below and 22 above the floor, plus the player's height.
 M.BELOW, M.ABOVE = 10, 24
 -- Hazards: damage per second (not reduced by armour), the ice water's slow,
--- and how long a player may stand on thin ice before it breaks.
+-- and how long after a player's step thin ice breaks.
 M.ICE_WATER_DPS, M.EMBER_DPS = 250, 350
 M.ICE_SLOW_FACTOR, M.ICE_SLOW_TIME = 0.6, 0.5
-M.ICE_BREAK_TIME = 1.5
+M.ICE_BREAK_DELAY = 1
 -- The dragon's wrath (user ruling 2026-10-03): damage per second to a fight
 -- participant who stands outside the arena while the fight runs.
 M.WRATH_DPS = 500
@@ -67,13 +67,44 @@ function M.hazard(nodes, name)
 	return nil
 end
 
--- Standing on thin ice: the time spent on the same node so far (`entry` =
--- {key, time} or nil) and whether it breaks now.
-function M.ice_step(entry, key, dtime)
-	if not key then return nil, false end
-	local time = (entry and entry.key == key and entry.time or 0) + dtime
-	if time >= M.ICE_BREAK_TIME then return nil, true end
-	return {key = key, time = time}, false
+-- Thin ice (user ruling 2026-10-04, Round 34, refined the same day): each
+-- sample of the 0.25 s hazard pass marks every thin-ice node in the 3x3x3
+-- cube around a player's feet, and a marked node breaks ICE_BREAK_DELAY
+-- seconds later, whether the player is still there or not. The cube covers
+-- the gap between two samples, so the path between them is not walked. A
+-- node holds at most one pending break, server-wide: marking it again never
+-- resets or postpones it (the earlier break wins).
+
+-- A sample at `feet` (a rounded node position) at time `now`: marks every
+-- node of the cube that `is_thin_ice(pos)` and has no pending break
+-- (`pending`: node key -> true; `key_of(pos)` the key) and returns their
+-- break event {due, at, nodes}, or nil when nothing new was marked.
+function M.ice_step(pending, feet, now, key_of, is_thin_ice)
+	local nodes = {}
+	for dy = -1, 1 do
+		for dx = -1, 1 do
+			for dz = -1, 1 do
+				local pos = {x = feet.x + dx, y = feet.y + dy, z = feet.z + dz}
+				local key = key_of(pos)
+				if not pending[key] and is_thin_ice(pos) then
+					pending[key] = true
+					nodes[#nodes + 1] = pos
+				end
+			end
+		end
+	end
+	if #nodes == 0 then return nil end
+	return {due = now + M.ICE_BREAK_DELAY, at = feet, nodes = nodes}
+end
+
+-- The events at the head of `queue` (kept in sample order) that are due at
+-- `now`, removed from it.
+function M.ice_due(queue, now)
+	local due = {}
+	while queue[1] and queue[1].due <= now + 1e-6 do
+		due[#due + 1] = table.remove(queue, 1)
+	end
+	return due
 end
 
 return M

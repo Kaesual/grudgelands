@@ -27,34 +27,46 @@ local function trainer_formspec(player, profession, confirming)
 	else
 		status = "Learn " .. definition.name .. "?"
 	end
+	-- One text box below the status line holds the notice, the unlearn
+	-- question or the recipe-book hint (Round 34): three lines high, so the
+	-- longest of them (two lines at this width, "Learned Leatherworker. Open
+	-- Inventory > ...") never needs a scrollbar. In legacy coordinates a
+	-- textarea starts a button half-height (0.35) below its y and is its
+	-- height less the slot gap (0.15) tall, so 1.25 + 0.35 + 1.2 ends above
+	-- the button row at 2.75.
 	local fs = {
-		"size[6.8,4.0]",
+		"size[6.8,4.5]",
 		("label[0.35,0.35;%s Trainer]"):format(esc(definition.name)),
 		("label[0.35,0.95;%s]"):format(esc(status)),
 	}
 	local session = sessions[player:get_player_name()]
-	if session and session.notice then
-		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,0.85;;;%s]"):format(
-			esc(session.notice))
+	local text
+	if confirming then
+		text = ("Unlearn %s? Only this profession's progression will be permanently lost.")
+			:format(definition.name)
+	elseif session and session.notice then
+		text = session.notice
 	elseif known then
-		fs[#fs + 1] = "textarea[0.35,1.25;6.1,0.85;;;Open Inventory > Crafting and choose this profession's recipe book.]"
+		text = "Open Inventory > Crafting and choose this profession's recipe book."
+	end
+	if text then
+		fs[#fs + 1] = ("textarea[0.35,1.25;6.1,1.35;;;%s]"):format(esc(text))
 	end
 	if confirming then
-		fs[#fs + 1] = ("label[0.35,2.15;Unlearn %s? Only this profession's progression will be permanently lost.]"):format(esc(definition.name))
 		fs[#fs + 1] = "button[0.35,2.75;2.0,0.7;grug_jobs_confirm;Confirm unlearn]"
 		fs[#fs + 1] = "button[2.55,2.75;1.3,0.7;grug_jobs_cancel;Cancel]"
 	elseif known and definition.class == "primary" then
-		fs[#fs + 1] = "button[0.35,2.15;1.8,0.7;grug_jobs_unlearn;Unlearn]"
+		fs[#fs + 1] = "button[0.35,2.75;1.8,0.7;grug_jobs_unlearn;Unlearn]"
 	elseif not known then
-		fs[#fs + 1] = ("button[0.35,2.15;2.2,0.7;grug_jobs_learn;Learn %s]")
+		fs[#fs + 1] = ("button[0.35,2.75;2.2,0.7;grug_jobs_learn;Learn %s]")
 			:format(esc(definition.name))
 	end
 	local repair = rawget(_G, "grug_repair")
 	if not confirming and repair and session and
 			repair.can_open_trainer(player, session.entity) then
-		fs[#fs + 1] = "button[3.0,2.15;2.2,0.7;grug_jobs_repair;Repair equipment]"
+		fs[#fs + 1] = "button[3.0,2.75;2.2,0.7;grug_jobs_repair;Repair equipment]"
 	end
-	fs[#fs + 1] = "button_exit[5.35,3.15;1.1,0.55;grug_jobs_close;Close]"
+	fs[#fs + 1] = "button_exit[5.35,3.65;1.1,0.55;grug_jobs_close;Close]"
 	return table.concat(fs)
 end
 

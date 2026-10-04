@@ -618,8 +618,8 @@ In every capital the **Crownbinder** ([economy.md](economy.md) §4,
 [item_tiers.md](item_tiers.md) §4) is the gate resident of the goldsmith
 service plot and the **Decor Merchant** (the culture vendor) the gate resident
 of the woodcarver service plot, taken over like the Housing Steward's; no
-blueprint or mapgen output changes. Both serve only their capital's faction.
-Neither has a map marker yet.
+blueprint or mapgen output changes. Both serve only their capital's faction
+and have a map marker on that faction's Map tab and minimap (Round 34).
 
 | Capital | Crownbinder (goldsmith plot) | Decor Merchant (woodcarver plot) |
 |---|---|---|

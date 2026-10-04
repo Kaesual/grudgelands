@@ -96,9 +96,12 @@ function grug_core.baseline_weapon_damage(level)
 	return math.floor(4 + 0.35 * level + 0.5)
 end
 
+-- The Strength term keeps its fraction like live melee damage since Round 33
+-- (grug_classes.get_melee_bonus), so same-level damage meets the fit exactly
+-- (Round 34 ruling 6).
 local function baseline_melee_total(level)
 	local strength = 10 + 3 * (level - 1)
-	return grug_core.baseline_weapon_damage(level) + math.floor(strength / 10)
+	return grug_core.baseline_weapon_damage(level) + strength / 10
 end
 
 -- Damage-only level fit. Support values and percentage consumables have

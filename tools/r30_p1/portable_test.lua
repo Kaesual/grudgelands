@@ -297,7 +297,8 @@ local function level_up(player, new_level)
 	for _, fn in ipairs(level_changes) do fn(player, old, new_level) end
 end
 grug_money = {MAX = 1e9, get = function() return 0 end, add = function() end,
-	format = function(c) return c .. "c" end}
+	format = function(c) return c .. "c" end,
+	deposit_location = function() return "detached:grug_money_deposit_x", "deposit" end}
 grug_mobs = {register_on_eligible_kill = function() end, register_participant_drop_hook = function() end,
 	dragon_map_markers = function() return {} end}
 grug_zones = {id_at = function() return "z" end, at = function() return nil end}

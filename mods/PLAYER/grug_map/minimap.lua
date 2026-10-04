@@ -50,16 +50,16 @@ local BEZEL_PX = 256
 local SEA = "#1c3a52"
 -- Kinds shown (ruling 8); settlements, camps, kings and dragons stay on the
 -- Map tab only.
-local SHOWN = {quest = true, steward = true, trainer = true, innkeeper = true,
-	home = true, waypoint = true}
+local SHOWN = {quest = true, steward = true, service = true, trainer = true,
+	innkeeper = true, home = true, waypoint = true}
 local QUEST_TEXTURE = {available = "grug_map_quest_available.png",
 	locked = "grug_map_quest_locked.png", ready = "grug_map_quest_ready.png",
 	active = "grug_map_quest_active.png"}
 local KIND_TEXTURE = {innkeeper = "grug_map_innkeeper.png", home = "grug_map_home.png",
 	waypoint = "grug_map_waypoint.png"}
 -- Which markers keep a slot when more than MARKER_SLOTS are in the circle.
-local PRIORITY = {quest = 1, steward = 2, home = 3, innkeeper = 4, trainer = 5,
-	waypoint = 6}
+local PRIORITY = {quest = 1, steward = 2, service = 2, home = 3, innkeeper = 4,
+	trainer = 5, waypoint = 6}
 local Z = {background = 10, map = 11, marker = 20, bezel = 45, party = 50, player = 60}
 -- The location line (Round 28 M1, location.lua): centred under the bezel,
 -- LOCATION_GAP HUD px below it, in its territory status's colour (Round 32,

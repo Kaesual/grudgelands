@@ -453,7 +453,8 @@ sfinv = {pages = pages, pages_unordered = {}, contexts = contexts,
 grug_inventory = {}
 dofile("mods/PLAYER/grug_inventory/ui.lua")
 grug_money = {format = function(c) return c .. " copper" end, get = function() return 0 end,
-	register_on_change = function() end}
+	register_on_change = function() end,
+	deposit_location = function() return "detached:grug_money_deposit_x", "deposit" end}
 grug_quests.journal = function()
 	return {quests = {{id = "q1", title = "Boar Trouble", description = "Boars eat our crops.",
 		objectives = {{type = "kill", mobs = {"grug_mobs:small_boar"}, count = 3, required = 10}},

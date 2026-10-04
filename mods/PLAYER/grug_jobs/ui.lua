@@ -892,10 +892,13 @@ local function slot_button(fs, x, y, field, profession, empty_label)
 	fs[#fs + 1] = ("tooltip[%s;%s]"):format(field, esc(tooltip))
 end
 
+-- The hint beside the grid is five lines high (Round 34): at this width its
+-- text wraps to about four lines, and the column below it is empty down to
+-- the inventory, so it never needs a scrollbar.
 function grug_jobs.crafting_page_content(player)
 	local fs = {
 		"label[0.05,0.15;Recipe books]",
-		"textarea[6.85,0.35;3.25,1.0;;;Start with Basics. Select a book, then choose a recipe to see its ingredients and station.]",
+		"textarea[6.85,0.35;3.25,2.2;;;Start with Basics. Select a book, then choose a recipe to see its ingredients and station.]",
 		"list[current_player;craft;1.75,0.5;3,3;]",
 		"list[current_player;craftpreview;5.75,1.5;1,1;]",
 		"image[4.75,1.5;1,1;sfinv_crafting_arrow.png]",

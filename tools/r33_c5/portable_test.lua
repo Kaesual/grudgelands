@@ -127,6 +127,7 @@ local modpaths = {
 	grug_gear = ROOT .. "/mods/ITEMS/grug_gear",
 	grug_traders = ROOT .. "/mods/ENTITIES/grug_traders",
 	grug_mapgen = ROOT .. "/mods/MAPGEN/grug_mapgen",
+	grug_money = ROOT .. "/mods/PLAYER/grug_money", -- coins.lua (Round 34)
 }
 core = permissive({
 	registered_items = registered,

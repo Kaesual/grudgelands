@@ -51,7 +51,9 @@ markers with the same per-player ready/available/active/locked precedence as
 world symbols. Include individual profession/Riding trainers, the six kings and
 two dragons at their authored locations. The Housing Steward has its own
 marker (kind `steward`, a cottage-and-key icon, Round 26 playtest), drawn above
-trainers, kings and innkeepers but below quest, party and player markers. NPC/boss markers do not query live
+trainers, kings and innkeepers but below quest, party and player markers. The
+capital services of Round 33 share that layer (kind `service`, Round 34): the
+Crownbinder (a crown over an anvil) and the Decor Merchant (a lantern). NPC/boss markers do not query live
 entities, load terrain, reveal health or indicate respawn state. All NPC/player
 hover tooltips contain only the name. Markers are not clustered, displaced or
 merged when nearby; subsequent playtest feedback decides whether any handling
@@ -60,7 +62,8 @@ is necessary. Map markers confer no remote interaction or travel.
 Round 31 (PvP ruling 13): **the NPC's faction decides who sees its
 marker.** Each NPC marker carries its NPC's faction (the race's; a quest
 giver's own race where it names one). A player sees only the own faction's
-quest givers, trainers, Housing Stewards and innkeepers, plus every king
+quest givers, trainers, Housing Stewards, Crownbinders, Decor Merchants and
+innkeepers, plus every king
 (the enemy's too) and both dragons; a character without a faction yet sees
 only the kings and dragons. Both factions can have markers in one zone
 (a spy in a contested zone), each seen only by its own side. The base,
@@ -237,13 +240,15 @@ drawn from the base image above. The gliding version (approved in playtest,
   base pixel of about 6.7 nodes at 1080p).
 - **Markers** are separate HUD elements, never pixels of the map texture:
   quest givers with their per-player state (ready, available, active,
-  locked), the Housing Steward, profession and Riding trainers, innkeepers,
+  locked), the Housing Steward, the Crownbinder and the Decor Merchant,
+  profession and Riding trainers, innkeepers,
   the player's home (the bound innkeeper or Claim Stone) and discovered
   waystones (Round 29). Settlements,
   camps, kings and dragons stay on the Map tab only. Markers glide with the
   map and are hidden unless the whole icon lies inside the hole. The minimap
   has 24 marker slots; when more markers fall inside the circle, quest givers
-  keep a slot first, then the Steward, home, innkeeper, trainers and
+  keep a slot first, then the Steward and the capital services, home,
+  innkeeper, trainers and
   waystones, and the
   kept ones are drawn in their usual order. Markers are not clustered or
   moved apart.
