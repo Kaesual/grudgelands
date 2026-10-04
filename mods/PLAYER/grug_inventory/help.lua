@@ -146,7 +146,7 @@ local SECTIONS = {
 		heading("Music and ambience"),
 		"• Music: calm pieces now and then, chosen by where you are: the lands, the front and the sea, the underground, or the towns. After each piece a few minutes of quiet.",
 		"• Each piece is downloaded once while music is on, a little before it plays. With music off nothing is downloaded.",
-		"• Ambience: the sound of the land around you by region, day and night, water and caves, and the forges and hearths of the settlements.",
+		"• Ambience: the sound of the land around you by day and night (so far in the human lands), running water, and the forges and hearths of the settlements.",
 		"• In chat: /music on, /music off or /music 50 (volume in percent); /ambience works the same.",
 		"• Your client's own volume setting still applies on top of these.",
 	})},
