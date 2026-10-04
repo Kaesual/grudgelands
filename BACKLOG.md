@@ -869,6 +869,43 @@ none blocks the GUI test. Numbers are comparisons, never targets.
   reach it today (note, not a task).
 - The Round 32 real-client performance test stays optional.
 
+### Character creation in one window (user, 2026-10-05; Round 35 candidate)
+
+Faction, race, class and look in one dialog with a live preview, replacing
+today's four separate steps (`grug_factions` faction form, `grug_classes`
+`selection.lua` race and class forms, `grug_visuals/creation.lua` look form).
+
+- **Layout:** the faction buttons in a full-width row at the top; below
+  them a narrow race column on the left (the selected race's description
+  under the list); to its right the class buttons in a row (the selected
+  class's description in one line below them) and under them the look
+  area: the model on the left, the trait selectors with ‹ › and Random on
+  the right, as in today's look dialog. A "Create character" button at the
+  bottom right, active only once faction, race and class are chosen, with
+  "This choice is final" beside it. The current choices stay highlighted;
+  tooltips on every button.
+- **Empty states:** before a faction is chosen everything below is empty
+  with a short hint; before a race is chosen the right side shows a hint
+  and no model is rendered.
+- **Changes:** changing the faction clears the race and the look (the class
+  stays); changing the race rolls a new random look.
+- **Preview:** mouse rotation on, auto-rotation off. The rotation resets on
+  every change (the engine rebuilds the model with each formspec); the user
+  accepts that. No weapon in the preview (`model[]` cannot show the attached
+  wield entity; no replacement wanted).
+- **Nothing is stored before "Create character":** the choices are a
+  session-only draft; Esc pauses and I resumes within the session; a
+  disconnect starts over. On the click everything is stored at once and the
+  arrival area is loaded then (the starts are generated at server start, so
+  this only reads them from disk, a short wait in the dialog is fine; no
+  prefetch on race selection). A reconnect during that wait resumes it
+  ("created, not yet arrived").
+- **Kept:** creation stasis (frozen, immortal) until the arrival, the wait
+  for world preparation at server start, retry after a load failure, the
+  dark backdrop. The rewrite simplifies the step machine (no pending class,
+  no per-step resume); the work is re-testing those cases, plus the layout
+  on small screens and in the web build.
+
 ### Money withdraw and deposit: Bag of Coins (user, 2026-10-04; done in Round 34 F2)
 
 **Done:** delivered in Round 34 lane F2 (`grug_money/coins.lua`); the rules
