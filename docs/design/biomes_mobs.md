@@ -443,7 +443,7 @@ use, not content:
 
 - **Always level 1, always 1 HP**, whatever the level field says at their
   position. This is the second documented exception to §0's "stats derived,
-  never hand-rolled" rule (after the Kraken's fixed L100) and it is
+  never hand-rolled" rule (after the Kraken's fixed L70) and it is
   implemented as a **`critter` tier** in the level engine, not as a
   hand-set stat in a def.
 - **0 XP.** Critters are food-bearing scenery, never an XP farm.
@@ -736,10 +736,12 @@ authority, while the closest shipped wield silhouette is:
 | Orc | great axe; Cleave | greataxe | none |
 | Troll | totem; Regrowth | staff | no totem visual; closest caster silhouette |
 
-**Deep sea (world.md §2b):** Kraken Guard, L100 fixed (hand-set — the
-one exception, it is a deterrent not content): mobs_mc_squid at
-visual_size ×6, verb: drags under (pulls target down, heavy melee),
-spawns only in open sea beyond the coastal ocean. No drops.
+**Deep sea (world.md §2b):** Kraken Guard, a level-70 elite, fixed (hand-set —
+the one exception, it is a deterrent not content; user ruling, Round 33, in
+place of the former L100 normal): mobs_mc_squid at visual_size ×6 (×1.4 as an
+elite), verb: drags under (pulls target down, heavy melee, the elite wind-up),
+spawns only in open sea beyond the coastal ocean. No drops (no gear, no bag)
+and no XP.
 
 Three fields carry the boat contract of `boats.md`; the travel plan's ruling
 7 (user, 2026-10-02) sets the first two:

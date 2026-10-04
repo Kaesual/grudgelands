@@ -67,6 +67,10 @@ precedence over preserving the exact mathematical ratio.
   buy-back; a 1–2c supply (thread, torch, stick) is not sellable at all,
   because 5% rounded up would equal its discounted price. Sticks are crafted
   from free wood, so no mob drops them and fishing does not catch them.
+- **Quality** (Round 33): a vendor buys a blue (Uncommon) item at **×3** and a
+  gold (Rare) item at **×6** of its Common buy-back, per stack
+  (`grug_traders.stack_sell_price`). An item without a Common buy-back
+  (today shields, spellbooks and trinkets) sells for nothing at any quality.
 - **Loot and gathered goods** pay one formula, `max(1, round(class value ×
   tier factor))`, with tier factors **1 / 2.6 / 6.4 / 16 / 40 / 100** (the
   weapon axis ÷ 25c) and the class values below, tuned once so the median kill

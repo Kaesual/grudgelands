@@ -133,9 +133,8 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   - **Class-family permissions:** Warrior: sword, dagger, Battle Axe;
     Scout: bow, sword, dagger; Mage and Priest: staff, wand, dagger. The
     hand-slot table above says which slot takes which family. Level and
-    occupied-hand checks also apply; the level check covers a weapon in
-    either hand.
-    Ordinary T1 weapons require level 1 despite base-stat item level 3;
+    occupied-hand checks also apply; the level check covers every slot (below).
+    Ordinary T1 items require level 1 despite base-stat item level 3;
     elevated found-item levels retain their own requirement. Common `Usable by`
     tooltip text lists permitted classes; it never changes with the viewer.
     Broken items remain visibly equipped but provide no usable combat weapon.
@@ -211,12 +210,14 @@ hand count), WP38 (native swing capability/pointability bridge), WP39
   them, and the open Character page refreshes exactly once. Join uses that
   notification after `sfinv` and `player_api`; a genuine nested equipment
   write may cause the documented second notification pass.
-- **Weapon level requirement is implemented here:** the same `allow_put`
-  filter reads a weapon's generated `_grug_ilvl` (or `_grug_req_level`)
-  directly in either hand slot, rejects it when that value exceeds the
-  character's level, and says so in the message feed, naming the slot
-  (`grug_inventory/equipment.lua`). Items without a positive level, shields,
-  spellbooks and the armor slots are unrestricted. Rejecting
+- **The level requirement is implemented here** (Round 33, every equipment
+  slot): the same `allow_put` filter asks `grug_core.can_use_item_level` —
+  the stack's own `grug_req_level`, else the definition's `_grug_req_level`
+  (min(item level, 60); 1 for T1 items) — in every equipment slot, rejects
+  the item when that value exceeds the character's level, and says so in the
+  message feed, naming the slot (`grug_inventory/equipment.lua`). Items
+  without a positive level are unrestricted. The tooltip ends with
+  "Requires level N" above level 1 (`items_crafting.md` §6.1). Rejecting
   the equip is deliberate — letting the item sit in the slot without effect
   would be an invisible failure.
 - **Armor classes are bound to the character class** (decided

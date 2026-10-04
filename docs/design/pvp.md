@@ -180,8 +180,8 @@ combat may follow its target in).
   innkeeper: respawn stays in peaceful land. An enemy fortress's waystone is
   inert.
 - **The General's drops:** his War Trophies and, on an enemy player's kill,
-  a gear roll at item level 65 with 60 % uncommon and 25 % rare in the
-  named rares' value window ([items_crafting.md](items_crafting.md) §5.1).
+  a boss's two gear items at item level 65, each blue or gold at even odds
+  (Round 33, [items_crafting.md](items_crafting.md) §5.1).
   His bodyguards drop no gear.
 
 ### 6.2 Battlegrounds camps
