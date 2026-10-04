@@ -89,13 +89,14 @@ Cooking and Alchemy. The roster is organised **by material, never by class**.
 | **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff and wand enchantments and upgrades; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
 | **Goldsmith** | Gold + the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Both trinket slots (enchants and upgrades), gem refinement, Settings |
 
+| **Alchemy** (secondary) | healing herbs + spices | Potions and elixirs — **gathers its own herbs** |
+
 Two professions dress every class in armour, weapon and offhand (Round 33,
 [item_tiers.md](item_tiers.md) §3.3): Warrior Armorsmith + Weaponsmith, Scout
 Leatherworker + Weaponsmith, Mage and Priest Tailor + Woodcarver; the
 Goldsmith serves every class. An **upgrade** (one per profession and tier)
 lifts an item of its families to its tier's top item level (item_tiers.md
 §3.1).
-| **Alchemy** (secondary) | healing herbs + spices | Potions and elixirs — **gathers its own herbs** |
 
 ### 2.1 The coverage is complete and overlap-free
 

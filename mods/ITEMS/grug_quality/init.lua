@@ -759,7 +759,10 @@ local function crown_plan(stack)
 			target .. ")."
 	end
 	local affixes = read_affixes(meta)
-	local lines, raised = {"Item level " .. ilvl .. " becomes " .. target .. "."}, false
+	local lines, raised = {}, false
+	if target ~= ilvl then
+		lines[1] = "Item level " .. ilvl .. " becomes " .. target .. "."
+	end
 	for index = 1, #affixes do
 		local affix = affixes[index]
 		if affix.tier < 7 then

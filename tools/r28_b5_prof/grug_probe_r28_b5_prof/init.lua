@@ -31,9 +31,11 @@ local OWN = {
 		return "grug_professions:bolt_" .. ({"patch", "woven", "heavy", "silkweave",
 			"silk", "stormweave"})[t]
 	end,
+	-- Round 33: bows belong to the Leatherworker (the leather grade).
 	bow = function(t)
-		return "grug_artisans:" .. ({"seasoned", "polished", "hardened", "inlaid",
-			"lacquered", "heartwood"})[t] .. "_wood"
+		return ({"grug_mobs:light_leather", "grug_professions:cured_leather",
+			"grug_mobs:heavy_leather", "grug_mobs:scaled_hide",
+			"grug_professions:sleek_leather", "grug_professions:nightscale_leather"})[t]
 	end,
 	trinket = function(t)
 		return "grug_artisans:setting_" .. ({"tin", "iron", "copper_inlaid_steel", "gold",
@@ -43,16 +45,20 @@ local OWN = {
 
 local function run()
 	local data = grug_professions.ENCHANT_DATA
-	-- 1. Every operation: own material + stat loot + family input, 588 in all.
-	local operations = grug_jobs.station_operations()
+	-- 1. Every enchant operation: own material + the channel's loot (Round 33)
+	-- + family input, 588 in all (the 36 upgrades are tools/r33_c4's).
+	local operations = {}
+	for _, op in ipairs(grug_jobs.station_operations()) do
+		if op.operation == "enchant" then operations[#operations + 1] = op end
+	end
 	check(#operations == 588, "588 enchant operations (got " .. #operations .. ")")
 	local per_profession, sampled = {}, 0
 	for _, op in ipairs(operations) do
 		per_profession[op.profession] = (per_profession[op.profession] or 0) + 1
 		local inputs = op.flat_inputs
 		check(#inputs == 3, op.id .. " has three inputs")
-		check(inputs[2] == data[op.tier].stat_loot[op.enchant_stat],
-			op.id .. " stat loot " .. tostring(inputs[2]))
+		check(inputs[2] == data[op.tier][op.enchant_channel .. "_loot"][op.enchant_stat],
+			op.id .. " loot " .. tostring(inputs[2]))
 		check(inputs[3] == data[op.tier].family_input[op.family],
 			op.id .. " family input " .. tostring(inputs[3]))
 		local own = OWN[op.family]
@@ -70,8 +76,8 @@ local function run()
 	log("operations per profession: " .. table.concat(counts, " ") .. "; own material checked on " ..
 		sampled)
 	check(per_profession.weaponsmith == 204 and per_profession.armorsmith == 84 and
-		per_profession.leatherworker == 60 and per_profession.tailor == 48 and
-		per_profession.woodcarver == 108 and per_profession.goldsmith == 84,
+		per_profession.leatherworker == 120 and per_profession.tailor == 96 and
+		per_profession.woodcarver == 48 and per_profession.goldsmith == 36,
 		"operations per profession")
 	-- Sample costs, written out.
 	local sword = grug_jobs.station_operation("enchant:sword:prefix:str:t1")
@@ -79,11 +85,11 @@ local function run()
 		"grug_materials:bronze_bar,grug_mobs:boar_tusk,grug_materials:tin_bar", "sword T1 Heavy cost")
 	local staff = grug_jobs.station_operation("enchant:caster_weapon:suffix:int:t3")
 	check(staff and table.concat(staff.flat_inputs, ",") ==
-		"grug_artisans:hardened_wood,grug_mobs:coded_talisman,grug_materials:rough_citrine",
+		"grug_artisans:hardened_wood,grug_mobs:bound_wisp_mote,grug_materials:rough_citrine",
 		"staff T3 of the Owl cost")
 	local ring = grug_jobs.station_operation("enchant:trinket:suffix:crit_percent:t6")
 	check(ring and table.concat(ring.flat_inputs, ",") ==
-		"grug_artisans:setting_gold_filigreed_abyssal_steel,grug_mobs:last_laugh_dentures," ..
+		"grug_artisans:setting_gold_filigreed_abyssal_steel,grug_mobs:glass_cat_claw," ..
 		"grug_materials:rough_diamond", "trinket T6 of the Eagle cost")
 
 	-- 2. Metal fittings are gone: no item, no recipe, no group member.

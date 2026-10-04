@@ -509,6 +509,21 @@ do
 	check(tool_why ~= nil, "E a tool or non-item is refused")
 	local _, empty_why = Q.crown_preview(ItemStack(""))
 	eq(empty_why, "Hand over the item to crown.", "E nothing to crown")
+	-- An enchant-only crown (a re-enchanted King drop at 65: T6 below T7)
+	-- leaves the item level out of the preview.
+	if boss_item then
+		local reenchanted = plan("enchant:sword:prefix:str:t6", boss_item)
+		if check(reenchanted ~= nil, "E a King drop takes a T6 enchant") then
+			local item = reenchanted.output
+			local text = Q.crown_preview(item)
+			check(text ~= nil and not text:find("Item level", 1, true) and
+				text:find("T6 Strength becomes T7.", 1, true) ~= nil,
+				"E an enchant-only crown names no item level (" .. tostring(text) .. ")")
+			local crowned = Q.crown_item(item)
+			check(crowned and crowned:get_meta():get_int("grug_ilvl") == 65 and
+				affix_on(crowned, "prefix").tier == 7, "E the enchant-only crown applies")
+		end
+	end
 	-- A plain item is crowned too: only its item level rises.
 	local plain = Q.crown_item(crafted("grug_gear:chest_cloth_patch"))
 	eq(plain and plain:get_meta():get_int("grug_ilvl"), 15, "E a plain T1 item crowns to 15")

@@ -198,28 +198,35 @@ local function item_checks()
 end
 
 local function enchant_checks()
-	local operations = grug_jobs.station_operations()
+	-- Round 33: the enchants only (the 36 upgrades are tools/r33_c4's).
+	local operations = {}
+	for _, op in ipairs(grug_jobs.station_operations()) do
+		if op.operation == "enchant" then operations[#operations + 1] = op end
+	end
 	check(#operations == 588, "588 enchant operations (got " .. #operations .. ")")
 	local per_profession, used = {}, {}
 	for _, op in ipairs(operations) do
 		per_profession[op.profession] = (per_profession[op.profession] or 0) + 1
 		local row, inputs = ENCHANTS[op.tier], op.flat_inputs
-		check(row and #inputs == 3 and inputs[2] == row.stat_loot[op.enchant_stat]
+		check(row and #inputs == 3 and
+			inputs[2] == row[op.enchant_channel .. "_loot"][op.enchant_stat]
 			and inputs[3] == row.family_input[op.family],
 			op.id .. " costs " .. table.concat(inputs, ","))
 		used[inputs[2]] = true
 		used[inputs[3]] = true
 	end
 	check(per_profession.weaponsmith == 204 and per_profession.armorsmith == 84 and
-		per_profession.leatherworker == 60 and per_profession.tailor == 48 and
-		per_profession.woodcarver == 108 and per_profession.goldsmith == 84,
+		per_profession.leatherworker == 120 and per_profession.tailor == 96 and
+		per_profession.woodcarver == 48 and per_profession.goldsmith == 36,
 		"operations per profession")
 	-- Every catalogue input is used by some operation.
 	local inputs = 0
 	for tier = 1, 6 do
-		for _, item in pairs(ENCHANTS[tier].stat_loot) do
-			check(used[item], "T" .. tier .. " stat loot " .. item .. " is used")
-			inputs = inputs + 1
+		for _, field in ipairs({"prefix_loot", "suffix_loot"}) do
+			for _, item in pairs(ENCHANTS[tier][field]) do
+				check(used[item], "T" .. tier .. " " .. field .. " " .. item .. " is used")
+				inputs = inputs + 1
+			end
 		end
 		for _, item in pairs(ENCHANTS[tier].family_input) do
 			check(used[item], "T" .. tier .. " family input " .. item .. " is used")
