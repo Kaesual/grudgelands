@@ -6,7 +6,7 @@ local flan = {
 	attack_type = "dogfight", attack_players = true, group_attack = true,
 	reach = 3, pathfinding = 1, walk_velocity = 1, run_velocity = 3.4,
 	jump = true, jump_height = 4, stepheight = 1.1, fear_height = 6,
-	view_range = 10, floats = 1,
+	view_range = 10, floats = true,
 	visual = "mesh", mesh = "grug_mobs_lava_flan.b3d", glow = 10,
 	textures = {{"grug_mobs_lava_flan.png"},
 		{"grug_mobs_lava_flan2.png"}, {"grug_mobs_lava_flan3.png"}},

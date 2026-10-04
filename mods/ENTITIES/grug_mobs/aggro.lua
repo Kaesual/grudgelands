@@ -339,7 +339,8 @@ local function evade_tick(self)
 	end
 	if grug_core.mono_time() - (ev.started or 0) > EVADE_TIMEOUT then
 		-- SELF-HEALING SAFETY NET. The run is straight-line steering, not
-		-- pathfinding, so a cliff, a wall or water can park an evader forever —
+		-- pathfinding, so a cliff or a wall can park an evader forever (water
+		-- no longer does: an evader swims, Round 34, mobs/api.lua) —
 		-- and forever means untouchable forever, plus every stray-garrison
 		-- consequence listed in leash_reset above. After 40 s the old teleport
 		-- takes over: the same ground correction every hand placement uses
@@ -624,6 +625,45 @@ local function roam_check(self)
 	grug_mobs.walk_toward(self, home.x, home.z, pos)
 end
 
+--
+-- Back to land (Round 34 F1, round34-plan.md §2.3 ruling 1). Every floating
+-- non-flier may now swim after its target (mobs/api.lua grug_may_wade), and
+-- once it swims, water stays passable for it. A mob that is idle in water
+-- when its fight is over — reset close to home, so no evade run; a chase that
+-- ended mid-lake; a knockback — swims toward its home, which is land, with the
+-- same one-second nudge as the roam cap until it stands on land again. A mob
+-- on land never enters this, so roaming still avoids water. Route carriers
+-- (patrollers, named rares) and post guards keep their own idle walk, which
+-- now crosses water too; an evader is already running home.
+--
+local function in_liquid(name)
+	local def = name and core.registered_nodes[name]
+	return def ~= nil and def.liquidtype ~= nil and def.liquidtype ~= "none"
+end
+
+local function shore_check(self)
+	if self.fly or self.keep_flying or not self.floats
+			or self._grug_patrol_route or self._grug_rare_id or self._grug_post_x
+			or (self.temp and self.temp.grug_evading) then
+		return false
+	end
+	-- Idle only, the same test as roam_check.
+	if self.attack or self.following
+			or (self.state ~= "stand" and self.state ~= "walk") then
+		return false
+	end
+	if not (in_liquid(self.standing_on) or in_liquid(self.standing_in)) then
+		return false
+	end
+	local home = self._grug_home
+	local pos = self.object and self.object:get_pos()
+	if not home or not pos then
+		return false
+	end
+	grug_mobs.walk_toward(self, home.x, home.z, pos)
+	return true
+end
+
 -- Called on every do_custom tick; does real work once a second. This IS the
 -- per-mob 1 Hz slot, so the threat-switch drain rides along in it rather than
 -- opening a second accumulator.
@@ -651,8 +691,11 @@ function grug_mobs.leash_tick(self, dtime)
 	-- the no-leash early return: being bound to an anchor is not the same
 	-- question as being leashed to a chase, and a camp family that ever opts
 	-- out of the leash must still stay at its camp. Costs a few field tests
-	-- and, for an idle free roamer, one squared distance.
-	roam_check(self)
+	-- and, for an idle free roamer, one squared distance. A mob idle in water
+	-- swims toward land first (shore_check above); the roam cap waits.
+	if not shore_check(self) then
+		roam_check(self)
+	end
 	-- The evade run (leash_reset above). BEFORE the no-leash early return only
 	-- for symmetry with the two rules above — a `_grug_no_leash` mob never
 	-- calls leash_reset and therefore can never carry the flag, so this costs

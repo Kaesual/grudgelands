@@ -1043,6 +1043,32 @@ end
 
 -- are we facing a cliff?
 
+-- GRUG PATCH (Round 34 F1, round34-plan.md §2.3 ruling 1): every mob that
+-- floats and does not fly swims. It may move into a liquid that does not hurt
+-- it while it fights (attack state), flees (runaway) or runs home after a
+-- fight (grug_mobs/aggro.lua's evade), and whenever it already swims, so a
+-- mob in a lake can always reach land again. Ambient stand/walk on land still
+-- treats water as a drop. Fliers, swimmers (`fly`) and the self-flying dragons
+-- and whelps (`keep_flying`) keep their own movement. A floating mob bobs at
+-- the surface, so the node at its feet (standing_on) counts as well as the one
+-- at its body (standing_in); either alone flickers.
+local function grug_is_liquid(nodename)
+	local def = core.registered_nodes[nodename]
+	return def ~= nil and def.liquidtype ~= nil and def.liquidtype ~= "none"
+end
+
+local function grug_may_wade(self)
+
+	if self.fly or self.keep_flying or not self.floats then return false end
+
+	local state = self.state
+
+	if state == "attack" or state == "runaway"
+	or (self.temp and self.temp.grug_evading) then return true end
+
+	return grug_is_liquid(self.standing_on) or grug_is_liquid(self.standing_in)
+end
+
 -- GRUG PATCH: `core.line_of_sight` stops at every non-air node, including
 -- harmless non-walkable vegetation.  Follow a bounded vertical probe through
 -- such cover until it finds real walkable support, while preserving dangerous
@@ -1067,10 +1093,17 @@ local function has_safe_support(self, top, bottom)
 		if node.name == "ignore" or node.loaded == false or not def
 		or is_node_dangerous(self, node.name) then return false end
 		if def.walkable then return true end
-		-- Water was unsafe before the vegetation correction even for mobs whose
-		-- water_damage is zero; do not turn a plant fix into a wading rule.
-		if def.liquidtype and def.liquidtype ~= "none" then return false end
-		if def.groups and (def.groups.liquid or 0) > 0 then return false end
+		-- GRUG PATCH (Round 34 F1): a liquid is support only for a mob that may
+		-- wade now (grug_may_wade, asked only here, so dry ground costs nothing)
+		-- and only when it hurts nobody: lava and every other damaging liquid
+		-- stay a boundary even for a mob immune to it. A liquid that hurts this
+		-- mob already returned false above. The cliff probe and the
+		-- close-obstacle sidestep share this rule.
+		if (def.liquidtype and def.liquidtype ~= "none")
+		or (def.groups and (def.groups.liquid or 0) > 0) then
+			return not (def.groups and def.groups.lava)
+				and (def.damage_per_second or 0) <= 0 and grug_may_wade(self)
+		end
 	end
 
 	return false
@@ -3068,6 +3101,30 @@ end
 
 -- falling & fall damage
 
+-- GRUG PATCH (Round 34 F1): a floating mob bobs with its feet about a quarter
+-- node under the water surface, too low for its stepheight to carry it onto a
+-- bank one node above the water, so it could swim in but never out. Facing
+-- such a bank (walkable at the next level up, free above it) it rises at
+-- GRUG_CLIMB_RISE instead of 0.45: the hop lifts its feet about half a node
+-- over the surface and the next push forward steps it up. A flush bank needs
+-- no hop; a bank two nodes high stays a wall. Two node reads per step, only
+-- while the mob floats in a liquid.
+local GRUG_CLIMB_RISE = 3
+
+local function grug_bank_ahead(self, pos)
+
+	local yaw = self.object:get_yaw() ; if not yaw then return false end
+	local cbox = mob_cbox(self)
+	local reach = cbox[4] + 0.5
+	local x = pos.x - sin(yaw) * reach
+	local z = pos.z + cos(yaw) * reach
+	local feet = pos.y + cbox[2]
+	local step = core.registered_nodes[node_ok({x = x, y = feet + 0.6, z = z}).name]
+	local above = core.registered_nodes[node_ok({x = x, y = feet + 1.6, z = z}).name]
+
+	return step and step.walkable and not (above and above.walkable) or false
+end
+
 function mob_class:falling(pos)
 
 	if self.fly or self.disable_falling then return end
@@ -3080,7 +3137,10 @@ function mob_class:falling(pos)
 
 		local visc = min(core.registered_nodes[self.standing_in].liquid_viscosity, 7) + 1
 
-		self.object:set_velocity({x = v.x, y = 0.45, z = v.z}) -- slow ascent in water
+		-- GRUG PATCH (Round 34 F1): climb out onto a one-node bank.
+		local rise = grug_bank_ahead(self, pos) and GRUG_CLIMB_RISE or 0.45
+
+		self.object:set_velocity({x = v.x, y = rise, z = v.z}) -- slow ascent in water
 
 		fall_speed = -1.2 / visc
 
