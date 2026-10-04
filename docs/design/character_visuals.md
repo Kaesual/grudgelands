@@ -12,7 +12,7 @@ the settlement side that populates the starts with those NPCs is
 ## 1. One model, six peoples
 
 Every humanoid — player, guard, bandit, vendor, mirefolk — uses the engine's
-`character.b3d`. A humanoid of a race is **composed** from layers on the one
+`character.b3d` (players wear it with a cloak appended, §5b). A humanoid of a race is **composed** from layers on the one
 64×32 skin, in this order (decided 2026-10-03, Round 31):
 
 1. **skin** — the skin tone, then the race's body: face, shading and the race's
@@ -270,6 +270,47 @@ item:
 
 The masks are generated (`tools/r31_b/gen_enchant_masks.py`, one two-frame
 `<texture>_ench.png` per texture, each under its source texture's licence).
+
+## 5b. Cloaks and achievements (Round 33)
+
+Decided 2026-10-04 (round33-plan.md §2.10). A cloak is a **cosmetic badge**,
+never an item: each character owns a list of cloaks and wears one of them or
+none. A new character owns **No cloak** and the **Plain grey cloak** and wears
+No cloak. Every other cloak is unlocked only by an **achievement**. Both lists
+are kept per character, and so is the choice.
+
+- **Achievements** count something the character did. The first five:
+  **Hunter** (kill 100 wild animals), **Kingslayer** (kill a King),
+  **Wyvernslayer** (kill the Stormscale Jungle Wyvern), **Dragonslayer** (kill
+  the Wyrmglass Ice Dragon) and **Honored** (kill 50 guards of the enemy
+  faction). Each unlocks its own cloak. An achievement may have tiers, each
+  earned once and never taken back. "Wild animals" are every animal mob,
+  critters and hostile beasts included, but no humanoid, construct, spirit or
+  slime, and not the dragons or their whelps (bosses and boss adds); the
+  Kraken Guard counts (user ruling 2026-10-04). A sub-type counts
+  as its base mob. Zombies have their own counter. A kill counts for every
+  character the kill credits (the XP rule's participants). A King or a dragon
+  counts for every character the boss ledger credits, whatever the loot
+  lockout says. Guards are the PvP counter.
+- The Character page has an **Achievements** tab: each achievement with its
+  cloak (dimmed until earned), its condition and its progress. Under the
+  model on the Stats view, a **dropdown** lists the owned cloaks. Earning a
+  tier posts a line to the message feed.
+- **On the model:** a cloak hangs from the shoulders to just above the knee.
+  It is a thin box behind the body on its own bone, keyed per animation
+  frame, the technique of VoxeLibre's capes. It sways a little standing,
+  swings out up to 30 degrees with the legs while walking (and never through
+  them) and lies back over the seat when sitting. It costs nothing per step,
+  every player sees it, and it scales with the race's stature. Players wear
+  `grug_visuals_character.b3d`, which is `character.b3d` with the cloak
+  appended (`tools/r33_c3/gen_cloak_model.py`, which also checks the leg
+  clearance). The cloak is the model's **second texture**, so the skin
+  composition is unchanged. NPCs keep `character.b3d`.
+- **Texture format:** 32×32. Columns 0–15 are the outer face seen from
+  behind (the image's left is the character's left), shoulder at the top.
+  Columns 16–31 are the lining seen from the front. The cloak's thin edges
+  take the outer face's border pixels. No cloak is the transparent
+  `blank.png`.
 
 ## 6. Round 11 item and station presentation
 

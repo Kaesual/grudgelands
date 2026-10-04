@@ -376,6 +376,9 @@ the Round 19 top-centre text list:
   the note "Capped by your level: reach level 10N+1, then craft once more
   for tier N+1" when the count is full and only the character level blocks
   the next tier. A counted craft refreshes the tab while it is open.
+  Since Round 33 a tab "Achievements" sits between Effects and Professions,
+  and the Stats view has the **cloak picker** under the model
+  ([character_visuals.md](character_visuals.md) §5b).
 - **Class icons** (Warrior, Mage, Priest, Scout) appear in the party HUD
   list and in the Group page's "Current party" table (`parties.md`).
 - Specialized displays such as the target frame remain separate. Effects
