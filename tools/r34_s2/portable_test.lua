@@ -336,6 +336,28 @@ do
 	check(text(rows) == "water@1,0 water@3,0", "E a playing loop near enough stays: " .. text(rows))
 	rows = R.choose_emitters(river, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {["6,0,0"] = true}, key)
 	check(text(rows) == "water@1,0 water@2,0", "E a playing loop too far behind is replaced: " .. text(rows))
+	-- a river bank with hundreds of flowing nodes: the same choice as a full sort
+	local many, brute = {["default:water_flowing"] = {}}, {}
+	local r = seeded(11)
+	for i = 1, 300 do
+		local p = {x = r(-12, 12), y = r(-5, 5), z = r(-12, 12)}
+		table.insert(many["default:water_flowing"], p)
+		brute[#brute + 1] = p
+	end
+	table.sort(brute, function(a, b)
+		local da, db = a.x * a.x + a.y * a.y + a.z * a.z, b.x * b.x + b.y * b.y + b.z * b.z
+		if da ~= db then return da < db end
+		if a.x ~= b.x then return a.x < b.x end
+		if a.y ~= b.y then return a.y < b.y end
+		return a.z < b.z
+	end)
+	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits, {}, key)
+	check(#rows == 2 and rows[1].pos == brute[1] and rows[2].pos == brute[2],
+		"E 300 flowing nodes: the two nearest, as a full sort")
+	rows = R.choose_emitters(many, D.emitter_nodes, {x = 0, y = 0, z = 0}, limits,
+		{[key(brute[4])] = true}, key)
+	check(#rows == 2 and rows[1].pos == brute[1] and rows[2].pos == brute[4],
+		"E 300 flowing nodes: the fourth nearest still playing stays")
 	check(D.emitter_nodes["default:water_source"] == nil and D.emitter_nodes["default:river_water_source"] == nil,
 		"E never a water source")
 end

@@ -313,33 +313,44 @@ end
 -- loops every pass; the free places go to the nearest others. Returns a
 -- list of {pos, kind, d2}, sorted by kind, then distance.
 function R.choose_emitters(found, kinds, pos, limits, active, key)
-	local by_kind = {}
+	-- Per kind only the nearest 2 * limit are kept, by insertion into a short
+	-- sorted list: a river bank can return hundreds of flowing nodes, and
+	-- they are neither all sorted nor each given a table.
+	local best = {}
+	local function before(d2, p, row)
+		if d2 ~= row.d2 then return d2 < row.d2 end
+		if p.x ~= row.pos.x then return p.x < row.pos.x end
+		if p.y ~= row.pos.y then return p.y < row.pos.y end
+		return p.z < row.pos.z
+	end
 	for name, list in pairs(found) do
 		local kind = kinds[name]
 		if kind then
-			local rows = by_kind[kind] or {}
-			by_kind[kind] = rows
+			local rows = best[kind] or {}
+			best[kind] = rows
+			local keep = 2 * (limits[kind] or 1)
 			for index = 1, #list do
 				local p = list[index]
 				local dx, dy, dz = p.x - pos.x, p.y - pos.y, p.z - pos.z
-				rows[#rows + 1] = {pos = p, kind = kind, d2 = dx * dx + dy * dy + dz * dz}
+				local d2 = dx * dx + dy * dy + dz * dz
+				local n = #rows
+				if n < keep or before(d2, p, rows[n]) then
+					local at = n + 1
+					while at > 1 and before(d2, p, rows[at - 1]) do at = at - 1 end
+					table.insert(rows, at, {pos = p, kind = kind, d2 = d2})
+					if #rows > keep then rows[#rows] = nil end
+				end
 			end
 		end
 	end
 	local out = {}
 	local order = {}
-	for kind in pairs(by_kind) do order[#order + 1] = kind end
+	for kind in pairs(best) do order[#order + 1] = kind end
 	table.sort(order)
 	for _, kind in ipairs(order) do
-		local rows = by_kind[kind]
-		table.sort(rows, function(a, b)
-			if a.d2 ~= b.d2 then return a.d2 < b.d2 end
-			if a.pos.x ~= b.pos.x then return a.pos.x < b.pos.x end
-			if a.pos.y ~= b.pos.y then return a.pos.y < b.pos.y end
-			return a.pos.z < b.pos.z
-		end)
+		local rows = best[kind]
 		local limit, chosen, picked = limits[kind] or 1, 0, {}
-		for index = 1, math.min(2 * limit, #rows) do
+		for index = 1, #rows do
 			if chosen < limit and active[key(rows[index].pos)] then
 				picked[index], chosen = true, chosen + 1
 			end

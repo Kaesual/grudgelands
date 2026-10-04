@@ -14,9 +14,11 @@
 -- game would. Logged: microseconds per second of each pass and per player
 -- evaluation, the node searches, sounds started and pushes per player and
 -- minute. With grug_ambience present it then counts flowing water (the
--- nodes the water loop hangs on) round the six start towns after the
+-- nodes the water loop hangs on) in eight sample regions (the six start
+-- towns and six lowland and wetland zone hubs, y -10 to 60) after the
 -- liquids had 20 s to settle: nodes, sources, and the share of 16 x 16
--- columns holding flowing water. Then the server shuts down.
+-- columns holding flowing water. Then the server shuts down. With the
+-- setting r34s2_census_only = true only the census runs.
 
 local P = "[r34s2_probe] "
 local NFAKE = tonumber(core.settings:get("r34s2_fakes") or "") or 40
@@ -162,19 +164,30 @@ local function move_fakes()
 end
 
 -- ---------------------------------------------------------------- census
-local CENSUS_HALF, CENSUS_UP, CENSUS_DOWN = 64, 24, 24
+local CENSUS_HALF, CENSUS_Y0, CENSUS_Y1 = 64, -10, 60
+local CENSUS_ONLY = core.settings:get_bool("r34s2_census_only", false)
+-- Zone hubs (simple_map.lua) of lowland and wetland zones, where rivers and
+-- lakes are likeliest, besides the six start towns.
+local HUBS = {
+	{"goldmead_vale", 0, -2050}, {"whitebridge_shire", -900, -1500},
+	{"moonfall_wood", 2400, -1500}, {"mournfen", -1800, 2050},
+	{"whispering_reedlands", 900, 1500}, {"totemwater_reach", 2400, 1500},
+}
 local census = {}
 
 local function census_start()
+	local list = {}
 	for _, row in ipairs(grug_core.start_identities()) do
 		local c = grug_core.start_position(row.faction_id, row.race_id)
-		if c then
-			local r = {race = row.race_id, c = c, done = false}
-			census[#census + 1] = r
-			core.emerge_area({x = c.x - CENSUS_HALF, y = c.y - CENSUS_DOWN, z = c.z - CENSUS_HALF},
-				{x = c.x + CENSUS_HALF - 1, y = c.y + CENSUS_UP, z = c.z + CENSUS_HALF - 1},
-				function(_, _, remaining) if remaining == 0 then r.done = true end end)
-		end
+		if c then list[#list + 1] = {row.race_id .. "_start", c.x, c.z} end
+	end
+	for _, h in ipairs(HUBS) do list[#list + 1] = h end
+	for _, h in ipairs(list) do
+		local r = {name = h[1], c = {x = h[2], y = 0, z = h[3]}, done = false}
+		census[#census + 1] = r
+		core.emerge_area({x = h[2] - CENSUS_HALF, y = CENSUS_Y0, z = h[3] - CENSUS_HALF},
+			{x = h[2] + CENSUS_HALF - 1, y = CENSUS_Y1, z = h[3] + CENSUS_HALF - 1},
+			function(_, _, remaining) if remaining == 0 then r.done = true end end)
 	end
 end
 
@@ -184,8 +197,8 @@ local function census_report()
 	local total_cells, wet_cells, total_flowing = 0, 0, 0
 	for _, r in ipairs(census) do
 		local c = r.c
-		local minp = {x = c.x - CENSUS_HALF, y = c.y - CENSUS_DOWN, z = c.z - CENSUS_HALF}
-		local maxp = {x = c.x + CENSUS_HALF - 1, y = c.y + CENSUS_UP, z = c.z + CENSUS_HALF - 1}
+		local minp = {x = c.x - CENSUS_HALF, y = CENSUS_Y0, z = c.z - CENSUS_HALF}
+		local maxp = {x = c.x + CENSUS_HALF - 1, y = CENSUS_Y1, z = c.z + CENSUS_HALF - 1}
 		local fpos, fcount = core.find_nodes_in_area(minp, maxp, flowing)
 		local _, scount = core.find_nodes_in_area(minp, maxp, sources)
 		local cells = {}
@@ -196,14 +209,38 @@ local function census_report()
 		for _ in pairs(cells) do wet = wet + 1 end
 		local n = (2 * CENSUS_HALF / 16) * (2 * CENSUS_HALF / 16)
 		total_cells, wet_cells, total_flowing = total_cells + n, wet_cells + wet, total_flowing + #fpos
-		log(("CENSUS %-7s %s emerged=%s flowing water %d, flowing river water %d, sources %d + %d; " ..
-			"16x16 columns with flowing water %d of %d"):format(r.race, core.pos_to_string(c),
+		-- The ambience node search where the water loop matters: at up to 20
+		-- flowing nodes of the region, as a player standing there would run it.
+		local ambience = rawget(_G, "grug_ambience")
+		if ambience and #fpos > 0 then
+			local D, R = ambience.data, ambience.rules
+			local names, kinds = {}, {}
+			for node, kind in pairs(D.emitter_nodes) do names[#names + 1] = node; kinds[node] = kind end
+			local limits = {}
+			for kind, spec in pairs(D.emitters) do limits[kind] = spec.limit end
+			local reach = D.emitter_reach
+			local us, got, n_at = 0, 0, 0
+			for i = 1, #fpos, math.max(1, math.floor(#fpos / 20)) do
+				local p = fpos[i]
+				local t = core.get_us_time()
+				local found = core.find_nodes_in_area(vector.subtract(p, reach), vector.add(p, reach), names, true)
+				local rows = R.choose_emitters(found, kinds, p, limits, {}, core.hash_node_position)
+				us = us + core.get_us_time() - t
+				for _, list in pairs(found) do got = got + #list end
+				n_at = n_at + 1
+				r.chosen = #rows
+			end
+			log(("CENSUS %-22s node search + choice at %d flowing nodes: %.1f us each, %.1f positions returned each"):format(
+				r.name, n_at, us / n_at, got / n_at))
+		end
+		log(("CENSUS %-22s %s emerged=%s flowing water %d, flowing river water %d, sources %d + %d; " ..
+			"16x16 columns with flowing water %d of %d"):format(r.name, core.pos_to_string(c),
 			tostring(r.done), fcount["default:water_flowing"] or 0,
 			fcount["default:river_water_flowing"] or 0, scount["default:water_source"] or 0,
 			scount["default:river_water_source"] or 0, wet, n))
 	end
 	log(("CENSUS total flowing %d in %d regions of %dx%dx%d; %d of %d 16x16 columns (%.1f %%)"):format(
-		total_flowing, #census, 2 * CENSUS_HALF, CENSUS_DOWN + CENSUS_UP + 1, 2 * CENSUS_HALF,
+		total_flowing, #census, 2 * CENSUS_HALF, CENSUS_Y1 - CENSUS_Y0 + 1, 2 * CENSUS_HALF,
 		wet_cells, total_cells, total_cells > 0 and 100 * wet_cells / total_cells or 0))
 end
 
@@ -259,7 +296,10 @@ core.register_globalstep(function(dtime)
 			state.phase, state.phase_t = "emerge", 0
 		end
 	elseif state.phase == "emerge" then
-		if emerge_done or state.phase_t > 120 then
+		if CENSUS_ONLY then
+			census_start()
+			state.phase, state.phase_t = "census", 0
+		elseif emerge_done or state.phase_t > 120 then
 			log(("emerge done=%s after %.1f s"):format(tostring(emerge_done), state.phase_t))
 			wrap_passes()
 			join_fakes(center)
