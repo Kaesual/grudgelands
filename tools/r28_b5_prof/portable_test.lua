@@ -1,13 +1,13 @@
 -- Round 28 Lane B5 portable test (rulings 27, 28). Loads the REAL files under
 -- minimal stubs and checks:
---   1. the shipped data/enchants.json (the Round 28 catalogue, Lane E1; the
---      same text as docs/planning/round28/design/catalog/enchants.json)
---      validates against the real stat pools (grug_quality) and yields the
---      588 operations, each costing own material + stat loot + family input;
+--   1. the shipped data/enchants.json (Round 33: the same text as
+--      tools/r33_ds/enchants_r33.json) validates against the real stat pools
+--      (grug_quality) and yields the 588 operations, each costing own
+--      material + the channel's loot + family input;
 --   2. operations generated from a complete sample catalogue: exact costs,
---      prefix and suffix share inputs, the trinket's two pools share stat loot;
---   3. load errors for missing or wrong entries (stat_loot, family_input,
---      tiers, unknown keys, non-item values);
+--      prefix and suffix take their own loot, so do the trinket's two pools;
+--   3. load errors for missing or wrong entries (prefix_loot, suffix_loot,
+--      family_input, tiers, unknown keys, non-item values);
 --   4. the cross-profession check: a foreign product in an operation is
 --      reported, an own product is not;
 --   5. cooking (grug_cooking/init.lua + grug_jobs/basics_routes.lua): the six
@@ -138,7 +138,8 @@ local function operations(by_tier, family, own)
 		for _, channel in ipairs({"prefix", "suffix"}) do
 			for _, stat in ipairs(enchant_pool(family, channel)) do
 				result[#result + 1] = {tier = tier, channel = channel, stat = stat, family = family,
-					inputs = data.operation_inputs(by_tier, family, stat, tier, own[tier])}
+					inputs = data.operation_inputs(by_tier, family, stat, channel, tier,
+						own[tier])}
 			end
 		end
 	end
@@ -154,8 +155,8 @@ end
 -- 1. The shipped catalogue data.
 -- ---------------------------------------------------------------------------
 local shipped_text = read("mods/ITEMS/grug_professions/data/enchants.json")
-eq(shipped_text, read("docs/planning/round28/design/catalog/enchants.json"),
-	"shipped enchants.json is the catalogue's")
+eq(shipped_text, read("tools/r33_ds/enchants_r33.json"),
+	"shipped enchants.json is the Round 33 data design's")
 local shipped = decode_json(shipped_text)
 local by_tier = data.validate_enchants(shipped, POOLS)
 local families, stats = data.families_and_stats(POOLS)
@@ -171,12 +172,13 @@ for _, family in ipairs(families) do
 		eq(#op.inputs, 3, family .. " op has three inputs")
 		eq(op.inputs[1], "own:" .. family .. "_t" .. op.tier, family .. " own material first")
 		local row = shipped[op.tier]
-		eq(op.inputs[2], row.stat_loot[op.stat], family .. " T" .. op.tier .. " stat loot")
+		eq(op.inputs[2], row[op.channel .. "_loot"][op.stat],
+			family .. " T" .. op.tier .. " " .. op.channel .. " loot")
 		eq(op.inputs[3], row.family_input[family], family .. " T" .. op.tier .. " family input")
 	end
 end
 eq(total, 588, "588 operations from the shipped data")
-eq(#data.referenced_items(by_tier), 6 * (9 + 11), "referenced items listed per tier")
+eq(#data.referenced_items(by_tier), 6 * (9 + 9 + 11), "referenced items listed per tier")
 
 -- ---------------------------------------------------------------------------
 -- 2. A complete sample catalogue: distinct items per stat, family and tier.
@@ -187,8 +189,11 @@ table.sort(stat_list)
 local function sample()
 	local rows = {}
 	for tier = 1, 6 do
-		local row = {tier = tier, stat_loot = {}, family_input = {}}
-		for _, stat in ipairs(stat_list) do row.stat_loot[stat] = "loot:" .. stat .. "_t" .. tier end
+		local row = {tier = tier, prefix_loot = {}, suffix_loot = {}, family_input = {}}
+		for _, stat in ipairs(stat_list) do
+			row.prefix_loot[stat] = "loot:" .. stat .. "_t" .. tier
+			row.suffix_loot[stat] = "sloot:" .. stat .. "_t" .. tier
+		end
 		for _, family in ipairs(families) do
 			row.family_input[family] = "mine:" .. family .. "_t" .. tier
 		end
@@ -197,31 +202,36 @@ local function sample()
 	return rows
 end
 local sample_tiers = data.validate_enchants(sample(), POOLS)
-local inputs = data.operation_inputs(sample_tiers, "sword", "dex", 2, "grug_materials:iron_bar")
+local inputs = data.operation_inputs(sample_tiers, "sword", "dex", "prefix", 2,
+	"grug_materials:iron_bar")
 eq(table.concat(inputs, ","), "grug_materials:iron_bar,loot:dex_t2,mine:sword_t2",
-	"sword T2 dex cost")
-inputs = data.operation_inputs(sample_tiers, "leather_armor", "dodge_percent", 5,
+	"sword T2 dex prefix cost")
+inputs = data.operation_inputs(sample_tiers, "leather_armor", "dodge_percent", "suffix", 5,
 	"grug_professions:sleek_leather")
 eq(table.concat(inputs, ","),
-	"grug_professions:sleek_leather,loot:dodge_percent_t5,mine:leather_armor_t5",
-	"leather T5 dodge cost")
+	"grug_professions:sleek_leather,sloot:dodge_percent_t5,mine:leather_armor_t5",
+	"leather T5 dodge suffix cost")
 local trinket_ops = operations(sample_tiers, "trinket", own_of("trinket"))
 eq(#trinket_ops, 36, "36 trinket operations")
 local by_key = {}
 for _, op in ipairs(trinket_ops) do
 	by_key[op.channel .. ":" .. op.stat .. ":" .. op.tier] = table.concat(op.inputs, ",")
-	eq(op.inputs[2], "loot:" .. op.stat .. "_t" .. op.tier, "trinket " .. op.channel .. " uses stat_loot")
+	eq(op.inputs[2], (op.channel == "prefix" and "loot:" or "sloot:") .. op.stat .. "_t" .. op.tier,
+		"trinket " .. op.channel .. " uses its channel's loot")
 	eq(op.inputs[3], "mine:trinket_t" .. op.tier, "trinket uses its family input")
 end
 check(by_key["prefix:str:4"] and by_key["suffix:crit_percent:4"], "trinket pools differ by channel")
 check(by_key["suffix:str:4"] == nil, "trinket suffix has no Strength")
 local sword_ops = operations(sample_tiers, "sword", own_of("sword"))
-local shared = {}
+local by_channel = {}
 for _, op in ipairs(sword_ops) do
 	local key = op.stat .. ":" .. op.tier
-	local cost = table.concat(op.inputs, ",")
-	if shared[key] then eq(cost, shared[key], "sword prefix and suffix share inputs " .. key) end
-	shared[key] = cost
+	by_channel[key] = by_channel[key] or {}
+	by_channel[key][op.channel] = op.inputs[2]
+end
+for key, loot in pairs(by_channel) do
+	check(loot.prefix and loot.suffix and loot.prefix ~= loot.suffix,
+		"sword prefix and suffix take their own loot " .. key)
 end
 
 -- ---------------------------------------------------------------------------
@@ -232,18 +242,22 @@ local function broken(edit)
 	edit(rows)
 	return function() return data.validate_enchants(rows, POOLS) end
 end
-fails_with(broken(function(rows) rows[3].stat_loot.dodge_percent = nil end),
-	"tier 3 has no stat_loot entry for stat dodge_percent", "missing stat loot")
+fails_with(broken(function(rows) rows[3].prefix_loot.dodge_percent = nil end),
+	"tier 3 has no prefix_loot entry for stat dodge_percent", "missing prefix loot")
+fails_with(broken(function(rows) rows[2].suffix_loot.armor_rating = nil end),
+	"tier 2 has no suffix_loot entry for stat armor_rating", "missing suffix loot")
+fails_with(broken(function(rows) rows[2].suffix_loot = nil end),
+	"tier 2 needs suffix_loot", "suffix loot block missing")
 fails_with(broken(function(rows) rows[5].family_input.bow = nil end),
 	"tier 5 has no family_input entry for family bow", "missing family input")
-fails_with(broken(function(rows) rows[2].stat_loot.strength = "loot:x" end),
+fails_with(broken(function(rows) rows[2].prefix_loot.strength = "loot:x" end),
 	"unknown stat strength", "unknown stat")
 fails_with(broken(function(rows) rows[1].family_input.axe = "mine:x" end),
 	"unknown family axe", "unknown family")
 fails_with(broken(function(rows) rows[6] = nil end), "no entry for tier 6", "missing tier")
 fails_with(broken(function(rows) rows[6].tier = 5 end), "lists tier 5 twice", "duplicate tier")
-fails_with(broken(function(rows) rows[4].stat_loot.int = "crab eye" end),
-	"stat_loot.int is not an item name", "non-item stat loot")
+fails_with(broken(function(rows) rows[4].suffix_loot.int = "crab eye" end),
+	"suffix_loot.int is not an item name", "non-item suffix loot")
 fails_with(broken(function(rows) rows[1].family_input = nil end),
 	"needs family_input", "family_input block missing")
 fails_with(function() return data.validate_enchants({}, POOLS) end, "non-empty list",
@@ -252,8 +266,10 @@ fails_with(function() return data.validate_enchants({}, POOLS) end, "non-empty l
 fails_with(function()
 	return data.validate_enchants(decode_json(read(
 		"tools/r28_design/samples/valid/catalog/enchants.json")), POOLS)
-end, "tier 1 has no stat_loot entry", "design sample is incomplete")
-fails_with(function() return data.operation_inputs(sample_tiers, "sword", "dex", 1, nil) end,
+end, "tier 1 needs prefix_loot", "the Round 28 one-loot sample is no catalogue now")
+fails_with(function()
+	return data.operation_inputs(sample_tiers, "sword", "dex", "prefix", 1, nil)
+end,
 	"sword T1 has no own material", "missing own material")
 
 -- Enchant inputs above the operation tier.

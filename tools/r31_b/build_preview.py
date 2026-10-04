@@ -47,7 +47,7 @@ AFFIX = {m[0]: (m[1], m[2]) for m in re.findall(
     r"\n\t(\w+) = \{label = \"[^\"]+\", short = \"[^\"]+\",\s*prefix = \"([^\"]+)\",\s*"
     r"suffix = \"([^\"]+)\"", QUALITY)}
 POOLS = {k: re.findall(r"\"(\w+)\"", v) for k, v in re.findall(
-    r"\n\t(\w+) = \{([^}]*)\}", QUALITY[QUALITY.index("local POOLS"):QUALITY.index("local BANDS")])}
+    r"\n\t(\w+) = \{([^}]*)\}", QUALITY[QUALITY.index("local POOLS"):QUALITY.index("-- Gear drops per kill")])}
 assert set(COLORS) == set(STATS) and set(AFFIX) == set(STATS), (COLORS, AFFIX)
 
 METALS = ["bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"]
