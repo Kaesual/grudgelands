@@ -31,5 +31,6 @@ grug_sounds_cloak.ogg, S1a J5.3, https://opengameart.org/content/rpg-sound-pack 
 grug_sounds_money.ogg, S1a J6.2, https://opengameart.org/content/fantasy-sound-effects-library (Little Robot Sound Factory, CC BY 3.0; ogg/J6.2.ogg sha256 892c591181851c08)
 grug_sounds_travel.ogg, S1a L1.2, https://freesound.org/people/GammaGool/sounds/735062/ (GammaGool, CC0 1.0; ogg/L1.2.ogg sha256 b03a2aff4d5bbc92)
 grug_sounds_pvp_on.ogg, S1a L4.1, https://opengameart.org/content/rpg-sound-pack (artisticdude, CC0 1.0; ogg/L4.1.ogg sha256 26165d71e65b1951)
-# Pending: quest_complete = E1.1 cut about 0.5 s shorter at the end (new cut, needs the user's confirmation).
+# Recut confirmed by the user 2026-10-04 (https://claude.ai/artifact/Ni5dadaPRa2uSRz6JjRXtA):
+grug_sounds_quest_complete.ogg, S1a R1.1 (E1.1 cut to 1.5 s), https://opengameart.org/content/fantasy-sound-effects-library (Little Robot Sound Factory, CC BY 3.0; previews/s1a/recut/ogg/R1.1.ogg sha256 03a4f069a2ed1e89)
 # Silent by the user's choice: quest_progress, talent, achievement, enchant, drop_blue, drop_gold, drop_bag, drop_boss, mount_summon, mount_dismount, respawn, zone_banner, pvp_off; pvp_on only on the Enable PvP button, no sound on automatic flag changes.

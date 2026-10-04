@@ -16,7 +16,8 @@ by Little Robot Sound Factory, www.littlerobotsoundfactory.com, from the
 (https://opengameart.org/content/fantasy-sound-effects-library), licensed
 under CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/); converted
 to mono Ogg and normalised. The level-up file is made from the pack's WAV of
-`Jingle_Achievement_00`.
+`Jingle_Achievement_00`, the quest-complete file from `Jingle_Win_00`, cut
+to 1.5 s with a short fade-out.
 
 | File | Page | Source | Author | License | Modification | SHA-256 (first 16) |
 |---|---|---|---|---|---|---|
@@ -50,3 +51,4 @@ to mono Ogg and normalised. The level-up file is made from the pack's WAV of
 | `sounds/grug_sounds_money.ogg` | S1a J6.2 | `Pickup_Gold_00.wav` | [Little Robot Sound Factory (www.littlerobotsoundfactory.com)](https://opengameart.org/content/fantasy-sound-effects-library) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | converted to mono Ogg Vorbis q3, start silence trimmed, peak-normalised to -3 dBFS | `892c591181851c08` |
 | `sounds/grug_sounds_travel.ogg` | S1a L1.2 | "Fast Warp In" (Freesound 735062, HQ preview, 128 kbit MP3) | [GammaGool](https://freesound.org/people/GammaGool/sounds/735062/) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, start silence trimmed, peak-normalised to -3 dBFS | `b03a2aff4d5bbc92` |
 | `sounds/grug_sounds_pvp_on.ogg` | S1a L4.1 | `sword-unsheathe2.wav` | [artisticdude](https://opengameart.org/content/rpg-sound-pack) | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | converted to mono Ogg Vorbis q3, start silence trimmed, peak-normalised to -3 dBFS | `26165d71e65b1951` |
+| `sounds/grug_sounds_quest_complete.ogg` | S1a R1.1 (E1.1 cut to 1.5 s) | `Jingle_Win_00.wav` | [Little Robot Sound Factory (www.littlerobotsoundfactory.com)](https://opengameart.org/content/fantasy-sound-effects-library) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | converted to mono Ogg Vorbis q3, cut to 1.5 s with a short fade-out (0.3 s), peak-normalised to -3 dBFS | `03a4f069a2ed1e89` |

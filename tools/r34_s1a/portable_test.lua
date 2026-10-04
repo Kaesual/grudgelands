@@ -16,8 +16,7 @@
 --      (a typo in an indirect name, e.g. a craft or drop helper, leaves the
 --      right name without a site); the click is the formspec style; the
 --      events the user chose to keep silent have neither a spec nor a hook
---      (plan §2.2a), enchant keeps its hook without a spec and quest_complete
---      waits for the user's confirmed cut;
+--      (plan §2.2a), enchant keeps its hook without a spec;
 --   P  play: a player target hears it positionally on its object or, for a
 --      personal spec, alone; an object target carries the object, a position
 --      the position; an event without a spec and a nil target are silent;
@@ -179,9 +178,8 @@ for _, name in ipairs({"quest_progress", "talent", "achievement", "drop_blue", "
 		"pvp_off"}) do
 	check(not hooks[name] and not EVENTS[name], "C silent by choice, no hook: " .. name)
 end
-for _, name in ipairs({"enchant", "quest_complete"}) do
-	check(hooks[name] and not EVENTS[name], "C hook without a sound for now: " .. name)
-end
+check(hooks.enchant and not EVENTS.enchant, "C hook without a sound for now: enchant")
+check(EVENTS.quest_complete ~= nil, "C quest_complete plays the confirmed cut (R1.1)")
 for _, name in ipairs(S.HOOKS) do
 	check(seen[name] or PENDING[name], "C declared hook has a call site: " .. name)
 end
@@ -219,8 +217,8 @@ local alice, bob, mount = player("alice"), player("bob"), entity()
 local function last() return played[#played] end
 
 played = {}
-EVENTS.quest_complete = nil
-eq(S.play("quest_complete", alice), false, "P an event without a spec is silent")
+EVENTS.enchant = nil
+eq(S.play("enchant", alice), false, "P an event without a spec is silent")
 eq(S.play("quest_accept", nil), false, "P a nil target is silent")
 eq(S.play(nil, alice), false, "P a nil event is silent")
 eq(#played, 0, "P nothing reached the engine")

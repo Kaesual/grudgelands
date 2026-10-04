@@ -56,7 +56,7 @@ grug_sounds.HOOKS = {
 -- Silent by the user's choice (plan §2.2a), so without a call site: quest
 -- progress, talent, achievement, drops, mount summon and dismount, respawn,
 -- zone banner, PvP off and any automatic PvP flag change. Enchant keeps its
--- hook without a sound; quest_complete waits for the user's confirmed cut.
+-- hook without a sound.
 
 -- The user's picks (tools/r34_s1a/approved.txt). Files are peak-normalised
 -- to -3 dBFS; the gains set the balance (quiet, frequent cues lower). UI and
@@ -75,6 +75,7 @@ local EVENTS = {
 	quest_page = {name = "grug_sounds_quest_page", gain = 0.5, personal = true},
 	quest_accept = {name = "grug_sounds_quest_accept", gain = 0.7, personal = true},
 	quest_abandon = {name = "grug_sounds_quest_abandon", gain = 0.6, personal = true},
+	quest_complete = {name = "grug_sounds_quest_complete", gain = 0.7, personal = true},
 	vendor_buy = {name = "grug_sounds_coins", gain = 0.6, personal = true, pitch = 0.05},
 	vendor_sell = {name = "grug_sounds_coins", gain = 0.6, personal = true, pitch = 0.05},
 	money = {name = "grug_sounds_money", gain = 0.7, personal = true},
