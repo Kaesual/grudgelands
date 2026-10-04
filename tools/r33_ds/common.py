@@ -11,7 +11,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 MOBS = REPO / "mods" / "ENTITIES" / "grug_mobs" / "data"
-ENCHANTS = REPO / "mods" / "ITEMS" / "grug_professions" / "data" / "enchants.json"
+# The enchant inputs before Round 33 (one stat_loot per tier; the shipped
+# file now carries this design's prefix_loot and suffix_loot). The Round 28
+# catalogue is the same text the game shipped until lane C4.
+ENCHANTS = REPO / "docs" / "planning" / "round28" / "design" / "catalog" / "enchants.json"
 
 
 def rnd(x):

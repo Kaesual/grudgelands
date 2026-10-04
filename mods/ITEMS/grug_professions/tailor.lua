@@ -86,3 +86,14 @@ P.register_recipe("tailor", {tier = 5, station = "tailor_bench",
 		{C .. "bolt_silk", C .. "bolt_silk", C .. "bolt_silk"}},
 	output = "grug_inventory:bag_great", mastery_required = 4,
 	hint = "Sew at a Tailor Bench"})
+
+-- The spellbook (Round 33, item_tiers.md §3.3; from the Goldsmith): two bolts
+-- of the tier and a Parchment, Journeyman mastery.
+local METALS = {"bronze", "iron", "steel", "silversteel", "embersteel", "abyssal_steel"}
+for tier = 1, #tiers do
+	local bolt = C .. "bolt_" .. tiers[tier].key
+	P.register_recipe("tailor", {tier = tier, station = "tailor_bench",
+		inputs = {{bolt, bolt, C .. "parchment"}},
+		output = "grug_gear:spellbook_" .. METALS[tier], mastery_required = 2,
+		hint = "Bind at a Tailor Bench"})
+end

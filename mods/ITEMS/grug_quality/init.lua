@@ -6,8 +6,11 @@
 --
 -- Shared item-meta keys (all belong to one concrete ItemStack):
 --   grug_quality       integer 1 Common / 2 Uncommon / 3 Rare / 4 reserved
---   grug_ench          ordered {channel, stat, value, tier?} affixes
+--   grug_ench          ordered {channel, stat, tier, value} affixes; the value
+--                      is the enchant rule at the item level and tier
+--                      (item_tiers.md §1.1), rewritten whenever either changes
 --   grug_ilvl          per-stack item level; absent falls back to _grug_ilvl
+--   grug_crowned       1 once a Fallen Crown was applied (crown_item)
 --   grug_req_level     per-stack equip requirement, absent without an ilvl
 --   grug_base_name     uncolored, unaffixed definition name used on rebuild
 --   grug_roll_seed     exact PcgRandom seed used for the last affix roll
@@ -35,19 +38,19 @@ local AFFIX = {
 	int = {label = "Intelligence", short = "Int", prefix = "Clever",
 		suffix = "of the Owl", decimals = 0},
 	max_hp_percent = {label = "maximum HP", short = "Max HP",
-		prefix = "Stout", suffix = "of the Ox", decimals = 0, percent = true},
+		prefix = "Stout", suffix = "of the Ox", decimals = 1, percent = true},
 	max_mana_percent = {label = "maximum Mana", short = "Max Mana",
-		prefix = "Attuned", suffix = "of the Raven", decimals = 0,
+		prefix = "Attuned", suffix = "of the Raven", decimals = 1,
 		percent = true},
 	crit_percent = {label = "Crit", short = "Crit", prefix = "Lucky",
 		suffix = "of the Eagle", decimals = 1, percent = true},
 	attack_speed_percent = {label = "attack speed", short = "Attack speed",
-		prefix = "Swift", suffix = "of the Hornet", decimals = 0,
+		prefix = "Swift", suffix = "of the Hornet", decimals = 1,
 		percent = true},
 	dodge_percent = {label = "Dodge", short = "Dodge", prefix = "Elusive",
 		suffix = "of the Cat", decimals = 1, percent = true},
 	armor_rating = {label = "armor rating", short = "Armor", prefix = "Stalwart",
-		suffix = "of the Tortoise", decimals = 0},
+		suffix = "of the Tortoise", decimals = 1},
 }
 
 local POOLS = {
@@ -70,28 +73,10 @@ local POOLS = {
 	trinket_suffix = {"max_hp_percent", "max_mana_percent", "crit_percent"},
 }
 
-local BANDS = {
-	{maximum = 15, values = {
-		attribute = {1, 3}, pool = {1, 2}, chance = {0.5, 1.0},
-		attack_speed = {3, 6}, armor = {1, 2},
-	}},
-	{maximum = 30, values = {
-		attribute = {2, 5}, pool = {2, 3}, chance = {0.5, 1.5},
-		attack_speed = {4, 8}, armor = {1, 3},
-	}},
-	{maximum = 45, values = {
-		attribute = {4, 8}, pool = {3, 4}, chance = {1.0, 2.0},
-		attack_speed = {6, 12}, armor = {2, 4},
-	}},
-	{maximum = 75, values = {
-		attribute = {6, 12}, pool = {4, 5}, chance = {1.5, 3.0},
-		attack_speed = {8, 16}, armor = {3, 6},
-	}},
-}
-
 -- Gear drops per kill (round33-plan.md §2.1), percent of a white, a blue and
 -- a gold item. One roll decides, so a kill drops at most one item. Named
--- rares (tier "rare") share the elite row; a critter drops no gear.
+-- rares (tier "rare"), zone leaders and war-camp captains (§2.9a, whatever
+-- their tier) share the elite row; a critter drops no gear.
 local ELITE_DROPS = {white = 10, blue = 10, gold = 5}
 grug_items.DROP_CHANCES = {
 	normal = {white = 5, blue = 2, gold = 1},
@@ -124,24 +109,38 @@ function grug_items.enchant_tier(ilvl)
 	return math.max(1, math.ceil(ilvl / 10))
 end
 
-local ENCHANT_VALUES = {
-	attribute = {2, 3, 5, 7, 9, 10},
-	pool = {1, 2, 2, 3, 4, 5},
-	chance = {0.5, 0.8, 1.2, 1.6, 2.0, 2.5},
-	attack_speed = {4, 6, 8, 10, 12, 14},
-	armor = {1, 2, 3, 4, 5, 6},
+-- The enchant value rule (item_tiers.md §1.1): value = a + b L + c L^2 with
+-- L = clamp(min(item level, 10 x tier), 1, 70), rounded to the stat's
+-- decimals and at least `minimum`. An enchant grows with its item's level up
+-- to its tier's top; T7 (boss drops, the crown) reaches item level 70.
+local CURVES = {
+	str = {a = 0.8, b = 0.15, c = 0.0025, minimum = 1},
+	dex = {a = 0.8, b = 0.13, c = 0.0019, minimum = 1},
+	int = {a = 0.8, b = 0.15, c = 0.0025, minimum = 1},
+	crit_percent = {a = 1.7, b = 0.044, c = 0, minimum = 0},
+	attack_speed_percent = {a = 1.6, b = 0.04, c = 0, minimum = 0},
+	max_hp_percent = {a = 1.6, b = 0.04, c = 0, minimum = 0},
+	max_mana_percent = {a = 2.2, b = 0.03, c = 0, minimum = 0},
+	dodge_percent = {a = 1.5, b = 0.032, c = 0, minimum = 0},
+	armor_rating = {a = 0, b = 0.08, c = 0, minimum = 0.5},
 }
+grug_items.ENCHANT_CURVES = CURVES
 
-function grug_items.enchant_value(stat, tier)
-	local key = (stat == "str" or stat == "dex" or stat == "int") and "attribute"
-		or ((stat == "max_hp_percent" or stat == "max_mana_percent") and "pool")
-		or ((stat == "crit_percent" or stat == "dodge_percent") and "chance")
-		or (stat == "attack_speed_percent" and "attack_speed")
-		or (stat == "armor_rating" and "armor")
-	return key and ENCHANT_VALUES[key][tier] or nil
+function grug_items.enchant_value(stat, ilvl, tier)
+	local curve = CURVES[stat]
+	if not curve then return nil end
+	local level = math.max(1, math.min(math.floor(tonumber(ilvl) or 1),
+		10 * (tonumber(tier) or 1), 70))
+	local raw = curve.a + curve.b * level + curve.c * level * level
+	local factor = AFFIX[stat].decimals == 1 and 10 or 1
+	return math.max(curve.minimum, math.floor(raw * factor + 0.5) / factor)
 end
 
-grug_items.ENCHANT_VALUES = ENCHANT_VALUES
+-- The value an enchant of `tier` reaches at its tier's top (the station's
+-- "up to" label).
+function grug_items.enchant_top_value(stat, tier)
+	return grug_items.enchant_value(stat, 10 * tier, tier)
+end
 
 grug_items.QUALITY = QUALITY
 grug_items.AFFIXES = AFFIX
@@ -151,7 +150,6 @@ grug_items.POOLS = POOLS
 function grug_items.enchant_pool(family, channel)
 	return POOLS[family == "trinket" and ("trinket_" .. channel) or family]
 end
-grug_items.BANDS = BANDS
 
 local DERIVED_KEYS = {
 	"_grug_strength", "_grug_dexterity", "_grug_intelligence",
@@ -291,53 +289,10 @@ function grug_items.family_for(stack)
 	return family_for(stack)
 end
 
-local function band_for(ilvl)
-	for index = 1, #BANDS do
-		if ilvl <= BANDS[index].maximum then return BANDS[index], index end
-	end
-	return BANDS[#BANDS], #BANDS
-end
-
-local function range_for(stat, ilvl)
-	local values = band_for(ilvl).values
-	if stat == "str" or stat == "dex" or stat == "int" then
-		return values.attribute
-	elseif stat == "max_hp_percent" or stat == "max_mana_percent" then
-		return values.pool
-	elseif stat == "crit_percent" or stat == "dodge_percent" then
-		return values.chance
-	elseif stat == "attack_speed_percent" then
-		return values.attack_speed
-	elseif stat == "armor_rating" then
-		return values.armor
-	end
-	error("grug_quality: unknown affix stat " .. tostring(stat), 0)
-end
-
-function grug_items.range_for(stat, ilvl)
-	local range = range_for(stat, clamp(math.floor(tonumber(ilvl) or 1), 1, 75))
-	return range[1], range[2]
-end
-
-local function rounded_value(stat, raw)
-	local decimals = AFFIX[stat].decimals or 0
-	local factor = 10 ^ decimals
-	return math.floor(raw * factor + 0.5) / factor
-end
-
--- The value of one found enchant at its item's level and enchant tier: a
--- uniform roll in the level's band range (the tier caps nothing yet).
-local function found_value(stat, ilvl, tier, rng)
-	local range = range_for(stat, ilvl)
-	return rounded_value(stat, range[1] + random_fraction(rng) *
-		(range[2] - range[1]))
-end
-
--- One found enchant (a drop, a boss reward, a vendor's rolled item): every
--- found roll comes here with its item's enchant tier.
-local function found_affix(channel, stat, ilvl, rng)
-	return {channel = channel, stat = stat,
-		value = found_value(stat, ilvl, grug_items.enchant_tier(ilvl), rng)}
+-- One found enchant (a drop, a boss reward, a vendor's rolled item): the
+-- item's tier, so it is worth exactly the rule at its item level.
+local function found_affix(channel, stat, ilvl)
+	return {channel = channel, stat = stat, tier = grug_items.enchant_tier(ilvl)}
 end
 
 local function read_affixes(meta)
@@ -350,6 +305,8 @@ local function read_affixes(meta)
 		local slot = value[index]
 		if type(slot) == "table" and AFFIX[slot.stat] and
 				type(slot.value) == "number" and not seen[slot.stat] and
+				type(slot.tier) == "number" and slot.tier % 1 == 0 and
+				slot.tier >= 1 and slot.tier <= 7 and
 				(slot.channel == "prefix" or slot.channel == "suffix") and
 				not channels[slot.channel] then
 			seen[slot.stat] = true
@@ -382,6 +339,12 @@ end
 local function format_number(value, decimals)
 	if decimals == 1 then return string.format("%.1f", value) end
 	return tostring(math.floor(value + 0.5))
+end
+
+-- An enchant value as the tooltip shows it (whole attributes, one decimal
+-- for the percentages and armor).
+function grug_items.format_enchant_value(stat, value)
+	return format_number(value, AFFIX[stat].decimals)
 end
 
 local function suffix_tail(word)
@@ -441,11 +404,11 @@ local function affix_line(slot, player)
 			slot.stat == "max_mana_percent") and grug_classes and
 			type(grug_classes.pool_percent_amount) == "function" then
 		local pool = slot.stat == "max_hp_percent" and "hp" or "mana"
-		extra = " (" .. grug_classes.pool_percent_amount(player, pool,
-			slot.value) .. " at your level)"
+		extra = grug_classes.pool_percent_amount(player, pool, slot.value) ..
+			" at your level"
 	end
 	return "+" .. value .. (definition.percent and "% " or " ") ..
-		definition.label .. extra
+		definition.label .. " (T" .. slot.tier .. (extra ~= "" and "; " .. extra or "") .. ")"
 end
 
 -- The enchant colours (round31-plan.md §2.2): the per-stack inventory image
@@ -529,6 +492,7 @@ function grug_items.regenerate_description(stack, player)
 	local inherited = base_lines(stack, ilvl)
 	for index = 1, #inherited do lines[#lines + 1] = inherited[index] end
 	for index = 1, #affixes do lines[#lines + 1] = affix_line(affixes[index], player) end
+	if meta:get_int("grug_crowned") == 1 then lines[#lines + 1] = "Crowned" end
 	lines[#lines + 1] = grug_gear.usable_by(stack)
 	local requirement = family ~= "tool" and
 		grug_gear.requirement_line(required_level(stack))
@@ -586,10 +550,30 @@ local function choose_unique(pool, count, rng)
 	return out
 end
 
--- A found item at item level `ilvl` with `count` (0, 1 or 2) random enchants;
--- without a count, the stack's preset quality decides it. Zero makes a plain
--- Common at that item level. A trinket's prefix and suffix draw from their own
--- pools, so its single enchant takes either channel at even odds.
+-- Every write of a stack's enchants comes here: each value is the rule at
+-- the stack's item level and the enchant's tier (item_tiers.md §1.1). Values
+-- are derived on write, not on read: only this mod writes an item level or
+-- an enchant tier (rolls, enchants, upgrades, the crown), while tooltips and
+-- the equipment totals read far more often. Quality is the enchant count
+-- plus one (Common 1, Uncommon 2, Rare 3).
+local function store_affixes(stack, affixes, player)
+	local meta = stack:get_meta()
+	local ilvl = effective_ilvl(stack) or 1
+	for index = 1, #affixes do
+		local affix = affixes[index]
+		affix.value = grug_items.enchant_value(affix.stat, ilvl, affix.tier)
+	end
+	meta:set_string("grug_ench", #affixes > 0 and core.serialize(affixes) or "")
+	meta:set_int("grug_quality", #affixes + 1)
+	apply_capabilities(stack, write_derived(meta, affixes))
+	grug_items.regenerate_description(stack, player)
+end
+
+-- A found item at item level `ilvl` with `count` (0, 1 or 2) random enchants
+-- of the item level's tier; without a count, the stack's preset quality
+-- decides it. Zero makes a plain Common at that item level. A trinket's
+-- prefix and suffix draw from their own pools, so its single enchant takes
+-- either channel at even odds.
 function grug_items.roll_enchants(stack, ilvl, count, seed)
 	if not stack or stack:is_empty() then return false, "empty item" end
 	local family = family_for(stack)
@@ -600,7 +584,6 @@ function grug_items.roll_enchants(stack, ilvl, count, seed)
 	if not ilvl then return false, "item has no item level" end
 	local meta = stack:get_meta()
 	local rng, used_seed = rng_for(seed, stack:get_name())
-	-- Quality is the enchant count plus one (Common 1, Uncommon 2, Rare 3).
 	local wanted = count == nil and meta:get_int("grug_quality") - 1 or count
 	wanted = clamp(math.floor(tonumber(wanted) or 0), 0, 2)
 	local affixes = {}
@@ -609,49 +592,43 @@ function grug_items.roll_enchants(stack, ilvl, count, seed)
 			(wanted == 1 and {rng:next(1, 2) == 1 and "prefix" or "suffix"} or {})
 		for index, channel in ipairs(channels) do
 			local pool = POOLS["trinket_" .. channel]
-			affixes[index] = found_affix(channel, pool[rng:next(1, #pool)], ilvl, rng)
+			affixes[index] = found_affix(channel, pool[rng:next(1, #pool)], ilvl)
 		end
 	else
 		local stats = choose_unique(POOLS[family], wanted, rng)
 		for index = 1, #stats do
 			affixes[index] = found_affix(index == 1 and "prefix" or "suffix",
-				stats[index], ilvl, rng)
+				stats[index], ilvl)
 		end
 	end
-	meta:set_int("grug_quality", #affixes + 1)
 	write_item_level_meta(stack, meta, ilvl)
-	meta:set_string("grug_ench", #affixes > 0 and core.serialize(affixes) or "")
 	meta:set_int("grug_roll_seed", used_seed)
-	local totals = write_derived(meta, affixes)
-	apply_capabilities(stack, totals)
-	grug_items.regenerate_description(stack)
+	store_affixes(stack, affixes)
 	return true, used_seed
 end
 
--- Deterministic operations work on copies. The station owns the atomic
--- capacity check, material consumption, output delivery and progression.
-function grug_items.operation_plan(recipe, inputs, player)
-	if type(inputs) ~= "table" or type(recipe) ~= "table" or recipe.operation ~= "enchant" or
-			grug_jobs.station_operation(recipe.id) ~= recipe then
-		return nil, "Select a registered enchantment."
-	end
-	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
-	if not allowed then return nil, reason end
+local function material_tier(stack)
+	return tonumber((stack:get_definition() or {})._grug_bracket)
+end
+
+local function enchant_name(affix)
+	return "T" .. affix.tier .. " " .. AFFIX[affix.stat].label
+end
+
+-- The one item a station operation works on (`accepts(family)`), the
+-- consumption of every listed material, and no unrelated stack.
+local function gather_inputs(recipe, inputs, accepts, noun)
 	local source, source_index
 	for index = 1, #inputs do
 		local stack = inputs[index]
-		if stack and not stack:is_empty() and family_for(stack) == recipe.family then
+		if stack and not stack:is_empty() and accepts(family_for(stack)) then
 			if source or stack:get_count() ~= 1 then
-				return nil, "Insert exactly one item to enchant."
+				return nil, "Insert exactly one item to " .. noun .. "."
 			end
 			source, source_index = ItemStack(stack), index
 		end
 	end
 	if not source then return nil, "Insert an item of the selected family." end
-	local target_tier = tonumber((source:get_definition() or {})._grug_bracket)
-	if not target_tier or target_tier < recipe.tier then
-		return nil, "The item tier must be at least the enchantment tier."
-	end
 	local consume = {[source_index] = 1}
 	for _, token in ipairs(recipe.flat_inputs) do
 		local found
@@ -664,7 +641,7 @@ function grug_items.operation_plan(recipe, inputs, player)
 				break
 			end
 		end
-		if not found then return nil, "Insert the required enchantment materials." end
+		if not found then return nil, "Insert the required " .. noun .. " materials." end
 	end
 	-- Refuse unrelated stacks so the selected operation describes the full grid.
 	for index = 1, #inputs do
@@ -672,7 +649,21 @@ function grug_items.operation_plan(recipe, inputs, player)
 			return nil, "Remove unrelated items from the station."
 		end
 	end
-	local value = grug_items.enchant_value(recipe.enchant_stat, recipe.tier)
+	return source, consume
+end
+
+-- An enchant writes the recipe's tier into its channel. Overwriting stays
+-- allowed; `warning` names a replaced enchant of a higher tier (a crowned or
+-- boss item's T7, a better found one), whose cap the new one never reaches.
+local function enchant_plan(recipe, inputs, player)
+	local source, consume = gather_inputs(recipe, inputs, function(family)
+		return family == recipe.family
+	end, "enchant")
+	if not source then return nil, consume end
+	local tier = material_tier(source)
+	if not tier or tier < recipe.tier then
+		return nil, "The item tier must be at least the enchantment tier."
+	end
 	local current = read_affixes(source:get_meta())
 	local channels = {}
 	for index = 1, #current do
@@ -681,24 +672,61 @@ function grug_items.operation_plan(recipe, inputs, player)
 			return nil, "The other channel already uses this stat."
 		end
 		if affix.channel == recipe.enchant_channel and affix.stat == recipe.enchant_stat and
-				affix.value == value then
+				affix.tier == recipe.tier then
 			return nil, "This enchantment would not change the item."
 		end
 		channels[affix.channel] = affix
 	end
-	channels[recipe.enchant_channel] = {channel = recipe.enchant_channel,
-		stat = recipe.enchant_stat, value = value, tier = recipe.tier}
+	local replaced = channels[recipe.enchant_channel]
+	local added = {channel = recipe.enchant_channel, stat = recipe.enchant_stat,
+		tier = recipe.tier}
+	channels[recipe.enchant_channel] = added
 	local affixes = {}
 	for _, channel in ipairs({"prefix", "suffix"}) do
 		if channels[channel] then affixes[#affixes + 1] = channels[channel] end
 	end
+	store_affixes(source, affixes, player)
+	local warning
+	if replaced and replaced.tier > recipe.tier then
+		warning = "Replaces " .. enchant_name(replaced) .. " with " ..
+			enchant_name(added) .. "."
+	end
+	return {output = source, consume = consume, recipe = recipe, warning = warning}
+end
+
+-- A profession upgrade (item_tiers.md §3.1): an item of the recipe's material
+-- tier T below item level 10 T rises to 10 T, never lower; its enchants keep
+-- stat, channel and tier and follow the new item level.
+local function upgrade_plan(recipe, inputs, player)
+	local source, consume = gather_inputs(recipe, inputs, function(family)
+		return recipe.family_set[family] == true
+	end, "upgrade")
+	if not source then return nil, consume end
+	if material_tier(source) ~= recipe.tier then
+		return nil, "This upgrade takes tier " .. recipe.tier .. " items."
+	end
+	local target = 10 * recipe.tier
+	if (effective_ilvl(source) or target) >= target then
+		return nil, "The item is already at item level " .. target .. " or higher."
+	end
 	local meta = source:get_meta()
-	meta:set_string("grug_ench", core.serialize(affixes))
-	meta:set_int("grug_quality", #affixes == 1 and 2 or 3)
-	local totals = write_derived(meta, affixes)
-	apply_capabilities(source, totals)
-	grug_items.regenerate_description(source, player)
+	write_item_level_meta(source, meta, target)
+	store_affixes(source, read_affixes(meta), player)
 	return {output = source, consume = consume, recipe = recipe}
+end
+
+-- Deterministic operations work on copies. The station owns the atomic
+-- capacity check, material consumption, output delivery and progression.
+-- A plan is {output, consume, recipe, warning?}.
+function grug_items.operation_plan(recipe, inputs, player)
+	if type(inputs) ~= "table" or type(recipe) ~= "table" or
+			grug_jobs.station_operation(recipe.id) ~= recipe then
+		return nil, "Select a registered operation."
+	end
+	local allowed, reason = grug_jobs.can_craft_recipe(player, recipe)
+	if not allowed then return nil, reason end
+	if recipe.operation == "upgrade" then return upgrade_plan(recipe, inputs, player) end
+	return enchant_plan(recipe, inputs, player)
 end
 
 function grug_items.preview_station_operation(recipe, inputs, player)
@@ -708,6 +736,65 @@ end
 
 function grug_items.apply_station_operation(recipe, inputs, player)
 	return grug_items.preview_station_operation(recipe, inputs, player)
+end
+
+-- The crown (round33-plan.md §2.5, item_tiers.md §4): one Fallen Crown lifts
+-- one item to its material tier's top + 5 and every enchant one tier (T7 at
+-- most); once per item. Refused where it would lower the item level or
+-- change nothing. Returns the crowned copy and the preview text, or nil and
+-- the refusal. The crown NPC (grug_traders) takes the crown and the fee.
+local function crown_plan(stack)
+	if not stack or stack:is_empty() then return nil, "Hand over the item to crown." end
+	local family = family_for(stack)
+	if not family or family == "tool" then return nil, "Only equipment can be crowned." end
+	if stack:get_count() ~= 1 then return nil, "Hand over exactly one item." end
+	local tier = material_tier(stack)
+	local ilvl = effective_ilvl(stack)
+	if not tier or not ilvl then return nil, "This item has no tier." end
+	local meta = stack:get_meta()
+	if meta:get_int("grug_crowned") == 1 then return nil, "This item is already crowned." end
+	local target = 10 * tier + 5
+	if target < ilvl then
+		return nil, "The crown would lower this item's level (" .. ilvl .. " to " ..
+			target .. ")."
+	end
+	local affixes = read_affixes(meta)
+	local lines, raised = {}, false
+	if target ~= ilvl then
+		lines[1] = "Item level " .. ilvl .. " becomes " .. target .. "."
+	end
+	for index = 1, #affixes do
+		local affix = affixes[index]
+		if affix.tier < 7 then
+			raised = true
+			lines[#lines + 1] = enchant_name(affix) .. " becomes T" .. (affix.tier + 1) .. "."
+			affix.tier = affix.tier + 1
+		end
+	end
+	if target == ilvl and not raised then
+		return nil, "The crown would change nothing on this item."
+	end
+	local out = ItemStack(stack)
+	local out_meta = out:get_meta()
+	out_meta:set_int("grug_crowned", 1)
+	write_item_level_meta(out, out_meta, target)
+	store_affixes(out, affixes)
+	return out, table.concat(lines, " ")
+end
+
+-- The preview text of crowning `stack`, or nil and the refusal reason.
+function grug_items.crown_preview(stack)
+	local out, text = crown_plan(stack)
+	if not out then return nil, text end
+	return text
+end
+
+-- Applies a Fallen Crown to a copy of `stack`: the crowned ItemStack and the
+-- preview text, or nil and the refusal reason. The caller swaps the stack.
+function grug_items.crown_item(stack, player)
+	local out, text = crown_plan(stack)
+	if out and player then grug_items.regenerate_description(out, player) end
+	return out, text
 end
 
 function grug_items.mastery_band(player)
@@ -759,6 +846,17 @@ local function boss_kind(self)
 	return nil
 end
 
+-- A zone leader (a leader sub-type, placed with `_grug_leader`) or a
+-- Battlegrounds camp captain.
+local function named_leader(self)
+	if self._grug_leader then return true end
+	local name = self.name or ""
+	local subtype = type(grug_mobs.subtype) == "function" and grug_mobs.subtype(name)
+	if type(subtype) == "table" and subtype.leader then return true end
+	local garrison = grug_mobs.pvp_garrison
+	return type(garrison) == "table" and garrison.pvp_kind(name) == "captain"
+end
+
 local function bag_for(level)
 	for _, row in ipairs(grug_items.BAG_DROPS.sizes) do
 		if not row.maximum or level <= row.maximum then return row.item end
@@ -789,7 +887,8 @@ function grug_items.roll_mob_gear(self, seed)
 			add(random_chance(rng, grug_items.BOSS_DROPS.gold) and 3 or 2)
 		end
 	elseif tier ~= "critter" then
-		local row = grug_items.DROP_CHANCES[tier] or grug_items.DROP_CHANCES.normal
+		local row = named_leader(self) and grug_items.DROP_CHANCES.elite or
+			grug_items.DROP_CHANCES[tier] or grug_items.DROP_CHANCES.normal
 		local roll = rng:next(1, 10000)
 		if roll <= row.white * 100 then
 			add(1)

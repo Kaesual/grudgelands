@@ -16,18 +16,28 @@ local PAGE_SIZE = 6
 local RANGE = 6 -- m, as the trade window
 
 --
--- THE ONE CALL into the crown operation (lane C4's grug_items). Contract:
---   grug_items.apply_crown(stack) -> crowned ItemStack, preview text
---                                 -> nil, refusal reason
--- It works on a copy and never changes the stack it is given; the preview
--- names what changes ("Item level 50 -> 55, Strength T6 -> T7").
+-- THE CALLS into the crown operation (grug_items, grug_quality/init.lua):
+--   grug_items.crown_preview(stack)       -> preview text | nil, reason
+--   grug_items.crown_item(stack, player)  -> crowned copy, preview text
+--                                         | nil, refusal reason
+-- Both work on a copy and never change the stack they are given.
 --
-function grug_traders.crown_operation(stack)
+local function crown_api(name)
 	local items = rawget(_G, "grug_items")
-	if not items or type(items.apply_crown) ~= "function" then
-		return nil, "The Crownbinder cannot work on this item."
-	end
-	return items.apply_crown(ItemStack(stack))
+	return items and type(items[name]) == "function" and items[name] or nil
+end
+local UNAVAILABLE = "The Crownbinder cannot work on this item."
+
+function grug_traders.crown_preview(stack)
+	local preview = crown_api("crown_preview")
+	if not preview then return nil, UNAVAILABLE end
+	return preview(ItemStack(stack))
+end
+
+function grug_traders.crown_operation(stack, player)
+	local crown = crown_api("crown_item")
+	if not crown then return nil, UNAVAILABLE end
+	return crown(ItemStack(stack), player)
 end
 
 -- Every list a player owns items in: the main inventory, the equipment slots
@@ -59,19 +69,18 @@ local function find_crown(inv)
 	return nil
 end
 
--- Every gear item the player owns, with the operation's answer for it: a row
--- with `result` and `text` can be crowned, a row with only `reason` cannot.
+-- Every gear item the player owns, with the operation's preview: a row with
+-- `result` and `text` can be crowned, a row with only `reason` cannot.
 function grug_traders.crown_rows(player)
 	local rows = {}
 	local inv = player:get_inventory()
 	for _, list in ipairs(owned_lists()) do
 		for index, stack in ipairs(inv:get_list(list) or {}) do
 			if not stack:is_empty() and is_gear(stack) then
-				local result, text = grug_traders.crown_operation(stack)
+				local text, reason = grug_traders.crown_preview(stack)
 				rows[#rows + 1] = {list = list, index = index,
-					expected = ItemStack(stack), result = result,
-					text = result and text or nil,
-					reason = not result and text or nil}
+					expected = ItemStack(stack), result = text ~= nil,
+					text = text, reason = reason}
 			end
 		end
 	end
@@ -88,8 +97,11 @@ function grug_traders.crown_apply(player, row)
 	if not current:equals(row.expected) then
 		return false, "That item has changed. Look again."
 	end
-	local crowned, reason = grug_traders.crown_operation(current)
+	local crowned, reason = grug_traders.crown_operation(current, player)
 	if not crowned then return false, reason end
+	-- crown_item rebuilds the description; a weapon's "Effective at level"
+	-- line is grug_gear's own.
+	grug_gear.initialize_weapon_tooltip(crowned, player)
 	local crown_list, crown_index, crown_stack = find_crown(inv)
 	if not crown_list then
 		return false, "You need a Fallen Crown."
@@ -141,9 +153,10 @@ local function form(player, session)
 		local row, y = rows[i], 2.5 + (i - first) * 0.95
 		fs[#fs + 1] = ("item_image[0.4,%.2f;0.8,0.8;%s]"):format(y, esc(row.expected:get_name()))
 		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.2, esc(first_line(row.expected)))
-		fs[#fs + 1] = ("label[1.4,%.2f;%s]"):format(y + 0.6,
-			esc(core.colorize(row.result and "#c8c8c8" or "#9a9a9a",
-				row.result and (row.text or "") or (row.reason or ""))))
+		-- A read-only textarea wraps the preview ("Item level 50 becomes 55.
+		-- Strength becomes T7. ...") inside the row.
+		fs[#fs + 1] = ("textarea[1.4,%.2f;8,0.55;;;%s]"):format(y + 0.4,
+			esc(row.result and (row.text or "") or (row.reason or "")))
 		if row.result then
 			fs[#fs + 1] = ("button[9.6,%.2f;2,0.8;crown_%d;Crown]"):format(y, i)
 		end

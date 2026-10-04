@@ -85,6 +85,7 @@ local function new_meta(fields)
 	end
 	function meta:get_int(key) return math.floor(tonumber(fields[key]) or 0) end
 	function meta:set_int(key, value) self:set_string(key, tostring(value)) end
+	function meta:set_tool_capabilities() end
 	return meta
 end
 ItemStack = function(source)
@@ -105,6 +106,7 @@ ItemStack = function(source)
 	function stack:set_wear(value) wear = value end
 	function stack:get_definition() return registered[name] or {} end
 	function stack:get_short_description() return name end
+	function stack:get_tool_capabilities() return (registered[name] or {}).tool_capabilities end
 	function stack:take_item(n)
 		n = n or 1
 		count = math.max(0, count - n)
@@ -477,7 +479,8 @@ do
 end
 
 ------------------------------------------------------------------------------
--- F. The Crownbinder (grug_traders/crown.lua) against a crown stub.
+-- F. The Crownbinder (grug_traders/crown.lua) with the real crown operation
+--    of grug_quality (grug_items.crown_preview / crown_item).
 ------------------------------------------------------------------------------
 do
 	local equipment_changed = 0
@@ -491,22 +494,39 @@ do
 	}
 	grug_money = nil
 	dofile(ROOT .. "/mods/PLAYER/grug_money/init.lua")
-	grug_core = permissive({})
-	grug_factions = permissive({serves = function() return true end})
+	-- Without the operation the NPC refuses cleanly.
+	grug_items = nil
 	dofile(ROOT .. "/mods/ENTITIES/grug_traders/crown.lua")
-
-	-- The stub of lane C4's operation: tier top + 5, once per item.
-	local calls = 0
-	grug_items = {apply_crown = function(stack)
-		calls = calls + 1
-		if stack:get_meta():get_string("grug_crowned") == "1" then
-			return nil, "This item already wears a crown."
-		end
-		local out = ItemStack(stack)
-		out:get_meta():set_string("grug_crowned", "1")
-		out:get_meta():set_int("grug_ilvl", 55)
-		return out, "Item level 50 -> 55"
-	end}
+	local none, why = grug_traders.crown_operation(ItemStack(grug_gear.weapon_item("sword", 5)))
+	check(none == nil and type(why) == "string", "F no crown operation: a refusal, no error")
+	-- The real operation (grug_quality/init.lua, lane C4).
+	grug_core = permissive({level_scale = function() return 1 end,
+		get_player_level = function() return 60 end})
+	grug_classes = permissive({get_melee_bonus = function() return 0 end})
+	grug_mobs = permissive({})
+	grug_jobs = permissive({})
+	grug_xp = permissive({get_level = function() return 60 end})
+	grug_factions = permissive({serves = function() return true end})
+	local tooltips = 0
+	local real_tooltip = grug_gear.initialize_weapon_tooltip
+	grug_gear.initialize_weapon_tooltip = function(stack, player)
+		tooltips = tooltips + 1
+		return real_tooltip(stack, player)
+	end
+	grug_repair = nil -- section D's partial module; descriptions skip durability
+	-- Park-Miller: enough for the one drop roll below.
+	PcgRandom = function(seed)
+		local state = seed % 2147483647
+		if state == 0 then state = 1 end
+		return {next = function(_, low, high)
+			state = (state * 48271) % 2147483647
+			return low + state % (high - low + 1)
+		end}
+	end
+	modpaths.grug_quality = ROOT .. "/mods/ITEMS/grug_quality"
+	current_mod = "grug_quality"
+	dofile(ROOT .. "/mods/ITEMS/grug_quality/init.lua")
+	current_mod = "grug_traders"
 	registered["grug_mobs:fallen_crown"] = {groups = {}}
 
 	local function new_player(money)
@@ -537,8 +557,9 @@ do
 	p.lists.main[1] = ItemStack("default:dirt")
 	local rows = grug_traders.crown_rows(p)
 	eq(#rows, 1, "F only gear is offered")
-	check(rows[1] and rows[1].result ~= nil and rows[1].text == "Item level 50 -> 55",
-		"F ...with the operation's preview")
+	check(rows[1] and rows[1].result and rows[1].text and
+		rows[1].text:find("Item level 40 becomes 55", 1, true) ~= nil,
+		"F ...with the operation's preview (" .. tostring(rows[1] and rows[1].text) .. ")")
 	-- No Fallen Crown: nothing changes.
 	local ok, message = grug_traders.crown_apply(p, rows[1])
 	check(not ok and message == "You need a Fallen Crown." and grug_money.get(p) == 20000,
@@ -561,22 +582,25 @@ do
 	ok, message = grug_traders.crown_apply(p, rows[1])
 	check(ok and grug_money.get(p) == 20000 - 14700, "F the fee is taken")
 	check(p.lists.grug_bag_1[1]:is_empty(), "F one Fallen Crown is consumed")
-	check(p.lists.grug_weapon[1]:get_meta():get_string("grug_crowned") == "1",
-		"F the crowned item replaces the old one")
+	local crowned = p.lists.grug_weapon[1]
+	check(crowned:get_meta():get_int("grug_crowned") == 1 and
+		grug_items.effective_ilvl(crowned) == 55, "F the crowned item (item level 55) replaces the old one")
 	eq(equipment_changed, 1, "F an equipped item refreshes the equipment")
+	check(tooltips >= 1, "F the weapon's effective-damage line is rebuilt")
 	-- Once per item: the operation's refusal is shown, no button.
 	p.lists.main[2] = ItemStack("grug_mobs:fallen_crown")
 	rows = grug_traders.crown_rows(p)
-	check(rows[1] and rows[1].result == nil and rows[1].reason == "This item already wears a crown.",
+	check(rows[1] and not rows[1].result and rows[1].reason == "This item is already crowned.",
 		"F a crowned item shows the refusal")
 	ok, message = grug_traders.crown_apply(p, rows[1])
 	check(not ok and grug_money.get(p) == 5300 and p.lists.main[2]:get_name() ==
 		"grug_mobs:fallen_crown", "F ...and crowning it again changes nothing")
-	-- Without the operation the NPC refuses cleanly.
-	grug_items = nil
-	local result, reason = grug_traders.crown_operation(ItemStack(sword))
-	check(result == nil and type(reason) == "string", "F no crown operation: a refusal, no error")
-	check(calls > 0, "F the stub was called")
+	-- A boss drop above the crown's target is refused (never lowering).
+	local drop = ItemStack(grug_gear.weapon_item("sword", 6))
+	grug_items.roll_enchants(drop, 70, 1, 7)
+	local text, reason = grug_traders.crown_preview(drop)
+	check(text == nil and reason and reason:find("lower", 1, true) ~= nil,
+		"F an item-level-70 drop is not lowered to 65")
 end
 
 ------------------------------------------------------------------------------

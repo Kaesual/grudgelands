@@ -336,8 +336,8 @@ do
 	grug_items.regenerate_description(plain)
 	check(plain:get_meta().fields.inventory_image == nil, "plain stack has no image key")
 	-- Affixes set: the image carries both colours.
-	local enchanted = stack_with(sword, {{channel = "prefix", stat = "str", value = 3},
-		{channel = "suffix", stat = "crit_percent", value = 1}})
+	local enchanted = stack_with(sword, {{channel = "prefix", stat = "str", tier = 3, value = 3},
+		{channel = "suffix", stat = "crit_percent", tier = 3, value = 1}})
 	grug_items.regenerate_description(enchanted)
 	check(enchanted:get_meta():get_string("inventory_image") ==
 		enchant_image(image, "str", "crit_percent"), "enchanted stack carries its colours")
@@ -346,8 +346,8 @@ do
 		grug_items.get_affixes(enchanted)) == false, "unchanged image is not rewritten")
 	-- An enchant replacing the suffix: the image follows.
 	enchanted:get_meta():set_string("grug_ench", core.serialize({
-		{channel = "prefix", stat = "str", value = 3},
-		{channel = "suffix", stat = "max_hp_percent", value = 2}}))
+		{channel = "prefix", stat = "str", tier = 3, value = 3},
+		{channel = "suffix", stat = "max_hp_percent", tier = 3, value = 2}}))
 	check(grug_items.regenerate_description(enchanted) == true, "changed affix reports a change")
 	check(enchanted:get_meta():get_string("inventory_image") ==
 		enchant_image(image, "str", "max_hp_percent"), "image follows the new suffix")
@@ -364,7 +364,7 @@ do
 		enchant_image(registered["grug_gear:chest_leather_cured"].inventory_image, prefix, suffix),
 		"loot roll writes the image")
 	-- Broken, uncracked image unchanged: not rewritten.
-	local broken = stack_with(sword, {{channel = "prefix", stat = "dex", value = 3}})
+	local broken = stack_with(sword, {{channel = "prefix", stat = "dex", tier = 3, value = 3}})
 	local meta = broken:get_meta()
 	local base = enchant_image(image, "dex", nil)
 	meta:set_string("inventory_image", "(" .. base .. ")^[cracko:1:4")
@@ -386,7 +386,7 @@ do
 			trinket = name
 		end
 	end
-	local t = stack_with(trinket, {{channel = "prefix", stat = "str", value = 1}})
+	local t = stack_with(trinket, {{channel = "prefix", stat = "str", tier = 3, value = 1}})
 	grug_items.regenerate_description(t)
 	check(t:get_meta().fields.inventory_image == nil, "trinket stays plain: " .. trinket)
 end

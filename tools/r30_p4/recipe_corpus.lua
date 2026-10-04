@@ -939,22 +939,125 @@ return {
 		},
 		[40] = {
 			existing_engine_recipe = false,
-			hint = "Cut at a Jeweller's Bench",
+			hint = "Bind at a Tailor Bench",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_materials:quartz",
+					[1] = "grug_professions:bolt_patch",
+					[2] = "grug_professions:bolt_patch",
+					[3] = "grug_professions:parchment",
 				},
 			},
-			material = true,
-			output_name = "grug_materials:cut_quartz",
-			profession = "goldsmith",
-			progress = false,
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_bronze",
+			profession = "tailor",
+			progress = true,
 			shapeless = false,
-			station = "jewellers_bench",
+			station = "tailor_bench",
 			tier = 1,
 		},
 		[41] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_woven",
+					[2] = "grug_professions:bolt_woven",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_iron",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 2,
+		},
+		[42] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_heavy",
+					[2] = "grug_professions:bolt_heavy",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_steel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 3,
+		},
+		[43] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_silkweave",
+					[2] = "grug_professions:bolt_silkweave",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_silversteel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 4,
+		},
+		[44] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_silk",
+					[2] = "grug_professions:bolt_silk",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_embersteel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 5,
+		},
+		[45] = {
+			existing_engine_recipe = false,
+			hint = "Bind at a Tailor Bench",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_professions:bolt_stormweave",
+					[2] = "grug_professions:bolt_stormweave",
+					[3] = "grug_professions:parchment",
+				},
+			},
+			mastery_required = 2,
+			material = false,
+			output_name = "grug_gear:spellbook_abyssal_steel",
+			profession = "tailor",
+			progress = true,
+			shapeless = false,
+			station = "tailor_bench",
+			tier = 6,
+		},
+		[46] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -971,7 +1074,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[42] = {
+		[47] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -988,7 +1091,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[43] = {
+		[48] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1005,7 +1108,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[44] = {
+		[49] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1022,7 +1125,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[45] = {
+		[50] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1039,7 +1142,7 @@ return {
 			station = "jewellers_bench",
 			tier = 5,
 		},
-		[46] = {
+		[51] = {
 			existing_engine_recipe = false,
 			hint = "Cut at a Jeweller's Bench",
 			in_place = false,
@@ -1056,7 +1159,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[47] = {
+		[52] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1074,7 +1177,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[48] = {
+		[53] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1092,7 +1195,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[49] = {
+		[54] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1110,7 +1213,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[50] = {
+		[55] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1128,7 +1231,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[51] = {
+		[56] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1146,7 +1249,7 @@ return {
 			station = "jewellers_bench",
 			tier = 5,
 		},
-		[52] = {
+		[57] = {
 			existing_engine_recipe = false,
 			hint = "Form at a Jeweller's Bench",
 			in_place = false,
@@ -1164,33 +1267,14 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[53] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_bronze",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 1,
-		},
-		[54] = {
+		[58] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_materials:cut_quartz",
+					[2] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1201,7 +1285,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[55] = {
+		[59] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1209,7 +1293,7 @@ return {
 				[1] = {
 					[1] = "grug_artisans:setting_tin",
 					[2] = "grug_artisans:setting_tin",
-					[3] = "grug_materials:cut_quartz",
+					[3] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1220,7 +1304,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[56] = {
+		[60] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1231,7 +1315,7 @@ return {
 					[3] = "grug_artisans:setting_tin",
 				},
 				[2] = {
-					[1] = "grug_materials:cut_quartz",
+					[1] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1242,7 +1326,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[57] = {
+		[61] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1254,7 +1338,7 @@ return {
 				},
 				[2] = {
 					[1] = "grug_artisans:setting_tin",
-					[2] = "grug_materials:cut_quartz",
+					[2] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1265,7 +1349,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[58] = {
+		[62] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1278,7 +1362,7 @@ return {
 				[2] = {
 					[1] = "grug_artisans:setting_tin",
 					[2] = "grug_artisans:setting_tin",
-					[3] = "grug_materials:cut_quartz",
+					[3] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1289,7 +1373,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[59] = {
+		[63] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1305,7 +1389,7 @@ return {
 					[3] = "grug_artisans:setting_tin",
 				},
 				[3] = {
-					[1] = "grug_materials:cut_quartz",
+					[1] = "grug_materials:cut_citrine",
 				},
 			},
 			material = false,
@@ -1316,26 +1400,7 @@ return {
 			station = "jewellers_bench",
 			tier = 1,
 		},
-		[60] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_iron",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_iron",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 2,
-		},
-		[61] = {
+		[64] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1353,7 +1418,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[62] = {
+		[65] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1372,7 +1437,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[63] = {
+		[66] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1394,7 +1459,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[64] = {
+		[67] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1417,7 +1482,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[65] = {
+		[68] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1441,7 +1506,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[66] = {
+		[69] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1468,26 +1533,7 @@ return {
 			station = "jewellers_bench",
 			tier = 2,
 		},
-		[67] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_copper_inlaid_steel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_steel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 3,
-		},
-		[68] = {
+		[70] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1505,7 +1551,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[69] = {
+		[71] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1524,7 +1570,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[70] = {
+		[72] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1546,7 +1592,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[71] = {
+		[73] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1569,7 +1615,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[72] = {
+		[74] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1593,7 +1639,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[73] = {
+		[75] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1620,26 +1666,7 @@ return {
 			station = "jewellers_bench",
 			tier = 3,
 		},
-		[74] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_silversteel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 4,
-		},
-		[75] = {
+		[76] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1657,7 +1684,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[76] = {
+		[77] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1676,7 +1703,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[77] = {
+		[78] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1698,7 +1725,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[78] = {
+		[79] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1721,7 +1748,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[79] = {
+		[80] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1745,7 +1772,7 @@ return {
 			station = "jewellers_bench",
 			tier = 4,
 		},
-		[80] = {
+		[81] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1771,25 +1798,6 @@ return {
 			shapeless = false,
 			station = "jewellers_bench",
 			tier = 4,
-		},
-		[81] = {
-			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_embersteel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_embersteel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 5,
 		},
 		[82] = {
 			existing_engine_recipe = false,
@@ -1936,25 +1944,6 @@ return {
 		},
 		[88] = {
 			existing_engine_recipe = false,
-			hint = "Bind at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_abyssal_steel",
-					[2] = "grug_professions:parchment",
-				},
-			},
-			mastery_required = 2,
-			material = false,
-			output_name = "grug_gear:spellbook_abyssal_steel",
-			profession = "goldsmith",
-			progress = true,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 6,
-		},
-		[89] = {
-			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
 			inputs = {
@@ -1975,7 +1964,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[90] = {
+		[89] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -1998,7 +1987,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[91] = {
+		[90] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2022,7 +2011,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[92] = {
+		[91] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2049,7 +2038,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[93] = {
+		[92] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2077,7 +2066,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[94] = {
+		[93] = {
 			existing_engine_recipe = false,
 			hint = "Assemble at a Jeweller's Bench",
 			in_place = false,
@@ -2106,83 +2095,7 @@ return {
 			station = "jewellers_bench",
 			tier = 6,
 		},
-		[95] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_copper_inlaid_steel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:slime_gel",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t3",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 3,
-		},
-		[96] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:croc_tooth",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t4",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 4,
-		},
-		[97] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_embersteel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_gathering:stormkelp",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t5",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 5,
-		},
-		[98] = {
-			existing_engine_recipe = false,
-			hint = "Form at a Jeweller's Bench",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_artisans:setting_gold_filigreed_abyssal_steel",
-					[2] = "grug_materials:gold_bar",
-					[3] = "grug_mobs:stone_core",
-				},
-			},
-			material = false,
-			output_name = "grug_artisans:ornament_components_t6",
-			profession = "goldsmith",
-			progress = false,
-			shapeless = false,
-			station = "jewellers_bench",
-			tier = 6,
-		},
-		[99] = {
+		[94] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2194,22 +2107,22 @@ return {
 				},
 			},
 			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t1",
+			output_name = "grug_alchemy:mixture_potion_healing",
 			profession = "alchemist",
 			progress = true,
 			shapeless = false,
 			station = "grid",
 			tier = 1,
 		},
-		[100] = {
+		[95] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
 			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t1",
+				[1] = "grug_alchemy:mixture_potion_healing",
 			},
 			material = false,
-			output_name = "grug_alchemy:potion_healing_t1",
+			output_name = "grug_alchemy:potion_healing",
 			profession = "alchemist",
 			progress = false,
 			shapeless = false,
@@ -2217,7 +2130,7 @@ return {
 			tier = 1,
 			time = 5,
 		},
-		[101] = {
+		[96] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2229,57 +2142,22 @@ return {
 				},
 			},
 			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t1",
+			output_name = "grug_alchemy:mixture_potion_mana",
 			profession = "alchemist",
 			progress = true,
 			shapeless = false,
 			station = "grid",
 			tier = 1,
 		},
-		[102] = {
+		[97] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
 			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t1",
+				[1] = "grug_alchemy:mixture_potion_mana",
 			},
 			material = false,
-			output_name = "grug_alchemy:potion_mana_t1",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 1,
-			time = 5,
-		},
-		[103] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:sunleaf",
-					[2] = "grug_mobs:tattered_flesh",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_vigor_t1",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 1,
-		},
-		[104] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_vigor_t1",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_vigor_t1",
+			output_name = "grug_alchemy:potion_mana",
 			profession = "alchemist",
 			progress = false,
 			shapeless = false,
@@ -2287,322 +2165,7 @@ return {
 			tier = 1,
 			time = 5,
 		},
-		[105] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:gravemoss",
-					[2] = "grug_mobs:crab_eye",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_focus_t1",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 1,
-		},
-		[106] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_focus_t1",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_focus_t1",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 1,
-			time = 5,
-		},
-		[107] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:sunleaf",
-					[2] = "grug_mobs:boar_tusk",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_precision_t1",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 1,
-		},
-		[108] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_precision_t1",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_precision_t1",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 1,
-			time = 5,
-		},
-		[109] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:gravemoss",
-					[2] = "grug_mobs:crab_leg",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t1",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 1,
-		},
-		[110] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t1",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t1",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 1,
-			time = 5,
-		},
-		[111] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_gathering:sunleaf",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[112] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_healing_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[113] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_cooking:sugar_cane",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[114] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_mana_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[115] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_mobs:tough_sinew",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_vigor_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[116] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_vigor_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_vigor_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[117] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_mobs:clear_crab_eye",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_focus_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[118] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_focus_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_focus_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[119] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_mobs:ridged_boar_tusk",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_precision_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[120] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_precision_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_precision_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[121] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:dragonweed",
-					[2] = "grug_mobs:ridged_crab_shell",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t2",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 2,
-		},
-		[122] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t2",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t2",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 2,
-			time = 5,
-		},
-		[123] = {
+		[98] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2621,7 +2184,7 @@ return {
 			station = "grid",
 			tier = 2,
 		},
-		[124] = {
+		[99] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2637,7 +2200,7 @@ return {
 			tier = 2,
 			time = 5,
 		},
-		[125] = {
+		[100] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2656,7 +2219,7 @@ return {
 			station = "grid",
 			tier = 2,
 		},
-		[126] = {
+		[101] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2672,7 +2235,7 @@ return {
 			tier = 2,
 			time = 5,
 		},
-		[127] = {
+		[102] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2684,22 +2247,22 @@ return {
 				},
 			},
 			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t3",
+			output_name = "grug_alchemy:mixture_potion_greater_healing",
 			profession = "alchemist",
 			progress = true,
 			shapeless = false,
 			station = "grid",
 			tier = 3,
 		},
-		[128] = {
+		[103] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
 			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t3",
+				[1] = "grug_alchemy:mixture_potion_greater_healing",
 			},
 			material = false,
-			output_name = "grug_alchemy:potion_healing_t3",
+			output_name = "grug_alchemy:potion_greater_healing",
 			profession = "alchemist",
 			progress = false,
 			shapeless = false,
@@ -2707,7 +2270,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[129] = {
+		[104] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2719,22 +2282,22 @@ return {
 				},
 			},
 			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t3",
+			output_name = "grug_alchemy:mixture_potion_greater_mana",
 			profession = "alchemist",
 			progress = true,
 			shapeless = false,
 			station = "grid",
 			tier = 3,
 		},
-		[130] = {
+		[105] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
 			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t3",
+				[1] = "grug_alchemy:mixture_potion_greater_mana",
 			},
 			material = false,
-			output_name = "grug_alchemy:potion_mana_t3",
+			output_name = "grug_alchemy:potion_greater_mana",
 			profession = "alchemist",
 			progress = false,
 			shapeless = false,
@@ -2742,7 +2305,42 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[131] = {
+		[106] = {
+			existing_engine_recipe = false,
+			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_cooking:cave_cap",
+					[2] = "grug_mobs:slime_gel",
+					[3] = "vessels:glass_bottle",
+				},
+			},
+			material = false,
+			output_name = "grug_alchemy:mixture_potion_cave",
+			profession = "alchemist",
+			progress = true,
+			shapeless = false,
+			station = "grid",
+			tier = 3,
+		},
+		[107] = {
+			existing_engine_recipe = false,
+			hint = "Anyone may finish the prepared mixture; no profession progress",
+			in_place = false,
+			inputs = {
+				[1] = "grug_alchemy:mixture_potion_cave",
+			},
+			material = false,
+			output_name = "grug_alchemy:potion_cave",
+			profession = "alchemist",
+			progress = false,
+			shapeless = false,
+			station = "brewing_stand",
+			tier = 3,
+			time = 5,
+		},
+		[108] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2761,7 +2359,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[132] = {
+		[109] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2777,7 +2375,7 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[133] = {
+		[110] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -2796,7 +2394,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[134] = {
+		[111] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2812,14 +2410,14 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[135] = {
+		[112] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:serrated_fang",
+					[2] = "grug_mobs:fang",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -2831,7 +2429,7 @@ return {
 			station = "grid",
 			tier = 3,
 		},
-		[136] = {
+		[113] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -2847,154 +2445,14 @@ return {
 			tier = 3,
 			time = 5,
 		},
-		[137] = {
+		[114] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:layered_crab_shell",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t3",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 3,
-		},
-		[138] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t3",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t3",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 3,
-			time = 5,
-		},
-		[139] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_cooking:cave_cap",
-					[2] = "grug_mobs:bound_wisp_mote",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_cave",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 3,
-		},
-		[140] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_cave",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_cave",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 3,
-			time = 5,
-		},
-		[141] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:leathery_flesh",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t4",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 4,
-		},
-		[142] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t4",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_healing_t4",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 4,
-			time = 5,
-		},
-		[143] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:venom_sac",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t4",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 4,
-		},
-		[144] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t4",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_mana_t4",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 4,
-			time = 5,
-		},
-		[145] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:ironbound_sinew",
+					[2] = "grug_mobs:croc_tooth",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3006,7 +2464,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[146] = {
+		[115] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3022,14 +2480,14 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[147] = {
+		[116] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:campaign_talisman",
+					[2] = "grug_mobs:venom_sac",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3041,7 +2499,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[148] = {
+		[117] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3057,14 +2515,14 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[149] = {
+		[118] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:razor_cat_claw",
+					[2] = "grug_mobs:shiny_scale",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3076,7 +2534,7 @@ return {
 			station = "grid",
 			tier = 4,
 		},
-		[150] = {
+		[119] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3092,119 +2550,49 @@ return {
 			tier = 4,
 			time = 5,
 		},
-		[151] = {
+		[120] = {
+			existing_engine_recipe = false,
+			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
+			in_place = false,
+			inputs = {
+				[1] = {
+					[1] = "grug_mobs:shiny_scale",
+					[2] = "grug_mobs:croc_tooth",
+					[3] = "vessels:glass_bottle",
+				},
+			},
+			material = false,
+			output_name = "grug_alchemy:mixture_elixir_stoneskin",
+			profession = "alchemist",
+			progress = true,
+			shapeless = false,
+			station = "grid",
+			tier = 4,
+		},
+		[121] = {
+			existing_engine_recipe = false,
+			hint = "Anyone may finish the prepared mixture; no profession progress",
+			in_place = false,
+			inputs = {
+				[1] = "grug_alchemy:mixture_elixir_stoneskin",
+			},
+			material = false,
+			output_name = "grug_alchemy:elixir_stoneskin",
+			profession = "alchemist",
+			progress = false,
+			shapeless = false,
+			station = "brewing_stand",
+			tier = 4,
+			time = 5,
+		},
+		[122] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:crimson_lotus",
-					[2] = "grug_mobs:shiny_scale",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t4",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 4,
-		},
-		[152] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t4",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t4",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 4,
-			time = 5,
-		},
-		[153] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_cooking:ember_moss",
-					[2] = "grug_gathering:crimson_lotus",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t5",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 5,
-		},
-		[154] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t5",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_healing_t5",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 5,
-			time = 5,
-		},
-		[155] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:stormkelp",
-					[2] = "grug_gathering:crimson_lotus",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t5",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 5,
-		},
-		[156] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t5",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_mana_t5",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 5,
-			time = 5,
-		},
-		[157] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_cooking:ember_moss",
-					[2] = "grug_mobs:scorched_flesh",
+					[2] = "grug_cooking:ember_moss",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3216,7 +2604,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[158] = {
+		[123] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3232,14 +2620,14 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[159] = {
+		[124] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_cooking:ember_moss",
-					[2] = "grug_cooking:cave_cap",
+					[1] = "grug_cooking:cave_cap",
+					[2] = "grug_cooking:ember_moss",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3251,7 +2639,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[160] = {
+		[125] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3267,14 +2655,14 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[161] = {
+		[126] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_cooking:ember_moss",
-					[2] = "grug_mobs:siegepack_fang",
+					[1] = "grug_mobs:shiny_scale",
+					[2] = "grug_cooking:ember_moss",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3286,7 +2674,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[162] = {
+		[127] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3302,49 +2690,14 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[163] = {
+		[128] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
 					[1] = "grug_gathering:stormkelp",
-					[2] = "grug_mobs:siege_bone",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t5",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 5,
-		},
-		[164] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t5",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t5",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 5,
-			time = 5,
-		},
-		[165] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:stormkelp",
-					[2] = "grug_cooking:cave_cap",
+					[2] = "grug_mobs:slime_gel",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3356,7 +2709,7 @@ return {
 			station = "grid",
 			tier = 5,
 		},
-		[166] = {
+		[129] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3372,84 +2725,14 @@ return {
 			tier = 5,
 			time = 5,
 		},
-		[167] = {
+		[130] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_gathering:wild_cocoa",
-					[2] = "grug_cooking:ember_moss",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_healing_t6",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 6,
-		},
-		[168] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_healing_t6",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_healing_t6",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 6,
-			time = 5,
-		},
-		[169] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:wild_cocoa",
-					[2] = "grug_gathering:stormkelp",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_potion_mana_t6",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 6,
-		},
-		[170] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_potion_mana_t6",
-			},
-			material = false,
-			output_name = "grug_alchemy:potion_mana_t6",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 6,
-			time = 5,
-		},
-		[171] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:wild_cocoa",
-					[2] = "grug_mobs:salt_cured_flesh",
+					[1] = "grug_cooking:ember_moss",
+					[2] = "grug_mobs:stone_core",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3461,7 +2744,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[172] = {
+		[131] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3477,14 +2760,14 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[173] = {
+		[132] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
 			inputs = {
 				[1] = {
-					[1] = "grug_gathering:wild_cocoa",
-					[2] = "grug_mobs:last_hex_shard",
+					[1] = "grug_cooking:ember_moss",
+					[2] = "grug_gathering:wild_cocoa",
 					[3] = "vessels:glass_bottle",
 				},
 			},
@@ -3496,7 +2779,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[174] = {
+		[133] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3512,7 +2795,7 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[175] = {
+		[134] = {
 			existing_engine_recipe = false,
 			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
 			in_place = false,
@@ -3531,7 +2814,7 @@ return {
 			station = "grid",
 			tier = 6,
 		},
-		[176] = {
+		[135] = {
 			existing_engine_recipe = false,
 			hint = "Anyone may finish the prepared mixture; no profession progress",
 			in_place = false,
@@ -3547,42 +2830,7 @@ return {
 			tier = 6,
 			time = 5,
 		},
-		[177] = {
-			existing_engine_recipe = false,
-			hint = "Prepare in the inventory grid; finish at a Brewing Stand",
-			in_place = false,
-			inputs = {
-				[1] = {
-					[1] = "grug_gathering:wild_cocoa",
-					[2] = "grug_mobs:unquiet_bone",
-					[3] = "vessels:glass_bottle",
-				},
-			},
-			material = false,
-			output_name = "grug_alchemy:mixture_elixir_stoneskin_t6",
-			profession = "alchemist",
-			progress = true,
-			shapeless = false,
-			station = "grid",
-			tier = 6,
-		},
-		[178] = {
-			existing_engine_recipe = false,
-			hint = "Anyone may finish the prepared mixture; no profession progress",
-			in_place = false,
-			inputs = {
-				[1] = "grug_alchemy:mixture_elixir_stoneskin_t6",
-			},
-			material = false,
-			output_name = "grug_alchemy:elixir_stoneskin_t6",
-			profession = "alchemist",
-			progress = false,
-			shapeless = false,
-			station = "brewing_stand",
-			tier = 6,
-			time = 5,
-		},
-		[179] = {
+		[136] = {
 			existing_engine_recipe = false,
 			hint = "Craft in the inventory grid",
 			in_place = false,
@@ -3622,44 +2870,25 @@ return {
 		["group:grug_cooking_staple"] = 1,
 		["group:wood"] = 1,
 		["grug_alchemy:mixture_elixir_deepwater"] = 5,
-		["grug_alchemy:mixture_elixir_focus_t1"] = 1,
-		["grug_alchemy:mixture_elixir_focus_t2"] = 2,
 		["grug_alchemy:mixture_elixir_focus_t3"] = 3,
 		["grug_alchemy:mixture_elixir_focus_t4"] = 4,
 		["grug_alchemy:mixture_elixir_focus_t5"] = 5,
 		["grug_alchemy:mixture_elixir_focus_t6"] = 6,
-		["grug_alchemy:mixture_elixir_precision_t1"] = 1,
-		["grug_alchemy:mixture_elixir_precision_t2"] = 2,
 		["grug_alchemy:mixture_elixir_precision_t3"] = 3,
 		["grug_alchemy:mixture_elixir_precision_t4"] = 4,
 		["grug_alchemy:mixture_elixir_precision_t5"] = 5,
 		["grug_alchemy:mixture_elixir_precision_t6"] = 6,
-		["grug_alchemy:mixture_elixir_stoneskin_t1"] = 1,
-		["grug_alchemy:mixture_elixir_stoneskin_t2"] = 2,
-		["grug_alchemy:mixture_elixir_stoneskin_t3"] = 3,
-		["grug_alchemy:mixture_elixir_stoneskin_t4"] = 4,
-		["grug_alchemy:mixture_elixir_stoneskin_t5"] = 5,
-		["grug_alchemy:mixture_elixir_stoneskin_t6"] = 6,
-		["grug_alchemy:mixture_elixir_vigor_t1"] = 1,
-		["grug_alchemy:mixture_elixir_vigor_t2"] = 2,
+		["grug_alchemy:mixture_elixir_stoneskin"] = 4,
 		["grug_alchemy:mixture_elixir_vigor_t3"] = 3,
 		["grug_alchemy:mixture_elixir_vigor_t4"] = 4,
 		["grug_alchemy:mixture_elixir_vigor_t5"] = 5,
 		["grug_alchemy:mixture_elixir_vigor_t6"] = 6,
 		["grug_alchemy:mixture_potion_antivenom"] = 2,
 		["grug_alchemy:mixture_potion_cave"] = 3,
-		["grug_alchemy:mixture_potion_healing_t1"] = 1,
-		["grug_alchemy:mixture_potion_healing_t2"] = 2,
-		["grug_alchemy:mixture_potion_healing_t3"] = 3,
-		["grug_alchemy:mixture_potion_healing_t4"] = 4,
-		["grug_alchemy:mixture_potion_healing_t5"] = 5,
-		["grug_alchemy:mixture_potion_healing_t6"] = 6,
-		["grug_alchemy:mixture_potion_mana_t1"] = 1,
-		["grug_alchemy:mixture_potion_mana_t2"] = 2,
-		["grug_alchemy:mixture_potion_mana_t3"] = 3,
-		["grug_alchemy:mixture_potion_mana_t4"] = 4,
-		["grug_alchemy:mixture_potion_mana_t5"] = 5,
-		["grug_alchemy:mixture_potion_mana_t6"] = 6,
+		["grug_alchemy:mixture_potion_greater_healing"] = 3,
+		["grug_alchemy:mixture_potion_greater_mana"] = 3,
+		["grug_alchemy:mixture_potion_healing"] = 1,
+		["grug_alchemy:mixture_potion_mana"] = 1,
 		["grug_alchemy:mixture_potion_swiftness"] = 2,
 		["grug_artisans:hardened_wood"] = 3,
 		["grug_artisans:heartwood_wood"] = 6,
@@ -3713,7 +2942,6 @@ return {
 		["grug_materials:cut_diamond"] = 6,
 		["grug_materials:cut_garnet"] = 3,
 		["grug_materials:cut_jade"] = 2,
-		["grug_materials:cut_quartz"] = 1,
 		["grug_materials:cut_ruby"] = 5,
 		["grug_materials:cut_sapphire"] = 4,
 		["grug_materials:embersteel_bar"] = 5,
@@ -3738,7 +2966,6 @@ return {
 		["grug_mobs:bitter_resin"] = 4,
 		["grug_mobs:bitter_venom"] = 2,
 		["grug_mobs:blunt_croc_tooth"] = 2,
-		["grug_mobs:boar_tusk"] = 1,
 		["grug_mobs:bone_chitin"] = 3,
 		["grug_mobs:bound_wisp_mote"] = 3,
 		["grug_mobs:braided_sinew"] = 3,

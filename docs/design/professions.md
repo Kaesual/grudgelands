@@ -66,7 +66,7 @@ the material ladder is its §3.0, the per-profession catalogs are
 - **Only real recipes count (Round 33):** enchants, upgrades and the
   profession's own end products (potions and elixirs at their mixture,
   dishes, bags, trinkets, spellbooks). Stations (Forge, Carving Bench, …),
-  intermediates (settings, cut gems, bolt bundles, ornament components) and
+  intermediates (settings, cut gems, bolt bundles) and
   every automatic furnace or brewing finish count nothing
   (`items_crafting.md` §2.3). There is no fast path for late starters. Every
   profession still reaches its band cap: the six primaries enchant at every
@@ -82,13 +82,21 @@ Cooking and Alchemy. The roster is organised **by material, never by class**.
 
 | Profession | Material chain T1–T6 | Owns exclusively |
 |---|---|---|
-| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Physical-weapon enchantments; plain weapons and tools are Basics |
-| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments; plain shields are Basics |
-| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor enchants and leather bags |
-| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and cloth bags |
-| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff, wand and bow enchantments; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
-| **Goldsmith** | Gold + Quartz + the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Both trinket slots, spellbooks, gem refinement, Settings and jewelry components |
+| **Weaponsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Sword, dagger and battle-axe enchantments and upgrades (the Scout's melee blade too); plain weapons and tools are Basics |
+| **Armorsmith** | Bronze → Iron → Steel → Silversteel → Embersteel → Abyssal Steel | Metal armor and shield enchantments and upgrades; plain shields are Basics |
+| **Leatherworker** | light → cured → heavy → scaled → sleek → nightscale leather | Leather armor and bow enchantments and upgrades, leather bags; plain bows are Basics |
+| **Tailor** | patch → woven → heavy → silkweave → silk → stormweave bolts | Cloth armor and spellbook enchantments and upgrades, spellbooks, cloth bags |
+| **Woodcarver** | any `group:wood`, graded Seasoned → Polished → Hardened → Inlaid → Lacquered → Heartwood (enchant materials) | Staff and wand enchantments and upgrades; plain items use sticks + metal in Basics, with occult mob components for caster weapons |
+| **Goldsmith** | Gold + the six depth-tiered gems (one per tier rock, Citrine T1 … Diamond T6) | Both trinket slots (enchants and upgrades), gem refinement, Settings |
+
 | **Alchemy** (secondary) | healing herbs + spices | Potions and elixirs — **gathers its own herbs** |
+
+Two professions dress every class in armour, weapon and offhand (Round 33,
+[item_tiers.md](item_tiers.md) §3.3): Warrior Armorsmith + Weaponsmith, Scout
+Leatherworker + Weaponsmith, Mage and Priest Tailor + Woodcarver; the
+Goldsmith serves every class. An **upgrade** (one per profession and tier)
+lifts an item of its families to its tier's top item level (item_tiers.md
+§3.1).
 
 ### 2.1 The coverage is complete and overlap-free
 
@@ -98,18 +106,21 @@ That is the property the re-cut was made for, and it is checkable:
   leather → Leatherworker, cloth → Tailor. No class of armor has two
   makers and none has none.
 - **Every weapon family's professional enchantments are assigned.** Sword,
-  dagger and battle-axe enchantments belong to the Weaponsmith; wand, staff and
-  bow enchantments belong to the Woodcarver. Their plain base recipes are
-  universal Basics. Scepters and orbs are absent from V1.
+  dagger and battle-axe enchantments belong to the Weaponsmith; wand and staff
+  enchantments to the Woodcarver; bow enchantments to the Leatherworker
+  (Round 33). Their plain base recipes are universal Basics. Scepters and orbs
+  are absent from V1.
 - **Both trinket slots finally have an owner** — the Goldsmith. In the
   old roster they had none at all. **The items ship in the MVP**
   (decided 2026-08-08): the slots are no longer reserved
   (`inventory_equipment.md` §2). Each trinket has one selectable primary-
   attribute prefix channel, one selectable HP/Mana/Crit suffix channel and one
-  authored special. Crafted bases start with empty channels; enchants have
-  fixed tier values (`items_crafting.md` §6.2).
+  authored special. Crafted bases start with empty channels; an enchant's
+  value follows the item level up to its tier's top
+  ([item_tiers.md](item_tiers.md) §1.1).
 - **Offhands have distinct roles**: plain shields are Basics and Armorsmith
-  improves them; Goldsmith makes spellbooks. The Scout's offhand is its melee
+  improves them; the Tailor makes and improves spellbooks (Round 33, before
+  the Goldsmith). The Scout's offhand is its melee
   blade, and its quiver is a slot, not an item (Round 28).
 - **Consumables** are Alchemy's alone. Tailor owns cloth bags and
   Leatherworker owns equal-capacity leather bags.
@@ -159,8 +170,8 @@ symmetric: four mastery tiers each, six material groups each.**
 ### 2.4 The Woodcarver closes a real hole
 
 The active caster roster is two-handed staff or one-handed wand plus a
-Goldsmith spellbook. Plain staff/wand recipes are Basics; Woodcarver owns their
-enchantments. Scepters and orbs are absent from fresh V1 worlds.
+Tailor spellbook. Plain staff/wand recipes are Basics; Woodcarver owns their
+enchantments and upgrades. Scepters and orbs are absent from fresh V1 worlds.
 
 ## 3. Self-contained professions (Round 28)
 
@@ -170,7 +181,7 @@ another profession turned out to be much worse in practice than expected.
 Variety comes from loot tables per tier band instead: every enchant consumes
 the profession's **own material** of the tier (metal bar, leather grade,
 cloth bolt, graded wood or setting), **one loot item of the tier** chosen by
-the stat, and **one mining or gathering item** chosen by the equipment
+the stat and channel, and **one mining or gathering item** chosen by the equipment
 family (`items_crafting.md` §6b.2); the Goldsmith may refine base gems
 further for its own recipes only. The load check fails when any profession
 recipe or enchant operation uses an item made by another profession's
@@ -222,7 +233,8 @@ who wants both specialties spends both slots, matching the two-profession cost
 of cloth or leather users who also want a professionally improved weapon.
 
 - **The Bowyer split is dropped entirely** (2026-08-07). Plain bows are Basics,
-  while Woodcarver owns their named enchant operations, so there is nothing
+  while the Leatherworker owns their named enchant operations (Round 33; the
+  Woodcarver before), so there is nothing
   left for a Bowyer to own. The
   Leatherworker is not split.
   *A settlement shop called a bowyer is not this.* Since 2026-09-15 a
@@ -236,7 +248,7 @@ of cloth or leather users who also want a professionally improved weapon.
   what equipment professions do to their own item families
   (`items_crafting.md` §6b), not another profession that would take a
   cut of all of them.
-- **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. Woodcarver improves bows.
+- **The bow foundation now has the Scout consumer.** Six tier bows beginning at Bronze are active V1 equipment. The Leatherworker improves bows (Round 33).
 
 ## Round 18 trainer feedback
 
