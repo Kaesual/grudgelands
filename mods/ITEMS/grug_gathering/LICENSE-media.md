@@ -16,11 +16,8 @@ that license.
 | Potato, Rock Salt | `default_clay_lump.png` |
 | Melon | `default_apple.png` |
 | Mushroom, Wild Cocoa | `default_pine_bush_sapling.png` |
-| Gravesalt, Red Ochre | `default_clay.png` |
-| Moonresin, Spirit Resin, Sunwax | `default_tree.png` |
-| Runeslate | `default_stone.png` |
 
-Node sounds reference the unchanged default leaves and stone sound sets. Their
+Node sounds reference the unchanged default leaves sound set. Its
 CC BY-SA 3.0, CC BY 3.0 and CC0 notices remain in the same vendored license
 file. No external plant asset is imported by WP33.
 

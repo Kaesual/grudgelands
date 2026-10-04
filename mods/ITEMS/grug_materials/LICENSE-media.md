@@ -135,18 +135,7 @@ Emberglass and Abyssal Crystal are the other two entries in the 12-row
 processed-material registry; their resource and block media are already listed
 in §3.
 
-## 5. Cultural materials
-
-| Runtime item | Vendored original | Runtime modifier |
-|---|---|---|
-| `grug_materials:sunwax` | `default_mese_crystal_fragment.png` | `^[colorize:#f0c45a:120` |
-| `grug_materials:runeslate` | `default_stone.png` | `^[colorize:#64758a:110` |
-| `grug_materials:moonresin` | `default_mese_crystal_fragment.png` | `^[colorize:#a9c9ee:130` |
-| `grug_materials:red_ochre` | `default_clay_lump.png` | `^[colorize:#a54122:150` |
-| `grug_materials:spirit_resin` | `default_mese_crystal_fragment.png` | `^[colorize:#8ca833:130` |
-| `grug_materials:gravesalt` | `default_mese_crystal_fragment.png` | `^[colorize:#ddd8c8:145` |
-
-## 6. Emberglass lighting
+## 5. Emberglass lighting
 
 `grug_materials:emberglass_lamp` uses
 `default_meselamp.png^[colorize:#ff7a2e:25`.
@@ -167,7 +156,7 @@ The internal `default_mese*.png` filenames in §§2, 3, 5 and 6 are provenance
 names of vendored assets. They are not player-facing legacy item/node IDs and
 do not create a parallel Mese material.
 
-## 7. Mining-failure feedback
+## 6. Mining-failure feedback
 
 Removed in Round 24: the under-tier resource shatter (and with it its
 transient `default_stone.png^[colorize:#777777:180` particles and the
@@ -177,7 +166,7 @@ became unused: this mod never stored its own particle texture or sound, and
 `default_stone.png` and the `default_dig_cracky` sounds remain in use by the
 vendored `default` mod (stone tiles, cracky dig sounds).
 
-## 8. Canonical derivatives of vendored nodes
+## 7. Canonical derivatives of vendored nodes
 
 These registrations copy the complete vendored source definition, including
 its unmodified textures and sounds, then replace the description, canonical
@@ -201,7 +190,7 @@ Other nodes registered by this mod use the vendored stone, glass or wood sound
 defaults from the same minetest_game commit. The combined sound licenses and
 attributions are the ones preserved in `mods/BASE/default/license.txt`.
 
-## 9. Round 24 stored rock and mineral textures
+## 8. Round 24 stored rock and mineral textures
 
 Eighteen files for Round 24 rulings 8, 16 and 17
 (`docs/planning/round24-mining-underground-mobs-plan.md`). Regenerate with
