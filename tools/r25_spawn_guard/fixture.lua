@@ -258,10 +258,14 @@ check(spawn_one(camp_pos, {}, {mob = "grug_mobs:mirefolk", radius = 10}, 0) == t
 -- 3c. rares.lua try_spawn (refused: no add, no alive mark, retried next pass).
 local marked, rare_added = 0, 0
 local try_spawn = extract("mods/ENTITIES/grug_mobs/rares.lua",
-	"local function try_spawn(id, spec, now)", "return function(id, spec, now)", {
+	"local function try_spawn(id, spec)", "return function(id, spec)", {
 		player_near_xz = function() return true end,
 		PLAYER_RANGE = 120,
-		find_existing = function() return false end,
+		-- Round 37 MP: liveness.lua answers "already out there" and stamps
+		-- the generation.
+		liveness = {instance = function() return nil end, adopt = function() end,
+			next_generation = function() return 1 end},
+		live_key = function(id) return "rare:" .. id end,
 		route_pos = function(pt) return pt end,
 		mark_alive = function() marked = marked + 1 end,
 		broadcast = function() end,
@@ -274,11 +278,11 @@ local try_spawn = extract("mods/ENTITIES/grug_mobs/rares.lua",
 			place_on_ground = function() end,
 		}, {__index = gm}),
 	})
-try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {ACTIVE}}, 0)
+try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {ACTIVE}})
 check(rare_added == 0 and marked == 0, "rare: hostile rare in an active claim not placed")
-try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {EXPIRED}}, 0)
+try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {EXPIRED}})
 check(rare_added == 1 and marked == 1, "rare: hostile rare in an expired claim placed")
-try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {FREE}}, 0)
+try_spawn("r1", {mob = "grug_mobs:wolf", name = "Rare", route = {FREE}})
 check(rare_added == 2 and marked == 2, "rare: hostile rare outside claims placed")
 
 -- ---------------------------------------------------------------------------
