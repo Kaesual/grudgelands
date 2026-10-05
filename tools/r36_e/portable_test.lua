@@ -155,6 +155,7 @@ end}
 ------------------------------------------------------------------------------
 local fed = {}
 grug_core = {register_tag_visibility = function() end,
+	get_player_faction = function() return nil end,
 	settlement_socket_anchor = function() return nil end,
 	hud_layout = {side_text_width = function() return 400 end, QUEST_WRAP = 400, anchors = {quest_list = {}}},
 	feed_item = function() end,
