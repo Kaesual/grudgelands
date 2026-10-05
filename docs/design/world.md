@@ -217,7 +217,9 @@ elite mobs (pillar cheese) and territory borders. One territorial rule:
     the hard-protected content of R1 (user decision 2026-09-29,
     [WP audit](../planning/wp-audit-2026-09-29.md#user-decisions-2026-09-29)
     E7). Nothing in the game damages terrain today; the guard is deferred work
-    (WP46).
+    (WP46). The one deliberate exception is **the rift's crack** (§4b, Round
+    36): written once per world inside its clash site's own POI box and
+    recorded, never by players and never anywhere else.
 - **R2 — Peaceful enemy territory**: in level-1–30 land, an enemy faction may
   not dig or place any node, including torches and ladders. Items remain
   usable. At y = -501 and below the universal contested deep rule overrides
@@ -684,6 +686,42 @@ combat damage for the ordinary five-second combat window.
 - **V2 — the Nether dragon lord** as part of the first large post-V1 content
   update, whose Nether has its own mapgen, story line and mob cast; the Fire
   Dragon and the wider Nether encounter reserve stay reserved until then.
+
+**The rift** (Round 36, round36-plan.md §2.1): the finale place of both
+factions' main line, at **one clash site** of the 51–60 front — one constant
+(`grug_mobs/rift_core.lua` `SITE`) among Saltgate Remnant, Tombroad Ambush,
+Skyroot Crossing and Cloudwatch Fall; Tombroad Ambush until the user's pick
+(its surroundings lie in the 58–60 belt on all six quest seeds). Runtime
+content, no mapgen; the place stays contested like the whole front, so PvP
+contact there is intended.
+
+- **The crack:** a jagged line of **void nodes** two nodes deep, cut into the
+  site's floor once per world when a player first finds the place loaded,
+  and recorded in mod storage, so later loads write nothing. Each site's
+  line is authored (waypoints round the composition's props); it never takes
+  a prop's footprint, the composition's central actor clearance (with a node
+  of margin) or the outer ring of its box, and every written node is the
+  site's own protected POI core (§2 R1b), so players cannot dig it. A cell
+  whose floor is not open ground stays floor.
+- **The void node:** not walkable, not pointable, unbreakable, never in a
+  player's hands; a player sinks in, moves as in a liquid (no breath lost),
+  takes **300 damage per second** (node damage: armour does not reduce it)
+  and swims up and steps out at the edge. Mobs avoid it like any damaging
+  node.
+- **Particles:** dark motes over the crack for each player within 48 nodes,
+  one spawner per stretch of the crack every 5 s, about 80 particles per
+  player and period, about 50 alive at once per player.
+- **The rift boss:** a demonic level-60 elite (`biomes_mobs.md`, Round 8
+  bosses table), sized for two or three level-60 players. It appears on the
+  site's centre like a leader when a player is within 48 nodes and none
+  within 6 of its spot, and is never saved with the map. Its leash is its
+  own: dragged more than **24 nodes** from where its fight began, or 15 s
+  without contact, it resets (full health, threat and its ledger cleared)
+  and runs home untouchable (the evade of `combat_stats.md` §4), taking an
+  A* way round the crack when a straight run stalls; idle it walks back to
+  its spot. It returns **5 minutes** of wall-clock time after its death.
+  Loot through the boss ledger (`items_crafting.md` §5.3b); every credited
+  kill reaches `grug_mobs.register_on_boss_kill` as `rift:<site key>`.
 
 ## 4c. Deep T4–T6 is contested endgame territory
 

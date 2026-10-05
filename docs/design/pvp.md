@@ -121,7 +121,7 @@ eligibility and flag".
   | Killing blows | the lethal hit |
   | Deaths to players | a death that credited at least one enemy player, logout deaths included |
   | Enemy guards killed | faction guards, royal guards, the Generals' bodyguards |
-  | Enemy captains killed | Battlegrounds camp captains |
+  | Enemy captains killed | Battlegrounds camp captains and the two war commanders |
   | Enemy generals killed | the two fortress Generals |
   | Enemy kings killed | the six kings |
 
@@ -203,13 +203,24 @@ combat may follow its target in).
   factors (1.15 × size, 1.5 × HP), respawning after 270–330 s. 48 captain
   names (one per camp and possible race) and the two Generals are by GPT-6
   Astra (`grug_mobs/data/pvp_names.json`).
+- **War commanders** (Round 36, round36-plan.md §2.3): the Throng War Camp of
+  Gravesalt Escarpment and the Accord War Camp of The Skyglass Canopy, and
+  only these two, also hold a **named war commander**: a level-60 elite with
+  the leaders' factors (1.15 × size, 1.5 × HP on top of the elite's), the
+  guard chassis, respawning after 270–330 s like a captain and counted as a
+  captain on the PvP tab. He has no authored socket: he stands five nodes
+  beside the captain, across from the camp's west yard post. He is the main
+  line's optional group fight in that camp; the captain stays its solo
+  target. His name lives in `pvp_names.json` (`commanders`; working names
+  until the story bible names them).
 - Own-faction players find shelter: the guards treat them as friends; enemy
   guards are hostile. Kiting enemy guards to an own camp is accepted.
 
 ## 7. Quests
 
 - **Player kills are never quest objectives** (players may be offline); PvP
-  quests target enemy garrisons: guards and captains within a camp's area.
+  quests target enemy garrisons: guards, captains and the two war
+  commanders within a camp's area.
 - **PvP quests start at level 40** ([progression.md](progression.md) §4).
 - Per faction 12 fortress quests: one **solo** raid per enemy camp (8: the
   camp's guards and captain), three ordinary fortress quests and one entry

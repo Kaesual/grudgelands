@@ -1402,10 +1402,11 @@ One roll per kill decides, so a kill drops **at most one** gear item:
 | Elite, named rare, zone leader, war-camp captain | 10% | 10% | 5% | 25% |
 | Critter | — | — | — | 0% |
 
-**Bosses** — the six race Kings and the two dragons through their personal
-reward (§5.3, §5.4), the two PvP fortress Generals on every enemy player's kill
-— always drop **two** items, each blue or gold at even odds: Kings and
-Generals item level 65, dragons item level 70. Their other loot (Fallen Crown,
+**Bosses** — the six race Kings, the two dragons and the rift boss (Round 36)
+through their personal reward (§5.3, §5.4, §5.3b), the two PvP fortress
+Generals on every enemy player's kill — always drop **two** items, each blue
+or gold at even odds: Kings, Generals and the rift boss item level 65,
+dragons item level 70. Their other loot (Fallen Crown,
 Scaled Hide, the General's war trophies) stays. The General has no reward
 ledger: his two items drop on the kill, like any mob gear, and only an enemy
 player's kill drops them; his bodyguards, like royal guards, drop no gear.
@@ -1460,6 +1461,16 @@ reward is two blue-or-gold items at item level 70 (§5.1) and authored materials
 never pays ledger money directly and no universal bar/pick depends on it:
 continental T5 Abyssal Crystal is the ordinary T6 entry. There is no hoard
 chest (WP audit E11) and no renewable gem socket on the islands (E5).
+
+### 5.3b The rift boss (Round 36)
+
+The main line's finale boss at the rift ([world.md](world.md) §4b) rewards
+through the same participation ledger and death grace as the dragons. Once
+per character per **24 hours** (its own rolling wall-clock lockout) a credited
+participant receives the boss reward: two blue-or-gold items at item level 65
+and nothing else. A credited kill inside the lockout gives that character an
+**elite's roll** instead (§5.1's elite row at its level 60, at most one item)
+and never moves the lockout. Every credited kill counts for achievements.
 
 ### 5.4 Six race Kings and Fallen Crowns
 
