@@ -2,10 +2,10 @@
 
 Decided rules (established 2026-08-06; housing milestone revised in Round 25,
 2026-09-29).
-The game ships 540 quests, one data file per zone (`quests.md`, "Quest
-data"): Round 29's 491 — one track per race from the start zone to its
-heartland, the contested 31–40 zones and the 41–60 front with its repeatable
-and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
+The game ships 540 quests, one data file per zone plus a front file per
+front host (`quests.md`, "Quest data"): Round 29's 491 — one track per race
+from the start zone to its heartland, the contested 31–40 zones and the 41–60
+front with its repeatable and island bounties, replacing the 240 quests of Rounds 14, 15 and 20 —
 Round 31's 24 PvP fortress quests (§4) and Round 36's 25 for the main line
 of levels 41–60 (WP9, `story.md` §2a).
 
@@ -88,11 +88,11 @@ Levels must keep delivering *decisions and buttons*, not just stats:
 [skill_trees.md](skill_trees.md) (revision 2, 2026-09-16) defines
 two trees per class on the cadence below, works the arithmetic out for every
 milestone, and lists every talent, keystone and capstone for all **four**
-classes — the fourth being the Scout ([scout.md](scout.md)). Its §6 records
-that the design has no remaining open decision.
+classes — the fourth being the Scout ([scout.md](scout.md)).
 
 The three bullets below were rewritten on **2026-09-16** by the user's
-rulings; the superseded text is named in `skill_trees.md` §5.2.
+rulings; the superseded text is named in the
+[WP11 delivery record](../archive/design/skill-trees-wp11-delivery.md) §5.2.
 
 - **1 talent point every 2 levels, the first at level 2** (30 points total
   at 60); a talent tree holds **28 ranks**, so a class holds 56 — you can fill
@@ -119,8 +119,8 @@ rulings; the superseded text is named in `skill_trees.md` §5.2.
   (`economy.md` §3/§4.1), and **the first respec of a character is free**. A
   respec is a **full reset**, and **class change is removed from the game
   entirely, for admins too**. *(Supersedes "Respec at the class trainer
-  for gold". `economy.md` §4, `items_crafting.md` §8.3 and `world.md` §1 now
-  state the same no-trainer rule.)*
+  for gold". `economy.md` §4 and `world.md` §3 state the same no-trainer
+  rule.)*
 - **Level 20 — Claim Stone:** the Housing Steward in every capital hands out
   the player's one free, soulbound Claim Stone. It claims a 101 × 101 home in
   the player's own level-11–30 home zones while it is fuelled
