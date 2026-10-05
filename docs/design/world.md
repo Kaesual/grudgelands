@@ -565,9 +565,8 @@ mirefolk camps, later miners, king bodyguards, …) follows ONE model:
   range rolled per refill). Slots are independent: if 2 of 4 bodyguards
   die, exactly 2 refills queue up. The royal encounter is the explicit
   group-reset/group-respawn exception above. Intervals in force today:
-  bandit/mirefolk camps **30–60 s** per slot (Round 28 ruling 37,
-  biomes_mobs.md §4; the recipe camps of biomes_mobs.md §4.2 use the same
-  slot model without a node),
+  bandit/mirefolk camps **30–60 s** per slot (Round 28 ruling 37: the
+  recipe camps of biomes_mobs.md §4.2, the same slot model without a node),
   guard posts **180–360 s** — clearing an outpost buys a while of open
   road; a PvP fortress's guards keep that rhythm, a Battlegrounds camp's
   guards return after **100–140 s** and its captain after **270–330 s**

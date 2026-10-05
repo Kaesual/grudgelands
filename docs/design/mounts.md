@@ -89,7 +89,8 @@ character state:
 - **Flight buys terrain at home and over the shared Battlegrounds, not in enemy
   territory or across ocean.** The two land tiers remain legal in enemy
   territory; §4 owns the complete geographic rule.
-- Each exact character-level anchor is both the visibility and purchase gate.
+- Each exact character-level anchor is the purchase gate; below it the tier
+  is listed greyed ("Requires level N", Round 28 ruling 19 above).
   Price is calibrated by reliable net earning time rather than preserving the
   obsolete 1s/8s/30s/60s table.
 - Inventory representation is **one recoverable item per bought tier**. Buying
@@ -214,7 +215,7 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 - **Dismounting** detaches the player, removes the ephemeral mount and places
   the player on a free neighbouring node where geography permits — the
   `mobs.detach` / `find_free_pos` pattern of the vendored
-  `mods/ENTITIES/mobs/mount.lua:183-198` and `:107-120`.
+  `mods/ENTITIES/mobs/mount.lua`.
 - **Death, logout and server shutdown dismount automatically.** The shared
   mount cleanup removes controller, visible child, warning and runtime status
   exactly once, even when vendored attachment cleanup runs first. Logout and
@@ -224,6 +225,8 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
   remains in player metadata; every reconnect starts on foot.
 - **Entering a no-mount zone dismounts you** (§4) — via the same detach and
   entity-removal transaction.
+- **A stun dismounts you**: `grug_core.set_stun` dismounts a mounted player
+  (`grug_core/movement.lua`).
 - **Taking damage dismounts you** (§3.1) — the same detach path again.
 - Mounting is refused while `grug_core.in_combat(player)` reports the active
   five-second combat window.
@@ -254,7 +257,7 @@ water. Flight and its geography (§3.2, §4) do not apply to them.
 - **Implementation note (engine fact, recorded 2026-08-13):** mobs_redo
   punches *what the player is attached to* —
   `local target = self.attack:get_attach() or self.attack`
-  (`mods/ENTITIES/mobs/api.lua:2793-2798`) — so a mob's melee swing lands on
+  (in the melee attack branch of `mods/ENTITIES/mobs/api.lua`) — so a mob's melee swing lands on
   the mount entity and the rider loses no HP from it. That swallowed swing is
   transferred to the rider and triggers the dismount; damage aimed at the
   player directly (our own PvP pipeline, projectiles, drowning, environment)
@@ -429,16 +432,15 @@ GPL-3.0-or-later):
 | **VoxeLibre** `mcl_mobs/mount.lua`, `mobs_mc/horse.lua` | a maintained fork of the same API | GPL-3.0-or-later (`VoxeLibre/LEGAL.md`); `mobs_mc/README.md` names GPLv3 for that mod, and LEGAL.md's dual-licence clause lets us take the game's GPL-3.0-or-later terms instead | ✓ compatible |
 
 - **mobs_redo is the base**: `mount.lua` is already vendored and loaded
-  (`mods/ENTITIES/mobs/init.lua:26`). Its four public helpers are
-  `mobs.attach(entity, player)` (`mount.lua:133-179`),
-  `mobs.detach(player)` (`:183-198`),
-  `mobs.drive(entity, moving_anim, stand_anim, can_fly, dtime)`
-  (`:202-334`) and `mobs.fly(entity, dtime, speed, shoots, arrow, ...)`
-  (`:338-410`); `force_detach` plus the leave/shutdown/die handlers sit
-  at `:47-97`. `drive`'s `can_fly` flag and `fly` are exactly the land /
+  (`mods/ENTITIES/mobs/init.lua`). Its four public helpers are
+  `mobs.attach(entity, player)`, `mobs.detach(player)`,
+  `mobs.drive(entity, moving_anim, stand_anim, can_fly, dtime)` and
+  `mobs.fly(entity, dtime, speed, moving_anim, stand_anim)`; the local
+  `force_detach` and the leave/shutdown/die handlers sit at the top of
+  `mount.lua`. `drive`'s `can_fly` flag and `fly` are exactly the land /
   flying split of §1.1, and the speed cap is the entity's own
-  `max_speed_forward` (`mount.lua:313-316`). It **requires the
-  `player_api` mod** (`mount.lua:8-16` stubs the whole API out
+  `max_speed_forward` (read in `mobs.drive`). It **requires the
+  `player_api` mod** (the head of `mount.lua` stubs the whole API out
   otherwise) — we vendor it as `mods/BASE/player_api`, so the
   precondition holds.
 - **Lord of the Test** shows the acquisition half we need and mobs_redo
